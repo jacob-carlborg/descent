@@ -3,6 +3,8 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.STC.*;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -678,77 +680,66 @@ public abstract class Type extends ASTDmdNode {
 	}
 	
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
-			SemanticContext context) {
+			SemanticContext context)
+	{
 		VarDeclaration v = null;
 
-		if (e.op == TOK.TOKdotvar) {
-			DotVarExp dv = (DotVarExp) e;
+	    if (e.op == TOKdotvar)
+	    {
+			DotVarExp dv = (DotVarExp )e;
 			v = dv.var.isVarDeclaration();
-		} else if (e.op == TOK.TOKvar) {
-			VarExp ve = (VarExp) e;
+	    }
+	    else if (e.op == TOKvar)
+	    {
+			VarExp ve = (VarExp )e;
 			v = ve.var.isVarDeclaration();
-		}
-		if (v != null) {
-			if (CharOperation.equals(ident.ident, Id.offset)) {
-				/* TODO semantic
-				 if (!global.params.useDeprecated)
-				 error(e.loc, ".offset deprecated, use .offsetof");
-				 goto Loffset;
-				 */
-			} else if (CharOperation.equals(ident.ident, Id.offsetof)) {
-				/* TODO semantic
-				 Loffset:
-				 if (v.storage_class & STC.STCfield)
-				 {
-				 e = new IntegerExp(e.loc, v.offset, Type.tint32);
-				 return e;
-				 }
-				 */
-			} else if (CharOperation.equals(ident.ident, Id.init)) {
-				if (v.init != null) {
-					if (v.init.isVoidInitializer() != null) {
-						/* TODO semantic
-						 error(e.loc, "%s.init is void", v.toChars());
-						 */
-					} else {
-						e = v.init.toExpression(context);
-						if (e.op == TOK.TOKassign || e.op == TOK.TOKconstruct) {
-							e = ((AssignExp) e).e2;
-
-							/*
-							 * Take care of case where we used a 0 to initialize the
-							 * struct.
-							 */
-							if (e.type == Type.tint32
-									&& e.isBool(false)
-									&& v.type.toBasetype(context).ty == TY.Tstruct) {
-								e = v.type.defaultInit(context);
-							}
-						}
-					}
+	    }
+	    if (null != v)
+	    {
+			if (CharOperation.equals(ident.ident, Id.offset))
+			{
+			    if (!context.global.params.useDeprecated)
+			    	error(".offset deprecated, use .offsetof");
+			    //goto Loffset;
+			    if (0 != (v.storage_class & STCfield))
+				{
+					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
 					return e;
 				}
 			}
-		}
-		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
-			/* TODO semantic
-			 if (!global.params.useDeprecated) {
-			 error(e.loc, ".typeinfo deprecated, use typeid(type)");
-			 }
-			 e = getTypeInfo(sc);
-			 return e;
-			 */
-		}
-		if (CharOperation.equals(ident.ident, Id.stringof)) {
-			/* TODO semantic
-			 char s = e.toChars();
-			 e = new StringExp(e.loc, s, strlen(s), 'c');
-			 Scope sc;
-			 e = e.semantic(&sc);
-			 return e;
-			 */
-		}
-		return getProperty(e.loc, ident.ident, context);
+			else if (CharOperation.equals(ident.ident, Id.offsetof))
+			{
+				//Loffset:
+				if (0 != (v.storage_class & STCfield))
+				{
+					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
+					return e;
+				}
+			}
+			else if (CharOperation.equals(ident.ident, Id.init))
+			{
+			    return defaultInit(context);
+			}
+	    }
+	    
+	    if (CharOperation.equals(ident.ident, Id.typeinfo))
+	    {
+			if (!context.global.params.useDeprecated)
+			    error(".typeinfo deprecated, use typeid(type)");
+			e = getTypeInfo(sc);
+			return e;
+	    }
+	    
+	    if (CharOperation.equals(ident.ident, Id.stringof))
+	    {
+	    	char[] s = e.toChars().toCharArray();
+	    	e = new StringExp(e.loc, s, 'c');
+			Scope _sc = new Scope();
+			e = e.semantic(_sc, context);
+			return e;
+	    }
+	    
+	    return getProperty(e.loc, ident.ident, context);
 	}
 
 	public int size(Loc loc) {
@@ -766,9 +757,8 @@ public abstract class Type extends ASTDmdNode {
 		return 0;
 	}
 
-	public int memalign(int structalign) {
-		// TODO
-		return 0;
+	public int memalign(int salign) {
+		return salign;
 	}
 
 	public boolean isBaseOf(Type type, int[] posffset) {
@@ -788,6 +778,8 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return false;
 	}
+	
+	
 	
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		if (this == to) {

@@ -232,7 +232,7 @@ public class CallExp extends UnaExp {
 						// Should fix deduce() so it works on null argument
 						arguments = new ArrayList<Expression>();
 					}
-					f = td.deduce(sc, null, arguments, context);
+					f = td.deduce(sc, loc, null, arguments, context);
 					if (f == null) {
 						type = Type.terror;
 						return this;
@@ -383,7 +383,7 @@ public class CallExp extends UnaExp {
 					e1 = e;
 				} else if (e1.op == TOKtemplate) {
 					TemplateExp te = (TemplateExp) e1;
-					f = te.td.deduce(sc, null, arguments, context);
+					f = te.td.deduce(sc, loc, null, arguments, context);
 					if (f == null) {
 						type = Type.terror;
 						return this;
