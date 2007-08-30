@@ -182,6 +182,7 @@ public interface Id {
 	char[] classInstanceSize = { 'c', 'l', 'a', 's', 's', 'I', 'n', 's', 't', 'a', 'n', 'c', 'e', 'S', 'i', 'z', 'e' };
 	char[] allMembers = { 'a', 'l', 'l', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
 	char[] derivedMembers = { 'd', 'e', 'r', 'i', 'v', 'e', 'd', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
+	char[] tupleof = { 't', 'u', 'p', 'l', 'e', 'o', 'f' };
 	
 	// Others useful
 	char[] ZERO = { '0' };

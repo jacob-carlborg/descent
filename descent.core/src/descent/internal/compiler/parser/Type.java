@@ -748,7 +748,7 @@ public abstract class Type extends ASTDmdNode {
 		return salign;
 	}
 
-	public boolean isBaseOf(Type type, int[] posffset) {
+	public boolean isBaseOf(Type type, int[] poffset, SemanticContext context) {
 		return false;
 	}
 	
