@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-public class TypeAArray extends Type {
+public class TypeAArray extends TypeArray {
 	
 	public Type index;
 	public Type key;

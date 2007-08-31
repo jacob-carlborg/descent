@@ -6,7 +6,7 @@ import java.util.List;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-public class TypeSArray extends Type {
+public class TypeSArray extends TypeArray {
 	
 	public Expression dim;
 

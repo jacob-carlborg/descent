@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-public class TypeDArray extends Type {
+public class TypeDArray extends TypeArray {
 	
 	public TypeDArray(Type next) {
 		super(TY.Tarray, next);
