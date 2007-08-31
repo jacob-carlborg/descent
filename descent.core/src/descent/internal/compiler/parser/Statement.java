@@ -71,5 +71,13 @@ public abstract class Statement extends ASTDmdNode {
 		toCBuffer(buf, hgs, context);
 		return buf.toChars();
 	}
+	
+	public Statement inlineScan(InlineScanState iss) {
+		return this;
+	}
+	
+	public boolean usesEH() {
+		return false;
+	}
 
 }

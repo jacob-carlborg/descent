@@ -18,10 +18,6 @@ public class WithStatement extends Statement {
 	}
 
 	@Override
-	public int getNodeType() {
-		return WITH_STATEMENT;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -29,6 +25,27 @@ public class WithStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public boolean fallOffEnd() {
+		return body != null ? body.fallOffEnd() : true;
+	}
+
+	@Override
+	public int getNodeType() {
+		return WITH_STATEMENT;
+	}
+
+	@Override
+	public Statement inlineScan(InlineScanState iss) {
+		if (exp != null) {
+			exp = exp.inlineScan(iss);
+		}
+		if (body != null) {
+			body = body.inlineScan(iss);
+		}
+		return this;
 	}
 
 	@Override
@@ -87,6 +104,29 @@ public class WithStatement extends Statement {
 		sc.pop();
 
 		return this;
+	}
+
+	@Override
+	public Statement syntaxCopy() {
+		WithStatement s = new WithStatement(loc, exp.syntaxCopy(),
+				body != null ? body.syntaxCopy() : null);
+		return s;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("with (");
+		exp.toCBuffer(buf, hgs, context);
+		buf.writestring(")\n");
+		if (body != null) {
+			body.toCBuffer(buf, hgs, context);
+		}
+	}
+	
+	@Override
+	public boolean usesEH() {
+		return body != null ? body.usesEH() : false;
 	}
 
 }

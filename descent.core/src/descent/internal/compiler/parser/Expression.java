@@ -386,5 +386,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public boolean isCommutative() {
 		return false; // default is no reverse
 	}
+	
+	public Expression inlineScan(InlineScanState iss) {
+		return this;
+	}
 
 }

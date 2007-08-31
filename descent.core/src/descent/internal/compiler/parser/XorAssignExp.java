@@ -8,12 +8,8 @@ public class XorAssignExp extends BinExp {
 	public XorAssignExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKxorass, e1, e2);
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return XOR_ASSIGN_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -22,11 +18,20 @@ public class XorAssignExp extends BinExp {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context)
-	{
-		return commonSemanticAssignIntegral(sc, context);
+	public int getNodeType() {
+		return XOR_ASSIGN_EXP;
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.xorass;
 	}
 	
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		return commonSemanticAssignIntegral(sc, context);
+	}
+
 }

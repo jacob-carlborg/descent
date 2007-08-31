@@ -107,6 +107,7 @@ IncrementExp.java
 IndexExp.java
 InExp.java
 Initializer.java
+InlineScanState.java
 IntegerExp.java
 IntegerWrapper.java
 InterfaceDeclaration.java
@@ -272,5 +273,3 @@ VoidInitializer.java
 VolatileStatement.java
 WhileStatement.java
 WithScopeSymbol.java
-WithStatement.java
-XorAssignExp.java
