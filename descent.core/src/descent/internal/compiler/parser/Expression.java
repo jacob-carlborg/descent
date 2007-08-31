@@ -223,7 +223,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 		context.acceptProblem(Problem.newSemanticTypeError(
 				IProblem.CannotImplicitlyConvert, 0,
-				start, length, new String[] { type.toString(), t.toString() }));
+				start, length, new String[] { type.toChars(context), t.toChars(context) }));
 
 		return castTo(sc, t, context);
 	}
