@@ -1,4 +1,3 @@
-AddrExp.java
 AggregateDeclaration.java
 AliasDeclaration.java
 AlignDeclaration.java

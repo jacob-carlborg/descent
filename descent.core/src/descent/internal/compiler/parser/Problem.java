@@ -339,6 +339,9 @@ public class Problem implements IProblem {
 		case CanOnlyConcatenateArrays:
 			return "Can only concatenate arrays, not " + arguments[0] +
 				" and " + arguments[1];
+		case ArrayIndexOutOfBounds:
+			return "Array index " + arguments[0] + " is out of bounds [0.." +
+				arguments[1] + "]"; 
 		default:
 			return "";
 		}
