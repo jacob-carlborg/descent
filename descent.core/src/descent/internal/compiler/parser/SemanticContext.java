@@ -69,15 +69,11 @@ public class SemanticContext {
 	private int generatedIds;	
 	public IdentifierExp generateId(String prefix) {
 		String name = prefix + ++generatedIds;
-		Identifier id = new Identifier(name.toCharArray(), TOK.TOKidentifier);
+		char[] id = name.toCharArray();
 		return new IdentifierExp(Loc.ZERO, id);
 	}
-	
-	public FuncDeclaration genCfunc(Type treturn, char[] name) {
-		return genCfunc(treturn, new Identifier(name, TOK.TOKidentifier));
-	}
 
-	public FuncDeclaration genCfunc(Type treturn, Identifier id) {
+	public FuncDeclaration genCfunc(Type treturn, char[] id) {
 		FuncDeclaration fd;
 		TypeFunction tf;
 		Dsymbol s;
@@ -85,7 +81,7 @@ public class SemanticContext {
 		// See if already in table
 		if (st == null)
 			st = new DsymbolTable();
-		s = st.lookup(id.string);
+		s = st.lookup(id);
 		if (s != null) {
 			fd = s.isFuncDeclaration();
 			Assert.isNotNull(fd);

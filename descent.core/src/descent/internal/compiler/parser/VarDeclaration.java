@@ -45,10 +45,6 @@ public class VarDeclaration extends Declaration {
 	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
 	}
-	
-	public VarDeclaration(Loc loc, Type type, Identifier ident, Initializer init) {
-		this(loc, type, ident.string, init);
-	}
 
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
 		super(loc, id);

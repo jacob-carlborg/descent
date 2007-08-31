@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -730,10 +731,10 @@ public abstract class ASTDmdNode extends ASTNode {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
-	public boolean findCondition(List<String> ids, Identifier ident) {
+	public boolean findCondition(List<char[]> ids, char[] ident) {
 		if (ids != null) {
-			for (String id : ids) {
-				if (id.equals(ident.string)) {
+			for (char[]id : ids) {
+				if (CharOperation.equals(id, ident)) {
 					return true;
 				}
 			}
@@ -800,8 +801,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					case Tarray: { // Create a static array variable v of type
 						// arg.type
 
-						Identifier id = new Identifier(("_arrayArg" + (++idn))
-								.toCharArray());
+						char[] id = ("_arrayArg" + (++idn)).toCharArray();
 						Type t = new TypeSArray(tb2.next, new IntegerExp(loc,
 								nargs - i));
 						t = t.semantic(loc, sc, context);

@@ -14,6 +14,7 @@ public class AddAssignExp extends BinExp {
 		return ADD_ASSIGN_EXP;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -23,19 +24,25 @@ public class AddAssignExp extends BinExp {
 		visitor.endVisit(this);
 	}
 
+	public char[] opId() {
+		return Id.addass;
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 
-		if (null != type)
+		if (null != type) {
 			return this;
+		}
 
 		super.semantic(sc, context);
 		e2 = resolveProperties(sc, e2, context);
 
 		e = op_overload(sc);
-		if (null != e)
+		if (null != e) {
 			return e;
+		}
 
 		e1 = e1.modifiableLvalue(sc, null, context);
 
@@ -50,9 +57,9 @@ public class AddAssignExp extends BinExp {
 		} else {
 			e1.checkScalar(context);
 			e1.checkNoBool(context);
-			if (tb1.ty == TY.Tpointer && tb2.isintegral())
+			if (tb1.ty == TY.Tpointer && tb2.isintegral()) {
 				e = scaleFactor(sc, context);
-			else if (tb1.ty == TY.Tbit || tb1.ty == TY.Tbool) {
+			} else if (tb1.ty == TY.Tbit || tb1.ty == TY.Tbool) {
 				// Rewrite e1+=e2 to e1=e1+e2
 				e = new AddExp(loc, e1, e2);
 				e = new CastExp(loc, e, e1.type);
@@ -64,7 +71,7 @@ public class AddAssignExp extends BinExp {
 				e1.checkArithmetic(context);
 				e2.checkArithmetic(context);
 				if (type.isreal() || type.isimaginary()) {
-					//assert(global.errors || e2->type->isfloating());
+					// assert(global.errors || e2->type->isfloating());
 					e2 = e2.castTo(sc, e1.type, context);
 				}
 				e = this;

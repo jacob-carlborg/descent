@@ -50,7 +50,6 @@ import static descent.internal.compiler.parser.TOK.TOKidentity;
 import static descent.internal.compiler.parser.TOK.TOKif;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKinout;
-import static descent.internal.compiler.parser.TOK.TOKint32;
 import static descent.internal.compiler.parser.TOK.TOKint32v;
 import static descent.internal.compiler.parser.TOK.TOKinterface;
 import static descent.internal.compiler.parser.TOK.TOKinvariant;
@@ -918,7 +917,7 @@ public class Parser extends Lexer {
 	
 	private DebugCondition parseDebugCondition() {
 		DebugCondition c;
-		Identifier id = null;
+		char[] id = null;
 		int idTokenStart = -1;
 		int idTokenLength = -1;
 		long level = 1;
@@ -926,11 +925,14 @@ public class Parser extends Lexer {
 		if (token.value == TOKlparen) {
 			nextToken();
 			if (token.value == TOKidentifier) {
-				id = new Identifier(token);
-			} else if (token.value == TOKint32v) {
+				id = token.string;
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
+			} else if (token.value == TOKint32v) {
+				id = token.string;
 				level = token.intValue.longValue();
+				idTokenStart = token.ptr;
+				idTokenLength = token.len;
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 			}
@@ -940,18 +942,15 @@ public class Parser extends Lexer {
 		} else {
 			c = new DebugCondition(1, null);
 		}
-		if (id == null && idTokenStart != -1) {
-			c.ident = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
-			c.ident.startPosition = idTokenStart;
-			c.ident.length = idTokenLength;
-		}
+		c.startPosition = idTokenStart;
+		c.length = idTokenLength;
 		return c;
 	}
 	
 	private VersionCondition parseVersionCondition() {
 		VersionCondition c;
 		long level = 1;
-		Identifier id = null;
+		char[] id = null;
 
 		int idTokenStart = -1;
 		int idTokenLength = -1;
@@ -959,11 +958,14 @@ public class Parser extends Lexer {
 		if (token.value == TOKlparen) {
 			nextToken();
 			if (token.value == TOKidentifier) {
-				id = new Identifier(token);
-			} else if (token.value == TOKint32v) {
+				id = token.string;
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
+			} else if (token.value == TOKint32v) {
+				id = token.string;
 				level = token.intValue.longValue();
+				idTokenStart = token.ptr;
+				idTokenLength = token.len;				
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 			}
@@ -973,11 +975,8 @@ public class Parser extends Lexer {
 			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
 		c = new VersionCondition(level, id);
-		if (id == null && idTokenStart != -1) {
-			c.ident = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
-			c.ident.startPosition = idTokenStart;
-			c.ident.length = idTokenLength;
-		}
+		c.startPosition = idTokenStart;
+		c.length = idTokenLength;
 		return c;
 	}
 	

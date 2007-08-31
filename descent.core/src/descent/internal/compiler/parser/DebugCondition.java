@@ -4,7 +4,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DebugCondition extends DVCondition {
 
-	public DebugCondition(long level, Identifier id) {
+	public DebugCondition(long level, char[] id) {
 		super(level, id);
 	}
 
@@ -23,7 +23,7 @@ public class DebugCondition extends DVCondition {
 	@Override
 	public char[] toCharArray() {
 		if (ident != null) {
-			return ident.string;
+			return ident;
 		} else {
 			return String.valueOf(level).toCharArray();
 		}
@@ -32,7 +32,7 @@ public class DebugCondition extends DVCondition {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		if (ident != null)
-			buf.printf("debug (" + ident.toChars() + ")");
+			buf.printf("debug (" + new String(ident) + ")");
 		else
 			buf.printf("debug (" + level + ")");
 	}

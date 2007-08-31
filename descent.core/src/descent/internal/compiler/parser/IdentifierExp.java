@@ -21,13 +21,6 @@ public class IdentifierExp extends Expression {
 		this.start = ident.start;
 		this.length = ident.length;
 	}
-	
-	public IdentifierExp(Loc loc, Identifier ident) {
-		this(loc);
-		this.ident = ident.string;
-		this.start = ident.startPosition;
-		this.length = ident.length;
-	}
 
 	public IdentifierExp(Loc loc, Token token) {
 		this(loc);

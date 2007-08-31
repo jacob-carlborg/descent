@@ -23,8 +23,8 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	}
 	
 	private static int unitTestId;
-	private static Identifier unitTestId() {
-		return new Identifier(("__unittest" + ++unitTestId).toCharArray(), TOK.TOKidentifier);
+	private static char[] unitTestId() {
+		return ("__unittest" + ++unitTestId).toCharArray();
 	}
 	
 	@Override

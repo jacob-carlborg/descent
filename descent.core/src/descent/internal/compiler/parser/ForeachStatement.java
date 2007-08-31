@@ -9,7 +9,6 @@ import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
-import static descent.internal.compiler.parser.TOK.TOKidentifier;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
@@ -370,8 +369,7 @@ public class ForeachStatement extends Statement {
 				// a reference.
 				VarDeclaration v;
 				Initializer ie;
-				id = new IdentifierExp(loc, new Identifier(("__applyArg" + i)
-						.toCharArray(), TOKidentifier));
+				id = new IdentifierExp(loc, ("__applyArg" + i).toCharArray());
 
 				ie = new ExpInitializer(loc, id);
 				v = new VarDeclaration(loc, arg.type, arg.ident, ie);

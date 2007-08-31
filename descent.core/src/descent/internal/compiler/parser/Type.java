@@ -863,7 +863,7 @@ public abstract class Type extends ASTDmdNode {
 		return false;
 	}
 
-	public Identifier getTypeInfoIdent(int internal) {
+	public char[] getTypeInfoIdent(int internal) {
 		// TODO semantic
 		return null;
 	}

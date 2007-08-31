@@ -91,8 +91,7 @@ public class CompoundStatement extends Statement {
 								body = new CompoundStatement(loc, a2);
 								body = new ScopeStatement(loc, body);
 	
-								Identifier id = new Identifier(("__o" + ++num).toCharArray(),
-										TOK.TOKidentifier);
+								char[] id = ("__o" + ++num).toCharArray();
 	
 								Statement handler = new ThrowStatement(loc, 
 										new IdentifierExp(loc, id));

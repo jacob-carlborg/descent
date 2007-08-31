@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.tests.scanner.ScannerTests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -42,6 +43,7 @@ public class AllLexerParserTests {
 		suite.addTestSuite(LexerReplacements_Test.class);
 		//suite.addTestSuite(Semantic1_Test.class);
 		suite.addTestSuite(ASTConvertion_Test.class);
+		suite.addTestSuite(ScannerTests.class);
 		//$JUnit-END$
 		return suite;
 	}

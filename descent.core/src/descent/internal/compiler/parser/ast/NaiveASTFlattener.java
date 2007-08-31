@@ -578,9 +578,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			DebugCondition cond = (DebugCondition) node.condition;
 			
 			this.buffer.append("debug");			
-			if (cond.ident.string != null) {
+			if (cond.ident != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.ident.string);
+				this.buffer.append(cond.ident);
 				this.buffer.append(")");
 			}
 			break;
@@ -624,9 +624,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			VersionCondition cond = (VersionCondition) node.condition;
 			
 			this.buffer.append("version");			
-			if (cond.ident.string != null) {
+			if (cond.ident != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.ident.string);
+				this.buffer.append(cond.ident);
 				this.buffer.append(")");
 			}
 			break;
@@ -664,9 +664,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			DebugCondition cond = (DebugCondition) node.condition;
 			
 			this.buffer.append("debug");			
-			if (cond.ident.string != null) {
+			if (cond.ident != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.ident.string);
+				this.buffer.append(cond.ident);
 				this.buffer.append(") ");
 			}
 			break;
@@ -710,9 +710,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			VersionCondition cond = (VersionCondition) node.condition;
 			
 			this.buffer.append("version");			
-			if (cond.ident.string != null) {
+			if (cond.ident != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.ident.string);
+				this.buffer.append(cond.ident);
 				this.buffer.append(") ");
 			}
 			break;

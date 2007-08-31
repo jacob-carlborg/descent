@@ -2007,8 +2007,8 @@ public class ASTConverter {
 			DebugDeclaration b = new DebugDeclaration(ast);
 			if (cond.ident != null) {
 				descent.core.dom.Version version = ast.newVersion(new String(
-						cond.ident.string));
-				version.setSourceRange(cond.ident.startPosition, cond.ident.length);
+						cond.ident));
+				version.setSourceRange(cond.startPosition, cond.length);
 				b.setVersion(version);
 			}
 			ret = b;
@@ -2059,8 +2059,8 @@ public class ASTConverter {
 			VersionDeclaration b = new VersionDeclaration(ast);
 			if (cond.ident != null) {
 				descent.core.dom.Version version = ast.newVersion(new String(
-						cond.ident.string));
-				version.setSourceRange(cond.ident.startPosition, cond.ident.length);
+						cond.ident));
+				version.setSourceRange(cond.startPosition, cond.length);
 				b.setVersion(version);
 			}
 			ret = b;
@@ -2082,8 +2082,8 @@ public class ASTConverter {
 				DebugCondition cond = (DebugCondition) a.condition;
 				DebugStatement b = new DebugStatement(ast);
 				if (cond.ident != null) {
-					descent.core.dom.Version version = ast.newVersion(new String(cond.ident.string));
-					version.setSourceRange(cond.ident.startPosition, cond.ident.length);
+					descent.core.dom.Version version = ast.newVersion(new String(cond.ident));
+					version.setSourceRange(cond.startPosition, cond.length);
 					b.setVersion(version);
 				}
 				ret = b;
@@ -2136,8 +2136,8 @@ public class ASTConverter {
 				VersionCondition cond = (VersionCondition) a.condition;
 				VersionStatement b = new VersionStatement(ast);
 				if (cond.ident != null) {
-					descent.core.dom.Version version = ast.newVersion(new String(cond.ident.string));
-					version.setSourceRange(cond.ident.startPosition, cond.ident.length);
+					descent.core.dom.Version version = ast.newVersion(new String(cond.ident));
+					version.setSourceRange(cond.startPosition, cond.length);
 					b.setVersion(version);
 				}
 				ret = b;

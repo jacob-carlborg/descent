@@ -4,7 +4,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VersionCondition extends DVCondition {
 
-	public VersionCondition(long level, Identifier id) {
+	public VersionCondition(long level, char[] id) {
 		super(level, id);
 	}
 
@@ -24,7 +24,7 @@ public class VersionCondition extends DVCondition {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		if (ident != null)
-			buf.printf("version (" + ident.toChars() + ")");
+			buf.printf("version (" + new String(ident) + ")");
 		else
 			buf.printf("version (" + level + ")");
 	}
@@ -32,7 +32,7 @@ public class VersionCondition extends DVCondition {
 	@Override
 	public char[] toCharArray() {
 		if (ident != null) {
-			return ident.string;
+			return ident;
 		} else {
 			return String.valueOf(level).toCharArray();
 		}
