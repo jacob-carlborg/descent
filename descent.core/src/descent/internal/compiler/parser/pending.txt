@@ -270,6 +270,3 @@ Version.java
 VersionCondition.java
 VersionSymbol.java
 VoidInitializer.java
-VolatileStatement.java
-WhileStatement.java
-WithScopeSymbol.java

@@ -59,5 +59,10 @@ public class ScopeStatement extends Statement {
     public int getNodeType() {
     	return SCOPE_STATEMENT;
     }
+    
+    @Override
+    public ScopeStatement isScopeStatement() {
+    	return this;
+    }
 
 }

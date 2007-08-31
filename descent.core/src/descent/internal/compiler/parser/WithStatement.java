@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.*;
 
+// DMD 1.020
 public class WithStatement extends Statement {
 
 	public Expression exp;

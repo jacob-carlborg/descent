@@ -390,5 +390,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Expression inlineScan(InlineScanState iss) {
 		return this;
 	}
+	
+	public Expression interpret(InterState istate) {
+		return EXP_CANT_INTERPRET;
+	}
 
 }
