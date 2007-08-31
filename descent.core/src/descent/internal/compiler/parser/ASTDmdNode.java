@@ -1155,6 +1155,11 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		return e;
 	}
+	
+	static Expression Xor(Type type, Expression e1, Expression e2, SemanticContext context) {
+		// TODO semantic
+		return null;
+	}
 
 	/*************************************
 	 * If expression is a variable with a const initializer,
