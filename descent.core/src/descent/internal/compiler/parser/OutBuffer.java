@@ -119,4 +119,8 @@ public class OutBuffer {
 		data.insert(0, c);
 	}
 
+	public void printf(long level) {
+		data.append(level);
+	}
+
 }
