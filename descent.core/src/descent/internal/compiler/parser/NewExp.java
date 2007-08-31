@@ -82,7 +82,7 @@ public class NewExp extends Expression {
 				} else {
 					error(
 							"'this' for nested class must be a class type, not %s",
-							thisexp.type.toChars());
+							thisexp.type.toChars(context));
 					type = newtype.semantic(loc, sc, context);
 				}
 			} else {
@@ -97,7 +97,7 @@ public class NewExp extends Expression {
 
 			if (thisexp != null && tb.ty != Tclass) {
 				error("e.new is only for allocating nested classes, not %s", tb
-						.toChars());
+						.toChars(context));
 			}
 
 			if (tb.ty == Tclass) {
@@ -107,11 +107,11 @@ public class NewExp extends Expression {
 				ClassDeclaration cd = tc.sym.isClassDeclaration();
 				if (cd.isInterfaceDeclaration() != null) {
 					error("cannot create instance of interface %s", cd
-							.toChars());
+							.toChars(context));
 				}
 				if (cd.isAbstract()) {
 					error("cannot create instance of abstract class %s", cd
-							.toChars());
+							.toChars(context));
 				}
 				checkDeprecated(sc, cd, context);
 				if (cd.isNested()) { /* We need a 'this' pointer for the nested class.
@@ -128,7 +128,7 @@ public class NewExp extends Expression {
 								if (sp == null) {
 									error(
 											"outer class %s 'this' needed to 'new' nested class %s",
-											cdn.toChars(), cd.toChars());
+											cdn.toChars(context), cd.toChars(context));
 									break;
 								}
 								ClassDeclaration cdp = sp.isClassDeclaration();
@@ -154,7 +154,7 @@ public class NewExp extends Expression {
 									&& !cdn.isBaseOf(cdthis, null, context)) {
 								error(
 										"'this' for nested class must be of type %s, not %s",
-										cdn.toChars(), thisexp.type.toChars());
+										cdn.toChars(context), thisexp.type.toChars(context));
 							}
 						}
 					} else if (thisexp != null) {
@@ -171,7 +171,7 @@ public class NewExp extends Expression {
 					member = f.isCtorDeclaration();
 					Assert.isNotNull(member);
 
-					cd.accessCheck(sc, member);
+					cd.accessCheck(sc, member, context);
 
 					tf = (TypeFunction) f.type;
 					type = tf.next;
@@ -182,7 +182,7 @@ public class NewExp extends Expression {
 					functionArguments(loc, sc, tf, arguments, context);
 				} else {
 					if (arguments != null && arguments.size() > 0) {
-						error("no constructor for %s", cd.toChars());
+						error("no constructor for %s", cd.toChars(context));
 					}
 				}
 
@@ -192,7 +192,7 @@ public class NewExp extends Expression {
 					f = cd.aggNew;
 
 					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(loc, cd.size(), Type.tuns32);
+					e = new IntegerExp(loc, cd.size(context), Type.tuns32);
 					if (newargs == null) {
 						newargs = new ArrayList<Expression>();
 					}
@@ -206,7 +206,7 @@ public class NewExp extends Expression {
 					functionArguments(loc, sc, tf, newargs, context);
 				} else {
 					if (newargs != null && newargs.size() > 0) {
-						error("no allocator for %s", cd.toChars());
+						error("no allocator for %s", cd.toChars(context));
 					}
 				}
 
@@ -217,14 +217,14 @@ public class NewExp extends Expression {
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {
-					error("no constructor for %s", type.toChars());
+					error("no constructor for %s", type.toChars(context));
 				}
 
 				if (f != null) {
 					Expression e;
 
 					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(loc, sd.size(), Type.tuns32);
+					e = new IntegerExp(loc, sd.size(context), Type.tuns32);
 					if (newargs == null) {
 						newargs = new ArrayList<Expression>();
 					}
@@ -261,14 +261,14 @@ public class NewExp extends Expression {
 					if (arg.op == TOKint64
 							&& arg.toInteger(context)
 									.compareTo(BigInteger.ZERO) < 0) {
-						error("negative array index %s", arg.toChars());
+						error("negative array index %s", arg.toChars(context));
 					}
 					arguments.set(i, arg);
 					tb = tb.next.toBasetype(context);
 				}
 			} else if (tb.isscalar()) {
 				if (arguments != null && arguments.size() > 0) {
-					error("no constructor for %s", type.toChars());
+					error("no constructor for %s", type.toChars(context));
 				}
 
 				type = type.pointerTo(context);
@@ -305,7 +305,7 @@ public class NewExp extends Expression {
 			argsToCBuffer(buf, newargs, hgs, context);
 			buf.writeByte(')');
 		}
-		newtype.toCBuffer(buf, null, hgs);
+		newtype.toCBuffer(buf, null, hgs, context);
 		if (arguments != null && arguments.size() > 0) {
 			buf.writeByte('(');
 			argsToCBuffer(buf, arguments, hgs, context);

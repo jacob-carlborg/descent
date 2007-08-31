@@ -578,9 +578,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			DebugCondition cond = (DebugCondition) node.condition;
 			
 			this.buffer.append("debug");			
-			if (cond.id.string != null) {
+			if (cond.ident.string != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.id.string);
+				this.buffer.append(cond.ident.string);
 				this.buffer.append(")");
 			}
 			break;
@@ -592,9 +592,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			if (cond.targ != null) {
 				cond.targ.accept(this);
 			}
-			if (cond.ident != null) {
+			if (cond.id != null) {
 				this.buffer.append(" ");
-				cond.ident.accept(this);
+				cond.id.accept(this);
 			}
 			if (cond.tok != null) {
 				switch (cond.tok) {
@@ -624,9 +624,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			VersionCondition cond = (VersionCondition) node.condition;
 			
 			this.buffer.append("version");			
-			if (cond.id.string != null) {
+			if (cond.ident.string != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.id.string);
+				this.buffer.append(cond.ident.string);
 				this.buffer.append(")");
 			}
 			break;
@@ -664,9 +664,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			DebugCondition cond = (DebugCondition) node.condition;
 			
 			this.buffer.append("debug");			
-			if (cond.id.string != null) {
+			if (cond.ident.string != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.id.string);
+				this.buffer.append(cond.ident.string);
 				this.buffer.append(") ");
 			}
 			break;
@@ -678,9 +678,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			if (cond.targ != null) {
 				cond.targ.accept(this);
 			}
-			if (cond.ident != null) {
+			if (cond.id != null) {
 				this.buffer.append(" ");
-				cond.ident.accept(this);
+				cond.id.accept(this);
 			}
 			if (cond.tok != null) {
 				switch (cond.tok) {
@@ -710,9 +710,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			VersionCondition cond = (VersionCondition) node.condition;
 			
 			this.buffer.append("version");			
-			if (cond.id.string != null) {
+			if (cond.ident.string != null) {
 				this.buffer.append("(");
-				this.buffer.append(cond.id.string);
+				this.buffer.append(cond.ident.string);
 				this.buffer.append(") ");
 			}
 			break;

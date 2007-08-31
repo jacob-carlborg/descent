@@ -29,8 +29,8 @@ public abstract class Declaration extends Dsymbol {
 		return "declaration";
 	}
 	
-	public int size() {
-		return type.size(loc);
+	public int size(SemanticContext context) {
+		return type.size(loc, context);
 	}
 	
 	public boolean isStaticConstructor() {

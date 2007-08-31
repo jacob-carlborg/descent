@@ -63,7 +63,7 @@ public class TypeFunction extends Type {
 			next = Type.terror;
 		}
 		if (next.isauto() && (sc.flags & SCOPEctor) == 0)
-			error("functions cannot return auto %s", next.toChars());
+			error("functions cannot return auto %s", next.toChars(context));
 
 		if (parameters != null) {
 			int dim = Argument.dim(parameters, context);
@@ -132,6 +132,11 @@ public class TypeFunction extends Type {
 	@Override
 	public int getNodeType() {
 		return TYPE_FUNCTION;
+	}
+	
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+		// TODO semantic
 	}
 
 }

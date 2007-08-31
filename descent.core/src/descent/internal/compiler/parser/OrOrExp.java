@@ -49,7 +49,7 @@ public class OrOrExp extends BinExp {
 		if(e1.type.ty == TY.Tvoid)
 			type = Type.tvoid;
 		if(e2.op == TOK.TOKtype || e2.op == TOK.TOKimport)
-			error(e2.toChars() + " is not an expression.");
+			error(e2.toChars(context) + " is not an expression.");
 		
 		return this;
 	}

@@ -98,7 +98,7 @@ public class DsymbolExp extends Expression {
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
 					if (v.init != null) {
 						if (v.inuse != 0) {
-							error("circular reference to '%s'", v.toChars());
+							error("circular reference to '%s'", v.toChars(context));
 							type = Type.tint32;
 							return this;
 						}
@@ -175,7 +175,7 @@ public class DsymbolExp extends Expression {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						error("%s is not an expression", o.toChars());
+						error("%s is not an expression", o.toChars(context));
 					} else {
 						Expression e2 = (Expression) o;
 						e2 = e2.syntaxCopy();
@@ -213,19 +213,19 @@ public class DsymbolExp extends Expression {
 		}
 
 		// Lerr:
-		error("%s '%s' is not a variable", s.kind(), s.toChars());
+		error("%s '%s' is not a variable", s.kind(), s.toChars(context));
 		type = Type.terror;
 		return this;
 	}
 	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		buf.writestring(s.toChars());
+		buf.writestring(s.toChars(context));
 	}
 	
 	@Override
-	public String toChars() {
-		return s.toChars();
+	public String toChars(SemanticContext context) {
+		return s.toChars(context);
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class MinExp extends BinExp {
 
 	    		typeCombine(sc, context);		// make sure pointer types are compatible
 	    		type = Type.tptrdiff_t;
-	    		stride = t2.next.size(Loc.ZERO);
+	    		stride = t2.next.size(Loc.ZERO, context);
 	    		e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO, new IntegerWrapper(stride), Type.tptrdiff_t));
 	    		e_.type = Type.tptrdiff_t;
 	    		return e_;
@@ -69,7 +69,7 @@ public class MinExp extends BinExp {
 	    else if (t2.ty == TY.Tpointer)
 	    {
 	    	type = e2.type;
-	    	error("can't subtract pointer from %s", e1.type.toChars());
+	    	error("can't subtract pointer from %s", e1.type.toChars(context));
 	    	return new IntegerExp(loc, 0);
 	    }
 	    else

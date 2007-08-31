@@ -38,5 +38,22 @@ public class TypeDelegate extends Type {
 	public int getNodeType() {
 		return TYPE_DELEGATE;
 	}
+	
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+		OutBuffer args = new OutBuffer();
+	    TypeFunction tf = (TypeFunction )next;
+
+	    // TODO semantic
+	    // argsToCBuffer(args, hgs, tf.parameters, tf.varargs, context);
+	    buf.prependstring(args.toChars());
+	    buf.prependstring(" delegate");
+	    if (ident != null)
+	    {
+		buf.writeByte(' ');
+		buf.writestring(ident.toChars(context));
+	    }
+	    next.next.toCBuffer2(buf, null, hgs, context);
+	}
 
 }

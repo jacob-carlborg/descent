@@ -43,7 +43,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, sd);
+		List<Dsymbol> d = include(sc, sd, context);
 
 		if (d != null) {
 			if (!addisdone) {

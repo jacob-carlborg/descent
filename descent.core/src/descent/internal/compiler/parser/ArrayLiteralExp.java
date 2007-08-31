@@ -131,7 +131,7 @@ public class ArrayLiteralExp extends Expression {
 			e = elements.get(i);
 
 			if (e.type == null) {
-				error("%s has no value", e.toChars());
+				error("%s has no value", e.toChars(context));
 			}
 			e = resolveProperties(sc, e, context);
 			if (t0 == null) {

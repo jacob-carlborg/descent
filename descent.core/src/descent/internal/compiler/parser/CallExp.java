@@ -267,7 +267,7 @@ public class CallExp extends UnaExp {
 								continue L10;
 							}
 							error("this for %s needs to be type %s not type %s", f
-									.toChars(), ad.toChars(), t.toChars());
+									.toChars(context), ad.toChars(context), t.toChars(context));
 						}
 					}
 				}
@@ -312,7 +312,7 @@ public class CallExp extends UnaExp {
 					f = cd.baseClass.ctor;
 					if (f == null) {
 						error("no super class constructor for %s", cd.baseClass
-								.toChars());
+								.toChars(context));
 						type = Type.terror;
 						return this;
 					} else {
@@ -365,7 +365,7 @@ public class CallExp extends UnaExp {
 					}
 				}
 			} else if (t1 == null) {
-				error("function expected before (), not '%s'", e1.toChars());
+				error("function expected before (), not '%s'", e1.toChars(context));
 				type = Type.terror;
 				return this;
 			} else if (t1.ty != Tfunction) {
@@ -405,7 +405,7 @@ public class CallExp extends UnaExp {
 					continue Lagain;
 				} else {
 					error("function expected before (), not %s of type %s", e1
-							.toChars(), e1.type.toChars());
+							.toChars(context), e1.type.toChars(context));
 					type = Type.terror;
 					return this;
 				}

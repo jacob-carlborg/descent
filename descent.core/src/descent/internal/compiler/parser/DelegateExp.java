@@ -134,7 +134,7 @@ public class DelegateExp extends UnaExp {
 							continue L10;
 						}
 						error("this for %s needs to be type %s not type %s",
-								func.toChars(), ad.toChars(), t.toChars());
+								func.toChars(context), ad.toChars(context), t.toChars(context));
 					}
 				}
 			}
@@ -151,7 +151,7 @@ public class DelegateExp extends UnaExp {
 			expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 			buf.writeByte('.');
 		}
-		buf.writestring(func.toChars());
+		buf.writestring(func.toChars(context));
 	}
 
 }

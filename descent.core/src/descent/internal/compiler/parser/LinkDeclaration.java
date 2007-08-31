@@ -99,6 +99,11 @@ public class LinkDeclaration extends AttribDeclaration {
 		buf.writestring(") ");
 		super.toCBuffer(buf, hgs, context);
 	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		return "extern ()";
+	}
 
 	@Override
 	public String toString() {

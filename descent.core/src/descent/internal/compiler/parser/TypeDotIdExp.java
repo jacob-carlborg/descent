@@ -46,10 +46,10 @@ public class TypeDotIdExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writeByte('(');
-	    type.toCBuffer(buf, null, hgs);
+	    type.toCBuffer(buf, null, hgs, context);
 	    buf.writeByte(')');
 	    buf.writeByte('.');
-	    buf.writestring(ident.toChars());
+	    buf.writestring(ident.toChars(context));
 	}
 
 }

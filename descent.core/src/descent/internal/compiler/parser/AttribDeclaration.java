@@ -12,12 +12,12 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public void addLocalClass(List<ClassDeclaration> aclasses) {
-		List<Dsymbol> d = include(null, null);
+	public void addLocalClass(List<ClassDeclaration> aclasses, SemanticContext context) {
+		List<Dsymbol> d = include(null, null, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
-				s.addLocalClass(aclasses);
+				s.addLocalClass(aclasses, context);
 			}
 		}
 	}
@@ -31,7 +31,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		int m = 0;
-		List<Dsymbol> d = include(sc, sd);
+		List<Dsymbol> d = include(sc, sd, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
@@ -42,19 +42,19 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public void checkCtorConstInit() {
-		List<Dsymbol> d = include(null, null);
+	public void checkCtorConstInit(SemanticContext context) {
+		List<Dsymbol> d = include(null, null, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
-				s.checkCtorConstInit();
+				s.checkCtorConstInit(context);
 			}
 		}
 	}
 
 	@Override
 	public boolean hasPointers(SemanticContext context) {
-		List<Dsymbol> d = include(null, null);
+		List<Dsymbol> d = include(null, null, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
@@ -66,7 +66,8 @@ public abstract class AttribDeclaration extends Dsymbol {
 		return false;
 	}
 
-	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd) {
+	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
+		// TODO semantic check the null,null references of this method 
 		return decl;
 	}
 
@@ -76,15 +77,15 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps) {
-		List<Dsymbol> d = include(null, null);
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+		List<Dsymbol> d = include(null, null, context);
 
-		return Dsymbol.oneMembers(d, ps);
+		return Dsymbol.oneMembers(d, ps, context);
 	}
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, null);
+		List<Dsymbol> d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {
@@ -95,7 +96,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, null);
+		List<Dsymbol> d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {
@@ -106,7 +107,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, null);
+		List<Dsymbol> d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {

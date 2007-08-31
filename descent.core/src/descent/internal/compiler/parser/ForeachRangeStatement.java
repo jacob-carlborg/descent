@@ -49,7 +49,7 @@ public class ForeachRangeStatement extends Statement {
 	    lwr = resolveProperties(sc, lwr, context);
 	    if(null == lwr.type)
 	    {
-			error("invalid range lower bound %s", lwr.toChars());
+			error("invalid range lower bound %s", lwr.toChars(context));
 			return this;
 	    }
 
@@ -57,7 +57,7 @@ public class ForeachRangeStatement extends Statement {
 	    upr = resolveProperties(sc, upr, context);
 	    if(null == upr.type)
 	    {
-			error("invalid range upper bound %s", upr.toChars());
+			error("invalid range upper bound %s", upr.toChars(context));
 			return this;
 	    }
 
@@ -78,7 +78,7 @@ public class ForeachRangeStatement extends Statement {
 	    }
 	    
 	    if (!arg.type.isscalar())
-	    	error("%s is not a scalar type", arg.type.toChars());
+	    	error("%s is not a scalar type", arg.type.toChars(context));
 
 	    sym = new ScopeDsymbol(Loc.ZERO);
 	    sym.parent = sc.scopesym;

@@ -53,7 +53,7 @@ public class DeleteExp extends UnaExp {
 
 			if (cd.isInterfaceDeclaration() != null && cd.isCOMclass()) {
 				error("cannot delete instance of COM interface %s", cd
-						.toChars());
+						.toChars(context));
 			}
 			break;
 		}
@@ -89,7 +89,7 @@ public class DeleteExp extends UnaExp {
 					break;
 				}
 			}
-			error("cannot delete type %s", e1.type.toChars());
+			error("cannot delete type %s", e1.type.toChars(context));
 			break;
 		}
 

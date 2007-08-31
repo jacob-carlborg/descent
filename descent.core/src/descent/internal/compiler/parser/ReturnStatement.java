@@ -129,7 +129,7 @@ public class ReturnStatement extends Statement {
 						if (!exp.type.equals(fd.type.next))
 							error(
 									"mismatched function return type inference of %s and %s",
-									exp.type.toChars(), fd.type.next.toChars());
+									exp.type.toChars(context), fd.type.next.toChars(context));
 					} else {
 						fd.type.next = exp.type;
 						fd.type = fd.type.semantic(loc, sc, context);
@@ -146,7 +146,7 @@ public class ReturnStatement extends Statement {
 					if (fd.type.next.ty != Tvoid)
 						error(
 								"mismatched function return type inference of void and %s",
-								fd.type.next.toChars());
+								fd.type.next.toChars(context));
 				} else {
 					fd.type.next = Type.tvoid;
 					fd.type = fd.type.semantic(loc, sc, context);

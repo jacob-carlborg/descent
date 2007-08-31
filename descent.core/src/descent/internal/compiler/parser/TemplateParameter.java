@@ -12,4 +12,8 @@ public abstract class TemplateParameter extends ASTDmdNode {
 	
 	public abstract void semantic(Scope sc, SemanticContext context);
 
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		// TODO semantic
+	}
+
 }

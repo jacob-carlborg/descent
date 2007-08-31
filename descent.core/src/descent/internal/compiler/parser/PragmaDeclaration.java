@@ -44,7 +44,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps) {
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		ps[0] = null;
 		return true;
 	}
@@ -142,7 +142,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.printf("pragma(%s");
-		buf.printf(ident.toChars());
+		buf.printf(ident.toChars(context));
 		if (args != null) {
 			for (Expression e : args) {
 				buf.writestring(", ");

@@ -35,8 +35,13 @@ public abstract class Initializer extends ASTDmdNode {
 		return null;
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
-		// TODO semantic
+	public abstract void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context);
+	
+	public String toChars(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		HdrGenState hgs = new HdrGenState();
+		toCBuffer(buf, hgs, context);
+		return buf.toChars();
 	}
 
 }

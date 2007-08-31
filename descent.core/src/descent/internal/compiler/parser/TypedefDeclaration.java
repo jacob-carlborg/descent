@@ -133,10 +133,10 @@ public class TypedefDeclaration extends Declaration {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring("typedef ");
-		basetype.toCBuffer(buf, ident, hgs);
+		basetype.toCBuffer(buf, ident, hgs, context);
 		if (init != null) {
 			buf.writestring(" = ");
-			init.toCBuffer(buf, hgs);
+			init.toCBuffer(buf, hgs, context);
 		}
 		buf.writeByte(';');
 		buf.writenl();

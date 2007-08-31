@@ -53,12 +53,12 @@ public abstract class BinExp extends Expression {
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
 		if (e1.type == null) {
-			error("%s has no value", e1.toChars());
+			error("%s has no value", e1.toChars(context));
 			e1.type = Type.terror;
 		}
 		e2 = e2.semantic(sc, context);
 		if (e2.type == null) {
-			error("%s has no value", e2.toChars());
+			error("%s has no value", e2.toChars(context));
 			e2.type = Type.terror;
 		}
 		Assert.isNotNull(e1.type);
@@ -121,7 +121,7 @@ public abstract class BinExp extends Expression {
 			e1.checkScalar(context);
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
-				error("operator not allowed on bool expression %s", toChars());
+				error("operator not allowed on bool expression %s", toChars(context));
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);
@@ -135,10 +135,10 @@ public abstract class BinExp extends Expression {
 		return this;
 	}
 
-	public void incompatibleTypes() {
+	public void incompatibleTypes(SemanticContext context) {
 		error("incompatible types for ((%s) %s (%s)): '%s' and '%s'", e1
-				.toChars(), op.toString(), e2.toChars(), e1.type.toChars(),
-				e2.type.toChars());
+				.toChars(context), op.toString(), e2.toChars(context), e1.type.toChars(context),
+				e2.type.toChars(context));
 	}
 
 	public boolean isunsigned() {
@@ -154,7 +154,7 @@ public abstract class BinExp extends Expression {
 			// Replace (ptr + int) with (ptr + (int * stride))
 			Type t = Type.tptrdiff_t;
 
-			stride = new BigInteger(String.valueOf(t1b.next.size(loc)));
+			stride = new BigInteger(String.valueOf(t1b.next.size(loc, context)));
 			if (!t.equals(t2b)) {
 				e2 = e2.castTo(sc, t, context);
 			}
@@ -174,7 +174,7 @@ public abstract class BinExp extends Expression {
 			Type t = Type.tptrdiff_t;
 			Expression e;
 
-			stride = new BigInteger(String.valueOf(t2b.next.size(loc)));
+			stride = new BigInteger(String.valueOf(t2b.next.size(loc, context)));
 			if (!t.equals(t1b)) {
 				e = e1.castTo(sc, t, context);
 			} else {
@@ -284,11 +284,11 @@ public abstract class BinExp extends Expression {
 		if (t1 == t2) {
 			if ((t1.ty == Tstruct || t1.ty == Tclass)
 					&& (op == TOKmin || op == TOKadd)) {
-				return typeCombine_Lincompatible_End(t);
+				return typeCombine_Lincompatible_End(t, context);
 			}
 		} else if (t1.isintegral() && t2.isintegral()) {
-			int sz1 = t1.size(loc);
-			int sz2 = t2.size(loc);
+			int sz1 = t1.size(loc, context);
+			int sz2 = t2.size(loc, context);
 			boolean sign1 = t1.isunsigned();
 			boolean sign2 = t2.isunsigned();
 
@@ -373,10 +373,10 @@ public abstract class BinExp extends Expression {
 						e1 = e1.castTo(sc, t, context);
 					}
 				} else {
-					return typeCombine_Lincompatible_End(t);
+					return typeCombine_Lincompatible_End(t, context);
 				}
 			} else {
-				return typeCombine_Lincompatible_End(t);
+				return typeCombine_Lincompatible_End(t, context);
 			}
 		} else if ((t1.ty == Tsarray || t1.ty == Tarray) && e2.op == TOKnull
 				&& t2.ty == Tpointer && t2.next.ty == Tvoid) {
@@ -449,7 +449,7 @@ public abstract class BinExp extends Expression {
 				}
 				return this;
 			} else {
-				return typeCombine_Lincompatible_End(t);
+				return typeCombine_Lincompatible_End(t, context);
 			}
 		} else if ((e1.op == TOKstring || e1.op == TOKnull)
 				&& e1.implicitConvTo(t2, context) != MATCHnomatch) {
@@ -482,7 +482,7 @@ public abstract class BinExp extends Expression {
 			e1 = e1.castTo(sc, t, context);
 			e2 = e2.castTo(sc, t, context);
 		} else {
-			incompatibleTypes();
+			incompatibleTypes(context);
 		}
 		if (type == null) {
 			type = t;
@@ -490,8 +490,8 @@ public abstract class BinExp extends Expression {
 		return this;
 	}
 
-	private Expression typeCombine_Lincompatible_End(Type t) {
-		incompatibleTypes();
+	private Expression typeCombine_Lincompatible_End(Type t, SemanticContext context) {
+		incompatibleTypes(context);
 		if (type == null) {
 			type = t;
 		}

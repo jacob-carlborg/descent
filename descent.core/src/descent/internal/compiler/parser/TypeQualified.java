@@ -9,10 +9,10 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 
 public abstract class TypeQualified extends Type {
-	
+
 	public Loc loc;
 	public List<IdentifierExp> idents;
-	
+
 	public TypeQualified(Loc loc, TY ty) {
 		super(ty, null);
 		this.loc = loc;
@@ -24,8 +24,9 @@ public abstract class TypeQualified extends Type {
 		}
 		idents.add(ident);
 	}
-	
-	public void resolveHelper(Scope sc, Dsymbol s, Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+
+	public void resolveHelper(Scope sc, Dsymbol s, Dsymbol scopesym,
+			Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
 		VarDeclaration v;
 		EnumMember em;
 		// TupleDeclaration td;
@@ -37,11 +38,11 @@ public abstract class TypeQualified extends Type {
 		ps[0] = null;
 		if (s != null) {
 			s = s.toAlias(context);
-			
+
 			if (idents != null) {
 				for (IdentifierExp id : idents) {
 					Dsymbol sm;
-	
+
 					if (id.dyncast() != DYNCAST.DYNCAST_IDENTIFIER) {
 						// It's a template instance
 						// printf("\ttemplate instance id\n");
@@ -50,13 +51,16 @@ public abstract class TypeQualified extends Type {
 						id = (IdentifierExp) ti.idents.get(0);
 						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAMember, 0, id.start, id.length, new String[] { new String(id.ident) }));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.NotAMember, 0, id.start,
+									id.length, new String[] { new String(
+											id.ident) }));
 							return;
 						}
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							error("%s is not a template", id.toChars());
+							error("%s is not a template", id.toChars(context));
 							return;
 						}
 						ti.tempdecl = td;
@@ -71,8 +75,10 @@ public abstract class TypeQualified extends Type {
 					// printf("getType = '%s'\n", s.getType().toChars());
 					if (sm == null) {
 						v = s.isVarDeclaration();
-						if (v != null && CharOperation.equals(id.ident, Id.length)) {
-							if (v.isConst() && v.getExpInitializer(context) != null) {
+						if (v != null
+								&& CharOperation.equals(id.ident, Id.length)) {
+							if (v.isConst()
+									&& v.getExpInitializer(context) != null) {
 								e = v.getExpInitializer(context).exp;
 							} else
 								e = new VarExp(loc, v);
@@ -130,16 +136,21 @@ public abstract class TypeQualified extends Type {
 				pe[0] = em.value.copy();
 				return;
 			}
-			
-			resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e, t, context);
+
+			resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e, t,
+					context);
 			return;
 		}
 		if (s == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedIdentifier, 0, start, length, new String[] { this.toString() }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UndefinedIdentifier, 0, start, length,
+					new String[] { this.toString() }));
 		}
 	}
-	
-	public void resolveHelper_L1_plus_end(Scope sc, Dsymbol s, Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps, Expression e, Type t, SemanticContext context) {
+
+	public void resolveHelper_L1_plus_end(Scope sc, Dsymbol s,
+			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps,
+			Expression e, Type t, SemanticContext context) {
 		t = s.getType();
 		if (t == null) {
 			// If the symbol is an import, try looking inside the import
@@ -150,7 +161,8 @@ public abstract class TypeQualified extends Type {
 				s = si.search(loc, s.ident, 0, context);
 				if (s != null && s != si) {
 					// goto L1
-					resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e, t, context);
+					resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e,
+							t, context);
 					return;
 				}
 				s = si;
@@ -159,7 +171,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (t.ty == TY.Tinstance && t != this && t.deco == null) {
-			error("forward reference to '%s'", t.toChars());
+			error("forward reference to '%s'", t.toChars(context));
 			return;
 		}
 
@@ -169,7 +181,7 @@ public abstract class TypeQualified extends Type {
 
 				for (scx = sc; true; scx = scx.enclosing) {
 					if (scx == null) {
-						error("forward reference to '%s'", t.toChars());
+						error("forward reference to '%s'", t.toChars(context));
 						return;
 					}
 					if (scx.scopesym == scopesym)
@@ -184,21 +196,40 @@ public abstract class TypeQualified extends Type {
 		else
 			pt[0] = t.merge(context);
 		if (s == null) {
-			error("identifier '%s' is not defined", toChars());
+			error("identifier '%s' is not defined", toChars(context));
 		}
 	}
-	
-	public void resolveHelper_L3(Scope sc, Expression[] pe, Expression e, SemanticContext context) {
-		for(IdentifierExp id : idents) {
+
+	public void resolveHelper_L3(Scope sc, Expression[] pe, Expression e,
+			SemanticContext context) {
+		for (IdentifierExp id : idents) {
 			e = e.type.dotExp(sc, e, id, context);
-	    }
-	    pe[0] = e;
+		}
+		pe[0] = e;
 	}
-	
+
 	public void resolveHelper_Lerror(IdentifierExp id) {
 		/* TODO semantic
-	    error("identifier '%s' of '%s' is not defined", id.toChars(), toChars());
-	    */
+		 error("identifier '%s' of '%s' is not defined", id.toChars(), toChars());
+		 */
+	}
+
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		int i;
+
+		for (i = 0; i < idents.size(); i++) {
+			IdentifierExp id = (IdentifierExp) idents.get(i);
+
+			buf.writeByte('.');
+
+			if (id.dyncast() == DYNCAST.DYNCAST_DSYMBOL) {
+				TemplateInstanceWrapper ti = (TemplateInstanceWrapper) id;
+				ti.tempinst.toCBuffer(buf, hgs, context);
+			} else
+				buf.writestring(id.toChars(context));
+		}
 	}
 
 }

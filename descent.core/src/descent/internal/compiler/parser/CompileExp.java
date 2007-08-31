@@ -30,7 +30,7 @@ public class CompileExp extends UnaExp {
 		e1 = resolveProperties(sc, e1, context);
 		e1 = e1.optimize(WANTvalue | WANTinterpret, context);
 		if (e1.op != TOKstring) {
-			error("argument to mixin must be a string, not (%s)", e1.toChars());
+			error("argument to mixin must be a string, not (%s)", e1.toChars(context));
 			return this;
 		}
 		StringExp se = (StringExp) e1;
@@ -39,7 +39,7 @@ public class CompileExp extends UnaExp {
 		p.loc = loc;
 		Expression e = p.parseExpression();
 		if (p.token.value != TOKeof) {
-			error("incomplete mixin expression (%s)", se.toChars());
+			error("incomplete mixin expression (%s)", se.toChars(context));
 		}
 		return e.semantic(sc, context);
 	}

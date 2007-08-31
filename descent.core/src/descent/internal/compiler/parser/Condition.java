@@ -17,14 +17,12 @@ public abstract class Condition extends ASTRangeLessNode {
 		return null;
 	}
 
-	public Object include(Object object, Object object2) {
-		// TODO semantic
-		return null;
+	public boolean include(Scope sc, ScopeDsymbol s, SemanticContext context) {
+		// TODO make it abstract and implement
+		return true;
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
-		// TODO semantic
-	}
+	public abstract void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context);
 
 	@Override
 	public int getNodeType() {

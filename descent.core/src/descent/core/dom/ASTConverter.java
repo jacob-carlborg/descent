@@ -2005,10 +2005,10 @@ public class ASTConverter {
 		case Condition.DEBUG: {
 			DebugCondition cond = (DebugCondition) a.condition;
 			DebugDeclaration b = new DebugDeclaration(ast);
-			if (cond.id != null) {
+			if (cond.ident != null) {
 				descent.core.dom.Version version = ast.newVersion(new String(
-						cond.id.string));
-				version.setSourceRange(cond.id.startPosition, cond.id.length);
+						cond.ident.string));
+				version.setSourceRange(cond.ident.startPosition, cond.ident.length);
 				b.setVersion(version);
 			}
 			ret = b;
@@ -2030,8 +2030,8 @@ public class ASTConverter {
 					break;
 				}
 			}
-			if (cond.ident != null) {
-				b.setName(convert(cond.ident));
+			if (cond.id != null) {
+				b.setName(convert(cond.id));
 			}
 			if (cond.targ != null) {
 				b.setTestType(convert(cond.targ));
@@ -2057,10 +2057,10 @@ public class ASTConverter {
 		case Condition.VERSION: {
 			VersionCondition cond = (VersionCondition) a.condition;
 			VersionDeclaration b = new VersionDeclaration(ast);
-			if (cond.id != null) {
+			if (cond.ident != null) {
 				descent.core.dom.Version version = ast.newVersion(new String(
-						cond.id.string));
-				version.setSourceRange(cond.id.startPosition, cond.id.length);
+						cond.ident.string));
+				version.setSourceRange(cond.ident.startPosition, cond.ident.length);
 				b.setVersion(version);
 			}
 			ret = b;
@@ -2081,9 +2081,9 @@ public class ASTConverter {
 			{
 				DebugCondition cond = (DebugCondition) a.condition;
 				DebugStatement b = new DebugStatement(ast);
-				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
-					version.setSourceRange(cond.id.startPosition, cond.id.length);
+				if (cond.ident != null) {
+					descent.core.dom.Version version = ast.newVersion(new String(cond.ident.string));
+					version.setSourceRange(cond.ident.startPosition, cond.ident.length);
 					b.setVersion(version);
 				}
 				ret = b;
@@ -2106,8 +2106,8 @@ public class ASTConverter {
 						break;
 					}
 				}
-				if (cond.ident != null) {
-					b.setName(convert(cond.ident));
+				if (cond.id != null) {
+					b.setName(convert(cond.id));
 				}
 				if (cond.targ != null) {
 					b.setTestType(convert(cond.targ));
@@ -2135,9 +2135,9 @@ public class ASTConverter {
 			{
 				VersionCondition cond = (VersionCondition) a.condition;
 				VersionStatement b = new VersionStatement(ast);
-				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
-					version.setSourceRange(cond.id.startPosition, cond.id.length);
+				if (cond.ident != null) {
+					descent.core.dom.Version version = ast.newVersion(new String(cond.ident.string));
+					version.setSourceRange(cond.ident.startPosition, cond.ident.length);
 					b.setVersion(version);
 				}
 				ret = b;

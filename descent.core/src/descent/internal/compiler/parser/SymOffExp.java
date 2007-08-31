@@ -21,7 +21,7 @@ public class SymOffExp extends Expression {
 		this.offset = offset;
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null && v.needThis()) {
-			error("need 'this' for address of %s", v.toChars());
+			error("need 'this' for address of %s", v.toChars(context));
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class SymOffExp extends Expression {
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (!v.isDataseg(context)) {
-				error("escaping reference to local %s", v.toChars());
+				error("escaping reference to local %s", v.toChars(context));
 			}
 		}
 	}
@@ -119,9 +119,9 @@ public class SymOffExp extends Expression {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		if (offset != 0) {
-			buf.printf("(& " + var.toChars() + "+" + offset + ")");
+			buf.printf("(& " + var.toChars(context) + "+" + offset + ")");
 		} else {
-			buf.printf("& " + var.toChars());
+			buf.printf("& " + var.toChars(context));
 		}
 	}
 	

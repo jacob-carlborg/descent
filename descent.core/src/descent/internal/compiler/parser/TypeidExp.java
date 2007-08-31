@@ -42,7 +42,7 @@ public class TypeidExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring("typeid(");
-	    typeidType.toCBuffer(buf, null, hgs);
+	    typeidType.toCBuffer(buf, null, hgs, context);
 	    buf.writeByte(')');
 	}
 

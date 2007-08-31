@@ -139,17 +139,17 @@ public class IdentifierExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		/* TODO semantic
-		if (hgs.hdrgen) {
-			buf.writestring(ident.toHChars2());
-		} else {
-			buf.writestring(ident.toChars());
-		}
-		*/
+		buf.writestring(ident);
+		// TODO semantic
+//		if (hgs.hdrgen) {
+//			buf.writestring(ident.toHChars2());
+//		} else {
+//			buf.writestring(ident.toChars());
+//		}
 	}
 
 	@Override
-	public String toChars() {
+	public String toChars(SemanticContext context) {
 		return new String(ident).intern();
 	}
 

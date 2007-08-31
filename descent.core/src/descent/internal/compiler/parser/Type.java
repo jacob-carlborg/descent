@@ -11,18 +11,19 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 
 public abstract class Type extends ASTDmdNode {
-	
+
 	public static class Modification {
 		public int startPosition;
 		public int length;
 		public TOK tok;
+
 		public Modification(TOK tok, int startPosition, int length) {
 			this.startPosition = startPosition;
 			this.length = length;
-			this.tok = tok;			
+			this.tok = tok;
 		}
 	}
-	
+
 	public final static Type tvoid = new TypeBasic(TY.Tvoid);
 	public final static Type tint8 = new TypeBasic(TY.Tint8);
 	public final static Type tuns8 = new TypeBasic(TY.Tuns8);
@@ -52,16 +53,16 @@ public abstract class Type extends ASTDmdNode {
 	public final static Type tsize_t = tuns32;
 	public final static Type tptrdiff_t = tint32;
 	public final static Type tshiftcnt = tint32;
-	
+
 	public static boolean impcnvWarn[][];
 	public static TY impcnvResult[][];
 	public static TY impcnvType1[][];
 	public static TY impcnvType2[][];
 	public static Type basic[];
-	
+
 	static {
 		int TMAX = TY.values().length;
-		
+
 		basic = new Type[TMAX];
 		basic[Tvoid.ordinal()] = new TypeBasic(Tvoid);
 		basic[Tint8.ordinal()] = new TypeBasic(Tint8);
@@ -86,343 +87,343 @@ public abstract class Type extends ASTDmdNode {
 		basic[Tchar.ordinal()] = new TypeBasic(Tchar);
 		basic[Twchar.ordinal()] = new TypeBasic(Twchar);
 		basic[Tdchar.ordinal()] = new TypeBasic(Tdchar);
-		
+
 		impcnvResult = new TY[TMAX][];
 		impcnvType1 = new TY[TMAX][];
 		impcnvType2 = new TY[TMAX][];
 		impcnvWarn = new boolean[TMAX][];
-		
-		for(int i = 0; i < TMAX; i++) {
+
+		for (int i = 0; i < TMAX; i++) {
 			impcnvResult[i] = new TY[TMAX];
 			impcnvType1[i] = new TY[TMAX];
 			impcnvType2[i] = new TY[TMAX];
 			impcnvWarn[i] = new boolean[TMAX];
-			for(int j = 0; j < TMAX; j++) {
+			for (int j = 0; j < TMAX; j++) {
 				impcnvResult[i][j] = Terror;
 				impcnvType1[i][j] = Terror;
 				impcnvType2[i][j] = Terror;
 				impcnvWarn[i][j] = false;
 			}
 		}
-		
-		X(Tbit,Tbit,    Tint32,Tint32,  Tint32);
-	    X(Tbit,Tint8,   Tint32,Tint32,  Tint32);
-	    X(Tbit,Tuns8,   Tint32,Tint32,  Tint32);
-	    X(Tbit,Tint16,  Tint32,Tint32,  Tint32);
-	    X(Tbit,Tuns16,  Tint32,Tint32,  Tint32);
-	    X(Tbit,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tbit,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tbit,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tbit,Tuns64,  Tuns64,Tuns64,  Tuns64);
 
-	    X(Tbit,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tbit,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tbit,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tbit,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tbit,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tbit,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tbit,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tbit,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tbit,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tbit, Tbit, Tint32, Tint32, Tint32);
+		X(Tbit, Tint8, Tint32, Tint32, Tint32);
+		X(Tbit, Tuns8, Tint32, Tint32, Tint32);
+		X(Tbit, Tint16, Tint32, Tint32, Tint32);
+		X(Tbit, Tuns16, Tint32, Tint32, Tint32);
+		X(Tbit, Tint32, Tint32, Tint32, Tint32);
+		X(Tbit, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tbit, Tint64, Tint64, Tint64, Tint64);
+		X(Tbit, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tbit, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tbit, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tbit, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tbit, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tbit, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tbit, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tbit, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tbit, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tbit, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tbool,Tbool,   Tbool,Tbool,    Tbool);
-	    X(Tbool,Tint8,   Tint32,Tint32,  Tint32);
-	    X(Tbool,Tuns8,   Tint32,Tint32,  Tint32);
-	    X(Tbool,Tint16,  Tint32,Tint32,  Tint32);
-	    X(Tbool,Tuns16,  Tint32,Tint32,  Tint32);
-	    X(Tbool,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tbool,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tbool,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tbool,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tbool,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tbool,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tbool,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tbool,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tbool,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tbool,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tbool,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tbool,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tbool,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tbool, Tbool, Tbool, Tbool, Tbool);
+		X(Tbool, Tint8, Tint32, Tint32, Tint32);
+		X(Tbool, Tuns8, Tint32, Tint32, Tint32);
+		X(Tbool, Tint16, Tint32, Tint32, Tint32);
+		X(Tbool, Tuns16, Tint32, Tint32, Tint32);
+		X(Tbool, Tint32, Tint32, Tint32, Tint32);
+		X(Tbool, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tbool, Tint64, Tint64, Tint64, Tint64);
+		X(Tbool, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tbool, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tbool, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tbool, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tbool, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tbool, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tbool, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tbool, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tbool, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tbool, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tint8,Tint8,   Tint32,Tint32,  Tint32);
-	    X(Tint8,Tuns8,   Tint32,Tint32,  Tint32);
-	    X(Tint8,Tint16,  Tint32,Tint32,  Tint32);
-	    X(Tint8,Tuns16,  Tint32,Tint32,  Tint32);
-	    X(Tint8,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tint8,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tint8,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tint8,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tint8,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tint8,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tint8,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tint8,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tint8,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tint8,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tint8,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tint8,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tint8,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tint8, Tint8, Tint32, Tint32, Tint32);
+		X(Tint8, Tuns8, Tint32, Tint32, Tint32);
+		X(Tint8, Tint16, Tint32, Tint32, Tint32);
+		X(Tint8, Tuns16, Tint32, Tint32, Tint32);
+		X(Tint8, Tint32, Tint32, Tint32, Tint32);
+		X(Tint8, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tint8, Tint64, Tint64, Tint64, Tint64);
+		X(Tint8, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tint8, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tint8, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tint8, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tint8, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tint8, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tint8, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tint8, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tint8, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tint8, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tuns8,Tuns8,   Tint32,Tint32,  Tint32);
-	    X(Tuns8,Tint16,  Tint32,Tint32,  Tint32);
-	    X(Tuns8,Tuns16,  Tint32,Tint32,  Tint32);
-	    X(Tuns8,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tuns8,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tuns8,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tuns8,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tuns8,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tuns8,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tuns8,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tuns8,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tuns8,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tuns8,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tuns8,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tuns8,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tuns8,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tuns8, Tuns8, Tint32, Tint32, Tint32);
+		X(Tuns8, Tint16, Tint32, Tint32, Tint32);
+		X(Tuns8, Tuns16, Tint32, Tint32, Tint32);
+		X(Tuns8, Tint32, Tint32, Tint32, Tint32);
+		X(Tuns8, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tuns8, Tint64, Tint64, Tint64, Tint64);
+		X(Tuns8, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tuns8, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tuns8, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tuns8, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tuns8, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tuns8, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tuns8, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tuns8, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tuns8, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tuns8, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tint16,Tint16,  Tint32,Tint32,  Tint32);
-	    X(Tint16,Tuns16,  Tint32,Tint32,  Tint32);
-	    X(Tint16,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tint16,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tint16,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tint16,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tint16,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tint16,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tint16,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tint16,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tint16,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tint16,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tint16,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tint16,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tint16,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tint16, Tint16, Tint32, Tint32, Tint32);
+		X(Tint16, Tuns16, Tint32, Tint32, Tint32);
+		X(Tint16, Tint32, Tint32, Tint32, Tint32);
+		X(Tint16, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tint16, Tint64, Tint64, Tint64, Tint64);
+		X(Tint16, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tint16, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tint16, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tint16, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tint16, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tint16, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tint16, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tint16, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tint16, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tint16, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tuns16,Tuns16,  Tint32,Tint32,  Tint32);
-	    X(Tuns16,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tuns16,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tuns16,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tuns16,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tuns16,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tuns16,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tuns16,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tuns16,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tuns16,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tuns16,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tuns16,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tuns16,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tuns16,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tuns16, Tuns16, Tint32, Tint32, Tint32);
+		X(Tuns16, Tint32, Tint32, Tint32, Tint32);
+		X(Tuns16, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tuns16, Tint64, Tint64, Tint64, Tint64);
+		X(Tuns16, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tuns16, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tuns16, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tuns16, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tuns16, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tuns16, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tuns16, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tuns16, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tuns16, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tuns16, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tint32,Tint32,  Tint32,Tint32,  Tint32);
-	    X(Tint32,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tint32,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tint32,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tint32,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tint32,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tint32,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tint32,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tint32,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tint32,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tint32,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tint32,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tint32,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tint32, Tint32, Tint32, Tint32, Tint32);
+		X(Tint32, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tint32, Tint64, Tint64, Tint64, Tint64);
+		X(Tint32, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tint32, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tint32, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tint32, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tint32, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tint32, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tint32, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tint32, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tint32, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tint32, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tuns32,Tuns32,  Tuns32,Tuns32,  Tuns32);
-	    X(Tuns32,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tuns32,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tuns32,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tuns32,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tuns32,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tuns32,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tuns32,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tuns32,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tuns32,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tuns32,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tuns32,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tuns32, Tuns32, Tuns32, Tuns32, Tuns32);
+		X(Tuns32, Tint64, Tint64, Tint64, Tint64);
+		X(Tuns32, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tuns32, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tuns32, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tuns32, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tuns32, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tuns32, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tuns32, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tuns32, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tuns32, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tuns32, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tint64,Tint64,  Tint64,Tint64,  Tint64);
-	    X(Tint64,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tint64,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tint64,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tint64,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tint64,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tint64,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tint64,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tint64,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tint64,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tint64,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tint64, Tint64, Tint64, Tint64, Tint64);
+		X(Tint64, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tint64, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tint64, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tint64, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tint64, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tint64, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tint64, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tint64, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tint64, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tint64, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tuns64,Tuns64,  Tuns64,Tuns64,  Tuns64);
+		/* ======================= */
 
-	    X(Tuns64,Tfloat32,     Tfloat32,Tfloat32,     Tfloat32);
-	    X(Tuns64,Tfloat64,     Tfloat64,Tfloat64,     Tfloat64);
-	    X(Tuns64,Tfloat80,     Tfloat80,Tfloat80,     Tfloat80);
-	    X(Tuns64,Timaginary32, Tfloat32,Timaginary32, Tfloat32);
-	    X(Tuns64,Timaginary64, Tfloat64,Timaginary64, Tfloat64);
-	    X(Tuns64,Timaginary80, Tfloat80,Timaginary80, Tfloat80);
-	    X(Tuns64,Tcomplex32,   Tfloat32,Tcomplex32,   Tcomplex32);
-	    X(Tuns64,Tcomplex64,   Tfloat64,Tcomplex64,   Tcomplex64);
-	    X(Tuns64,Tcomplex80,   Tfloat80,Tcomplex80,   Tcomplex80);
+		X(Tuns64, Tuns64, Tuns64, Tuns64, Tuns64);
 
-	    /* ======================= */
+		X(Tuns64, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tuns64, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tuns64, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
+		X(Tuns64, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tuns64, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tuns64, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
+		X(Tuns64, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tuns64, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tuns64, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tfloat32,Tfloat32,  Tfloat32,Tfloat32, Tfloat32);
-	    X(Tfloat32,Tfloat64,  Tfloat64,Tfloat64, Tfloat64);
-	    X(Tfloat32,Tfloat80,  Tfloat80,Tfloat80, Tfloat80);
+		/* ======================= */
 
-	    X(Tfloat32,Timaginary32,  Tfloat32,Timaginary32, Tfloat32);
-	    X(Tfloat32,Timaginary64,  Tfloat64,Timaginary64, Tfloat64);
-	    X(Tfloat32,Timaginary80,  Tfloat80,Timaginary80, Tfloat80);
+		X(Tfloat32, Tfloat32, Tfloat32, Tfloat32, Tfloat32);
+		X(Tfloat32, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tfloat32, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
 
-	    X(Tfloat32,Tcomplex32,  Tfloat32,Tcomplex32, Tcomplex32);
-	    X(Tfloat32,Tcomplex64,  Tfloat64,Tcomplex64, Tcomplex64);
-	    X(Tfloat32,Tcomplex80,  Tfloat80,Tcomplex80, Tcomplex80);
+		X(Tfloat32, Timaginary32, Tfloat32, Timaginary32, Tfloat32);
+		X(Tfloat32, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tfloat32, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
 
-	    /* ======================= */
+		X(Tfloat32, Tcomplex32, Tfloat32, Tcomplex32, Tcomplex32);
+		X(Tfloat32, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tfloat32, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tfloat64,Tfloat64,  Tfloat64,Tfloat64, Tfloat64);
-	    X(Tfloat64,Tfloat80,  Tfloat80,Tfloat80, Tfloat80);
+		/* ======================= */
 
-	    X(Tfloat64,Timaginary32,  Tfloat64,Timaginary64, Tfloat64);
-	    X(Tfloat64,Timaginary64,  Tfloat64,Timaginary64, Tfloat64);
-	    X(Tfloat64,Timaginary80,  Tfloat80,Timaginary80, Tfloat80);
+		X(Tfloat64, Tfloat64, Tfloat64, Tfloat64, Tfloat64);
+		X(Tfloat64, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
 
-	    X(Tfloat64,Tcomplex32,  Tfloat64,Tcomplex64, Tcomplex64);
-	    X(Tfloat64,Tcomplex64,  Tfloat64,Tcomplex64, Tcomplex64);
-	    X(Tfloat64,Tcomplex80,  Tfloat80,Tcomplex80, Tcomplex80);
+		X(Tfloat64, Timaginary32, Tfloat64, Timaginary64, Tfloat64);
+		X(Tfloat64, Timaginary64, Tfloat64, Timaginary64, Tfloat64);
+		X(Tfloat64, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
 
-	    /* ======================= */
+		X(Tfloat64, Tcomplex32, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tfloat64, Tcomplex64, Tfloat64, Tcomplex64, Tcomplex64);
+		X(Tfloat64, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Tfloat80,Tfloat80,  Tfloat80,Tfloat80, Tfloat80);
+		/* ======================= */
 
-	    X(Tfloat80,Timaginary32,  Tfloat80,Timaginary80, Tfloat80);
-	    X(Tfloat80,Timaginary64,  Tfloat80,Timaginary80, Tfloat80);
-	    X(Tfloat80,Timaginary80,  Tfloat80,Timaginary80, Tfloat80);
+		X(Tfloat80, Tfloat80, Tfloat80, Tfloat80, Tfloat80);
 
-	    X(Tfloat80,Tcomplex32,  Tfloat80,Tcomplex80, Tcomplex80);
-	    X(Tfloat80,Tcomplex64,  Tfloat80,Tcomplex80, Tcomplex80);
-	    X(Tfloat80,Tcomplex80,  Tfloat80,Tcomplex80, Tcomplex80);
+		X(Tfloat80, Timaginary32, Tfloat80, Timaginary80, Tfloat80);
+		X(Tfloat80, Timaginary64, Tfloat80, Timaginary80, Tfloat80);
+		X(Tfloat80, Timaginary80, Tfloat80, Timaginary80, Tfloat80);
 
-	    /* ======================= */
+		X(Tfloat80, Tcomplex32, Tfloat80, Tcomplex80, Tcomplex80);
+		X(Tfloat80, Tcomplex64, Tfloat80, Tcomplex80, Tcomplex80);
+		X(Tfloat80, Tcomplex80, Tfloat80, Tcomplex80, Tcomplex80);
 
-	    X(Timaginary32,Timaginary32,  Timaginary32,Timaginary32, Timaginary32);
-	    X(Timaginary32,Timaginary64,  Timaginary64,Timaginary64, Timaginary64);
-	    X(Timaginary32,Timaginary80,  Timaginary80,Timaginary80, Timaginary80);
+		/* ======================= */
 
-	    X(Timaginary32,Tcomplex32,  Timaginary32,Tcomplex32, Tcomplex32);
-	    X(Timaginary32,Tcomplex64,  Timaginary64,Tcomplex64, Tcomplex64);
-	    X(Timaginary32,Tcomplex80,  Timaginary80,Tcomplex80, Tcomplex80);
+		X(Timaginary32, Timaginary32, Timaginary32, Timaginary32, Timaginary32);
+		X(Timaginary32, Timaginary64, Timaginary64, Timaginary64, Timaginary64);
+		X(Timaginary32, Timaginary80, Timaginary80, Timaginary80, Timaginary80);
 
-	    /* ======================= */
+		X(Timaginary32, Tcomplex32, Timaginary32, Tcomplex32, Tcomplex32);
+		X(Timaginary32, Tcomplex64, Timaginary64, Tcomplex64, Tcomplex64);
+		X(Timaginary32, Tcomplex80, Timaginary80, Tcomplex80, Tcomplex80);
 
-	    X(Timaginary64,Timaginary64,  Timaginary64,Timaginary64, Timaginary64);
-	    X(Timaginary64,Timaginary80,  Timaginary80,Timaginary80, Timaginary80);
+		/* ======================= */
 
-	    X(Timaginary64,Tcomplex32,  Timaginary64,Tcomplex64, Tcomplex64);
-	    X(Timaginary64,Tcomplex64,  Timaginary64,Tcomplex64, Tcomplex64);
-	    X(Timaginary64,Tcomplex80,  Timaginary80,Tcomplex80, Tcomplex80);
+		X(Timaginary64, Timaginary64, Timaginary64, Timaginary64, Timaginary64);
+		X(Timaginary64, Timaginary80, Timaginary80, Timaginary80, Timaginary80);
 
-	    /* ======================= */
+		X(Timaginary64, Tcomplex32, Timaginary64, Tcomplex64, Tcomplex64);
+		X(Timaginary64, Tcomplex64, Timaginary64, Tcomplex64, Tcomplex64);
+		X(Timaginary64, Tcomplex80, Timaginary80, Tcomplex80, Tcomplex80);
 
-	    X(Timaginary80,Timaginary80,  Timaginary80,Timaginary80, Timaginary80);
+		/* ======================= */
 
-	    X(Timaginary80,Tcomplex32,  Timaginary80,Tcomplex80, Tcomplex80);
-	    X(Timaginary80,Tcomplex64,  Timaginary80,Tcomplex80, Tcomplex80);
-	    X(Timaginary80,Tcomplex80,  Timaginary80,Tcomplex80, Tcomplex80);
+		X(Timaginary80, Timaginary80, Timaginary80, Timaginary80, Timaginary80);
 
-	    /* ======================= */
+		X(Timaginary80, Tcomplex32, Timaginary80, Tcomplex80, Tcomplex80);
+		X(Timaginary80, Tcomplex64, Timaginary80, Tcomplex80, Tcomplex80);
+		X(Timaginary80, Tcomplex80, Timaginary80, Tcomplex80, Tcomplex80);
 
-	    X(Tcomplex32,Tcomplex32,  Tcomplex32,Tcomplex32, Tcomplex32);
-	    X(Tcomplex32,Tcomplex64,  Tcomplex64,Tcomplex64, Tcomplex64);
-	    X(Tcomplex32,Tcomplex80,  Tcomplex80,Tcomplex80, Tcomplex80);
+		/* ======================= */
 
-	    /* ======================= */
+		X(Tcomplex32, Tcomplex32, Tcomplex32, Tcomplex32, Tcomplex32);
+		X(Tcomplex32, Tcomplex64, Tcomplex64, Tcomplex64, Tcomplex64);
+		X(Tcomplex32, Tcomplex80, Tcomplex80, Tcomplex80, Tcomplex80);
 
-	    X(Tcomplex64,Tcomplex64,  Tcomplex64,Tcomplex64, Tcomplex64);
-	    X(Tcomplex64,Tcomplex80,  Tcomplex80,Tcomplex80, Tcomplex80);
+		/* ======================= */
 
-	    /* ======================= */
+		X(Tcomplex64, Tcomplex64, Tcomplex64, Tcomplex64, Tcomplex64);
+		X(Tcomplex64, Tcomplex80, Tcomplex80, Tcomplex80, Tcomplex80);
 
-	    X(Tcomplex80,Tcomplex80,  Tcomplex80,Tcomplex80, Tcomplex80);
-	    
-	    /* ======================= */	    
-	    /* ======================= */
-	    
-	    Y(Tint8, Tbit);
-	    Y(Tuns8, Tbit);
-	    Y(Tint16, Tbit);
-	    Y(Tuns16, Tbit);
-	    Y(Tint32, Tbit);
-	    Y(Tuns32, Tbit);
-	    Y(Tint64, Tbit);
-	    Y(Tuns64, Tbit);
+		/* ======================= */
 
-	    Y(Tuns8, Tint8);
-	    Y(Tint16, Tint8);
-	    Y(Tuns16, Tint8);
-	    Y(Tint32, Tint8);
-	    Y(Tuns32, Tint8);
-	    Y(Tint64, Tint8);
-	    Y(Tuns64, Tint8);
+		X(Tcomplex80, Tcomplex80, Tcomplex80, Tcomplex80, Tcomplex80);
 
-	    Y(Tint8, Tuns8);
-	    Y(Tint16, Tuns8);
-	    Y(Tuns16, Tuns8);
-	    Y(Tint32, Tuns8);
-	    Y(Tuns32, Tuns8);
-	    Y(Tint64, Tuns8);
-	    Y(Tuns64, Tuns8);
+		/* ======================= */
+		/* ======================= */
 
-	    Y(Tuns16, Tint16);
-	    Y(Tint32, Tint16);
-	    Y(Tuns32, Tint16);
-	    Y(Tint64, Tint16);
-	    Y(Tuns64, Tint16);
+		Y(Tint8, Tbit);
+		Y(Tuns8, Tbit);
+		Y(Tint16, Tbit);
+		Y(Tuns16, Tbit);
+		Y(Tint32, Tbit);
+		Y(Tuns32, Tbit);
+		Y(Tint64, Tbit);
+		Y(Tuns64, Tbit);
 
-	    Y(Tint16, Tuns16);
-	    Y(Tint32, Tuns16);
-	    Y(Tuns32, Tuns16);
-	    Y(Tint64, Tuns16);
-	    Y(Tuns64, Tuns16);
+		Y(Tuns8, Tint8);
+		Y(Tint16, Tint8);
+		Y(Tuns16, Tint8);
+		Y(Tint32, Tint8);
+		Y(Tuns32, Tint8);
+		Y(Tint64, Tint8);
+		Y(Tuns64, Tint8);
 
-	    // Y(Tuns32, Tint32);
-	    Y(Tint64, Tint32);
-	    Y(Tuns64, Tint32);
+		Y(Tint8, Tuns8);
+		Y(Tint16, Tuns8);
+		Y(Tuns16, Tuns8);
+		Y(Tint32, Tuns8);
+		Y(Tuns32, Tuns8);
+		Y(Tint64, Tuns8);
+		Y(Tuns64, Tuns8);
 
-	    // Y(Tint32, Tuns32);
-	    Y(Tint64, Tuns32);
-	    Y(Tuns64, Tuns32);
+		Y(Tuns16, Tint16);
+		Y(Tint32, Tint16);
+		Y(Tuns32, Tint16);
+		Y(Tint64, Tint16);
+		Y(Tuns64, Tint16);
 
-	    Y(Tint64, Tuns64);
-	    Y(Tuns64, Tint64);
-	    
-	    /* ======================= */	    
-	    /* ======================= */
-	    
-	    for (int i = 0; i < TMAX; i++) {
+		Y(Tint16, Tuns16);
+		Y(Tint32, Tuns16);
+		Y(Tuns32, Tuns16);
+		Y(Tint64, Tuns16);
+		Y(Tuns64, Tuns16);
+
+		// Y(Tuns32, Tint32);
+		Y(Tint64, Tint32);
+		Y(Tuns64, Tint32);
+
+		// Y(Tint32, Tuns32);
+		Y(Tint64, Tuns32);
+		Y(Tuns64, Tuns32);
+
+		Y(Tint64, Tuns64);
+		Y(Tuns64, Tint64);
+
+		/* ======================= */
+		/* ======================= */
+
+		for (int i = 0; i < TMAX; i++) {
 			for (int j = 0; j < TMAX; j++) {
 				if (impcnvResult[i][j] == Terror) {
 					impcnvResult[i][j] = impcnvResult[j][i];
@@ -430,81 +431,81 @@ public abstract class Type extends ASTDmdNode {
 					impcnvType2[i][j] = impcnvType1[j][i];
 				}
 			}
-	    }
+		}
 	}
-	
+
 	private static void X(TY t1, TY t2, TY nt1, TY nt2, TY rt) {
 		X(t1.ordinal(), t2.ordinal(), nt1, nt2, rt);
 	}
-	
+
 	private static void X(int t1, int t2, TY nt1, TY nt2, TY rt) {
 		impcnvResult[t1][t2] = rt;
 		impcnvType1[t1][t2] = nt1;
 		impcnvType2[t1][t2] = nt2;
 	}
-	
+
 	private static void Y(TY t1, TY t2) {
 		Y(t1.ordinal(), t2.ordinal());
 	}
-	
+
 	private static void Y(int t1, int t2) {
 		impcnvWarn[t1][t2] = true;
 	}
-	
+
 	public TY ty;
 	public Type next;
 	public String deco;
-	public Type pto;		// merged pointer to this type
-	public Type rto;		// reference to this type
-	public Type arrayof;	// array of this type
-	
+	public Type pto; // merged pointer to this type
+	public Type rto; // reference to this type
+	public Type arrayof; // array of this type
+
 	public List<Modification> modifications;
-	
+
 	public Type(TY ty, Type next) {
 		this.ty = ty;
 		this.next = next;
 	}
-	
+
 	@Override
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_TYPE;
 	}
-	
+
 	public TypeBasic isTypeBasic() {
 		return null;
 	}
-	
+
 	public boolean isbit() {
 		return false;
 	}
-	
+
 	public boolean iscomplex() {
 		return false;
 	}
-	
+
 	public boolean isreal() {
 		return false;
 	}
-	
+
 	public boolean isimaginary() {
 		return false;
 	}
-	
+
 	public boolean isscalar() {
 		return false;
 	}
-	
+
 	public ClassDeclaration isClassHandle() {
 		return null;
 	}
-	
+
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		if (next != null) {
 			next = next.semantic(loc, sc, context);
 		}
 		return merge(context);
 	}
-	
+
 	public Type merge(SemanticContext context) {
 		Type t;
 
@@ -529,28 +530,29 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return t;
 	}
-	
+
 	public void toDecoBuffer(OutBuffer buf) {
 		buf.writeByte(ty.mangleChar);
-	    if (next != null) {
+		if (next != null) {
 			Assert.isTrue(next != this);
 			next.toDecoBuffer(buf);
 		}
 	}
-	
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+
+	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+			Dsymbol[] ps, SemanticContext context) {
 		Type t;
 
-	    t = semantic(loc, sc, context);
-	    pt[0] = t;
-	    pe[0] = null;
-	    ps[0] = null;
+		t = semantic(loc, sc, context);
+		pt[0] = t;
+		pe[0] = null;
+		ps[0] = null;
 	}
-	
+
 	public Expression toExpression() {
 		return null;
 	}
-	
+
 	public Type toBasetype(SemanticContext context) {
 		return this;
 	}
@@ -566,7 +568,7 @@ public abstract class Type extends ASTDmdNode {
 	public boolean isunsigned() {
 		return false;
 	}
-	
+
 	public boolean isauto() {
 		return false;
 	}
@@ -580,11 +582,11 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return pto;
 	}
-	
+
 	public Type referenceTo() {
 		return null;
 	}
-	
+
 	public Type arrayOf(SemanticContext context) {
 		if (arrayof == null) {
 			Type t;
@@ -594,60 +596,45 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return arrayof;
 	}
-	
+
 	public Expression defaultInit(SemanticContext context) {
 		return null;
 	}
-	
+
 	public Expression getProperty(Loc loc, char[] ident, SemanticContext context) {
 		Expression e = null;
 
-	    if (CharOperation.equals(ident, Id.__sizeof))
-	    {
-	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
-	    }
-	    else if (CharOperation.equals(ident, Id.size))
-	    {
-	    	error(".size property should be replaced with .sizeof");
-	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
-	    }
-	    else if (CharOperation.equals(ident, Id.alignof))
-	    {
-	    	e = new IntegerExp(loc, alignsize(), Type.tsize_t);
-	    }
-	    else if (CharOperation.equals(ident, Id.typeinfo))
-	    {
+		if (CharOperation.equals(ident, Id.__sizeof)) {
+			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
+		} else if (CharOperation.equals(ident, Id.size)) {
+			error(".size property should be replaced with .sizeof");
+			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
+		} else if (CharOperation.equals(ident, Id.alignof)) {
+			e = new IntegerExp(loc, alignsize(context), Type.tsize_t);
+		} else if (CharOperation.equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated)
-			    error(".typeinfo deprecated, use typeid(type)");
+				error(".typeinfo deprecated, use typeid(type)");
 			e = getTypeInfo(null);
-	    }
-	    else if (CharOperation.equals(ident, Id.init))
-	    {
-	    	e = defaultInit(context);
-	    }
-	    else if (CharOperation.equals(ident, Id.mangleof))
-	    {
-	    	Assert.isNotNull(deco);
-	    	e = new StringExp(loc, deco.toCharArray(), 'c');
+		} else if (CharOperation.equals(ident, Id.init)) {
+			e = defaultInit(context);
+		} else if (CharOperation.equals(ident, Id.mangleof)) {
+			Assert.isNotNull(deco);
+			e = new StringExp(loc, deco.toCharArray(), 'c');
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
-	    }
-	    else if (CharOperation.equals(ident, Id.stringof))
-	    {	
-	    	char[] s = toChars().toCharArray();
+		} else if (CharOperation.equals(ident, Id.stringof)) {
+			char[] s = toChars(context).toCharArray();
 			e = new StringExp(loc, s, 'c');
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
-	    }
-	    else
-	    {
-			error("no property '%s' for type '%s'", 
-					new String(ident), toChars());
+		} else {
+			error("no property '%s' for type '%s'", new String(ident),
+					toChars(context));
 			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
-	    }
+		}
 		return e;
 	}
-	
+
 	public Type reliesOnTident() {
 		if (next == null) {
 			return null;
@@ -655,103 +642,88 @@ public abstract class Type extends ASTDmdNode {
 			return next.reliesOnTident();
 		}
 	}
-	
+
 	public void checkDeprecated(Loc loc, Scope sc, SemanticContext context) {
 		Type t;
-	    Dsymbol s;
+		Dsymbol s;
 
-	    for (t = this; t != null; t = t.next)
-	    {
-		s = t.toDsymbol(sc, context);
-		if (s != null)
-		    s.checkDeprecated(sc, context);
-	    }
+		for (t = this; t != null; t = t.next) {
+			s = t.toDsymbol(sc, context);
+			if (s != null)
+				s.checkDeprecated(sc, context);
+		}
 	}
-	
+
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
-			SemanticContext context)
-	{
+			SemanticContext context) {
 		VarDeclaration v = null;
 
-	    if (e.op == TOKdotvar)
-	    {
-			DotVarExp dv = (DotVarExp )e;
+		if (e.op == TOKdotvar) {
+			DotVarExp dv = (DotVarExp) e;
 			v = dv.var.isVarDeclaration();
-	    }
-	    else if (e.op == TOKvar)
-	    {
-			VarExp ve = (VarExp )e;
+		} else if (e.op == TOKvar) {
+			VarExp ve = (VarExp) e;
 			v = ve.var.isVarDeclaration();
-	    }
-	    if (null != v)
-	    {
-			if (CharOperation.equals(ident.ident, Id.offset))
-			{
-			    if (!context.global.params.useDeprecated)
-			    	error(".offset deprecated, use .offsetof");
-			    //goto Loffset;
-			    if (0 != (v.storage_class & STCfield))
-				{
+		}
+		if (null != v) {
+			if (CharOperation.equals(ident.ident, Id.offset)) {
+				if (!context.global.params.useDeprecated)
+					error(".offset deprecated, use .offsetof");
+				//goto Loffset;
+				if (0 != (v.storage_class & STCfield)) {
 					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
 					return e;
 				}
-			}
-			else if (CharOperation.equals(ident.ident, Id.offsetof))
-			{
+			} else if (CharOperation.equals(ident.ident, Id.offsetof)) {
 				//Loffset:
-				if (0 != (v.storage_class & STCfield))
-				{
+				if (0 != (v.storage_class & STCfield)) {
 					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
 					return e;
 				}
+			} else if (CharOperation.equals(ident.ident, Id.init)) {
+				return defaultInit(context);
 			}
-			else if (CharOperation.equals(ident.ident, Id.init))
-			{
-			    return defaultInit(context);
-			}
-	    }
-	    
-	    if (CharOperation.equals(ident.ident, Id.typeinfo))
-	    {
+		}
+
+		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated)
-			    error(".typeinfo deprecated, use typeid(type)");
+				error(".typeinfo deprecated, use typeid(type)");
 			e = getTypeInfo(sc);
 			return e;
-	    }
-	    
-	    if (CharOperation.equals(ident.ident, Id.stringof))
-	    {
-	    	char[] s = e.toChars().toCharArray();
-	    	e = new StringExp(e.loc, s, 'c');
+		}
+
+		if (CharOperation.equals(ident.ident, Id.stringof)) {
+			char[] s = e.toChars(context).toCharArray();
+			e = new StringExp(e.loc, s, 'c');
 			Scope _sc = new Scope();
 			e = e.semantic(_sc, context);
 			return e;
-	    }
-	    
-	    return getProperty(e.loc, ident.ident, context);
+		}
+
+		return getProperty(e.loc, ident.ident, context);
 	}
 
-	public int size(Loc loc) {
-		error("no size for type %s", toChars());
-	    return 1;
-	}
-	
-	public int size() {
-		return size(null);
+	public int size(Loc loc, SemanticContext context) {
+		error("no size for type %s", toChars(context));
+		return 1;
 	}
 
-	public int alignsize() {
-		return size(null);
+	public int size(SemanticContext context) {
+		return size(null, context);
 	}
 
-	public int memalign(int salign) {
+	public int alignsize(SemanticContext context) {
+		return size(null, context);
+	}
+
+	public int memalign(int salign, SemanticContext context) {
 		return salign;
 	}
 
 	public boolean isBaseOf(Type type, int[] poffset, SemanticContext context) {
 		return false;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Type))
@@ -765,21 +737,19 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return false;
 	}
-	
-	
-	
+
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		if (this == to) {
 			return MATCH.MATCHexact;
 		}
 		return MATCH.MATCHnomatch;
 	}
-	
+
 	private final static int COVARIANT = 1;
 	private final static int DISTINCT = 0;
 	private final static int NOT_COVARIANT = 2;
 	private final static int OTHER = 3;
-	
+
 	public int covariant(Type t, SemanticContext context) {
 		boolean inoutmismatch = false;
 
@@ -849,23 +819,23 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return NOT_COVARIANT;
 	}
-	
+
 	public boolean isfloating() {
 		return false;
 	}
-	
+
 	public boolean isString() {
 		return false;
 	}
-	
+
 	public boolean isZeroInit() {
 		return false;
 	}
-	
+
 	public boolean checkBoolean(SemanticContext context) {
 		return isscalar(context);
 	}
-	
+
 	public boolean isscalar(SemanticContext context) {
 		return false;
 	}
@@ -875,8 +845,18 @@ public abstract class Type extends ASTDmdNode {
 		return this;
 	}
 
-	public void toCBuffer(OutBuffer buf, Object object, HdrGenState hgs) {
-		// TODO semantic
+	@Override
+	public String toChars(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		HdrGenState hgs = new HdrGenState();
+		toCBuffer2(buf, null, hgs, context);
+		return buf.toChars();
+	}
+
+	public void toCBuffer(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+		OutBuffer tbuf = new OutBuffer();
+		toCBuffer2(tbuf, ident, hgs, context);
+		buf.write(tbuf);
 	}
 
 	public boolean hasPointers(SemanticContext context) {
@@ -888,15 +868,20 @@ public abstract class Type extends ASTDmdNode {
 		return null;
 	}
 
-	public void toCBuffer2(OutBuffer argbuf, Object object, HdrGenState hgs) {
-		// TODO semantic
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		buf.prependstring(toChars(context));
+		if (ident != null) {
+			buf.writeByte(' ');
+			buf.writestring(ident.ident);
+		}
 	}
 
 	public Expression getTypeInfo(Scope sc) {
 		// TODO semantic
 		return null;
 	}
-	
+
 	public Type nextOf() {
 		return next;
 	}
@@ -905,7 +890,8 @@ public abstract class Type extends ASTDmdNode {
 		if (this.modifications == null) {
 			this.modifications = new ArrayList<Modification>();
 		}
-		this.modifications.add(new Modification(TOK.TOKconst, startPosition, length));
+		this.modifications.add(new Modification(TOK.TOKconst, startPosition,
+				length));
 		return this;
 	}
 
@@ -913,7 +899,8 @@ public abstract class Type extends ASTDmdNode {
 		if (this.modifications == null) {
 			this.modifications = new ArrayList<Modification>();
 		}
-		this.modifications.add(new Modification(TOK.TOKinvariant, startPosition, length));
+		this.modifications.add(new Modification(TOK.TOKinvariant,
+				startPosition, length));
 		return this;
 	}
 

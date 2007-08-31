@@ -15,7 +15,7 @@ public class TypeTuple extends Type {
 	private TypeTuple() {
 		super(TY.Ttuple, null);
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on fake class");
 	}
@@ -26,7 +26,8 @@ public class TypeTuple extends Type {
 		return tt;
 	}
 
-	public static TypeTuple newExpressions(List<Expression> exps, SemanticContext context) {
+	public static TypeTuple newExpressions(List<Expression> exps,
+			SemanticContext context) {
 		TypeTuple tt = new TypeTuple();
 		ArrayList<Argument> arguments = new ArrayList<Argument>();
 		if (exps != null) {
@@ -47,6 +48,19 @@ public class TypeTuple extends Type {
 	@Override
 	public int getNodeType() {
 		return TYPE_TUPLE;
+	}
+
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		OutBuffer buf2 = new OutBuffer();
+		// TODO semantic
+		// argsToCBuffer(buf2, hgs, arguments, 0, context);
+		buf.prependstring(buf2.toChars());
+		if (ident != null) {
+			buf.writeByte(' ');
+			buf.writestring(ident.toChars(context));
+		}
 	}
 
 }

@@ -47,7 +47,7 @@ public class ArrayExp extends UnaExp {
 		{
 			// Convert to IndexExp
 			if(arguments.size() != 1)
-				error("only one index allowed to index " + t1.toChars());
+				error("only one index allowed to index " + t1.toChars(context));
 			e = new IndexExp(loc, e1, arguments.get(0));
 			return e.semantic(sc, context);
 		}
@@ -58,7 +58,7 @@ public class ArrayExp extends UnaExp {
 			e = arguments.get(i);
 			e = e.semantic(sc, context);
 			if(null == e.type)
-				error(e.toChars() + " has no value");
+				error(e.toChars(context) + " has no value");
 			arguments.set(i, e);
 		}
 		
@@ -68,7 +68,7 @@ public class ArrayExp extends UnaExp {
 		e = op_overload(sc);
 		if (null == e)
 	    {
-			error("no [] operator overload for type " + e1.type.toChars());
+			error("no [] operator overload for type " + e1.type.toChars(context));
 			e = e1;
 	    }
 		

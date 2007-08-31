@@ -308,7 +308,7 @@ public class IntegerExp extends Expression {
 				switch (t.ty) {
 				case Tenum: {
 					TypeEnum te = (TypeEnum) t;
-					buf.printf("cast(" + te.sym.toChars() + "%s)");
+					buf.printf("cast(" + te.sym.toChars(context) + "%s)");
 					t = te.sym.memtype;
 					// goto L1;
 					loop = true;
@@ -317,7 +317,7 @@ public class IntegerExp extends Expression {
 
 				case Ttypedef: {
 					TypeTypedef tt = (TypeTypedef) t;
-					buf.printf("cast(" + tt.sym.toChars() + ")");
+					buf.printf("cast(" + tt.sym.toChars(context) + ")");
 					t = tt.sym.basetype;
 					// goto L1;
 					loop = true;
@@ -392,7 +392,7 @@ public class IntegerExp extends Expression {
 
 				case Tpointer:
 					buf.writestring("cast(");
-					buf.writestring(t.toChars());
+					buf.writestring(t.toChars(context));
 					buf.writeByte(')');
 					buf.printf(NumberUtils.castToUns32(v) + "u");
 					break;
@@ -409,8 +409,8 @@ public class IntegerExp extends Expression {
 	}
 
 	@Override
-	public String toChars() {
-		return new String(str).intern();
+	public String toChars(SemanticContext context) {
+		return super.toChars(context);
 	}
 
 	@Override
@@ -491,7 +491,7 @@ public class IntegerExp extends Expression {
 		} else if (loc.filename == null) {
 			loc = e.loc;
 		}
-		e.error("constant %s is not an lvalue", e.toChars());
+		e.error("constant %s is not an lvalue", e.toChars(context));
 		return this;
 	}
 

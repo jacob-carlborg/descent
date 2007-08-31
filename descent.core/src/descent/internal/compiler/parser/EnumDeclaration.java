@@ -66,11 +66,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps) {
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		if (isAnonymous()) {
-			return super.oneMembers(members, ps);
+			return super.oneMembers(members, ps, context);
 		}
-		return super.oneMember(ps);
+		return super.oneMember(ps, context);
 	}
 
 	@Override
@@ -318,12 +318,12 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 		buf.writestring("enum ");
 		if (ident != null) {
-			buf.writestring(ident.toChars());
+			buf.writestring(ident.toChars(context));
 			buf.writeByte(' ');
 		}
 		if (memtype != null) {
 			buf.writestring(": ");
-			memtype.toCBuffer(buf, null, hgs);
+			memtype.toCBuffer(buf, null, hgs, context);
 		}
 		if (members == null) {
 			buf.writeByte(';');

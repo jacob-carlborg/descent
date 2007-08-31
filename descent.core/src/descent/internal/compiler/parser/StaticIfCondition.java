@@ -23,5 +23,12 @@ public class StaticIfCondition extends Condition {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring("static if(");
+	    exp.toCBuffer(buf, hgs, context);
+	    buf.writeByte(')');
+	}
 
 }

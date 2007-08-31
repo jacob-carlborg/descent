@@ -60,7 +60,7 @@ public class IndexExp extends BinExp {
 	    e2 = e2.semantic(sc, context);
 	    if(null == e2.type)
 	    {
-	    	error("%s has no value", e2.toChars());
+	    	error("%s has no value", e2.toChars(context));
 	    	e2.type = Type.terror;
 	    }
 	    e2 = resolveProperties(sc, e2, context);
@@ -143,7 +143,7 @@ public class IndexExp extends BinExp {
 			default:
 			{
 		    	error("%s must be an array or pointer type, not %s",
-				e1.toChars(), e1.type.toChars());
+				e1.toChars(context), e1.type.toChars(context));
 		    	type = Type.tint32;
 		    	break;
 		    }

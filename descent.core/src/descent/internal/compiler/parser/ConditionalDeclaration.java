@@ -36,16 +36,16 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd) {
+	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
 		Assert.isNotNull(condition);
-		return condition.include(sc, sd) != null ? decl : elsedecl;
+		return condition.include(sc, sd, context) ? decl : elsedecl;
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps) {
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		if (condition.inc) {
-			List d = condition.include(null, null) != null ? decl : elsedecl;
-			return Dsymbol.oneMembers(d, ps);
+			List d = condition.include(null, null, context) ? decl : elsedecl;
+			return Dsymbol.oneMembers(d, ps, context);
 		}
 		ps[0] = null;
 		return true;
@@ -63,7 +63,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		condition.toCBuffer(buf, hgs);
+		condition.toCBuffer(buf, hgs, context);
 		if (decl != null || elsedecl != null) {
 			buf.writenl();
 			buf.writeByte('{');

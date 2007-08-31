@@ -46,7 +46,7 @@ public class AddExp extends BinExp {
 					|| (tb2.ty == TY.Tpointer && e1.type.isintegral())) {
 				e = scaleFactor(sc, context);
 			} else if (tb1.ty == TY.Tpointer && tb2.ty == TY.Tpointer) {
-				incompatibleTypes();
+				incompatibleTypes(context);
 				type = e1.type;
 				e = this;
 			} else {

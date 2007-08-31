@@ -213,9 +213,9 @@ public class SliceExp extends UnaExp {
 	{
 		String s;
 	    if (t.ty == TY.Tvoid)
-	    	s = e1.toChars();
+	    	s = e1.toChars(context);
 	    else
-	    	s = t.toChars();
+	    	s = t.toChars(context);
 	    
 	    error("%s cannot be sliced with []", s);
 	    type = Type.terror;

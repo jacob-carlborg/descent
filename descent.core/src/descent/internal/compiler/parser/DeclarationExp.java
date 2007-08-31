@@ -56,14 +56,14 @@ public class DeclarationExp extends Expression {
 		// Must be unique in both.
 		if (s.ident != null) {
 			if (sc.insert(s) == null) {
-				error("declaration %s is already defined", s.toPrettyChars());
+				error("declaration %s is already defined", s.toPrettyChars(context));
 			} else if (sc.func != null) {
 				//VarDeclaration v = s.isVarDeclaration();
 				if ((s.isFuncDeclaration() != null /*|| v && v.storage_class & STCstatic*/)
 						&& sc.func.localsymtab.insert(s) == null) {
 					error(
 							"declaration %s is already defined in another scope in %s",
-							s.toPrettyChars(), sc.func.toChars());
+							s.toPrettyChars(context), sc.func.toChars(context));
 				} else if (!context.global.params.useDeprecated) { // Disallow shadowing
 
 					for (Scope scx = sc.enclosing; scx != null
@@ -75,7 +75,7 @@ public class DeclarationExp extends Expression {
 								&& (s2 = scx.scopesym.symtab.lookup(s.ident)) != null
 								&& s != s2) {
 							error("shadowing declaration %s is deprecated", s
-									.toPrettyChars());
+									.toPrettyChars(context));
 						}
 					}
 				}

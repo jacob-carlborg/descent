@@ -81,5 +81,10 @@ public class ExpInitializer extends Initializer {
 	public int getNodeType() {
 		return EXP_INITIALIZER;
 	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		exp.toCBuffer(buf, hgs, context);
+	}
 
 }

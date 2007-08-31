@@ -39,7 +39,7 @@ public class InExp extends BinExp {
 	    Type t2b = e2.type.toBasetype(context);
 	    if (t2b.ty != TY.Taarray)
 	    {
-	    	error("rvalue of in expression must be an associative array, not %s", e2.type.toChars());
+	    	error("rvalue of in expression must be an associative array, not %s", e2.type.toChars(context));
 	    	type = Type.terror;
 	    }
 	    else

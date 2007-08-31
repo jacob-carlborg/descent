@@ -38,40 +38,40 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ForeachStatement extends Statement {
-	
-	private final static char[] _aaApply = { '_', 'a', 'a', 'A', 'p', 'p', 'l', 'y', };
-	private final static char[] _aaApply2 = { '_', 'a', 'a', 'A', 'p', 'p', 'l', 'y', '2' };
-	
+
+	private final static char[] _aaApply = { '_', 'a', 'a', 'A', 'p', 'p', 'l',
+			'y', };
+	private final static char[] _aaApply2 = { '_', 'a', 'a', 'A', 'p', 'p',
+			'l', 'y', '2' };
+
 	public TOK op;
 	public List<Argument> arguments;
 	public Expression aggr;
 	public Expression sourceAggr;
-	
+
 	public Statement body;
-	
+
 	public VarDeclaration key;
 	public VarDeclaration value;
 
-	public FuncDeclaration func;	// function we're lexically in
-	
-	public List cases;	// put breaks, continues, gotos and returns here
-	public List gotos;	// forward referenced goto's go here
-	
-	public final static String[] fntab =
-		{ "cc","cw","cd",
-		  "wc","cc","wd",
-		  "dc","dw","dd"
-		};
+	public FuncDeclaration func; // function we're lexically in
 
-	public ForeachStatement(Loc loc, TOK op, List<Argument> arguments, Expression aggr, Statement body) {
+	public List cases; // put breaks, continues, gotos and returns here
+	public List gotos; // forward referenced goto's go here
+
+	public final static String[] fntab = { "cc", "cw", "cd", "wc", "cc", "wd",
+			"dc", "dw", "dd" };
+
+	public ForeachStatement(Loc loc, TOK op, List<Argument> arguments,
+			Expression aggr, Statement body) {
 		super(loc);
 		this.op = op;
 		this.arguments = arguments;
 		this.sourceAggr = aggr;
 		this.aggr = aggr;
-		this.body = body;		
+		this.body = body;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -82,7 +82,6 @@ public class ForeachStatement extends Statement {
 		visitor.endVisit(this);
 	}
 
-	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		ScopeDsymbol sym;
@@ -101,7 +100,7 @@ public class ForeachStatement extends Statement {
 		aggr = aggr.semantic(sc, context);
 		aggr = resolveProperties(sc, aggr, context);
 		if (aggr.type == null) {
-			error("invalid foreach aggregate %s", aggr.toChars());
+			error("invalid foreach aggregate %s", aggr.toChars(context));
 			return this;
 		}
 
@@ -151,15 +150,17 @@ public class ForeachStatement extends Statement {
 
 				if (dim == 2) { // Declare key
 					if ((arg.storageClass & (STCout | STCref | STClazy)) != 0)
-						error("no storage class for %s", arg.ident.toChars());
+						error("no storage class for %s", arg.ident
+								.toChars(context));
 					TY keyty = arg.type.ty;
 					if ((keyty != Tint32 && keyty != Tuns32)
 							|| (context.global.params.isX86_64
 									&& keyty != Tint64 && keyty != Tuns64)) {
 						error("foreach: key type must be int or uint, not %s",
-								arg.type.toChars());
+								arg.type.toChars(context));
 					}
-					Initializer ie = new ExpInitializer(loc, new IntegerExp(loc, k));
+					Initializer ie = new ExpInitializer(loc, new IntegerExp(
+							loc, k));
 					VarDeclaration var = new VarDeclaration(loc, arg.type,
 							arg.ident, ie);
 					var.storage_class |= STCconst;
@@ -169,7 +170,7 @@ public class ForeachStatement extends Statement {
 				}
 				// Declare value
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
-					error("no storage class for %s", arg.ident.toChars());
+					error("no storage class for %s", arg.ident.toChars(context));
 				}
 				Dsymbol var;
 				if (te != null) {
@@ -196,7 +197,7 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = (Argument) arguments.get(i);
 			if (arg.type == null) {
-				error("cannot infer type for %s", arg.ident.toChars());
+				error("cannot infer type for %s", arg.ident.toChars(context));
 				return this;
 			}
 		}
@@ -250,7 +251,8 @@ public class ForeachStatement extends Statement {
 
 				var = new VarDeclaration(loc, arg.type, arg.ident, null);
 				var.storage_class |= STCforeach;
-				var.storage_class |= arg.storageClass & (STCin | STCout | STCref);
+				var.storage_class |= arg.storageClass
+						& (STCin | STCout | STCref);
 				DeclarationExp de = new DeclarationExp(loc, var);
 				de.semantic(sc, context);
 				if (dim == 2 && i == 0)
@@ -265,10 +267,11 @@ public class ForeachStatement extends Statement {
 
 			if (!value.type.equals(tab.next)) {
 				if (aggr.op == TOKstring)
-					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context), context);
+					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context),
+							context);
 				else
-					error("foreach: %s is not an array of %s", tab.toChars(),
-							value.type.toChars());
+					error("foreach: %s is not an array of %s", tab
+							.toChars(context), value.type.toChars(context));
 			}
 
 			if ((value.storage_class & STCout) != 0
@@ -279,7 +282,7 @@ public class ForeachStatement extends Statement {
 					&& ((key.type.ty != Tint32 && key.type.ty != Tuns32) || (context.global.params.isX86_64
 							&& key.type.ty != Tint64 && key.type.ty != Tuns64))) {
 				error("foreach: key type must be int or uint, not %s", key.type
-						.toChars());
+						.toChars(context));
 			}
 
 			if (key != null && (key.storage_class & STCout) != 0)
@@ -305,23 +308,26 @@ public class ForeachStatement extends Statement {
 		case Tstruct:
 		case Tdelegate:
 			// Lapply: 
-			{
-				Statement[] pointer_s = { null };
-				semantic_Lapply(sc, context, dim, pointer_s, tab, taa, tn, tnv, i);
-				s = pointer_s[0];
-				break;
-			}
+		{
+			Statement[] pointer_s = { null };
+			semantic_Lapply(sc, context, dim, pointer_s, tab, taa, tn, tnv, i);
+			s = pointer_s[0];
+			break;
+		}
 
 		default:
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAggregateType, 0, sourceAggr.start, sourceAggr.length, new String[] { aggr.type.toString() }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.NotAnAggregateType, 0, sourceAggr.start,
+					sourceAggr.length, new String[] { aggr.type.toString() }));
 			break;
 		}
 		sc.noctor--;
 		sc.pop();
 		return s;
 	}
-	
-	private void semantic_Lapply(Scope sc, SemanticContext context, int dim, Statement[] s, Type tab, TypeAArray taa, Type tn, Type tnv, int i) {
+
+	private void semantic_Lapply(Scope sc, SemanticContext context, int dim,
+			Statement[] s, Type tab, TypeAArray taa, Type tn, Type tnv, int i) {
 		FuncDeclaration fdapply;
 		List<Argument> args;
 		Expression ec;
@@ -336,8 +342,7 @@ public class ForeachStatement extends Statement {
 		tret = func.type.next;
 
 		// Need a variable to hold value from any return statements in body.
-		if (sc.func.vresult == null && tret != null
-				&& tret != Type.tvoid) {
+		if (sc.func.vresult == null && tret != null && tret != Type.tvoid) {
 			VarDeclaration v;
 
 			v = new VarDeclaration(loc, tret, Id.result, null);
@@ -365,8 +370,8 @@ public class ForeachStatement extends Statement {
 				// a reference.
 				VarDeclaration v;
 				Initializer ie;
-				id = new IdentifierExp(loc, new Identifier(("__applyArg" + i).toCharArray(),
-						TOKidentifier));
+				id = new IdentifierExp(loc, new Identifier(("__applyArg" + i)
+						.toCharArray(), TOKidentifier));
 
 				ie = new ExpInitializer(loc, id);
 				v = new VarDeclaration(loc, arg.type, arg.ident, ie);
@@ -389,8 +394,8 @@ public class ForeachStatement extends Statement {
 
 			if (gs.label.statement == null) { // 'Promote' it to this scope, and replace with a return
 				cases.add(gs);
-				s[0] = new ReturnStatement(loc, 
-						new IntegerExp(loc, cases.size() + 1));
+				s[0] = new ReturnStatement(loc, new IntegerExp(loc, cases
+						.size() + 1));
 				cs.statements.set(0, s[0]);
 			}
 		}
@@ -402,13 +407,13 @@ public class ForeachStatement extends Statement {
 				if ((arg.storageClass & STCref) != 0)
 					error("foreach: index cannot be inout");
 				if (!arg.type.equals(taa.index))
-					error("foreach: index must be type %s, not %s",
-							taa.index.toChars(), arg.type.toChars());
+					error("foreach: index must be type %s, not %s", taa.index
+							.toChars(context), arg.type.toChars(context));
 				arg = (Argument) arguments.get(1);
 			}
 			if (!arg.type.equals(taa.next))
-				error("foreach: value must be type %s, not %s",
-						taa.next.toChars(), arg.type.toChars());
+				error("foreach: value must be type %s, not %s", taa.next
+						.toChars(context), arg.type.toChars(context));
 
 			/*
 			 * Call: _aaApply(aggr, keysize, flde)
@@ -420,7 +425,7 @@ public class ForeachStatement extends Statement {
 			ec = new VarExp(loc, fdapply);
 			List<Expression> exps = new ArrayList<Expression>();
 			exps.add(aggr);
-			int keysize = taa.key.size(loc);
+			int keysize = taa.key.size(loc, context);
 			keysize = (keysize + 3) & ~3;
 			exps.add(new IntegerExp(loc, keysize, Type.tint32));
 			exps.add(flde);
@@ -482,22 +487,21 @@ public class ForeachStatement extends Statement {
 			e = new CallExp(loc, aggr, exps);
 			e = e.semantic(sc, context);
 			if (e.type != Type.tint32)
-				error("opApply() function for %s must return an int",
-						tab.toChars());
+				error("opApply() function for %s must return an int", tab
+						.toChars(context));
 		} else {
 			/*
 			 * Call: aggr.apply(flde)
 			 */
-			ec = new DotIdExp(loc, aggr, new IdentifierExp(loc, 
-					(op == TOKforeach_reverse) ? Id.applyReverse
-							: Id.apply));
+			ec = new DotIdExp(loc, aggr, new IdentifierExp(loc,
+					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply));
 			List<Expression> exps = new ArrayList<Expression>();
 			exps.add(flde);
 			e = new CallExp(loc, ec, exps);
 			e = e.semantic(sc, context);
 			if (e.type != Type.tint32)
-				error("opApply() function for %s must return an int",
-						tab.toChars());
+				error("opApply() function for %s must return an int", tab
+						.toChars(context));
 		}
 
 		if (cases.size() == 0)
@@ -524,10 +528,40 @@ public class ForeachStatement extends Statement {
 			s[0] = s[0].semantic(sc, context);
 		}
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return FOREACH_STATEMENT;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring(op.toString());
+		buf.writestring(" (");
+		for (int i = 0; i < arguments.size(); i++) {
+			Argument a = (Argument) arguments.get(i);
+			if (i != 0)
+				buf.writestring(", ");
+			if ((a.storageClass & STCref) != 0)
+				buf
+						.writestring((context.global.params.Dversion == 1) ? "inout "
+								: "ref ");
+			if (a.type != null)
+				a.type.toCBuffer(buf, a.ident, hgs, context);
+			else
+				buf.writestring(a.ident.toChars(context));
+		}
+		buf.writestring("; ");
+		aggr.toCBuffer(buf, hgs, context);
+		buf.writebyte(')');
+		buf.writenl();
+		buf.writebyte('{');
+		buf.writenl();
+		if (body != null)
+			body.toCBuffer(buf, hgs, context);
+		buf.writebyte('}');
+		buf.writenl();
 	}
 
 }

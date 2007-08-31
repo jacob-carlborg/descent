@@ -75,7 +75,7 @@ public class DotVarExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 	    buf.writeByte('.');
-	    buf.writestring(var.toChars());
+	    buf.writestring(var.toChars(context));
 	}
 
 	@Override
@@ -94,11 +94,11 @@ public class DotVarExp extends UnaExp {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						error("%s is not an expression", o.toChars());
+						error("%s is not an expression", o.toChars(context));
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
-							error("%s is not a member", e.toChars());
+							error("%s is not a member", e.toChars(context));
 						} else {
 							DsymbolExp ve = (DsymbolExp) e;
 
@@ -166,7 +166,7 @@ public class DotVarExp extends UnaExp {
 							}
 							error(
 									"this for %s needs to be type %s not type %s",
-									var.toChars(), ad.toChars(), t.toChars());
+									var.toChars(context), ad.toChars(context), t.toChars(context));
 						}
 					}
 				}

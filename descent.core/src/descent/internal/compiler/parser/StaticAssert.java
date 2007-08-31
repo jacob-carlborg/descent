@@ -57,7 +57,7 @@ public class StaticAssert extends Dsymbol {
 			 * TODO semantic if (!global.gag) fatal();
 			 */
 		} else if (!e.isBool(true)) {
-			error("(%s) is not evaluatable at compile time", exp.toChars());
+			error("(%s) is not evaluatable at compile time", exp.toChars(context));
 		}
 	}
 	

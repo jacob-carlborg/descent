@@ -6,20 +6,20 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ModuleDeclaration extends ASTDmdNode {
-	
+
 	public IdentifierExp id;
 	public List<IdentifierExp> packages;
-	
+
 	public ModuleDeclaration(List<IdentifierExp> packages, IdentifierExp id) {
 		this.packages = packages;
 		this.id = id;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return MODULE_DECLARATION;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -28,19 +28,19 @@ public class ModuleDeclaration extends ASTDmdNode {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("module ");
-		if(packages != null)
-			for(IdentifierExp pack : packages) {
-				sb.append(pack);
-				sb.append('.');
+	public String toChars(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		if (packages != null && packages.size() > 0) {
+			for (int i = 0; i < packages.size(); i++) {
+				IdentifierExp pid = packages.get(i);
+				buf.writestring(pid.toChars(context));
+				buf.writeByte('.');
 			}
-		sb.append(id);
-		sb.append(';');
-		return sb.toString();
+		}
+		buf.writestring(id.toChars(context));
+		return buf.extractData();
 	}
-	
+
 }

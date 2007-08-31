@@ -941,9 +941,9 @@ public class Parser extends Lexer {
 			c = new DebugCondition(1, null);
 		}
 		if (id == null && idTokenStart != -1) {
-			c.id = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
-			c.id.startPosition = idTokenStart;
-			c.id.length = idTokenLength;
+			c.ident = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
+			c.ident.startPosition = idTokenStart;
+			c.ident.length = idTokenLength;
 		}
 		return c;
 	}
@@ -974,9 +974,9 @@ public class Parser extends Lexer {
 		}
 		c = new VersionCondition(level, id);
 		if (id == null && idTokenStart != -1) {
-			c.id = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
-			c.id.startPosition = idTokenStart;
-			c.id.length = idTokenLength;
+			c.ident = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
+			c.ident.startPosition = idTokenStart;
+			c.ident.length = idTokenLength;
 		}
 		return c;
 	}

@@ -47,7 +47,7 @@ public class WithStatement extends Statement {
 
 			sym = es.type.toDsymbol(sc, context).isScopeDsymbol();
 			if (sym == null) {
-				error("%s has no members", es.toChars());
+				error("%s has no members", es.toChars(context));
 				body = body.semantic(sc, context);
 				return this;
 			}
@@ -74,7 +74,7 @@ public class WithStatement extends Statement {
 				sym.parent = sc.scopesym;
 			} else {
 				error("with expressions must be class objects, not '%s'",
-						exp.type.toChars());
+						exp.type.toChars(context));
 				return null;
 			}
 		}

@@ -186,7 +186,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
 						error("inherits from duplicate interface %s", b2.base
-								.toChars());
+								.toChars(context));
 					}
 				}
 

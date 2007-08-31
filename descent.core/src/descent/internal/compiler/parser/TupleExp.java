@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
 import java.util.List;
+import static descent.internal.compiler.parser.DYNCAST.*;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -14,7 +16,32 @@ public class TupleExp extends Expression {
 		this.exps = exps;
 		this.type = null;
 	}
-	
+
+	public TupleExp(Loc loc, TupleDeclaration tup, SemanticContext context) {
+		super(loc, TOK.TOKtuple);
+		exps = new ArrayList<Expression>(tup.objects.size());
+		type = null;
+
+		for (int i = 0; i < tup.objects.size(); i++) {
+			ASTDmdNode o = (ASTDmdNode) tup.objects.get(i);
+			if (o.dyncast() == DYNCAST_EXPRESSION) {
+				Expression e = (Expression) o;
+				e = e.syntaxCopy();
+				exps.add(e);
+			} else if (o.dyncast() == DYNCAST_DSYMBOL) {
+				Dsymbol s = (Dsymbol) o;
+				Expression e = new DsymbolExp(loc, s);
+				exps.add(e);
+			} else if (o.dyncast() == DYNCAST_TYPE) {
+				Type t = (Type) o;
+				Expression e = new TypeExp(loc, t);
+				exps.add(e);
+			} else {
+				error("%s is not an expression", o.toChars(context));
+			}
+		}
+	}
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -22,7 +49,6 @@ public class TupleExp extends Expression {
 		}
 		visitor.endVisit(this);
 	}
-
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
@@ -101,7 +127,7 @@ public class TupleExp extends Expression {
 
 			e = e.semantic(sc, context);
 			if (e.type == null) {
-				error("%s has no value", e.toChars());
+				error("%s has no value", e.toChars(context));
 				e.type = Type.terror;
 			}
 			exps.set(i, e);

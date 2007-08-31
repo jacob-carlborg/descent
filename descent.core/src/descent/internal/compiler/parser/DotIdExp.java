@@ -111,7 +111,7 @@ public class DotIdExp extends UnaExp {
 				VarDeclaration v = s.isVarDeclaration();
 				if (v != null) {
 					if (v.inuse != 0) {
-						error("circular reference to '%s'", v.toChars());
+						error("circular reference to '%s'", v.toChars(context));
 						type = Type.tint32;
 						return this;
 					}
@@ -194,7 +194,7 @@ public class DotIdExp extends UnaExp {
 				// BUG: handle other cases like in IdentifierExp.semantic()
 				Assert.isTrue(false);
 			}
-			error("undefined identifier %s", toChars());
+			error("undefined identifier %s", toChars(context));
 			type = Type.tvoid;
 			return this;
 		} else if (e1.type.ty == Tpointer && !CharOperation.equals(ident.ident, Id.init)
@@ -215,7 +215,7 @@ public class DotIdExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 	    buf.writeByte('.');
-	    buf.writestring(ident.toChars());
+	    buf.writestring(ident.toChars(context));
 	}
 
 }

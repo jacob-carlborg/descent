@@ -57,11 +57,17 @@ public class StringExp extends Expression {
 	}
 
 	@Override
-	public String toChars() {
+	public String toChars(SemanticContext context) {
 		OutBuffer out = new OutBuffer();
 		HdrGenState hdr = new HdrGenState();
-		toCBuffer(out, hdr, null);
+		toCBuffer(out, hdr, context);
 		return out.toChars();
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		// TODO semantic
+		super.toCBuffer(buf, hgs, context);
 	}
 
 	public StringExp toUTF8(Scope sc, SemanticContext context) {

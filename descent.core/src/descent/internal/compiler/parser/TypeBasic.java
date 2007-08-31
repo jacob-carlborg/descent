@@ -33,7 +33,7 @@ public class TypeBasic extends Type {
 		toDecoBuffer(out);
 		deco = out.extractData();
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
@@ -99,13 +99,13 @@ public class TypeBasic extends Type {
 
 			// If converting to integral
 			/* TODO semantic
-			if (false && context.global.params.Dversion > 1 && tob.flags & TFLAGSintegral) {
-				d_uns64 sz = size(0);
-				d_uns64 tosz = tob.size(0);
+			 if (false && context.global.params.Dversion > 1 && tob.flags & TFLAGSintegral) {
+			 d_uns64 sz = size(0);
+			 d_uns64 tosz = tob.size(0);
 
-				if (sz > tosz)
-					return MATCHnomatch;
-			}
+			 if (sz > tosz)
+			 return MATCHnomatch;
+			 }
 			 */
 		} else if ((ty.flags & TFLAGSfloating) != 0) {
 			// Disallow implicit conversion of floating point to integer
@@ -115,12 +115,13 @@ public class TypeBasic extends Type {
 			Assert.isTrue((tob.ty.flags & TFLAGSfloating) != 0);
 
 			// Disallow implicit conversion from complex to non-complex
-			if ((ty.flags & TFLAGScomplex) != 0 && (tob.ty.flags & TFLAGScomplex) == 0)
+			if ((ty.flags & TFLAGScomplex) != 0
+					&& (tob.ty.flags & TFLAGScomplex) == 0)
 				return MATCHnomatch;
 
 			// Disallow implicit conversion of real or imaginary to complex
-			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != 0 && (tob.ty.flags
-					& TFLAGScomplex) != 0)
+			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != 0
+					&& (tob.ty.flags & TFLAGScomplex) != 0)
 				return MATCHnomatch;
 
 			// Disallow implicit conversion to-from real and imaginary
@@ -129,7 +130,7 @@ public class TypeBasic extends Type {
 		}
 		return MATCHconvert;
 	}
-	
+
 	@Override
 	public boolean isbit() {
 		return ty == Tbit;
@@ -173,6 +174,21 @@ public class TypeBasic extends Type {
 	@Override
 	public String toString() {
 		return ty.name;
+	}
+
+	@Override
+	public String toChars(SemanticContext context) {
+		return toString();
+	}
+
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		buf.prependstring(this.toString());
+		if (ident != null) {
+			buf.writeByte(' ');
+			buf.writestring(ident.toChars(context));
+		}
 	}
 
 }

@@ -105,8 +105,8 @@ public class CatExp extends BinExp {
 					start,
 					length,
 					new String[] {
-						e1.type.toChars(),
-						e2.type.toChars(),
+						e1.type.toChars(context),
+						e2.type.toChars(context),
 					}));
 		    type = Type.tint32;
 		    e = this;

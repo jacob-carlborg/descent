@@ -40,7 +40,7 @@ public class CatAssignExp extends BinExp {
 	    	SliceExp se = (SliceExp) e1;
 
 	    	if (se.e1.type.toBasetype(context).ty == TY.Tsarray)
-	    		error("cannot append to static array %s", se.e1.type.toChars());
+	    		error("cannot append to static array %s", se.e1.type.toChars(context));
 	    }
 
 	    e1 = e1.modifiableLvalue(sc, null, context);
@@ -70,7 +70,7 @@ public class CatAssignExp extends BinExp {
 	    
 	    else
 	    {
-			error("cannot append type %s to type %s", tb2.toChars(), tb1.toChars());
+			error("cannot append type %s to type %s", tb2.toChars(context), tb1.toChars(context));
 			type = Type.tint32;
 			e = this;
 	    }

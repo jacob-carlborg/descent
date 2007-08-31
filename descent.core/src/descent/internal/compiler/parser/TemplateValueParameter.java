@@ -43,7 +43,7 @@ public class TemplateValueParameter extends TemplateParameter {
 				&& valType.ty != TY.Tident)
 			error(
 					"arithmetic/string type expected for value-parameter, not %s",
-					valType.toChars());
+					valType.toChars(context));
 
 		if (specValue != null) {
 			Expression e = specValue;

@@ -105,7 +105,7 @@ public class BaseClass extends ASTDmdNode {
 				if (newinstance != 0 && fd.toParent() != cd
 						&& ifd.toParent() == base) {
 					cd.error("interface function %s.%s is not implemented", id
-							.toChars(), ifd.ident.toChars());
+							.toChars(context), ifd.ident.toChars(context));
 				}
 
 				if (fd.toParent() == cd) {
@@ -115,7 +115,7 @@ public class BaseClass extends ASTDmdNode {
 				// BUG: should mark this class as abstract?
 				if (!cd.isAbstract()) {
 					cd.error("interface function %s.%s isn't implemented", id
-							.toChars(), ifd.ident.toChars());
+							.toChars(context), ifd.ident.toChars(context));
 				}
 				fd = null;
 			}

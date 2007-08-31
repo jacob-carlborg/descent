@@ -64,12 +64,12 @@ public class FuncExp extends Expression {
 	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		buf.writestring(fd.toChars());
+		buf.writestring(fd.toChars(context));
 	}
 
 	@Override
-	public String toChars() {
-		return fd.toChars();
+	public String toChars(SemanticContext context) {
+		return fd.toChars(context);
 	}
 
 }

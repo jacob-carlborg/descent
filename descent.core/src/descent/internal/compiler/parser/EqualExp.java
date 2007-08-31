@@ -82,7 +82,7 @@ public class EqualExp extends BinExp {
 	    	(t2.ty == TY.Tarray || t2.ty == TY.Tsarray))
 	    {
 	    	if (!t1.next.equals(t2.next))
-	    		error("array comparison type mismatch, %s vs %s", t1.next.toChars(), t2.next.toChars());
+	    		error("array comparison type mismatch, %s vs %s", t1.next.toChars(context), t2.next.toChars(context));
 	    }
 	    
 	    else

@@ -36,7 +36,7 @@ public class DotTypeExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 	    buf.writeByte('.');
-	    buf.writestring(sym.toChars());
+	    buf.writestring(sym.toChars(context));
 	}
 
 }

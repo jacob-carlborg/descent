@@ -30,7 +30,7 @@ public class DotTemplateExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 	    buf.writeByte('.');
-	    buf.writestring(td.toChars());
+	    buf.writestring(td.toChars(context));
 	}
 
 }

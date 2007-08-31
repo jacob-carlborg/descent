@@ -35,10 +35,10 @@ public class VarExp extends Expression {
 			// if reference type
 			if (tb.ty == Tarray || tb.ty == Tsarray || tb.ty == Tclass) {
 				if ((v.isAuto() || v.isScope()) && !v.noauto) {
-					error("escaping reference to auto local %s", v.toChars());
+					error("escaping reference to auto local %s", v.toChars(context));
 				} else if ((v.storage_class & STCvariadic) != 0) {
 					error("escaping reference to variadic parameter %s", v
-							.toChars());
+							.toChars(context));
 				}
 			}
 		}
@@ -70,15 +70,15 @@ public class VarExp extends Expression {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		if (sc.incontract != 0 && var.isParameter()) {
-			error("cannot modify parameter '%s' in contract", var.toChars());
+			error("cannot modify parameter '%s' in contract", var.toChars(context));
 		}
 
 		if (type != null && type.toBasetype(context).ty == Tsarray) {
-			error("cannot change reference to static array '%s'", var.toChars());
+			error("cannot change reference to static array '%s'", var.toChars(context));
 		}
 
 		if (var.isConst()) {
-			error("cannot modify const variable '%s'", var.toChars());
+			error("cannot modify const variable '%s'", var.toChars(context));
 		}
 
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
@@ -138,12 +138,12 @@ public class VarExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.writestring(var.toChars());
+		buf.writestring(var.toChars(context));
 	}
 
 	@Override
-	public String toChars() {
-		return var.toChars();
+	public String toChars(SemanticContext context) {
+		return var.toChars(context);
 	}
 
 	@Override

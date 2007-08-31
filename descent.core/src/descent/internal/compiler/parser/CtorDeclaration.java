@@ -97,5 +97,10 @@ public class CtorDeclaration extends FuncDeclaration {
 	public int getNodeType() {
 		return CTOR_DECLARATION;
 	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		return "this";
+	}
 
 }

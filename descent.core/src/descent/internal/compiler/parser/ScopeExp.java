@@ -84,7 +84,7 @@ public class ScopeExp extends Expression {
 		} else {
 			buf.writestring(sds.kind());
 			buf.writestring(" ");
-			buf.writestring(sds.toChars());
+			buf.writestring(sds.toChars(context));
 		}
 	}
 

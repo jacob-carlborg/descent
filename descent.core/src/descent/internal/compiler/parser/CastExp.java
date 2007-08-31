@@ -50,7 +50,7 @@ public class CastExp extends UnaExp {
 			VarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null) {
 				if (!v.isDataseg(context)) {
-					error("escaping reference to local %s", v.toChars());
+					error("escaping reference to local %s", v.toChars(context));
 				}
 			}
 		}
@@ -117,7 +117,7 @@ public class CastExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring("cast(");
-		to.toCBuffer(buf, null, hgs);
+		to.toCBuffer(buf, null, hgs, context);
 		buf.writeByte(')');
 		expToCBuffer(buf, hgs, e1, op.precedence, context);
 	}
@@ -167,7 +167,7 @@ public class CastExp extends UnaExp {
 
 		if (e1.isConst()) {
 			if (e1.op == TOKsymoff) {
-				if (type.size() == e1.type.size()
+				if (type.size(context) == e1.type.size(context)
 						&& type.toBasetype(context).ty != Tsarray) {
 					e1.type = type;
 					return e1;

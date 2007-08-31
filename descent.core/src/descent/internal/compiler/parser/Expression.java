@@ -64,7 +64,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			// Do (type *) cast of (type [dim])
 			else if (tb.ty == Tpointer && type.ty == Tsarray) {
 
-				if (type.size(loc) == 0) {
+				if (type.size(loc, context) == 0) {
 					e = new NullExp(loc);
 				} else {
 					e = new AddrExp(loc, e);
@@ -79,7 +79,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkArithmetic(SemanticContext context) {
 		if (!type.isintegral() && !type.isfloating()) {
-			error("'%s' is not an arithmetic type", toChars());
+			error("'%s' is not an arithmetic type", toChars(context));
 		}
 	}
 
@@ -92,8 +92,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkIntegral(SemanticContext context) {
 		if (!type.isintegral()) {
-			error("'%s' is not of integral type, it is a %s", toChars(), type
-					.toChars());
+			error("'%s' is not of integral type, it is a %s", toChars(context), type
+					.toChars(context));
 			return new IntegerExp(loc, 0);
 		}
 		return this;
@@ -101,20 +101,20 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkNoBool(SemanticContext context) {
 		if (type.toBasetype(context).ty == Tbool) {
-			error("operation not allowed on bool '%s'", toChars());
+			error("operation not allowed on bool '%s'", toChars(context));
 		}
 	}
 
 	public void checkScalar(SemanticContext context) {
 		if (!type.isscalar()) {
-			error("'%s' is not a scalar, it is a %s", toChars(), type.toChars());
+			error("'%s' is not a scalar, it is a %s", toChars(context), type.toChars(context));
 		}
 	}
 
 	public int checkSideEffect(int flag, SemanticContext context) {
 		if (flag == 0) {
 			error("%s has no effect in expression (%s)", op.toString(),
-					toChars());
+					toChars(context));
 		}
 		return 0;
 	}
@@ -122,7 +122,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Expression checkToBoolean(SemanticContext context) {
 		if (type.checkBoolean(context)) {
 			error("expression %s of type %s does not have a boolean value",
-					toChars(), type.toChars());
+					toChars(context), type.toChars(context));
 		}
 		return this;
 	}
@@ -137,7 +137,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		tb = type.toBasetype(context);
 		if (tb.ty == Tsarray) {
 			TypeSArray ts = (TypeSArray) tb;
-			if (ts.size(loc) == 0) {
+			if (ts.size(loc, context) == 0) {
 				e = new NullExp(loc);
 			} else {
 				e = new AddrExp(loc, this);
@@ -200,7 +200,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 				 */
 				error(
 						"implicit conversion of expression (%s) of type %s to %s can cause loss of data",
-						toChars(), type.toChars(), t.toChars());
+						toChars(context), type.toChars(context), t.toChars(context));
 			}
 			return castTo(sc, t, context);
 		}
@@ -216,9 +216,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		 * void delegate(E) EDG; } Should eventually
 		 * make it work.
 		 */
-			error("forward reference to type %s", t.toChars());
+			error("forward reference to type %s", t.toChars(context));
 		} else if (t.reliesOnTident() != null) {
-			error("forward reference to type %s", t.reliesOnTident().toChars());
+			error("forward reference to type %s", t.reliesOnTident().toChars(context));
 		}
 
 		context.acceptProblem(Problem.newSemanticTypeError(
@@ -230,7 +230,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		if (type == null) {
-			error("%s is not an expression", toChars());
+			error("%s is not an expression", toChars(context));
 			type = Type.terror;
 		}
 		if (t.ty == Tbit && isBit()) {
@@ -294,7 +294,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void rvalue(SemanticContext context) {
 		if (type != null && type.toBasetype(context).ty == Tvoid) {
-			error("expression %s is void and has no value", toChars());
+			error("expression %s is void and has no value", toChars(context));
 		}
 	}
 
@@ -317,19 +317,16 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	@Override
-	public String toChars() {
-		OutBuffer buf;
+	public String toChars(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
 		HdrGenState hgs = new HdrGenState();
-
-		buf = new OutBuffer();
-		// TODO check this null
-		toCBuffer(buf, hgs, null);
+		toCBuffer(buf, hgs, context);
 		return buf.toChars();
 	}
 
 	public Complex toComplex(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
-				toChars());
+				toChars(context));
 		return Complex.ZERO;
 	}
 
@@ -340,7 +337,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Real toImaginary(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
-				toChars());
+				toChars(context));
 		return Real.ZERO;
 	}
 
@@ -356,17 +353,17 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		} else if (loc.filename == null) {
 			loc = e.loc;
 		}
-		error("%s is not an lvalue", e.toChars());
+		error("%s is not an lvalue", e.toChars(context));
 		return this;
 	}
 
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
-		error("expression %s is not a valid template value argument", toChars());
+		error("expression %s is not a valid template value argument", toChars(context));
 	}
 
 	public Real toReal(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
-				toChars());
+				toChars(context));
 		return Real.ZERO;
 	}
 

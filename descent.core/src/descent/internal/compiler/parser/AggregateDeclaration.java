@@ -53,9 +53,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	/*******************************
 	 * Do access check for member of this class, this class being the
 	 * type of the 'this' pointer used to access smember.
+	 * @param context TODO
 	 */
 
-	public void accessCheck(Scope sc, Dsymbol smember) {
+	public void accessCheck(Scope sc, Dsymbol smember, SemanticContext context) {
 		boolean result;
 
 		FuncDeclaration f = sc.func;
@@ -85,7 +86,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			result = accessCheckX(smember, f, this, cdscope);
 		}
 		if (!result) {
-			error("member %s is not accessible", smember.toChars());
+			error("member %s is not accessible", smember.toChars(context));
 		}
 	}
 
@@ -163,9 +164,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			return;
 		}
 
-		memsize = v.type.size(loc);
-		memalignsize = v.type.alignsize();
-		xalign = v.type.memalign(sc.structalign);
+		memsize = v.type.size(loc, context);
+		memalignsize = v.type.alignsize(context);
+		xalign = v.type.memalign(sc.structalign, context);
 
 		int[] sc_offset_pointer = { sc.offset };
 		alignmember(xalign, memalignsize, sc_offset_pointer);

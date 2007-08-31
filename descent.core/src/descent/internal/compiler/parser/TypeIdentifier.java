@@ -13,7 +13,7 @@ public class TypeIdentifier extends TypeQualified {
 		super(loc, TY.Tident);
 		this.ident = ident;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -21,24 +21,25 @@ public class TypeIdentifier extends TypeQualified {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	public TypeIdentifier(Loc loc, char[] ident) {
 		this(loc, new IdentifierExp(loc, ident));
 	}
-	
+
 	@Override
 	public Expression toExpression() {
 		Expression e = new IdentifierExp(loc, ident.ident);
 		e.setSourceRange(ident.start, ident.length);
 		if (idents != null) {
-			for(IdentifierExp id : idents) {
+			for (IdentifierExp id : idents) {
 				e = new DotIdExp(loc, e, id);
-				e.setSourceRange(ident.start, id.start + id.length - ident.start);
+				e.setSourceRange(ident.start, id.start + id.length
+						- ident.start);
 			}
 		}
 		return e;
 	}
-	
+
 	@Override
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		Type[] t = { null };
@@ -65,15 +66,17 @@ public class TypeIdentifier extends TypeQualified {
 				// TODO semantic remove the following if but leave the body
 				if (!CharOperation.equals(s[0].ident.ident, Id.Object)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.UsedAsAType, 0,
-							s[0].ident.start, s[0].ident.length, new String[] { new String(s[0].ident.ident) }));
+							IProblem.UsedAsAType, 0, s[0].ident.start,
+							s[0].ident.length, new String[] { new String(
+									s[0].ident.ident) }));
 				}
 			} else {
 				// TODO semantic remove the following if but leave the body
 				if (!CharOperation.equals(ident.ident, Id.Object)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.UsedAsAType, 0,
-							this.ident.start, this.ident.length, new String[] { new String(this.ident.ident) }));
+							IProblem.UsedAsAType, 0, this.ident.start,
+							this.ident.length, new String[] { new String(
+									this.ident.ident) }));
 				}
 			}
 			// TODO see if this change is ok, I change it to error to get
@@ -83,7 +86,7 @@ public class TypeIdentifier extends TypeQualified {
 		}
 		return t[0];
 	}
-	
+
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		Dsymbol s;
@@ -105,13 +108,15 @@ public class TypeIdentifier extends TypeQualified {
 						id = (IdentifierExp) ti.idents.get(0);
 						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
-							error("template identifier %s is not a member of %s", id.toChars(), s.toChars());
+							error(
+									"template identifier %s is not a member of %s",
+									id.toChars(context), s.toChars(context));
 							break;
 						}
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							error("%s is not a template", id.toChars());
+							error("%s is not a template", id.toChars(context));
 							break;
 						}
 						ti.tempdecl = td;
@@ -132,17 +137,18 @@ public class TypeIdentifier extends TypeQualified {
 		}
 		return s;
 	}
-	
-	@Override
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
-		Dsymbol s;
-	    Dsymbol[] scopesym = { null };
 
-	    //printf("TypeIdentifier::resolve(sc = %p, idents = '%s')\n", sc, toChars());
-	    s = sc.search(loc, ident, scopesym, context);
-	    resolveHelper(sc, s, scopesym[0], pe, pt, ps, context);
+	@Override
+	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+			Dsymbol[] ps, SemanticContext context) {
+		Dsymbol s;
+		Dsymbol[] scopesym = { null };
+
+		//printf("TypeIdentifier::resolve(sc = %p, idents = '%s')\n", sc, toChars());
+		s = sc.search(loc, ident, scopesym, context);
+		resolveHelper(sc, s, scopesym[0], pe, pt, ps, context);
 	}
-	
+
 	@Override
 	public Type reliesOnTident() {
 		return this;
@@ -152,18 +158,33 @@ public class TypeIdentifier extends TypeQualified {
 	public int getNodeType() {
 		return TYPE_IDENTIFIER;
 	}
-	
+
 	@Override
 	public String toString() {
 		return ident.toString();
 	}
-	
+
 	@Override
 	public char[] toCharArray() {
 		if (idents == null || idents.isEmpty()) {
 			return ident.ident;
 		} else {
 			return super.toCharArray();
+		}
+	}
+
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		OutBuffer tmp = new OutBuffer();
+
+		tmp.writestring(this.ident.toChars(context));
+		// TODO semantic
+		// toCBuffer2Helper(tmp, null, hgs);
+		buf.prependstring(tmp.toChars());
+		if (ident != null) {
+			buf.writeByte(' ');
+			buf.writestring(ident.toChars(context));
 		}
 	}
 

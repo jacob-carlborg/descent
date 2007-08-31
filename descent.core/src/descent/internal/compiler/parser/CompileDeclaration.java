@@ -42,7 +42,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		exp = resolveProperties(sc, exp, context);
 		exp = exp.optimize(WANTvalue | WANTinterpret, context);
 		if (exp.op != TOKstring) {
-			error("argument to mixin must be a string, not (%s)", exp.toChars());
+			error("argument to mixin must be a string, not (%s)", exp.toChars(context));
 			return;
 		}
 		StringExp se = (StringExp) exp;
@@ -52,7 +52,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		p.loc = loc;
 		decl = p.parseDeclDefs(false);
 		if (p.token.value != TOKeof) {
-			error("incomplete mixin declaration (%s)", se.toChars());
+			error("incomplete mixin declaration (%s)", se.toChars(context));
 		}
 
 		super.addMember(sc, sd, 0, context);

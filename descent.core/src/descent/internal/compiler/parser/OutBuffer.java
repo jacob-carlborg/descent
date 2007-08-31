@@ -34,7 +34,15 @@ public class OutBuffer {
 		data.append("\n");
 	}
 	
+	public void writebyte(char c) {
+		data.append(c);
+	}
+	
 	public void writestring(String s) {
+		data.append(s);
+	}
+	
+	public void writestring(char[] s) {
 		data.append(s);
 	}
 	
@@ -101,6 +109,14 @@ public class OutBuffer {
 
 	public void writeUTF16(int i) {
 		// TODO semantic
+	}
+
+	public void prependstring(String string) {
+		data.insert(0, string);
+	}
+
+	public void prependbyte(char c) {
+		data.insert(0, c);
 	}
 
 }

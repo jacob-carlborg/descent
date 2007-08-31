@@ -71,10 +71,17 @@ public class RealExp extends Expression {
 		}
 		return this;
 	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		// TODO semantic
+		super.toCBuffer(buf, hgs, context);
+	}
 
 	@Override
-	public String toChars() {
-		return new String(str).intern();
+	public String toChars(SemanticContext context) {
+		// TODO semantic toChars
+		return super.toChars(context);
 	}
 
 	@Override

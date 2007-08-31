@@ -34,7 +34,7 @@ public class VoidInitializer extends Initializer {
 	}
 	
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring("void");
 	}
 	

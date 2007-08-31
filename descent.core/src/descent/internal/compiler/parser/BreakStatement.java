@@ -61,13 +61,13 @@ public class BreakStatement extends Statement {
 					Statement s = ls.statement;
 
 					if (!s.hasBreak())
-						error("label '%s' has no break", ident.toChars());
+						error("label '%s' has no break", ident.toChars(context));
 					if (ls.tf != sc.tf)
 						error("cannot break out of finally block");
 					return this;
 				}
 			}
-			error("enclosing label '%s' for break not found", ident.toChars());
+			error("enclosing label '%s' for break not found", ident.toChars(context));
 		} else if (sc.sbreak == null) {
 			if (sc.fes != null) {
 				Statement s;

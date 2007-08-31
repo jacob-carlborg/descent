@@ -355,7 +355,7 @@ public class TraitsExp extends Expression {
 			ScopeDsymbol sd = s.isScopeDsymbol();
 			if(null == sd)
 			{
-			    error("%s %s has no members", s.kind(), s.toChars());
+			    error("%s %s has no members", s.kind(), s.toChars(context));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			

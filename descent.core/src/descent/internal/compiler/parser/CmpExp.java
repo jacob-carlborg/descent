@@ -56,7 +56,7 @@ public class CmpExp extends BinExp {
 	    	(t2.ty == TY.Tarray || t2.ty == TY.Tsarray))
 	    {
     		if (!t1.next.equals(t2.next))
-    		    error("array comparison type mismatch, %s vs %s", t1.next.toChars(), t2.next.toChars());
+    		    error("array comparison type mismatch, %s vs %s", t1.next.toChars(context), t2.next.toChars(context));
 	    	e = this;
 	    }
 	    else if (t1.ty == TY.Tstruct || t2.ty == TY.Tstruct ||
@@ -64,10 +64,10 @@ public class CmpExp extends BinExp {
 	    {
 	    	if (t2.ty == TY.Tstruct)
 	    		error("need member function opCmp() for %s %s to compare", 
-	    				t2.toDsymbol(sc, context).kind(), t2.toChars());
+	    				t2.toDsymbol(sc, context).kind(), t2.toChars(context));
 	    	else
 	    		error("need member function opCmp() for %s %s to compare", 
-	    				t1.toDsymbol(sc, context).kind(), t1.toChars());
+	    				t1.toDsymbol(sc, context).kind(), t1.toChars(context));
 	    	e = this;
 	    }
 	    else if (t1.iscomplex() || t2.iscomplex())

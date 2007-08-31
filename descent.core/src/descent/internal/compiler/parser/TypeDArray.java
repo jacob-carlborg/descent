@@ -29,5 +29,11 @@ public class TypeDArray extends Type {
 	public int getNodeType() {
 		return TYPE_D_ARRAY;
 	}
+	
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+		// TODO semantic this shouldn't be here... see what's going on with Type::toChars()
+		
+	}
 
 }

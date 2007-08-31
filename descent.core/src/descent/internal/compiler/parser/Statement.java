@@ -57,5 +57,19 @@ public abstract class Statement extends ASTDmdNode {
 	public boolean hasContinue() {
 		return false;
 	}
+	
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context)
+	{
+	    buf.printf("Statement::toCBuffer()");
+	    buf.writenl();
+	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		HdrGenState hgs = new HdrGenState();
+		toCBuffer(buf, hgs, context);
+		return buf.toChars();
+	}
 
 }

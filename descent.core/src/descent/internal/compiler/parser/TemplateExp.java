@@ -24,12 +24,12 @@ public class TemplateExp extends Expression {
     
     @Override
     public void rvalue(SemanticContext context) {
-    	 error("template %s has no value", toChars());
+    	 error("template %s has no value", toChars(context));
     }
 
 	@Override
     public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-    	 buf.writestring(td.toChars());
+    	 buf.writestring(td.toChars(context));
     }
 
 }

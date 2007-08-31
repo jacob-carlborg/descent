@@ -32,7 +32,7 @@ public class TypeExp extends Expression {
 	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		type.toCBuffer(buf, null, hgs);
+		type.toCBuffer(buf, null, hgs, context);
 	}
 
 }

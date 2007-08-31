@@ -18,14 +18,14 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return b;
 	}
 
-	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps) {
+	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps, SemanticContext context) {
 		Dsymbol s = null;
 
 		if (members != null) {
 			for (int i = 0; i < members.size(); i++) {
 				Dsymbol sx = members.get(i);
 
-				boolean x = sx.oneMember(ps);
+				boolean x = sx.oneMember(ps, context);
 				if (!x) {
 					Assert.isTrue(ps[0] == null);
 					return false;
@@ -62,7 +62,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 		this.parent = null;
 	}
 
-	public void addLocalClass(List<ClassDeclaration> aclasses) {
+	public void addLocalClass(List<ClassDeclaration> aclasses, SemanticContext context) {
 
 	}
 
@@ -94,7 +94,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return 0;
 	}
 
-	public void checkCtorConstInit() {
+	public void checkCtorConstInit(SemanticContext context) {
 
 	}
 
@@ -349,7 +349,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return false;
 	}
 
-	public boolean oneMember(Dsymbol[] ps) {
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		ps[0] = this;
 		return true;
 	}
@@ -391,8 +391,8 @@ public abstract class Dsymbol extends ASTDmdNode {
 
 	}
 
-	public int size() {
-		error("Dsymbol '%s' has no size\n", toChars());
+	public int size(SemanticContext context) {
+		error("Dsymbol '%s' has no size\n", toChars(context));
 		return 0;
 	}
 
@@ -405,12 +405,12 @@ public abstract class Dsymbol extends ASTDmdNode {
 	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		buf.writestring(toChars());
+		buf.writestring(toChars(context));
 	}
 
 	@Override
-	public String toChars() {
-		return ident != null ? ident.toChars() : "__anonymous";
+	public String toChars(SemanticContext context) {
+		return ident != null ? ident.toChars(context) : "__anonymous";
 	}
 
 	public Dsymbol toParent() {
@@ -426,9 +426,9 @@ public abstract class Dsymbol extends ASTDmdNode {
 	}
 
 	@Override
-	public String toPrettyChars() {
+	public String toPrettyChars(SemanticContext context) {
 		// TODO semantic
-		return toChars();
+		return toChars(context);
 	}
 
 }

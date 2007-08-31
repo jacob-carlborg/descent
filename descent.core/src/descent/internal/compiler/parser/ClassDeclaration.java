@@ -40,16 +40,16 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public PROT protection;
 	public boolean isnested; // !=0 if is nested
 	public VarDeclaration vthis; // 'this' parameter if this class is nested
-	public boolean com; // !=0 if this is a COM class
+	
+	public ClassInfoDeclaration vclassinfo;	// the ClassInfo object for this ClassDeclaration
+    public boolean com;				// !=0 if this is a COM class
+    public boolean isauto;				// !=0 if this is an auto class
+    public boolean isabstract;			// !=0 if abstract class
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 
 	public ClassDeclaration(Loc loc, char[] id) {
 		this(loc, id, null);
-	}
-	
-	public ClassDeclaration(Loc loc, Identifier id) {
-		this(loc, id.string, null);
 	}
 
 	public ClassDeclaration(Loc loc, char[] id, List<BaseClass> baseclasses) {
@@ -87,7 +87,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public void addLocalClass(List<ClassDeclaration> aclasses) {
+	public void addLocalClass(List<ClassDeclaration> aclasses, SemanticContext context) {
 		aclasses.add(this);
 	}
 
@@ -217,7 +217,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 */
 			if (cd.baseClass != null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
-				cd.error("base class is forward referenced by %s", toChars());
+				cd.error("base class is forward referenced by %s", toChars(context));
 			}
 
 			cd = cd.baseClass;
@@ -285,7 +285,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				if (b.base != null) {
 					if (b.base.symtab == null) {
 						error("base %s is forward referenced", b.base.ident
-								.toChars());
+								.toChars(context));
 					} else {
 						s = b.base.search(loc, ident, flags, context);
 						if (s == this) {
@@ -541,12 +541,12 @@ public class ClassDeclaration extends AggregateDeclaration {
 				isnested = true;
 				if ((storage_class & STC.STCstatic) != 0) {
 					error("static class cannot inherit from nested class %s",
-							baseClass.toChars());
+							baseClass.toChars(context));
 				}
 				if (toParent2() != baseClass.toParent2()) {
 					error("super class %s is nested within %s, not %s",
-							baseClass.toChars(), baseClass.toParent2()
-									.toChars(), toParent2().toChars());
+							baseClass.toChars(context), baseClass.toParent2()
+									.toChars(context), toParent2().toChars(context));
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
 				Dsymbol s = toParent2();
@@ -729,7 +729,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		if (!isAnonymous()) {
 			buf.printf(kind());
-			buf.writestring(toChars());
+			buf.writestring(toChars(context));
 			if (baseclasses.size() > 0) {
 				buf.writestring(" : ");
 			}
@@ -740,7 +740,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (i != 0) {
 				buf.writeByte(',');
 			}
-			b.type.toCBuffer(buf, null, hgs);
+			b.type.toCBuffer(buf, null, hgs, context);
 		}
 		buf.writenl();
 		buf.writeByte('{');

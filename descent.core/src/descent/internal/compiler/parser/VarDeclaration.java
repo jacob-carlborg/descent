@@ -108,7 +108,7 @@ public class VarDeclaration extends Declaration {
 	}
 
 	@Override
-	public void checkCtorConstInit() {
+	public void checkCtorConstInit(SemanticContext context) {
 		if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
 			error("missing initializer in static constructor for const variable");
 		}
@@ -353,7 +353,7 @@ public class VarDeclaration extends Declaration {
 				AggregateDeclaration ad = ti.tempdecl.isMember();
 				if (ad != null && storage_class != STC.STCundefined) {
 					error("cannot use template to add field to aggregate '%s'",
-							ad.toChars());
+							ad.toChars(context));
 				}
 			}
 		}
@@ -460,7 +460,7 @@ public class VarDeclaration extends Declaration {
 							}
 							if (t.next.toBasetype(context).ty == TY.Tbit) {
 								// t.size() gives size in bytes, convert to bits
-								dim *= t.size(loc) * 8;
+								dim *= t.size(loc, context) * 8;
 							} else {
 								dim *= ((TypeSArray) t).dim.toInteger(context)
 										.intValue();
@@ -574,13 +574,13 @@ public class VarDeclaration extends Declaration {
 			buf.writestring("static ");
 		}
 		if (type != null) {
-			type.toCBuffer(buf, ident, hgs);
+			type.toCBuffer(buf, ident, hgs, context);
 		} else {
-			buf.writestring(ident.toChars());
+			buf.writestring(ident.toChars(context));
 		}
 		if (init != null) {
 			buf.writestring(" = ");
-			init.toCBuffer(buf, hgs);
+			init.toCBuffer(buf, hgs, context);
 		}
 		buf.writeByte(';');
 		buf.writenl();

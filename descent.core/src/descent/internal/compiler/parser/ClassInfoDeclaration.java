@@ -5,6 +5,10 @@ import org.eclipse.core.runtime.Assert;
 public class ClassInfoDeclaration extends VarDeclaration {
 	
 	public ClassDeclaration cd;
+	
+	public ClassInfoDeclaration(ClassDeclaration cd, SemanticContext context) {
+		this(Loc.ZERO, cd, context);
+	}
 
 	public ClassInfoDeclaration(Loc loc, ClassDeclaration cd, SemanticContext context) {
 		super(loc, context.classinfo.type, cd.ident, null);

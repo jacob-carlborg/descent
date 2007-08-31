@@ -4,16 +4,16 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeTypeof extends TypeQualified {
-	
+
 	public Expression exp;
 	public int typeofStart;
 	public int typeofLength;
 
 	public TypeTypeof(Loc loc, Expression exp) {
 		super(loc, TY.Ttypeof);
-		this.exp = exp;		
+		this.exp = exp;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -21,15 +21,32 @@ public class TypeTypeof extends TypeQualified {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return TYPE_TYPEOF;
 	}
-	
+
 	public void setTypeofSourceRange(int start, int length) {
 		this.typeofStart = start;
 		this.typeofLength = length;
+	}
+
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		OutBuffer tmp = new OutBuffer();
+
+		tmp.writestring("typeof(");
+		exp.toCBuffer(tmp, hgs, context);
+		tmp.writeByte(')');
+		// TODO semantic
+		// toCBuffer2Helper(&tmp, NULL, hgs);
+		buf.prependstring(tmp.toChars());
+		if (ident != null) {
+			buf.writeByte(' ');
+			buf.writestring(ident.toChars(context));
+		}
 	}
 
 }

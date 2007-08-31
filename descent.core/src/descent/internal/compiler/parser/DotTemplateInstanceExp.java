@@ -74,8 +74,8 @@ public class DotTemplateInstanceExp extends UnaExp {
 					s = ((TypeStruct) t1).sym;
 				} else {
 					// goto L1;
-					error("template %s is not a member of %s", ti.toChars(), e1
-							.toChars());
+					error("template %s is not a member of %s", ti.toChars(context), e1
+							.toChars(context));
 					return new IntegerExp(loc, 0);
 				}
 			}
@@ -86,16 +86,16 @@ public class DotTemplateInstanceExp extends UnaExp {
 			t1 = t1.next.toBasetype(context);
 			if (t1.ty != Tstruct) {
 				// goto L1;
-				error("template %s is not a member of %s", ti.toChars(), e1
-						.toChars());
+				error("template %s is not a member of %s", ti.toChars(context), e1
+						.toChars(context));
 				return new IntegerExp(loc, 0);
 			}
 			s = t1.toDsymbol(sc, context);
 			eleft = e1;
 		} else {
 			// L1:
-			error("template %s is not a member of %s", ti.toChars(), e1
-					.toChars());
+			error("template %s is not a member of %s", ti.toChars(context), e1
+					.toChars(context));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

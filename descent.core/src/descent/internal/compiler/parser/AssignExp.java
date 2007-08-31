@@ -202,7 +202,7 @@ public class AssignExp extends BinExp {
 	    }
 	    else if (t1.ty == TY.Tsarray)
 	    {
-	    	error("cannot assign to static array %s", e1.toChars());
+	    	error("cannot assign to static array %s", e1.toChars(context));
 	    }
 	    else
 	    {

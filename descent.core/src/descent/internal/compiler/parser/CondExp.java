@@ -141,7 +141,7 @@ public class CondExp extends BinExp {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context)
 	{
-		error("conditional expression %s is not a modifiable lvalue", toChars());
+		error("conditional expression %s is not a modifiable lvalue", toChars(context));
 	    return this;
 	}
 

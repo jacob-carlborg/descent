@@ -59,7 +59,7 @@ public class PtrExp extends UnaExp {
 			break;
 
 		default:
-			error("can only * a pointer, not a '%s'", e1.type.toChars());
+			error("can only * a pointer, not a '%s'", e1.type.toChars(context));
 			type = Type.tint32;
 			break;
 		}

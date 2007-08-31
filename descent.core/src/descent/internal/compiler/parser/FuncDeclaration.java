@@ -170,7 +170,7 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		if (type.ty != Tfunction) {
-			error("%s must be a function", toChars());
+			error("%s must be a function", toChars(context));
 			return;
 		}
 		f = (TypeFunction) (type);
@@ -217,11 +217,11 @@ public class FuncDeclaration extends Declaration {
 					|| isUnitTestDeclaration() != null
 					|| isNewDeclaration() != null || isDelete()) {
 				error("special function not allowed in interface %s", id
-						.toChars());
+						.toChars(context));
 			}
 			if (fbody != null) {
 				error("function body is not abstract in interface %s", id
-						.toChars());
+						.toChars(context));
 			}
 		}
 
@@ -261,13 +261,13 @@ public class FuncDeclaration extends Declaration {
 						if (cov == 2) {
 							error(
 									"of type %s overrides but is not covariant with %s of type %s",
-									type.toChars(), fdv.toPrettyChars(),
-									fdv.type.toChars());
+									type.toChars(context), fdv.toPrettyChars(context),
+									fdv.type.toChars(context));
 						}
 						if (cov == 1) {
 							if (fdv.isFinal()) {
 								error("cannot override final function %s", fdv
-										.toPrettyChars());
+										.toPrettyChars(context));
 							}
 							if (fdv.toParent() == parent) {
 								// If both are mixins, then error.
@@ -376,8 +376,8 @@ public class FuncDeclaration extends Declaration {
 						if (cov == 2) {
 							error(
 									"of type %s overrides but is not covariant with %s of type %s",
-									type.toChars(), fdv.toPrettyChars(),
-									fdv.type.toChars());
+									type.toChars(context), fdv.toPrettyChars(context),
+									fdv.type.toChars(context));
 						}
 						if (cov == 1) {
 							Type ti = null;
@@ -400,7 +400,7 @@ public class FuncDeclaration extends Declaration {
 								if (tintro != null && !tintro.equals(ti)) {
 									error(
 											"incompatible covariant types %s and %s",
-											tintro.toChars(), ti.toChars());
+											tintro.toChars(context), ti.toChars(context));
 								}
 								tintro = ti;
 							}
@@ -449,7 +449,7 @@ public class FuncDeclaration extends Declaration {
 				if (cd2 != null) {
 					error(
 							"cannot use template to add virtual function to class '%s'",
-							cd2.toChars());
+							cd2.toChars(context));
 				}
 			}
 		}
@@ -711,8 +711,8 @@ public class FuncDeclaration extends Declaration {
 					v.storage_class |= arg.storageClass & (STCin | STCout | STCref | STClazy);
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
-						error("parameter %s.%s is already defined", toChars(),
-								v.toChars());
+						error("parameter %s.%s is already defined", toChars(context),
+								v.toChars(context));
 					} else {
 						parameters.add(v);
 					}
@@ -751,7 +751,7 @@ public class FuncDeclaration extends Declaration {
 						v.isexp = true;
 						if (sc2.insert(v) == null) {
 							error("parameter %s.%s is already defined",
-									toChars(), v.toChars());
+									toChars(context), v.toChars(context));
 						}
 						localsymtab.insert(v);
 						v.parent = this;
@@ -804,7 +804,7 @@ public class FuncDeclaration extends Declaration {
 					v.semantic(sc2, context);
 					sc2.incontract++;
 					if (sc2.insert(v) == null) {
-						error("out result %s is already defined", v.toChars());
+						error("out result %s is already defined", v.toChars(context));
 					}
 					v.parent = this;
 					vresult = v;
@@ -922,7 +922,7 @@ public class FuncDeclaration extends Declaration {
 					for (int i = 0; i < ad2.members.size(); i++) {
 						Dsymbol s = ad2.members.get(i);
 
-						s.checkCtorConstInit();
+						s.checkCtorConstInit(context);
 					}
 				}
 
@@ -936,7 +936,7 @@ public class FuncDeclaration extends Declaration {
 
 							if (!v.ctorinit && v.isCtorinit())
 								error("missing initializer for const field %s",
-										v.toChars());
+										v.toChars(context));
 						}
 					}
 
@@ -1055,7 +1055,7 @@ public class FuncDeclaration extends Declaration {
 								.get(parameters.size() - 1);
 					else
 						p = v_arguments; // last parameter is _arguments[]
-					offset = p.type.size(loc);
+					offset = p.type.size(loc, context);
 					offset = (offset + 3) & ~3; // assume stack aligns on 4
 					e = new SymOffExp(loc, p, offset, context);
 					e.synthetic = true;

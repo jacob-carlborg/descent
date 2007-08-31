@@ -33,12 +33,12 @@ public class Identifier {
 	}
 	
 	public String toChars() {
-		return toString();
+		return new String(string).intern();
 	}
 	
 	@Override
 	public String toString() {
-		return new String(string);
+		return toChars();
 	}
 	
 	@Override
