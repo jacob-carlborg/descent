@@ -74,6 +74,14 @@ public class IntegerWrapper extends Number {
 		}
 	}
 	
+	public int compareTo(int value) {
+		if (bigIntegerValue == null) {
+			return intValue > value ? 1 : (intValue < value ? -1 : 0);
+		} else {
+			return bigIntegerValue.compareTo(new BigInteger(String.valueOf(value)));
+		}
+	}
+	
 	public int compareTo(BigInteger value) {
 		if (bigIntegerValue == null) {
 			bigIntegerValue = new BigInteger(String.valueOf(intValue));
@@ -170,6 +178,14 @@ public class IntegerWrapper extends Number {
 		} else {
 			return String.valueOf(intValue);
 		}
+	}
+
+	public IntegerWrapper times(int value) {
+		if (bigIntegerValue == null) {
+			bigIntegerValue = new BigInteger(String.valueOf(intValue));
+		}
+		
+		return new IntegerWrapper(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 	}
 
 }

@@ -221,7 +221,6 @@ TupleExp.java
 TY.java
 Type.java
 TypeAArray.java
-TypeArray.java
 TypeBasic.java
 TypeClass.java
 TypeDArray.java

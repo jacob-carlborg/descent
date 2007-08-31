@@ -904,4 +904,9 @@ public abstract class Type extends ASTDmdNode {
 		return this;
 	}
 
+	public Expression getInternalTypeInfo(Scope sc) {
+		// TODO semantic
+		return null;
+	}
+
 }

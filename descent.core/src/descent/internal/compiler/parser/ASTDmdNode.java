@@ -1042,7 +1042,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return getNodeType();
 	}
 	
-	Expression Add(Type type, Expression e1, Expression e2) {
+	static Expression Add(Type type, Expression e1, Expression e2, SemanticContext context) {
 		// TODO semantic
 		return null;
 	}
@@ -1052,7 +1052,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	 *  type: type to paint the result
 	 */
 
-	Expression Cast(Type type, Type to, Expression e1, SemanticContext context) {
+	static Expression Cast(Type type, Type to, Expression e1, SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
 		Loc loc = e1.loc;
 
@@ -1149,7 +1149,8 @@ public abstract class ASTDmdNode extends ASTNode {
 			e = new StructLiteralExp(loc, sd, elements);
 			e.type = type;
 		} else {
-			error("cannot cast %s to %s", e1.type.toChars(context), type.toChars(context));
+			// TODO semantic uncomment below
+			// error("cannot cast %s to %s", e1.type.toChars(context), type.toChars(context));
 			e = new IntegerExp(loc, 0, type);
 		}
 		return e;

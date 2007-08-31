@@ -12,9 +12,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class SymOffExp extends Expression {
 
 	public Declaration var;
-	public int offset;
-
-	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
+	public IntegerWrapper offset;
+	
+	public SymOffExp(Loc loc, Declaration var, IntegerWrapper offset, SemanticContext context) {
 		super(loc, TOK.TOKsymoff);
 		Assert.isNotNull(var);
 		this.var = var;
@@ -23,6 +23,10 @@ public class SymOffExp extends Expression {
 		if (v != null && v.needThis()) {
 			error("need 'this' for address of %s", v.toChars(context));
 		}
+	}
+
+	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
+		this(loc, var, new IntegerWrapper(offset), context);
 	}
 	
 	public void accept0(IASTVisitor visitor) {
@@ -118,7 +122,7 @@ public class SymOffExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		if (offset != 0) {
+		if (!offset.equals(0)) {
 			buf.printf("(& " + var.toChars(context) + "+" + offset + ")");
 		} else {
 			buf.printf("& " + var.toChars(context));

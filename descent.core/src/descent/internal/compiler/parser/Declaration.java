@@ -104,4 +104,14 @@ public abstract class Declaration extends Dsymbol {
 
 	public boolean isOverride()     { return (storage_class & STC.STCoverride) != 0; }
 
+	public boolean isOut() {
+		// TODO semantic
+		return false;
+	}
+
+	public boolean isRef() {
+		// TODO semantic
+		return false;
+	}
+
 }

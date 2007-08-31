@@ -50,7 +50,7 @@ public class AddExp extends BinExp {
 			if (e1.op == TOKsymoff && e2.op == TOKsymoff) {
 				return this;
 			}
-			e = Add(type, e1, e2);
+			e = Add(type, e1, e2, context);
 		} else {
 			e = this;
 		}

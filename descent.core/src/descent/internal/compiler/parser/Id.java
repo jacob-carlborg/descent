@@ -183,6 +183,8 @@ public interface Id {
 	char[] allMembers = { 'a', 'l', 'l', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
 	char[] derivedMembers = { 'd', 'e', 'r', 'i', 'v', 'e', 'd', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
 	char[] tupleof = { 't', 'u', 'p', 'l', 'e', 'o', 'f' };
+	char[] adDup = { '_', 'a', 'd', 'D', 'u', 'p' };
+	char[] adReverse = { '_', 'a', 'd', 'R', 'e', 'v', 'e', 'r', 's', 'e' };
 	
 	// Others useful
 	char[] ZERO = { '0' };
@@ -190,6 +192,6 @@ public interface Id {
 	char[] Cpp = { 'C', '+', '+' };
 	char[] Ddoc = { 'D', 'd', 'o', 'c' };
 	char[] string = { 's', 't', 'r', 'i', 'n', 'g' };
-	char[] size_t = { 's', 'i', 'z', 'e', '_', 't' };
+	char[] size_t = { 's', 'i', 'z', 'e', '_', 't' };	
 
 }

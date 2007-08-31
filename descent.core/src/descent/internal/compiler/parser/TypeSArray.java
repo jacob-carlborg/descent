@@ -45,5 +45,10 @@ public class TypeSArray extends TypeArray {
 	public int getNodeType() {
 		return TYPE_S_ARRAY;
 	}
+	
+	@Override
+	public void toPrettyBracket(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.printf("[" + dim.toChars(context) + "]");
+	}
 
 }
