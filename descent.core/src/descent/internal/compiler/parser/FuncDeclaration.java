@@ -315,7 +315,7 @@ public class FuncDeclaration extends Declaration {
 									 * offsets differ
 									 */
 									int[] offset = { 0 };
-									if (fdv.type.next.isBaseOf(type.next, offset)) {
+									if (fdv.type.next.isBaseOf(type.next, offset, context)) {
 										tintro = fdv.type;
 									}
 								}
@@ -391,7 +391,7 @@ public class FuncDeclaration extends Declaration {
 								 * offsets differ
 								 */
 								int[] offset = { 0 };
-								if (fdv.type.next.isBaseOf(type.next, offset)) {
+								if (fdv.type.next.isBaseOf(type.next, offset, context)) {
 									ti = fdv.type;
 
 								}

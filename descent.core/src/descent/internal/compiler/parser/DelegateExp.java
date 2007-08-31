@@ -48,7 +48,7 @@ public class DelegateExp extends UnaExp {
 					if (f != null) {
 						int[] offset = { 0 };
 						if (f.tintro != null
-								&& f.tintro.next.isBaseOf(f.type.next, offset)
+								&& f.tintro.next.isBaseOf(f.type.next, offset, context)
 								&& offset[0] != 0) {
 							error("cannot form delegate due to covariant return type");
 						}
@@ -66,7 +66,7 @@ public class DelegateExp extends UnaExp {
 			int[] offset = { 0 };
 
 			if (func.tintro != null
-					&& func.tintro.next.isBaseOf(func.type.next, offset)
+					&& func.tintro.next.isBaseOf(func.type.next, offset, context)
 					&& offset[0] != 0) {
 				error("cannot form delegate due to covariant return type");
 			}

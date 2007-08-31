@@ -413,7 +413,7 @@ public class VarDeclaration extends Declaration {
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
-					if (type.isBaseOf(ne.newtype.semantic(loc, sc, context), null)) {
+					if (type.isBaseOf(ne.newtype.semantic(loc, sc, context), null, context)) {
 						onstack = 2;
 					}
 				}

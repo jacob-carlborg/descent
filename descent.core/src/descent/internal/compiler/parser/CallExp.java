@@ -485,7 +485,7 @@ public class CallExp extends UnaExp {
 			int[] offset = { 0 };
 
 			// TODO semantic check "offset != null"... it will always return true! :-(
-			if (f.tintro.next.isBaseOf(t, offset) && offset != null) {
+			if (f.tintro.next.isBaseOf(t, offset, context) && offset != null) {
 				type = f.tintro.next;
 				return castTo(sc, t, context);
 			}
