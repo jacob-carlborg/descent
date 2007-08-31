@@ -1041,6 +1041,11 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final int getElementType() {
 		return getNodeType();
 	}
+	
+	Expression Add(Type type, Expression e1, Expression e2) {
+		// TODO semantic
+		return null;
+	}
 
 	/* Also returns EXP_CANT_INTERPRET if cannot be computed.
 	 *  to:	type to cast to

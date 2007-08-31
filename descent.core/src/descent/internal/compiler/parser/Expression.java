@@ -371,8 +371,20 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return toInteger(context);
 	}
 	
+	public char[] opId() {
+		throw new IllegalStateException("assert(0);");
+	}
+	
+	public char[] opId_r() {
+		return null;
+	}
+	
 	public boolean isConst() {
 		return false;
+	}
+	
+	public boolean isCommutative() {
+		return false; // default is no reverse
 	}
 
 }

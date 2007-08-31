@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.*;
 
 public class AddExp extends BinExp {
 
@@ -10,10 +11,6 @@ public class AddExp extends BinExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return ADD_EXP;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,6 +21,43 @@ public class AddExp extends BinExp {
 	}
 
 	@Override
+	public int getNodeType() {
+		return ADD_EXP;
+	}
+
+	@Override
+	public boolean isCommutative() {
+		return true;
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.add;
+	}
+
+	@Override
+	public char[] opId_r() {
+		return Id.add_r;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		Expression e;
+
+		e1 = e1.optimize(result, context);
+		e2 = e2.optimize(result, context);
+		if (e1.isConst() && e2.isConst()) {
+			if (e1.op == TOKsymoff && e2.op == TOKsymoff) {
+				return this;
+			}
+			e = Add(type, e1, e2);
+		} else {
+			e = this;
+		}
+		return e;
+	}
+
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 
@@ -31,8 +65,9 @@ public class AddExp extends BinExp {
 			super.semanticp(sc, context);
 
 			e = op_overload(sc);
-			if (null != e)
+			if (null != e) {
 				return e;
+			}
 
 			Type tb1 = e1.type.toBasetype(context);
 			Type tb2 = e2.type.toBasetype(context);

@@ -10,11 +10,6 @@ public class AddAssignExp extends BinExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return ADD_ASSIGN_EXP;
-	}
-
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,6 +19,12 @@ public class AddAssignExp extends BinExp {
 		visitor.endVisit(this);
 	}
 
+	@Override
+	public int getNodeType() {
+		return ADD_ASSIGN_EXP;
+	}
+
+	@Override
 	public char[] opId() {
 		return Id.addass;
 	}
