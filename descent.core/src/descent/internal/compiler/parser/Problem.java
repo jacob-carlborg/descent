@@ -342,6 +342,11 @@ public class Problem implements IProblem {
 		case ArrayIndexOutOfBounds:
 			return "Array index " + arguments[0] + " is out of bounds [0.." +
 				arguments[1] + "]"; 
+		case AssertionFailed:
+			return arguments[0];
+		case AssertionFailedNoMessage:
+			return "assert(" + arguments[0] + ") failed";
+			
 		default:
 			return "";
 		}

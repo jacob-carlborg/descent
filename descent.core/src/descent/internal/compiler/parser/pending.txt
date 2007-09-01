@@ -1,7 +1,6 @@
 AggregateDeclaration.java
 AliasDeclaration.java
 AlignDeclaration.java
-AndAndExp.java
 AndAssignExp.java
 AndExp.java
 AnonDeclaration.java
@@ -13,7 +12,6 @@ ArrayLiteralExp.java
 ArrayScopeSymbol.java
 AsmBlock.java
 AsmStatement.java
-AssertExp.java
 AssignExp.java
 AssocArrayLiteralExp.java
 ASTDmdNode.java

@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.TY.*;
+
+// DMD 1.020
 public class AndAndExp extends BinExp {
 
 	public AndAndExp(Loc loc, Expression e1, Expression e2) {
@@ -81,4 +84,69 @@ public class AndAndExp extends BinExp {
 			return e2.checkSideEffect(flag, context);
 		}
 	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		Expression e = e1.interpret(istate, context);
+		if(e != EXP_CANT_INTERPRET)
+		{
+			if(e.isBool(false))
+				e = new IntegerExp(e1.loc, 0, type);
+			else if(e.isBool(true))
+			{
+				e = e2.interpret(istate, context);
+				if(e != EXP_CANT_INTERPRET)
+				{
+					if(e.isBool(false))
+						e = new IntegerExp(e1.loc, 0, type);
+					else if(e.isBool(true))
+						e = new IntegerExp(e1.loc, 1, type);
+					else
+						e = EXP_CANT_INTERPRET;
+				}
+			}
+			else
+				e = EXP_CANT_INTERPRET;
+		}
+		return e;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		Expression e;
+		
+		// printf("AndAndExp.optimize(%d) %s\n", result, toChars());
+		e1 = e1.optimize(WANTflags | (result & WANTinterpret), context);
+		e = this;
+		if(e1.isBool(false))
+		{
+			e = new CommaExp(loc, e1, new IntegerExp(loc, 0, type));
+			e.type = type;
+			e = e.optimize(result, context);
+		}
+		else
+		{
+			e2 = e2.optimize(WANTflags | (result & WANTinterpret), context);
+			if(result > 0 && e2.type.toBasetype(context).ty == Tvoid &&
+					context.global.errors <= 0)
+				error("void has no value");
+			if(e1.isConst())
+			{
+				if(e2.isConst())
+				{
+					boolean n1 = e1.isBool(true);
+					boolean n2 = e2.isBool(true);
+					
+					e = new IntegerExp(loc, n1 && n2 ? 1 : 0, type);
+				}
+				else if(e1.isBool(true))
+					e = new BoolExp(loc, e2, type);
+			}
+		}
+		return e;
+	}
+	
+	// PERHAPS elem *toElem(IRState *irs);
 }

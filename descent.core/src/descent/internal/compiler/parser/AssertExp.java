@@ -1,8 +1,10 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class AssertExp extends UnaExp {
 
 	public Expression msg;
@@ -16,11 +18,6 @@ public class AssertExp extends UnaExp {
 		this.msg = msg;
 	}
 	
-	@Override
-	public int checkSideEffect(int flag, SemanticContext context) {
-		return 1;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -30,10 +27,54 @@ public class AssertExp extends UnaExp {
 	}
 	
 	@Override
-	public Expression syntaxCopy() {
-		AssertExp ae = new AssertExp(loc, e1.syntaxCopy(), msg != null ? msg
-				.syntaxCopy() : null);
-		return ae;
+	public int checkSideEffect(int flag, SemanticContext context) {
+		return 1;
+	}
+	
+	@Override
+	public int getNodeType() {
+		return ASSERT_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		Expression e;
+		Expression e1;
+		
+		e1 = this.e1.interpret(istate, context);
+		if(e1 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		
+		if(e1.isBool(true))
+		{
+			return e1;
+		}
+		else if(e1.isBool(false))
+		{
+			if(null != msg)
+			{
+				e = msg.interpret(istate, context);
+				if(e == EXP_CANT_INTERPRET)
+					return EXP_CANT_INTERPRET; //goto Lcant;
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.AssertionFailed, 0, start, length,
+						new String[]
+						{ e.toChars(context), }));
+			}
+			else
+			{
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.AssertionFailedNoMessage, 0, start, length,
+						new String[]
+						{ toChars(context), }));
+			}
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		}
+		else
+		{
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		}
 	}
 
 	@Override
@@ -64,6 +105,13 @@ public class AssertExp extends UnaExp {
 	}
 
 	@Override
+	public Expression syntaxCopy() {
+		AssertExp ae = new AssertExp(loc, e1.syntaxCopy(), msg != null ? msg
+				.syntaxCopy() : null);
+		return ae;
+	}
+	
+	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring("assert(");
@@ -74,10 +122,10 @@ public class AssertExp extends UnaExp {
 		}
 		buf.writeByte(')');
 	}
-
-	@Override
-	public int getNodeType() {
-		return ASSERT_EXP;
-	}
+	
+	// PERHAPS int inlineCost(InlineCostState *ics);
+	// PERHAPS Expression *doInline(InlineDoState *ids);
+	// PERHAPS Expression *inlineScan(InlineScanState *iss);
+	// PERHAPS elem *toElem(IRState *irs);
 
 }

@@ -395,4 +395,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return EXP_CANT_INTERPRET;
 	}
 
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

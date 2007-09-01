@@ -29,4 +29,19 @@ public class AndAssignExp extends BinExp {
 		return commonSemanticAssignIntegral(sc, context);
 	}
 
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		// TODO semantic return interpretAssignCommon(istate, op, context);
+		return null;
+	}
+
+	@Override
+	public char[] opId()
+	{
+		return Id.addass;
+	}
+	
+	// PERHAPS elem *toElem(IRState *irs);
+
 }
