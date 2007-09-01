@@ -582,9 +582,4 @@ public class VarDeclaration extends Declaration {
 		buf.writenl();
 	}
 
-	@Override
-	public String toString() {
-		return type + " " + ident + ";";
-	}
-
 }

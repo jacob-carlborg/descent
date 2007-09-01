@@ -32,7 +32,7 @@ public class UAddExp extends UnaExp {
 		Assert.isTrue(type == null);
 		super.semantic(sc, context);
 		e1 = resolveProperties(sc, e1, context);
-		e = op_overload(sc);
+		e = op_overload(sc, context);
 		if (e != null) {
 			return e;
 		}

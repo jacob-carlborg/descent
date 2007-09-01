@@ -65,7 +65,7 @@ public class ArrayExp extends UnaExp {
 		expandTuples(arguments);
 		assert(arguments != null && arguments.size() > 0);
 		
-		e = op_overload(sc);
+		e = op_overload(sc, context);
 		if (null == e)
 	    {
 			error("no [] operator overload for type " + e1.type.toChars(context));

@@ -272,9 +272,4 @@ public class AliasDeclaration extends Declaration {
 		buf.writenl();
 	}
 
-	@Override
-	public String toString() {
-		return "alias " + type + " " + ident + ";";
-	}
-
 }

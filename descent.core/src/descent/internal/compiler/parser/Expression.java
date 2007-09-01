@@ -92,8 +92,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkIntegral(SemanticContext context) {
 		if (!type.isintegral()) {
-			error("'%s' is not of integral type, it is a %s", toChars(context), type
-					.toChars(context));
+			error("'%s' is not of integral type, it is a %s", toChars(context),
+					type.toChars(context));
 			return new IntegerExp(loc, 0);
 		}
 		return this;
@@ -107,7 +107,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkScalar(SemanticContext context) {
 		if (!type.isscalar()) {
-			error("'%s' is not a scalar, it is a %s", toChars(context), type.toChars(context));
+			error("'%s' is not a scalar, it is a %s", toChars(context), type
+					.toChars(context));
 		}
 	}
 
@@ -147,7 +148,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e;
 	}
 
-	public Expression combine(Expression e1, Expression e2) {
+	public static Expression combine(Expression e1, Expression e2) {
 		if (e1 != null) {
 			if (e2 != null) {
 				e1 = new CommaExp(e1.loc, e1, e2);
@@ -200,7 +201,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 				 */
 				error(
 						"implicit conversion of expression (%s) of type %s to %s can cause loss of data",
-						toChars(context), type.toChars(context), t.toChars(context));
+						toChars(context), type.toChars(context), t
+								.toChars(context));
 			}
 			return castTo(sc, t, context);
 		}
@@ -218,12 +220,13 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		 */
 			error("forward reference to type %s", t.toChars(context));
 		} else if (t.reliesOnTident() != null) {
-			error("forward reference to type %s", t.reliesOnTident().toChars(context));
+			error("forward reference to type %s", t.reliesOnTident().toChars(
+					context));
 		}
 
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.CannotImplicitlyConvert, 0,
-				start, length, new String[] { type.toChars(context), t.toChars(context) }));
+				IProblem.CannotImplicitlyConvert, 0, start, length,
+				new String[] { type.toChars(context), t.toChars(context) }));
 
 		return castTo(sc, t, context);
 	}
@@ -358,7 +361,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
-		error("expression %s is not a valid template value argument", toChars(context));
+		error("expression %s is not a valid template value argument",
+				toChars(context));
 	}
 
 	public Real toReal(SemanticContext context) {
@@ -370,35 +374,56 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public IntegerWrapper toUInteger(SemanticContext context) {
 		return toInteger(context);
 	}
-	
+
 	public char[] opId() {
 		throw new IllegalStateException("assert(0);");
 	}
-	
+
 	public char[] opId_r() {
 		return null;
 	}
-	
+
 	public boolean isConst() {
 		return false;
 	}
-	
+
 	public boolean isCommutative() {
 		return false; // default is no reverse
 	}
-	
+
+	public int inlineCost(InlineCostState ics) {
+		return 1;
+	}
+
 	public Expression inlineScan(InlineScanState iss) {
 		return this;
 	}
-	
-	public Expression interpret(InterState istate) {
+
+	public Expression interpret(InterState istate, SemanticContext context) {
 		return EXP_CANT_INTERPRET;
 	}
 
-	public Expression interpret(InterState istate, SemanticContext context)
-	{
-		// TODO Auto-generated method stub
-		return null;
+	public Expression doInline(InlineDoState ids) {
+		return copy();
+	}
+
+	public void scanForNestedRef(Scope sc) {
+		// empty
+	}
+
+	public static Expression build_overload(Loc loc, Scope sc, Expression ethis,
+			Expression earg, IdentifierExp id, SemanticContext context) {
+		Expression e;
+
+		e = new DotIdExp(loc, ethis, id);
+
+		if (earg != null)
+			e = new CallExp(loc, e, earg);
+		else
+			e = new CallExp(loc, e);
+
+		e = e.semantic(sc, context);
+		return e;
 	}
 
 }

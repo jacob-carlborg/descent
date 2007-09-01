@@ -3,17 +3,21 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class UnitTestDeclaration extends FuncDeclaration {
-	
+
+	private static int unitTestId;
+
+	private static char[] unitTestId() {
+		return ("__unittest" + ++unitTestId).toCharArray();
+	}
+
 	public UnitTestDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Loc.ZERO, unitTestId()), STC.STCundefined, null);
+		super(loc, new IdentifierExp(Loc.ZERO, unitTestId()), STC.STCundefined,
+				null);
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return UNIT_TEST_DECLARATION;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -21,22 +25,37 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		}
 		visitor.endVisit(this);
 	}
-	
-	private static int unitTestId;
-	private static char[] unitTestId() {
-		return ("__unittest" + ++unitTestId).toCharArray();
-	}
-	
+
 	@Override
-	public UnitTestDeclaration isUnitTestDeclaration() {
-		return this;
+	public boolean addPostInvariant(SemanticContext context) {
+		return false;
 	}
-	
+
+	@Override
+	public boolean addPreInvariant(SemanticContext context) {
+		return false;
+	}
+
+	@Override
+	public int getNodeType() {
+		return UNIT_TEST_DECLARATION;
+	}
+
 	@Override
 	public AggregateDeclaration isThis() {
 		return null;
 	}
-	
+
+	@Override
+	public UnitTestDeclaration isUnitTestDeclaration() {
+		return this;
+	}
+
+	@Override
+	public boolean isVirtual() {
+		return false;
+	}
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (context.global.params.useUnitTests) {
@@ -57,15 +76,24 @@ public class UnitTestDeclaration extends FuncDeclaration {
 			m.needmoduleinfo = true;
 		}
 	}
-	
+
 	@Override
-	public boolean addPreInvariant(SemanticContext context) {
-		return false;
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		if (s != null) {
+			throw new IllegalStateException("assert(!s);");
+		}
+		UnitTestDeclaration utd = new UnitTestDeclaration(loc);
+		return super.syntaxCopy(utd);
 	}
-	
+
 	@Override
-	public boolean addPostInvariant(SemanticContext context) {
-		return false;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		if (hgs.hdrgen) {
+			return;
+		}
+		buf.writestring("unittest");
+		bodyToCBuffer(buf, hgs, context);
 	}
-	
+
 }

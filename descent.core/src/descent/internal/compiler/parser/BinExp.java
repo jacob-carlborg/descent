@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TOK.TOKadd;
-import static descent.internal.compiler.parser.TOK.TOKaddass;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKandass;
 import static descent.internal.compiler.parser.TOK.TOKassign;
 import static descent.internal.compiler.parser.TOK.TOKcatass;
@@ -49,7 +49,7 @@ public abstract class BinExp extends Expression {
 			this.length = e2.start + e2.length - e1.start;
 		}
 	}
-	
+
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
 		if (e1.type == null) {
@@ -86,7 +86,7 @@ public abstract class BinExp extends Expression {
 			BinExp_semantic(sc, context);
 			e2 = resolveProperties(sc, e2, context);
 
-			e = op_overload(sc);
+			e = op_overload(sc, context);
 			if (e != null) {
 				return e;
 			}
@@ -112,7 +112,7 @@ public abstract class BinExp extends Expression {
 			BinExp_semantic(sc, context);
 			e2 = resolveProperties(sc, e2, context);
 
-			e = op_overload(sc);
+			e = op_overload(sc, context);
 			if (e != null) {
 				return e;
 			}
@@ -121,7 +121,8 @@ public abstract class BinExp extends Expression {
 			e1.checkScalar(context);
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
-				error("operator not allowed on bool expression %s", toChars(context));
+				error("operator not allowed on bool expression %s",
+						toChars(context));
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);
@@ -137,8 +138,8 @@ public abstract class BinExp extends Expression {
 
 	public void incompatibleTypes(SemanticContext context) {
 		error("incompatible types for ((%s) %s (%s)): '%s' and '%s'", e1
-				.toChars(context), op.toString(), e2.toChars(context), e1.type.toChars(context),
-				e2.type.toChars(context));
+				.toChars(context), op.toString(), e2.toChars(context), e1.type
+				.toChars(context), e2.type.toChars(context));
 	}
 
 	public boolean isunsigned() {
@@ -164,7 +165,8 @@ public abstract class BinExp extends Expression {
 				// and letting back end do it.
 				e2 = new UshrExp(loc, e2, new IntegerExp(loc, 3, t));
 			} else {
-				e2 = new MulExp(loc, e2, new IntegerExp(loc, new IntegerWrapper(stride), t));
+				e2 = new MulExp(loc, e2, new IntegerExp(loc,
+						new IntegerWrapper(stride), t));
 			}
 			e2.type = t;
 			type = e1.type;
@@ -184,7 +186,8 @@ public abstract class BinExp extends Expression {
 				// BUG: should add runtime check for misaligned offsets
 				e = new UshrExp(loc, e, new IntegerExp(loc, 3, t));
 			} else {
-				e = new MulExp(loc, e, new IntegerExp(loc, new IntegerWrapper(stride), t));
+				e = new MulExp(loc, e, new IntegerExp(loc, new IntegerWrapper(
+						stride), t));
 			}
 			e.type = t;
 			type = e2.type;
@@ -193,12 +196,12 @@ public abstract class BinExp extends Expression {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		return BinExp_semantic(sc, context);
 	}
-	
+
 	public Expression semanticp(Scope sc, SemanticContext context) {
 		BinExp_semantic(sc, context);
 		e1 = resolveProperties(sc, e1, context);
@@ -218,12 +221,14 @@ public abstract class BinExp extends Expression {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, op.precedence, context);
-	    buf.writeByte(' ');
-	    buf.writestring(op.toString());
-	    buf.writeByte(' ');
-	    expToCBuffer(buf, hgs, e2, PREC.values()[op.precedence.ordinal() + 1], context);
+		buf.writeByte(' ');
+		buf.writestring(op.toString());
+		buf.writeByte(' ');
+		expToCBuffer(buf, hgs, e2, PREC.values()[op.precedence.ordinal() + 1],
+				context);
 	}
 
 	public Expression typeCombine(Scope sc, SemanticContext context) {
@@ -490,12 +495,52 @@ public abstract class BinExp extends Expression {
 		return this;
 	}
 
-	private Expression typeCombine_Lincompatible_End(Type t, SemanticContext context) {
+	private Expression typeCombine_Lincompatible_End(Type t,
+			SemanticContext context) {
 		incompatibleTypes(context);
 		if (type == null) {
 			type = t;
 		}
 		return this;
+	}
+
+	Expression interpretCommon2(InterState istate, TOK op,
+			SemanticContext context) {
+		Expression e;
+		Expression e1;
+		Expression e2;
+
+		e1 = this.e1.interpret(istate, context);
+		if (e1 == EXP_CANT_INTERPRET) {
+			// goto Lcant;
+			return EXP_CANT_INTERPRET;
+		}
+		if (!e1.isConst() && e1.op != TOKstring && e1.op != TOKarrayliteral
+				&& e1.op != TOKstructliteral) {
+			// goto Lcant;
+			return EXP_CANT_INTERPRET;
+		}
+
+		e2 = this.e2.interpret(istate, context);
+		if (e2 == EXP_CANT_INTERPRET) {
+			// goto Lcant;
+			return EXP_CANT_INTERPRET;
+		}
+		if (!e2.isConst() && e2.op != TOKstring && e2.op != TOKarrayliteral
+				&& e2.op != TOKstructliteral) {
+			// goto Lcant;
+			return EXP_CANT_INTERPRET;
+		}
+
+		/* TODO semantic
+		 e = (*fp)(op, type, e1, e2);
+		 */
+		// TODO remove the next line
+		e = null;
+		return e;
+
+		//	Lcant:
+		//	    return EXP_CANT_INTERPRET;
 	}
 
 }

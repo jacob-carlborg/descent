@@ -43,6 +43,7 @@ CondExp.java
 Condition.java
 ConditionalDeclaration.java
 ConditionalStatement.java
+Constfold.java
 ContinueStatement.java
 CtorDeclaration.java
 DebugCondition.java
@@ -105,6 +106,8 @@ IncrementExp.java
 IndexExp.java
 InExp.java
 Initializer.java
+InlineCostState.java
+InlineDoState.java
 InlineScanState.java
 IntegerExp.java
 IntegerWrapper.java
@@ -254,13 +257,7 @@ TypeTupleDelegateDeclaration.java
 TypeTypedef.java
 TypeTypeof.java
 UAddExp.java
-UnaExp.java
 UniAlpha.java
-UnionDeclaration.java
-UnitTestDeclaration.java
-UnrolledLoopStatement.java
-UshrAssignExp.java
-UshrExp.java
 Utf.java
 VarDeclaration.java
 VarExp.java

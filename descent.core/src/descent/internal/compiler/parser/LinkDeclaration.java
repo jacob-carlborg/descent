@@ -105,9 +105,4 @@ public class LinkDeclaration extends AttribDeclaration {
 		return "extern ()";
 	}
 
-	@Override
-	public String toString() {
-		return "extern ()";
-	}
-
 }

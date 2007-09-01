@@ -142,9 +142,4 @@ public class TypedefDeclaration extends Declaration {
 		buf.writenl();
 	}
 
-	@Override
-	public String toString() {
-		return "typedef " + basetype + " " + ident + ";";
-	}
-
 }

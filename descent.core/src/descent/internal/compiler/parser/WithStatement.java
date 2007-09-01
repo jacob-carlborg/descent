@@ -29,8 +29,8 @@ public class WithStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd() {
-		return body != null ? body.fallOffEnd() : true;
+	public boolean fallOffEnd(SemanticContext context) {
+		return body != null ? body.fallOffEnd(context) : true;
 	}
 
 	@Override

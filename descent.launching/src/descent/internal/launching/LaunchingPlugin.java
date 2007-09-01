@@ -73,7 +73,7 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "descent.launching"; //$NON-NLS-1$
-	public static final String ID_PLUGIN = PLUGIN_ID; //$NON-NLS-1$
+	public static final String ID_PLUGIN = PLUGIN_ID;
 	
 	private static final String EMPTY_STRING = "";    //$NON-NLS-1$
 	private String fOldVMPrefString = EMPTY_STRING;

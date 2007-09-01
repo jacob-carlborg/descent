@@ -338,6 +338,9 @@ public interface IProblem {
 	int UnrecongnizedTrait = 369;
 	int CanOnlyConcatenateArrays = 370;
 	int ArrayIndexOutOfBounds = 371;
+	int AssertionFailed = 372;
+	int AssertionFailedNoMessage = 373;
+	int StatementIsNotReachable = 374;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

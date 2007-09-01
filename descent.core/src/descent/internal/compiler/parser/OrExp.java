@@ -32,7 +32,7 @@ public class OrExp extends BinExp {
 	    {	
 	    	super.semanticp(sc, context);
 	    	
-	    	e = op_overload(sc);
+	    	e = op_overload(sc, context);
 	    	if(null != e)
 	    		return e;
 	    	

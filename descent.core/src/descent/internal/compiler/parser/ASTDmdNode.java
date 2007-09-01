@@ -34,8 +34,28 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // class Object in DMD compiler
 public abstract class ASTDmdNode extends ASTNode {
+	
+	public interface BinExp_interpretCommon_fp
+	{
+		Expression call(Type type, Expression e1, Expression e2,
+				SemanticContext context);
+	}
+
+	public interface BinExp_interpretCommon2_fp
+	{
+		Expression call(TOK op, Type type, Expression e1, Expression e2,
+				SemanticContext context);
+	}
+	
+	public interface UnaExp_interpretCommon_fp
+	{
+		Expression call(Type type, Expression e1,
+				SemanticContext context);
+	}
 
 	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;
+	
+	public final static int COST_MAX = 250; 
 
 	public final static int WANTflags = 1;
 	public final static int WANTvalue = 2;
@@ -1033,7 +1053,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
-	public Expression op_overload(Scope sc) {
+	public Expression op_overload(Scope sc, SemanticContext context) {
 		// TODO semantic
 		return null;
 	}
@@ -1043,6 +1063,11 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	static Expression Add(Type type, Expression e1, Expression e2, SemanticContext context) {
+		// TODO semantic
+		return null;
+	}
+	
+	static Expression Ushr(Type type, Expression e1, Expression e2, SemanticContext context) {
 		// TODO semantic
 		return null;
 	}

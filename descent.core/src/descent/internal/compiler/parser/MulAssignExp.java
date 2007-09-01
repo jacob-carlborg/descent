@@ -31,7 +31,7 @@ public class MulAssignExp extends BinExp {
 	    super.semantic(sc, context);
 	    e2 = resolveProperties(sc, e2, context);
 
-	    e = op_overload(sc);
+	    e = op_overload(sc, context);
 	    if(null != e)
 	    	return e;
 

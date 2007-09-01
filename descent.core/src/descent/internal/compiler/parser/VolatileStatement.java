@@ -27,8 +27,8 @@ public class VolatileStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd() {
-		return statement != null ? statement.fallOffEnd() : true;
+	public boolean fallOffEnd(SemanticContext context) {
+		return statement != null ? statement.fallOffEnd(context) : true;
 	}
 
 	@Override

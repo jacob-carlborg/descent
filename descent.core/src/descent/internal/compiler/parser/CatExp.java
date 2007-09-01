@@ -36,7 +36,7 @@ public class CatExp extends BinExp {
 		Expression e;
 
 		super.semanticp(sc, context);
-		e = op_overload(sc);
+		e = op_overload(sc, context);
 		if(null != e)
 		    return e;
 		

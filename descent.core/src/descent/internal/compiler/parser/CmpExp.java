@@ -37,7 +37,7 @@ public class CmpExp extends BinExp {
 	    
 	    
 	    super.semanticp(sc, context);
-	    e = op_overload(sc);
+	    e = op_overload(sc, context);
 	    if(null != e)
 	    {
 	    	e = new CmpExp(loc, op, e, new IntegerExp(loc, 0, Type.tint32));

@@ -14,24 +14,6 @@ package descent.internal.compiler.parser;
 // DMD 1.020
 public class Constfold
 {
-
-	public interface BinExp_interpretCommon_fp
-	{
-		Expression call(Type type, Expression e1, Expression e2,
-				SemanticContext context);
-	}
-
-	public interface BinExp_interpretCommon2_fp
-	{
-		Expression call(TOK op, Type type, Expression e1, Expression e2,
-				SemanticContext context);
-	}
-	
-	public interface UnaExp_interpretCommon_fp
-	{
-		Expression call(Type type, Expression e1,
-				SemanticContext context);
-	}
 	
 	/*
 	TODO semantic:

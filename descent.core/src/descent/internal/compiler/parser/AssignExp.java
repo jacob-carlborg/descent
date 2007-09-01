@@ -170,7 +170,7 @@ public class AssignExp extends BinExp {
 			if (MATCH.MATCHnomatch == 
 				e2.type.implicitConvTo(e1.type, context))
 			{
-			    Expression e = op_overload(sc);
+			    Expression e = op_overload(sc, context);
 			    if(null != e)
 			    	return e;
 			}

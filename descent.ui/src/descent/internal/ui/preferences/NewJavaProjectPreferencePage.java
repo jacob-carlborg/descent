@@ -281,7 +281,7 @@ public class NewJavaProjectPreferencePage extends PreferencePage implements IWor
 	}
 	
 	private static IClasspathEntry getJREContainerEntry() {
-		return JavaCore.newContainerEntry(new Path(JavaRuntime.JRE_CONTAINER)); //$NON-NLS-1$
+		return JavaCore.newContainerEntry(new Path(JavaRuntime.JRE_CONTAINER));
 	}
 	
 	private static IClasspathEntry getJREVariableEntry() {

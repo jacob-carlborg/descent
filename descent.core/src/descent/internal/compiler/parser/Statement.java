@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import java.util.List;
 
 public abstract class Statement extends ASTDmdNode {
-
+	
 	public Loc loc;
 	public boolean incontract;
 
@@ -48,7 +48,7 @@ public abstract class Statement extends ASTDmdNode {
 		return this;
 	}
 
-	public boolean fallOffEnd() {
+	public boolean fallOffEnd(SemanticContext context) {
 		return true;
 	}
 
@@ -73,6 +73,14 @@ public abstract class Statement extends ASTDmdNode {
 		toCBuffer(buf, hgs, context);
 		return buf.toChars();
 	}
+	
+	public int inlineCost(InlineCostState ics) {
+		return COST_MAX;
+	}
+	
+	public Expression doInline(InlineDoState ids) {
+		throw new IllegalStateException("assert(0);");
+	}
 
 	public Statement inlineScan(InlineScanState iss) {
 		return this;
@@ -85,8 +93,36 @@ public abstract class Statement extends ASTDmdNode {
 	public boolean comeFrom() {
 		return false;
 	}
+	
+	public DeclarationStatement isDeclarationStatement() {
+		return null;
+	}
+	
+	public CompoundStatement isCompoundStatement() {
+		return null;
+	}
+	
+	public ReturnStatement isReturnStatement() {
+		return null;
+	}
+	
+	public IfStatement isIfStatement() {
+		return null;
+	}
+	
+	public TryCatchStatement isTryCatchStatement() {
+		return null;
+	}
+	
+	public GotoStatement isGotoStatement() {
+		return null;
+	}
+	
+	public AsmStatement isAsmStatement() {
+		return null;
+	}
 
-	public Expression interpret(InterState istate) {
+	public Expression interpret(InterState istate, SemanticContext context) {
 		// START()
 		if (istate.start != null) {
 			if (istate.start != this)

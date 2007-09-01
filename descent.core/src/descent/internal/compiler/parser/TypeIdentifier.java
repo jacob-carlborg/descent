@@ -160,11 +160,6 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public String toString() {
-		return ident.toString();
-	}
-
-	@Override
 	public char[] toCharArray() {
 		if (idents == null || idents.isEmpty()) {
 			return ident.ident;

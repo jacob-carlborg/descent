@@ -49,9 +49,9 @@ public class Problem implements IProblem {
 		return newSemanticMemberError(id, line, sourceStart, length, null);
 	}
 	
-	public static Problem newSemanticTypeError(int id, int line, int sourceStart, int length, String[] arguments) {
+	private static Problem newSemanticTypeProblem(int id, int line, int sourceStart, int length, String[] arguments, boolean isError) {
 		Problem p = new Problem();
-		p.isError = true;
+		p.isError = isError;
 		p.id = id;
 		p.categoryId = CAT_TYPE;
 		p.sourceLineNumber = line;
@@ -61,8 +61,20 @@ public class Problem implements IProblem {
 		return p;
 	}
 	
+	public static Problem newSemanticTypeError(int id, int line, int sourceStart, int length, String[] arguments) {
+		return newSemanticTypeProblem(id, line, sourceStart, length, arguments, true);
+	}
+	
 	public static Problem newSemanticTypeError(int id, int line, int sourceStart, int length) {
 		return newSemanticTypeError(id, line, sourceStart, length, null);
+	}
+	
+	public static IProblem newSemanticTypeWarning(int id, int line, int start, int length, String[] arguments) {
+		return newSemanticTypeProblem(id, line, start, length, arguments, false);
+	}
+	
+	public static IProblem newSemanticTypeWarning(int id, int line, int start, int length) {
+		return newSemanticTypeWarning(id, line, start, length, null);
 	}
 	
 	public static Problem newTask(String message, int line, int sourceStart, int length) {

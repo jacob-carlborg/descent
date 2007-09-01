@@ -31,7 +31,7 @@ public class ShrExp extends BinExp {
 	    if(null == type)
 	    {
 	    	super.semanticp(sc, context);
-			e = op_overload(sc);
+			e = op_overload(sc, context);
 			if(null != e)
 			    return e;
 			e1 = e1.checkIntegral(context);

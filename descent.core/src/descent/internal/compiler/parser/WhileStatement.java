@@ -34,9 +34,9 @@ public class WhileStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd() {
+	public boolean fallOffEnd(SemanticContext context) {
 		if (body != null) {
-			body.fallOffEnd();
+			body.fallOffEnd(context);
 		}
 		return true;
 	}
@@ -64,14 +64,14 @@ public class WhileStatement extends Statement {
 	}
 
 	@Override
-	public Expression interpret(InterState istate) {
+	public Expression interpret(InterState istate, SemanticContext context) {
 		if (istate.start == this) {
 			istate.start = null;
 		}
 		Expression e;
 
 		if (istate.start != null) {
-			e = body != null ? body.interpret(istate) : null;
+			e = body != null ? body.interpret(istate, context) : null;
 			if (istate.start != null) {
 				return null;
 			}
@@ -87,7 +87,7 @@ public class WhileStatement extends Statement {
 		}
 
 		while (true) {
-			e = condition.interpret(istate);
+			e = condition.interpret(istate, context);
 			if (e == EXP_CANT_INTERPRET) {
 				break;
 			}
@@ -96,7 +96,7 @@ public class WhileStatement extends Statement {
 				break;
 			}
 			if (e.isBool(true)) {
-				e = body != null ? body.interpret(istate) : null;
+				e = body != null ? body.interpret(istate, context) : null;
 				if (e == EXP_CANT_INTERPRET) {
 					break;
 				}

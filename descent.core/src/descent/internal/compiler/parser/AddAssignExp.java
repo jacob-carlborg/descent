@@ -24,6 +24,11 @@ public class AddAssignExp extends BinExp {
 	public int getNodeType() {
 		return ADD_ASSIGN_EXP;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon2(istate, op, context);
+	}
 
 	@Override
 	public char[] opId() {
@@ -41,7 +46,7 @@ public class AddAssignExp extends BinExp {
 		super.semantic(sc, context);
 		e2 = resolveProperties(sc, e2, context);
 
-		e = op_overload(sc);
+		e = op_overload(sc, context);
 		if (null != e) {
 			return e;
 		}

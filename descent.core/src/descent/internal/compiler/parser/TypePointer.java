@@ -41,11 +41,6 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public String toString() {
-		return next + "*";
-	}
-
-	@Override
 	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
 			SemanticContext context) {
 		buf.prependstring("*");

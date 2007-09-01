@@ -61,7 +61,7 @@ public class EqualExp extends BinExp {
 	    }
 	    
 		
-		e = op_overload(sc);
+		e = op_overload(sc, context);
 		if(null != e)
 		{
 		    if(op == TOK.TOKnotequal)
