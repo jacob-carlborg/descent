@@ -1035,6 +1035,7 @@ public class Parser extends Lexer {
 	    nextToken();
 	    List<Argument> arguments = parseParameters(varargs);
 	    CtorDeclaration f = new CtorDeclaration(loc, arguments, varargs[0]);
+	    f.thisStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
@@ -1049,6 +1050,7 @@ public class Parser extends Lexer {
 	    check(TOKrparen);
 		
 		DtorDeclaration f = new DtorDeclaration(loc);
+		f.notThisStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
@@ -1136,7 +1138,8 @@ public class Parser extends Lexer {
 	    			startLine, name);
 	    }
 		
-		DeleteDeclaration f = new DeleteDeclaration(loc, arguments, varargs[0]);
+		DeleteDeclaration f = new DeleteDeclaration(loc, arguments);
+		f.deleteStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;

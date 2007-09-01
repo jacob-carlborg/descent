@@ -110,7 +110,7 @@ public class VarDeclaration extends Declaration {
 		}
 	}
 
-	public void checkNestedReference(Scope sc, SemanticContext context) {
+	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
 		if (!isDataseg(context) && parent != sc.parent && parent != null) {
 			FuncDeclaration fdv = toParent().isFuncDeclaration();
 			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();

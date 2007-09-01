@@ -66,8 +66,7 @@ public class AssertExp extends UnaExp {
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.AssertionFailedNoMessage, 0, start, length,
-						new String[]
-						{ toChars(context), }));
+						new String[] { e1.toChars(context) }));
 			}
 			return EXP_CANT_INTERPRET; //goto Lcant;
 		}

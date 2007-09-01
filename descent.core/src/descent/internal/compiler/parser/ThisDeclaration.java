@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
-import org.eclipse.core.runtime.Assert;
-
+// DMD 1.020
 public class ThisDeclaration extends VarDeclaration {
 
 	public ThisDeclaration(Loc loc, Type type) {
@@ -10,8 +9,7 @@ public class ThisDeclaration extends VarDeclaration {
 	
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
-		Assert.isTrue(false);
-		return null;
+		throw new IllegalStateException("assert(0);");
 	}
 
 }

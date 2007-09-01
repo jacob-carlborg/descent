@@ -2,8 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+// DMD 1.020
 public abstract class Statement extends ASTDmdNode {
-	
+
 	public Loc loc;
 	public boolean incontract;
 
@@ -11,11 +12,79 @@ public abstract class Statement extends ASTDmdNode {
 		this.loc = loc;
 	}
 
-	public Statement semantic(Scope sc, SemanticContext context) {
-		return this;
+	public boolean comeFrom() {
+		return false;
+	}
+
+	public Expression doInline(InlineDoState ids) {
+		throw new IllegalStateException("assert(0);");
+	}
+
+	public boolean fallOffEnd(SemanticContext context) {
+		return true;
 	}
 
 	public List<Statement> flatten(Scope sc) {
+		return null;
+	}
+
+	public boolean hasBreak() {
+		return false;
+	}
+
+	public boolean hasContinue() {
+		return false;
+	}
+
+	public int inlineCost(InlineCostState ics) {
+		return COST_MAX;
+	}
+
+	public Statement inlineScan(InlineScanState iss) {
+		return this;
+	}
+
+	public Expression interpret(InterState istate, SemanticContext context) {
+		// START()
+		if (istate.start != null) {
+			if (istate.start != this) {
+				return null;
+			}
+			istate.start = null;
+		}
+		// START()
+		return EXP_CANT_INTERPRET;
+	}
+
+	public AsmStatement isAsmStatement() {
+		return null;
+	}
+
+	public CompoundStatement isCompoundStatement() {
+		return null;
+	}
+
+	public DeclarationStatement isDeclarationStatement() {
+		return null;
+	}
+
+	public GotoStatement isGotoStatement() {
+		return null;
+	}
+
+	public IfStatement isIfStatement() {
+		return null;
+	}
+
+	public ReturnStatement isReturnStatement() {
+		return null;
+	}
+
+	public ScopeStatement isScopeStatement() {
+		return null;
+	}
+
+	public TryCatchStatement isTryCatchStatement() {
 		return null;
 	}
 
@@ -24,6 +93,10 @@ public abstract class Statement extends ASTDmdNode {
 		sentry[0] = null;
 		sexception[0] = null;
 		sfinally[0] = null;
+	}
+
+	public Statement semantic(Scope sc, SemanticContext context) {
+		return this;
 	}
 
 	public Statement semanticScope(Scope sc, Statement sbreak,
@@ -44,20 +117,7 @@ public abstract class Statement extends ASTDmdNode {
 	}
 
 	public Statement syntaxCopy() {
-		// TODO semantic
-		return this;
-	}
-
-	public boolean fallOffEnd(SemanticContext context) {
-		return true;
-	}
-
-	public boolean hasBreak() {
-		return false;
-	}
-
-	public boolean hasContinue() {
-		return false;
+		throw new IllegalStateException("assert(0);");
 	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
@@ -73,67 +133,9 @@ public abstract class Statement extends ASTDmdNode {
 		toCBuffer(buf, hgs, context);
 		return buf.toChars();
 	}
-	
-	public int inlineCost(InlineCostState ics) {
-		return COST_MAX;
-	}
-	
-	public Expression doInline(InlineDoState ids) {
-		throw new IllegalStateException("assert(0);");
-	}
-
-	public Statement inlineScan(InlineScanState iss) {
-		return this;
-	}
 
 	public boolean usesEH() {
 		return false;
 	}
 
-	public boolean comeFrom() {
-		return false;
-	}
-	
-	public DeclarationStatement isDeclarationStatement() {
-		return null;
-	}
-	
-	public CompoundStatement isCompoundStatement() {
-		return null;
-	}
-	
-	public ReturnStatement isReturnStatement() {
-		return null;
-	}
-	
-	public IfStatement isIfStatement() {
-		return null;
-	}
-	
-	public TryCatchStatement isTryCatchStatement() {
-		return null;
-	}
-	
-	public GotoStatement isGotoStatement() {
-		return null;
-	}
-	
-	public AsmStatement isAsmStatement() {
-		return null;
-	}
-
-	public Expression interpret(InterState istate, SemanticContext context) {
-		// START()
-		if (istate.start != null) {
-			if (istate.start != this)
-				return null;
-			istate.start = null;
-		}
-		// START()
-	    return EXP_CANT_INTERPRET;
-	}
-
-	public ScopeStatement isScopeStatement() {
-		return null;
-	}
 }

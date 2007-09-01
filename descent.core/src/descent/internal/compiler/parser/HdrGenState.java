@@ -4,5 +4,6 @@ public class HdrGenState {
 
 	public boolean hdrgen;
 	public boolean tpltMember;
+	public int console;
 
 }

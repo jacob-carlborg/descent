@@ -4,7 +4,7 @@ public class Global {
 	
 	public int structalign;
 	public String version;
-	public int gag;
+	public int gag = 1;
 	public int errors;
 	public Param params = new Param();
 

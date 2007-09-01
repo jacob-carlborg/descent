@@ -41,6 +41,7 @@ public class FuncDeclaration extends Declaration {
 	private final static char[] null_this = { 'n', 'u', 'l', 'l', ' ', 't',
 			'h', 'i', 's' };
 
+	public List fthrows; // Array of Type's of exceptions (not used)
 	public Statement fensure;
 	public Statement frequire;
 	public Statement fbody;

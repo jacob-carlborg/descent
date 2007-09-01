@@ -308,7 +308,7 @@ public interface IProblem {
 	int MoreThanOneInvariant = 338;
 	int DuplicatedParameter = 339;
 	int SymbolNotFound = 340;
-	int StaticAssertIsFalse = 341;
+	int StatementIsNotReachable = 341;
 	int VoidFunctionsHaveNoResult = 342; // TODO is this the same as VoidHaveNoValue ?
 	int ReturnStatementsCannotBeInContracts = 343;
 	int NotAnAggregateType = 344;
@@ -340,7 +340,8 @@ public interface IProblem {
 	int ArrayIndexOutOfBounds = 371;
 	int AssertionFailed = 372;
 	int AssertionFailedNoMessage = 373;
-	int StatementIsNotReachable = 374;
+	int ExpressionIsNotEvaluatableAtCompileTime = 374;
+	
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

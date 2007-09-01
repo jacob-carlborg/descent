@@ -130,7 +130,7 @@ public class VarExp extends Expression {
 					return ei.exp.implicitCastTo(sc, type, context);
 				}
 			}
-			v.checkNestedReference(sc, context);
+			v.checkNestedReference(sc, loc, context);
 		}
 		return this;
 	}

@@ -32,7 +32,7 @@ import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
-	private final static boolean RESOLVE = false;
+	private final static boolean RESOLVE = true;
 	
 	public static class ParseResult {
 		public Module module;

@@ -45,7 +45,6 @@ ConditionalDeclaration.java
 ConditionalStatement.java
 Constfold.java
 ContinueStatement.java
-CtorDeclaration.java
 DebugCondition.java
 DebugSymbol.java
 Declaration.java
@@ -54,7 +53,6 @@ DeclarationStatement.java
 DecrementExp.java
 DefaultStatement.java
 DelegateExp.java
-DeleteDeclaration.java
 DeleteExp.java
 DivAssignExp.java
 DivExp.java
@@ -69,7 +67,6 @@ DotVarExp.java
 Dsymbol.java
 DsymbolExp.java
 DsymbolTable.java
-DtorDeclaration.java
 DVCondition.java
 DYNCAST.java
 Entity.java
@@ -83,7 +80,6 @@ FileExp.java
 ForeachRangeStatement.java
 ForeachStatement.java
 ForStatement.java
-FuncAliasDeclaration.java
 FuncDeclaration.java
 FuncExp.java
 FuncLiteralDeclaration.java
@@ -180,11 +176,6 @@ ShrAssignExp.java
 ShrExp.java
 SliceExp.java
 StandardLibraryHelper.java
-Statement.java
-StaticAssert.java
-StaticAssertStatement.java
-StaticCtorDeclaration.java
-StaticDtorDeclaration.java
 StaticIfCondition.java
 StaticIfDeclaration.java
 STC.java
@@ -209,8 +200,6 @@ TemplateParameter.java
 TemplateTupleParameter.java
 TemplateTypeParameter.java
 TemplateValueParameter.java
-ThisDeclaration.java
-ThisExp.java
 ThrowStatement.java
 TOK.java
 Token.java

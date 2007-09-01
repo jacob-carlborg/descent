@@ -114,7 +114,7 @@ public class SymOffExp extends Expression {
 		}
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
-			v.checkNestedReference(sc, context);
+			v.checkNestedReference(sc, loc, context);
 		}
 		return this;
 	}

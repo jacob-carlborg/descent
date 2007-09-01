@@ -10,6 +10,7 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	public FuncLiteralDeclaration(Loc loc, Type type, TOK tok, ForeachStatement fes) {
 		super(loc, null, STC.STCundefined, type);
 		this.tok = tok;
+		// TODO semantic
 	}
 
 	@Override
@@ -23,7 +24,6 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, ident);
-			// Template args?
 			TreeVisitor.acceptChildren(visitor, sourceFrequire);
 			TreeVisitor.acceptChildren(visitor, sourceFbody);
 			TreeVisitor.acceptChildren(visitor, outId);

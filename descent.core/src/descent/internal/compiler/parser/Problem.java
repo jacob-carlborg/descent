@@ -286,8 +286,6 @@ public class Problem implements IProblem {
 			return "Duplicate parameter " + arguments[0];
 		case SymbolNotFound:
 			return "Symbol " + arguments[0] + " not found";
-		case StaticAssertIsFalse:
-			return "The expression statically evaluates to false";
 		case VoidFunctionsHaveNoResult:
 			return "Void functions have no result";
 		case ReturnStatementsCannotBeInContracts:
@@ -355,10 +353,11 @@ public class Problem implements IProblem {
 			return "Array index " + arguments[0] + " is out of bounds [0.." +
 				arguments[1] + "]"; 
 		case AssertionFailed:
-			return arguments[0];
+			return "Assertion failed: " + arguments[0];
 		case AssertionFailedNoMessage:
 			return "assert(" + arguments[0] + ") failed";
-			
+		case ExpressionIsNotEvaluatableAtCompileTime:
+			return arguments[0] + " is not evaluatable at compile time";
 		default:
 			return "";
 		}

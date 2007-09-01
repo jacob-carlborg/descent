@@ -407,7 +407,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return copy();
 	}
 
-	public void scanForNestedRef(Scope sc) {
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
 		// empty
 	}
 

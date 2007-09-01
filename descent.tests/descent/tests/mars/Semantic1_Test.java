@@ -573,12 +573,20 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors(" int Y; template T(alias X : Y) { }");
 	}
 	
-	public void testStaticAssert() {
+	public void testStaticAssertNoMessage() {
 		String s = " static assert(false);";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.StaticAssertIsFalse, 15, 5);
+		assertError(p[0], IProblem.AssertionFailedNoMessage, 15, 5);
+	}
+	
+	public void testStaticAssert() {
+		String s = " static assert(false, \"message\");";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.AssertionFailed, 15, 5);
 	}
 	
 	public void testFunctionMustReturnLong() {

@@ -843,9 +843,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		this.buffer.append("delete");
 		this.buffer.append("(");
 		visitList(node.arguments, ", ");
-		if (node.varargs != 0) {
-			this.buffer.append("...");
-		}
 		this.buffer.append(")");
 		if (node.frequire != null) {
 			this.buffer.append(LINE_END);

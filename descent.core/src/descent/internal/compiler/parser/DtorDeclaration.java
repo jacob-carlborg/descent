@@ -8,24 +8,20 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DtorDeclaration extends FuncDeclaration {
-	
+
+	public int notThisStart;
+
 	public DtorDeclaration(Loc loc) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.dtor), STC.STCundefined, null);
 	}
-	
-	
+
 	@Override
-	public int getNodeType() {
-		return DTOR_DECLARATION;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, ident);
-			// Template args?
 			TreeVisitor.acceptChildren(visitor, sourceFrequire);
 			TreeVisitor.acceptChildren(visitor, sourceFbody);
 			TreeVisitor.acceptChildren(visitor, outId);
@@ -35,15 +31,39 @@ public class DtorDeclaration extends FuncDeclaration {
 	}
 
 	@Override
+	public boolean addPostInvariant(SemanticContext context) {
+		return false;
+	}
+
+	@Override
+	public boolean addPreInvariant(SemanticContext context) {
+		return (vthis != null && context.global.params.useInvariants);
+	}
+
+	@Override
+	public int getNodeType() {
+		return DTOR_DECLARATION;
+	}
+
+	@Override
 	public DtorDeclaration isDtorDeclaration() {
 		return this;
 	}
-	
+
+	@Override
+	public boolean isVirtual() {
+		if (BREAKABI) {
+			return false;
+		} else {
+			return super.isVirtual();
+		}
+	}
+
 	@Override
 	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
-		return false;
+		return false; // cannot overload destructors
 	}
-	
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		ClassDeclaration cd;
@@ -52,8 +72,8 @@ public class DtorDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
-			// TODO semantic point out the "this" token
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DestructorsOnlyForClass, 0, start, "~this".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.DestructorsOnlyForClass, 0, notThisStart, 5));
 		} else {
 			if (cd.dtors == null) {
 				cd.dtors = new ArrayList<FuncDeclaration>();
@@ -70,15 +90,25 @@ public class DtorDeclaration extends FuncDeclaration {
 
 		sc.pop();
 	}
-	
+
 	@Override
-	public boolean addPreInvariant(SemanticContext context) {
-		return (vthis != null && context.global.params.useInvariants);
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		if (s != null) {
+			throw new IllegalStateException("assert(!s);");
+		}
+
+		DtorDeclaration dd = new DtorDeclaration(loc);
+		return super.syntaxCopy(dd);
 	}
-	
+
 	@Override
-	public boolean addPostInvariant(SemanticContext context) {
-		return false;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		if (hgs.hdrgen) {
+			return;
+		}
+		buf.writestring("~this()");
+		bodyToCBuffer(buf, hgs, context);
 	}
 
 }

@@ -87,8 +87,8 @@ public abstract class UnaExp extends Expression {
 	}
 
 	@Override
-	public void scanForNestedRef(Scope sc) {
-		e1.scanForNestedRef(sc);
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		e1.scanForNestedRef(sc, context);
 	}
 
 	@Override

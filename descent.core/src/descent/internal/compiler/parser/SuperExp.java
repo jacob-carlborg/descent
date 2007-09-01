@@ -95,7 +95,7 @@ public class SuperExp extends ThisExp {
 			type = cd.baseClass.type;
 		}
 
-		var.isVarDeclaration().checkNestedReference(sc, context);
+		var.isVarDeclaration().checkNestedReference(sc, loc, context);
 		/*
 		 * #if 0 if (fd != fdthis) { fdthis.getLevel(loc, fd);
 		 * fd.vthis.nestedref = 1; fd.nestedFrameRef = 1; } #endif

@@ -4,23 +4,19 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-
+// DMD 1.020
 public class StaticAssert extends Dsymbol {
-	
+
 	public Expression exp;
 	public Expression msg;
 
 	public StaticAssert(Loc loc, Expression exp, Expression msg) {
 		super(loc);
 		this.exp = exp;
-		this.msg = msg;		
+		this.msg = msg;
 	}
-	
+
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum, SemanticContext context) {
-		return 0; // we didn't add anything
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -29,41 +25,85 @@ public class StaticAssert extends Dsymbol {
 		}
 		visitor.endVisit(this);
 	}
-	
+
+	@Override
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+			SemanticContext context) {
+		return 0; // we didn't add anything
+	}
+
+	@Override
+	public int getNodeType() {
+		return STATIC_ASSERT;
+	}
+
+	@Override
+	public void inlineScan(SemanticContext context) {
+		// empty
+	}
+
+	@Override
+	public String kind() {
+		return "static assert";
+	}
+
+	@Override
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+		ps[0] = null;
+		return true;
+	}
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		
+		// empty
 	}
-	
+
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		Expression e;
 
 		e = exp.semantic(sc, context);
-		e = e.optimize(Expression.WANTvalue, context);
+		e = e.optimize(ASTDmdNode.WANTvalue, context);
 		if (e.isBool(false)) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticAssertIsFalse, 0, exp.start, exp.length));
-			/* TODO see if appear "msg" in the error
 			if (msg != null) {
+				HdrGenState hgs = new HdrGenState();
+				OutBuffer buf = new OutBuffer();
+
 				msg = msg.semantic(sc, context);
-				msg = msg.optimize(Expression.WANTvalue);
-				String p = msg.toChars();
-				error("(%s) is false, %s", exp.toChars(), p);
+				msg = msg.optimize(WANTvalue | WANTinterpret, context);
+				hgs.console = 1;
+				msg.toCBuffer(buf, hgs, context);
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.AssertionFailed, 0, exp.start, exp.length,
+						new String[] { buf.toChars() }));
 			} else {
-				error("(%s) is false", exp.toChars());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.AssertionFailedNoMessage, 0, exp.start,
+						exp.length, new String[] { exp.toChars(context) }));
 			}
-			*/
-			/*
-			 * TODO semantic if (!global.gag) fatal();
-			 */
+			if (context.global.gag == 0) {
+				fatal();
+			}
 		} else if (!e.isBool(true)) {
-			error("(%s) is not evaluatable at compile time", exp.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0,
+					exp.start, exp.length,
+					new String[] { exp.toChars(context) }));
 		}
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return STATIC_ASSERT;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring(kind());
+		buf.writeByte('(');
+		exp.toCBuffer(buf, hgs, context);
+		if (msg != null) {
+			buf.writeByte(',');
+			msg.toCBuffer(buf, hgs, context);
+		}
+		buf.writestring(");");
+		buf.writenl();
 	}
 
 }

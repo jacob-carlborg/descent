@@ -17,6 +17,14 @@ public abstract class Dsymbol extends ASTDmdNode {
 		}
 		return b;
 	}
+	
+	public static List<Argument> arraySyntaxCopyArguments(List<Argument> a) {
+		List<Argument> b = new ArrayList<Argument>();
+		for (Argument s : a) {
+			b.add(s.syntaxCopy());
+		}
+		return b;
+	}
 
 	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps, SemanticContext context) {
 		Dsymbol s = null;
@@ -211,6 +219,10 @@ public abstract class Dsymbol extends ASTDmdNode {
 	}
 
 	public Declaration isDeclaration() {
+		return null;
+	}
+	
+	public DeleteDeclaration isDeleteDeclaration() {
 		return null;
 	}
 

@@ -5,35 +5,68 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class ThisExp extends Expression {
-	
+
 	public Declaration var;
 
 	public ThisExp(Loc loc) {
 		super(loc, TOK.TOKthis);
 		this.var = null;
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return THIS_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
-	
+	@Override
+	public Expression doInline(InlineDoState ids) {
+		if (ids.vthis == null) {
+			return this;
+		}
+
+		VarExp ve = new VarExp(loc, ids.vthis);
+		ve.type = type;
+		return ve;
+	}
+
+	@Override
+	public int getNodeType() {
+		return THIS_EXP;
+	}
+
+	@Override
+	public int inlineCost(InlineCostState ics) {
+		FuncDeclaration fd = ics.fd;
+		if (!ics.hdrscan) {
+			if (fd.isNested() || !ics.hasthis) {
+				return COST_MAX;
+			}
+		}
+		return 1;
+	}
+
 	@Override
 	public boolean isBool(boolean result) {
 		return result ? true : false;
 	}
-	
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		if (var == null) {
+			throw new IllegalStateException("assert(var);");
+		}
+		var.isVarDeclaration().checkNestedReference(sc, Loc.ZERO, context);
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		FuncDeclaration fd;
+		@SuppressWarnings("unused")
 		FuncDeclaration fdthis;
+		@SuppressWarnings("unused")
 		int nested = 0;
 
 		if (type != null) { // assert(global.errors || var);
@@ -71,7 +104,7 @@ public class ThisExp extends Expression {
 
 		fdthis = sc.parent.isFuncDeclaration();
 		fd = hasThis(sc); // fd is the uplevel function with the 'this'
-							// variable
+		// variable
 		if (fd == null) {
 			// goto Lerr;
 			return semantic_Lerr(sc, context);
@@ -81,26 +114,25 @@ public class ThisExp extends Expression {
 		var = fd.vthis;
 		Assert.isNotNull(var.parent);
 		type = var.type;
-		var.isVarDeclaration().checkNestedReference(sc, context);
-		/*
-		 * #if 0 if (fd != fdthis) // if nested { fdthis.getLevel(fd);
-		 * fd.vthis.nestedref = 1; fd.nestedFrameRef = 1; } #endif
-		 */
+		var.isVarDeclaration().checkNestedReference(sc, loc, context);
 		sc.callSuper |= Scope.CSXthis;
 		return this;
 	}
-	
+
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
-    	type = Type.tint32;
-	    return this;
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 0, start,
+				length));
+		type = Type.tint32;
+		return this;
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		 buf.writestring("this");
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("this");
 	}
-		
+
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;

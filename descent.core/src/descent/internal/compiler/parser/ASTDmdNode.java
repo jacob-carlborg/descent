@@ -34,28 +34,25 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // class Object in DMD compiler
 public abstract class ASTDmdNode extends ASTNode {
-	
-	public interface BinExp_interpretCommon_fp
-	{
+
+	public interface BinExp_interpretCommon_fp {
 		Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context);
 	}
 
-	public interface BinExp_interpretCommon2_fp
-	{
+	public interface BinExp_interpretCommon2_fp {
 		Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context);
 	}
-	
-	public interface UnaExp_interpretCommon_fp
-	{
-		Expression call(Type type, Expression e1,
-				SemanticContext context);
+
+	public interface UnaExp_interpretCommon_fp {
+		Expression call(Type type, Expression e1, SemanticContext context);
 	}
 
 	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;
-	
-	public final static int COST_MAX = 250; 
+
+	public final static int COST_MAX = 250;
+	public final static boolean BREAKABI = true;
 
 	public final static int WANTflags = 1;
 	public final static int WANTvalue = 2;
@@ -253,22 +250,25 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int TRAITS_EXP = 191;
 	public final static int COMMENT = 192;
 	public final static int PRAGMA = 193;
-	
+
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
 		public EXP_SOMETHING_INTERPRET() {
 			super(null, null);
 		}
+
 		@Override
 		public int getNodeType() {
 			return 0;
 		}
+
 		@Override
 		public String toChars(SemanticContext context) {
 			return null;
 		}
+
 		@Override
 		protected void accept0(IASTVisitor visitor) {
-		}		
+		}
 	}
 
 	public final static Expression EXP_CANT_INTERPRET = new EXP_SOMETHING_INTERPRET();
@@ -600,8 +600,8 @@ public abstract class ASTDmdNode extends ASTNode {
 			if (d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d)) {
 				error("%s %s.%s is not accessible from %s", d.kind(), d
-						.getModule().toChars(context), d.toChars(context), sc.module
-						.toChars(context));
+						.getModule().toChars(context), d.toChars(context),
+						sc.module.toChars(context));
 			}
 		} else if (e.type.ty == Tclass) { // Do access check
 			ClassDeclaration cd;
@@ -753,7 +753,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 	public boolean findCondition(List<char[]> ids, char[] ident) {
 		if (ids != null) {
-			for (char[]id : ids) {
+			for (char[] id : ids) {
 				if (CharOperation.equals(id, ident)) {
 					return true;
 				}
@@ -1046,7 +1046,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public String toChars(SemanticContext context) {
-		throw new IllegalStateException("This is an abstract method in DMD an should be implemented");
+		throw new IllegalStateException(
+				"This is an abstract method in DMD an should be implemented");
 	}
 
 	protected String toPrettyChars(SemanticContext context) {
@@ -1061,13 +1062,15 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final int getElementType() {
 		return getNodeType();
 	}
-	
-	static Expression Add(Type type, Expression e1, Expression e2, SemanticContext context) {
+
+	static Expression Add(Type type, Expression e1, Expression e2,
+			SemanticContext context) {
 		// TODO semantic
 		return null;
 	}
-	
-	static Expression Ushr(Type type, Expression e1, Expression e2, SemanticContext context) {
+
+	static Expression Ushr(Type type, Expression e1, Expression e2,
+			SemanticContext context) {
 		// TODO semantic
 		return null;
 	}
@@ -1077,7 +1080,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	 *  type: type to paint the result
 	 */
 
-	static Expression Cast(Type type, Type to, Expression e1, SemanticContext context) {
+	static Expression Cast(Type type, Type to, Expression e1,
+			SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
 		Loc loc = e1.loc;
 
@@ -1180,8 +1184,9 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		return e;
 	}
-	
-	static Expression Xor(Type type, Expression e1, Expression e2, SemanticContext context) {
+
+	static Expression Xor(Type type, Expression e1, Expression e2,
+			SemanticContext context) {
 		// TODO semantic
 		return null;
 	}
@@ -1203,6 +1208,44 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		}
 		return e1;
+	}
+
+	public void argsToCBuffer(OutBuffer buf, HdrGenState hgs,
+			List<Argument> arguments, int varargs, SemanticContext context) {
+		buf.writeByte('(');
+		if (arguments != null) {
+			int i;
+			OutBuffer argbuf = new OutBuffer();
+
+			for (i = 0; i < arguments.size(); i++) {
+				Argument arg;
+
+				if (i != 0)
+					buf.writestring(", ");
+				arg = arguments.get(i);
+				if ((arg.storageClass & STCout) != 0)
+					buf.writestring("out ");
+				else if ((arg.storageClass & STCref) != 0)
+					buf
+							.writestring((context.global.params.Dversion == 1) ? "inout "
+									: "ref ");
+				else if ((arg.storageClass & STClazy) != 0)
+					buf.writestring("lazy ");
+				argbuf.reset();
+				arg.type.toCBuffer2(argbuf, arg.ident, hgs, context);
+				if (arg.defaultArg != null) {
+					argbuf.writestring(" = ");
+					arg.defaultArg.toCBuffer(argbuf, hgs, context);
+				}
+				buf.write(argbuf);
+			}
+			if (varargs != 0) {
+				if (i != 0 && varargs == 1)
+					buf.writeByte(',');
+				buf.writestring("...");
+			}
+		}
+		buf.writeByte(')');
 	}
 
 }
