@@ -80,7 +80,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="mmrnmhrm.core.CorePreferenceInitializer">
+            class="mmrnmhrm.core.DeeCorePreferenceInitializer">
       </initializer>
    </extension>
    <extension
@@ -89,6 +89,29 @@
             class="mmrnmhrm.core.dltk.search.DeeSearchFactory"
             nature="mmrnmhrm.core.deenature">
       </seachFactory>
+   </extension>
+   <extension
+         point="org.eclipse.dltk.launching.interpreterInstallTypes">
+      <interpreterInstallType
+            class="mmrnmhrm.core.launch.DeeDmdInstallType"
+            id="mmrnmhrm.core.launching.interpreterInstallType1">
+      </interpreterInstallType>
+   </extension>
+   <extension
+         point="org.eclipse.dltk.core.builder">
+      <builder
+            class="mmrnmhrm.core.build.DeeDLTKScriptBuilder"
+            nature="mmrnmhrm.core.deenature">
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="mmrnmhrm.core.launch.DeeLaunchConfiguration"
+            id="mmrnmhrm.core.deeLaunchConfigurationType"
+            modes="run, debug"
+            name="%localDeeApplication">
+      </launchConfigurationType>
    </extension>
 
 </plugin>

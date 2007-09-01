@@ -7,8 +7,9 @@ import descent.internal.compiler.parser.PragmaStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.expressions.Expression;
+import dtool.dom.statements.IStatement;
 
-public class DeclarationPragma extends DeclarationAttrib  {
+public class DeclarationPragma extends DeclarationAttrib implements IStatement {
 
 	public Symbol ident;
 	public Expression[] expressions;

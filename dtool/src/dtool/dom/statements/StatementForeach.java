@@ -19,7 +19,7 @@ public class StatementForeach extends Statement {
 		convertNode(elem);
 		this.params = DescentASTConverter.convertMany(
 				elem.arguments.toArray(), new IFunctionParameter[elem.arguments.size()]);
-		this.iterable = Expression.convert(elem.aggr);
+		this.iterable = Expression.convert(elem.sourceAggr);
 		this.body = Statement.convert(elem.body);
 		this.reverse = elem.op == TOK.TOKforeach_reverse;
 	}

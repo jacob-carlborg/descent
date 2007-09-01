@@ -2,7 +2,7 @@ package mmrnmhrm.ui;
 
 import mmrnmhrm.core.dltk.DeeLanguageToolkit;
 import mmrnmhrm.ui.editor.DeeEditor;
-import mmrnmhrm.ui.preferences.DeeCompilersPreferencePage;
+import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
 import mmrnmhrm.ui.text.DeeSimpleSourceViewerConfiguration;
 
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
@@ -79,8 +79,7 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 
 	@Override
 	public String getInterpreterContainerId() {
-		// TODO Provide launching support?
-		return null;
+		return "mmrnmrhm.core.launching.INTERPRETER_CONTAINER";
 	}
 
 

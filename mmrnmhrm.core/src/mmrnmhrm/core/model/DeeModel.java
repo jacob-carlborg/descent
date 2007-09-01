@@ -1,97 +1,134 @@
 package mmrnmhrm.core.model;
 
-import melnorme.miscutil.ArrayUtil;
-import mmrnmhrm.core.DeeCore;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
+import java.util.HashMap;
+import java.util.Map;
+
+import melnorme.miscutil.log.Logg;
+import mmrnmhrm.core.LangCore;
+
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.DLTKCore;
-import org.eclipse.dltk.core.IBuildpathEntry;
-import org.eclipse.dltk.core.IProjectFragment;
+import org.eclipse.dltk.core.ElementChangedEvent;
+import org.eclipse.dltk.core.IElementChangedListener;
+import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.core.IModelElementDelta;
 import org.eclipse.dltk.core.IScriptProject;
-import org.eclipse.dltk.core.ISourceModule;
+
+import static melnorme.miscutil.Assert.assertFail;
 
 /**
- * The Dee Model. It's elements are not handle-based, nor cached like JDT.
+ * The D Model. 
+ * It is a listener for the DLTK Model, and maintains a list of DeeProjects.
  */
-public class DeeModel {
+public class DeeModel implements IElementChangedListener {
 	
-	@SuppressWarnings("restriction")
-	private static org.eclipse.dltk.internal.core.Model getModel() {
-		return org.eclipse.dltk.internal.core.ModelManager.
-		getModelManager().getModel();
-	}
+	private static DeeModel instance;
 	
-	
-	/** Returns the D project with the given name, null if none. */
-	@SuppressWarnings("restriction")
-	public static DeeProject getLangProject(String name) {
-		return new DeeProject(getModel().getScriptProject(name));
-	}
-	
-	/** Returns the D project for given project */
-	public static DeeProject getLangProject(IProject project) {
-		return new DeeProject(DLTKCore.create(project));
-	}
-	
-	public static void createDeeProject(IProject project) throws CoreException {
-		DeeModel.addNature(project, DeeNature.NATURE_ID);
-
-		IScriptProject dltkProj = DLTKCore.create(project);
-		dltkProj.setRawBuildpath(new IBuildpathEntry[0], null);
-	}
-	
-	/** Adds a nature to the given project if it doesn't exist already.*/
-	public static void addNature(IProject project, String natureID) throws CoreException {
-		IProjectDescription description = project.getDescription();
-		String[] natures = description.getNatureIds();
-		if(ArrayUtil.contains(natures, natureID))
-			return;
-	
-		String[] newNatures = ArrayUtil.append(natures, natureID);
-		description.setNatureIds(newNatures);
-		project.setDescription(description, null); 
+	public static void initModel() {
+		instance = new DeeModel();
+		DLTKCore.addElementChangedListener(instance, ElementChangedEvent.POST_CHANGE);
 	}
 
-	/** Returns the Compilation for the given file. If the file is not part
-	 * of the model, return null. */
-	public static CompilationUnit findCompilationUnit(IFile file) throws CoreException {
-		CompilationUnit cunit = findMember(file);
-		return cunit;
+	public static void dispose() {
+		DLTKCore.removeElementChangedListener(instance);
 	}
 
-	private static CompilationUnit findMember(IFile file) throws CoreException {
-		DeeProject deeproj = getLangProject(file.getProject());
-		if(deeproj == null) return null;
-		
-		ISourceModule srcModule = DLTKCore.createSourceModuleFrom(file);
-		return new CompilationUnit(srcModule, getSourceModuleFile(srcModule));
+	Map<IScriptProject, DeeProjectOptions> deeInfos;
+	
+	public DeeModel() {
+		deeInfos = new HashMap<IScriptProject, DeeProjectOptions>(); 
 	}
-
-
-	/** Get's a sourceModule's file, apparently getUnderlyingResource()
-	 * doesn't work all the time. */
-	public static IFile getSourceModuleFile(ISourceModule srcModule) {
-		//return (IFile) srcModule.getUnderlyingResource();
-		return DeeCore.getWorkspaceRoot().getFile(srcModule.getPath());
-	}
-
-
-	/** Creates a SourceFolder for the given folder, and adds it the project. */
-	public static IProjectFragment createAddSourceFolder(IScriptProject dltkProj, IFolder folder) throws CoreException {
-		IProjectFragment fragment = dltkProj.getProjectFragment(folder);
-		if(fragment == null || !fragment.exists()) {
-			IBuildpathEntry[] bpentries = dltkProj.getRawBuildpath();
-			IBuildpathEntry entry = DLTKCore.newSourceEntry(fragment.getPath());
-			dltkProj.setRawBuildpath(ArrayUtil.concat(bpentries, entry), null);
+	
+	@Override
+	public void elementChanged(ElementChangedEvent event) {
+		IModelElementDelta delta= event.getDelta();
+		if (delta != null) {
+			System.out.println("delta received: ");
+			System.out.println(delta);
 		}
-		return fragment;
+		IModelElement element = delta.getElement();
+
+		// TODO handle moved elements
+		if(element.getElementType() == IModelElement.SCRIPT_MODEL) {
+			/*for (IModelElementDelta projectdelta : delta.getAddedChildren()) {
+				processProjectDelta(projectdelta);
+			}*/
+			for (IModelElementDelta projectdelta : delta.getAffectedChildren()) {
+				processProjectDelta(projectdelta);
+			}
+			
+		} else {
+			assertFail("Delta root must be model");
+		}
+	}
+
+	private void processProjectDelta(IModelElementDelta delta) {
+    	IScriptProject project = (IScriptProject) delta.getElement();
+		switch(delta.getKind()) {
+		case IModelElementDelta.ADDED:
+			Logg.main.println(">> Adding project: ", project);
+			addNewDLTKProject(project);
+			break;
+		case IModelElementDelta.REMOVED:
+			Logg.main.println(">> Removing project: ", project);
+			removeDLTKProject(project);
+			break;
+		case IModelElementDelta.CHANGED:
+			if(delta.getResourceDeltas() == null)
+				break;
+			for (IResourceDelta resourceDelta : delta.getResourceDeltas()) {
+		    	IResource resource =  resourceDelta.getResource();
+		    	Path cfgpath = new Path(DeeProjectOptions.CFG_FILE_NAME);
+				if(resource.getProjectRelativePath().equals(cfgpath)) {
+					Logg.main.println(">> CFG_FILE changed: ", resource);
+					removeDLTKProject(project);
+				}
+			}
+			break;
+		default:
+			assertFail("!!!! Unknown delta type for project;");
+		}
+	}
+
+	private void removeDLTKProject(IScriptProject project) {
+		//assertTrue(deeInfos.containsKey(project));
+		deeInfos.remove(project);
 	}
 
 
+	private void addNewDLTKProject(IScriptProject project) {
+		//assertTrue(!deeInfos.containsKey(project));
+		if(deeInfos.containsKey(project)) {
+			Logg.main.println("!!!! Warning: adding project that already exists.");
+			LangCore.logWarning("Adding project that already exists.");
+		}
+		DeeProjectOptions deeProj = new DeeProjectOptions(project);
+		deeInfos.put(project, deeProj);
+	}
+	
+	public static DeeProjectOptions getDeeProjectInfo(IScriptProject project) {
+		if(instance.deeInfos.containsKey(project)) {
+			DeeProjectOptions info = instance.deeInfos.get(project);
+			return info;
+		} 
+		try {
+			return loadProjectInfo(project);
+		} catch (CoreException e) {
+			LangCore.log(e);
+			return null;
+		}
+	}
+
+
+	private static DeeProjectOptions loadProjectInfo(IScriptProject project) throws CoreException {
+		DeeProjectOptions info = new DeeProjectOptions(project);
+		info.loadNewProjectConfig();
+		return info;
+	}
 
 
 }

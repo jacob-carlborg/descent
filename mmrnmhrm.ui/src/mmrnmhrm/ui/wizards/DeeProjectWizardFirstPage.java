@@ -6,7 +6,7 @@ package mmrnmhrm.ui.wizards;
 import java.util.Observable;
 
 import mmrnmhrm.core.model.DeeNature;
-import mmrnmhrm.ui.preferences.DeeCompilersPreferencePage;
+import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
 
 import org.eclipse.dltk.debug.ui.DLTKDebugUIPlugin;
 import org.eclipse.dltk.launching.IInterpreterInstall;
@@ -16,11 +16,11 @@ import org.eclipse.swt.widgets.Composite;
 
 public class DeeProjectWizardFirstPage extends ProjectWizardFirstPage {
 
-	RubyInterpreterGroup fInterpreterGroup;
+	DeeInterpreterGroup fInterpreterGroup;
 	
-	final class RubyInterpreterGroup extends AbstractInterpreterGroup {
+	final class DeeInterpreterGroup extends AbstractInterpreterGroup {
 		
-		public RubyInterpreterGroup(Composite composite) {
+		public DeeInterpreterGroup(Composite composite) {
 			super (composite);
 		}
 
@@ -37,7 +37,7 @@ public class DeeProjectWizardFirstPage extends ProjectWizardFirstPage {
 
     @Override
 	protected void createInterpreterGroup(Composite parent) {
-		fInterpreterGroup = new RubyInterpreterGroup(parent);
+		fInterpreterGroup = new DeeInterpreterGroup(parent);
 	}
 
     @Override

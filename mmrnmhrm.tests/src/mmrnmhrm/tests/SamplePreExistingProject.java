@@ -6,8 +6,8 @@ import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -68,7 +68,7 @@ public abstract class SamplePreExistingProject {
 		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
 				project, destDir);
 		if(addSrcFolder)
-			DeeModel.createAddSourceFolder(sampleDeeProj.dltkProj, folder);
+			ModelUtil.createAddSourceFolder(sampleDeeProj.dltkProj, folder);
 
 		return folder;
 	}

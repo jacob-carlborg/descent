@@ -1,10 +1,9 @@
 package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.core.model.ModelUtil;
 import mmrnmhrm.tests.BaseUITest;
-import mmrnmhrm.tests.adapters.TestAdapter_WizardDialog;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -18,8 +17,8 @@ import org.junit.Before;
 
 public class DeeProjectWizardTest extends BaseUITest {
 
-	private DeeProjectCreationWizard wizard;
-	private TestAdapter_WizardDialog wizDialog;
+	//private DeeProjectCreationWizard wizard;
+	//private TestAdapter_WizardDialog wizDialog;
 	
 	final static String NEWPROJNAME = "TestProject";
 	
@@ -43,7 +42,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 		// Should undo all wizard actions
 		ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				DeeProject deeproj = DeeModel.getLangProject(NEWPROJNAME);
+				DeeProject deeproj = ModelUtil.getDeeProject(NEWPROJNAME);
 				if(deeproj != null) {
 //					DeeModelRoot.getInstance().removeDeeProject(deeproj);
 //					deeproj.getProject().delete(true, monitor);
@@ -173,12 +172,12 @@ public class DeeProjectWizardTest extends BaseUITest {
 	protected boolean checkNoChanges() throws Throwable {
 		if(exceptionThrown)
 			throw exception;
-		return DeeModel.getLangProject(NEWPROJNAME) == null;
+		return ModelUtil.getDeeProject(NEWPROJNAME) == null;
 	}
 
 	protected boolean checkProjectCreated() throws Throwable {
 		if(exceptionThrown)
 			throw exception;
-		return DeeModel.getLangProject(NEWPROJNAME) != null;
+		return ModelUtil.getDeeProject(NEWPROJNAME) != null;
 	}
 }

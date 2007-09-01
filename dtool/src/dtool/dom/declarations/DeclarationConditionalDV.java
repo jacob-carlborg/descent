@@ -13,8 +13,8 @@ public class DeclarationConditionalDV extends DeclarationConditional {
 	public DeclarationConditionalDV(ASTNode elem,
 			DVCondition condition, NodeList thendecls, NodeList elsedecls) {
 		convertNode(elem);
-		if(condition.id != null) {
-			this.ident = new Symbol(condition.id.string);
+		if(condition.ident != null) {
+			this.ident = new Symbol(condition.ident);
 			this.ident.setSourceRange(condition);
 		} else
 			ident = null;

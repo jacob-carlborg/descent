@@ -5,7 +5,7 @@ package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.properties.DeeBuildpathsBlock;
+import mmrnmhrm.ui.preferences.DeeBuildpathsBlock;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,7 +41,7 @@ public class DeeProjectWizardSecondPage extends ProjectWizardSecondPage {
 	@Override
 	public void performFinish(IProgressMonitor monitor) throws CoreException,
 			InterruptedException {
-		super.performFinish(monitor);
-		getScriptProject().setOption("race", "We are the Chenjesu. We are the Mmrnmhrm.");
+		super.performFinish(monitor);;
 	}
+	
 }

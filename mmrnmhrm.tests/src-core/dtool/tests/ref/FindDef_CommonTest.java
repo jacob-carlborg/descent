@@ -3,11 +3,13 @@ package dtool.tests.ref;
 import java.io.IOException;
 import java.util.Collection;
 
+import mmrnmhrm.core.dltk.ParsingUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BasePluginTest;
 import mmrnmhrm.tests.SampleMainProject;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 import org.junit.Test;
 
@@ -32,6 +34,7 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 	}
 	
 	CompilationUnit cunit;
+	ISourceModule modUnit;
 	Module module;
 
 	int offset; 
@@ -42,8 +45,9 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		this.targetOffset = targetOffset;
 		//cunit = CoreTestUtils.testParseCUnit(TestUtils.readTestDataFile(testfile));
 		cunit = SampleMainProject.getCompilationUnit(TEST_SRCFOLDER +"/"+ testfile);
+		modUnit = cunit.modUnit;
 		//System.out.println("==== Source length: "+cunit.source.length()+" ====");
-		module = cunit.getNeoModule();	
+		module = ParsingUtil.getNeoASTModule(cunit.modUnit);	
 	}
 	
 	@Test
@@ -53,11 +57,13 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 	
 	public static void assertFindReF(CompilationUnit cunit, int offset,
 			CompilationUnit targetCunit, int targetOffset) throws ModelException {
+		ISourceModule modUnit2 = cunit.modUnit;
+
 		counter++;
 		System.out.print("Find ref case #"+counter+": "+offset+": ");
-		System.out.println(cunit.getSource().substring(offset).split("\\s")[0]);
+		System.out.println(modUnit2.getBuffer().getContents().substring(offset).split("\\s")[0]);
 		
-		IASTNode node = ASTNodeFinder.findElement(cunit.getNeoModule(), offset);
+		IASTNode node = ASTNodeFinder.findElement(ParsingUtil.getNeoASTModule(modUnit2), offset);
 		Reference ent = (Reference) node;
 		
 		Collection<DefUnit> defunits = ent.findTargetDefUnits(true);
@@ -72,7 +78,7 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		assertTrue(defunit != null, " defunit = null");
 
 		Module obtainedModule = NodeUtil.getParentModule(defunit);
-		assertTrue(obtainedModule.getModuleUnit().equals(targetCunit.getModuleUnit()),
+		assertTrue(obtainedModule.getModuleUnit().equals(targetCunit.modUnit),
 				" Find Ref got wrong target module.");
 		
 		assertTrue(defunit.defname.getStartPos() == targetOffset, 

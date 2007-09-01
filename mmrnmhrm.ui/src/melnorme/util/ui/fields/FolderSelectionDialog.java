@@ -44,9 +44,6 @@ public class FolderSelectionDialog extends ElementTreeSelectionDialog implements
 		setComparator(new ResourceComparator(ResourceComparator.NAME));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-	 */
 	protected Control createDialogArea(Composite parent) {
 		Composite result= (Composite)super.createDialogArea(parent);
 		

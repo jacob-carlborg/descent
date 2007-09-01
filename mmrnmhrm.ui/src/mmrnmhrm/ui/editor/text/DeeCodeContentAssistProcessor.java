@@ -2,7 +2,7 @@ package mmrnmhrm.ui.editor.text;
 
 import java.util.ArrayList;
 
-import mmrnmhrm.ui.DeePlugin;
+import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.dltk.core.ISourceModule;
@@ -15,7 +15,6 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.dom.definitions.DefUnit;
@@ -54,8 +53,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
 			final int offset) {
 		
-		IEditorInput editorInput = textEditor.getEditorInput();
-		ISourceModule moduleUnit = DeePlugin.getModuleUnit(editorInput);
+		ISourceModule moduleUnit = EditorUtil.getModuleUnit(textEditor);
 
 		String str = viewer.getDocument().get();
 		ICompletionProposal[] proposals = computeProposals(offset, moduleUnit, str, session);

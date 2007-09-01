@@ -2,6 +2,7 @@ package mmrnmhrm.ui.views;
 
 import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.jface.ElementContentProvider;
+import mmrnmhrm.core.dltk.ParsingUtil;
 
 public class ASTViewerContentProvider extends ElementContentProvider {
 	
@@ -15,7 +16,7 @@ public class ASTViewerContentProvider extends ElementContentProvider {
 	public Object[] getElements(Object inputElement) {
 		IElement input;
 		if(view.fUseOldAst == true)
-			input = view.fCUnit.getDmdModule();
+			input = ParsingUtil.parseModule(view.fCUnit.modUnit).dmdModule;
 		else
 			input = view.fCUnit.getModule();
 		if(input == null)

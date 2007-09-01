@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -81,7 +80,7 @@ public abstract class SampleNonDeeProject {
 	/** Gets a CompilationUnit from the sample project. 
 	 * CompilationUnit must be on the build path. */
 	public static CompilationUnit getCompilationUnit(String filepath) throws CoreException {
-		return DeeModel.findCompilationUnit(getFile(filepath));
+		return new CompilationUnit(getFile(filepath));
 	}
 	
 }

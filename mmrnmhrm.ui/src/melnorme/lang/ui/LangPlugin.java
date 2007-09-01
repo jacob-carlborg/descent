@@ -30,7 +30,6 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 				LangUIMessages.LangPlugin_internal_error, e)); 
 	}
 	
-
 	/** Gets the active workbench window. */
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
 		return DeePlugin.getInstance().getWorkbench().getActiveWorkbenchWindow();

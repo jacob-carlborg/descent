@@ -15,7 +15,7 @@ public class ExpIftype extends Expression {
 	
 	public ExpIftype(IftypeExp node) {
 		convertNode(node);
-		Assert.isNull(node.ident);
+		Assert.isNull(node.id);
 		this.tok = node.tok;
 		this.arg = Reference.convertType(node.targ);
 		this.specType = Reference.convertType(node.tspec);

@@ -3,9 +3,11 @@ package melnorme.lang.ui;
 
 
 import melnorme.miscutil.Assert;
-import mmrnmhrm.core.dltk.ModelUtil;
+import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.ActualPlugin;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.ISourceModule;
@@ -19,6 +21,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -86,15 +89,31 @@ public class EditorUtil {
 		} 
 		return project;
 	}
+	
+	public static ISourceModule getModuleUnit(ITextEditor textEditor) {
+		IModelElement element = EditorUtility.getEditorInputModelElement(textEditor, false);
+		if(!(element instanceof ISourceModule))
+			return null;
+		return (ISourceModule) element;
+	}
 
 	public static Module getNeoModuleFromEditor(ITextEditor textEditor) {
 		IModelElement element = EditorUtility.getEditorInputModelElement(textEditor, false);
 		if(!(element instanceof ISourceModule))
 			return null;
 		ISourceModule sourceModule = (ISourceModule) element;
-		Module neoModule = ModelUtil.getNeoASTModule(ModelUtil.parseModule(sourceModule));
+		Module neoModule = ParsingUtil.getNeoASTModule(ParsingUtil.parseModule(sourceModule));
 		Assert.isNotNull(neoModule.getModuleUnit());
 		return neoModule;
+	}
+
+	@Deprecated
+	public static CompilationUnit getCompilationUnit(IEditorInput input) {
+		if(input instanceof FileEditorInput) {
+			IFile file = ((FileEditorInput) input).getFile();
+			return new CompilationUnit(file);
+		}
+		return null;
 	}
 
 }

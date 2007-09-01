@@ -1,5 +1,6 @@
 package mmrnmhrm.ui;
 
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.dltk.ui.ScriptElementImageProvider;
@@ -28,7 +29,13 @@ public class DeeScriptUILabelProvider extends ScriptUILabelProvider {
 	
 	@Override
 	public Image getImage(Object element) {
+		Logg.main.println("getImage:: " + element);
 		return super.getImage(element);
+	}
+	
+	@Override
+	public String getText(Object element) {
+		return super.getText(element);
 	}
 	
 }

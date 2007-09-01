@@ -14,9 +14,9 @@ debug(foo) {
 }
 
 void func() {
-	debug(foo) {
+	debug(foo) 
 		char var3;
-	} else {
+	else {
 		int var3;
 	}
 }
@@ -39,9 +39,9 @@ version(foo) {
 void func() {
 	version(foo) {
 		char var3;
-	} else {
+	} else 
 		int var3;
-	}
+	
 }
 
 // ----- Conditional ----
@@ -50,4 +50,10 @@ static if(true) {
 } else {
 	int num;
 }
+
+static if(true)  
+	String str;
+else 
+	int num;
+
 

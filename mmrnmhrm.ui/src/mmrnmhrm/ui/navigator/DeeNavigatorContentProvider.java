@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -25,7 +26,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, org.ec
 		if(element instanceof IProject) {
 			try {
 				//dltkProj.open(null);
-				return DeeModel.getLangProject((IProject)element).dltkProj.getChildren();
+				return new DeeProject(DLTKCore.create(((IProject)element))).dltkProj.getChildren();
 			} catch (CoreException e) {
 				return null;
 			}

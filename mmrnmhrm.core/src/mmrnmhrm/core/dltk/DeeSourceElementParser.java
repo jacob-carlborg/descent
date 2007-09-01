@@ -3,6 +3,7 @@ package mmrnmhrm.core.dltk;
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.LangCore;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
@@ -50,34 +51,10 @@ public class DeeSourceElementParser implements ISourceElementParser {
 		IFile file = DeeCore.getWorkspaceRoot().getFile(path);
 		ISourceModule module = null;
 		module = DLTKCore.createSourceModuleFrom(file);
-
-		/*
-		Model model = ModelManager.getModelManager().getModel();
-		IScriptProject project = model.getScriptProject(path.segment(0));
-		try {
-						
-			//IPath projRelPath = path.removeFirstSegments(1);
-			IProjectFragment[] fragments = project.getProjectFragments();
-			for (int i = 0; i < fragments.length; i++) {
-				IProjectFragment srcFolder = fragments[i];
-				int commonSegs = srcFolder.getPath().matchingFirstSegments(path);
-				IPath srcRelPath = path.removeFirstSegments(commonSegs);
-				IScriptFolder scriptFolder = srcFolder.getScriptFolder(srcRelPath.removeLastSegments(1));
-				if(scriptFolder == null)
-					continue;
-				String modName = srcRelPath.removeFileExtension().lastSegment();
-				module = scriptFolder.getSourceModule(modName);
-				if(module != null) {
-					break;
-				}
-			}
-		} catch (RuntimeException e) {
-			throw ExceptionAdapter.unchecked(e);
-		}*/
-
+		
 		Assert.isNotNull(module);
 		// create a parser, that gives us an AST
-		ModuleDeclaration moduleDeclaration = parseModule(astCache, module, contents, fReporter, filename);
+		DeeModuleDeclaration moduleDeclaration = parseModule(astCache, module, contents, fReporter, filename);
 		
 		// traverse fetched AST with a visitor, that reports model element 
 		// to given ISourceElementRequestor
@@ -91,16 +68,16 @@ public class DeeSourceElementParser implements ISourceElementParser {
 				e.printStackTrace();
 			}
 		}
-
-		return moduleDeclaration;
+		return null;
+		//return moduleDeclaration;
 	}
 	
 
 	/** Obtains an AST from the given module, possibly using a cached value. 
 	 * Must supply either sourceModule or source */
-	public static ModuleDeclaration parseModule(ISourceModuleInfo astCache,
+	public static DeeModuleDeclaration parseModule(ISourceModuleInfo astCache,
 			ISourceModule sourceModule, char[] source, IProblemReporter reporter, char[] filename) {
-		ModuleDeclaration moduleDeclaration = getModuleAST(astCache);
+		DeeModuleDeclaration moduleDeclaration = getModuleAST(astCache);
 		if(moduleDeclaration != null) {
 			String str = (sourceModule == null) ? "<null>" : sourceModule.getElementName();
 			Logg.model.println("ParseModule (got AST cache): " + str);
@@ -111,7 +88,7 @@ public class DeeSourceElementParser implements ISourceElementParser {
 		try {
 			source = sourceModule.getSourceAsCharArray();
 		} catch (ModelException e) {
-			DeeCore.log(e);
+			LangCore.log(e);
 			if( DLTKCore.DEBUG ) {
 				e.printStackTrace();
 			}
@@ -122,9 +99,10 @@ public class DeeSourceElementParser implements ISourceElementParser {
 		moduleDeclaration = DeeSourceParser.parseModule(source, reporter, filename);
 		String str = (filename == null) ? "<null>" : new String(filename);
 		Logg.model.println("ParseModule parsed: ", str);
-		Module neoModule = ModelUtil.getNeoASTModule(moduleDeclaration);
+		Module neoModule = ParsingUtil.getNeoASTModule(moduleDeclaration);
 		Assert.isNotNull(sourceModule);
-		neoModule.setModuleUnit(sourceModule);
+		if(neoModule != null)
+			neoModule.setModuleUnit(sourceModule);
 
 		if(astCache != null) {
 			astCache.put(AST_CACHE_KEY, moduleDeclaration);
@@ -132,10 +110,10 @@ public class DeeSourceElementParser implements ISourceElementParser {
 		return moduleDeclaration;
 	}
 
-	public static ModuleDeclaration getModuleAST(ISourceModuleInfo astCache) {
+	public static DeeModuleDeclaration getModuleAST(ISourceModuleInfo astCache) {
 		if(astCache != null) {
-			ModuleDeclaration moduleDeclaration;
-			moduleDeclaration = (ModuleDeclaration) astCache.get(AST_CACHE_KEY);
+			DeeModuleDeclaration moduleDeclaration;
+			moduleDeclaration = (DeeModuleDeclaration) astCache.get(AST_CACHE_KEY);
 			if(moduleDeclaration != null)
 				return moduleDeclaration;
 		}

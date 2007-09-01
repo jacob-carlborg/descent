@@ -1,12 +1,12 @@
 package mmrnmhrm.ui.views;
 
 import melnorme.lang.ui.EditorUtil;
+import mmrnmhrm.core.dltk.DeeModuleDeclaration;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.CompilationUnit.EModelStatus;
-import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionHandler;
 
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -153,7 +153,8 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		} else {
 			fEditor = editor;
 			IEditorInput input = fEditor.getEditorInput();
-			fCUnit = DeePlugin.getCompilationUnitOperation(input);
+			ISourceModule modUnit = EditorUtil.getModuleUnit(fEditor);
+			fCUnit = CompilationUnit.create(modUnit);
 			if(fCUnit != null) {
 				fDocument = fEditor.getDocumentProvider().getDocument(editor.getEditorInput());
 				
@@ -165,7 +166,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 				refreshViewer();
 			} else {
-				setContentDescription("No DeeDocument available");
+				setContentDescription("No module element available");
 				viewer.getControl().setVisible(false);
 			}
 		}
@@ -178,12 +179,12 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			return;
 		
 		int offset = EditorUtil.getSelection(fEditor).getOffset();
-		if(fCUnit.getParseStatus() == EModelStatus.OK) {
-			setContentDescription("AST ok, sel: " + offset);
-		} else {
-			setContentDescription(fCUnit.toStringParseStatus());
-		}
-		if(fCUnit.getParseStatus() == CompilationUnit.EModelStatus.PARSER_INTERNAL_ERROR) {
+		DeeModuleDeclaration deeModule = fCUnit.getDeeModuleDeclaration(); 
+
+		setContentDescription("AST ("+deeModule.toStringParseStatus()+
+				"), sel: " + offset);
+
+		if(fCUnit.getModule() == null) {
 			viewer.getControl().setVisible(false);
 			return;
 		}

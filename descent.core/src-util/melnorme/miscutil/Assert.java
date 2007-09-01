@@ -97,5 +97,55 @@ public abstract class Assert {
 		fail();
 	}
 
+	/* ============================================================= */
+
+	/** Asserts that the given object is <code>null</code>. */
+	public static void assertIsNull(Object obj) {
+		Assert.isTrue(obj == null);
+	}
+
+	/** Asserts that the given object is not <code>null</code>. If this
+	 * is not the case, some kind of unchecked exception is thrown.
+	 * The given message is included in that exception, to aid debugging.
+	 */
+	public static void assertNotNull(Object object, String message) {
+		Assert.isTrue(!(object == null), message);
+	}
+	
+	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
+	public static void assertNotNull(Object object) {
+		Assert.isTrue(!(object == null), "");
+	}
+
+
+	/** Asserts that the given boolean is <code>true</code>. If this
+	 * is not the case, some kind of unchecked exception is thrown.
+	 * The given message is included in that exception, to aid debugging.
+	 *
+	 * @return <code>true</code> if the check passes (does not return
+	 *    if the check fails)
+	 */
+	public static boolean assertTrue(boolean expression, String message) {
+		return Assert.isTrue(expression, message);
+	}
+	
+	/** Like {@link #isTrue(boolean, String)} with empty message
+	 */
+	public static boolean assertTrue(boolean expression) {
+		return Assert.isTrue(expression, ""); //$NON-NLS-1$
+	}
+
+	
+	/** Causes an inconditional assertion failure, with message msg.
+	 */
+	public static void assertFail(String msg) {
+		Assert.fail(msg);
+	}
+	
+	/** Like {@link #fail(String)} with empty message. 
+	 */
+	public static void assertFail() {
+		Assert.fail();
+	}
 	
 }

@@ -36,7 +36,7 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 
 	@Override
 	public String getLanguageName() {
-		return "Dee";
+		return "D";
 	}
 
 	@Override

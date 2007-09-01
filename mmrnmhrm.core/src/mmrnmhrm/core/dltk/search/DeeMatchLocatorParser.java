@@ -1,7 +1,7 @@
 package mmrnmhrm.core.dltk.search;
 
 
-import mmrnmhrm.core.dltk.ModelUtil;
+import mmrnmhrm.core.dltk.ParsingUtil;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
@@ -27,7 +27,7 @@ public class DeeMatchLocatorParser extends MatchLocatorParser {
 		ISourceModule sourceModule = 
 		(org.eclipse.dltk.core.ISourceModule) possibleMatch.getModelElement();
 		
-		return ModelUtil.parseModule(sourceModule);
+		return ParsingUtil.parseModule(sourceModule);
 	}
 
 	private ASTVisitor visitor = new ASTVisitor() {

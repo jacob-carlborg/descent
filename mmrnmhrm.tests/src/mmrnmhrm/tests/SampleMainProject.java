@@ -7,8 +7,8 @@ import java.net.URISyntaxException;
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.dltk.core.DLTKCore;
 
 /**
  * This classes creates a sample project 
@@ -61,8 +62,8 @@ public abstract class SampleMainProject {
 			project.delete(true, null);
 		project.create(null);
 		project.open(null);
-		DeeModel.createDeeProject(project);
-		return DeeModel.getLangProject(name);
+		ModelUtil.createDeeProject(project);
+		return new DeeProject(DLTKCore.create(project));
 	}
 	
 	private static IFolder createFolderInProject(String bundleDir, String destDir, boolean addSrcFolder) throws CoreException,
@@ -71,7 +72,7 @@ public abstract class SampleMainProject {
 		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
 				project, destDir);
 		if(addSrcFolder) {
-			DeeModel.createAddSourceFolder(deeProj.dltkProj, folder);
+			ModelUtil.createAddSourceFolder(deeProj.dltkProj, folder);
 			deeProj.dltkProj.save(null, false);
 		}
 		return folder;
@@ -113,7 +114,7 @@ public abstract class SampleMainProject {
 	/** Gets a CompilationUnit from the sample project. 
 	 * CompilationUnit must be on the build path. */
 	public static CompilationUnit getCompilationUnit(String filepath) throws CoreException {
-		return DeeModel.findCompilationUnit(getFile(filepath));
+		return new CompilationUnit(getFile(filepath));
 	}
 	
 }

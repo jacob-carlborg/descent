@@ -1,6 +1,7 @@
 package melnorme.lang.ui;
 
 import mmrnmhrm.ui.ActualPlugin;
+import mmrnmhrm.ui.DeeUIMessages;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;

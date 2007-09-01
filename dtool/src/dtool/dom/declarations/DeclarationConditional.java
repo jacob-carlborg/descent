@@ -43,7 +43,7 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 			return new DeclarationConditionalDV(elem, (DVCondition) condition, thendecls, elsedecls);
 		}
 		StaticIfCondition stIfCondition = (StaticIfCondition) condition;
-		if(stIfCondition.exp instanceof IftypeExp && ((IftypeExp) stIfCondition.exp).ident != null) {
+		if(stIfCondition.exp instanceof IftypeExp && ((IftypeExp) stIfCondition.exp).id != null) {
 			return new DeclarationStaticIfIsType(elem, (IftypeExp) stIfCondition.exp, thendecls, elsedecls);
 		} else { 
 			return new DeclarationStaticIf(elem, stIfCondition, thendecls, elsedecls);

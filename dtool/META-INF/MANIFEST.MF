@@ -23,4 +23,5 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: descent.core;visibility:=reexport,
  org.eclipse.dltk.core,
  org.eclipse.core.runtime,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.dltk.launching

@@ -1,8 +1,10 @@
 package mmrnmhrm.ui.actions;
 
 import melnorme.lang.ui.ExceptionHandler;
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.ui.DeePlugin;
 
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -31,6 +33,16 @@ public class OperationsManager {
 	}
 	
 	
+	public static boolean executeOperation(final IWorkspaceRunnable action, String opName) {
+		ISimpleRunnable op = new ISimpleRunnable() {
+			public void run() throws CoreException {
+				DeeCore.run(action, null);
+			}
+		};
+		return get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
+	}
+
+	
 	public static void executeOperation(String opName, ISimpleRunnable op) {
 		get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
 	}
@@ -48,6 +60,7 @@ public class OperationsManager {
 		} catch (CoreException ce) {
 			ExceptionHandler.handle(ce, opName, "Execution Error");
 			opResult = IStatus.ERROR; 
+			return false;
 		} catch(RuntimeException re) {
 			opResult = IStatus.ERROR;
 			throw re;

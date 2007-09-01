@@ -51,7 +51,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-
+// XXX: DLTK 0.9 copy
 /**
  * Configures Editor hover preferences.
  * TODO: We need to add support for user categories here...

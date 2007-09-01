@@ -30,10 +30,10 @@ public class StatementTry extends Statement {
 			this.body = Statement.convert(elem.handler);
 			if(elem.type == null) {
 				this.param = null;
-			} else if(elem.id == null) {
+			} else if(elem.ident == null) {
 				this.param = new NamelessParameter(elem.type);
 			} else {
-				this.param = new FunctionParameter(elem.type, elem.id);
+				this.param = new FunctionParameter(elem.type, elem.ident);
 			}
 		}
 

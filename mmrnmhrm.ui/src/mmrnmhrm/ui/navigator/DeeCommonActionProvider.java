@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.navigator;
 
-import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.ModelUtil;
 import mmrnmhrm.ui.actions.ISimpleRunnable;
 import mmrnmhrm.ui.actions.OperationsManager;
 import mmrnmhrm.ui.editor.DeeEditor;
@@ -41,7 +41,7 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 			
 			IStructuredSelection sel = (IStructuredSelection) selection;
 			if(sel.size() == 1 && sel.getFirstElement() instanceof ISourceModule) {
-				file = DeeModel.getSourceModuleFile((ISourceModule) sel.getFirstElement()); 
+				file = ModelUtil.getSourceModuleFile((ISourceModule) sel.getFirstElement()); 
 				return true;
 			}
 			return false;

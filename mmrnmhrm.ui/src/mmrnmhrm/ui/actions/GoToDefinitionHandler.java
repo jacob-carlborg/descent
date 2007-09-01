@@ -13,8 +13,11 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.IExternalSourceModule;
 import org.eclipse.dltk.core.ISourceModule;
+import org.eclipse.dltk.internal.ui.editor.ExternalStorageEditorInput;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -145,8 +148,17 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 			IWorkbenchPage page = window.getActivePage();
 			// getCorrespondingResource isn't with linked folders 
 			//IFile file = (IFile) modUnit.getCorrespondingResource();
-			IFile file = (IFile) DeeCore.getWorkspaceRoot().findMember(modUnit.getPath());
-			targetEditor = (ITextEditor) IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
+			String editorID = DeeEditor.EDITOR_ID;
+			if (modUnit instanceof IExternalSourceModule) {
+				targetEditor = (ITextEditor) IDE.openEditor(page, new ExternalStorageEditorInput(
+						(IStorage) modUnit), editorID);
+			} else if (modUnit instanceof ISourceModule) {
+				IFile file = (IFile) DeeCore.getWorkspaceRoot().findMember(modUnit.getPath());
+				targetEditor = (ITextEditor) IDE.openEditor(page, file, editorID);
+			} else {
+				throw new CoreException(DeeCore.createErrorStatus(
+						"Don't know how to open editor for: " + modUnit));
+			}
 		} else {
 			targetEditor = editor;
 		}

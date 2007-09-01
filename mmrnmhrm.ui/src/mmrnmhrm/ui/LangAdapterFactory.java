@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.IContributorResourceAdapter;
 
-
+// not used anymore
 public class LangAdapterFactory implements IAdapterFactory, IContributorResourceAdapter {
 
 	

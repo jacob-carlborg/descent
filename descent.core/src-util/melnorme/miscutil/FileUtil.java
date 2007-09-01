@@ -3,9 +3,12 @@ package melnorme.miscutil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 /**
  * Miscelleanous file utilities 
+ * XXX: what about closing the streams?
  */
 public final class FileUtil {
 
@@ -70,5 +73,10 @@ public final class FileUtil {
 	/** Read all chars available in the given Reader, returns a String. */
 	public static String readStringFromReader(Reader reader) throws IOException {
 		return new String(readCharsFromReader(reader));
+	}
+
+	/** Read all chars available in the given InputStream, returns a String. */
+	public static String readStringFromStream(InputStream inputStream) throws IOException {
+		return readStringFromReader(new InputStreamReader(inputStream));
 	}
 }

@@ -1,6 +1,15 @@
 module foo;
 
 
+// ==============   Pragmas   ==============
+ 
+pragma(msg, "msg2");
+ 
+void func() {
+	pragma(msg, "msg");
+}
+ 
+
 // ==============   imports  ==============
 
 import std.stdio;
@@ -73,11 +82,6 @@ static this() { writeln("Foo"); }
 static ~this() { writeln("Foo"); }
 
 
-// ==============   DebugSpecification   ==============
-
-// ==============   VersionSpecification   ==============
-
-
 
 // ==============   Declaration   ==============
 
@@ -99,15 +103,5 @@ template Tpl(A, B : int, C : int = void, int N) {
 
 }
 
-// ----- Conditional ----
-static if(true) { 
-	String str;
-} else {
-	int num;
-}
-
-static if(true) { 
-	String str;
-}
 
 

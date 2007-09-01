@@ -46,14 +46,8 @@
             name="Dee (Mmrnmhrm)"/>
       <wizard
             category="mmrnmhrm.category"
-            class="mmrnmhrm.ui.wizards.DeeProjectWizard"
-            icon="icons/obj16/dee_project.gif"
-            id="Mmrnmhrm.wizard.newProject"
-            name="Dee Project"
-            project="true"/>
-      <wizard
-            category="mmrnmhrm.category"
             class="mmrnmhrm.ui.wizards.DeeProjectCreationWizard"
+            icon="icons/obj16/dee_project.gif"
             id="mmrnmhrm.ui.wizards.deeProjectWizard"
             name="Dee Project"
             project="true">
@@ -62,9 +56,19 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="mmrnmhrm.ui.properties.DeeBuildPathPropertyPage"
-            id="mmrnmhrm.ui.properties.DeeBuildpathProperties"
-            name="D Project Config">
+            class="mmrnmhrm.ui.preferences.pages.DeeBuildPathPropertyPage"
+            id="mmrnmhrm.ui.properties.DeeBuildPathProperties"
+            name="D Build Path (Mmrnmhrm)">
+         <enabledWhen>
+            <reference
+                  definitionId="mmrnmhrm.core.expressions.isDeeNature">
+            </reference>
+         </enabledWhen>
+      </page>
+      <page
+            class="mmrnmhrm.ui.preferences.pages.DeeCompileOptionsPropertyPage"
+            id="mmrnmhrm.ui.properties.DeeCompileOptionsProperties"
+            name="D Compile Options">
          <enabledWhen>
             <reference
                   definitionId="mmrnmhrm.core.expressions.isDeeNature">
@@ -75,29 +79,29 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+            class="mmrnmhrm.ui.preferences.pages.DeeRootPreferencePage"
             id="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
             name="%LangPreferencePage.name"/>
       	<page
 	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
-	          class="mmrnmhrm.ui.preferences.DeeEditorPreferencesPage"
+	          class="mmrnmhrm.ui.preferences.pages.DeeEditorPreferencePage"
 	          id="mmrnmhrm.ui.preferences.Editor"
 	          name="%LangEditorPreferencePage.name"/>
 	    <page
 	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
-	          class="mmrnmhrm.ui.preferences.DeeSourceColoringPreferencePage"
+	          class="mmrnmhrm.ui.preferences.pages.DeeSourceColoringPreferencePage"
 	          id="mmrnmhrm.ui.preferences.editor.SourceColoring"
 	          name="%LangEditorSyntaxColoringPreferencePage.name"/>
      	<page
               category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
-              class="mmrnmhrm.ui.preferences.DeeTemplatePreferencePage"
+              class="mmrnmhrm.ui.preferences.pages.DeeTemplatePreferencePage"
               id="mmrnmhrm.ui.preferences.EditorTemplates"
               name="%LangCodeTemplatesPreferencePage.name">      
             
       </page>
       <page
             category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
-            class="mmrnmhrm.ui.preferences.DeeCompilersPreferencePage"
+            class="mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage"
             id="mmrnmhrm.ui.preferences.editor.SourceColoring"
             name="%LangCompilersPreferencePage.name">
       </page>
@@ -258,22 +262,10 @@
       </command>
       <command
             categoryId="mmrnmhrm.ui.commands.category1"
-            defaultHandler="mmrnmhrm.ui.actions.ConfigureBuildPathHandler"
-            id="mmrnmhrm.ui.commands.configureBuildPath"
-            name="Configure Build Path">
-      </command>
-      <command
-            categoryId="mmrnmhrm.ui.commands.category1"
             defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
             id="mmrnmhrm.ui.commands.buildPathAdd"
-            name="Add as Source Folder">
+            name="Add as Folder Library">
       </command>
- <command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       defaultHandler="mmrnmhrm.ui.actions.RemoveSourceFolderHandler"
-       id="mmrnmhrm.ui.commands.buildPathRemove"
-       name="Remove from Build Path">
- </command>
 	<command
        categoryId="mmrnmhrm.ui.commands.category1"
        id="mmrnmhrm.ui.commands.openDefinition"
@@ -335,31 +327,10 @@
          <toolbar
                id="mmrnmhrm.ui.toolbars.sampleToolbar">
             <command
-                  commandId="mmrnmhrm.ui.commands.refreshModel"
-                  icon="icons/action16e/declipse.gif"
-                  label="Refresh D Model"
-                  tooltip="Refresh D Model">
-               <visibleWhen>
-                  <reference
-                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
-                  </reference>
-               </visibleWhen>
-            </command>
-            <command
                   commandId="mmrnmhrm.ui.commands.openDeeType"
                   icon="icons/action16e/opentype.gif"
                   label="%OpenTypeAction.label"
                   tooltip="%OpenTypeAction.tooltip">
-               <visibleWhen>
-                  <reference
-                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
-                  </reference>
-               </visibleWhen>
-            </command>
-            <command
-                  commandId="mmrnmhrm.ui.commands.sampleCommand2"
-                  icon="icons/action16e/spathi.16.gif"
-                  label="Sample Command2">
                <visibleWhen>
                   <reference
                         definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
@@ -378,71 +349,97 @@
             </command>
          </toolbar>
       </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?before=additions">
+         <toolbar
+               id="mmrnmhrm.ui.toolbars.sampleToolbar">
+            <command
+                  commandId="mmrnmhrm.ui.commands.refreshModel"
+                  icon="icons/action16e/declipse.gif"
+                  label="Refresh D Model"
+                  tooltip="Refresh D Model">
+               <visibleWhen>
+                  <equals
+                        value="false">
+                  </equals>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="mmrnmhrm.ui.commands.sampleCommand2"
+                  icon="icons/action16e/spathi.16.gif"
+                  label="Sample Command2">
+               <visibleWhen>
+                  <equals
+                        value="false">
+                  </equals>
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
             <menuContribution
-            locationURI="popup:org.eclipse.ui.popup.any?before=group.build">
-         <menu
-               id="mmrnmhrm.ui.menus.buildpath"
-               label="Dee Builld Path">
-            <visibleWhen>
+                  locationURI="popup:org.eclipse.dltk.ui.ScriptExplorer?after=group.edit">
+               <!--
+               <menu
+                     label="Build Path Extras">
+                     
+                  <command
+                        commandId="mmrnmhrm.ui.commands.buildPathAdd"
+                        icon="icons/jar_l_obj.gif"
+                        mnemonic="%contributions.view.edit.mnemonic">
+                     <visibleWhen>
+                        <with
+                              variable="activeMenuSelection">
+                           <iterate
+                                 operator="or">
+                              <instanceof
+                                    value="org.eclipse.core.resources.IFolder">
+                              </instanceof>
+                              <and>
+                                 <instanceof
+                                       value="org.eclipse.core.resources.IFile">
+                                 </instanceof>
+                                 <test
+                                       property="matchesName"
+                                       value="*.zip">
+                                 </test>
+                              </and>
+                           </iterate>
+                        </with>
+                     </visibleWhen>
+                  </command>
+                             <visibleWhen>
                <with
                      variable="activeMenuSelection">
-                  <iterate>
-                     <or>
-                        <reference
-                              definitionId="mmrnmhrm.core.expressions.isDeeNatureContainer">
-                        </reference>
-                        <instanceof
-                              value="org.eclipse.dltk.core.IProjectFragment">
-                        </instanceof>
-                     </or>
+                  <iterate
+                        operator="and">
+                     <reference
+                           definitionId="mmrnmhrm.core.expressions.isDeeNatureContainer">
+                     </reference>
                   </iterate>
                </with>
             </visibleWhen>
-            <separator
-                  name="content"
-                  visible="true">
-            </separator>
-            <separator
-                  name="additions"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="mmrnmhrm.ui.commands.buildPathAdd"
-                  icon="icons/lcl16e/add_as_source_folder.gif"
-                  mnemonic="%contributions.view.edit.mnemonic">
-               <visibleWhen>
-                  <with
-                        variable="activeMenuSelection">
-                     <iterate>
-                        <instanceof
-                              value="org.eclipse.core.resources.IFolder">
-                        </instanceof>
-                     </iterate>
-                  </with>
-               </visibleWhen>
-            </command>
-            <command
-                  commandId="mmrnmhrm.ui.commands.buildPathRemove"
-                  icon="icons/lcl16e/remove_as_source_folder.gif"
-                  mnemonic="%contributions.view.edit.mnemonic">
-               <visibleWhen>
-                  <with
-                        variable="activeMenuSelection">
-                     <iterate>
-                        <instanceof
-                              value="org.eclipse.dltk.core.IProjectFragment">
-                        </instanceof>
-                     </iterate>
-                  </with>
-               </visibleWhen>
-            </command>
-            <command
-                  commandId="mmrnmhrm.ui.commands.configureBuildPath"
-                  icon="icons/lcl16e/configure_build_path.gif"
-                  mnemonic="%contributions.view.edit.mnemonic">
-            </command>
-         </menu>
-      </menuContribution>
+   
+               </menu>
+               -->
+            </menuContribution>
+            <menuContribution
+                  locationURI="popup:org.eclipse.dltk.ui.buildpath.menu?before=buildpathGroup">
+               <command
+                     commandId="mmrnmhrm.ui.commands.buildPathAdd"
+                     icon="icons/lcl16e/add_as_source_folder.gif"
+                     mnemonic="%contributions.view.edit.mnemonic">
+                  <visibleWhen>
+                     <with
+                           variable="activeMenuSelection">
+                        <iterate>
+                           <instanceof
+                                 value="org.eclipse.core.resources.IFolder">
+                           </instanceof>
+                        </iterate>
+                     </with>
+                  </visibleWhen>
+               </command>
+            </menuContribution>
       
       
 
@@ -530,14 +527,13 @@
                <reference
                      definitionId="mmrnmhrm.core.expressions.isDeeNature">
                </reference>
-               <instanceof value="mmrnmhrm.core.model.IDeeElement"/>
             </or>
          </triggerPoints>
          <possibleChildren>
             <or>
                <instanceof value="org.eclipse.core.resources.IResource"/>
                <instanceof
-                     value="mmrnmhrm.core.model.IDeeElement">
+                     value="org.eclipse.dltk.core.IModelElement">
                </instanceof>
             </or>
          </possibleChildren>
@@ -565,6 +561,77 @@
             name="Dee Element"
             targetId="mmrnmhrm.ui.texteditor.deeCodeTarget">
       </hyperlinkDetector>
+   </extension>
+   <extension
+         point="org.eclipse.dltk.ui.buildpathContainerPage">
+      <buildpathContainerPath
+            class="mmrnmhrm.ui.launch.DeeInterpreterContainerWizardPage"
+            id="mmrnmrhm.core.launching.INTERPRETER_CONTAINER"
+            name="D System Libraries"
+            nature="mmrnmhrm.core.deenature">
+      </buildpathContainerPath>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="mmrnmhrm.ui.launch.DeeTabGroup"
+            description="%LangTabGroup.description"
+            id="mmrnmhrm.ui.launchConfigurationTabGroup1"
+            type="mmrnmhrm.core.deeLaunchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="mmrnmhrm.ui.launch.RubyLaunchShortcut"
+            description="%LangLaunchShortcut.description"
+            icon="$nl$/icons/d_app.gif"
+            id="mmrnmhrm.ui.launch.launchShortcut"
+            label="%LangLaunchShortcut.name"
+            modes="run, debug">
+         <description
+               description="%LangLaunchShortcut.runDescription"
+               mode="run">
+         </description>
+         <description
+               description="%LangLaunchShortcut.debugDescription"
+               mode="debug">
+         </description>
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <or>
+                        <test
+                              args="mmrnmhrm.core.deenature"
+                              property="org.eclipse.dltk.launching.hasProjectNature">
+                        </test>
+                     </or>
+                  </iterate>
+               </with>
+            </enablement>
+            <contextLabel
+                  label="%LangLaunchShortcut.runName"
+                  mode="run">
+            </contextLabel>
+            <contextLabel
+                  label="%LangLaunchShortcut.debugName"
+                  mode="debug">
+            </contextLabel>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="mmrnmhrm.core.deeLaunchConfigurationType"
+            icon="$nl$/icons/d_app.gif"
+            id="mmrnmhrm.ui.launchConfigurationTypeImage1">
+      </launchConfigurationTypeImage>
    </extension>
 
 </plugin>

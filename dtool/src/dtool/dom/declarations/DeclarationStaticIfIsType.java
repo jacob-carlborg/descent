@@ -93,7 +93,7 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 			IftypeExp iftypeExp, NodeList thendecls, NodeList elsedecls) {
 		convertNode(elem);
 		this.arg = Reference.convertType(iftypeExp.targ);
-		this.defUnit = new IsTypeDefUnit(iftypeExp.ident);
+		this.defUnit = new IsTypeDefUnit(iftypeExp.id);
 		this.tok = iftypeExp.tok;
 		this.specType = Reference.convertType(iftypeExp.tspec);
 		this.thendecls = thendecls;

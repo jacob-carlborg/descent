@@ -24,7 +24,7 @@ public class SWTUtil2 {
 		
 	/** Controls the enablement of composite color helpers. 
 	 * (random backgroung color)*/
-	public static final boolean enableColorHelpers = false;
+	public static final boolean enableColorHelpers = true;
 	
 	private static Random rnd = new Random(0);
 

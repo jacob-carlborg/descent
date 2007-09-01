@@ -32,6 +32,11 @@ public class Module extends Package {
 		return this;
 	}
 	
+	@Override
+	public int getNodeType() {
+		return MODULE;
+	}
+	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -40,6 +45,11 @@ public class Module extends Package {
 		}
 		visitor.endVisit(this);
 	}
+	
+	public boolean hasSyntaxErrors() {
+		return problems.size() != 0;
+	}
+
 
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
@@ -168,10 +178,7 @@ public class Module extends Package {
 		// TODO semantic
 	}
 
-	@Override
-	public int getNodeType() {
-		return MODULE;
-	}
+
 
 	public void addDeferredSemantic(Dsymbol s) {
 		if (deferred == null) {
@@ -197,5 +204,6 @@ public class Module extends Package {
 	public void toModuleAssert() {
 		// TODO semantic
 	}
+
 
 }
