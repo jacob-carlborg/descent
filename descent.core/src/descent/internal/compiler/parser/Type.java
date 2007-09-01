@@ -9,6 +9,7 @@ import static descent.internal.compiler.parser.STC.*;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 
 public abstract class Type extends ASTDmdNode {
 
@@ -600,21 +601,26 @@ public abstract class Type extends ASTDmdNode {
 	public Expression defaultInit(SemanticContext context) {
 		return null;
 	}
-
-	public Expression getProperty(Loc loc, char[] ident, SemanticContext context) {
+	
+	public Expression getProperty(Loc loc, IdentifierExp ident, SemanticContext context) {
+		return getProperty(loc, ident.ident, ident.start, ident.length, context);
+	}
+	
+	public Expression getProperty(Loc loc, char[] ident, int start, int length, SemanticContext context) {
 		Expression e = null;
 
 		if (CharOperation.equals(ident, Id.__sizeof)) {
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (CharOperation.equals(ident, Id.size)) {
-			error(".size property should be replaced with .sizeof");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, start, length, new String[] { ".size", ".sizeof" }));
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (CharOperation.equals(ident, Id.alignof)) {
 			e = new IntegerExp(loc, alignsize(context), Type.tsize_t);
 		} else if (CharOperation.equals(ident, Id.typeinfo)) {
-			if (!context.global.params.useDeprecated)
-				error(".typeinfo deprecated, use typeid(type)");
-			e = getTypeInfo(null);
+			if (!context.global.params.useDeprecated) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, start, length, new String[] { "typeinfo", ".typeid(type)" }));
+			}
+			e = getTypeInfo(null, context);
 		} else if (CharOperation.equals(ident, Id.init)) {
 			e = defaultInit(context);
 		} else if (CharOperation.equals(ident, Id.mangleof)) {
@@ -628,8 +634,7 @@ public abstract class Type extends ASTDmdNode {
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 		} else {
-			error("no property '%s' for type '%s'", new String(ident),
-					toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedProperty, 0, start, length, new String[] { new String(ident), toChars(context) }));
 			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
 		}
 		return e;
@@ -686,9 +691,10 @@ public abstract class Type extends ASTDmdNode {
 		}
 
 		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
-			if (!context.global.params.useDeprecated)
-				error(".typeinfo deprecated, use typeid(type)");
-			e = getTypeInfo(sc);
+			if (!context.global.params.useDeprecated) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, start, length, new String[] { ".typeinfo", "typeid(type)" }));
+			}
+			e = getTypeInfo(sc, context);
 			return e;
 		}
 
@@ -700,7 +706,7 @@ public abstract class Type extends ASTDmdNode {
 			return e;
 		}
 
-		return getProperty(e.loc, ident.ident, context);
+		return getProperty(e.loc, ident, context);
 	}
 
 	public int size(Loc loc, SemanticContext context) {
@@ -877,11 +883,6 @@ public abstract class Type extends ASTDmdNode {
 		}
 	}
 
-	public Expression getTypeInfo(Scope sc) {
-		// TODO semantic
-		return null;
-	}
-
 	public Type nextOf() {
 		return next;
 	}
@@ -905,6 +906,11 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public Expression getInternalTypeInfo(Scope sc) {
+		// TODO semantic
+		return null;
+	}
+	
+	public Expression getTypeInfo(Scope sc, SemanticContext context) {
 		// TODO semantic
 		return null;
 	}

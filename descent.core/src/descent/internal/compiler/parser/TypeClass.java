@@ -5,6 +5,7 @@ import java.util.List;
 
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.*;
@@ -123,9 +124,10 @@ public class TypeClass extends Type {
 			}
 
 			else if (CharOperation.equals(ident.ident, Id.typeinfo)) {
-				if (!context.global.params.useDeprecated)
-					error(".typeinfo deprecated, use typeid(type)");
-				return getTypeInfo(sc);
+				if (!context.global.params.useDeprecated) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, ident.start, ident.length, new String[] { "typeinfo", ".typeid(type)" }));
+				}
+				return getTypeInfo(sc, context);
 			}
 
 			else if (CharOperation.equals(ident.ident, Id.outer)

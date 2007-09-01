@@ -819,5 +819,37 @@ public class Semantic1_Test extends Parser_Test {
 		// This suit is black... NOT!!!
 		assertNoSemanticErrors("auto a = \"Hello \" ~ \"World!\";");
 	}
+	
+	public void testIntInit() {
+		assertNoSemanticErrors("int x = int.init;");
+	}
+	
+	public void testIntSizeof() {
+		assertNoSemanticErrors("int x = int.sizeof;");
+	}
+	
+	public void testIntUndefinedProperty() {
+		String s = "int x = int.something;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.UndefinedProperty, 12, 9);
+	}
+	
+	public void testIntSizePropertyDeprecated() {
+		String s = "int x = int.size;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DeprecatedProperty, 12, 4);
+	}
+	
+	public void testIntTypeinfoPropertyDeprecated() {
+		String s = "int x = int.typeinfo;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DeprecatedProperty, 12, 8);
+	}
 
 }

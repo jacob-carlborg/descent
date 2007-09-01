@@ -76,7 +76,7 @@ public abstract class TypeArray extends Type {
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
 			arguments = new ArrayList<Expression>();
 			if (dup) {
-				arguments.add(getTypeInfo(sc));
+				arguments.add(getTypeInfo(sc, context));
 			}
 			arguments.add(e);
 			if (!dup) {
@@ -96,7 +96,7 @@ public abstract class TypeArray extends Type {
 			arguments = new ArrayList<Expression>();
 			arguments.add(e);
 			if (next.ty != Tbit) {
-				arguments.add(n.ty == Tsarray ? n.getTypeInfo(sc) // don't convert to dynamic array
+				arguments.add(n.ty == Tsarray ? n.getTypeInfo(sc, context) // don't convert to dynamic array
 						: n.getInternalTypeInfo(sc));
 			}
 			e = new CallExp(e.loc, ec, arguments);

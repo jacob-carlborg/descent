@@ -30,7 +30,7 @@ public class TypeidExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 	    typeidType = typeidType.semantic(loc, sc, context);
-	    e = typeidType.getTypeInfo(sc);
+	    e = typeidType.getTypeInfo(sc, context);
 	    return e;
 	}
 	

@@ -341,7 +341,8 @@ public interface IProblem {
 	int AssertionFailed = 372;
 	int AssertionFailedNoMessage = 373;
 	int ExpressionIsNotEvaluatableAtCompileTime = 374;
-	
+	int UndefinedProperty = 375;
+	int DeprecatedProperty = 376;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

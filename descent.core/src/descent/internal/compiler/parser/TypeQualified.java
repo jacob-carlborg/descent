@@ -104,7 +104,7 @@ public abstract class TypeQualified extends Type {
 									continue;
 								}
 							}
-							e = t.getProperty(loc, id.ident, context);
+							e = t.getProperty(loc, id, context);
 							resolveHelper_L3(sc, pe, e, context);
 						} else {
 							// Lerror:

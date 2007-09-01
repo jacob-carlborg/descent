@@ -358,6 +358,10 @@ public class Problem implements IProblem {
 			return "assert(" + arguments[0] + ") failed";
 		case ExpressionIsNotEvaluatableAtCompileTime:
 			return arguments[0] + " is not evaluatable at compile time";
+		case UndefinedProperty:
+			return "No property '" + arguments[0] + "' for type '" + arguments[1] +"'";
+		case DeprecatedProperty:
+			return "The property '" + arguments[0] + "' is deprecated: use '" + arguments[1] + "' instead";
 		default:
 			return "";
 		}

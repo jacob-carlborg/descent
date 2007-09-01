@@ -14,7 +14,7 @@ public class NumberUtils {
 		return new IntegerWrapper(value.bigIntegerValue());
 	}
 
-	private final static long INT_UPPER = 0xFFFFFFFF + 1;
+	private final static long INT_UPPER = 0xFFFFFFFFL + 1;
 	public static  IntegerWrapper castToUns32(IntegerWrapper value) {
 		long b = value.longValue();
 		if (b < 0) {
