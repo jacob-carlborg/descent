@@ -6,8 +6,8 @@ public class TypeInfoDeclaration extends VarDeclaration {
 	
 	public Type tinfo;
 	
-	public TypeInfoDeclaration(Loc loc, Type tinfo, int internal, SemanticContext context) {
-		super(loc, context.typeinfo.type, tinfo.getTypeInfoIdent(internal), null);
+	public TypeInfoDeclaration(Type tinfo, int internal, SemanticContext context) {
+		super(Loc.ZERO, context.typeinfo.type, tinfo.getTypeInfoIdent(internal), null);
 		this.tinfo = tinfo;
 		this.storage_class = STC.STCstatic;
 		this.protection = PROT.PROTpublic;

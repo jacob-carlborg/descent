@@ -21,7 +21,7 @@ public class Token {
 	public char[] string; // the string value of the token, if any
 	public int len; // The length of the token
 	public int postfix;
-	public IntegerWrapper intValue;
+	public integer_t intValue;
 	public BigDecimal floatValue;
 	public int lineNumber;
 	public Comment leadingComment;

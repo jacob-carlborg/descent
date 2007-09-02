@@ -29,13 +29,13 @@ public class IntegerExp extends Expression {
 	private final static BigInteger N_SLASH_SLASH = new BigInteger("197");
 
 	public char[] str;
-	public IntegerWrapper value;
+	public integer_t value;
 
-	public IntegerExp(Loc loc, IntegerWrapper value) {
+	public IntegerExp(Loc loc, integer_t value) {
 		this(loc, CharOperation.NO_CHAR, value, Type.tint32);
 	}
 
-	public IntegerExp(Loc loc, IntegerWrapper value, Type type) {
+	public IntegerExp(Loc loc, integer_t value, Type type) {
 		this(loc, null, value, type);
 	}
 	
@@ -44,14 +44,14 @@ public class IntegerExp extends Expression {
 	}
 
 	public IntegerExp(Loc loc, int value) {
-		this(loc, new IntegerWrapper(value));
+		this(loc, new integer_t(value));
 	}
 
 	public IntegerExp(Loc loc, int value, Type type) {
-		this(loc, new IntegerWrapper(value), type);
+		this(loc, new integer_t(value), type);
 	}
 
-	public IntegerExp(Loc loc, char[] str, IntegerWrapper value, Type type) {
+	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
 		super(loc, TOK.TOKint64);
 		this.str = str;
 		this.value = value;
@@ -59,7 +59,7 @@ public class IntegerExp extends Expression {
 	}
 
 	public IntegerExp(Loc loc, char[] str, int value, Type type) {
-		this(loc, str, new IntegerWrapper(value), type);
+		this(loc, str, new integer_t(value), type);
 	}
 	
 	public void accept0(IASTVisitor visitor) {
@@ -67,7 +67,7 @@ public class IntegerExp extends Expression {
 		visitor.endVisit(this);
 	}
 
-	private IntegerWrapper cast(IntegerWrapper num, TY ty) {
+	private integer_t cast(integer_t num, TY ty) {
 		// TODO implement cast in BigInteger
 		return num;
 	}
@@ -278,7 +278,7 @@ public class IntegerExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			// Determine what the type of this number is
-			IntegerWrapper number = value;
+			integer_t number = value;
 
 			if (number.compareTo(N_0x8000000000000000) >= 0) {
 				type = Type.tuns64;
@@ -296,7 +296,7 @@ public class IntegerExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		IntegerWrapper v = toInteger(context);
+		integer_t v = toInteger(context);
 
 		if (type != null) {
 			Type t = type;
@@ -414,17 +414,17 @@ public class IntegerExp extends Expression {
 	}
 
 	@Override
-	public Complex toComplex(SemanticContext context) {
-		return new Complex(toReal(context), Real.ZERO);
+	public complex_t toComplex(SemanticContext context) {
+		return new complex_t(toReal(context), real_t.ZERO);
 	}
 
 	@Override
-	public Real toImaginary(SemanticContext context) {
-		return Real.ZERO;
+	public real_t toImaginary(SemanticContext context) {
+		return real_t.ZERO;
 	}
 
 	@Override
-	public IntegerWrapper toInteger(SemanticContext context) {
+	public integer_t toInteger(SemanticContext context) {
 		Type t;
 
 		t = type;
@@ -432,8 +432,8 @@ public class IntegerExp extends Expression {
 			switch (t.ty) {
 			case Tbit:
 			case Tbool:
-				value = (value.compareTo(BigInteger.ZERO) != 0) ? IntegerWrapper.ONE
-						: IntegerWrapper.ZERO;
+				value = (value.compareTo(BigInteger.ZERO) != 0) ? integer_t.ONE
+						: integer_t.ZERO;
 				break;
 			case Tint8:
 				value = NumberUtils.castToInt8(value);
@@ -496,15 +496,15 @@ public class IntegerExp extends Expression {
 	}
 
 	@Override
-	public Real toReal(SemanticContext context) {
+	public real_t toReal(SemanticContext context) {
 		Type t;
 
 		toInteger(context);
 		t = type.toBasetype(context);
 		if (t.ty == Tuns64) {
-			return new Real(NumberUtils.castToUns64(value));
+			return new real_t(NumberUtils.castToUns64(value));
 		} else {
-			return new Real(NumberUtils.castToInt64(value));
+			return new real_t(NumberUtils.castToInt64(value));
 		}
 	}
 	

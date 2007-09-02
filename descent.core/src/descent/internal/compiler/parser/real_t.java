@@ -5,41 +5,41 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
-public class Real {
+public class real_t {
 	
-	public final static Real ZERO = new Real(BigDecimal.ZERO);
+	public final static real_t ZERO = new real_t(BigDecimal.ZERO);
 	
 	public BigDecimal value;
 	public double nanOrInfinite;
 	
-	public Real(BigInteger value) {
+	public real_t(BigInteger value) {
 		this.value = new BigDecimal(value);
 	}
 	
-	public Real(IntegerWrapper value) {
+	public real_t(integer_t value) {
 		this.value = new BigDecimal(value.bigIntegerValue());
 	}
 	
-	public Real(BigDecimal value) {
+	public real_t(BigDecimal value) {
 		this.value = value;
 	}
 	
-	public Real(double nanOrInfinite) {
+	public real_t(double nanOrInfinite) {
 		Assert.isTrue(Double.isInfinite(nanOrInfinite) || Double.isNaN(nanOrInfinite));
 		this.nanOrInfinite = nanOrInfinite;
 	}
 	
-	public IntegerWrapper toIntegerWrapper() {
-		return new IntegerWrapper(value.toBigInteger());
+	public integer_t toIntegerWrapper() {
+		return new integer_t(value.toBigInteger());
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Real)) {
+		if (!(obj instanceof real_t)) {
 			return false;
 		}
 		
-		Real r = (Real) obj;
+		real_t r = (real_t) obj;
 		if ((value != null) != (r.value != null)) {
 			return false;
 		}

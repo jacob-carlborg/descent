@@ -5,16 +5,16 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class RealExp extends Expression {
 
 	public char[] str;
-	public Real value;
+	public real_t value;
 
-	public RealExp(Loc loc, char[] str, Real value, Type type) {
+	public RealExp(Loc loc, char[] str, real_t value, Type type) {
 		super(loc, TOK.TOKfloat64);
 		this.str = str;
 		this.value = value;
 		this.type = type;
 	}
 	
-	public RealExp(Loc loc, Real value, Type type) {
+	public RealExp(Loc loc, real_t value, Type type) {
 		this(loc, null, value, type);
 	}
 	
@@ -59,7 +59,7 @@ public class RealExp extends Expression {
 
 	@Override
 	public boolean isBool(boolean result) {
-		return result ? !value.equals(Real.ZERO) : value.equals(Real.ZERO);
+		return result ? !value.equals(real_t.ZERO) : value.equals(real_t.ZERO);
 	}
 
 	@Override
@@ -85,27 +85,27 @@ public class RealExp extends Expression {
 	}
 
 	@Override
-	public Complex toComplex(SemanticContext context) {
-		return new Complex(toReal(context), toImaginary(context));
+	public complex_t toComplex(SemanticContext context) {
+		return new complex_t(toReal(context), toImaginary(context));
 	}
 
 	@Override
-	public Real toImaginary(SemanticContext context) {
-		return type.isreal() ? Real.ZERO : value;
+	public real_t toImaginary(SemanticContext context) {
+		return type.isreal() ? real_t.ZERO : value;
 	}
 
 	@Override
-	public IntegerWrapper toInteger(SemanticContext context) {
+	public integer_t toInteger(SemanticContext context) {
 		return value.toIntegerWrapper();
 	}
 
 	@Override
-	public Real toReal(SemanticContext context) {
-		return type.isreal() ? value : Real.ZERO;
+	public real_t toReal(SemanticContext context) {
+		return type.isreal() ? value : real_t.ZERO;
 	}
 
 	@Override
-	public IntegerWrapper toUInteger(SemanticContext context) {
+	public integer_t toUInteger(SemanticContext context) {
 		return NumberUtils.castToUns64(value.toIntegerWrapper());
 	}
 	

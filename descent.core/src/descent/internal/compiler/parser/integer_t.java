@@ -6,36 +6,36 @@ import java.math.BigInteger;
  * Class to hide wether a number is represented with a long
  * or a BigInteger.
  */
-public class IntegerWrapper extends Number {
+public class integer_t extends Number {
 	
-	public final static IntegerWrapper ZERO = new IntegerWrapper(0);
-	public final static IntegerWrapper ONE = new IntegerWrapper(1);
+	public final static integer_t ZERO = new integer_t(0);
+	public final static integer_t ONE = new integer_t(1);
 	
 	private static final long serialVersionUID = 1L;
 	
 	private int intValue;
 	private BigInteger bigIntegerValue;
 	
-	public IntegerWrapper(int intValue) {
+	public integer_t(int intValue) {
 		this.intValue = intValue;
 	}
 	
-	public IntegerWrapper(BigInteger bigIntegerValue) {
+	public integer_t(BigInteger bigIntegerValue) {
 		this.bigIntegerValue = bigIntegerValue;
 	}
 	
-	public IntegerWrapper and(BigInteger value) {
+	public integer_t and(BigInteger value) {
 		if (bigIntegerValue == null) {
 			bigIntegerValue = new BigInteger(String.valueOf(intValue));
 		}
-		return new IntegerWrapper(bigIntegerValue.and(value));
+		return new integer_t(bigIntegerValue.and(value));
 	}
 	
 	public boolean equals(Object other) {
 		if (other instanceof BigInteger) {
 			return equals((BigInteger) other);
-		} else if (other instanceof IntegerWrapper) {
-			return equals((IntegerWrapper) other);
+		} else if (other instanceof integer_t) {
+			return equals((integer_t) other);
 		} else {
 			return false;
 		}
@@ -56,7 +56,7 @@ public class IntegerWrapper extends Number {
 		return bigIntegerValue.equals(other);
 	}
 	
-	public boolean equals(IntegerWrapper other) {
+	public boolean equals(integer_t other) {
 		if (bigIntegerValue == null) {
 			if (other.bigIntegerValue == null) {
 				return intValue == other.intValue;
@@ -90,7 +90,7 @@ public class IntegerWrapper extends Number {
 		return bigIntegerValue.compareTo(value);
 	}
 	
-	public int compareTo(IntegerWrapper value) {
+	public int compareTo(integer_t value) {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.compareTo(value.bigIntegerValue());
 		} else {
@@ -105,25 +105,25 @@ public class IntegerWrapper extends Number {
 		}
 	}
 	
-	public IntegerWrapper add(int value) {
+	public integer_t add(int value) {
 		if (bigIntegerValue != null) {			
-			return new IntegerWrapper(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
+			return new integer_t(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 		} else {
 			if (intValue > 0 && intValue + value < 0) {
 				BigInteger bin = new BigInteger(String.valueOf(intValue));
-				return new IntegerWrapper(bin.add(new BigInteger(String.valueOf(value))));
+				return new integer_t(bin.add(new BigInteger(String.valueOf(value))));
 			} else {
-				return new IntegerWrapper(intValue + value);
+				return new integer_t(intValue + value);
 			}
 		}
 	}
 	
-	public IntegerWrapper add(BigInteger value) {
+	public integer_t add(BigInteger value) {
 		if (bigIntegerValue != null) {			
-			return new IntegerWrapper(bigIntegerValue.add(value));
+			return new integer_t(bigIntegerValue.add(value));
 		} else {
 			BigInteger bin = new BigInteger(String.valueOf(intValue));
-			return new IntegerWrapper(bin.add(new BigInteger(String.valueOf(value))));
+			return new integer_t(bin.add(new BigInteger(String.valueOf(value))));
 		}
 	}
 	
@@ -180,12 +180,12 @@ public class IntegerWrapper extends Number {
 		}
 	}
 
-	public IntegerWrapper times(int value) {
+	public integer_t times(int value) {
 		if (bigIntegerValue == null) {
 			bigIntegerValue = new BigInteger(String.valueOf(intValue));
 		}
 		
-		return new IntegerWrapper(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
+		return new integer_t(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 	}
 
 }

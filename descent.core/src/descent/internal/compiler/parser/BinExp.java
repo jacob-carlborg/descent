@@ -166,7 +166,7 @@ public abstract class BinExp extends Expression {
 				e2 = new UshrExp(loc, e2, new IntegerExp(loc, 3, t));
 			} else {
 				e2 = new MulExp(loc, e2, new IntegerExp(loc,
-						new IntegerWrapper(stride), t));
+						new integer_t(stride), t));
 			}
 			e2.type = t;
 			type = e1.type;
@@ -186,7 +186,7 @@ public abstract class BinExp extends Expression {
 				// BUG: should add runtime check for misaligned offsets
 				e = new UshrExp(loc, e, new IntegerExp(loc, 3, t));
 			} else {
-				e = new MulExp(loc, e, new IntegerExp(loc, new IntegerWrapper(
+				e = new MulExp(loc, e, new IntegerExp(loc, new integer_t(
 						stride), t));
 			}
 			e.type = t;

@@ -5,6 +5,7 @@ import java.util.List;
 import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.MATCH.*;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -12,6 +13,8 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 
 public abstract class Type extends ASTDmdNode {
+
+	public final static int PTRSIZE = 4;
 
 	public static class Modification {
 		public int startPosition;
@@ -601,24 +604,30 @@ public abstract class Type extends ASTDmdNode {
 	public Expression defaultInit(SemanticContext context) {
 		return null;
 	}
-	
-	public Expression getProperty(Loc loc, IdentifierExp ident, SemanticContext context) {
+
+	public Expression getProperty(Loc loc, IdentifierExp ident,
+			SemanticContext context) {
 		return getProperty(loc, ident.ident, ident.start, ident.length, context);
 	}
-	
-	public Expression getProperty(Loc loc, char[] ident, int start, int length, SemanticContext context) {
+
+	public Expression getProperty(Loc loc, char[] ident, int start, int length,
+			SemanticContext context) {
 		Expression e = null;
 
 		if (CharOperation.equals(ident, Id.__sizeof)) {
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (CharOperation.equals(ident, Id.size)) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, start, length, new String[] { ".size", ".sizeof" }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.DeprecatedProperty, 0, start, length,
+					new String[] { ".size", ".sizeof" }));
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (CharOperation.equals(ident, Id.alignof)) {
 			e = new IntegerExp(loc, alignsize(context), Type.tsize_t);
 		} else if (CharOperation.equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, start, length, new String[] { "typeinfo", ".typeid(type)" }));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.DeprecatedProperty, 0, start, length,
+						new String[] { "typeinfo", ".typeid(type)" }));
 			}
 			e = getTypeInfo(null, context);
 		} else if (CharOperation.equals(ident, Id.init)) {
@@ -634,7 +643,9 @@ public abstract class Type extends ASTDmdNode {
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedProperty, 0, start, length, new String[] { new String(ident), toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UndefinedProperty, 0, start, length, new String[] {
+							new String(ident), toChars(context) }));
 			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
 		}
 		return e;
@@ -692,7 +703,9 @@ public abstract class Type extends ASTDmdNode {
 
 		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, start, length, new String[] { ".typeinfo", "typeid(type)" }));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.DeprecatedProperty, 0, start, length,
+						new String[] { ".typeinfo", "typeid(type)" }));
 			}
 			e = getTypeInfo(sc, context);
 			return e;
@@ -715,7 +728,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public int size(SemanticContext context) {
-		return size(null, context);
+		return size(Loc.ZERO, context);
 	}
 
 	public int alignsize(SemanticContext context) {
@@ -830,7 +843,7 @@ public abstract class Type extends ASTDmdNode {
 		return false;
 	}
 
-	public boolean isString() {
+	public boolean isString(SemanticContext context) {
 		return false;
 	}
 
@@ -859,7 +872,8 @@ public abstract class Type extends ASTDmdNode {
 		return buf.toChars();
 	}
 
-	public void toCBuffer(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
 		OutBuffer tbuf = new OutBuffer();
 		toCBuffer2(tbuf, ident, hgs, context);
 		buf.write(tbuf);
@@ -909,10 +923,103 @@ public abstract class Type extends ASTDmdNode {
 		// TODO semantic
 		return null;
 	}
-	
+
 	public Expression getTypeInfo(Scope sc, SemanticContext context) {
 		// TODO semantic
 		return null;
 	}
 
+	public int templateParameterLookup(Type tparam,
+			List<TemplateParameter> parameters) {
+		if (tparam.ty != Tident) {
+			throw new IllegalStateException("assert(tparam.ty == Tident);");
+		}
+		TypeIdentifier tident = (TypeIdentifier) tparam;
+		if (tident.idents.size() == 0) {
+			IdentifierExp id = tident.ident;
+
+			for (int i = 0; i < parameters.size(); i++) {
+				TemplateParameter tp = (TemplateParameter) parameters.get(i);
+
+				if (tp.ident.equals(id))
+					return i;
+			}
+		}
+		return -1;
+	}
+
+	public MATCH deduceType(Scope sc, Type tparam,
+			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+			SemanticContext context) {
+		if (tparam == null) {
+			return MATCHnomatch;
+		}
+
+		if (this == tparam) {
+			return MATCHexact;
+		}
+
+		if (tparam.ty == Tident) {
+			// Determine which parameter tparam is
+			int i = templateParameterLookup(tparam, parameters);
+			if (i == -1) {
+				if (sc == null) {
+					return MATCHnomatch;
+				}
+				/* BUG: what if tparam is a template instance, that
+				 * has as an argument another Tident?
+				 */
+				tparam = tparam.semantic(Loc.ZERO, sc, context);
+				if (tparam.ty == Tident) {
+					throw new IllegalStateException(
+							"assert(tparam.ty != Tident);");
+				}
+				return deduceType(sc, tparam, parameters, dedtypes, context);
+			}
+
+			TemplateParameter tp = parameters.get(i);
+
+			// Found the corresponding parameter tp
+			if (null == tp.isTemplateTypeParameter()) {
+				return MATCHnomatch;
+			}
+			Type at = (Type) dedtypes.get(i);
+			if (null == at) {
+				dedtypes.set(i, this);
+				return MATCHexact;
+			}
+			if (equals(at)) {
+				return MATCHexact;
+			} else if (ty == Tclass && at.ty == Tclass) {
+				return implicitConvTo(at, context);
+			} else if (ty == Tsarray && at.ty == Tarray
+					&& next.equals(at.nextOf())) {
+				return MATCHexact;
+			} else
+				return MATCHnomatch;
+		}
+
+		if (ty != tparam.ty) {
+			return MATCHnomatch;
+		}
+
+		if (nextOf() != null)
+			return nextOf().deduceType(sc, tparam.nextOf(), parameters,
+					dedtypes, context);
+
+		return MATCHexact;
+	}
+	
+	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context) {
+		return new TypeInfoDeclaration(this, 0, context);
+	}
+	
+	public void toTypeInfoBuffer(OutBuffer buf) {
+		throw new IllegalStateException("assert(0);");
+	}
+	
+	public boolean builtinTypeInfo() {
+		return false;
+	}
+	
 }

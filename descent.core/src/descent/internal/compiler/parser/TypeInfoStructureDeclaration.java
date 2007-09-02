@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class TypeInfoStructureDeclaration extends TypeInfoDeclaration {
 
-	public TypeInfoStructureDeclaration(Loc loc, Type tinfo, SemanticContext context) {
-		super(loc, tinfo, 0, context);
+	public TypeInfoStructureDeclaration(Type tinfo, SemanticContext context) {
+		super(tinfo, 0, context);
 	}
 
 }

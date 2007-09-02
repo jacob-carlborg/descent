@@ -66,7 +66,7 @@ public class TypeBasic extends Type {
 		default:
 			return new IntegerExp(Loc.ZERO, Id.ZERO, 0, this);
 		}
-		return new IntegerExp(Loc.ZERO, new IntegerWrapper(value), this);
+		return new IntegerExp(Loc.ZERO, new integer_t(value), this);
 	}
 
 	@Override
@@ -189,6 +189,11 @@ public class TypeBasic extends Type {
 			buf.writeByte(' ');
 			buf.writestring(ident.toChars(context));
 		}
+	}
+	
+	@Override
+	public boolean builtinTypeInfo() {
+		return true;
 	}
 
 }

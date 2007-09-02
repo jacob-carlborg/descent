@@ -130,12 +130,12 @@ public class AddrExp extends UnaExp {
 			IndexExp ae = (IndexExp) e1;
 
 			if (ae.e2.op == TOKint64 && ae.e1.op == TOKvar) {
-				IntegerWrapper index = ae.e2.toInteger(context);
+				integer_t index = ae.e2.toInteger(context);
 				VarExp ve = (VarExp) ae.e1;
 				if (ve.type.ty == Tsarray && ve.type.next.ty != Tbit
 						&& !ve.var.isImportedSymbol()) {
 					TypeSArray ts = (TypeSArray) ve.type;
-					IntegerWrapper dim = ts.dim.toInteger(context);
+					integer_t dim = ts.dim.toInteger(context);
 					if (index.compareTo(0) < 0 || index.compareTo(dim) >= 0) {
 						// TODO test this error
 						context.acceptProblem(Problem.newSemanticTypeError(

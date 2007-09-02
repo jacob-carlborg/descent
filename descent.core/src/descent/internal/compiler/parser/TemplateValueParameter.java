@@ -39,7 +39,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		sparam.semantic(sc, context);
 		valType = valType.semantic(loc, sc, context);
 		if (!(valType.isintegral() || valType.isfloating() || valType
-				.isString())
+				.isString(context))
 				&& valType.ty != TY.Tident)
 			error(
 					"arithmetic/string type expected for value-parameter, not %s",
@@ -61,6 +61,11 @@ public class TemplateValueParameter extends TemplateParameter {
 	@Override
 	public int getNodeType() {
 		return TEMPLATE_VALUE_PARAMETER;
+	}
+	
+	@Override
+	public TemplateValueParameter isTemplateValueParameter() {
+		return this;
 	}
 
 }

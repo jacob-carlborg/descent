@@ -691,6 +691,12 @@ public abstract class ASTDmdNode extends ASTNode {
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_OBJECT;
 	}
+	
+	protected void error(Loc loc, String ... s) {
+		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
+			throw new IllegalStateException("Problem reporting not implemented");
+		}
+	}
 
 	protected void error(String s) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
@@ -1041,7 +1047,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public boolean RealEquals(Real r1, Real r2) {
+	public boolean RealEquals(real_t r1, real_t r2) {
 		return r1.equals(r2);
 	}
 
@@ -1099,8 +1105,8 @@ public abstract class ASTDmdNode extends ASTNode {
 					type);
 		else if (type.isintegral()) {
 			if (e1.type.isfloating()) {
-				IntegerWrapper result;
-				Real r = e1.toReal(context);
+				integer_t result;
+				real_t r = e1.toReal(context);
 
 				switch (type.toBasetype(context).ty) {
 				case Tint8:
@@ -1140,15 +1146,15 @@ public abstract class ASTDmdNode extends ASTNode {
 			else
 				e = new IntegerExp(loc, e1.toInteger(context), type);
 		} else if (tb.isreal()) {
-			Real value = e1.toReal(context);
+			real_t value = e1.toReal(context);
 
 			e = new RealExp(loc, value, type);
 		} else if (tb.isimaginary()) {
-			Real value = e1.toImaginary(context);
+			real_t value = e1.toImaginary(context);
 
 			e = new RealExp(loc, value, type);
 		} else if (tb.iscomplex()) {
-			Complex value = e1.toComplex(context);
+			complex_t value = e1.toComplex(context);
 
 			e = new ComplexExp(loc, value, type);
 		} else if (tb.isscalar())

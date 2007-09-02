@@ -20,17 +20,17 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 	public Type type; // the TypeEnum
 	public Type memtype; // type of the members
-	IntegerWrapper maxval;
-	IntegerWrapper minval;
-	IntegerWrapper defaultval; // default initializer
+	integer_t maxval;
+	integer_t minval;
+	integer_t defaultval; // default initializer
 
 	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
 		super(loc, id);
 		this.type = new TypeEnum(this);
 		this.memtype = memtype;
-		this.maxval = IntegerWrapper.ZERO;
-		this.minval = IntegerWrapper.ZERO;
-		this.defaultval = IntegerWrapper.ZERO;
+		this.maxval = integer_t.ZERO;
+		this.minval = integer_t.ZERO;
+		this.defaultval = integer_t.ZERO;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		IntegerWrapper number;
+		integer_t number;
 		Type t;
 		Scope sce;
 
@@ -128,7 +128,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		symtab = new DsymbolTable();
 		sce = sc.push(this);
 		sce.parent = this;
-		number = IntegerWrapper.ZERO;
+		number = integer_t.ZERO;
 		if (members == null) { // enum ident;
 			return;
 		}

@@ -47,5 +47,10 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public int getNodeType() {
 		return TEMPLATE_ALIAS_PARAMETER;
 	}
+	
+	@Override
+	public TemplateAliasParameter isTemplateAliasParameter() {
+		return this;
+	}
 
 }

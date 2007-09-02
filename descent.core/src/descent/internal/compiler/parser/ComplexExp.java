@@ -6,10 +6,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ComplexExp extends Expression {
 
-	public Complex value;
+	public complex_t value;
 	public Type type;
 
-	public ComplexExp(Loc loc, Complex value, Type type) {
+	public ComplexExp(Loc loc, complex_t value, Type type) {
 		super(loc, TOK.TOKcomplex80);
 		this.value = value;
 		this.type = type;
@@ -31,23 +31,23 @@ public class ComplexExp extends Expression {
 	}
 
 	@Override
-	public IntegerWrapper toInteger(SemanticContext context) {
+	public integer_t toInteger(SemanticContext context) {
 		return toReal(context).toIntegerWrapper();
 	}
 
 	@Override
-	public IntegerWrapper toUInteger(SemanticContext context) {
+	public integer_t toUInteger(SemanticContext context) {
 		// TODO toBigUInteger ?
 		return toReal(context).toIntegerWrapper();
 	}
 
 	@Override
-	public Real toReal(SemanticContext context) {
+	public real_t toReal(SemanticContext context) {
 		return value.r;
 	}
 
 	@Override
-	public Real toImaginary(SemanticContext context) {
+	public real_t toImaginary(SemanticContext context) {
 		return value.i;
 	}
 

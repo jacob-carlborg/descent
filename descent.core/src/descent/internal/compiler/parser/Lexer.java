@@ -4100,18 +4100,18 @@ public class Lexer implements IProblemRequestor {
 		case '\\':
 			switch (input[p]) {
 			case 'u':
-				t.intValue = new IntegerWrapper(escapeSequence());
+				t.intValue = new integer_t(escapeSequence());
 				tk = TOKwcharv;
 				break;
 
 			case 'U':
 			case '&':
-				t.intValue = new IntegerWrapper(escapeSequence());
+				t.intValue = new integer_t(escapeSequence());
 				tk = TOKdcharv;
 				break;
 
 			default:
-				t.intValue = new IntegerWrapper(escapeSequence());
+				t.intValue = new integer_t(escapeSequence());
 				break;
 			}
 			break;
@@ -4125,7 +4125,7 @@ public class Lexer implements IProblemRequestor {
 			error( 
 					IProblem.UnterminatedCharacterConstant, token.lineNumber, token.ptr, p
 							- token.ptr);
-			t.intValue = IntegerWrapper.ZERO;
+			t.intValue = integer_t.ZERO;
 			return tk;
 		}
 
@@ -4139,7 +4139,7 @@ public class Lexer implements IProblemRequestor {
 					error(
 							IProblem.UnterminatedCharacterConstant,
 							token.lineNumber, token.ptr, p - token.ptr);
-					t.intValue = IntegerWrapper.ZERO;
+					t.intValue = integer_t.ZERO;
 					return tk;
 				}
 				if (c < 0xD800 || (c >= 0xE000 && c < 0xFFFE))
@@ -4150,7 +4150,7 @@ public class Lexer implements IProblemRequestor {
 			break;
 		}
 		
-		t.intValue = new IntegerWrapper(c);
+		t.intValue = new integer_t(c);
 		t.len = p - t.ptr + 1;
 		t.setString(input, t.ptr, t.len);
 
@@ -4477,7 +4477,7 @@ public class Lexer implements IProblemRequestor {
 		}
 
 		// uinteger_t n; // unsigned >=64 bit integer type
-		IntegerWrapper n; // unsigned >=64 bit integer type
+		integer_t n; // unsigned >=64 bit integer type
 		boolean integerOverflow = false;
 		
 		boolean isAnInt = false;
@@ -4485,7 +4485,7 @@ public class Lexer implements IProblemRequestor {
 
 		if (stringbuffer.data.length() == 1
 				&& (state == STATE_decimal || state == STATE_0)) {
-			n = new IntegerWrapper(intResult);
+			n = new integer_t(intResult);
 			isAnInt = true;
 		} else {
 			// Convert string to integer
@@ -4509,13 +4509,13 @@ public class Lexer implements IProblemRequestor {
 			}
 			
 			if (r == 10 && stringbuffer.data.length() <= 9) {
-				n = new IntegerWrapper(intResult);
+				n = new integer_t(intResult);
 				isAnInt = true;
 			} else {
 				try {
-					n = new IntegerWrapper(new BigInteger(stringbuffer.data.substring(p), r));
+					n = new integer_t(new BigInteger(stringbuffer.data.substring(p), r));
 				} catch (NumberFormatException ex) {
-					n = IntegerWrapper.ZERO;
+					n = integer_t.ZERO;
 				}
 			}
 			if (n.compareTo(X_FFFFFFFFFFFFFFFF) > 0) {

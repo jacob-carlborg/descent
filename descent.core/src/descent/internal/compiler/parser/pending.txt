@@ -8,6 +8,7 @@ AnonymousAggregateDeclaration.java
 Argument.java
 ArrayExp.java
 ArrayInitializer.java
+ArrayLengthExp.java
 ArrayLiteralExp.java
 ArrayScopeSymbol.java
 AsmBlock.java
@@ -211,10 +212,8 @@ TupleDeclaration.java
 TupleExp.java
 TY.java
 Type.java
-TypeAArray.java
 TypeBasic.java
 TypeClass.java
-TypeDArray.java
 TypedefDeclaration.java
 TypeDelegate.java
 TypeDotIdExp.java

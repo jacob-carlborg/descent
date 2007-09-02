@@ -5212,12 +5212,12 @@ public class Parser extends Lexer {
 		case TOKuns32v: e = new IntegerExp(loc, token.string, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
 		case TOKint64v: e = new IntegerExp(loc, token.string, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
 		case TOKuns64v: e = new IntegerExp(loc, token.string, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKfloat32v: e = new RealExp(loc, token.string, new Real(token.floatValue), Type.tfloat32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKfloat64v: e = new RealExp(loc, token.string, new Real(token.floatValue), Type.tfloat64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKfloat80v: e = new RealExp(loc, token.string, new Real(token.floatValue), Type.tfloat80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKimaginary32v: e = new RealExp(loc, token.string, new Real(token.floatValue), Type.timaginary32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKimaginary64v: e = new RealExp(loc, token.string, new Real(token.floatValue), Type.timaginary64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKimaginary80v: e = new RealExp(loc, token.string, new Real(token.floatValue), Type.timaginary80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKfloat32v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.tfloat32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKfloat64v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.tfloat64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKfloat80v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.tfloat80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKimaginary32v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.timaginary32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKimaginary64v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.timaginary64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKimaginary80v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.timaginary80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
 
 		case TOKnull:
 		    e = new NullExp(loc);

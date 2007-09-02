@@ -327,10 +327,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return buf.toChars();
 	}
 
-	public Complex toComplex(SemanticContext context) {
+	public complex_t toComplex(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
 				toChars(context));
-		return Complex.ZERO;
+		return complex_t.ZERO;
 	}
 
 	public Expression toDelegate(Scope sc, Type tret) {
@@ -338,16 +338,16 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return null;
 	}
 
-	public Real toImaginary(SemanticContext context) {
+	public real_t toImaginary(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
 				toChars(context));
-		return Real.ZERO;
+		return real_t.ZERO;
 	}
 
-	public IntegerWrapper toInteger(SemanticContext context) {
+	public integer_t toInteger(SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
 				IProblem.IntegerConstantExpressionExpected, 0, start, length));
-		return IntegerWrapper.ZERO;
+		return integer_t.ZERO;
 	}
 
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
@@ -365,13 +365,13 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 				toChars(context));
 	}
 
-	public Real toReal(SemanticContext context) {
+	public real_t toReal(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
 				toChars(context));
-		return Real.ZERO;
+		return real_t.ZERO;
 	}
 
-	public IntegerWrapper toUInteger(SemanticContext context) {
+	public integer_t toUInteger(SemanticContext context) {
 		return toInteger(context);
 	}
 

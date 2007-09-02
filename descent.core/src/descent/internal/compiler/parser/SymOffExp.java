@@ -12,9 +12,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class SymOffExp extends Expression {
 
 	public Declaration var;
-	public IntegerWrapper offset;
+	public integer_t offset;
 	
-	public SymOffExp(Loc loc, Declaration var, IntegerWrapper offset, SemanticContext context) {
+	public SymOffExp(Loc loc, Declaration var, integer_t offset, SemanticContext context) {
 		super(loc, TOK.TOKsymoff);
 		Assert.isNotNull(var);
 		this.var = var;
@@ -26,7 +26,7 @@ public class SymOffExp extends Expression {
 	}
 
 	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
-		this(loc, var, new IntegerWrapper(offset), context);
+		this(loc, var, new integer_t(offset), context);
 	}
 	
 	public void accept0(IASTVisitor visitor) {

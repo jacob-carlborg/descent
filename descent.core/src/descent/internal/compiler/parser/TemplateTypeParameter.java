@@ -42,5 +42,10 @@ public class TemplateTypeParameter extends TemplateParameter {
 	public int getNodeType() {
 		return TEMPLATE_TYPE_PARAMETER;
 	}
+	
+	@Override
+	public TemplateTypeParameter isTemplateTypeParameter() {
+		return this;
+	}
 
 }

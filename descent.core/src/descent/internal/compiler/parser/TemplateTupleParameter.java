@@ -31,5 +31,10 @@ public class TemplateTupleParameter extends TemplateParameter {
 	public int getNodeType() {
 		return TEMPLATE_TUPLE_PARAMETER;
 	}
+	
+	@Override
+	public TemplateTupleParameter isTemplateTupleParameter() {
+		return this;
+	}
 
 }

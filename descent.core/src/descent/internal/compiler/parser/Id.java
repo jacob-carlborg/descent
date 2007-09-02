@@ -6,7 +6,7 @@ public interface Id {
 	
 	char[] IUnknown = { 'I', 'u', 'n', 'k', 'n', 'o', 'w', 'n' };
 	char[] Object = { 'O', 'b', 'j', 'e', 'c', 't' };
-	char[] object = { 'o', 'b', 'j', 'e', 'c', 't' };
+	char[] object = { 'o', 'b', 'j', 'e', 'c', 't' }; // shared
 	char[] max = { 'm', 'a', 'x' };
 	char[] min = { 'm', 'i', 'n' };
 	char[] This = { 't', 'h', 'i', 's' };
@@ -22,7 +22,7 @@ public interface Id {
 	char[] alignof = { 'a', 'l', 'i', 'g', 'n', 'o', 'f' };
 	char[] mangleof = { 'm', 'a', 'n', 'g', 'l', 'e', 'o', 'f' };
 	char[] stringof = { 's', 't', 'r', 'i', 'n', 'g', 'o', 'f' };
-	char[] length = { 'l', 'e', 'n', 'g', 't', 'h' };
+	char[] length = { 'l', 'e', 'n', 'g', 't', 'h' }; // shared
 	char[] remove = { 'r', 'e', 'm', 'o', 'v', 'e' };
 	char[] ptr = { 'p', 't', 'r' };
 	char[] dollar = { '_', '_', 'd', 'o', 'l', 'l', 'a', 'r' };
@@ -39,7 +39,7 @@ public interface Id {
 	char[] _delegate = { 'd', 'e', 'l', 'e', 'g', 'a', 't', 'e' };
 	char[] line = { 'l', 'i', 'n', 'e' };
 	char[] empty = CharOperation.NO_CHAR;
-	char[] p = { 'p' };
+	char[] p = { 'p' }; // shared
 	char[] coverage = { '_', '_', 'c', 'o', 'v', 'e', 'r', 'a', 'g', 'e' };
 	char[] TypeInfo = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o' };
 	char[] TypeInfo_Class = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'C', 'l', 'a', 's', 's' };
@@ -75,13 +75,13 @@ public interface Id {
 	char[] min_exp = { 'm', 'i', 'n', '_', 'e', 'x', 'p' };
 	char[] re = { 'r', 'e' };
 	char[] im = { 'i', 'm' };
-	char[] C = { 'C' };
-	char[] D = { 'D' };
-	char[] Windows = { 'W', 'i', 'n', 'd', 'o', 'w', 's' };
-	char[] Pascal = { 'P', 'a', 's', 'c', 'a', 'l' };
-	char[] exit = { 'e', 'x', 'i', 't' };
-	char[] success = { 's', 'u', 'c', 'c', 'e', 's', 's' };
-	char[] failure = { 'f', 'a', 'i', 'l', 'u', 'r', 'e' };
+	char[] C = { 'C' }; // shared
+	char[] D = { 'D' }; // shared
+	char[] Windows = { 'W', 'i', 'n', 'd', 'o', 'w', 's' }; // shared
+	char[] Pascal = { 'P', 'a', 's', 'c', 'a', 'l' }; // shared
+	char[] exit = { 'e', 'x', 'i', 't' }; // shared
+	char[] success = { 's', 'u', 'c', 'c', 'e', 's', 's' }; // shared
+	char[] failure = { 'f', 'a', 'i', 'l', 'u', 'r', 'e' }; // shared
 	char[] keys = { 'k', 'e', 'y', 's' };
 	char[] values = { 'v', 'a', 'l', 'u', 'e', 's' };
 	char[] rehash = { 'r', 'e', 'h', 'a', 's', 'h' };
@@ -151,8 +151,8 @@ public interface Id {
 	char[] classDelete = { 'd', 'e', 'l', 'e', 't', 'e' };
 	char[] apply = { 'o', 'p', 'A', 'p', 'p', 'l', 'y' };
 	char[] applyReverse = { 'o', 'p', 'A', 'p', 'p', 'l', 'y', 'R', 'e', 'v', 'e', 'r', 's', 'e' };
-	char[] lib = { 'l', 'i', 'b' };
-	char[] msg = { 'm', 's', 'g' };
+	char[] lib = { 'l', 'i', 'b' }; // shared
+	char[] msg = { 'm', 's', 'g' }; // shared
 	char[] GNU_asm = { 'G', 'N', 'U', '_', 'a', 's', 'm' };
 	char[] tohash = { 't', 'o', 'H', 'a', 's', 'h' };
 	char[] alloca = { 'a', 'l', 'l', 'o', 'c', 'a' };
@@ -163,7 +163,7 @@ public interface Id {
 	char[] _arguments_typeinfo = { '_', 'a', 'r', 'g', 'u', 'm', 'e', 'n', 't', 's', '_', 't', 'y', 'p', 'e', 'i', 'n', 'f', 'o' };
 	char[] elements = { 'e', 'l', 'e', 'm', 'e', 'n', 't', 's' };
 	char[] outer = { 'o', 'u', 't', 'e', 'r' };
-	char[] System = { 'S', 'y', 's', 't', 'e', 'm' };
+	char[] System = { 'S', 'y', 's', 't', 'e', 'm' }; // shared
 	char[] isArithmetic = { 'i', 's', 'A', 'r', 'i', 't', 'h', 'm', 'e', 't', 'i', 'c' };
 	char[] isFloating = { 'i', 's', 'F', 'l', 'o', 'a', 't', 'i', 'n', 'g' };
 	char[] isIntegral = { 'i', 's', 'I', 'n', 't', 'e', 'g', 'r', 'a', 'l' };
@@ -185,13 +185,17 @@ public interface Id {
 	char[] tupleof = { 't', 'u', 'p', 'l', 'e', 'o', 'f' };
 	char[] adDup = { '_', 'a', 'd', 'D', 'u', 'p' };
 	char[] adReverse = { '_', 'a', 'd', 'R', 'e', 'v', 'e', 'r', 's', 'e' };
+	char[] aaLen = { '_', 'a', 'a', 'L', 'e', 'n' };
+	char[] aaKeys = { '_', 'a', 'a', 'K', 'e', 'y', 's' };
+	char[] aaValues = { '_', 'a', 'a', 'V', 'a', 'l', 'u', 'e', 's' };
+	char[] aaRehash = { '_', 'a', 'a', 'R', 'e', 'h', 'a', 's', 'h' };
 	
 	// Others useful
 	char[] ZERO = { '0' };
 	char[] ONE = { '1' };
 	char[] Cpp = { 'C', '+', '+' };
 	char[] Ddoc = { 'D', 'd', 'o', 'c' };
-	char[] string = { 's', 't', 'r', 'i', 'n', 'g' };
-	char[] size_t = { 's', 'i', 'z', 'e', '_', 't' };	
+	char[] string = { 's', 't', 'r', 'i', 'n', 'g' }; // shared
+	char[] size_t = { 's', 'i', 'z', 'e', '_', 't' }; // shared	
 
 }
