@@ -17,6 +17,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public AliasDeclaration aliasdecl; // != null if instance is an alias for its
 	public boolean semanticdone; // has semantic() been done?
 	public WithScopeSymbol withsym;
+	public IdentifierExp name;
 
 	public TemplateInstance(IdentifierExp id) {
 		super(null);

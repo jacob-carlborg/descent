@@ -32,7 +32,7 @@ public class Scope {
 	public PROT protection;				// protection for class members
 	public int explicitProtection;		// set if in an explicit protection attribute
     public int stc;						// storage class
-    public boolean intypeof;			// in typeof(exp)
+    public int intypeof;			// in typeof(exp)
     public boolean inunion;		// we're processing members of a union
     public int incontract;		// we're inside contract code
     public boolean nofree;			// set if shouldn't free it

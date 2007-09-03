@@ -8,7 +8,6 @@ AnonymousAggregateDeclaration.java
 Argument.java
 ArrayExp.java
 ArrayInitializer.java
-ArrayLengthExp.java
 ArrayLiteralExp.java
 ArrayScopeSymbol.java
 AsmBlock.java
@@ -221,7 +220,6 @@ TypeEnum.java
 TypeExp.java
 TypeFunction.java
 TypeIdentifier.java
-TypeidExp.java
 TypeInfoArrayDeclaration.java
 TypeInfoAssociativeArrayDeclaration.java
 TypeInfoClassDeclaration.java
@@ -243,8 +241,6 @@ TypeStruct.java
 TypeTuple.java
 TypeTupleDelegateDeclaration.java
 TypeTypedef.java
-TypeTypeof.java
-UAddExp.java
 UniAlpha.java
 Utf.java
 VarDeclaration.java

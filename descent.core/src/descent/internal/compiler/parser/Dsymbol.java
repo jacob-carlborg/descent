@@ -17,7 +17,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 		}
 		return b;
 	}
-	
+
 	public static List<Argument> arraySyntaxCopyArguments(List<Argument> a) {
 		List<Argument> b = new ArrayList<Argument>();
 		for (Argument s : a) {
@@ -26,7 +26,8 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return b;
 	}
 
-	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps, SemanticContext context) {
+	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps,
+			SemanticContext context) {
 		Dsymbol s = null;
 
 		if (members != null) {
@@ -55,7 +56,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
 	public Loc loc;
-	
+
 	public Dsymbol() {
 	}
 
@@ -70,7 +71,8 @@ public abstract class Dsymbol extends ASTDmdNode {
 		this.parent = null;
 	}
 
-	public void addLocalClass(List<ClassDeclaration> aclasses, SemanticContext context) {
+	public void addLocalClass(List<ClassDeclaration> aclasses,
+			SemanticContext context) {
 
 	}
 
@@ -90,11 +92,13 @@ public abstract class Dsymbol extends ASTDmdNode {
 			}
 			if (sd.isAggregateDeclaration() != null
 					|| sd.isEnumDeclaration() != null) {
-				if (CharOperation.equals(ident.ident, Id.__sizeof) || CharOperation.equals(ident.ident, Id.alignof)
+				if (CharOperation.equals(ident.ident, Id.__sizeof)
+						|| CharOperation.equals(ident.ident, Id.alignof)
 						|| CharOperation.equals(ident.ident, Id.mangleof)) {
 					context.acceptProblem(Problem.newSemanticMemberError(
 							IProblem.PropertyCanNotBeRedefined, 0, ident.start,
-							ident.length, new String[] { new String(ident.ident) }));
+							ident.length,
+							new String[] { new String(ident.ident) }));
 				}
 			}
 			return 1;
@@ -145,7 +149,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 		}
 
 		Dsymbol s = (Dsymbol) (o);
-		if(ident == null)
+		if (ident == null)
 			return s.ident == null;
 		return ident.equals(s.ident);
 	}
@@ -196,7 +200,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 	public ArrayScopeSymbol isArrayScopeSymbol() {
 		return null;
 	}
-	
+
 	public AttribDeclaration isAttribDeclaration() {
 		return null;
 	}
@@ -221,7 +225,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 	public Declaration isDeclaration() {
 		return null;
 	}
-	
+
 	public DeleteDeclaration isDeleteDeclaration() {
 		return null;
 	}
@@ -382,7 +386,8 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return PROT.PROTpublic;
 	}
 
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, char[] ident, int flags,
+			SemanticContext context) {
 		return null;
 	}
 
@@ -416,7 +421,8 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return this;
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring(toChars(context));
 	}
 
@@ -441,6 +447,47 @@ public abstract class Dsymbol extends ASTDmdNode {
 	public String toPrettyChars(SemanticContext context) {
 		// TODO semantic
 		return toChars(context);
+	}
+
+	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
+			SemanticContext context) {
+		Dsymbol s = toAlias(context);
+		Dsymbol sm;
+
+		switch (id.dyncast()) {
+		case DYNCAST_IDENTIFIER:
+			sm = s.search(loc, id, 0, context);
+			break;
+
+		case DYNCAST_DSYMBOL: { // It's a template instance
+			//printf("\ttemplate instance id\n");
+			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
+			TemplateInstance ti = st.isTemplateInstance();
+			id = ti.name;
+			sm = s.search(loc, id, 0, context);
+			if (null == sm) {
+				error("template identifier %s is not a member of %s %s", id
+						.toChars(context), s.kind(), s.toChars(context));
+				return null;
+			}
+			sm = sm.toAlias(context);
+			TemplateDeclaration td = sm.isTemplateDeclaration();
+			if (null == td) {
+				error("%s is not a template, it is a %s", id.toChars(context),
+						sm.kind());
+				return null;
+			}
+			ti.tempdecl = td;
+			if (!ti.semanticdone)
+				ti.semantic(sc, context);
+			sm = ti.toAlias(context);
+			break;
+		}
+
+		default:
+			throw new IllegalStateException("assert(0);");
+		}
+		return sm;
 	}
 
 }

@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class UAddExp extends UnaExp {
 
 	public UAddExp(Loc loc, Expression e1) {
@@ -13,10 +14,6 @@ public class UAddExp extends UnaExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return UADD_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,7 +21,17 @@ public class UAddExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int getNodeType() {
+		return UADD_EXP;
+	}
 
+	@Override
+	public char[] opId() {
+		return Id.uadd;
+	}
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;

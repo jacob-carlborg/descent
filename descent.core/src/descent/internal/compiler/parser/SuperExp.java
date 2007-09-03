@@ -38,7 +38,7 @@ public class SuperExp extends ThisExp {
 		 * Special case for typeof(this) and typeof(super) since both should
 		 * work even if they are not inside a non-static member function
 		 */
-		if (sc.intypeof) {
+		if (sc.intypeof != 0) {
 			// Find enclosing class
 			for (Dsymbol s2 = sc.parent; true; s2 = s2.parent) {
 				ClassDeclaration cd2;

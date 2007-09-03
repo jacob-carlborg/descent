@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import static descent.internal.compiler.parser.DYNCAST.*;
 
 public abstract class TypeQualified extends Type {
 
@@ -230,6 +231,40 @@ public abstract class TypeQualified extends Type {
 			} else
 				buf.writestring(id.toChars(context));
 		}
+	}
+
+	public void syntaxCopyHelper(TypeQualified t) {
+		// TODO semantic
+		// idents.setDim(t.idents.size());
+		for (int i = 0; i < idents.size(); i++) {
+			IdentifierExp id = t.idents.get(i);
+			if (id.dyncast() == DYNCAST_DSYMBOL) {
+				TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
+
+				ti = (TemplateInstance) ti.syntaxCopy(null);
+				id = new TemplateInstanceWrapper(Loc.ZERO, ti);
+			}
+			idents.set(i, id);
+		}
+	}
+	
+	public void toCBuffer2Helper(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context)
+	{
+	    int i;
+
+	    for (i = 0; i < idents.size(); i++)
+	    {	IdentifierExp id = idents.get(i);
+
+		buf.writeByte('.');
+
+		if (id.dyncast() == DYNCAST_DSYMBOL)
+		{
+		    TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
+		    ti.toCBuffer(buf, hgs, context);
+		}
+		else
+		    buf.writestring(id.toChars(context));
+	    }
 	}
 
 }

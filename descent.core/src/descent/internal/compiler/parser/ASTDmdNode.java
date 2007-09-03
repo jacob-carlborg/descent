@@ -250,6 +250,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int TRAITS_EXP = 191;
 	public final static int COMMENT = 192;
 	public final static int PRAGMA = 193;
+	public final static int ARRAY_LENGTH_EXP = 194;
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
 		public EXP_SOMETHING_INTERPRET() {
@@ -691,8 +692,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_OBJECT;
 	}
-	
-	protected void error(Loc loc, String ... s) {
+
+	protected void error(Loc loc, String... s) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
@@ -1252,6 +1253,30 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		}
 		buf.writeByte(')');
+	}
+
+	static Expression ArrayLength(Type type, Expression e1) {
+		Expression e;
+		Loc loc = e1.loc;
+
+		if (e1.op == TOKstring) {
+			StringExp es1 = (StringExp) e1;
+
+			e = new IntegerExp(loc, es1.len, type);
+		} else if (e1.op == TOKarrayliteral) {
+			ArrayLiteralExp ale = (ArrayLiteralExp) e1;
+			int dim;
+
+			dim = ale.elements != null ? ale.elements.size() : 0;
+			e = new IntegerExp(loc, dim, type);
+		} else if (e1.op == TOKassocarrayliteral) {
+			AssocArrayLiteralExp ale = (AssocArrayLiteralExp) e1;
+			int dim = ale.keys.size();
+
+			e = new IntegerExp(loc, dim, type);
+		} else
+			e = EXP_CANT_INTERPRET;
+		return e;
 	}
 
 }
