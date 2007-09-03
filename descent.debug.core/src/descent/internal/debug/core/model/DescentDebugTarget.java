@@ -172,6 +172,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 	
 	public void suspend() throws DebugException {
+		
 	}
 
 	public void terminate() throws DebugException {
@@ -321,14 +322,10 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		}
 		
 		public void streamAppended(String text, IStreamMonitor monitor) {
-			if (this == fErrorStreamListener) {
-				System.out.println(text);
-			}
-			
 			try {
 				fStreamBuffer.append(text);
 				
-				if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
+				if (fStreamBuffer.toString().trim().equals(fEndCommunicationString)) {
 					if (fIsError) {
 						fDebugger.interpretError(fEndCommunicationString);
 					} else {

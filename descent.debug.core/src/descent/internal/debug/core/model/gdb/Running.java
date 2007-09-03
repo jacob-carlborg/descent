@@ -8,7 +8,7 @@ public class Running implements IState {
 	
 	private final GdbDebugger fCli;
 	
-	private int fLastWasBreakpointHit = 0;
+	private boolean fLastWasBreakpointHit;
 	private String fBreakpointFileName;
 	private int fBreakpointLineNumber;
 
@@ -17,9 +17,8 @@ public class Running implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (fLastWasBreakpointHit > 0) {
-			fLastWasBreakpointHit--;
-			if (fLastWasBreakpointHit == 0) {
+		if (fLastWasBreakpointHit) {
+			if (text.trim().equals("(gdb)")) {
 				if (fBreakpointFileName != null) {
 					fCli.fListener.breakpointHit(fBreakpointFileName, fBreakpointLineNumber);
 				} else {
@@ -32,18 +31,21 @@ public class Running implements IState {
 		} else if (text.startsWith("Breakpoint ")) { //$NON-NLS-1$
 			// Breakpoint n hit at file:lineNumber address
 			
-			// After a breakpoint hit comes the source, then "->". So we signal
-			// the breakpoint hit in two next interpret call.
-			fLastWasBreakpointHit = 2;
-			
 			int indexOfColon = text.lastIndexOf(':');
 			if (indexOfColon != -1) {
 				int indexOfSpaceBefore = text.lastIndexOf(' ', indexOfColon - 1);
 				int indexOfSpaceAfter = text.indexOf(' ', indexOfColon + 1);
+				if (indexOfSpaceAfter == -1) {
+					indexOfSpaceAfter = text.length();
+				}
 				if (indexOfSpaceBefore != -1 && indexOfSpaceAfter != -1) {
 					fBreakpointFileName = text.substring(indexOfSpaceBefore + 1, indexOfColon);
-					fBreakpointLineNumber = Integer.parseInt(text.substring(indexOfColon + 1, indexOfSpaceAfter));
-					return;
+					try {
+						fBreakpointLineNumber = Integer.parseInt(text.substring(indexOfColon + 1, indexOfSpaceAfter));
+					} catch (NumberFormatException e) {
+						return;
+					}
+					fLastWasBreakpointHit = true;
 				}
 			}
 		}

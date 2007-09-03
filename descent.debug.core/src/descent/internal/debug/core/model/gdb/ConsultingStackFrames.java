@@ -60,6 +60,10 @@ public class ConsultingStackFrames  implements IState {
 		int indexOfIn = data.indexOf(" in "); //$NON-NLS-1$
 		int indexOfFrom = data.lastIndexOf(" from "); //$NON-NLS-1$
 		int indexOfAt = data.lastIndexOf(" at "); //$NON-NLS-1$
+		if (indexOfAt == -1) {
+			// It may also come like this
+			indexOfAt = data.lastIndexOf(")at "); //$NON-NLS-1$
+		}
 		int lastIndexOfColon = data.lastIndexOf(':');
 		
 		// Number
