@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
-import org.eclipse.core.runtime.Assert;
-
+// DMD 1.020
 public class TypeInfoDeclaration extends VarDeclaration {
 	
 	public Type tinfo;
@@ -15,14 +14,15 @@ public class TypeInfoDeclaration extends VarDeclaration {
 	}
 	
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		Assert.isTrue(false);
-		return null;
+	public void semantic(Scope sc, SemanticContext context) {
+		if (linkage != LINK.LINKc) {
+			throw new IllegalStateException("assert(linkage == LINKc);");
+		}
 	}
 	
 	@Override
-	public void semantic(Scope sc, SemanticContext context) {
-		
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		throw new IllegalStateException("assert(0);"); // should never be produced by syntax
 	}
 
 }

@@ -40,5 +40,10 @@ public class NegExp extends UnaExp {
 		}
 		return this;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
 
 }

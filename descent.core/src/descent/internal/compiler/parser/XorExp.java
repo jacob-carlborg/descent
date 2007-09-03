@@ -24,6 +24,11 @@ public class XorExp extends BinExp {
 	public int getNodeType() {
 		return XOR_EXP;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
 
 	@Override
 	public boolean isCommutative() {

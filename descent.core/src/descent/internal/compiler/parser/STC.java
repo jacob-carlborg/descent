@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+// DMD 1.020
 public class STC {
 	
 	public final static int STCundefined    = 0;

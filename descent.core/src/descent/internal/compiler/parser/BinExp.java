@@ -503,8 +503,13 @@ public abstract class BinExp extends Expression {
 		}
 		return this;
 	}
+	
+	public Expression interpretCommon(InterState istate, TOK op, SemanticContext context) {
+		// TODO semantic
+		return null;
+	}
 
-	Expression interpretCommon2(InterState istate, TOK op,
+	public Expression interpretCommon2(InterState istate, TOK op,
 			SemanticContext context) {
 		Expression e;
 		Expression e1;
@@ -541,6 +546,11 @@ public abstract class BinExp extends Expression {
 
 		//	Lcant:
 		//	    return EXP_CANT_INTERPRET;
+	}
+	
+	public Expression interpretAssignCommon(InterState istate, TOK op, SemanticContext context) {
+		// TODO semantic
+		return null;
 	}
 
 }

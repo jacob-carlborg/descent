@@ -24,6 +24,11 @@ public class UshrExp extends BinExp {
 	public int getNodeType() {
 		return USHR_EXP;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
 
 	@Override
 	public char[] opId() {

@@ -35,5 +35,10 @@ public class NotExp extends UnaExp {
 	    type = Type.tboolean;
 	    return this;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
 
 }

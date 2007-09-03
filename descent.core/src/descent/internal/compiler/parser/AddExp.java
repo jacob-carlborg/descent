@@ -25,6 +25,11 @@ public class AddExp extends BinExp {
 	public int getNodeType() {
 		return ADD_EXP;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
 
 	@Override
 	public boolean isCommutative() {

@@ -1,9 +1,11 @@
 package descent.internal.compiler.parser;
 
+// DMD 1.020
 public class InlineCostState {
 
+	public boolean nested;
 	public boolean hasthis;
-	public FuncDeclaration fd;
 	public boolean hdrscan;
+	public FuncDeclaration fd;	
 
 }

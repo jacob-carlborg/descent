@@ -1278,5 +1278,10 @@ public abstract class ASTDmdNode extends ASTNode {
 			e = EXP_CANT_INTERPRET;
 		return e;
 	}
+	
+	static Expression Shr(Type type, Expression e1, Expression e2, SemanticContext context) {
+		// TODO semantic
+		return null;
+	}
 
 }

@@ -225,7 +225,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	boolean visit(TypeInfoInterfaceDeclaration node);
 	boolean visit(TypeInfoPointerDeclaration node);
 	boolean visit(TypeInfoStaticArrayDeclaration node);
-	boolean visit(TypeInfoStructureDeclaration node);
+	boolean visit(TypeInfoStructDeclaration node);
 	boolean visit(TypeInfoTypedefDeclaration node);
 	boolean visit(TypeInstance node);
 	boolean visit(TypePointer node);
@@ -460,7 +460,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	void endVisit(TypeInfoInterfaceDeclaration node);
 	void endVisit(TypeInfoPointerDeclaration node);
 	void endVisit(TypeInfoStaticArrayDeclaration node);
-	void endVisit(TypeInfoStructureDeclaration node);
+	void endVisit(TypeInfoStructDeclaration node);
 	void endVisit(TypeInfoTypedefDeclaration node);
 	void endVisit(TypeInstance node);
 	void endVisit(TypePointer node);

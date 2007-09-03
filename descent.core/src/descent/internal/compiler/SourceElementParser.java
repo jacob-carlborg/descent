@@ -1722,7 +1722,7 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(TypeInfoStructureDeclaration node) {
+	public boolean visit(TypeInfoStructDeclaration node) {
 		return false;
 	}
 
@@ -2355,7 +2355,7 @@ public class SourceElementParser implements IASTVisitor {
 	public void endVisit(TypeInfoStaticArrayDeclaration node) {
 	}
 
-	public void endVisit(TypeInfoStructureDeclaration node) {
+	public void endVisit(TypeInfoStructDeclaration node) {
 	}
 
 	public void endVisit(TypeInfoTypedefDeclaration node) {

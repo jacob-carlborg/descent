@@ -8,12 +8,12 @@ public class AndAssignExp extends BinExp {
 	public AndAssignExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKandass, e1, e2);
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return AND_ASSIGN_EXP;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,24 +24,20 @@ public class AndAssignExp extends BinExp {
 	}
 
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context)
-	{
+	public Expression semantic(Scope sc, SemanticContext context) {
 		return commonSemanticAssignIntegral(sc, context);
 	}
 
 	@Override
-	public Expression interpret(InterState istate, SemanticContext context)
-	{
-		// TODO semantic return interpretAssignCommon(istate, op, context);
-		return null;
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretAssignCommon(istate, op, context);
 	}
 
 	@Override
-	public char[] opId()
-	{
+	public char[] opId() {
 		return Id.addass;
 	}
-	
+
 	// PERHAPS elem *toElem(IRState *irs);
 
 }

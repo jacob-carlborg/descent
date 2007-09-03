@@ -78,6 +78,11 @@ public class CatAssignExp extends BinExp {
 	    return e;
 	}
 	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretAssignCommon(istate, op, context);
+	}
+	
 	
 	
 }

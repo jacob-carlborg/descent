@@ -27,7 +27,7 @@ public class AddAssignExp extends BinExp {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon2(istate, op, context);
+		return interpretAssignCommon(istate, op, context);
 	}
 
 	@Override

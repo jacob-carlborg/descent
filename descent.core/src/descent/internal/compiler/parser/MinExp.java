@@ -106,4 +106,9 @@ public class MinExp extends BinExp {
 	    return e;
 	}
 	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
+	
 }

@@ -74,6 +74,11 @@ public class MulAssignExp extends BinExp {
 	    }
 	    return this;
 	}
+		
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretAssignCommon(istate, op, context);
+	}
 	
 	
 }

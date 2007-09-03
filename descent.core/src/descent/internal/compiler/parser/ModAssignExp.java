@@ -27,7 +27,11 @@ public class ModAssignExp extends BinExp {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context)
 	{
-		/* TODO semantic return commonSemanticAssign(sc, context); */
-		return null;
+		return commonSemmanticAssign(sc, context);
+	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretAssignCommon(istate, op, context);
 	}
 }

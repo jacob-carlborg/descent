@@ -25,6 +25,13 @@ public abstract class UnaExp extends Expression {
 	public int inlineCost(InlineCostState ics) {
 		return 1 + e1.inlineCost(ics);
 	}
+	
+	public Expression interpretCommon(InterState istate, TOK op, SemanticContext context) {
+		// TODO the method below is called, but we only recieve a TOK...
+		// how is that?
+		
+		return null;
+	}
 
 	public Expression interpretCommon(InterState istate,
 			UnaExp_interpretCommon_fp fp, SemanticContext context) {

@@ -2601,7 +2601,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(TypeInfoStructureDeclaration node) {
+	public boolean visit(TypeInfoStructDeclaration node) {
 		// compiler node
 		return false;
 	}
@@ -3472,7 +3472,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public void endVisit(TypeInfoStaticArrayDeclaration node) {
 	}
 
-	public void endVisit(TypeInfoStructureDeclaration node) {
+	public void endVisit(TypeInfoStructDeclaration node) {
 	}
 
 	public void endVisit(TypeInfoTypedefDeclaration node) {

@@ -188,4 +188,9 @@ public class integer_t extends Number {
 		return new integer_t(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 	}
 
+	public integer_t shiftLeft(integer_t value) {
+		// TODO semantic
+		return null;
+	}
+
 }
