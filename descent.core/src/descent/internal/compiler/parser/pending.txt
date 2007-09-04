@@ -183,16 +183,11 @@ SuperExp.java
 SwitchStatement.java
 SymOffExp.java
 SynchronizedStatement.java
-TemplateAliasParameter.java
 TemplateDeclaration.java
 TemplateExp.java
 TemplateInstance.java
 TemplateInstanceWrapper.java
 TemplateMixin.java
-TemplateParameter.java
-TemplateTupleParameter.java
-TemplateTypeParameter.java
-TemplateValueParameter.java
 ThrowStatement.java
 TOK.java
 Token.java

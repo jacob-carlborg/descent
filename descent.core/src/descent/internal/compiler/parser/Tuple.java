@@ -1,9 +1,13 @@
 package descent.internal.compiler.parser;
 
+import java.util.List;
+
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Tuple extends ASTDmdNode {
+	
+	public List<ASTDmdNode> objects;
 	
 	@Override
 	public DYNCAST dyncast() {

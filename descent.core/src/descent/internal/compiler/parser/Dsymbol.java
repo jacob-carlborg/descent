@@ -7,8 +7,9 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
-public abstract class Dsymbol extends ASTDmdNode {
+public class Dsymbol extends ASTDmdNode {
 
 	public static List<Dsymbol> arraySyntaxCopy(List<Dsymbol> a) {
 		List<Dsymbol> b = new ArrayList<Dsymbol>();
@@ -488,6 +489,15 @@ public abstract class Dsymbol extends ASTDmdNode {
 			throw new IllegalStateException("assert(0);");
 		}
 		return sm;
+	}
+
+	@Override
+	public int getNodeType() {
+		return 0;
+	}
+
+	@Override
+	protected void accept0(IASTVisitor visitor) {
 	}
 
 }
