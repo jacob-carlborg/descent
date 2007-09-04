@@ -22,5 +22,11 @@ public class complex_t {
 		complex_t c = (complex_t) obj;
 		return r.equals(c.r) && i.equals(c.i);
 	}
+	
+	public complex_t negate()
+	{
+		// TODO semantic
+		return null;
+	}
 
 }

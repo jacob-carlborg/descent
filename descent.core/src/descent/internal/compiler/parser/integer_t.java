@@ -192,5 +192,21 @@ public class integer_t extends Number {
 		// TODO semantic
 		return null;
 	}
+	
+	public integer_t negate()
+	{
+		if(null != bigIntegerValue)
+			return new integer_t(bigIntegerValue.negate());
+		else
+			return new integer_t(-intValue);
+	}
+	
+	public integer_t complement()
+	{
+		if(null != bigIntegerValue)
+			return new integer_t(bigIntegerValue.not());
+		else
+			return new integer_t(~intValue);
+	}
 
 }

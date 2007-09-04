@@ -51,5 +51,9 @@ public class real_t {
 		}
 	}
 	
+	public real_t negate()
+	{
+		return new real_t(value.negate());
+	}
 
 }
