@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.TOK.TOKarray;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.Constfold.*;
 
 public abstract class UnaExp extends Expression {
 
@@ -34,7 +35,7 @@ public abstract class UnaExp extends Expression {
 	}
 
 	public Expression interpretCommon(InterState istate,
-			UnaExp_interpretCommon_fp fp, SemanticContext context) {
+			UnaExp_fp fp, SemanticContext context) {
 		Expression e;
 		Expression e1;
 

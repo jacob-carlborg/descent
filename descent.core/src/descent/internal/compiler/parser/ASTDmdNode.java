@@ -35,20 +35,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // class Object in DMD compiler
 public abstract class ASTDmdNode extends ASTNode {
 
-	public interface BinExp_interpretCommon_fp {
-		Expression call(Type type, Expression e1, Expression e2,
-				SemanticContext context);
-	}
-
-	public interface BinExp_interpretCommon2_fp {
-		Expression call(TOK op, Type type, Expression e1, Expression e2,
-				SemanticContext context);
-	}
-
-	public interface UnaExp_interpretCommon_fp {
-		Expression call(Type type, Expression e1, SemanticContext context);
-	}
-
 	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;
 
 	public final static int COST_MAX = 250;
@@ -251,6 +237,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int COMMENT = 192;
 	public final static int PRAGMA = 193;
 	public final static int ARRAY_LENGTH_EXP = 194;
+	public final static int DOT_TEMPLATE_EXP = 195;
+	public final static int SWITCH_ERROR_STATEMENT = 196;
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
 		public EXP_SOMETHING_INTERPRET() {
@@ -1070,116 +1058,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		return getNodeType();
 	}
 
-	/* Also returns EXP_CANT_INTERPRET if cannot be computed.
-	 *  to:	type to cast to
-	 *  type: type to paint the result
-	 */
-
-	static Expression Cast(Type type, Type to, Expression e1,
-			SemanticContext context) {
-		Expression e = EXP_CANT_INTERPRET;
-		Loc loc = e1.loc;
-
-		//printf("Cast(type = %s, to = %s, e1 = %s)\n", type.toChars(), to.toChars(), e1.toChars());
-		//printf("e1.type = %s\n", e1.type.toChars());
-		if (type.equals(e1.type) && to.equals(type))
-			return e1;
-
-		if (!e1.isConst())
-			return EXP_CANT_INTERPRET;
-
-		Type tb = to.toBasetype(context);
-		if (tb.ty == Tbool)
-			e = new IntegerExp(loc, e1.toInteger(context).equals(0) ? 0 : 1,
-					type);
-		else if (type.isintegral()) {
-			if (e1.type.isfloating()) {
-				integer_t result;
-				real_t r = e1.toReal(context);
-
-				switch (type.toBasetype(context).ty) {
-				case Tint8:
-					result = NumberUtils.castToInt8(r);
-					break;
-				case Tchar:
-				case Tuns8:
-					result = NumberUtils.castToUns8(r);
-					break;
-				case Tint16:
-					result = NumberUtils.castToInt16(r);
-					break;
-				case Twchar:
-				case Tuns16:
-					result = NumberUtils.castToUns16(r);
-					break;
-				case Tint32:
-					result = NumberUtils.castToInt32(r);
-					break;
-				case Tdchar:
-				case Tuns32:
-					result = NumberUtils.castToUns32(r);
-					break;
-				case Tint64:
-					result = NumberUtils.castToInt64(r);
-					break;
-				case Tuns64:
-					result = NumberUtils.castToUns64(r);
-					break;
-				default:
-					throw new IllegalStateException("assert(0);");
-				}
-
-				e = new IntegerExp(loc, result, type);
-			} else if (type.isunsigned())
-				e = new IntegerExp(loc, e1.toUInteger(context), type);
-			else
-				e = new IntegerExp(loc, e1.toInteger(context), type);
-		} else if (tb.isreal()) {
-			real_t value = e1.toReal(context);
-
-			e = new RealExp(loc, value, type);
-		} else if (tb.isimaginary()) {
-			real_t value = e1.toImaginary(context);
-
-			e = new RealExp(loc, value, type);
-		} else if (tb.iscomplex()) {
-			complex_t value = e1.toComplex(context);
-
-			e = new ComplexExp(loc, value, type);
-		} else if (tb.isscalar())
-			e = new IntegerExp(loc, e1.toInteger(context), type);
-		else if (tb.ty == Tvoid)
-			e = EXP_CANT_INTERPRET;
-		else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
-			StructDeclaration sd = tb.toDsymbol(null, context)
-					.isStructDeclaration();
-			if (sd == null) {
-				throw new IllegalStateException("assert(sd);");
-			}
-			List<Expression> elements = new ArrayList<Expression>();
-			for (int i = 0; i < sd.fields.size(); i++) {
-				Dsymbol s = (Dsymbol) sd.fields.get(i);
-				VarDeclaration v = s.isVarDeclaration();
-				if (v == null) {
-					throw new IllegalStateException("assert(v);");
-				}
-
-				Expression exp = new IntegerExp(0);
-				exp = Cast(v.type, v.type, exp, context);
-				if (exp == EXP_CANT_INTERPRET)
-					return exp;
-				elements.add(exp);
-			}
-			e = new StructLiteralExp(loc, sd, elements);
-			e.type = type;
-		} else {
-			// TODO semantic uncomment below
-			// error("cannot cast %s to %s", e1.type.toChars(context), type.toChars(context));
-			e = new IntegerExp(loc, 0, type);
-		}
-		return e;
-	}
-
 	/*************************************
 	 * If expression is a variable with a const initializer,
 	 * return that initializer.
@@ -1236,4 +1114,5 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		buf.writeByte(')');
 	}
+	
 }

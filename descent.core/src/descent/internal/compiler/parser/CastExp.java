@@ -1,13 +1,21 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TOK.TOKvar;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tsarray;
-import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Cast;
+import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKcall;
+import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 public class CastExp extends UnaExp {
 

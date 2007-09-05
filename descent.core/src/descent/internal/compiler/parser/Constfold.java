@@ -1,7 +1,25 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import static descent.internal.compiler.parser.ASTDmdNode.EXP_CANT_INTERPRET;
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.TOKaddress;
+import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TOK.TOKidentity;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKnotequal;
+import static descent.internal.compiler.parser.TOK.TOKnotidentity;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKstructliteral;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
+
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 /**
  * A class to hold constant-folding functions used by the interpreter. The
@@ -870,11 +888,120 @@ public class Constfold
 		}
 	};
 	
+	public static final UnaExp_fp Cast = new UnaExp_fp() {
+
+		public Expression call(Type type, Expression e1, SemanticContext context) {
+			return null;
+		}
+		
+	};
+	
+	public final static Expression Cast(Type type, Type to, Expression e1,
+			SemanticContext context) {
+		Expression e = EXP_CANT_INTERPRET;
+		Loc loc = e1.loc;
+
+		if (type.equals(e1.type) && to.equals(type))
+			return e1;
+
+		if (!e1.isConst())
+			return EXP_CANT_INTERPRET;
+
+		Type tb = to.toBasetype(context);
+		if (tb.ty == Tbool)
+			e = new IntegerExp(loc, e1.toInteger(context).equals(0) ? 0 : 1,
+					type);
+		else if (type.isintegral()) {
+			if (e1.type.isfloating()) {
+				integer_t result;
+				real_t r = e1.toReal(context);
+
+				switch (type.toBasetype(context).ty) {
+				case Tint8:
+					result = NumberUtils.castToInt8(r);
+					break;
+				case Tchar:
+				case Tuns8:
+					result = NumberUtils.castToUns8(r);
+					break;
+				case Tint16:
+					result = NumberUtils.castToInt16(r);
+					break;
+				case Twchar:
+				case Tuns16:
+					result = NumberUtils.castToUns16(r);
+					break;
+				case Tint32:
+					result = NumberUtils.castToInt32(r);
+					break;
+				case Tdchar:
+				case Tuns32:
+					result = NumberUtils.castToUns32(r);
+					break;
+				case Tint64:
+					result = NumberUtils.castToInt64(r);
+					break;
+				case Tuns64:
+					result = NumberUtils.castToUns64(r);
+					break;
+				default:
+					throw new IllegalStateException("assert(0);");
+				}
+
+				e = new IntegerExp(loc, result, type);
+			} else if (type.isunsigned())
+				e = new IntegerExp(loc, e1.toUInteger(context), type);
+			else
+				e = new IntegerExp(loc, e1.toInteger(context), type);
+		} else if (tb.isreal()) {
+			real_t value = e1.toReal(context);
+
+			e = new RealExp(loc, value, type);
+		} else if (tb.isimaginary()) {
+			real_t value = e1.toImaginary(context);
+
+			e = new RealExp(loc, value, type);
+		} else if (tb.iscomplex()) {
+			complex_t value = e1.toComplex(context);
+
+			e = new ComplexExp(loc, value, type);
+		} else if (tb.isscalar())
+			e = new IntegerExp(loc, e1.toInteger(context), type);
+		else if (tb.ty == Tvoid)
+			e = EXP_CANT_INTERPRET;
+		else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
+			StructDeclaration sd = tb.toDsymbol(null, context)
+					.isStructDeclaration();
+			if (sd == null) {
+				throw new IllegalStateException("assert(sd);");
+			}
+			List<Expression> elements = new ArrayList<Expression>();
+			for (int i = 0; i < sd.fields.size(); i++) {
+				Dsymbol s = (Dsymbol) sd.fields.get(i);
+				VarDeclaration v = s.isVarDeclaration();
+				if (v == null) {
+					throw new IllegalStateException("assert(v);");
+				}
+
+				Expression exp = new IntegerExp(0);
+				exp = Cast(v.type, v.type, exp, context);
+				if (exp == EXP_CANT_INTERPRET)
+					return exp;
+				elements.add(exp);
+			}
+			e = new StructLiteralExp(loc, sd, elements);
+			e.type = type;
+		} else {
+			// TODO semantic uncomment below
+			// error("cannot cast %s to %s", e1.type.toChars(context), type.toChars(context));
+			e = new IntegerExp(loc, 0, type);
+		}
+		return e;
+	}
+	
 	/*
 	 * TODO semantic
 	 * 
-	 * Expression *Cast(Type *type, Type *to, Expression *e1); Expression
-	 *    (implemented in ASTDmdNode, should it be moved?)
 	 * *Slice(Type *type, Expression *e1, Expression *lwr, Expression *upr);
 	 * 
 	 * These functions may never be passed as a function pointer, in which case

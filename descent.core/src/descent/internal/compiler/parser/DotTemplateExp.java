@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class DotTemplateExp extends UnaExp {
 
 	public TemplateDeclaration td;
@@ -11,13 +12,8 @@ public class DotTemplateExp extends UnaExp {
 		super(loc, TOK.TOKdottd, e1);
 		this.td = td;
 	}
-	
-	
+
 	@Override
-	public int getNodeType() {
-		return 0;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -25,12 +21,18 @@ public class DotTemplateExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public int getNodeType() {
+		return DOT_TEMPLATE_EXP;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
-	    buf.writeByte('.');
-	    buf.writestring(td.toChars(context));
+		buf.writeByte('.');
+		buf.writestring(td.toChars(context));
 	}
 
 }

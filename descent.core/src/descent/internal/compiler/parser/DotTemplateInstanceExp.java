@@ -1,17 +1,19 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKdotexp;
-import static descent.internal.compiler.parser.TOK.TOKimport;
-import static descent.internal.compiler.parser.TOK.TOKtype;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
 
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
+// DMD 1.020
 public class DotTemplateInstanceExp extends UnaExp {
 
 	public TemplateInstance ti;
@@ -20,12 +22,8 @@ public class DotTemplateInstanceExp extends UnaExp {
 		super(loc, TOK.TOKdotti, e);
 		this.ti = ti;
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return DOT_TEMPLATE_INSTANCE_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -35,10 +33,8 @@ public class DotTemplateInstanceExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		DotTemplateInstanceExp de = new DotTemplateInstanceExp(loc, e1.syntaxCopy(),
-				(TemplateInstance) ti.syntaxCopy(null));
-		return de;
+	public int getNodeType() {
+		return DOT_TEMPLATE_INSTANCE_EXP;
 	}
 
 	@Override
@@ -74,8 +70,8 @@ public class DotTemplateInstanceExp extends UnaExp {
 					s = ((TypeStruct) t1).sym;
 				} else {
 					// goto L1;
-					error("template %s is not a member of %s", ti.toChars(context), e1
-							.toChars(context));
+					error("template %s is not a member of %s", ti
+							.toChars(context), e1.toChars(context));
 					return new IntegerExp(loc, 0);
 				}
 			}
@@ -86,8 +82,8 @@ public class DotTemplateInstanceExp extends UnaExp {
 			t1 = t1.next.toBasetype(context);
 			if (t1.ty != Tstruct) {
 				// goto L1;
-				error("template %s is not a member of %s", ti.toChars(context), e1
-						.toChars(context));
+				error("template %s is not a member of %s", ti.toChars(context),
+						e1.toChars(context));
 				return new IntegerExp(loc, 0);
 			}
 			s = t1.toDsymbol(sc, context);
@@ -147,12 +143,20 @@ public class DotTemplateInstanceExp extends UnaExp {
 
 		// Lerr: return new IntegerExp(0);
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public Expression syntaxCopy() {
+		DotTemplateInstanceExp de = new DotTemplateInstanceExp(loc, e1
+				.syntaxCopy(), (TemplateInstance) ti.syntaxCopy(null));
+		return de;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
-	    buf.writeByte('.');
-	    ti.toCBuffer(buf, hgs, context);
+		buf.writeByte('.');
+		ti.toCBuffer(buf, hgs, context);
 	}
 
 }

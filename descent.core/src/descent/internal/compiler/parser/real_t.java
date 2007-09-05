@@ -66,7 +66,6 @@ public class real_t implements Comparable {
 		return new real_t(value.subtract(other.value));
 	}
 
-	@Override
 	public int compareTo(Object arg0)
 	{
 		// TODO Auto-generated method stub

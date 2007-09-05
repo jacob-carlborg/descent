@@ -1,11 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.STC.STCfield;
-import static descent.internal.compiler.parser.TOK.TOKdsymbol;
-import static descent.internal.compiler.parser.TOK.TOKthis;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tstruct;
-
 import java.util.ArrayList;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -14,6 +8,15 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.STC.STCfield;
+
+import static descent.internal.compiler.parser.TOK.TOKdsymbol;
+import static descent.internal.compiler.parser.TOK.TOKthis;
+
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
+// DMD 1.020
 public class DotVarExp extends UnaExp {
 
 	public Declaration var;
@@ -24,16 +27,17 @@ public class DotVarExp extends UnaExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return DOT_VAR_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, e1);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return DOT_VAR_EXP;
 	}
 
 	@Override
@@ -58,24 +62,16 @@ public class DotVarExp extends UnaExp {
 						s = s.toParent2();
 						continue;
 					} else {
-						/* TODO semantic
-						 const char *p = var.isStatic() ? "static " : "";
-						 error("can only initialize %sconst member %s inside %sconstructor",
-						 p, var.toChars(), p);
-						 */
+						String p = var.isStatic() ? "static " : "";
+						error(
+								"can only initialize %sconst member %s inside %sconstructor",
+								p, var.toChars(context), p);
 					}
 				}
 				break;
 			}
 		}
 		return this;
-	}
-	
-	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
-	    buf.writeByte('.');
-	    buf.writestring(var.toChars(context));
 	}
 
 	@Override
@@ -84,11 +80,12 @@ public class DotVarExp extends UnaExp {
 			var = var.toAlias(context).isDeclaration();
 
 			TupleDeclaration tup = var.isTupleDeclaration();
-			if (tup != null) { /* Replace:
-			 *	e1.tuple(a, b, c)
-			 * with:
-			 *	tuple(e1.a, e1.b, e1.c)
-			 */
+			if (tup != null) {
+				/* Replace:
+				 *	e1.tuple(a, b, c)
+				 * with:
+				 *	tuple(e1.a, e1.b, e1.c)
+				 */
 				ArrayList<Expression> exps = new ArrayList<Expression>();
 				exps.ensureCapacity(tup.objects.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
@@ -166,7 +163,8 @@ public class DotVarExp extends UnaExp {
 							}
 							error(
 									"this for %s needs to be type %s not type %s",
-									var.toChars(context), ad.toChars(context), t.toChars(context));
+									var.toChars(context), ad.toChars(context),
+									t.toChars(context));
 						}
 					}
 				}
@@ -174,6 +172,14 @@ public class DotVarExp extends UnaExp {
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
+		buf.writeByte('.');
+		buf.writestring(var.toChars(context));
 	}
 
 	@Override

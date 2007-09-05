@@ -1,18 +1,17 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
+
 import static descent.internal.compiler.parser.TY.Tpointer;
-import melnorme.miscutil.tree.TreeVisitor;
 
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
+// DMD 1.020
 public class DotIdExp extends UnaExp {
 
 	public IdentifierExp ident;
@@ -23,16 +22,17 @@ public class DotIdExp extends UnaExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return DOT_ID_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, e1);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int getNodeType() {
+		return DOT_ID_EXP;
 	}
 	
 	@Override
@@ -150,7 +150,6 @@ public class DotIdExp extends UnaExp {
 
 				FuncDeclaration f = s.isFuncDeclaration();
 				if (f != null) {
-					//printf("it's a function\n");
 					if (f.needThis()) {
 						if (eleft == null) {
 							eleft = new ThisExp(loc);
@@ -174,7 +173,6 @@ public class DotIdExp extends UnaExp {
 
 				ScopeDsymbol sds = s.isScopeDsymbol();
 				if (sds != null) {
-					//printf("it's a ScopeDsymbol\n");
 					e = new ScopeExp(loc, sds);
 					e = e.semantic(sc, context);
 					if (eleft != null) {
@@ -191,8 +189,7 @@ public class DotIdExp extends UnaExp {
 					return ie2.semantic(sc, context);
 				}
 
-				// BUG: handle other cases like in IdentifierExp.semantic()
-				Assert.isTrue(false);
+				throw new IllegalStateException("assert(0);");
 			}
 			error("undefined identifier %s", toChars(context));
 			type = Type.tvoid;

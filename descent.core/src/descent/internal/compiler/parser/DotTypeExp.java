@@ -3,8 +3,9 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class DotTypeExp extends UnaExp {
-	
+
 	public Dsymbol sym;
 
 	public DotTypeExp(Loc loc, Expression e, Dsymbol s) {
@@ -12,12 +13,8 @@ public class DotTypeExp extends UnaExp {
 		this.sym = s;
 		this.type = s.getType();
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return 0;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -25,18 +22,24 @@ public class DotTypeExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context) {
-		super.semantic(sc, context);
-	    return this;
+	public int getNodeType() {
+		return 0;
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public Expression semantic(Scope sc, SemanticContext context) {
+		super.semantic(sc, context);
+		return this;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
-	    buf.writeByte('.');
-	    buf.writestring(sym.toChars(context));
+		buf.writeByte('.');
+		buf.writestring(sym.toChars(context));
 	}
 
 }

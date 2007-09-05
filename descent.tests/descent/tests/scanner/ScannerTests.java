@@ -72,6 +72,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			case TOKdottd:
 			case TOKassocarrayliteral:
 			case TOKstructliteral:
+			case TOKarraylength:
 				continue;
 			}
 			

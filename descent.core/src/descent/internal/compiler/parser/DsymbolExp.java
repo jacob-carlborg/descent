@@ -1,15 +1,16 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKstring;
-import static descent.internal.compiler.parser.TY.Tsarray;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 
+import static descent.internal.compiler.parser.TY.Tsarray;
+
+// DMD 1.020
 public class DsymbolExp extends Expression {
 
 	public Dsymbol s;
@@ -20,11 +21,6 @@ public class DsymbolExp extends Expression {
 	}
 
 	@Override
-	public int getNodeType() {
-		return DSYMBOL_EXP;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -32,7 +28,12 @@ public class DsymbolExp extends Expression {
 		}
 		visitor.endVisit(this);
 	}
-	
+
+	@Override
+	public int getNodeType() {
+		return DSYMBOL_EXP;
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		// Lagain:
@@ -91,14 +92,17 @@ public class DsymbolExp extends Expression {
 				if (type == null) {
 					type = v.type;
 					if (v.type == null) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { v.toString() }));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ForwardReference, 0, start, length,
+								new String[] { v.toString() }));
 						type = Type.terror;
 					}
 				}
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
 					if (v.init != null) {
 						if (v.inuse != 0) {
-							error("circular reference to '%s'", v.toChars(context));
+							error("circular reference to '%s'", v
+									.toChars(context));
 							type = Type.tint32;
 							return this;
 						}
@@ -217,12 +221,13 @@ public class DsymbolExp extends Expression {
 		type = Type.terror;
 		return this;
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring(s.toChars(context));
 	}
-	
+
 	@Override
 	public String toChars(SemanticContext context) {
 		return s.toChars(context);

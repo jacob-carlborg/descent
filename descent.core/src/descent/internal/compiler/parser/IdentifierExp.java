@@ -4,9 +4,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-/*
- * Identifier + IdentifierExp
- */
+// DMD 1.020
 public class IdentifierExp extends Expression {
 
 	public char[] ident;
@@ -15,6 +13,15 @@ public class IdentifierExp extends Expression {
 		super(loc, TOK.TOKidentifier);
 	}
 	
+	public IdentifierExp(char[] ident) {
+		this(Loc.ZERO, ident);
+	}
+
+	public IdentifierExp(Loc loc, char[] ident) {
+		this(loc);
+		this.ident = ident;
+	}
+
 	public IdentifierExp(Loc loc, IdentifierExp ident) {
 		this(loc);
 		this.ident = ident.ident;
@@ -28,12 +35,8 @@ public class IdentifierExp extends Expression {
 		this.start = token.ptr;
 		this.length = token.len;
 	}
-	
-	public IdentifierExp(Loc loc, char[] ident) {
-		this(loc);
-		this.ident = ident;
-	}
-	
+
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
@@ -43,7 +46,7 @@ public class IdentifierExp extends Expression {
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_IDENTIFIER;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof IdentifierExp)) {
@@ -123,8 +126,9 @@ public class IdentifierExp extends Expression {
 			}
 			return e.semantic(sc, context);
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedIdentifier, 0,
-				start, length, new String[] { new String(ident) }));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.UndefinedIdentifier, 0, start, length,
+				new String[] { new String(ident) }));
 		type = Type.terror;
 		return this;
 	}
@@ -133,12 +137,16 @@ public class IdentifierExp extends Expression {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring(ident);
-		// TODO semantic
-//		if (hgs.hdrgen) {
-//			buf.writestring(ident.toHChars2());
-//		} else {
-//			buf.writestring(ident.toChars());
-//		}
+		//		if (hgs.hdrgen) {
+		//			buf.writestring(ident.toHChars2());
+		//		} else {
+		//			buf.writestring(ident.toChars());
+		//		}
+	}
+
+	@Override
+	public char[] toCharArray() {
+		return ident;
 	}
 
 	@Override
@@ -154,11 +162,6 @@ public class IdentifierExp extends Expression {
 	@Override
 	public String toString() {
 		return new String(ident);
-	}
-	
-	@Override
-	public char[] toCharArray() {
-		return ident;
 	}
 
 }
