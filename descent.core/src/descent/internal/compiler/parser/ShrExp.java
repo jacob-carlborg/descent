@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Shr;
 
 // DMD 1.020
 public class ShrExp extends BinExp {
@@ -48,7 +49,7 @@ public class ShrExp extends BinExp {
 		e2 = e2.optimize(result, context);
 
 		if (e1.isConst() && e2.isConst()) {
-			e = Shr(type, e1, e2, context);
+			e = Shr.call(type, e1, e2, context);
 		} else {
 			e = this;
 		}

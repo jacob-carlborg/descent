@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PREC.*;
 import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.Constfold.ArrayLength;
 
 // DMD 1.020
 public class ArrayLengthExp extends UnaExp {
@@ -49,7 +50,7 @@ public class ArrayLengthExp extends UnaExp {
 			return EXP_CANT_INTERPRET;
 		if (e1.op == TOKstring || e1.op == TOKarrayliteral
 				|| e1.op == TOKassocarrayliteral) {
-			e = ArrayLength(type, e1);
+			e = ArrayLength.call(type, e1, context);
 		} else
 			return EXP_CANT_INTERPRET;
 		return e;
@@ -63,7 +64,7 @@ public class ArrayLengthExp extends UnaExp {
 		e = this;
 		if (e1.op == TOKstring || e1.op == TOKarrayliteral
 				|| e1.op == TOKassocarrayliteral) {
-			e = ArrayLength(type, e1);
+			e = ArrayLength.call(type, e1, context);
 		}
 		return e;
 	}

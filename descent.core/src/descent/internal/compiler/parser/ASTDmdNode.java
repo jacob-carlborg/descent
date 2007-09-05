@@ -1070,18 +1070,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		return getNodeType();
 	}
 
-	static Expression Add(Type type, Expression e1, Expression e2,
-			SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
-	static Expression Ushr(Type type, Expression e1, Expression e2,
-			SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
 	/* Also returns EXP_CANT_INTERPRET if cannot be computed.
 	 *  to:	type to cast to
 	 *  type: type to paint the result
@@ -1192,12 +1180,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e;
 	}
 
-	static Expression Xor(Type type, Expression e1, Expression e2,
-			SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
 	/*************************************
 	 * If expression is a variable with a const initializer,
 	 * return that initializer.
@@ -1254,34 +1236,4 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		buf.writeByte(')');
 	}
-
-	static Expression ArrayLength(Type type, Expression e1) {
-		Expression e;
-		Loc loc = e1.loc;
-
-		if (e1.op == TOKstring) {
-			StringExp es1 = (StringExp) e1;
-
-			e = new IntegerExp(loc, es1.len, type);
-		} else if (e1.op == TOKarrayliteral) {
-			ArrayLiteralExp ale = (ArrayLiteralExp) e1;
-			int dim;
-
-			dim = ale.elements != null ? ale.elements.size() : 0;
-			e = new IntegerExp(loc, dim, type);
-		} else if (e1.op == TOKassocarrayliteral) {
-			AssocArrayLiteralExp ale = (AssocArrayLiteralExp) e1;
-			int dim = ale.keys.size();
-
-			e = new IntegerExp(loc, dim, type);
-		} else
-			e = EXP_CANT_INTERPRET;
-		return e;
-	}
-	
-	static Expression Shr(Type type, Expression e1, Expression e2, SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
 }

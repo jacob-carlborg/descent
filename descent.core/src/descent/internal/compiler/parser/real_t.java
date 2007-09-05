@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
-public class real_t {
+public class real_t implements Comparable {
 	
 	public final static real_t ZERO = new real_t(BigDecimal.ZERO);
 	
@@ -54,6 +54,28 @@ public class real_t {
 	public real_t negate()
 	{
 		return new real_t(value.negate());
+	}
+	
+	public real_t add(real_t other)
+	{
+		return new real_t(value.add(other.value));
+	}
+	
+	public real_t subtract(real_t other)
+	{
+		return new real_t(value.subtract(other.value));
+	}
+
+	@Override
+	public int compareTo(Object arg0)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public boolean isnan()
+	{
+		return value == null && Double.isNaN(nanOrInfinite);
 	}
 
 }

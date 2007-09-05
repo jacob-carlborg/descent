@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.Constfold.Add;
 
 // DMD 1.020 
 public class AddExp extends BinExp {
@@ -56,7 +57,7 @@ public class AddExp extends BinExp {
 			if (e1.op == TOKsymoff && e2.op == TOKsymoff) {
 				return this;
 			}
-			e = Add(type, e1, e2, context);
+			e = Add.call(type, e1, e2, context);
 		} else {
 			e = this;
 		}

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Ushr;
 
 // DMD 1.020
 public class UshrExp extends BinExp {
@@ -48,7 +49,7 @@ public class UshrExp extends BinExp {
 		e2 = e2.optimize(result, context);
 
 		if (e1.isConst() && e2.isConst()) {
-			e = Ushr(type, e1, e2, context);
+			e = Ushr.call(type, e1, e2, context);
 		} else {
 			e = this;
 		}

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Xor;
 
 // DMD 1.020 
 public class XorExp extends BinExp {
@@ -52,7 +53,7 @@ public class XorExp extends BinExp {
 		e1 = e1.optimize(result, context);
 		e2 = e2.optimize(result, context);
 		if (e1.isConst() && e2.isConst()) {
-			e = Xor(type, e1, e2, context);
+			e = Xor.call(type, e1, e2, context);
 		} else {
 			e = this;
 		}

@@ -26,7 +26,7 @@ public class integer_t extends Number {
 	
 	public integer_t and(BigInteger value) {
 		if (bigIntegerValue == null) {
-			bigIntegerValue = new BigInteger(String.valueOf(intValue));
+			bigIntegerValue = BigInteger.valueOf(intValue);
 		}
 		return new integer_t(bigIntegerValue.and(value));
 	}
@@ -51,7 +51,7 @@ public class integer_t extends Number {
 	
 	public boolean equals(BigInteger other) {
 		if (bigIntegerValue == null) {
-			bigIntegerValue = new BigInteger(String.valueOf(intValue));
+			bigIntegerValue = BigInteger.valueOf(intValue);
 		}
 		return bigIntegerValue.equals(other);
 	}
@@ -61,7 +61,7 @@ public class integer_t extends Number {
 			if (other.bigIntegerValue == null) {
 				return intValue == other.intValue;
 			} else {
-				bigIntegerValue = new BigInteger(String.valueOf(intValue));
+				bigIntegerValue = BigInteger.valueOf(intValue);
 				return bigIntegerValue.equals(other.bigIntegerValue);
 			}
 		} else {
@@ -78,13 +78,13 @@ public class integer_t extends Number {
 		if (bigIntegerValue == null) {
 			return intValue > value ? 1 : (intValue < value ? -1 : 0);
 		} else {
-			return bigIntegerValue.compareTo(new BigInteger(String.valueOf(value)));
+			return bigIntegerValue.compareTo(BigInteger.valueOf(intValue));
 		}
 	}
 	
 	public int compareTo(BigInteger value) {
 		if (bigIntegerValue == null) {
-			bigIntegerValue = new BigInteger(String.valueOf(intValue));
+			bigIntegerValue = BigInteger.valueOf(intValue);
 		}
 		
 		return bigIntegerValue.compareTo(value);
@@ -98,8 +98,8 @@ public class integer_t extends Number {
 				long otherLong = value.longValue();
 				return intValue > otherLong ? 1 : (intValue < otherLong ? - 1 : 0);
 			} else {
-				bigIntegerValue = new BigInteger(String.valueOf(intValue));
-				value.bigIntegerValue = new BigInteger(String.valueOf(value.intValue));
+				bigIntegerValue = BigInteger.valueOf(intValue);
+				value.bigIntegerValue = BigInteger.valueOf(intValue);
 				return bigIntegerValue.compareTo(value.bigIntegerValue);
 			}
 		}
@@ -110,8 +110,8 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 		} else {
 			if (intValue > 0 && intValue + value < 0) {
-				BigInteger bin = new BigInteger(String.valueOf(intValue));
-				return new integer_t(bin.add(new BigInteger(String.valueOf(value))));
+				BigInteger bin = BigInteger.valueOf(intValue);
+				return new integer_t(bin.add(BigInteger.valueOf(intValue)));
 			} else {
 				return new integer_t(intValue + value);
 			}
@@ -122,8 +122,36 @@ public class integer_t extends Number {
 		if (bigIntegerValue != null) {			
 			return new integer_t(bigIntegerValue.add(value));
 		} else {
-			BigInteger bin = new BigInteger(String.valueOf(intValue));
-			return new integer_t(bin.add(new BigInteger(String.valueOf(value))));
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return new integer_t(bin.add(BigInteger.valueOf(intValue)));
+		}
+	}
+	
+	public integer_t add(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.add(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.add(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.add(value.bigIntegerValue)) :
+					new integer_t(bin.add(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
+	public integer_t subtract(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.subtract(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.subtract(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.subtract(value.bigIntegerValue)) :
+					new integer_t(bin.subtract(BigInteger.valueOf(value.intValue)));
 		}
 	}
 	
@@ -167,7 +195,7 @@ public class integer_t extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue;
 		} else {
-			return new BigInteger(String.valueOf(intValue));
+			return BigInteger.valueOf(intValue);
 		}
 	}
 	
@@ -182,7 +210,7 @@ public class integer_t extends Number {
 
 	public integer_t times(int value) {
 		if (bigIntegerValue == null) {
-			bigIntegerValue = new BigInteger(String.valueOf(intValue));
+			bigIntegerValue = BigInteger.valueOf(intValue);
 		}
 		
 		return new integer_t(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
