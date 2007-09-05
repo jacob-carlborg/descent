@@ -67,4 +67,13 @@ public class Catch extends ASTDmdNode {
 		sc.pop();
 	}
 
+	public Catch syntaxCopy() {
+		// TODO semantic
+		return this;
+	}
+
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		// TODO semantic
+	}
+
 }

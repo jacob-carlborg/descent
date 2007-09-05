@@ -78,7 +78,6 @@ GotoCaseStatement.java
 GotoDefaultStatement.java
 GotoStatement.java
 HaltExp.java
-HashtableOfCharArrayAndObject.java
 HdrGenState.java
 Id.java
 Identifier.java
@@ -141,8 +140,6 @@ RemoveExp.java
 ReturnStatement.java
 Scope.java
 ScopeDsymbol.java
-ScopeExp.java
-ScopeStatement.java
 SemanticContext.java
 SliceExp.java
 StaticIfCondition.java
@@ -163,7 +160,6 @@ TemplateMixin.java
 TOK.java
 Token.java
 TraitsExp.java
-TryCatchStatement.java
 TryFinallyStatement.java
 Tuple.java
 TupleDeclaration.java
