@@ -51,6 +51,8 @@ public class real_t implements Comparable {
 		}
 	}
 	
+	// FIXME Figure out the semantics with infinite and NaN values
+	
 	public real_t negate()
 	{
 		return new real_t(value.negate());
@@ -64,6 +66,21 @@ public class real_t implements Comparable {
 	public real_t subtract(real_t other)
 	{
 		return new real_t(value.subtract(other.value));
+	}
+	
+	public real_t multiply(real_t other)
+	{
+		return new real_t(value.multiply(other.value));
+	}
+	
+	public real_t divide(real_t other)
+	{
+		return new real_t(value.divide(other.value));
+	}
+	
+	public real_t remainder(real_t other)
+	{
+		return new real_t(value.remainder(other.value));
 	}
 
 	public int compareTo(Object arg0)

@@ -410,8 +410,61 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+			Loc loc = e1.loc;
+			
+			if(type.isfloating())
+			{
+				complex_t c;
+				real_t r;
+				
+				if(e1.type.isreal())
+				{
+					r = e1.toReal(context);
+					c = e2.toComplex(context);
+					c = new complex_t(r.multiply(c.r), r.multiply(c.i));
+				}
+				else if(e1.type.isimaginary())
+				{
+					r = e1.toImaginary(context);
+					c = e2.toComplex(context);
+					c = new complex_t(r.negate().multiply(c.i), r.multiply(c.r));
+				}
+				else if(e2.type.isreal())
+				{
+					r = e2.toReal(context);
+					c = e1.toComplex(context);
+					c = new complex_t(r.multiply(c.r), r.multiply(c.i));
+				}
+				else if(e2.type.isimaginary())
+				{
+					r = e2.toImaginary(context);
+					c = e1.toComplex(context);
+					c = new complex_t(r.negate().multiply(c.i), r.multiply(c.r));
+				}
+				else
+				{
+					c = e1.toComplex(context).multiply(e2.toComplex(context));
+				}
+				
+				if(type.isreal())
+					e = new RealExp(loc, c.r, type);
+				else if(type.isimaginary())
+					e = new RealExp(loc, c.i, type);
+				else if(type.iscomplex())
+					e = new ComplexExp(loc, c, type);
+				else
+				{
+					assert(false);
+					e = null;
+				}
+			}
+			else
+			{
+				e = new IntegerExp(loc, e1.toInteger(context).multiply
+						(e2.toInteger(context)), type);
+			}
+			return e;
 		}
 	};
 	
@@ -420,8 +473,72 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+			Loc loc = e1.loc;
+			
+			if(type.isfloating())
+			{
+				complex_t c;
+				real_t r;
+				
+				// e1.type.print();
+				// e2.type.print();
+				if(e2.type.isreal())
+				{
+					if(e1.type.isreal())
+					{
+						e = new RealExp(loc, e1.toReal(context).
+								divide(e2.toReal(context)), type);
+						return e;
+					}
+					r = e2.toReal(context);
+					c = e1.toComplex(context);
+					c = new complex_t(c.r.divide(r), c.i.divide(r));
+				}
+				else if(e2.type.isimaginary())
+				{
+					r = e2.toImaginary(context);
+					c = e1.toComplex(context);
+					c = new complex_t(c.i.divide(r), c.r.negate().divide(r));
+				}
+				else
+				{
+					c = e1.toComplex(context).divide(e2.toComplex(context));
+				}
+				
+				if(type.isreal())
+					e = new RealExp(loc, c.r, type);
+				else if(type.isimaginary())
+					e = new RealExp(loc, c.i, type);
+				else if(type.iscomplex())
+					e = new ComplexExp(loc, c, type);
+				else
+				{
+					assert(false);
+					e = null;
+				}
+			}
+			else
+			{
+				integer_t n1;
+				integer_t n2;
+				integer_t n;
+				
+				n1 = e1.toInteger(context);
+				n2 = e2.toInteger(context);
+				if(n2.equals(0))
+				{
+					e2.error("divide by 0");
+					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
+					n2 = integer_t.ONE;
+				}
+				if(e1.type.isunsigned() || e2.type.isunsigned())
+					n = /* TODO unsigned ((d_uns64) n1) / ((d_uns64) n2)*/ null;
+				else
+					n = n1.divide(n2);
+				e = new IntegerExp(loc, n, type);
+			}
+			return e;
 		}
 	};
 	
@@ -430,8 +547,64 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+			Loc loc = e1.loc;
+			
+			if(type.isfloating())
+			{
+				complex_t c;
+				
+				if(e2.type.isreal())
+				{
+					real_t r2 = e2.toReal(context);
+					c = new complex_t(e1.toReal(context).remainder(r2),
+							e1.toImaginary(context).remainder(r2));
+				}
+				else if(e2.type.isimaginary())
+				{
+					real_t i2 = e2.toImaginary(context);
+					c = new complex_t(e1.toReal(context).remainder(i2),
+							e1.toImaginary(context).remainder(i2));
+				}
+				else
+				{
+					assert (false);
+					c = null;
+				}
+				
+				if(type.isreal())
+					e = new RealExp(loc, c.r, type);
+				else if(type.isimaginary())
+					e = new RealExp(loc, c.i, type);
+				else if(type.iscomplex())
+					e = new ComplexExp(loc, c, type);
+				else
+				{
+					assert (false);
+					e = null;
+				}
+			}
+			else
+			{
+				integer_t n1;
+				integer_t n2;
+				integer_t n;
+				
+				n1 = e1.toInteger(context);
+				n2 = e2.toInteger(context);
+				if(n2.equals(0))
+				{
+					e2.error("divide by 0");
+					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
+					n2 = integer_t.ONE;
+				}
+				if(e1.type.isunsigned() || e2.type.isunsigned())
+					n = null/* TODO unsigned ((d_uns64) n1) % ((d_uns64) n2) */;
+				else
+					n = n1.remainder(n2);
+				e = new IntegerExp(loc, n, type);
+			}
+			return e;
 		}
 	};
 	
@@ -440,8 +613,12 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+		    Loc loc = e1.loc;
+
+		    e = new IntegerExp(loc, e1.toInteger(context).
+		    		shiftLeft(e2.toInteger(context)), type);
+		    return e;
 		}
 	};
 	
@@ -450,8 +627,56 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+		    Loc loc = e1.loc;
+		    int count;
+		    integer_t value;
+
+		    value = e1.toInteger(context);
+		    count = e2.toInteger(context).intValue();
+		    switch (e1.type.toBasetype(context).ty)
+		    {
+			    /* TODO just calling bigInteger.shiftRight() method won't
+			     * correctly truncate bits
+				case Tint8:
+					value = (d_int8)(value) >> count;
+					break;
+	
+				case Tuns8:
+					value = (d_uns8)(value) >> count;
+					break;
+	
+				case Tint16:
+					value = (d_int16)(value) >> count;
+					break;
+	
+				case Tuns16:
+					value = (d_uns16)(value) >> count;
+					break;
+	
+				case Tint32:
+					value = (d_int32)(value) >> count;
+					break;
+	
+				case Tuns32:
+					value = (d_uns32)(value) >> count;
+					break;
+	
+				case Tint64:
+					value = (d_int64)(value) >> count;
+					break;
+	
+				case Tuns64:
+					value = (d_uns64)(value) >> count;
+					break;
+				*/
+				default:
+					assert(false);
+					value = null;
+					break;
+		    }
+		    e = new IntegerExp(loc, value, type);
+		    return e;
 		}
 	};
 	
@@ -460,8 +685,46 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+		    Loc loc = e1.loc;
+		    int count;
+		    integer_t value;
+
+		    value = e1.toInteger(context);
+		    count = e2.toInteger(context).intValue();
+		    switch (e1.type.toBasetype(context).ty)
+		    {
+			    /* TODO just calling bigInteger.shiftRight() method won't
+				 * correctly truncate bits
+				case Tint8:
+				case Tuns8:
+					assert(0);		// no way to trigger this
+					value = (value & 0xFF) >> count;
+					break;
+	
+				case Tint16:
+				case Tuns16:
+					assert(0);		// no way to trigger this
+					value = (value & 0xFFFF) >> count;
+					break;
+	
+				case Tint32:
+				case Tuns32:
+					value = (value & 0xFFFFFFFF) >> count;
+					break;
+	
+				case Tint64:
+				case Tuns64:
+					value = (d_uns64)(value) >> count;
+					break;
+				*/
+				default:
+					assert(false);
+					value = null;
+					break;
+		    }
+		    e = new IntegerExp(loc, value, type);
+		    return e;
 		}
 	};
 	
@@ -470,8 +733,12 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+		    Loc loc = e1.loc;
+
+		    e = new IntegerExp(loc, e1.toInteger(context).
+		    		and(e2.toInteger(context)), type);
+		    return e;
 		}
 	};
 	
@@ -480,8 +747,12 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+		    Loc loc = e1.loc;
+
+		    e = new IntegerExp(loc, e1.toInteger(context).
+		    		or(e2.toInteger(context)), type);
+		    return e;
 		}
 	};
 	
@@ -490,8 +761,12 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e;
+		    Loc loc = e1.loc;
+
+		    e = new IntegerExp(loc, e1.toInteger(context).
+		    		xor(e2.toInteger(context)), type);
+		    return e;
 		}
 	};
 	

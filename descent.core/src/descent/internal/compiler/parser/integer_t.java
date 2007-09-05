@@ -155,6 +155,48 @@ public class integer_t extends Number {
 		}
 	}
 	
+	public integer_t multiply(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.multiply(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.multiply(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.multiply(value.bigIntegerValue)) :
+					new integer_t(bin.multiply(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
+	public integer_t divide(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.divide(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.divide(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.divide(value.bigIntegerValue)) :
+					new integer_t(bin.divide(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
+	public integer_t remainder(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.remainder(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.remainder(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.remainder(value.bigIntegerValue)) :
+					new integer_t(bin.remainder(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
 	@Override
 	public long longValue() {
 		if (bigIntegerValue != null) {
@@ -215,11 +257,6 @@ public class integer_t extends Number {
 		
 		return new integer_t(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 	}
-
-	public integer_t shiftLeft(integer_t value) {
-		// TODO semantic
-		return null;
-	}
 	
 	public integer_t negate()
 	{
@@ -235,6 +272,76 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.not());
 		else
 			return new integer_t(~intValue);
+	}
+	
+	public integer_t and(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.and(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.and(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.and(value.bigIntegerValue)) :
+					new integer_t(bin.and(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
+	public integer_t or(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.or(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.or(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.or(value.bigIntegerValue)) :
+					new integer_t(bin.or(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
+	public integer_t xor(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.xor(value.bigIntegerValue)) :
+					new integer_t(bigIntegerValue.xor(BigInteger.valueOf(value.intValue)));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.xor(value.bigIntegerValue)) :
+					new integer_t(bin.xor(BigInteger.valueOf(value.intValue)));
+		}
+	}
+	
+	public integer_t shiftLeft(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.shiftLeft(value.bigIntegerValue.intValue())) :
+					new integer_t(bigIntegerValue.shiftLeft(value.intValue));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.shiftLeft(value.bigIntegerValue.intValue())) :
+					new integer_t(bin.shiftLeft(value.intValue));
+		}
+	}
+	
+	public integer_t shiftRight(integer_t value)
+	{
+		if (bigIntegerValue != null) {
+			return value.bigIntegerValue != null ?
+					new integer_t(bigIntegerValue.shiftRight(value.bigIntegerValue.intValue())) :
+					new integer_t(bigIntegerValue.shiftRight(value.intValue));
+		} else {
+			BigInteger bin = BigInteger.valueOf(intValue);
+			return value.bigIntegerValue != null ?
+					new integer_t(bin.shiftRight(value.bigIntegerValue.intValue())) :
+					new integer_t(bin.shiftRight(value.intValue));
+		}
 	}
 
 }

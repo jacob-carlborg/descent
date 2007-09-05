@@ -28,5 +28,17 @@ public class complex_t {
 		// TODO semantic
 		return null;
 	}
+	
+	public complex_t multiply(complex_t other)
+	{
+		// TODO semantic
+		return null;
+	}
+	
+	public complex_t divide(complex_t other)
+	{
+		// TODO semantic
+		return null;
+	}
 
 }
