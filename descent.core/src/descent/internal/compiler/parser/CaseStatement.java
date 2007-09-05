@@ -2,8 +2,10 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 
+// DMD 1.020
 public class CaseStatement extends Statement {
 
 	public Expression exp;
@@ -16,10 +18,6 @@ public class CaseStatement extends Statement {
 	}
 
 	@Override
-	public int getNodeType() {
-		return CASE_STATEMENT;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -29,6 +27,52 @@ public class CaseStatement extends Statement {
 		visitor.endVisit(this);
 	}
 
+	@Override
+	public boolean comeFrom() {
+		return true;
+	}
+
+	public boolean compare(ASTDmdNode obj) {
+		if (!(obj instanceof CaseStatement)) {
+			return false;
+		}
+		
+		// Sort cases so we can do an efficient lookup
+	    CaseStatement cs2 = (CaseStatement) obj;
+	    return exp.compare(cs2.exp);
+	}
+
+	@Override
+	public boolean fallOffEnd(SemanticContext context) {
+		return statement.fallOffEnd(context);
+	}
+
+	@Override
+	public int getNodeType() {
+		return CASE_STATEMENT;
+	}
+	
+	@Override
+	public Statement inlineScan(InlineScanState iss) {
+		exp = exp.inlineScan(iss);
+		if (statement != null) {
+			statement = statement.inlineScan(iss);
+		}
+		return this;
+	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		if (istate.start == this) {
+			istate.start = null;
+		}
+		if (statement != null) {
+			return statement.interpret(istate, context);
+		} else {
+			return null;
+		}
+	}
+	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		SwitchStatement sw = sc.sw;
@@ -72,6 +116,26 @@ public class CaseStatement extends Statement {
 		}
 		statement = statement.semantic(sc, context);
 		return this;
+	}
+	
+	@Override
+	public Statement syntaxCopy() {
+		CaseStatement s = new CaseStatement(loc, exp.syntaxCopy(), statement.syntaxCopy());
+	    return s;
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring("case ");
+	    exp.toCBuffer(buf, hgs, context);
+	    buf.writebyte(':');
+	    buf.writenl();
+	    statement.toCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public boolean usesEH() {
+		return statement.usesEH();
 	}
 
 }

@@ -239,6 +239,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int ARRAY_LENGTH_EXP = 194;
 	public final static int DOT_TEMPLATE_EXP = 195;
 	public final static int SWITCH_ERROR_STATEMENT = 196;
+	public final static int BOOL_EXP = 197;
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
 		public EXP_SOMETHING_INTERPRET() {

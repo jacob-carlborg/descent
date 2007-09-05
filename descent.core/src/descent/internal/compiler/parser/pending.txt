@@ -18,10 +18,7 @@ ASTDmdNode.java
 AttribDeclaration.java
 BaseClass.java
 BinExp.java
-BoolExp.java
-BreakStatement.java
 CallExp.java
-CaseStatement.java
 CastExp.java
 CatAssignExp.java
 Catch.java
@@ -43,7 +40,6 @@ Condition.java
 ConditionalDeclaration.java
 ConditionalStatement.java
 Constfold.java
-ContinueStatement.java
 DebugCondition.java
 DebugSymbol.java
 Declaration.java

@@ -426,4 +426,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e;
 	}
 
+	public boolean compare(Expression exp) {
+		// TODO semantic
+		return false;
+	}
+
 }

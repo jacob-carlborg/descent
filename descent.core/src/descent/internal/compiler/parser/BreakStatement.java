@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class BreakStatement extends Statement {
 
 	public IdentifierExp ident;
@@ -13,16 +14,39 @@ public class BreakStatement extends Statement {
 	}
 
 	@Override
-	public int getNodeType() {
-		return BREAK_STATEMENT;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public boolean fallOffEnd(SemanticContext context) {
+		return false;
+	}
+
+	@Override
+	public int getNodeType() {
+		return BREAK_STATEMENT;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		// START()
+		if (istate.start != null) {
+			if (istate.start != this) {
+				return null;
+			}
+			istate.start = null;
+		}
+		// START()
+		if (ident != null) {
+			return EXP_CANT_INTERPRET;
+		} else {
+			return EXP_BREAK_INTERPRET;
+		}
 	}
 
 	@Override
@@ -60,14 +84,17 @@ public class BreakStatement extends Statement {
 				if (ls != null && ls.ident.equals(ident)) {
 					Statement s = ls.statement;
 
-					if (!s.hasBreak())
+					if (!s.hasBreak()) {
 						error("label '%s' has no break", ident.toChars(context));
-					if (ls.tf != sc.tf)
+					}
+					if (ls.tf != sc.tf) {
 						error("cannot break out of finally block");
+					}
 					return this;
 				}
 			}
-			error("enclosing label '%s' for break not found", ident.toChars(context));
+			error("enclosing label '%s' for break not found", ident
+					.toChars(context));
 		} else if (sc.sbreak == null) {
 			if (sc.fes != null) {
 				Statement s;
@@ -79,6 +106,24 @@ public class BreakStatement extends Statement {
 			error("break is not inside a loop or switch");
 		}
 		return this;
+	}
+
+	@Override
+	public Statement syntaxCopy() {
+		BreakStatement s = new BreakStatement(loc, ident);
+		return s;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("break");
+		if (ident != null) {
+			buf.writebyte(' ');
+			buf.writestring(ident.toChars(context));
+		}
+		buf.writebyte(';');
+		buf.writenl();
 	}
 
 }
