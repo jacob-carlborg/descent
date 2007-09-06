@@ -38,7 +38,6 @@ public abstract class ASTDmdNode extends ASTNode {
 	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;
 
 	public final static int COST_MAX = 250;
-	public final static boolean BREAKABI = true;
 
 	public final static int WANTflags = 1;
 	public final static int WANTvalue = 2;

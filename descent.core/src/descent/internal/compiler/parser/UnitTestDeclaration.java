@@ -52,7 +52,7 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public boolean isVirtual() {
+	public boolean isVirtual(SemanticContext context) {
 		return false;
 	}
 

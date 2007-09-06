@@ -123,7 +123,7 @@ public class TryCatchStatement extends Statement {
 		int i;
 		for (i = 0; i < catches.size(); i++) {
 			Catch c = catches.get(i);
-			c.toCBuffer(buf, hgs);
+			c.toCBuffer(buf, hgs, context);
 		}
 	}
 

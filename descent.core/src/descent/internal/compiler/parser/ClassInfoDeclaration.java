@@ -1,29 +1,28 @@
 package descent.internal.compiler.parser;
 
-import org.eclipse.core.runtime.Assert;
-
+// DMD 1.020
 public class ClassInfoDeclaration extends VarDeclaration {
-	
+
 	public ClassDeclaration cd;
-	
+
 	public ClassInfoDeclaration(ClassDeclaration cd, SemanticContext context) {
 		this(Loc.ZERO, cd, context);
 	}
 
-	public ClassInfoDeclaration(Loc loc, ClassDeclaration cd, SemanticContext context) {
+	public ClassInfoDeclaration(Loc loc, ClassDeclaration cd,
+			SemanticContext context) {
 		super(loc, context.classinfo.type, cd.ident, null);
 		this.cd = cd;
 	}
-	
-	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		Assert.isTrue(false);
-		return null;
-	}
-	
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		
+		// empty
+	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		throw new IllegalStateException("assert(0);");
 	}
 
 }

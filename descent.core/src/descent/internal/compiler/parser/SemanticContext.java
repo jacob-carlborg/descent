@@ -8,6 +8,7 @@ import descent.core.compiler.IProblem;
 public class SemanticContext {
 	
 	public boolean BREAKABI = true;
+	public boolean IN_GCC = false;
 	public boolean _DH = true;
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;

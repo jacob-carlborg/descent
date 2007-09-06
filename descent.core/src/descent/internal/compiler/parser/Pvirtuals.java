@@ -7,11 +7,11 @@ public class Pvirtuals
 	public Expression e1;
 	public List<Expression> exps;
 	
-	static int fpvirtuals(Object param, FuncDeclaration f)
+	static int fpvirtuals(Object param, FuncDeclaration f, SemanticContext context)
 	{
 		Pvirtuals p = (Pvirtuals) param;
 
-	    if(f.isVirtual())
+	    if(f.isVirtual(context))
 	    {
 	    	Expression e;
 

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+// DMD 1.020
 public abstract class AttribDeclaration extends Dsymbol {
 
 	public List<Dsymbol> decl;
@@ -12,7 +13,8 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public void addLocalClass(List<ClassDeclaration> aclasses, SemanticContext context) {
+	public void addLocalClass(List<ClassDeclaration> aclasses,
+			SemanticContext context) {
 		List<Dsymbol> d = include(null, null, context);
 
 		if (d != null) {
@@ -20,11 +22,6 @@ public abstract class AttribDeclaration extends Dsymbol {
 				s.addLocalClass(aclasses, context);
 			}
 		}
-	}
-	
-	@Override
-	public AttribDeclaration isAttribDeclaration() {
-		return this;
 	}
 
 	@Override
@@ -66,9 +63,30 @@ public abstract class AttribDeclaration extends Dsymbol {
 		return false;
 	}
 
-	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
-		// TODO semantic check the null,null references of this method 
+	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd,
+			SemanticContext context) {
 		return decl;
+	}
+
+	@Override
+	public void inlineScan(SemanticContext context) {
+		int i;
+		List d = include(null, null, context);
+
+		if (d != null) {
+			for (i = 0; i < d.size(); i++) {
+				Dsymbol s;
+
+				s = (Dsymbol) d.get(i);
+				//printf("AttribDeclaration::inlineScan %s\n", s.toChars());
+				s.inlineScan(context);
+			}
+		}
+	}
+
+	@Override
+	public AttribDeclaration isAttribDeclaration() {
+		return this;
 	}
 
 	@Override
@@ -117,7 +135,8 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		if (decl != null) {
 			buf.writenl();
 			buf.writeByte('{');

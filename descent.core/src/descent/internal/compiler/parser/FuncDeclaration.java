@@ -157,7 +157,7 @@ public class FuncDeclaration extends Declaration {
 		return ad;
 	}
 
-	public boolean isVirtual() {
+	public boolean isVirtual(SemanticContext context) {
 		return isMember() != null
 				&& !(isStatic() || protection == PROT.PROTprivate || protection == PROT.PROTpackage)
 				&& toParent().isClassDeclaration() != null;
@@ -202,7 +202,7 @@ public class FuncDeclaration extends Declaration {
 					ident.length));
 		}
 
-		if (isAbstract() && !isVirtual()) {
+		if (isAbstract() && !isVirtual(context)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.NonVirtualFunctionsCannotBeAbstract, 0,
 					ident.start, ident.length));
@@ -254,7 +254,7 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			// if static function, do not put in vtbl[]
-			if (!isVirtual()) {
+			if (!isVirtual(context)) {
 				return;
 			}
 
@@ -465,7 +465,7 @@ public class FuncDeclaration extends Declaration {
 		/*
 		 * Do not allow template instances to add virtual functions to a class.
 		 */
-		if (isVirtual()) {
+		if (isVirtual(context)) {
 			TemplateInstance ti = parent.isTemplateInstance();
 			if (ti != null) {
 				// Take care of nested templates
@@ -1389,7 +1389,7 @@ public class FuncDeclaration extends Declaration {
 
 		if (fbody == null || !hdrscan
 				&& (isSynchronized() || isImportedSymbol() || nestedFrameRef || // no nested references to this frame
-				(isVirtual() && !isFinal()))) {
+				(isVirtual(context) && !isFinal()))) {
 			// goto Lno;
 			if (!hdrscan) // Don't modify inlineStatus for header content scan
 				inlineStatus = ILSno;

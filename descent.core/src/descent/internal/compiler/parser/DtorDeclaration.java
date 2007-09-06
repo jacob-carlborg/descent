@@ -52,11 +52,11 @@ public class DtorDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public boolean isVirtual() {
-		if (BREAKABI) {
+	public boolean isVirtual(SemanticContext context) {
+		if (context.BREAKABI) {
 			return false;
 		} else {
-			return super.isVirtual();
+			return super.isVirtual(context);
 		}
 	}
 

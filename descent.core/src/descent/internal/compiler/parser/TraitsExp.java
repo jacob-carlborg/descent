@@ -177,7 +177,7 @@ public class TraitsExp extends Expression {
 				public boolean check(Dsymbol s)
 				{
 					FuncDeclaration f = s.isFuncDeclaration();
-					return null != f && f.isVirtual();
+					return null != f && f.isVirtual(context);
 				}
 	    	});
 	    }
