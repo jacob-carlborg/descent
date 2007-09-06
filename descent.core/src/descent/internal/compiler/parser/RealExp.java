@@ -96,7 +96,7 @@ public class RealExp extends Expression {
 
 	@Override
 	public integer_t toInteger(SemanticContext context) {
-		return value.toIntegerWrapper();
+		return value.to_integer_t();
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class RealExp extends Expression {
 
 	@Override
 	public integer_t toUInteger(SemanticContext context) {
-		return NumberUtils.castToUns64(value.toIntegerWrapper());
+		return value.to_integer_t().castToUns64();
 	}
 	
 	@Override

@@ -601,7 +601,7 @@ public class Constfold
 				if(e1.type.isunsigned() || e2.type.isunsigned())
 					n = null/* TODO unsigned ((d_uns64) n1) % ((d_uns64) n2) */;
 				else
-					n = n1.remainder(n2);
+					n = n1.mod(n2);
 				e = new IntegerExp(loc, n, type);
 			}
 			return e;

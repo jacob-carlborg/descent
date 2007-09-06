@@ -29,7 +29,7 @@ public class real_t implements Comparable {
 		this.nanOrInfinite = nanOrInfinite;
 	}
 	
-	public integer_t toIntegerWrapper() {
+	public integer_t to_integer_t() {
 		return new integer_t(value.toBigInteger());
 	}
 	

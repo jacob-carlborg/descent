@@ -32,13 +32,13 @@ public class ComplexExp extends Expression {
 
 	@Override
 	public integer_t toInteger(SemanticContext context) {
-		return toReal(context).toIntegerWrapper();
+		return toReal(context).to_integer_t();
 	}
 
 	@Override
 	public integer_t toUInteger(SemanticContext context) {
 		// TODO toBigUInteger ?
-		return toReal(context).toIntegerWrapper();
+		return toReal(context).to_integer_t();
 	}
 
 	@Override
@@ -65,9 +65,9 @@ public class ComplexExp extends Expression {
 	public boolean isBool(boolean result) {
 		// TODO check this
 		if (result) {
-			return !value.r.toIntegerWrapper().equals(BigInteger.ZERO);
+			return !value.r.to_integer_t().equals(BigInteger.ZERO);
 		} else {
-			return value.r.toIntegerWrapper().equals(BigInteger.ZERO);
+			return value.r.to_integer_t().equals(BigInteger.ZERO);
 		}
 	}
 

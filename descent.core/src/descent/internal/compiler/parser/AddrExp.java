@@ -148,7 +148,7 @@ public class AddrExp extends UnaExp {
 				    				String.valueOf(dim),
 				    			}));
 					}
-					e = new SymOffExp(loc, ve.var, index.times(ts.next
+					e = new SymOffExp(loc, ve.var, index.multiply(ts.next
 							.size(context)), context);
 					e.type = type;
 					return e;

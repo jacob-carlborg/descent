@@ -44,6 +44,7 @@ public class AllLexerParserTests {
 		//suite.addTestSuite(Semantic1_Test.class);
 		suite.addTestSuite(ASTConvertion_Test.class);
 		suite.addTestSuite(ScannerTests.class);
+		suite.addTestSuite(integer_t_Test.class);
 		//$JUnit-END$
 		return suite;
 	}
