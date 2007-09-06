@@ -182,7 +182,7 @@ public class TypeClass extends Type {
 		d = s.isDeclaration();
 		if (null == d) {
 			e.error("%s.%s is not a declaration", e.toChars(context), ident
-					.toChars(context));
+					.toChars());
 			return new IntegerExp(e.loc, 1, Type.tint32);
 		}
 
@@ -274,7 +274,7 @@ public class TypeClass extends Type {
 		buf.prependstring(sym.toChars(context));
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 	}
 

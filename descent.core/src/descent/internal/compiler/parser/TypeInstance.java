@@ -36,7 +36,7 @@ public class TypeInstance extends TypeQualified {
 		buf.prependstring(tmp.toChars());
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 	}
 

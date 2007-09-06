@@ -171,7 +171,8 @@ public class ArrayLiteralExp extends Expression {
 	@Override
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
 		int dim = elements != null ? elements.size() : 0;
-		buf.printf("A" + dim);
+		buf.writestring("A");
+		buf.writestring(dim);
 		for (int i = 0; i < dim; i++) {
 			Expression e = elements.get(i);
 			e.toMangleBuffer(buf, context);

@@ -148,10 +148,14 @@ public class IdentifierExp extends Expression {
 	public char[] toCharArray() {
 		return ident;
 	}
+	
+	public String toChars() {
+		return new String(ident).intern();
+	}
 
 	@Override
 	public String toChars(SemanticContext context) {
-		return new String(ident).intern();
+		return toChars();
 	}
 
 	@Override

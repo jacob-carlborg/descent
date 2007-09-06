@@ -115,7 +115,7 @@ public abstract class TypeArray extends Type {
 		buf.prependstring(buf2.toChars());
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 		next.toCBuffer2(buf, null, hgs, context);
 	}

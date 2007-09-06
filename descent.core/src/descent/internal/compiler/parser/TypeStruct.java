@@ -277,7 +277,7 @@ public class TypeStruct extends Type {
 		buf.prependbyte(' ');
 	    buf.prependstring(toChars(context));
 	    if (ident != null)
-		buf.writestring(ident.toChars(context));
+		buf.writestring(ident.toChars());
 	}
 
 }

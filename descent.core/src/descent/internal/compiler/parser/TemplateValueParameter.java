@@ -46,7 +46,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		v.storage_class = STCtemplateparameter;
 		if (null == sc.insert(v)) {
 			error(loc, "parameter '%s' multiply defined", ident
-					.toChars(context));
+					.toChars());
 		}
 		sparam = v;
 	}

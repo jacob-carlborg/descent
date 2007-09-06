@@ -206,7 +206,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		OutBuffer buf = new OutBuffer();
 		HdrGenState hgs = new HdrGenState();
 
-		buf.writestring(ident.toChars(context));
+		buf.writestring(ident.toChars());
 		buf.writeByte('(');
 		for (int i = 0; i < parameters.size(); i++) {
 			TemplateParameter tp = parameters.get(i);

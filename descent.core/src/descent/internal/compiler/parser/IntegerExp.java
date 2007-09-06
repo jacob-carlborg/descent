@@ -308,7 +308,9 @@ public class IntegerExp extends Expression {
 				switch (t.ty) {
 				case Tenum: {
 					TypeEnum te = (TypeEnum) t;
-					buf.printf("cast(" + te.sym.toChars(context) + "%s)");
+					buf.writestring("cast(");
+					buf.writestring(te.sym.toChars(context));
+					buf.writestring(")");
 					t = te.sym.memtype;
 					// goto L1;
 					loop = true;
@@ -317,7 +319,9 @@ public class IntegerExp extends Expression {
 
 				case Ttypedef: {
 					TypeTypedef tt = (TypeTypedef) t;
-					buf.printf("cast(" + tt.sym.toChars(context) + ")");
+					buf.writestring("cast(");
+					buf.writestring(tt.sym.toChars(context));
+					buf.writestring(")");
 					t = tt.sym.basetype;
 					// goto L1;
 					loop = true;
@@ -334,7 +338,9 @@ public class IntegerExp extends Expression {
 					}
 				case Tchar:
 					if (Chars.isprint(v) && v.compareTo(N_SLASH_SLASH) != 0) {
-						buf.printf("'" + v.castToInt32() + "'");
+						buf.writestring("'");
+						buf.writestring(v.castToInt32().toString());
+						buf.writestring("'");
 					} else {
 						/* TODO semantic
 						 buf.printf("'\\x%02x'", (int)v);
@@ -344,32 +350,35 @@ public class IntegerExp extends Expression {
 
 				case Tint8:
 					buf.writestring("cast(byte)");
-					buf.printf(v.castToInt32().toString());
+					buf.writestring(v.castToInt32().toString());
 					break;
 
 				case Tint16:
 					buf.writestring("cast(short)");
-					buf.printf(v.castToInt32().toString());
+					buf.writestring(v.castToInt32().toString());
 					break;
 
 				case Tint32:
 					// L2:
-					buf.printf(v.castToInt32().toString());
+					buf.writestring(v.castToInt32().toString());
 					break;
 
 				case Tuns8:
 					buf.writestring("cast(ubyte)");
-					buf.printf(v.castToUns32() + "u");
+					buf.writestring(v.castToUns32().toString());
+					buf.writestring("u");
 					break;
 
 				case Tuns16:
 					buf.writestring("cast(ushort)");
-					buf.printf(v.castToUns32() + "u");
+					buf.writestring(v.castToUns32().toString());
+					buf.writestring("u");
 					break;
 
 				case Tuns32:
 					// L3:
-					buf.printf(v.castToUns32() + "u");
+					buf.writestring(v.castToUns32().toString());
+					buf.writestring("u");
 					break;
 
 				case Tint64:
@@ -394,7 +403,8 @@ public class IntegerExp extends Expression {
 					buf.writestring("cast(");
 					buf.writestring(t.toChars(context));
 					buf.writeByte(')');
-					buf.printf(v.castToUns32() + "u");
+					buf.writestring(v.castToUns32().toString());
+					buf.writestring("u");
 					break;
 
 				default:
@@ -402,9 +412,10 @@ public class IntegerExp extends Expression {
 				}
 			}
 		} else if (v.and(N_0x8000000000000000).compareTo(BigInteger.ZERO) != 0) {
-			buf.printf("0x" + v.bigIntegerValue().toString(16));
+			buf.writestring("0x");
+			buf.writestring(v.bigIntegerValue().toString(16));
 		} else {
-			buf.printf(v.toString());
+			buf.writestring(v.toString());
 		}
 	}
 

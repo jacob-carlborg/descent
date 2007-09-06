@@ -23,10 +23,15 @@ public class VersionCondition extends DVCondition {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		if (ident != null)
-			buf.printf("version (" + new String(ident) + ")");
-		else
-			buf.printf("version (" + level + ")");
+		if (ident != null) {
+			buf.writestring("version (");
+		buf.writestring(ident);
+		buf.writestring(")");
+		} else {
+			buf.writestring("version (");
+			buf.writestring(level);
+			buf.writestring(")");
+		}
 	}
 
 	@Override

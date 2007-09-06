@@ -150,7 +150,7 @@ public class ForeachStatement extends Statement {
 				if (dim == 2) { // Declare key
 					if ((arg.storageClass & (STCout | STCref | STClazy)) != 0)
 						error("no storage class for %s", arg.ident
-								.toChars(context));
+								.toChars());
 					TY keyty = arg.type.ty;
 					if ((keyty != Tint32 && keyty != Tuns32)
 							|| (context.global.params.isX86_64
@@ -169,7 +169,7 @@ public class ForeachStatement extends Statement {
 				}
 				// Declare value
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
-					error("no storage class for %s", arg.ident.toChars(context));
+					error("no storage class for %s", arg.ident.toChars());
 				}
 				Dsymbol var;
 				if (te != null) {
@@ -196,7 +196,7 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = (Argument) arguments.get(i);
 			if (arg.type == null) {
-				error("cannot infer type for %s", arg.ident.toChars(context));
+				error("cannot infer type for %s", arg.ident.toChars());
 				return this;
 			}
 		}
@@ -548,7 +548,7 @@ public class ForeachStatement extends Statement {
 			if (a.type != null)
 				a.type.toCBuffer(buf, a.ident, hgs, context);
 			else
-				buf.writestring(a.ident.toChars(context));
+				buf.writestring(a.ident.toChars());
 		}
 		buf.writestring("; ");
 		aggr.toCBuffer(buf, hgs, context);

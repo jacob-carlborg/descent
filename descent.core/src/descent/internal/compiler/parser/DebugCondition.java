@@ -31,10 +31,15 @@ public class DebugCondition extends DVCondition {
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		if (ident != null)
-			buf.printf("debug (" + new String(ident) + ")");
-		else
-			buf.printf("debug (" + level + ")");
+		if (ident != null) {
+			buf.writestring("debug (");
+			buf.writestring(ident);
+			buf.writestring(")");
+		} else {
+			buf.writestring("debug (");
+			buf.writestring(level);
+			buf.writestring(")");
+		}
 	}
 
 }

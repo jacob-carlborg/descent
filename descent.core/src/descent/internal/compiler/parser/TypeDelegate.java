@@ -51,7 +51,7 @@ public class TypeDelegate extends Type {
 	    if (ident != null)
 	    {
 		buf.writeByte(' ');
-		buf.writestring(ident.toChars(context));
+		buf.writestring(ident.toChars());
 	    }
 	    next.next.toCBuffer2(buf, null, hgs, context);
 	}

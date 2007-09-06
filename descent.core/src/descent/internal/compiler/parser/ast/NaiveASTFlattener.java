@@ -2686,11 +2686,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(TypeTupleDelegateDeclaration node) {
-		// compiler node
-		return false;
-	}
-
 	public boolean visit(TypeTypedef node) {
 		// compiler node
 		return false;
@@ -3497,9 +3492,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public void endVisit(TypeTuple node) {
-	}
-
-	public void endVisit(TypeTupleDelegateDeclaration node) {
 	}
 
 	public void endVisit(TypeTypedef node) {

@@ -7,19 +7,21 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class PragmaStatement extends Statement {
 
 	public IdentifierExp ident;
 	public List<Expression> args;
 	public Statement body;
 
-	public PragmaStatement(Loc loc, IdentifierExp ident, List<Expression> args, Statement body) {
+	public PragmaStatement(Loc loc, IdentifierExp ident, List<Expression> args,
+			Statement body) {
 		super(loc);
 		this.ident = ident;
 		this.args = args;
 		this.body = body;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -31,12 +33,24 @@ public class PragmaStatement extends Statement {
 		visitor.endVisit(this);
 	}
 
-	
+	@Override
+	public boolean fallOffEnd(SemanticContext context) {
+		if (body != null) {
+			return body.fallOffEnd(context);
+		}
+		return true;
+	}
+
+	@Override
+	public int getNodeType() {
+		return PRAGMA_STATEMENT;
+	}
+
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		
+
 		// msg and lib char[] instances are reused by Lexer
-		
+
 		if (CharOperation.equals(ident.ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
@@ -45,27 +59,21 @@ public class PragmaStatement extends Statement {
 					e = e.semantic(sc, context);
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOK.TOKstring) {
-						StringExp se = (StringExp) e;
-						/* TODO semantic
-						 fprintf(stdmsg, "%.*s", (int)se.len, se.string);
-						 */
+
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.StringExpectedForPragmaMsg, 0,
 								e.start, e.length));
 					}
 				}
-				/* TODO semantic
-				 fprintf(stdmsg, "\n");
-				 */
 			}
 		} else if (CharOperation.equals(ident.ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem
 								.newSemanticTypeError(
-										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString, 0, start,
-										"pragma".length()));
+										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
+										0, start, "pragma".length()));
 			} else {
 				Expression e = args.get(0);
 				e = e.semantic(sc, context);
@@ -73,21 +81,14 @@ public class PragmaStatement extends Statement {
 				args.set(0, e);
 				if (e.op != TOK.TOKstring) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.StringExpectedForPragmaLib, 0,
-							e.start, e.length));
-				} else if (context.global.params.verbose) {
-					/* TODO semantic
-					 StringExp se = (StringExp )e;
-					 char *name = (char *)mem.malloc(se.len + 1);
-					 memcpy(name, se.string, se.len);
-					 name[se.len] = 0;
-					 printf("library   %s\n", name);
-					 mem.free(name);
-					 */
+							IProblem.StringExpectedForPragmaLib, 0, e.start,
+							e.length));
+
 				}
 			}
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
 		}
 
 		if (body != null) {
@@ -95,10 +96,35 @@ public class PragmaStatement extends Statement {
 		}
 		return body;
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return PRAGMA_STATEMENT;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("pragma (");
+		buf.writestring(ident.toChars());
+		if (args != null && args.size() > 0) {
+			buf.writestring(", ");
+			argsToCBuffer(buf, args, hgs, context);
+		}
+		buf.writeByte(')');
+		if (body != null) {
+			buf.writenl();
+			buf.writeByte('{');
+			buf.writenl();
+
+			body.toCBuffer(buf, hgs, context);
+
+			buf.writeByte('}');
+			buf.writenl();
+		} else {
+			buf.writeByte(';');
+			buf.writenl();
+		}
+	}
+
+	@Override
+	public boolean usesEH() {
+		return body != null && body.usesEH();
 	}
 
 }

@@ -572,7 +572,7 @@ public class VarDeclaration extends Declaration {
 		if (type != null) {
 			type.toCBuffer(buf, ident, hgs, context);
 		} else {
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 		if (init != null) {
 			buf.writestring(" = ");

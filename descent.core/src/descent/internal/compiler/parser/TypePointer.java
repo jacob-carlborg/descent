@@ -46,7 +46,7 @@ public class TypePointer extends Type {
 		buf.prependstring("*");
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 		next.toCBuffer2(buf, ident, hgs, context);
 	}

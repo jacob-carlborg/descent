@@ -33,13 +33,16 @@ public class TypeSlice extends Type {
 			SemanticContext context) {
 		OutBuffer buf2 = new OutBuffer();
 
-		buf2.printf("[" + lwr.toChars(context) + " .. ");
-		buf2.printf(upr.toChars(context) + "]");
+		buf2.writestring("[");
+		buf2.writestring(lwr.toChars(context));
+		buf2.writestring(" .. ");
+		buf2.writestring(upr.toChars(context));
+		buf2.writestring("]");
 
 		buf.prependstring(buf2.toChars());
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 		next.toCBuffer2(buf, null, hgs, context);
 	}

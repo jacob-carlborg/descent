@@ -110,13 +110,13 @@ public class TypeIdentifier extends TypeQualified {
 						if (sm == null) {
 							error(
 									"template identifier %s is not a member of %s",
-									id.toChars(context), s.toChars(context));
+									id.toChars(), s.toChars(context));
 							break;
 						}
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							error("%s is not a template", id.toChars(context));
+							error("%s is not a template", id.toChars());
 							break;
 						}
 						ti.tempdecl = td;
@@ -173,13 +173,13 @@ public class TypeIdentifier extends TypeQualified {
 			SemanticContext context) {
 		OutBuffer tmp = new OutBuffer();
 
-		tmp.writestring(this.ident.toChars(context));
+		tmp.writestring(this.ident.toChars());
 		// TODO semantic
 		// toCBuffer2Helper(tmp, null, hgs);
 		buf.prependstring(tmp.toChars());
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 	}
 

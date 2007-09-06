@@ -35,6 +35,8 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.internal.compiler.parser.Constfold.BinExp_fp;
+
 public abstract class BinExp extends Expression {
 
 	public Expression e1;
@@ -550,6 +552,11 @@ public abstract class BinExp extends Expression {
 	
 	public Expression interpretAssignCommon(InterState istate, TOK op, SemanticContext context) {
 		// TODO semantic
+		return null;
+	}
+	
+	public Expression interpretAssignCommon(InterState istate, BinExp_fp add, int i, SemanticContext context) {
+		// TODo semantic
 		return null;
 	}
 

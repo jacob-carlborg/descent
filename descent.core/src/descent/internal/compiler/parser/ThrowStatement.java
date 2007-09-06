@@ -66,7 +66,7 @@ public class ThrowStatement extends Statement {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.printf("throw ");
+		buf.writestring("throw ");
 		exp.toCBuffer(buf, hgs, context);
 		buf.writeByte(';');
 		buf.writenl();

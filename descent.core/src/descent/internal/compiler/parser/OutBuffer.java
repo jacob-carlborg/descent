@@ -26,16 +26,16 @@ public class OutBuffer {
 		data.append(b);
 	}
 	
-	public void printf(String s) {
-		data.append(s);
-	}
-	
 	public void writenl() {
 		data.append("\n");
 	}
 	
 	public void writebyte(char c) {
 		data.append(c);
+	}
+	
+	public void writestring(Object o) {
+		data.append(o.toString());
 	}
 	
 	public void writestring(String s) {
@@ -119,8 +119,12 @@ public class OutBuffer {
 		data.insert(0, c);
 	}
 
-	public void printf(long level) {
-		data.append(level);
+	public void writestring(int i) {
+		data.append(i);
+	}
+
+	public void writestring(long l) {
+		data.append(l);
 	}
 
 }

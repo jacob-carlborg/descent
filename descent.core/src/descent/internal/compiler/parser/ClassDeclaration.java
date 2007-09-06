@@ -285,7 +285,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				if (b.base != null) {
 					if (b.base.symtab == null) {
 						error("base %s is forward referenced", b.base.ident
-								.toChars(context));
+								.toChars());
 					} else {
 						s = b.base.search(loc, ident, flags, context);
 						if (s == this) {
@@ -728,7 +728,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		if (!isAnonymous()) {
-			buf.printf(kind());
+			buf.writestring(kind());
 			buf.writestring(toChars(context));
 			if (baseclasses.size() > 0) {
 				buf.writestring(" : ");

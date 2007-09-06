@@ -187,7 +187,7 @@ public class TypeBasic extends Type {
 		buf.prependstring(this.toString());
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 	}
 	

@@ -68,7 +68,7 @@ public class TypeEnum extends Type {
 		buf.prependstring(sym.toChars(context));
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 	}
 

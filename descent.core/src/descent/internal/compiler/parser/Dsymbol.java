@@ -429,7 +429,7 @@ public class Dsymbol extends ASTDmdNode {
 
 	@Override
 	public String toChars(SemanticContext context) {
-		return ident != null ? ident.toChars(context) : "__anonymous";
+		return ident != null ? ident.toChars() : "__anonymous";
 	}
 
 	public Dsymbol toParent() {
@@ -468,13 +468,13 @@ public class Dsymbol extends ASTDmdNode {
 			sm = s.search(loc, id, 0, context);
 			if (null == sm) {
 				error("template identifier %s is not a member of %s %s", id
-						.toChars(context), s.kind(), s.toChars(context));
+						.toChars(), s.kind(), s.toChars(context));
 				return null;
 			}
 			sm = sm.toAlias(context);
 			TemplateDeclaration td = sm.isTemplateDeclaration();
 			if (null == td) {
-				error("%s is not a template, it is a %s", id.toChars(context),
+				error("%s is not a template, it is a %s", id.toChars(),
 						sm.kind());
 				return null;
 			}

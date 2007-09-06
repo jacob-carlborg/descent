@@ -179,7 +179,7 @@ public class Scope {
 		}
 	}
 
-	public void mergeCallSuper(int cs) {
+	public void mergeCallSuper(Loc loc, int cs) {
 		// This does a primitive flow analysis to support the restrictions
 		// regarding when and how constructors can appear.
 		// It merges the results of two paths.

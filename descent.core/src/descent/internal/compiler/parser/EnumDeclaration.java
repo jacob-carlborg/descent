@@ -318,7 +318,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 		buf.writestring("enum ");
 		if (ident != null) {
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 			buf.writeByte(' ');
 		}
 		if (memtype != null) {

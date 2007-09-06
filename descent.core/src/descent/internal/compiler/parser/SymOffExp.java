@@ -123,9 +123,13 @@ public class SymOffExp extends Expression {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		if (!offset.equals(0)) {
-			buf.printf("(& " + var.toChars(context) + "+" + offset + ")");
+			buf.writestring("(& ");
+			buf.writestring(var.toChars(context));
+			buf.writestring("+");
+			buf.writestring(offset);
+			buf.writestring(")");
 		} else {
-			buf.printf("& " + var.toChars(context));
+			buf.writestring("& " + var.toChars(context));
 		}
 	}
 	

@@ -35,11 +35,11 @@ public class ModuleDeclaration extends ASTDmdNode {
 		if (packages != null && packages.size() > 0) {
 			for (int i = 0; i < packages.size(); i++) {
 				IdentifierExp pid = packages.get(i);
-				buf.writestring(pid.toChars(context));
+				buf.writestring(pid.toChars());
 				buf.writeByte('.');
 			}
 		}
-		buf.writestring(id.toChars(context));
+		buf.writestring(id.toChars());
 		return buf.extractData();
 	}
 

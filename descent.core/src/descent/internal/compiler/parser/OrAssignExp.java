@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class OrAssignExp extends BinExp {
 
 	public OrAssignExp(Loc loc, Expression e1, Expression e2) {
@@ -10,10 +11,6 @@ public class OrAssignExp extends BinExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return OR_ASSIGN_EXP;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,13 +21,23 @@ public class OrAssignExp extends BinExp {
 	}
 
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context) {
-		return commonSemanticAssignIntegral(sc, context);
+	public int getNodeType() {
+		return OR_ASSIGN_EXP;
 	}
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		return interpretAssignCommon(istate, op, context);
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.orass;
+	}
+
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		return commonSemanticAssignIntegral(sc, context);
 	}
 
 }

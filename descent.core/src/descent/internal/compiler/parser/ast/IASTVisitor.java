@@ -234,7 +234,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	boolean visit(TypeSlice node);
 	boolean visit(TypeStruct node);
 	boolean visit(TypeTuple node);
-	boolean visit(TypeTupleDelegateDeclaration node);
 	boolean visit(TypeTypedef node);
 	boolean visit(TypeTypeof node);
 	boolean visit(UAddExp node);
@@ -469,7 +468,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	void endVisit(TypeSlice node);
 	void endVisit(TypeStruct node);
 	void endVisit(TypeTuple node);
-	void endVisit(TypeTupleDelegateDeclaration node);
 	void endVisit(TypeTypedef node);
 	void endVisit(TypeTypeof node);
 	void endVisit(UAddExp node);

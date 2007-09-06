@@ -2,21 +2,20 @@ package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-
+// DMD 1.020
 public class AssignExp extends BinExp {
+
+	public boolean ismemset;
 
 	public AssignExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKassign, e1, e2);
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return ASSIGN_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -27,190 +26,174 @@ public class AssignExp extends BinExp {
 	}
 
 	@Override
-	public Expression checkToBoolean(SemanticContext context)
-	{
+	public Expression checkToBoolean(SemanticContext context) {
 		error("'=' does not give a boolean result");
-	    return this;
+		return this;
 	}
 
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context)
-	{   
-	    /* Look for operator overloading of a[i]=value.
-	     * Do it before semantic() otherwise the a[i] will have been
-	     * converted to a.opIndex() already.
-	     */
-	    if (e1.op == TOK.TOKarray)
-	    {	
-	    	Type t1;
+	public int getNodeType() {
+		return ASSIGN_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretAssignCommon(istate, null, context);
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.assign;
+	}
+
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		/* Look for operator overloading of a[i]=value.
+		 * Do it before semantic() otherwise the a[i] will have been
+		 * converted to a.opIndex() already.
+		 */
+		if (e1.op == TOK.TOKarray) {
+			Type t1;
 			ArrayExp ae = (ArrayExp) e1;
 			AggregateDeclaration ad;
 			char[] id = Id.index;
-	
+
 			ae.e1 = ae.e1.semantic(sc, context);
 			t1 = ae.e1.type.toBasetype(context);
-			
-			if(t1.ty == TY.Tstruct || t1.ty == TY.Tclass)
-			{
-				if (t1.ty == TY.Tstruct)
-				{
-				    ad = ((TypeStruct) t1).sym;
-				}
-				else // t1.ty == TY.Tclass
+
+			if (t1.ty == TY.Tstruct || t1.ty == TY.Tclass) {
+				if (t1.ty == TY.Tstruct) {
+					ad = ((TypeStruct) t1).sym;
+				} else // t1.ty == TY.Tclass
 				{
 					ad = ((TypeClass) t1).sym;
 				}
-				
-			    // Rewrite (a[i] = value) to (a.opIndexAssign(value, i))
-			    if(null != search_function(ad, Id.indexass, context))
-			    {
-			    	Expression e = new DotIdExp(loc, ae.e1, 
-			    			new IdentifierExp(Loc.ZERO, Id.indexass));
-			    	List<Expression> a = 
-			    		new ArrayList<Expression>(ae.arguments);
-	
-					a.add(e2); // WTF a.add(0, e2); -- Add at position 0 or add a null and then e2?
+
+				// Rewrite (a[i] = value) to (a.opIndexAssign(value, i))
+				if (null != search_function(ad, Id.indexass, context)) {
+					Expression e = new DotIdExp(loc, ae.e1, new IdentifierExp(
+							Loc.ZERO, Id.indexass));
+					List<Expression> a = new ArrayList<Expression>(ae.arguments);
+
+					a.add(0, e2);
 					e = new CallExp(loc, e, a);
 					e = e.semantic(sc, context);
 					return e;
-			    }
-			    else
-			    {
+				} else {
 					// Rewrite (a[i] = value) to (a.opIndex(i, value))
-					if(null != search_function(ad, id, context))
-					{
-						Expression e = new DotIdExp(loc, ae.e1, 
+					if (null != search_function(ad, id, context)) {
+						Expression e = new DotIdExp(loc, ae.e1,
 								new IdentifierExp(Loc.ZERO, id));
-					
+
 						error("operator [] assignment overload with opIndex(i, value) illegal, use opIndexAssign(value, i)");
-		
-					    e = new CallExp(loc, e, (Expression) ae.arguments.get(0), e2);
-					    e = e.semantic(sc, context);
-					    return e;
+
+						e = new CallExp(loc, e, ae.arguments.get(0), e2);
+						e = e.semantic(sc, context);
+						return e;
 					}
-			    }
+				}
 			}
-	    }
-	    
-	    /* Look for operator overloading of a[i..j]=value.
-	     * Do it before semantic() otherwise the a[i..j] will have been
-	     * converted to a.opSlice() already.
-	     */
-	    if (e1.op == TOK.TOKslice)
-	    {
-	    	Type t1;
+		}
+
+		/* Look for operator overloading of a[i..j]=value.
+		 * Do it before semantic() otherwise the a[i..j] will have been
+		 * converted to a.opSlice() already.
+		 */
+		if (e1.op == TOK.TOKslice) {
+			Type t1;
 			SliceExp ae = (SliceExp) e1;
 			AggregateDeclaration ad;
-			char[] id = Id.index;
-	
+
 			ae.e1 = ae.e1.semantic(sc, context);
 			ae.e1 = resolveProperties(sc, ae.e1, context);
 			t1 = ae.e1.type.toBasetype(context);
-			
-			if(t1.ty == TY.Tstruct || t1.ty == TY.Tclass)
-			{
-				if (t1.ty == TY.Tstruct)
+
+			if (t1.ty == TY.Tstruct || t1.ty == TY.Tclass) {
+				if (t1.ty == TY.Tstruct) {
+					ad = ((TypeStruct) t1).sym;
+
+				} else // t1.ty == TY.Tclass
 				{
-				    ad = ((TypeStruct) t1).sym;
-				    
+					ad = ((TypeClass) t1).sym;
 				}
-				else // t1.ty == TY.Tclass
-				{
-				    ad = ((TypeClass) t1).sym;
-				}
-				
-			    // Rewrite (a[i..j] = value) to (a.opIndexAssign(value, i, j))
-			    if(null != search_function(ad, Id.sliceass, context))
-			    {
-			    	Expression e = new DotIdExp(loc, ae.e1, 
-			    			new IdentifierExp(Loc.ZERO, Id.sliceass));
-			    	List<Expression> a = new ArrayList<Expression>();
-	
+
+				// Rewrite (a[i..j] = value) to (a.opIndexAssign(value, i, j))
+				if (null != search_function(ad, Id.sliceass, context)) {
+					Expression e = new DotIdExp(loc, ae.e1, new IdentifierExp(
+							Loc.ZERO, Id.sliceass));
+					List<Expression> a = new ArrayList<Expression>();
+
 					a.add(e2);
-					if(null != ae.lwr)
-					{
+					if (null != ae.lwr) {
 						a.add(ae.lwr);
-					    assert(null != ae.upr);
-					    a.add(ae.upr);
+						assert (null != ae.upr);
+						a.add(ae.upr);
+					} else {
+						assert (null == ae.upr);
 					}
-					else
-					    assert(null == ae.upr);
-					
+
 					e = new CallExp(loc, e, a);
 					e = e.semantic(sc, context);
 					return e;
-			    }
+				}
 			}
-	    }
-	    
-	    Expression e1old = e1;
-	    Type t1;
-	    
-	    super.semantic(sc, context);
-	    e2 = resolveProperties(sc, e2, context);
-	    assert(null != e1.type);
+		}
 
-	    t1 = e1.type.toBasetype(context);
+		Expression e1old = e1;
+		Type t1;
 
-	    if (t1.ty == TY.Tfunction)
-	    {
-	    	// Rewrite f=value to f(value)
+		super.semantic(sc, context);
+		e2 = resolveProperties(sc, e2, context);
+		assert (null != e1.type);
+
+		t1 = e1.type.toBasetype(context);
+
+		if (t1.ty == TY.Tfunction) {
+			// Rewrite f=value to f(value)
 			Expression e;
-	
+
 			e = new CallExp(loc, e1, e2);
 			e = e.semantic(sc, context);
 			return e;
-	    }
+		}
 
-	    /* If it is an assignment from a 'foreign' type,
-	     * check for operator overloading.
-	     */
-	    if (t1.ty == TY.Tclass || t1.ty == TY.Tstruct)
-	    {
-			if (MATCH.MATCHnomatch == 
-				e2.type.implicitConvTo(e1.type, context))
-			{
-			    Expression e = op_overload(sc, context);
-			    if(null != e)
-			    	return e;
+		/* If it is an assignment from a 'foreign' type,
+		 * check for operator overloading.
+		 */
+		if (t1.ty == TY.Tclass || t1.ty == TY.Tstruct) {
+			if (MATCH.MATCHnomatch == e2.type.implicitConvTo(e1.type, context)) {
+				Expression e = op_overload(sc, context);
+				if (null != e) {
+					return e;
+				}
 			}
-	    }
+		}
 
-	    e2.rvalue(context);
-	    /* TODO semantic ArrayLengthExp
-	    if (e1.op == TOK.TOKarraylength)
-	    {
+		e2.rvalue(context);
+		if (e1.op == TOK.TOKarraylength) {
 			// e1 is not an lvalue, but we let code generator handle it
 			ArrayLengthExp ale = (ArrayLengthExp) e1;
-			ale.e1 = ale.e1.modifiableLvalue(sc, null);
-	    }
-	    else
-	    */
-	    if (e1.op == TOK.TOKslice)
-	    	;
-	    else
-	    {
-	    	// Try to do a decent error message with the expression
-	    	// before it got constant folded
-	    	e1 = e1.modifiableLvalue(sc, e1old, context);
-	    }
+			ale.e1 = ale.e1.modifiableLvalue(sc, null, context);
+		} else if (e1.op == TOK.TOKslice) {
+			;
+		} else {
+			// Try to do a decent error message with the expression
+			// before it got constant folded
+			e1 = e1.modifiableLvalue(sc, e1old, context);
+		}
 
-	    if (e1.op == TOK.TOKslice && null != t1.next &&
-	    		!(t1.next.equals(e2.type.next)))
-	    {   // memset
-	    	e2 = e2.implicitCastTo(sc, t1.next, context);
-	    }
-	    else if (t1.ty == TY.Tsarray)
-	    {
-	    	error("cannot assign to static array %s", e1.toChars(context));
-	    }
-	    else
-	    {
-	    	e2 = e2.implicitCastTo(sc, e1.type, context);
-	    }
-	    
-	    type = e1.type;
-	    assert(null != type);
-	    return this;
+		if (e1.op == TOK.TOKslice && null != t1.next
+				&& !(t1.next.equals(e2.type.next))) { // memset
+			e2 = e2.implicitCastTo(sc, t1.next, context);
+		} else if (t1.ty == TY.Tsarray) {
+			error("cannot assign to static array %s", e1.toChars(context));
+		} else {
+			e2 = e2.implicitCastTo(sc, e1.type, context);
+		}
+
+		type = e1.type;
+		assert (null != type);
+		return this;
 	}
+
 }

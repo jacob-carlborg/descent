@@ -93,7 +93,7 @@ public class ContinueStatement extends Statement {
 
 					if (!s.hasContinue()) {
 						error("label '%s' has no continue", ident
-								.toChars(context));
+								.toChars());
 					}
 					if (ls.tf != sc.tf) {
 						error("cannot continue out of finally block");
@@ -102,7 +102,7 @@ public class ContinueStatement extends Statement {
 				}
 			}
 			error("enclosing label '%s' for continue not found", ident
-					.toChars(context));
+					.toChars());
 		} else if (null == sc.scontinue) {
 			if (sc.fes != null) {
 				Statement s;
@@ -128,7 +128,7 @@ public class ContinueStatement extends Statement {
 		buf.writestring("continue");
 		if (ident != null) {
 			buf.writebyte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 		buf.writebyte(';');
 		buf.writenl();

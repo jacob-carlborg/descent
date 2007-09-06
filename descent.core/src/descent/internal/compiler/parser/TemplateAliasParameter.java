@@ -43,7 +43,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		sparam = new AliasDeclaration(loc, ident, ti);
 		if (sc.insert(sparam) == null) {
 			error(loc, "parameter '%s' multiply defined", ident
-					.toChars(context));
+					.toChars());
 		}
 	}
 
@@ -191,7 +191,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring("alias ");
-		buf.writestring(ident.toChars(context));
+		buf.writestring(ident.toChars());
 		if (specAliasT != null) {
 			buf.writestring(" : ");
 			specAliasT.toCBuffer(buf, null, hgs, context);

@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKstring;
-
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -11,28 +9,20 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 
+// DMD 1.020
 public class PragmaDeclaration extends AttribDeclaration {
 
 	public List<Expression> args;
 
-	public PragmaDeclaration(Loc loc, IdentifierExp ident, List<Expression> args,
-			List<Dsymbol> decl) {
+	public PragmaDeclaration(Loc loc, IdentifierExp ident,
+			List<Expression> args, List<Dsymbol> decl) {
 		super(loc, decl);
 		this.ident = ident;
 		this.args = args;
 	}
 
-	@Override
-	public int getNodeType() {
-		return PRAGMA_DECLARATION;
-	}
-
-	@Override
-	public String kind() {
-		return "pragma";
-	}
-	
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -44,6 +34,16 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 
 	@Override
+	public int getNodeType() {
+		return PRAGMA_DECLARATION;
+	}
+
+	@Override
+	public String kind() {
+		return "pragma";
+	}
+
+	@Override
 	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		ps[0] = null;
 		return true;
@@ -51,11 +51,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) { // Should be
-		// merged with
-		// PragmaStatement
+		// merged with PragmaStatement
 
-		// msg and lib char[] instances are reused by Lexer
-		
 		if (CharOperation.equals(ident.ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
@@ -64,23 +61,17 @@ public class PragmaDeclaration extends AttribDeclaration {
 					e = e.semantic(sc, context);
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOKstring) {
-						/*
-						 * TODO semantic StringExp se = (StringExp )e;
-						 * fprintf(stdmsg, "%.*s", (int)se.len, se.string);
-						 */
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.StringExpectedForPragmaMsg, 0,
 								e.start, e.length));
 					}
 				}
-				// fprintf(stdmsg, "\n");
 			}
 			// goto Lnodecl
 			if (decl != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PragmaIsMissingClosingSemicolon, 0, start,
-						"pragma".length()));
+						IProblem.PragmaIsMissingClosingSemicolon, 0, start, 6));
 			}
 			return;
 		} else if (CharOperation.equals(ident.ident, Id.lib)) {
@@ -88,37 +79,29 @@ public class PragmaDeclaration extends AttribDeclaration {
 				context
 						.acceptProblem(Problem
 								.newSemanticTypeError(
-										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString, 0, start,
-										6));
+										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
+										0, start, 6));
 			} else {
 				Expression e = args.get(0);
 
 				e = e.semantic(sc, context);
 				e = e.optimize(WANTvalue | WANTinterpret, context);
 				args.set(0, e);
-				if (e.op != TOKstring)
+				if (e.op != TOKstring) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.StringExpectedForPragmaLib, 0, e.start, e.length));
-				else if (context.global.params.verbose) {
-					/*
-					 * TODO semantic StringExp se = (StringExp )e; char *name =
-					 * (char *)mem.malloc(se.len + 1); memcpy(name, se.string,
-					 * se.len); name[se.len] = 0; printf("library %s\n", name);
-					 * mem.free(name);
-					 */
+							IProblem.StringExpectedForPragmaLib, 0, e.start,
+							e.length));
 				}
 			}
 			// goto Lnodecl;
 			if (decl != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PragmaIsMissingClosingSemicolon, 0, start,
-						"pragma".length()));
+						IProblem.PragmaIsMissingClosingSemicolon, 0, start, 6));
 			}
 			return;
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UnrecognizedPragma, 0,
-					ident.start, ident.length));
+					IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
 		}
 
 		if (decl != null) {
@@ -134,15 +117,16 @@ public class PragmaDeclaration extends AttribDeclaration {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);
-		pd = new PragmaDeclaration(loc, ident, Expression.arraySyntaxCopy(args),
-				arraySyntaxCopy(decl));
+		pd = new PragmaDeclaration(loc, ident,
+				Expression.arraySyntaxCopy(args), arraySyntaxCopy(decl));
 		return pd;
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		buf.printf("pragma(%s");
-		buf.printf(ident.toChars(context));
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("pragma(");
+		buf.writestring(ident.toChars());
 		if (args != null) {
 			for (Expression e : args) {
 				buf.writestring(", ");

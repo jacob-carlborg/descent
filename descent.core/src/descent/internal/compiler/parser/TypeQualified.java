@@ -61,7 +61,7 @@ public abstract class TypeQualified extends Type {
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							error("%s is not a template", id.toChars(context));
+							error("%s is not a template", id.toChars());
 							return;
 						}
 						ti.tempdecl = td;
@@ -229,7 +229,7 @@ public abstract class TypeQualified extends Type {
 				TemplateInstanceWrapper ti = (TemplateInstanceWrapper) id;
 				ti.tempinst.toCBuffer(buf, hgs, context);
 			} else
-				buf.writestring(id.toChars(context));
+				buf.writestring(id.toChars());
 		}
 	}
 
@@ -263,7 +263,7 @@ public abstract class TypeQualified extends Type {
 		    ti.toCBuffer(buf, hgs, context);
 		}
 		else
-		    buf.writestring(id.toChars(context));
+		    buf.writestring(id.toChars());
 	    }
 	}
 

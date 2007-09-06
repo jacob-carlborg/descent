@@ -1758,10 +1758,6 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(TypeTupleDelegateDeclaration node) {
-		return false;
-	}
-
 	public boolean visit(TypeTypedef node) {
 		return false;
 	}
@@ -2380,9 +2376,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public void endVisit(TypeTuple node) {
-	}
-
-	public void endVisit(TypeTupleDelegateDeclaration node) {
 	}
 
 	public void endVisit(TypeTypedef node) {

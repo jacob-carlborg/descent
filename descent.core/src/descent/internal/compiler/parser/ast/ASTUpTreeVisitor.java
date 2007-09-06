@@ -909,10 +909,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(TypeTuple.class.getSuperclass().equals(Type.class));
 		return visit((Type) node);
 	}
-	public boolean visit(TypeTupleDelegateDeclaration node) {
-		Assert.isTrue(TypeTupleDelegateDeclaration.class.getSuperclass().equals(TypeInfoDeclaration.class));
-		return visit((TypeInfoDeclaration) node);
-	}
 	public boolean visit(TypeTypedef node) {
 		Assert.isTrue(TypeTypedef.class.getSuperclass().equals(Type.class));
 		return visit((Type) node);
@@ -1862,10 +1858,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	public void endVisit(TypeTuple node) {
 		Assert.isTrue(TypeTuple.class.getSuperclass().equals(Type.class));
 		endVisit((Type) node);
-	}
-	public void endVisit(TypeTupleDelegateDeclaration node) {
-		Assert.isTrue(TypeTupleDelegateDeclaration.class.getSuperclass().equals(TypeInfoDeclaration.class));
-		endVisit((TypeInfoDeclaration) node);
 	}
 	public void endVisit(TypeTypedef node) {
 		Assert.isTrue(TypeTypedef.class.getSuperclass().equals(Type.class));

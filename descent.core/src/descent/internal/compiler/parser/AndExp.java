@@ -2,7 +2,9 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.And;
 
+// DMD 1.020
 public class AndExp extends BinExp {
 
 	public AndExp(Loc loc, Expression e1, Expression e2) {
@@ -10,10 +12,6 @@ public class AndExp extends BinExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return AND_EXP;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,6 +22,45 @@ public class AndExp extends BinExp {
 	}
 
 	@Override
+	public int getNodeType() {
+		return AND_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
+
+	@Override
+	public boolean isCommutative() {
+		return true;
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.iand;
+	}
+
+	@Override
+	public char[] opId_r() {
+		return Id.iand_r;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		Expression e;
+
+		e1 = e1.optimize(result, context);
+		e2 = e2.optimize(result, context);
+		if (e1.isConst() && e2.isConst()) {
+			e = And.call(type, e1, e2, context);
+		} else {
+			e = this;
+		}
+		return e;
+	}
+
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 
@@ -31,8 +68,9 @@ public class AndExp extends BinExp {
 			super.semanticp(sc, context);
 
 			e = op_overload(sc, context);
-			if (null != e)
+			if (null != e) {
 				return e;
+			}
 
 			if ((e1.type.toBasetype(context).ty == TY.Tbool)
 					&& (e2.type.toBasetype(context).ty == TY.Tbool)) {
@@ -45,11 +83,6 @@ public class AndExp extends BinExp {
 			}
 		}
 		return this;
-	}
-
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
 	}
 
 }

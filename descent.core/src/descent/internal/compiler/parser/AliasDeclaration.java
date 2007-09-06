@@ -264,7 +264,7 @@ public class AliasDeclaration extends Declaration {
 		if (aliassym != null) {
 			aliassym.toCBuffer(buf, hgs, context);
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		} else {
 			type.toCBuffer(buf, ident, hgs, context);
 		}

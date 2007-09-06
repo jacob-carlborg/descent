@@ -86,7 +86,7 @@ public class IfStatement extends Statement {
 		sc.callSuper = cs0;
 		if (elsebody != null)
 			elsebody = elsebody.semanticScope(sc, null, null, context);
-		sc.mergeCallSuper(cs1);
+		sc.mergeCallSuper(loc, cs1);
 
 		return this;
 	}

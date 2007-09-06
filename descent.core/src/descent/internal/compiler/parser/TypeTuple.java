@@ -59,7 +59,7 @@ public class TypeTuple extends Type {
 		buf.prependstring(buf2.toChars());
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		}
 	}
 

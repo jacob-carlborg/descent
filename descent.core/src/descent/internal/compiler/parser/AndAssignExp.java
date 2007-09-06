@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class AndAssignExp extends BinExp {
 
 	public AndAssignExp(Loc loc, Expression e1, Expression e2) {
@@ -10,10 +11,6 @@ public class AndAssignExp extends BinExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return AND_ASSIGN_EXP;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,8 +21,8 @@ public class AndAssignExp extends BinExp {
 	}
 
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context) {
-		return commonSemanticAssignIntegral(sc, context);
+	public int getNodeType() {
+		return AND_ASSIGN_EXP;
 	}
 
 	@Override
@@ -38,6 +35,9 @@ public class AndAssignExp extends BinExp {
 		return Id.addass;
 	}
 
-	// PERHAPS elem *toElem(IRState *irs);
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		return commonSemanticAssignIntegral(sc, context);
+	}
 
 }

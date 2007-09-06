@@ -212,7 +212,7 @@ public class DotIdExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 	    buf.writeByte('.');
-	    buf.writestring(ident.toChars(context));
+	    buf.writestring(ident.toChars());
 	}
 
 }

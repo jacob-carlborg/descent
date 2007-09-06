@@ -2,7 +2,9 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Com;
 
+// DMD 1.020
 public class ComExp extends UnaExp {
 
 	public ComExp(Loc loc, Expression e1) {
@@ -10,16 +12,40 @@ public class ComExp extends UnaExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return COM_EXP;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, e1);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return COM_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, op, context);
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.com;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		Expression e;
+
+		e1 = e1.optimize(result, context);
+		if (e1.isConst()) {
+			e = Com.call(type, e1, context);
+		} else {
+			e = this;
+		}
+		return e;
 	}
 
 	@Override
@@ -39,11 +65,6 @@ public class ComExp extends UnaExp {
 			type = e1.type;
 		}
 		return this;
-	}
-	
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
 	}
 
 }

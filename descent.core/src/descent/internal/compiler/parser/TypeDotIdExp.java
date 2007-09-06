@@ -51,7 +51,7 @@ public class TypeDotIdExp extends Expression {
 		type.toCBuffer(buf, null, hgs, context);
 		buf.writeByte(')');
 		buf.writeByte('.');
-		buf.writestring(ident.toChars(context));
+		buf.writestring(ident.toChars());
 	}
 
 }

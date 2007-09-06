@@ -122,7 +122,7 @@ public abstract class Statement extends ASTDmdNode {
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.printf("Statement::toCBuffer()");
+		buf.writestring("Statement::toCBuffer()");
 		buf.writenl();
 	}
 

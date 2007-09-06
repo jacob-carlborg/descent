@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class ProtDeclaration extends AttribDeclaration {
 
 	public Modifier modifier;
@@ -15,8 +16,8 @@ public class ProtDeclaration extends AttribDeclaration {
 	public PROT protection;
 	public boolean colon;
 
-	public ProtDeclaration(Loc loc, PROT p, List<Dsymbol> decl, Modifier modifier,
-			boolean single, boolean colon) {
+	public ProtDeclaration(Loc loc, PROT p, List<Dsymbol> decl,
+			Modifier modifier, boolean single, boolean colon) {
 		super(loc, decl);
 		this.protection = p;
 		this.modifier = modifier;
@@ -25,10 +26,6 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return PROT_DECLARATION;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -36,6 +33,11 @@ public class ProtDeclaration extends AttribDeclaration {
 			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return PROT_DECLARATION;
 	}
 
 	@Override
@@ -63,14 +65,17 @@ public class ProtDeclaration extends AttribDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		ProtDeclaration pd;
 
-		Assert.isTrue(s == null);
-		pd = new ProtDeclaration(loc, protection, Dsymbol.arraySyntaxCopy(decl),
-				modifier, single, colon);
+		if (s != null) {
+			throw new IllegalStateException("assert(s);");
+		}
+		pd = new ProtDeclaration(loc, protection,
+				Dsymbol.arraySyntaxCopy(decl), modifier, single, colon);
 		return pd;
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		String p = null;
 
 		switch (protection) {

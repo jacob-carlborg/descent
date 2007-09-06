@@ -49,7 +49,9 @@ public class TypeSArray extends TypeArray {
 	@Override
 	public void toPrettyBracket(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.printf("[" + dim.toChars(context) + "]");
+		buf.writestring("[");
+		buf.writestring(dim.toChars(context));
+		buf.writestring("]");
 	}
 
 	@Override

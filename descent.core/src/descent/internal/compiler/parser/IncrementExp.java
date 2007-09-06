@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// This class is only for Descent
 public class IncrementExp extends AddAssignExp {
 
 	public IncrementExp(Loc loc, Expression e1) {

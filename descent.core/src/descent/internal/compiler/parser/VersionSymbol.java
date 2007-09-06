@@ -84,9 +84,9 @@ public class VersionSymbol extends Dsymbol {
 			SemanticContext context) {
 		buf.writestring("version = ");
 		if (ident != null) {
-			buf.writestring(ident.toChars(context));
+			buf.writestring(ident.toChars());
 		} else {
-			buf.printf(level);
+			buf.writestring(level);
 		}
 		buf.writestring(";");
 		buf.writenl();
