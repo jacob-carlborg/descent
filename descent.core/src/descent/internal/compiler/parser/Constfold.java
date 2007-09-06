@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static descent.internal.compiler.parser.ASTDmdNode.EXP_CANT_INTERPRET;
@@ -16,10 +17,16 @@ import static descent.internal.compiler.parser.TOK.TOKnotidentity;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
+import static descent.internal.compiler.parser.TOK.TOKnull;
 
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.TY.Tchar;
+import static descent.internal.compiler.parser.TY.Twchar;
+import static descent.internal.compiler.parser.TY.Tdchar;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tarray;
 
 /**
  * A class to hold constant-folding functions used by the interpreter. The
@@ -775,8 +782,94 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e = EXP_CANT_INTERPRET;
+			Loc loc = e1.loc;
+			
+			// printf("Index(e1 = %s, e2 = %s)\n", e1.toChars(), e2.toChars());
+			assert (null != e1.type);
+			if(e1.op == TOKstring && e2.op == TOKint64)
+			{
+				StringExp es1 = (StringExp) e1;
+				int i = e2.toInteger(context).intValue();
+				
+				if(i >= es1.len)
+					e1.error("string index %ju is out of bounds [0 .. %zu]", i,
+							es1.len);
+				else
+				{
+					integer_t value;
+					
+					value = new integer_t(es1.string[i]);
+					e = new IntegerExp(loc, value, type);
+				}
+			}
+			else if(e1.type.toBasetype(context).ty == Tsarray &&
+					e2.op == TOKint64)
+			{
+				TypeSArray tsa = (TypeSArray) e1.type.toBasetype(context);
+				int length = tsa.dim.toInteger(context).intValue();
+				int i = e2.toInteger(context).intValue();
+				
+				if(i >= length)
+				{
+					// TODO semantic e2.error("array index %ju is out of bounds
+					// %s[0 .. %ju]", i, e1.toChars(context), length);
+				}
+				else if(e1.op == TOKarrayliteral &&
+						0 == e1.checkSideEffect(2, context))
+				{
+					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
+					e = (Expression) ale.elements.get(i);
+					e.type = type;
+				}
+			}
+			else if(e1.type.toBasetype(context).ty == Tarray &&
+					e2.op == TOKint64)
+			{
+				int i = e2.toInteger(context).intValue();
+				
+				if(e1.op == TOKarrayliteral &&
+						0 == e1.checkSideEffect(2, context))
+				{
+					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
+					if(i >= ale.elements.size())
+					{
+						// TODO semantic e2.error("array index %ju is out of
+						// bounds %s[0 .. %u]", i, e1.toChars(),
+						// ale.elements.dim);
+					}
+					else
+					{
+						e = (Expression) ale.elements.get(i);
+						e.type = type;
+					}
+				}
+			}
+			else if(e1.op == TOKassocarrayliteral &&
+					0 == e1.checkSideEffect(2, context))
+			{
+				AssocArrayLiteralExp ae = (AssocArrayLiteralExp) e1;
+				/*
+				 * Search the keys backwards, in case there are duplicate keys
+				 */
+				int i = ae.keys.size();
+				while(true)
+				{
+					i--;
+					Expression ekey = (Expression) ae.keys.get(i);
+					Expression ex = Equal.call(TOKequal, Type.tbool, ekey, e2,
+							context);
+					if(ex == EXP_CANT_INTERPRET)
+						return ex;
+					if(ex.isBool(true))
+					{
+						e = (Expression) ae.values.get(i);
+						e.type = type;
+						break;
+					}
+				}
+			}
+			return e;
 		}
 	};
 	
@@ -785,12 +878,224 @@ public class Constfold
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context)
 		{
-			// TODO semantic
-			return null;
+			Expression e = EXP_CANT_INTERPRET;
+			Loc loc = e1.loc;
+			Type t;
+			
+			// printf("Cat(e1 = %s, e2 = %s)\n", e1.toChars(), e2.toChars());
+			
+			if((e1.op == TOKnull && e2.op == TOKint64) ||
+					(e1.op == TOKint64 && e2.op == TOKnull))
+			{
+				if(e1.op == TOKnull && e2.op == TOKint64)
+					e = e2;
+				else
+					e = e1;
+				
+				Type tn = e.type.toBasetype(context);
+				if(tn.ty == Tchar || tn.ty == Twchar || tn.ty == Tdchar)
+				{
+					/* TODO semantic -- this MIGHT be string concatenation, I
+					 * can't really tell...
+				    // Create a StringExp
+				    void* s;
+				    StringExp es;
+				    size_t len = 1;
+				    int sz = tn.size();
+				    integer_t v = e.toInteger();
+	
+				    s = mem.malloc((len + 1) * sz);
+				    memcpy((unsigned char *)s, &v, sz);
+	
+				    // Add terminating 0
+				    memset((unsigned char *)s + len * sz, 0, sz);
+	
+				    es = new StringExp(loc, s, len);
+				    es.sz = sz;
+				    es.committed = 1;
+				    e = es;
+				    */
+				}
+				else
+				{
+					// Create an ArrayLiteralExp
+					List<Expression> elements = new ArrayList<Expression>(1);
+					elements.add(e);
+					e = new ArrayLiteralExp(e.loc, elements);
+				}
+				
+				e.type = type;
+				return e;
+			}
+			
+			else if(e1.op == TOKstring && e2.op == TOKstring)
+			{
+				// Concatenate the strings
+				StringExp es1 = (StringExp) e1;
+				StringExp es2 = (StringExp) e2;
+				StringExp es = new StringExp(loc, ASTDmdNode.arrayConcat(
+						es1.string, es2.string));
+				
+				char sz = es1.sz;
+				assert (sz == es2.sz);
+				es.sz = sz;
+				es.committed = es1.committed | es2.committed;
+				if(es1.committed)
+					t = es1.type;
+				else
+					t = es2.type;
+				es.type = type;
+				e = es;
+			}
+			
+			else if(e1.op == TOKstring && e2.op == TOKint64)
+			{
+				// Concatenate the strings
+				StringExp es1 = (StringExp) e1;
+				StringExp es;
+				int len = es1.len + 1;
+				char sz = es1.sz;
+				
+				/*
+				 * PERHAPS java's char type is 16 bits wide -- dchar is 32 bits --
+				 * this could be a problem, if, say, one was creating a
+				 * cuneiform string by concatenating integers at compile-time,
+				 * and then using said string for mixin identifier generation or
+				 * something else Descent cares about... one of my favorite
+				 * activities!
+				 */
+				char[] v = new char[]
+				{ (char) e2.toInteger(context).intValue() };
+				
+				es = new StringExp(loc, ASTDmdNode.arrayConcat(es1.string, v));
+				es.sz = sz;
+				es.committed = es1.committed;
+				t = es1.type;
+				es.type = type;
+				e = es;
+			}
+			
+			else if(e1.op == TOKint64 && e2.op == TOKstring)
+			{
+				// Concatenate the strings
+				StringExp es2 = (StringExp) e2;
+				StringExp es;
+				char sz = es2.sz;
+				char[] v = new char[]
+				{ (char) e1.toInteger(context).intValue() };
+				
+				es = new StringExp(loc, ASTDmdNode.arrayConcat(v, es2.string));
+				es.sz = sz;
+				es.committed = es2.committed;
+				t = es2.type;
+				es.type = type;
+				e = es;
+			}
+			else if(e1.op == TOKarrayliteral && e2.op == TOKarrayliteral &&
+					e1.type.equals(e2.type))
+			{
+				// Concatenate the arrays
+				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
+				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
+				
+				ArrayLiteralExp ale = new ArrayLiteralExp(
+						es1.loc,
+						new ArrayList(es1.elements.size() + es2.elements.size()));
+				ale.elements.addAll(es1.elements);
+				ale.elements.addAll(es2.elements);
+				e = ale;
+				
+				if(type.toBasetype(context).ty == Tsarray)
+				{
+					e.type = new TypeSArray(e1.type.toBasetype(context).next,
+							new IntegerExp(Loc.ZERO, es1.elements.size(),
+									Type.tindex));
+					e.type = e.type.semantic(loc, null, context);
+				}
+				else
+				{
+					e.type = type;
+				}
+			}
+			
+			else if(e1.op == TOKarrayliteral &&
+					e1.type.toBasetype(context).next.equals(e2.type))
+			{
+				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
+				
+				ArrayLiteralExp ale = new ArrayLiteralExp(es1.loc,
+						new ArrayList<Expression>(es1.elements.size() + 1));
+				ale.elements.addAll(es1.elements);
+				ale.elements.add(e2);
+				e = ale;
+				
+				if(type.toBasetype(context).ty == Tsarray)
+				{
+					e.type = new TypeSArray(e2.type, new IntegerExp(Loc.ZERO,
+							es1.elements.size(), Type.tindex));
+					e.type = e.type.semantic(loc, null, context);
+				}
+				else
+				{
+					e.type = type;
+				}
+			}
+			
+			else if(e2.op == TOKarrayliteral &&
+					e2.type.toBasetype(context).next.equals(e1.type))
+			{
+				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
+				
+				ArrayLiteralExp ale = new ArrayLiteralExp(es2.loc,
+						new ArrayList<Expression>(es2.elements.size() + 1));
+				ale.elements.add(e1);
+				ale.elements.addAll(es2.elements);
+				e = ale;
+				
+				if(type.toBasetype(context).ty == Tsarray)
+				{
+					e.type = new TypeSArray(e1.type, new IntegerExp(Loc.ZERO,
+							es2.elements.size(), Type.tindex));
+					e.type = e.type.semantic(loc, null, context);
+				}
+				else
+				{
+					e.type = type;
+				}
+			}
+			
+			else if((e1.op == TOKnull && e2.op == TOKstring) ||
+					(e1.op == TOKstring && e2.op == TOKnull))
+			{
+				if(e1.op == TOKnull && e2.op == TOKstring)
+				{
+					t = e1.type;
+					e = e2;
+				}
+				else
+				{
+					e = e1;
+					t = e2.type;
+				}
+				Type tb = t.toBasetype(context);
+				if(tb.ty == Tarray && tb.next.equals(e.type))
+				{
+					List<Expression> expressions = new ArrayList<Expression>(1);
+					expressions.add(e);
+					e = new ArrayLiteralExp(loc, expressions);
+					e.type = t;
+				}
+				if(!e.type.equals(type))
+				{
+					StringExp se = (StringExp) e.copy();
+					e = se.castTo(null, type, context);
+				}
+			}
+			return e;
 		}
 	};
 	
-	//--------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 	public static interface BinExp_fp2
 	{
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
@@ -1163,13 +1468,62 @@ public class Constfold
 		}
 	};
 	
-	public static final UnaExp_fp Cast = new UnaExp_fp() {
-
-		public Expression call(Type type, Expression e1, SemanticContext context) {
-			return null;
+	//--------------------------------------------------------------------------
+	public static final Expression Slice(Type type, Expression e1,
+			Expression lwr, Expression upr, SemanticContext context)
+	{
+		Expression e = EXP_CANT_INTERPRET;
+		Loc loc = e1.loc;
+		
+		if(e1.op == TOKstring && lwr.op == TOKint64 && upr.op == TOKint64)
+		{
+			StringExp es1 = (StringExp) e1;
+			int ilwr = lwr.toInteger(context).intValue();
+			int iupr = upr.toInteger(context).intValue();
+			
+			if(iupr > es1.len || ilwr > iupr)
+			{
+				// TODO semantic e1.error("string slice [%ju .. %ju] is out of bounds", ilwr, iupr);
+			}
+			else
+			{
+				int len = iupr - ilwr;
+				char sz = es1.sz;
+				StringExp es;
+				char[] s = new char[len];
+				System.arraycopy(es1.string, ilwr, s, 0, len);
+				es = new StringExp(loc, s, es1.postfix);
+				es.sz = sz;
+				es.committed = true;
+				es.type = type;
+				e = es;
+			}
 		}
 		
-	};
+		else if(e1.op == TOKarrayliteral && lwr.op == TOKint64 &&
+				upr.op == TOKint64 && 0 == e1.checkSideEffect(2, context))
+		{
+			ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
+			int ilwr = lwr.toInteger(context).intValue();
+			int iupr = upr.toInteger(context).intValue();
+			
+			if(iupr > es1.elements.size() || ilwr > iupr)
+			{
+				e1.error("array slice [%ju .. %ju] is out of bounds", ilwr,
+						iupr);
+			}
+			else
+			{
+				List<Expression> elements = new ArrayList<Expression>(iupr -
+						ilwr);
+				for(int i = ilwr; i < iupr; i++)
+					elements.add(es1.elements.get(i));
+				e = new ArrayLiteralExp(e1.loc, elements);
+				e.type = type;
+			}
+		}
+		return e;
+	}
 	
 	public final static Expression Cast(Type type, Type to, Expression e1,
 			SemanticContext context) {
@@ -1273,14 +1627,5 @@ public class Constfold
 		}
 		return e;
 	}
-	
-	/*
-	 * TODO semantic
-	 * 
-	 * *Slice(Type *type, Expression *e1, Expression *lwr, Expression *upr);
-	 * 
-	 * These functions may never be passed as a function pointer, in which case
-	 * should they be interfaces to keep ortagonality or just functions?
-	 */
 	
 }

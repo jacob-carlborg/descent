@@ -32,7 +32,6 @@ CompoundStatement.java
 Condition.java
 ConditionalDeclaration.java
 ConditionalStatement.java
-Constfold.java
 DebugCondition.java
 DebugSymbol.java
 Declaration.java
