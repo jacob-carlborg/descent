@@ -39,6 +39,8 @@ public class VarDeclaration extends Declaration {
 	public int nestedref;
 	public boolean ctorinit;
 	public Expression value; // when interpreting, this is the value
+	public Object csym;
+	public Object isym;
 
 	// (NULL if value not determinable)
 

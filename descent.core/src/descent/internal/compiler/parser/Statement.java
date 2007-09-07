@@ -40,7 +40,7 @@ public abstract class Statement extends ASTDmdNode {
 		return COST_MAX;
 	}
 
-	public Statement inlineScan(InlineScanState iss) {
+	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
 		return this;
 	}
 

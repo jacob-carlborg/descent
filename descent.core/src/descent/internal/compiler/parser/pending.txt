@@ -31,9 +31,6 @@ ConditionalStatement.java
 DebugCondition.java
 DebugSymbol.java
 Declaration.java
-DeclarationExp.java
-DeclarationStatement.java
-DefaultStatement.java
 DelegateExp.java
 DeleteExp.java
 DoStatement.java
@@ -56,7 +53,6 @@ FuncExp.java
 FuncLiteralDeclaration.java
 Global.java
 GotoCaseStatement.java
-GotoDefaultStatement.java
 GotoStatement.java
 HdrGenState.java
 Id.java

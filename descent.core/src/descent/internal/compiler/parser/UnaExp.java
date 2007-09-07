@@ -23,8 +23,8 @@ public abstract class UnaExp extends Expression {
 	}
 
 	@Override
-	public int inlineCost(InlineCostState ics) {
-		return 1 + e1.inlineCost(ics);
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		return 1 + e1.inlineCost(ics, context);
 	}
 	
 	public Expression interpretCommon(InterState istate, TOK op, SemanticContext context) {

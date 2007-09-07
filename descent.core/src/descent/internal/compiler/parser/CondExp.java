@@ -97,16 +97,16 @@ public class CondExp extends BinExp {
 	}
 
 	@Override
-	public int inlineCost(InlineCostState ics) {
-		return 1 + e1.inlineCost(ics) + e2.inlineCost(ics)
-				+ econd.inlineCost(ics);
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		return 1 + e1.inlineCost(ics, context) + e2.inlineCost(ics, context)
+				+ econd.inlineCost(ics, context);
 	}
 
 	@Override
-	public Expression inlineScan(InlineScanState iss) {
-		econd = econd.inlineScan(iss);
-		e1 = e1.inlineScan(iss);
-		e2 = e2.inlineScan(iss);
+	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
+		econd = econd.inlineScan(iss, context);
+		e1 = e1.inlineScan(iss, context);
+		e2 = e2.inlineScan(iss, context);
 		return this;
 	}
 

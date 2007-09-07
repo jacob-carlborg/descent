@@ -141,5 +141,10 @@ public class TypedefDeclaration extends Declaration {
 		buf.writeByte(';');
 		buf.writenl();
 	}
+	
+	@Override
+	public TypedefDeclaration isTypedefDeclaration() {
+		return this;
+	}
 
 }

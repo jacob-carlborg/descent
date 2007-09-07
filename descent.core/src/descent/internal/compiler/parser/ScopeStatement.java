@@ -50,9 +50,9 @@ public class ScopeStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss) {
+	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
 		if (statement != null) {
-			statement = statement.inlineScan(iss);
+			statement = statement.inlineScan(iss, context);
 		}
 		return this;
 	}

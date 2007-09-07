@@ -136,11 +136,11 @@ public class CompoundStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss) {
+	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {
-				statements.set(i, s.inlineScan(iss));
+				statements.set(i, s.inlineScan(iss, context));
 			}
 		}
 		return this;

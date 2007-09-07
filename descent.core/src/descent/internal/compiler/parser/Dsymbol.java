@@ -185,6 +185,10 @@ public class Dsymbol extends ASTDmdNode {
 	public AggregateDeclaration isAggregateDeclaration() {
 		return null;
 	}
+	
+	public TypedefDeclaration isTypedefDeclaration() {
+		return null;
+	}
 
 	public AliasDeclaration isAliasDeclaration() {
 		return null;

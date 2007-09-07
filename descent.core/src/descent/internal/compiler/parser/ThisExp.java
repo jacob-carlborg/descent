@@ -38,7 +38,7 @@ public class ThisExp extends Expression {
 	}
 
 	@Override
-	public int inlineCost(InlineCostState ics) {
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
 		FuncDeclaration fd = ics.fd;
 		if (!ics.hdrscan) {
 			if (fd.isNested() || !ics.hasthis) {

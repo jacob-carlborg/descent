@@ -57,9 +57,9 @@ public class WhileStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss) {
-		condition = condition.inlineScan(iss);
-		body = body != null ? body.inlineScan(iss) : null;
+	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
+		condition = condition.inlineScan(iss, context);
+		body = body != null ? body.inlineScan(iss, context) : null;
 		return this;
 	}
 

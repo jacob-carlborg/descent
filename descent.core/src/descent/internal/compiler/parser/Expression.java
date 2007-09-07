@@ -391,11 +391,11 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return false; // default is no reverse
 	}
 
-	public int inlineCost(InlineCostState ics) {
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
 		return 1;
 	}
 
-	public Expression inlineScan(InlineScanState iss) {
+	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
 		return this;
 	}
 

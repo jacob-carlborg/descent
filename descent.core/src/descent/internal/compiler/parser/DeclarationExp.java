@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class DeclarationExp extends Expression {
 
 	public Dsymbol declaration;
@@ -11,7 +12,8 @@ public class DeclarationExp extends Expression {
 		super(loc, TOK.TOKdeclaration);
 		this.declaration = declaration;
 	}
-	
+
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Fake node");
 	}
@@ -22,10 +24,128 @@ public class DeclarationExp extends Expression {
 	}
 
 	@Override
+	public Expression doInline(InlineDoState ids) {
+		DeclarationExp de = (DeclarationExp) copy();
+		VarDeclaration vd;
+
+		//printf("DeclarationExp::doInline(%s)\n", toChars());
+		vd = declaration.isVarDeclaration();
+		if (vd != null) {
+			if (vd.isStatic() || vd.isConst()) {
+				;
+			} else {
+				ExpInitializer ie;
+				ExpInitializer ieto;
+				VarDeclaration vto;
+
+				vto = new VarDeclaration(vd.loc, vd.type, vd.ident, vd.init);
+				vto = vd;
+				vto.parent = ids.parent;
+				//		    vto.csym = null;
+				//		    vto.isym = null;
+
+				ids.from.add(vd);
+				ids.to.add(vto);
+
+				if (vd.init.isVoidInitializer() != null) {
+					vto.init = new VoidInitializer(vd.init.loc);
+				} else {
+					ie = vd.init.isExpInitializer();
+					if (ie == null) {
+						throw new IllegalStateException("assert(ie);");
+					}
+					ieto = new ExpInitializer(ie.loc, ie.exp.doInline(ids));
+					vto.init = ieto;
+				}
+				de.declaration = vto;
+			}
+		}
+		/* This needs work, like DeclarationExp::toElem(), if we are
+		 * to handle TemplateMixin's. For now, we just don't inline them.
+		 */
+		return de;
+	}
+
+	@Override
 	public int getNodeType() {
 		return DECLARATION_EXP;
 	}
-	
+
+	@Override
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		int cost = 0;
+		VarDeclaration vd;
+
+		vd = declaration.isVarDeclaration();
+		if (vd != null) {
+			TupleDeclaration td = vd.toAlias(context).isTupleDeclaration();
+			if (td != null) {
+				return COST_MAX; // finish DeclarationExp::doInline
+			}
+			if (!ics.hdrscan && vd.isDataseg(context)) {
+				return COST_MAX;
+			}
+			cost += 1;
+
+			// Scan initializer (vd.init)
+			if (vd.init != null) {
+				ExpInitializer ie = vd.init.isExpInitializer();
+
+				if (ie != null) {
+					cost += ie.exp.inlineCost(ics, context);
+				}
+			}
+		}
+
+		// These can contain functions, which when copied, get output twice.
+		if (declaration.isStructDeclaration() != null
+				|| declaration.isClassDeclaration() != null
+				|| declaration.isFuncDeclaration() != null
+				|| declaration.isTypedefDeclaration() != null
+				|| declaration.isTemplateMixin() != null) {
+			return COST_MAX;
+		}
+
+		//printf("DeclarationExp::inlineCost('%s')\n", toChars());
+		return cost;
+	}
+
+	@Override
+	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
+		scanVar(declaration, iss, context);
+		return this;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		Expression e = EXP_CANT_INTERPRET;
+		VarDeclaration v = declaration.isVarDeclaration();
+		if (v != null) {
+			Dsymbol s = v.toAlias(context);
+			if (s == v && !v.isStatic() && v.init != null) {
+				ExpInitializer ie = v.init.isExpInitializer();
+				if (ie != null) {
+					e = ie.exp.interpret(istate, context);
+				} else if (v.init.isVoidInitializer() != null) {
+					e = null;
+				}
+			} else if (s == v && v.isConst() && v.init != null) {
+				e = v.init.toExpression(context);
+				if (null == e) {
+					e = EXP_CANT_INTERPRET;
+				} else if (null == e.type) {
+					e.type = v.type;
+				}
+			}
+		}
+		return e;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		declaration.parent = sc.parent;
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type != null) {
@@ -56,7 +176,8 @@ public class DeclarationExp extends Expression {
 		// Must be unique in both.
 		if (s.ident != null) {
 			if (sc.insert(s) == null) {
-				error("declaration %s is already defined", s.toPrettyChars(context));
+				error("declaration %s is already defined", s
+						.toPrettyChars(context));
 			} else if (sc.func != null) {
 				//VarDeclaration v = s.isVarDeclaration();
 				if ((s.isFuncDeclaration() != null /*|| v && v.storage_class & STCstatic*/)
@@ -100,14 +221,15 @@ public class DeclarationExp extends Expression {
 		type = Type.tvoid;
 		return this;
 	}
-	
+
 	@Override
 	public Expression syntaxCopy() {
 		return new DeclarationExp(loc, declaration.syntaxCopy(null));
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		declaration.toCBuffer(buf, hgs, context);
 	}
 
