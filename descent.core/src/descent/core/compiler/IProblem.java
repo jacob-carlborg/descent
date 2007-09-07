@@ -343,6 +343,10 @@ public interface IProblem {
 	int ExpressionIsNotEvaluatableAtCompileTime = 374;
 	int UndefinedProperty = 375;
 	int DeprecatedProperty = 376;
+	int FileNameMustBeString = 377;
+	int FileImportsMustBeSpecified = 378;
+	int FileNotFound = 379;
+	int ErrorReadingFile = 380;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

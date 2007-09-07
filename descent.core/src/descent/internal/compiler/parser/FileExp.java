@@ -1,8 +1,27 @@
 package descent.internal.compiler.parser;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+/*
+ * PERHAPS this is a prime candidate for a weighty operation (disk I/O) that 
+ *      could be done only if needed by the IDE. For example, if it's reading
+ *      in an image file that's shown at runtime, there's no reason to do this
+ *      operation. If, on the other hand, the contents of the file are being
+ *      used in a string mixin, we'd have to run this. Maybe it could be moved
+ *      into optimize(WANTvalue) or otherwise marked as necessary/unnecessary?
+ */
 public class FileExp extends UnaExp {
 
 	public FileExp(Loc loc, Expression e) {
@@ -32,70 +51,126 @@ public class FileExp extends UnaExp {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context)
-	{
-	    /* RETHINK file imports (there should be a separate dialog to choose
-	                             this stuff, which Descent will pass to the
-	                             compiler. In addition, this should def.
-	                             be cached somehow, so we're not reading the
-	                             whole file every time semantic is checked.
-	                             In some cases (i.e. if the file is binary),
-	                             there's really no need to resolve it at all,
-	                             so we might want to lazily resolve this
-	                             anyway.)
-	   
-	   
-		char[] name;
-	    StringExp se;
-	    
+	{   
 	    super.semantic(sc, context);
 	    e1 = resolveProperties(sc, e1, context);
-	    e1 = e1.optimize(WANTvalue);
+	    e1 = e1.optimize(WANTvalue, context);
 	    if (e1.op != TOK.TOKstring)
 	    {
-	    	error("file name argument must be a string, not (%s)", e1.toChars());
-			se = new StringExp(loc, Id.empty);
-			return se.semantic(sc, context);
+	    	context.acceptProblem(Problem.newSemanticTypeError(
+	    			IProblem.FileNameMustBeString,
+	    			0,
+	    			e1.start,
+	    			e1.length,
+	    			new String[] { e1.toChars(context) }));
+			return (new StringExp(loc, Id.empty)).semantic(sc, context);
 	    }
 	    
-	    StringExp e1_se = (StringExp) e1;
-	    e1_se = e1_se.toUTF8(sc);
-	    name = e1_se.string;
+	    String filename = new String(((StringExp) e1).string);
+	    File file = context.fileImports.get(filename);
 	    
-	    if (!global.params.fileImppath)
+	    if(null == file)
 	    {
-	    	error("need -Jpath switch to import text file %s", name);
-	    	se = new StringExp(loc, "");
-	    	return se->semantic(sc);
+	    	context.acceptProblem(Problem.newSemanticTypeError(
+	    			IProblem.FileImportsMustBeSpecified,
+	    			0,
+	    			e1.start,
+	    			e1.length,
+	    			new String[] { filename }));
+			return (new StringExp(loc, Id.empty)).semantic(sc, context);
 	    }
 	    
-	    if (name != FileName.name(name))
-	    {	error("use -Jpath switch to provide path for filename %s", name);
-		se = new StringExp(loc, "");
-		return se->semantic(sc);
+	    if(!file.exists())
+	    {
+	    	context.acceptProblem(Problem.newSemanticTypeError(
+	    			IProblem.FileNotFound,
+	    			0,
+	    			e1.start,
+	    			e1.length,
+	    			new String[] { file.getAbsolutePath() }));
+			return (new StringExp(loc, Id.empty)).semantic(sc, context);
 	    }
 	    
-	    name = FileName.searchPath(global.filePath, name, 0);
-	    if (!name)
-	    {	error("file %s cannot be found, check -Jpath", se.toChars());
-		se = new StringExp(loc, "");
-		return se->semantic(sc);
+	    try
+	    {
+	    	char[] data = getFile(file);
+	    	return (new StringExp(loc, data)).semantic(sc, context);
 	    }
-	    
-	    {	File f(name);
-		if (f.read())
-		{   error("cannot read file %s", f.toChars());
-		    se = new StringExp(loc, "");
-		return se->semantic(sc);
+	    catch(IOException e)
+	    {
+	    	context.acceptProblem(Problem.newSemanticTypeError(
+	    			IProblem.ErrorReadingFile,
+	    			0,
+	    			e1.start,
+	    			e1.length,
+	    			new String[] { file.getAbsolutePath() }));
+	    	return (new StringExp(loc, Id.empty)).semantic(sc, context);
+	    }
+	}
+	
+	private static char[] getFile(File file) throws IOException
+	{
+		CachedFile cachedFile = cache.get(file);
+		if(null != cachedFile)
+		{
+			return cachedFile.getData();
 		}
 		else
 		{
-		    f.ref = 1;
-		    se = new StringExp(loc, f.buffer, f.len);
+			cachedFile = new CachedFile(file);
+			cache.put(file, cachedFile);
+			return cachedFile.getData();
 		}
-	    }
-	    */
-	    
-	    Expression se = new StringExp(loc, Id.empty);
-		return se.semantic(sc, context);
+	}
+	
+	private static final Map<File, CachedFile> cache = 
+		new HashMap<File, CachedFile>();
+	
+	private static final class CachedFile
+	{
+		final File file;
+		long lastModified;
+		WeakReference<char[]> data;
+		
+		CachedFile(File $file)
+		{
+			assert(null != $file);
+			file = $file;
+		}
+		
+		char[] getData() throws IOException
+		{
+			if(null == data)
+				return readData();
+			if(file.lastModified() > lastModified)
+				return readData();
+			
+			char[] cachedData = data.get();
+			if(cachedData == null)
+				return readData();
+			return cachedData;
+		}
+		
+		private char[] readData() throws IOException
+		{
+			InputStream in = new BufferedInputStream(new FileInputStream(file));
+	        long size = file.length();
+	        assert(size <= Integer.MAX_VALUE);
+	        char[] buf = new char[(int) size];
+	        int next, i;
+	        // TODO make a dialog box suggesting our users go get a cup of
+        	// tea every time they save... or just speed this up
+	        for(i = 0; (next = in.read()) >= 0; i++)
+	        {
+	        	buf[i] = (char) next;
+	        }
+	        in.close();
+	        
+	        lastModified = file.lastModified();
+	        data = new WeakReference<char[]>(buf);
+	        
+	        return buf;
+			
+		}
 	}
 }

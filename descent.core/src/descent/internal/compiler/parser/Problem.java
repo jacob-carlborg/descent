@@ -362,6 +362,14 @@ public class Problem implements IProblem {
 			return "No property '" + arguments[0] + "' for type '" + arguments[1] +"'";
 		case DeprecatedProperty:
 			return "The property '" + arguments[0] + "' is deprecated: use '" + arguments[1] + "' instead";
+		case FileNameMustBeString:
+			return "File name argument must be a string, not (" + arguments[0] + ")";
+		case FileImportsMustBeSpecified:
+			return "File " + arguments[0] + " must be specified as a file import";
+		case FileNotFound:
+			return "File " + arguments[0] + " not found";
+		case ErrorReadingFile:
+			return "Could not read file : " + arguments[0];
 		default:
 			return "";
 		}

@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.IProblemRequestor;
@@ -13,6 +17,9 @@ public class SemanticContext {
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;
 	public Global global = new Global();
+	
+	// TODO file imports should be selectable in a dialog or something
+	public Map<String, File> fileImports = new HashMap<String, File>();
 	
 	public ClassDeclaration object; // ClassDeclaration::object
 	public ClassDeclaration classinfo; // ClassDeclaration::classinfo
