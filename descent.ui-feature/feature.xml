@@ -2,7 +2,7 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.4.2.20070822"
+      version="0.4.3.20070907"
       provider-name="Descent">
 
    <description url="http://dsource.org/projects/descent">
@@ -100,6 +100,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </license>
 
    <url>
+      <update label="Descent Update Site" url="http://svn.dsource.org/projects/descent/trunk/descent.update-site/"/>
       <discovery label="Descent at Dsource" url="http://www.dsource.org/projects/descent"/>
    </url>
 

@@ -301,7 +301,6 @@
          </filter>
       </page>
 -->
-	<!--
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%buildPathPageName"        
@@ -324,7 +323,6 @@
          </filter>
          <keywordReference id="descent.ui.buildpath"/>
       </page>
-      -->
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%codeStylePageName"
