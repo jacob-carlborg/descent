@@ -248,5 +248,29 @@ public class IftypeExp extends Expression {
 	    }
 	    return new IntegerExp(Loc.ZERO, 1);
 	}
+
+	@Override
+	public Expression syntaxCopy()
+	{
+		return new IftypeExp(loc, targ.syntaxCopy(), id, tok,
+				null != tspec ? tspec.syntaxCopy() : null, tok2);
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context)
+	{
+		buf.writestring("is(");
+		targ.toCBuffer(buf, id, hgs, context);
+		if(null != tspec)
+		{
+			if(tok == TOK.TOKcolon)
+				buf.writestring(" : ");
+			else
+				buf.writestring(" == ");
+			tspec.toCBuffer(buf, null, hgs, context);
+		}
+		buf.writeByte(')');
+	}
 	
 }

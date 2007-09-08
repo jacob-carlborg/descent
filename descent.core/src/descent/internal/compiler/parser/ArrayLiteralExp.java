@@ -1,11 +1,13 @@
 package descent.internal.compiler.parser;
 
+// DMD 1.020
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -134,6 +136,11 @@ public class ArrayLiteralExp extends Expression {
 				error("%s has no value", e.toChars(context));
 			}
 			e = resolveProperties(sc, e, context);
+			
+			boolean committed = true;
+			if (e.op == TOK.TOKstring)
+			    committed = ((StringExp) e).committed;
+			
 			if (t0 == null) {
 				t0 = e.type;
 				// Convert any static arrays to dynamic arrays
@@ -144,6 +151,13 @@ public class ArrayLiteralExp extends Expression {
 			} else {
 				e = e.implicitCastTo(sc, t0, context);
 			}
+			
+			if (!committed && e.op == TOK.TOKstring)
+			{
+				StringExp se = (StringExp) e;
+			    se.committed = false;
+			}
+			
 			elements.set(i, e);
 		}
 
@@ -178,5 +192,77 @@ public class ArrayLiteralExp extends Expression {
 			e.toMangleBuffer(buf, context);
 		}
 	}
+	
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context)
+	{
+		arrayExpressionScanForNestedRef(sc, elements, context);
+	}
 
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		List<Expression> expsx = null;
+		
+		if(null != elements)
+		{
+			for(int i = 0; i < elements.size(); i++)
+			{
+				Expression e = (Expression) elements.get(i);
+				Expression ex;
+				
+				ex = e.interpret(istate, context);
+				if(ex == EXP_CANT_INTERPRET)
+				{
+					return EXP_CANT_INTERPRET;
+				}
+				
+				/*
+				 * If any changes, do Copy On Write
+				 */
+				if(ex != e)
+				{
+					if(null == expsx)
+					{
+						expsx = new ArrayList<Expression>(elements.size());
+						expsx.addAll(elements);
+					}
+					expsx.set(i, ex);
+				}
+			}
+		}
+		
+		if(null != elements && null != expsx)
+		{
+			expandTuples(expsx);
+			if(expsx.size() != elements.size())
+			{
+				return EXP_CANT_INTERPRET;
+			}
+			ArrayLiteralExp ae = new ArrayLiteralExp(loc, expsx);
+			ae.type = type;
+			return ae;
+		}
+		return this;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		if(null != elements)
+		{
+			for(int i = 0; i < elements.size(); i++)
+			{
+				Expression e = elements.get(i);
+				
+				e = e.optimize(WANTvalue | (result & WANTinterpret), context);
+				elements.set(i, e);
+			}
+		}
+		return this;
+	}
+	
+	// PERHAPS int inlineCost(InlineCostState *ics);
+	// PERHAPS Expression *doInline(InlineDoState *ids);
+	// PERHAPS Expression *inlineScan(InlineScanState *iss);
 }

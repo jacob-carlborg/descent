@@ -1153,5 +1153,22 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		}
 	}
+	
+	public static void arrayExpressionScanForNestedRef(Scope sc, 
+			List<Expression> a, SemanticContext context)
+	{
+		if(null == a)
+		{
+			for(int i = 0; i < a.size(); i++)
+			{
+				Expression e = (Expression) a.get(i);
+				
+				if(null != e)
+				{
+					e.scanForNestedRef(sc, context);
+				}
+			}
+		}
+	}
 
 }

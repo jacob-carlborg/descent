@@ -6,11 +6,9 @@ AnonymousAggregateDeclaration.java
 Argument.java
 ArrayExp.java
 ArrayInitializer.java
-ArrayLiteralExp.java
 ArrayScopeSymbol.java
 AsmBlock.java
 AsmStatement.java
-AssocArrayLiteralExp.java
 ASTDmdNode.java
 BaseClass.java
 BinExp.java
@@ -58,7 +56,6 @@ Id.java
 Identifier.java
 IfStatement.java
 IftypeCondition.java
-IftypeExp.java
 Import.java
 IndexExp.java
 InExp.java
