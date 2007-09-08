@@ -1418,7 +1418,7 @@ public class FuncDeclaration extends Declaration {
 		ics.hasthis = hasthis;
 		ics.fd = this;
 		ics.hdrscan = hdrscan;
-		cost = fbody.inlineCost(ics);
+		cost = fbody.inlineCost(ics, context);
 		if (cost >= COST_MAX) {
 			// goto Lno;
 			if (!hdrscan) // Don't modify inlineStatus for header content scan
@@ -1480,6 +1480,20 @@ public class FuncDeclaration extends Declaration {
 			buf.writeByte(';');
 			buf.writenl();
 		}
+	}
+
+	public LabelDsymbol searchLabel(IdentifierExp ident) {
+		Dsymbol s;
+
+		if (null == labtab)
+			labtab = new DsymbolTable(); // guess we need one
+
+		s = labtab.lookup(ident);
+		if (null == s) {
+			s = new LabelDsymbol(ident);
+			labtab.insert(s);
+		}
+		return (LabelDsymbol) s;
 	}
 
 }

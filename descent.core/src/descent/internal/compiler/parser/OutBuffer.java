@@ -38,6 +38,10 @@ public class OutBuffer {
 		data.append(o.toString());
 	}
 	
+	public void printf(String s) {
+		data.append(s);
+	}
+	
 	public void writestring(String s) {
 		data.append(s);
 	}

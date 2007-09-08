@@ -120,13 +120,13 @@ public class CompoundStatement extends Statement {
 	}
 
 	@Override
-	public int inlineCost(InlineCostState ics) {
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
 		int cost = 0;
 
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {
-				cost += s.inlineCost(ics);
+				cost += s.inlineCost(ics, context);
 				if (cost >= COST_MAX) {
 					break;
 				}

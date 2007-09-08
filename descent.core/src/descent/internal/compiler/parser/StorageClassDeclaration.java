@@ -1,5 +1,13 @@
 package descent.internal.compiler.parser;
 
+import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
@@ -10,6 +18,7 @@ import static descent.internal.compiler.parser.STC.STCoverride;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCsynchronized;
+
 import static descent.internal.compiler.parser.TOK.TOKabstract;
 import static descent.internal.compiler.parser.TOK.TOKauto;
 import static descent.internal.compiler.parser.TOK.TOKconst;
@@ -21,14 +30,7 @@ import static descent.internal.compiler.parser.TOK.TOKscope;
 import static descent.internal.compiler.parser.TOK.TOKstatic;
 import static descent.internal.compiler.parser.TOK.TOKsynchronized;
 
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
+// DMD 1.020
 public class StorageClassDeclaration extends AttribDeclaration {
 
 	static class SCstring {
@@ -66,10 +68,6 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return STORAGE_CLASS_DECLARATION;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -77,6 +75,11 @@ public class StorageClassDeclaration extends AttribDeclaration {
 			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return STORAGE_CLASS_DECLARATION;
 	}
 
 	@Override
@@ -105,13 +108,14 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		StorageClassDeclaration scd;
 
 		Assert.isNotNull(s);
-		scd = new StorageClassDeclaration(loc, stc, Dsymbol.arraySyntaxCopy(decl),
-				modifier, single, colon);
+		scd = new StorageClassDeclaration(loc, stc, Dsymbol
+				.arraySyntaxCopy(decl), modifier, single, colon);
 		return scd;
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		boolean written = false;
 		for (SCstring sc : table) {
 			if ((stc & sc.stc) != 0) {

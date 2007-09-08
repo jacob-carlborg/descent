@@ -5,6 +5,7 @@ import java.util.List;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class ModuleDeclaration extends ASTDmdNode {
 
 	public IdentifierExp id;
@@ -16,10 +17,6 @@ public class ModuleDeclaration extends ASTDmdNode {
 	}
 
 	@Override
-	public int getNodeType() {
-		return MODULE_DECLARATION;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -27,6 +24,11 @@ public class ModuleDeclaration extends ASTDmdNode {
 			TreeVisitor.acceptChildren(visitor, id);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return MODULE_DECLARATION;
 	}
 
 	@Override

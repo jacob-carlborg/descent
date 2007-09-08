@@ -22,17 +22,19 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	public ArrayScopeSymbol(Expression e) {
 		super(Loc.ZERO);
 		Assert.isTrue(e.op == TOK.TOKindex || e.op == TOK.TOKslice);
-		this.exp = e;
-		this.type = null;
-		this.td = null;
+		exp = e;
+	}
+	
+	public ArrayScopeSymbol(TypeTuple t) {
+		type = t;
+	}
+	
+	public ArrayScopeSymbol(TupleDeclaration s) {
+		td = s;
 	}
 	
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			melnorme.miscutil.Assert.failTODO();
-		}
-		visitor.endVisit(this);
+		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
 	}
 
 	public ArrayScopeSymbol(Loc loc, TupleDeclaration s) {
@@ -94,12 +96,14 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 				if (exp.op == TOKindex) {
 					IndexExp ie = (IndexExp) exp;
 
+					// TODO semantic
 					// pvar = &ie.lengthVar;
 					pvar = ie;
 					ce = ie.e1;
 				} else if (exp.op == TOKslice) {
 					SliceExp se = (SliceExp) exp;
 
+					// TODO semantic
 					// pvar = &se.lengthVar;
 					pvar = se;
 					ce = se.e1;
@@ -139,6 +143,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 						v.storage_class |= STCconst;
 					}
 
+					// TODO semantic
 					// *pvar = v;
 					if (pvar instanceof IndexExp) {
 						((IndexExp) pvar).lengthVar = v;
@@ -146,6 +151,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 						((SliceExp) pvar).lengthVar = v;
 					}
 				}
+				// TODO semantic
 				// return *pvar;
 				if (pvar instanceof IndexExp) {
 					return ((IndexExp) pvar).lengthVar;

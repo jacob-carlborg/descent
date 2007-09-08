@@ -36,7 +36,7 @@ public abstract class Statement extends ASTDmdNode {
 		return false;
 	}
 
-	public int inlineCost(InlineCostState ics) {
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
 		return COST_MAX;
 	}
 

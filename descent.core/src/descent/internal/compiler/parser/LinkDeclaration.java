@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class LinkDeclaration extends AttribDeclaration {
 
 	public LINK linkage;
@@ -18,10 +19,6 @@ public class LinkDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return LINK_DECLARATION;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -29,6 +26,11 @@ public class LinkDeclaration extends AttribDeclaration {
 			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return LINK_DECLARATION;
 	}
 
 	@Override
@@ -71,7 +73,8 @@ public class LinkDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		String p = null;
 
 		switch (linkage) {
@@ -99,7 +102,7 @@ public class LinkDeclaration extends AttribDeclaration {
 		buf.writestring(") ");
 		super.toCBuffer(buf, hgs, context);
 	}
-	
+
 	@Override
 	public String toChars(SemanticContext context) {
 		return "extern ()";
