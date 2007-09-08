@@ -36,11 +36,6 @@ Dsymbol.java
 DsymbolTable.java
 DVCondition.java
 Entity.java
-EnumDeclaration.java
-EnumMember.java
-EqualExp.java
-ExpInitializer.java
-Expression.java
 ExpStatement.java
 ForeachRangeStatement.java
 ForeachStatement.java

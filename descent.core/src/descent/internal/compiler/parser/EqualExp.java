@@ -2,7 +2,9 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Equal;
 
+// DMD 1.020
 public class EqualExp extends BinExp {
 
 	public EqualExp(Loc loc, TOK op, Expression e1, Expression e2) {
@@ -10,10 +12,6 @@ public class EqualExp extends BinExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return EQUAL_EXP;
-	}
-
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,13 +22,57 @@ public class EqualExp extends BinExp {
 	}
 
 	@Override
+	public int getNodeType() {
+		return EQUAL_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon2(istate, op, context);
+	}
+
+	@Override
+	public boolean isBit() {
+		return true;
+	}
+
+	@Override
+	public boolean isCommutative() {
+		return true;
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.eq;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		Expression e;
+
+		e1 = e1.optimize(WANTvalue | (result & WANTinterpret), context);
+		e2 = e2.optimize(WANTvalue | (result & WANTinterpret), context);
+		e = this;
+
+		Expression e1 = fromConstInitializer(this.e1, context);
+		Expression e2 = fromConstInitializer(this.e2, context);
+
+		e = Equal.call(op, type, e1, e2, context);
+		if (e == EXP_CANT_INTERPRET) {
+			e = this;
+		}
+		return e;
+	}
+
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 		Type t1;
 		Type t2;
 
-		if (null != type)
+		if (null != type) {
 			return this;
+		}
 
 		super.semanticp(sc, context);
 
@@ -72,9 +114,10 @@ public class EqualExp extends BinExp {
 		t2 = e2.type.toBasetype(context);
 		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
-			if (!t1.next.equals(t2.next))
+			if (!t1.next.equals(t2.next)) {
 				error("array comparison type mismatch, %s vs %s", t1.next
 						.toChars(context), t2.next.toChars(context));
+			}
 		}
 
 		else {
@@ -88,13 +131,4 @@ public class EqualExp extends BinExp {
 		return e;
 	}
 
-	@Override
-	public boolean isBit() {
-		return true;
-	}
-
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon2(istate, op, context);
-	}
 }

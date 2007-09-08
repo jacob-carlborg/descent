@@ -3,20 +3,20 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class EnumDeclaration extends ScopeDsymbol {
 
-	private final static BigInteger N_2 = new BigInteger("2");
-	private final static BigInteger N_128 = new BigInteger("128");
-	private final static BigInteger N_256 = new BigInteger("256");
-	private final static BigInteger N_0x8000 = new BigInteger("8000", 16);
-	private final static BigInteger N_0x10000 = new BigInteger("10000", 16);
-	private final static BigInteger N_0x80000000 = new BigInteger("80000000", 16);
-	private final static BigInteger N_0x100000000 = new BigInteger("100000000",	16);
-	private final static BigInteger N_0x8000000000000000 = new BigInteger("8000000000000000", 16);
+	private final static int N_2 = 2;
+	private final static int N_128 = 128;
+	private final static int N_256 = 256;
+	private final static int N_0x8000 = 0x8000;
+	private final static int N_0x10000 = 0x10000;
+	private final static long N_0x80000000 = 0x80000000L;
+	private final static long N_0x100000000 = 0x100000000L;
+	private final static long N_0x8000000000000000 = 0x8000000000000000L;
 
 	public Type type; // the TypeEnum
 	public Type memtype; // type of the members
@@ -34,16 +34,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public int getNodeType() {
-		return ENUM_DECLARATION;
-	}
-
-	@Override
-	public Type getType() {
-		return type;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -56,10 +46,20 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
+	public int getNodeType() {
+		return ENUM_DECLARATION;
+	}
+
+	@Override
+	public Type getType() {
+		return type;
+	}
+
+	@Override
 	public EnumDeclaration isEnumDeclaration() {
 		return this;
 	}
-	
+
 	@Override
 	public String kind() {
 		return "enum";
@@ -235,7 +235,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 						break;
 
 					case Tuns64:
-						// TODO incorrect comparison in Java
+						// TODO semantic incorrect comparison in Java
 						if (number.equals(BigInteger.ZERO)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.EnumValueOverflow, 0,
@@ -288,7 +288,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 				}
 			}
 
-			number = number.add(BigInteger.ONE);
+			number = number.add(1);
 		}
 
 		sce.pop();
@@ -313,7 +313,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		int i;
 
 		buf.writestring("enum ");

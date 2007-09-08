@@ -831,7 +831,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						for (int u = i; u < nargs; u++) {
 							Expression a = arguments.get(u);
 							if (tret != null && !tb2.next.equals(a.type)) {
-								a = a.toDelegate(sc, tret);
+								a = a.toDelegate(sc, tret, context);
 							}
 
 							Expression e = new VarExp(loc, v);
@@ -901,7 +901,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 				// Convert lazy argument to a delegate
 				if ((p.storageClass & STClazy) != 0) {
-					arg = arg.toDelegate(sc, p.type);
+					arg = arg.toDelegate(sc, p.type, context);
 				}
 			} else {
 

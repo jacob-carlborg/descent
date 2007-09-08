@@ -1,8 +1,18 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import descent.core.compiler.IProblem;
+import static descent.internal.compiler.parser.LINK.LINKd;
+
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.TOK.TOKdelegate;
+import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKint64;
+
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tpointer;
@@ -10,11 +20,7 @@ import static descent.internal.compiler.parser.TY.Treference;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import descent.core.compiler.IProblem;
-
+// DMD 1.020
 public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public static List<Expression> arraySyntaxCopy(List<Expression> exps) {
@@ -30,8 +36,38 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return a;
 	}
 
+	public static Expression build_overload(Loc loc, Scope sc,
+			Expression ethis, Expression earg, IdentifierExp id,
+			SemanticContext context) {
+		Expression e;
+
+		e = new DotIdExp(loc, ethis, id);
+
+		if (earg != null) {
+			e = new CallExp(loc, e, earg);
+		} else {
+			e = new CallExp(loc, e);
+		}
+
+		e = e.semantic(sc, context);
+		return e;
+	}
+
+	public static Expression combine(Expression e1, Expression e2) {
+		if (e1 != null) {
+			if (e2 != null) {
+				e1 = new CommaExp(e1.loc, e1, e2);
+				e1.type = e2.type;
+			}
+		} else {
+			e1 = e2;
+		}
+		return e1;
+	}
 	public Loc loc;
+
 	public TOK op;
+
 	public Type type;
 
 	public Expression(Loc loc, TOK op) {
@@ -88,6 +124,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public void checkEscape(SemanticContext context) {
+		// empty
 	}
 
 	public Expression checkIntegral(SemanticContext context) {
@@ -114,8 +151,12 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public int checkSideEffect(int flag, SemanticContext context) {
 		if (flag == 0) {
-			error("%s has no effect in expression (%s)", op.toString(),
-					toChars(context));
+			if (op == TOKimport) {
+				error("%s has no effect", toChars(context));
+			} else {
+				error("%s has no effect in expression (%s)", op.toString(),
+						toChars(context));
+			}
 		}
 		return 0;
 	}
@@ -148,16 +189,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e;
 	}
 
-	public static Expression combine(Expression e1, Expression e2) {
-		if (e1 != null) {
-			if (e2 != null) {
-				e1 = new CommaExp(e1.loc, e1, e2);
-				e1.type = e2.type;
-			}
-		} else {
-			e1 = e2;
-		}
-		return e1;
+	public boolean compare(Expression exp) {
+		// TODO semantic
+		return false;
 	}
 
 	public Expression copy() {
@@ -179,6 +213,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return this;
 	}
 
+	public Expression doInline(InlineDoState ids) {
+		return copy();
+	}
+
 	@Override
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_EXPRESSION;
@@ -196,11 +234,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					return e.implicitCastTo(sc, t, context);
 				}
 
-				/*
-				 * TODO semantic fprintf(stdmsg, "warning - ");
-				 */
 				error(
-						"implicit conversion of expression (%s) of type %s to %s can cause loss of data",
+						"warning - implicit conversion of expression (%s) of type %s to %s can cause loss of data",
 						toChars(context), type.toChars(context), t
 								.toChars(context));
 			}
@@ -250,6 +285,14 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return MATCHnomatch;
 	}
 
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		return 1;
+	}
+
+	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
+		return this;
+	}
+
 	public Expression integralPromotions(Scope sc, SemanticContext context) {
 		Expression e;
 
@@ -277,6 +320,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e;
 	}
 
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return EXP_CANT_INTERPRET;
+	}
+
 	public boolean isBit() {
 		return false;
 	}
@@ -285,10 +332,26 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return false;
 	}
 
+	public boolean isCommutative() {
+		return false; // default is no reverse
+	}
+
+	public boolean isConst() {
+		return false;
+	}
+
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		// See if this expression is a modifiable lvalue (i.e. not const)
 		return toLvalue(sc, e, context);
+	}
+
+	public char[] opId() {
+		throw new IllegalStateException("assert(0);");
+	}
+
+	public char[] opId_r() {
+		return null;
 	}
 
 	public Expression optimize(int result, SemanticContext context) {
@@ -299,6 +362,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		if (type != null && type.toBasetype(context).ty == Tvoid) {
 			error("expression %s is void and has no value", toChars(context));
 		}
+	}
+
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		// empty
 	}
 
 	public Expression semantic(Scope sc, SemanticContext context) {
@@ -333,9 +400,21 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return complex_t.ZERO;
 	}
 
-	public Expression toDelegate(Scope sc, Type tret) {
-		// TODO semantic
-		return null;
+	public Expression toDelegate(Scope sc, Type t, SemanticContext context) {
+		TypeFunction tf = new TypeFunction(null, t, 0, LINKd);
+		FuncLiteralDeclaration fld = new FuncLiteralDeclaration(loc, tf,
+				TOKdelegate, null);
+		Expression e;
+		sc = sc.push();
+		sc.parent = fld; // set current function to be the delegate
+		e = this;
+		e.scanForNestedRef(sc, context);
+		sc = sc.pop();
+		Statement s = new ReturnStatement(loc, e);
+		fld.fbody = s;
+		e = new FuncExp(loc, fld);
+		e = e.semantic(sc, context);
+		return e;
 	}
 
 	public real_t toImaginary(SemanticContext context) {
@@ -371,64 +450,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return real_t.ZERO;
 	}
 
+	// TODO semantic should return uinteger_t
 	public integer_t toUInteger(SemanticContext context) {
 		return toInteger(context);
-	}
-
-	public char[] opId() {
-		throw new IllegalStateException("assert(0);");
-	}
-
-	public char[] opId_r() {
-		return null;
-	}
-
-	public boolean isConst() {
-		return false;
-	}
-
-	public boolean isCommutative() {
-		return false; // default is no reverse
-	}
-
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1;
-	}
-
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		return this;
-	}
-
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return EXP_CANT_INTERPRET;
-	}
-
-	public Expression doInline(InlineDoState ids) {
-		return copy();
-	}
-
-	public void scanForNestedRef(Scope sc, SemanticContext context) {
-		// empty
-	}
-
-	public static Expression build_overload(Loc loc, Scope sc, Expression ethis,
-			Expression earg, IdentifierExp id, SemanticContext context) {
-		Expression e;
-
-		e = new DotIdExp(loc, ethis, id);
-
-		if (earg != null)
-			e = new CallExp(loc, e, earg);
-		else
-			e = new CallExp(loc, e);
-
-		e = e.semantic(sc, context);
-		return e;
-	}
-
-	public boolean compare(Expression exp) {
-		// TODO semantic
-		return false;
 	}
 
 }

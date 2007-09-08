@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class ExpInitializer extends Initializer {
 
 	public Expression exp;
@@ -15,12 +16,8 @@ public class ExpInitializer extends Initializer {
 		this.start = exp.start;
 		this.length = exp.length;
 	}
-	
+
 	@Override
-	public ExpInitializer isExpInitializer() {
-		return this;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -28,18 +25,27 @@ public class ExpInitializer extends Initializer {
 		}
 		visitor.endVisit(this);
 	}
-	
-	
+
+	@Override
+	public int getNodeType() {
+		return EXP_INITIALIZER;
+	}
+
 	@Override
 	public Type inferType(Scope sc, SemanticContext context) {
-	    exp = exp.semantic(sc, context);
-	    exp = Expression.resolveProperties(sc, exp, context);
-	    return exp.type;
+		exp = exp.semantic(sc, context);
+		exp = ASTDmdNode.resolveProperties(sc, exp, context);
+		return exp.type;
 	}
-	
+
+	@Override
+	public ExpInitializer isExpInitializer() {
+		return this;
+	}
+
 	@Override
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
-	    exp = exp.semantic(sc, context);
+		exp = exp.semantic(sc, context);
 		Type tb = t.toBasetype(context);
 
 		/*
@@ -57,8 +63,8 @@ public class ExpInitializer extends Initializer {
 							((TypeSArray) t).dim.toInteger(context)) < 0) {
 				exp = se.castTo(sc, t, context);
 				// goto L1;
-				exp = exp.optimize(Expression.WANTvalue
-						| Expression.WANTinterpret, context);
+				exp = exp.optimize(ASTDmdNode.WANTvalue
+						| ASTDmdNode.WANTinterpret, context);
 				return this;
 			}
 		}
@@ -73,18 +79,25 @@ public class ExpInitializer extends Initializer {
 
 		exp = exp.implicitCastTo(sc, t, context);
 		// L1:
-		exp = exp.optimize(Expression.WANTvalue | Expression.WANTinterpret, context);
+		exp = exp.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret,
+				context);
 		return this;
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return EXP_INITIALIZER;
+	public Initializer syntaxCopy() {
+		return new ExpInitializer(loc, exp.syntaxCopy());
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		exp.toCBuffer(buf, hgs, context);
+	}
+
+	@Override
+	public Expression toExpression(SemanticContext context) {
+		return exp;
 	}
 
 }

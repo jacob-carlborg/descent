@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class EnumMember extends Dsymbol {
 
 	public Expression value;
@@ -20,10 +21,6 @@ public class EnumMember extends Dsymbol {
 	}
 
 	@Override
-	public int getNodeType() {
-		return ENUM_MEMBER;
-	}
-	
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -34,6 +31,10 @@ public class EnumMember extends Dsymbol {
 		visitor.endVisit(this);
 	}
 
+	@Override
+	public int getNodeType() {
+		return ENUM_MEMBER;
+	}
 
 	@Override
 	public EnumMember isEnumMember() {
@@ -63,7 +64,8 @@ public class EnumMember extends Dsymbol {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring(ident.toChars());
 		if (value != null) {
 			buf.writestring(" = ");
