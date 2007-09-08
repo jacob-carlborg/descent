@@ -561,5 +561,12 @@ public class ForeachStatement extends Statement {
 		buf.writebyte('}');
 		buf.writenl();
 	}
+	
+	@Override
+	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
+		aggr = aggr.inlineScan(iss, context);
+	    body = body.inlineScan(iss, context);
+	    return this;
+	}
 
 }
