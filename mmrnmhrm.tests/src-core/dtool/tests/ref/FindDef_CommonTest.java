@@ -13,6 +13,8 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 import org.junit.Test;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefUnit;
@@ -64,13 +66,13 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		System.out.println(modUnit2.getBuffer().getContents().substring(offset).split("\\s")[0]);
 		
 		IASTNode node = ASTNodeFinder.findElement(ParsingUtil.getNeoASTModule(modUnit2), offset);
-		Reference ent = (Reference) node;
+		node.toString();
+		Reference ref = (Reference) node;
 		
-		Collection<DefUnit> defunits = ent.findTargetDefUnits(true);
+		Collection<DefUnit> defunits = ref.findTargetDefUnits(true);
 		
 		if(defunits == null || defunits.isEmpty()) {
-			assertTrue(targetOffset == -1, 
-					" Find Ref got no DefUnit.");
+			assertTrue(targetOffset == -1, " Find Ref got no DefUnit.");
 			return;
 		}
 		DefUnit defunit = defunits.iterator().next();
@@ -78,10 +80,8 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		assertTrue(defunit != null, " defunit = null");
 
 		Module obtainedModule = NodeUtil.getParentModule(defunit);
-		assertTrue(obtainedModule.getModuleUnit().equals(targetCunit.modUnit),
-				" Find Ref got wrong target module.");
+		assertTrue(obtainedModule.getModuleUnit().equals(targetCunit.modUnit), " Find Ref got wrong target module.");
 		
-		assertTrue(defunit.defname.getStartPos() == targetOffset, 
-				" Find Ref went to wrong offset: " + defunit.defname.getStartPos());
+		assertTrue(defunit.defname.getStartPos() == targetOffset, " Find Ref went to wrong offset: " + defunit.defname.getStartPos());
 	}
 }

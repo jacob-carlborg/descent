@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Layout;
  * Miscelleanous class with some SWT utils.
  * @see SWTUtil 
  */
-public class SWTUtil2 {
+public class SWTUtilExt {
 		
 	/** Controls the enablement of composite color helpers. 
 	 * (random backgroung color)*/

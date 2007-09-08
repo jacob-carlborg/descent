@@ -38,7 +38,7 @@ public class TypeMapArray extends CommonRefNative {
 	}
 	
 	@Override
-	public String toString() {
+	public String toStringAsElement() {
 		return valuetype + "["+keytype+"]";
 	}
 	

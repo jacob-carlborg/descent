@@ -51,6 +51,17 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 		return defunits.iterator().next();
 	}
 	
+	@Override
+	public String toString() {
+		return toStringAsElement();
+	}
+	
+	@Override
+	public abstract String toStringAsElement(); 
+	
+	public String toStringAsReference() {
+		return toStringAsElement();
+	}
 	
 	public static IDefUnitReference maybeNullReference(Reference ref) {
 		if(ref != null)
@@ -58,7 +69,7 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 		return NativeDefUnit.nullReference;
 	}
 	
-	/* ---------------- Conversion Funcs ---------------- */
+	/* ====================== Conversion Funcs ====================== */
 
 	public static Reference convertType(Type type) {
 		Reference entity = (Reference) DescentASTConverter.convertElem(type);
@@ -202,6 +213,8 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 
 		return newelem;
 	}
+
+
 
 }
 

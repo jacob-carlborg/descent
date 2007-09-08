@@ -47,7 +47,9 @@ public class DeeOutlineContentProvider extends ElementContentProvider {
 	}
 
 	public static boolean isDeclarationWithDefUnits(Object element) {
-		return (!(element instanceof DefUnit) && element instanceof INonScopedBlock);
+		return (!(element instanceof DefUnit) 
+				&& element instanceof INonScopedBlock
+				&& !(element instanceof DeclarationImport));
 	}
 	
 	public boolean hasChildren(Object element) {

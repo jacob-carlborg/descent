@@ -33,7 +33,7 @@ public class TypeDynArray extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 
-	public String toString() {
+	public String toStringAsElement() {
 		return elemtype + "[]";
 	}
 
@@ -61,7 +61,7 @@ public class TypeDynArray extends CommonRefNative {
 		}
 		
 		@Override
-		public String toString() {
+		public String toStringAsElement() {
 			return "T[]";
 		}
 

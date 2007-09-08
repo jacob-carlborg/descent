@@ -40,8 +40,8 @@ public class DefinitionAlias extends Definition implements IStatement {
 	}
 	
 	@Override
-	public String toStringAsCodeCompletion() {
-		return defname + " -> " + target.toString();
+	public String toStringForCodeCompletion() {
+		return getName() + " -> " + target.toStringAsReference();
 	}
 	
 }

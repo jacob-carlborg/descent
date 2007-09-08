@@ -39,4 +39,10 @@ public class RefTypeSlice extends Reference {
 		return null;
 	}
 
+
+	@Override
+	public String toStringAsElement() {
+		return slicee.toStringAsElement()+"["+from+".."+to+"]";
+	}
+
 }

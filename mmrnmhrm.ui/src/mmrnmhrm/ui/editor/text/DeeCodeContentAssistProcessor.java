@@ -77,7 +77,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 						searchOptions.rplLen, 
 						rplStr.length(),
 						DeeElementImageProvider.getNodeImage(defUnit),
-						defUnit.toStringAsCodeCompletion(),
+						defUnit.toStringForCodeCompletion(),
 						defUnit,
 						null // context information
 						));

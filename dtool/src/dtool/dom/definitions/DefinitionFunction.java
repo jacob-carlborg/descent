@@ -4,13 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.TypeFunction;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTPrinter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
@@ -85,54 +85,12 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		visitor.endVisit(this);
 	}
 	
-	public static String toStringParameterSig(List<IFunctionParameter> params, int varargs) {
-		String strParams = "(";
-		for (int i = 0; i < params.size(); i++) {
-			if(i != 0)
-				strParams += ", ";
-			strParams += params.get(i).toStringAsParameter();
-		}
-		if(varargs == 1) strParams += (params.size()==0 ? "..." : ", ...");
-		if(varargs == 2) strParams += "...";
-		return strParams + ")";
-	}
-	
-	@Override
-	public String toString() {
-		return super.toString() + toStringParameterSig(params, varargs);
-	}
-	
-	private String toStringTemplateParams() {
-		return (templateParams == null ? "" : 
-			"("+ StringUtil.collToString(templateParams, ",") +")");
-	}
-	
-	
-	@Override
-	public String toStringFullSignature() {
-		String str = getArcheType().toString() + "  "
-			+ rettype.toString() + " " + getName() 
-			+ toStringTemplateParams()
-			+ toStringParameterSig(params, varargs);
-		return str;
-	}
-	
-
-	@Override
-	public String toStringAsCodeCompletion() {
-		return getName()
-			+ toStringTemplateParams()
-			+ toStringParameterSig(params, varargs) 
-			+ "  " + rettype 
-			+ " - " + NodeUtil.getOuterDefUnit(this);
-	}
-
-
 	
 	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Function;
 	}
+
 	
 	@Override
 	public IScopeNode getMembersScope() {
@@ -150,7 +108,42 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		return params.iterator();
 	}
 
+	
+	public static String toStringParameterSig(List<IFunctionParameter> params, int varargs) {
+		String strParams = "(";
+		for (int i = 0; i < params.size(); i++) {
+			if(i != 0)
+				strParams += ", ";
+			strParams += params.get(i).toStringAsFunctionSignaturePart();
+		}
+		if(varargs == 1) strParams += (params.size()==0 ? "..." : ", ...");
+		if(varargs == 2) strParams += "...";
+		return strParams + ")";
+	}
+	
+	@Override
+	public String toStringAsElement() {
+		return getName() + toStringParameterSig(params, varargs);
+	}
+	
 
+	@Override
+	public String toStringForHoverSignature() {
+		String str = getArcheType().toString() + "  "
+			+ rettype.toStringAsReference() + " " + getName() 
+			+ ASTPrinter.toStringAsElements(templateParams)
+			+ toStringParameterSig(params, varargs);
+		return str;
+	}
+	
 
+	@Override
+	public String toStringForCodeCompletion() {
+		return getName()
+			+ ASTPrinter.toStringAsElements(templateParams)
+			+ toStringParameterSig(params, varargs) 
+			+ "  " + rettype.toStringAsReference()
+			+ " - " + NodeUtil.getOuterDefUnit(this).toStringAsElement();
+	}
 
 }

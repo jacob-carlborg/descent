@@ -1,8 +1,6 @@
 package mmrnmhrm.ui.wizards;
 
 
-import mmrnmhrm.core.model.DeeProject;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,10 +14,9 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 public class DeeProjectCreationWizard extends NewElementWizard {
 
-	
 	protected ProjectWizardFirstPage fFirstPage;
     protected ProjectWizardSecondPage fSecondPage;
-    protected DeeProject deeProject;
+    protected DeeProjectWizardPage3 fThirdPage;
     
 	private IConfigurationElement fConfigElement;
     
@@ -34,10 +31,12 @@ public class DeeProjectCreationWizard extends NewElementWizard {
 	}
 
 	public void addPages() {
-        fFirstPage = new DeeProjectWizardFirstPage();
-        fSecondPage = new DeeProjectWizardSecondPage(fFirstPage);
+        fFirstPage = new DeeProjectWizardPage1();
+        fSecondPage = new DeeProjectWizardPage2(fFirstPage);
+        fThirdPage = new DeeProjectWizardPage3(fSecondPage);
         addPage(fFirstPage);
         addPage(fSecondPage);
+        //addPage(fThirdPage); // because secondPage breaks if is not last page
 	}
 
 	@Override
@@ -47,6 +46,7 @@ public class DeeProjectCreationWizard extends NewElementWizard {
 	
 	protected void finishPage(IProgressMonitor monitor) throws InterruptedException, CoreException {
 		fSecondPage.performFinish(monitor); // use the full progress monitor
+		fThirdPage.performOk();
 	}
 
 	
@@ -61,6 +61,7 @@ public class DeeProjectCreationWizard extends NewElementWizard {
 	
 	public boolean performCancel() {
 		fSecondPage.performCancel();
+		fThirdPage.performCancel();
 		return super.performCancel();
 	}
 

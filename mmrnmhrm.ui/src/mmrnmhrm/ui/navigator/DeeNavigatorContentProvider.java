@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
-import melnorme.util.ui.swt.SWTUtil2;
+import melnorme.util.ui.swt.SWTUtilExt;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 
@@ -80,7 +80,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, org.ec
 	}
 
 	public void elementChanged(org.eclipse.dltk.core.ElementChangedEvent event) {
-		SWTUtil2.runInSWTThread(new Runnable() {
+		SWTUtilExt.runInSWTThread(new Runnable() {
 			public void run() {
 				viewer.refresh();
 			}

@@ -16,9 +16,9 @@ import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
 import org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-public class DeeProjectWizardSecondPage extends ProjectWizardSecondPage {
+public class DeeProjectWizardPage2 extends ProjectWizardSecondPage {
 
-	public DeeProjectWizardSecondPage(ProjectWizardFirstPage mainPage) {
+	public DeeProjectWizardPage2(ProjectWizardFirstPage mainPage) {
 		super(mainPage);
 	}
 

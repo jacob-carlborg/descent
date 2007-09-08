@@ -54,7 +54,7 @@ public class RefQualified extends CommonRefQualified {
 	}
 
 	
-	public String toString() {
+	public String toStringAsElement() {
 		return root + "." + subref;
 	}
 	

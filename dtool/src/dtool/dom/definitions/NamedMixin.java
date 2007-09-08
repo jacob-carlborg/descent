@@ -10,11 +10,11 @@ import dtool.refmodel.IScopeNode;
 
 /*
  */
-public class DefinitionMixin extends DefUnit implements IStatement {
+public class NamedMixin extends DefUnit implements IStatement {
 	
 	public Reference type;
 	
-	private DefinitionMixin(TemplateMixin elem, Reference tplInstance) {
+	private NamedMixin(TemplateMixin elem, Reference tplInstance) {
 		super(elem);
 		this.type = tplInstance;
 	}
@@ -22,7 +22,7 @@ public class DefinitionMixin extends DefUnit implements IStatement {
 	public static ASTNeoNode convertMixinInstance(TemplateMixin elem) {
 		if(elem.ident != null) {
 			Reference typeref = Reference.convertTemplateInstance(elem, elem.tiargs);
-			return new DefinitionMixin(elem, typeref);
+			return new NamedMixin(elem, typeref);
  		} else {
  			elem.setSourceRange(elem.typeStart, elem.typeLength);
  			Reference typeref = Reference.convertTemplateInstance(elem, elem.tiargs);

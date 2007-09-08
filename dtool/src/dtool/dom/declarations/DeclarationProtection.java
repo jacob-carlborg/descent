@@ -7,8 +7,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.ProtDeclaration;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.definitions.Definition;
+import dtool.refmodel.INonScopedBlock;
 
 public class DeclarationProtection extends DeclarationAttrib {
 
@@ -36,4 +39,32 @@ public class DeclarationProtection extends DeclarationAttrib {
 		return body.getNodeIterator();
 	}
 
+	@Override
+	public String toStringAsElement() {
+		return "["+modifier+"]";
+	}
+	
+	public void processEffectiveModifiers() {
+		INonScopedBlock block = this;
+		processEffectiveModifiers(block);
+	}
+
+	private void processEffectiveModifiers(INonScopedBlock block) {
+		Iterator<? extends IASTNode> iter = block.getMembersIterator();
+		while(iter.hasNext()) {
+			IASTNode node = iter.next();
+	
+			if(node instanceof Definition) {
+				Definition def = (Definition) node;
+				def.protection = prot;
+			} else if (node instanceof DeclarationProtection) {
+				// Do not descend, that inner decl take priority
+			} else if (node instanceof DeclarationImport && prot == PROT.PROTpublic) {
+				DeclarationImport declImport = (DeclarationImport) node;
+				declImport.isTransitive = true;
+			} else if(node instanceof INonScopedBlock) {
+				processEffectiveModifiers((INonScopedBlock) node);
+			}
+		}
+	}
 }

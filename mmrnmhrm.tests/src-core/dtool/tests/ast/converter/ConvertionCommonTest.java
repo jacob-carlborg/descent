@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.BeforeClass;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTChecker;
 import dtool.dom.ast.ASTNeoNode;
@@ -22,8 +24,7 @@ public abstract class ConvertionCommonTest extends BasePluginTest {
 	public static ASTNeoNode testDtoolASTConvertion(final String source) throws CoreException {
 		
 		descent.internal.compiler.parser.Module mod = ParserAdapter.parseSource(source).mod;
-		BasePluginTest.assertTrue(mod.problems.size() == 0,
-				"Found syntax errors while parsing.");
+		assertTrue(mod.problems.size() == 0, "Found syntax errors while parsing.");
 	
 		Module neoModule = DescentASTConverter.convertModule(mod);
 		ASTChecker.checkConsistency(neoModule);

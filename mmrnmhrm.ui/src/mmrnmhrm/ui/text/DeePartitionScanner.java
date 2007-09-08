@@ -28,8 +28,8 @@ public class DeePartitionScanner extends RuleBasedPartitionScanner {
 		rules.add(new SingleLineRule("\"", "\"", tkString, '\\'));
 
 		// FIXME: nesting
-		rules.add(new MultiLineRule("/++", "/+", tkDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		rules.add(new MultiLineRule("/+", "/+", tkComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		rules.add(new MultiLineRule("/++", "+/", tkDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		rules.add(new MultiLineRule("/+", "+/", tkComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		rules.add(new MultiLineRule("/**", "*/", tkDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
 		rules.add(new MultiLineRule("/*", "*/", tkComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
 

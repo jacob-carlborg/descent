@@ -16,6 +16,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 public class DeeEditorTest extends BaseUITest {
 
 	public static IDocument getDocument(ScriptEditor editor) {
@@ -37,7 +39,7 @@ public class DeeEditorTest extends BaseUITest {
 		
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		IEditorPart editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
-		assertTrue(editor instanceof DeeEditor);
+		assertTrue(editor instanceof DeeEditor, "Assertion failed.");
 
 		page.showView("org.eclipse.ui.views.ContentOutline");
 		page.showView(ASTViewer.VIEW_ID);
@@ -49,7 +51,7 @@ public class DeeEditorTest extends BaseUITest {
 		
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		IEditorPart editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
-		assertTrue(editor instanceof DeeEditor);
+		assertTrue(editor instanceof DeeEditor, "Assertion failed.");
 
 		page.showView("org.eclipse.ui.views.ContentOutline");
 		page.showView(ASTViewer.VIEW_ID);

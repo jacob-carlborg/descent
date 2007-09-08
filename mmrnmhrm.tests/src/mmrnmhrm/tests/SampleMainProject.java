@@ -5,18 +5,16 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
-import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.dltk.core.DLTKCore;
+
+import static melnorme.miscutil.Assert.assertTrue;
 
 /**
  * This classes creates a sample project 
@@ -45,37 +43,11 @@ public abstract class SampleMainProject {
 
 	public static void createAndSetupSampleProj() {
 		try {
-			deeProj = createAndOpenDeeProject(SAMPLEPROJNAME);
+			deeProj = CoreTestUtils.createAndOpenDeeProject(SAMPLEPROJNAME);
 			fillSampleProj();
 		} catch (Exception e) {
 			throw ExceptionAdapter.unchecked(e);
 		}
-	}
-
-	public static DeeProject createAndOpenDeeProject(String name)
-			throws CoreException {
-		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
-
-		IProject project;
-		project = workspaceRoot.getProject(name);
-		if(project.exists())
-			project.delete(true, null);
-		project.create(null);
-		project.open(null);
-		ModelUtil.createDeeProject(project);
-		return new DeeProject(DLTKCore.create(project));
-	}
-	
-	private static IFolder createFolderInProject(String bundleDir, String destDir, boolean addSrcFolder) throws CoreException,
-			URISyntaxException, IOException {
-		IFolder folder;
-		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
-				project, destDir);
-		if(addSrcFolder) {
-			ModelUtil.createAddSourceFolder(deeProj.dltkProj, folder);
-			deeProj.dltkProj.save(null, false);
-		}
-		return folder;
 	}
 
 	public static void fillSampleProj() throws CoreException, URISyntaxException, IOException {
@@ -86,19 +58,26 @@ public abstract class SampleMainProject {
 		
 		sampleNonExistantFile = project.getFile(new Path("nonexistant.d"));
 
-		folder = createFolderInProject("sampleSrc1", TEST_SRC1, false);
-		sampleFile1 = folder.getFile("foo.d");
+		folder = CoreTestUtils.createFolderInProject(project, 
+				ITestDataConstants.SAMPLE_SRC1, TEST_SRC1, false);
+		sampleFile1 = folder.getFile("bigfile.d");
 
-		folder = createFolderInProject("sampleSrcOut", TEST_OUTSRC, false);
+		folder = CoreTestUtils.createFolderInProject(project, 
+				"sampleSrcOut", TEST_OUTSRC, false);
 		sampleOutOfModelFile = folder.getFile("outfile.d");
 		
-		folder = createFolderInProject("refs", TEST_SRC_REFS, true);
+		folder = CoreTestUtils.createFolderInProject(project, 
+				"refs", TEST_SRC_REFS, true);
 
-		folder = createFolderInProject("sampleSrc3", TEST_SRC3, true);
+		folder = CoreTestUtils.createFolderInProject(project, 
+				ITestDataConstants.SAMPLE_SRC3, TEST_SRC3, true);
 
-		folder = createFolderInProject(TEST_SRC_PHOBOSHD, TEST_SRC_PHOBOSHD, true);
-		folder = createFolderInProject(TEST_SRC_PHOBOSIMPL, TEST_SRC_PHOBOSIMPL, true);
-		folder = createFolderInProject(TEST_SRC_TANGO, TEST_SRC_TANGO, true);
+		folder = CoreTestUtils.createFolderInProject(project, 
+				TEST_SRC_PHOBOSHD, TEST_SRC_PHOBOSHD, true);
+		folder = CoreTestUtils.createFolderInProject(project, 
+				TEST_SRC_PHOBOSIMPL, TEST_SRC_PHOBOSIMPL, true);
+		folder = CoreTestUtils.createFolderInProject(project, 
+				TEST_SRC_TANGO, TEST_SRC_TANGO, true);
 
 		//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}
@@ -107,7 +86,7 @@ public abstract class SampleMainProject {
 	/** Gets a IFile from the sample project. */
 	public static IFile getFile(String filepath) {
 		IFile file = deeProj.getProject().getFile(filepath);
-		BasePluginTest.assertTrue(file.exists(), "Test file not found.");
+		assertTrue(file.exists(), "Test file not found.");
 		return file;
 	}
 	

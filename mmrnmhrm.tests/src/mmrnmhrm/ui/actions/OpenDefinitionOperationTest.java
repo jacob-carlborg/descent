@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 public class OpenDefinitionOperationTest extends BaseUITest {
 
 	private static final String TEST_SRCFILE = SampleMainProject.TEST_SRC1 + "/testGoToDefOp.d";

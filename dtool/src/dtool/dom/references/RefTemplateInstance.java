@@ -43,7 +43,7 @@ public class RefTemplateInstance extends CommonRefSingle {
 		visitor.endVisit(this);
 	}
 
-	public String toString() {
+	public String toStringAsElement() {
 		return name + "!(" + StringUtil.collToString(tiargs, ",") + ")";
 	}
 

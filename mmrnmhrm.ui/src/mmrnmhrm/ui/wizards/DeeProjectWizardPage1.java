@@ -14,7 +14,7 @@ import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
 import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.swt.widgets.Composite;
 
-public class DeeProjectWizardFirstPage extends ProjectWizardFirstPage {
+public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 
 	DeeInterpreterGroup fInterpreterGroup;
 	

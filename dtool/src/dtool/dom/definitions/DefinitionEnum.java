@@ -72,8 +72,8 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 	}
 
 	@Override
-	public String toStringAsCodeCompletion() {
-		return defname + " - " + getModuleScope();
+	public String toStringForCodeCompletion() {
+		return getName() + " - " + getModuleScope().toStringAsElement();
 	}
 
 }

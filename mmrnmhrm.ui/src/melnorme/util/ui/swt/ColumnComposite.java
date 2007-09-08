@@ -18,7 +18,7 @@ public class ColumnComposite extends DialogComposite {
 	public ColumnComposite(Composite parent, int numCol, boolean margins) {
 		super(parent);
 		GridLayout gl = new GridLayout(numCol, false);
-		SWTUtil2.initGridLayout(gl, margins, useDialogDefaults ? parent : null);
+		SWTUtilExt.initGridLayout(gl, margins, useDialogDefaults ? parent : null);
 		setLayout(gl);
 	}
 

@@ -18,7 +18,7 @@ import dtool.refmodel.IScopeNode;
 
 /*
  */
-public class DefinitionTemplate extends DefUnit implements IScopeNode {
+public class DefinitionTemplate extends Definition implements IScopeNode {
 
 	public final TemplateParameter[] templateParams; 
 	public final ASTNeoNode[] decls;

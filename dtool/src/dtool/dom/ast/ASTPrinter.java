@@ -3,6 +3,7 @@ package dtool.dom.ast;
 import melnorme.miscutil.tree.TreeDepthRecon;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTNode;
+import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.RefQualified;
 
 /**
@@ -13,21 +14,16 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
 	/** => #toStringNodeExtra(node, true) */
 	public static String toStringNodeExtra(IASTNode node) {
-		return toStringNodeExtra(node, true);
+		return node.toStringAsNode(true);
 	}
 
-	/** Gets an extended String representation of given node. */
-	public static String toStringNodeExtra(IASTNode node, boolean printRangeInfo) {
-		return node.toStringAsNode(printRangeInfo) + " " + node.toString();
-	}
-	
 	/** #toStringAST(elem, true) */
 	public static String toStringAST(ASTNode elem) {
 		return toStringAST(elem, true);
 	}	
 
 	/** Gets a String representation of the whole AST tree. */
-	public static String toStringAST(ASTNode elem, boolean recurseUnconverted) {
+	public static String toStringAST(IASTNode elem, boolean recurseUnconverted) {
 		ASTPrinter astPrinter = new ASTPrinter();
 		astPrinter.recurseUnconverted = recurseUnconverted;
 		return astPrinter.getStringRep(elem);
@@ -73,15 +69,20 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
 	
 	/** Gets a String represesention according to this printer */
-	public String getStringRep(ASTNode elem) {
+	public String getStringRep(IASTNode elem) {
 		elem.accept(this);
 		return strbuffer.toString();
 	}
 
 	
 	/** Gets a String representation of elem only, with extra info. */
-	private String toStringElementExtra(IASTNode elem) {
-		return toStringNodeExtra(elem, printRangeInfo);
+	private String toStringElementExtra(ASTNode elem) {
+		return elem.toStringAsNode(printRangeInfo);
+	}
+	
+	/** Gets a String representation of elem only, with extra info. */
+	private String toStringElementExtra(ASTNeoNode elem) {
+		return elem.toStringAsNode(printRangeInfo) +" "+ elem.toStringAsElement();
 	}
 	
 	/* ---------------------------------- */
@@ -150,6 +151,21 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		}
 
 		indent--;
+	}
+
+	public static String toStringAsElements(DefUnit[] defUnits) {
+		if(defUnits == null)
+			return "";
+		
+		String sep = ", ";
+		StringBuilder sb = new StringBuilder("(");
+		for (int i = 0; i < defUnits.length; i++) {
+			if(i > 0)
+				sb.append(sep);
+			sb.append(defUnits[i].toStringAsElement());
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 
 }

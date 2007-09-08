@@ -11,6 +11,7 @@ import melnorme.util.ui.fields.StringDialogField;
 import melnorme.util.ui.swt.LayoutUtil;
 import mmrnmhrm.core.build.BudDeeModuleCompiler;
 import mmrnmhrm.core.build.DeeCompilerOptions;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProjectOptions;
 import mmrnmhrm.ui.actions.OperationsManager;
 
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IStringButtonAdapter;
@@ -119,12 +121,17 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		fOptionsPreview.setLabelText("Compiler Options Preview:");
 	}
 	
-	public void init(DeeProjectOptions projectInfo) {
+	protected void init(DeeProjectOptions projectInfo) {
 		assertNotNull(projectInfo);
 		fDeeProjInfo = projectInfo;
 		overlayOptions = fDeeProjInfo.compilerOptions.clone();
 		updateView();
 	}
+	
+	public void init2(IScriptProject scriptProject) {
+		init(DeeModel.getDeeProjectInfo(scriptProject));
+	}
+
 	
 	public Composite createControl(Composite parent) {
 		Composite content = parent;
@@ -163,7 +170,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		comp = FieldUtil.createCompose(content, true, fOptionsPreview);
 		LayoutUtil.enableDiagonalExpand(comp);
 		LayoutUtil.enableDiagonalExpand(fOptionsPreview.getTextControl(null));
-		return comp;
+		return content;
 	}
 
 	private Shell getShell() {
@@ -198,7 +205,8 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		IFolder outputFolder = fDeeProjInfo.getProject().getFolder(options.outputDir);
 		IFile file = outputFolder.getFile("<files.d>");
 		previewModules.add(file);
-		List<String> text = BudDeeModuleCompiler.createCommandLine(previewModules, options);
+		List<String> text =	BudDeeModuleCompiler.createCommandLine(
+				previewModules, fDeeProjInfo.dltkProj, options);
 		fOptionsPreview.setText(StringUtil.collToString(text, "  "));
 	}
 

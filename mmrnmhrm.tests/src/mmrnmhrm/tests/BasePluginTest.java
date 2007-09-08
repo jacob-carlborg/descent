@@ -1,8 +1,6 @@
 package mmrnmhrm.tests;
 
 
-import junit.framework.Assert;
-
 import org.eclipse.dltk.core.search.indexing.IndexManager;
 import org.eclipse.dltk.internal.core.ModelManager;
 
@@ -22,18 +20,6 @@ public class BasePluginTest {
 		SamplePreExistingProject.checkForExistanceOfPreExistingProject();
 		SampleMainProject.createAndSetupSampleProj();
 		SampleNonDeeProject.createAndSetupProject();
-	}
-	
-
-	public static void assertTrue(boolean b) {
-		assertTrue(b, "Assertion failed.");
-	}
-	
-	public static void assertTrue(boolean b, String msg) {
-		if(b == false) {
-			b = false; // dummy statement to allow breakpoint placement
-		}
-		Assert.assertTrue(msg, b);
 	}
 	
 }

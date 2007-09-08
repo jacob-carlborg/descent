@@ -1,5 +1,7 @@
 package dtool.dom.definitions;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.ASTNeoNode;
@@ -16,6 +18,7 @@ public class Symbol extends ASTNeoNode {
 	}
 
 	public Symbol(String name) {
+		assertNotNull(name);
 		this.name = name;
 	}
 	
@@ -36,6 +39,11 @@ public class Symbol extends ASTNeoNode {
 	
 	@Override
 	public String toString() {
+		return name;
+	}
+	
+	@Override
+	public String toStringAsElement() {
 		return name;
 	}
 }

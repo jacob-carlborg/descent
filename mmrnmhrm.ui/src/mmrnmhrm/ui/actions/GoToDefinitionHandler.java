@@ -44,7 +44,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 	private static final String GO_TO_DEFINITION_OPNAME = "Go to Definition";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
+		
 		IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);
 		try {
 			executeOperation((ITextEditor) editor, false);
@@ -53,6 +53,8 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		}
 		return null;
 	}
+
+
 
 	public static void executeChecked(final ITextEditor srcEditor,
 			final boolean openNewEditor) {

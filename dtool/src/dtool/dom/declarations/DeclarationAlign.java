@@ -21,5 +21,10 @@ public class DeclarationAlign extends DeclarationAttrib {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		return "[align("+alignnum+")]";
+	}
 
 }

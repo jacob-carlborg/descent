@@ -26,7 +26,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
@@ -152,10 +151,9 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			viewer.getControl().setVisible(false);
 		} else {
 			fEditor = editor;
-			IEditorInput input = fEditor.getEditorInput();
 			ISourceModule modUnit = EditorUtil.getModuleUnit(fEditor);
 			fCUnit = CompilationUnit.create(modUnit);
-			if(fCUnit != null) {
+			if(fCUnit != null && fCUnit.modUnit.exists()) {
 				fDocument = fEditor.getDocumentProvider().getDocument(editor.getEditorInput());
 				
 				fDocument.addDocumentListener(this);
@@ -179,8 +177,8 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			return;
 		
 		int offset = EditorUtil.getSelection(fEditor).getOffset();
-		DeeModuleDeclaration deeModule = fCUnit.getDeeModuleDeclaration(); 
-
+		DeeModuleDeclaration deeModule = fCUnit.getDeeModuleDeclaration();
+		
 		setContentDescription("AST ("+deeModule.toStringParseStatus()+
 				"), sel: " + offset);
 
@@ -188,7 +186,6 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			viewer.getControl().setVisible(false);
 			return;
 		}
-		
 		selNode = ASTNodeFinder.findElement(fCUnit.getModule(), offset);
 		//viewer.getControl().setRedraw(false);
 		//viewer.setInput(fCUnit);

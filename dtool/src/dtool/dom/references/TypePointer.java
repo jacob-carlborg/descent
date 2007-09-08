@@ -50,7 +50,7 @@ public class TypePointer extends CommonRefNative {
 	}
 	
 	@Override
-	public String toString() {
+	public String toStringAsElement() {
 		return elemtype + "*";
 	}
 

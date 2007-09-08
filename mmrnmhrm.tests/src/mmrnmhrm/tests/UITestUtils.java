@@ -1,6 +1,7 @@
 package mmrnmhrm.tests;
 
 import melnorme.miscutil.ExceptionAdapter;
+import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -41,6 +42,10 @@ public class UITestUtils {
 			
 		}
 		display.update();
+	}
+
+	public static void runEventLoop() {
+		runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}
 
 }

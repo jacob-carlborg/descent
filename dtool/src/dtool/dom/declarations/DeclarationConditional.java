@@ -64,4 +64,5 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 		return Arrays.asList(getMembers()).iterator();
 	}
 
+	
 }

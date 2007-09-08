@@ -18,4 +18,9 @@ public class TypeStruct extends CommonRefNative {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public String toStringAsElement() {
+		throw new UnsupportedOperationException();
+	}
+
 }

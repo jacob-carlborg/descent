@@ -20,8 +20,8 @@ public class PartialPackageDefUnitOfPackage extends PartialPackageDefUnit  {
 	}
 	
 	@Override
-	public String toString() {
-		return getName() + "." + child.toString();
+	public String toStringAsElement() {
+		return getName() + "." + child.toStringAsElement();
 	}
 
 }

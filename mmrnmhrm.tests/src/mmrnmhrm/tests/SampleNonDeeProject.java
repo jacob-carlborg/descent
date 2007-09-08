@@ -13,6 +13,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 /**
  * Builds a simple project with d sources, but that is not a Dee Project
  */
@@ -73,7 +75,7 @@ public abstract class SampleNonDeeProject {
 	/** Gets a IFile from the sample project. */
 	public static IFile getFile(String filepath) {
 		IFile file = project.getProject().getFile(filepath);
-		BasePluginTest.assertTrue(file.exists(), "Test file not found.");
+		assertTrue(file.exists(), "Test file not found.");
 		return file;
 	}
 	

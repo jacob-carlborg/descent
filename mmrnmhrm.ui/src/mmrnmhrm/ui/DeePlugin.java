@@ -3,6 +3,8 @@ package mmrnmhrm.ui;
 import melnorme.lang.ui.InitializeAfterLoadJob;
 import melnorme.lang.ui.LangPlugin;
 import melnorme.miscutil.log.Logg;
+import mmrnmhrm.core.build.DeeBuilder;
+import mmrnmhrm.ui.launch.DeeBuildUIListener;
 import mmrnmhrm.ui.text.DeeTextTools;
 
 import org.eclipse.core.runtime.CoreException;
@@ -58,6 +60,7 @@ public class DeePlugin extends LangPlugin {
 	}
 
 	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
+		DeeBuilder.setBuilderListener(new DeeBuildUIListener());
 		// nothing to do
 	}
 

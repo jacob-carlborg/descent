@@ -133,10 +133,6 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	}
 
 	
-	public boolean visit(TypeTupleDelegateDeclaration node) {
-		return assertFailFAKENODE();
-	}
-	
 	public boolean visit(TypeInfoArrayDeclaration node) {
 		return assertFailFAKENODE();
 	}
@@ -177,7 +173,7 @@ public abstract class CoreConverter extends ASTCommonConverter {
 		return assertFailFAKENODE();
 	}
 
-	public boolean visit(TypeInfoStructureDeclaration node) {
+	public boolean visit(TypeInfoStructDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
@@ -1354,290 +1350,190 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 	@Override
 	public void endVisit(TypeDelegate node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeDotIdExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeEnum node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeFunction node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeIdentifier node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeidExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoArrayDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoAssociativeArrayDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoClassDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoDelegateDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoEnumDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoFunctionDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoInterfaceDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoPointerDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInfoStaticArrayDeclaration node) {
-
-		
 	}
 
 	@Override
-	public void endVisit(TypeInfoStructureDeclaration node) {
-
-		
+	public void endVisit(TypeInfoStructDeclaration node) {
 	}
 
 	@Override
 	public void endVisit(TypeInfoTypedefDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeInstance node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypePointer node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeQualified node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeSArray node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeSlice node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeStruct node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeTuple node) {
-
-		
-	}
-
-	@Override
-	public void endVisit(TypeTupleDelegateDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeTypedef node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(TypeTypeof node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UAddExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UnaExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UnionDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UnitTestDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UnrolledLoopStatement node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UshrAssignExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(UshrExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(VarDeclaration node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(VarExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(Version node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(VersionCondition node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(VersionSymbol node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(VoidInitializer node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(VolatileStatement node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(WhileStatement node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(WithScopeSymbol node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(WithStatement node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(XorAssignExp node) {
-
-		
 	}
 
 	@Override
 	public void endVisit(XorExp node) {
-
-		
 	}
 
 

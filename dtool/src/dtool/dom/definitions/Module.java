@@ -9,7 +9,9 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.dltk.core.ISourceModule;
 
+import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.ModuleDeclaration;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
@@ -44,60 +46,61 @@ public class Module extends DefUnit implements IScopeNode {
 		}
 		
 		@Override
-		public String toString() {
+		public String toStringAsElement() {
 			String str = StringUtil.collToString(packages, ".");
 			if(str.length() == 0)
-				return moduleName.toString();
+				return moduleName.toStringAsElement();
 			else
-				return str + "." + moduleName;
+				return str + "." + moduleName.toStringAsElement();
 		}
 	}
 
-	private Object moduleUnit;
+	private Object moduleUnit; // The compilation unit / Model Element
 
-	public DeclarationModule md;
-	public ASTNeoNode[] members;
+	public final DeclarationModule md;
+	public final ASTNeoNode[] members;
+	public final Comment[] preComments;
+
 	
+	public static Module createModule(descent.internal.compiler.parser.Module elem) {
+		Symbol defname;
+		DeclarationModule md;
+		Comment[] preComments = null;
 
-	public Module(descent.internal.compiler.parser.Module elem) {
-		super((Symbol) null);
-		setSourceRange(elem);
-		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
-		if(elem.md != null){
-			// If there is md there is this	elem.ident
-			this.defname = new Symbol(elem.md.id); 
-			this.md = new DeclarationModule(elem.md);
-
+		ASTNeoNode[] members = Declaration.convertMany(elem.members);
+		
+		if(elem.md == null) {
+			defname = new Symbol("<unnamed>");
+			md = null;
+		} else  {
+			defname = new Symbol(elem.md.id);
+			md = new DeclarationModule(elem.md);
+			
 			if(elem.md.packages != null) {
-				this.md.packages = new RefIdentifier[elem.md.packages.size()];
-				CommonRefSingle.convertManyToRefIdentifier(elem.md.packages, this.md.packages);
+				md.packages = new RefIdentifier[elem.md.packages.size()];
+				CommonRefSingle.convertManyToRefIdentifier(elem.md.packages, md.packages);
 			} else {
-				this.md.packages = new RefIdentifier[0];
+				md.packages = new RefIdentifier[0];
 			}
-			this.preComments = elem.md.preDdocs;
-		} else {
-			this.defname = new Symbol((String) null); 
+			preComments = elem.md.preDdocs.toArray(new Comment[elem.md.preDdocs.size()]);
 		}
-		this.members = Declaration.convertMany(elem.members);
+		return new Module(defname, preComments, md, members, elem);
 	}
+	
+	public Module(Symbol defname, Comment[] preComments, DeclarationModule md,
+			ASTNeoNode[] members, IASTNode sourceRange) {
+		super(defname);
+		setSourceRange(sourceRange);
+		this.preComments = preComments;
+		this.md = md;
+		this.members = members;
+	}
+
 
 	public EArcheType getArcheType() {
 		return EArcheType.Module;
 	}
 	
-	@Override
-	public String toString() {
-		if(defname == null || defname.name == null)
-			return "<noname>";
-		else 
-			return md.toString();
-	}
-	
-	@Override
-	public String toStringFullSignature() {
-		return toString();
-	}
-
 	public void setModuleUnit(ISourceModule moduleUnit) {
 		this.moduleUnit = moduleUnit;
 	}
@@ -127,6 +130,21 @@ public class Module extends DefUnit implements IScopeNode {
 		return Arrays.asList(members).iterator();
 	}
 
-
+	@Override
+	public String toStringAsElement() {
+		if(md == null)
+			return "<undefined>";
+		return md.toStringAsElement();
+	}
+	
+	@Override
+	public String toStringForHoverSignature() {
+		return toStringAsElement();
+	}
+	
+	@Override
+	public String toStringForCodeCompletion() {
+		return getName();
+	}
 
 }

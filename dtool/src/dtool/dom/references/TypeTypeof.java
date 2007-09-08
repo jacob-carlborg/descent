@@ -27,7 +27,7 @@ public class TypeTypeof extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 	
-	public String toString() {
+	public String toStringAsElement() {
 		return "typeof(" + expression +")";
 	}
 

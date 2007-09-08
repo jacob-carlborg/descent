@@ -6,6 +6,8 @@ import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.swt.graphics.Image;
 
+import dtool.dom.ast.ASTNeoNode;
+
 
 
 public class DeeOutlineLabelProvider extends SimpleLabelProvider {
@@ -15,6 +17,6 @@ public class DeeOutlineLabelProvider extends SimpleLabelProvider {
 	}
 
 	public String getText(Object elem) {
-		return elem.toString();
+		return ((ASTNeoNode) elem).toStringAsElement();
 	}
 }

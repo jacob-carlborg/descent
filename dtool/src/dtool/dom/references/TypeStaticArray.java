@@ -42,7 +42,7 @@ public class TypeStaticArray extends CommonRefNative {
 	}
 	
 	@Override
-	public String toString() {
+	public String toStringAsElement() {
 		return elemtype + "["+sizeexp+"]";
 	}
 

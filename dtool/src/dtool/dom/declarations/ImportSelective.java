@@ -113,5 +113,17 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 		// Do nothing. Selective imports do not contribute secondary-space DefUnits
 		// TODO: This is a bug in D, it's not according to the spec.
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		String str = "";
+		for (int i = 0; i < impSelFrags.length; i++) {
+			ImportSelectiveFragment fragment = impSelFrags[i];
+			if(i > 0)
+				str = str + ", ";
+			str = str + fragment.toStringAsElement();
+		}
+		return moduleRef.toStringAsElement() + str;
+	}
 
 }

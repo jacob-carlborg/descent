@@ -1,5 +1,6 @@
 package dtool.descentadapter;
 
+
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -37,13 +38,13 @@ import dtool.dom.definitions.DefinitionCtor;
 import dtool.dom.definitions.DefinitionEnum;
 import dtool.dom.definitions.DefinitionFunction;
 import dtool.dom.definitions.DefinitionInterface;
-import dtool.dom.definitions.DefinitionMixin;
 import dtool.dom.definitions.DefinitionStruct;
 import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionUnion;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.EnumMember;
+import dtool.dom.definitions.NamedMixin;
 import dtool.dom.definitions.TemplateParamAlias;
 import dtool.dom.definitions.TemplateParamTuple;
 import dtool.dom.definitions.TemplateParamType;
@@ -52,7 +53,7 @@ import dtool.dom.definitions.TemplateParamValue;
 /**
  * Converts from DMD's AST to a nicer AST ("Neo AST")
  */
-abstract class DeclarationConverter extends RefConverter {
+public abstract class DeclarationConverter extends RefConverter {
 
 	public boolean visit(Version node) {
 		return assertFailHandledDirectly();
@@ -147,6 +148,25 @@ abstract class DeclarationConverter extends RefConverter {
 		return endAdapt(new DeclarationProtection(elem));
 	}
 
+	public void endVisit(descent.internal.compiler.parser.ProtDeclaration elem) {
+		DeclarationProtection scDecl = (DeclarationProtection) ret;
+		scDecl.processEffectiveModifiers();
+	}
+
+	public boolean visit(descent.internal.compiler.parser.StorageClassDeclaration elem) {
+		return endAdapt(new DeclarationStorageClass(elem));
+	}
+	
+	public void endVisit(descent.internal.compiler.parser.StorageClassDeclaration elem) {
+		DeclarationStorageClass scDecl = (DeclarationStorageClass) ret;
+		scDecl.processEffectiveModifiers();
+	}
+
+	public boolean visit(descent.internal.compiler.parser.UnitTestDeclaration elem) {
+		return endAdapt(new DeclarationUnitTest(elem));
+	}
+
+
 	public boolean visit(descent.internal.compiler.parser.StaticAssert elem) {
 		return endAdapt(new DeclarationStaticAssert(elem));
 	}
@@ -154,15 +174,6 @@ abstract class DeclarationConverter extends RefConverter {
 	public boolean visit(descent.internal.compiler.parser.StaticIfDeclaration elem) {
 		return endAdapt(DeclarationConditional.create(elem));
 	}
-
-	public boolean visit(descent.internal.compiler.parser.StorageClassDeclaration elem) {
-		return endAdapt(new DeclarationStorageClass(elem));
-	}
-
-	public boolean visit(descent.internal.compiler.parser.UnitTestDeclaration elem) {
-		return endAdapt(new DeclarationUnitTest(elem));
-	}
-
 
 	
 	
@@ -178,7 +189,7 @@ abstract class DeclarationConverter extends RefConverter {
 	}	
 	
 	public boolean visit(descent.internal.compiler.parser.TemplateMixin elem) {
-		return endAdapt(DefinitionMixin.convertMixinInstance(elem));
+		return endAdapt(NamedMixin.convertMixinInstance(elem));
 	}	
 	
 	public boolean visit(descent.internal.compiler.parser.TypedefDeclaration elem) {

@@ -1,13 +1,19 @@
 package mmrnmhrm.ui.editor;
 
+import java.util.Iterator;
+
 import mmrnmhrm.core.dltk.DeeLanguageToolkit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.text.DeeDocumentSetupParticipant;
 import mmrnmhrm.ui.text.DeePartitions;
 
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
+import org.eclipse.dltk.core.ISourceRange;
+import org.eclipse.dltk.core.ISourceReference;
+import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
 import org.eclipse.dltk.internal.ui.editor.ScriptOutlinePage;
+import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.text.ScriptTextTools;
 import org.eclipse.dltk.ui.text.folding.IFoldingStructureProvider;
 import org.eclipse.jface.action.IMenuManager;
@@ -18,11 +24,16 @@ import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
+
+import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.definitions.DefUnit;
 
 public class DeeEditor extends ScriptEditor {
 	
@@ -76,17 +87,52 @@ public class DeeEditor extends ScriptEditor {
 	
 	@Override
 	protected void doSelectionChanged(SelectionChangedEvent event) {
-		/*ISourceReference reference = null;
+		// XXX: DLTK copy 0.9
+		ISourceReference reference = null;
 		ISelection selection = event.getSelection();
 		Iterator iter = ((IStructuredSelection) selection).iterator();
 		while (iter.hasNext()) {
 			Object obj = iter.next();
 			if (obj instanceof ASTNeoNode) {
-				//reference = ((ASTNeoNode)obj).getSourceRange();
+				reference = adaptNodeToReference((ASTNeoNode)obj);
 				break;
 			}
-		}*/
-		super.doSelectionChanged(event);
+		}
+		if (!isActivePart() && DLTKUIPlugin.getActivePage() != null)
+			DLTKUIPlugin.getActivePage().bringToTop(this);
+		setSelection(reference, !isActivePart());
+	}
+
+	private ISourceReference adaptNodeToReference(final ASTNeoNode node) {
+		return new org.eclipse.dltk.core.ISourceReference(){
+			@Override
+			final public ISourceRange getSourceRange() {
+				return new ISourceRange() {
+					@Override
+					final public int getOffset() {
+						if(node instanceof DefUnit)
+							return ((DefUnit)node).defname.getOffset();
+						return node.getOffset();
+					}
+				
+					@Override
+					final public int getLength() {
+						if(node instanceof DefUnit)
+							return ((DefUnit)node).defname.getLength();
+						return node.getLength();
+					}
+				
+				};
+			}
+			@Override
+			final public boolean exists() {
+				return true;
+			}
+			@Override
+			final public String getSource() throws ModelException {
+				return null;
+			}
+		};
 	}
 	
 	public void createPartControl(Composite parent) {

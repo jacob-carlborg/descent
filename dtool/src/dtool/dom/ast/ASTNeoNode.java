@@ -153,11 +153,34 @@ public abstract class ASTNeoNode extends ASTNode
 		}
 		visitor.endvisit(this);	 			
 	}
-
-	public String toString() {
-		return toStringAsNode(false);
+	
+	public IScope getModuleScope() {
+		return NodeUtil.getParentModule(this);
 	}
 
+	/** Sets the source range the same as the given elem, 
+	 * even if the range is invalid*/
+	public final void setSourceRange(IASTNode elem) {
+		setStart(elem.getStartPos());
+		setEnd(elem.getStartPos() + elem.getLength());
+	}
+
+	public String toString() {
+		return getDebugString();
+	}
+
+	protected String getDebugString() {
+		return ASTPrinter.toStringAST(this, true);
+	}
+	
+	/** Returns a simple representation of this node 
+	 * (ie. one liner, no members). */
+	public String toStringAsElement() {
+		return "";
+	}
+
+	/** Gets the node's classname striped of package qualifier,
+	 * plus range info. */
 	public String toStringAsNode(boolean printRangeInfo) {
 		String str = toStringClassName();
 
@@ -174,20 +197,7 @@ public abstract class ASTNeoNode extends ASTNode
 		int lastIx = str.lastIndexOf('.');
 		return str.substring(lastIx+1);
 	}
-	
-	public IScope getModuleScope() {
-		return NodeUtil.getParentModule(this);
-	}
 
 
-	/* ===================  Convertion utils  ====================== */
-	
-	/** Sets the source range the same as the given elem, 
-	 * even if the range is invalid*/
-	public final void setSourceRange(IASTNode elem) {
-		setStart(elem.getStartPos());
-		setEnd(elem.getStartPos() + elem.getLength());
-	}
 
-	
 }

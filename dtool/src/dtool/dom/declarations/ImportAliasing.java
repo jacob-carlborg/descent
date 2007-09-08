@@ -5,6 +5,8 @@ package dtool.dom.declarations;
 
 import java.util.Iterator;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -28,6 +30,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 			convertNode(impAlias);
 			setSourceRange(ident.start, impAlias.getEndPos() - ident.start);
 			this.impAlias = impAlias;
+			assertNotNull(impAlias);
 		}
 		
 		@Override
@@ -78,5 +81,10 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 
 	public Iterator<? extends IASTNode> getMembersIterator() {
 		return IteratorUtil.singletonIterator(aliasDefUnit);
+	}
+	
+	@Override
+	public String toStringAsElement() {
+		return aliasDefUnit.toStringAsElement() +"="+ moduleRef.toStringAsElement() ;
 	}
 }

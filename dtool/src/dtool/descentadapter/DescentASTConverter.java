@@ -14,7 +14,7 @@ public class DescentASTConverter {
 	public static StatementConverter converter = new StatementConverter();;
 
 	public static Module convertModule(ASTNode cumodule) {
-		Module module = new Module((descent.internal.compiler.parser.Module) cumodule);
+		Module module = Module.createModule((descent.internal.compiler.parser.Module) cumodule);
 		module.accept(new PostConvertionAdapter());
 		return module;
 	}

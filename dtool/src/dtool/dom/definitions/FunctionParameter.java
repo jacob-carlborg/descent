@@ -9,13 +9,13 @@ import descent.internal.compiler.parser.TypeBasic;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Reference;
-import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	
-
 	public Reference type;
 	public int storageClass;
 	public Expression defaultValue;
@@ -29,6 +29,7 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 			this.type = null;
 		else 
 			this.type = Reference.convertType(elem.type);
+		assertNotNull(this.type);
 		this.storageClass = elem.storageClass;
 		this.defaultValue = Expression.convert(elem.defaultArg);
 			
@@ -41,6 +42,12 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 		this.type = Reference.convertType(type);
 	}
 
+	
+	@Override
+	public EArcheType getArcheType() {
+		return EArcheType.Variable;
+	}
+	
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -52,42 +59,44 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 		}
 		visitor.endVisit(this);	
 	}
-	
-	@Override
-	public EArcheType getArcheType() {
-		return EArcheType.Variable;
-	}
 
-	private IDefUnitReference determineType() {
-		if(type != null)
-			return type;
-		return NativeDefUnit.nullReference;
-	}
-	
-	public String toStringAsParameter() {
-		return determineType() + " " + defname;
-	}
-
-	@Override
-	public String toStringFullSignature() {
-		String str = getArcheType().toString() + "  "
-			+ determineType().toString() + " " + getName();
-		return str;
-	}
-	
-	@Override
-	public String toStringAsCodeCompletion() {
-		return defname + "   " + determineType().toString() + " - "
-				+ NodeUtil.getOuterDefUnit(this);
-	}
-	
 	@Override
 	public IScopeNode getMembersScope() {
-		Collection<DefUnit> defunits = determineType().findTargetDefUnits(true);
+		Collection<DefUnit> defunits = type.findTargetDefUnits(true);
 		if(defunits == null || defunits.isEmpty())
 			return null;
 		return defunits.iterator().next().getMembersScope();
 		//return defunit.getMembersScope();
+	}
+	
+	@Override
+	public String toStringForHoverSignature() {
+		String str = getArcheType().toString() + "  "
+			+ type.toStringAsElement() + " " + getName();
+		return str;
+	}
+	
+	@Override
+	public String toStringForCodeCompletion() {
+		return getName() + "   " + type.toStringAsElement() + " - "
+				+ NodeUtil.getOuterDefUnit(this).toStringAsElement();
+	}
+
+	@Override
+	public String toStringAsFunctionSignaturePart() {
+		return type.toStringAsElement() + " " + getName();
+	}
+	
+	@Override
+	public String toStringAsFunctionSimpleSignaturePart() {
+		return type.toStringAsElement();
+	}
+
+	@Override
+	public String toStringInitializer() {
+		if(defaultValue == null)
+			return null;
+		return defaultValue.toStringAsElement();
 	}
 
 }

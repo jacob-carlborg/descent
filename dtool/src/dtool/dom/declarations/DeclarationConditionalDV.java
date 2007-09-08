@@ -1,7 +1,11 @@
 package dtool.dom.declarations;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.DVCondition;
+import descent.internal.compiler.parser.DebugCondition;
+import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
@@ -9,6 +13,7 @@ import dtool.dom.definitions.Symbol;
 public class DeclarationConditionalDV extends DeclarationConditional {
 
 	public final Symbol ident;
+	public final boolean isDebug;
 
 	public DeclarationConditionalDV(ASTNode elem,
 			DVCondition condition, NodeList thendecls, NodeList elsedecls) {
@@ -18,6 +23,9 @@ public class DeclarationConditionalDV extends DeclarationConditional {
 			this.ident.setSourceRange(condition);
 		} else
 			ident = null;
+		isDebug = condition instanceof DebugCondition;
+		if(!isDebug)
+			assertTrue(condition instanceof VersionCondition);
 		this.thendecls = thendecls; 
 		this.elsedecls = elsedecls;
 	}
@@ -33,5 +41,13 @@ public class DeclarationConditionalDV extends DeclarationConditional {
 		}
 		visitor.endVisit(this);
 	}
-
+	
+	@Override
+	public String toStringAsElement() {
+		if(ident!= null)
+			return "["+ (isDebug?"debug":"version") 
+				+ "("+ident.toStringAsElement()+")]";
+		else 
+			return "["+ (isDebug?"debug":"version")+"()]";
+	}
 }

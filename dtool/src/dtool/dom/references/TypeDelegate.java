@@ -58,7 +58,7 @@ public class TypeDelegate extends CommonRefNative {
 	}
 	
 	@Override
-	public String toString() {
+	public String toStringAsElement() {
 		return maybeNullReference(rettype).toString() + " delegate"  
 		+ DefinitionFunction.toStringParameterSig(params, varargs);
 	}

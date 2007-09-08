@@ -45,20 +45,6 @@ public class DefinitionVariable extends Definition implements IStatement {
 			return type;
 		return NativeDefUnit.nullReference;
 	}
-	
-	@Override
-	public String toStringFullSignature() {
-		String str = getArcheType().toString() + "  "
-			+ determineType().toString() + " " + getName();
-		return str;
-	}
-	
-	@Override
-	public String toStringAsCodeCompletion() {
-		return defname + "   " + determineType().toString() + " - "
-				+ NodeUtil.getOuterDefUnit(this);
-	}
-
 
 	@Override
 	public IScopeNode getMembersScope() {
@@ -67,6 +53,25 @@ public class DefinitionVariable extends Definition implements IStatement {
 			return null;
 		return defunits.iterator().next().getMembersScope();
 		//return defunit.getMembersScope();
+	}
+	
+	private String getTypeString() {
+		if(type != null)
+			return type.toStringAsElement();
+		return "auto";
+	}
+	
+	@Override
+	public String toStringForHoverSignature() {
+		String str = getArcheType().toString() + "  "
+			+ getTypeString() + " " + getName();
+		return str;
+	}
+	
+	@Override
+	public String toStringForCodeCompletion() {
+		return defname + "   " + getTypeString() + " - "
+				+ NodeUtil.getOuterDefUnit(this).toStringAsElement();
 	}
 
 }

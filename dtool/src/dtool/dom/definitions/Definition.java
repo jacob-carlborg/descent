@@ -1,10 +1,9 @@
 package dtool.dom.definitions;
 
-import java.util.List;
-
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.PROT;
+import descent.internal.compiler.parser.STC;
 import dtool.descentadapter.DescentASTConverter;
 
 /**
@@ -12,23 +11,25 @@ import dtool.descentadapter.DescentASTConverter;
  */
 public abstract class Definition extends DefUnit  {
 	
+	private static final Modifier[] NOMODIFIERS = new Modifier[0];
+	
+	public final Modifier[] modifiers;
 	public PROT protection; // fixme, should be node
-	public List<Modifier> modifiers;
+	public int effectiveModifiers;
 
 	public Definition(Dsymbol elem) {
 		super(elem);
-		this.protection = Def_EProtection.adaptFromDescent(elem.prot()); 
-		this.modifiers = DescentASTConverter.convertManyL(elem.modifiers,
-				this.modifiers); 
+		this.protection = Def_EProtection.adaptFromDescent(elem.prot());
+		if(elem.modifiers != null && elem.modifiers.size() != 0) {
+			this.modifiers = elem.modifiers.toArray(
+					new Modifier[elem.modifiers.size()]);
+			for (int i = 0; i < this.modifiers.length; i++) {
+				effectiveModifiers |= STC.fromTOK(modifiers[i].tok);
+			}
+		} else {
+			this.modifiers = NOMODIFIERS;
+		}
 	}
-	
-	/*@Override
-	protected void convertDsymbol(Dsymbol elem) {
-		super.convertDsymbol(elem);
-		this.protection = Def_EProtection.adaptFromDescent(elem.prot()); 
-		this.modifiers = DescentASTConverter.convertManyL(elem.modifiers,
-				this.modifiers); 
-	}*/
 	
 	public static Definition convert(Dsymbol elem) {
 		return (Definition) DescentASTConverter.convertElem(elem);

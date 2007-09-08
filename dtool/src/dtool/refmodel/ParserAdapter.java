@@ -66,17 +66,18 @@ public class ParserAdapter {
 		}
 		
 		if(mod.problems.size() != 0) {
-			if(lastToken != null && lastToken.value == TOK.TOKdot) {
-				
+			if(lastToken != null && lastToken.value == TOK.TOKdot
+					&& lastToken.next.value != TOK.TOKidentifier) {
 				// Insert a dummy identifier, so the reference will parse
 				String newstr = str.substring(0, offset) + "_" 
 					+ str.substring(offset, str.length());
+
+				// Mark this for ahead
+				isQualifiedDotFixSearch = true;
 				
 				parseModule(newstr);
 				
 				if(mod.problems.size() == 0) {
-					// We succeeded, mark this for ahead
-					isQualifiedDotFixSearch = true;
 					return;
 				}
 				error = "Syntax Errors, cannot complete. (even with dot recovery)";

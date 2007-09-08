@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import melnorme.miscutil.Assert;
+import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
-import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.CoreUtils;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeProjectOptions;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -22,10 +24,18 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IBuildpathEntry;
+import org.eclipse.dltk.core.IProjectFragment;
 import org.eclipse.dltk.core.IScriptProject;
 
 
 public class DeeBuilder extends IncrementalProjectBuilder {
+	
+	protected static IDeeBuilderListener buildListener = 
+		new IDeeBuilderListener.NullDeeBuilderListener();
+	
+	public static void setBuilderListener(IDeeBuilderListener listener) {
+		buildListener = listener;
+	}
 
 	protected List<IFile> dmodules;
 	private IFolder outputFolder;
@@ -64,13 +74,24 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 			if(entry.getEntryKind() == IBuildpathEntry.BPE_SOURCE) {
 
 				IPath entrypath = entry.getPath().removeFirstSegments(1);
-				IFolder entryResource = (IFolder) project.findMember(entrypath);
+				IContainer entryResource = (IContainer) project.findMember(entrypath);
 	
-				DeeCore.getWorkspace().copy(entryResource.members(),
-						outputFolder.getFullPath(), IResource.REPLACE, new SubProgressMonitor(monitor, 1));
+				if(!entryResource.getFullPath().equals(outputFolder.getFullPath())) {
+					// fixme overwriting copy
+					CoreUtils.overwriteCopy(entryResource, outputFolder,
+							new SubProgressMonitor(monitor, 1));
+				}
 
 				collectModules(outputFolder, monitor);
 			} else if(entry.getEntryKind() == IBuildpathEntry.BPE_LIBRARY) {
+				if(!entry.isExternal()) {
+					IPath entrypath = entry.getPath();
+					IProjectFragment projFrag = deeProj.findProjectFragment(entrypath);
+					if(projFrag != null)
+						Logg.main.println(StringUtil.collToString(projFrag.getChildren(), ","));
+					else
+						Logg.main.println("No proj frag for: " + entrypath);
+				}
 				// TODO compiler with the library
 			}
 		}
@@ -100,7 +121,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		}
 
 		if(!outputFolder.exists())
-			outputFolder.create(true, true, null);
+			outputFolder.create(IResource.DERIVED, true, null);
 		return outputFolder;
 	}
 

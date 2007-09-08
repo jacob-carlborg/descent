@@ -23,4 +23,6 @@ public interface IScope {
 	/** Gets the module of scope. TODO: Define if it can be null */
 	IScope getModuleScope();
 	
+	/** For UI printing */
+	String toStringAsElement();
 }

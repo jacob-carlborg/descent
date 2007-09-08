@@ -13,6 +13,7 @@ public class DeeCompilerOptions {
 
 	public EBuildTypes buildType;
 	public String artifactName;
+	/** Project relative path */
 	public IPath outputDir;
 	public String buildTool;
 	public String extraOptions;

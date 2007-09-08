@@ -49,3 +49,8 @@ class Xpto {
 	static Foo!(int, Foo) xptofoo;
 	static FooBar xptofoobar;
 } 
+
+
+import pack.mod3;
+import nonexistantmodule.blah; // Test this in the face of non-existant
+import nonexistantmodule;

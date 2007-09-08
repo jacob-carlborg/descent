@@ -1,9 +1,12 @@
 package mmrnmhrm.core.dltk;
 
+import java.io.File;
+
 import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.model.DeeNameRules;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.IExternalSourceModule;
 import org.eclipse.dltk.core.IProjectFragment;
 import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.IScriptProject;
@@ -39,7 +42,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 				for (int i = 0; i < DeeNameRules.VALID_EXTENSIONS.length; i++) {
 					String fileext = DeeNameRules.VALID_EXTENSIONS[i];
 					ISourceModule modUnit = pkgFrag.getSourceModule(modName+fileext);
-				 	if(modUnit != null && modUnit.exists()) { 
+				 	if(exists(modUnit)) { 
 					 	DeeModuleDeclaration modDecl = ParsingUtil.parseModule(modUnit);
 					 	return ParsingUtil.getNeoASTModule(modDecl);
 				 	}
@@ -48,6 +51,21 @@ public class DLTKModuleResolver implements IModuleResolver {
 			}	
 		}
 		return null;
+	}
+
+	private boolean exists(ISourceModule modUnit) {
+		return modUnit != null && modUnit.exists()
+		// XXX: Fix for DLTK bug: 
+		// modUnit.exists() true on external source modules of libraries
+		// we should make a test case for this
+			&& externalReallyExists(modUnit)
+		;
+	}
+
+	private boolean externalReallyExists(ISourceModule modUnit) {
+		if(!(modUnit instanceof IExternalSourceModule))
+			return true;
+		return new File(modUnit.getPath().toOSString()).exists();
 	}
 
 }

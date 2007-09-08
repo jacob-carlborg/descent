@@ -29,7 +29,7 @@ public class RefModuleQualified extends CommonRefQualified {
 		visitor.endVisit(this);
 	}
 
-	public String toString() {
+	public String toStringAsElement() {
 		return "." + subref;
 	}
 

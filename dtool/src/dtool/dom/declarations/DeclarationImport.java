@@ -65,11 +65,7 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 		visitor.endVisit(this);
 	}
 	
-	public String toString() {
-		return "[import declaration]";
-		//return StringUtil.collToString(imports, ",");
-	}
-	
+
 	public static abstract class ImportFragment extends ASTNeoNode {
 		public RefModule moduleRef;
 
@@ -79,6 +75,11 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 		}
 
 		public abstract void searchDefUnit(CommonDefUnitSearch options);
+		
+		@Override
+		public String toStringAsElement() {
+			return moduleRef.toStringAsElement();
+		}
 
 	}
 	
@@ -88,6 +89,17 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(getMembers()).iterator();
+	}
+	
+	public String toStringAsElement() {
+		String str = "";
+		for (int i = 0; i < imports.length; i++) {
+			ImportFragment fragment = imports[i];
+			if(i > 0)
+				str = str + ", ";
+			str = str + fragment.toStringAsElement();
+		}
+		return "[import "+str+"]";
 	}
 
 }

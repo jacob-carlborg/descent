@@ -3,6 +3,8 @@ package dtool.dom.references;
 import java.util.Collection;
 import java.util.List;
 
+import melnorme.miscutil.StringUtil;
+
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
@@ -13,6 +15,7 @@ import dtool.refmodel.NodeUtil;
 
 /** 
  * A module reference (in import declarations only).
+ * XXX: should be qualified or not?
  */
 public class RefModule extends Reference {
 	
@@ -50,6 +53,15 @@ public class RefModule extends Reference {
 			//TreeVisitor.acceptChildren(visitor, subent);
 		}
 		visitor.endVisit(this);	
+	}
+
+	@Override
+	public String toStringAsElement() {
+		String str = StringUtil.collToString(packages, ".");
+		if(str.length() == 0)
+			return module;
+		else
+			return str + "." + module;
 	}
 
 }

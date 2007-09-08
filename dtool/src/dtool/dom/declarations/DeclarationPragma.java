@@ -37,4 +37,9 @@ public class DeclarationPragma extends DeclarationAttrib implements IStatement {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		return "[pragma("+ident+",...)]";
+	}
 }

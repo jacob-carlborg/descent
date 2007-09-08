@@ -51,7 +51,7 @@ public class TypeFunction extends CommonRefNative {
 	}
 	
 	@Override
-	public String toString() {
+	public String toStringAsElement() {
 		return Reference.maybeNullReference(rettype).toString() + " function"  
 		+ DefinitionFunction.toStringParameterSig(params, varargs);
 	}

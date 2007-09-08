@@ -16,7 +16,7 @@ public class DeeDLTKScriptBuilder implements IScriptBuilder {
 	@Override
 	public IStatus[] buildModelElements(IScriptProject project, List elements,
 			IProgressMonitor monitor) {
-		Logg.main.println(">> Requested buildModelElements for:\n" +
+		Logg.nolog.println(">> Requested buildModelElements for:\n" +
 				StringUtil.collToString(elements, "\n") );
 		//IStatus[] status;
 		return null;
@@ -25,14 +25,14 @@ public class DeeDLTKScriptBuilder implements IScriptBuilder {
 	@Override
 	public IStatus[] buildResources(IScriptProject project, List resources,
 			IProgressMonitor monitor) {
-		Logg.main.println(">> Requested buildResources for:\n" +
+		Logg.nolog.println(">> Requested buildResources for:\n" +
 				StringUtil.collToString(resources, "\n") );
 		return null;
 	}
 
 	@Override
 	public List getDependencies(IScriptProject project, List resources) {
-		Logg.main.println(">> Requested deps for:\n" +
+		Logg.nolog.println(">> Requested deps for:\n" +
 				StringUtil.collToString(resources, "\n") );
 		ArrayList<Object> list = new ArrayList<Object>(1);
 		//list.add(project);

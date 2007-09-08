@@ -3,7 +3,7 @@ package mmrnmhrm.ui.editor;
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.log.Logg;
 import melnorme.miscutil.tree.IElement;
-import melnorme.util.ui.swt.SWTUtil2;
+import melnorme.util.ui.swt.SWTUtilExt;
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
 import mmrnmhrm.core.dltk.ParsingUtil;
 
@@ -34,7 +34,7 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 			public void elementChanged(org.eclipse.dltk.core.ElementChangedEvent event) {
 				if(getControl() == null || fOutlineViewer == null)
 					Assert.fail();
-				SWTUtil2.runInSWTThread(new Runnable() {
+				SWTUtilExt.runInSWTThread(new Runnable() {
 					public void run() {
 						if(getControl() == null || fOutlineViewer == null)
 							return; // may have been disposed meanwhile

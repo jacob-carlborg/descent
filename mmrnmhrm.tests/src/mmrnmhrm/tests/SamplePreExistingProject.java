@@ -40,7 +40,7 @@ public abstract class SamplePreExistingProject {
 		if(!project.exists()) {
 			// If the preexisting project doesn't exist, create it
 			try {
-				sampleDeeProj = SampleMainProject.createAndOpenDeeProject(PREEXISTINGPROJNAME);
+				sampleDeeProj = CoreTestUtils.createAndOpenDeeProject(PREEXISTINGPROJNAME);
 				fillPreExistingSampleProj();
 			} catch (Exception e) {
 				ExceptionAdapter.unchecked(e);

@@ -1,7 +1,5 @@
 package mmrnmhrm.ui.preferences.pages;
 
-import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.core.model.DeeProjectOptions;
 import mmrnmhrm.ui.preferences.DeeProjectCompileOptionsBlock;
 
 import org.eclipse.core.resources.IProject;
@@ -17,31 +15,24 @@ import org.eclipse.ui.dialogs.PropertyPage;
 public class DeeCompileOptionsPropertyPage extends PropertyPage {
 	
 	private DeeProjectCompileOptionsBlock fProjCfg;
-	private DeeProjectOptions fDeeProject;
 
 	public DeeCompileOptionsPropertyPage() {
 		fProjCfg = new DeeProjectCompileOptionsBlock();
 	}
 	
-	/*** {@inheritDoc} */
 	protected Control createContents(Composite parent) {
 		
 		noDefaultAndApplyButton();		
 		
-		fDeeProject = getDeeProject();
-		if (fDeeProject == null) {
+		if (getProject() == null) {
 			Label label = new Label(parent, SWT.NONE);
 			label.setText("Target not a D project.");
 			setVisible(false);
 			return label;
 		} else {
-			fProjCfg.init(fDeeProject);
+			fProjCfg.init2(DLTKCore.create(getProject()));
 			return fProjCfg.createControl(parent);
 		}
-	}
-	
-	private DeeProjectOptions getDeeProject() {
-		return DeeModel.getDeeProjectInfo(DLTKCore.create(getProject()));
 	}
 	
 	private IProject getProject() {
@@ -53,9 +44,6 @@ public class DeeCompileOptionsPropertyPage extends PropertyPage {
 	}
 
 	public boolean performOk() {
-		if(fDeeProject == null) 
-			return true;
-		
 		return fProjCfg.performOk();
 	}
 	

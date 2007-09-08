@@ -44,13 +44,14 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 		return EArcheType.Package;
 	}
 	
+	
 	@Override
-	public String toStringAsCodeCompletion() {
+	public String toStringForHoverSignature() {
 		return getName();
 	}
 	
 	@Override
-	public String toStringFullSignature() {
+	public String toStringForCodeCompletion() {
 		return getName();
 	}
 	

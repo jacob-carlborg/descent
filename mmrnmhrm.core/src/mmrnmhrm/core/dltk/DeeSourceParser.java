@@ -62,7 +62,13 @@ public class DeeSourceParser implements ISourceParser {
 			IProblemReporter reporter, char[] fileName) {
 		Parser parser = new Parser(AST.D2, source);
 		parser.setProblemReporter(DescentProblemAdapter.create(reporter));
-		Module dmdModule = parser.parseModuleObj();
+		Module dmdModule = null;
+		try {
+			dmdModule = parser.parseModuleObj();
+		} catch (RuntimeException e) {
+			LangCore.log(e);
+			throw e;
+		}
 		assertTrue(dmdModule.length == source.length);
 		DeeModuleDeclaration moduleDec = new DeeModuleDeclaration(dmdModule);
 		if(dmdModule.hasSyntaxErrors()

@@ -1,6 +1,7 @@
 package mmrnmhrm.core.dltk;
 
 import melnorme.miscutil.Assert;
+import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.LangCore;
@@ -56,18 +57,8 @@ public class DeeSourceElementParser implements ISourceElementParser {
 		// create a parser, that gives us an AST
 		DeeModuleDeclaration moduleDeclaration = parseModule(astCache, module, contents, fReporter, filename);
 		
-		// traverse fetched AST with a visitor, that reports model element 
-		// to given ISourceElementRequestor
-		DeeSourceElementRequestor requestor; 
-		requestor = new DeeSourceElementRequestor(this.fRequestor);
-		
-		try {
-			moduleDeclaration.traverse(requestor);
-		} catch (Exception e) {
-			if (DLTKCore.DEBUG) {
-				e.printStackTrace();
-			}
-		}
+		DeeSourceElementProvider provider = new DeeSourceElementProvider(fRequestor);
+		provider.provide(moduleDeclaration);
 		return null;
 		//return moduleDeclaration;
 	}
@@ -89,12 +80,9 @@ public class DeeSourceElementParser implements ISourceElementParser {
 			source = sourceModule.getSourceAsCharArray();
 		} catch (ModelException e) {
 			LangCore.log(e);
-			if( DLTKCore.DEBUG ) {
-				e.printStackTrace();
-			}
-			//ExceptionAdapter.unchecked(e);
-			return null;
+			throw ExceptionAdapter.unchecked(e);
 		}
+
 		
 		moduleDeclaration = DeeSourceParser.parseModule(source, reporter, filename);
 		String str = (filename == null) ? "<null>" : new String(filename);

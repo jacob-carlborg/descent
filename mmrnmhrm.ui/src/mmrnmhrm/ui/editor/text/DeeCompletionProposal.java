@@ -47,7 +47,7 @@ public class DeeCompletionProposal extends AbstractCompletionProposal implements
 	 * useful for debugging purposes only. */
 	@Override
 	public String toString() {
-		return defUnit.toString();
+		return defUnit.getName();
 	}
 
 }

@@ -36,13 +36,15 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	}
 	
 	@Override
-	public String toStringAsCodeCompletion() {
-		return defname + " -> " + type.toString() + " - " + getModuleScope();
-	}
-
-	@Override
 	public IScopeNode getMembersScope() {
 		return type.getTargetScope();
 	}
+	
+	@Override
+	public String toStringForCodeCompletion() {
+		return getName() +" -> "+ type.toStringAsReference() 
+		+" - "+ getModuleScope().toStringAsElement();
+	}
+
 
 }

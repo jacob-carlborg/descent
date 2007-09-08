@@ -29,7 +29,7 @@ public class RefIdentifier extends CommonRefSingle {
 		visitor.endVisit(this);
 	}
 	
-	public String toString() {
+	public String toStringAsElement() {
 		return name;
 	}
 }

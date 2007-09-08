@@ -47,16 +47,12 @@ public class DeeModel implements IElementChangedListener {
 	public void elementChanged(ElementChangedEvent event) {
 		IModelElementDelta delta= event.getDelta();
 		if (delta != null) {
-			System.out.println("delta received: ");
-			System.out.println(delta);
+			Logg.nolog.println("delta received: ");
+			Logg.nolog.println(delta);
 		}
 		IModelElement element = delta.getElement();
 
-		// TODO handle moved elements
 		if(element.getElementType() == IModelElement.SCRIPT_MODEL) {
-			/*for (IModelElementDelta projectdelta : delta.getAddedChildren()) {
-				processProjectDelta(projectdelta);
-			}*/
 			for (IModelElementDelta projectdelta : delta.getAffectedChildren()) {
 				processProjectDelta(projectdelta);
 			}

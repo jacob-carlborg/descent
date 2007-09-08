@@ -37,6 +37,11 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 		public String toString() {
 			return "<natives>";
 		}
+
+		@Override
+		public String toStringAsElement() {
+			return toString();
+		}
 	}
 	
 	public static final NativesScope nativesScope = new NativesScope();
@@ -69,8 +74,8 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 	}
 	
 	@Override
-	public String toStringFullSignature() {
-		return super.toStringFullSignature();
+	public String toStringForHoverSignature() {
+		return super.toStringForHoverSignature();
 	}
 	
 	@Override

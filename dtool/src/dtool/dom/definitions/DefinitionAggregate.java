@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.IteratorUtil;
-import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTPrinter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
@@ -46,23 +46,18 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 			return IteratorUtil.getEMPTY_ITERATOR();
 		return members.iterator();
 	}
-
-	@Override
-	public String toStringAsCodeCompletion() {
-		return defname + " - " + getModuleScope();
-	}
 	
-	private String toStringTemplateParams() {
-		return (templateParams == null ? "" : 
-			"("+ StringUtil.collToString(templateParams, ",") +")");
+	@Override
+	public String toStringForHoverSignature() {
+		String str = getArcheType().toString() 
+		+ "  " + getModuleScope().toStringAsElement() +"."+ getName()
+		+ ASTPrinter.toStringAsElements(templateParams);
+		return str;
 	}
 
 	@Override
-	public String toStringFullSignature() {
-		String str = getArcheType().toString() 
-		+ "  " + getModuleScope() +"."+ getName()
-		+ toStringTemplateParams();
-		return str;
+	public String toStringForCodeCompletion() {
+		return getName() + " - " + getModuleScope().toStringAsElement();
 	}
 	
 }

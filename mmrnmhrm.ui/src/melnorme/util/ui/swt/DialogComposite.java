@@ -27,7 +27,7 @@ public class DialogComposite extends Composite {
 	public DialogComposite(Composite parent, boolean margins, boolean useDLUdefaults) {
 		super(parent, SWT.NONE);
 
-		SWTUtil2.setRandomColor(this);
+		SWTUtilExt.setRandomColor(this);
 		
 		if(parent.getLayout() instanceof GridLayout) {
 			setLayoutData(LayoutUtil.createDefaultGridData());
@@ -37,6 +37,6 @@ public class DialogComposite extends Composite {
 	/** Sets the enable state of this control and of all children. */
 	public void recursiveSetEnabled(boolean enabled) {
 		super.setEnabled(enabled);
-		SWTUtil2.recursiveSetEnabled(this, enabled);
+		SWTUtilExt.recursiveSetEnabled(this, enabled);
 	}
 }

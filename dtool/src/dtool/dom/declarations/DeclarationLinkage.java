@@ -22,5 +22,10 @@ public class DeclarationLinkage extends DeclarationAttrib {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		return "[extern("+linkage+")]";
+	}
 
 }

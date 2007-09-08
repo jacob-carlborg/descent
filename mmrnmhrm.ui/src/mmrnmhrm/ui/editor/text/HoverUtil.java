@@ -18,7 +18,7 @@ import dtool.dom.definitions.DefUnit;
 public class HoverUtil {
 
 	public static String getDefUnitHoverInfoWithDeeDoc(DefUnit defUnit) {
-		String sig = defUnit.toStringFullSignature();
+		String sig = defUnit.toStringForHoverSignature();
 		String str = sig.substring(sig.indexOf(' ')+1);
 		str = convertToHTMLContent(str);
 		str = "<b>" +str+ "</b>" 
