@@ -146,5 +146,10 @@ public class TypedefDeclaration extends Declaration {
 	public TypedefDeclaration isTypedefDeclaration() {
 		return this;
 	}
+	
+	@Override
+	public String mangle(SemanticContext context) {
+		return super.mangle(context);
+	}
 
 }

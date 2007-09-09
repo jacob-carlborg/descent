@@ -213,7 +213,7 @@ public class StructDeclaration extends AggregateDeclaration {
 					zeroInit = true;
 					break;
 				} else {
-					if (!vd.type.isZeroInit()) {
+					if (!vd.type.isZeroInit(context)) {
 						zeroInit = false;
 						break;
 					}
@@ -236,6 +236,11 @@ public class StructDeclaration extends AggregateDeclaration {
 	@Override
 	public int getNodeType() {
 		return STRUCT_DECLARATION;
+	}
+	
+	@Override
+	public String mangle(SemanticContext context) {
+		return super.mangle(context);
 	}
 
 }

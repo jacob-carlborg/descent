@@ -1496,4 +1496,12 @@ public class FuncDeclaration extends Declaration {
 		return (LabelDsymbol) s;
 	}
 
+	@Override
+	public String mangle(SemanticContext context) {
+		if (isMain())
+			return "_Dmain";
+
+		return super.mangle(context);
+	}
+
 }

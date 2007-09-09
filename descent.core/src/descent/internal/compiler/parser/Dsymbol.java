@@ -150,8 +150,9 @@ public class Dsymbol extends ASTDmdNode {
 		}
 
 		Dsymbol s = (Dsymbol) (o);
-		if (ident == null)
+		if (ident == null) {
 			return s.ident == null;
+		}
 		return ident.equals(s.ident);
 	}
 
@@ -185,7 +186,7 @@ public class Dsymbol extends ASTDmdNode {
 	public AggregateDeclaration isAggregateDeclaration() {
 		return null;
 	}
-	
+
 	public TypedefDeclaration isTypedefDeclaration() {
 		return null;
 	}
@@ -478,13 +479,14 @@ public class Dsymbol extends ASTDmdNode {
 			sm = sm.toAlias(context);
 			TemplateDeclaration td = sm.isTemplateDeclaration();
 			if (null == td) {
-				error("%s is not a template, it is a %s", id.toChars(),
-						sm.kind());
+				error("%s is not a template, it is a %s", id.toChars(), sm
+						.kind());
 				return null;
 			}
 			ti.tempdecl = td;
-			if (!ti.semanticdone)
+			if (!ti.semanticdone) {
 				ti.semantic(sc, context);
+			}
 			sm = ti.toAlias(context);
 			break;
 		}
@@ -502,6 +504,26 @@ public class Dsymbol extends ASTDmdNode {
 
 	@Override
 	protected void accept0(IASTVisitor visitor) {
+	}
+
+	public String mangle(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		String id;
+
+		id = ident != null ? ident.toChars() : toChars(context);
+		if (parent != null) {
+			String p = parent.mangle(context);
+			if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
+				p += 2;
+			}
+			buf.writestring(p);
+		}
+		// TODO this was %zu -> what's that?
+		buf.writestring(id.length());
+		buf.writestring(id);
+		id = buf.toChars();
+		buf.data = null;
+		return id;
 	}
 
 }

@@ -221,7 +221,7 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit() {
+	public boolean isZeroInit(SemanticContext context) {
 		return sym.zeroInit;
 	}
 
@@ -241,7 +241,7 @@ public class TypeStruct extends Type {
 		return sym;
 	}
 
-	public void toTypeInfoBuffer(OutBuffer buf) {
+	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		// TODO Auto-generated method stub
 	}
 

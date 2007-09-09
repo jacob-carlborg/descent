@@ -21,7 +21,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ClassDeclaration extends AggregateDeclaration {
-	
+
 	public final static int OFFSET_RUNTIME = 0x76543210;
 
 	public List<BaseClass> sourceBaseclasses;
@@ -29,22 +29,22 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List<BaseClass> baseclasses;
 	public ClassDeclaration baseClass; // null only if this is Object
 	public CtorDeclaration ctor;
-    public CtorDeclaration defaultCtor;	// default constructor
+	public CtorDeclaration defaultCtor; // default constructor
 	public List<FuncDeclaration> dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
 	public List<BaseClass> interfaces;
 	public List<BaseClass> vtblInterfaces; // array of base interfaces that
-											// have
+	// have
 	// their own vtbl[]
 	public PROT protection;
 	public boolean isnested; // !=0 if is nested
 	public VarDeclaration vthis; // 'this' parameter if this class is nested
-	
-	public ClassInfoDeclaration vclassinfo;	// the ClassInfo object for this ClassDeclaration
-    public boolean com;				// !=0 if this is a COM class
-    public boolean isauto;				// !=0 if this is an auto class
-    public boolean isabstract;			// !=0 if abstract class
+
+	public ClassInfoDeclaration vclassinfo; // the ClassInfo object for this ClassDeclaration
+	public boolean com; // !=0 if this is a COM class
+	public boolean isauto; // !=0 if this is an auto class
+	public boolean isabstract; // !=0 if abstract class
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 
@@ -56,7 +56,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this(loc, new IdentifierExp(loc, id), baseclasses);
 	}
 
-	public ClassDeclaration(Loc loc, IdentifierExp id, List<BaseClass> baseclasses) {
+	public ClassDeclaration(Loc loc, IdentifierExp id,
+			List<BaseClass> baseclasses) {
 		super(loc, id);
 		if (baseclasses == null) {
 			this.baseclasses = new ArrayList<BaseClass>(0);
@@ -70,10 +71,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this.vtbl = new ArrayList(0);
 		this.vtblFinal = new ArrayList(0);
 		handle = type;
-		
+
 		// TODO missing semantic scode
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -87,7 +88,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public void addLocalClass(List<ClassDeclaration> aclasses, SemanticContext context) {
+	public void addLocalClass(List<ClassDeclaration> aclasses,
+			SemanticContext context) {
 		aclasses.add(this);
 	}
 
@@ -217,7 +219,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 */
 			if (cd.baseClass != null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
-				cd.error("base class is forward referenced by %s", toChars(context));
+				cd.error("base class is forward referenced by %s",
+						toChars(context));
 			}
 
 			cd = cd.baseClass;
@@ -258,7 +261,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, char[] ident, int flags,
+			SemanticContext context) {
 		Dsymbol s;
 
 		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
@@ -268,8 +272,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		if (members == null || symtab == null || scope != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceWhenLookingFor, 0, start, length, 
-					new String[] { new String(this.ident.ident), new String(ident) }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForwardReferenceWhenLookingFor, 0, start, length,
+					new String[] { new String(this.ident.ident),
+							new String(ident) }));
 			return null;
 		}
 
@@ -450,7 +456,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 					if (b2.base == tc.sym) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.DuplicatedInterfaceInheritance, 0,
-								b.sourceType.start, b.sourceType.length, new String[] { b.sourceType.toString(), new String(this.ident.ident) }));
+								b.sourceType.start, b.sourceType.length,
+								new String[] { b.sourceType.toString(),
+										new String(this.ident.ident) }));
 					}
 				}
 
@@ -491,7 +499,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			tc = (TypeClass) (b.type);
 			baseClass = tc.sym;
 			if (baseClass.isInterfaceDeclaration() != null) {
-				throw new IllegalStateException("assert(!baseClass->isInterfaceDeclaration());");
+				throw new IllegalStateException(
+						"assert(!baseClass->isInterfaceDeclaration());");
 			}
 			b.base = baseClass;
 		}
@@ -501,9 +510,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		if (baseClass != null) {
 			if ((baseClass.storage_class & STCfinal) != 0) {
-			    error("cannot inherit from final class %s", baseClass.toString());
+				error("cannot inherit from final class %s", baseClass
+						.toString());
 			}
-			
+
 			interfaces.remove(0);
 
 			// Copy vtbl[] from base class
@@ -546,7 +556,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 				if (toParent2() != baseClass.toParent2()) {
 					error("super class %s is nested within %s, not %s",
 							baseClass.toChars(context), baseClass.toParent2()
-									.toChars(context), toParent2().toChars(context));
+									.toChars(context), toParent2().toChars(
+									context));
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
 				Dsymbol s = toParent2();
@@ -589,7 +600,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		sc = sc.push(this);
-	    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
+		sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
 
 		sc.parent = this;
 		sc.inunion = false;
@@ -726,7 +737,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		if (!isAnonymous()) {
 			buf.writestring(kind());
 			buf.writestring(toChars(context));
@@ -757,6 +769,35 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 	public int vtblOffset() {
 		return 1;
+	}
+
+	@Override
+	public String mangle(SemanticContext context) {
+		Dsymbol parentsave = parent;
+
+		/* These are reserved to the compiler, so keep simple
+		 * names for them.
+		 */
+		if (CharOperation.equals(ident.ident, Id.Exception)) {
+			if (CharOperation.equals(parent.ident.ident, Id.object)) {
+				parent = null;
+			}
+		} else if (CharOperation.equals(ident.ident, Id.TypeInfo)
+				||
+				//		CharOperation.equals(ident.ident, Id.Exception) ||
+				CharOperation.equals(ident.ident, Id.TypeInfo_Struct)
+				|| CharOperation.equals(ident.ident, Id.TypeInfo_Class)
+				|| CharOperation.equals(ident.ident, Id.TypeInfo_Typedef)
+				|| CharOperation.equals(ident.ident, Id.TypeInfo_Tuple)
+				|| this == context.object || this == context.classinfo
+				|| this == context.moduleinfo
+				|| ident.toChars().startsWith("TypeInfo_")) {
+			parent = null;
+		}
+
+		String id = super.mangle(context);
+		parent = parentsave;
+		return id;
 	}
 
 }

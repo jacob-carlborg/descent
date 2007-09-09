@@ -118,9 +118,17 @@ public class OutBuffer {
 	public void prependstring(String string) {
 		data.insert(0, string);
 	}
+	
+	public void prependstring(int i) {
+		data.insert(0, i);
+	}
 
 	public void prependbyte(char c) {
 		data.insert(0, c);
+	}
+	
+	public void writestring(char c) {
+		data.append(c);
 	}
 
 	public void writestring(int i) {

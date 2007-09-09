@@ -216,10 +216,10 @@ public class TypeAArray extends TypeArray {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf) {
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
-		index.toDecoBuffer(buf);
-		next.toDecoBuffer(buf);
+		index.toDecoBuffer(buf, context);
+		next.toDecoBuffer(buf, context);
 	}
 
 	@Override

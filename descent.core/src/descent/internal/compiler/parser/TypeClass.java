@@ -7,10 +7,23 @@ import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKdottype;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tinstance;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
+// DMD 1.020
 public class TypeClass extends Type {
 
 	public ClassDeclaration sym;
@@ -20,13 +33,62 @@ public class TypeClass extends Type {
 		this.sym = sym;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on fake class");
 	}
 
 	@Override
-	public boolean isauto() {
-		return sym.isauto;
+	public boolean checkBoolean(SemanticContext context) {
+		return true;
+	}
+
+	@Override
+	public MATCH deduceType(Scope sc, Type tparam,
+			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+			SemanticContext context) {
+		/* If this class is a template class, and we're matching
+		 * it against a template instance, convert the class type
+		 * to a template instance, too, and try again.
+		 */
+		TemplateInstance ti = sym.parent.isTemplateInstance();
+
+		if (tparam != null && tparam.ty == Tinstance) {
+			if (ti != null && ti.toAlias(context) == sym) {
+				TypeInstance t = new TypeInstance(Loc.ZERO, ti);
+				return t.deduceType(sc, tparam, parameters, dedtypes, context);
+			}
+
+			/* Match things like:
+			 *  S!(T).foo
+			 */
+			TypeInstance tpi = (TypeInstance) tparam;
+			if (tpi.idents.size() != 0) {
+				IdentifierExp id = tpi.idents.get(tpi.idents.size() - 1);
+				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id)) {
+					Type tparent = sym.parent.getType();
+					if (tparent != null) {
+						/* Slice off the .foo in S!(T).foo
+						 */
+						// TODO semantic
+						// tpi.idents.size()--;
+						MATCH m = tparent.deduceType(sc, tpi, parameters,
+								dedtypes, context);
+						// TODO semantic
+						// tpi.idents.size()++;
+						return m;
+					}
+				}
+			}
+		}
+
+		// Extra check
+		if (tparam != null && tparam.ty == Tclass) {
+			TypeClass tp = (TypeClass) tparam;
+
+			return implicitConvTo(tp, context);
+		}
+		return super.deduceType(sc, tparam, parameters, dedtypes, context);
 	}
 
 	@Override
@@ -38,21 +100,14 @@ public class TypeClass extends Type {
 	}
 
 	@Override
-	public int getNodeType() {
-		return TYPE_CLASS;
-	}
-
-	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		int offset;
-
-		Expression b;
 		VarDeclaration v;
 		Dsymbol s;
 		DotVarExp de;
 		Declaration d;
 
+		boolean gotoL1 = false;
 		if (e.op == TOKdotexp) {
 			DotExp de_ = (DotExp) e;
 
@@ -62,6 +117,7 @@ public class TypeClass extends Type {
 				s = se.sds.search(e.loc, ident, 0, context);
 				e = de_.e1;
 				//goto L1;
+				gotoL1 = true;
 			} else {
 				s = sym.search(e.loc, ident, 0, context);
 			}
@@ -69,7 +125,7 @@ public class TypeClass extends Type {
 			s = sym.search(e.loc, ident, 0, context);
 		}
 
-		if (CharOperation.equals(ident.ident, Id.tupleof)) {
+		if (CharOperation.equals(ident.ident, Id.tupleof) && !gotoL1) {
 			/* Create a TupleExp
 			 */
 			List<Expression> exps = new ArrayList<Expression>(sym.fields.size());
@@ -112,8 +168,9 @@ public class TypeClass extends Type {
 					e = new PtrExp(e.loc, e);
 					e.type = t.pointerTo(context);
 					if (sym.isInterfaceDeclaration() != null) {
-						if (sym.isCOMclass())
+						if (sym.isCOMclass()) {
 							error("no .classinfo for COM interface objects");
+						}
 						e.type = e.type.pointerTo(context);
 						e = new PtrExp(e.loc, e);
 						e.type = t.pointerTo(context);
@@ -125,7 +182,10 @@ public class TypeClass extends Type {
 
 			else if (CharOperation.equals(ident.ident, Id.typeinfo)) {
 				if (!context.global.params.useDeprecated) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeprecatedProperty, 0, ident.start, ident.length, new String[] { "typeinfo", ".typeid(type)" }));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.DeprecatedProperty, 0, ident.start,
+							ident.length, new String[] { "typeinfo",
+									".typeid(type)" }));
 				}
 				return getTypeInfo(sc, context);
 			}
@@ -206,12 +266,13 @@ public class TypeClass extends Type {
 							return e;
 						} else if ((null == cd || !cd.isBaseOf(thiscd, null,
 								context))
-								&& null == d.isFuncDeclaration())
+								&& null == d.isFuncDeclaration()) {
 							e
 									.error(
 											"'this' is required, but %s is not a base class of %s",
 											e.type.toChars(context), thiscd
 													.toChars(context));
+						}
 					}
 				}
 
@@ -223,8 +284,9 @@ public class TypeClass extends Type {
 				;
 				e = e.semantic(sc, context);
 				return e;
-			} else
+			} else {
 				ve = new VarExp(e.loc, d);
+			}
 			return ve;
 		}
 
@@ -254,18 +316,87 @@ public class TypeClass extends Type {
 	}
 
 	@Override
+	public int getNodeType() {
+		return TYPE_CLASS;
+	}
+
+	@Override
+	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context) {
+		if (sym.isInterfaceDeclaration() != null) {
+			return new TypeInfoInterfaceDeclaration(this, context);
+		} else {
+			return new TypeInfoClassDeclaration(this, context);
+		}
+	}
+
+	@Override
+	public boolean hasPointers(SemanticContext context) {
+		return true;
+	}
+
+	@Override
+	public MATCH implicitConvTo(Type to, SemanticContext context) {
+		if (this == to) {
+			return MATCHexact;
+		}
+
+		ClassDeclaration cdto = to.isClassHandle();
+		if (cdto != null && cdto.isBaseOf(sym, null, context)) {
+			return MATCHconvert;
+		}
+
+		if (context.global.params.Dversion == 1) {
+			// Allow conversion to (void *)
+			if (to.ty == Tpointer && to.next.ty == Tvoid) {
+				return MATCHconvert;
+			}
+		}
+
+		return MATCHnomatch;
+	}
+
+	@Override
+	public boolean isauto() {
+		return sym.isauto;
+	}
+
+	@Override
 	public boolean isBaseOf(Type type, int[] poffset, SemanticContext context) {
 		if (type.ty == Tclass) {
 			ClassDeclaration cd = ((TypeClass) type).sym;
-			if (sym.isBaseOf(cd, poffset, context))
+			if (sym.isBaseOf(cd, poffset, context)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
 	@Override
-	public String toChars(SemanticContext context) {
-		return sym.toPrettyChars(context);
+	public ClassDeclaration isClassHandle() {
+		return sym;
+	}
+
+	@Override
+	public boolean isZeroInit(SemanticContext context) {
+		return true;
+	}
+
+	@Override
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+		if (sym.scope != null) {
+			sym.semantic(sym.scope, context);
+		}
+		return merge(context);
+	}
+
+	@Override
+	public int size(Loc loc, SemanticContext context) {
+		return PTRSIZE;
+	}
+
+	@Override
+	public Type syntaxCopy() {
+		return this;
 	}
 
 	@Override
@@ -276,6 +407,23 @@ public class TypeClass extends Type {
 			buf.writeByte(' ');
 			buf.writestring(ident.toChars());
 		}
+	}
+
+	@Override
+	public String toChars(SemanticContext context) {
+		return sym.toPrettyChars(context);
+	}
+
+	@Override
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+		String name = sym.mangle(context);
+		buf.writestring(ty.mangleChar);
+		buf.writestring(name);
+	}
+
+	@Override
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
+		return sym;
 	}
 
 }

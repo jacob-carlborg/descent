@@ -57,6 +57,8 @@ public abstract class Type extends ASTDmdNode {
 	public final static Type tsize_t = tuns32;
 	public final static Type tptrdiff_t = tint32;
 	public final static Type tshiftcnt = tint32;
+	// TODO semantic check this null
+	public final static Type tvoidptr = tvoid.pointerTo(null);
 
 	public static boolean impcnvWarn[][];
 	public static TY impcnvResult[][];
@@ -522,7 +524,7 @@ public abstract class Type extends ASTDmdNode {
 			if (next != null) {
 				next = next.merge(context);
 			}
-			toDecoBuffer(buf);
+			toDecoBuffer(buf, context);
 			sv = context.typeStringTable.update(buf.toString());
 			if (sv.ptrvalue != null) {
 				t = (Type) sv.ptrvalue;
@@ -535,11 +537,11 @@ public abstract class Type extends ASTDmdNode {
 		return t;
 	}
 
-	public void toDecoBuffer(OutBuffer buf) {
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		if (next != null) {
 			Assert.isTrue(next != this);
-			next.toDecoBuffer(buf);
+			next.toDecoBuffer(buf, context);
 		}
 	}
 
@@ -605,7 +607,7 @@ public abstract class Type extends ASTDmdNode {
 		return null;
 	}
 
-	public Expression getProperty(Loc loc, IdentifierExp ident,
+	public final Expression getProperty(Loc loc, IdentifierExp ident,
 			SemanticContext context) {
 		return getProperty(loc, ident.ident, ident.start, ident.length, context);
 	}
@@ -727,7 +729,7 @@ public abstract class Type extends ASTDmdNode {
 		return 1;
 	}
 
-	public int size(SemanticContext context) {
+	public final int size(SemanticContext context) {
 		return size(Loc.ZERO, context);
 	}
 
@@ -847,7 +849,7 @@ public abstract class Type extends ASTDmdNode {
 		return false;
 	}
 
-	public boolean isZeroInit() {
+	public boolean isZeroInit(SemanticContext context) {
 		return false;
 	}
 
@@ -1014,12 +1016,16 @@ public abstract class Type extends ASTDmdNode {
 		return new TypeInfoDeclaration(this, 0, context);
 	}
 	
-	public void toTypeInfoBuffer(OutBuffer buf) {
+	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 	
 	public boolean builtinTypeInfo() {
 		return false;
+	}
+	
+	public static char needThisPrefix() {
+		return 'M'; // name mangling prefix for functions needing 'this'
 	}
 	
 }

@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TUPLE;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
@@ -1070,8 +1074,9 @@ public abstract class ASTDmdNode extends ASTNode {
 			VarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null && v.isConst() && v.init != null) {
 				Expression ei = v.init.toExpression(context);
-				if (ei != null && ei.type != null)
+				if (ei != null && ei.type != null) {
 					e1 = ei;
+				}
 			}
 		}
 		return e1;
@@ -1087,17 +1092,19 @@ public abstract class ASTDmdNode extends ASTNode {
 			for (i = 0; i < arguments.size(); i++) {
 				Argument arg;
 
-				if (i != 0)
+				if (i != 0) {
 					buf.writestring(", ");
+				}
 				arg = arguments.get(i);
-				if ((arg.storageClass & STCout) != 0)
+				if ((arg.storageClass & STCout) != 0) {
 					buf.writestring("out ");
-				else if ((arg.storageClass & STCref) != 0)
+				} else if ((arg.storageClass & STCref) != 0) {
 					buf
 							.writestring((context.global.params.Dversion == 1) ? "inout "
 									: "ref ");
-				else if ((arg.storageClass & STClazy) != 0)
+				} else if ((arg.storageClass & STClazy) != 0) {
 					buf.writestring("lazy ");
+				}
 				argbuf.reset();
 				arg.type.toCBuffer2(argbuf, arg.ident, hgs, context);
 				if (arg.defaultArg != null) {
@@ -1107,8 +1114,9 @@ public abstract class ASTDmdNode extends ASTNode {
 				buf.write(argbuf);
 			}
 			if (varargs != 0) {
-				if (i != 0 && varargs == 1)
+				if (i != 0 && varargs == 1) {
 					buf.writeByte(',');
+				}
 				buf.writestring("...");
 			}
 		}
@@ -1129,7 +1137,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		return result;
 	}
 
-	public static void scanVar(Dsymbol s, InlineScanState iss, SemanticContext context) {
+	public static void scanVar(Dsymbol s, InlineScanState iss,
+			SemanticContext context) {
 		VarDeclaration vd = s.isVarDeclaration();
 		if (vd != null) {
 			TupleDeclaration td = vd.toAlias(context).isTupleDeclaration();
@@ -1137,7 +1146,8 @@ public abstract class ASTDmdNode extends ASTNode {
 				for (int i = 0; i < td.objects.size(); i++) {
 					DsymbolExp se = (DsymbolExp) td.objects.get(i);
 					if (se.op != TOKdsymbol) {
-						throw new IllegalStateException("assert (se.op == TOKdsymbol);");
+						throw new IllegalStateException(
+								"assert (se.op == TOKdsymbol);");
 					}
 					scanVar(se.s, iss, context);
 				}
@@ -1153,22 +1163,127 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		}
 	}
-	
-	public static void arrayExpressionScanForNestedRef(Scope sc, 
-			List<Expression> a, SemanticContext context)
-	{
-		if(null == a)
-		{
-			for(int i = 0; i < a.size(); i++)
-			{
-				Expression e = (Expression) a.get(i);
-				
-				if(null != e)
-				{
+
+	public static void arrayExpressionScanForNestedRef(Scope sc,
+			List<Expression> a, SemanticContext context) {
+		if (null == a) {
+			for (int i = 0; i < a.size(); i++) {
+				Expression e = a.get(i);
+
+				if (null != e) {
 					e.scanForNestedRef(sc, context);
 				}
 			}
 		}
 	}
 
+	public static String mangle(Declaration sthis) {
+		OutBuffer buf = new OutBuffer();
+		String id;
+		Dsymbol s;
+
+		s = sthis;
+		do {
+			if (s.ident != null) {
+				FuncDeclaration fd = s.isFuncDeclaration();
+				if (s != sthis && fd != null) {
+					id = mangle(fd);
+					buf.prependstring(id);
+					// goto L1;
+					break;
+				} else {
+					id = s.ident.toChars();
+					int len = id.length();
+					buf.prependstring(id);
+					buf.prependstring(len);
+				}
+			} else {
+				buf.prependstring("0");
+			}
+			s = s.parent;
+		} while (s != null);
+
+		// L1:
+		FuncDeclaration fd = sthis.isFuncDeclaration();
+		if (fd != null && (fd.needThis() || fd.isNested())) {
+			buf.writeByte(Type.needThisPrefix());
+		}
+		if (sthis.type.deco != null) {
+			buf.writestring(sthis.type.deco);
+		} else {
+			if (!fd.inferRetType) {
+				throw new IllegalStateException("assert (fd.inferRetType);");
+			}
+		}
+
+		id = buf.toChars();
+		buf.data = null;
+		return id;
+	}
+	
+	public static Dsymbol getDsymbol(ASTDmdNode oarg, SemanticContext context) {
+		Dsymbol sa;
+		Expression ea = isExpression(oarg);
+		if (ea != null) { // Try to convert Expression to symbol
+			if (ea.op == TOKvar) {
+				sa = ((VarExp) ea).var;
+			} else if (ea.op == TOKfunction) {
+				sa = ((FuncExp) ea).fd;
+			} else {
+				sa = null;
+			}
+		} else { // Try to convert Type to symbol
+			Type ta = isType(oarg);
+			if (ta != null) {
+				sa = ta.toDsymbol(null, context);
+			} else {
+				sa = isDsymbol(oarg); // if already a symbol
+			}
+		}
+		return sa;
+	}
+
+	public static Type getType(ASTDmdNode o) {
+		Type t = isType(o);
+		if (null == t) {
+			Expression e = isExpression(o);
+			if (e != null) {
+				t = e.type;
+			}
+		}
+		return t;
+	}
+
+	public static Dsymbol isDsymbol(ASTDmdNode o) {
+		//return dynamic_cast<Dsymbol >(o);
+		if (null == o || o.dyncast() != DYNCAST_DSYMBOL) {
+			return null;
+		}
+		return (Dsymbol) o;
+	}
+
+	public static Expression isExpression(ASTDmdNode o) {
+		//return dynamic_cast<Expression >(o);
+		if (null == o || o.dyncast() != DYNCAST_EXPRESSION) {
+			return null;
+		}
+		return (Expression) o;
+	}
+
+	public static Tuple isTuple(ASTDmdNode o) {
+		//return dynamic_cast<Tuple >(o);
+		if (null == o || o.dyncast() != DYNCAST_TUPLE) {
+			return null;
+		}
+		return (Tuple) o;
+	}
+
+	public static Type isType(ASTDmdNode o) {
+		//return dynamic_cast<Type >(o);
+		if (null == o || o.dyncast() != DYNCAST_TYPE) {
+			return null;
+		}
+		return (Type) o;
+	}
+	
 }

@@ -189,6 +189,7 @@ public interface Id {
 	char[] aaKeys = { '_', 'a', 'a', 'K', 'e', 'y', 's' };
 	char[] aaValues = { '_', 'a', 'a', 'V', 'a', 'l', 'u', 'e', 's' };
 	char[] aaRehash = { '_', 'a', 'a', 'R', 'e', 'h', 'a', 's', 'h' };
+	char[] funcptr = { 'f', 'u', 'n', 'c', 'p', 't', 'r' };
 	
 	// Others useful
 	char[] ZERO = { '0' };

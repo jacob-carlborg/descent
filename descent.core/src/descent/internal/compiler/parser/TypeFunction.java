@@ -16,19 +16,20 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeFunction extends Type {
-	
+
 	public List<Argument> parameters;
 	public int varargs;
-	public LINK linkage;	// calling convention
+	public LINK linkage; // calling convention
 	public int inuse;
 
-	public TypeFunction(List<Argument> parameters, Type treturn, int varargs, LINK linkage) {
+	public TypeFunction(List<Argument> parameters, Type treturn, int varargs,
+			LINK linkage) {
 		super(Tfunction, treturn);
 		this.parameters = parameters;
 		this.varargs = varargs;
 		this.linkage = linkage;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -38,7 +39,7 @@ public class TypeFunction extends Type {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		if (deco != null) { // if semantic() already run
@@ -51,7 +52,9 @@ public class TypeFunction extends Type {
 		}
 		next = next.semantic(loc, sc, context);
 		if (next.toBasetype(context).ty == Tsarray) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnStaticArrays, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.FunctionsCannotReturnStaticArrays, 0, start,
+					length));
 			next = Type.terror;
 		}
 		if (next.toBasetype(context).ty == Tfunction) {
@@ -89,19 +92,25 @@ public class TypeFunction extends Type {
 
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
 					if (t.ty == Tsarray) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray, 0, t.start, t.length));
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeError(
+												IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray,
+												0, t.start, t.length));
 					}
 				}
 				if ((arg.storageClass & STClazy) == 0 && t.ty == Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveParameterOfTypeVoid, 0, t.start, t.length));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotHaveParameterOfTypeVoid, 0, t.start,
+							t.length));
 				}
 
 				if (arg.defaultArg != null) {
 					arg.defaultArg = arg.defaultArg.semantic(sc, context);
 					arg.defaultArg = Expression.resolveProperties(sc,
 							arg.defaultArg, context);
-					arg.defaultArg = arg.defaultArg
-							.implicitCastTo(sc, arg.type, context);
+					arg.defaultArg = arg.defaultArg.implicitCastTo(sc,
+							arg.type, context);
 				}
 			}
 		}
@@ -124,19 +133,65 @@ public class TypeFunction extends Type {
 		 */
 		return this;
 	}
-	
+
 	public RET retStyle() {
 		return RET.RETstack;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return TYPE_FUNCTION;
 	}
-	
+
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
 		// TODO semantic
+	}
+
+	@Override
+	public Type syntaxCopy() {
+		Type treturn = next != null ? next.syntaxCopy() : null;
+		List<Argument> params = Dsymbol.arraySyntaxCopyArguments(parameters);
+		Type t = new TypeFunction(params, treturn, varargs, linkage);
+		return t;
+	}
+
+	@Override
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+		char mc;
+
+		if (inuse != 0) {
+			inuse = 2; // flag error to caller
+			return;
+		}
+		inuse++;
+		switch (linkage) {
+		case LINKd:
+			mc = 'F';
+			break;
+		case LINKc:
+			mc = 'U';
+			break;
+		case LINKwindows:
+			mc = 'W';
+			break;
+		case LINKpascal:
+			mc = 'V';
+			break;
+		case LINKcpp:
+			mc = 'R';
+			break;
+		default:
+			throw new IllegalStateException("assert(0);");
+		}
+		buf.writeByte(mc);
+		// Write argument types
+		// TODO semantic
+		// argsToDecoBuffer(buf, parameters);
+		buf.writeByte('Z' - varargs); // mark end of arg list
+		next.toDecoBuffer(buf, context);
+		inuse--;
 	}
 
 }

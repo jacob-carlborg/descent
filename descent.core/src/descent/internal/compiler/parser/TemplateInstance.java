@@ -72,4 +72,24 @@ public class TemplateInstance extends ScopeDsymbol {
 		return s;
 	}
 
+	@Override
+	public String mangle(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		String id;
+
+		id = ident != null ? ident.toChars() : toChars(context);
+		if (tempdecl.parent != null) {
+			String p = tempdecl.parent.mangle(context);
+			if (p.charAt(0) == '_' && p.charAt(1) == 'D')
+				p += 2;
+			buf.writestring(p);
+		}
+		// TODO semantic this was %zu -> what's that?
+		buf.writestring(id.length());
+		buf.writestring(id);
+		id = buf.toChars();
+		buf.data = null;
+		return id;
+	}
+
 }

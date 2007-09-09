@@ -30,7 +30,7 @@ public class TypeBasic extends Type {
 
 		// HACK to get deco ready
 		OutBuffer out = new OutBuffer();
-		toDecoBuffer(out);
+		toDecoBuffer(out, null /* it's safe to pass null here */);
 		deco = out.extractData();
 	}
 

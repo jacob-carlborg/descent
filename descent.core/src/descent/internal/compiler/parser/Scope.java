@@ -33,6 +33,7 @@ public class Scope {
 	public int explicitProtection;		// set if in an explicit protection attribute
     public int stc;						// storage class
     public int intypeof;			// in typeof(exp)
+    public int parameterSpecialization; // // if in template parameter specialization
     public boolean inunion;		// we're processing members of a union
     public int incontract;		// we're inside contract code
     public boolean nofree;			// set if shouldn't free it
@@ -45,6 +46,7 @@ public class Scope {
     public TryFinallyStatement tf;	// enclosing try finally statement
     
     public AnonymousAggregateDeclaration anonAgg;	// for temporary analysis
+	
 	
 	public Scope() {
 		this.linkage = LINK.LINKd;

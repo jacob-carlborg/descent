@@ -117,7 +117,7 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public boolean isZeroInit() {
+	public boolean isZeroInit(SemanticContext context) {
 		return true;
 	}
 
@@ -162,10 +162,10 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf) {
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		if (next != null) {
-			next.toDecoBuffer(buf);
+			next.toDecoBuffer(buf, context);
 		}
 	}
 
@@ -176,10 +176,10 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public void toTypeInfoBuffer(OutBuffer buf) {
+	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		if (next != null) {
-			next.toTypeInfoBuffer(buf);
+			next.toTypeInfoBuffer(buf, context);
 		}
 	}
 
