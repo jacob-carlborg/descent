@@ -15,6 +15,9 @@ import descent.core.compiler.IProblem;
 public abstract class Type extends ASTDmdNode {
 
 	public final static int PTRSIZE = 4;
+	
+	// TODO where to get this value from?
+	public final static int REALSIZE = 8;
 
 	public static class Modification {
 		public int startPosition;
@@ -57,8 +60,6 @@ public abstract class Type extends ASTDmdNode {
 	public final static Type tsize_t = tuns32;
 	public final static Type tptrdiff_t = tint32;
 	public final static Type tshiftcnt = tint32;
-	// TODO semantic check this null
-	public final static Type tvoidptr = tvoid.pointerTo(null);
 
 	public static boolean impcnvWarn[][];
 	public static TY impcnvResult[][];
@@ -464,6 +465,7 @@ public abstract class Type extends ASTDmdNode {
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
+	public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
 
 	public List<Modification> modifications;
 
@@ -515,7 +517,6 @@ public abstract class Type extends ASTDmdNode {
 	public Type merge(SemanticContext context) {
 		Type t;
 
-		// printf("merge(%s)\n", toChars());
 		t = this;
 		if (deco == null) {
 			OutBuffer buf = new OutBuffer();
@@ -706,7 +707,7 @@ public abstract class Type extends ASTDmdNode {
 		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.DeprecatedProperty, 0, start, length,
+						IProblem.DeprecatedProperty, 0, ident.start, ident.length,
 						new String[] { ".typeinfo", "typeid(type)" }));
 			}
 			e = getTypeInfo(sc, context);
@@ -926,11 +927,6 @@ public abstract class Type extends ASTDmdNode {
 		return null;
 	}
 
-	public Expression getTypeInfo(Scope sc, SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
 	public int templateParameterLookup(Type tparam,
 			List<TemplateParameter> parameters) {
 		if (tparam.ty != Tident) {
@@ -1011,21 +1007,54 @@ public abstract class Type extends ASTDmdNode {
 
 		return MATCHexact;
 	}
-	
+
 	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context) {
 		return new TypeInfoDeclaration(this, 0, context);
 	}
-	
+
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
-	
+
 	public boolean builtinTypeInfo() {
 		return false;
 	}
-	
+
 	public static char needThisPrefix() {
 		return 'M'; // name mangling prefix for functions needing 'this'
 	}
-	
+
+	public Expression getTypeInfo(Scope sc, SemanticContext context) {
+		Expression e;
+		Type t;
+
+		t = merge(context); // do this since not all Type's are merge'd
+		if (null == t.vtinfo) {
+			t.vtinfo = t.getTypeInfoDeclaration(context);
+
+			if (t.vtinfo == null) {
+				throw new IllegalStateException("assert(t.vtinfo);");
+			}
+
+			/* If this has a custom implementation in std/typeinfo, then
+			 * do not generate a COMDAT for it.
+			 */
+			if (!t.builtinTypeInfo()) { // Generate COMDAT
+				if (sc != null) // if in semantic() pass
+				{ // Find module that will go all the way to an object file
+					Module m = sc.module.importedFrom;
+					m.members.add(t.vtinfo);
+				} else // if in obj generation pass
+				{
+					// TODO semantic
+					// t.vtinfo.toObjFile();
+				}
+			}
+		}
+		e = new VarExp(Loc.ZERO, t.vtinfo);
+		e = e.addressOf(sc, context);
+		e.type = t.vtinfo.type; // do this so we don't get redundant dereference
+		return e;
+	}
+
 }

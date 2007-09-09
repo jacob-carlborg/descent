@@ -198,9 +198,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		sizeok = 1;
 
-		/* TODO semantic
-		 Module::dprogress++;
-		 */
+		context.dprogress++;
 
 		// Determine if struct is all zeros or not
 		zeroInit = true;

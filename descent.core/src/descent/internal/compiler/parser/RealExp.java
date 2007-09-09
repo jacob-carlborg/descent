@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.math.BigDecimal;
+
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class RealExp extends Expression {
@@ -18,6 +20,10 @@ public class RealExp extends Expression {
 		this(loc, null, value, type);
 	}
 	
+	public RealExp(Loc loc, double d, Type type) {
+		this(loc, new real_t(BigDecimal.valueOf(d)), type);
+	}
+
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);

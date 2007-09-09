@@ -11,6 +11,7 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeBasic extends Type {
@@ -190,10 +191,190 @@ public class TypeBasic extends Type {
 			buf.writestring(ident.toChars());
 		}
 	}
-	
+
 	@Override
 	public boolean builtinTypeInfo() {
 		return true;
+	}
+
+	@Override
+	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
+			SemanticContext context) {
+		Type t;
+
+		if (CharOperation.equals(ident.ident, Id.re)) {
+			switch (ty) {
+			case Tcomplex32:
+				t = tfloat32;
+				// goto L1;
+				e = e.castTo(sc, t, context);
+				break;
+			case Tcomplex64:
+				t = tfloat64;
+				// goto L1;
+				e = e.castTo(sc, t, context);
+				break;
+			case Tcomplex80:
+				t = tfloat80;
+				// goto L1;
+				e = e.castTo(sc, t, context);
+				break;
+			// L1: 
+			// e = e.castTo(sc, t, context);
+			// break;
+
+			case Tfloat32:
+			case Tfloat64:
+			case Tfloat80:
+				break;
+
+			case Timaginary32:
+				t = tfloat32;
+				// goto L2;
+				e = new RealExp(Loc.ZERO, 0.0, t);
+				break;
+			case Timaginary64:
+				t = tfloat64; // goto L2;
+				e = new RealExp(Loc.ZERO, 0.0, t);
+				break;
+			case Timaginary80:
+				t = tfloat80; // goto L2;
+				e = new RealExp(Loc.ZERO, 0.0, t);
+				break;
+			// L2: 
+			// e = new RealExp(Loc.ZERO, 0.0, t);
+			// break;
+
+			default:
+				return getProperty(e.loc, ident, context);
+			}
+		} else if (CharOperation.equals(ident.ident, Id.im)) {
+			Type t2;
+
+			switch (ty) {
+			case Tcomplex32:
+				t = timaginary32;
+				t2 = tfloat32;
+				// goto L3;
+				e = e.castTo(sc, t, context);
+				e.type = t2;
+				break;
+			case Tcomplex64:
+				t = timaginary64;
+				t2 = tfloat64;
+				// goto L3;
+				e = e.castTo(sc, t, context);
+				e.type = t2;
+				break;
+			case Tcomplex80:
+				t = timaginary80;
+				t2 = tfloat80;
+				// goto L3;
+				e = e.castTo(sc, t, context);
+				e.type = t2;
+				break;
+			// L3: 
+			// e = e.castTo(sc, t, context);
+			// e.type = t2;
+			// break;
+
+			case Timaginary32:
+				t = tfloat32;
+				// goto L4;
+				e.type = t;
+				break;
+			case Timaginary64:
+				t = tfloat64;
+				// goto L4;
+				e.type = t;
+				break;
+			case Timaginary80:
+				t = tfloat80;
+				// goto L4;
+				e.type = t;
+				break;
+			// L4: 
+			// e.type = t;
+			// break;
+
+			case Tfloat32:
+			case Tfloat64:
+			case Tfloat80:
+				e = new RealExp(Loc.ZERO, 0.0, this);
+				break;
+
+			default:
+				return getProperty(e.loc, ident, context);
+			}
+		} else {
+			return super.dotExp(sc, e, ident, context);
+		}
+		return e;
+	}
+
+	@Override
+	public int size(Loc loc, SemanticContext context) {
+		int size;
+
+		switch (ty) {
+		case Tint8:
+		case Tuns8:
+			size = 1;
+			break;
+		case Tint16:
+		case Tuns16:
+			size = 2;
+			break;
+		case Tint32:
+		case Tuns32:
+		case Tfloat32:
+		case Timaginary32:
+			size = 4;
+			break;
+		case Tint64:
+		case Tuns64:
+		case Tfloat64:
+		case Timaginary64:
+			size = 8;
+			break;
+		case Tfloat80:
+		case Timaginary80:
+			size = REALSIZE;
+			break;
+		case Tcomplex32:
+			size = 8;
+			break;
+		case Tcomplex64:
+			size = 16;
+			break;
+		case Tcomplex80:
+			size = REALSIZE * 2;
+			break;
+
+		case Tvoid:
+			size = 1;
+			break;
+
+		case Tbit:
+			size = 1;
+			break;
+		case Tbool:
+			size = 1;
+			break;
+		case Tchar:
+			size = 1;
+			break;
+		case Twchar:
+			size = 2;
+			break;
+		case Tdchar:
+			size = 4;
+			break;
+
+		default:
+			throw new IllegalStateException("assert(0);");
+		}
+		return size;
 	}
 
 }

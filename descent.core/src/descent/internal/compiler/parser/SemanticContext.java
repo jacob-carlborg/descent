@@ -39,6 +39,9 @@ public class SemanticContext {
 	
 	public ClassDeclaration moduleinfo;
 	
+	public Type tvoidptr;
+	public int dprogress;
+	
 	public DsymbolTable st;
 	public int apiLevel;
 	
@@ -63,6 +66,8 @@ public class SemanticContext {
 		this.typeinfofunction = slh.TypeInfo_Function;
 		this.typeinfodelegate = slh.TypeInfo_Delegate;
 		this.typeinfotypelist = slh.TypeInfo_Tuple;
+		
+		this.tvoidptr = Type.tvoid.pointerTo(this);
 	}
 	
 	public void acceptProblem(IProblem problem) {

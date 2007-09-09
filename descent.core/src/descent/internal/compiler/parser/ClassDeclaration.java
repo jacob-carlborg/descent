@@ -317,7 +317,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			ident = context.generateId(id);
 		}
 
-		if (scope != null) {
+		if (null == scope) {
 			if (parent == null && sc.parent != null
 					&& sc.parent.isModule() == null) {
 				parent = sc.parent;
@@ -706,9 +706,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		structsize = sc.offset;
 		sizeok = 1;
 
-		/*
-		 * TODO semantic Module::dprogress++;
-		 */
+		context.dprogress++;
 
 		sc.pop();
 	}
@@ -779,7 +777,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * names for them.
 		 */
 		if (CharOperation.equals(ident.ident, Id.Exception)) {
-			if (CharOperation.equals(parent.ident.ident, Id.object)) {
+			if (parent.ident != null
+					&& CharOperation.equals(parent.ident.ident, Id.object)) {
 				parent = null;
 			}
 		} else if (CharOperation.equals(ident.ident, Id.TypeInfo)

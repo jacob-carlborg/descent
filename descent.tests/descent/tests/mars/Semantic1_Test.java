@@ -677,9 +677,10 @@ public class Semantic1_Test extends Parser_Test {
 	public void testThisOnlyAllowedInNonStaticMemberFunctions() {
 		String s = " void bla() { this; }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
 		assertError(p[0], IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 14, 4);
+		assertError(p[1], IProblem.ExpressionHasNoEffect, 14, 4);
 	}
 	
 	public void testUndefinedIdentifier() {
@@ -845,11 +846,15 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testIntTypeinfoPropertyDeprecated() {
-		String s = "int x = int.typeinfo;";
+		String s = "TypeInfo x = int.typeinfo;";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.DeprecatedProperty, 12, 8);
+		assertError(p[0], IProblem.DeprecatedProperty, 17, 8);
+	}
+	
+	public void testBaseClassIsOuter() {
+		assertNoSemanticErrors("class BaseClass { class SomeClass : BaseClass { } }");
 	}
 
 }

@@ -152,10 +152,13 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public int checkSideEffect(int flag, SemanticContext context) {
 		if (flag == 0) {
 			if (op == TOKimport) {
-				error("%s has no effect", toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ExpressionHasNoEffect, 0, 
+						start, length));
 			} else {
-				error("%s has no effect in expression (%s)", op.toString(),
-						toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ExpressionHasNoEffect, 0, 
+						start, length));
 			}
 		}
 		return 0;

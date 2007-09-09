@@ -37,13 +37,13 @@ public class TypeDelegate extends Type {
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
 		if (CharOperation.equals(ident.ident, Id.ptr)) {
-			e.type = tvoidptr;
+			e.type = context.tvoidptr;
 			return e;
 		} else if (CharOperation.equals(ident.ident, Id.funcptr)) {
 			e = e.addressOf(sc, context);
-			e.type = tvoidptr;
+			e.type = context.tvoidptr;
 			e = new AddExp(e.loc, e, new IntegerExp(PTRSIZE));
-			e.type = tvoidptr;
+			e.type = context.tvoidptr;
 			e = new PtrExp(e.loc, e);
 			e.type = next.pointerTo(context);
 			return e;

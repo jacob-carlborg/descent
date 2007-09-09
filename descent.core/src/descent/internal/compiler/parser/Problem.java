@@ -370,6 +370,10 @@ public class Problem implements IProblem {
 			return "File " + arguments[0] + " not found";
 		case ErrorReadingFile:
 			return "Could not read file : " + arguments[0];
+		case ExpressionHasNoEffect:
+			return "Expression has no effect";
+		case ConstantIsNotAnLValue:
+			return "Constant is not an lvalue";
 		default:
 			return "";
 		}

@@ -118,7 +118,8 @@ public abstract class Declaration extends Dsymbol {
 
 	@Override
 	public String mangle(SemanticContext context) {
-		if (null == parent || parent.isModule() != null) { // if at global scope
+		if (null == parent || parent.isModule() != null) { 
+			// if at global scope
 			// If it's not a D declaration, no mangling
 			switch (linkage) {
 			case LINKd:

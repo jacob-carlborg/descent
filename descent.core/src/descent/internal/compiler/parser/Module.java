@@ -22,21 +22,23 @@ public class Module extends Package {
 	public int semanticdone; // has semantic() been done?
 	public List<Dsymbol> deferred;
 	public boolean needmoduleinfo;
-	
+	public Module importedFrom;
+
 	public Module(Loc loc) {
 		super(loc);
+		deferred = new ArrayList<Dsymbol>();
 	}
 
 	@Override
 	public Module isModule() {
 		return this;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return MODULE;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -45,11 +47,10 @@ public class Module extends Package {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	public boolean hasSyntaxErrors() {
 		return problems.size() != 0;
 	}
-
 
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
@@ -74,9 +75,9 @@ public class Module extends Package {
 		 * (ident != Id::object) { Import *im = new Import(0, NULL, Id::object,
 		 * NULL, 0); members->shift(im); }
 		 */
-		
+
 		symtab = new DsymbolTable();
-		
+
 		// TODO This is the current replacement of Add import of "object" if this module isn't "object"
 		if (ident == null || ident.ident != Id.object) {
 			symtab.insert(context.object);
@@ -96,7 +97,6 @@ public class Module extends Package {
 			symtab.insert(context.typeinfotypelist);
 		}
 
-		
 		if (members != null) {
 
 			// Add all symbols into module's symbol table
@@ -108,7 +108,7 @@ public class Module extends Package {
 			for (Dsymbol s : members) {
 				s.semantic(sc, context);
 			}
-			
+
 			runDeferredSemantic(context);
 		}
 
@@ -117,10 +117,10 @@ public class Module extends Package {
 
 		semanticdone = semanticstarted;
 	}
-	
+
 	@Override
 	public void semantic2(Scope scope, SemanticContext context) {
-	    if (deferred != null && deferred.size() > 0) {
+		if (deferred != null && deferred.size() > 0) {
 			for (Dsymbol sd : deferred) {
 				sd.error("unable to resolve forward reference in definition");
 			}
@@ -148,7 +148,7 @@ public class Module extends Package {
 		sc.pop();
 		semanticdone = semanticstarted;
 	}
-	
+
 	@Override
 	public void semantic3(Scope scope, SemanticContext context) {
 		if (semanticstarted >= 3) {
@@ -173,12 +173,6 @@ public class Module extends Package {
 		sc.pop();
 		semanticdone = semanticstarted;
 	}
-	
-	public void runDeferredSemantic(SemanticContext context) {
-		// TODO semantic
-	}
-
-
 
 	public void addDeferredSemantic(Dsymbol s) {
 		if (deferred == null) {
@@ -205,5 +199,35 @@ public class Module extends Package {
 		// TODO semantic
 	}
 
+	public static int nested;
+
+	public void runDeferredSemantic(SemanticContext context) {
+		int len;
+
+		if (nested != 0)
+			return;
+		nested++;
+
+		do {
+			context.dprogress = 0;
+			len = deferred.size();
+			if (0 == len) {
+				break;
+			}
+
+			Dsymbol[] todo = new Dsymbol[deferred.size()];
+			for (int i = 0; i < deferred.size(); i++) {
+				todo[i] = deferred.get(i);
+			}
+			deferred.clear();
+
+			for (int i = 0; i < len; i++) {
+				Dsymbol s = todo[i];
+
+				s.semantic(null, context);
+			}
+		} while (deferred.size() < len || context.dprogress != 0); // while making progress
+		nested--;
+	}
 
 }

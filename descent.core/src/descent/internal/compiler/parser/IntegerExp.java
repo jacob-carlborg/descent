@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class IntegerExp extends Expression {
@@ -499,10 +500,11 @@ public class IntegerExp extends Expression {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (e == null) {
 			e = this;
-		} else if (loc.filename == null) {
+		} else if (loc != null && loc.filename == null) {
 			loc = e.loc;
 		}
-		e.error("constant %s is not an lvalue", e.toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstantIsNotAnLValue, 
+				0, e.start, e.length));
 		return this;
 	}
 

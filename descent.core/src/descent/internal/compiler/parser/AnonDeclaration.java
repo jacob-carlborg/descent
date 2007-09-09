@@ -108,9 +108,7 @@ public class AnonDeclaration extends AttribDeclaration {
 				return;
 			}
 			if (sem == 0) {
-				/*
-				 * TODO semantic Module::dprogress++;
-				 */
+				context.dprogress++;
 				sem = 1;
 			} else {
 				;

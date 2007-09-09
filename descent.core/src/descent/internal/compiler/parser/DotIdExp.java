@@ -202,7 +202,7 @@ public class DotIdExp extends UnaExp {
 			e.type = e1.type.next;
 			return e.type.dotExp(sc, e, ident, context);
 		} else {
-			e = e1.type.dotExp(sc, e1, ident, context);
+			e = e1.type.dotExp(sc, e1, ident, context);			
 			e = e.semantic(sc, context);
 			return e;
 		}

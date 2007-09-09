@@ -347,6 +347,8 @@ public interface IProblem {
 	int FileImportsMustBeSpecified = 378;
 	int FileNotFound = 379;
 	int ErrorReadingFile = 380;
+	int ExpressionHasNoEffect = 381;
+	int ConstantIsNotAnLValue = 382;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

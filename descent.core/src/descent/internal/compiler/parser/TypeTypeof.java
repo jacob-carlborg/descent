@@ -44,7 +44,7 @@ public class TypeTypeof extends TypeQualified {
 			}
 		}
 
-		if (idents.size() != 0) {
+		if (idents != null && idents.size() != 0) {
 			Dsymbol s = t.toDsymbol(sc, context);
 			for (int i = 0; i < idents.size(); i++) {
 				if (null == s) {
