@@ -101,7 +101,6 @@ TupleExp.java
 Type.java
 TypeBasic.java
 TypedefDeclaration.java
-TypeFunction.java
 TypeSArray.java
 TypeSlice.java
 TypeStruct.java
