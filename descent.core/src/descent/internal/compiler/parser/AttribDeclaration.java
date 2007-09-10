@@ -1,21 +1,20 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
 
 // DMD 1.020
 public abstract class AttribDeclaration extends Dsymbol {
 
-	public List<Dsymbol> decl;
+	public Dsymbols decl;
 
-	public AttribDeclaration(Loc loc, List<Dsymbol> decl) {
+	public AttribDeclaration(Loc loc, Dsymbols decl) {
 		super(loc);
 		this.decl = decl;
 	}
 
 	@Override
-	public void addLocalClass(List<ClassDeclaration> aclasses,
+	public void addLocalClass(ClassDeclarations aclasses,
 			SemanticContext context) {
-		List<Dsymbol> d = include(null, null, context);
+		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
@@ -28,7 +27,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		int m = 0;
-		List<Dsymbol> d = include(sc, sd, context);
+		Dsymbols d = include(sc, sd, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
@@ -40,7 +39,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public void checkCtorConstInit(SemanticContext context) {
-		List<Dsymbol> d = include(null, null, context);
+		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
@@ -51,7 +50,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public boolean hasPointers(SemanticContext context) {
-		List<Dsymbol> d = include(null, null, context);
+		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
@@ -63,7 +62,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		return false;
 	}
 
-	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd,
+	public Dsymbols include(Scope sc, ScopeDsymbol sd,
 			SemanticContext context) {
 		return decl;
 	}
@@ -71,7 +70,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 	@Override
 	public void inlineScan(SemanticContext context) {
 		int i;
-		List d = include(null, null, context);
+		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
 			for (i = 0; i < d.size(); i++) {
@@ -96,14 +95,14 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
-		List<Dsymbol> d = include(null, null, context);
+		Dsymbols d = include(null, null, context);
 
 		return Dsymbol.oneMembers(d, ps, context);
 	}
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, null, context);
+		Dsymbols d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {
@@ -114,7 +113,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, null, context);
+		Dsymbols d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {
@@ -125,7 +124,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, null, context);
+		Dsymbols d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {

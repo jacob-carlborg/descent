@@ -1,10 +1,11 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.MATCH.*;
+
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 // DMD 1.020
 public class TemplateTypeParameter extends TemplateParameter {
@@ -76,8 +77,8 @@ public class TemplateTypeParameter extends TemplateParameter {
 	}
 
 	@Override
-	public MATCH matchArg(Scope sc, List<ASTDmdNode> tiargs, int i,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+	public MATCH matchArg(Scope sc, Objects tiargs, int i,
+			TemplateParameters parameters, Objects dedtypes,
 			Declaration[] psparam, SemanticContext context) {
 		Type t;
 		ASTDmdNode oarg;

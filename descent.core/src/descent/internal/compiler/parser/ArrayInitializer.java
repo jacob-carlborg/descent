@@ -1,17 +1,13 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayInitializer extends Initializer {
 
-	public List<Expression> index;
-	public List<Initializer> value;
+	public Expressions index;
+	public Initializers value;
 
 	public ArrayInitializer(Loc loc) {
 		super(loc);
@@ -28,8 +24,8 @@ public class ArrayInitializer extends Initializer {
 
 	public void addInit(Expression index, Initializer value) {
 		if (this.index == null) {
-			this.index = new ArrayList<Expression>();
-			this.value = new ArrayList<Initializer>();
+			this.index = new Expressions();
+			this.value = new Initializers();
 		}
 		this.index.add(index);
 		this.value.add(value);

@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 
 public class StaticIfDeclaration extends ConditionalDeclaration {
@@ -9,7 +7,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 	public ScopeDsymbol sd;
 	public boolean addisdone;
 
-	public StaticIfDeclaration(Loc loc, Condition condition, List<Dsymbol> decl, List<Dsymbol> elsedecl) {
+	public StaticIfDeclaration(Loc loc, Condition condition, Dsymbols decl, Dsymbols elsedecl) {
 		super(loc, condition, decl, elsedecl);
 	}
 	
@@ -43,7 +41,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		List<Dsymbol> d = include(sc, sd, context);
+		Dsymbols d = include(sc, sd, context);
 
 		if (d != null) {
 			if (!addisdone) {

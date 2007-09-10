@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
 
 // DMD 1.020
 public abstract class Statement extends ASTDmdNode {
@@ -24,7 +23,7 @@ public abstract class Statement extends ASTDmdNode {
 		return true;
 	}
 
-	public List<Statement> flatten(Scope sc) {
+	public Statements flatten(Scope sc) {
 		return null;
 	}
 

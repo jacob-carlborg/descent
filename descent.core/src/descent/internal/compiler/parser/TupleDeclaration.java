@@ -1,24 +1,21 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.STC.STCin;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.STC.STCin;
+
 public class TupleDeclaration extends Declaration {
 
-	public List<ASTDmdNode> objects;
+	public Objects objects;
 	public boolean isexp; // true: expression tuple
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
 	public TupleDeclaration(Loc loc, IdentifierExp ident,
-			List<ASTDmdNode> objects) {
+			Objects objects) {
 		super(loc, ident);
 		this.type = null;
 		this.objects = objects;
@@ -66,7 +63,7 @@ public class TupleDeclaration extends Declaration {
 			/*
 			 * We know it's a type tuple, so build the TypeTuple
 			 */
-			List<Argument> args = new ArrayList<Argument>(objects.size());
+			Arguments args = new Arguments(objects.size());
 			for (int i = 0; i < objects.size(); i++) {
 				Type t = (Type) objects.get(i);
 

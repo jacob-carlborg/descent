@@ -10,7 +10,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ScopeDsymbol extends Dsymbol {
 
-	public List<Dsymbol> members;
+	public Dsymbols members;
 	public DsymbolTable symtab;
 	public List<ScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import

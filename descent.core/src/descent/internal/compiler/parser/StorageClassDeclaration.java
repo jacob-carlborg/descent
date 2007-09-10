@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -58,7 +56,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public Modifier modifier;
 	public boolean colon;
 
-	public StorageClassDeclaration(Loc loc, int stc, List<Dsymbol> decl,
+	public StorageClassDeclaration(Loc loc, int stc, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {
 		super(loc, decl);
 		this.stc = stc;

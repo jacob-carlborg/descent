@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -172,7 +169,7 @@ public class SliceExp extends UnaExp {
 		
 			    if (e1.op == TOK.TOKtuple)
 			    {
-			    	List<Expression> exps = new ArrayList<Expression>
+			    	Expressions exps = new Expressions
 			    			(i2 - i1);
 					for (int i = 0; i < (i2 - i1); i++)
 					{
@@ -183,7 +180,7 @@ public class SliceExp extends UnaExp {
 			    }
 			    else
 			    {
-			    	List<Argument> args = new ArrayList<Argument>(i2 - i1);
+			    	Arguments args = new Arguments(i2 - i1);
 					for (int i = i1; i < i2; i++)
 					{
 						Argument arg = tup.arguments.get(i);

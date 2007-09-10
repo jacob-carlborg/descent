@@ -186,8 +186,8 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected List<Dsymbol> parseModule() {
-	    List<Dsymbol> decldefs = new ArrayList<Dsymbol>();
+	protected Dsymbols parseModule() {
+	    Dsymbols decldefs = new Dsymbols();
 	    
 	    // Special treatment if the file starts with Ddoc
 	    if (token.value == TOKidentifier && CharOperation.equals(token.string, Id.Ddoc)) {
@@ -210,12 +210,12 @@ public class Parser extends Lexer {
 				}
 				return decldefs;
 			} else {
-				List<IdentifierExp> a = null;
+				Identifiers a = null;
 				IdentifierExp id = null;
 				id = newIdentifierExp();
 				while (nextToken() == TOKdot) {
 					if (a == null) {
-						a = new ArrayList<IdentifierExp>();
+						a = new Identifiers();
 					}
 					a.add(id);
 					nextToken();
@@ -256,7 +256,7 @@ public class Parser extends Lexer {
 		return decldefs;
 	}
 	
-	private List parseModule_LErr(List decldefs) {
+	private Dsymbols parseModule_LErr(Dsymbols decldefs) {
 		while (token.value != TOKsemicolon && token.value != TOKeof)
 	    	nextToken();
 	    nextToken();
@@ -264,17 +264,17 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Dsymbol> parseDeclDefs(boolean once) {
+	public Dsymbols parseDeclDefs(boolean once) {
 		Dsymbol s = null;
-		List<Dsymbol> decldefs;
-		List<Dsymbol> a = new ArrayList<Dsymbol>();
-		List<Dsymbol> aelse;
+		Dsymbols decldefs;
+		Dsymbols a = new Dsymbols();
+		Dsymbols aelse;
 		PROT prot;
 		int stc;
 		boolean[] isSingle = new boolean[1];
 		boolean attachLeadingComments = true;
 		
-		decldefs = new ArrayList<Dsymbol>();
+		decldefs = new Dsymbols();
 		do {
 			List<Comment> lastComments = getLastDocComments();
 			isSingle[0] = false;
@@ -547,7 +547,7 @@ public class Parser extends Lexer {
 
 			case TOKpragma: {
 				IdentifierExp ident;
-				List<Expression> args = null;
+				Expressions args = null;
 
 				nextToken();
 				check(TOKlparen);
@@ -681,7 +681,7 @@ public class Parser extends Lexer {
 		return null;
 	}
 	
-	private Dsymbol parseDeclDefs_Lstc2(boolean[] isSingle, Modifier modifier, int stc, List<Dsymbol> decldefs) {
+	private Dsymbol parseDeclDefs_Lstc2(boolean[] isSingle, Modifier modifier, int stc, Dsymbols decldefs) {
 		Token firstToken = new Token(prevToken);
 		int start = firstToken.ptr;
 		
@@ -796,7 +796,7 @@ public class Parser extends Lexer {
 		else
 		{  
 			boolean isColon = token.value == TOKcolon;
-			List<Dsymbol> a = parseBlock(isSingle);
+			Dsymbols a = parseBlock(isSingle);
 			
 			if (isSingle[0] && a.size() == 0) {
 				parsingErrorDeleteToken(firstToken);
@@ -811,12 +811,12 @@ public class Parser extends Lexer {
 		return s;
 	}
 	
-	private List<Dsymbol> parseBlock() {
+	private Dsymbols parseBlock() {
 		return parseBlock(null);
 	}
 	
-	private List<Dsymbol> parseBlock(boolean[] isSingle) {
-		List<Dsymbol> a = null;
+	private Dsymbols parseBlock(boolean[] isSingle) {
+		Dsymbols a = null;
 
 		switch (token.value) {
 		case TOKsemicolon:
@@ -1033,7 +1033,7 @@ public class Parser extends Lexer {
 		
 		int[] varargs = new int[1];
 	    nextToken();
-	    List<Argument> arguments = parseParameters(varargs);
+	    Arguments arguments = parseParameters(varargs);
 	    CtorDeclaration f = new CtorDeclaration(loc, arguments, varargs[0]);
 	    f.thisStart = start;
 	    parseContracts(f);
@@ -1114,7 +1114,7 @@ public class Parser extends Lexer {
 		
 		nextToken();
 		int[] varargs = new int[1];
-		List<Argument> arguments = parseParameters(varargs);
+		Arguments arguments = parseParameters(varargs);
 		
 		NewDeclaration f = new NewDeclaration(loc, arguments, varargs[0]);
 	    parseContracts(f);
@@ -1130,7 +1130,7 @@ public class Parser extends Lexer {
 		
 		nextToken();
 		int[] varargs = new int[1];
-		List<Argument> arguments = parseParameters(varargs);
+		Arguments arguments = parseParameters(varargs);
 		
 		if (varargs[0] != 0) {
 	    	error(
@@ -1146,7 +1146,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Argument> parseParameters(int[] pvarargs) {
+	private Arguments parseParameters(int[] pvarargs) {
 		if (apiLevel < D2) {
 			return parseParametersD1(pvarargs);
 		} else {
@@ -1154,8 +1154,8 @@ public class Parser extends Lexer {
 		}
 	}
 	
-	private List<Argument> parseParametersD1(int[] pvarargs) {
-		List<Argument> arguments = new ArrayList<Argument>();
+	private Arguments parseParametersD1(int[] pvarargs) {
+		Arguments arguments = new Arguments();
 		int varargs = 0;
 		boolean hasdefault = false;
 
@@ -1265,8 +1265,8 @@ public class Parser extends Lexer {
 		return arguments;
 	}
 	
-	private List<Argument> parseParametersD2(int[] pvarargs) {
-		List<Argument> arguments = new ArrayList<Argument>();
+	private Arguments parseParametersD2(int[] pvarargs) {
+		Arguments arguments = new Arguments();
 		int varargs = 0;
 		boolean hasdefault = false;
 
@@ -1491,7 +1491,7 @@ public class Parser extends Lexer {
 			e.setSourceRange(enumTokenStart, token.ptr + token.len - enumTokenStart);
 			nextToken();			  
 		} else if (token.value == TOKlcurly) {
-			e.members = new ArrayList<Dsymbol>();
+			e.members = new Dsymbols();
 			nextToken();
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
@@ -1536,8 +1536,8 @@ public class Parser extends Lexer {
 	private Dsymbol parseAggregate() {
 		AggregateDeclaration a = null;
 		IdentifierExp id;
-		List<TemplateParameter> tpl = null;
-		List<BaseClass> baseClasses = null;
+		TemplateParameters tpl = null;
+		BaseClasses baseClasses = null;
 		int anon = 0;
 		boolean[] malformed = { false };
 		
@@ -1602,7 +1602,7 @@ public class Parser extends Lexer {
 			nextToken();
 		} else if (token.value == TOKlcurly) {
 			nextToken();
-			List decl = parseDeclDefs(false);
+			Dsymbols decl = parseDeclDefs(false);
 			if (token.value != TOKrcurly) {
 				parsingErrorInsertTokenAfter(prevToken, "}");
 			}
@@ -1648,11 +1648,11 @@ public class Parser extends Lexer {
 		
 		if (tpl != null)
 		{	
-			List<Dsymbol> decldefs;
+			Dsymbols decldefs;
 			TemplateDeclaration tempdecl;
 	
 			// Wrap a template around the aggregate declaration
-			decldefs = new ArrayList<Dsymbol>();
+			decldefs = new Dsymbols();
 			decldefs.add(a);
 			tempdecl = new TemplateDeclaration(loc, id, tpl, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
@@ -1663,9 +1663,9 @@ public class Parser extends Lexer {
 		return a;
 	}
 	
-	private List<BaseClass> parseBaseClasses() {
+	private BaseClasses parseBaseClasses() {
 		PROT protection = PROT.PROTpublic;
-		List<BaseClass> baseclasses = new ArrayList<BaseClass>();
+		BaseClasses baseclasses = new BaseClasses();
 		Modifier modifier = null;
 
 		for (; true; nextToken()) {
@@ -1696,8 +1696,8 @@ public class Parser extends Lexer {
 	
 	private TemplateDeclaration parseTemplateDeclaration() {
 		IdentifierExp id;
-		List<TemplateParameter> tpl;
-		List<Dsymbol> decldefs;
+		TemplateParameters tpl;
+		Dsymbols decldefs;
 		boolean[] malformed = { false };
 
 		int start = token.ptr;
@@ -1745,11 +1745,11 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<TemplateParameter> parseTemplateParameterList(boolean[] malformed) {
+	private TemplateParameters parseTemplateParameterList(boolean[] malformed) {
 		// Change from DMD: empty template parameter list is returned in case
 		// of a syntax error
 		
-		List<TemplateParameter> tpl = new ArrayList<TemplateParameter>();
+		TemplateParameters tpl = new TemplateParameters();
 
 		if (token.value != TOKlparen) {
 			parsingErrorInsertToComplete(prevToken, "Parenthesized TemplateParameterList", "TemplateDeclaration");
@@ -1913,8 +1913,8 @@ public class Parser extends Lexer {
 		TemplateMixin tm;
 		IdentifierExp id = null;
 		Type tqual;
-		List<ASTDmdNode> tiargs;
-		List<IdentifierExp> idents;
+		Objects tiargs;
+		Identifiers idents;
 
 		nextToken();
 		
@@ -1945,7 +1945,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 		
-		idents = new ArrayList<IdentifierExp>();
+		idents = new Identifiers();
 		while (true) {
 			int thisStart = prevToken.ptr;
 			
@@ -2004,17 +2004,17 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ASTDmdNode> parseTemplateArgumentList() {
+	private Objects parseTemplateArgumentList() {
 	    if (token.value != TOKlparen)
 	    {   
 	    	parsingErrorInsertToComplete(prevToken, "!(TemplateArgumentList)", "TemplateType");
-	    	return new ArrayList<ASTDmdNode>();
+	    	return new Objects();
 	    }
 	    return parseTemplateArgumentList2();
 	}
 	
-	private List<ASTDmdNode> parseTemplateArgumentList2() {
-		List<ASTDmdNode> tiargs = new ArrayList<ASTDmdNode>();
+	private Objects parseTemplateArgumentList2() {
+		Objects tiargs = new Objects();
 		nextToken();
 
 		// Get TemplateArgumentList
@@ -2053,7 +2053,7 @@ public class Parser extends Lexer {
 		Import s = null;
 		IdentifierExp id = null;
 		IdentifierExp aliasid = null;
-		List<IdentifierExp> a = null;
+		Identifiers a = null;
 		int start = token.ptr;
 		int sStart = 0;
 		
@@ -2091,7 +2091,7 @@ public class Parser extends Lexer {
 
 				while (token.value == TOKdot) {
 					if (a == null) {
-						a = new ArrayList<IdentifierExp>();
+						a = new Identifiers();
 					}
 					a.add(id);					
 					nextToken();
@@ -2163,7 +2163,7 @@ public class Parser extends Lexer {
 		return parseType(pident, null);
 	}
 	
-	private Type parseType(IdentifierExp[] pident, List<TemplateParameter>[] tpl) {   
+	private Type parseType(IdentifierExp[] pident, TemplateParameters[] tpl) {   
 		Type t;
 
 		if (token.value == TOKconst && peek(token).value != TOKlparen) {
@@ -2469,7 +2469,7 @@ public class Parser extends Lexer {
 			case TOKfunction: { // Handle delegate declaration:
 				// t delegate(parameter list)
 				// t function(parameter list)
-				List<Argument> arguments;
+				Arguments arguments;
 				int varargs = 0;
 				TOK save = token.value;
 
@@ -2504,7 +2504,7 @@ public class Parser extends Lexer {
 		return parseDeclarator(targ, ident, null, null);
 	}
 
-	private Type parseDeclarator(Type t, IdentifierExp[] pident, List<TemplateParameter>[] tpl, int[] identStart) {
+	private Type parseDeclarator(Type t, IdentifierExp[] pident, TemplateParameters[] tpl, int[] identStart) {
 		// This may happen if a basic type was not find
 		if (t == null) {
 			return null;
@@ -2595,7 +2595,7 @@ public class Parser extends Lexer {
 		    }
 	//#endif
 		    case TOKlparen:
-		    {	List<Argument> arguments;
+		    {	Arguments arguments;
 			int varargs = 0;
 
 			if (tpl != null)
@@ -2639,7 +2639,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Dsymbol> parseDeclarations(List<Comment> lastComments) {
+	private Dsymbols parseDeclarations(List<Comment> lastComments) {
 		int storage_class;
 		int stc;
 		Type ts;
@@ -2647,7 +2647,7 @@ public class Parser extends Lexer {
 		Type tfirst;
 		IdentifierExp ident;
 		int lineNumber = 0;
-		List a;
+		Dsymbols a;
 		TOK tok;
 		LINK link = linkage;
 		
@@ -2720,7 +2720,7 @@ public class Parser extends Lexer {
 			break;
 		}
 
-		a = new ArrayList();
+		a = new Dsymbols();
 		
 		boolean first = true;
 		VarDeclaration previousVar = null;
@@ -2798,11 +2798,11 @@ public class Parser extends Lexer {
 		TypedefDeclaration previousTypedef = null;
 		first = true;
 		while (true) {
-			List<TemplateParameter> tpl = null;
+			TemplateParameters tpl = null;
 
 			ident = null;
 			IdentifierExp[] pointer2_ident = { ident };
-			List[] pointer2_tpl = { tpl };
+			TemplateParameters[] pointer2_tpl = { tpl };
 			t = parseDeclarator(ts, pointer2_ident, pointer2_tpl, identStart);
 			ident = pointer2_ident[0];
 			tpl = pointer2_tpl[0];
@@ -2868,7 +2868,7 @@ public class Parser extends Lexer {
 					a.add(v);
 			    } else {
 			    	// TODO: this is never reached by tests
-			    	List ax = new ArrayList();
+			    	Dsymbols ax = new Dsymbols();
 			    	ax.add(v);
 			    	Dsymbol s = new LinkDeclaration(null, link, ax);
 			    	a.add(s);
@@ -2909,17 +2909,17 @@ public class Parser extends Lexer {
 				if (link == linkage) {
 					s = f;
 				} else {
-					List<Dsymbol> ax = new ArrayList<Dsymbol>();
+					Dsymbols ax = new Dsymbols();
 					ax.add(f);
 					s = new LinkDeclaration(loc, link, ax);
 				}
 					
 				if (tpl != null) { // it's a function template
-					List decldefs;
+					Dsymbols decldefs;
 					TemplateDeclaration tempdecl;
 
 					// Wrap a template around the aggregate declaration
-					decldefs = new ArrayList();
+					decldefs = new Dsymbols();
 					decldefs.add(s);
 					tempdecl = new TemplateDeclaration(loc, s.ident, tpl, decldefs);
 					tempdecl.setSourceRange(s.start, s.length);
@@ -3450,10 +3450,10 @@ public class Parser extends Lexer {
 		}
 
 		case TOKlcurly: {
-			List<Statement> statements;
+			Statements statements;
 
 			nextToken();
-			statements = new ArrayList<Statement>();
+			statements = new Statements();
 			
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
@@ -3561,7 +3561,7 @@ public class Parser extends Lexer {
 		case TOKforeach_reverse:
 		{
 			TOK op = token.value;
-			List arguments;
+			Arguments arguments;
 
 			// Statement d; // <-- not used
 			Statement body;
@@ -3570,7 +3570,7 @@ public class Parser extends Lexer {
 			nextToken();
 			check(TOKlparen);
 
-			arguments = new ArrayList();
+			arguments = new Arguments();
 
 			while (true) {
 				Type tb;
@@ -3871,7 +3871,7 @@ public class Parser extends Lexer {
 
 		case TOKpragma: {
 			IdentifierExp ident;
-			List<Expression> args = null;
+			Expressions args = null;
 			Statement body;
 			
 			nextToken();
@@ -3920,7 +3920,7 @@ public class Parser extends Lexer {
 
 		case TOKcase: {
 			Expression exp;
-			List<Statement> statements;
+			Statements statements;
 			List cases = new ArrayList(); // array of Expression's
 
 			while (true) {
@@ -3932,7 +3932,7 @@ public class Parser extends Lexer {
 			}
 			check(TOKcolon);
 
-			statements = new ArrayList<Statement>();
+			statements = new Statements();
 			while (token.value != TOKcase && token.value != TOKdefault
 					&& token.value != TOKrcurly) {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
@@ -3953,12 +3953,12 @@ public class Parser extends Lexer {
 		}
 
 		case TOKdefault: {
-			List<Statement> statements;
+			Statements statements;
 			
 			nextToken();
 			check(TOKcolon);
 
-			statements = new ArrayList<Statement>();
+			statements = new Statements();
 			while (token.value != TOKcase && token.value != TOKdefault
 					&& token.value != TOKrcurly) {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
@@ -4171,7 +4171,7 @@ public class Parser extends Lexer {
 			break;
 
 		case TOKasm: {
-			List<Statement> statements;
+			Statements statements;
 			IdentifierExp label;
 			List<Token> toklist = new ArrayList<Token>(6);
 			
@@ -4183,7 +4183,7 @@ public class Parser extends Lexer {
 			nextToken();
 			check(TOKlcurly);
 			label = null;
-			statements = new ArrayList<Statement>();
+			statements = new Statements();
 			while (true) {
 				switch (token.value) {
 				case TOKidentifier:
@@ -4272,7 +4272,7 @@ public class Parser extends Lexer {
 
 		a = parseDeclarations(new ArrayList<Comment>());
 		if (a.size() > 1) {
-			List<Statement> as = new ArrayList<Statement>(a.size());
+			Statements as = new Statements(a.size());
 			for (int i = 0; i < a.size(); i++) {
 				Dsymbol d = (Dsymbol) a.get(i);
 				s[0] = new DeclarationStatement(loc, d);
@@ -5370,7 +5370,7 @@ public class Parser extends Lexer {
 			/* __traits(identifier, args...)
 			 */
 			IdentifierExp ident;
-			List<ASTDmdNode> args = null;
+			Objects args = null;
 
 			nextToken();
 			check(TOKlparen);
@@ -5527,8 +5527,8 @@ public class Parser extends Lexer {
 		     *	[ value, value, value ... ]
 		     *	[ key:value, key:value, key:value ... ]
 		     */
-			List<Expression> values = new ArrayList<Expression>();
-			List<Expression> keys = null;
+			Expressions values = new Expressions();
+			Expressions keys = null;
 
 			nextToken();
 			if (token.value != TOKrbracket) {
@@ -5538,7 +5538,7 @@ public class Parser extends Lexer {
 							&& (keys != null || values.size() == 0)) {
 						nextToken();
 						if (keys == null) {
-							keys = new ArrayList<Expression>();
+							keys = new Expressions();
 						}
 						keys.add(e2);
 						e2 = parseAssignExp();
@@ -5663,7 +5663,7 @@ public class Parser extends Lexer {
 						upr = parseAssignExp();
 						e = new SliceExp(loc, e, index, upr);
 					} else { // array[index, i2, i3, i4, ...]
-						List<Expression> arguments = new ArrayList<Expression>();
+						Expressions arguments = new Expressions();
 						arguments.add(index);
 						if (token.value == TOKcomma) {
 							nextToken();
@@ -5920,7 +5920,7 @@ public class Parser extends Lexer {
 	}
 
 	private void parsePrimaryExp_case_delegate(Expression[] e, TOK save) {
-		List<Argument> arguments;
+		Arguments arguments;
 		int varargs = 0;
 		FuncLiteralDeclaration fd;
 		Type t;
@@ -5928,7 +5928,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKlcurly) {
 			t = null;
 			varargs = 0;
-			arguments = new ArrayList<Argument>();
+			arguments = new Arguments();
 		} else {
 			if (token.value == TOKlparen)
 				t = null;
@@ -6328,13 +6328,13 @@ public class Parser extends Lexer {
 	 */
 	
 	@SuppressWarnings("unchecked")
-	private List<Expression> parseArguments() {
+	private Expressions parseArguments() {
 		// function call
-		List<Expression> arguments;
+		Expressions arguments;
 		Expression arg;
 		TOK endtok;
 
-		arguments = new ArrayList<Expression>();
+		arguments = new Expressions();
 		if (token.value == TOKlbracket) {
 			endtok = TOKrbracket;
 		} else {
@@ -6362,8 +6362,8 @@ public class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	private Expression parseNewExp(Expression thisexp) {
 		Type t;
-		List<Expression> newargs = null;
-		List<Expression> arguments = null;
+		Expressions newargs = null;
+		Expressions arguments = null;
 		Expression e;
 
 		nextToken();
@@ -6377,7 +6377,7 @@ public class Parser extends Lexer {
 			if (token.value == TOKlparen)
 				arguments = parseArguments();
 
-			List<BaseClass> baseClasses = null;
+			BaseClasses baseClasses = null;
 			if (token.value != TOKlcurly)
 				baseClasses = parseBaseClasses();
 
@@ -6389,7 +6389,7 @@ public class Parser extends Lexer {
 				cd.members = null;
 			} else {
 				nextToken();
-				List decl = parseDeclDefs(false);
+				Dsymbols decl = parseDeclDefs(false);
 				if (token.value != TOKrcurly) {
 					parsingErrorInsertToComplete(prevToken, "ClassBody", "AnnonymousClassDeclaration");
 				}
@@ -6412,7 +6412,7 @@ public class Parser extends Lexer {
 				
 				Expression e2 = index.toExpression();
 				if (e2 != null) {
-					arguments = new ArrayList<Expression>();
+					arguments = new Expressions();
 					arguments.add(e2);				
 					t = new TypeDArray(t.next);
 				} else {
@@ -6425,7 +6425,7 @@ public class Parser extends Lexer {
 				TypeSArray tsa = (TypeSArray) t;
 				Expression e2 = tsa.dim;
 	
-				arguments = new ArrayList<Expression>();
+				arguments = new Expressions();
 				arguments.add(e2);
 				
 				t = new TypeDArray(t.next);
@@ -6459,11 +6459,11 @@ public class Parser extends Lexer {
 	    return associativeArray;
 	}
 	
-	private CompoundStatement newBlock(List<Statement> statements) {
+	private CompoundStatement newBlock(Statements statements) {
 		return new CompoundStatement(loc, statements);
 	}
 	
-	private CompoundStatement newManyVarsBlock(List<Statement> statements) {
+	private CompoundStatement newManyVarsBlock(Statements statements) {
 		CompoundStatement statement = new CompoundStatement(loc, statements);
 		statement.manyVars = true;
 		return statement;

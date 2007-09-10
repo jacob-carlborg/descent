@@ -197,7 +197,7 @@ public class SwitchStatement extends Statement {
 			}
 
 			// Generate runtime error if the default is hit
-			List<Statement> a = new ArrayList<Statement>();
+			Statements a = new Statements();
 			CompoundStatement cs;
 			Statement s;
 

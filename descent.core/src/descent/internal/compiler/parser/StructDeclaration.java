@@ -1,10 +1,6 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.PROT.PROTnone;
-import static descent.internal.compiler.parser.STC.STCin;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 
@@ -12,6 +8,9 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.PROT.PROTnone;
+
+import static descent.internal.compiler.parser.STC.STCin;
 
 public class StructDeclaration extends AggregateDeclaration {
 	
@@ -120,7 +119,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		TypeFunction tfeqptr;
 		{
-			List<Argument> arguments = new ArrayList<Argument>();
+			Arguments arguments = new Arguments();
 			Argument arg = new Argument(STCin, handle, new IdentifierExp(loc, 
 					Id.p), null);
 
@@ -132,7 +131,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		TypeFunction tfeq;
 		{
-			List<Argument> arguments = new ArrayList<Argument>();
+			Arguments arguments = new Arguments();
 			Argument arg = new Argument(STCin, type, null, null);
 
 			arguments.add(arg);
@@ -153,7 +152,7 @@ public class StructDeclaration extends AggregateDeclaration {
 								STC.STCundefined, tfeqptr);
 						Expression e = new IdentifierExp(loc, Id.p);
 						e = new PtrExp(loc, e);
-						List<Expression> args = new ArrayList<Expression>();
+						Expressions args = new Expressions();
 						args.add(e);
 						e = new IdentifierExp(loc, id);
 						e = new CallExp(loc, e, args);

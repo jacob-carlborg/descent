@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
@@ -45,7 +42,7 @@ public class TypeClass extends Type {
 
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
 		/* If this class is a template class, and we're matching
 		 * it against a template instance, convert the class type
@@ -128,7 +125,7 @@ public class TypeClass extends Type {
 		if (CharOperation.equals(ident.ident, Id.tupleof) && !gotoL1) {
 			/* Create a TupleExp
 			 */
-			List<Expression> exps = new ArrayList<Expression>(sym.fields.size());
+			Expressions exps = new Expressions(sym.fields.size());
 			for (VarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);

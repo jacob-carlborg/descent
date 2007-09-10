@@ -6,15 +6,15 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Argument extends ASTDmdNode {
-	
+
 	public int storageClass;
 	public Type type;
 	public IdentifierExp ident;
 	public Expression defaultArg;
 	public Expression sourceDefaultArg;
-	
 
-	public Argument(int storageClass, Type type, IdentifierExp ident, Expression defaultArg) {
+	public Argument(int storageClass, Type type, IdentifierExp ident,
+			Expression defaultArg) {
 		this.storageClass = storageClass;
 		if (type == null) {
 			this.type = Type.terror;
@@ -25,7 +25,7 @@ public class Argument extends ASTDmdNode {
 		this.defaultArg = defaultArg;
 		this.sourceDefaultArg = defaultArg;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -35,9 +35,9 @@ public class Argument extends ASTDmdNode {
 		}
 		visitor.endVisit(this);
 	}
-    
-    public static int dim(List<Argument> args, SemanticContext context) {
-    	int n = 0;
+
+	public static int dim(Arguments args, SemanticContext context) {
+		int n = 0;
 		if (args != null) {
 			for (Argument arg : args) {
 				Type t = arg.type.toBasetype(context);
@@ -50,14 +50,16 @@ public class Argument extends ASTDmdNode {
 			}
 		}
 		return n;
-    }
-    
-    public static Argument getNth(List<Argument> args, int nth, SemanticContext context) {
-    	return getNth(args, nth, null, context);
-    }
-    
-    public static Argument getNth(List<Argument> args, int nth, int[] pn, SemanticContext context) {
-    	if (args == null)
+	}
+
+	public static Argument getNth(Arguments args, int nth,
+			SemanticContext context) {
+		return getNth(args, nth, null, context);
+	}
+
+	public static Argument getNth(Arguments args, int nth, int[] pn,
+			SemanticContext context) {
+		if (args == null)
 			return null;
 
 		int n = 0;
@@ -81,21 +83,25 @@ public class Argument extends ASTDmdNode {
 			pn[0] += n;
 		}
 		return null;
-    }
-    
-    @Override
-    public int getNodeType() {
-    	return ARGUMENT;
-    }
+	}
+
+	@Override
+	public int getNodeType() {
+		return ARGUMENT;
+	}
 
 	public Type isLazyArray() {
 		// TODO semantic
 		return null;
 	}
 
-	public Argument syntaxCopy()
-	{
-		//TODO semantic
-		return null;
+	public Argument syntaxCopy() {
+		Argument a = new Argument(storageClass, type != null ? type
+				.syntaxCopy() : null, ident, defaultArg != null ? defaultArg
+				.syntaxCopy() : null);
+		return a;
 	}
+	
+	
+	
 }

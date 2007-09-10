@@ -1,32 +1,30 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKint64;
-import static descent.internal.compiler.parser.TY.Tarray;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tstruct;
-
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tstruct;
 
 public class NewExp extends Expression {
 
 	public Expression thisexp;
-	public List<Expression> newargs;
+	public Expressions newargs;
 	public Type newtype;
-	public List<Expression> arguments;
+	public Expressions arguments;
 	public CtorDeclaration member; // constructor function
 	public NewDeclaration allocator; // allocator function
 	public boolean onstack; // allocate on stack
 
-	public NewExp(Loc loc, Expression thisexp, List<Expression> newargs, Type newtype,
-			List<Expression> arguments) {
+	public NewExp(Loc loc, Expression thisexp, Expressions newargs, Type newtype,
+			Expressions arguments) {
 		super(loc, TOK.TOKnew);
 		this.thisexp = thisexp;
 		this.newargs = newargs;
@@ -177,7 +175,7 @@ public class NewExp extends Expression {
 					type = tf.next;
 
 					if (arguments == null) {
-						arguments = new ArrayList<Expression>();
+						arguments = new Expressions();
 					}
 					functionArguments(loc, sc, tf, arguments, context);
 				} else {
@@ -194,7 +192,7 @@ public class NewExp extends Expression {
 					// Prepend the uint size argument to newargs[]
 					e = new IntegerExp(loc, cd.size(context), Type.tuns32);
 					if (newargs == null) {
-						newargs = new ArrayList<Expression>();
+						newargs = new Expressions();
 					}
 					newargs.add(0, e);
 
@@ -226,7 +224,7 @@ public class NewExp extends Expression {
 					// Prepend the uint size argument to newargs[]
 					e = new IntegerExp(loc, sd.size(context), Type.tuns32);
 					if (newargs == null) {
-						newargs = new ArrayList<Expression>();
+						newargs = new Expressions();
 					}
 					newargs.add(0, e);
 

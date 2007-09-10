@@ -1,17 +1,28 @@
 package descent.internal.compiler.parser;
 
+import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCforeach;
 import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
+
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
+
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbit;
@@ -26,16 +37,6 @@ import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
 import static descent.internal.compiler.parser.TY.Twchar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 public class ForeachStatement extends Statement {
 
 	private final static char[] _aaApply = { '_', 'a', 'a', 'A', 'p', 'p', 'l',
@@ -44,7 +45,7 @@ public class ForeachStatement extends Statement {
 			'l', 'y', '2' };
 
 	public TOK op;
-	public List<Argument> arguments;
+	public Arguments arguments;
 	public Expression aggr;
 	public Expression sourceAggr;
 
@@ -61,7 +62,7 @@ public class ForeachStatement extends Statement {
 	public final static String[] fntab = { "cc", "cw", "cd", "wc", "cc", "wd",
 			"dc", "dw", "dd" };
 
-	public ForeachStatement(Loc loc, TOK op, List<Argument> arguments,
+	public ForeachStatement(Loc loc, TOK op, Arguments arguments,
 			Expression aggr, Statement body) {
 		super(loc);
 		this.op = op;
@@ -124,7 +125,7 @@ public class ForeachStatement extends Statement {
 			}
 
 			TypeTuple tuple = (TypeTuple) tab;
-			List<Statement> statements = new ArrayList<Statement>();
+			Statements statements = new Statements();
 			// printf("aggr: op = %d, %s\n", aggr.op, aggr.toChars());
 			int n = 0;
 			TupleExp te = null;
@@ -145,7 +146,7 @@ public class ForeachStatement extends Statement {
 				else
 					t = Argument.getNth(tuple.arguments, k, context).type;
 				Argument arg = (Argument) arguments.get(0);
-				List<Statement> st = new ArrayList<Statement>();
+				Statements st = new Statements();
 
 				if (dim == 2) { // Declare key
 					if ((arg.storageClass & (STCout | STCref | STClazy)) != 0)
@@ -328,7 +329,7 @@ public class ForeachStatement extends Statement {
 	private void semantic_Lapply(Scope sc, SemanticContext context, int dim,
 			Statement[] s, Type tab, TypeAArray taa, Type tn, Type tnv, int i) {
 		FuncDeclaration fdapply;
-		List<Argument> args;
+		Arguments args;
 		Expression ec;
 		Expression e;
 		FuncLiteralDeclaration fld;
@@ -358,7 +359,7 @@ public class ForeachStatement extends Statement {
 		 * Turn body into the function literal: int delegate(inout T arg) {
 		 * body }
 		 */
-		args = new ArrayList<Argument>();
+		args = new Arguments();
 		for (i = 0; i < dim; i++) {
 			Argument arg = (Argument) arguments.get(i);
 
@@ -421,7 +422,7 @@ public class ForeachStatement extends Statement {
 			else
 				fdapply = context.genCfunc(Type.tindex, _aaApply);
 			ec = new VarExp(loc, fdapply);
-			List<Expression> exps = new ArrayList<Expression>();
+			Expressions exps = new Expressions();
 			exps.add(aggr);
 			int keysize = taa.key.size(loc, context);
 			keysize = (keysize + 3) & ~3;
@@ -468,7 +469,7 @@ public class ForeachStatement extends Statement {
 			fdapply = context.genCfunc(Type.tindex, fdname.toCharArray());
 
 			ec = new VarExp(loc, fdapply);
-			List<Expression> exps = new ArrayList<Expression>();
+			Expressions exps = new Expressions();
 			if (tab.ty == Tsarray) {
 				aggr = aggr.castTo(sc, tn.arrayOf(context), context);
 			}
@@ -480,7 +481,7 @@ public class ForeachStatement extends Statement {
 			/*
 			 * Call: aggr(flde)
 			 */
-			List<Expression> exps = new ArrayList<Expression>();
+			Expressions exps = new Expressions();
 			exps.add(flde);
 			e = new CallExp(loc, aggr, exps);
 			e = e.semantic(sc, context);
@@ -493,7 +494,7 @@ public class ForeachStatement extends Statement {
 			 */
 			ec = new DotIdExp(loc, aggr, new IdentifierExp(loc,
 					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply));
-			List<Expression> exps = new ArrayList<Expression>();
+			Expressions exps = new Expressions();
 			exps.add(flde);
 			e = new CallExp(loc, ec, exps);
 			e = e.semantic(sc, context);
@@ -507,7 +508,7 @@ public class ForeachStatement extends Statement {
 			s[0] = new ExpStatement(loc, e);
 		else { // Construct a switch statement around the return value
 			// of the apply function.
-			List<Statement> a2 = new ArrayList<Statement>();
+			Statements a2 = new Statements();
 
 			// default: break; takes care of cases 0 and 1
 			s[0] = new BreakStatement(loc, null);

@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
@@ -11,23 +8,23 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Dsymbol extends ASTDmdNode {
 
-	public static List<Dsymbol> arraySyntaxCopy(List<Dsymbol> a) {
-		List<Dsymbol> b = new ArrayList<Dsymbol>();
+	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
+		Dsymbols b = new Dsymbols();
 		for (Dsymbol s : a) {
 			b.add(s.syntaxCopy(null));
 		}
 		return b;
 	}
 
-	public static List<Argument> arraySyntaxCopyArguments(List<Argument> a) {
-		List<Argument> b = new ArrayList<Argument>();
+	public static Arguments arraySyntaxCopy(Arguments a) {
+		Arguments b = new Arguments();
 		for (Argument s : a) {
 			b.add(s.syntaxCopy());
 		}
 		return b;
 	}
 
-	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps,
+	public static boolean oneMembers(Dsymbols members, Dsymbol[] ps,
 			SemanticContext context) {
 		Dsymbol s = null;
 
@@ -72,7 +69,7 @@ public class Dsymbol extends ASTDmdNode {
 		this.parent = null;
 	}
 
-	public void addLocalClass(List<ClassDeclaration> aclasses,
+	public void addLocalClass(ClassDeclarations aclasses,
 			SemanticContext context) {
 
 	}

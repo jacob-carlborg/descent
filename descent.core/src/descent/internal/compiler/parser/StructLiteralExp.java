@@ -1,20 +1,18 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StructLiteralExp extends Expression {	
 
 	public StructDeclaration sd;		// which aggregate this is for
-	public List<Expression> elements;	// parallels sd->fields[] with
+	public Expressions elements;	// parallels sd->fields[] with
 				// NULL entries for fields to skip
 
     // Symbol *sym;		// back end symbol to initialize with literal
 	public int soffset;		// offset from start of s
 	public int fillHoles;		// fill alignment 'holes' with zero
 	
-	public StructLiteralExp(Loc loc, StructDeclaration sd, List<Expression> elements) {
+	public StructLiteralExp(Loc loc, StructDeclaration sd, Expressions elements) {
 		super(loc, TOK.TOKstructliteral);
 		this.sd = sd;
 	    this.elements = elements;

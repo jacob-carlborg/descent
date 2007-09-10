@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
 import melnorme.miscutil.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -9,9 +7,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class UnrolledLoopStatement extends Statement {
 
-	public List<Statement> statements;
+	public Statements statements;
 
-	public UnrolledLoopStatement(Loc loc, List<Statement> statements) {
+	public UnrolledLoopStatement(Loc loc, Statements statements) {
 		super(loc);
 		this.statements = statements;
 	}
@@ -171,7 +169,7 @@ public class UnrolledLoopStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy() {
-		List<Statement> a = new ArrayList<Statement>(statements.size());
+		Statements a = new Statements(statements.size());
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {

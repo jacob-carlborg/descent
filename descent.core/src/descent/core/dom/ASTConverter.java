@@ -627,7 +627,7 @@ public class ASTConverter {
 		toAdd.add(b);
 	}
 	
-	private Declaration tryConvertMany(List<Dsymbol> decl, descent.core.dom.Modifier modifier, List<Modifier> modifiers) {
+	private Declaration tryConvertMany(Dsymbols decl, descent.core.dom.Modifier modifier, List<Modifier> modifiers) {
 		Dsymbol dsymbol = decl.get(0);
 		descent.core.dom.Declaration declaration = null;
 		if (dsymbol instanceof VarDeclaration) {
@@ -3162,7 +3162,7 @@ public class ASTConverter {
 		for(BaseClass base : source) destination.add(convert(base));
 	}
 	
-	public void convertTemplateParameters(List<descent.core.dom.TemplateParameter> destination, List<TemplateParameter> source) {
+	public void convertTemplateParameters(List<descent.core.dom.TemplateParameter> destination, TemplateParameters source) {
 		if (source == null || source.isEmpty()) return;
 		for(TemplateParameter temp : source) destination.add(convert(temp));
 	}
@@ -3250,7 +3250,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, List<IdentifierExp> ids, List<ASTDmdNode> tiargs) {
+	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, Identifiers ids, Objects tiargs) {
 		descent.core.dom.Type ret = null;
 		if (typeof != null) {
 			ret = convert(typeof);
@@ -3298,7 +3298,7 @@ public class ASTConverter {
 		return ret;
 	}
 	
-	public descent.core.dom.Name convert(List<IdentifierExp> packages, IdentifierExp id) {
+	public descent.core.dom.Name convert(Identifiers packages, IdentifierExp id) {
 		descent.core.dom.SimpleName sIdLast = convert(id);
 		if (packages == null || packages.isEmpty()) {
 			return sIdLast;
@@ -3318,7 +3318,7 @@ public class ASTConverter {
 		}
 	}
 	
-	public descent.core.dom.Name convert(IdentifierExp id, List<IdentifierExp> packages) {
+	public descent.core.dom.Name convert(IdentifierExp id, Identifiers packages) {
 		descent.core.dom.SimpleName sIdFirst = convert(id);
 		if (packages == null || packages.isEmpty()) {
 			return sIdFirst;

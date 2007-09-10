@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -86,7 +84,7 @@ public class DotVarExp extends UnaExp {
 				 * with:
 				 *	tuple(e1.a, e1.b, e1.c)
 				 */
-				ArrayList<Expression> exps = new ArrayList<Expression>();
+				Expressions exps = new Expressions();
 				exps.ensureCapacity(tup.objects.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);

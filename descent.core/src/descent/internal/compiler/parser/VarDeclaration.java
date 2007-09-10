@@ -1,15 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.PROT.PROTexport;
-import static descent.internal.compiler.parser.STC.STCauto;
-import static descent.internal.compiler.parser.STC.STCconst;
-import static descent.internal.compiler.parser.STC.STCfield;
-import static descent.internal.compiler.parser.STC.STCscope;
-import static descent.internal.compiler.parser.STC.STCstatic;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -17,6 +7,13 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.PROT.PROTexport;
+
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
 
 public class VarDeclaration extends Declaration {
 
@@ -273,7 +270,7 @@ public class VarDeclaration extends Declaration {
 			 */
 			TypeTuple tt = (TypeTuple) tb;
 			int nelems = Argument.dim(tt.arguments, context);
-			List exps = new ArrayList(nelems);
+			Objects exps = new Objects(nelems);
 
 			for (int i = 0; i < nelems; i++) {
 				Argument arg = Argument.getNth(tt.arguments, i, context);

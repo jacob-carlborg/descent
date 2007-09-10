@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -43,7 +42,7 @@ public class TypeAArray extends TypeArray {
 
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
 		// Extra check that index type must match
 		if (tparam != null && tparam.ty == Taarray) {
@@ -69,18 +68,18 @@ public class TypeAArray extends TypeArray {
 		if (CharOperation.equals(ident.ident, Id.length)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 
 			fd = context.genCfunc(Type.tsize_t, Id.aaLen);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = fd.type.next;
 		} else if (CharOperation.equals(ident.ident, Id.keys)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 			int size = key.size(e.loc, context);
 
 			if (size == 0) {
@@ -88,7 +87,7 @@ public class TypeAArray extends TypeArray {
 			}
 			fd = context.genCfunc(Type.tindex, Id.aaKeys);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e);
 			arguments.add(new IntegerExp(Loc.ZERO, size, Type.tsize_t));
 			e = new CallExp(e.loc, ec, arguments);
@@ -96,11 +95,11 @@ public class TypeAArray extends TypeArray {
 		} else if (CharOperation.equals(ident.ident, Id.values)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 
 			fd = context.genCfunc(Type.tindex, Id.aaValues);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e);
 			int keysize = key.size(e.loc, context);
 			keysize = (keysize + 3) & ~3; // BUG: 64 bit pointers?
@@ -112,11 +111,11 @@ public class TypeAArray extends TypeArray {
 		} else if (CharOperation.equals(ident.ident, Id.rehash)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 
 			fd = context.genCfunc(Type.tint64, Id.aaRehash);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e.addressOf(sc, context));
 			arguments.add(key.getInternalTypeInfo(sc));
 			e = new CallExp(e.loc, ec, arguments);

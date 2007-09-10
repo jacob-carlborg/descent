@@ -1,7 +1,6 @@
 AggregateDeclaration.java
 AliasDeclaration.java
 AlignDeclaration.java
-AnonDeclaration.java
 AnonymousAggregateDeclaration.java
 Argument.java
 ArrayExp.java

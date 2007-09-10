@@ -11,9 +11,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class TraitsExp extends Expression {
 
 	public IdentifierExp ident;
-	public List<ASTDmdNode> args;
+	public Objects args;
 
-	public TraitsExp(Loc loc, IdentifierExp ident, List<ASTDmdNode> args) {
+	public TraitsExp(Loc loc, IdentifierExp ident, Objects args) {
 		super(loc, TOK.TOKtraits);
 		this.ident = ident;
 		this.args = args;
@@ -277,7 +277,7 @@ public class TraitsExp extends Expression {
 			    /* Create tuple of virtual function overloads of e
 			     */
 			    //e.dump(0);
-			    List<Expression> exps = new ArrayList<Expression>();
+			    Expressions exps = new Expressions();
 			    FuncDeclaration f;
 			    if (e.op == TOK.TOKvar)
 			    {

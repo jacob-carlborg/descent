@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -11,10 +9,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class ConditionalDeclaration extends AttribDeclaration {
 
 	public Condition condition;
-	public List<Dsymbol> elsedecl;
+	public Dsymbols elsedecl;
 
-	public ConditionalDeclaration(Loc loc, Condition condition, List<Dsymbol> decl,
-			List<Dsymbol> elsedecl) {
+	public ConditionalDeclaration(Loc loc, Condition condition, Dsymbols decl,
+			Dsymbols elsedecl) {
 		super(loc, decl);
 		this.condition = condition;
 		this.elsedecl = elsedecl;
@@ -36,7 +34,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public List<Dsymbol> include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
+	public Dsymbols include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
 		Assert.isNotNull(condition);
 		return condition.include(sc, sd, context) ? decl : elsedecl;
 	}
@@ -44,7 +42,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	@Override
 	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		if (condition.inc) {
-			List d = condition.include(null, null, context) ? decl : elsedecl;
+			Dsymbols d = condition.include(null, null, context) ? decl : elsedecl;
 			return Dsymbol.oneMembers(d, ps, context);
 		}
 		ps[0] = null;

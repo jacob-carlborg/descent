@@ -13,7 +13,7 @@ public class LinkDeclaration extends AttribDeclaration {
 
 	public LINK linkage;
 
-	public LinkDeclaration(Loc loc, LINK linkage, List<Dsymbol> decl) {
+	public LinkDeclaration(Loc loc, LINK linkage, Dsymbols decl) {
 		super(loc, decl);
 		this.linkage = linkage;
 	}

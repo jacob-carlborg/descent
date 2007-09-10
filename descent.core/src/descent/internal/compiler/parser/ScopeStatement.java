@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -75,7 +73,7 @@ public class ScopeStatement extends Statement {
 		ScopeDsymbol sym;
 
 		if (statement != null) {
-			List<Statement> a;
+			Statements a;
 
 			sym = new ScopeDsymbol(loc);
 			sym.parent = sc.scopesym;

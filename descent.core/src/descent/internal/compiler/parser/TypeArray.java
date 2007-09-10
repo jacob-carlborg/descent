@@ -1,14 +1,11 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
+
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Twchar;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import descent.core.compiler.CharOperation;
 
 public abstract class TypeArray extends Type {
 
@@ -32,14 +29,14 @@ public abstract class TypeArray extends Type {
 				&& (n.ty == Tchar || n.ty == Twchar)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 			char[] nm;
 
 			nm = name1[n.ty == Twchar ? 1 : 0];
 			fd = context.genCfunc(Type.tindex, nm);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
@@ -47,14 +44,14 @@ public abstract class TypeArray extends Type {
 				&& (n.ty == Tchar || n.ty == Twchar)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 			char[] nm;
 
 			nm = name2[n.ty == Twchar ? 1 : 0];
 			fd = context.genCfunc(Type.tindex, nm);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
@@ -62,7 +59,7 @@ public abstract class TypeArray extends Type {
 				|| CharOperation.equals(ident.ident, Id.dup)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 			int size = next.size(e.loc, context);
 			boolean dup;
 
@@ -74,7 +71,7 @@ public abstract class TypeArray extends Type {
 			fd = context.genCfunc(Type.tindex, dup ? Id.adDup : Id.adReverse);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			if (dup) {
 				arguments.add(getTypeInfo(sc, context));
 			}
@@ -87,13 +84,13 @@ public abstract class TypeArray extends Type {
 		} else if (CharOperation.equals(ident.ident, Id.sort)) {
 			Expression ec;
 			FuncDeclaration fd;
-			List<Expression> arguments;
+			Expressions arguments;
 
 			fd = context.genCfunc(tint32.arrayOf(context),
 					(n.ty == Tbit ? name3[0] : name3[1]));
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 			arguments.add(e);
 			if (next.ty != Tbit) {
 				arguments.add(n.ty == Tsarray ? n.getTypeInfo(sc, context) // don't convert to dynamic array

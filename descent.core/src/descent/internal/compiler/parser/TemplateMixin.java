@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -9,17 +8,17 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class TemplateMixin extends TemplateInstance {
 
 	public Type tqual;
-	public List<ASTDmdNode> tiargs;
+	public Objects tiargs;
 	public int typeStart;
 	public int typeLength;
 
 	public TemplateMixin(IdentifierExp ident, Type tqual,
-			List<IdentifierExp> idents, List<ASTDmdNode> tiargs) {
+			Identifiers idents, Objects tiargs) {
 		super(idents.get(idents.size() - 1));
 		this.ident = ident;
 		this.tqual = tqual;
 		this.idents = idents;
-		this.tiargs = tiargs != null ? tiargs : new ArrayList<ASTDmdNode>(0);
+		this.tiargs = tiargs != null ? tiargs : new Objects(0);
 	}
 
 	public void setTypeSourceRange(int start, int length) {

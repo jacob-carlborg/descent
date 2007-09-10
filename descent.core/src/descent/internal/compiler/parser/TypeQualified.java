@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
@@ -13,7 +10,7 @@ import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 public abstract class TypeQualified extends Type {
 
 	public Loc loc;
-	public List<IdentifierExp> idents;
+	public Identifiers idents;
 
 	public TypeQualified(Loc loc, TY ty) {
 		super(ty, null);
@@ -22,7 +19,7 @@ public abstract class TypeQualified extends Type {
 
 	public void addIdent(IdentifierExp ident) {
 		if (idents == null) {
-			idents = new ArrayList<IdentifierExp>();
+			idents = new Identifiers();
 		}
 		idents.add(ident);
 	}

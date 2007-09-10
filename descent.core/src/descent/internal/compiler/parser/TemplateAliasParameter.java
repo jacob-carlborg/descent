@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -85,8 +83,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 
 	@Override
-	public MATCH matchArg(Scope sc, List<ASTDmdNode> tiargs, int i,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+	public MATCH matchArg(Scope sc, Objects tiargs, int i,
+			TemplateParameters parameters, Objects dedtypes,
 			Declaration[] psparam, SemanticContext context) {
 		Dsymbol sa;
 		ASTDmdNode oarg;

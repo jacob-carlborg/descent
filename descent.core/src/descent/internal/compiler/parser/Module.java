@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -20,13 +19,13 @@ public class Module extends Package {
 	public int[] lineEnds;
 	public int semanticstarted; // has semantic() been started?
 	public int semanticdone; // has semantic() been done?
-	public List<Dsymbol> deferred;
+	public Dsymbols deferred;
 	public boolean needmoduleinfo;
 	public Module importedFrom;
 
 	public Module(Loc loc) {
 		super(loc);
-		deferred = new ArrayList<Dsymbol>();
+		deferred = new Dsymbols();
 	}
 
 	@Override
@@ -176,7 +175,7 @@ public class Module extends Package {
 
 	public void addDeferredSemantic(Dsymbol s) {
 		if (deferred == null) {
-			deferred = new ArrayList<Dsymbol>();
+			deferred = new Dsymbols();
 		}
 
 		// Don't add it if it is already there

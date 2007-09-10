@@ -1,24 +1,26 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-import static descent.internal.compiler.parser.MATCH.*;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.PREC.*;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.Constfold.Equal;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Equal;
+
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.PREC.PREC_assign;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public class AssocArrayLiteralExp extends Expression {
 
-	public List<Expression> keys;
-	public List<Expression> values;
+	public Expressions keys;
+	public Expressions values;
 
-	public AssocArrayLiteralExp(Loc loc, List<Expression> keys,
-			List<Expression> values) {
+	public AssocArrayLiteralExp(Loc loc, Expressions keys,
+			Expressions values) {
 		super(loc, TOK.TOKassocarrayliteral);
 		this.keys = keys;
 		this.values = values;
@@ -109,8 +111,8 @@ public class AssocArrayLiteralExp extends Expression {
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context)
 	{
-		List<Expression> keysx = keys;
-		List<Expression> valuesx = values;
+		Expressions keysx = keys;
+		Expressions valuesx = values;
 		
 		for(int i = 0; i < keys.size(); i++)
 		{
@@ -128,7 +130,7 @@ public class AssocArrayLiteralExp extends Expression {
 			if(ex != ekey)
 			{
 				if(keysx == keys)
-					keysx = new ArrayList<Expression>(keys);
+					keysx = new Expressions(keys);
 				keysx.set(i, ex);
 			}
 			
@@ -142,7 +144,7 @@ public class AssocArrayLiteralExp extends Expression {
 			if(ex != evalue)
 			{
 				if(valuesx == values)
-					valuesx = new ArrayList<Expression>(values);
+					valuesx = new Expressions(values);
 				valuesx.set(i, ex);
 			}
 		}
@@ -171,9 +173,9 @@ public class AssocArrayLiteralExp extends Expression {
 				{
 					// Remove ekey
 					if(keysx == keys)
-						keysx = new ArrayList<Expression>(keys);
+						keysx = new Expressions(keys);
 					if(valuesx == values)
-						valuesx = new ArrayList<Expression>(values);
+						valuesx = new Expressions(values);
 					keysx.remove(i - 1);
 					valuesx.remove(i - 1);
 					i -= 1; // redo the i'th iteration

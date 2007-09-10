@@ -43,8 +43,8 @@ public class LabelStatement extends Statement {
 	}
 
 	@Override
-	public List<Statement> flatten(Scope sc) {
-		List<Statement> a = null;
+	public Statements flatten(Scope sc) {
+		Statements a = null;
 
 		if (statement != null) {
 			a = statement.flatten(sc);

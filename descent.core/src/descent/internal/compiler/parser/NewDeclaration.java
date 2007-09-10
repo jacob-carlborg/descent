@@ -9,10 +9,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class NewDeclaration extends FuncDeclaration {
 	
-	public List<Argument> arguments;
+	public Arguments arguments;
 	public int varargs;
 	
-	public NewDeclaration(Loc loc, List<Argument> arguments, int varargs) {
+	public NewDeclaration(Loc loc, Arguments arguments, int varargs) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.classNew), STC.STCstatic, null);
 		this.arguments = arguments;
 		this.varargs = varargs;

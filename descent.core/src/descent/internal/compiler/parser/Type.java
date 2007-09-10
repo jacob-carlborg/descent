@@ -2,15 +2,48 @@ package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.STC.*;
-import static descent.internal.compiler.parser.MATCH.*;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.STC.STCfield;
+
+import static descent.internal.compiler.parser.TOK.TOKdotvar;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tchar;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tcomplex32;
+import static descent.internal.compiler.parser.TY.Tcomplex64;
+import static descent.internal.compiler.parser.TY.Tcomplex80;
+import static descent.internal.compiler.parser.TY.Tdchar;
+import static descent.internal.compiler.parser.TY.Terror;
+import static descent.internal.compiler.parser.TY.Tfloat32;
+import static descent.internal.compiler.parser.TY.Tfloat64;
+import static descent.internal.compiler.parser.TY.Tfloat80;
+import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Timaginary32;
+import static descent.internal.compiler.parser.TY.Timaginary64;
+import static descent.internal.compiler.parser.TY.Timaginary80;
+import static descent.internal.compiler.parser.TY.Tint16;
+import static descent.internal.compiler.parser.TY.Tint32;
+import static descent.internal.compiler.parser.TY.Tint64;
+import static descent.internal.compiler.parser.TY.Tint8;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tuns16;
+import static descent.internal.compiler.parser.TY.Tuns32;
+import static descent.internal.compiler.parser.TY.Tuns64;
+import static descent.internal.compiler.parser.TY.Tuns8;
+import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.TY.Twchar;
 
 public abstract class Type extends ASTDmdNode {
 
@@ -928,7 +961,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public int templateParameterLookup(Type tparam,
-			List<TemplateParameter> parameters) {
+			TemplateParameters parameters) {
 		if (tparam.ty != Tident) {
 			throw new IllegalStateException("assert(tparam.ty == Tident);");
 		}
@@ -947,7 +980,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public MATCH deduceType(Scope sc, Type tparam,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
 		if (tparam == null) {
 			return MATCHnomatch;

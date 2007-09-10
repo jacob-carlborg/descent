@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser.ast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.CharOperation;
@@ -398,7 +397,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(CaseStatement node) {
-		List<Expression> exps = new ArrayList<Expression>();
+		List<Expression> exps = new Expressions();
 		
 		CaseStatement x = node;
 		while(x.statement instanceof CaseStatement) {
@@ -1142,7 +1141,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return visit(node, null);
 	}
 	
-	private boolean visit(FuncDeclaration node, List<TemplateParameter> templateParameters) {
+	private boolean visit(FuncDeclaration node, TemplateParameters templateParameters) {
 		visitPreDDocss(node.preDdocs);
 		printIndent();
 		visitModifiers(node.modifiers);
@@ -2063,7 +2062,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 	
-	private boolean visit(AggregateDeclaration node, List<TemplateParameter> parameters) {
+	private boolean visit(AggregateDeclaration node, TemplateParameters parameters) {
 		switch(node.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 			ClassDeclaration classDecl = (ClassDeclaration) node;
@@ -2085,7 +2084,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 	
-	private boolean visit(AggregateDeclaration node, String name, List<TemplateParameter> templateParameters, List<BaseClass> baseClasses) {
+	private boolean visit(AggregateDeclaration node, String name, TemplateParameters templateParameters, BaseClasses baseClasses) {
 		visitPreDDocss(node.preDdocs);
 		printIndent();
 		visitModifiers(node.modifiers);
@@ -2246,7 +2245,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		visitTemplateMixinType(node.tqual, node.idents, node.tiargs);
 	}
 
-	private void visitTemplateMixinType(Type typeof, List<IdentifierExp> ids, List<ASTDmdNode> tiargs) {
+	private void visitTemplateMixinType(Type typeof, Identifiers ids, Objects tiargs) {
 		boolean ret = false;
 		
 		if (typeof != null) {

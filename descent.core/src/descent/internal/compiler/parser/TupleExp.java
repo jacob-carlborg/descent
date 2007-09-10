@@ -1,17 +1,16 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-import static descent.internal.compiler.parser.DYNCAST.*;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
 
 public class TupleExp extends Expression {
 
-	public List<Expression> exps;
+	public Expressions exps;
 
-	public TupleExp(Loc loc, List<Expression> exps) {
+	public TupleExp(Loc loc, Expressions exps) {
 		super(loc, TOK.TOKtuple);
 		this.exps = exps;
 		this.type = null;
@@ -19,7 +18,7 @@ public class TupleExp extends Expression {
 
 	public TupleExp(Loc loc, TupleDeclaration tup, SemanticContext context) {
 		super(loc, TOK.TOKtuple);
-		exps = new ArrayList<Expression>(tup.objects.size());
+		exps = new Expressions(tup.objects.size());
 		type = null;
 
 		for (int i = 0; i < tup.objects.size(); i++) {

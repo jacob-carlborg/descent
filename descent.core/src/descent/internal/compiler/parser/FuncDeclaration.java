@@ -1,5 +1,17 @@
 package descent.internal.compiler.parser;
 
+import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.ILS.ILSno;
+import static descent.internal.compiler.parser.ILS.ILSyes;
+
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCdeprecated;
@@ -11,6 +23,7 @@ import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCvariadic;
+
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tfunction;
@@ -18,20 +31,9 @@ import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
-import static descent.internal.compiler.parser.ILS.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class FuncDeclaration extends Declaration {
 
@@ -62,7 +64,7 @@ public class FuncDeclaration extends Declaration {
 	public ForeachStatement fes; // if foreach body, this is the foreach
 	public VarDeclaration vthis; // 'this' parameter (member and nested)
 	public VarDeclaration v_arguments; // '_arguments' parameter
-	public List<Dsymbol> parameters; // Array of VarDeclaration's for parameters
+	public Dsymbols parameters; // Array of VarDeclaration's for parameters
 	public DsymbolTable labtab; // statement label symbol table
 	public VarDeclaration vresult; // variable corresponding to outId
 	public LabelDsymbol returnLabel; // where the return goes
@@ -733,7 +735,7 @@ public class FuncDeclaration extends Declaration {
 			if (nparams != 0) { // parameters[] has all the tuples removed, as
 				// the back end
 				// doesn't know about tuples
-				parameters = new ArrayList<Dsymbol>(nparams);
+				parameters = new Dsymbols(nparams);
 				for (int i = 0; i < nparams; i++) {
 					Argument arg = Argument.getNth(f.parameters, i, context);
 					IdentifierExp id = arg.ident;
@@ -774,7 +776,7 @@ public class FuncDeclaration extends Declaration {
 					if (arg.type.ty == Ttuple) {
 						TypeTuple t = (TypeTuple) arg.type;
 						int dim = Argument.dim(t.arguments, context);
-						List exps = new ArrayList(dim);
+						Objects exps = new Objects(dim);
 						for (int j = 0; j < dim; j++) {
 							Argument narg = Argument.getNth(t.arguments, j,
 									context);
@@ -1072,7 +1074,7 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			{
-				List<Statement> a = new ArrayList<Statement>();
+				Statements a = new Statements();
 
 				// Merge in initialization of 'out' parameters
 				if (parameters != null) {
@@ -1318,7 +1320,7 @@ public class FuncDeclaration extends Declaration {
 		return FUNC_DECLARATION;
 	}
 
-	public FuncDeclaration overloadResolve(List<Expression> arguments,
+	public FuncDeclaration overloadResolve(Expressions arguments,
 			SemanticContext context) {
 		// TODO semantic
 		return null;

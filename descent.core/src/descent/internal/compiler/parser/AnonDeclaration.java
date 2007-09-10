@@ -1,9 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.STC.STCauto;
-import static descent.internal.compiler.parser.STC.STCscope;
-import static descent.internal.compiler.parser.STC.STCstatic;
-
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -13,15 +9,29 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+
+// DMD 1.020
 public class AnonDeclaration extends AttribDeclaration {
 
 	public boolean isunion;
 	public Scope scope; // !=NULL means context to use
 	public int sem; // 1 if successful semantic()
 
-	public AnonDeclaration(Loc loc, boolean isunion, List<Dsymbol> decl) {
+	public AnonDeclaration(Loc loc, boolean isunion, Dsymbols decl) {
 		super(loc, decl);
 		this.isunion = isunion;
+	}
+
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, decl);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -30,16 +40,13 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 
 	@Override
+	public AttribDeclaration isAttribDeclaration() {
+		return this;
+	}
+
+	@Override
 	public String kind() {
 		return isunion ? "anonymous union" : "anonymous struct";
-	}
-	
-	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, decl);
-		}
-		visitor.endVisit(this);
 	}
 
 	@Override
@@ -59,15 +66,20 @@ public class AnonDeclaration extends AttribDeclaration {
 		if (ad == null
 				|| (ad.isStructDeclaration() == null && ad.isClassDeclaration() == null)) {
 			if (isunion) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start, "union".length()));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start,
+						"union".length()));
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start, "struct".length()));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start,
+						"struct".length()));
 			}
 			return;
 		}
 
 		if (decl != null) {
-			AnonymousAggregateDeclaration aad = new AnonymousAggregateDeclaration(loc);
+			AnonymousAggregateDeclaration aad = new AnonymousAggregateDeclaration(
+					loc);
 			boolean adisunion;
 
 			if (sc.anonAgg != null) {
@@ -89,8 +101,9 @@ public class AnonDeclaration extends AttribDeclaration {
 				Dsymbol s = decl.get(i);
 
 				s.semantic(sc, context);
-				if (isunion)
+				if (isunion) {
 					sc.offset = 0;
+				}
 				if (aad.sizeok == 2) {
 					break;
 				}
@@ -136,8 +149,9 @@ public class AnonDeclaration extends AttribDeclaration {
 
 			// Add size of aad to ad
 			if (adisunion) {
-				if (aad.structsize > ad.structsize)
+				if (aad.structsize > ad.structsize) {
 					ad.structsize = aad.structsize;
+				}
 				sc.offset = 0;
 			} else {
 				ad.structsize = sc.offset + aad.structsize;
@@ -162,7 +176,8 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring(isunion ? "union" : "struct");
 		buf.writestring("\n{\n");
 		if (decl != null) {

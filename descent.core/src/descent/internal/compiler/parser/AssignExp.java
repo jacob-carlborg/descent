@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -73,7 +70,7 @@ public class AssignExp extends BinExp {
 				if (null != search_function(ad, Id.indexass, context)) {
 					Expression e = new DotIdExp(loc, ae.e1, new IdentifierExp(
 							Loc.ZERO, Id.indexass));
-					List<Expression> a = new ArrayList<Expression>(ae.arguments);
+					Expressions a = new Expressions(ae.arguments);
 
 					a.add(0, e2);
 					e = new CallExp(loc, e, a);
@@ -121,7 +118,7 @@ public class AssignExp extends BinExp {
 				if (null != search_function(ad, Id.sliceass, context)) {
 					Expression e = new DotIdExp(loc, ae.e1, new IdentifierExp(
 							Loc.ZERO, Id.sliceass));
-					List<Expression> a = new ArrayList<Expression>();
+					Expressions a = new Expressions();
 
 					a.add(e2);
 					if (null != ae.lwr) {

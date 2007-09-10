@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -174,7 +171,7 @@ public class DsymbolExp extends Expression {
 
 			TupleDeclaration tup = s.isTupleDeclaration();
 			if (tup != null) {
-				List<Expression> exps = new ArrayList<Expression>(tup.objects
+				Expressions exps = new Expressions(tup.objects
 						.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);

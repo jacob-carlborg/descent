@@ -1,14 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.PROT.PROTnone;
-import static descent.internal.compiler.parser.STC.STCabstract;
-import static descent.internal.compiler.parser.STC.STCauto;
-import static descent.internal.compiler.parser.STC.STCdeprecated;
-import static descent.internal.compiler.parser.STC.STCfinal;
-import static descent.internal.compiler.parser.STC.STCscope;
-import static descent.internal.compiler.parser.STC.STCstatic;
-import static descent.internal.compiler.parser.TY.Tclass;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,22 +10,32 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.PROT.PROTnone;
+
+import static descent.internal.compiler.parser.STC.STCabstract;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+
+import static descent.internal.compiler.parser.TY.Tclass;
 
 public class ClassDeclaration extends AggregateDeclaration {
 
 	public final static int OFFSET_RUNTIME = 0x76543210;
 
-	public List<BaseClass> sourceBaseclasses;
+	public BaseClasses sourceBaseclasses;
 
-	public List<BaseClass> baseclasses;
+	public BaseClasses baseclasses;
 	public ClassDeclaration baseClass; // null only if this is Object
 	public CtorDeclaration ctor;
 	public CtorDeclaration defaultCtor; // default constructor
-	public List<FuncDeclaration> dtors; // Array of destructors
+	public FuncDeclarations dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
-	public List<BaseClass> interfaces;
-	public List<BaseClass> vtblInterfaces; // array of base interfaces that
+	public BaseClasses interfaces;
+	public BaseClasses vtblInterfaces; // array of base interfaces that
 	// have
 	// their own vtbl[]
 	public PROT protection;
@@ -52,18 +53,18 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this(loc, id, null);
 	}
 
-	public ClassDeclaration(Loc loc, char[] id, List<BaseClass> baseclasses) {
+	public ClassDeclaration(Loc loc, char[] id, BaseClasses baseclasses) {
 		this(loc, new IdentifierExp(loc, id), baseclasses);
 	}
 
 	public ClassDeclaration(Loc loc, IdentifierExp id,
-			List<BaseClass> baseclasses) {
+			BaseClasses baseclasses) {
 		super(loc, id);
 		if (baseclasses == null) {
-			this.baseclasses = new ArrayList<BaseClass>(0);
+			this.baseclasses = new BaseClasses(0);
 		} else {
 			this.baseclasses = baseclasses;
-			this.sourceBaseclasses = new ArrayList<BaseClass>(baseclasses
+			this.sourceBaseclasses = new BaseClasses(baseclasses
 					.size());
 			this.sourceBaseclasses.addAll(baseclasses);
 		}
@@ -88,7 +89,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public void addLocalClass(List<ClassDeclaration> aclasses,
+	public void addLocalClass(ClassDeclarations aclasses,
 			SemanticContext context) {
 		aclasses.add(this);
 	}
@@ -173,7 +174,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public void interfaceSemantic(Scope sc, SemanticContext context) {
 		int i;
 
-		vtblInterfaces = new ArrayList<BaseClass>(interfaces.size());
+		vtblInterfaces = new BaseClasses(interfaces.size());
 
 		for (i = 0; i < interfaces.size(); i++) {
 			BaseClass b = interfaces.get(i);
@@ -505,7 +506,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			b.base = baseClass;
 		}
 
-		interfaces = new ArrayList<BaseClass>(baseclasses.size());
+		interfaces = new BaseClasses(baseclasses.size());
 		interfaces.addAll(baseclasses);
 
 		if (baseClass != null) {
@@ -518,7 +519,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			// Copy vtbl[] from base class
 			if (baseClass.vtbl != null) {
-				vtbl = new ArrayList<FuncDeclaration>(baseClass.vtbl.size());
+				vtbl = new FuncDeclarations(baseClass.vtbl.size());
 				vtbl.addAll(baseClass.vtbl);
 			}
 
@@ -528,7 +529,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			vthis = baseClass.vthis;
 		} else {
 			// No base class, so this is the root of the class hierarchy
-			vtbl = new ArrayList<FuncDeclaration>(1);
+			vtbl = new FuncDeclarations(1);
 			vtbl.add(this); // leave room for classinfo as first member
 		}
 
@@ -680,7 +681,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (ctor == null && baseClass != null && baseClass.ctor != null) {
 			// toChars());
 			ctor = new CtorDeclaration(loc, null, 0);
-			ctor.fbody = new CompoundStatement(loc, new ArrayList<Statement>());
+			ctor.fbody = new CompoundStatement(loc, new Statements());
 			members.add(ctor);
 			ctor.addMember(sc, this, 1, context);
 			sc = scsave;
@@ -723,7 +724,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		cd.storage_class |= storage_class;
 
-		cd.baseclasses = new ArrayList<BaseClass>(this.baseclasses.size());
+		cd.baseclasses = new BaseClasses(this.baseclasses.size());
 		for (int i = 0; i < cd.baseclasses.size(); i++) {
 			BaseClass b = this.baseclasses.get(i);
 			BaseClass b2 = new BaseClass(b.type.syntaxCopy(), b.protection);

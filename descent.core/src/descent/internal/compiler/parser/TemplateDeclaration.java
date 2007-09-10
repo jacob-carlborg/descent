@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -10,14 +7,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	// Wether this template declaration is just a wrapper for "class B(T) ..."
 	public boolean wrapper;
-	public List<TemplateParameter> parameters;
+	public TemplateParameters parameters;
 	public Scope scope;
 	public Dsymbol onemember;
 	public TemplateDeclaration overnext; // next overloaded TemplateDeclaration
 	public TemplateDeclaration overroot; // first in overnext list
 
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
-			List<TemplateParameter> parameters, List<Dsymbol> decldefs) {
+			TemplateParameters parameters, Dsymbols decldefs) {
 		super(loc, id);
 		this.parameters = parameters;
 		this.members = decldefs;
@@ -95,13 +92,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return TEMPLATE_DECLARATION;
 	}
 
-	public FuncDeclaration deduce(Scope sc, Loc loc, List<ASTDmdNode> targsi,
-			List<Expression> fargs, SemanticContext context) {
+	public FuncDeclaration deduce(Scope sc, Loc loc, Objects targsi,
+			Expressions fargs, SemanticContext context) {
 
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
 		TemplateDeclaration td_best = null;
-		List<ASTDmdNode> tdargs = new ArrayList<ASTDmdNode>();
+		Objects tdargs = new Objects();
 		TemplateInstance ti;
 		FuncDeclaration fd;
 
@@ -119,9 +116,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 			MATCH m;
 
-			List[] dedargs_ = new List[] { null }; // Pass a one-element array to get reference semantics
+			Objects[] dedargs_ = new Objects[] { null }; // Pass a one-element array to get reference semantics
 			m = MATCH.MATCHnomatch; /* td.deduceMatch(targsi, fargs, dedargs_); */
-			List<ASTDmdNode> dedargs = dedargs_[0];
+			Objects dedargs = dedargs_[0];
 
 			//printf("deduceMatch = %d\n", m);
 			if (m == MATCH.MATCHnomatch) {
@@ -138,7 +135,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				m_best = m;
 				//tdargs.setDim(dedargs.dim);
 				//memcpy(tdargs.data, dedargs.data, tdargs.dim * sizeof(void *));
-				tdargs = new ArrayList<ASTDmdNode>(dedargs); // Looks like a shallow copy
+				tdargs = new Objects(dedargs); // Looks like a shallow copy
 				continue;
 			}
 
@@ -158,7 +155,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				/* WTF assert((size_t)td.scope > 0x10000); */
 				td_best = td;
 				m_best = m;
-				tdargs = new ArrayList<ASTDmdNode>(dedargs);
+				tdargs = new Objects(dedargs);
 				continue;
 			} else {
 				// Lambig:
@@ -191,7 +188,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 
 	// Lerror:
-	FuncDeclaration Lerror(List<Expression> fargs, SemanticContext context) {
+	FuncDeclaration Lerror(Expressions fargs, SemanticContext context) {
 		OutBuffer buf = new OutBuffer();
 		HdrGenState hgs = new HdrGenState();
 

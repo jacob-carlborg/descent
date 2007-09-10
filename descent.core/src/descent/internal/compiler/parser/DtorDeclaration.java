@@ -1,9 +1,6 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -77,7 +74,7 @@ public class DtorDeclaration extends FuncDeclaration {
 					IProblem.DestructorsOnlyForClass, 0, notThisStart, 5));
 		} else {
 			if (cd.dtors == null) {
-				cd.dtors = new ArrayList<FuncDeclaration>();
+				cd.dtors = new FuncDeclarations();
 			}
 			cd.dtors.add(this);
 		}

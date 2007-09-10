@@ -316,7 +316,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return false;
 	}
 
-	public static void inferApplyArgTypes(TOK op, List<Argument> arguments,
+	public static void inferApplyArgTypes(TOK op, Arguments arguments,
 			Expression aggr, SemanticContext context) {
 		if (arguments == null || arguments.isEmpty()) {
 			return;
@@ -432,7 +432,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static void inferApplyArgTypesX(FuncDeclaration fstart,
-			List<Argument> arguments, SemanticContext context) {
+			Arguments arguments, SemanticContext context) {
 		Declaration d;
 		Declaration next;
 
@@ -472,7 +472,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static boolean inferApplyArgTypesY(TypeFunction tf,
-			List<Argument> arguments, SemanticContext context) {
+			Arguments arguments, SemanticContext context) {
 		int nparams;
 		Argument p;
 
@@ -631,7 +631,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		modifiers.addAll(someModifiers);
 	}
 
-	public void argExpTypesToCBuffer(OutBuffer buf, List<Expression> arguments,
+	public void argExpTypesToCBuffer(OutBuffer buf, Expressions arguments,
 			HdrGenState hgs, SemanticContext context) {
 		if (arguments != null) {
 			OutBuffer argbuf = new OutBuffer();
@@ -649,7 +649,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public void argsToCBuffer(OutBuffer buf, List<Expression> arguments,
+	public void argsToCBuffer(OutBuffer buf, Expressions arguments,
 			HdrGenState hgs, SemanticContext context) {
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); i++) {
@@ -663,7 +663,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public void arrayExpressionSemantic(List<Expression> exps, Scope sc,
+	public void arrayExpressionSemantic(Expressions exps, Scope sc,
 			SemanticContext context) {
 		if (exps != null) {
 			for (int i = 0; i < exps.size(); i++) {
@@ -715,7 +715,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public void expandTuples(List<Expression> exps) {
+	public void expandTuples(Expressions exps) {
 		if (exps != null) {
 			for (int i = 0; i < exps.size(); i++) {
 				Expression arg = exps.get(i);
@@ -763,7 +763,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public void functionArguments(Loc loc, Scope sc, TypeFunction tf,
-			List<Expression> arguments, SemanticContext context) {
+			Expressions arguments, SemanticContext context) {
 		int n;
 		int done;
 		Type tb;
@@ -858,7 +858,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					 * Set arg to be: new Tclass(arg0, arg1,
 					 * ..., argn)
 					 */
-						List<Expression> args = new ArrayList<Expression>(
+						Expressions args = new Expressions(
 								nargs - 1);
 						for (int u = i; u < nargs; u++) {
 							args.set(u - i, arguments.get(u));
@@ -1021,7 +1021,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return fd;
 	}
 
-	public void preFunctionArguments(Loc loc, Scope sc, List<Expression> exps,
+	public void preFunctionArguments(Loc loc, Scope sc, Expressions exps,
 			SemanticContext context) {
 		if (exps != null) {
 			expandTuples(exps);
@@ -1165,7 +1165,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static void arrayExpressionScanForNestedRef(Scope sc,
-			List<Expression> a, SemanticContext context) {
+			Expressions a, SemanticContext context) {
 		if (null == a) {
 			for (int i = 0; i < a.size(); i++) {
 				Expression e = a.get(i);

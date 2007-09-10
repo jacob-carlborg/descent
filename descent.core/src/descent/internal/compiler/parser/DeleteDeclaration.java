@@ -12,10 +12,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class DeleteDeclaration extends FuncDeclaration {
 
-	public List<Argument> arguments;
+	public Arguments arguments;
 	public int deleteStart; // where the "delete" keyword starts
 
-	public DeleteDeclaration(Loc loc, List<Argument> arguments) {
+	public DeleteDeclaration(Loc loc, Arguments arguments) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.classDelete),
 				STC.STCundefined, null);
 		this.arguments = arguments;
@@ -111,7 +111,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		DeleteDeclaration f = new DeleteDeclaration(loc, null);
 		super.syntaxCopy(f);
-		f.arguments = arraySyntaxCopyArguments(arguments);
+		f.arguments = arraySyntaxCopy(arguments);
 		return f;
 	}
 

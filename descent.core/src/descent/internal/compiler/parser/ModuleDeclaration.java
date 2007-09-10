@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -9,9 +7,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class ModuleDeclaration extends ASTDmdNode {
 
 	public IdentifierExp id;
-	public List<IdentifierExp> packages;
+	public Identifiers packages;
 
-	public ModuleDeclaration(List<IdentifierExp> packages, IdentifierExp id) {
+	public ModuleDeclaration(Identifiers packages, IdentifierExp id) {
 		this.packages = packages;
 		this.id = id;
 	}

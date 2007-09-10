@@ -1,8 +1,6 @@
 package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static descent.internal.compiler.parser.ASTDmdNode.EXP_CANT_INTERPRET;
 import static descent.internal.compiler.parser.TOK.TOKadd;
@@ -14,19 +12,19 @@ import static descent.internal.compiler.parser.TOK.TOKidentity;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKnotequal;
 import static descent.internal.compiler.parser.TOK.TOKnotidentity;
+import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
-import static descent.internal.compiler.parser.TOK.TOKnull;
 
+import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbool;
-import static descent.internal.compiler.parser.TY.Tstruct;
-import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Tchar;
-import static descent.internal.compiler.parser.TY.Twchar;
 import static descent.internal.compiler.parser.TY.Tdchar;
 import static descent.internal.compiler.parser.TY.Tsarray;
-import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.TY.Twchar;
 
 /**
  * A class to hold constant-folding functions used by the interpreter. The
@@ -919,7 +917,7 @@ public class Constfold
 				else
 				{
 					// Create an ArrayLiteralExp
-					List<Expression> elements = new ArrayList<Expression>(1);
+					Expressions elements = new Expressions(1);
 					elements.add(e);
 					e = new ArrayLiteralExp(e.loc, elements);
 				}
@@ -1024,7 +1022,7 @@ public class Constfold
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
 				
 				ArrayLiteralExp ale = new ArrayLiteralExp(es1.loc,
-						new ArrayList<Expression>(es1.elements.size() + 1));
+						new Expressions(es1.elements.size() + 1));
 				ale.elements.addAll(es1.elements);
 				ale.elements.add(e2);
 				e = ale;
@@ -1047,7 +1045,7 @@ public class Constfold
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
 				
 				ArrayLiteralExp ale = new ArrayLiteralExp(es2.loc,
-						new ArrayList<Expression>(es2.elements.size() + 1));
+						new Expressions(es2.elements.size() + 1));
 				ale.elements.add(e1);
 				ale.elements.addAll(es2.elements);
 				e = ale;
@@ -1080,7 +1078,7 @@ public class Constfold
 				Type tb = t.toBasetype(context);
 				if(tb.ty == Tarray && tb.next.equals(e.type))
 				{
-					List<Expression> expressions = new ArrayList<Expression>(1);
+					Expressions expressions = new Expressions(1);
 					expressions.add(e);
 					e = new ArrayLiteralExp(loc, expressions);
 					e.type = t;
@@ -1514,7 +1512,7 @@ public class Constfold
 			}
 			else
 			{
-				List<Expression> elements = new ArrayList<Expression>(iupr -
+				Expressions elements = new Expressions(iupr -
 						ilwr);
 				for(int i = ilwr; i < iupr; i++)
 					elements.add(es1.elements.get(i));
@@ -1604,7 +1602,7 @@ public class Constfold
 			if (sd == null) {
 				throw new IllegalStateException("assert(sd);");
 			}
-			List<Expression> elements = new ArrayList<Expression>();
+			Expressions elements = new Expressions();
 			for (int i = 0; i < sd.fields.size(); i++) {
 				Dsymbol s = (Dsymbol) sd.fields.get(i);
 				VarDeclaration v = s.isVarDeclaration();

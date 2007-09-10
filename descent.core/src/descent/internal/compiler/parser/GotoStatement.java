@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -68,7 +65,7 @@ public class GotoStatement extends Statement {
 			 * so we can patch it later, and add it to a 'look at this later'
 			 * list.
 			 */
-			List<Statement> a = new ArrayList<Statement>();
+			Statements a = new Statements();
 			Statement s;
 
 			a.add(this);

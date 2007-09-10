@@ -17,7 +17,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class InterfaceDeclaration extends ClassDeclaration {
 
-	public InterfaceDeclaration(Loc loc, IdentifierExp id, List<BaseClass> baseclasses) {
+	public InterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseclasses) {
 		super(loc, id, baseclasses);
 		com = false;
 		if (id != null && CharOperation.equals(id.ident, Id.IUnknown)) { // IUnknown is the root
@@ -207,7 +207,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			i++;
 		}
 
-		interfaces = new ArrayList<BaseClass>(baseclasses);
+		interfaces = new BaseClasses(baseclasses);
 
 		interfaceSemantic(sc, context);
 

@@ -1,13 +1,11 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AsmBlock extends CompoundStatement {
 
-	public AsmBlock(Loc loc, List<Statement> statements) {
+	public AsmBlock(Loc loc, Statements statements) {
 		super(loc, statements);
 	}
 	

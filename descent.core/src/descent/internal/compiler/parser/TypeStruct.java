@@ -1,15 +1,11 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKdotexp;
-import static descent.internal.compiler.parser.TOK.TOKimport;
-import static descent.internal.compiler.parser.TOK.TOKtype;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
 
 public class TypeStruct extends Type {
 
@@ -84,7 +80,7 @@ public class TypeStruct extends Type {
 		if (CharOperation.equals(ident.ident, Id.tupleof)) {
 			/* Create a TupleExp
 			 */
-			List<Expression> exps = new ArrayList<Expression>(sym.fields.size());
+			Expressions exps = new Expressions(sym.fields.size());
 			for (VarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
@@ -245,15 +241,8 @@ public class TypeStruct extends Type {
 		// TODO Auto-generated method stub
 	}
 
-	/*
-	 dt_t[] toDt(dt_t[] pdt)
-	 {
-	 // TODO semantic
-	 }
-	 */
-
 	public MATCH deduceType(Scope sc, Type tparam,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes) {
+			TemplateParameters parameters, Objects dedtypes) {
 		// TODO Auto-generated method stub
 		return null;
 	}

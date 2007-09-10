@@ -168,7 +168,7 @@ public class SourceElementParser implements IASTVisitor {
 		return flags;
 	}
 	
-	private char[][] getTokens(List<BaseClass> baseClasses) {
+	private char[][] getTokens(BaseClasses baseClasses) {
 		if (baseClasses.size() == 0) return CharOperation.NO_CHAR_CHAR;
 		
 		char[][] tokens = new char[baseClasses.size()][];
@@ -178,7 +178,7 @@ public class SourceElementParser implements IASTVisitor {
 		return tokens;
 	}	
 
-	private TypeParameterInfo[] getTypeParameters(List<TemplateParameter> parameters) {
+	private TypeParameterInfo[] getTypeParameters(TemplateParameters parameters) {
 		TypeParameterInfo[] infos = new TypeParameterInfo[parameters.size()];
 		for(int i = 0; i < parameters.size(); i++) {
 			TemplateParameter param = parameters.get(i);
@@ -196,7 +196,7 @@ public class SourceElementParser implements IASTVisitor {
 		return infos;
 	}
 	
-	private char[][] getParameterNames(List<Argument> arguments) {
+	private char[][] getParameterNames(Arguments arguments) {
 		if (arguments.size() == 0) return CharOperation.NO_CHAR_CHAR;
 		
 		char[][] names = new char[arguments.size()][];
@@ -211,7 +211,7 @@ public class SourceElementParser implements IASTVisitor {
 		return names;
 	}
 	
-	private char[][] getParameterTypes(List<Argument> arguments) {
+	private char[][] getParameterTypes(Arguments arguments) {
 		if (arguments.size() == 0) return CharOperation.NO_CHAR_CHAR;
 		
 		char[][] types = new char[arguments.size()][];
@@ -257,7 +257,7 @@ public class SourceElementParser implements IASTVisitor {
 		}
 	}
 	
-	private void visit(AggregateDeclaration node, int flags, List<BaseClass> baseClasses, TemplateDeclaration templateDeclaration) {
+	private void visit(AggregateDeclaration node, int flags, BaseClasses baseClasses, TemplateDeclaration templateDeclaration) {
 		// TODO Java -> D
 		// Also, since the base class notation in D dosen't distinguis between
 		// classes and interfaces, let's assume they are all interfaces for the moment
@@ -427,7 +427,7 @@ public class SourceElementParser implements IASTVisitor {
 		return true;
 	}
 	
-	private boolean visit(FuncDeclaration node, int flags, List<Argument> arguments) {
+	private boolean visit(FuncDeclaration node, int flags, Arguments arguments) {
 		MethodInfo info = new MethodInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
@@ -749,8 +749,8 @@ public class SourceElementParser implements IASTVisitor {
 		}
 		requestor.enterConditional(startOf(node), getFlags(node.modifiers) | flags, displayString);
 		
-		List<Dsymbol> thenDeclarations = node.decl;
-		List<Dsymbol> elseDeclarations = node.elsedecl;
+		Dsymbols thenDeclarations = node.decl;
+		Dsymbols elseDeclarations = node.elsedecl;
 		
 		if (thenDeclarations != null && !thenDeclarations.isEmpty()) {
 			if (elseDeclarations != null && !elseDeclarations.isEmpty()) {

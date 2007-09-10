@@ -95,7 +95,6 @@ public class AliasDeclaration extends Declaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		// TODO semantic missing porting from 1.007 to 1.020
 		
-		// printf("AliasDeclaration::semantic() %s\n", toChars());
 		if (aliassym != null) {
 			if (aliassym.isTemplateInstance() != null) {
 				aliassym.semantic(sc, context);

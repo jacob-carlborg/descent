@@ -1,7 +1,15 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKd;
+
 import static descent.internal.compiler.parser.STC.STClazy;
+
 import static descent.internal.compiler.parser.Scope.CSXany_ctor;
 import static descent.internal.compiler.parser.Scope.CSXlabel;
 import static descent.internal.compiler.parser.Scope.CSXsuper_ctor;
@@ -16,6 +24,7 @@ import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKtemplate;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKvar;
+
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
@@ -25,19 +34,9 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 public class CallExp extends UnaExp {
 
-	public List<Expression> arguments;
+	public Expressions arguments;
 
 	public CallExp(Loc loc, Expression e) {
 		super(loc, TOK.TOKcall, e);
@@ -46,18 +45,18 @@ public class CallExp extends UnaExp {
 
 	public CallExp(Loc loc, Expression e, Expression earg1) {
 		super(loc, TOK.TOKcall, e);
-		this.arguments = new ArrayList<Expression>(1);
+		this.arguments = new Expressions(1);
 		this.arguments.add(earg1);
 	}
 	
 	public CallExp(Loc loc, Expression e, Expression earg1, Expression earg2) {
 		super(loc, TOK.TOKcall, e);
-		this.arguments = new ArrayList<Expression>(2);
+		this.arguments = new Expressions(2);
 		this.arguments.add(earg1);
 		this.arguments.add(earg2);
 	}
 
-	public CallExp(Loc loc, Expression e, List<Expression> exps) {
+	public CallExp(Loc loc, Expression e, Expressions exps) {
 		super(loc, TOK.TOKcall, e);
 		this.arguments = exps;
 	}
@@ -134,7 +133,7 @@ public class CallExp extends UnaExp {
 					}
 				} else if (e1ty == Tarray || e1ty == Tsarray || e1ty == Taarray) {
 					if (arguments == null) {
-						arguments = new ArrayList<Expression>();
+						arguments = new Expressions();
 					}
 					arguments.add(0, dotid.e1);
 					e1 = new IdentifierExp(dotid.loc, dotid.ident);
@@ -230,7 +229,7 @@ public class CallExp extends UnaExp {
 					Assert.isNotNull(td);
 					if (arguments == null) {
 						// Should fix deduce() so it works on null argument
-						arguments = new ArrayList<Expression>();
+						arguments = new Expressions();
 					}
 					f = td.deduce(sc, loc, null, arguments, context);
 					if (f == null) {
@@ -474,7 +473,7 @@ public class CallExp extends UnaExp {
 		type = tf.next;
 
 		if (arguments == null) {
-			arguments = new ArrayList<Expression>();
+			arguments = new Expressions();
 		}
 		functionArguments(loc, sc, tf, arguments, context);
 

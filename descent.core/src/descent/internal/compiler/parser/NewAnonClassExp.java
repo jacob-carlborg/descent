@@ -1,19 +1,17 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class NewAnonClassExp extends Expression {
 
 	public Expression thisexp;
-	public List<Expression> newargs;
+	public Expressions newargs;
 	public ClassDeclaration cd;
-	public List<Expression> arguments;
+	public Expressions arguments;
 
-	public NewAnonClassExp(Loc loc, Expression thisexp, List<Expression> newargs,
-			ClassDeclaration cd, List<Expression> arguments) {
+	public NewAnonClassExp(Loc loc, Expression thisexp, Expressions newargs,
+			ClassDeclaration cd, Expressions arguments) {
 		super(loc, TOK.TOKnewanonclass);
 		this.thisexp = thisexp;
 		this.newargs = newargs;

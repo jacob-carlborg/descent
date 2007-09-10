@@ -12,7 +12,7 @@ public class AlignDeclaration extends AttribDeclaration {
 
 	public int salign;
 
-	public AlignDeclaration(Loc loc, int sa, List<Dsymbol> decl) {
+	public AlignDeclaration(Loc loc, int sa, Dsymbols decl) {
 		super(loc, decl);
 		this.salign = sa;
 	}

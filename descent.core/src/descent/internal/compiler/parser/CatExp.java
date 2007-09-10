@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -56,7 +53,7 @@ public class CatExp extends BinExp {
 		    if(tb2.ty == TY.Tarray)
 		    {
 		    	// Make e2 into [e2]
-		    	List<Expression> elements = new ArrayList<Expression>(1);
+		    	Expressions elements = new Expressions(1);
 		    	elements.add(e2);
 		    	e2 = new ArrayLiteralExp(e2.loc, elements);
 		    	e2.type = type;
@@ -72,7 +69,7 @@ public class CatExp extends BinExp {
 		    if (tb1.ty == TY.Tarray)
 		    {
 		    	// Make e1 into [e1]
-		    	List<Expression> elements = new ArrayList<Expression>(1);
+		    	Expressions elements = new Expressions(1);
 		    	elements.add(e1);
 				e1 = new ArrayLiteralExp(e1.loc, elements);
 				e1.type = type;

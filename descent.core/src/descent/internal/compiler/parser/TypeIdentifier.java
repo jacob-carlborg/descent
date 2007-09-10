@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -35,7 +33,7 @@ public class TypeIdentifier extends TypeQualified {
 
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
 		// Extra check
 		if (tparam != null && tparam.ty == Tident) {

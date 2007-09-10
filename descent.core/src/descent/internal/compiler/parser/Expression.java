@@ -23,11 +23,11 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public abstract class Expression extends ASTDmdNode implements Cloneable {
 
-	public static List<Expression> arraySyntaxCopy(List<Expression> exps) {
-		List<Expression> a = null;
+	public static Expressions arraySyntaxCopy(Expressions exps) {
+		Expressions a = null;
 
 		if (exps != null) {
-			a = new ArrayList<Expression>(exps.size());
+			a = new Expressions(exps.size());
 			for (Expression e : exps) {
 				e = e.syntaxCopy();
 				a.add(e);

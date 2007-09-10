@@ -1,15 +1,13 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayExp extends UnaExp {
 
-	public List<Expression> arguments;
+	public Expressions arguments;
 
-	public ArrayExp(Loc loc, Expression e, List<Expression> arguments) {
+	public ArrayExp(Loc loc, Expression e, Expressions arguments) {
 		super(loc, TOK.TOKarray, e);
 		this.arguments = arguments;
 	}

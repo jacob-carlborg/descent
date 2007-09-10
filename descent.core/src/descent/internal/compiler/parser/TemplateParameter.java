@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
 
 // DMD 1.020
 public abstract class TemplateParameter extends ASTDmdNode {
@@ -43,8 +42,8 @@ public abstract class TemplateParameter extends ASTDmdNode {
 	/**
 	 * Match actual argument against parameter.
 	 */
-	public abstract MATCH matchArg(Scope sc, List<ASTDmdNode> tiargs, int i,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+	public abstract MATCH matchArg(Scope sc, Objects tiargs, int i,
+			TemplateParameters parameters, Objects dedtypes,
 			Declaration[] psparam, SemanticContext context);
 
 	/**

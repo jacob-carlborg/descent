@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.Tfunction;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -10,6 +7,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
+
+import static descent.internal.compiler.parser.TY.Tfunction;
 
 public class BaseClass extends ASTDmdNode {
 
@@ -19,11 +18,11 @@ public class BaseClass extends ASTDmdNode {
 	public PROT protection;
 	public ClassDeclaration base;
 	public int offset; // 'this' pointer offset
-	public List<FuncDeclaration> vtbl; // for interfaces: Array of
+	public FuncDeclarations vtbl; // for interfaces: Array of
 	// FuncDeclaration's
 	// making up the vtbl[]
 
-	public List<BaseClass> baseInterfaces; // if BaseClass is an interface,
+	public BaseClasses baseInterfaces; // if BaseClass is an interface,
 
 	// these
 
@@ -61,8 +60,8 @@ public class BaseClass extends ASTDmdNode {
 		visitor.endVisit(this);
 	}
 
-	public void copyBaseInterfaces(List<BaseClass> vtblInterfaces) {
-		baseInterfaces = new ArrayList<BaseClass>(base.interfaces.size());
+	public void copyBaseInterfaces(BaseClasses vtblInterfaces) {
+		baseInterfaces = new BaseClasses(base.interfaces.size());
 
 		for (int i = 0; i < base.interfaces.size(); i++) {
 			BaseClass b = baseInterfaces.get(i);

@@ -10,11 +10,11 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class CtorDeclaration extends FuncDeclaration {
 
-	public List<Argument> arguments;
+	public Arguments arguments;
 	public int varargs;
 	public int thisStart; // where the "this" keyword starts
 
-	public CtorDeclaration(Loc loc, List<Argument> arguments, int varags) {
+	public CtorDeclaration(Loc loc, Arguments arguments, int varags) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.ctor), STC.STCundefined, null);
 		this.arguments = arguments;
 		this.varargs = varags;
@@ -125,7 +125,7 @@ public class CtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!fhtorws);");
 		}
 
-		f.arguments = arraySyntaxCopyArguments(arguments);
+		f.arguments = arraySyntaxCopy(arguments);
 		return f;
 	}
 

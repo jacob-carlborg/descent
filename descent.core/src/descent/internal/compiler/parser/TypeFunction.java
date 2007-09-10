@@ -1,28 +1,28 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
+
 import static descent.internal.compiler.parser.Scope.SCOPEctor;
+
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 public class TypeFunction extends Type {
 
-	public List<Argument> parameters;
+	public Arguments parameters;
 	public int varargs;
 	public LINK linkage; // calling convention
 	public int inuse;
 
-	public TypeFunction(List<Argument> parameters, Type treturn, int varargs,
+	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
 		super(Tfunction, treturn);
 		this.parameters = parameters;
@@ -152,7 +152,7 @@ public class TypeFunction extends Type {
 	@Override
 	public Type syntaxCopy() {
 		Type treturn = next != null ? next.syntaxCopy() : null;
-		List<Argument> params = Dsymbol.arraySyntaxCopyArguments(parameters);
+		Arguments params = Dsymbol.arraySyntaxCopy(parameters);
 		Type t = new TypeFunction(params, treturn, varargs, linkage);
 		return t;
 	}

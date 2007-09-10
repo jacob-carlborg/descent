@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -14,8 +13,8 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 // DMD 1.020
 public class StructInitializer extends Initializer {
 
-	public ArrayList<IdentifierExp> field;
-	public List<Initializer> value;
+	public Identifiers field;
+	public Initializers value;
 
 	public List<VarDeclaration> vars; // parallel array of VarDeclaration *'s
 	public AggregateDeclaration ad; // which aggregate this is for
@@ -36,8 +35,8 @@ public class StructInitializer extends Initializer {
 
 	public void addInit(IdentifierExp field, Initializer value) {
 		if (this.field == null) {
-			this.field = new ArrayList<IdentifierExp>();
-			this.value = new ArrayList<Initializer>();
+			this.field = new Identifiers();
+			this.value = new Initializers();
 		}
 		this.field.add(field);
 		this.value.add(value);
@@ -108,11 +107,11 @@ public class StructInitializer extends Initializer {
 				fieldi++;
 			}
 		} else if (t.ty == Tdelegate && value.size() == 0) { //  Rewrite as empty delegate literal { }
-			List<Argument> arguments = new ArrayList<Argument>();
+			Arguments arguments = new Arguments();
 			Type tf = new TypeFunction(arguments, null, 0, LINKd);
 			FuncLiteralDeclaration fd = new FuncLiteralDeclaration(loc, tf,
 					TOKdelegate, null);
-			fd.fbody = new CompoundStatement(loc, new ArrayList<Statement>());
+			fd.fbody = new CompoundStatement(loc, new Statements());
 			// fd.endloc = loc; // this was removed from DMD (in case a bug exists in Descent)
 			Expression e = new FuncExp(loc, fd);
 			ExpInitializer ie = new ExpInitializer(loc, e);
@@ -138,8 +137,8 @@ public class StructInitializer extends Initializer {
 			throw new IllegalStateException("assert(field.dim == value.dim);");
 		}
 
-		ai.field = new ArrayList<IdentifierExp>(field.size());
-		ai.value = new ArrayList<Initializer>(value.size());
+		ai.field = new Identifiers(field.size());
+		ai.value = new Initializers(value.size());
 		for (int i = 0; i < field.size(); i++) {
 			ai.field.set(i, field.get(i));
 

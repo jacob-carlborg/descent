@@ -1,11 +1,10 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
 
 public class Pvirtuals
 {
 	public Expression e1;
-	public List<Expression> exps;
+	public Expressions exps;
 	
 	static int fpvirtuals(Object param, FuncDeclaration f, SemanticContext context)
 	{

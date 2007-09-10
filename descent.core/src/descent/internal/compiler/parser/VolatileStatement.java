@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -32,8 +30,8 @@ public class VolatileStatement extends Statement {
 	}
 
 	@Override
-	public List<Statement> flatten(Scope sc) {
-		List<Statement> a;
+	public Statements flatten(Scope sc) {
+		Statements a;
 
 		a = statement != null ? statement.flatten(sc) : null;
 		if (a != null) {

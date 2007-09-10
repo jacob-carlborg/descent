@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
@@ -11,10 +9,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class PragmaStatement extends Statement {
 
 	public IdentifierExp ident;
-	public List<Expression> args;
+	public Expressions args;
 	public Statement body;
 
-	public PragmaStatement(Loc loc, IdentifierExp ident, List<Expression> args,
+	public PragmaStatement(Loc loc, IdentifierExp ident, Expressions args,
 			Statement body) {
 		super(loc);
 		this.ident = ident;

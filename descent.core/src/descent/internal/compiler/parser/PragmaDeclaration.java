@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -14,10 +12,10 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 // DMD 1.020
 public class PragmaDeclaration extends AttribDeclaration {
 
-	public List<Expression> args;
+	public Expressions args;
 
 	public PragmaDeclaration(Loc loc, IdentifierExp ident,
-			List<Expression> args, List<Dsymbol> decl) {
+			Expressions args, Dsymbols decl) {
 		super(loc, decl);
 		this.ident = ident;
 		this.args = args;

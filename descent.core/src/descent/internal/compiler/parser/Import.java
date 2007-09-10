@@ -1,24 +1,20 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Import extends Dsymbol {
 	
-	public List<IdentifierExp> packages;
+	public Identifiers packages;
 	public IdentifierExp id;
 	public IdentifierExp aliasId;
 	
-	public List<IdentifierExp> names;
-	public List<IdentifierExp> aliases;
+	public Identifiers names;
+	public Identifiers aliases;
 	public Module mod;
 	public Package pkg;
 	
-	public Import(Loc loc, List<IdentifierExp> packages, IdentifierExp id, IdentifierExp aliasId) {
+	public Import(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId) {
 		super(loc);
 		this.packages = packages;
 		this.id = id;
@@ -51,8 +47,8 @@ public class Import extends Dsymbol {
 
 	public void addAlias(IdentifierExp name, IdentifierExp alias) {
 		if (names == null) {
-			names = new ArrayList<IdentifierExp>();
-			aliases = new ArrayList<IdentifierExp>();
+			names = new Identifiers();
+			aliases = new Identifiers();
 		}
 		names.add(name);
 		aliases.add(alias);

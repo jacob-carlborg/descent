@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -16,7 +14,7 @@ public class ProtDeclaration extends AttribDeclaration {
 	public PROT protection;
 	public boolean colon;
 
-	public ProtDeclaration(Loc loc, PROT p, List<Dsymbol> decl,
+	public ProtDeclaration(Loc loc, PROT p, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {
 		super(loc, decl);
 		this.protection = p;

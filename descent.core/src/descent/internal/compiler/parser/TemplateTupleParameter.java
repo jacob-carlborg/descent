@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -54,8 +52,8 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 
 	@Override
-	public MATCH matchArg(Scope sc, List<ASTDmdNode> tiargs, int i,
-			List<TemplateParameter> parameters, List<ASTDmdNode> dedtypes,
+	public MATCH matchArg(Scope sc, Objects tiargs, int i,
+			TemplateParameters parameters, Objects dedtypes,
 			Declaration[] psparam, SemanticContext context) {
 		/* The rest of the actual arguments (tiargs[]) form the match
 		 * for the variadic parameter.

@@ -1,25 +1,25 @@
 package descent.internal.compiler.parser;
 
 // DMD 1.020
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TY.Tarray;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tsarray;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
+
 public class ArrayLiteralExp extends Expression {
 
-	public List<Expression> elements;
+	public Expressions elements;
 
 	public ArrayLiteralExp(Loc loc, List<? extends Expression> elements) {
 		super(loc, TOK.TOKarrayliteral);
-		this.elements = (List<Expression>) elements;
+		this.elements = (Expressions) elements;
 	}
 	
 	public void accept0(IASTVisitor visitor) {
@@ -202,7 +202,7 @@ public class ArrayLiteralExp extends Expression {
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context)
 	{
-		List<Expression> expsx = null;
+		Expressions expsx = null;
 		
 		if(null != elements)
 		{
@@ -224,7 +224,7 @@ public class ArrayLiteralExp extends Expression {
 				{
 					if(null == expsx)
 					{
-						expsx = new ArrayList<Expression>(elements.size());
+						expsx = new Expressions(elements.size());
 						expsx.addAll(elements);
 					}
 					expsx.set(i, ex);

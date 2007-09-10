@@ -1,16 +1,13 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.STC.STCin;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.STC.STCin;
+
 public class TypeTuple extends Type {
 
-	public List<Argument> arguments;
+	public Arguments arguments;
 
 	private TypeTuple() {
 		super(TY.Ttuple, null);
@@ -20,16 +17,16 @@ public class TypeTuple extends Type {
 		Assert.fail("Accept0 on fake class");
 	}
 
-	public static TypeTuple newArguments(List<Argument> arguments) {
+	public static TypeTuple newArguments(Arguments arguments) {
 		TypeTuple tt = new TypeTuple();
 		tt.arguments = arguments;
 		return tt;
 	}
 
-	public static TypeTuple newExpressions(List<Expression> exps,
+	public static TypeTuple newExpressions(Expressions exps,
 			SemanticContext context) {
 		TypeTuple tt = new TypeTuple();
-		ArrayList<Argument> arguments = new ArrayList<Argument>();
+		Arguments arguments = new Arguments();
 		if (exps != null) {
 			arguments.ensureCapacity(exps.size());
 			for (int i = 0; i < exps.size(); i++) {

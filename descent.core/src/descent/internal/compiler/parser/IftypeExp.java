@@ -108,7 +108,7 @@ public class IftypeExp extends Expression {
 			    		return new IntegerExp(Loc.ZERO, 0); // goto Lno;
 					else
 					{   ClassDeclaration cd = ((TypeClass)targ).sym;
-					    List<Argument> args = new ArrayList<Argument>(cd.baseclasses.size());
+					    Arguments args = new Arguments(cd.baseclasses.size());
 					    for(int i = 0; i < cd.baseclasses.size(); i++)
 					    {
 					    	BaseClass b = (BaseClass) cd.baseclasses.get(i);
@@ -139,9 +139,9 @@ public class IftypeExp extends Expression {
 					/* Generate tuple from function parameter types.
 					 */
 					assert(tded.ty == TY.Tfunction);
-					List<Argument> params = ((TypeFunction)tded).parameters;
+					Arguments params = ((TypeFunction)tded).parameters;
 					int dim = params.size();
-					List<Argument> args = new ArrayList<Argument>(dim);
+					Arguments args = new Arguments(dim);
 					for(int i = 0; i < dim; i++)
 					{
 						Argument arg = params.get(i);
@@ -182,10 +182,10 @@ public class IftypeExp extends Expression {
 			TemplateTypeParameter tp = 
 				new TemplateTypeParameter(loc, id, null, null);
 	
-			List<TemplateParameter> parameters = new ArrayList<TemplateParameter>(1);
+			TemplateParameters parameters = new TemplateParameters(1);
 			parameters.add(tp);
 	
-			List<ASTDmdNode> dedtypes = new ArrayList<ASTDmdNode>(1);
+			Objects dedtypes = new Objects(1);
 	
 			m = null; /* TODO semantic targ.deduceType(null, tspec, parameters, dedtypes); */
 			if (m == MATCH.MATCHnomatch ||

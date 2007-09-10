@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -33,7 +30,7 @@ public class TypeSArray extends TypeArray {
 	public Expression toExpression() {
 		Expression e = next.toExpression();
 		if (e != null) {
-			List<Expression> arguments = new ArrayList<Expression>(1);
+			Expressions arguments = new Expressions(1);
 			arguments.add(dim);
 			e = new ArrayExp(dim.loc, e, arguments);
 			e.setSourceRange(start, length);

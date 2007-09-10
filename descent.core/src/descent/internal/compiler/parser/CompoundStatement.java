@@ -14,24 +14,24 @@ public class CompoundStatement extends Statement {
 
 	public boolean manyVars; 	// if true, the block is just to group variable declarations,
 								// alias declarations or typedef declarations
-	public List<Statement> statements;
+	public Statements statements;
 
-	public List<Statement> sourceStatements;
+	public Statements sourceStatements;
 
-	public CompoundStatement(Loc loc, List<Statement> statements) {
+	public CompoundStatement(Loc loc, Statements statements) {
 		super(loc);
 		this.statements = statements;
 		if (statements != null) {
-			this.sourceStatements = new ArrayList<Statement>(statements);
+			this.sourceStatements = new Statements(statements);
 		}
 	}
 
 	public CompoundStatement(Loc loc, Statement s1, Statement s2) {
 		super(loc);
-		this.statements = new ArrayList<Statement>(2);
+		this.statements = new Statements(2);
 		this.statements.add(s1);
 		this.statements.add(s2);
-		this.sourceStatements = new ArrayList<Statement>(statements);
+		this.sourceStatements = new Statements(statements);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class CompoundStatement extends Statement {
 	}
 
 	@Override
-	public List<Statement> flatten(Scope sc) {
+	public Statements flatten(Scope sc) {
 		return statements;
 	}
 
@@ -195,7 +195,7 @@ public class CompoundStatement extends Statement {
 			for (int i = 0; i < statements.size();) {
 				s = statements.get(i);
 				if (s != null) {
-					List<Statement> a = s.flatten(sc);
+					Statements a = s.flatten(sc);
 
 					if (a != null) {
 						statements.remove(i);
@@ -225,7 +225,7 @@ public class CompoundStatement extends Statement {
 								 * (Object __o) { sexception; throw __o; }
 								 */
 								Statement body;
-								List<Statement> a2 = new ArrayList<Statement>();
+								Statements a2 = new Statements();
 
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
@@ -264,7 +264,7 @@ public class CompoundStatement extends Statement {
 								 * finally { sfinally; }
 								 */
 								Statement body;
-								List<Statement> a2 = new ArrayList<Statement>();
+								Statements a2 = new Statements();
 
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
@@ -291,7 +291,7 @@ public class CompoundStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy() {
-		List<Statement> a = new ArrayList<Statement>(statements.size());
+		Statements a = new Statements(statements.size());
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {

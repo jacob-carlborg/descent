@@ -1,17 +1,13 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TemplateInstance extends ScopeDsymbol {
 
-	public List<IdentifierExp> idents;
-	public List<ASTDmdNode> tiargs;
+	public Identifiers idents;
+	public Objects tiargs;
 	public TemplateDeclaration tempdecl; // referenced by foo.bar.abc
 	public TemplateInstance inst; // refer to existing instance
 	public AliasDeclaration aliasdecl; // != null if instance is an alias for its
@@ -21,7 +17,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	public TemplateInstance(IdentifierExp id) {
 		super(null);
-		this.idents = new ArrayList<IdentifierExp>(3);
+		this.idents = new Identifiers(3);
 		this.idents.add(id);
 	}
 
