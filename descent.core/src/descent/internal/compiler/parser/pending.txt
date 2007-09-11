@@ -75,7 +75,6 @@ Pvirtuals.java
 real_t.java
 RealExp.java
 RemoveExp.java
-Scope.java
 ScopeDsymbol.java
 SemanticContext.java
 SliceExp.java

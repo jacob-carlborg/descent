@@ -565,7 +565,7 @@ public class FuncDeclaration extends Declaration {
 		/*
 		 * Save scope for possible later use (if we need the function internals)
 		 */
-		scope = new Scope(sc);
+		scope = new Scope(sc, context);
 		scope.setNoFree();
 		return;
 	}

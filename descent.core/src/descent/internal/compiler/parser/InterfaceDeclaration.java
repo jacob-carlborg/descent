@@ -198,7 +198,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				}
 				if (b.base.symtab == null || b.base.scope != null) {
 					// Forward reference of base, try again later
-					scope = scx != null ? scx : new Scope(sc);
+					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
 					scope.module.addDeferredSemantic(this);
 					return;

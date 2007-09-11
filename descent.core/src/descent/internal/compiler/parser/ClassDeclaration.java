@@ -412,7 +412,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 							// printf("\ttry later, forward reference of base
 							// class %s\n",
 							// tc.sym.toChars());
-							scope = scx != null ? scx : new Scope(sc);
+							scope = scx != null ? scx : new Scope(sc, context);
 							scope.setNoFree();
 							scope.module.addDeferredSemantic(this);
 							return;
@@ -470,7 +470,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					// Forward reference of base, try again later
 					// printf("\ttry later, forward reference of base %s\n",
 					// baseClass.toChars());
-					scope = scx != null ? scx : new Scope(sc);
+					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
 					scope.module.addDeferredSemantic(this);
 					return;
@@ -641,7 +641,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			sc = sc.pop();
 
-			scope = scx != null ? scx : new Scope(sc);
+			scope = scx != null ? scx : new Scope(sc, context);
 			scope.setNoFree();
 			scope.module.addDeferredSemantic(this);
 

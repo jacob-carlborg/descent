@@ -56,7 +56,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		 * Remember Scope for later instantiations, but make a copy since
 		 * attributes can change.
 		 */
-		this.scope = new Scope(sc);
+		this.scope = new Scope(sc, context);
 		this.scope.setNoFree();
 
 		// Set up scope for parameters

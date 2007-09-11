@@ -114,7 +114,7 @@ public class AnonDeclaration extends AttribDeclaration {
 			if (aad.sizeok == 2) {
 				ad.sizeok = 2;
 				if (sc.anonAgg == null) {
-					scope = scx != null ? scx : new Scope(sc);
+					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
 					scope.module.addDeferredSemantic(this);
 				}

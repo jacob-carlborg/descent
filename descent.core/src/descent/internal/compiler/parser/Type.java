@@ -671,12 +671,12 @@ public abstract class Type extends ASTDmdNode {
 		} else if (CharOperation.equals(ident, Id.mangleof)) {
 			Assert.isNotNull(deco);
 			e = new StringExp(loc, deco.toCharArray(), 'c');
-			Scope sc = new Scope();
+			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else if (CharOperation.equals(ident, Id.stringof)) {
 			char[] s = toChars(context).toCharArray();
 			e = new StringExp(loc, s, 'c');
-			Scope sc = new Scope();
+			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -750,7 +750,7 @@ public abstract class Type extends ASTDmdNode {
 		if (CharOperation.equals(ident.ident, Id.stringof)) {
 			char[] s = e.toChars(context).toCharArray();
 			e = new StringExp(e.loc, s, 'c');
-			Scope _sc = new Scope();
+			Scope _sc = new Scope(context);
 			e = e.semantic(_sc, context);
 			return e;
 		}

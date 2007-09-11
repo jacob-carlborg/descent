@@ -178,7 +178,7 @@ public class StructDeclaration extends AggregateDeclaration {
 			alignsize = 0;
 			structalign = 0;
 
-			scope = scx != null ? scx : new Scope(sc);
+			scope = scx != null ? scx : new Scope(sc, context);
 			scope.setNoFree();
 			scope.module.addDeferredSemantic(this);
 			return;

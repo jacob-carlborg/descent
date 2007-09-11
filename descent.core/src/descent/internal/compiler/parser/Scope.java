@@ -3,182 +3,197 @@ package descent.internal.compiler.parser;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
+import static descent.internal.compiler.parser.LINK.LINKd;
+import static descent.internal.compiler.parser.PROT.PROTpublic;
 
-
+// DMD 1.020
 public class Scope {
-	
-	public final static int CSXthis_ctor = 	0x0001;
+
+	public final static int CSXthis_ctor = 0x0001;
 	public final static int CSXsuper_ctor = 0x0002;
-	public final static int CSXthis = 		0x0004;
-	public final static int CSXsuper = 		0x0008;
-	public final static int CSXlabel = 		0x0010;
-	public final static int CSXreturn = 	0x0020;
-	public final static int CSXany_ctor = 	0x0040;
-	
-	public final static int SCOPEctor = 	0x0001; // constructor type
+	public final static int CSXthis = 0x0004;
+	public final static int CSXsuper = 0x0008;
+	public final static int CSXlabel = 0x0010;
+	public final static int CSXreturn = 0x0020;
+	public final static int CSXany_ctor = 0x0040;
+
+	public final static int SCOPEctor = 0x0001; // constructor type
 	public final static int SCOPEstaticif = 0x0002; // inside static if
-	
-	public Scope enclosing; 			// enclosing Scope
-	public Module module; 				// Root module
-	public ScopeDsymbol scopesym; 		// current symbol
-	public ScopeDsymbol sd; 			// if in static if, and declaring new symbols,
-	public FuncDeclaration func;		// function we are in
-	public Dsymbol parent; 				// parent to use
-	LabelStatement slabel;	// enclosing labelled statement
-	public int callSuper; 				// primitive flow analysis for constructors
-	public int structalign;				// alignment for struct members
-	public int offset;		// next offset to use in aggregate
-	public LINK linkage;
-	public PROT protection;				// protection for class members
-	public int explicitProtection;		// set if in an explicit protection attribute
-    public int stc;						// storage class
-    public int intypeof;			// in typeof(exp)
-    public int parameterSpecialization; // // if in template parameter specialization
-    public boolean inunion;		// we're processing members of a union
-    public int incontract;		// we're inside contract code
-    public boolean nofree;			// set if shouldn't free it
-    public int noctor;			// set if constructor calls aren't allowed
-    public int flags;
-    public Statement sbreak;		// enclosing statement that supports "break"
-    public Statement scontinue;	// enclosing statement that supports "continue"
-    public SwitchStatement sw;	// enclosing switch statement
-    public ForeachStatement fes;	// if nested function for ForeachStatement, this is it
-    public TryFinallyStatement tf;	// enclosing try finally statement
-    
-    public AnonymousAggregateDeclaration anonAgg;	// for temporary analysis
-	
-	
-	public Scope() {
-		this.linkage = LINK.LINKd;
-		this.protection = PROT.PROTpublic;
-		this.stc = 0;
-	}
-	
-	public Scope(Scope enclosing) {
-		this();
-		this.module = enclosing.module;
-		this.parent = enclosing.parent;
-		this.enclosing = enclosing;
-	}
 
 	public static Scope createGlobal(Module module, SemanticContext context) {
 		Scope sc;
 
-	    sc = new Scope();
-	    sc.module = module;
-	    sc.scopesym = new ScopeDsymbol(Loc.ZERO);
-	    sc.scopesym.symtab = new DsymbolTable();
+		sc = new Scope(context);
+		sc.module = module;
+		sc.scopesym = new ScopeDsymbol(Loc.ZERO);
+		sc.scopesym.symtab = new DsymbolTable();
 
-	    // Add top level package as member of this global scope
-	    Dsymbol m = module;
-	    while (m.parent != null) {
-	    	m = m.parent;
-	    }
-	    
-	    m.addMember(null, sc.scopesym, 1, context);
-	    m.parent = null;			// got changed by addMember()
+		// Add top level package as member of this global scope
+		Dsymbol m = module;
+		while (m.parent != null) {
+			m = m.parent;
+		}
 
-	    // Create the module scope underneath the global scope
-	    sc = sc.push(module);
-	    sc.parent = module;
-	    return sc;
+		m.addMember(null, sc.scopesym, 1, context);
+		m.parent = null; // got changed by addMember()
+
+		// Create the module scope underneath the global scope
+		sc = sc.push(module);
+		sc.parent = module;
+		return sc;
 	}
-	
-	public Scope push() {
-		Scope s = new Scope(this);
-	    assert(this != s);
-	    return s;
+	public Scope enclosing; // enclosing Scope
+	public Module module; // Root module
+	public ScopeDsymbol scopesym; // current symbol
+	public ScopeDsymbol sd; // if in static if, and declaring new symbols,
+	public FuncDeclaration func; // function we are in
+	public Dsymbol parent; // parent to use
+	public LabelStatement slabel; // enclosing labelled statement
+	public SwitchStatement sw; // enclosing switch statement
+	public TryFinallyStatement tf; // enclosing try finally statement
+	public Statement sbreak; // enclosing statement that supports "break"
+	public Statement scontinue; // enclosing statement that supports "continue"
+	public ForeachStatement fes; // if nested function for ForeachStatement, this is it
+	public int offset; // next offset to use in aggregate
+	public boolean inunion; // we're processing members of a union
+	public int incontract; // we're inside contract code
+	public boolean nofree; // set if shouldn't free it
+	public int noctor; // set if constructor calls aren't allowed
+	public int intypeof; // in typeof(exp)
+	public int parameterSpecialization; // // if in template parameter specialization
+	public int callSuper; // primitive flow analysis for constructors
+	public int structalign; // alignment for struct members
+	public LINK linkage; // linkage for external functions
+	public PROT protection; // protection for class members
+	public int explicitProtection; // set if in an explicit protection attribute
+	public int stc; // storage class    
+	public int flags;
+
+	public AnonymousAggregateDeclaration anonAgg; // for temporary analysis
+
+	public SemanticContext context;
+
+	private Scope() {
+		this.module = null;
+		this.scopesym = null;
+		this.sd = null;
+		this.enclosing = null;
+		this.parent = null;
+		this.sw = null;
+		this.tf = null;
+		this.sbreak = null;
+		this.scontinue = null;
+		this.fes = null;
+		this.structalign = context.global.structalign;
+		this.func = null;
+		this.slabel = null;
+		this.linkage = LINKd;
+		this.protection = PROTpublic;
+		this.explicitProtection = 0;
+		this.stc = 0;
+		this.offset = 0;
+		this.inunion = false;
+		this.incontract = 0;
+		this.nofree = false;
+		this.noctor = 0;
+		this.intypeof = 0;
+		this.parameterSpecialization = 0;
+		this.callSuper = 0;
+		this.flags = 0;
+		this.anonAgg = null;
 	}
 
-	public Scope push(ScopeDsymbol ss) {
-		Scope s = push();
-	    s.scopesym = ss;
-	    return s;
+	public Scope(Scope enclosing, SemanticContext context) {
+		this();
+		this.module = enclosing.module;
+		this.func = enclosing.func;
+		this.parent = enclosing.parent;
+		this.scopesym = null;
+		this.sd = null;
+		this.sw = enclosing.sw;
+		this.tf = enclosing.tf;
+		this.sbreak = enclosing.sbreak;
+		this.scontinue = enclosing.scontinue;
+		this.fes = enclosing.fes;
+		this.structalign = enclosing.structalign;
+		this.enclosing = enclosing;
+		this.slabel = null;
+		this.linkage = enclosing.linkage;
+		this.protection = enclosing.protection;
+		this.explicitProtection = enclosing.explicitProtection;
+		this.stc = enclosing.stc;
+		this.offset = 0;
+		this.inunion = enclosing.inunion;
+		this.incontract = enclosing.incontract;
+		this.nofree = false;
+		this.noctor = enclosing.noctor;
+		this.intypeof = enclosing.intypeof;
+		this.parameterSpecialization = enclosing.parameterSpecialization;
+		this.callSuper = enclosing.callSuper;
+		this.flags = 0;
+		this.anonAgg = null;
+		this.context = context;
 	}
-	
-	public Scope pop() {
-		Scope enc = enclosing;
 
-	    if (enclosing != null) {
-	    	enclosing.callSuper |= callSuper;
-	    }
-
-	    return enc;
+	public Scope(SemanticContext context) {
+		this();
+		this.context = context;
 	}
-	
-	public Dsymbol search(Loc loc, IdentifierExp ident, Dsymbol[] pscopesym,
-			SemanticContext context) {
-		Dsymbol s;
+
+	public void error(String s) {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
+
+	public ClassDeclaration getClassScope() {
 		Scope sc;
 
-		//printf("Scope::search(%p, '%s')\n", this, ident.toChars());
-		if (CharOperation.equals(ident.ident, Id.empty)) {
-			// Look for module scope
-			for (sc = this; sc != null; sc = sc.enclosing) {
-				assert (sc != sc.enclosing);
-				if (sc.scopesym != null) {
-					s = sc.scopesym.isModule();
-					if (s != null) {
-						//printf("\tfound %s.%s\n", s.parent ? s.parent.toChars() : "", s.toChars());
-						if (pscopesym != null)
-							pscopesym[0] = sc.scopesym;
-						return s;
-					}
-				}
-			}
-			return null;
-		}
-
 		for (sc = this; sc != null; sc = sc.enclosing) {
-			assert (sc != sc.enclosing);
-			if (sc.scopesym != null) {
-				//printf("\tlooking in scopesym '%s', kind = '%s'\n", sc.scopesym.toChars(), sc.scopesym.kind());
-				s = sc.scopesym.search(loc, ident, 0, context);
-				if (s != null) {
-					 if ((context.global.params.warnings || context.global.params.Dversion > 1)
-							&& CharOperation.equals(ident.ident, Id.length)
-							&& sc.scopesym.isArrayScopeSymbol() != null
-							&& sc.enclosing != null
-							&& sc.enclosing.search(loc, ident, null, context) != null) {
-						/* TODO semantic
-						if (context.global.params.warnings) {
-							fprintf(stdmsg, "warning - ");
-						}
-						error("array 'length' hides other 'length' name in outer scope");
-						*/
-					}
+			ClassDeclaration cd;
 
-					// printf("\tfound %s.%s, kind = '%s'\n", s.parent ?
-					// s.parent.toChars() : "", s.toChars(), s.kind());
-					if (pscopesym != null)
-						pscopesym[0] = sc.scopesym;
-					return s;
+			if (sc.scopesym != null) {
+				cd = sc.scopesym.isClassDeclaration();
+				if (cd != null) {
+					return cd;
 				}
 			}
 		}
-
 		return null;
 	}
-	
+
+	public AggregateDeclaration getStructClassScope() {
+		Scope sc;
+
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			AggregateDeclaration ad;
+
+			if (sc.scopesym != null) {
+				ad = sc.scopesym.isClassDeclaration();
+				if (ad != null) {
+					return ad;
+				} else {
+					ad = sc.scopesym.isStructDeclaration();
+					if (ad != null) {
+						return ad;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public Dsymbol insert(Dsymbol s) {
 		Scope sc;
 
 		for (sc = this; sc != null; sc = sc.enclosing) {
 			if (sc.scopesym != null) {
-				if (sc.scopesym.symtab == null)
+				if (sc.scopesym.symtab == null) {
 					sc.scopesym.symtab = new DsymbolTable();
+				}
 				return sc.scopesym.symtab.insert(s);
 			}
 		}
 		Assert.isTrue(false);
 		return null;
-	}
-	
-	public void setNoFree() {
-		Scope sc;
-		for (sc = this; sc != null; sc = sc.enclosing) {
-			sc.nofree = true;
-		}
 	}
 
 	public void mergeCallSuper(Loc loc, int cs) {
@@ -206,29 +221,80 @@ public class Scope {
 			}
 		}
 	}
-	    
-	public void error(String s) {
-		throw new IllegalStateException("Problem reporting not implemented");
+
+	public Scope pop() {
+		Scope enc = enclosing;
+
+		if (enclosing != null) {
+			enclosing.callSuper |= callSuper;
+		}
+
+		return enc;
 	}
 
-	public AggregateDeclaration getStructClassScope() {
+	public Scope push() {
+		Scope s = new Scope(this, context);
+		assert (this != s);
+		return s;
+	}
+
+	public Scope push(ScopeDsymbol ss) {
+		Scope s = push();
+		s.scopesym = ss;
+		return s;
+	}
+
+	public Dsymbol search(Loc loc, IdentifierExp ident, Dsymbol[] pscopesym,
+			SemanticContext context) {
+		Dsymbol s;
 		Scope sc;
 
-		for (sc = this; sc != null; sc = sc.enclosing) {
-			AggregateDeclaration ad;
+		if (CharOperation.equals(ident.ident, Id.empty)) {
+			// Look for module scope
+			for (sc = this; sc != null; sc = sc.enclosing) {
+				assert (sc != sc.enclosing);
+				if (sc.scopesym != null) {
+					s = sc.scopesym.isModule();
+					if (s != null) {
+						if (pscopesym != null) {
+							pscopesym[0] = sc.scopesym;
+						}
+						return s;
+					}
+				}
+			}
+			return null;
+		}
 
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			assert (sc != sc.enclosing);
 			if (sc.scopesym != null) {
-				ad = sc.scopesym.isClassDeclaration();
-				if (ad != null)
-					return ad;
-				else {
-					ad = sc.scopesym.isStructDeclaration();
-					if (ad != null)
-						return ad;
+				s = sc.scopesym.search(loc, ident, 0, context);
+				if (s != null) {
+					if ((context.global.params.warnings || context.global.params.Dversion > 1)
+							&& CharOperation.equals(ident.ident, Id.length)
+							&& sc.scopesym.isArrayScopeSymbol() != null
+							&& sc.enclosing != null
+							&& sc.enclosing.search(loc, ident, null, context) != null) {
+						error("warning - array 'length' hides other 'length' name in outer scope");
+					}
+
+					if (pscopesym != null) {
+						pscopesym[0] = sc.scopesym;
+					}
+					return s;
 				}
 			}
 		}
+
 		return null;
+	}
+
+	public void setNoFree() {
+		Scope sc;
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			sc.nofree = true;
+		}
 	}
 
 }
