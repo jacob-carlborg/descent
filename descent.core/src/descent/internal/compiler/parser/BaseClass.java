@@ -27,6 +27,10 @@ public class BaseClass extends ASTDmdNode {
 	// these
 
 	// are a copy of the InterfaceDeclaration::interfaces
+	
+	public BaseClass() {
+		
+	}
 
 	public BaseClass(Type type, Modifier modifier, PROT protection) {
 		this.type = type;
@@ -50,7 +54,7 @@ public class BaseClass extends ASTDmdNode {
 		bc.baseInterfaces = baseInterfaces;
 		return bc;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -90,7 +94,9 @@ public class BaseClass extends ASTDmdNode {
 			FuncDeclaration fd;
 			TypeFunction tf;
 
-			Assert.isNotNull(ifd);
+			if (ifd == null) {
+				throw new IllegalStateException("assert(ifd);");
+			}
 			// Find corresponding function in this class
 			tf = (ifd.type.ty == Tfunction) ? (TypeFunction) (ifd.type) : null;
 			fd = cd.findFunc(ifd.ident, tf, context);
@@ -130,7 +136,7 @@ public class BaseClass extends ASTDmdNode {
 	public int getNodeType() {
 		return BASE_CLASS;
 	}
-	
+
 	@Override
 	public char[] toCharArray() {
 		if (modifier == null) {

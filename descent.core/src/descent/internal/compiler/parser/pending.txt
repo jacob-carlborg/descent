@@ -47,7 +47,6 @@ Identifier.java
 IftypeCondition.java
 Import.java
 IndexExp.java
-Initializer.java
 IntegerExp.java
 integer_t.java
 InterfaceDeclaration.java

@@ -8,6 +8,7 @@ public class ArrayInitializer extends Initializer {
 
 	public Expressions index;
 	public Initializers value;
+	public Type type; // type that array will be used to initialize
 
 	public ArrayInitializer(Loc loc) {
 		super(loc);
@@ -80,6 +81,40 @@ public class ArrayInitializer extends Initializer {
 				iz.toCBuffer(buf, hgs, context);
 		}
 		buf.writebyte(']');
+	}
+
+	@Override
+	public Expression toExpression(SemanticContext context) {
+		Expressions elements;
+		Expression e;
+
+		elements = new Expressions();
+		for (int i = 0; i < value.size(); i++) {
+			if (index.get(i) != null) {
+				// goto Lno;
+				elements = null;
+				error(loc, "array initializers as expressions are not allowed");
+				return null;
+			}
+			Initializer iz = value.get(i);
+			if (null == iz) {
+				// goto Lno;
+				elements = null;
+				error(loc, "array initializers as expressions are not allowed");
+				return null;
+			}
+			Expression ex = iz.toExpression(context);
+			if (null == ex) {
+				// goto Lno;
+				elements = null;
+				error(loc, "array initializers as expressions are not allowed");
+				return null;
+			}
+			elements.add(ex);
+		}
+		e = new ArrayLiteralExp(loc, elements);
+		e.type = type;
+		return e;
 	}
 
 }
