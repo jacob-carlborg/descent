@@ -28,6 +28,10 @@ public abstract class Initializer extends ASTDmdNode {
 		error("cannot infer type from initializer");
 		return Type.terror;
 	}
+	
+	public ArrayInitializer isArrayInitializer() {
+		return null;
+	}
 
 	public ExpInitializer isExpInitializer() {
 		return null;

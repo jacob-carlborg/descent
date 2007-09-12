@@ -1094,6 +1094,7 @@ public class Parser extends Lexer {
 	    }
 
 	    InvariantDeclaration invariant = new InvariantDeclaration(loc);
+	    invariant.invariantStart = start;
 	    invariant.fbody = parseStatement(PScurly);
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return invariant;

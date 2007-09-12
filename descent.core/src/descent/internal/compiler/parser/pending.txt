@@ -4,7 +4,6 @@ AlignDeclaration.java
 AnonymousAggregateDeclaration.java
 Argument.java
 ArrayExp.java
-ArrayInitializer.java
 ArrayScopeSymbol.java
 AsmBlock.java
 AsmStatement.java
@@ -50,7 +49,6 @@ IndexExp.java
 IntegerExp.java
 integer_t.java
 InterfaceDeclaration.java
-InvariantDeclaration.java
 Lexer.java
 Loc.java
 Module.java
