@@ -99,8 +99,6 @@ TupleExp.java
 Type.java
 TypeBasic.java
 TypedefDeclaration.java
-TypeSArray.java
-TypeSlice.java
 TypeStruct.java
 TypeTuple.java
 UniAlpha.javaT

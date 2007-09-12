@@ -1286,4 +1286,35 @@ public abstract class ASTDmdNode extends ASTNode {
 		return (Type) o;
 	}
 	
+	public static Expression semanticLength(Scope sc, Type t, Expression exp,
+			SemanticContext context)
+	{
+		if(t.ty == Ttuple)
+		{
+			ScopeDsymbol sym = new ArrayScopeSymbol((TypeTuple) t);
+			sym.parent = sc.scopesym;
+			sc = sc.push(sym);
+			
+			exp = exp.semantic(sc, context);
+			
+			sc.pop();
+		}
+		else
+			exp = exp.semantic(sc, context);
+		return exp;
+	}
+
+	public static Expression semanticLength(Scope sc, TupleDeclaration s,
+			Expression exp, SemanticContext context)
+	{
+		ScopeDsymbol sym = new ArrayScopeSymbol(s);
+		sym.parent = sc.scopesym;
+		sc = sc.push(sym);
+		
+		exp = exp.semantic(sc, context);
+		
+		sc.pop();
+		return exp;
+	}
+	
 }
