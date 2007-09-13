@@ -12,6 +12,7 @@ public class CompileStatement extends Statement {
 		this.exp = exp;	
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

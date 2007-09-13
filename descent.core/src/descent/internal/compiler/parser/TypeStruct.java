@@ -17,6 +17,7 @@ public class TypeStruct extends Type {
 		this.sym = sym;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on fake class");
 	}
@@ -325,6 +326,7 @@ public class TypeStruct extends Type {
 		return sym;
 	}
 
+	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		toDecoBuffer(buf, context);
 	}

@@ -19,6 +19,7 @@ public class AsmStatement extends Statement {
 		return ASM_STATEMENT;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);

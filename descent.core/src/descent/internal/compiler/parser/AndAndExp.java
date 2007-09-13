@@ -17,6 +17,7 @@ public class AndAndExp extends BinExp {
 		return AND_AND_EXP;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -71,6 +72,7 @@ public class AndAndExp extends BinExp {
 		return true;
 	}
 	
+	@Override
 	public int checkSideEffect(int flag, SemanticContext context)
 	{
 		if(flag == 2)

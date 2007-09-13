@@ -27,6 +27,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		return COMPILE_DECLARATION;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

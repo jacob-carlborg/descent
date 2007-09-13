@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class TypeBasic extends Type {
 
 	private final static BigInteger N_0xFF = new BigInteger("FF", 16);
@@ -35,6 +36,7 @@ public class TypeBasic extends Type {
 		deco = out.extractData();
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
@@ -152,23 +154,28 @@ public class TypeBasic extends Type {
 		return (ty.flags & TFLAGSunsigned) != 0;
 	}
 
+	@Override
 	public boolean isfloating() {
 		return (ty.flags & TFLAGSfloating) != 0;
 	}
 
+	@Override
 	public boolean isreal() {
 		return (ty.flags & TFLAGSreal) != 0;
 	}
 
+	@Override
 	public boolean isimaginary() {
 		return (ty.flags & TFLAGSimaginary) != 0;
 	}
 
+	@Override
 	public boolean iscomplex() {
 		return (ty.flags & TFLAGScomplex) != 0;
 	}
 
-	public boolean isscalar() {
+	@Override
+	public boolean isscalar(SemanticContext context) {
 		return (ty.flags & (TFLAGSintegral | TFLAGSfloating)) != 0;
 	}
 
@@ -375,6 +382,63 @@ public class TypeBasic extends Type {
 			throw new IllegalStateException("assert(0);");
 		}
 		return size;
+	}
+
+	@Override
+	public int alignsize(SemanticContext context)
+	{
+		int sz;
+
+	    switch (ty)
+	    {
+		case Tfloat80:
+		case Timaginary80:
+		case Tcomplex80:
+		    sz = 2;
+		    break;
+
+		default:
+		    sz = size(Loc.ZERO, context);
+		    break;
+	    }
+	    return sz;
+	}
+
+	@Override
+	public Expression getProperty(Loc loc, char[] ident, int start, int length,
+			SemanticContext context)
+	{
+		// TODO Auto-generated method stub
+		return super.getProperty(loc, ident, start, length, context);
+	}
+	
+	@Override
+	public boolean isZeroInit(SemanticContext context)
+	{
+		switch (ty)
+	    {
+		case Tchar:
+		case Twchar:
+		case Tdchar:
+		case Timaginary32:
+		case Timaginary64:
+		case Timaginary80:
+		case Tfloat32:
+		case Tfloat64:
+		case Tfloat80:
+		case Tcomplex32:
+		case Tcomplex64:
+		case Tcomplex80:
+		    return false;		// no
+	    }
+	    return true;			// yes
+	}
+
+	@Override
+	public Type syntaxCopy()
+	{
+		// No semantic analysis done on basic types, no need to copy
+	    return this;
 	}
 
 }

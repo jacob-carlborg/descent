@@ -22,6 +22,7 @@ public class ArrayLiteralExp extends Expression {
 		this.elements = (Expressions) elements;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

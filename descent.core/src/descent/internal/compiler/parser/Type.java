@@ -532,10 +532,6 @@ public abstract class Type extends ASTDmdNode {
 		return false;
 	}
 
-	public boolean isscalar() {
-		return false;
-	}
-
 	public ClassDeclaration isClassHandle() {
 		return null;
 	}

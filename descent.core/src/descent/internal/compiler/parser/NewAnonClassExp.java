@@ -24,6 +24,7 @@ public class NewAnonClassExp extends Expression {
 		return NEW_ANON_CLASS_EXP;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

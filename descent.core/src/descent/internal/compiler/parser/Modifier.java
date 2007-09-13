@@ -22,6 +22,7 @@ public class Modifier extends ASTDmdNode {
 		return MODIFIER;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);

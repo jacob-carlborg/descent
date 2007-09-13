@@ -33,6 +33,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		td = s;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
 	}

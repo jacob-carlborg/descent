@@ -12,6 +12,7 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 		this.tempinst = tempinst;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

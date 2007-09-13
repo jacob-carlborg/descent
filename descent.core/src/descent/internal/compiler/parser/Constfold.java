@@ -1592,7 +1592,7 @@ public class Constfold
 			complex_t value = e1.toComplex(context);
 
 			e = new ComplexExp(loc, value, type);
-		} else if (tb.isscalar())
+		} else if (tb.isscalar(context))
 			e = new IntegerExp(loc, e1.toInteger(context), type);
 		else if (tb.ty == Tvoid)
 			e = EXP_CANT_INTERPRET;

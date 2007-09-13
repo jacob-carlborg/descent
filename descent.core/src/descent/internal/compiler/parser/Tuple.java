@@ -17,6 +17,7 @@ public class Tuple extends ASTDmdNode {
 		return 0;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Fake Node accept0");
 	}

@@ -32,6 +32,7 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 		this.valueTable = new Object[extraRoom];
 	}
 
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 		//		HashtableOfStringAndInt result = (HashtableOfStringAndInt) super.clone();
@@ -124,6 +125,7 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 		return elementSize;
 	}
 
+	@Override
 	public String toString() {
 		String s = ""; //$NON-NLS-1$
 		Object object;

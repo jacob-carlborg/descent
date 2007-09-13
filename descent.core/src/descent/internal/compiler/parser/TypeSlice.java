@@ -16,6 +16,7 @@ public class TypeSlice extends Type {
 		this.upr = upr;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

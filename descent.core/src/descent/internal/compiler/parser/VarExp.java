@@ -22,6 +22,7 @@ public class VarExp extends Expression {
 		this.type = var.type;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
 	}

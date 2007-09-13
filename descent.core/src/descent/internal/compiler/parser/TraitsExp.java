@@ -19,6 +19,7 @@ public class TraitsExp extends Expression {
 		this.args = args;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -88,7 +89,7 @@ public class TraitsExp extends Expression {
 	    	{
 				public boolean check(Type t)
 				{
-					return t.isscalar();
+					return t.isscalar(context);
 				}
 	    	});
 	    }

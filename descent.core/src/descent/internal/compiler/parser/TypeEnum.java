@@ -157,7 +157,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public boolean isscalar() {
+	public boolean isscalar(SemanticContext context) {
 		return true;
 	}
 

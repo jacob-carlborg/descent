@@ -27,6 +27,7 @@ public class ForeachRangeStatement extends Statement {
 		return FOREACH_RANGE_STATEMENT;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -77,7 +78,7 @@ public class ForeachRangeStatement extends Statement {
 			upr = ea.e2;
 	    }
 	    
-	    if (!arg.type.isscalar())
+	    if (!arg.type.isscalar(context))
 	    	error("%s is not a scalar type", arg.type.toChars(context));
 
 	    sym = new ScopeDsymbol(Loc.ZERO);

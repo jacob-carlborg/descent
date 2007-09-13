@@ -14,6 +14,7 @@ public class RemoveExp extends BinExp {
 		return 0;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

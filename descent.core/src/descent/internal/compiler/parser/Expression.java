@@ -143,7 +143,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public void checkScalar(SemanticContext context) {
-		if (!type.isscalar()) {
+		if (!type.isscalar(context)) {
 			error("'%s' is not a scalar, it is a %s", toChars(context), type
 					.toChars(context));
 		}

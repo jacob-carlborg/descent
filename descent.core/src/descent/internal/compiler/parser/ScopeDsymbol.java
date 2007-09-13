@@ -38,6 +38,7 @@ public class ScopeDsymbol extends Dsymbol {
 		this.prots = null;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		melnorme.miscutil.Assert.fail("Abstract Class accept0");
 	}

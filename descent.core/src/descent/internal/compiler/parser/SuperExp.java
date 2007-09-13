@@ -17,6 +17,7 @@ public class SuperExp extends ThisExp {
 		return SUPER_EXP;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);

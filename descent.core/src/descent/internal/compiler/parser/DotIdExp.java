@@ -126,7 +126,7 @@ public class DotIdExp extends UnaExp {
 									return e;
 								}
 							}
-						} else if (type.isscalar()) {
+						} else if (type.isscalar(context)) {
 							e = type.defaultInit(context);
 							e.loc = loc;
 							return e;

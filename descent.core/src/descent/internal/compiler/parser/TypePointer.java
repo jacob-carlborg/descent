@@ -73,7 +73,7 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public boolean isscalar() {
+	public boolean isscalar(SemanticContext context) {
 		return true;
 	}
 

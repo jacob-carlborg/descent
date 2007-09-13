@@ -181,6 +181,7 @@ public class VarDeclaration extends Declaration {
 		return (storage_class & (STC.STCin | STC.STCout)) == (STC.STCin | STC.STCout);
 	}
 
+	@Override
 	public boolean isOut() {
 		return (storage_class & STC.STCout) != 0;
 	}

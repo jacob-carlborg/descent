@@ -29,6 +29,7 @@ public abstract class Declaration extends Dsymbol {
 		return "declaration";
 	}
 
+	@Override
 	public int size(SemanticContext context) {
 		return type.size(loc, context);
 	}
@@ -58,6 +59,7 @@ public abstract class Declaration extends Dsymbol {
 		return false;
 	}
 
+	@Override
 	public PROT prot() {
 		return protection;
 	}
@@ -98,6 +100,7 @@ public abstract class Declaration extends Dsymbol {
 		return (storage_class & STC.STCparameter) != 0;
 	}
 
+	@Override
 	public boolean isDeprecated() {
 		return (storage_class & STC.STCdeprecated) != 0;
 	}

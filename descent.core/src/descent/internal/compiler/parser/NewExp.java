@@ -40,6 +40,7 @@ public class NewExp extends Expression {
 		return NEW_EXP;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -264,7 +265,7 @@ public class NewExp extends Expression {
 					arguments.set(i, arg);
 					tb = tb.next.toBasetype(context);
 				}
-			} else if (tb.isscalar()) {
+			} else if (tb.isscalar(context)) {
 				if (arguments != null && arguments.size() > 0) {
 					error("no constructor for %s", type.toChars(context));
 				}

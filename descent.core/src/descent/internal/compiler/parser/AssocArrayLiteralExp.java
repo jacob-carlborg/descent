@@ -26,6 +26,7 @@ public class AssocArrayLiteralExp extends Expression {
 		this.values = values;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

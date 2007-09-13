@@ -13,6 +13,7 @@ public class VersionCondition extends DVCondition {
 		return VERSION;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

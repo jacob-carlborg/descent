@@ -23,6 +23,7 @@ public class IndexExp extends BinExp {
 		return 0;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("accept0 fake node");
 	}

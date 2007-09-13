@@ -18,6 +18,7 @@ public class AssertExp extends UnaExp {
 		this.msg = msg;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

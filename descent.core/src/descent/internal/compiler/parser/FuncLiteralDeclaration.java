@@ -18,6 +18,7 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 		return FUNC_LITERAL_DECLARATION;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

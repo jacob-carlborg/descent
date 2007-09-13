@@ -134,8 +134,8 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public boolean isscalar() {
-		return sym.basetype.isscalar();
+	public boolean isscalar(SemanticContext context) {
+		return sym.basetype.isscalar(context);
 	}
 
 	@Override

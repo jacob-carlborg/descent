@@ -16,6 +16,7 @@ public class TypeTuple extends Type {
 		super(TY.Ttuple, null);
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on fake class");
 	}
