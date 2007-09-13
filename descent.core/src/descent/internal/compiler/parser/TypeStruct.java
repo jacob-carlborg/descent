@@ -3,9 +3,10 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKdotexp;
-import static descent.internal.compiler.parser.TOK.TOKimport;
-import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.MATCH.*;
+import static descent.internal.compiler.parser.DYNCAST.*;
 
 public class TypeStruct extends Type {
 
@@ -18,31 +19,6 @@ public class TypeStruct extends Type {
 
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on fake class");
-	}
-
-	@Override
-	public Expression defaultInit(SemanticContext context) {
-		return super.defaultInit(context);
-		/* TODO semantic
-		 Symbol s;
-		 Declaration d;
-
-		 s = sym.toInitializer();
-		 d = new SymbolDeclaration(sym.loc, s, sym);
-		 assert(d);
-		 d.type = this;
-		 return new VarExp(sym.loc, d);
-		 */
-	}
-
-	@Override
-	public int getNodeType() {
-		return TYPE_STRUCT;
-	}
-
-	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
-		return merge(context);
 	}
 
 	@Override
@@ -59,6 +35,79 @@ public class TypeStruct extends Type {
 	@Override
 	public boolean checkBoolean(SemanticContext context) {
 		return false;
+	}
+
+	@Override
+	public MATCH deduceType(Scope sc, Type tparam,
+			TemplateParameters parameters, Objects dedtypes,
+			SemanticContext context) {
+		//printf("TypeStruct.deduceType()\n");
+	    //printf("\tthis.parent   = %s, ", sym.parent.toChars()); print();
+	    //printf("\ttparam = %d, ", tparam.ty); tparam.print();
+
+	    /* If this struct is a template struct, and we're matching
+	     * it against a template instance, convert the struct type
+	     * to a template instance, too, and try again.
+	     */
+	    TemplateInstance ti = sym.parent.isTemplateInstance();
+
+	    if (null != tparam && tparam.ty == Tinstance)
+	    {
+		if (null != ti && ti.toAlias(context) == sym)
+		{
+		    TypeInstance t = new TypeInstance(Loc.ZERO, ti);
+		    return t.deduceType(sc, tparam, parameters, dedtypes, context);
+		}
+
+		/* Match things like:
+		 *  S!(T).foo
+		 */
+		TypeInstance tpi = (TypeInstance )tparam;
+		if (tpi.idents.size() > 0)
+		{   IdentifierExp id = (IdentifierExp)tpi.idents.get(tpi.idents.size() - 1);
+		    if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id))
+		    {
+			Type tparent = sym.parent.getType();
+			if (null != tparent)
+			{
+			    /* Slice off the .foo in S!(T).foo
+			     */
+				/* TODO semantic
+			    tpi.idents.dim--;
+			    MATCH m = tparent.deduceType(sc, tpi, parameters, dedtypes);
+			    tpi.idents.dim++;
+			    return m;
+			    */
+				return MATCHnomatch;
+			}
+		    }
+		}
+	    }
+
+	    // Extra check
+	    if (null != tparam && tparam.ty == Tstruct)
+	    {
+		TypeStruct tp = (TypeStruct )tparam;
+
+		if (sym != tp.sym)
+		    return MATCHnomatch;
+	    }
+	    return super.deduceType(sc, tparam, parameters, dedtypes, context);
+	}
+
+	@Override
+	public Expression defaultInit(SemanticContext context) {
+		return super.defaultInit(context);
+		/* TODO semantic
+		 Symbol s;
+		 Declaration d;
+
+		 s = sym.toInitializer();
+		 d = new SymbolDeclaration(sym.loc, s, sym);
+		 assert(d);
+		 d.type = this;
+		 return new VarExp(sym.loc, d);
+		 */
 	}
 
 	@Override
@@ -202,6 +251,16 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
+	public int getNodeType() {
+		return TYPE_STRUCT;
+	}
+
+	@Override
+	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context) {
+		return new TypeInfoStructDeclaration(this, context);
+	}
+
+	@Override
 	public boolean hasPointers(SemanticContext context) {
 		StructDeclaration s = sym;
 
@@ -228,37 +287,13 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+		return merge(context);
+	}
+
+	@Override
 	public int size(Loc loc, SemanticContext context) {
 		return sym.size(context);
-	}
-
-	@Override
-	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
-		return sym;
-	}
-
-	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		// TODO Auto-generated method stub
-	}
-
-	public MATCH deduceType(Scope sc, Type tparam,
-			TemplateParameters parameters, Objects dedtypes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	TypeInfoDeclaration getTypeInfoDeclaration() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String toChars(SemanticContext context) {
-		TemplateInstance ti = sym.parent.isTemplateInstance();
-		if (ti != null && ti.toAlias(context) == sym) {
-			return ti.toChars(context);
-		}
-		return sym.toChars(context);
 	}
 	
 	@Override
@@ -268,5 +303,32 @@ public class TypeStruct extends Type {
 	    if (ident != null)
 		buf.writestring(ident.toChars());
 	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		TemplateInstance ti = sym.parent.isTemplateInstance();
+		if (ti != null && ti.toAlias(context) == sym) {
+			return ti.toChars(context);
+		}
+		return sym.toChars(context);
+	}
 
+	@Override
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context)
+	{
+	    String name = sym.mangle(context);
+	    buf.printf(ty.mangleChar + name);
+	}
+	
+	@Override
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
+		return sym;
+	}
+
+	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
+		toDecoBuffer(buf, context);
+	}
+
+	//PERHAPS dt_t **toDt(dt_t **pdt);
+    //PERHAPS type *toCtype();
 }
