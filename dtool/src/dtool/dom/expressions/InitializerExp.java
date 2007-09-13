@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class InitializerExp extends Initializer {
 	
-	public Expression exp;
+	public Resolvable exp;
 
 	public InitializerExp(ExpInitializer elem) {
 		convertNode(elem);

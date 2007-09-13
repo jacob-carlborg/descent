@@ -17,5 +17,10 @@ public class ExpLiteralBool extends Expression {
 		visitor.visit(this);
 		visitor.endVisit(this);	
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		return String.valueOf(value);
+	}
 
 }

@@ -1,6 +1,9 @@
 package mmrnmhrm.ui.wizards;
 
 
+import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
+import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,14 +11,12 @@ import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.wizards.NewElementWizard;
-import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
-import org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 public class DeeProjectCreationWizard extends NewElementWizard {
 
-	protected ProjectWizardFirstPage fFirstPage;
-    protected ProjectWizardSecondPage fSecondPage;
+	protected ProjectWizardFirstPage_ fFirstPage;
+    protected ProjectWizardSecondPage_ fSecondPage;
     protected DeeProjectWizardPage3 fThirdPage;
     
 	private IConfigurationElement fConfigElement;
@@ -30,6 +31,7 @@ public class DeeProjectCreationWizard extends NewElementWizard {
 		fConfigElement = cfig;
 	}
 
+	@Override
 	public void addPages() {
         fFirstPage = new DeeProjectWizardPage1();
         fSecondPage = new DeeProjectWizardPage2(fFirstPage);
@@ -44,12 +46,13 @@ public class DeeProjectCreationWizard extends NewElementWizard {
 		return DLTKCore.create(fFirstPage.getProjectHandle());
 	}
 	
+	@Override
 	protected void finishPage(IProgressMonitor monitor) throws InterruptedException, CoreException {
 		fSecondPage.performFinish(monitor); // use the full progress monitor
-		fThirdPage.performOk();
+		//fThirdPage.performOk();
 	}
 
-	
+	@Override
 	public boolean performFinish() {
 		boolean res = super.performFinish();
 		if (res) {
@@ -59,9 +62,10 @@ public class DeeProjectCreationWizard extends NewElementWizard {
 		return res;
 	}
 	
+	@Override
 	public boolean performCancel() {
 		fSecondPage.performCancel();
-		fThirdPage.performCancel();
+		//fThirdPage.performCancel();
 		return super.performCancel();
 	}
 

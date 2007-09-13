@@ -9,6 +9,14 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralInteger extends Expression {
+
+	public static ASTNeoNode convertIntegerExp(IntegerExp node) {
+		if(((TypeBasic) node.type).ty == TY.Tbool)
+			return new ExpLiteralBool(node);
+		else
+			return new ExpLiteralInteger(node);
+			
+	}
 	
 	BigInteger num;
 
@@ -27,12 +35,11 @@ public class ExpLiteralInteger extends Expression {
 		visitor.endVisit(this);	 
 	}
 
-	public static ASTNeoNode convertIntegerExp(IntegerExp node) {
-		if(((TypeBasic) node.type).ty == TY.Tbool)
-			return new ExpLiteralBool(node);
-		else
-			return new ExpLiteralInteger(node);
-			
+	@Override
+	public String toStringAsElement() {
+		if(num == null)
+			return "__<SPECIAL>__";
+		return num.toString();
 	}
 
 }

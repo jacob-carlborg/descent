@@ -69,10 +69,11 @@ public class DeeNeoMatchLocator extends MatchLocator {
 			Object obj = nodeSet.matchingNodes.keyTable[i];
 			if(obj instanceof ASTNeoNode) {
 				ASTNeoNode node = (ASTNeoNode) obj;
+				Integer accLevel = (Integer) nodeSet.matchingNodes.valueTable[i];
 				IModelElement modelElement = currentPossibleMatch.getModelElement();
-				IType type = new SourceType((ModelElement)modelElement, node.toString());
+				IType type = new SourceType((ModelElement)modelElement, node.toStringAsElement());
 				SearchMatch match = patternLocator.newDeclarationMatch(node,
-						type, 1, node.sourceEnd() - node.getOffset() + 1,
+						type, accLevel.intValue(), node.sourceEnd() - node.getOffset() + 1,
 						this);
 				report(match);
 			}

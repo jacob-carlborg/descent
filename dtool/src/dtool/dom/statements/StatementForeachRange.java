@@ -7,13 +7,14 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.IFunctionParameter;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementForeachRange extends Statement {
 
 	public final boolean reverse;
 	public final IFunctionParameter param;
-	public final Expression lwr;
-	public final Expression upr;
+	public final Resolvable lwr;
+	public final Resolvable upr;
 	public final IStatement body;
 
 	public StatementForeachRange(ForeachRangeStatement elem) {

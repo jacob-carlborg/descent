@@ -52,6 +52,7 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 	}
 	
 	/** Gets the preference store for this page. */
+	@Override
 	public IPreferenceStore getPreferenceStore() {
 		return ActualPlugin.getPrefStore();
 	}

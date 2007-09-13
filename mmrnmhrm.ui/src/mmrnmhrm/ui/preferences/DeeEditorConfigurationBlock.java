@@ -16,7 +16,7 @@ public class DeeEditorConfigurationBlock extends EditorConfigurationBlock {
 		super(mainPreferencePage, store, disableSmart, tabAlwaysIndent);
 	}
 	
-	
+	@Override
 	public Control createControl(Composite parent) {
 		initializeDialogUnits(parent);
 

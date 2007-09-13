@@ -9,6 +9,7 @@ public class DeeCompilersPreferencePage extends InterpreterPreferencePage {
 	
 	public final static String PAGE_ID = "mmrnmhrm.ui.preferences.DeeCompilers";
 
+	@Override
 	public InterpretersBlock createInterpretersBlock() {
 		return new DeeCompilersBlock();
 	}

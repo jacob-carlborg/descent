@@ -5,10 +5,11 @@ import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class DeclarationStaticIf extends DeclarationConditional {
 	
-	public Expression exp;
+	public Resolvable exp;
 
 	public DeclarationStaticIf(ASTNode elem,
 			StaticIfCondition condition, NodeList thendecls, NodeList elsedecls) {
@@ -28,6 +29,11 @@ public class DeclarationStaticIf extends DeclarationConditional {
 			TreeVisitor.acceptChildren(visitor, elsedecls.nodes);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public String toStringAsElement() {
+		return "[static if("+"..."+")]";
 	}
 
 }

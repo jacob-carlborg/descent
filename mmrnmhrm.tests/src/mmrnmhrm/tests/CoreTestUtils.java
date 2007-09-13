@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import mmrnmhrm.core.CoreUtils;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.ModelUtil;
@@ -25,6 +26,7 @@ import org.eclipse.dltk.core.IScriptProject;
 import org.osgi.framework.Bundle;
 
 import static melnorme.miscutil.Assert.assertNotNull;
+import static melnorme.miscutil.Assert.assertTrue;
 
 
 
@@ -32,19 +34,30 @@ public class CoreTestUtils {
 
 	
 	/** FIXME: copy each file ourselfs, to prevent copying .svn files. */
-	static IFolder createWorkspaceFolderFromBundle(String srcpath, IContainer parent, String destname)
+	static IContainer copyBundleDirToWorkspaceContainer(String srcpath, IContainer destParent, String destname)
 			throws CoreException, URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(DeeTestsPlugin.PLUGIN_ID);
 		IPath bundlesrcpath = new Path(DeeTestsPlugin.TESTDATA + srcpath);
 		URL sourceURL = FileLocator.find(bundle, bundlesrcpath, null);
 		assertNotNull(sourceURL);
-		IFolder linkFolder = parent.getFolder(new Path("__"+destname+"link"));
+		IFolder linkFolder = destParent.getFolder(new Path("__"+destname+"link"));
 		linkFolder.createLink(FileLocator.toFileURL(sourceURL).toURI(), IResource.NONE, null);
-		
-		IPath projpath = parent.getFullPath(); 
-		linkFolder.copy(projpath.append(destname), false, null);
+
+		if(destname.length() == 0) {
+			CoreUtils.copyContentsOverwriting(linkFolder, destParent, null);
+		} else {
+			IFolder destFolder = destParent.getFolder(new Path(destname));
+			destFolder.create(true, true, null);
+			CoreUtils.copyContentsOverwriting(linkFolder, destFolder, null);
+		}
+
+		//IPath projpath = destParent.getFullPath(); 
+		//linkFolder.copy(projpath.append(destname), false, null);
+
 		linkFolder.delete(false, null);
-		return parent.getFolder(new Path(destname));
+		if(destname.length() == 0)
+			return destParent;
+		return destParent.getFolder(new Path(destname));
 	}
 
 	public static DeeProject createAndOpenDeeProject(String name)
@@ -70,9 +83,17 @@ public class CoreTestUtils {
 	public static IFolder createFolderInProject(IProject project,
 			String bundleDir, String destDir, boolean addSrcFolder)
 			throws CoreException, URISyntaxException, IOException {
-		IFolder folder;
+		assertTrue(destDir.length() > 0);
+		return (IFolder) createContainerInProject(
+				project, bundleDir, destDir, addSrcFolder);
+	}
+	
+	public static IContainer createContainerInProject(IProject project,
+			String bundleDir, String destDir, boolean addSrcFolder)
+			throws CoreException, URISyntaxException, IOException {
+		IContainer folder;
 		IScriptProject dltkProj = DLTKCore.create(project);
-		folder = createWorkspaceFolderFromBundle(bundleDir,
+		folder = copyBundleDirToWorkspaceContainer(bundleDir,
 				project, destDir);
 		if(addSrcFolder) {
 			ModelUtil.createAddSourceFolder(dltkProj, folder);

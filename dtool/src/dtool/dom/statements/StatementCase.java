@@ -4,10 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.CaseStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementCase extends Statement {
 
-	public Expression exp;
+	public Resolvable exp;
 	public IStatement st;
 	
 	public StatementCase(CaseStatement elem) {

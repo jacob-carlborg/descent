@@ -1,7 +1,6 @@
 package mmrnmhrm.ui.editor;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.log.Logg;
 import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.swt.SWTUtilExt;
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
@@ -19,6 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
 import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.Logg;
 
 
 public class DeeOutlinePage extends ScriptOutlinePage {
@@ -130,7 +130,7 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 		}
 	}
 	
-	
+	@Override
 	protected ILabelDecorator getLabelDecorator() {
 		return new DeeOutlineLabelDecorator(); 
 	}

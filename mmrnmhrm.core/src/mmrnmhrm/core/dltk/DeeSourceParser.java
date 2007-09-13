@@ -27,7 +27,7 @@ public class DeeSourceParser implements ISourceParser {
 			this.reporter = reporter;
 		}
 
-		@Override
+		//@Override
 		public IMarker reportProblem(IProblem problem) {
 			try {
 				return reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
@@ -52,7 +52,7 @@ public class DeeSourceParser implements ISourceParser {
 	}
 	
 	/** Used by reconciler. */
-	@Override
+	//@Override
 	public DeeModuleDeclaration parse(char[] fileName, char[] source,
 			IProblemReporter reporter) {
 		return parseModule(source, reporter, fileName);

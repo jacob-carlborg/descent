@@ -7,16 +7,17 @@ import descent.internal.compiler.parser.TypeSlice;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.refmodel.IDefUnitReferenceNode;
 
 public class RefTypeSlice extends Reference {
 
 	public IDefUnitReferenceNode slicee;
-	public Expression from;
-	public Expression to;
+	public Resolvable from;
+	public Resolvable to;
 	
 	public RefTypeSlice(TypeSlice elem) {
-		slicee = Reference.convertType(elem.next);
+		slicee = ReferenceConverter.convertType(elem.next);
 		from = Expression.convert(elem.lwr);
 		to = Expression.convert(elem.upr);
 	}
@@ -34,6 +35,7 @@ public class RefTypeSlice extends Reference {
 	}
 
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		// TODO:
 		return null;
@@ -42,7 +44,8 @@ public class RefTypeSlice extends Reference {
 
 	@Override
 	public String toStringAsElement() {
-		return slicee.toStringAsElement()+"["+from+".."+to+"]";
+		return slicee.toStringAsElement()
+		+"["+from.toStringAsElement() +".."+ to.toStringAsElement()+"]";
 	}
 
 }

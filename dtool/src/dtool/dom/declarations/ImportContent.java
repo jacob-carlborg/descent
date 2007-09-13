@@ -2,7 +2,7 @@ package dtool.dom.declarations;
 
 import descent.internal.compiler.parser.Import;
 import dtool.refmodel.CommonDefUnitSearch;
-import dtool.refmodel.EntityResolver;
+import dtool.refmodel.ReferenceResolver;
 import dtool.refmodel.DefUnitSearch;
 
 public class ImportContent extends ImportStatic {
@@ -12,7 +12,7 @@ public class ImportContent extends ImportStatic {
 	}
 	
 	@Override
-	public void searchDefUnit(CommonDefUnitSearch options) {
-		EntityResolver.findDefUnitInContentImport(this, options);
+	public void searchInSecondaryScope(CommonDefUnitSearch options) {
+		ReferenceResolver.findDefUnitInContentImport(this, options);
 	}
 }

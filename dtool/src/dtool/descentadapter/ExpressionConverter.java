@@ -108,7 +108,6 @@ import dtool.dom.expressions.ExpSuper;
 import dtool.dom.expressions.ExpThis;
 import dtool.dom.expressions.ExpTraits;
 import dtool.dom.expressions.ExpTypeid;
-import dtool.dom.expressions.Expression;
 import dtool.dom.expressions.InfixExpression;
 import dtool.dom.expressions.InitializerArray;
 import dtool.dom.expressions.InitializerExp;
@@ -116,6 +115,7 @@ import dtool.dom.expressions.InitializerStruct;
 import dtool.dom.expressions.InitializerVoid;
 import dtool.dom.expressions.PostfixExpression;
 import dtool.dom.expressions.PrefixExpression;
+import dtool.dom.expressions.Resolvable;
 
 abstract class ExpressionConverter extends DeclarationConverter {
 	
@@ -205,6 +205,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 		return endAdapt(new ExpLiteralFunc(element));
 	}
 	
+	@Override
 	public boolean visit(IdentifierExp element) {
 		return endAdapt(new ExpReference(element));
 	}
@@ -313,19 +314,19 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 
 	public boolean visit(AddAssignExp element) {
-		Expression newelem = new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
+		Resolvable newelem = new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
 		return endAdapt(newelem);
 	}
 	
 	public boolean visit(IncrementExp node) {
-		Expression newelem = new PrefixExpression(node, PrefixExpression.Type.PRE_INCREMENT);
+		Resolvable newelem = new PrefixExpression(node, PrefixExpression.Type.PRE_INCREMENT);
 		return endAdapt(newelem);
 	}
 
 	
 
 	public boolean visit(MinAssignExp element) {
-		Expression newelem = new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
+		Resolvable newelem = new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
 		return endAdapt(newelem);
 	}
 	

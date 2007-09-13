@@ -53,11 +53,12 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 	}
 	
 	
-
+	@Override
 	public boolean visit(ASTRangeLessNode elem) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(IASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {
 			//Assert.fail();
@@ -82,7 +83,9 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 				offset <= elem.getEndPos() : offset < elem.getEndPos();
 	}
 
+	@Override
 	public void endVisit(ASTRangeLessNode elem) { }
+	@Override
 	public void endVisit(ASTNeoNode elem) { }
 
 }

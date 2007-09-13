@@ -37,10 +37,6 @@ public class Symbol extends ASTNeoNode {
 		visitor.endVisit(this);
 	}
 	
-	@Override
-	public String toString() {
-		return name;
-	}
 	
 	@Override
 	public String toStringAsElement() {

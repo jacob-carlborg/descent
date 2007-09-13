@@ -6,6 +6,7 @@ import descent.internal.compiler.parser.IftypeExp;
 import descent.internal.compiler.parser.TOK;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 public class ExpIftype extends Expression {
 
@@ -17,8 +18,8 @@ public class ExpIftype extends Expression {
 		convertNode(node);
 		Assert.isNull(node.id);
 		this.tok = node.tok;
-		this.arg = Reference.convertType(node.targ);
-		this.specType = Reference.convertType(node.tspec);
+		this.arg = ReferenceConverter.convertType(node.targ);
+		this.specType = ReferenceConverter.convertType(node.tspec);
 	}
 
 	@Override

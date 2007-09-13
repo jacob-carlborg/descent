@@ -13,6 +13,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.dom.statements.IStatement;
 import dtool.dom.statements.Statement;
 import dtool.refmodel.IScope;
@@ -54,7 +55,7 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 
 		varargs = convertVarArgs(elemTypeFunc.varargs);
 		Assert.isNotNull(elemTypeFunc.next);
-		this.rettype = Reference.convertType(elemTypeFunc.next);
+		this.rettype = ReferenceConverter.convertType(elemTypeFunc.next);
 		Assert.isNotNull(this.rettype);
 	}
 	
@@ -70,6 +71,7 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		return varargs;
 	}
 	
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -109,7 +111,8 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 	}
 
 	
-	public static String toStringParameterSig(List<IFunctionParameter> params, int varargs) {
+	public static String toStringParametersForSignature(
+			List<IFunctionParameter> params, int varargs) {
 		String strParams = "(";
 		for (int i = 0; i < params.size(); i++) {
 			if(i != 0)
@@ -123,16 +126,16 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 	
 	@Override
 	public String toStringAsElement() {
-		return getName() + toStringParameterSig(params, varargs);
+		return getName() + toStringParametersForSignature(params, varargs);
 	}
 	
 
 	@Override
 	public String toStringForHoverSignature() {
 		String str = getArcheType().toString() + "  "
-			+ rettype.toStringAsReference() + " " + getName() 
-			+ ASTPrinter.toStringAsElements(templateParams)
-			+ toStringParameterSig(params, varargs);
+			+ rettype.toStringAsElement() + " " + getName() 
+			+ ASTPrinter.toStringParamListAsElements(templateParams)
+			+ toStringParametersForSignature(params, varargs);
 		return str;
 	}
 	
@@ -140,9 +143,9 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 	@Override
 	public String toStringForCodeCompletion() {
 		return getName()
-			+ ASTPrinter.toStringAsElements(templateParams)
-			+ toStringParameterSig(params, varargs) 
-			+ "  " + rettype.toStringAsReference()
+			+ ASTPrinter.toStringParamListAsElements(templateParams)
+			+ toStringParametersForSignature(params, varargs) 
+			+ "  " + rettype.toStringAsElement()
 			+ " - " + NodeUtil.getOuterDefUnit(this).toStringAsElement();
 	}
 

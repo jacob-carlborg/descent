@@ -17,7 +17,7 @@ public class DeeSearchFactory implements ISearchFactory {
 	}
 
 	public DLTKSearchParticipant createSearchParticipant() {
-		return null; // XXX: ?
+		return null; // XXX: DTLK: DLTKSearchParticipant?
 	}
 
 	public MatchLocator createMatchLocator(SearchPattern pattern,
@@ -27,7 +27,7 @@ public class DeeSearchFactory implements ISearchFactory {
 	}
 
 	public IMatchLocatorParser createMatchParser(MatchLocator locator) {
-		return new DeeMatchLocatorParser(locator);
+		return new DeeNeoMatchLocatorParser(locator);
 	}
 
 }

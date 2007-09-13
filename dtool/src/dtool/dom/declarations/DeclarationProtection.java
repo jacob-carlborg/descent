@@ -35,6 +35,7 @@ public class DeclarationProtection extends DeclarationAttrib {
 		visitor.endVisit(this);
 	}
 	
+	@Override
 	public Iterator<ASTNeoNode> getMembersIterator() {
 		return body.getNodeIterator();
 	}

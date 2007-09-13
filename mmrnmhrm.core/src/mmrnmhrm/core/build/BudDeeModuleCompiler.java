@@ -7,7 +7,6 @@ import java.util.List;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProjectOptions;
-import melnorme.miscutil.log.Logg;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -16,6 +15,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.core.IScriptProject;
+
+import dtool.Logg;
 
 public class BudDeeModuleCompiler {
 	

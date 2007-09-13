@@ -15,7 +15,7 @@ public class DeeInstall extends AbstractInterpreterInstall {
 		super(type, id);
 	}
 
-	@Override
+	//@Override
 	public String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}

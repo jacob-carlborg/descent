@@ -14,6 +14,7 @@ public class TypeStruct extends CommonRefNative {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		throw new UnsupportedOperationException();
 	}

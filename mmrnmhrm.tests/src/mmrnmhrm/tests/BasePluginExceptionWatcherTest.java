@@ -1,5 +1,7 @@
 package mmrnmhrm.tests;
 
+import mmrnmhrm.ui.DeePlugin;
+
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -40,7 +42,7 @@ public abstract class BasePluginExceptionWatcherTest extends BasePluginTest {
 		Platform.removeLogListener(loglistener);
 		if(exceptionThrown == true) {
 			if(exception == null) {
-				//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
+				UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 			}
 			throw exception;
 		}

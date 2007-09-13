@@ -9,11 +9,13 @@ import org.eclipse.jface.preference.IPreferencePage;
 
 public class RubyInterpreterComboBlock extends AbstractInterpreterComboBlock {
 	
+	@Override
 	protected void showInterpreterPreferencePage()  { 
 		IPreferencePage page = new DeeCompilersPreferencePage(); 
 		showPrefPage(DeeCompilersPreferencePage.PAGE_ID, page); 
 	}
 
+	@Override
 	protected String getCurrentLanguageNature () {
 		return DeeNature.NATURE_ID;
 	}

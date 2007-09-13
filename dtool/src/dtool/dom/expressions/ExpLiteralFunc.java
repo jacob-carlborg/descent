@@ -12,6 +12,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefinitionFunction;
 import dtool.dom.definitions.IFunctionParameter;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.dom.statements.IStatement;
 import dtool.dom.statements.Statement;
 
@@ -39,7 +40,7 @@ public class ExpLiteralFunc extends Expression {
 		this.params = DescentASTConverter.convertManyL(elemTypeFunc.parameters, this.params); 
 
 		varargs = DefinitionFunction.convertVarArgs(elemTypeFunc.varargs);
-		this.rettype = Reference.convertType(elemTypeFunc.next);
+		this.rettype = ReferenceConverter.convertType(elemTypeFunc.next);
 	}
 
 	@Override

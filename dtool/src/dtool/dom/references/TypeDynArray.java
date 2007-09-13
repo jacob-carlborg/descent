@@ -22,9 +22,10 @@ public class TypeDynArray extends CommonRefNative {
 
 	public TypeDynArray(TypeDArray elem) {
 		setSourceRange(elem);
-		this.elemtype = Reference.convertType(elem.next);
+		this.elemtype = ReferenceConverter.convertType(elem.next);
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -33,10 +34,12 @@ public class TypeDynArray extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public String toStringAsElement() {
-		return elemtype + "[]";
+		return elemtype.toStringAsElement() + "[]";
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicDynArray.instance);
 	}
@@ -60,11 +63,6 @@ public class TypeDynArray extends CommonRefNative {
 			return null;
 		}
 		
-		@Override
-		public String toStringAsElement() {
-			return "T[]";
-		}
-
 		public Iterator<? extends ASTNode> getMembersIterator() {
 			// TODO Auto-generated method stub
 			return null;

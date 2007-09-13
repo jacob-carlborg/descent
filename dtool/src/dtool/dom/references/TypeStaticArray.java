@@ -14,20 +14,22 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.NativeDefUnit;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 public class TypeStaticArray extends CommonRefNative {
 	public Reference elemtype;
-	public Expression sizeexp;
+	public Resolvable sizeexp;
 
 	public TypeStaticArray(TypeSArray elem) {
 		setSourceRange(elem);
-		this.elemtype = Reference.convertType(elem.next);
+		this.elemtype = ReferenceConverter.convertType(elem.next);
 		this.sizeexp = Expression.convert(elem.dim); 
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -37,13 +39,14 @@ public class TypeStaticArray extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicStaticArray.instance);
 	}
 	
 	@Override
 	public String toStringAsElement() {
-		return elemtype + "["+sizeexp+"]";
+		return elemtype.toStringAsElement() + "["+sizeexp.toStringAsElement()+"]";
 	}
 
 	

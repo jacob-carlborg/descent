@@ -4,7 +4,6 @@ package mmrnmhrm.core.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.LangCore;
 
 import org.eclipse.core.resources.IResource;
@@ -17,6 +16,8 @@ import org.eclipse.dltk.core.IElementChangedListener;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.IModelElementDelta;
 import org.eclipse.dltk.core.IScriptProject;
+
+import dtool.Logg;
 
 import static melnorme.miscutil.Assert.assertFail;
 
@@ -43,7 +44,7 @@ public class DeeModel implements IElementChangedListener {
 		deeInfos = new HashMap<IScriptProject, DeeProjectOptions>(); 
 	}
 	
-	@Override
+	//@Override
 	public void elementChanged(ElementChangedEvent event) {
 		IModelElementDelta delta= event.getDelta();
 		if (delta != null) {

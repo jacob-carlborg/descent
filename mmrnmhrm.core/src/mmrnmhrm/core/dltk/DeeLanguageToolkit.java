@@ -4,7 +4,6 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeNature;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.core.AbstractLanguageToolkit;
@@ -34,12 +33,12 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 		return DEE_LANGUAGE_FILE_EXTENSIONS;
 	}
 
-	@Override
+	//@Override
 	public String getLanguageName() {
 		return "D";
 	}
 
-	@Override
+	//@Override
 	public String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}
@@ -53,9 +52,12 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 		}
 	}
 	
+	
+	
+	/* TODO: when DLTK supports is, validate packages
 	@Override
 	public boolean validateSourcePackage(IPath path) {
 		return DeeNameRules.isValidPackageName(path.lastSegment());
-	}
+	}*/
 
 }

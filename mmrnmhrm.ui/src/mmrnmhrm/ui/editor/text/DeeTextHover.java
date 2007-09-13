@@ -54,6 +54,7 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 		return node;
 	}
 	
+	@Override
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
 		ASTNeoNode node = getNodeAtOffset(offset);
 		if(node == null)
@@ -66,7 +67,7 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 	}
 
 
-
+	@Override
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		if(!(hoverRegion instanceof NodeRegion))
 			return null;

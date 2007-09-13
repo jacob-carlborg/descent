@@ -8,6 +8,7 @@ import mmrnmhrm.ui.text.DeeDocumentSetupParticipant;
 import mmrnmhrm.ui.text.DeePartitions;
 import mmrnmhrm.ui.text.DeeSimpleSourceViewerConfiguration;
 import mmrnmhrm.ui.text.color.DeeColorConstants;
+import mmrnmrhm.org.eclipse.dltk.ui.preferences.AbstractScriptEditorColoringConfigurationBlock;
 
 import org.eclipse.dltk.internal.ui.editor.ScriptSourceViewer;
 import org.eclipse.dltk.ui.preferences.IPreferenceConfigurationBlock;
@@ -23,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class DeeSourceColoringConfigurationBlock extends
-		mmrnmhrm.ui.preferences.AbstractScriptEditorColoringConfigurationBlock implements
+		AbstractScriptEditorColoringConfigurationBlock implements
 		IPreferenceConfigurationBlock {
 	
 	private static final String PREVIEW_FILE_NAME = "coloringpreview.txt";
@@ -54,10 +55,12 @@ public class DeeSourceColoringConfigurationBlock extends
 		super(store);
 	}
 
+	@Override
 	protected String[][] getSyntaxColorListModel() {
 		return fSyntaxColorListModel;
 	}
 
+	@Override
 	protected ProjectionViewer createPreviewViewer(Composite parent,
 			IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
 			boolean showAnnotationsOverview, int styles, IPreferenceStore store) {
@@ -65,6 +68,7 @@ public class DeeSourceColoringConfigurationBlock extends
 				showAnnotationsOverview, styles, store);
 	}
 
+	@Override
 	protected ScriptSourceViewerConfiguration createSimpleSourceViewerConfiguration(
 			IColorManager colorManager, IPreferenceStore preferenceStore,
 			ITextEditor editor, boolean configureFormatter) {
@@ -72,12 +76,14 @@ public class DeeSourceColoringConfigurationBlock extends
 				preferenceStore, editor, DeePartitions.DEE_PARTITIONING,
 				configureFormatter);
 	}
-
+	
+	@Override
 	protected void setDocumentPartitioning(IDocument document) {
 		//DeeDocumentSetupParticipant participant = new DeeDocumentSetupParticipant();
 		(new DeeDocumentSetupParticipant()).setup(document);
 	}
 
+	@Override
 	protected String getPreviewContent() {
 		String line;
 		String separator = System.getProperty("line.separator"); //$NON-NLS-1$

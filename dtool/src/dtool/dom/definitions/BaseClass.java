@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.PROT;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 public class BaseClass extends ASTNeoNode {
 	
@@ -20,7 +21,7 @@ public class BaseClass extends ASTNeoNode {
 			convertNode(elem.type); // Try to have some range
 			
 		this.prot = elem.protection;
-		this.type = Reference.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type);
 	}
 	
 	@Override

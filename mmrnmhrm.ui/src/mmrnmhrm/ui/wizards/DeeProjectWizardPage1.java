@@ -7,14 +7,14 @@ import java.util.Observable;
 
 import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
+import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
 
 import org.eclipse.dltk.debug.ui.DLTKDebugUIPlugin;
 import org.eclipse.dltk.launching.IInterpreterInstall;
-import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
 import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.swt.widgets.Composite;
 
-public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
+public class DeeProjectWizardPage1 extends ProjectWizardFirstPage_ {
 
 	DeeInterpreterGroup fInterpreterGroup;
 	
@@ -24,10 +24,12 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 			super (composite);
 		}
 
+		@Override
 		protected String getCurrentLanguageNature() {
 			return DeeNature.NATURE_ID;
 		}
 
+		@Override
 		protected void showInterpreterPreferencePage() {
 			IPreferencePage page = new DeeCompilersPreferencePage(); 
 			DLTKDebugUIPlugin.showPreferencePage(DeeCompilersPreferencePage.PAGE_ID, page); 					
@@ -50,6 +52,7 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 		return true;
 	}
 
+	@Override
 	protected IInterpreterInstall getInterpreter() {
 		return fInterpreterGroup.getSelectedInterpreter();
 	}
@@ -62,5 +65,10 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 	@Override
 	protected boolean interpeterRequired() {
 		return false;
+	}
+	
+	@Override
+	public boolean isSrc() {
+		return true; // Create src+bin buildpath
 	}
 }

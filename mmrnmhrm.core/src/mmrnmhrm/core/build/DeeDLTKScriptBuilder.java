@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.StringUtil;
-import melnorme.miscutil.log.Logg;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.builder.IScriptBuilder;
 
+import dtool.Logg;
+
 public class DeeDLTKScriptBuilder implements IScriptBuilder {
 
-	@Override
+	//@Override
 	public IStatus[] buildModelElements(IScriptProject project, List elements,
 			IProgressMonitor monitor) {
 		Logg.nolog.println(">> Requested buildModelElements for:\n" +
@@ -22,7 +23,7 @@ public class DeeDLTKScriptBuilder implements IScriptBuilder {
 		return null;
 	}
 
-	@Override
+	//@Override
 	public IStatus[] buildResources(IScriptProject project, List resources,
 			IProgressMonitor monitor) {
 		Logg.nolog.println(">> Requested buildResources for:\n" +
@@ -30,7 +31,7 @@ public class DeeDLTKScriptBuilder implements IScriptBuilder {
 		return null;
 	}
 
-	@Override
+	//@Override
 	public List getDependencies(IScriptProject project, List resources) {
 		Logg.nolog.println(">> Requested deps for:\n" +
 				StringUtil.collToString(resources, "\n") );

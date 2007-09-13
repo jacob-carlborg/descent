@@ -34,6 +34,7 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 			this.selProvider = selProvider;
 		}
 		
+		@Override
 		public boolean isEnabled() {
 			ISelection selection = selProvider.getSelection();
 			if(selection.isEmpty())

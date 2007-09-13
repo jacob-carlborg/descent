@@ -6,7 +6,7 @@ import org.eclipse.swt.events.VerifyEvent;
 
 public class DeeBracketInserter extends BracketInserter {
 
-	public DeeBracketInserter(DeeEditor editor) {
+	public DeeBracketInserter(ScriptEditor editor) {
 		super(editor);
 	}
 

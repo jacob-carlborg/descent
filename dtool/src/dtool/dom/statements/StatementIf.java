@@ -4,10 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IfStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementIf extends Statement {
 
-	public Expression pred;
+	public Resolvable pred;
 	public IStatement thenbody;
 	public IStatement elsebody;
 

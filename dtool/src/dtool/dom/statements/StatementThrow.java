@@ -4,10 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ThrowStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementThrow extends Statement {
 
-	public Expression exp;
+	public Resolvable exp;
 
 	public StatementThrow(ThrowStatement elem) {
 		convertNode(elem);

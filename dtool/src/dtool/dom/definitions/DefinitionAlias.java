@@ -21,10 +21,12 @@ public class DefinitionAlias extends Definition implements IStatement {
 		target = (Reference) DescentASTConverter.convertElem(elem.type);
 	}
 	
+	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Alias;
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -39,9 +41,10 @@ public class DefinitionAlias extends Definition implements IStatement {
 		return target.getTargetScope();
 	}
 	
+	
 	@Override
 	public String toStringForCodeCompletion() {
-		return getName() + " -> " + target.toStringAsReference();
+		return getName() + " -> " + target.toStringAsElement();
 	}
 	
 }

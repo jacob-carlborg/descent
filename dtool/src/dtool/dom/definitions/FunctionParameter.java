@@ -8,7 +8,9 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
@@ -18,7 +20,7 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	
 	public Reference type;
 	public int storageClass;
-	public Expression defaultValue;
+	public Resolvable defaultValue;
 	
 	protected FunctionParameter(descent.internal.compiler.parser.Argument elem) {
 		super(elem.ident);
@@ -28,7 +30,7 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 		if(elem.type instanceof TypeBasic && ((TypeBasic)elem.type).ty.name == null)
 			this.type = null;
 		else 
-			this.type = Reference.convertType(elem.type);
+			this.type = ReferenceConverter.convertType(elem.type);
 		assertNotNull(this.type);
 		this.storageClass = elem.storageClass;
 		this.defaultValue = Expression.convert(elem.defaultArg);
@@ -39,7 +41,7 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 		super(id);
 		setSourceRange(type.getStartPos(), id.getEndPos() - type.getStartPos());
 		
-		this.type = Reference.convertType(type);
+		this.type = ReferenceConverter.convertType(type);
 	}
 
 	
@@ -82,17 +84,17 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 				+ NodeUtil.getOuterDefUnit(this).toStringAsElement();
 	}
 
-	@Override
+	//@Override
 	public String toStringAsFunctionSignaturePart() {
 		return type.toStringAsElement() + " " + getName();
 	}
 	
-	@Override
+	//@Override
 	public String toStringAsFunctionSimpleSignaturePart() {
 		return type.toStringAsElement();
 	}
 
-	@Override
+	//@Override
 	public String toStringInitializer() {
 		if(defaultValue == null)
 			return null;

@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.ast.IASTNode;
 /**
  * Gives access to the scope's DefUnits, and to super scopes. 
  */
-public interface IScope {
+public interface IScope extends IScopeAdaptable {
 
 
 	/** Gets all members of this scope, DefUnit or not. 

@@ -56,6 +56,7 @@ public class FindDef_TestImportStatic extends FindDef_CommonImportTest  {
 	}
 
 	@Test
+	@Override
 	public void test() throws Exception {
 		cunit.modUnit.getBuffer().replace(ix1, 4, "    ");
 		cunit.modUnit.getBuffer().replace(ix2, 4, "//  ");

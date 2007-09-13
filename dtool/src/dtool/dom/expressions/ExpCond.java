@@ -6,9 +6,9 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpCond extends Expression {
 
-	public Expression predExp;
-	public Expression trueExp;
-	public Expression falseExp;
+	public Resolvable predExp;
+	public Resolvable trueExp;
+	public Resolvable falseExp;
 
 	public ExpCond(CondExp elem) {
 		convertNode(elem);

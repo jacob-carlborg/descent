@@ -38,7 +38,7 @@ public class DeeCompletionProposal extends AbstractCompletionProposal implements
 		this.defUnit = defUnit;
 	}
 
-
+	@Override
 	public String getProposalInfoString(IProgressMonitor monitor) {
 		return HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
 	}

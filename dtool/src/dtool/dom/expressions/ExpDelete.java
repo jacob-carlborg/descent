@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpDelete extends Expression {
 
-	public Expression exp;
+	public Resolvable exp;
 	
 	public ExpDelete(DeleteExp elem) {
 		convertNode(elem);

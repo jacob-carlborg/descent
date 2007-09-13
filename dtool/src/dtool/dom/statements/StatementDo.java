@@ -4,10 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.DoStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementDo extends Statement {
 
-	public Expression exp;
+	public Resolvable exp;
 	public IStatement st;
 
 	public StatementDo(DoStatement elem) {

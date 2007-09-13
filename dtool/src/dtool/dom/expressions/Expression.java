@@ -4,23 +4,22 @@ import java.util.Collection;
 import java.util.List;
 
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.IDefUnitReferenceNode;
 
-public abstract class Expression extends ASTNeoNode implements IDefUnitReferenceNode {
+public abstract class Expression extends Resolvable implements IDefUnitReferenceNode {
 
+	// deprecate
+	public Collection<DefUnit> getType() {
+		return findTargetDefUnits(false);
+	}
 	
-	// TYPE BINDING
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		throw new UnsupportedOperationException(
 				"Unsupported peering the type/scope of expression: "+toStringClassName());
 	}
 	
-
-	public Collection<DefUnit> getType() {
-		return findTargetDefUnits(false);
-	}
 	
 	/* ---------------- Conversion Funcs ---------------- */
 	

@@ -15,23 +15,28 @@ import org.eclipse.swt.widgets.Label;
 public class DeeEditorPreferencePage extends
 		AbstractConfigurationBlockPreferencePage {
 
+	@Override
 	protected String getHelpId() {
 		return "";
 	}
 
+	@Override
 	protected void setDescription() {
 		String description 	= DeePreferencesMessages.DLTKEditorPreferencePage_general;
 		setDescription(description);
 	}
 
+	@Override
 	protected Label createDescriptionLabel(Composite parent) {
 		return null;
 	}
 
+	@Override
 	protected void setPreferenceStore() {
 		setPreferenceStore(DeePlugin.getDefault().getPreferenceStore());
 	}
 
+	@Override
 	protected IPreferenceConfigurationBlock createConfigurationBlock(
 			OverlayPreferenceStore overlayPreferenceStore) {
 		return new DeeEditorConfigurationBlock(this, overlayPreferenceStore, true, true );

@@ -21,6 +21,7 @@ public class RefModuleQualified extends CommonRefQualified {
 		subref = CommonRefSingle.convertToSingleRef(elem);
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -29,14 +30,17 @@ public class RefModuleQualified extends CommonRefQualified {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public String toStringAsElement() {
-		return "." + subref;
+		return "." + subref.toStringAsElement();
 	}
 
+	@Override
 	public IDefUnitReferenceNode getRoot() {
 		return null;
 	}
 		
+	@Override
 	public Collection<DefUnit> findRootDefUnits() {
 		final Module module = NodeUtil.getParentModule(this);
 		return Collections.singletonList((DefUnit)module);

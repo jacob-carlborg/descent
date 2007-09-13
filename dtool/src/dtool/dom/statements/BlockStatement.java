@@ -6,7 +6,6 @@ import java.util.List;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ScopeStatement;
 import descent.internal.compiler.parser.ast.ASTNode;
-import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.IScope;
@@ -62,6 +61,11 @@ public class BlockStatement extends Statement implements IScopeNode {
 
 	public List<IScope> getSuperScopes() {
 		return null;
+	}
+	
+	@Override
+	public IScope getAdaptedScope() {
+		return this;
 	}
 
 }

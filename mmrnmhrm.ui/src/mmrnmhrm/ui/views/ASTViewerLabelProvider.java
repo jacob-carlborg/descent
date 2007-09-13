@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Display;
 
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.Reference;
 
@@ -34,6 +33,7 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 		cEntityColor = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
 	}
 	
+	@Override
 	public void dispose() {
 	}
 	
@@ -41,8 +41,9 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 		return DeeElementImageProvider.getElementImage((IASTNode) element);
 	}
 
+	@Override
 	public String getText(Object elem) {
-		return ASTPrinter.toStringNodeExtra((IASTNode) elem);
+		return ((IASTNode) elem).toStringAsNode(true);
 	}
 
 	public Color getBackground(Object element) {

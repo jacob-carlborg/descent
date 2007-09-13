@@ -2,7 +2,6 @@ package mmrnmhrm.ui;
 
 import melnorme.lang.ui.InitializeAfterLoadJob;
 import melnorme.lang.ui.LangPlugin;
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.build.DeeBuilder;
 import mmrnmhrm.ui.launch.DeeBuildUIListener;
 import mmrnmhrm.ui.text.DeeTextTools;
@@ -12,6 +11,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.ui.text.ScriptTextTools;
 import org.osgi.framework.BundleContext;
+
+import dtool.Logg;
 
 
 public class DeePlugin extends LangPlugin {
@@ -39,6 +40,7 @@ public class DeePlugin extends LangPlugin {
 
 	
 	/** {@inheritDoc} */
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		initPlugin();
@@ -46,6 +48,7 @@ public class DeePlugin extends LangPlugin {
 	}
 	
 	/** {@inheritDoc} */
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		pluginInstance = null;

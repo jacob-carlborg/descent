@@ -5,7 +5,9 @@ import descent.internal.compiler.parser.Type;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 import static melnorme.miscutil.Assert.assertNotNull;
 
@@ -13,11 +15,11 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 
 	public final Reference type;
 	public final int storageClass;
-	public final Expression defaultValue;
+	public final Resolvable defaultValue;
 
 	protected NamelessParameter(descent.internal.compiler.parser.Argument elem) {
 		convertNode(elem);
-		this.type = Reference.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type);
 		assertNotNull(elem.type);
 		this.storageClass = elem.storageClass;
 		this.defaultValue = Expression.convert(elem.defaultArg);
@@ -26,7 +28,7 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 	
 	public NamelessParameter(Type type) {
 		convertNode(type);
-		this.type = Reference.convertType(type);
+		this.type = ReferenceConverter.convertType(type);
 		this.storageClass = 0;
 		this.defaultValue = null;
 	}
@@ -42,21 +44,21 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 	}
 	
 	
-	@Override
+	//@Override
 	public String toStringAsFunctionSignaturePart() {
-		return type.toStringAsReference();
+		return type.toStringAsElement();
 	}
 
-	@Override
+	//@Override
 	public String toStringAsFunctionSimpleSignaturePart() {
-		return type.toStringAsReference();
+		return type.toStringAsElement();
 	}
 
-	@Override
+	//@Override
 	public String toStringInitializer() {
 		if(defaultValue == null)
 			return null;
-		return defaultValue.toString();
+		return defaultValue.toStringAsElement();
 	}
 
 }

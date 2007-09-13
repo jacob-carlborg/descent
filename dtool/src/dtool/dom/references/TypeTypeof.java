@@ -19,6 +19,7 @@ public class TypeTypeof extends CommonRefNative {
 		this.expression = Expression.convert(elem.exp);
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -27,10 +28,12 @@ public class TypeTypeof extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 	
+	@Override
 	public String toStringAsElement() {
-		return "typeof(" + expression +")";
+		return "typeof(" + expression.toStringAsElement() +")";
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return expression.getType();
 	}

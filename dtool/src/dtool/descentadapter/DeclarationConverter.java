@@ -148,6 +148,7 @@ public abstract class DeclarationConverter extends RefConverter {
 		return endAdapt(new DeclarationProtection(elem));
 	}
 
+	@Override
 	public void endVisit(descent.internal.compiler.parser.ProtDeclaration elem) {
 		DeclarationProtection scDecl = (DeclarationProtection) ret;
 		scDecl.processEffectiveModifiers();
@@ -157,6 +158,7 @@ public abstract class DeclarationConverter extends RefConverter {
 		return endAdapt(new DeclarationStorageClass(elem));
 	}
 	
+	@Override
 	public void endVisit(descent.internal.compiler.parser.StorageClassDeclaration elem) {
 		DeclarationStorageClass scDecl = (DeclarationStorageClass) ret;
 		scDecl.processEffectiveModifiers();

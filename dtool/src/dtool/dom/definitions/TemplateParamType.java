@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TemplateTypeParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.refmodel.IScopeNode;
 
 public class TemplateParamType extends TemplateParameter {
@@ -14,8 +15,8 @@ public class TemplateParamType extends TemplateParameter {
 	public TemplateParamType(TemplateTypeParameter elem) {
 		super(elem.ident);
 		convertNode(elem);
-		this.specType = Reference.convertType(elem.specType);
-		this.defaultType = Reference.convertType(elem.defaultType);
+		this.specType = ReferenceConverter.convertType(elem.specType);
+		this.defaultType = ReferenceConverter.convertType(elem.defaultType);
 	}
 
 	@Override

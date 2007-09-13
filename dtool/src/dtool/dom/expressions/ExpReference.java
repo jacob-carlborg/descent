@@ -15,6 +15,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.CommonRefSingle;
 import dtool.dom.references.RefQualified;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 /**
  * An Expression wrapping a Reference
@@ -30,23 +31,23 @@ public class ExpReference extends Expression {
 
 	public ExpReference(TypeExp elem) {
 		convertNode(elem);
-		this.ref = Reference.convertType(elem.type);
+		this.ref = ReferenceConverter.convertType(elem.type);
 	}
 	
 	public ExpReference(DotIdExp elem) {
 		convertNode(elem);
-		this.ref = RefQualified.convertDotIdexp(elem);
+		this.ref = ReferenceConverter.convertDotIdexp(elem);
 	}
 	
 	public ExpReference(DotTemplateInstanceExp elem) {
 		convertNode(elem);
-		this.ref = RefQualified.convertDotTemplateIdexp(elem);
+		this.ref = ReferenceConverter.convertDotTemplateIdexp(elem);
 	}
 	
 	public ExpReference(TypeDotIdExp elem) {
 		convertNode(elem);
 		this.ref = new RefQualified(
-				Reference.convertType(elem.type),
+				ReferenceConverter.convertType(elem.type),
 				CommonRefSingle.convertToSingleRef(elem.ident)
 				);
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(qent);

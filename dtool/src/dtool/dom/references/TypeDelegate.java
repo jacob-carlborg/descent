@@ -14,7 +14,6 @@ import dtool.dom.definitions.DefinitionFunction;
 import dtool.dom.definitions.IFunctionParameter;
 import dtool.dom.definitions.NativeDefUnit;
 import dtool.refmodel.DefUnitSearch;
-import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -47,20 +46,16 @@ public class TypeDelegate extends CommonRefNative {
 	}
 
 	
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicDelegate.instance);
 	}
 	
-	public static IDefUnitReference maybeNullReference(Reference ref) {
-		if(ref != null)
-			return ref;
-		return NativeDefUnit.nullReference;
-	}
-	
 	@Override
 	public String toStringAsElement() {
-		return maybeNullReference(rettype).toString() + " delegate"  
-		+ DefinitionFunction.toStringParameterSig(params, varargs);
+		return Reference.maybeNullReference(rettype).toStringAsElement() 
+		+ " delegate"  
+		+ DefinitionFunction.toStringParametersForSignature(params, varargs);
 	}
 	
 	public static class IntrinsicDelegate extends NativeDefUnit {

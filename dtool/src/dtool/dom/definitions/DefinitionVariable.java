@@ -6,10 +6,10 @@ import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.NodeUtil;
 
 /**
  * A definition of a variable
@@ -21,10 +21,11 @@ public class DefinitionVariable extends Definition implements IStatement {
 
 	public DefinitionVariable(descent.internal.compiler.parser.VarDeclaration elem) {
 		super(elem);
-		this.type = Reference.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type);
 		this.init = Initializer.convert(elem.init);
 	}
 	
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -70,8 +71,8 @@ public class DefinitionVariable extends Definition implements IStatement {
 	
 	@Override
 	public String toStringForCodeCompletion() {
-		return defname + "   " + getTypeString() + " - "
-				+ NodeUtil.getOuterDefUnit(this).toStringAsElement();
+		return defname.toStringAsElement() + "   " + getTypeString() + " - "
+				+ getModuleScope().toStringAsElement();
 	}
 
 }

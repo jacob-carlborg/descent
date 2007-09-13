@@ -56,6 +56,11 @@ public class StatementTry extends Statement {
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
+		
+		@Override
+		public IScope getAdaptedScope() {
+			return this;
+		}
 	}
 
 	public IStatement body;

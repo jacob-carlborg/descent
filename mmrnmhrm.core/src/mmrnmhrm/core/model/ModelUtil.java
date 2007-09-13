@@ -3,8 +3,8 @@ package mmrnmhrm.core.model;
 import melnorme.miscutil.ArrayUtil;
 import mmrnmhrm.core.DeeCore;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -28,7 +28,7 @@ public class ModelUtil {
 	}
 	
 	/** Creates a SourceFolder for the given folder, and adds it the project. */
-	public static IProjectFragment createAddSourceFolder(IScriptProject dltkProj, IFolder folder) throws CoreException {
+	public static IProjectFragment createAddSourceFolder(IScriptProject dltkProj, IContainer folder) throws CoreException {
 		IProjectFragment fragment = dltkProj.getProjectFragment(folder);
 		if(fragment == null || !fragment.exists()) {
 			IBuildpathEntry[] bpentries = dltkProj.getRawBuildpath();

@@ -20,10 +20,11 @@ public class TypeMapArray extends CommonRefNative {
 
 	public TypeMapArray(TypeAArray elem) {
 		setSourceRange(elem);
-		this.valuetype = Reference.convertType(elem.next);
-		this.keytype = Reference.convertType(elem.index);
+		this.valuetype = ReferenceConverter.convertType(elem.next);
+		this.keytype = ReferenceConverter.convertType(elem.index);
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -33,13 +34,14 @@ public class TypeMapArray extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicMapArray.instance);
 	}
 	
 	@Override
 	public String toStringAsElement() {
-		return valuetype + "["+keytype+"]";
+		return valuetype.toStringAsElement() + "["+keytype.toStringAsElement()+"]";
 	}
 	
 	public static class IntrinsicMapArray extends NativeDefUnit {

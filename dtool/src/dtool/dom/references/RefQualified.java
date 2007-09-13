@@ -44,6 +44,7 @@ public class RefQualified extends CommonRefQualified {
 		this.subref = subRef;
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -53,19 +54,21 @@ public class RefQualified extends CommonRefQualified {
 		visitor.endVisit(this);
 	}
 
-	
+	@Override
 	public String toStringAsElement() {
-		return root + "." + subref;
+		return root.toStringAsElement() + "." + subref.toStringAsElement();
 	}
 	
 	public IASTNode getRootAsNode() {
 		return (IASTNode) this.root;
 	}
 
+	@Override
 	public IDefUnitReferenceNode getRoot() {
 		return root;
 	}
 
+	@Override
 	public Collection<DefUnit> findRootDefUnits() {
 		return root.findTargetDefUnits(false);
 	}

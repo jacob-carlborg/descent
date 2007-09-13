@@ -1,5 +1,6 @@
 package dtool.dom.ast;
 
+import static melnorme.miscutil.Assert.assertFail;
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.tree.IElement;
@@ -78,6 +79,7 @@ public abstract class ASTNeoNode extends ASTNode
 	}
 	
 	/** Get's an ISourceRange of this node's source range. */
+	@Override
 	public ISourceRange getSourceRange () {
 		return super.getSourceRange();
 	}
@@ -99,7 +101,7 @@ public abstract class ASTNeoNode extends ASTNode
 		return 0; // TODO Not DMD element
 	}
 
-	@Override
+	//@Override
 	public ASTNeoNode[] getChildren() {
 		return (ASTNeoNode[]) ASTNeoChildrenCollector.getChildrenArray(this);
 	}
@@ -165,23 +167,11 @@ public abstract class ASTNeoNode extends ASTNode
 		setEnd(elem.getStartPos() + elem.getLength());
 	}
 
-	public String toString() {
-		return getDebugString();
-	}
-
-	protected String getDebugString() {
-		return ASTPrinter.toStringAST(this, true);
-	}
-	
-	/** Returns a simple representation of this node 
-	 * (ie. one liner, no members). */
-	public String toStringAsElement() {
-		return "";
-	}
+	/* =============== STRING FUNCTIONS =============== */
 
 	/** Gets the node's classname striped of package qualifier,
-	 * plus range info. */
-	public String toStringAsNode(boolean printRangeInfo) {
+	 * plus optional range info. */
+	public final String toStringAsNode(boolean printRangeInfo) {
 		String str = toStringClassName();
 
 /*		if(this instanceof ASTDmdNode)
@@ -198,6 +188,25 @@ public abstract class ASTNeoNode extends ASTNode
 		return str.substring(lastIx+1);
 	}
 
+	@Override
+	@Deprecated
+	public final String toString() {
+		assertFail("ASTNeoNode.toString is for debugging purposes only.");
+		return toStringClassName() +" "+ toStringAsCode();
+		//return ASTPrinter.toStringAsFullNodeTree(this, true);
+	}
+	
+	/** Returns a simple representation of this node, 
+	 * element-like and fir for a line. */
+	public String toStringAsElement() {
+		return "?";
+	}
+	
+	/** Returns a simple representation of this node 
+	 * (ie. one liner, no members). */
+	protected String toStringAsCode() {
+		return "<"+toStringAsElement()+">";
+	}
 
 
 }

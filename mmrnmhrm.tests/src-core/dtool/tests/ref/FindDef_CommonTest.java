@@ -1,5 +1,8 @@
 package dtool.tests.ref;
 
+import static melnorme.miscutil.Assert.assertFail;
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Collection;
 
@@ -13,9 +16,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 import org.junit.Test;
 
-import static melnorme.miscutil.Assert.assertTrue;
-
-import descent.internal.compiler.parser.ast.IASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -65,15 +66,16 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		System.out.print("Find ref case #"+counter+": "+offset+": ");
 		System.out.println(modUnit2.getBuffer().getContents().substring(offset).split("\\s")[0]);
 		
-		IASTNode node = ASTNodeFinder.findElement(ParsingUtil.getNeoASTModule(modUnit2), offset);
-		node.toString();
+		ASTNeoNode node = ASTNodeFinder.findElement(ParsingUtil.getNeoASTModule(modUnit2), offset);
+
 		Reference ref = (Reference) node;
 		
 		Collection<DefUnit> defunits = ref.findTargetDefUnits(true);
 		
 		if(defunits == null || defunits.isEmpty()) {
-			assertTrue(targetOffset == -1, " Find Ref got no DefUnit.");
-			return;
+			if(targetOffset == -1)
+				return; // Ok, it matches the expected
+			assertFail(" Find Ref got no DefUnit.");
 		}
 		DefUnit defunit = defunits.iterator().next();
 		

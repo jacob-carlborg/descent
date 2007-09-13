@@ -16,6 +16,7 @@ public class DeeOutlineLabelProvider extends SimpleLabelProvider {
 		return DeeElementImageProvider.getElementImage((IElement) element);
 	}
 
+	@Override
 	public String getText(Object elem) {
 		return ((ASTNeoNode) elem).toStringAsElement();
 	}

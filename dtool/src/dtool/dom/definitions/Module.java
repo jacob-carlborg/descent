@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.dltk.core.ISourceModule;
@@ -13,6 +12,7 @@ import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTPrinter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.references.CommonRefSingle;
@@ -36,6 +36,7 @@ public class Module extends DefUnit implements IScopeNode {
 			this.moduleName = new Symbol(md.id); 
 		}
 
+		@Override
 		public void accept0(IASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
 			if (children) {
@@ -47,7 +48,7 @@ public class Module extends DefUnit implements IScopeNode {
 		
 		@Override
 		public String toStringAsElement() {
-			String str = StringUtil.collToString(packages, ".");
+			String str = ASTPrinter.toStringAsElements(packages, "."); 
 			if(str.length() == 0)
 				return moduleName.toStringAsElement();
 			else
@@ -97,6 +98,7 @@ public class Module extends DefUnit implements IScopeNode {
 	}
 
 
+	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Module;
 	}
@@ -108,6 +110,7 @@ public class Module extends DefUnit implements IScopeNode {
 		return (ISourceModule) moduleUnit;
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

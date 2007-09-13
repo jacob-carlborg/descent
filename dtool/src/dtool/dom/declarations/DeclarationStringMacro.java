@@ -10,12 +10,13 @@ import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.INonScopedBlock;
 
 public class DeclarationStringMacro extends ASTNeoNode implements IStatement, INonScopedBlock {
 	
-	public final Expression exp;
+	public final Resolvable exp;
 
 	public DeclarationStringMacro(CompileDeclaration node) {
 		convertNode(node);

@@ -31,9 +31,11 @@ public class DeeCompilerLibraryBlock extends AbstractInterpreterLibraryBlock {
 	public DeeCompilerLibraryBlock(AddScriptInterpreterDialog d) {
 	    super(d);
 	}
+	@Override
 	protected IBaseLabelProvider getLabelProvider() {
 		return new LibraryLabelProvider();
 	}
+	@Override
 	protected IDialogSettings getDialogSettions() {
 		return DeePlugin.getDefault().getDialogSettings();
 		//return RubyDebugUIPlugin.getDefault().getDialogSettings();

@@ -1,6 +1,5 @@
 package mmrnmhrm.tests.core.ref;
 
-import melnorme.miscutil.Assert;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.ui.editor.DeeEditorTest;
 
@@ -17,9 +16,6 @@ public class CodeCompletion_Test extends CodeCompletion__Common {
 	@BeforeClass
 	public static void commonSetUp() throws Exception {
 		setupWithFile(SampleMainProject.deeProj, TEST_SRCFILE);
-		Assert.isTrue(editor.getScriptSourceViewer() != null);
-		//assist = new DeeCodeContentAssistProcessor(null, editor);
-		doc = DeeEditorTest.getDocument(editor);
 	}
 
 	
@@ -47,7 +43,7 @@ public class CodeCompletion_Test extends CodeCompletion__Common {
 				);
 		
 		// same test, but characters ahead of offset
-		testComputeProposalsWithRepLen2(410, 1, 2,"Param", "unc", "oobarvar",
+		testComputeProposalsWithRepLen(410, 1, 2,"Param", "unc", "oobarvar",
 				"oovar", "oox", 
 				/*"FooBar",*/  "oo_t", "ooalias", "ooOfModule", "rak" /*,"Foo",*/
 				);
@@ -79,7 +75,7 @@ public class CodeCompletion_Test extends CodeCompletion__Common {
 	@Test
 	public void test6b() throws Exception {
 		// Test in middle of the first name of the qualified ref
-		testComputeProposalsWithRepLen2(575, 1, 2, "oo", "ooBar");
+		testComputeProposalsWithRepLen(575, 1, 2, "oo", "ooBar");
 		// Test at end of qualified ref
 		testComputeProposals(579, 1, "oovar", "oox");
 	}

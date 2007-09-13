@@ -8,15 +8,15 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralMapArray extends Expression {
 
-	public final Expression[] keys;
-	public final Expression[] values;
+	public final Resolvable[] keys;
+	public final Resolvable[] values;
 	
 	public ExpLiteralMapArray(AssocArrayLiteralExp node) {
 		convertNode(node);
 		Assert.isTrue(node.keys.size() == node.values.size());
-		this.keys = new Expression[node.keys.size()];
+		this.keys = new Resolvable[node.keys.size()];
 		DescentASTConverter.convertMany(node.keys, this.keys);
-		this.values = new Expression[node.values.size()];
+		this.values = new Resolvable[node.values.size()];
 		DescentASTConverter.convertMany(node.keys, this.keys);
 	}
 

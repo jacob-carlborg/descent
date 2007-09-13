@@ -21,6 +21,7 @@ import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Module.DeclarationModule;
 import dtool.dom.references.Reference;
+import dtool.dom.references.RefModule.LiteModuleDummy;
 
 public class DeeElementImageProvider {
 	
@@ -43,7 +44,8 @@ public class DeeElementImageProvider {
 	public static Image getNodeImage(ASTNeoNode node) {
 		if(node instanceof DeclarationImport) { 
 			return getImage(DeePluginImages.NODE_IMPORT);
-		} else if(node instanceof DeclarationModule || node instanceof Module) {
+		} else if(node instanceof DeclarationModule 
+				|| node instanceof Module || node instanceof LiteModuleDummy) {
 			return getImage(DeePluginImages.NODE_MODULE_DEC);
 		} else if(node instanceof PartialPackageDefUnit ) {
 			return getImage(DeePluginImages.NODE_MODULE_DEC);

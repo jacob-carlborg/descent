@@ -89,6 +89,7 @@ public class DeeSourceViewerConfiguration extends
 			fDocScanner.adaptToPreferenceChange(event);
 	}
 	
+	@Override
 	public IPresentationReconciler getPresentationReconciler(
 			ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new ScriptPresentationReconciler();
@@ -128,6 +129,7 @@ public class DeeSourceViewerConfiguration extends
 		return targets;
 	}
 	
+	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		if (getEditor() == null)
 			return null;
@@ -154,6 +156,7 @@ public class DeeSourceViewerConfiguration extends
 		return assistant;
 	}
 	
+	@Override
 	protected IInformationControlCreator getOutlinePresenterControlCreator(
 			ISourceViewer sourceViewer, final String commandId) {
 		return new IInformationControlCreator() {
@@ -170,6 +173,7 @@ public class DeeSourceViewerConfiguration extends
 		};
 	}
 	
+	@Override
 	protected void initializeQuickOutlineContexts(InformationPresenter presenter,
 			IInformationProvider provider) {
 		presenter.setInformationProvider(provider, DeePartitions.DEE_CODE);
@@ -195,6 +199,7 @@ public class DeeSourceViewerConfiguration extends
 
 	
 	@SuppressWarnings("restriction")
+	@Override
 	public IInformationPresenter getHierarchyPresenter(
 			ScriptSourceViewer sourceViewer, boolean doCodeResolve) {
 		// Do not create hierarchy presenter if there's no CU.
@@ -216,6 +221,7 @@ public class DeeSourceViewerConfiguration extends
 	}
 
 	
+	@Override
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
 			@SuppressWarnings("restriction")

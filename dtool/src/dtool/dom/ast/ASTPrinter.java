@@ -1,9 +1,11 @@
 package dtool.dom.ast;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import melnorme.miscutil.tree.TreeDepthRecon;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.RefQualified;
 
 /**
@@ -12,33 +14,50 @@ import dtool.dom.references.RefQualified;
  */
 public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
-	/** => #toStringNodeExtra(node, true) */
-	public static String toStringNodeExtra(IASTNode node) {
-		return node.toStringAsNode(true);
+	/* ===================== Helpers ============================ */
+
+	public static String toStringParamListAsElements(ASTNeoNode[] nodes) {
+		if(nodes == null)
+			return "";
+		return "("+toStringAsElements(nodes, ", ")+")";
 	}
-
-	/** #toStringAST(elem, true) */
-	public static String toStringAST(ASTNode elem) {
-		return toStringAST(elem, true);
-	}	
-
-	/** Gets a String representation of the whole AST tree. */
-	public static String toStringAST(IASTNode elem, boolean recurseUnconverted) {
+	
+	/** Util for printing a collection of nodes. */
+	public static String toStringAsElements(ASTNeoNode[] nodes, String sep) {
+		
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < nodes.length; i++) {
+			if(i > 0)
+				sb.append(sep);
+			sb.append(nodes[i].toStringAsElement());
+		}
+		return sb.toString();
+	}
+	
+	public final static String toStringAsElements(
+			Collection<? extends ASTNeoNode> nodes, String sep) {
+		StringBuilder sb = new StringBuilder();
+		Iterator<? extends ASTNeoNode> iter = nodes.iterator();
+		for (int i = 0; iter.hasNext(); i++) {
+			if(i > 0)
+				sb.append(sep);
+			sb.append(iter.next().toStringAsElement());
+		}
+		return sb.toString();
+	}
+	
+	/** Gets a String representation of the whole node tree, with one
+	 * line per node, and using toStringAsNodePlusExtra */
+	public static String toStringAsFullNodeTree(IASTNode elem, boolean recurseUnconverted) {
 		ASTPrinter astPrinter = new ASTPrinter();
 		astPrinter.recurseUnconverted = recurseUnconverted;
-		return astPrinter.getStringRep(elem);
+		elem.accept(astPrinter);
+		return astPrinter.strbuffer.toString();
 	}
 
-//	private static ASTPrinter singletonPrinter = new ASTPrinter();
 	
-	/** Gets a String representation of given node. */
-/*	public static String toStringElement(ASTNode node) {
-		// use singleton for optimization purposes
-		singletonPrinter.visitChildren = false;
-		singletonPrinter.strbuffer = new StringBuffer();
-		return singletonPrinter.getStringRep(node);
-	}
-*/
+	/* ====================================================== */
+
 	
 	// print source range
 	public boolean printRangeInfo = true;
@@ -62,26 +81,14 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		this.indent = 0;
 		this.strbuffer = new StringBuffer();
 	}
-	/*private ASTPrinter(boolean collapseLeafs) {
-		this();
-		this.collapseLeafs = collapseLeafs;
-	}*/
-
-	
-	/** Gets a String represesention according to this printer */
-	public String getStringRep(IASTNode elem) {
-		elem.accept(this);
-		return strbuffer.toString();
-	}
-
 	
 	/** Gets a String representation of elem only, with extra info. */
-	private String toStringElementExtra(ASTNode elem) {
+	private String toStringAsNodePlusExtra(ASTNode elem) {
 		return elem.toStringAsNode(printRangeInfo);
 	}
 	
 	/** Gets a String representation of elem only, with extra info. */
-	private String toStringElementExtra(ASTNeoNode elem) {
+	private String toStringAsNodePlusExtra(ASTNeoNode elem) {
 		return elem.toStringAsNode(printRangeInfo) +" "+ elem.toStringAsElement();
 	}
 	
@@ -99,8 +106,8 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		print(melnorme.miscutil.StringUtil.newFilledString(indent, "  "));
 	}
 
-	private void printGenericElement(IASTNode element, String str) {
-		int maxdepth = collapseLeafs? TreeDepthRecon.findMaxDepth(element) : -1;
+	private void printNodeDecorations(IASTNode node, String str) {
+		int maxdepth = collapseLeafs? TreeDepthRecon.findMaxDepth(node) : -1;
 
 		if(collapseLeafs && maxdepth == 1 && allSiblingsAreLeafs)
 			print("  ");
@@ -121,28 +128,28 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 	}
 	
 	/* ====================================================== */
-
+	@Override
 	public boolean visit(ASTNode elem) {
-		printGenericElement(elem, toStringElementExtra(elem));
+		printNodeDecorations(elem, toStringAsNodePlusExtra(elem));
 		return visitChildren && recurseUnconverted;
 	}
 
 	
 	/* ---------------- Neo ------------------ */
-	
+	@Override
 	public boolean visit(ASTNeoNode elem) {
-		printGenericElement(elem, toStringElementExtra(elem) );
+		printNodeDecorations(elem, toStringAsNodePlusExtra(elem) );
 		return visitChildren;
 	}
 	
 	public boolean visit(RefQualified elem) {
-		printGenericElement(elem, toStringElementExtra(elem));
+		printNodeDecorations(elem, toStringAsNodePlusExtra(elem));
 		return visitChildren && visitQualifiedNameChildren;
 	}
 	
 	
 	/* ---------------------------------- */
-	
+	@Override
 	public void endVisit(ASTNode element) {
 		
 		if(collapseLeafs && TreeDepthRecon.findMaxDepth(element) == 2) {
@@ -153,20 +160,8 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		indent--;
 	}
 
-	public static String toStringAsElements(DefUnit[] defUnits) {
-		if(defUnits == null)
-			return "";
-		
-		String sep = ", ";
-		StringBuilder sb = new StringBuilder("(");
-		for (int i = 0; i < defUnits.length; i++) {
-			if(i > 0)
-				sb.append(sep);
-			sb.append(defUnits[i].toStringAsElement());
-		}
-		sb.append(")");
-		return sb.toString();
-	}
+
+	
 
 }
 

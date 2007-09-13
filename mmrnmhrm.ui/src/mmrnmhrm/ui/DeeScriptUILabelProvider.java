@@ -1,12 +1,12 @@
 package mmrnmhrm.ui;
 
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.dltk.ui.ScriptElementImageProvider;
 import org.eclipse.dltk.ui.viewsupport.ScriptUILabelProvider;
 import org.eclipse.swt.graphics.Image;
 
+import dtool.Logg;
 import dtool.dom.ast.ASTNeoNode;
 
 public class DeeScriptUILabelProvider extends ScriptUILabelProvider {

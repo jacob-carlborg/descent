@@ -24,6 +24,7 @@ public class DefinitionUnion extends DefinitionAggregate {
 		//	this.templateParams = TemplateParameter.convertMany(elem.templateParameters);
 	}
 	
+	@Override	
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		acceptNodeChildren(visitor, children);

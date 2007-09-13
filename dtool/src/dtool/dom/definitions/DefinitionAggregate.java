@@ -24,6 +24,7 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 		super(elem);
 	}
 	
+	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Aggregate;
 	}
@@ -51,7 +52,7 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 	public String toStringForHoverSignature() {
 		String str = getArcheType().toString() 
 		+ "  " + getModuleScope().toStringAsElement() +"."+ getName()
-		+ ASTPrinter.toStringAsElements(templateParams);
+		+ ASTPrinter.toStringParamListAsElements(templateParams);
 		return str;
 	}
 

@@ -4,12 +4,13 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ForStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementFor extends Statement {
 
 	public IStatement init;
-	public Expression cond;
-	public Expression inc;
+	public Resolvable cond;
+	public Resolvable inc;
 	public IStatement body;
 
 

@@ -1,7 +1,6 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
@@ -22,6 +21,7 @@ public class DeeNavigatorLabelProvider extends ModelElementLabelProvider {
 				| ModelElementLabelProvider.SHOW_ROOT);
 	}
 	
+	@Override
 	public Image getImage(Object element) {
 		if(element instanceof IElement) 
 			return DeeElementImageProvider.getElementImage((IElement) element);
@@ -50,6 +50,7 @@ public class DeeNavigatorLabelProvider extends ModelElementLabelProvider {
 			return null;
 	}
 
+	@Override
 	public String getText(Object element) {
 		/*if(element instanceof IDeeElement) {
 			return ((IDeeElement) element).getElementName();
@@ -62,18 +63,21 @@ public class DeeNavigatorLabelProvider extends ModelElementLabelProvider {
 		return "<UNKNOWN>";
 	}
 	
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		// Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 
-
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 }

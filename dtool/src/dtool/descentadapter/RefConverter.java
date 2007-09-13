@@ -11,6 +11,7 @@ import dtool.dom.expressions.ExpReference;
 import dtool.dom.references.RefIdentifier;
 import dtool.dom.references.RefTypeSlice;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.dom.references.TypeDelegate;
 import dtool.dom.references.TypeDynArray;
 import dtool.dom.references.TypeFunction;
@@ -63,21 +64,21 @@ abstract class RefConverter extends CoreConverter {
 	}
 	
 	public boolean visit(descent.internal.compiler.parser.TemplateInstance elem) {
-		return endAdapt(Reference.convertTemplateInstance(elem));
+		return endAdapt(ReferenceConverter.convertTemplateInstance(elem));
 	}
 	
 	public boolean visit(descent.internal.compiler.parser.TypeIdentifier elem) {
-		Reference rootent = Reference.convertTypeIdentifier_ToRoot(elem);
-		return endAdapt(Reference.convertTypeQualified(rootent, elem));
+		Reference rootent = ReferenceConverter.convertTypeIdentifier_ToRoot(elem);
+		return endAdapt(ReferenceConverter.convertTypeQualified(rootent, elem));
 	}
 
 	public boolean visit(TypeInstance elem) {
-		return endAdapt(Reference.convertTypeInstance(elem));
+		return endAdapt(ReferenceConverter.convertTypeInstance(elem));
 	}
 	
 	public boolean visit(descent.internal.compiler.parser.TypeTypeof elem) {
 		Reference rootent = new TypeTypeof(elem);
-		return endAdapt(Reference.convertTypeQualified(rootent, elem));
+		return endAdapt(ReferenceConverter.convertTypeQualified(rootent, elem));
 	}
 
 	

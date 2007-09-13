@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
@@ -15,7 +16,7 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
 		super(elem);
-		this.type = Reference.convertType(elem.sourceBasetype);
+		this.type = ReferenceConverter.convertType(elem.sourceBasetype);
 		this.initializer = Initializer.convert(elem.init);
 	}
 
@@ -42,7 +43,7 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	
 	@Override
 	public String toStringForCodeCompletion() {
-		return getName() +" -> "+ type.toStringAsReference() 
+		return getName() +" -> "+ type.toStringAsElement() 
 		+" - "+ getModuleScope().toStringAsElement();
 	}
 

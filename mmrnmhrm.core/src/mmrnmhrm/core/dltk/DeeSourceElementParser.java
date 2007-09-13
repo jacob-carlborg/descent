@@ -2,7 +2,6 @@ package mmrnmhrm.core.dltk;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.LangCore;
 
@@ -18,6 +17,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.ISourceModuleInfoCache.ISourceModuleInfo;
 
+import dtool.Logg;
 import dtool.dom.definitions.Module;
 
 public class DeeSourceElementParser implements ISourceElementParser {
@@ -34,7 +34,7 @@ public class DeeSourceElementParser implements ISourceElementParser {
 		//this.fReporter = problemReporter;
 	}
 
-	@Override
+	//@Override
 	public void setReporter(IProblemReporter reporter) {
 		this.fReporter = reporter;
 	}
@@ -44,7 +44,7 @@ public class DeeSourceElementParser implements ISourceElementParser {
 	}
 
 	@SuppressWarnings("restriction")
-	@Override
+	//@Override
 	public ModuleDeclaration parseSourceModule(
 			char[] contents, ISourceModuleInfo astCache, char[] filename) {
 

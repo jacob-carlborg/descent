@@ -13,23 +13,28 @@ import org.eclipse.swt.widgets.Label;
 public class DeeSourceColoringPreferencePage extends
 		AbstractConfigurationBlockPreferencePage {
 
+	@Override
 	protected String getHelpId() {
 		return "";
 	}
 
+	@Override
 	protected void setDescription() {
 		String description = PreferencesMessages.DLTKEditorPreferencePage_colors;
 		setDescription(description);
 	}
 
+	@Override
 	protected Label createDescriptionLabel(Composite parent) {
 		return null;
 	}
 
+	@Override
 	protected void setPreferenceStore() {
 		setPreferenceStore(DeePlugin.getDefault().getPreferenceStore());
 	}
 
+	@Override
 	protected IPreferenceConfigurationBlock createConfigurationBlock(
 			OverlayPreferenceStore overlayPreferenceStore) {
 		return new DeeSourceColoringConfigurationBlock(overlayPreferenceStore);

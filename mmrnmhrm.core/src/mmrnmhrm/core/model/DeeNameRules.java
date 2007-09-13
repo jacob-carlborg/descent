@@ -1,5 +1,6 @@
 package mmrnmhrm.core.model;
 
+
 public class DeeNameRules {
 
 	private static final String DEE_FILE_EXTENSION = ".d";
@@ -30,19 +31,37 @@ public class DeeNameRules {
 		return false;
 	}
 
-	public static boolean isValidPackageName(String name) {
-		if(!(Character.isLetter(name.charAt(0)) || name.charAt(0) == '_'))
+	
+	public static boolean isValidPackagePathName(String pathname) {
+		if(pathname.equals(""))
+			return true;
+		
+		String[] parts = pathname.split("/");
+		for (int i = 0; i < parts.length; i++) {
+			if(!isValidPackageNamePart(parts[i]))
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isValidPackageNamePart(String partname) {
+		if(partname.length() == 0)
+			return false;
+		
+		if(!(Character.isLetter(partname.charAt(0)) || partname.charAt(0) == '_'))
 			return false;
 	
-		for(int i = 1; i < name.length(); ++i){
-			//if(name.charAt(i) == '.');
+		for(int i = 1; i < partname.length(); ++i){
 			
-			if(!Character.isLetterOrDigit(name.charAt(i)))
+			if(!Character.isLetterOrDigit(partname.charAt(i)))
 				return false;
 		}
 		return true;
 	}
 
+	public static String convertPackagePathName(String pkgPathName) {
+		return pkgPathName.replace("/", ".");
+	}
 
 
 }

@@ -67,7 +67,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		fArtifactName.setDialogFieldListener(this);
 		
 		fOutputDir = new StringButtonDialogField(new IStringButtonAdapter() {
-			@Override
+			//@Override
 			public void changeControlPressed(DialogField field) {
 				ProjectContainerSelectionDialog containerDialog;
 				containerDialog	= new ProjectContainerSelectionDialog(getShell(), fDeeProjInfo.getProject());
@@ -93,7 +93,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		fOutputDir.setDialogFieldListener(this);
 		
 		fCompilerTool = new StringButtonDialogField(new IStringButtonAdapter() {
-			@Override
+			//@Override
 			public void changeControlPressed(DialogField field) {
 				FileDialog dialog = new FileDialog(getShell());
 				dialog.setFilterPath(fCompilerTool.getText());
@@ -188,7 +188,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		updateBuildPreview(options);
 	}
 	
-	@Override
+	//@Override
 	public void dialogFieldChanged(DialogField field) {
 		DeeCompilerOptions options = overlayOptions;
 		options.buildType = fBuildType.getSelectedObject();

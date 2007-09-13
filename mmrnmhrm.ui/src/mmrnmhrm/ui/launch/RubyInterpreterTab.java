@@ -7,10 +7,12 @@ import org.eclipse.dltk.internal.debug.ui.interpreters.AbstractInterpreterComboB
 
 public class RubyInterpreterTab extends InterpreterTab {
 	
+	@Override
 	protected AbstractInterpreterComboBlock getInterpreterBlock() {
 		return new RubyInterpreterComboBlock();
 	}
 
+	@Override
 	protected String getNature() {
 		return DeeNature.NATURE_ID;
 	}

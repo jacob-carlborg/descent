@@ -6,8 +6,8 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpAssert extends Expression {
 	
-	public Expression exp;
-	public Expression msg;
+	public Resolvable exp;
+	public Resolvable msg;
 
 	public ExpAssert(AssertExp elem) {
 		convertNode(elem);

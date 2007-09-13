@@ -232,6 +232,7 @@ public abstract class AbstractCompletionProposal implements
 	private static final class ControlCreator extends AbstractReusableInformationControlCreator {
 
 		@SuppressWarnings("restriction")
+		@Override
 		public IInformationControl doCreateInformationControl(Shell parent) {
 			return new org.eclipse.jface.internal.text.html.BrowserInformationControl(
 					parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);

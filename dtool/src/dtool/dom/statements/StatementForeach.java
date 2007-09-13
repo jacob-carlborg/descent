@@ -6,12 +6,13 @@ import descent.internal.compiler.parser.TOK;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.IFunctionParameter;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementForeach extends Statement {
 
 	public boolean reverse;
 	public IFunctionParameter[] params;
-	public Expression iterable;
+	public Resolvable iterable;
 	public IStatement body;
 
 	public StatementForeach(ForeachStatement elem) {

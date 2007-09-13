@@ -7,7 +7,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpStringMacro extends Expression {
 
-	public final Expression exp;
+	public final Resolvable exp;
 
 	public ExpStringMacro(CompileExp node) {
 		convertNode(node);

@@ -74,7 +74,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 	}
 
 	@Override
-	public void searchDefUnit(CommonDefUnitSearch options) {
+	public void searchInSecondaryScope(CommonDefUnitSearch options) {
 		// Do nothing. Aliasing imports do not contribute secondary-space DefUnits
 		// TODO: this is a bug in D, it's not according to spec.
 	}
@@ -85,6 +85,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 	
 	@Override
 	public String toStringAsElement() {
-		return aliasDefUnit.toStringAsElement() +"="+ moduleRef.toStringAsElement() ;
+		return aliasDefUnit.toStringAsElement() 
+		+ " = "+ moduleRef.toStringAsElement() ;
 	}
 }

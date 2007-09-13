@@ -61,7 +61,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		errorMsg = session.errorMsg;
 		return proposals; 
 	}
-		
+	
 	public static ICompletionProposal[] computeProposals(final int offset,
 			ISourceModule moduleUnit, String source, CompletionSession session) {
 		

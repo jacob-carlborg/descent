@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Image;
 
 public class RubyMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 
-
+	@Override
 	protected boolean validateProject(IScriptProject project) {
 		if (project == null)
 			return false;
@@ -26,7 +26,7 @@ public class RubyMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 		}
 		return false;
 	}
-	
+	@Override
 	protected String getLanguageName () {
 		return "RUBY";
 	}
@@ -34,10 +34,12 @@ public class RubyMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
 	 */
+	@Override
 	public Image getImage() {
 		return DLTKPluginImages.get(DLTKPluginImages.IMG_OBJS_CLASS);
 	}
-
+	
+	@Override
 	protected String getNatureID() {
 		return DeeNature.NATURE_ID;
 	}

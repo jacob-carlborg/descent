@@ -8,8 +8,8 @@ import dtool.refmodel.IDefUnitReferenceNode;
 public class ExpSlice extends Expression {
 
 	public IDefUnitReferenceNode slicee;
-	public Expression from;
-	public Expression to;
+	public Resolvable from;
+	public Resolvable to;
 	
 	public ExpSlice(SliceExp elem) {
 		convertNode(elem);

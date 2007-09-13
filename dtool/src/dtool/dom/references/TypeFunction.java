@@ -36,7 +36,7 @@ public class TypeFunction extends CommonRefNative {
 	}
 
 
-
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -46,14 +46,16 @@ public class TypeFunction extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicFunction.instance);
 	}
 	
 	@Override
 	public String toStringAsElement() {
-		return Reference.maybeNullReference(rettype).toString() + " function"  
-		+ DefinitionFunction.toStringParameterSig(params, varargs);
+		return Reference.maybeNullReference(rettype).toStringAsElement() 
+		+ " function"  
+		+ DefinitionFunction.toStringParametersForSignature(params, varargs);
 	}
 
 	

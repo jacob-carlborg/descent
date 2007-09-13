@@ -12,6 +12,7 @@ public class DeeBuildPathPropertyPage extends BuildPathsPropertyPage implements 
 
 	public static final String PAGEID = "mmrnmhrm.ui.properties.DeeBuildPathProperties";  
 
+	@Override
 	protected BuildpathsBlock createBuildPathBlock(IWorkbenchPreferenceContainer pageContainer) {
 		return new DeeBuildpathsBlock(new BusyIndicatorRunnableContext(), 
 				this, getSettings().getInt(INDEX), false, pageContainer);

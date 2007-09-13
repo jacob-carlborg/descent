@@ -15,20 +15,20 @@ public class PostfixExpression extends Expression {
 		int POST_DECREMENT = 10;
 	}
 	
-	public Expression exp;
+	public Resolvable exp;
 	
 	public int kind;
 
 	
 	public PostfixExpression(UnaExp elem, int kind) {
 		convertNode(elem);
-		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
 		this.kind = kind;
 	}
 
 	public PostfixExpression(BinExp elem) {
 		setSourceRange(elem);
-		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
 		if(elem.op == TOK.TOKplusplus) {
 			this.kind = Type.POST_INCREMENT;
 		} else if(elem.op == TOK.TOKminusminus) {

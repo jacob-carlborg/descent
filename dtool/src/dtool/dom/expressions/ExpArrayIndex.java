@@ -6,8 +6,8 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpArrayIndex extends Expression {
 
-	public Expression array;
-	public Expression[] args;
+	public Resolvable array;
+	public Resolvable[] args;
 	
 	public ExpArrayIndex(ArrayExp elem) {
 		convertNode(elem);

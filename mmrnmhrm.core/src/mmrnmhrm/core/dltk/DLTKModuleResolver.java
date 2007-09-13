@@ -1,16 +1,20 @@
 package mmrnmhrm.core.dltk;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.model.DeeNameRules;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.dltk.core.IExternalSourceModule;
+import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.IProjectFragment;
 import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ISourceModule;
+import org.eclipse.dltk.core.ModelException;
 
 import dtool.dom.definitions.Module;
 import dtool.refmodel.pluginadapters.IModuleResolver;
@@ -21,7 +25,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 	
 	/** Finds the module with the given package and module name.
 	 * refModule is used to determine which project/build-path to search. */
-	@Override
+	//@Override
 	public Module findModule(Module sourceRefModule, String[] packages,
 			String modName) throws CoreException {
 
@@ -68,4 +72,43 @@ public class DLTKModuleResolver implements IModuleResolver {
 		return new File(modUnit.getPath().toOSString()).exists();
 	}
 
+	//@Override
+	public String[] findModules(Module refSourceModule, String fqNamePrefix) throws ModelException {
+		ISourceModule sourceModule = (ISourceModule) refSourceModule.getModuleUnit();
+
+		IScriptProject scriptProject = sourceModule.getScriptProject();
+
+		List<String> strings = new ArrayList<String>();
+		
+		for (IProjectFragment srcFolder : scriptProject.getProjectFragments()) {
+			
+			for (IModelElement pkgFragElem : srcFolder.getChildren()) {
+				IScriptFolder pkgFrag = (IScriptFolder) pkgFragElem;
+			
+				String pkgName = pkgFrag.getElementName();
+				if(!DeeNameRules.isValidPackagePathName(pkgName))
+					continue;
+				
+				pkgName = DeeNameRules.convertPackagePathName(pkgName);
+
+				for (IModelElement srcUnitElem : pkgFrag.getChildren()) {
+					ISourceModule srcUnit = (ISourceModule) srcUnitElem;
+					String modName = srcUnit.getElementName();
+					// remove extension
+					modName = modName.substring(0, modName.indexOf('.'));
+					String fqName;
+					if(pkgName.equals(""))
+						fqName = modName;
+					else 
+						fqName = pkgName + "." + modName;
+					
+					if(fqName.startsWith(fqNamePrefix))
+						strings.add(fqName);
+				}
+			}
+		}		
+		
+		return strings.toArray(new String[strings.size()]);
+	}
+	
 }

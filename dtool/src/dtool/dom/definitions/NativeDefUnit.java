@@ -28,7 +28,13 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 		public IScope getModuleScope() {
 			return this;
 		}
+		
+		@Override
+		public IScope getAdaptedScope() {
+			return this;
+		}
 
+		@Override
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
@@ -38,25 +44,25 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 			return "<natives>";
 		}
 
-		@Override
+		//@Override
 		public String toStringAsElement() {
 			return toString();
 		}
 	}
 	
-	public static final NativesScope nativesScope = new NativesScope();
-	//public static final DefUnit unknown = new NativesScope();
-	public static final IDefUnitReference nullReference = new IDefUnitReference() {
-
+	private static final class UndeterminedReference implements IDefUnitReference {
 		public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 			return null;
 		}
-		
 		@Override
-		public String toString() {
+		public String toStringAsElement() {
 			return "<unknown>";
 		}
-	};
+	}
+	
+	public static final NativesScope nativesScope = new NativesScope();
+	//public static final DefUnit unknown = new NativesScope();
+	public static final IDefUnitReference nullReference = new UndeterminedReference();
 
 	public NativeDefUnit(String name) {
 		super(new Symbol(name));
@@ -73,17 +79,13 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 		Assert.fail("Intrinsics do not suppport accept.");
 	}
 	
-	@Override
-	public String toStringForHoverSignature() {
-		return super.toStringForHoverSignature();
-	}
 	
 	@Override
 	public abstract IScopeNode getMembersScope();
 	
 	//public abstract IScope getSuperScope();
 
-
+	@Override
 	public IScope getModuleScope() {
 		return nativesScope;
 	}

@@ -10,6 +10,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 	
 	// Extension point entry point
+	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = DeePlugin.getInstance().getPreferenceStore();
 
@@ -43,7 +44,12 @@ public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 		// folding
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
 		store.setDefault(PreferenceConstants.EDITOR_COMMENTS_FOLDING_ENABLED, true);		
-//	
+		
+
+		// WIZARDS
+		store.setDefault(PreferenceConstants.SRCBIN_FOLDERS_IN_NEWPROJ, true);
+		store.setDefault(PreferenceConstants.SRC_SRCNAME, "src"); //$NON-NLS-1$		
+
 	}
 	
 }

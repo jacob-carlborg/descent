@@ -34,9 +34,10 @@ public class TypePointer extends CommonRefNative {
 	
 	private TypePointer(descent.internal.compiler.parser.TypePointer elem) {
 		setSourceRange(elem);
-		this.elemtype = Reference.convertType(elem.next);
+		this.elemtype = ReferenceConverter.convertType(elem.next);
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -45,13 +46,14 @@ public class TypePointer extends CommonRefNative {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicPointer.instance);
 	}
 	
 	@Override
 	public String toStringAsElement() {
-		return elemtype + "*";
+		return elemtype.toStringAsElement() + "*";
 	}
 
 	

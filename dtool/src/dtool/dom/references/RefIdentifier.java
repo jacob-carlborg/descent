@@ -24,11 +24,13 @@ public class RefIdentifier extends CommonRefSingle {
 		this.name = elem.toString();
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 	
+	@Override
 	public String toStringAsElement() {
 		return name;
 	}

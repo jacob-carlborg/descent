@@ -1,19 +1,21 @@
 package dtool.dom.definitions;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import java.util.List;
 
 import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.refmodel.IScopeAdaptable;
+import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
-
-import static melnorme.miscutil.Assert.assertNotNull;
 
 /**
  * Abstract class for all AST elements that define a new named entity.
  */
-public abstract class DefUnit extends ASTNeoNode {
+public abstract class DefUnit extends ASTNeoNode implements	IScopeAdaptable {
 	
 
 	static public enum EArcheType {
@@ -80,18 +82,15 @@ public abstract class DefUnit extends ASTNeoNode {
 	 * May be null if the scope is not found. */
 	public abstract IScopeNode getMembersScope();
 
-	
 	@Override
-	public String toString() {
-		return toStringAsElement();
+	public IScope getAdaptedScope() {
+		return getMembersScope();
 	}
 	
-	
-	/** Return a simple element string (for outline) */
+	@Override
 	public String toStringAsElement() {
 		return getName();
 	}
-
 	
 	/** Returns signature-oriented String representation. */
 	public String toStringForHoverSignature() {
@@ -102,6 +101,7 @@ public abstract class DefUnit extends ASTNeoNode {
 	}
 	
 	/** Returns completion proposal oriented String representation. */
+	//public abstract String toStringForCodeCompletion() ;
 	public String toStringForCodeCompletion() {
 		return getName() + " - " + getModuleScope().toStringAsElement();
 	}

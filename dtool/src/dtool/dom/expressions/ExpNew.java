@@ -4,18 +4,19 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.NewExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 public class ExpNew extends Expression {
 
-	Expression[] allocargs;
+	Resolvable[] allocargs;
 	Reference type;
-	Expression[] args;
+	Resolvable[] args;
 
 	public ExpNew(NewExp elem) {
 		convertNode(elem);
 		if(elem.newargs != null)
 			this.allocargs = Expression.convertMany(elem.newargs); 
-		this.type = Reference.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type);
 		if(elem.arguments != null)
 			this.args = Expression.convertMany(elem.arguments); 
 	}

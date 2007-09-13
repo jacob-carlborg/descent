@@ -5,27 +5,42 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
+
+import static melnorme.miscutil.Assert.assertTrue;
 
 public class CoreUtils {
 
-	public static void overwriteCopy(IContainer source, IFolder dest,
+	public static void copyContentsOverwriting(IContainer source, IContainer dest,
 			SubProgressMonitor monitor) throws CoreException {
+		assertTrue(dest.exists());
+		
 		IResource[] members = source.members();
 		for (int i = 0; i < members.length; i++) {
-			IResource resource = members[i];
-			IPath destPath = dest.getFullPath().append(resource.getName());
-			IResource target = LangCore.getWorkspaceRoot().findMember(destPath);
-			if(resource.getType() == IResource.FILE) {
-				if(target == null)
-					resource.copy(destPath, IResource.REPLACE | IResource.FORCE, monitor);
-			} else if(resource.getType() == IResource.FOLDER) {
-				IContainer container = (IContainer) resource;
-				IFolder dstFolder = dest.getFolder(container.getName());
-				if(target == null)
+			IResource srcResource = members[i];
+			IPath destPath = dest.getFullPath().append(srcResource.getName());
+			IResource dstResource = LangCore.getWorkspaceRoot().findMember(destPath);
+		
+			if(srcResource.getType() == IResource.FILE) {
+				if(dstResource == null) // if dst does not exist
+					srcResource.copy(destPath, IResource.FORCE, monitor);
+			} else if(srcResource.getType() == IResource.FOLDER) {
+				IFolder srcFolder = (IFolder) srcResource;
+				if(srcFolder.equals(dest)) {
+					continue; // We should not copy a folder into itself
+				}
+
+				IFolder dstFolder = dest.getFolder(new Path(srcFolder.getName()));
+				
+				if(dstResource == null) {
 					dstFolder.create(true, true, monitor);
-				if(dstFolder.exists()) // Make sure the target is really a folder
-					overwriteCopy(container, dstFolder, monitor);
+				} else if(dstResource.getType() == IResource.FILE) {
+					dstResource.delete(true, monitor);
+					dstFolder.create(true, true, monitor);
+				}
+				assertTrue(dstFolder.exists());
+				copyContentsOverwriting(srcFolder, dstFolder, monitor);
 			}
 			
 		}

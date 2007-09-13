@@ -10,8 +10,8 @@ import dtool.dom.definitions.BaseClass;
 
 public class ExpLiteralNewAnonClass extends Expression {
 	
-	public Expression[] allocargs;
-	public Expression[] args;
+	public Resolvable[] allocargs;
+	public Resolvable[] args;
 	public BaseClass[] baseClasses;
 	public ASTNeoNode[] members; 
 

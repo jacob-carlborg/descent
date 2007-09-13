@@ -7,7 +7,7 @@ import descent.internal.compiler.parser.STC;
 import dtool.descentadapter.DescentASTConverter;
 
 /**
- * Abstract classe for all *free standing* definitions. 
+ * Abstract classe for all declaration-based DefUnits. 
  */
 public abstract class Definition extends DefUnit  {
 	
@@ -19,7 +19,7 @@ public abstract class Definition extends DefUnit  {
 
 	public Definition(Dsymbol elem) {
 		super(elem);
-		this.protection = Def_EProtection.adaptFromDescent(elem.prot());
+		this.protection = elem.prot();
 		if(elem.modifiers != null && elem.modifiers.size() != 0) {
 			this.modifiers = elem.modifiers.toArray(
 					new Modifier[elem.modifiers.size()]);

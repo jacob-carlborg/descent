@@ -8,11 +8,13 @@ import org.eclipse.dltk.internal.debug.ui.launcher.AbstractScriptLaunchShortcut;
 
 // TODO: adapt for singleton launch
 public class RubyLaunchShortcut extends AbstractScriptLaunchShortcut {
+	@Override
 	protected ILaunchConfigurationType getConfigurationType() {
 		return getLaunchManager().getLaunchConfigurationType(
 				DeeLaunchConfigurationConstants.ID_DEE_SCRIPT);
 	}
 
+	@Override
 	protected String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}

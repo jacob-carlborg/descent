@@ -1,6 +1,7 @@
 package dtool.refmodel;
 
 import melnorme.miscutil.tree.IElement;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.BaseClass;
 import dtool.dom.definitions.DefUnit;
@@ -22,7 +23,7 @@ public class NodeUtil {
 
 	/** Finds the first outer scope of the given element 
 	 * (navigating through the element's parents). */
-	public static IScopeNode getOuterScope(IElement elem) {
+	public static IScopeNode getOuterScope(IASTNode elem) {
 		return getScopeNode(elem.getParent());
 	}
 	

@@ -14,6 +14,7 @@ public class DefinitionInterface extends DefinitionClass {
 		super(elem);
 	}
 	
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		acceptNodeChildren(visitor, children);

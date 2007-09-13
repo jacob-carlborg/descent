@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class InitializerArray extends Initializer {
 
-	public Expression[] indexes;
+	public Resolvable[] indexes;
 	public Initializer[] values;
 
 		

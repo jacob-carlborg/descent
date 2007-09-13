@@ -68,7 +68,12 @@ public abstract class CommonDefUnitSearch {
 	public abstract boolean isFinished();
 
 	/** Returns whether this search matches the given defUnit or not. */
+	// DEPRECATE?
 	public abstract boolean matches(DefUnit defUnit);
+
+	/** Returns whether this search matches the given name or not. */
+	public abstract boolean matchesName(String defName);
+
 	
 	/** Adds the matched defunit. */
 	public abstract void addMatch(DefUnit defUnit);

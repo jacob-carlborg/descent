@@ -3,12 +3,13 @@ package dtool.dom.definitions;
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.references.Reference;
 import dtool.refmodel.IScopeNode;
 
 public class EnumMember extends DefUnit {
 	
-	public Expression value;
+	public Resolvable value;
 
 	public EnumMember(descent.internal.compiler.parser.EnumMember elem) {
 		super(elem);

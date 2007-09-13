@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpArrayLiteral extends Expression {
 	
-	public Expression[] args;
+	public Resolvable[] args;
 
 	public ExpArrayLiteral(ArrayLiteralExp elem) {
 		convertNode(elem);

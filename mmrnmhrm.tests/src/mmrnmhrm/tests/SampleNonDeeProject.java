@@ -59,7 +59,7 @@ public abstract class SampleNonDeeProject {
 		
 		//IFolder folder;
 		
-		CoreTestUtils.createWorkspaceFolderFromBundle("sampleSrc1",
+		CoreTestUtils.copyBundleDirToWorkspaceContainer("sampleSrc1",
 				project, TEST_OUT_SRC);
 		
 		

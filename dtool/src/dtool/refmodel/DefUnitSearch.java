@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import dtool.dom.declarations.PartialPackageDefUnit;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.Reference;
+import dtool.dom.expressions.Resolvable;
 
 /**
  * Normal DefUnit search, 
@@ -18,11 +18,11 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 	private ArrayList<DefUnit> defunits;
 	protected boolean matchesArePartialDefUnits = false;
 
-	public DefUnitSearch(String name, Reference searchref) {
+	public DefUnitSearch(String name, Resolvable searchref) {
 		this(name, searchref, false);
 	}
 	
-	public DefUnitSearch(String searchName, Reference searchref, boolean findOneOnly) {
+	public DefUnitSearch(String searchName, Resolvable searchref, boolean findOneOnly) {
 		super(NodeUtil.getOuterScope(searchref));
 		this.searchName = searchName;
 		this.findOnlyOne = findOneOnly;
@@ -35,6 +35,7 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 		return defunits;
 	}
 
+	@Override
 	public void addMatch(DefUnit defunit) {
 		if(defunits == null)
 			defunits = new ArrayList<DefUnit>(4);
@@ -47,12 +48,19 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 	 * {@link #findOnlyOne} is set, and it has found all possible valid DefUnits. 
 	 * If one match is a partial DefUnit, then the search must continue searching
 	 * all scopes, because there could allways be another partial. */
+	@Override
 	public boolean isFinished() {
 		return defunits != null && !matchesArePartialDefUnits;
 	}
 
+	@Override
 	public boolean matches(DefUnit defUnit) {
-		return searchName.equals(defUnit.getName());
+		return matchesName(defUnit.getName());
+	}
+	
+	@Override
+	public boolean matchesName(String defName) {
+		return searchName.equals(defName);
 	}
 
 }

@@ -44,6 +44,7 @@ public class FolderSelectionDialog extends ElementTreeSelectionDialog implements
 		setComparator(new ResourceComparator(ResourceComparator.NAME));
 	}
 
+	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite result= (Composite)super.createDialogArea(parent);
 		
@@ -52,6 +53,7 @@ public class FolderSelectionDialog extends ElementTreeSelectionDialog implements
 		Button button = new Button(result, SWT.PUSH);
 		button.setText(NewWizardMessages.FolderSelectionDialog_button); 
 		button.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				newFolderButtonPressed();
 			}
@@ -80,6 +82,7 @@ public class FolderSelectionDialog extends ElementTreeSelectionDialog implements
 	
 	protected void newFolderButtonPressed() {
 		NewFolderDialog dialog= new NewFolderDialog(getShell(), fSelectedContainer) {
+			@Override
 			protected Control createContents(Composite parent) {
 				//PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IActualHelpContextIds.BP_CREATE_NEW_FOLDER);
 				return super.createContents(parent);

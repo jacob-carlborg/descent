@@ -3,6 +3,7 @@ package dtool.dom.ast;
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.ASTRangeLessNode;
+import dtool.Logg;
 
 
 /**
@@ -23,42 +24,34 @@ public class ASTChecker extends ASTNeoUpTreeVisitor {
 		elem.accept(new ASTChecker(elem.getStartPos()));
 	}	
 	
-	protected void print(String str) {
-		System.out.print(str);
-	}
-	
-	protected void println(String str) {
-		System.out.print(str);
-		System.out.println();
-	}
-
 	private boolean eventSourceRangeNoInfo(ASTNode elem) {
-		print("Source range no info on: ");
-		println(ASTPrinter.toStringNodeExtra(elem));
+		Logg.astmodel.print("Source range no info on: ");
+		Logg.astmodel.println(elem.toStringAsNode(true));
 		return false;
 	}
 	
 	private boolean eventSourceRangeStartPosBreach(ASTNode elem) {
-		print("Source range start pos error on: ");
-		println(ASTPrinter.toStringNodeExtra(elem));
+		Logg.astmodel.print("Source range start pos error on: ");
+		Logg.astmodel.println(elem.toStringAsNode(true));
 		return false;
 	}
 	
 	private void eventSourceRangeEndPosBreach(ASTNode elem) {
-		print("Source range end pos error on: ");
-		println(ASTPrinter.toStringNodeExtra(elem));
+		Logg.astmodel.print("Source range end pos error on: ");
+		Logg.astmodel.println(elem.toStringAsNode(true));
 	}
 	
 	/* ====================================================== */
-	
+	@Override
 	public boolean visit(ASTRangeLessNode elem) {
 		Assert.fail("Got an unranged node."); return false;
 	}
-	
+	@Override
 	public void endVisit(ASTRangeLessNode elem) {
 		Assert.fail("Got an unranged node.");
 	}
 	
+	@Override
 	public boolean visit(ASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {
 			return eventSourceRangeNoInfo(elem);
@@ -70,6 +63,7 @@ public class ASTChecker extends ASTNeoUpTreeVisitor {
 		}
 	}
 
+	@Override
 	public void endVisit(ASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {
 			//return eventSourceRangeNoInfo(elem);

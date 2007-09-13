@@ -4,7 +4,6 @@ import java.util.List;
 
 import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.ui.text.color.DeeColorConstants;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
 
@@ -21,6 +20,7 @@ import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.ast.TokenUtil;
+import dtool.Logg;
 
 @Deprecated
 public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
@@ -58,15 +58,17 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 		DeeColorConstants.DEE_DEFAULT
 	};
 
-	
+	@Override
 	protected String[] getTokenProperties() {
 		return fgTokenProperties;
 	}
 
+	@Override
 	protected List createRules() {
 		return null;
 	}
 	
+	@Override
 	public void setRange(IDocument document, int offset, int length) {
 		Logg.codeScanner.println(">> DeeCodeScanner#setRange: " + offset + ","+ length);
 		AssertIn.isTrue(offset >= 0 && length >= 1);
@@ -85,6 +87,7 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 		this.document = document;
 	}
 	
+	@Override
 	public int getTokenLength() {
 		if(whitespace) {
 			return lastlength;
@@ -93,6 +96,7 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 		}
 	}
 
+	@Override
 	public int getTokenOffset() {
 		if(whitespace) {
 			return lastoffset;
@@ -105,6 +109,7 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 		return token.ptr + rangeOffset;
 	}
 
+	@Override
 	public IToken nextToken() {
 
 		if(whitespace) {

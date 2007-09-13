@@ -6,28 +6,32 @@ import java.util.Iterator;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.RefIdentifier;
+import dtool.dom.references.RefImportSelection;
 import dtool.refmodel.CommonDefUnitSearch;
-import dtool.refmodel.DefUnitSearch;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.INonScopedBlock;
-import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
+import dtool.refmodel.ReferenceResolver;
 
 public class ImportSelective extends ImportFragment implements INonScopedBlock {
+	public static interface IImportSelectiveSelection extends IASTNode {
+		//String getTargetName();
+	}
 	
-	public static class ImportSelectiveFragment extends DefUnit {
+	public static class ImportSelectiveAlias extends DefUnit 
+		implements IImportSelectiveSelection {
 
-		public RefIdentifier targetname;
+		public final RefImportSelection target;
 
-		public ImportSelective impSel; // Non Structural Element
+		//public ImportSelective impSel; // Non Structural Element
 		
-		public ImportSelectiveFragment(IdentifierExp name) {
+		public ImportSelectiveAlias(IdentifierExp name, RefImportSelection impSelection) {
 			super(name);
+			this.target = impSelection;
 		}
 
 		@Override
@@ -35,7 +39,7 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 			boolean children = visitor.visit(this);
 			if (children) {
 				TreeVisitor.acceptChildren(visitor, defname);
-				TreeVisitor.acceptChildren(visitor, targetname);
+				TreeVisitor.acceptChildren(visitor, target);
 			}
 			visitor.endVisit(this);		
 		}
@@ -46,47 +50,38 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 			return EArcheType.Alias;
 		}
 
-
 		@Override
 		public IScopeNode getMembersScope() {
-			IScope scope = impSel.moduleRef.getTargetScope();
-			String name = targetname != null ? targetname.name : defname.name;
-			
-			DefUnitSearch search = new DefUnitSearch(name, impSel.moduleRef, true);
-			EntityResolver.findDefUnitInScope(scope, search);
-			if(search.getDefUnits() == null)
-				return null;
-			
-			DefUnit defunit = search.getDefUnits().iterator().next();
-			return defunit.getMembersScope();
+			return target.getTargetScope();
 		}
 	}
+
 	
-	public static ImportSelectiveFragment create(IdentifierExp name,
+	public static ASTNeoNode create(IdentifierExp name,
 			IdentifierExp alias, ImportSelective impSel) {
-	
-		ImportSelectiveFragment impSelfrag;
 		
+		RefImportSelection impSelection;
+		impSelection = new RefImportSelection(name, impSel);
 		if(alias == null) {
-			impSelfrag = new ImportSelectiveFragment(name);
-			impSelfrag.setSourceRange(name);
+			//implements IImportSelectiveFragment
+			return impSelection;
 		} else {
-			impSelfrag = new ImportSelectiveFragment(alias);
-			impSelfrag.targetname = new RefIdentifier(name);
-			impSelfrag.setSourceRange(alias.start, name.getEndPos());
+			ImportSelectiveAlias impSelfrag;
+			impSelfrag = new ImportSelectiveAlias(alias, impSelection);
+			impSelfrag.setSourceRange(alias.start, name.getEndPos() - alias.start);
+			return impSelfrag;
 		}
-		impSelfrag.impSel = impSel;
-		return impSelfrag;
+		
 	}
 	
 	
-	public ImportSelectiveFragment impSelFrags[];
+	public ASTNeoNode impSelFrags[];
 	
 	public ImportSelective(Import selImport) {
 		super(selImport);
 		
 		int importsSize = selImport.names.size(); 
-		this.impSelFrags = new ImportSelectiveFragment[importsSize];
+		this.impSelFrags = new ASTNeoNode[importsSize];
 		for(int i = 0; i < importsSize; i++) {
 			this.impSelFrags[i] = ImportSelective.create(selImport.names.get(i),
 					selImport.aliases.get(i), this);
@@ -109,21 +104,20 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 	}
 
 	@Override
-	public void searchDefUnit(CommonDefUnitSearch options) {
-		// Do nothing. Selective imports do not contribute secondary-space DefUnits
-		// TODO: This is a bug in D, it's not according to the spec.
+	public void searchInSecondaryScope(CommonDefUnitSearch search) {
+		ReferenceResolver.findDefUnitInSelectiveImport(this, search);
 	}
 	
 	@Override
 	public String toStringAsElement() {
 		String str = "";
 		for (int i = 0; i < impSelFrags.length; i++) {
-			ImportSelectiveFragment fragment = impSelFrags[i];
+			ASTNeoNode fragment = impSelFrags[i];
 			if(i > 0)
 				str = str + ", ";
 			str = str + fragment.toStringAsElement();
 		}
-		return moduleRef.toStringAsElement() + str;
+		return moduleRef.toStringAsElement() + " : " + str;
 	}
 
 }

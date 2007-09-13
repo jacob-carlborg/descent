@@ -10,6 +10,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -27,13 +28,13 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 		if(elem.ident != null) {
 			DefinitionEnum defEnum = new DefinitionEnum(elem);
 			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members) ;
-			defEnum.type = Reference.convertType(elem.memtype); 
+			defEnum.type = ReferenceConverter.convertType(elem.memtype); 
 			return defEnum;
 		} else {
 			EnumContainer enumContainer = new EnumContainer();
 			enumContainer.setSourceRange(elem);
 			enumContainer.members = DescentASTConverter.convertManyL(elem.members, enumContainer.members) ;
-			enumContainer.type = Reference.convertType(elem.memtype); 
+			enumContainer.type = ReferenceConverter.convertType(elem.memtype); 
 			return enumContainer;
 		}
 	}

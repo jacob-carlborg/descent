@@ -65,7 +65,7 @@ public abstract class SamplePreExistingProject {
 	private static IFolder createFolderInProject(String bundleDir, String destDir, boolean addSrcFolder) throws CoreException,
 			URISyntaxException, IOException {
 		IFolder folder;
-		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
+		folder = (IFolder) CoreTestUtils.copyBundleDirToWorkspaceContainer(bundleDir,
 				project, destDir);
 		if(addSrcFolder)
 			ModelUtil.createAddSourceFolder(sampleDeeProj.dltkProj, folder);

@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpParenthesized extends Expression {
 
-	public Expression exp;
+	public Resolvable exp;
 
 	public ExpParenthesized(ParenExp elem) {
 		convertNode(elem);

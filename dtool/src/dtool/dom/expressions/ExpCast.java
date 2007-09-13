@@ -4,16 +4,17 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.CastExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 public class ExpCast extends Expression {
 	
-	Expression exp;
+	Resolvable exp;
 	Reference type;
 
 	public ExpCast(CastExp elem) {
 		convertNode(elem);
 		this.exp = Expression.convert(elem.e1); 
-		this.type = Reference.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type);
 	}
 
 	@Override

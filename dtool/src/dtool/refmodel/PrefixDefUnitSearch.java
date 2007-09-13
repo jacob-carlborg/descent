@@ -1,5 +1,7 @@
 package dtool.refmodel;
 
+import static melnorme.miscutil.Assert.assertFail;
+
 import org.eclipse.dltk.core.ISourceModule;
 
 import descent.internal.compiler.parser.TOK;
@@ -13,8 +15,10 @@ import dtool.dom.definitions.Module;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.CommonRefQualified;
 import dtool.dom.references.CommonRefSingle;
+import dtool.dom.references.NamedReference;
 import dtool.dom.references.RefIdentifier;
-import dtool.dom.references.RefQualified;
+import dtool.dom.references.RefImportSelection;
+import dtool.dom.references.RefModule;
 import dtool.dom.references.RefTemplateInstance;
 import dtool.dom.references.Reference;
 
@@ -42,7 +46,12 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 	
 	@Override
 	public boolean matches(DefUnit defUnit) {
-		return defUnit.getName().startsWith(searchOptions.searchPrefix);
+		return matchesName(defUnit.getName());
+	}
+	
+	@Override
+	public boolean matchesName(String defName) {
+		return defName.startsWith(searchOptions.searchPrefix);
 	}
 
 	@Override
@@ -64,7 +73,6 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 			CompletionSession session,
 			IDefUnitMatchAccepter defUnitAccepter) {
 
-		System.out.println("Do Code Assist");
 		if(session.invokeNode != null) {
 			if(offset < session.invokeNode.getOffset()) 
 				return null; // return without doing matches
@@ -102,43 +110,48 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		// : Do actual completion search
 		
 		PrefixSearchOptions searchOptions = new PrefixSearchOptions();
-		CommonDefUnitSearch search = new PrefixDefUnitSearch(searchOptions, defUnitAccepter);
+		PrefixDefUnitSearch search = new PrefixDefUnitSearch(searchOptions, defUnitAccepter);
 		
 		ASTNeoNode node = ASTNodeFinder.findElement(neoModule, offset);
 		session.invokeNode = node;
 		search.refScope = NodeUtil.getScopeNode(node);
 		
-		if(node instanceof Reference)  {
-
+		if(node instanceof NamedReference)  {
+			NamedReference namedRef = (NamedReference) node;
+			
 			if(node instanceof RefIdentifier) {
 				RefIdentifier refIdent = (RefIdentifier) node;
 				if(!parserAdapter.isQualifiedDotFixSearch) {
 					setupPrefixedSearch(searchOptions, offset, refIdent);
-				} 
-				
-				CommonRefQualified.doSearchForPossiblyQualifiedSingleRef(search, refIdent);
-				return null;
+				}
 			} else if(node instanceof CommonRefQualified) {
+				//CommonRefQualified refQual = (CommonRefQualified) node;
+
 				if(lastToken.value != TOK.TOKdot)
 					return "No completions available (Invalid qualified ref context)";
-				RefQualified.doQualifiedSearch(search, (CommonRefQualified) node);
-				return null;
 			} else if(node instanceof RefTemplateInstance) {
 				RefTemplateInstance refTpl = (RefTemplateInstance) node;
 				int idEndPos = refTpl.getStartPos() + refTpl.name.length();
 				
 				if(offset <= idEndPos) {
 					setupPrefixedSearch(searchOptions, offset, refTpl);
-					CommonRefQualified.doSearchForPossiblyQualifiedSingleRef(search, refTpl);
-				} else {
-					if(lastToken.value == TOK.TOKnot)
-						return "Invalid Context:" + lastToken;
-					CommonRefQualified.doSearchForPossiblyQualifiedSingleRef(search, refTpl);
+				} else if(lastToken.value == TOK.TOKnot) {
+					return "Invalid Context:" + lastToken;
 				}
-				return null;
+			} else if(node instanceof RefModule) {
+				RefModule refMod = (RefModule) node;
+				setupPrefixedSearch2(searchOptions, offset, refMod.getOffset(), refMod.toStringAsElement());
+			} else if (node instanceof RefImportSelection) {
+				RefImportSelection refImpSel = (RefImportSelection) node;
+				setupPrefixedSearch2(searchOptions, offset, refImpSel.getOffset(), refImpSel.name);
 			} else {
-				return "Don't know how to complete for node: "+node+"(TODO)";
+				assertFail();
 			}
+			
+			namedRef.doSearch(search);
+			return null;
+		} else if(node instanceof Reference) {
+			return "Don't know how to complete for node: "+node+"(TODO)";
 		}
 		
 		// Determine a scope for an unprefix search
@@ -154,16 +167,25 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 				return "No completions available";
 		}
 		
-		EntityResolver.findDefUnitInExtendedScope(scope, search);
+		ReferenceResolver.findDefUnitInExtendedScope(scope, search);
 		return null;
 	}
 
+	@Deprecated
 	private static void setupPrefixedSearch(PrefixSearchOptions searchOptions, 
 			final int offset, CommonRefSingle refTpl) {
 		int prefixLen = offset - refTpl.getOffset(); //get *Name* offset
 		searchOptions.prefixLen = prefixLen;
 		searchOptions.rplLen = refTpl.name.length() - prefixLen;
 		searchOptions.searchPrefix = refTpl.name.substring(0, prefixLen);
+	}
+	
+	private static void setupPrefixedSearch2(PrefixSearchOptions searchOptions, 
+			final int offset, int nameOffset, String name) {
+		int prefixLen = offset - nameOffset; 
+		searchOptions.prefixLen = prefixLen;
+		searchOptions.rplLen = name.length() - prefixLen;
+		searchOptions.searchPrefix = name.substring(0, prefixLen);
 	}
 
 

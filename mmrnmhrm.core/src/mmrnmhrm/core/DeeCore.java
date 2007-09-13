@@ -4,9 +4,10 @@ import mmrnmhrm.core.dltk.DLTKModuleResolver;
 import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.BundleContext;
 
-import dtool.refmodel.EntityResolver;
+import dtool.refmodel.ReferenceResolver;
 
 
 public class DeeCore extends LangCore {
@@ -26,6 +27,11 @@ public class DeeCore extends LangCore {
 	public static DeeCore getInstance() {
 		return pluginInstance;
 	}
+	
+	protected static final boolean DEBUG_MODE = true ||
+	"true".equalsIgnoreCase(Platform.getDebugOption(
+			PLUGIN_ID+"/debug/ResultCollector"));
+
 
 	/** {@inheritDoc} */
 	public void start(BundleContext context) throws Exception {
@@ -43,16 +49,12 @@ public class DeeCore extends LangCore {
 	
 	public void initPlugin() throws CoreException {
 		//EntityResolver.initializeEntityResolver(DeeModel.getRoot());
-		EntityResolver.initializeEntityResolver(DLTKModuleResolver.instance);
+		ReferenceResolver.initializeEntityResolver(DLTKModuleResolver.instance);
 		//TypeHierarchy.DEBUG = true;
 		
 		DeeModel.initModel(); // Can we add a listener here?
 	}
 
-/*	public static Preferences getPreferences() {
-		return getInstance().getPluginPreferences();
-	}
-*/
 
 	/* *********************************************** */
 

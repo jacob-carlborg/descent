@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralImportedString extends Expression {
 	
-	final public Expression exp; 
+	final public Resolvable exp; 
 
 	public ExpLiteralImportedString(FileExp node) {
 		convertNode(node);

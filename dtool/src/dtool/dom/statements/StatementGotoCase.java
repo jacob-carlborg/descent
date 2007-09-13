@@ -4,10 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.GotoCaseStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 
 public class StatementGotoCase extends Statement {
 
-	public Expression exp;
+	public Resolvable exp;
 	
 	public StatementGotoCase(GotoCaseStatement elem) {
 		convertNode(elem);

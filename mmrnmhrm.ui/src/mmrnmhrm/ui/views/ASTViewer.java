@@ -101,6 +101,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		super.dispose();
 	}
 	
+	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
@@ -198,6 +199,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 	
 	/** Passing the focus request to the viewer's control. */
+	@Override
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
@@ -249,6 +251,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 	private void makeActions() {
 		actionExpand = new Action() {
+			@Override
 			public void run() {
 				viewer.expandAll();
 			}
@@ -258,6 +261,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		DeePluginImages.setupActionImages(actionExpand, "expandall.gif");
 		
 		actionCollapse = new Action() {
+			@Override
 			public void run() {
 				viewer.collapseAll();
 			}
@@ -267,6 +271,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		DeePluginImages.setupActionImages(actionCollapse, "collapseall.gif");
 		
 		actionToggle = new Action() {
+			@Override
 			public void run() {
 				fUseOldAst  = !fUseOldAst; refreshViewer();
 			}

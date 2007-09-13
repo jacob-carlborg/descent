@@ -26,6 +26,7 @@ public class ProjectFolderSelectionDialog extends ProjectContainerSelectionDialo
 		dialog.addFilter(filter);
 	}
 
+	@Override
 	public IFolder chooseContainer() {
 		if (dialog.open() == Window.OK) {
 			return (IFolder) dialog.getFirstResult();

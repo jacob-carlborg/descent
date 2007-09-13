@@ -20,20 +20,20 @@ public class PrefixExpression extends Expression {
 		int INVERT = 8;
 	}
 	
-	public Expression exp;
+	public Resolvable exp;
 
 	public int kind;
 
 
 	public PrefixExpression(UnaExp elem, int kind) {
 		convertNode(elem);
-		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
 		this.kind = kind;
 	}
 
 	public PrefixExpression(BinExp elem, int kind) {
 		setSourceRange(elem);
-		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
 		this.kind = kind;
 	}
 	

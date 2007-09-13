@@ -45,16 +45,16 @@ public class InfixExpression extends Expression {
 		int NOT_IDENTITY = 45;
 	}
 
-	public Expression leftExp;
-	public Expression rightExp;
+	public Resolvable leftExp;
+	public Resolvable rightExp;
 	
 	public int kind;
 
 	
 	public InfixExpression(BinExp elem, int kind) {
 		convertNode(elem);
-		this.leftExp = (Expression) DescentASTConverter.convertElem(elem.e1);
-		this.rightExp = (Expression) DescentASTConverter.convertElem(elem.e2);
+		this.leftExp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
+		this.rightExp = (Resolvable) DescentASTConverter.convertElem(elem.e2);
 		this.kind = kind;
 	}
 

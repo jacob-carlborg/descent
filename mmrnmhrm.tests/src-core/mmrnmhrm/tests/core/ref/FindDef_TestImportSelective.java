@@ -26,17 +26,19 @@ public class FindDef_TestImportSelective extends FindDef_CommonImportTest  {
 
                 //
                 //
-                // {195, 12, "pack/sample.d"}, //FIXME: parser bugs
+                {195, 12, "pack/sample.d"}, 
                 //
                 
-                //{208, 60, "pack/sample.d"}, //FIXME: parser bugs
-                //{240, 100, "pack/sample.d"}, //FIXME: parser bugs
-                //{258, 25, "pack/sample.d"}, //FIXME: parser bugs
-                //{286, 40, "pack/sample.d"}, //FIXME: parser bugs
+                {208, 60, "pack/sample.d"}, 
+                {240, 100, "pack/sample.d"}, 
+                {258, 25, "pack/sample.d"}, 
+                {286, 40, "pack/sample.d"}, 
+                
+                {888, 911, testSrcFile},
 
                 {479, -1, null},
                 
-                {528, 208, testSrcFile},
+                {528, 60, "pack/sample.d"},
                 {554, 221, testSrcFile},
                 {586, -1, null},
 
@@ -49,6 +51,7 @@ public class FindDef_TestImportSelective extends FindDef_CommonImportTest  {
                 {752, -1, null},
                 {803, -1, null},
                 {852, -1, null},
+                
               
         });
     }

@@ -14,9 +14,11 @@ import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.references.CommonRefNative;
 import dtool.dom.references.CommonRefQualified;
 import dtool.dom.references.CommonRefSingle;
+import dtool.dom.references.NamedReference;
 import dtool.dom.references.RefIdentifier;
 import dtool.dom.references.RefTemplateInstance;
 import dtool.dom.references.Reference;
@@ -68,10 +70,15 @@ public interface IASTNeoVisitor extends IASTVisitor {
 
 	/* ---------------------------------- */
 
+	boolean visit(Resolvable elem);
+	void endVisit(Resolvable node);
+
 	boolean visit(Reference elem);
 	void endVisit(Reference node);
 	
 	boolean visit(CommonRefNative elem);
+
+	boolean visit(NamedReference elem);
 	
 	boolean visit(CommonRefQualified elem);
 	

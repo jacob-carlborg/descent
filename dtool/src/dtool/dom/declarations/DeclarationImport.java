@@ -56,7 +56,7 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 		
 	}
 	
-
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -74,7 +74,9 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 			this.moduleRef = new RefModule(elem.packages, elem.id);
 		}
 
-		public abstract void searchDefUnit(CommonDefUnitSearch options);
+		/** Performs a search in the secondary/background scope.
+		 * Only imports contribute to this secondary namespace. */
+		public abstract void searchInSecondaryScope(CommonDefUnitSearch options);
 		
 		@Override
 		public String toStringAsElement() {
@@ -90,7 +92,8 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(getMembers()).iterator();
 	}
-	
+
+	@Override
 	public String toStringAsElement() {
 		String str = "";
 		for (int i = 0; i < imports.length; i++) {

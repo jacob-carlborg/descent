@@ -16,6 +16,7 @@ public class DialogAddDeeCompiler extends AddScriptInterpreterDialog {
 		super(requestor, shell, interpreterInstallTypes, editedInterpreter);
 	}
 
+	@Override
 	protected AbstractInterpreterLibraryBlock createLibraryBlock(AddScriptInterpreterDialog dialog) {		
 		return new DeeCompilerLibraryBlock(dialog);
 	}

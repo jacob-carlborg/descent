@@ -4,19 +4,21 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TemplateValueParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.refmodel.IScopeNode;
 
 public class TemplateParamValue extends TemplateParameter {
 
 	public Reference type;
-	public Expression specvalue;
-	public Expression defaultvalue;
+	public Resolvable specvalue;
+	public Resolvable defaultvalue;
 
 	public TemplateParamValue(TemplateValueParameter elem) {
 		super(elem.ident);
 		convertNode(elem);
-		this.type = Reference.convertType(elem.valType);
+		this.type = ReferenceConverter.convertType(elem.valType);
 		this.specvalue = Expression.convert(elem.specValue);
 		this.defaultvalue = Expression.convert(elem.defaultValue);
 	}

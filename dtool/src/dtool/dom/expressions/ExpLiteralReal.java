@@ -15,5 +15,10 @@ public class ExpLiteralReal extends Expression {
 		visitor.visit(this);
 		visitor.endVisit(this);	 
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		return "<REAL>";
+	}
 
 }

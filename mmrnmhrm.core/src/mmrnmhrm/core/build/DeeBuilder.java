@@ -6,7 +6,6 @@ import java.util.Map;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.StringUtil;
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.CoreUtils;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNameRules;
@@ -26,6 +25,8 @@ import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IBuildpathEntry;
 import org.eclipse.dltk.core.IProjectFragment;
 import org.eclipse.dltk.core.IScriptProject;
+
+import dtool.Logg;
 
 
 public class DeeBuilder extends IncrementalProjectBuilder {
@@ -78,7 +79,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 	
 				if(!entryResource.getFullPath().equals(outputFolder.getFullPath())) {
 					// fixme overwriting copy
-					CoreUtils.overwriteCopy(entryResource, outputFolder,
+					CoreUtils.copyContentsOverwriting(entryResource, outputFolder,
 							new SubProgressMonitor(monitor, 1));
 				}
 

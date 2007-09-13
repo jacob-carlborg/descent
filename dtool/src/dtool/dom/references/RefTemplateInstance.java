@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.List;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.TemplateInstance;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTPrinter;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class RefTemplateInstance extends CommonRefSingle {
@@ -34,6 +34,7 @@ public class RefTemplateInstance extends CommonRefSingle {
 			this.tiargs = Collections.emptyList();
 	}
 
+	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -43,8 +44,9 @@ public class RefTemplateInstance extends CommonRefSingle {
 		visitor.endVisit(this);
 	}
 
+	@Override
 	public String toStringAsElement() {
-		return name + "!(" + StringUtil.collToString(tiargs, ",") + ")";
+		return name + "!" + ASTPrinter.toStringAsElements(tiargs, ", ");
 	}
 
 }

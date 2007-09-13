@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TypeidExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 
 public class ExpTypeid extends Expression {
 
@@ -11,7 +12,7 @@ public class ExpTypeid extends Expression {
 	
 	public ExpTypeid(TypeidExp elem) {
 		convertNode(elem);
-		this.type = Reference.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type);
 	}
 
 	@Override

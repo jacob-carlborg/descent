@@ -51,6 +51,7 @@ public class TreeListEditorField {
 
 
 	public static class TreeListContentProvider extends ElementContentProvider {
+		@Override
 		public Object[] getElements(Object inputElement) {
 			Assert.fail("Unreachable code.");
 			return null;
@@ -71,6 +72,7 @@ public class TreeListEditorField {
 	/** Adds a FieldOperation creating it from an IElementCommand. */
 	public void addElementOperation(String label, final IElementCommand cmd) {
 		FieldOperation op = new FieldOperation(label) {
+			@Override
 			public void execute() {
 				cmd.executeCommand(null);
 			}
@@ -82,6 +84,7 @@ public class TreeListEditorField {
 	/** Adds a pre-made edit operation, from an IElementCommand. */
 	public void addEditOperation(String label, final IElementCommand cmd) {
 		FieldOperation op = new FieldOperation(label) {
+			@Override
 			public boolean canExecute() {
 				return field.getSelectedElements().size() == 1; 
 			}
@@ -98,6 +101,7 @@ public class TreeListEditorField {
 	/** Adds a pre-made remove operation, from an IElementCommand. */
 	public void addRemoveOperation(String label, final IElementCommand cmd) {
 		FieldOperation op = new FieldOperation(label) {
+			@Override
 			public boolean canExecute() {
 				return field.getSelectedElements().size() > 0; 
 			}

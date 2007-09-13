@@ -3,7 +3,6 @@ package mmrnmhrm.ui.text;
 import java.util.ArrayList;
 import java.util.List;
 
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.ui.text.color.DeeColorConstants;
 
 import org.eclipse.dltk.ui.text.AbstractScriptScanner;
@@ -17,6 +16,7 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 
 import descent.internal.compiler.parser.ast.TokenUtil;
+import dtool.Logg;
 
 public class DeeCodeScanner extends AbstractScriptScanner {
 
@@ -38,11 +38,12 @@ public class DeeCodeScanner extends AbstractScriptScanner {
 		DeeColorConstants.DEE_DEFAULT
 	};
 
-	
+	@Override
 	protected String[] getTokenProperties() {
 		return fgTokenProperties;
 	}
 
+	@Override
 	protected List createRules() {
 		List<IRule> rules = new ArrayList<IRule>();
 		

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 
@@ -19,6 +18,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.IScriptProject;
 import org.ini4j.Ini;
 import org.ini4j.InvalidIniFormatException;
+
+import dtool.Logg;
 
 import static melnorme.miscutil.Assert.assertFail;
 

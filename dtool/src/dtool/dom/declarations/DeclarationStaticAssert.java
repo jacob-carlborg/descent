@@ -6,12 +6,13 @@ import descent.internal.compiler.parser.StaticAssertStatement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.expressions.Resolvable;
 import dtool.dom.statements.IStatement;
 
 public class DeclarationStaticAssert extends ASTNeoNode implements IStatement {
 
-	public Expression pred;
-	public Expression msg;
+	public Resolvable pred;
+	public Resolvable msg;
 	
 	public DeclarationStaticAssert(StaticAssert elem) {
 		convertNode(elem);

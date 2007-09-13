@@ -27,7 +27,7 @@ public class ASTNeoChildrenCollector extends ASTNeoHomoVisitor {
 	}
 	
 
-	
+	@Override
 	public boolean enterNode(ASTNeoNode elem) {
 		if(visitingParent == true) {
 			visitingParent = false;
@@ -39,6 +39,7 @@ public class ASTNeoChildrenCollector extends ASTNeoHomoVisitor {
 		return false;
 	}
 
+	@Override
 	protected void leaveNode(ASTNeoNode elem) {
 		// Do nothing
 	}

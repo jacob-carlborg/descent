@@ -14,5 +14,10 @@ public class ExpLiteralNull extends Expression {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public String toStringAsElement() {
+		return "null";
+	}
 
 }

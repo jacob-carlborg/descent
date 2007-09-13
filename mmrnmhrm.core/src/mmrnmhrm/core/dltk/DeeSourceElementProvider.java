@@ -51,7 +51,7 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 		String[] strs = new String[coll.size()];
 		Iterator<BaseClass> iter = coll.iterator();
 		for (int i = 0; i < strs.length; i++) {
-			strs[i] = iter.next().type.toStringAsReference();
+			strs[i] = iter.next().type.toStringAsElement();
 		}
 		return strs;
 	}

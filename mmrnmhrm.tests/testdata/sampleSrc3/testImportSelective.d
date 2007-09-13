@@ -1,8 +1,8 @@
 /*** Selective import test                                             ***/
 
-import pack.mod2;
-// XXX: Extra imports before the selective import are not supported 
-import /*pack.mod2,*/ pack.sample : 
+//port pack.mod2;
+                                                                    
+import   pack.mod2,   pack.sample : 
  	SampleClass, SampleClassAlias = SampleClassB, 
  	sampleVar, sampleVarAlias = sampleVarB;
 import mod1alias = pack.mod1;
@@ -26,4 +26,7 @@ void func() {
 
 	pack2.foopublic.foopublicImportVar++; // fail
 	pack2.fooprivate.fooprivateImportVar++; // fail
+	
+	sampleVarB++; 
 }
+int sampleVarB;

@@ -14,6 +14,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.Reference;
+import dtool.dom.references.ReferenceConverter;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -80,6 +81,11 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
+		
+		@Override
+		public IScope getAdaptedScope() {
+			return this;
+		}
 	}
 	
 	public IsTypeScope thendeclsScope;
@@ -92,13 +98,15 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 	public DeclarationStaticIfIsType(ASTDmdNode  elem,
 			IftypeExp iftypeExp, NodeList thendecls, NodeList elsedecls) {
 		convertNode(elem);
-		this.arg = Reference.convertType(iftypeExp.targ);
+		this.arg = ReferenceConverter.convertType(iftypeExp.targ);
 		this.defUnit = new IsTypeDefUnit(iftypeExp.id);
 		this.tok = iftypeExp.tok;
-		this.specType = Reference.convertType(iftypeExp.tspec);
+		this.specType = ReferenceConverter.convertType(iftypeExp.tspec);
 		this.thendecls = thendecls;
 		this.elsedecls = elsedecls;
 		this.thendeclsScope = new IsTypeScope(thendecls);
+		this.thendeclsScope.setSourceRange(iftypeExp.getStartPos(), 
+				elem.getEndPos() - iftypeExp.getStartPos());
 	}
 
 	@Override

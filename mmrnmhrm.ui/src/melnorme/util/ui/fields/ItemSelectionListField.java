@@ -34,6 +34,7 @@ public class ItemSelectionListField extends DialogField {
 			this.items = items;
 		}
 		
+		@Override
 		public String toString() {
 			return name;
 		}
@@ -47,6 +48,7 @@ public class ItemSelectionListField extends DialogField {
 			this.name = name;
 		}
 		
+		@Override
 		public String toString() {
 			return name;
 		}

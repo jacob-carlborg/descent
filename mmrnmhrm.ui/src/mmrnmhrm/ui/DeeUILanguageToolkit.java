@@ -25,65 +25,65 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 		return instance ;
 	}
 	
-	@Override
+	//@Override
 	public IDLTKLanguageToolkit getCoreToolkit() {
 		return DeeLanguageToolkit.getDefault();
 	}
 	
-	@Override
+	//@Override
 	public IDialogSettings getDialogSettings() {
 		return DeePlugin.getInstance().getDialogSettings();
 	}
 	
-	@Override
+	//@Override
 	public String getEditorId(Object inputElement) {
 		return DeeEditor.EDITOR_ID;
 	}
 	
-	@Override
+	//@Override
 	public IPreferenceStore getPreferenceStore() {
 		return DeePlugin.getInstance().getPreferenceStore();
 	}
 	
-	@Override
+	//@Override
 	public String getPartitioningId() {
 		return DeeConstants.PARTITIONING_ID;
 	}
 	
-	@Override
+	//@Override
 	public ScriptTextTools getTextTools() {
 		return DeePlugin.getDefault().getTextTools();
 	}
 	
-	@Override
+	//@Override
 	public ScriptSourceViewerConfiguration createSourceViwerConfiguration() {
 		return new DeeSimpleSourceViewerConfiguration(getTextTools()
 				.getColorManager(), getPreferenceStore(), null,
 				getPartitioningId(), false);
 	}
 	
-	@Override
+	//@Override
 	public ScriptUILabelProvider createScripUILabelProvider() {
 		return new DeeScriptUILabelProvider();
 	}
 	
-	@Override
+	//@Override
 	public ScriptElementLabels getScriptElementLabels() {
 		return elementLabels; 
 	}
 
-	@Override
+	//@Override
 	public String getInterpreterPreferencePage() {
 		return DeeCompilersPreferencePage.PAGE_ID;
 	}
 
-	@Override
+	//@Override
 	public String getInterpreterContainerId() {
 		return "mmrnmrhm.core.launching.INTERPRETER_CONTAINER";
 	}
 
 
-	@Override
+	//@Override
 	public boolean getProvideMembers(ISourceModule element) {
 		return true;
 	}

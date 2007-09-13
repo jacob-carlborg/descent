@@ -3,8 +3,6 @@ package mmrnmhrm.ui.actions;
 import java.util.Collection;
 
 import melnorme.lang.ui.EditorUtil;
-import melnorme.miscutil.StringUtil;
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeEditor;
@@ -27,6 +25,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import dtool.Logg;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTPrinter;
@@ -43,6 +42,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 	public static final String COMMAND_ID = DeePlugin.PLUGIN_ID+".commands.openDefinition";
 	private static final String GO_TO_DEFINITION_OPNAME = "Go to Definition";
 
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
 		IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);
@@ -88,17 +88,17 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 			Logg.main.println(" ! ASTElementFinder null?");
 			return;
 		}
-		Logg.main.println(" Selected Element: " + ASTPrinter.toStringNodeExtra(elem));
+		Logg.main.println(" Selected Element: " + elem.toStringAsNode(true));
 
 		if(elem instanceof Symbol) {
 			dialogInfo(window.getShell(),
 					"Element is not an entity reference,"
-					+" it's already a definition: " + elem);
+					+" it's already a definition: " + elem.toStringClassName());
 			return;
 		}
 		if(!(elem instanceof Reference)) {
 			dialogInfo(window.getShell(),
-					"Element is not an entity reference: "+ elem);
+					"Element is not an entity reference: "+ elem.toStringClassName());
 			return;
 		} 
 		
@@ -114,30 +114,31 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		
 		if(defunits == null || defunits.size() == 0) {
 			dialogWarning(window.getShell(), 
-					"Definition not found for entity reference: " + elem);
+					"Definition not found for entity reference: " 
+					+ elem.toStringClassName());
 			return;
 		}
 
 		Logg.main.println(" Find Definition, found: " 
-				+ StringUtil.collToString(defunits, " ") );
+				+ ASTPrinter.toStringAsElements(defunits, " ") );
 		
 		if(defunits.size() > 1) {
 			dialogInfo(window.getShell(), 
 					"Multiple definitions found: \n" 
-					+ StringUtil.collToString(defunits, "\n")
+					+ ASTPrinter.toStringAsElements(defunits, "\n")
 					+ "\nGoing to the first one.");
 		}
 
 		DefUnit defunit = DefUnitSearch.getResultDefUnit(defunits);
 		
 		if(defunit.hasNoSourceRangeInfo()) {
-			dialogError(window.getShell(),
-					"DefUnit " +defunit+ " has no source range info!");
+			dialogError(window.getShell(), "DefUnit " 
+					+defunit.toStringAsElement()+ " has no source range info!");
 			return;
 		} 
 		if(defunit instanceof INativeDefUnit) {
 			dialogInfo(window.getShell(),
-				"DefUnit " +defunit+ " is a language native.");
+				"DefUnit " +defunit.toStringAsElement()+ " is a language native.");
 			return;
 		} 
 		

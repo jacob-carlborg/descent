@@ -20,6 +20,7 @@ public class DeeTemplatePreferencePage extends ScriptTemplatePreferencePage {
 		setContextTypeRegistry(RubyTemplateAccess.getContextTypeRegistry());
 	}
 
+	@Override
 	protected ScriptSourceViewerConfiguration createSourceViewerConfiguration(
 			IDocument document) {
 		IPreferenceStore store = DeePlugin.getDefault().getPreferenceStore();

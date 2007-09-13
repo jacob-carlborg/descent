@@ -13,9 +13,11 @@ public abstract class ASTNeoHomoVisitor extends ASTNeoUpTreeVisitor {
 		elem.accept(this);
 	}
 	
+	@Override
 	public void preVisit(ASTNeoNode elem) {
 	}
 
+	@Override
 	public void postVisit(ASTNeoNode elem) {
 	}
 	
@@ -23,10 +25,12 @@ public abstract class ASTNeoHomoVisitor extends ASTNeoUpTreeVisitor {
 	abstract void leaveNode(ASTNeoNode elem);
 
 
+	@Override
 	public final boolean visit(ASTNeoNode elem) {
 		return enterNode(elem);
 	}
 
+	@Override
 	public final void endVisit(ASTNeoNode elem) {
 		leaveNode(elem);
 	}

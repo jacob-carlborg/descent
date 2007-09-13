@@ -34,6 +34,7 @@ public class InitializeAfterLoadJob extends UIJob {
 			} while (wasInterrupted);
 		}
 		
+		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			monitor.beginTask("", 10); //$NON-NLS-1$
 			
@@ -50,6 +51,7 @@ public class InitializeAfterLoadJob extends UIJob {
 			ActualPlugin.initialized = true;
 			return new Status(IStatus.OK, ActualPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$
 		}
+		@Override
 		public boolean belongsTo(Object family) {
 			return ActualPlugin.PLUGIN_ID.equals(family);
 		}
@@ -59,6 +61,8 @@ public class InitializeAfterLoadJob extends UIJob {
 		super(DeeUIMessages.InitializeAfterLoadJob_starter_job_name);
 		setSystem(true);
 	}
+	
+	@Override
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 		ActualPlugin.initialized = false;
 		Job job = new RealJob(DeeUIMessages.LangPlugin_initializing_ui);

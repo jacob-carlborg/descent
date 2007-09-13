@@ -90,12 +90,12 @@
 	    <page
 	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
 	          class="mmrnmhrm.ui.preferences.pages.DeeSourceColoringPreferencePage"
-	          id="mmrnmhrm.ui.preferences.editor.SourceColoring"
+	          id="mmrnmhrm.ui.preferences.Editor"
 	          name="%LangEditorSyntaxColoringPreferencePage.name"/>
      	<page
               category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
               class="mmrnmhrm.ui.preferences.pages.DeeTemplatePreferencePage"
-              id="mmrnmhrm.ui.preferences.EditorTemplates"
+              id="mmrnmhrm.ui.preferences.Editor"
               name="%LangCodeTemplatesPreferencePage.name">      
             
       </page>
@@ -273,7 +273,7 @@
       </command>
  <command
        categoryId="mmrnmhrm.ui.commands.category1"
-       defaultHandler="mmrnmhrm.ui.actions.DeeContentAssistHandler"
+       defaultHandler="mmrnmhrm.ui.actions.DeeInvokeContentAssistHandler"
        id="mmrnmhrm.ui.commands.invokeContentAssist"
        name="Content Assist (Mmrnmhrm)">
  </command>

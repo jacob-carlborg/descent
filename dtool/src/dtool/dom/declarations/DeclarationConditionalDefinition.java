@@ -49,6 +49,7 @@ public class DeclarationConditionalDefinition extends ASTNeoNode {
 		visitor.endVisit(this);
 	}
 	
+	@Override
 	public String toStringAsElement() {
 		return "["+ (conditionalKind == Type.VERSION?"debug":"version") 
 			+ "="+identifier.toStringAsElement()+")]";

@@ -1,23 +1,27 @@
 package dtool.dom.references;
 
+import static melnorme.miscutil.Assert.assertFail;
+
 import java.util.Collection;
 import java.util.List;
 
 import melnorme.miscutil.StringUtil;
-
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
+import dtool.dom.definitions.Symbol;
 import dtool.refmodel.DefUnitSearch;
-import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
+import dtool.refmodel.PrefixDefUnitSearch;
+import dtool.refmodel.ReferenceResolver;
 
 /** 
  * A module reference (in import declarations only).
  * XXX: should be qualified or not?
  */
-public class RefModule extends Reference {
+public class RefModule extends NamedReference {
 	
 	//public String packageName;
 	public String[] packages;
@@ -37,12 +41,6 @@ public class RefModule extends Reference {
 			setSourceRange(startPos, id.getEndPos() - startPos);
 		}
 	}
-
-	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
-		Module originMod = NodeUtil.getParentModule(this);
-		Module targetMod = EntityResolver.findModule(originMod, packages, module);
-		return DefUnitSearch.wrapResult(targetMod);
-	}
 	
 
 	@Override
@@ -55,6 +53,57 @@ public class RefModule extends Reference {
 		visitor.endVisit(this);	
 	}
 
+	@Override
+	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
+		Module originMod = NodeUtil.getParentModule(this);
+		Module targetMod = ReferenceResolver.findModule(originMod, packages, module);
+		return DefUnitSearch.wrapResult(targetMod);
+	}
+	public static class LiteModuleDummy extends DefUnit {
+		public LiteModuleDummy(String defname) {
+			super(new Symbol(defname));
+		}
+
+		@Override
+		public EArcheType getArcheType() {
+			return EArcheType.Module;
+		}
+
+		@Override
+		public IScopeNode getMembersScope() {
+			assertFail(); return null;
+		}
+
+		@Override
+		public void accept0(IASTNeoVisitor visitor) {
+			assertFail();
+		}
+		
+		@Override
+		public String toStringForCodeCompletion() {
+			return getName();
+		}
+		
+		@Override
+		public String toStringForHoverSignature() {
+			return getName();
+		}
+	}
+	
+	@Override
+	public void doSearch(PrefixDefUnitSearch search) {
+		String prefix = search.searchOptions.searchPrefix;
+
+		Module module = NodeUtil.getParentModule(this);
+		String[] strings = ReferenceResolver.findModules(module, prefix);
+		for (int i = 0; i < strings.length; i++) {
+			String name = strings[i];
+			
+			search.addMatch(new LiteModuleDummy(name));		
+		}
+
+	}
+	
 	@Override
 	public String toStringAsElement() {
 		String str = StringUtil.collToString(packages, ".");

@@ -31,7 +31,7 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	public static class DeeLaunchingPlugin extends DeeCore {
 	}
 
-	@Override
+	//@Override
 	public String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}
@@ -46,7 +46,7 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 		return DeeLaunchingPlugin.getInstance().getLog();
 	}
 
-	@Override
+	//@Override
 	public String getName() {
 		return "DMD + Phobos";
 	}

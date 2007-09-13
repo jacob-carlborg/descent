@@ -20,6 +20,7 @@ public class DeeCompileOptionsPropertyPage extends PropertyPage {
 		fProjCfg = new DeeProjectCompileOptionsBlock();
 	}
 	
+	@Override
 	protected Control createContents(Composite parent) {
 		
 		noDefaultAndApplyButton();		
@@ -43,6 +44,7 @@ public class DeeCompileOptionsPropertyPage extends PropertyPage {
 		return (IProject) adaptable.getAdapter(IProject.class);
 	}
 
+	@Override
 	public boolean performOk() {
 		return fProjCfg.performOk();
 	}

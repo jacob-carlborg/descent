@@ -32,11 +32,13 @@ public class DeeOutlineContentProvider extends ElementContentProvider {
 		return deeElems.toArray();
 	}
 
+	@Override
 	public Object[] getElements(Object inputElement) {
 		//return filterElements(root.getModule().getChildren());
 		return getChildren(inputElement);
 	}
 
+	@Override
 	public Object[] getChildren(Object element) {
 		if(element instanceof Module || isDeclarationWithDefUnits(element)) {
 			IASTNode node = (IASTNode) element;
@@ -52,6 +54,7 @@ public class DeeOutlineContentProvider extends ElementContentProvider {
 				&& !(element instanceof DeclarationImport));
 	}
 	
+	@Override
 	public boolean hasChildren(Object element) {
 		if(element instanceof Module || isDeclarationWithDefUnits(element)) {
 			IASTNode node = (IASTNode) element;
@@ -61,6 +64,7 @@ public class DeeOutlineContentProvider extends ElementContentProvider {
 		}
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		
 		/*if(newInput instanceof IEditorInput) {
