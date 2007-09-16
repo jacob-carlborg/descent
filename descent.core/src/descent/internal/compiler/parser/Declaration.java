@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+
 public abstract class Declaration extends Dsymbol {
 
 	public Type type;
@@ -108,15 +112,17 @@ public abstract class Declaration extends Dsymbol {
 	public boolean isOverride() {
 		return (storage_class & STC.STCoverride) != 0;
 	}
+	
+	public boolean isIn() {
+		return (storage_class & STCin) != 0;
+	}
 
 	public boolean isOut() {
-		// TODO semantic
-		return false;
+		return (storage_class & STCout) != 0;
 	}
 
 	public boolean isRef() {
-		// TODO semantic
-		return false;
+		return (storage_class & STCref) != 0;
 	}
 
 	@Override

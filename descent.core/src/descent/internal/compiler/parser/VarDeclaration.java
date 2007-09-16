@@ -11,16 +11,31 @@ import static descent.internal.compiler.parser.PROT.PROTexport;
 
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCctorinit;
+import static descent.internal.compiler.parser.STC.STCextern;
 import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.STC.STCforeach;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCparameter;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCtemplateparameter;
+import static descent.internal.compiler.parser.STC.STCundefined;
+
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.*;
+
+import static descent.internal.compiler.parser.TY.Taarray;
 
 public class VarDeclaration extends Declaration {
 
 	public boolean first; // is this the first declaration in a multi
 	public boolean last; // is this the last declaration in a multi
 	public VarDeclaration next;
-	
+
 	// declaration?
 	public Type sourceType;
 	public Initializer init;
@@ -32,12 +47,14 @@ public class VarDeclaration extends Declaration {
 	public int offset;
 	public boolean noauto; // no auto semantics
 	public int onstack; // 1: it has been allocated on the stack
-	// 2: on stack, run destructor anyway
+		// 2: on stack, run destructor anyway
+	public int canassign;		// it can be assigned to
 	public int nestedref;
 	public boolean ctorinit;
 	public Expression value; // when interpreting, this is the value
 	public Object csym;
 	public Object isym;
+	
 
 	// (NULL if value not determinable)
 
@@ -65,7 +82,7 @@ public class VarDeclaration extends Declaration {
 		this.onstack = 0;
 		this.value = null;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -87,7 +104,7 @@ public class VarDeclaration extends Declaration {
 				 * determine if there's no way the monitor could be set.
 				 */
 				if (true || onstack != 0 || cd.dtors.size() > 0) // if any
-																	// destructors
+				// destructors
 				{
 					// delete this;
 					Expression ec;
@@ -115,10 +132,10 @@ public class VarDeclaration extends Declaration {
 			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
 
 			if (fdv != null && fdthis != null) {
-				/*
-				 * TODO loc??? if (loc.filename) fdthis.getLevel(loc, fdv);
-				 * nestedref = 1; fdv.nestedFrameRef = 1;
-				 */
+				if (loc != null && loc.filename != null)
+					fdthis.getLevel(loc, fdv, context);
+				nestedref = 1;
+				fdv.nestedFrameRef = true;
 			}
 		}
 	}
@@ -152,15 +169,13 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public boolean isDataseg(SemanticContext context) {
 		Dsymbol parent = this.toParent();
-		if (parent == null
-				&& (storage_class & (STC.STCstatic | STC.STCconst)) == 0) {
+		if (parent == null && (storage_class & (STCstatic | STCconst)) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotResolveForwardReference, 0, start,
-					length));
+					IProblem.CannotResolveForwardReference, 0, start, length));
 			type = Type.terror;
 			return false;
 		}
-		return ((storage_class & (STC.STCstatic | STC.STCconst)) != 0
+		return ((storage_class & (STCstatic | STCconst)) != 0
 				|| parent.isModule() != null || parent.isTemplateInstance() != null);
 	}
 
@@ -174,16 +189,16 @@ public class VarDeclaration extends Declaration {
 	}
 
 	public boolean isIn() {
-		return (storage_class & STC.STCin) != 0;
+		return (storage_class & STCin) != 0;
 	}
 
 	public boolean isInOut() {
-		return (storage_class & (STC.STCin | STC.STCout)) == (STC.STCin | STC.STCout);
+		return (storage_class & (STCin | STCout)) == (STCin | STCout);
 	}
 
 	@Override
 	public boolean isOut() {
-		return (storage_class & STC.STCout) != 0;
+		return (storage_class & STCout) != 0;
 	}
 
 	@Override
@@ -204,7 +219,7 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		storage_class |= sc.stc;
-		if ((storage_class & STC.STCextern) != 0 && init != null) {
+		if ((storage_class & STCextern) != 0 && init != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ExternSymbolsCannotHaveInitializers, 0,
 					init.start, init.length));
@@ -227,7 +242,7 @@ public class VarDeclaration extends Declaration {
 			 * This is a kludge to support the existing syntax for RAII
 			 * declarations.
 			 */
-			storage_class &= ~STC.STCauto;
+			storage_class &= ~STCauto;
 		} else {
 			type = type.semantic(loc, sc, context);
 		}
@@ -241,10 +256,10 @@ public class VarDeclaration extends Declaration {
 		FuncDeclaration fd = parent.isFuncDeclaration();
 
 		Type tb = type.toBasetype(context);
-		if (tb.ty == TY.Tvoid && (storage_class & STC.STClazy) == 0) {
+		if (tb.ty == TY.Tvoid && (storage_class & STClazy) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VoidsHaveNoValue, 0,
-					sourceType.start, sourceType.length));
+					IProblem.VoidsHaveNoValue, 0, sourceType.start,
+					sourceType.length));
 			type = Type.terror;
 			tb = type;
 		}
@@ -260,7 +275,8 @@ public class VarDeclaration extends Declaration {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						// "No definition of struct " + ts.sym.ident,
 						IProblem.NoDefinition, 0, sourceType.start,
-						sourceType.length, new String[] { new String(ts.sym.ident.ident) }));
+						sourceType.length, new String[] { new String(
+								ts.sym.ident.ident) }));
 			}
 		}
 
@@ -277,8 +293,8 @@ public class VarDeclaration extends Declaration {
 				Argument arg = Argument.getNth(tt.arguments, i, context);
 
 				OutBuffer buf = new OutBuffer();
-				buf.data.append("_").append(ident.ident).append(
-						"_field_").append(i).append("u");
+				buf.data.append("_").append(ident.ident).append("_field_")
+						.append(i).append("u");
 				String name = buf.extractData();
 				IdentifierExp id = new IdentifierExp(loc, name.toCharArray());
 
@@ -300,23 +316,28 @@ public class VarDeclaration extends Declaration {
 			return;
 		}
 
-		if ((storage_class & STC.STCconst) != 0 && init == null && fd == null) {
+		if ((storage_class & STCconst) != 0 && init == null && fd == null) {
 			// Initialize by constructor only
-			storage_class = (storage_class & ~STC.STCconst) | STC.STCctorinit;
+			storage_class = (storage_class & ~STCconst) | STCctorinit;
 		}
 
 		if (isConst()) {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, 0, ident.start, ident.length, new String[] { "synchronized" }));
+			context
+					.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ModifierCannotBeAppliedToVariables, 0,
+							ident.start, ident.length,
+							new String[] { "synchronized" }));
 		} else if (isOverride()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, 0, ident.start, ident.length, new String[] { "override" }));
+					IProblem.ModifierCannotBeAppliedToVariables, 0,
+					ident.start, ident.length, new String[] { "override" }));
 		} else if (isAbstract()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, 0, ident.start, ident.length, new String[] { "abstract" }));
-		} else if ((storage_class & STC.STCtemplateparameter) != 0) {
+					IProblem.ModifierCannotBeAppliedToVariables, 0,
+					ident.start, ident.length, new String[] { "abstract" }));
+		} else if ((storage_class & STCtemplateparameter) != 0) {
 		} else {
 			AggregateDeclaration aad = sc.anonAgg;
 			if (aad == null) {
@@ -347,7 +368,7 @@ public class VarDeclaration extends Declaration {
 
 				// If it's a member template
 				AggregateDeclaration ad = ti.tempdecl.isMember();
-				if (ad != null && storage_class != STC.STCundefined) {
+				if (ad != null && storage_class != STCundefined) {
 					error("cannot use template to add field to aggregate '%s'",
 							ad.toChars(context));
 				}
@@ -355,25 +376,22 @@ public class VarDeclaration extends Declaration {
 		}
 
 		if (type.isauto() && !noauto) {
-			if ((storage_class & (STC.STCfield | STC.STCout | STC.STCstatic)) != 0
+			if ((storage_class & (STCfield | STCout | STCref | STCstatic)) != 0
 					|| fd == null) {
-				error("globals, statics, fields, inout and out parameters cannot be auto");
+				error("globals, statics, fields, ref and out parameters cannot be auto");
 			}
 
-			if ((storage_class & (STC.STCauto | STC.STCscope)) == 0) {
-				if ((storage_class & STC.STCparameter) == 0
+			if ((storage_class & (STCauto | STCscope)) == 0) {
+				if ((storage_class & STCparameter) == 0
 						&& CharOperation.equals(ident.ident, Id.withSym)) {
-					error("reference to auto class must be auto");
+					error("reference to scope class must be scope");
 				}
 			}
 		}
 
-		if (init == null
-				&& !sc.inunion
-				&& !isStatic()
-				&& !isConst()
+		if (init == null && !sc.inunion && !isStatic() && !isConst()
 				&& fd != null
-				&& (storage_class & (STC.STCfield | STC.STCin | STC.STCforeach)) == 0) {
+				&& (storage_class & (STCfield | STCin | STCforeach)) == 0) {
 			// Provide a default initializer
 			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
 				Expression e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
@@ -401,6 +419,11 @@ public class VarDeclaration extends Declaration {
 		}
 
 		if (init != null) {
+			ArrayInitializer ai = init.isArrayInitializer();
+			if (ai != null && type.toBasetype(context).ty == Taarray) {
+				init = ai.toAssocArrayInitializer(context);
+			}
+
 			ExpInitializer ei = init.isExpInitializer();
 
 			// See if we can allocate on the stack
@@ -409,7 +432,8 @@ public class VarDeclaration extends Declaration {
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
-					if (type.isBaseOf(ne.newtype.semantic(loc, sc, context), null, context)) {
+					if (type.isBaseOf(ne.newtype.semantic(loc, sc, context),
+							null, context)) {
 						onstack = 2;
 					}
 				}
@@ -461,8 +485,8 @@ public class VarDeclaration extends Declaration {
 								dim *= ((TypeSArray) t).dim.toInteger(context)
 										.intValue();
 							}
-							e1.type = new TypeSArray(t.next, new IntegerExp(loc, 
-									Id.ZERO, dim, Type.tindex));
+							e1.type = new TypeSArray(t.next, new IntegerExp(
+									loc, Id.ZERO, dim, Type.tindex));
 						}
 						e1 = new SliceExp(loc, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
@@ -472,35 +496,45 @@ public class VarDeclaration extends Declaration {
 						}
 					}
 					ei.exp = new AssignExp(loc, e1, ei.exp);
+					ei.exp.op = TOKconstruct;
+					canassign++;
 					ei.exp = ei.exp.semantic(sc, context);
+					canassign--;
 					ei.exp.optimize(ASTDmdNode.WANTvalue, context);
 				} else {
 					init = init.semantic(sc, type, context);
 					if (fd != null && isConst() && !isStatic()) { // Make it
 						// static
-						storage_class |= STC.STCstatic;
+						storage_class |= STCstatic;
 					}
 				}
-			} else if (isConst()) {
-				/*
-				 * Because we may need the results of a const declaration in a
-				 * subsequent type, such as an array dimension, before
-				 * semantic2() gets ordinarily run, try to run semantic2() now.
+			} else if (isConst() || isFinal()) {
+				/* Because we may need the results of a const declaration in a
+				 * subsequent type, such as an array dimension, before semantic2()
+				 * gets ordinarily run, try to run semantic2() now.
 				 * Ignore failure.
 				 */
 
-				/*
-				 * TODO semantic if (ei && !global.errors && !inferred) { int
-				 * errors = global.errors; global.gag++; //printf("+gag\n");
-				 * Expression e = ei.exp.syntaxCopy(); inuse++; e =
-				 * e.semantic(sc, context); inuse--; e = e.implicitCastTo(sc,
-				 * type); global.gag--; //printf("-gag\n"); if (errors !=
-				 * global.errors) // if errors happened { if (global.gag == 0)
-				 * global.errors = errors; // act as if nothing happened } else {
-				 * e = e.optimize(Expression.WANTvalue |
-				 * Expression.WANTinterpret); if (e.op == TOK.TOKint64 || e.op ==
-				 * TOK.TOKstring) { ei.exp = e; // no errors, keep result } } }
-				 */
+				if (ei != null && 0 == context.global.errors && 0 == inferred) {
+					int errors = context.global.errors;
+					context.global.gag++;
+					Expression e = ei.exp.syntaxCopy();
+					inuse++;
+					e = e.semantic(sc, context);
+					inuse--;
+					e = e.implicitCastTo(sc, type, context);
+					context.global.gag--;
+					if (errors != context.global.errors) // if errors happened
+					{
+						if (context.global.gag == 0)
+							context.global.errors = errors; // act as if nothing happened
+					} else {
+						e = e.optimize(WANTvalue | WANTinterpret, context);
+						if (e.op == TOKint64 || e.op == TOKstring) {
+							ei.exp = e; // no errors, keep result
+						}
+					}
+				}
 			}
 		}
 	}
@@ -527,8 +561,8 @@ public class VarDeclaration extends Declaration {
 				// init.isExpInitializer().exp.dump(0);
 			}
 
-			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy() : null,
-					ident, init);
+			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy()
+					: null, ident, init);
 			sv.storage_class = storage_class;
 		}
 		// Syntax copy for header file
@@ -562,7 +596,8 @@ public class VarDeclaration extends Declaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		if ((storage_class & STCconst) != 0) {
 			buf.writestring("const ");
 		}

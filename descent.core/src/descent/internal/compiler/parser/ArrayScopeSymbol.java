@@ -1,17 +1,20 @@
 package descent.internal.compiler.parser;
 
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 import static descent.internal.compiler.parser.STC.STCconst;
+
+import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKindex;
 import static descent.internal.compiler.parser.TOK.TOKslice;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
+
 import static descent.internal.compiler.parser.TY.Ttuple;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayScopeSymbol extends ScopeDsymbol {
 
@@ -24,15 +27,15 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		Assert.isTrue(e.op == TOK.TOKindex || e.op == TOK.TOKslice);
 		exp = e;
 	}
-	
+
 	public ArrayScopeSymbol(TypeTuple t) {
 		type = t;
 	}
-	
+
 	public ArrayScopeSymbol(TupleDeclaration s) {
 		td = s;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
@@ -63,8 +66,10 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		if (CharOperation.equals(ident, Id.length) || CharOperation.equals(ident, Id.dollar)) {
+	public Dsymbol search(Loc loc, char[] ident, int flags,
+			SemanticContext context) {
+		if (CharOperation.equals(ident, Id.length)
+				|| CharOperation.equals(ident, Id.dollar)) {
 			Expression pvar;
 			Expression ce;
 
@@ -77,9 +82,9 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 				if (td != null) {
 					VarDeclaration v = new VarDeclaration(loc, Type.tsize_t,
 							Id.dollar, null);
-					Expression e = new IntegerExp(loc, td.objects.size(),
+					Expression e = new IntegerExp(Loc.ZERO, td.objects.size(),
 							Type.tsize_t);
-					v.init = new ExpInitializer(loc, e);
+					v.init = new ExpInitializer(Loc.ZERO, e);
 					v.storage_class |= STCconst;
 					return v;
 				}
@@ -87,9 +92,9 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 				if (type != null) {
 					VarDeclaration v = new VarDeclaration(loc, Type.tsize_t,
 							Id.dollar, null);
-					Expression e = new IntegerExp(loc, type.arguments.size(),
-							Type.tsize_t);
-					v.init = new ExpInitializer(loc, e);
+					Expression e = new IntegerExp(Loc.ZERO, type.arguments
+							.size(), Type.tsize_t);
+					v.init = new ExpInitializer(Loc.ZERO, e);
 					v.storage_class |= STCconst;
 					return v;
 				}
@@ -133,9 +138,18 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 							Id.dollar, null);
 
 					if (ce.op == TOKstring) {
-						Expression e = new IntegerExp(loc, ((StringExp) ce).len,
+						Expression e = new IntegerExp(Loc.ZERO,
+								((StringExp) ce).len, Type.tsize_t);
+						v.init = new ExpInitializer(Loc.ZERO, e);
+						v.storage_class |= STCconst;
+					} else if (ce.op == TOKarrayliteral) {
+						/* It is for an array literal, so the
+						 * length will be a const.
+						 */
+						Expression e = new IntegerExp(Loc.ZERO,
+								((ArrayLiteralExp) ce).elements.size(),
 								Type.tsize_t);
-						v.init = new ExpInitializer(loc, e);
+						v.init = new ExpInitializer(Loc.ZERO, e);
 						v.storage_class |= STCconst;
 					} else if (ce.op == TOKtuple) {
 						Expression e = new IntegerExp(loc, ((TupleExp) ce).exps
