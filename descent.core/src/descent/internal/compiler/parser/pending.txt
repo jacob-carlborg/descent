@@ -8,7 +8,6 @@ ArrayScopeSymbol.java
 AsmBlock.java
 AsmStatement.java
 ASTDmdNode.java
-BaseClass.java
 BinExp.java
 CallExp.java
 CastExp.java
@@ -25,7 +24,6 @@ Condition.java
 ConditionalDeclaration.java
 ConditionalStatement.java
 DebugCondition.java
-DebugSymbol.java
 Declaration.java
 DelegateExp.java
 DeleteExp.java
@@ -36,7 +34,6 @@ Entity.java
 ForeachRangeStatement.java
 ForeachStatement.java
 ForStatement.java
-FuncDeclaration.java
 FuncExp.java
 FuncLiteralDeclaration.java
 Global.java
@@ -103,4 +100,3 @@ VarDeclaration.java
 VarExp.java
 Version.java
 VersionCondition.java
-VersionSymbol.java

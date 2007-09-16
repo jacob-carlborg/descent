@@ -10,7 +10,14 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.ILS.ILSno;
+import static descent.internal.compiler.parser.ILS.ILSuninitialized;
 import static descent.internal.compiler.parser.ILS.ILSyes;
+import static descent.internal.compiler.parser.LINK.LINKc;
+import static descent.internal.compiler.parser.LINK.LINKd;
+
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.PROT.PROTexport;
 
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
@@ -24,8 +31,11 @@ import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCvariadic;
 
+import static descent.internal.compiler.parser.TOK.TOKvar;
+
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
+import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
@@ -35,6 +45,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
+// DMD 1.020
 public class FuncDeclaration extends Declaration {
 
 	private final static char[] missing_return_expression = { 'm', 'i', 's',
@@ -72,7 +83,8 @@ public class FuncDeclaration extends Declaration {
 	public boolean naked; // !=0 if naked
 	public boolean inlineAsm; // !=0 if has inline assembler
 	public ILS inlineStatus;
-	public boolean inlineNest; // !=0 if nested inline
+	public int inlineNest; // !=0 if nested inline
+	public boolean cantInterpret;
 	public boolean nestedFrameRef;
 	public int hasReturnExp; // 1 if there's a return exp; statement
 	// 2 if there's a throw statement
@@ -88,6 +100,10 @@ public class FuncDeclaration extends Declaration {
 		super(loc, ident);
 		this.storage_class = storage_class;
 		this.type = type;
+		this.loc = loc;
+		this.vtblIndex = -1;
+		this.inlineStatus = ILSuninitialized;
+		this.inferRetType = (type != null && type.nextOf() == null);
 	}
 
 	@Override
@@ -107,40 +123,561 @@ public class FuncDeclaration extends Declaration {
 		visitor.endVisit(this);
 	}
 
+	public boolean addPostInvariant(SemanticContext context) {
+		AggregateDeclaration ad = isThis();
+		return (ad != null
+				&& ad.inv != null
+				&& context.global.params.useInvariants
+				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
+	}
+
+	public boolean addPreInvariant(SemanticContext context) {
+		AggregateDeclaration ad = isThis();
+		return (ad != null
+				&& context.global.params.useInvariants
+				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
+	}
+
+	public void appendExp(Expression e) {
+		Statement s;
+
+		s = new ExpStatement(Loc.ZERO, e);
+		appendState(s);
+	}
+
+	public void appendState(Statement s) {
+		CompoundStatement cs;
+
+		if (null == fbody) {
+			Statements a;
+
+			a = new Statements();
+			fbody = new CompoundStatement(Loc.ZERO, a);
+		}
+		cs = fbody.isCompoundStatement();
+		cs.statements.add(s);
+	}
+
+	public void bodyToCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		if (fbody != null
+				&& (!hgs.hdrgen || hgs.tpltMember || canInline(true, true,
+						context))) {
+			buf.writenl();
+
+			// in{}
+			if (frequire != null) {
+				buf.writestring("in");
+				buf.writenl();
+				frequire.toCBuffer(buf, hgs, context);
+			}
+
+			// out{}
+			if (fensure != null) {
+				buf.writestring("out");
+				if (outId != null) {
+					buf.writebyte('(');
+					buf.writestring(outId.toChars(context));
+					buf.writebyte(')');
+				}
+				buf.writenl();
+				fensure.toCBuffer(buf, hgs, context);
+			}
+
+			if (frequire != null || fensure != null) {
+				buf.writestring("body");
+				buf.writenl();
+			}
+
+			buf.writebyte('{');
+			buf.writenl();
+			fbody.toCBuffer(buf, hgs, context);
+			buf.writebyte('}');
+			buf.writenl();
+		} else {
+			buf.writeByte(';');
+			buf.writenl();
+		}
+	}
+
+	public boolean canInline(boolean hasthis, boolean hdrscan,
+			SemanticContext context) {
+		InlineCostState ics = new InlineCostState();
+		int cost;
+
+		if (needThis() && !hasthis) {
+			return false;
+		}
+
+		if (inlineNest != 0 || (semanticRun == 0 && !hdrscan)) {
+			return false;
+		}
+
+		switch (inlineStatus) {
+		case ILSyes:
+			return true;
+
+		case ILSno:
+			return false;
+
+		case ILSuninitialized:
+			break;
+
+		default:
+			throw new IllegalStateException("assert(0);");
+		}
+
+		if (type != null) {
+			if (type.ty != Tfunction) {
+				throw new IllegalStateException("assert(type.ty == Tfunction);");
+			}
+			TypeFunction tf = (TypeFunction) type;
+			if (tf.varargs == 1) { // no variadic parameter lists
+				// goto Lno;
+				if (!hdrscan) {
+					inlineStatus = ILSno;
+				}
+				return false;
+			}
+
+			/* Don't inline a function that returns non-void, but has
+			 * no return expression.
+			 */
+			if (tf.next != null && tf.next.ty != Tvoid
+					&& (hasReturnExp & 1) == 0 && !hdrscan) {
+				// goto Lno
+				if (!hdrscan) {
+					inlineStatus = ILSno;
+				}
+				return false;
+			}
+		} else {
+			CtorDeclaration ctor = isCtorDeclaration();
+
+			if (ctor != null && ctor.varargs == 1) {
+				// goto Lno
+				if (!hdrscan) {
+					inlineStatus = ILSno;
+				}
+				return false;
+			}
+		}
+
+		if (fbody == null || !hdrscan
+				&& (isSynchronized() || isImportedSymbol() || nestedFrameRef || // no nested references to this frame
+				(isVirtual(context) && !isFinal()))) {
+			// goto Lno;
+			if (!hdrscan) {
+				inlineStatus = ILSno;
+			}
+			return false;
+		}
+
+		/* If any parameters are Tsarray's (which are passed by reference)
+		 * or out parameters (also passed by reference), don't do inlining.
+		 */
+		if (parameters != null) {
+			for (int i = 0; i < parameters.size(); i++) {
+				VarDeclaration v = (VarDeclaration) parameters.get(i);
+				if (v.isOut() || v.isRef()
+						|| v.type.toBasetype(context).ty == Tsarray) {
+					// goto Lno;
+					if (!hdrscan) {
+						inlineStatus = ILSno;
+					}
+					return false;
+				}
+			}
+		}
+
+		// memset(&ics, 0, sizeof(ics));
+		ics.nested = 0;
+		ics.hasthis = hasthis;
+		ics.fd = this;
+		ics.hdrscan = hdrscan;
+		cost = fbody.inlineCost(ics, context);
+		if (cost >= COST_MAX) {
+			// goto Lno;
+			if (!hdrscan) {
+				inlineStatus = ILSno;
+			}
+			return false;
+		}
+
+		if (!hdrscan) {
+			inlineScan(context);
+		}
+
+		// Lyes:
+		if (!hdrscan) {
+			inlineStatus = ILSyes;
+		}
+		return true;
+	}
+
+	public boolean canInline(boolean hasthis, SemanticContext context) {
+		return canInline(hasthis, false, context);
+	}
+
+	public Expression doInline(InlineScanState iss, Expression ethis,
+			List arguments, SemanticContext context) {
+		InlineDoState ids;
+		DeclarationExp de;
+		Expression e = null;
+
+		// memset(&ids, 0, sizeof(ids));
+		ids = new InlineDoState();
+
+		ids.parent = iss.fd;
+
+		// Set up vthis
+		if (ethis != null) {
+			VarDeclaration vthis;
+			ExpInitializer ei;
+			VarExp ve;
+
+			if (ethis.type.ty != Tclass && ethis.type.ty != Tpointer) {
+				ethis = ethis.addressOf(null, context);
+			}
+
+			ei = new ExpInitializer(ethis.loc, ethis);
+
+			vthis = new VarDeclaration(ethis.loc, ethis.type, Id.This, ei);
+			vthis.storage_class = STCin;
+			vthis.linkage = LINKd;
+			vthis.parent = iss.fd;
+
+			ve = new VarExp(vthis.loc, vthis);
+			ve.type = vthis.type;
+
+			ei.exp = new AssignExp(vthis.loc, ve, ethis);
+			ei.exp.type = ve.type;
+
+			ids.vthis = vthis;
+		}
+
+		// Set up parameters
+		if (ethis != null) {
+			e = new DeclarationExp(Loc.ZERO, ids.vthis);
+			e.type = Type.tvoid;
+		}
+
+		if (arguments != null && arguments.size() != 0) {
+			if (parameters.size() != arguments.size()) {
+				throw new IllegalStateException(
+						"assert(parameters.size() == arguments.size());");
+			}
+
+			for (int i = 0; i < arguments.size(); i++) {
+				VarDeclaration vfrom = (VarDeclaration) parameters.get(i);
+				VarDeclaration vto;
+				Expression arg = (Expression) arguments.get(i);
+				ExpInitializer ei;
+				VarExp ve;
+
+				ei = new ExpInitializer(arg.loc, arg);
+
+				vto = new VarDeclaration(vfrom.loc, vfrom.type, vfrom.ident, ei);
+				vto.storage_class |= vfrom.storage_class
+						& (STCin | STCout | STClazy | STCref);
+				vto.linkage = vfrom.linkage;
+				vto.parent = iss.fd;
+
+				ve = new VarExp(vto.loc, vto);
+				//ve.type = vto.type;
+				ve.type = arg.type;
+
+				ei.exp = new AssignExp(vto.loc, ve, arg);
+				ei.exp.type = ve.type;
+
+				ids.from.add(vfrom);
+				ids.to.add(vto);
+
+				de = new DeclarationExp(Loc.ZERO, vto);
+				de.type = Type.tvoid;
+
+				e = Expression.combine(e, de);
+			}
+		}
+
+		inlineNest++;
+		Expression eb = fbody.doInline(ids);
+		inlineNest--;
+		return Expression.combine(e, eb);
+	}
+
+	public int getLevel(Loc loc, FuncDeclaration fd, SemanticContext context) {
+		int level;
+		Dsymbol s;
+		Dsymbol fdparent;
+
+		fdparent = fd.toParent2();
+		if (fdparent == this) {
+			return -1;
+		}
+		s = this;
+		level = 0;
+		while (fd != s && fdparent != s.toParent2()) {
+			FuncDeclaration thisfd = s.isFuncDeclaration();
+			if (thisfd != null) {
+				if (!thisfd.isNested() && null == thisfd.vthis) {
+					// goto Lerr;
+					error(loc, "cannot access frame of function %s", fd
+							.toChars(context));
+					return 1;
+				}
+			} else {
+				ClassDeclaration thiscd = s.isClassDeclaration();
+				if (thiscd != null) {
+					if (!thiscd.isNested()) {
+						// goto Lerr;
+						error(loc, "cannot access frame of function %s", fd
+								.toChars(context));
+						return 1;
+					}
+				} else {
+					// goto Lerr;
+					error(loc, "cannot access frame of function %s", fd
+							.toChars(context));
+					return 1;
+				}
+			}
+
+			s = s.toParent2();
+			if (s == null) {
+				throw new IllegalStateException("assert(s);");
+			}
+			level++;
+		}
+		return level;
+	}
+
+	@Override
+	public int getNodeType() {
+		return FUNC_DECLARATION;
+	}
+
+	@Override
+	public void inlineScan(SemanticContext context) {
+		InlineScanState iss = new InlineScanState();
+		iss.fd = this;
+		if (fbody != null) {
+			inlineNest++;
+			fbody = fbody.inlineScan(iss, context);
+			inlineNest--;
+		}
+	}
+
+	public Expression interpret(InterState istate, Expressions arguments,
+			SemanticContext context) {
+		if (context.global.errors != 0) {
+			return null;
+		}
+		if (CharOperation.equals(ident.ident, Id.aaLen)) {
+			return interpret_aaLen(istate, arguments, context);
+		} else if (CharOperation.equals(ident.ident, Id.aaKeys)) {
+			return interpret_aaKeys(istate, arguments, context);
+		} else if (CharOperation.equals(ident.ident, Id.aaValues)) {
+			return interpret_aaValues(istate, arguments, context);
+		}
+
+		if (cantInterpret || semanticRun == 1) {
+			return null;
+		}
+
+		if (needThis() || isNested() || null == fbody) {
+			cantInterpret = true;
+			return null;
+		}
+
+		if (semanticRun == 0 && scope != null) {
+			semantic3(scope, context);
+		}
+		if (semanticRun < 2) {
+			return null;
+		}
+
+		Type tb = type.toBasetype(context);
+
+		if (!(tb.ty == Tfunction)) {
+			throw new IllegalStateException("assert(tb.ty == Tfunction);");
+		}
+		TypeFunction tf = (TypeFunction) tb;
+		@SuppressWarnings("unused")
+		Type tret = tf.next.toBasetype(context);
+		if (tf.varargs != 0 /*|| tret.ty == Tvoid*/) {
+			cantInterpret = true;
+			return null;
+		}
+
+		if (tf.parameters != null) {
+			int dim = Argument.dim(tf.parameters, context);
+			for (int i = 0; i < dim; i++) {
+				Argument arg = Argument.getNth(tf.parameters, i, context);
+				if ((arg.storageClass & STClazy) != 0) {
+					cantInterpret = true;
+					return null;
+				}
+			}
+		}
+
+		InterState istatex = new InterState();
+		istatex.caller = istate;
+		istatex.fd = this;
+
+		Expressions vsave = new Expressions();
+		int dim = 0;
+		if (arguments != null) {
+			dim = arguments.size();
+
+			if (!(0 == dim || parameters.size() == dim)) {
+				throw new IllegalStateException(
+						"assert(!dim || parameters.dim == dim);");
+			}
+
+			vsave.ensureCapacity(dim);
+
+			for (int i = 0; i < dim; i++) {
+				Expression earg = arguments.get(i);
+				Argument arg = Argument.getNth(tf.parameters, i, context);
+				VarDeclaration v = (VarDeclaration) parameters.get(i);
+				vsave.set(i, v.value);
+				if ((arg.storageClass & (STCout | STCref)) != 0) {
+					/* Bind out or ref parameter to the corresponding
+					 * variable v2
+					 */
+					if (null == istate || earg.op != TOKvar) {
+						return null; // can't bind to non-interpreted vars
+					}
+
+					VarDeclaration v2;
+					while (true) {
+						VarExp ve = (VarExp) earg;
+						v2 = ve.var.isVarDeclaration();
+						if (null == v2) {
+							return null;
+						}
+						if (null == v2.value || v2.value.op != TOKvar) {
+							break;
+						}
+						earg = v2.value;
+					}
+
+					v.value = new VarExp(earg.loc, v2);
+
+					/* Don't restore the value of v2 upon function return
+					 */
+					if (istate != null) {
+						throw new IllegalStateException("assert(istate);");
+					}
+					for (int j = 0; j < istate.vars.size(); j++) {
+						VarDeclaration v3 = (VarDeclaration) istate.vars.get(j);
+						if (v3 == v2) {
+							istate.vars.set(j, null);
+							break;
+						}
+					}
+				} else { /* Value parameters
+				 */
+					earg = earg.interpret(istatex, context);
+					if (earg == EXP_CANT_INTERPRET) {
+						return null;
+					}
+					v.value = earg;
+				}
+			}
+		}
+
+		/* Save the values of the local variables used
+		 */
+		Expressions valueSaves = new Expressions();
+		if (istate != null) {
+			valueSaves.ensureCapacity(istate.vars.size());
+			for (int i = 0; i < istate.vars.size(); i++) {
+				VarDeclaration v = (VarDeclaration) istate.vars.get(i);
+				if (v != null) {
+					valueSaves.set(i, v.value);
+					v.value = null;
+				}
+			}
+		}
+
+		Expression e = null;
+
+		while (true) {
+			e = fbody.interpret(istatex, context);
+			if (e == EXP_CANT_INTERPRET) {
+				e = null;
+			}
+
+			/* This is how we deal with a recursive statement AST
+			 * that has arbitrary goto statements in it.
+			 * Bubble up a 'result' which is the target of the goto
+			 * statement, then go recursively down the AST looking
+			 * for that statement, then execute starting there.
+			 */
+			if (e == EXP_GOTO_INTERPRET) {
+				istatex.start = istatex.gotoTarget; // set starting statement
+				istatex.gotoTarget = null;
+			} else {
+				break;
+			}
+		}
+
+		/* Restore the parameter values
+		 */
+		for (int i = 0; i < dim; i++) {
+			VarDeclaration v = (VarDeclaration) parameters.get(i);
+			v.value = vsave.get(i);
+		}
+
+		if (istate != null) {
+			/* Restore the variable values
+			 */
+			for (int i = 0; i < istate.vars.size(); i++) {
+				VarDeclaration v = (VarDeclaration) istate.vars.get(i);
+				if (v != null) {
+					v.value = valueSaves.get(i);
+				}
+			}
+		}
+
+		return e;
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return (storage_class & STCabstract) != 0;
+	}
+
+	@Override
+	public boolean isCodepseg() {
+		return true; // functions are always in the code segment
+	}
+
+	public boolean isDllMain() {
+		return CharOperation.equals(ident.ident, Id.DllMain)
+				&& linkage != LINKc && null == isMember();
+	}
+
+	@Override
+	public boolean isExport() {
+		return protection == PROTexport;
+	}
+
 	@Override
 	public FuncDeclaration isFuncDeclaration() {
 		return this;
 	}
 
-	public void setFrequire(Statement frequire) {
-		this.frequire = frequire;
-		sourceFrequire = frequire;
-	}
-
-	public void setFensure(Statement fensure) {
-		this.fensure = fensure;
-		sourceFensure = fensure;
-	}
-
-	public void setFbody(Statement fbody) {
-		this.fbody = fbody;
-		sourceFbody = fbody;
-	}
-
-	public boolean isNested() {
-		return ((storage_class & STCstatic) == 0)
-				&& (toParent2().isFuncDeclaration() != null);
-	}
-
 	@Override
-	public AggregateDeclaration isThis() {
-		AggregateDeclaration ad;
+	public boolean isImportedSymbol() {
+		return (protection == PROTexport) && null == fbody;
+	}
 
-		ad = null;
-		if ((storage_class & STCstatic) == 0) {
-			ad = isMember2();
-		}
-		return ad;
+	public boolean isMain() {
+		return CharOperation.equals(ident.ident, Id.main)
+				&& linkage != LINK.LINKc && isMember() == null && !isNested();
 	}
 
 	public AggregateDeclaration isMember2() {
@@ -159,10 +696,206 @@ public class FuncDeclaration extends Declaration {
 		return ad;
 	}
 
+	public boolean isNested() {
+		return ((storage_class & STCstatic) == 0)
+				&& (toParent2().isFuncDeclaration() != null);
+	}
+
+	@Override
+	public AggregateDeclaration isThis() {
+		AggregateDeclaration ad;
+
+		ad = null;
+		if ((storage_class & STCstatic) == 0) {
+			ad = isMember2();
+		}
+		return ad;
+	}
+
 	public boolean isVirtual(SemanticContext context) {
 		return isMember() != null
 				&& !(isStatic() || protection == PROT.PROTprivate || protection == PROT.PROTpackage)
 				&& toParent().isClassDeclaration() != null;
+	}
+
+	public boolean isWinMain() {
+		return CharOperation.equals(ident.ident, Id.WinMain)
+				&& linkage != LINKc && null == isMember();
+	}
+
+	@Override
+	public String kind() {
+		return "function";
+	}
+
+	@Override
+	public String mangle(SemanticContext context) {
+		if (isMain()) {
+			return "_Dmain";
+		}
+
+		return super.mangle(context);
+	}
+
+	@Override
+	public boolean needThis() {
+		boolean i = isThis() != null;
+		if (!i && isFuncAliasDeclaration() != null) {
+			i = ((FuncAliasDeclaration) this).funcalias.needThis();
+		}
+		return i;
+	}
+
+	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
+		FuncDeclaration f;
+		Declaration d;
+		Declaration next;
+
+		for (d = this; d != null; d = next) {
+			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
+
+			if (fa != null) {
+				FuncDeclaration f2 = fa.funcalias
+						.overloadExactMatch(t, context);
+				if (f2 != null) {
+					return f2;
+				}
+				next = fa.overnext;
+			} else {
+				AliasDeclaration a = d.isAliasDeclaration();
+
+				if (a != null) {
+					Dsymbol s = a.toAlias(context);
+					next = s.isDeclaration();
+					if (next == a) {
+						break;
+					}
+				} else {
+					f = d.isFuncDeclaration();
+					if (f == null) {
+						break; // BUG: should print error message?
+					}
+					if (t.equals(d.type)) {
+						return f;
+					}
+					next = f.overnext;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
+		FuncDeclaration f;
+		AliasDeclaration a;
+
+		a = s.isAliasDeclaration();
+		if (a != null) {
+			if (overnext != null) {
+				return overnext.overloadInsert(a, context);
+			}
+			if (a.aliassym == null && a.type.ty != Tident
+					&& a.type.ty != Tinstance) {
+				return false;
+			}
+			overnext = a;
+			return true;
+		}
+		f = s.isFuncDeclaration();
+		if (f == null) {
+			return false;
+		}
+
+		if (type != null && f.type != null
+				&& // can be NULL for overloaded constructors
+				f.type.covariant(type, context) != 0
+				&& isFuncAliasDeclaration() == null) {
+			return false;
+		}
+
+		if (overnext != null) {
+			return overnext.overloadInsert(f, context);
+		}
+		overnext = f;
+		return false;
+	}
+
+	public FuncDeclaration overloadResolve(Expressions arguments,
+			SemanticContext context) {
+		TypeFunction tf;
+		Match m = new Match();
+		m.last = MATCHnomatch;
+		overloadResolveX(m, this, arguments, context);
+
+		if (m.count == 1) // exactly one match
+		{
+			return m.lastf;
+		} else {
+			OutBuffer buf = new OutBuffer();
+
+			if (arguments != null) {
+				HdrGenState hgs = new HdrGenState();
+
+				argExpTypesToCBuffer(buf, arguments, hgs, context);
+			}
+
+			if (m.last == MATCHnomatch) {
+				tf = (TypeFunction) type;
+
+				error(loc, "%s does not match parameter types (%s)", Argument
+						.argsTypesToChars(tf.parameters, tf.varargs, context),
+						buf.toChars());
+				return m.anyf; // as long as it's not a FuncAliasDeclaration
+			} else {
+				TypeFunction t1 = (TypeFunction) m.lastf.type;
+				TypeFunction t2 = (TypeFunction) m.nextf.type;
+
+				error(
+						loc,
+						"called with argument types:\n\t(%s)\nmatches both:\n\t%s%s\nand:\n\t%s%s",
+						buf.toChars(), m.lastf.toPrettyChars(context), Argument
+								.argsTypesToChars(t1.parameters, t1.varargs,
+										context), m.nextf
+								.toPrettyChars(context), Argument
+								.argsTypesToChars(t2.parameters, t2.varargs,
+										context));
+				return m.lastf;
+			}
+		}
+	}
+
+	public boolean overrides(FuncDeclaration fd, SemanticContext context) {
+		boolean result = false;
+
+		if (fd.ident.equals(ident)) {
+			int cov = type.covariant(fd.type, context);
+			if (cov != 0) {
+				ClassDeclaration cd1 = toParent().isClassDeclaration();
+				ClassDeclaration cd2 = fd.toParent().isClassDeclaration();
+
+				if (cd1 != null && cd2 != null
+						&& cd2.isBaseOf(cd1, null, context)) {
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+	public LabelDsymbol searchLabel(IdentifierExp ident) {
+		Dsymbol s;
+
+		if (null == labtab) {
+			labtab = new DsymbolTable(); // guess we need one
+		}
+
+		s = labtab.lookup(ident);
+		if (null == s) {
+			s = new LabelDsymbol(ident);
+			labtab.insert(s);
+		}
+		return (LabelDsymbol) s;
 	}
 
 	@Override
@@ -213,14 +946,12 @@ public class FuncDeclaration extends Declaration {
 		sd = parent.isStructDeclaration();
 		if (sd != null) {
 			// Verify no constructors, destructors, etc.
-			/* removed since this is in CtorDeclaration::semantic and DtorDeclaration::semantic
-			 if (isCtorDeclaration() != null) {
-			 context.acceptProblem(Problem.newSemanticTypeError("Constructors only are for class definitions", IProblem.ConstructorsOnlyForClass, 0, start, "this".length()));
-			 }
-			 if (isDtorDeclaration() != null) {
-			 context.acceptProblem(Problem.newSemanticTypeError("Destructors only are for class definitions", IProblem.ConstructorsOnlyForClass, 0, start, "~this".length()));
-			 }
-			 */
+			if (isCtorDeclaration() != null || isDtorDeclaration() != null
+			//|| isInvariantDeclaration()
+			//|| isUnitTestDeclaration()
+			) {
+				error("special member functions not allowed for %ss", sd.kind());
+			}
 		}
 
 		id = parent.isInterfaceDeclaration();
@@ -474,8 +1205,9 @@ public class FuncDeclaration extends Declaration {
 				while (true) {
 					TemplateInstance ti2 = ti.tempdecl.parent
 							.isTemplateInstance();
-					if (ti2 == null)
+					if (ti2 == null) {
 						break;
+					}
 					ti = ti2;
 				}
 
@@ -572,7 +1304,7 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
-
+		// empty
 	}
 
 	@Override
@@ -583,7 +1315,7 @@ public class FuncDeclaration extends Declaration {
 		VarDeclaration _arguments = null;
 
 		if (parent == null) {
-			Assert.isTrue(false);
+			throw new IllegalStateException("assert(0);");
 		}
 
 		if (semanticRun != 0) {
@@ -748,8 +1480,9 @@ public class FuncDeclaration extends Declaration {
 							null);
 					v.synthetic = true;
 					v.storage_class |= STCparameter;
-					if (f.varargs == 2 && i + 1 == nparams)
+					if (f.varargs == 2 && i + 1 == nparams) {
 						v.storage_class |= STCvariadic;
+					}
 					v.storage_class |= arg.storageClass
 							& (STCin | STCout | STCref | STClazy);
 					v.semantic(sc2, context);
@@ -980,9 +1713,10 @@ public class FuncDeclaration extends Declaration {
 						for (int i = 0; i < cd.fields.size(); i++) {
 							VarDeclaration v = cd.fields.get(i);
 
-							if (!v.ctorinit && v.isCtorinit())
+							if (!v.ctorinit && v.isCtorinit()) {
 								error("missing initializer for const field %s",
 										v.toChars(context));
+							}
 						}
 					}
 
@@ -995,13 +1729,13 @@ public class FuncDeclaration extends Declaration {
 						Expression e1 = new SuperExp(loc);
 						Expression e = new CallExp(loc, e1);
 
-						/*
-						 * TODO semantic unsigned errors =
-						 * context.global.errors; context.global.gag++; e =
-						 * e.semantic(sc2, context); context.global.gag--; if
-						 * (errors != global.errors) error("no match for
-						 * implicit super() call in constructor");
-						 */
+						int errors = context.global.errors;
+						context.global.gag++;
+						e = e.semantic(sc2, context);
+						context.global.gag--;
+						if (errors != context.global.errors) {
+							error("no match for implicit super() call in constructor");
+						}
 
 						Statement s = new ExpStatement(loc, e);
 						s.synthetic = true;
@@ -1017,12 +1751,12 @@ public class FuncDeclaration extends Declaration {
 					fbody = new CompoundStatement(loc, fbody, s);
 					fbody.synthetic = true;
 					Assert.isTrue(returnLabel == null);
-				} else if (hasReturnExp == 0 && type.next.ty != Tvoid)
+				} else if (hasReturnExp == 0 && type.next.ty != Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FunctionMustReturnAResultOfType, 0,
 							ident.start, ident.length, new String[] { type.next
 									.toString() }));
-				else if (!inlineAsm) {
+				} else if (!inlineAsm) {
 					if (type.next.ty == Tvoid) {
 						if (offend && isMain()) { // Add a return 0; statement
 							Statement s = new ReturnStatement(loc,
@@ -1102,11 +1836,12 @@ public class FuncDeclaration extends Declaration {
 					int offset;
 
 					e1 = new VarExp(loc, argptr);
-					if (parameters != null && parameters.size() > 0)
+					if (parameters != null && parameters.size() > 0) {
 						p = (VarDeclaration) parameters
 								.get(parameters.size() - 1);
-					else
+					} else {
 						p = v_arguments; // last parameter is _arguments[]
+					}
 					offset = p.type.size(loc, context);
 					offset = (offset + 3) & ~3; // assume stack aligns on 4
 					e = new SymOffExp(loc, p, offset, context);
@@ -1148,8 +1883,9 @@ public class FuncDeclaration extends Declaration {
 						a.add(frequire);
 					}
 				} else {
-					if (frequire != null && context.global.params.useIn)
+					if (frequire != null && context.global.params.useIn) {
 						a.add(frequire);
+					}
 				}
 
 				// Precondition invariant
@@ -1162,8 +1898,9 @@ public class FuncDeclaration extends Declaration {
 
 						while (inv == null && cd != null) {
 							cd = cd.baseClass;
-							if (cd == null)
+							if (cd == null) {
 								break;
+							}
 							inv = cd.inv;
 						}
 						if (inv != null) {
@@ -1221,289 +1958,46 @@ public class FuncDeclaration extends Declaration {
 		semanticRun = 2;
 	}
 
-	public boolean addPreInvariant(SemanticContext context) {
-		AggregateDeclaration ad = isThis();
-		return (ad != null
-				&& context.global.params.useInvariants
-				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
+	public void setFbody(Statement fbody) {
+		this.fbody = fbody;
+		sourceFbody = fbody;
 	}
 
-	public boolean addPostInvariant(SemanticContext context) {
-		AggregateDeclaration ad = isThis();
-		return (ad != null
-				&& ad.inv != null
-				&& context.global.params.useInvariants
-				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
+	public void setFensure(Statement fensure) {
+		this.fensure = fensure;
+		sourceFensure = fensure;
 	}
 
-	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
+	public void setFrequire(Statement frequire) {
+		this.frequire = frequire;
+		sourceFrequire = frequire;
+	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
 		FuncDeclaration f;
-		Declaration d;
-		Declaration next;
 
-		for (d = this; d != null; d = next) {
-			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
-
-			if (fa != null) {
-				FuncDeclaration f2 = fa.funcalias
-						.overloadExactMatch(t, context);
-				if (f2 != null) {
-					return f2;
-				}
-				next = fa.overnext;
-			} else {
-				AliasDeclaration a = d.isAliasDeclaration();
-
-				if (a != null) {
-					Dsymbol s = a.toAlias(context);
-					next = s.isDeclaration();
-					if (next == a) {
-						break;
-					}
-				} else {
-					f = d.isFuncDeclaration();
-					if (f == null) {
-						break; // BUG: should print error message?
-					}
-					if (t.equals(d.type)) {
-						return f;
-					}
-					next = f.overnext;
-				}
-			}
-		}
-		return null;
-	}
-
-	public boolean isMain() {
-		return CharOperation.equals(ident.ident, Id.main)
-				&& linkage != LINK.LINKc && isMember() == null && !isNested();
-	}
-
-	@Override
-	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
-		FuncDeclaration f;
-		AliasDeclaration a;
-
-		a = s.isAliasDeclaration();
-		if (a != null) {
-			if (overnext != null) {
-				return overnext.overloadInsert(a, context);
-			}
-			if (a.aliassym == null && a.type.ty != Tident
-					&& a.type.ty != Tinstance) {
-				return false;
-			}
-			overnext = a;
-			return true;
-		}
-		f = s.isFuncDeclaration();
-		if (f == null) {
-			return false;
-		}
-
-		if (type != null && f.type != null
-				&& // can be NULL for overloaded constructors
-				f.type.covariant(type, context) != 0
-				&& isFuncAliasDeclaration() == null) {
-			return false;
-		}
-
-		if (overnext != null)
-			return overnext.overloadInsert(f, context);
-		overnext = f;
-		return false;
-	}
-
-	@Override
-	public int getNodeType() {
-		return FUNC_DECLARATION;
-	}
-
-	public FuncDeclaration overloadResolve(Expressions arguments,
-			SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
-	public boolean canInline(boolean hasthis, SemanticContext context) {
-		return canInline(hasthis, false, context);
-	}
-
-	public boolean canInline(boolean hasthis, boolean hdrscan,
-			SemanticContext context) {
-		InlineCostState ics = new InlineCostState();
-		int cost;
-
-		if (needThis() && !hasthis)
-			return false;
-
-		if (inlineNest || (semanticRun == 0 && !hdrscan)) {
-			return false;
-		}
-
-		switch (inlineStatus) {
-		case ILSyes:
-			return true;
-
-		case ILSno:
-			return false;
-
-		case ILSuninitialized:
-			break;
-
-		default:
-			throw new IllegalStateException("assert(0);");
-		}
-
-		if (type != null) {
-			if (type.ty != Tfunction) {
-				throw new IllegalStateException("assert(type.ty == Tfunction);");
-			}
-			TypeFunction tf = (TypeFunction) type;
-			if (tf.varargs == 1) { // no variadic parameter lists
-				// goto Lno;
-				if (!hdrscan) // Don't modify inlineStatus for header content scan
-					inlineStatus = ILSno;
-				return false;
-			}
-
-			/* Don't inline a function that returns non-void, but has
-			 * no return expression.
-			 */
-			if (tf.next != null && tf.next.ty != Tvoid
-					&& (hasReturnExp & 1) == 0 && !hdrscan) {
-				// goto Lno
-				if (!hdrscan) // Don't modify inlineStatus for header content scan
-					inlineStatus = ILSno;
-				return false;
-			}
+		if (s != null) {
+			f = (FuncDeclaration) s;
 		} else {
-			CtorDeclaration ctor = isCtorDeclaration();
-
-			if (ctor != null && ctor.varargs == 1) {
-				// goto Lno
-				if (!hdrscan) // Don't modify inlineStatus for header content scan
-					inlineStatus = ILSno;
-				return false;
-			}
+			f = new FuncDeclaration(loc, ident, storage_class, type
+					.syntaxCopy());
 		}
-
-		if (fbody == null || !hdrscan
-				&& (isSynchronized() || isImportedSymbol() || nestedFrameRef || // no nested references to this frame
-				(isVirtual(context) && !isFinal()))) {
-			// goto Lno;
-			if (!hdrscan) // Don't modify inlineStatus for header content scan
-				inlineStatus = ILSno;
-			return false;
+		f.outId = outId;
+		f.frequire = frequire != null ? frequire.syntaxCopy() : null;
+		f.fensure = fensure != null ? fensure.syntaxCopy() : null;
+		f.fbody = fbody != null ? fbody.syntaxCopy() : null;
+		if (fthrows != null) {
+			throw new IllegalStateException("assert(!fthrows);"); // deprecated
 		}
-
-		/* If any parameters are Tsarray's (which are passed by reference)
-		 * or out parameters (also passed by reference), don't do inlining.
-		 */
-		if (parameters != null) {
-			for (int i = 0; i < parameters.size(); i++) {
-				VarDeclaration v = (VarDeclaration) parameters.get(i);
-				if (v.isOut() || v.isRef()
-						|| v.type.toBasetype(context).ty == Tsarray) {
-					// goto Lno;
-					if (!hdrscan) // Don't modify inlineStatus for header content scan
-						inlineStatus = ILSno;
-					return false;
-				}
-			}
-		}
-
-		// TODO semantic
-		// memset(&ics, 0, sizeof(ics));
-
-		ics.hasthis = hasthis;
-		ics.fd = this;
-		ics.hdrscan = hdrscan;
-		cost = fbody.inlineCost(ics, context);
-		if (cost >= COST_MAX) {
-			// goto Lno;
-			if (!hdrscan) // Don't modify inlineStatus for header content scan
-				inlineStatus = ILSno;
-			return false;
-		}
-
-		if (!hdrscan) // Don't scan recursively for header content scan
-			inlineScan(context);
-
-		// Lyes:
-		if (!hdrscan) // Don't modify inlineStatus for header content scan
-			inlineStatus = ILSyes;
-		return true;
-
-		//	Lno:
-		//	    if (!hdrscan)    // Don't modify inlineStatus for header content scan
-		//		inlineStatus = ILSno;
-		//	    return false;
-	}
-
-	public void bodyToCBuffer(OutBuffer buf, HdrGenState hgs,
-			SemanticContext context) {
-		if (fbody != null
-				&& (!hgs.hdrgen || hgs.tpltMember || canInline(true, true,
-						context))) {
-			buf.writenl();
-
-			// in{}
-			if (frequire != null) {
-				buf.writestring("in");
-				buf.writenl();
-				frequire.toCBuffer(buf, hgs, context);
-			}
-
-			// out{}
-			if (fensure != null) {
-				buf.writestring("out");
-				if (outId != null) {
-					buf.writebyte('(');
-					buf.writestring(outId.toChars(context));
-					buf.writebyte(')');
-				}
-				buf.writenl();
-				fensure.toCBuffer(buf, hgs, context);
-			}
-
-			if (frequire != null || fensure != null) {
-				buf.writestring("body");
-				buf.writenl();
-			}
-
-			buf.writebyte('{');
-			buf.writenl();
-			fbody.toCBuffer(buf, hgs, context);
-			buf.writebyte('}');
-			buf.writenl();
-		} else {
-			buf.writeByte(';');
-			buf.writenl();
-		}
-	}
-
-	public LabelDsymbol searchLabel(IdentifierExp ident) {
-		Dsymbol s;
-
-		if (null == labtab)
-			labtab = new DsymbolTable(); // guess we need one
-
-		s = labtab.lookup(ident);
-		if (null == s) {
-			s = new LabelDsymbol(ident);
-			labtab.insert(s);
-		}
-		return (LabelDsymbol) s;
+		return f;
 	}
 
 	@Override
-	public String mangle(SemanticContext context) {
-		if (isMain())
-			return "_Dmain";
-
-		return super.mangle(context);
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		type.toCBuffer(buf, ident, hgs, context);
+		bodyToCBuffer(buf, hgs, context);
 	}
 
 }

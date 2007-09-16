@@ -6,20 +6,21 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class Dsymbol extends ASTDmdNode {
-
-	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
-		Dsymbols b = new Dsymbols();
-		for (Dsymbol s : a) {
-			b.add(s.syntaxCopy(null));
-		}
-		return b;
-	}
 
 	public static Arguments arraySyntaxCopy(Arguments a) {
 		Arguments b = new Arguments();
 		for (Argument s : a) {
 			b.add(s.syntaxCopy());
+		}
+		return b;
+	}
+
+	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
+		Dsymbols b = new Dsymbols();
+		for (Dsymbol s : a) {
+			b.add(s.syntaxCopy(null));
 		}
 		return b;
 	}
@@ -67,6 +68,10 @@ public class Dsymbol extends ASTDmdNode {
 		this.ident = ident;
 		this.c_ident = null;
 		this.parent = null;
+	}
+
+	@Override
+	protected void accept0(IASTVisitor visitor) {
 	}
 
 	public void addLocalClass(ClassDeclarations aclasses,
@@ -168,6 +173,11 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 
+	@Override
+	public int getNodeType() {
+		return 0;
+	}
+
 	public Type getType() {
 		return null;
 	}
@@ -181,10 +191,6 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public AggregateDeclaration isAggregateDeclaration() {
-		return null;
-	}
-
-	public TypedefDeclaration isTypedefDeclaration() {
 		return null;
 	}
 
@@ -344,6 +350,10 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 
+	public TypedefDeclaration isTypedefDeclaration() {
+		return null;
+	}
+
 	public UnionDeclaration isUnionDeclaration() {
 		return null;
 	}
@@ -362,6 +372,26 @@ public class Dsymbol extends ASTDmdNode {
 
 	public String kind() {
 		return "symbol";
+	}
+
+	public String mangle(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		String id;
+
+		id = ident != null ? ident.toChars() : toChars(context);
+		if (parent != null) {
+			String p = parent.mangle(context);
+			if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
+				p += 2;
+			}
+			buf.writestring(p);
+		}
+		// TODO this was %zu -> what's that?
+		buf.writestring(id.length());
+		buf.writestring(id);
+		id = buf.toChars();
+		buf.data = null;
+		return id;
 	}
 
 	public boolean needThis() {
@@ -397,6 +427,48 @@ public class Dsymbol extends ASTDmdNode {
 	public final Dsymbol search(Loc loc, IdentifierExp ident, int flags,
 			SemanticContext context) {
 		return search(loc, ident.ident, flags, context);
+	}
+
+	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
+			SemanticContext context) {
+		Dsymbol s = toAlias(context);
+		Dsymbol sm;
+
+		switch (id.dyncast()) {
+		case DYNCAST_IDENTIFIER:
+			sm = s.search(loc, id, 0, context);
+			break;
+
+		case DYNCAST_DSYMBOL: { // It's a template instance
+			//printf("\ttemplate instance id\n");
+			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
+			TemplateInstance ti = st.isTemplateInstance();
+			id = ti.name;
+			sm = s.search(loc, id, 0, context);
+			if (null == sm) {
+				error("template identifier %s is not a member of %s %s", id
+						.toChars(), s.kind(), s.toChars(context));
+				return null;
+			}
+			sm = sm.toAlias(context);
+			TemplateDeclaration td = sm.isTemplateDeclaration();
+			if (null == td) {
+				error("%s is not a template, it is a %s", id.toChars(), sm
+						.kind());
+				return null;
+			}
+			ti.tempdecl = td;
+			if (!ti.semanticdone) {
+				ti.semantic(sc, context);
+			}
+			sm = ti.toAlias(context);
+			break;
+		}
+
+		default:
+			throw new IllegalStateException("assert(0);");
+		}
+		return sm;
 	}
 
 	public void semantic(Scope sc, SemanticContext context) {
@@ -450,77 +522,6 @@ public class Dsymbol extends ASTDmdNode {
 	public String toPrettyChars(SemanticContext context) {
 		// TODO semantic
 		return toChars(context);
-	}
-
-	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
-			SemanticContext context) {
-		Dsymbol s = toAlias(context);
-		Dsymbol sm;
-
-		switch (id.dyncast()) {
-		case DYNCAST_IDENTIFIER:
-			sm = s.search(loc, id, 0, context);
-			break;
-
-		case DYNCAST_DSYMBOL: { // It's a template instance
-			//printf("\ttemplate instance id\n");
-			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
-			TemplateInstance ti = st.isTemplateInstance();
-			id = ti.name;
-			sm = s.search(loc, id, 0, context);
-			if (null == sm) {
-				error("template identifier %s is not a member of %s %s", id
-						.toChars(), s.kind(), s.toChars(context));
-				return null;
-			}
-			sm = sm.toAlias(context);
-			TemplateDeclaration td = sm.isTemplateDeclaration();
-			if (null == td) {
-				error("%s is not a template, it is a %s", id.toChars(), sm
-						.kind());
-				return null;
-			}
-			ti.tempdecl = td;
-			if (!ti.semanticdone) {
-				ti.semantic(sc, context);
-			}
-			sm = ti.toAlias(context);
-			break;
-		}
-
-		default:
-			throw new IllegalStateException("assert(0);");
-		}
-		return sm;
-	}
-
-	@Override
-	public int getNodeType() {
-		return 0;
-	}
-
-	@Override
-	protected void accept0(IASTVisitor visitor) {
-	}
-
-	public String mangle(SemanticContext context) {
-		OutBuffer buf = new OutBuffer();
-		String id;
-
-		id = ident != null ? ident.toChars() : toChars(context);
-		if (parent != null) {
-			String p = parent.mangle(context);
-			if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
-				p += 2;
-			}
-			buf.writestring(p);
-		}
-		// TODO this was %zu -> what's that?
-		buf.writestring(id.length());
-		buf.writestring(id);
-		id = buf.toChars();
-		buf.data = null;
-		return id;
 	}
 
 }

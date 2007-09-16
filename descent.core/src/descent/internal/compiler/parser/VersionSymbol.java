@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -38,27 +40,23 @@ public class VersionSymbol extends Dsymbol {
 		// just make sure subsequent debug declarations work.
 		m = sd.isModule();
 		if (ident != null) {
-			/* TODO semantic
-			 VersionCondition.checkPredefined(loc, ident.toChars(context));
-			 */
+			VersionCondition.checkPredefined(loc, ident, context);
 			if (m == null) {
 				error("declaration must be at module level");
 			} else {
-				/* TODO semantic
-				 if (findCondition(m.versionidsNot, ident))
-				 error("defined after use");
-				 if (!m.versionids)
-				 m.versionids = new Array();
-				 m.versionids.push(ident.toChars());
-				 */
+				if (findCondition(m.versionidsNot, ident)) {
+					error("defined after use");
+				}
+				if (null == m.versionids) {
+					m.versionids = new ArrayList<char[]>();
+				}
+				m.versionids.add(ident.ident);
 			}
 		} else {
 			if (m == null) {
 				error("level declaration must be at module level");
 			} else {
-				/* TODO semantic
-				 m.versionlevel = level;
-				 */
+				m.versionlevel = level;
 			}
 		}
 		return 0;
@@ -77,6 +75,16 @@ public class VersionSymbol extends Dsymbol {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		// empty
+	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		if (s != null) {
+			throw new IllegalStateException("assert(!s)");
+		}
+		VersionSymbol ds = new VersionSymbol(loc, ident, version);
+		ds.level = level;
+		return ds;
 	}
 
 	@Override

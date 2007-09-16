@@ -26,6 +26,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.MATCH.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -243,6 +244,15 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int DOT_TEMPLATE_EXP = 195;
 	public final static int SWITCH_ERROR_STATEMENT = 196;
 	public final static int BOOL_EXP = 197;
+
+	// Defined here because MATCH and Match overlap on Windows
+	public static class Match {
+		int count; // number of matches found
+		MATCH last; // match level of lastf
+		FuncDeclaration lastf; // last matching function we found
+		FuncDeclaration nextf; // current matching function
+		FuncDeclaration anyf; // pick a func, any func, to use for error recovery
+	};
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
 		public EXP_SOMETHING_INTERPRET() {
@@ -858,8 +868,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					 * Set arg to be: new Tclass(arg0, arg1,
 					 * ..., argn)
 					 */
-						Expressions args = new Expressions(
-								nargs - 1);
+						Expressions args = new Expressions(nargs - 1);
 						for (int u = i; u < nargs; u++) {
 							args.set(u - i, arguments.get(u));
 						}
@@ -1164,8 +1173,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public static void arrayExpressionScanForNestedRef(Scope sc,
-			Expressions a, SemanticContext context) {
+	public static void arrayExpressionScanForNestedRef(Scope sc, Expressions a,
+			SemanticContext context) {
 		if (null == a) {
 			for (int i = 0; i < a.size(); i++) {
 				Expression e = a.get(i);
@@ -1220,7 +1229,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		buf.data = null;
 		return id;
 	}
-	
+
 	public static Dsymbol getDsymbol(ASTDmdNode oarg, SemanticContext context) {
 		Dsymbol sa;
 		Expression ea = isExpression(oarg);
@@ -1285,36 +1294,219 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		return (Type) o;
 	}
-	
+
 	public static Expression semanticLength(Scope sc, Type t, Expression exp,
-			SemanticContext context)
-	{
-		if(t.ty == Ttuple)
-		{
+			SemanticContext context) {
+		if (t.ty == Ttuple) {
 			ScopeDsymbol sym = new ArrayScopeSymbol((TypeTuple) t);
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
-			
+
 			exp = exp.semantic(sc, context);
-			
+
 			sc.pop();
-		}
-		else
+		} else {
 			exp = exp.semantic(sc, context);
+		}
 		return exp;
 	}
 
 	public static Expression semanticLength(Scope sc, TupleDeclaration s,
-			Expression exp, SemanticContext context)
-	{
+			Expression exp, SemanticContext context) {
 		ScopeDsymbol sym = new ArrayScopeSymbol(s);
 		sym.parent = sc.scopesym;
 		sc = sc.push(sym);
-		
+
 		exp = exp.semantic(sc, context);
-		
+
 		sc.pop();
 		return exp;
 	}
-	
+
+	public static boolean findCondition(List<char[]> ids, IdentifierExp ident) {
+		if (ids != null) {
+			for (int i = 0; i < ids.size(); i++) {
+				char[] id = ids.get(i);
+
+				if (ident.ident != null
+						&& CharOperation.equals(id, ident.ident)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public static void overloadResolveX(Match m, FuncDeclaration fstart,
+			Expressions arguments, SemanticContext context) {
+		Param2 p = new Param2();
+		p.m = m;
+		p.arguments = arguments;
+		overloadApply(fstart, fp2, p, context);
+	}
+
+	public static interface OverloadApply_fp {
+		int call(Object param, FuncDeclaration f, SemanticContext context);
+	}
+
+	public final static OverloadApply_fp fp2 = new OverloadApply_fp() {
+
+		public int call(Object param, FuncDeclaration f, SemanticContext context) {
+			Param2 p = (Param2) param;
+			Match m = p.m;
+			Expressions arguments = p.arguments;
+			MATCH match;
+
+			if (f != m.lastf) // skip duplicates
+			{
+				TypeFunction tf;
+
+				m.anyf = f;
+				tf = (TypeFunction) f.type;
+				match = tf.callMatch(arguments, context);
+				if (match != MATCHnomatch) {
+					if (match.ordinal() > m.last.ordinal()) {
+						// goto LfIsBetter;
+						m.last = match;
+						m.lastf = f;
+						m.count = 1;
+						return 0;
+					}
+
+					if (match.ordinal() < m.last.ordinal()) {
+						// goto LlastIsBetter;
+						return 0;
+					}
+
+					/* See if one of the matches overrides the other.
+					 */
+					if (m.lastf.overrides(f, context)) {
+						// goto LlastIsBetter;
+						return 0;
+					} else if (f.overrides(m.lastf, context)) {
+						// goto LfIsBetter;
+						m.last = match;
+						m.lastf = f;
+						m.count = 1;
+						return 0;
+					}
+
+					// Lambiguous:
+					m.nextf = f;
+					m.count++;
+					return 0;
+				}
+			}
+			return 0;
+		}
+
+	};
+
+	/***************************************************
+	 * Visit each overloaded function in turn, and call
+	 * (*fp)(param, f) on it.
+	 * Exit when no more, or (*fp)(param, f) returns 1.
+	 * Returns:
+	 *	0	continue
+	 *	1	done
+	 */
+
+	public static int overloadApply(FuncDeclaration fstart,
+			OverloadApply_fp fp, Object param, SemanticContext context) {
+		FuncDeclaration f;
+		Declaration d;
+		Declaration next;
+
+		for (d = fstart; d != null; d = next) {
+			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
+
+			if (fa != null) {
+				if (overloadApply(fa.funcalias, fp, param, context) != 0) {
+					return 1;
+				}
+				next = fa.overnext;
+			} else {
+				AliasDeclaration a = d.isAliasDeclaration();
+
+				if (a != null) {
+					Dsymbol s = a.toAlias(context);
+					next = s.isDeclaration();
+					if (next == a) {
+						break;
+					}
+					if (next == fstart) {
+						break;
+					}
+				} else {
+					f = d.isFuncDeclaration();
+					if (null == f) {
+						d.error("is aliased to a function");
+						break; // BUG: should print error message?
+					}
+					if (fp.call(param, f, context) != 0) {
+						return 1;
+					}
+
+					next = f.overnext;
+				}
+			}
+		}
+		return 0;
+	}
+
+	public static Expression interpret_aaLen(InterState istate,
+			Expressions arguments, SemanticContext context) {
+		if (null == arguments || arguments.size() != 1) {
+			return null;
+		}
+		Expression earg = arguments.get(0);
+		earg = earg.interpret(istate, context);
+		if (earg == EXP_CANT_INTERPRET) {
+			return null;
+		}
+		if (earg.op != TOKassocarrayliteral) {
+			return null;
+		}
+		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
+		Expression e = new IntegerExp(aae.loc, aae.keys.size(), Type.tsize_t);
+		return e;
+	}
+
+	public static Expression interpret_aaKeys(InterState istate,
+			Expressions arguments, SemanticContext context) {
+		if (null == arguments || arguments.size() != 2) {
+			return null;
+		}
+		Expression earg = arguments.get(0);
+		earg = earg.interpret(istate, context);
+		if (earg == EXP_CANT_INTERPRET) {
+			return null;
+		}
+		if (earg.op != TOKassocarrayliteral) {
+			return null;
+		}
+		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
+		Expression e = new ArrayLiteralExp(aae.loc, aae.keys);
+		return e;
+	}
+
+	public static Expression interpret_aaValues(InterState istate,
+			Expressions arguments, SemanticContext context) {
+		if (null == arguments || arguments.size() != 3) {
+			return null;
+		}
+		Expression earg = arguments.get(0);
+		earg = earg.interpret(istate, context);
+		if (earg == EXP_CANT_INTERPRET) {
+			return null;
+		}
+		if (earg.op != TOKassocarrayliteral) {
+			return null;
+		}
+		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
+		Expression e = new ArrayLiteralExp(aae.loc, aae.values);
+		return e;
+	}
+
 }

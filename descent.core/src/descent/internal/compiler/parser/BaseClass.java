@@ -4,12 +4,11 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 
-import org.eclipse.core.runtime.Assert;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tfunction;
 
+// DMD 1.020
 public class BaseClass extends ASTDmdNode {
 
 	public Modifier modifier;
@@ -23,10 +22,7 @@ public class BaseClass extends ASTDmdNode {
 	// making up the vtbl[]
 
 	public BaseClasses baseInterfaces; // if BaseClass is an interface,
-
-	// these
-
-	// are a copy of the InterfaceDeclaration::interfaces
+										// these are a copy of the InterfaceDeclaration::interfaces
 	
 	public BaseClass() {
 		
@@ -46,16 +42,6 @@ public class BaseClass extends ASTDmdNode {
 	}
 
 	@Override
-	public BaseClass clone() {
-		BaseClass bc = new BaseClass(type, modifier, protection);
-		bc.base = base;
-		bc.offset = offset;
-		bc.vtbl = vtbl;
-		bc.baseInterfaces = baseInterfaces;
-		return bc;
-	}
-
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -65,6 +51,16 @@ public class BaseClass extends ASTDmdNode {
 		visitor.endVisit(this);
 	}
 
+	@Override
+	public BaseClass clone() {
+		BaseClass bc = new BaseClass(type, modifier, protection);
+		bc.base = base;
+		bc.offset = offset;
+		bc.vtbl = vtbl;
+		bc.baseInterfaces = baseInterfaces;
+		return bc;
+	}
+
 	public void copyBaseInterfaces(BaseClasses vtblInterfaces) {
 		baseInterfaces = new BaseClasses(base.interfaces.size());
 
@@ -72,7 +68,9 @@ public class BaseClass extends ASTDmdNode {
 			BaseClass b = baseInterfaces.get(i);
 			BaseClass b2 = base.interfaces.get(i);
 
-			Assert.isTrue(b2.vtbl.size() == 0); // should not be filled yet
+			if (b2.vtbl.size() != 0) {
+				throw new IllegalStateException("assert(b2.vtbl.size() == 0)"); // should not be filled yet
+			}
 			b = b2.clone();
 
 			if (i == 0) {

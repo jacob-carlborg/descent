@@ -22,6 +22,14 @@ public class Module extends Package {
 	public Dsymbols deferred;
 	public boolean needmoduleinfo;
 	public Module importedFrom;
+	
+	public long debuglevel;	// debug level
+	public List<char[]> debugids;		// debug identifiers
+	public List<char[]> debugidsNot;		// forward referenced debug identifiers
+	
+	public long versionlevel;
+	public List<char[]> versionids;		// version identifiers
+	public List<char[]> versionidsNot;	// forward referenced version identifiers
 
 	public Module(Loc loc) {
 		super(loc);

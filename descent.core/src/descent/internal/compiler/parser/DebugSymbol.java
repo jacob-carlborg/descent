@@ -1,28 +1,27 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// TODO this class is not exactly like in DMD
+// DMD 1.020
 public class DebugSymbol extends Dsymbol {
-	
+
 	public long level;
 	public Version version;
 
 	public DebugSymbol(Loc loc, IdentifierExp ident, Version version) {
 		super(loc, ident);
-		this.version = version;		
+		this.version = version;
 	}
-	
+
 	public DebugSymbol(Loc loc, long level, Version version) {
 		super(loc);
 		this.level = level;
-		this.version = version;		
+		this.version = version;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -31,23 +30,73 @@ public class DebugSymbol extends Dsymbol {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
-	public void semantic(Scope sc, SemanticContext context) {
-		
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+			SemanticContext context) {
+		Module m;
+
+		// Do not add the member to the symbol table,
+		// just make sure subsequent debug declarations work.
+		m = sd.isModule();
+		if (ident != null) {
+			if (null == m) {
+				error("declaration must be at module level");
+			} else {
+				if (findCondition(m.debugidsNot, ident)) {
+					error("defined after use");
+				}
+				if (null == m.debugids) {
+					m.debugids = new ArrayList<char[]>();
+				}
+				m.debugids.add(ident.ident);
+			}
+		} else {
+			if (null == m) {
+				error("level declaration must be at module level");
+			} else {
+				m.debuglevel = level;
+			}
+		}
+		return 0;
 	}
-	
-	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		Assert.isTrue(s == null);
-	    DebugSymbol ds = new DebugSymbol(loc, ident, version);
-	    ds.level = level;
-	    return ds;
-	}
-	
+
 	@Override
 	public int getNodeType() {
 		return DEBUG_SYMBOL;
+	}
+
+	@Override
+	public String kind() {
+		return "debug";
+	}
+
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		// empty
+	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		if (s != null) {
+			throw new IllegalStateException("assert(!s)");
+		}
+		DebugSymbol ds = new DebugSymbol(loc, ident, version);
+		ds.level = level;
+		return ds;
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("debug = ");
+		if (ident != null) {
+			buf.writestring(ident.toChars());
+		} else {
+			buf.writestring(level);
+		}
+		buf.writestring(";");
+		buf.writenl();
 	}
 
 }

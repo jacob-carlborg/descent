@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
