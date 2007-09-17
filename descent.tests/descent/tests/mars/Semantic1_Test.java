@@ -897,7 +897,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testBreakIsNotInsideALoopOrSwitch_NotInSwitch() {
-		assertNoSemanticErrors("void foo() { switch(true) { case true: break; } }");
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; default: } }");
 	}
 	
 	public void testCaseIsNotInsideASwitchStatement() {
@@ -909,7 +909,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testCaseIsNotInsideASwitchStatement_Not() {
-		assertNoSemanticErrors("void foo() { switch(true) { case true: break; } }");
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; default: } }");
 	}
 	
 	public void testVersionDeclarationMustBeAtModuleLevel() {
@@ -945,7 +945,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testGotoCaseNotInSwitch_Not() {
-		assertNoSemanticErrors("void foo() { switch(true) { case true: break; case false: goto case true; } }");
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; case false: goto case true; default: } }");
 	}
 	
 	public void testGotoDefaultNotInSwitch() {
@@ -957,7 +957,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testGotoDefaultNotInSwitch_Not() {
-		assertNoSemanticErrors("void foo() { switch(true) { case true: break; case false: goto default; } }");
+		assertNoSemanticErrors("void foo() { switch(true) { case false: goto default; default: } }");
 	}
 	
 	public void testLazyVariablesCannotBeLvalues() {

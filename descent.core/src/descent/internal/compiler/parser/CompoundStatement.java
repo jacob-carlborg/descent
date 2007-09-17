@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -101,12 +102,10 @@ public class CompoundStatement extends Statement {
 			}
 
 			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				/* TODO semantic uncomment
 				context
-				.acceptProblem(Problem.newSemanticTypeWarning(
-						IProblem.StatementIsNotReachable, 0, s.start,
-						s.length));
-				*/
+					.acceptProblem(Problem.newSemanticTypeWarning(
+							IProblem.StatementIsNotReachable, 0, s.start,
+							s.length));
 			}
 			falloff = s.fallOffEnd(context);
 		}

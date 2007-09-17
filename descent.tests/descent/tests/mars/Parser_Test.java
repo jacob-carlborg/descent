@@ -189,7 +189,7 @@ public abstract class Parser_Test extends TestCase {
 	
 	protected void assertWarning(IProblem p, int errorCode, int start, int length) {
 		assertEquals(errorCode, p.getID());
-		assertTrue(p.isError());
+		assertTrue(p.isWarning());
 		assertEquals(start, p.getSourceStart());
 		assertEquals(length, p.getSourceEnd() - p.getSourceStart() + 1);
 	}
