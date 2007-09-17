@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -24,7 +25,7 @@ public class AssignExp extends BinExp {
 
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		error("'=' does not give a boolean result");
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.AssignDoesNotGiveABooleanResult, 0, start, length));
 		return this;
 	}
 

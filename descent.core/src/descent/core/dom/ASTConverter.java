@@ -2273,17 +2273,17 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Statement convert(CompoundStatement a) {
-		if (a.synthetic) {
-			List<descent.core.dom.Statement> stms = new ArrayList<descent.core.dom.Statement>(1);
-			convertStatements(stms, a.sourceStatements);
-			if (stms.size() == 1) {
-				return stms.get(0);
-			} else if (stms.size() == 0) {
-				return null;
-			} else {
-				throw new IllegalStateException("Should not happen");
-			}
-		} else {
+//		if (a.synthetic) {
+//			List<descent.core.dom.Statement> stms = new ArrayList<descent.core.dom.Statement>(1);
+//			convertStatements(stms, a.sourceStatements);
+//			if (stms.size() == 1) {
+//				return stms.get(0);
+//			} else if (stms.size() == 0) {
+//				return null;
+//			} else {
+//				throw new IllegalStateException("Should not happen");
+//			}
+//		} else {
 			if (a.manyVars) {
 				Statement firstStatement = a.statements.get(0);
 				
@@ -2309,7 +2309,7 @@ public class ASTConverter {
 				b.setSourceRange(a.start, a.length);
 				return b;
 			}
-		}
+//		}
 	}
 	
 	public descent.core.dom.MixinExpression convert(CompileExp a) {
@@ -3151,9 +3151,6 @@ public class ASTConverter {
 	public void convertStatements(List<descent.core.dom.Statement> destination, List<Statement> source) {
 		if (source == null || source.isEmpty()) return;
 		for(Statement stm : source) {
-			if (stm.synthetic) {
-				continue;
-			}
 			destination.add(convert(stm));
 		}
 	}

@@ -715,8 +715,9 @@ public abstract class Type extends ASTDmdNode {
 		}
 		if (null != v) {
 			if (CharOperation.equals(ident.ident, Id.offset)) {
-				if (!context.global.params.useDeprecated)
+				if (!context.global.params.useDeprecated) {
 					error(".offset deprecated, use .offsetof");
+				}
 				//goto Loffset;
 				if (0 != (v.storage_class & STCfield)) {
 					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);

@@ -233,7 +233,6 @@ public class VarDeclaration extends Declaration {
 			inuse++;
 
 			type = init.inferType(sc, context);
-			type.synthetic = true;
 
 			inuse--;
 			inferred = 1;

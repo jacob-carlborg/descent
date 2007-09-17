@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -41,7 +42,7 @@ public class DebugSymbol extends Dsymbol {
 		m = sd.isModule();
 		if (ident != null) {
 			if (null == m) {
-				error("declaration must be at module level");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, 0, start, length));
 			} else {
 				if (findCondition(m.debugidsNot, ident)) {
 					error("defined after use");
@@ -53,7 +54,7 @@ public class DebugSymbol extends Dsymbol {
 			}
 		} else {
 			if (null == m) {
-				error("level declaration must be at module level");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, 0, start, length));
 			} else {
 				m.debuglevel = level;
 			}

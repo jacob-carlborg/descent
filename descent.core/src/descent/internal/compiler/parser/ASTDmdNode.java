@@ -585,18 +585,6 @@ public abstract class ASTDmdNode extends ASTNode {
 
 	public Comment postDdoc;
 
-	/**
-	 * Denotes a node created during the semantic pass, must be ignored by
-	 * ASTConverter.
-	 */
-	public boolean synthetic;
-
-	/**
-	 * Denotes a node descarded during the semantic pass, must not be ignored by
-	 * ASTConverter.
-	 */
-	public boolean discarded;
-
 	public void accessCheck(Scope sc, Expression e, Declaration d,
 			SemanticContext context) {
 		if (e == null) {

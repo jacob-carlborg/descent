@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VersionCondition extends DVCondition {
@@ -60,20 +61,14 @@ public class VersionCondition extends DVCondition {
 			if (ident.ident != null
 					&& CharOperation.equals(ident.ident, resevered[i])) {
 				// goto Lerror;
-				ident
-						.error(
-								loc,
-								"version identifier '%s' is reserved and cannot be set",
-								ident.toChars());
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionIdentifierReserved, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
 			}
 		}
 
 		if (ident.ident != null && ident.ident[0] == 'D'
 				&& ident.ident[1] == '_') {
 			// goto Lerror;
-			ident.error(loc,
-					"version identifier '%s' is reserved and cannot be set",
-					ident.toChars());
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionIdentifierReserved, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
 		}
 	}
 

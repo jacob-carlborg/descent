@@ -1020,7 +1020,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(EnumMember node) {
 		printIndent();
 		node.ident.accept(this);
-		if (node.value != null && !node.value.synthetic) {
+		if (node.value != null) {
 			this.buffer.append(" = ");
 			node.value.accept(this);
 		}

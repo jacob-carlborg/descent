@@ -349,6 +349,16 @@ public interface IProblem {
 	int ErrorReadingFile = 380;
 	int ExpressionHasNoEffect = 381;
 	int ConstantIsNotAnLValue = 382;
+	int VersionIdentifierReserved = 383;
+	int CannotPutCatchStatementInsideFinallyBlock = 384;
+	int AssignDoesNotGiveABooleanResult = 385;
+	int BreakIsNotInsideALoopOrSwitch = 386;
+	int CaseIsNotInSwitch = 387;
+	int VersionDeclarationMustBeAtModuleLevel = 388;
+	int DebugDeclarationMustBeAtModuleLevel = 389;
+	int GotoCaseNotInSwitch = 390;
+	int GotoDefaultNotInSwitch = 391;
+	int LazyVariablesCannotBeLvalues = 392;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

@@ -605,4 +605,26 @@ public class ForeachStatement extends Statement {
 		return this;
 	}
 
+	@Override
+	public boolean comeFrom() {
+		if (body != null)
+			return body.comeFrom();
+		return false;
+	}
+
+	@Override
+	public boolean fallOffEnd(SemanticContext context) {
+		if (body != null)
+			body.fallOffEnd(context);
+		return true;
+	}
+	
+	@Override
+	public Statement syntaxCopy() {
+		Arguments args = Argument.arraySyntaxCopy(arguments);
+	    Expression exp = aggr.syntaxCopy();
+	    ForeachStatement s = new ForeachStatement(loc, op, args, exp, body != null ? body.syntaxCopy() : null);
+	    return s;
+	}
+
 }

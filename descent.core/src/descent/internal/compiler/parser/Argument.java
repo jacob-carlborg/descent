@@ -141,4 +141,18 @@ public class Argument extends ASTDmdNode {
 		return a;
 	}
 
+	public static Arguments arraySyntaxCopy(Arguments args) {
+		Arguments a = null;
+
+		if (args != null) {
+			a = new Arguments(args.size());
+			for (int i = 0; i < a.size(); i++) {
+				Argument arg = args.get(i);
+				arg = arg.syntaxCopy();
+				a.add(arg);
+			}
+		}
+		return a;
+	}
+
 }

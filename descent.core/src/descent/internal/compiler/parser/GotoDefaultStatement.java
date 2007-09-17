@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -52,7 +53,7 @@ public class GotoDefaultStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		sw = sc.sw;
 		if (null == sw) {
-			error("goto default not in switch statement");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.GotoDefaultNotInSwitch, 0, start, length));
 		}
 		return this;
 	}

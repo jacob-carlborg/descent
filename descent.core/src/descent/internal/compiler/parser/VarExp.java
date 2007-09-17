@@ -10,6 +10,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VarExp extends Expression {
@@ -156,7 +157,7 @@ public class VarExp extends Expression {
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if ((var.storage_class & STClazy) != 0) {
-			error("lazy variables cannot be lvalues");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.LazyVariablesCannotBeLvalues, 0, start, length));
 		}
 		return this;
 	}

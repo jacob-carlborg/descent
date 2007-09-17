@@ -198,7 +198,6 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[0], IProblem.VoidsHaveNoValue, 1, 4);
 	}
 
-	// TODO should only report one problem (the first).
 	// Dmd reports three in this case, we are trying
 	// to make it cleaner to the user
 	public void testUsedAsAType() {
@@ -655,7 +654,7 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.CannotImplicitlyConvert, 21, 5);
-		assertEquals("Type mismatch: cannot implicitly convert from char[3] to bool", p[0].getMessage());
+		assertEquals("Type mismatch: cannot implicitly convert from char[3u] to bool", p[0].getMessage());
 	}
 	
 	public void testVoidFunctionsHaveNoResult() {
@@ -856,5 +855,135 @@ public class Semantic1_Test extends Parser_Test {
 	public void testBaseClassIsOuter() {
 		assertNoSemanticErrors("class BaseClass { class SomeClass : BaseClass { } }");
 	}
+	
+	public void testVersionConditionOk() {
+		assertNoSemanticErrors("version = something;");
+	}
+	
+	public void testVersionConditionPredefined() {
+		String s = "version = DigitalMars;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.VersionIdentifierReserved, 10, 11);
+	}
+	
+	public void testVersionConditionPredefined2() {
+		String s = "version = D_something;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.VersionIdentifierReserved, 10, 11);
+	}
+	
+	public void testAssignToBoolean() {
+		String s = "void foo() { int x = 2; if (x = 3) { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.AssignDoesNotGiveABooleanResult, 28, 5);
+	}
+	
+	public void testBreakIsNotInsideALoopOrSwitch() {
+		String s = "void foo() { break; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.BreakIsNotInsideALoopOrSwitch, 13, 6);
+	}
+	
+	public void testBreakIsNotInsideALoopOrSwitch_NotInWhile() {
+		assertNoSemanticErrors("void foo() { while(true) { break; } }");
+	}
+	
+	public void testBreakIsNotInsideALoopOrSwitch_NotInSwitch() {
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; } }");
+	}
+	
+	public void testCaseIsNotInsideASwitchStatement() {
+		String s = "void foo() { case 1:; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.CaseIsNotInSwitch, 13, 8);
+	}
+	
+	public void testCaseIsNotInsideASwitchStatement_Not() {
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; } }");
+	}
+	
+	public void testVersionDeclarationMustBeAtModuleLevel() {
+		String s = "class X { version = something; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.VersionDeclarationMustBeAtModuleLevel, 10, 20);
+	}
+	
+	public void testVersionDeclarationMustBeAtModuleLevel_Not() {
+		assertNoSemanticErrors("version = something;");
+	}
+	
+	public void testDebugDeclarationMustBeAtModuleLevel() {
+		String s = "class X { debug = something; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DebugDeclarationMustBeAtModuleLevel, 10, 18);
+	}
+	
+	public void testDebugDeclarationMustBeAtModuleLevel_Not() {
+		assertNoSemanticErrors("debug = something;");
+	}
+	
+	public void testGotoCaseNotInSwitch() {
+		String s = "void foo() { goto case 1; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.GotoCaseNotInSwitch, 13, 12);
+	}
+	
+	public void testGotoCaseNotInSwitch_Not() {
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; case false: goto case true; } }");
+	}
+	
+	public void testGotoDefaultNotInSwitch() {
+		String s = "void foo() { goto default; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.GotoDefaultNotInSwitch, 13, 13);
+	}
+	
+	public void testGotoDefaultNotInSwitch_Not() {
+		assertNoSemanticErrors("void foo() { switch(true) { case true: break; case false: goto default; } }");
+	}
+	
+	public void testLazyVariablesCannotBeLvalues() {
+		String s = "void foo(lazy int x) { x = 2; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.LazyVariablesCannotBeLvalues, 23, 1);
+	}
+	
+	public void testStatementIsNotReachable() {
+		String s = "void foo() { return; int x; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertWarning(p[0], IProblem.StatementIsNotReachable, 21, 6);
+	}
+	
+	/* TODO test for SemanticContext.IN_GCC = true
+	public void testCannotPutCatchStatementInsideFinallyBlock() {
+		String s = "void foo() { try { } finally { try { } catch { } } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.CannotPutCatchStatementInsideFinallyBlock, 39, 9);
+	}
+	*/
 
 }

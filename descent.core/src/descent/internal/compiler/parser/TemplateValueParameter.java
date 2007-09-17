@@ -44,7 +44,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		VarDeclaration v = new VarDeclaration(loc, valType, ident, null);
 		v.storage_class = STCtemplateparameter;
 		if (null == sc.insert(v)) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
 		}
 		sparam = v;
 	}

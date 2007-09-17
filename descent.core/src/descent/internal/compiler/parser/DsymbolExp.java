@@ -120,6 +120,8 @@ public class DsymbolExp extends Expression {
 					}
 				}
 				e = new VarExp(loc, v);
+				e.start = start;
+				e.length = length;
 				e.type = type;
 				e = e.semantic(sc, context);
 				return e.deref();

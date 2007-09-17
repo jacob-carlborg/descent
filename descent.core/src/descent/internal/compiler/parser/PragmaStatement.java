@@ -125,4 +125,14 @@ public class PragmaStatement extends Statement {
 		return body != null && body.usesEH();
 	}
 
+	@Override
+	public Statement syntaxCopy() {
+		Statement b = null;
+		if (body != null)
+			b = body.syntaxCopy();
+		PragmaStatement s = new PragmaStatement(loc, ident, Expression
+				.arraySyntaxCopy(args), b);
+		return s;
+	}
+
 }

@@ -222,15 +222,17 @@ public abstract class TypeQualified extends Type {
 	}
 
 	public void syntaxCopyHelper(TypeQualified t) {
-		for (int i = 0; i < idents.size(); i++) {
-			IdentifierExp id = t.idents.get(i);
-			if (id.dyncast() == DYNCAST_DSYMBOL) {
-				TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
-
-				ti = (TemplateInstance) ti.syntaxCopy(null);
-				id = new TemplateInstanceWrapper(Loc.ZERO, ti);
+		if (idents != null) {
+			for (int i = 0; i < idents.size(); i++) {
+				IdentifierExp id = t.idents.get(i);
+				if (id.dyncast() == DYNCAST_DSYMBOL) {
+					TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
+	
+					ti = (TemplateInstance) ti.syntaxCopy(null);
+					id = new TemplateInstanceWrapper(Loc.ZERO, ti);
+				}
+				idents.set(i, id);
 			}
-			idents.set(i, id);
 		}
 	}
 

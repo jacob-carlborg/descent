@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -57,8 +58,11 @@ public class GotoCaseStatement extends Statement {
 		}
 
 		if (null == sc.sw) {
-			error("goto case not in switch statement");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.GotoCaseNotInSwitch, 0, start, length));
 		} else {
+			if (sc.sw.gotoCases == null) {
+				sc.sw.gotoCases = new Identifiers();
+			}
 			sc.sw.gotoCases.add(this);
 			if (exp != null) {
 				exp = exp.implicitCastTo(sc, sc.sw.condition.type, context);

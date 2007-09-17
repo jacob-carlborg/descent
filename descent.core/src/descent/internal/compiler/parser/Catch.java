@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -40,7 +41,7 @@ public class Catch extends ASTDmdNode {
 
 		if (context.IN_GCC) {
 			if (sc.tf != null) {
-				error(loc, "cannot put catch statement inside finally block");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotPutCatchStatementInsideFinallyBlock, 0, start, length));
 			}
 		}
 

@@ -19,8 +19,10 @@ public class Dsymbol extends ASTDmdNode {
 
 	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
 		Dsymbols b = new Dsymbols();
-		for (Dsymbol s : a) {
-			b.add(s.syntaxCopy(null));
+		if (a != null) {
+			for (Dsymbol s : a) {
+				b.add(s.syntaxCopy(null));
+			}
 		}
 		return b;
 	}

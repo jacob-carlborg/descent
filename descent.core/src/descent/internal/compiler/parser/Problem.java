@@ -286,6 +286,8 @@ public class Problem implements IProblem {
 			return "Duplicate parameter " + arguments[0];
 		case SymbolNotFound:
 			return "Symbol " + arguments[0] + " not found";
+		case StatementIsNotReachable:
+			return "Statement is not reachable";
 		case VoidFunctionsHaveNoResult:
 			return "Void functions have no result";
 		case ReturnStatementsCannotBeInContracts:
@@ -374,6 +376,26 @@ public class Problem implements IProblem {
 			return "Expression has no effect";
 		case ConstantIsNotAnLValue:
 			return "Constant is not an lvalue";
+		case VersionIdentifierReserved:
+			return "Version identifier '" + arguments[0] + "' is reserved and cannot be set";
+		case CannotPutCatchStatementInsideFinallyBlock:
+			return "Cannot put catch statement inside finally block";
+		case AssignDoesNotGiveABooleanResult:
+			return "'=' does not give a boolean result";
+		case BreakIsNotInsideALoopOrSwitch:
+			return "break is not inside a loop or switch statement";
+		case CaseIsNotInSwitch:
+			return "case is not inside a switch statement";
+		case VersionDeclarationMustBeAtModuleLevel:
+			return "version declaration must be at module level";
+		case DebugDeclarationMustBeAtModuleLevel:
+			return "debug declaration must be at module level";
+		case GotoCaseNotInSwitch:
+			return "goto case is not inside a switch statement";
+		case GotoDefaultNotInSwitch:
+			return "goto default is not inside a switch statement";
+		case LazyVariablesCannotBeLvalues:
+			return "lazy variables cannot be lvalues";
 		default:
 			return "";
 		}

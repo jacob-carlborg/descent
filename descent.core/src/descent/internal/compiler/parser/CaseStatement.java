@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKstring;
@@ -103,16 +104,18 @@ public class CaseStatement extends Statement {
 			sw.cases.add(this);
 
 			// Resolve any goto case's with no exp to this case statement
-			for (i = 0; i < sw.gotoCases.size(); i++) {
-				GotoCaseStatement gcs = (GotoCaseStatement) sw.gotoCases.get(i);
-
-				if (gcs.exp == null) {
-					gcs.cs = this;
-					sw.gotoCases.remove(i); // remove from array
+			if (sw.gotoCases != null) {
+				for (i = 0; i < sw.gotoCases.size(); i++) {
+					GotoCaseStatement gcs = (GotoCaseStatement) sw.gotoCases.get(i);
+	
+					if (gcs.exp == null) {
+						gcs.cs = this;
+						sw.gotoCases.remove(i); // remove from array
+					}
 				}
 			}
 		} else {
-			error("case not in switch statement");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseIsNotInSwitch, 0, start, length));
 		}
 		statement = statement.semantic(sc, context);
 		return this;

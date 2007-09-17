@@ -24,6 +24,11 @@ public class AsmStatement extends Statement {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public Statement syntaxCopy() {
+		return new AsmStatement(loc, toklist);
+	}
 
 
 }

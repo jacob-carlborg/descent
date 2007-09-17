@@ -123,6 +123,8 @@ public class IdentifierExp extends Expression {
 					}
 				}
 				e = new DsymbolExp(loc, s);
+				e.start = start;
+				e.length = length;
 			}
 			return e.semantic(sc, context);
 		}

@@ -163,30 +163,35 @@ public class SwitchStatement extends Statement {
 		sc.noctor--;
 
 		// Resolve any goto case's with exp
-		Lfoundcase: for (int i = 0; i < gotoCases.size(); i++) {
-			GotoCaseStatement gcs = (GotoCaseStatement) gotoCases.get(i);
+		
 
-			if (null == gcs.exp) {
-				gcs.error("no case statement following goto case;");
-				break;
-			}
-
-			for (Scope scx = sc; scx != null; scx = scx.enclosing) {
-				if (null == scx.sw) {
-					continue;
+		if (gotoCases != null) {
+			Lfoundcase:
+			for (int i = 0; i < gotoCases.size(); i++) {
+				GotoCaseStatement gcs = (GotoCaseStatement) gotoCases.get(i);
+	
+				if (null == gcs.exp) {
+					gcs.error("no case statement following goto case;");
+					break;
 				}
-				for (int j = 0; j < scx.sw.cases.size(); j++) {
-					CaseStatement cs = (CaseStatement) scx.sw.cases.get(j);
-
-					if (cs.exp.equals(gcs.exp)) {
-						gcs.cs = cs;
-						// goto Lfoundcase;
-						continue Lfoundcase;
+	
+				for (Scope scx = sc; scx != null; scx = scx.enclosing) {
+					if (null == scx.sw) {
+						continue;
+					}
+					for (int j = 0; j < scx.sw.cases.size(); j++) {
+						CaseStatement cs = (CaseStatement) scx.sw.cases.get(j);
+	
+						if (cs.exp.equals(gcs.exp)) {
+							gcs.cs = cs;
+							// goto Lfoundcase;
+							continue Lfoundcase;
+						}
 					}
 				}
+				gcs.error("case %s not found", gcs.exp.toChars(context));
+				// Lfoundcase: ;
 			}
-			gcs.error("case %s not found", gcs.exp.toChars(context));
-			// Lfoundcase: ;
 		}
 
 		if (null == sc.sw.sdefault) {

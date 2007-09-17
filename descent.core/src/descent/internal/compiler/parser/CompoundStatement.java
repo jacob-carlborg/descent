@@ -15,7 +15,6 @@ public class CompoundStatement extends Statement {
 	public boolean manyVars; 	// if true, the block is just to group variable declarations,
 								// alias declarations or typedef declarations
 	public Statements statements;
-
 	public Statements sourceStatements;
 
 	public CompoundStatement(Loc loc, Statements statements) {
@@ -102,7 +101,12 @@ public class CompoundStatement extends Statement {
 			}
 
 			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				s.error("warning - statement is not reachable");
+				/* TODO semantic uncomment
+				context
+				.acceptProblem(Problem.newSemanticTypeWarning(
+						IProblem.StatementIsNotReachable, 0, s.start,
+						s.length));
+				*/
 			}
 			falloff = s.fallOffEnd(context);
 		}
@@ -297,7 +301,7 @@ public class CompoundStatement extends Statement {
 			if (s != null) {
 				s = s.syntaxCopy();
 			}
-			a.set(i, s);
+			a.add(s);
 		}
 		CompoundStatement cs = new CompoundStatement(loc, a);
 		return cs;

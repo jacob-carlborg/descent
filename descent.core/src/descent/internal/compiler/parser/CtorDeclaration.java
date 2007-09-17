@@ -95,11 +95,8 @@ public class CtorDeclaration extends FuncDeclaration {
 			Statement s;
 
 			e = new ThisExp(loc);
-			e.synthetic = true;
 			s = new ReturnStatement(loc, e);
-			s.synthetic = true;
 			fbody = new CompoundStatement(loc, fbody, s);
-			fbody.synthetic = true;
 		}
 
 		super.semantic(sc, context);

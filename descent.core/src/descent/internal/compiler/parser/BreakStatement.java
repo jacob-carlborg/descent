@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -103,7 +104,7 @@ public class BreakStatement extends Statement {
 				s = new ReturnStatement(0, new IntegerExp(1));
 				return s;
 			}
-			error("break is not inside a loop or switch");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.BreakIsNotInsideALoopOrSwitch, 0, start, length));
 		}
 		return this;
 	}

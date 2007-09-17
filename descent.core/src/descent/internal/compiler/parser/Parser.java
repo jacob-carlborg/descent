@@ -6500,7 +6500,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKint32v) {
 			return new VersionSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new VersionSymbol(loc, new IdentifierExp(loc, token.string), newVersionForCurrentToken());
+			return new VersionSymbol(loc, newIdentifierExp(), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}

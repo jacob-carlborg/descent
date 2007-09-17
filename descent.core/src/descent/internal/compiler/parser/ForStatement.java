@@ -4,20 +4,21 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ForStatement extends Statement {
-	
+
 	public Statement init;
 	public Expression condition;
 	public Expression increment;
 	public Statement body;
 
-	public ForStatement(Loc loc, Statement init, Expression condition, Expression increment, Statement body) {
+	public ForStatement(Loc loc, Statement init, Expression condition,
+			Expression increment, Statement body) {
 		super(loc);
 		this.init = init;
 		this.condition = condition;
 		this.increment = increment;
-		this.body = body;		
+		this.body = body;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -30,7 +31,6 @@ public class ForStatement extends Statement {
 		visitor.endVisit(this);
 	}
 
-	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		ScopeDsymbol sym = new ScopeDsymbol(loc);
@@ -59,10 +59,26 @@ public class ForStatement extends Statement {
 		sc.pop();
 		return this;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return FOR_STATEMENT;
+	}
+
+	@Override
+	public boolean comeFrom() {
+		if (body != null) {
+			boolean result = body.comeFrom();
+			return result;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean fallOffEnd(SemanticContext context) {
+		if (body != null)
+			body.fallOffEnd(context);
+		return true;
 	}
 
 }
