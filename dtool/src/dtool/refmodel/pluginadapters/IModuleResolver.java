@@ -1,6 +1,6 @@
 package dtool.refmodel.pluginadapters;
 
-import dtool.dom.definitions.Module;
+import dtool.ast.definitions.Module;
 
 /** 
  * Adapter interface for plugin DTool to interface with a host plugin that 

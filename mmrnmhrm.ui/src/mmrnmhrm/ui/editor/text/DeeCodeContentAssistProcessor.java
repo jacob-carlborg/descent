@@ -17,7 +17,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.definitions.DefUnit;
+import dtool.ast.definitions.DefUnit;
 import dtool.refmodel.PrefixDefUnitSearch;
 import dtool.refmodel.PrefixSearchOptions;
 import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;

@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Display;
 
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.Reference;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.references.Reference;
 
 public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColorProvider, IFontProvider {
 

@@ -15,7 +15,7 @@ import org.eclipse.dltk.ui.search.PatternQuerySpecification;
 import org.eclipse.dltk.ui.search.QuerySpecification;
 import org.eclipse.ui.IWorkingSet;
 
-import dtool.dom.definitions.DefUnit;
+import dtool.ast.definitions.DefUnit;
 
 public final class FindReferencesInWorkingSetAction extends FindAction {
 

@@ -10,12 +10,12 @@ import org.eclipse.dltk.internal.core.search.matching.QualifiedTypeDeclarationPa
 import org.eclipse.dltk.internal.core.search.matching.TypeDeclarationPattern;
 import org.eclipse.dltk.internal.core.search.matching.TypeReferencePattern;
 
-import dtool.dom.definitions.Definition;
-import dtool.dom.definitions.DefinitionAggregate;
-import dtool.dom.definitions.DefinitionAlias;
-import dtool.dom.definitions.DefinitionFunction;
-import dtool.dom.definitions.DefinitionVariable;
-import dtool.dom.references.NamedReference;
+import dtool.ast.definitions.Definition;
+import dtool.ast.definitions.DefinitionAggregate;
+import dtool.ast.definitions.DefinitionAlias;
+import dtool.ast.definitions.DefinitionFunction;
+import dtool.ast.definitions.DefinitionVariable;
+import dtool.ast.references.NamedReference;
 
 public class DeeNeoPatternMatcher extends PatternLocator {
 												

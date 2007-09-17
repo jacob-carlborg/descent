@@ -7,7 +7,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.internal.ui.editor.EditorUtility;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.definitions.Module;
+import dtool.ast.definitions.Module;
 
 public class ModelOperationUtil {
 

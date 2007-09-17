@@ -12,9 +12,9 @@ import org.junit.BeforeClass;
 import static melnorme.miscutil.Assert.assertTrue;
 
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTChecker;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.definitions.Module;
+import dtool.ast.ASTChecker;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.definitions.Module;
 import dtool.refmodel.ParserAdapter;
 
 public abstract class ConvertionCommonTest extends BasePluginTest {

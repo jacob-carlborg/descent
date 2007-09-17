@@ -19,8 +19,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.actions.ActionGroup;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.definitions.DefUnit;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.definitions.DefUnit;
 
 public abstract class DeeBaseEditor extends ScriptEditor {
 	

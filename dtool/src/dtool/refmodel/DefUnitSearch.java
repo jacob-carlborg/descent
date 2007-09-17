@@ -3,9 +3,9 @@ package dtool.refmodel;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import dtool.dom.declarations.PartialPackageDefUnit;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.expressions.Resolvable;
+import dtool.ast.declarations.PartialPackageDefUnit;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.expressions.Resolvable;
 
 /**
  * Normal DefUnit search, 

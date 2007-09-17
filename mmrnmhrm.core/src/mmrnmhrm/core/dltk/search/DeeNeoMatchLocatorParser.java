@@ -12,11 +12,11 @@ import org.eclipse.dltk.core.search.matching.MatchLocator;
 import org.eclipse.dltk.core.search.matching.MatchLocatorParser;
 import org.eclipse.dltk.core.search.matching.PossibleMatch;
 
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.DefinitionAggregate;
-import dtool.dom.definitions.DefinitionClass;
-import dtool.dom.definitions.Module;
-import dtool.dom.references.NamedReference;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.DefinitionAggregate;
+import dtool.ast.definitions.DefinitionClass;
+import dtool.ast.definitions.Module;
+import dtool.ast.references.NamedReference;
 
 public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 

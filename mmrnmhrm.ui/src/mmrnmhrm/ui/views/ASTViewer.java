@@ -41,7 +41,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.ast.ASTNodeFinder;
+import dtool.ast.ASTNodeFinder;
 
 
 /**

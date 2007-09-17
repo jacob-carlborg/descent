@@ -14,7 +14,7 @@ import org.eclipse.dltk.ui.DLTKPluginImages;
 import org.eclipse.dltk.ui.search.PatternQuerySpecification;
 import org.eclipse.dltk.ui.search.QuerySpecification;
 
-import dtool.dom.definitions.DefUnit;
+import dtool.ast.definitions.DefUnit;
 
 public final class FindReferencesInProjectAction extends FindAction {
 

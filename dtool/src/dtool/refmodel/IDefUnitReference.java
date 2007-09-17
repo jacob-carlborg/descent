@@ -2,7 +2,7 @@ package dtool.refmodel;
 
 import java.util.Collection;
 
-import dtool.dom.definitions.DefUnit;
+import dtool.ast.definitions.DefUnit;
 
 /** A reference to a DefUnit. */
 public interface IDefUnitReference {

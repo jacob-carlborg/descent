@@ -76,7 +76,7 @@ public class DeeSourceParser implements ISourceParser {
 			// DontLet's try to convert a malformed AST
 			return moduleDec;
 		}
-		dtool.dom.definitions.Module neoModule = DescentASTConverter.convertModule(dmdModule);
+		dtool.ast.definitions.Module neoModule = DescentASTConverter.convertModule(dmdModule);
 		moduleDec.setNeoModule(neoModule);
 		return moduleDec;
 	}

@@ -7,20 +7,20 @@ import org.eclipse.dltk.core.ISourceModule;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.ast.TokenUtil;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.ASTNodeFinder;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
+import dtool.ast.expressions.Expression;
+import dtool.ast.references.CommonRefQualified;
+import dtool.ast.references.CommonRefSingle;
+import dtool.ast.references.NamedReference;
+import dtool.ast.references.RefIdentifier;
+import dtool.ast.references.RefImportSelection;
+import dtool.ast.references.RefModule;
+import dtool.ast.references.RefTemplateInstance;
+import dtool.ast.references.Reference;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNodeFinder;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.expressions.Expression;
-import dtool.dom.references.CommonRefQualified;
-import dtool.dom.references.CommonRefSingle;
-import dtool.dom.references.NamedReference;
-import dtool.dom.references.RefIdentifier;
-import dtool.dom.references.RefImportSelection;
-import dtool.dom.references.RefModule;
-import dtool.dom.references.RefTemplateInstance;
-import dtool.dom.references.Reference;
 
 /** Class that does a scoped name lookup for matches that start with 
  * a given prefix name. 

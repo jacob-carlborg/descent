@@ -29,12 +29,12 @@ import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNodeFinder;
-import dtool.dom.definitions.DefSymbol;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.references.Reference;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.ASTNodeFinder;
+import dtool.ast.definitions.DefSymbol;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
+import dtool.ast.references.Reference;
 
 public abstract class FindAction extends SelectionDispatchAction {
 

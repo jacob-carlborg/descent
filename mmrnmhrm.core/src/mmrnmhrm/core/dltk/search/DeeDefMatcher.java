@@ -8,9 +8,9 @@ import org.eclipse.dltk.core.search.SearchPattern;
 import org.eclipse.dltk.core.search.matching.PatternLocator;
 import org.eclipse.dltk.internal.core.search.matching.MatchingNodeSet;
 
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.CommonRefQualified;
-import dtool.dom.references.Reference;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.references.CommonRefQualified;
+import dtool.ast.references.Reference;
 
 public class DeeDefMatcher extends PatternLocator {
 	

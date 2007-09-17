@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import dtool.dom.definitions.DefUnit;
+import dtool.ast.definitions.DefUnit;
 
 public abstract class CommonDefUnitSearch {
 

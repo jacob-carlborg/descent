@@ -6,7 +6,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ISourceModuleInfoCache;
 import org.eclipse.dltk.core.ISourceModuleInfoCache.ISourceModuleInfo;
 
-import dtool.dom.definitions.Module;
+import dtool.ast.definitions.Module;
 
 public abstract class ParsingUtil {
 

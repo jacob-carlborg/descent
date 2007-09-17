@@ -4,7 +4,7 @@ import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 
 import static melnorme.miscutil.Assert.assertFail;
 
-import dtool.dom.definitions.Module;
+import dtool.ast.definitions.Module;
 
 public class DeeModuleDeclaration extends ModuleDeclaration {
 

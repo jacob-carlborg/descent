@@ -10,9 +10,9 @@ import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNodeFinder;
-import dtool.dom.references.Reference;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.ASTNodeFinder;
+import dtool.ast.references.Reference;
 
 public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 

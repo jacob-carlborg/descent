@@ -20,7 +20,7 @@ import org.eclipse.dltk.internal.core.search.matching.MethodPattern;
 import org.eclipse.dltk.internal.core.search.matching.TypeDeclarationPattern;
 import org.eclipse.dltk.internal.core.search.matching.TypeReferencePattern;
 
-import dtool.dom.ast.ASTNeoNode;
+import dtool.ast.ASTNeoNode;
 
 public class DeeNeoMatchLocator extends MatchLocator {
 

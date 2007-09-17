@@ -1,6 +1,5 @@
 package dtool.descentadapter;
 
-import descent.core.dom.SelectiveImport;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.ast.ASTNode;
@@ -235,9 +234,6 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 
 	public boolean visit(ModuleDeclaration elem) {
-		return assertFailABSTRACT_NODE();
-	}
-	public boolean visit(SelectiveImport elem) {
 		return assertFailABSTRACT_NODE();
 	}
 

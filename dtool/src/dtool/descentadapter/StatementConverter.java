@@ -33,35 +33,35 @@ import descent.internal.compiler.parser.TryFinallyStatement;
 import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.declarations.DeclarationConditional;
-import dtool.dom.declarations.DeclarationPragma;
-import dtool.dom.declarations.DeclarationStaticAssert;
-import dtool.dom.statements.BlockStatement;
-import dtool.dom.statements.StatementAsm;
-import dtool.dom.statements.StatementBreak;
-import dtool.dom.statements.StatementCase;
-import dtool.dom.statements.StatementContinue;
-import dtool.dom.statements.StatementDefault;
-import dtool.dom.statements.StatementDo;
-import dtool.dom.statements.StatementExp;
-import dtool.dom.statements.StatementFor;
-import dtool.dom.statements.StatementForeach;
-import dtool.dom.statements.StatementForeachRange;
-import dtool.dom.statements.StatementGoto;
-import dtool.dom.statements.StatementGotoCase;
-import dtool.dom.statements.StatementGotoDefault;
-import dtool.dom.statements.StatementIf;
-import dtool.dom.statements.StatementLabel;
-import dtool.dom.statements.StatementOnScope;
-import dtool.dom.statements.StatementReturn;
-import dtool.dom.statements.StatementSwitch;
-import dtool.dom.statements.StatementSynchronized;
-import dtool.dom.statements.StatementThrow;
-import dtool.dom.statements.StatementTry;
-import dtool.dom.statements.StatementVolatile;
-import dtool.dom.statements.StatementWhile;
-import dtool.dom.statements.StatementWith;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.declarations.DeclarationConditional;
+import dtool.ast.declarations.DeclarationPragma;
+import dtool.ast.declarations.DeclarationStaticAssert;
+import dtool.ast.statements.BlockStatement;
+import dtool.ast.statements.StatementAsm;
+import dtool.ast.statements.StatementBreak;
+import dtool.ast.statements.StatementCase;
+import dtool.ast.statements.StatementContinue;
+import dtool.ast.statements.StatementDefault;
+import dtool.ast.statements.StatementDo;
+import dtool.ast.statements.StatementExp;
+import dtool.ast.statements.StatementFor;
+import dtool.ast.statements.StatementForeach;
+import dtool.ast.statements.StatementForeachRange;
+import dtool.ast.statements.StatementGoto;
+import dtool.ast.statements.StatementGotoCase;
+import dtool.ast.statements.StatementGotoDefault;
+import dtool.ast.statements.StatementIf;
+import dtool.ast.statements.StatementLabel;
+import dtool.ast.statements.StatementOnScope;
+import dtool.ast.statements.StatementReturn;
+import dtool.ast.statements.StatementSwitch;
+import dtool.ast.statements.StatementSynchronized;
+import dtool.ast.statements.StatementThrow;
+import dtool.ast.statements.StatementTry;
+import dtool.ast.statements.StatementVolatile;
+import dtool.ast.statements.StatementWhile;
+import dtool.ast.statements.StatementWith;
 
 public final class StatementConverter extends ExpressionConverter {
 	
@@ -198,7 +198,7 @@ public final class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(DeclarationExp node) {
-		return endAdapt((ASTNeoNode) dtool.dom.declarations.Declaration.convert(node.declaration));
+		return endAdapt((ASTNeoNode) dtool.ast.declarations.Declaration.convert(node.declaration));
 	}
 
 }

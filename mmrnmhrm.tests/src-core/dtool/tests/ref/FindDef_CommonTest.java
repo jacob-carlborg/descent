@@ -16,11 +16,11 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 import org.junit.Test;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNodeFinder;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.references.Reference;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.ASTNodeFinder;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
+import dtool.ast.references.Reference;
 import dtool.refmodel.NodeUtil;
 
 //@RunWith(Parameterized.class)

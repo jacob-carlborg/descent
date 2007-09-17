@@ -5,17 +5,17 @@ import java.util.Iterator;
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.IteratorUtil;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.declarations.DeclarationImport;
-import dtool.dom.declarations.ImportContent;
-import dtool.dom.declarations.ImportSelective;
-import dtool.dom.declarations.ImportStatic;
-import dtool.dom.declarations.PartialPackageDefUnitOfPackage;
-import dtool.dom.declarations.DeclarationImport.ImportFragment;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.definitions.Module.DeclarationModule;
-import dtool.dom.references.RefImportSelection;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.declarations.DeclarationImport;
+import dtool.ast.declarations.ImportContent;
+import dtool.ast.declarations.ImportSelective;
+import dtool.ast.declarations.ImportStatic;
+import dtool.ast.declarations.PartialPackageDefUnitOfPackage;
+import dtool.ast.declarations.DeclarationImport.ImportFragment;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
+import dtool.ast.definitions.Module.DeclarationModule;
+import dtool.ast.references.RefImportSelection;
 import dtool.refmodel.pluginadapters.IModuleResolver;
 
 /**

@@ -1,6 +1,6 @@
 package dtool.descentadapter;
 
-import dtool.dom.ast.ASTNodeParentizer;
+import dtool.ast.ASTNodeParentizer;
 
 public final class PostConvertionAdapter extends ASTNodeParentizer {
 

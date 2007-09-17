@@ -6,8 +6,8 @@ import java.util.List;
 
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.definitions.Module;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.definitions.Module;
 
 public class DescentASTConverter {
 

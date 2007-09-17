@@ -6,7 +6,7 @@ import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.swt.graphics.Image;
 
-import dtool.dom.ast.ASTNeoNode;
+import dtool.ast.ASTNeoNode;
 
 
 

@@ -7,7 +7,7 @@ import org.eclipse.dltk.ui.viewsupport.ScriptUILabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import dtool.Logg;
-import dtool.dom.ast.ASTNeoNode;
+import dtool.ast.ASTNeoNode;
 
 public class DeeScriptUILabelProvider extends ScriptUILabelProvider {
 	public static class DeeScriptElementImageProvider extends ScriptElementImageProvider {

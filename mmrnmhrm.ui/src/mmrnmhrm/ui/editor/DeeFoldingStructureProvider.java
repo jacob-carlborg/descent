@@ -10,8 +10,8 @@ import org.eclipse.dltk.ast.declarations.ISourceParser;
 import org.eclipse.dltk.ui.text.folding.AbstractASTFoldingStructureProvider;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
-import dtool.dom.definitions.DefinitionAggregate;
-import dtool.dom.definitions.DefinitionFunction;
+import dtool.ast.definitions.DefinitionAggregate;
+import dtool.ast.definitions.DefinitionFunction;
 
 // TODO finish
 public class DeeFoldingStructureProvider extends

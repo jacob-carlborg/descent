@@ -16,7 +16,7 @@ import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 
-import dtool.dom.definitions.Module;
+import dtool.ast.definitions.Module;
 import dtool.refmodel.pluginadapters.IModuleResolver;
 
 public class DLTKModuleResolver implements IModuleResolver {

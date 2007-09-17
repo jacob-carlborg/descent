@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-descent.core/src"/>
+	<classpathentry kind="src" path="src-descent.core/src-util"/>
 	<classpathentry exported="true" kind="lib" path="libs/antlr-3.0b5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ini4j.jar" sourcepath="libs/ini4j-0.2.6/src/classes">
 		<attributes>

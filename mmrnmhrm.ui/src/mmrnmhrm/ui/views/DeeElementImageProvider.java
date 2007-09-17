@@ -5,23 +5,23 @@ import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.swt.graphics.Image;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.declarations.DeclarationImport;
-import dtool.dom.declarations.PartialPackageDefUnit;
-import dtool.dom.definitions.DefinitionAlias;
-import dtool.dom.definitions.DefinitionClass;
-import dtool.dom.definitions.DefinitionEnum;
-import dtool.dom.definitions.DefinitionFunction;
-import dtool.dom.definitions.DefinitionInterface;
-import dtool.dom.definitions.DefinitionStruct;
-import dtool.dom.definitions.DefinitionTemplate;
-import dtool.dom.definitions.DefinitionTypedef;
-import dtool.dom.definitions.DefinitionUnion;
-import dtool.dom.definitions.DefinitionVariable;
-import dtool.dom.definitions.Module;
-import dtool.dom.definitions.Module.DeclarationModule;
-import dtool.dom.references.Reference;
-import dtool.dom.references.RefModule.LiteModuleDummy;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.declarations.DeclarationImport;
+import dtool.ast.declarations.PartialPackageDefUnit;
+import dtool.ast.definitions.DefinitionAlias;
+import dtool.ast.definitions.DefinitionClass;
+import dtool.ast.definitions.DefinitionEnum;
+import dtool.ast.definitions.DefinitionFunction;
+import dtool.ast.definitions.DefinitionInterface;
+import dtool.ast.definitions.DefinitionStruct;
+import dtool.ast.definitions.DefinitionTemplate;
+import dtool.ast.definitions.DefinitionTypedef;
+import dtool.ast.definitions.DefinitionUnion;
+import dtool.ast.definitions.DefinitionVariable;
+import dtool.ast.definitions.Module;
+import dtool.ast.definitions.Module.DeclarationModule;
+import dtool.ast.references.Reference;
+import dtool.ast.references.RefModule.LiteModuleDummy;
 
 public class DeeElementImageProvider {
 	

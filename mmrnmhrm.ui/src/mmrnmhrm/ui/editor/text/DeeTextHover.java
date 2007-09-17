@@ -9,12 +9,12 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNodeFinder;
-import dtool.dom.definitions.DefSymbol;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.references.Reference;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.ASTNodeFinder;
+import dtool.ast.definitions.DefSymbol;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
+import dtool.ast.references.Reference;
 
 /** 
  *  TODO Learn more about DefaultTextHover

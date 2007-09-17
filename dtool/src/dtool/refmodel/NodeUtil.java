@@ -2,10 +2,10 @@ package dtool.refmodel;
 
 import melnorme.miscutil.tree.IElement;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.definitions.BaseClass;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.definitions.BaseClass;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
 
 public class NodeUtil {
 

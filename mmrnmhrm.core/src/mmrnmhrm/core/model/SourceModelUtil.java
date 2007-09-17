@@ -4,12 +4,12 @@ import org.eclipse.dltk.core.IMember;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.IType;
 
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Definition;
-import dtool.dom.definitions.DefinitionFunction;
-import dtool.dom.definitions.DefinitionVariable;
-import dtool.dom.definitions.Module;
+import dtool.ast.ASTNeoNode;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Definition;
+import dtool.ast.definitions.DefinitionFunction;
+import dtool.ast.definitions.DefinitionVariable;
+import dtool.ast.definitions.Module;
 
 public class SourceModelUtil {
 	

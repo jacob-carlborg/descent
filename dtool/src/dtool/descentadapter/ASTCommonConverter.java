@@ -3,7 +3,7 @@ package dtool.descentadapter;
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import dtool.dom.ast.ASTNeoNode;
+import dtool.ast.ASTNeoNode;
 
 /**
  * This class is a mixin. 

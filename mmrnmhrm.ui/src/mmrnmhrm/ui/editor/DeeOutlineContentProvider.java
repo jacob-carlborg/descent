@@ -9,10 +9,10 @@ import org.eclipse.jface.viewers.Viewer;
 
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.declarations.DeclarationImport;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.definitions.Module.DeclarationModule;
+import dtool.ast.declarations.DeclarationImport;
+import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.Module;
+import dtool.ast.definitions.Module.DeclarationModule;
 import dtool.refmodel.INonScopedBlock;
 
 public class DeeOutlineContentProvider extends ElementContentProvider {

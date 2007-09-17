@@ -7,18 +7,18 @@ import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.TemplateInstanceWrapper;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeInstance;
-import dtool.dom.expressions.ExpReference;
-import dtool.dom.references.RefIdentifier;
-import dtool.dom.references.RefTypeSlice;
-import dtool.dom.references.Reference;
-import dtool.dom.references.ReferenceConverter;
-import dtool.dom.references.TypeDelegate;
-import dtool.dom.references.TypeDynArray;
-import dtool.dom.references.TypeFunction;
-import dtool.dom.references.TypeMapArray;
-import dtool.dom.references.TypePointer;
-import dtool.dom.references.TypeStaticArray;
-import dtool.dom.references.TypeTypeof;
+import dtool.ast.expressions.ExpReference;
+import dtool.ast.references.RefIdentifier;
+import dtool.ast.references.RefTypeSlice;
+import dtool.ast.references.Reference;
+import dtool.ast.references.ReferenceConverter;
+import dtool.ast.references.TypeDelegate;
+import dtool.ast.references.TypeDynArray;
+import dtool.ast.references.TypeFunction;
+import dtool.ast.references.TypeMapArray;
+import dtool.ast.references.TypePointer;
+import dtool.ast.references.TypeStaticArray;
+import dtool.ast.references.TypeTypeof;
 
 /**
  * This class is a mixin. 

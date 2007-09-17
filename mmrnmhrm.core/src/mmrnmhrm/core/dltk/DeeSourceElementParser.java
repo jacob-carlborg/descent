@@ -17,7 +17,7 @@ import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.ISourceModuleInfoCache.ISourceModuleInfo;
 
 import dtool.Logg;
-import dtool.dom.definitions.Module;
+import dtool.ast.definitions.Module;
 
 public class DeeSourceElementParser implements ISourceElementParser {
  
