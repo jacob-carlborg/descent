@@ -1,9 +1,12 @@
 package dtool.dom.definitions;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.dltk.core.ISourceModule;
@@ -12,11 +15,8 @@ import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTPrinter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
-import dtool.dom.references.CommonRefSingle;
-import dtool.dom.references.RefIdentifier;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -28,7 +28,7 @@ public class Module extends DefUnit implements IScopeNode {
 
 	public static class DeclarationModule extends ASTNeoNode {
 
-		public RefIdentifier[] packages;
+		public String[] packages;
 		public Symbol moduleName;
 		
 		public DeclarationModule(ModuleDeclaration md) {
@@ -40,7 +40,7 @@ public class Module extends DefUnit implements IScopeNode {
 		public void accept0(IASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
 			if (children) {
-				TreeVisitor.acceptChildren(visitor, packages);
+				//TreeVisitor.acceptChildren(visitor, packages);
 				TreeVisitor.acceptChildren(visitor, moduleName);
 			}
 			visitor.endVisit(this);
@@ -48,7 +48,8 @@ public class Module extends DefUnit implements IScopeNode {
 		
 		@Override
 		public String toStringAsElement() {
-			String str = ASTPrinter.toStringAsElements(packages, "."); 
+			//String str = ASTPrinter.toStringAsElements(packages, "."); 
+			String str = StringUtil.collToString(packages, ".");
 			if(str.length() == 0)
 				return moduleName.toStringAsElement();
 			else
@@ -78,11 +79,15 @@ public class Module extends DefUnit implements IScopeNode {
 			md = new DeclarationModule(elem.md);
 			
 			if(elem.md.packages != null) {
-				md.packages = new RefIdentifier[elem.md.packages.size()];
-				CommonRefSingle.convertManyToRefIdentifier(elem.md.packages, md.packages);
+				md.packages = new String[elem.md.packages.size()];
 			} else {
-				md.packages = new RefIdentifier[0];
+				md.packages = new String[0];
 			}
+			for (int i = 0; i < md.packages.length; i++) {
+				md.packages[i] = new String(elem.md.packages.get(i).ident);
+			}
+			
+
 			preComments = elem.md.preDdocs.toArray(new Comment[elem.md.preDdocs.size()]);
 		}
 		return new Module(defname, preComments, md, members, elem);
@@ -103,8 +108,11 @@ public class Module extends DefUnit implements IScopeNode {
 		return EArcheType.Module;
 	}
 	
-	public void setModuleUnit(ISourceModule moduleUnit) {
-		this.moduleUnit = moduleUnit;
+	public void setModuleUnit(ISourceModule modUnit) {
+		assertTrue(modUnit.exists());
+		if(this.moduleUnit != null)
+			assertTrue(this.moduleUnit.equals(modUnit));
+		this.moduleUnit = modUnit;
 	}
 	public ISourceModule getModuleUnit() {
 		return (ISourceModule) moduleUnit;

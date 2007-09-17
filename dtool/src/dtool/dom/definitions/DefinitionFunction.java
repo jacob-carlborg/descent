@@ -96,6 +96,7 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 	
 	@Override
 	public IScopeNode getMembersScope() {
+		// FIXME
 		return this;
 	}
 

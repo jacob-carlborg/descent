@@ -1,12 +1,13 @@
 package mmrnmhrm.ui.navigator;
 
 import mmrnmhrm.core.model.ModelUtil;
-import mmrnmhrm.ui.actions.ISimpleRunnable;
 import mmrnmhrm.ui.actions.OperationsManager;
 import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -50,11 +51,11 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 		
 		@Override
 		public void run() {
-			OperationsManager.executeOperation("Open Element", new ISimpleRunnable() {
-				public void run() throws CoreException {
+			OperationsManager.executeOperation(new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
 					IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
 				}
-			});
+			}, "Open Element");
 		}
 	}
 	

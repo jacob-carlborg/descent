@@ -44,6 +44,7 @@ public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 		// folding
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
 		store.setDefault(PreferenceConstants.EDITOR_COMMENTS_FOLDING_ENABLED, true);		
+		store.setDefault(PreferenceConstants.SEARCH_USE_REDUCED_MENU, true);
 		
 
 		// WIZARDS

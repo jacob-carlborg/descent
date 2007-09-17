@@ -34,6 +34,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 		ISourceModule sourceModule = (ISourceModule) sourceRefModule.getModuleUnit();
 
 		IScriptProject deeproj = sourceModule.getScriptProject();
+		
 		if(deeproj == null)
 			return null;
 		

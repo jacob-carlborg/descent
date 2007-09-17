@@ -1,6 +1,5 @@
 package dtool.dom.ast;
 
-import static melnorme.miscutil.Assert.assertFail;
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.tree.IElement;
@@ -12,6 +11,7 @@ import org.eclipse.dltk.core.ISourceRange;
 
 import descent.internal.compiler.parser.ast.IASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import dtool.dom.definitions.Module;
 import dtool.refmodel.IScope;
 import dtool.refmodel.NodeUtil;
 
@@ -159,6 +159,11 @@ public abstract class ASTNeoNode extends ASTNode
 	public IScope getModuleScope() {
 		return NodeUtil.getParentModule(this);
 	}
+	
+	public Module getModuleNode() {
+		return NodeUtil.getParentModule(this);
+	}
+
 
 	/** Sets the source range the same as the given elem, 
 	 * even if the range is invalid*/
@@ -191,13 +196,13 @@ public abstract class ASTNeoNode extends ASTNode
 	@Override
 	@Deprecated
 	public final String toString() {
-		assertFail("ASTNeoNode.toString is for debugging purposes only.");
+		//assertFail("ASTNeoNode.toString is for debugging purposes only.");
 		return toStringClassName() +" "+ toStringAsCode();
 		//return ASTPrinter.toStringAsFullNodeTree(this, true);
 	}
 	
 	/** Returns a simple representation of this node, 
-	 * element-like and fir for a line. */
+	 * element-like and for for a line. */
 	public String toStringAsElement() {
 		return "?";
 	}

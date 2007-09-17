@@ -2,18 +2,22 @@ package mmrnmhrm.ui.editor;
 
 import java.util.Iterator;
 
+import mmrnmhrm.org.eclipse.dltk.ui.actions.ReferencesSearchGroup;
+
 import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.ISourceReference;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.internal.ui.editor.BracketInserter;
 import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
+import org.eclipse.dltk.ui.actions.OpenViewActionGroup;
 import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.actions.ActionGroup;
 
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
@@ -99,6 +103,35 @@ public abstract class DeeBaseEditor extends ScriptEditor {
 			}
 		};
 	}
+	
+	@SuppressWarnings("restriction")
+	@Override
+	protected void createActions() {
+		super.createActions();
+		//ActionGroup oeg = new OpenEditorActionGroup(this);
+		ActionGroup ovg = new OpenViewActionGroup(this);
+		//ActionGroup dsg = new SearchActionGroup(this);
 
+		ActionGroup fReferencesGroup= new ReferencesSearchGroup(this, this.getLanguageToolkit());
+		//fReadAccessGroup= new ReadReferencesSearchGroup(fEditor);
+		//fWriteAccessGroup= new WriteReferencesSearchGroup(fEditor);
+		//ActionGroup fDeclarationsGroup= new DeclarationsSearchGroup(this, this.getLanguageToolkit());
+
+
+		fActionGroups = new org.eclipse.dltk.internal.ui.actions.
+		CompositeActionGroup(new ActionGroup[] { 
+				//oeg, 
+				ovg, //dsg,
+				fReferencesGroup, //fDeclarationsGroup
+				});
+
+		fContextMenuGroup = new org.eclipse.dltk.internal.ui.actions.
+		CompositeActionGroup(new ActionGroup[] { 
+				//oeg, 
+				ovg, //dsg,
+				fReferencesGroup, //fDeclarationsGroup
+				});
+	}
 
 }
+

@@ -1,6 +1,7 @@
 package mmrnmhrm.core.dltk.search;
 
 
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.dltk.ParsingUtil;
 
 import org.eclipse.dltk.ast.ASTNode;
@@ -11,9 +12,11 @@ import org.eclipse.dltk.core.search.matching.MatchLocator;
 import org.eclipse.dltk.core.search.matching.MatchLocatorParser;
 import org.eclipse.dltk.core.search.matching.PossibleMatch;
 
+import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionClass;
 import dtool.dom.definitions.Module;
+import dtool.dom.references.NamedReference;
 
 public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 
@@ -51,10 +54,16 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 			unit.traverse(visitor);
 		} catch (Exception e) {
 			e.printStackTrace();
+			DeeCore.log(e);
 		}
 	}
 
 	private void processNode(ASTNode node) {
+		if(node instanceof DefUnit || node instanceof NamedReference) {
+			getPatternLocator().match(node, getNodeSet());
+			return;
+		}
+
 		if(node instanceof Module) {
 			getPatternLocator().match(node, getNodeSet());
 		} else

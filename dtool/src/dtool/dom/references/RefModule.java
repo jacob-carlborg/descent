@@ -90,6 +90,12 @@ public class RefModule extends NamedReference {
 		}
 	}
 	
+	
+	@Override
+	protected String getReferenceName() {
+		return module;
+	}
+	
 	@Override
 	public void doSearch(PrefixDefUnitSearch search) {
 		String prefix = search.searchOptions.searchPrefix;
@@ -112,5 +118,6 @@ public class RefModule extends NamedReference {
 		else
 			return str + "." + module;
 	}
+
 
 }

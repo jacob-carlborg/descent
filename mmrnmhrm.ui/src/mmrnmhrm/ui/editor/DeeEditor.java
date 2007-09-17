@@ -82,10 +82,7 @@ public class DeeEditor extends DeeBaseEditor {
 	}
 	
 	
-	@Override
-	protected void createActions() {
-		super.createActions();
-	}
+
 	
 	@Override
 	public void editorContextMenuAboutToShow(IMenuManager menu) {
@@ -93,6 +90,9 @@ public class DeeEditor extends DeeBaseEditor {
 		//menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN, fActionGoToDefinition);
 		menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN,
 				DeeEditorActionContributor.getCommand_FindDefinition());
+/*		menu.appendToGroup(ITextEditorActionConstants.GROUP_OPEN,
+				DeeEditorActionContributor.getCommand_FindDefinition());
+	*/	
 	}
 	
 	@Override

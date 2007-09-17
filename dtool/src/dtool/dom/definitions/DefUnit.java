@@ -8,8 +8,8 @@ import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.refmodel.IScopeAdaptable;
 import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeAdaptable;
 import dtool.refmodel.IScopeNode;
 
 /**

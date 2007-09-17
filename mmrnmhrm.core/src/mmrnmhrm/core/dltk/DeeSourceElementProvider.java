@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.dltk.ast.Modifiers;
 import org.eclipse.dltk.compiler.ISourceElementRequestor;
+import org.eclipse.dltk.compiler.ISourceElementRequestor.FieldInfo;
 import org.eclipse.dltk.compiler.ISourceElementRequestor.TypeInfo;
 
 import descent.internal.compiler.parser.STC;
@@ -22,6 +23,7 @@ import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module;
+import dtool.dom.references.NamedReference;
 
 public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 
@@ -101,11 +103,14 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 	}
 	
 	private static int getProtectionFlags(Definition elem, int modifiers) {
+		// default:
+		
 		switch(elem.protection) {
-		case PROTprivate: modifiers |= Modifiers.AccPrivate;
-		case PROTpublic: modifiers |= Modifiers.AccPublic;
-		case PROTprotected: modifiers |= Modifiers.AccProtected;
-		case PROTpackage: modifiers |= Modifiers.AccDefault;
+		case PROTprivate: modifiers |= Modifiers.AccPrivate; break;
+		case PROTpublic: modifiers |= Modifiers.AccPublic; break;
+		case PROTprotected: modifiers |= Modifiers.AccProtected; break;
+		case PROTpackage: modifiers |= Modifiers.AccDefault; break;
+		default: modifiers |= Modifiers.AccPublic;
 		}
 		return modifiers;
 	}
@@ -153,8 +158,21 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 		return methodInfo;
 	}
 	
+	
+	private FieldInfo createFieldInfo(DefinitionVariable elem) {
+		ISourceElementRequestor.FieldInfo fieldInfo = new ISourceElementRequestor.FieldInfo();
+		setupDefUnitTypeInfo(elem, fieldInfo);
+		setupDefinitionTypeInfo(elem, fieldInfo);
+		return fieldInfo;
+	}
+
+	/* ================================== */
+	
+	
+	
 	@Override
 	public boolean visit(Module node) {
+		requestor.enterModule();
 		requestor.enterType(createTypeInfoForModule(node));
 		/*DeclarationModule md = node.md;
 		String pkgName = "";
@@ -175,7 +193,8 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 
 	@Override
 	public void endVisit(Module node) {
-		//requestor.exitType(node.sourceEnd() -1);
+		requestor.exitType(node.sourceEnd() -1);
+		requestor.exitModule(node.sourceEnd() -1);
 	}
 	
 	@Override
@@ -222,27 +241,39 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 
 	@Override
 	public boolean visit(DefinitionVariable elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		requestor.enterField(createFieldInfo(elem));
 		return true;
 	}
 	
 	@Override
+	public void endVisit(DefinitionVariable elem) {
+		requestor.exitField(elem.sourceEnd()-1);
+	}	
+	
+	@Override
 	public boolean visit(DefinitionEnum elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		//requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
 		return true;
 	}
 	
 	@Override
 	public boolean visit(DefinitionTypedef elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		//requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
 		return true;
 	}
 	
 	@Override
 	public boolean visit(DefinitionAlias elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		//requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
 		return true;
 	}
+	
 
+	@Override
+	public boolean visit(NamedReference elem) {
+		requestor.acceptTypeReference(elem.toStringAsElement().toCharArray(), 
+				elem.sourceStart()-1);
+		return true;
+	}
 
 }

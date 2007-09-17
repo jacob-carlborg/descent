@@ -1,5 +1,7 @@
 package mmrnmhrm.core.dltk;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ISourceModuleInfoCache;
 import org.eclipse.dltk.core.ISourceModuleInfoCache.ISourceModuleInfo;

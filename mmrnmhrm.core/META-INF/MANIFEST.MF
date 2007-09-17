@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Export-Package: mmrnmhrm.core,
  mmrnmhrm.core.build,
  mmrnmhrm.core.dltk,
+ mmrnmhrm.core.dltk.search,
  mmrnmhrm.core.launch,
  mmrnmhrm.core.model
 Require-Bundle: com.ibm.icu,

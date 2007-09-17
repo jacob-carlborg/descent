@@ -47,11 +47,11 @@ public class AddSourceFolderHandler extends AbstractHandler {
 			}
 		};
 		
-		OperationsManager.executeOperation("Add Folder Library To Build Path", new ISimpleRunnable() {
-			public void run() throws CoreException {
+		OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
 				DeeCore.run(op, null);
 			}
-		});
+		}, "Add Folder Library To Build Path");
 
 		return null;
 	}

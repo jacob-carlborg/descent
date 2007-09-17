@@ -88,12 +88,12 @@
 	          id="mmrnmhrm.ui.preferences.Editor"
 	          name="%LangEditorPreferencePage.name"/>
 	    <page
-	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+	          category="mmrnmhrm.ui.preferences.Editor"
 	          class="mmrnmhrm.ui.preferences.pages.DeeSourceColoringPreferencePage"
 	          id="mmrnmhrm.ui.preferences.Editor"
 	          name="%LangEditorSyntaxColoringPreferencePage.name"/>
      	<page
-              category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+              category="mmrnmhrm.ui.preferences.Editor"
               class="mmrnmhrm.ui.preferences.pages.DeeTemplatePreferencePage"
               id="mmrnmhrm.ui.preferences.Editor"
               name="%LangCodeTemplatesPreferencePage.name">      
@@ -289,6 +289,11 @@
        id="mmrnmhrm.ui.commands.openDeeSearchPage"
        name="%OpenLangSearchPageAction.label">
  </command>
+ <command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       id="org.eclipse.dltk.ui.edit.text.script.search.references.in.workspace"
+       name="&quot;&lt;FNORD&gt;&quot;">
+ </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -476,6 +481,12 @@
             contextId="mmrnmhrm.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+H">
+      </key>
+      <key
+            commandId="org.eclipse.dltk.ui.edit.text.script.search.references.in.workspace"
+            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+G">
       </key>
    </extension>
 

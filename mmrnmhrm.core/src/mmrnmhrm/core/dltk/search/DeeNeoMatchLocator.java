@@ -1,10 +1,11 @@
 package mmrnmhrm.core.dltk.search;
 
+import mmrnmhrm.core.model.SourceModelUtil;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
-import org.eclipse.dltk.core.IModelElement;
-import org.eclipse.dltk.core.IType;
+import org.eclipse.dltk.core.IMember;
 import org.eclipse.dltk.core.search.IDLTKSearchScope;
 import org.eclipse.dltk.core.search.SearchMatch;
 import org.eclipse.dltk.core.search.SearchPattern;
@@ -12,15 +13,11 @@ import org.eclipse.dltk.core.search.SearchRequestor;
 import org.eclipse.dltk.core.search.indexing.IIndexConstants;
 import org.eclipse.dltk.core.search.matching.MatchLocator;
 import org.eclipse.dltk.core.search.matching.PatternLocator;
-import org.eclipse.dltk.internal.core.ModelElement;
-import org.eclipse.dltk.internal.core.SourceType;
-import org.eclipse.dltk.internal.core.search.matching.FieldLocator;
 import org.eclipse.dltk.internal.core.search.matching.FieldPattern;
 import org.eclipse.dltk.internal.core.search.matching.InternalSearchPattern;
 import org.eclipse.dltk.internal.core.search.matching.MatchingNodeSet;
 import org.eclipse.dltk.internal.core.search.matching.MethodPattern;
 import org.eclipse.dltk.internal.core.search.matching.TypeDeclarationPattern;
-import org.eclipse.dltk.internal.core.search.matching.TypeReferenceLocator;
 import org.eclipse.dltk.internal.core.search.matching.TypeReferencePattern;
 
 import dtool.dom.ast.ASTNeoNode;
@@ -36,15 +33,21 @@ public class DeeNeoMatchLocator extends MatchLocator {
 	
 	@SuppressWarnings("restriction")
 	public static PatternLocator neoCreatePatternLocator(SearchPattern pattern) {
+		if(DeeDefMatcher.param_defunit != null) {
+			DeeDefMatcher defMatcher = new DeeDefMatcher(DeeDefMatcher.param_defunit, pattern);
+			DeeDefMatcher.param_defunit = null;
+			return defMatcher;
+		}
+		
 		switch (((InternalSearchPattern) pattern).kind) {
 			case IIndexConstants.TYPE_REF_PATTERN:
-				return new TypeReferenceLocator((TypeReferencePattern) pattern);
+				return new DeeNeoPatternMatcher((TypeReferencePattern) pattern);
 			case IIndexConstants.TYPE_DECL_PATTERN:
-				return new NeoTypeDefinitionLocator((TypeDeclarationPattern) pattern);
+				return new DeeNeoPatternMatcher((TypeDeclarationPattern) pattern);
 			case IIndexConstants.FIELD_PATTERN:
-				 return new FieldLocator((FieldPattern) pattern);
+				 return new DeeNeoPatternMatcher((FieldPattern) pattern);
 			case IIndexConstants.METHOD_PATTERN:
-				return new NeoTypeDefinitionLocator((MethodPattern) pattern);
+				return new DeeNeoPatternMatcher((MethodPattern) pattern);
 		}
 		return null;
 	}
@@ -52,6 +55,7 @@ public class DeeNeoMatchLocator extends MatchLocator {
 	@SuppressWarnings("restriction")
 	@Override
 	protected void reportMatching(ModuleDeclaration unit) throws CoreException {
+		//DeeModuleDeclaration deeDec = (DeeModuleDeclaration) unit;
 		//super.reportMatching(unit);
 		MatchingNodeSet nodeSet = currentPossibleMatch.nodeSet;
 		
@@ -70,11 +74,14 @@ public class DeeNeoMatchLocator extends MatchLocator {
 			if(obj instanceof ASTNeoNode) {
 				ASTNeoNode node = (ASTNeoNode) obj;
 				Integer accLevel = (Integer) nodeSet.matchingNodes.valueTable[i];
-				IModelElement modelElement = currentPossibleMatch.getModelElement();
-				IType type = new SourceType((ModelElement)modelElement, node.toStringAsElement());
+				//IModelElement modelElement = currentPossibleMatch.getModelElement();
+				//IModelElement enclosingElement = modelElement;
+				IMember enclosingType = SourceModelUtil.getTypeHandle(node);
+				//Logg.main.println(enclosingType.getFullyQualifiedName());
 				SearchMatch match = patternLocator.newDeclarationMatch(node,
-						type, accLevel.intValue(), node.sourceEnd() - node.getOffset() + 1,
+						enclosingType, accLevel.intValue(), node.sourceEnd() - node.getOffset(),
 						this);
+				
 				report(match);
 			}
 		}
@@ -83,4 +90,6 @@ public class DeeNeoMatchLocator extends MatchLocator {
 	*/
 		super.reportMatching(unit);
 	}
+	
+
 }

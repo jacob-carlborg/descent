@@ -1,6 +1,5 @@
 package mmrnmhrm.core.dltk;
 
-import melnorme.miscutil.Assert;
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.LangCore;
@@ -49,11 +48,14 @@ public class DeeSourceElementParser implements ISourceElementParser {
 			char[] contents, ISourceModuleInfo astCache, char[] filename) {
 
 		IPath path = new Path(new String(filename));
-		IFile file = DeeCore.getWorkspaceRoot().getFile(path);
 		ISourceModule module = null;
-		module = DLTKCore.createSourceModuleFrom(file);
+		if(!path.isAbsolute()) {
+			IFile file = DeeCore.getWorkspaceRoot().getFile(path);
+			module = DLTKCore.createSourceModuleFrom(file);
+		}
 		
-		Assert.isNotNull(module);
+		//assertNotNull(module);
+		//assertTrue(module.exists());
 		// create a parser, that gives us an AST
 		DeeModuleDeclaration moduleDeclaration = parseModule(astCache, module, contents, fReporter, filename);
 		
@@ -67,38 +69,42 @@ public class DeeSourceElementParser implements ISourceElementParser {
 	/** Obtains an AST from the given module, possibly using a cached value. 
 	 * Must supply either sourceModule or source */
 	public static DeeModuleDeclaration parseModule(ISourceModuleInfo astCache,
-			ISourceModule sourceModule, char[] source, IProblemReporter reporter, char[] filename) {
-		DeeModuleDeclaration moduleDeclaration = getModuleAST(astCache);
-		if(moduleDeclaration != null) {
-			String str = (sourceModule == null) ? "<null>" : sourceModule.getElementName();
+			ISourceModule modUnit, char[] source, IProblemReporter reporter, char[] filename) {
+		DeeModuleDeclaration moduleDecl = getCachedModule(astCache);
+		if(moduleDecl != null) {
+			String str = (modUnit == null) ? "<null>" : modUnit.getElementName();
 			Logg.model.println("ParseModule (got AST cache): " + str);
-			return moduleDeclaration;
+			// setup the moduleUnit nonetheless, cause it can be null
+			if(modUnit != null) {
+				moduleDecl.neoModule.setModuleUnit(modUnit);
+			}
+			return moduleDecl;
 		}
 		
 		if(source == null)
 		try {
-			source = sourceModule.getSourceAsCharArray();
+			source = modUnit.getSourceAsCharArray();
 		} catch (ModelException e) {
 			LangCore.log(e);
 			throw ExceptionAdapter.unchecked(e);
 		}
 
 		
-		moduleDeclaration = DeeSourceParser.parseModule(source, reporter, filename);
+		moduleDecl = DeeSourceParser.parseModule(source, reporter, filename);
 		String str = (filename == null) ? "<null>" : new String(filename);
 		Logg.model.println("ParseModule parsed: ", str);
-		Module neoModule = ParsingUtil.getNeoASTModule(moduleDeclaration);
-		Assert.isNotNull(sourceModule);
-		if(neoModule != null)
-			neoModule.setModuleUnit(sourceModule);
+		Module neoModule = ParsingUtil.getNeoASTModule(moduleDecl);
+		//Assert.isNotNull(modUnit);
+		if(neoModule != null && modUnit != null)
+			neoModule.setModuleUnit(modUnit);
 
 		if(astCache != null) {
-			astCache.put(AST_CACHE_KEY, moduleDeclaration);
+			astCache.put(AST_CACHE_KEY, moduleDecl);
 		}
-		return moduleDeclaration;
+		return moduleDecl;
 	}
 
-	public static DeeModuleDeclaration getModuleAST(ISourceModuleInfo astCache) {
+	public static DeeModuleDeclaration getCachedModule(ISourceModuleInfo astCache) {
 		if(astCache != null) {
 			DeeModuleDeclaration moduleDeclaration;
 			moduleDeclaration = (DeeModuleDeclaration) astCache.get(AST_CACHE_KEY);

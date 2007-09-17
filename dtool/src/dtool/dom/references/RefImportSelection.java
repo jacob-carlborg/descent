@@ -32,6 +32,11 @@ public class RefImportSelection extends NamedReference
 	}
 	
 	@Override
+	protected String getReferenceName() {
+		return name;
+	}
+	
+	@Override
 	public String toStringAsElement() {
 		return name;
 	}

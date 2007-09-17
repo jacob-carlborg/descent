@@ -14,6 +14,7 @@ import org.eclipse.dltk.core.IProjectFragment;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ISourceModule;
 
+
 public class ModelUtil {
 
 	public static DeeProject getDeeProject(String name) {
@@ -62,5 +63,6 @@ public class ModelUtil {
 		return org.eclipse.dltk.internal.core.ModelManager.
 		getModelManager().getModel();
 	}
+
 
 }

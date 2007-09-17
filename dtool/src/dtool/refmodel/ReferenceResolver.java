@@ -87,14 +87,14 @@ public class ReferenceResolver {
 		if(decMod != null) {
 			DefUnit defUnit;
 			
-			if(decMod.packages.length == 0 || decMod.packages[0].name == "") {
+			if(decMod.packages.length == 0 || decMod.packages[0] == "") {
 				defUnit = module;
 			} else {
 				// Cache this?
 			
 				String[] packNames = new String[decMod.packages.length];
 				for(int i = 0; i< decMod.packages.length; ++i){
-					packNames[i] = decMod.packages[i].name;
+					packNames[i] = decMod.packages[i];
 				}
 				
 				defUnit = PartialPackageDefUnitOfPackage.createPartialDefUnits(

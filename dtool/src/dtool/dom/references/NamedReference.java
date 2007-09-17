@@ -1,5 +1,6 @@
 package dtool.dom.references;
 
+import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.PrefixDefUnitSearch;
 
 /** 
@@ -11,5 +12,19 @@ public abstract class NamedReference extends Reference {
 	/** Perform a search using the lookup rules of this reference. */
 	public abstract void doSearch(PrefixDefUnitSearch search);
 
+	
+	/** Return wheter this reference can match the given defunit.
+	 * This is a very lightweight method that only compared the defunit's 
+	 * name with the identifier of this reference, if any.
+	 * XXX: Qualified refs, how to compare? 
+	 */
+	@Override
+	public final boolean canMatch(DefUnit defunit) {
+		return getReferenceName().equals(defunit.getName());
+	}
+
+	protected String getReferenceName() {
+		return toStringAsElement();
+	}
 
 }

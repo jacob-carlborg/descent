@@ -11,11 +11,12 @@
 package mmrnmhrm.ui.editor.text;
 
 import mmrnmhrm.ui.actions.GoToDefinitionHandler;
-import mmrnmhrm.ui.actions.ISimpleRunnable;
 import mmrnmhrm.ui.actions.OperationsManager;
 
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -48,11 +49,11 @@ public class DeeElementHyperlink implements IHyperlink {
 	}
 
 	public void open() {
-		OperationsManager.executeOperation("Open Element", new ISimpleRunnable() {
-			public void run() throws CoreException {
+		OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
 				GoToDefinitionHandler.executeOperation(fTextEditor, true, offset);
 			}
-		});
+		}, "Open Element");
 	}
 
 	public String getTypeLabel() {

@@ -12,7 +12,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IStorage;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.core.IExternalSourceModule;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.internal.ui.editor.ExternalStorageEditorInput;
@@ -58,11 +60,11 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 
 	public static void executeChecked(final ITextEditor srcEditor,
 			final boolean openNewEditor) {
-		OperationsManager.executeOperation(GO_TO_DEFINITION_OPNAME, new ISimpleRunnable() {
-			public void run() throws CoreException {
+		OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
 				executeOperation(srcEditor, openNewEditor);
 			}
-		});
+		}, GO_TO_DEFINITION_OPNAME);
 	}
 
 	public static void executeOperation(ITextEditor srcEditor,
@@ -115,7 +117,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		if(defunits == null || defunits.size() == 0) {
 			dialogWarning(window.getShell(), 
 					"Definition not found for entity reference: " 
-					+ elem.toStringClassName());
+					+ elem.toStringAsElement());
 			return;
 		}
 
@@ -145,6 +147,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		ITextEditor targetEditor;
 
 		Module targetModule = NodeUtil.getParentModule(defunit);
+
 		ISourceModule modUnit = (ISourceModule) targetModule.getModuleUnit();
 
 		if(openNewEditor || neoModule != targetModule) {

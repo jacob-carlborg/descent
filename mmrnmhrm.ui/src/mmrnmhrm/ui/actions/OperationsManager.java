@@ -42,10 +42,6 @@ public class OperationsManager {
 		return get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
 	}
 
-	
-	public static void executeOperation(String opName, ISimpleRunnable op) {
-		get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
-	}
 
 	public void instanceDoOperation(String opName, ISimpleRunnable op) {
 		doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);

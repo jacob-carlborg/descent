@@ -67,7 +67,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 
 		dmodules = new ArrayList<IFile>();
 		
-		IBuildpathEntry[] buildpathEntries = deeProj.getResolvedBuildpath(false);
+		IBuildpathEntry[] buildpathEntries = deeProj.getResolvedBuildpath(true);
 
 		for (int i = 0; i < buildpathEntries.length; i++) {
 			IBuildpathEntry entry = buildpathEntries[i];

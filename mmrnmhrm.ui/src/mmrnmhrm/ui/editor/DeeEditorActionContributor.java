@@ -26,6 +26,14 @@ public class DeeEditorActionContributor extends	SourceModuleEditorActionContribu
 				CommandContributionItem.STYLE_PUSH);
 	}
 	
+	public static CommandContributionItem getCommand_SearchReferences() {
+		return new CommandContributionItem(DeePlugin.getActiveWorkbenchWindow(), null, 
+				"GoToDefinitionHandler.COMMAND_ID", null,
+				null, null, null, null, null, null,
+				CommandContributionItem.STYLE_PUSH);
+	}
+
+	
 	@Override
 	public void contributeToMenu(IMenuManager menu) {
 		super.contributeToMenu(menu);

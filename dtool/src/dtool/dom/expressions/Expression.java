@@ -1,6 +1,7 @@
 package dtool.dom.expressions;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import dtool.descentadapter.DescentASTConverter;
@@ -16,8 +17,9 @@ public abstract class Expression extends Resolvable implements IDefUnitReference
 	
 	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
-		throw new UnsupportedOperationException(
-				"Unsupported peering the type/scope of expression: "+toStringClassName());
+		return Collections.emptySet();
+		/*throw new UnsupportedOperationException(
+				"Unsupported peering the type/scope of expression: "+toStringClassName());*/
 	}
 	
 	

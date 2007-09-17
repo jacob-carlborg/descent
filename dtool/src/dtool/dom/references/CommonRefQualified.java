@@ -31,6 +31,11 @@ public abstract class CommonRefQualified extends NamedReference
 
 	public abstract Collection<DefUnit> findRootDefUnits();
 	
+	@Override
+	protected String getReferenceName() {
+		return subref.getReferenceName();
+	}
+	
 	/** Finds the target defunits of this qualified reference. */
 	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
@@ -56,7 +61,8 @@ public abstract class CommonRefQualified extends NamedReference
 		
 		for (DefUnit unit : defunits) {
 			IScopeNode scope = unit.getMembersScope();
-			ReferenceResolver.findDefUnitInScope(scope, search);
+			if(scope != null)
+				ReferenceResolver.findDefUnitInScope(scope, search);
 			if(search.isFinished())
 				return;
 		}

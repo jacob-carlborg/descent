@@ -48,4 +48,10 @@ public class RefTypeSlice extends Reference {
 		+"["+from.toStringAsElement() +".."+ to.toStringAsElement()+"]";
 	}
 
+
+	@Override
+	public boolean canMatch(DefUnit defunit) {
+		return false;
+	}
+
 }

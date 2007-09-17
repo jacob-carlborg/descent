@@ -43,5 +43,7 @@ public abstract class Reference extends Resolvable {
 	@Override
 	public abstract String toStringAsElement();
 
+	public abstract boolean canMatch(DefUnit defunit);
+
 }
 
