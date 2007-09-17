@@ -73,7 +73,8 @@ public class Scope {
 
 	public SemanticContext context;
 
-	private Scope() {
+	public Scope(SemanticContext context) {
+		this.context = context;
 		this.module = null;
 		this.scopesym = null;
 		this.sd = null;
@@ -104,7 +105,7 @@ public class Scope {
 	}
 
 	public Scope(Scope enclosing, SemanticContext context) {
-		this();
+		this.context = context;
 		this.module = enclosing.module;
 		this.func = enclosing.func;
 		this.parent = enclosing.parent;
@@ -132,11 +133,6 @@ public class Scope {
 		this.callSuper = enclosing.callSuper;
 		this.flags = 0;
 		this.anonAgg = null;
-		this.context = context;
-	}
-
-	public Scope(SemanticContext context) {
-		this();
 		this.context = context;
 	}
 

@@ -150,9 +150,9 @@ public class AssocArrayLiteralExp extends Expression {
 			}
 		}
 		if(keysx != keys)
-			expandTuples(keysx);
+			expandTuples(keysx, context);
 		if(valuesx != values)
-			expandTuples(valuesx);
+			expandTuples(valuesx, context);
 		if(keysx.size() != valuesx.size())
 			return EXP_CANT_INTERPRET; // goto Lerr;
 			
@@ -246,8 +246,8 @@ public class AssocArrayLiteralExp extends Expression {
 			keys.set(i, key);
 			values.set(i, value);
 		}
-		expandTuples(keys);
-		expandTuples(values);
+		expandTuples(keys, context);
+		expandTuples(values, context);
 		if(keys.size() != values.size())
 		{
 			error("number of keys is %u, must match number of values %u", keys

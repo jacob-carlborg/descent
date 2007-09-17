@@ -152,51 +152,21 @@ public class TypeIdentifier extends TypeQualified {
 
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
-		Dsymbol s;
-		Dsymbol[] scopesym = { null };
-
-		if (sc == null) {
+		if (null == sc) {
 			return null;
 		}
-		s = sc.search(loc, ident, scopesym, context);
-		if (s != null) {
-			s = s.toAlias(context);
-			if (idents != null) {
-				for (IdentifierExp id : idents) {
-					Dsymbol sm;
-					if (id.dyncast() != DYNCAST.DYNCAST_IDENTIFIER) {
-						// It's a template instance
-						TemplateDeclaration td;
-						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
-						id = ti.idents.get(0);
-						sm = s.search(loc, id, 0, context);
-						if (sm == null) {
-							error(
-									"template identifier %s is not a member of %s",
-									id.toChars(), s.toChars(context));
-							break;
-						}
-						sm = sm.toAlias(context);
-						td = sm.isTemplateDeclaration();
-						if (td == null) {
-							error("%s is not a template", id.toChars());
-							break;
-						}
-						ti.tempdecl = td;
-						if (!ti.semanticdone) {
-							ti.semantic(sc, context);
-						}
-						sm = ti.toAlias(context);
-					} else {
-						sm = s.search(loc, id, 0, context);
-					}
-					s = sm;
 
-					if (s == null) // failed to find a symbol
+		Dsymbol[] scopesym = { null };
+		Dsymbol s = sc.search(loc, ident, scopesym, context);
+		if (s != null) {
+			if (idents != null) {
+				for (int i = 0; i < idents.size(); i++) {
+					IdentifierExp id = idents.get(i);
+					s = s.searchX(loc, sc, id, context);
+					if (null == s) // failed to find a symbol
 					{
 						break;
 					}
-					s = s.toAlias(context);
 				}
 			}
 		}

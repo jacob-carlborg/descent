@@ -58,7 +58,7 @@ public class CastExp extends UnaExp {
 			VarExp ve = (VarExp) e1;
 			VarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null) {
-				if (!v.isDataseg(context)) {
+				if (!v.isDataseg(context) && !v.isParameter()) {
 					error("escaping reference to local %s", v.toChars(context));
 				}
 			}
@@ -114,7 +114,8 @@ public class CastExp extends UnaExp {
 				return e;
 			}
 		}
-		return e1.castTo(sc, to, context);
+		e = e1.castTo(sc, to, context);
+		return e;
 	}
 
 	@Override

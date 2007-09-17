@@ -97,11 +97,11 @@ public class DotTemplateInstanceExp extends UnaExp {
 		}
 
 		Assert.isNotNull(s);
-		id = ti.idents.get(0).ident;
+		id = ti.name.ident;
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
-			error("template identifier %s is not a member of %s", id,
-					s.ident.ident);
+			error("template identifier %s is not a member of %s %s", new String(id), s.kind(),
+					new String(s.ident.ident));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

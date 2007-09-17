@@ -2212,7 +2212,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(TemplateInstance node) {
-		node.idents.get(0).accept(this);
+		if (node.name != null) {
+			node.name.accept(this);
+		}
 		this.buffer.append("!");
 		visitList(node.tiargs, ", ", "(", ")");
 		return false;
@@ -2612,7 +2614,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(TypeInstance node) {
 		startModifiedType(node);
-		IdentifierExp id = node.tempinst.idents.get(0);
+		IdentifierExp id = node.tempinst.name;
 		if (!CharOperation.equals(id.ident, Id.empty)) {
 			id.accept(this);
 		}

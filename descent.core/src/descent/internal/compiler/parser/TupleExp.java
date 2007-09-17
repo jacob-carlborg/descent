@@ -133,7 +133,7 @@ public class TupleExp extends Expression {
 			exps.set(i, e);
 		}
 
-		expandTuples(exps);
+		expandTuples(exps, context);
 		if (false && exps.size() == 1) {
 			return exps.get(0);
 		}

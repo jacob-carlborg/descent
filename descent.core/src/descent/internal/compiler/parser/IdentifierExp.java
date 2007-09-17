@@ -106,8 +106,8 @@ public class IdentifierExp extends Expression {
 
 					if (ti != null
 							&& ti.isTemplateMixin() == null
-							&& (ti.idents.get(ti.idents.size()).ident == f.ident.ident || ti
-									.toAlias(context).ident == f.ident)
+							&& (ti.name.equals(f.ident) || 
+									ti.toAlias(context).ident == f.ident)
 							&& ti.tempdecl != null
 							&& ti.tempdecl.onemember != null) {
 						TemplateDeclaration tempdecl = ti.tempdecl;

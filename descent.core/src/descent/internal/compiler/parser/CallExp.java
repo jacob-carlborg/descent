@@ -17,6 +17,7 @@ import static descent.internal.compiler.parser.Scope.CSXthis_ctor;
 import static descent.internal.compiler.parser.TOK.TOKcomma;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdot;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKdottd;
 import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKimport;
@@ -48,7 +49,7 @@ public class CallExp extends UnaExp {
 		this.arguments = new Expressions(1);
 		this.arguments.add(earg1);
 	}
-	
+
 	public CallExp(Loc loc, Expression e, Expression earg1, Expression earg2) {
 		super(loc, TOK.TOKcall, e);
 		this.arguments = new Expressions(2);
@@ -60,12 +61,12 @@ public class CallExp extends UnaExp {
 		super(loc, TOK.TOKcall, e);
 		this.arguments = exps;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return CALL_EXP;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -75,11 +76,11 @@ public class CallExp extends UnaExp {
 		visitor.endVisit(this);
 	}
 
-
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		TypeFunction tf;
@@ -98,7 +99,7 @@ public class CallExp extends UnaExp {
 			e1 = new DotVarExp(de.loc, de.e1, de.func);
 			return semantic(sc, context);
 		}
-		
+
 		boolean gotoLagain = false;
 
 		/* Transform:
@@ -113,7 +114,8 @@ public class CallExp extends UnaExp {
 			Assert.isNotNull(dotid.e1);
 			if (dotid.e1.type != null) {
 				TY e1ty = dotid.e1.type.toBasetype(context).ty;
-				if (e1ty == Taarray && CharOperation.equals(dotid.ident.ident, Id.remove)) {
+				if (e1ty == Taarray
+						&& CharOperation.equals(dotid.ident.ident, Id.remove)) {
 					if (arguments == null || arguments.size() != 1) {
 						error("expected key as argument to aa.remove()");
 						// goto Lagain;
@@ -124,12 +126,12 @@ public class CallExp extends UnaExp {
 						key = key.semantic(sc, context);
 						key = resolveProperties(sc, key, context);
 						key.rvalue(context);
-	
+
 						TypeAArray taa = (TypeAArray) dotid.e1.type
 								.toBasetype(context);
 						key = key.implicitCastTo(sc, taa.index, context);
 						key = key.implicitCastTo(sc, taa.key, context);
-	
+
 						return new RemoveExp(loc, dotid.e1, key);
 					}
 				} else if (e1ty == Tarray || e1ty == Tsarray || e1ty == Taarray) {
@@ -145,84 +147,116 @@ public class CallExp extends UnaExp {
 		if (!gotoLagain) {
 			istemp = 0;
 		}
-		
+
 		boolean loopLagain = true;
-		Lagain: while(loopLagain) {
+		Lagain: while (loopLagain) {
 			loopLagain = false;
 			f = null;
 			if (e1.op == TOKthis || e1.op == TOKsuper) {
 				// semantic() run later for these
 			} else {
 				super.semantic(sc, context);
-	
+
 				/* Look for e1 being a lazy parameter
 				 */
 				if (e1.op == TOKvar) {
 					VarExp ve = (VarExp) e1;
-	
+
 					if ((ve.var.storage_class & STClazy) != 0) {
 						tf = new TypeFunction(null, ve.var.type, 0, LINKd);
 						TypeDelegate t = new TypeDelegate(tf);
 						ve.type = t.semantic(loc, sc, context);
 					}
 				}
-	
+
 				if (e1.op == TOKimport) { // Perhaps this should be moved to ScopeExp.semantic()
 					ScopeExp se = (ScopeExp) e1;
 					e1 = new DsymbolExp(loc, se.sds);
 					e1 = e1.semantic(sc, context);
 				}
+				// patch for #540 by Oskar Linde
+				else if (e1.op == TOKdotexp) {
+					DotExp de = (DotExp) e1;
+
+					if (de.e2.op == TOKimport) { // This should *really* be moved to ScopeExp::semantic()
+						ScopeExp se = (ScopeExp) de.e2;
+						de.e2 = new DsymbolExp(loc, se.sds);
+						de.e2 = de.e2.semantic(sc, context);
+					}
+
+					if (de.e2.op == TOKtemplate) {
+						TemplateExp te = (TemplateExp) de.e2;
+						e1 = new DotTemplateExp(loc, de.e1, te.td);
+					}
+				}
+
 			}
-	
+
 			if (e1.op == TOKcomma) {
 				CommaExp ce = (CommaExp) e1;
-	
+
 				e1 = ce.e2;
 				e1.type = ce.type;
 				ce.e2 = this;
 				ce.type = null;
 				return ce.semantic(sc, context);
 			}
-	
+
 			t1 = null;
 			if (e1.type != null) {
 				t1 = e1.type.toBasetype(context);
 			}
-	
+
 			// Check for call operator overload
-			if (t1 != null) {
+			if (t1 != null) {	
 				AggregateDeclaration ad;
-	
-				if (t1.ty == Tclass) {
-					ad = ((TypeClass) t1).sym;
-					// goto L1;
-				} else if (t1.ty == Tstruct) {
-					ad = ((TypeStruct) t1).sym;
+
+				if (t1.ty == Tstruct)
+				{
+				    ad = ((TypeStruct) t1).sym;
+				    if (search_function(ad, Id.call, context) != null) {
+				    	// goto L1;	// overload of opCall, therefore it's a call
+				    	 // Rewrite as e1.call(arguments)
+					    Expression e = new DotIdExp(loc, e1, new IdentifierExp(Id.call));
+					    e = new CallExp(loc, e, arguments);
+					    e = e.semantic(sc, context);
+					    return e;
+				    }
+				    /* It's a struct literal
+				     */
+				    Expression e = new StructLiteralExp(loc, (StructDeclaration) ad, arguments);
+				    e = e.semantic(sc, context);
+				    return e;
 				}
+				else if (t1.ty == Tclass)
+				{
+				    ad = ((TypeClass) t1).sym;
+				    // goto L1;
 				// L1:
-				// Rewrite as e1.call(arguments)
-				Expression e = new DotIdExp(loc, e1, new IdentifierExp(loc, Id.call));
-				e = new CallExp(loc, e, arguments);
-				e = e.semantic(sc, context);
-				return e;
-			}
-	
+				    // Rewrite as e1.call(arguments)
+				    Expression e = new DotIdExp(loc, e1, new IdentifierExp(Id.call));
+				    e = new CallExp(loc, e, arguments);
+				    e = e.semantic(sc, context);
+				    return e;
+				}
+		    }
+
 			arrayExpressionSemantic(arguments, sc, context);
 			preFunctionArguments(loc, sc, arguments, context);
-	
+
 			if (e1.op == TOKdotvar && t1.ty == Tfunction || e1.op == TOKdottd) {
 				DotVarExp dve = null;
 				DotTemplateExp dte = null;
 				AggregateDeclaration ad;
 				UnaExp ue = (UnaExp) (e1);
-	
+
 				if (e1.op == TOKdotvar) { // Do overload resolution
 					dve = (DotVarExp) (e1);
-	
+
 					f = dve.var.isFuncDeclaration();
 					Assert.isNotNull(f);
 					f = f.overloadResolve(arguments, context);
-	
+
 					ad = f.toParent().isAggregateDeclaration();
 				} else {
 					dte = (DotTemplateExp) (e1);
@@ -246,7 +280,7 @@ public class CallExp extends UnaExp {
 				 * in DotVarExp.semantic().
 				 */
 				boolean loopL10 = true;
-				L10: while(loopL10) {
+				L10: while (loopL10) {
 					loopL10 = false;
 					Type t = ue.e1.type.toBasetype(context);
 					if (f.needThis()
@@ -255,23 +289,27 @@ public class CallExp extends UnaExp {
 							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
 						ClassDeclaration cd = ad.isClassDeclaration();
 						ClassDeclaration tcd = t.isClassHandle();
-		
-						if (cd == null || tcd == null
-								|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
+
+						if (cd == null
+								|| tcd == null
+								|| !(tcd == cd || cd.isBaseOf(tcd, null,
+										context))) {
 							if (tcd != null && tcd.isNested()) { // Try again with outer scope
-		
+
 								ue.e1 = new DotVarExp(loc, ue.e1, tcd.vthis);
 								ue.e1 = ue.e1.semantic(sc, context);
 								// goto L10;
 								loopL10 = true;
 								continue L10;
 							}
-							error("this for %s needs to be type %s not type %s", f
-									.toChars(context), ad.toChars(context), t.toChars(context));
+							error(
+									"this for %s needs to be type %s not type %s",
+									f.toChars(context), ad.toChars(context), t
+											.toChars(context));
 						}
 					}
 				}
-	
+
 				checkDeprecated(sc, f, context);
 				accessCheck(sc, ue.e1, f, context);
 				if (!f.needThis()) {
@@ -285,12 +323,13 @@ public class CallExp extends UnaExp {
 						e1 = new DotVarExp(loc, dte.e1, f);
 					}
 					e1.type = f.type;
-	
+
 					// See if we need to adjust the 'this' pointer
 					ad = f.isThis();
 					ClassDeclaration cd = ue.e1.type.isClassHandle();
-					if (ad != null && cd != null && ad.isClassDeclaration() != null
-							&& ad != cd && ue.e1.op != TOKsuper) {
+					if (ad != null && cd != null
+							&& ad.isClassDeclaration() != null && ad != cd
+							&& ue.e1.op != TOKsuper) {
 						ue.e1 = ue.e1.castTo(sc, ad.type, context); //new CastExp(loc, ue.e1, ad.type);
 						ue.e1 = ue.e1.semantic(sc, context);
 					}
@@ -299,7 +338,7 @@ public class CallExp extends UnaExp {
 			} else if (e1.op == TOKsuper) {
 				// Base class constructor call
 				ClassDeclaration cd = null;
-	
+
 				if (sc.func != null) {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
@@ -323,7 +362,7 @@ public class CallExp extends UnaExp {
 							error("multiple constructor calls");
 						}
 						sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
-	
+
 						f = f.overloadResolve(arguments, context);
 						checkDeprecated(sc, f, context);
 						e1 = new DotVarExp(e1.loc, e1, f);
@@ -334,7 +373,7 @@ public class CallExp extends UnaExp {
 			} else if (e1.op == TOKthis) {
 				// same class constructor call
 				ClassDeclaration cd = null;
-	
+
 				if (sc.func != null) {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
@@ -350,14 +389,14 @@ public class CallExp extends UnaExp {
 						error("multiple constructor calls");
 					}
 					sc.callSuper |= CSXany_ctor | CSXthis_ctor;
-	
+
 					f = cd.ctor;
 					f = f.overloadResolve(arguments, context);
 					checkDeprecated(sc, f, context);
 					e1 = new DotVarExp(e1.loc, e1, f);
 					e1 = e1.semantic(sc, context);
 					t1 = e1.type;
-	
+
 					// BUG: this should really be done by checking the static
 					// call graph
 					if (f == sc.func) {
@@ -365,7 +404,8 @@ public class CallExp extends UnaExp {
 					}
 				}
 			} else if (t1 == null) {
-				error("function expected before (), not '%s'", e1.toChars(context));
+				error("function expected before (), not '%s'", e1
+						.toChars(context));
 				type = Type.terror;
 				return this;
 			} else if (t1.ty != Tfunction) {
@@ -376,7 +416,7 @@ public class CallExp extends UnaExp {
 					return semantic_Lcheckargs(sc, tf, f, context);
 				} else if (t1.ty == Tpointer && t1.next.ty == Tfunction) {
 					Expression e;
-	
+
 					e = new PtrExp(loc, e1);
 					t1 = t1.next;
 					e.type = t1;
@@ -391,14 +431,14 @@ public class CallExp extends UnaExp {
 					if (f.needThis() && hasThis(sc) != null) {
 						// Supply an implicit 'this', as in
 						//	  this.ident
-	
-						e1 = new DotTemplateExp(loc, (new ThisExp(loc)).semantic(sc,
-								context), te.td);
+
+						e1 = new DotTemplateExp(loc, (new ThisExp(loc))
+								.semantic(sc, context), te.td);
 						// goto Lagain;
 						loopLagain = true;
 						continue Lagain;
 					}
-	
+
 					e1 = new VarExp(loc, f);
 					// goto Lagain;
 					loopLagain = true;
@@ -412,18 +452,18 @@ public class CallExp extends UnaExp {
 			} else if (e1.op == TOKvar) {
 				// Do overload resolution
 				VarExp ve = (VarExp) e1;
-	
+
 				f = ve.var.isFuncDeclaration();
 				Assert.isNotNull(f);
-	
+
 				// Look to see if f is really a function template
 				if (false && istemp == 0 && f.parent != null) {
 					TemplateInstance ti = f.parent.isTemplateInstance();
-	
+
 					// TODO semantic check == comparison
 					if (ti != null
-							&& (ti.idents.get(ti.idents.size() - 1).ident == f.ident.ident || ti
-									.toAlias(context).ident.ident == f.ident.ident)
+							&& (ti.name.equals(f.ident) || ti
+									.toAlias(context).ident.equals(f.ident))
 							&& ti.tempdecl != null) {
 						/* This is so that one can refer to the enclosing
 						 * template, even if it has the same name as a member
@@ -440,36 +480,37 @@ public class CallExp extends UnaExp {
 						continue Lagain;
 					}
 				}
-	
+
 				f = f.overloadResolve(arguments, context);
 				checkDeprecated(sc, f, context);
-	
+
 				if (f.needThis() && hasThis(sc) != null) {
 					// Supply an implicit 'this', as in
 					//	  this.ident
-	
+
 					e1 = new DotVarExp(loc, new ThisExp(loc), f);
 					// goto Lagain;
 					loopLagain = true;
 					continue Lagain;
 				}
-	
+
 				accessCheck(sc, null, f, context);
-	
+
 				ve.var = f;
 				ve.type = f.type;
 				t1 = f.type;
 			}
 		}
-		
+
 		Assert.isTrue(t1.ty == Tfunction);
 		tf = (TypeFunction) (t1);
 
 		// Lcheckargs:
 		return semantic_Lcheckargs(sc, tf, f, context);
 	}
-	
-	private Expression semantic_Lcheckargs(Scope sc, TypeFunction tf, FuncDeclaration f, SemanticContext context) {
+
+	private Expression semantic_Lcheckargs(Scope sc, TypeFunction tf,
+			FuncDeclaration f, SemanticContext context) {
 		Assert.isTrue(tf.ty == Tfunction);
 		type = tf.next;
 
@@ -498,15 +539,16 @@ public class CallExp extends UnaExp {
 	public Expression syntaxCopy() {
 		return new CallExp(loc, e1.syntaxCopy(), arraySyntaxCopy(arguments));
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-	    expToCBuffer(buf, hgs, e1, op.precedence, context);
-	    buf.writeByte('(');
-	    argsToCBuffer(buf, arguments, hgs, context);
-	    buf.writeByte(')');
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		expToCBuffer(buf, hgs, e1, op.precedence, context);
+		buf.writeByte('(');
+		argsToCBuffer(buf, arguments, hgs, context);
+		buf.writeByte(')');
 	}
-	
+
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (type.toBasetype(context).ty == Tstruct) {

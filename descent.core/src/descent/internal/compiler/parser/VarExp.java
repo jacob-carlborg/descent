@@ -21,12 +21,11 @@ public class VarExp extends Expression {
 		this.var = var;
 		this.type = var.type;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
 	}
-
 
 	@Override
 	public void checkEscape(SemanticContext context) {
@@ -36,7 +35,8 @@ public class VarExp extends Expression {
 			// if reference type
 			if (tb.ty == Tarray || tb.ty == Tsarray || tb.ty == Tclass) {
 				if ((v.isAuto() || v.isScope()) && !v.noauto) {
-					error("escaping reference to auto local %s", v.toChars(context));
+					error("escaping reference to auto local %s", v
+							.toChars(context));
 				} else if ((v.storage_class & STCvariadic) != 0) {
 					error("escaping reference to variadic parameter %s", v
 							.toChars(context));
@@ -71,15 +71,21 @@ public class VarExp extends Expression {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		if (sc.incontract != 0 && var.isParameter()) {
-			error("cannot modify parameter '%s' in contract", var.toChars(context));
+			error("cannot modify parameter '%s' in contract", var
+					.toChars(context));
 		}
 
 		if (type != null && type.toBasetype(context).ty == Tsarray) {
-			error("cannot change reference to static array '%s'", var.toChars(context));
+			error("cannot change reference to static array '%s'", var
+					.toChars(context));
 		}
 
-		if (var.isConst()) {
-			error("cannot modify const variable '%s'", var.toChars(context));
+		VarDeclaration v = var.isVarDeclaration();
+		if (v != null
+				&& v.canassign == 0
+				&& (var.isConst() || (context.global.params.Dversion > 1 && var
+						.isFinal()))) {
+			error("cannot modify final variable '%s'", var.toChars(context));
 		}
 
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
@@ -93,9 +99,9 @@ public class VarExp extends Expression {
 						&& ((fd.isCtorDeclaration() != null && (var.storage_class & STCfield) != 0) || (fd
 								.isStaticCtorDeclaration() != null && (var.storage_class & STCfield) == 0))
 						&& fd.toParent() == var.toParent()) {
-					VarDeclaration v = var.isVarDeclaration();
-					Assert.isNotNull(v);
-					v.ctorinit = true;
+					VarDeclaration v2 = var.isVarDeclaration();
+					Assert.isNotNull(v2);
+					v2.ctorinit = true;
 				} else {
 					if (s != null) {
 						s = s.toParent2();

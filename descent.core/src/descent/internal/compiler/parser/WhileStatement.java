@@ -124,6 +124,7 @@ public class WhileStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		condition = condition.semantic(sc, context);
 		condition = resolveProperties(sc, condition, context);
+	    condition = condition.optimize(WANTvalue, context);
 		condition = condition.checkToBoolean(context);
 
 		sc.noctor++;
@@ -131,7 +132,9 @@ public class WhileStatement extends Statement {
 		Scope scd = sc.push();
 		scd.sbreak = this;
 		scd.scontinue = this;
-		body = body.semantic(scd, context);
+		if (body != null) {
+			body = body.semantic(scd, context);
+		}
 		scd.pop();
 
 		sc.noctor--;

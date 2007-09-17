@@ -6,7 +6,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TemplateInstance extends ScopeDsymbol {
 
-	public Identifiers idents;
 	public Objects tiargs;
 	public TemplateDeclaration tempdecl; // referenced by foo.bar.abc
 	public TemplateInstance inst; // refer to existing instance
@@ -17,8 +16,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	public TemplateInstance(IdentifierExp id) {
 		super(null);
-		this.idents = new Identifiers(3);
-		this.idents.add(id);
+		this.name = id;
 	}
 
 	@Override

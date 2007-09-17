@@ -40,8 +40,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		TypeIdentifier ti = new TypeIdentifier(loc, ident);
 		sparam = new AliasDeclaration(loc, ident, ti);
 		if (sc.insert(sparam) == null) {
-			error(loc, "parameter '%s' multiply defined", ident
-					.toChars());
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length));
 		}
 	}
 

@@ -365,7 +365,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				arg = arguments.get(1);
 			}
 			if (arg.type == null && tab.ty != Ttuple) {
-				arg.type = tab.next; // value type
+				arg.type = tab.nextOf(); // value type
 			}
 			break;
 
@@ -388,7 +388,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			ad = ((TypeClass) tab).sym;
 			// goto Laggr;
 			/*
-			 * Look for an int opApply(int delegate(inout Type [, ...]) dg);
+			 * Look for an int opApply(int delegate(ref Type [, ...]) dg);
 			 * overload
 			 */
 			Dsymbol s = search_function(ad,
@@ -431,7 +431,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					inferApplyArgTypesX(fd, arguments, context);
 				}
 			} else {
-				inferApplyArgTypesY((TypeFunction) tab.next, arguments, context);
+				inferApplyArgTypesY((TypeFunction) tab.nextOf(), arguments, context);
 			}
 			break;
 		}
@@ -493,7 +493,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (p.type.ty != Tdelegate) {
 			return true;
 		}
-		tf = (TypeFunction) p.type.next;
+		tf = (TypeFunction) p.type.nextOf();
 		Assert.isTrue(tf.ty == Tfunction);
 
 		/*
@@ -722,26 +722,6 @@ public abstract class ASTDmdNode extends ASTNode {
 	protected void error(String s, char[]... s2) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
-		}
-	}
-
-	public void expandTuples(Expressions exps) {
-		if (exps != null) {
-			for (int i = 0; i < exps.size(); i++) {
-				Expression arg = exps.get(i);
-
-				// Inline expand all the tuples
-				while (arg.op == TOKtuple) {
-					TupleExp te = (TupleExp) arg;
-
-					exps.remove(i); // remove arg
-					exps.addAll(i, te.exps); // replace with tuple contents
-					if (i == exps.size()) {
-						return; // empty tuple, no more arguments
-					}
-					arg = exps.get(i);
-				}
-			}
 		}
 	}
 
@@ -1033,7 +1013,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public void preFunctionArguments(Loc loc, Scope sc, Expressions exps,
 			SemanticContext context) {
 		if (exps != null) {
-			expandTuples(exps);
+			expandTuples(exps, context);
 
 			for (int i = 0; i < exps.size(); i++) {
 				Expression arg = exps.get(i);
@@ -1507,6 +1487,43 @@ public abstract class ASTDmdNode extends ASTNode {
 		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
 		Expression e = new ArrayLiteralExp(aae.loc, aae.values);
 		return e;
+	}
+
+	public void expandTuples(Expressions exps, SemanticContext context) {
+		if (exps != null) {
+			for (int i = 0; i < exps.size(); i++) {
+				Expression arg = exps.get(i);
+				if (null == arg)
+					continue;
+
+				// Look for tuple with 0 members
+				if (arg.op == TOKtype) {
+					TypeExp e = (TypeExp) arg;
+					if (e.type.toBasetype(context).ty == Ttuple) {
+						TypeTuple tt = (TypeTuple) e.type.toBasetype(context);
+
+						if (null == tt.arguments || tt.arguments.size() == 0) {
+							exps.remove(i);
+							if (i == exps.size())
+								return;
+							i--;
+							continue;
+						}
+					}
+				}
+
+				// Inline expand all the tuples
+				while (arg.op == TOKtuple) {
+					TupleExp te = (TupleExp) arg;
+
+					exps.remove(i); // remove arg
+					exps.addAll(i, te.exps); // replace with tuple contents
+					if (i == exps.size())
+						return; // empty tuple, no more arguments
+					arg = exps.get(i);
+				}
+			}
+		}
 	}
 
 }

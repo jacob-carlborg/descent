@@ -3,10 +3,16 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
-import static descent.internal.compiler.parser.DYNCAST.*;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
+
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+
+import static descent.internal.compiler.parser.TY.Tinstance;
+import static descent.internal.compiler.parser.TY.Tstruct;
 
 public class TypeStruct extends Type {
 
@@ -42,58 +48,51 @@ public class TypeStruct extends Type {
 	public MATCH deduceType(Scope sc, Type tparam,
 			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
-		//printf("TypeStruct.deduceType()\n");
-	    //printf("\tthis.parent   = %s, ", sym.parent.toChars()); print();
-	    //printf("\ttparam = %d, ", tparam.ty); tparam.print();
 
-	    /* If this struct is a template struct, and we're matching
-	     * it against a template instance, convert the struct type
-	     * to a template instance, too, and try again.
-	     */
-	    TemplateInstance ti = sym.parent.isTemplateInstance();
-
-	    if (null != tparam && tparam.ty == Tinstance)
-	    {
-		if (null != ti && ti.toAlias(context) == sym)
-		{
-		    TypeInstance t = new TypeInstance(Loc.ZERO, ti);
-		    return t.deduceType(sc, tparam, parameters, dedtypes, context);
-		}
-
-		/* Match things like:
-		 *  S!(T).foo
+		/* If this struct is a template struct, and we're matching
+		 * it against a template instance, convert the struct type
+		 * to a template instance, too, and try again.
 		 */
-		TypeInstance tpi = (TypeInstance )tparam;
-		if (tpi.idents.size() > 0)
-		{   IdentifierExp id = (IdentifierExp)tpi.idents.get(tpi.idents.size() - 1);
-		    if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id))
-		    {
-			Type tparent = sym.parent.getType();
-			if (null != tparent)
-			{
-			    /* Slice off the .foo in S!(T).foo
-			     */
-				/* TODO semantic
-			    tpi.idents.dim--;
-			    MATCH m = tparent.deduceType(sc, tpi, parameters, dedtypes);
-			    tpi.idents.dim++;
-			    return m;
-			    */
-				return MATCHnomatch;
+		TemplateInstance ti = sym.parent.isTemplateInstance();
+
+		if (null != tparam && tparam.ty == Tinstance) {
+			if (null != ti && ti.toAlias(context) == sym) {
+				TypeInstance t = new TypeInstance(Loc.ZERO, ti);
+				return t.deduceType(sc, tparam, parameters, dedtypes, context);
 			}
-		    }
+
+			/* Match things like:
+			 *  S!(T).foo
+			 */
+			TypeInstance tpi = (TypeInstance) tparam;
+			if (tpi.idents.size() > 0) {
+				IdentifierExp id = (IdentifierExp) tpi.idents.get(tpi.idents
+						.size() - 1);
+				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id)) {
+					Type tparent = sym.parent.getType();
+					if (null != tparent) {
+						/* Slice off the .foo in S!(T).foo
+						 */
+						/* TODO semantic
+						 tpi.idents.dim--;
+						 MATCH m = tparent.deduceType(sc, tpi, parameters, dedtypes);
+						 tpi.idents.dim++;
+						 return m;
+						 */
+						return MATCHnomatch;
+					}
+				}
+			}
 		}
-	    }
 
-	    // Extra check
-	    if (null != tparam && tparam.ty == Tstruct)
-	    {
-		TypeStruct tp = (TypeStruct )tparam;
+		// Extra check
+		if (null != tparam && tparam.ty == Tstruct) {
+			TypeStruct tp = (TypeStruct) tparam;
 
-		if (sym != tp.sym)
-		    return MATCHnomatch;
-	    }
-	    return super.deduceType(sc, tparam, parameters, dedtypes, context);
+			if (sym != tp.sym)
+				return MATCHnomatch;
+		}
+		return super.deduceType(sc, tparam, parameters, dedtypes, context);
 	}
 
 	@Override
@@ -213,7 +212,7 @@ public class TypeStruct extends Type {
 				return e;
 			}
 			if (null != d.isTupleDeclaration()) {
-				e = null; /* TODO new TupleExp(e.loc, d.isTupleDeclaration()); */
+				e = new TupleExp(e.loc, d.isTupleDeclaration(), context);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -296,15 +295,16 @@ public class TypeStruct extends Type {
 	public int size(Loc loc, SemanticContext context) {
 		return sym.size(context);
 	}
-	
+
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
 		buf.prependbyte(' ');
-	    buf.prependstring(toChars(context));
-	    if (ident != null)
-		buf.writestring(ident.toChars());
+		buf.prependstring(toChars(context));
+		if (ident != null)
+			buf.writestring(ident.toChars());
 	}
-	
+
 	@Override
 	public String toChars(SemanticContext context) {
 		TemplateInstance ti = sym.parent.isTemplateInstance();
@@ -315,12 +315,11 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context)
-	{
-	    String name = sym.mangle(context);
-	    buf.printf(ty.mangleChar + name);
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+		String name = sym.mangle(context);
+		buf.printf(ty.mangleChar + name);
 	}
-	
+
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
@@ -332,5 +331,5 @@ public class TypeStruct extends Type {
 	}
 
 	//PERHAPS dt_t **toDt(dt_t **pdt);
-    //PERHAPS type *toCtype();
+	//PERHAPS type *toCtype();
 }

@@ -41,13 +41,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					.toChars(context));
 		}
 
-		if (/* global.params.useArrayBounds && */sc.module != null) {
+		if (context.global.params.useArrayBounds && sc.module != null) {
 			// Generate this function as it may be used
 			// when template is instantiated in other modules
 			sc.module.toModuleArray();
 		}
 
-		if (/* global.params.useAssert && */sc.module != null) {
+		if (context.global.params.useAssert && sc.module != null) {
 			// Generate this function as it may be used
 			// when template is instantiated in other modules
 			sc.module.toModuleAssert();
@@ -64,6 +64,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		ScopeDsymbol paramsym = new ScopeDsymbol(loc);
 		paramsym.parent = sc.parent;
 		Scope paramscope = sc.push(paramsym);
+		paramscope.parameterSpecialization = 1;
+
+		for (int i = 0; i < parameters.size(); i++) {
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			tp.declareParameter(paramscope, context);
+		}
 
 		for (TemplateParameter tp : parameters) {
 			tp.semantic(paramscope, context);

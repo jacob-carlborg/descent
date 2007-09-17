@@ -18,6 +18,7 @@ import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.PROT.PROTexport;
+import static descent.internal.compiler.parser.PROT.PROTprivate;
 
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
@@ -468,7 +469,7 @@ public class FuncDeclaration extends Declaration {
 		}
 	}
 
-	public Expression interpret(InterState istate, Expressions arguments,
+	public Expression T(InterState istate, Expressions arguments,
 			SemanticContext context) {
 		if (context.global.errors != 0) {
 			return null;
@@ -909,7 +910,7 @@ public class FuncDeclaration extends Declaration {
 		ClassDeclaration cd;
 		InterfaceDeclaration id;
 
-		if (type.next != null) {
+		if (type.nextOf() != null) {
 			type = type.semantic(loc, sc, context);
 		}
 
@@ -1061,8 +1062,8 @@ public class FuncDeclaration extends Declaration {
 									 * offsets differ
 									 */
 									int[] offset = { 0 };
-									if (fdv.type.next.isBaseOf(type.next,
-											offset, context)) {
+									if (fdv.type.nextOf().isBaseOf(
+											type.nextOf(), offset, context)) {
 										tintro = fdv.type;
 									}
 								}
@@ -1085,29 +1086,24 @@ public class FuncDeclaration extends Declaration {
 
 			// This is an 'introducing' function.
 			if (!gotoL1) {
-				if (isFinal()) {
-					// Verify this doesn't override previous final function
-					if (cd.baseClass != null) {
-						Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
-						if (s != null) {
-							FuncDeclaration f2 = s.isFuncDeclaration();
-							f2 = f2.overloadExactMatch(type, context);
-							if (f2 != null && f2.isFinal()) {
-								context
-										.acceptProblem(Problem
-												.newSemanticTypeError(
-														IProblem.CannotOverrideFinalFunctions,
-														0,
-														ident.start,
-														ident.length,
-														new String[] {
-																new String(
-																		ident.ident),
-																new String(
-																		cd.ident.ident) }));
-							}
+
+				// Verify this doesn't override previous final function
+				if (cd.baseClass != null) {
+					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
+					if (s != null) {
+						FuncDeclaration f2 = s.isFuncDeclaration();
+						f2 = f2.overloadExactMatch(type, context);
+						if (f2 != null && f2.isFinal()
+								&& f2.prot() != PROTprivate) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.CannotOverrideFinalFunctions, 0,
+									ident.start, ident.length, new String[] {
+											new String(ident.ident),
+											new String(cd.ident.ident) }));
 						}
 					}
+				}
+				if (isFinal()) {
 					cd.vtblFinal.add(this);
 				} else {
 					// Append to end of vtbl[]
@@ -1149,8 +1145,8 @@ public class FuncDeclaration extends Declaration {
 								 * offsets differ
 								 */
 								int[] offset = { 0 };
-								if (fdv.type.next.isBaseOf(type.next, offset,
-										context)) {
+								if (fdv.type.nextOf().isBaseOf(type.nextOf(),
+										offset, context)) {
 									ti = fdv.type;
 
 								}
@@ -1245,7 +1241,7 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			if (!gotoLmainerr) {
-				if (f.next.ty != Tint32 && f.next.ty != Tvoid) {
+				if (f.nextOf().ty != Tint32 && f.nextOf().ty != Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.MustReturnIntOrVoidFromMainFunction, 0,
 							type.start, type.length));
@@ -1277,7 +1273,7 @@ public class FuncDeclaration extends Declaration {
 				Type t0 = arg0.type.toBasetype(context);
 				Type tb = sd != null ? sd.type : cd.type;
 				if (arg0.type.implicitConvTo(tb, context) != MATCH.MATCHnomatch
-						|| (sd != null && t0.ty == Tpointer && t0.next
+						|| (sd != null && t0.ty == Tpointer && t0.nextOf()
 								.implicitConvTo(tb, context) != MATCH.MATCHnomatch)) {
 					if (nparams == 1) {
 						// goto Lassignerr;}
@@ -1364,6 +1360,7 @@ public class FuncDeclaration extends Declaration {
 			sc2.structalign = 8;
 			sc2.incontract = 0;
 			sc2.tf = null;
+			sc2.noctor = 0;
 
 			// Declare 'this'
 			ad = isThis();
@@ -1485,6 +1482,9 @@ public class FuncDeclaration extends Declaration {
 					}
 					v.storage_class |= arg.storageClass
 							& (STCin | STCout | STCref | STClazy);
+					if ((v.storage_class & STClazy) != 0) {
+						v.storage_class |= STCin;
+					}
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
 						error("parameter %s.%s is already defined",
@@ -1541,7 +1541,7 @@ public class FuncDeclaration extends Declaration {
 				// BUG: need to error if accessing out parameters
 				// BUG: need to treat parameters as const
 				// BUG: need to disallow returns and throws
-				// BUG: verify that all in and inout parameters are read
+				// BUG: verify that all in and ref parameters are read
 				frequire = frequire.semantic(sc2, context);
 				labtab = null; // so body can't refer to labels
 			}
@@ -1553,8 +1553,8 @@ public class FuncDeclaration extends Declaration {
 				sym.parent = sc2.scopesym;
 				sc2 = sc2.push(sym);
 
-				Assert.isNotNull(type.next);
-				if (type.next.ty == Tvoid) {
+				Assert.isNotNull(type.nextOf());
+				if (type.nextOf().ty == Tvoid) {
 					if (outId != null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.VoidFunctionsHaveNoResult, 0,
@@ -1575,7 +1575,7 @@ public class FuncDeclaration extends Declaration {
 						fensure.loc = loc;
 					}
 
-					v = new VarDeclaration(loc, type.next, outId, null);
+					v = new VarDeclaration(loc, type.nextOf(), outId, null);
 					v.synthetic = true;
 					v.noauto = true;
 					sc2.incontract--;
@@ -1679,7 +1679,7 @@ public class FuncDeclaration extends Declaration {
 
 				if (inferRetType) { // If no return type inferred yet, then
 					// infer a void
-					if (type.next == null) {
+					if (type.nextOf() == null) {
 						type.next = Type.tvoid;
 						type = type.semantic(loc, sc, context);
 					}
@@ -1742,8 +1742,8 @@ public class FuncDeclaration extends Declaration {
 						fbody = new CompoundStatement(loc, s, fbody);
 						fbody.synthetic = true;
 					}
-				} else if (fes != null) { // For foreach(){} body, append a
-					// return 0;
+				} else if (fes != null) { 
+					// For foreach(){} body, append a return 0;
 					Expression e = new IntegerExp(loc, 0);
 					e.synthetic = true;
 					Statement s = new ReturnStatement(loc, e);
@@ -1751,13 +1751,13 @@ public class FuncDeclaration extends Declaration {
 					fbody = new CompoundStatement(loc, fbody, s);
 					fbody.synthetic = true;
 					Assert.isTrue(returnLabel == null);
-				} else if (hasReturnExp == 0 && type.next.ty != Tvoid) {
+				} else if (hasReturnExp == 0 && type.nextOf().ty != Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FunctionMustReturnAResultOfType, 0,
-							ident.start, ident.length, new String[] { type.next
+							ident.start, ident.length, new String[] { type.nextOf()
 									.toString() }));
 				} else if (!inlineAsm) {
-					if (type.next.ty == Tvoid) {
+					if (type.nextOf().ty == Tvoid) {
 						if (offend && isMain()) { // Add a return 0; statement
 							Statement s = new ReturnStatement(loc,
 									new IntegerExp(loc, 0));
@@ -1794,7 +1794,7 @@ public class FuncDeclaration extends Declaration {
 								e = new HaltExp(loc);
 								e.synthetic = true;
 							}
-							e = new CommaExp(loc, e, type.next
+							e = new CommaExp(loc, e, type.nextOf()
 									.defaultInit(context));
 							e.synthetic = true;
 							e = e.semantic(sc2, context);
@@ -1933,13 +1933,13 @@ public class FuncDeclaration extends Declaration {
 				if (fensure != null) {
 					a.add(returnLabel.statement);
 
-					if (type.next.ty != Tvoid) {
+					if (type.nextOf().ty != Tvoid) {
 						// Create: return vresult;
 						Assert.isNotNull(vresult);
 						Expression e = new VarExp(loc, vresult);
 						e.synthetic = true;
 						if (tintro != null) {
-							e = e.implicitCastTo(sc, tintro.next, context);
+							e = e.implicitCastTo(sc, tintro.nextOf(), context);
 							e = e.semantic(sc, context);
 						}
 						ReturnStatement s = new ReturnStatement(loc, e);

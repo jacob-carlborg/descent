@@ -57,7 +57,7 @@ public class ArrayExp extends UnaExp {
 			arguments.set(i, e);
 		}
 
-		expandTuples(arguments);
+		expandTuples(arguments, context);
 		assert (arguments != null && arguments.size() > 0);
 
 		e = op_overload(sc, context);

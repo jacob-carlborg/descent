@@ -908,6 +908,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName(convert(a.ident));
 		}
+		
 		descent.core.dom.Type convertedType = convertTemplateMixin(a.typeStart, a.typeLength, a.tqual, a.idents, a.tiargs);
 		if (convertedType != null) {
 			b.setType(convertedType);
@@ -962,8 +963,8 @@ public class ASTConverter {
 	public descent.core.dom.TemplateType convert(TemplateInstanceWrapper a) {
 		TemplateInstance tempinst = a.tempinst;
 		TemplateType tt = new TemplateType(ast);
-		if (tempinst.idents != null && tempinst.idents.size() > 0) {
-			tt.setName(convert(tempinst.idents.get(0)));
+		if (tempinst.name != null) {
+			tt.setName(convert(tempinst.name));
 		}
 		if (tempinst.tiargs != null) {
 			for(ASTDmdNode node : tempinst.tiargs) {
@@ -979,8 +980,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.TemplateType convert(TemplateInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
-		if (a.idents != null && a.idents.size() > 0) {
-			b.setName(convert(a.idents.get(0)));
+		if (a.name != null) {
+			b.setName(convert(a.name));
 		}
 		for(ASTDmdNode node : a.tiargs) {
 			ASTNode convertedNode = convert(node);
@@ -2798,8 +2799,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
-		if (a.tempinst.idents != null && a.tempinst.idents.size() > 0) {
-			SimpleName convertedIdent = convert(a.tempinst.idents.get(0));
+		if (a.tempinst.name != null) {
+			SimpleName convertedIdent = convert(a.tempinst.name);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}

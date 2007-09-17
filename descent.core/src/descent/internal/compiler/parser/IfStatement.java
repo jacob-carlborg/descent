@@ -183,6 +183,11 @@ public class IfStatement extends Statement {
 	}
 
 	@Override
+	public IfStatement isIfStatement() {
+		return this;
+	}
+
+	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		condition = condition.semantic(sc, context);
 		condition = resolveProperties(sc, condition, context);

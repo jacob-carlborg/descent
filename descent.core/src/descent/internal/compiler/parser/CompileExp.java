@@ -32,6 +32,7 @@ public class CompileExp extends UnaExp {
 		e1 = e1.optimize(WANTvalue | WANTinterpret, context);
 		if (e1.op != TOKstring) {
 			error("argument to mixin must be a string, not (%s)", e1.toChars(context));
+			type = Type.terror;
 			return this;
 		}
 		StringExp se = (StringExp) e1;

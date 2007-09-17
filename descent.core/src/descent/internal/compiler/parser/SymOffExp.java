@@ -71,7 +71,7 @@ public class SymOffExp extends Expression {
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (!v.isDataseg(context)) {
-				error("escaping reference to local %s", v.toChars(context));
+				error("escaping reference to local variable %s", v.toChars(context));
 			}
 		}
 	}

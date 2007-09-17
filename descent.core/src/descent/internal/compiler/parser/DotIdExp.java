@@ -191,6 +191,13 @@ public class DotIdExp extends UnaExp {
 
 				throw new IllegalStateException("assert(0);");
 			}
+			else if (CharOperation.equals(ident.ident, Id.stringof))
+			{   String s2 = ie.toChars(context);
+			    e = new StringExp(loc, s2.toCharArray(), 'c');
+			    e = e.semantic(sc, context);
+			    return e;
+			}
+
 			error("undefined identifier %s", toChars(context));
 			type = Type.tvoid;
 			return this;

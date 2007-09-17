@@ -17,12 +17,12 @@ public class Param {
     char isWindows;	// generate code for Windows
     char scheduler;	// which scheduler to use
     boolean useDeprecated = false;	// allow use of deprecated features
-    boolean useAssert;	// generate runtime code for assert()'s
-    boolean useInvariants;	// generate class invariant checks
-    boolean useIn;		// generate precondition checks
-    boolean useOut;	// generate postcondition checks
-    boolean useArrayBounds; // generate array bounds checks
-    boolean useSwitchError; // check for switches without a default
+    boolean useAssert = true;	// generate runtime code for assert()'s
+    boolean useInvariants = true;	// generate class invariant checks
+    boolean useIn = true;		// generate precondition checks
+    boolean useOut = true;	// generate postcondition checks
+    boolean useArrayBounds = true; // generate array bounds checks
+    boolean useSwitchError = true; // check for switches without a default
     boolean useUnitTests = true;	// generate unittest code
     boolean useInline;	// inline expand functions
     boolean release;	// build release version

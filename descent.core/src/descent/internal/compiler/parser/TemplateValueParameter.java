@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
@@ -43,8 +44,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		VarDeclaration v = new VarDeclaration(loc, valType, ident, null);
 		v.storage_class = STCtemplateparameter;
 		if (null == sc.insert(v)) {
-			error(loc, "parameter '%s' multiply defined", ident
-					.toChars());
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length));
 		}
 		sparam = v;
 	}

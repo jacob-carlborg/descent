@@ -165,7 +165,7 @@ public class ReturnStatement extends Statement {
 				VarExp ve = (VarExp) exp;
 				VarDeclaration v = ve.var.isVarDeclaration();
 
-				if (v == null || v.isOut()) {
+				if (v == null || v.isOut() || v.isRef()) {
 					fd.nrvo_can = 0;
 				} else if (fd.nrvo_var == null) {
 					if (!v.isDataseg(context) && !v.isParameter()
@@ -177,6 +177,8 @@ public class ReturnStatement extends Statement {
 				} else if (fd.nrvo_var != v) {
 					fd.nrvo_can = 0;
 				}
+			} else {
+				fd.nrvo_can = 0;
 			}
 
 			if (fd.returnLabel != null && tbret.ty != Tvoid) {

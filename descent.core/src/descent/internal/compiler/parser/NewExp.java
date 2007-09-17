@@ -23,8 +23,8 @@ public class NewExp extends Expression {
 	public NewDeclaration allocator; // allocator function
 	public boolean onstack; // allocate on stack
 
-	public NewExp(Loc loc, Expression thisexp, Expressions newargs, Type newtype,
-			Expressions arguments) {
+	public NewExp(Loc loc, Expression thisexp, Expressions newargs,
+			Type newtype, Expressions arguments) {
 		super(loc, TOK.TOKnew);
 		this.thisexp = thisexp;
 		this.newargs = newargs;
@@ -39,7 +39,7 @@ public class NewExp extends Expression {
 	public int getNodeType() {
 		return NEW_EXP;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -52,12 +52,10 @@ public class NewExp extends Expression {
 		visitor.endVisit(this);
 	}
 
-
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}
-
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
@@ -87,6 +85,7 @@ public class NewExp extends Expression {
 			} else {
 				type = newtype.semantic(loc, sc, context);
 			}
+		    newtype = type;		// in case type gets cast to something else
 			tb = type.toBasetype(context);
 
 			arrayExpressionSemantic(newargs, sc, context);
@@ -107,8 +106,7 @@ public class NewExp extends Expression {
 				if (cd.isInterfaceDeclaration() != null) {
 					error("cannot create instance of interface %s", cd
 							.toChars(context));
-				}
-				if (cd.isAbstract()) {
+				} else if (cd.isAbstract()) {
 					error("cannot create instance of abstract class %s", cd
 							.toChars(context));
 				}
@@ -127,7 +125,8 @@ public class NewExp extends Expression {
 								if (sp == null) {
 									error(
 											"outer class %s 'this' needed to 'new' nested class %s",
-											cdn.toChars(context), cd.toChars(context));
+											cdn.toChars(context), cd
+													.toChars(context));
 									break;
 								}
 								ClassDeclaration cdp = sp.isClassDeclaration();
@@ -153,7 +152,8 @@ public class NewExp extends Expression {
 									&& !cdn.isBaseOf(cdthis, null, context)) {
 								error(
 										"'this' for nested class must be of type %s, not %s",
-										cdn.toChars(context), thisexp.type.toChars(context));
+										cdn.toChars(context), thisexp.type
+												.toChars(context));
 							}
 						}
 					} else if (thisexp != null) {
@@ -272,11 +272,9 @@ public class NewExp extends Expression {
 
 				type = type.pointerTo(context);
 			} else {
-				/* TODO semantic
-				 error(
-				 "new can only create structs, dynamic arrays or class objects, not %s's",
-				 type.toChars());
-				 */
+				error(
+						"new can only create structs, dynamic arrays or class objects, not %s's",
+						type.toChars(context));
 				type = type.pointerTo(context);
 			}
 		}

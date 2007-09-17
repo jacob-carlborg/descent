@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;

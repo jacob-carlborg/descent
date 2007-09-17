@@ -130,7 +130,9 @@ public class DoStatement extends Statement {
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		sc.noctor++;
-		body = body.semanticScope(sc, this, this, context);
+		if (body != null) {
+			body = body.semanticScope(sc, this, this, context);
+		}
 		sc.noctor--;
 		condition = condition.semantic(sc, context);
 		condition = resolveProperties(sc, condition, context);

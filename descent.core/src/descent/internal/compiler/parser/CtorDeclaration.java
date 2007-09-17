@@ -105,6 +105,12 @@ public class CtorDeclaration extends FuncDeclaration {
 		super.semantic(sc, context);
 
 		sc.pop();
+
+		// See if it's the default constructor
+		if (cd != null && varargs == 0 && Argument.dim(arguments, context) == 0) {
+			cd.defaultCtor = this;
+		}
+
 	}
 
 	@Override

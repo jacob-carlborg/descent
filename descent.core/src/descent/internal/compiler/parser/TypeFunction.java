@@ -356,7 +356,6 @@ public class TypeFunction extends Type {
 	}
 	public MATCH callMatch(Expressions args, SemanticContext context)
 	{
-		// printf("TypeFunction.callMatch()\n");
 		MATCH match = MATCHexact; // assume exact match
 		
 		int nparams = Argument.dim(parameters, context);

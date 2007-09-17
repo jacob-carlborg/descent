@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
@@ -36,8 +37,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 		TypeIdentifier ti = new TypeIdentifier(loc, ident);
 		sparam = new AliasDeclaration(loc, ident, ti);
 		if (null == sc.insert(sparam)) {
-			error(loc, "parameter '%s' multiply defined", ident
-					.toChars());
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length));
 		}
 	}
 
@@ -87,7 +87,8 @@ public class TemplateTypeParameter extends TemplateParameter {
 
 		if (i < tiargs.size()) {
 			oarg = tiargs.get(i);
-		} else { // Get default argument instead
+		} else { 
+			// Get default argument instead
 			oarg = defaultArg(sc, context);
 			if (null == oarg) {
 				assert (i < dedtypes.size());

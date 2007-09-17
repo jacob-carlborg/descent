@@ -245,5 +245,10 @@ public class ArrayInitializer extends Initializer {
 		e.type = type;
 		return e;
 	}
+	
+	@Override
+	public ArrayInitializer isArrayInitializer() {
+		return this;
+	}
 
 }

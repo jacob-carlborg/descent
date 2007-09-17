@@ -98,7 +98,7 @@ public class SemanticContext {
 		if (s != null) {
 			fd = s.isFuncDeclaration();
 			Assert.isNotNull(fd);
-			Assert.isTrue(fd.type.next.equals(treturn));
+			Assert.isTrue(fd.type.nextOf().equals(treturn));
 		} else {
 			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
 			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Loc.ZERO, id), STC.STCstatic, tf);

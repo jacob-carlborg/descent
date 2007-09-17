@@ -339,14 +339,16 @@ public class IntegerExp extends Expression {
 						break;
 					}
 				case Tchar:
-					if (Chars.isprint(v) && v.compareTo(N_SLASH_SLASH) != 0) {
-						buf.writestring("'");
-						buf.writestring(v.castToInt32().toString());
+					if (v.equals('\''))
+					    buf.writestring("'\\''");
+					else if (Chars.isprint(v) && !v.equals('\\')) {
+					    buf.writestring("'");
+						buf.writestring((char) v.intValue());
 						buf.writestring("'");
 					} else {
 						/* TODO semantic
-						 buf.printf("'\\x%02x'", (int)v);
-						 */
+					    buf.printf("'\\x%02x'", (int)v)
+					    */
 					}
 					break;
 

@@ -44,10 +44,9 @@ public abstract class TypeQualified extends Type {
 
 					if (id.dyncast() != DYNCAST.DYNCAST_IDENTIFIER) {
 						// It's a template instance
-						// printf("\ttemplate instance id\n");
 						TemplateDeclaration td;
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
-						id = ti.idents.get(0);
+						id = ti.name;
 						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -103,7 +102,9 @@ public abstract class TypeQualified extends Type {
 									continue;
 								}
 							}
-							e = t.getProperty(loc, id, context);
+							// e = t.getProperty(loc, id, context);
+						    e = new TypeExp(loc, t);
+						    e = t.dotExp(sc, e, id, context);
 							resolveHelper_L3(sc, pe, e, context);
 						} else {
 							// Lerror:

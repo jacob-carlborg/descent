@@ -1,12 +1,11 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TemplateMixin extends TemplateInstance {
 
+	public Identifiers idents;
 	public Type tqual;
 	public Objects tiargs;
 	public int typeStart;
