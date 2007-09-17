@@ -881,7 +881,15 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.AssignDoesNotGiveABooleanResult, 28, 5);
+		assertError(p[0], IProblem.ExpressionDoesNotGiveABooleanResult, 28, 5);
+	}
+	
+	public void testDeleteToBoolean() {
+		String s = "void foo() { int* x; if (delete x) { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.ExpressionDoesNotGiveABooleanResult, 25, 8);
 	}
 	
 	public void testBreakIsNotInsideALoopOrSwitch() {
@@ -974,6 +982,62 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals(1, p.length);
 		
 		assertWarning(p[0], IProblem.StatementIsNotReachable, 21, 6);
+	}
+	
+	public void testDivisionByZeroWithDiv() {
+		String s = "void foo() { int x = 2 / 0; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DivisionByZero, 21, 5);
+	}
+	
+	public void testDivisionByZeroWithMod() {
+		String s = "void foo() { int x = 2 % 0; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DivisionByZero, 21, 5);
+	}
+	
+	public void testDefaultNotInSwitch() {
+		String s = "void foo() { default: }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DefaultNotInSwitch, 13, 8);
+	}
+	
+	public void testDefaultNotInSwitch_Not() {
+		assertNoSemanticErrors("void foo() { switch(true) { default: } }");
+	}
+	
+	public void testSwitchAlreadyHasDefault() {
+		String s = "void foo() { switch(true) { default: break; default: } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.SwitchAlreadyHasDefault, 44, 8);
+	}
+	
+	public void testContinueNotInLoop() {
+		String s = "void foo() { continue; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.ContinueNotInLoop, 13, 9);
+	}
+	
+	public void testContinueNotInLoop_Not() {
+		assertNoSemanticErrors("void foo() { while(true) { continue; } }");
+	}
+	
+	public void testForeachIndexCannotBeRef() {
+		String s = "void foo() { int[int] x; foreach(ref a, b; x) { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.ForeachIndexCannotBeRef, 13, 9);
 	}
 	
 	/* TODO test for SemanticContext.IN_GCC = true

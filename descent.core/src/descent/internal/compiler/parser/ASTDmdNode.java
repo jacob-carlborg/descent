@@ -34,6 +34,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -475,7 +476,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					break;
 				}
 			} else {
-				d.error("is aliased to a function");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DivisionByZero, 0, d.start, d.length));
 				break;
 			}
 		}

@@ -17,56 +17,56 @@ public class Problem implements IProblem {
 	
 	private Problem() { }
 	
-	public static Problem newSyntaxError(int id, int line, int sourceStart, int length, String[] arguments) {
+	public static Problem newSyntaxError(int id, int line, int start, int length, String[] arguments) {
 		Problem p = new Problem();
 		p.isError = true;
 		p.id = id;
 		p.categoryId = CAT_SYNTAX;
 		p.sourceLineNumber = line;
-		p.sourceStart = sourceStart;
-		p.sourceEnd = sourceStart + length - 1;
+		p.sourceStart = start;
+		p.sourceEnd = start + length - 1;
 		p.arguments = arguments;
 		return p;
 	}
 	
-	public static Problem newSyntaxError(int id, int line, int sourceStart, int length) {
-		return newSyntaxError(id, line, sourceStart, length, null);
+	public static Problem newSyntaxError(int id, int line, int start, int length) {
+		return newSyntaxError(id, line, start, length, null);
 	}
 	
-	public static Problem newSemanticMemberError(int id, int line, int sourceStart, int length, String[] arguments) {
+	public static Problem newSemanticMemberError(int id, int line, int start, int length, String[] arguments) {
 		Problem p = new Problem();
 		p.isError = true;
 		p.id = id;
 		p.categoryId = CAT_MEMBER;
 		p.sourceLineNumber = line;
-		p.sourceStart = sourceStart;
-		p.sourceEnd = sourceStart + length - 1;
+		p.sourceStart = start;
+		p.sourceEnd = start + length - 1;
 		p.arguments = arguments;
 		return p;
 	}
 	
-	public static Problem newSemanticMemberError(int id, int line, int sourceStart, int length) {
-		return newSemanticMemberError(id, line, sourceStart, length, null);
+	public static Problem newSemanticMemberError(int id, int line, int start, int length) {
+		return newSemanticMemberError(id, line, start, length, null);
 	}
 	
-	private static Problem newSemanticTypeProblem(int id, int line, int sourceStart, int length, String[] arguments, boolean isError) {
+	private static Problem newSemanticTypeProblem(int id, int line, int start, int length, String[] arguments, boolean isError) {
 		Problem p = new Problem();
 		p.isError = isError;
 		p.id = id;
 		p.categoryId = CAT_TYPE;
 		p.sourceLineNumber = line;
-		p.sourceStart = sourceStart;
-		p.sourceEnd = sourceStart + length - 1;
+		p.sourceStart = start;
+		p.sourceEnd = start + length - 1;
 		p.arguments = arguments;
 		return p;
 	}
 	
-	public static Problem newSemanticTypeError(int id, int line, int sourceStart, int length, String[] arguments) {
-		return newSemanticTypeProblem(id, line, sourceStart, length, arguments, true);
+	public static Problem newSemanticTypeError(int id, int line, int start, int length, String[] arguments) {
+		return newSemanticTypeProblem(id, line, start, length, arguments, true);
 	}
 	
-	public static Problem newSemanticTypeError(int id, int line, int sourceStart, int length) {
-		return newSemanticTypeError(id, line, sourceStart, length, null);
+	public static Problem newSemanticTypeError(int id, int line, int start, int length) {
+		return newSemanticTypeError(id, line, start, length, null);
 	}
 	
 	public static IProblem newSemanticTypeWarning(int id, int line, int start, int length, String[] arguments) {
@@ -77,15 +77,15 @@ public class Problem implements IProblem {
 		return newSemanticTypeWarning(id, line, start, length, null);
 	}
 	
-	public static Problem newTask(String message, int line, int sourceStart, int length) {
+	public static Problem newTask(String message, int line, int start, int length) {
 		Problem p = new Problem();
 		p.arguments = new String[] { message };
 		p.isError = false;
 		p.id = IProblem.Task;
 		p.categoryId = CAT_UNSPECIFIED;
 		p.sourceLineNumber = line;
-		p.sourceStart = sourceStart;
-		p.sourceEnd = sourceStart + length - 1;
+		p.sourceStart = start;
+		p.sourceEnd = start + length - 1;
 		return p;
 	}
 	
@@ -380,8 +380,8 @@ public class Problem implements IProblem {
 			return "Version identifier '" + arguments[0] + "' is reserved and cannot be set";
 		case CannotPutCatchStatementInsideFinallyBlock:
 			return "Cannot put catch statement inside finally block";
-		case AssignDoesNotGiveABooleanResult:
-			return "'=' does not give a boolean result";
+		case ExpressionDoesNotGiveABooleanResult:
+			return "Expression does not give a boolean result";
 		case BreakIsNotInsideALoopOrSwitch:
 			return "break is not inside a loop or switch statement";
 		case CaseIsNotInSwitch:
@@ -396,6 +396,16 @@ public class Problem implements IProblem {
 			return "goto default is not inside a switch statement";
 		case LazyVariablesCannotBeLvalues:
 			return "lazy variables cannot be lvalues";
+		case DivisionByZero:
+			return "Division by zero";
+		case DefaultNotInSwitch:
+			return "default is not inside a switch statement";
+		case SwitchAlreadyHasDefault:
+			return "switch statement already has a default";
+		case ContinueNotInLoop:
+			return "continue is not inside a loop";
+		case ForeachIndexCannotBeRef:
+			return "foreach: index cannot be ref";
 		default:
 			return "";
 		}

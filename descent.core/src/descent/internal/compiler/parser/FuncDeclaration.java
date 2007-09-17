@@ -677,7 +677,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean isMain() {
-		return CharOperation.equals(ident.ident, Id.main)
+		return ident != null && CharOperation.equals(ident.ident, Id.main)
 				&& linkage != LINK.LINKc && isMember() == null && !isNested();
 	}
 
@@ -1255,7 +1255,7 @@ public class FuncDeclaration extends Declaration {
 			}
 		}
 
-		if (CharOperation.equals(ident.ident, Id.assign)
+		if (ident != null && CharOperation.equals(ident.ident, Id.assign)
 				&& (sd != null || cd != null)) { // Disallow
 			// identity
 			// assignment

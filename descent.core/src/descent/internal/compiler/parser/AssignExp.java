@@ -25,7 +25,7 @@ public class AssignExp extends BinExp {
 
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.AssignDoesNotGiveABooleanResult, 0, start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionDoesNotGiveABooleanResult, 0, start, length));
 		return this;
 	}
 

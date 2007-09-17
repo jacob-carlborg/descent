@@ -9,13 +9,18 @@ import static descent.internal.compiler.parser.TY.*;
 public class WithStatement extends Statement {
 
 	public Expression exp;
+	public Expression sourceExp;
 	public Statement body;
+	public Statement sourceBody;
+	
 	public VarDeclaration wthis;
 
 	public WithStatement(Loc loc, Expression exp, Statement body) {
 		super(loc);
 		this.exp = exp;
+		this.sourceExp = exp;
 		this.body = body;
+		this.sourceBody = body;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import static descent.internal.compiler.parser.TOK.TOKindex;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DeleteExp extends UnaExp {
@@ -33,7 +34,7 @@ public class DeleteExp extends UnaExp {
 	
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		error("delete does not give a boolean result");
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionDoesNotGiveABooleanResult, 0, start, length));
 	    return this;
 	}
 

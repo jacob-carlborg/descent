@@ -1936,14 +1936,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.WithStatement convert(WithStatement a) {
 		descent.core.dom.WithStatement b = new descent.core.dom.WithStatement(ast);
-		if (a.body != null) {
-			descent.core.dom.Statement convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2172,7 +2172,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
-		convertStatements(b.statements(), ((CompoundStatement) a.statement).statements);
+		convertStatements(b.statements(), ((CompoundStatement) a.sourceStatement).statements);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}

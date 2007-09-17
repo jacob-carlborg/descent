@@ -351,7 +351,7 @@ public interface IProblem {
 	int ConstantIsNotAnLValue = 382;
 	int VersionIdentifierReserved = 383;
 	int CannotPutCatchStatementInsideFinallyBlock = 384;
-	int AssignDoesNotGiveABooleanResult = 385;
+	int ExpressionDoesNotGiveABooleanResult = 385;
 	int BreakIsNotInsideALoopOrSwitch = 386;
 	int CaseIsNotInSwitch = 387;
 	int VersionDeclarationMustBeAtModuleLevel = 388;
@@ -359,6 +359,12 @@ public interface IProblem {
 	int GotoCaseNotInSwitch = 390;
 	int GotoDefaultNotInSwitch = 391;
 	int LazyVariablesCannotBeLvalues = 392;
+	int DivisionByZero = 393;
+	int DefaultNotInSwitch = 394;
+	int SwitchAlreadyHasDefault = 395;
+	int ContinueNotInLoop = 396;
+	int ForeachIndexCannotBeRef = 397;
+	
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

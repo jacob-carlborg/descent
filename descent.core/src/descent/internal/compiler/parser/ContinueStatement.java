@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -111,7 +112,7 @@ public class ContinueStatement extends Statement {
 				s = new ReturnStatement(0, new IntegerExp(0));
 				return s;
 			}
-			error("continue is not inside a loop");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ContinueNotInLoop, 0, start, length));
 		}
 		return this;
 	}

@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
 
+import descent.core.compiler.IProblem;
+
 import static descent.internal.compiler.parser.ASTDmdNode.EXP_CANT_INTERPRET;
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddress;
@@ -533,7 +535,7 @@ public class Constfold
 				n2 = e2.toInteger(context);
 				if(n2.equals(0))
 				{
-					e2.error("divide by 0");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DivisionByZero, 0, e1.start, e2.start + e2.length - e1.start));
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
@@ -599,7 +601,7 @@ public class Constfold
 				n2 = e2.toInteger(context);
 				if(n2.equals(0))
 				{
-					e2.error("divide by 0");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DivisionByZero, 0, e1.start, e2.start + e2.length - e1.start));
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}

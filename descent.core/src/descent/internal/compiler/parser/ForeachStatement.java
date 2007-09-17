@@ -429,7 +429,7 @@ public class ForeachStatement extends Statement {
 			Argument arg = arguments.get(0);
 			if (dim == 2) {
 				if ((arg.storageClass & STCref) != 0) {
-					error("foreach: index cannot be ref");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachIndexCannotBeRef, 0, arg.start, arg.length));
 				}
 				if (!arg.type.equals(taa.index)) {
 					error("foreach: index must be type %s, not %s", taa.index

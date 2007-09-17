@@ -825,7 +825,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		printIndent();
 		this.buffer.append("default:\n");
 		indent++;
-		visitList(((CompoundStatement) node.statement).statements, "\n");
+		visitList(((CompoundStatement) node.sourceStatement).statements, "\n");
 		indent--;
 		return false;
 	}
@@ -2839,9 +2839,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(WithStatement node) {
 		printIndent();
 		this.buffer.append("with(");
-		node.exp.accept(this);
+		node.sourceExp.accept(this);
 		this.buffer.append(") ");
-		node.body.accept(this);
+		node.sourceBody.accept(this);
 		return false;
 	}
 

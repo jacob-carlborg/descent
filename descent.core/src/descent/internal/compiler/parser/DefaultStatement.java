@@ -1,16 +1,19 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class DefaultStatement extends Statement {
 
 	public Statement statement;
+	public Statement sourceStatement;
 
 	public DefaultStatement(Loc loc, Statement s) {
 		super(loc);
 		this.statement = s;
+		this.sourceStatement = s;
 	}
 
 	@Override
@@ -61,12 +64,13 @@ public class DefaultStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		if (sc.sw != null) {
 			if (sc.sw.sdefault != null) {
-				error("switch statement already has a default");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SwitchAlreadyHasDefault, 0, start, length));
 			}
 			sc.sw.sdefault = this;
 		} else {
-			error("default not in switch statement");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DefaultNotInSwitch, 0, start, length));
 		}
+		
 		statement = statement.semantic(sc, context);
 		return this;
 	}
