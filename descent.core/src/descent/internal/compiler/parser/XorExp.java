@@ -28,7 +28,7 @@ public class XorExp extends BinExp {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Xor, context);
 	}
 
 	@Override

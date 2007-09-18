@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Not;
 
 public class NotExp extends UnaExp {
 
@@ -39,7 +40,7 @@ public class NotExp extends UnaExp {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Not, context);
 	}
 
 }

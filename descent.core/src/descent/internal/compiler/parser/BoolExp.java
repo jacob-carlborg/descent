@@ -28,7 +28,7 @@ public class BoolExp extends UnaExp {
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Bool, context);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Shl;
 
 // DMD 1.020
 public class ShlExp extends BinExp {
@@ -27,7 +28,7 @@ public class ShlExp extends BinExp {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Shl, context);
 	}
 
 	@Override

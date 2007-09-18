@@ -24,9 +24,11 @@ public class real_t implements Comparable {
 		this.value = value;
 	}
 	
-	public real_t(double nanOrInfinite) {
-		Assert.isTrue(Double.isInfinite(nanOrInfinite) || Double.isNaN(nanOrInfinite));
-		this.nanOrInfinite = nanOrInfinite;
+	public real_t(double doubleVal) {
+		if(Double.isInfinite(doubleVal) || Double.isNaN(doubleVal))
+			nanOrInfinite = doubleVal;
+		else
+			value = new BigDecimal(doubleVal);
 	}
 	
 	public integer_t to_integer_t() {

@@ -28,7 +28,7 @@ public class DivExp extends BinExp {
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Div, context);
 	}
 
 	@Override

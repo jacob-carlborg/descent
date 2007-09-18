@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Ushr;
 
 public class UshrAssignExp extends BinExp {
 
@@ -26,7 +27,7 @@ public class UshrAssignExp extends BinExp {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon2(istate, op, context);
+		return interpretAssignCommon(istate, Ushr, context);
 	}
 
 	@Override

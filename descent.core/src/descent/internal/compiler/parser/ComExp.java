@@ -27,7 +27,7 @@ public class ComExp extends UnaExp {
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Com, context);
 	}
 
 	@Override

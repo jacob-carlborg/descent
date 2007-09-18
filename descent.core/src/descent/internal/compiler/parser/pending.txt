@@ -92,7 +92,6 @@ Tuple.java
 TupleDeclaration.java
 TupleExp.java
 Type.java
-TypeBasic.java
 TypedefDeclaration.java
 UniAlpha.javaT
 Utf.java

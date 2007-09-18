@@ -28,7 +28,7 @@ public class OrExp extends BinExp {
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, op, context);
+		return interpretCommon(istate, Or, context);
 	}
 
 	@Override

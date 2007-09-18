@@ -1,35 +1,12 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.MATCH.*;
 import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TOK.TOKandass;
-import static descent.internal.compiler.parser.TOK.TOKassign;
-import static descent.internal.compiler.parser.TOK.TOKcatass;
-import static descent.internal.compiler.parser.TOK.TOKdivass;
-import static descent.internal.compiler.parser.TOK.TOKin;
-import static descent.internal.compiler.parser.TOK.TOKmin;
-import static descent.internal.compiler.parser.TOK.TOKminass;
-import static descent.internal.compiler.parser.TOK.TOKminusminus;
-import static descent.internal.compiler.parser.TOK.TOKmodass;
-import static descent.internal.compiler.parser.TOK.TOKmulass;
-import static descent.internal.compiler.parser.TOK.TOKnull;
-import static descent.internal.compiler.parser.TOK.TOKorass;
-import static descent.internal.compiler.parser.TOK.TOKplusplus;
-import static descent.internal.compiler.parser.TOK.TOKremove;
-import static descent.internal.compiler.parser.TOK.TOKshlass;
-import static descent.internal.compiler.parser.TOK.TOKshrass;
-import static descent.internal.compiler.parser.TOK.TOKstring;
-import static descent.internal.compiler.parser.TOK.TOKushrass;
-import static descent.internal.compiler.parser.TOK.TOKxorass;
-import static descent.internal.compiler.parser.TY.Tarray;
-import static descent.internal.compiler.parser.TY.Tbool;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Terror;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tsarray;
-import static descent.internal.compiler.parser.TY.Tstruct;
-import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.Constfold.BinExp_fp;
+import static descent.internal.compiler.parser.Constfold.BinExp_fp2;
+import static descent.internal.compiler.parser.Constfold.Index;
+import static descent.internal.compiler.parser.Constfold.Equal;
 
 import java.math.BigInteger;
 
@@ -506,12 +483,29 @@ public abstract class BinExp extends Expression {
 		return this;
 	}
 	
-	public Expression interpretCommon(InterState istate, TOK op, SemanticContext context) {
-		// TODO semantic
-		return null;
+	public Expression interpretCommon(InterState istate, BinExp_fp fp,
+			SemanticContext context) {
+		Expression e;
+		Expression e1;
+		Expression e2;
+		
+		e1 = this.e1.interpret(istate, context);
+		if(e1 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		if(!e1.isConst())
+			return EXP_CANT_INTERPRET; //goto Lcant;
+			
+		e2 = this.e2.interpret(istate, context);
+		if(e2 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		if(!e2.isConst())
+			return EXP_CANT_INTERPRET; //goto Lcant;
+			
+		e = fp.call(type, e1, e2, context);
+		return e;
 	}
 
-	public Expression interpretCommon2(InterState istate, TOK op,
+	public Expression interpretCommon2(InterState istate, BinExp_fp2 fp,
 			SemanticContext context) {
 		Expression e;
 		Expression e1;
@@ -539,25 +533,334 @@ public abstract class BinExp extends Expression {
 			return EXP_CANT_INTERPRET;
 		}
 
-		/* TODO semantic
-		 e = (*fp)(op, type, e1, e2);
-		 */
-		// TODO remove the next line
-		e = null;
+		 e = fp.call(op, type, e1, e2, context);
 		return e;
 
 		//	Lcant:
 		//	    return EXP_CANT_INTERPRET;
 	}
 	
-	public Expression interpretAssignCommon(InterState istate, TOK op, SemanticContext context) {
-		// TODO semantic
-		return null;
+	public Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
+			SemanticContext context)
+	{
+		return interpretAssignCommon(istate, fp, 0, context);
 	}
 	
-	public Expression interpretAssignCommon(InterState istate, BinExp_fp add, int i, SemanticContext context) {
-		// TODo semantic
-		return null;
+	public Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
+			int post, SemanticContext context)
+	{
+		Expression e = EXP_CANT_INTERPRET;
+		Expression e1 = this.e1;
+		
+		if(null != fp)
+		{
+			if(e1.op == TOKcast)
+			{
+				CastExp ce = (CastExp) e1;
+				e1 = ce.e1;
+			}
+		}
+		if(e1 == EXP_CANT_INTERPRET)
+			return e1;
+		Expression e2 = this.e2.interpret(istate, context);
+		if(e2 == EXP_CANT_INTERPRET)
+			return e2;
+		
+		/* Assignment to variable of the form:
+		 *        v = e2
+		 */
+		if(e1.op == TOKvar)
+		{
+			VarExp ve = (VarExp) e1;
+			VarDeclaration v = ve.var.isVarDeclaration();
+			if(null != v && !v.isDataseg(context))
+			{
+				/* Chase down rebinding of out and ref
+				 */
+				if(null != v.value && v.value.op == TOKvar)
+				{
+					ve = (VarExp) v.value;
+					v = ve.var.isVarDeclaration();
+					assert (null != v);
+				}
+				
+				Expression ev = v.value;
+				if(null != fp && null == ev)
+				{
+					error("variable %s is used before initialization", v
+							.toChars(context));
+					return e;
+				}
+				if(null != fp)
+					e2 = fp.call(v.type, ev, e2, context);
+				else
+					e2 = Constfold.Cast(v.type, v.type, e2, context);
+				if(e2 != EXP_CANT_INTERPRET)
+				{
+					if(!v.isParameter())
+					{
+						for(int i = 0; true; i++)
+						{
+							if(i == istate.vars.size())
+							{
+								istate.vars.add(v);
+								break;
+							}
+							if(v == (VarDeclaration) istate.vars.get(i))
+								break;
+						}
+					}
+					v.value = e2;
+					e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
+				}
+			}
+		}
+		/* Assignment to struct member of the form:
+		 *   (symoffexp) = e2
+		 */
+		else if(e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff)
+		{
+			SymOffExp soe = (SymOffExp) ((PtrExp) e1).e1;
+			VarDeclaration v = soe.var.isVarDeclaration();
+			
+			if(v.isDataseg(context))
+				return EXP_CANT_INTERPRET;
+			if(null != fp && null == v.value)
+			{
+				error("variable %s is used before initialization", v
+						.toChars(context));
+				return e;
+			}
+			if(v.value.op != TOKstructliteral)
+				return EXP_CANT_INTERPRET;
+			StructLiteralExp se = (StructLiteralExp) v.value;
+			int fieldi = 0 /* TODO semantic se.getFieldIndex(type, soe.offset) */;
+			if(fieldi == -1)
+				return EXP_CANT_INTERPRET;
+			Expression ev = null /* TODO semantic se.getField(type, soe.offset) */;
+			if(null != fp)
+				e2 = fp.call(type, ev, e2, context);
+			else
+				e2 = Constfold.Cast(type, type, e2, context);
+			if(e2 == EXP_CANT_INTERPRET)
+				return e2;
+			
+			if(!v.isParameter())
+			{
+				for(int i = 0; true; i++)
+				{
+					if(i == istate.vars.size())
+					{
+						istate.vars.add(v);
+						break;
+					}
+					if(v == (VarDeclaration) istate.vars.get(i))
+						break;
+				}
+			}
+			
+			/* Create new struct literal reflecting updated fieldi
+			 */
+			Expressions expsx = new Expressions(se.elements.size());
+			//expsx.setDim(se.elements.size());
+			for(int j = 0; j < se.elements.size(); j++)
+			{
+				if(j == fieldi)
+					expsx.add(e2);
+				else
+					expsx.add(j, se.elements.get(j));
+			}
+			v.value = new StructLiteralExp(se.loc, se.sd, expsx);
+			v.value.type = se.type;
+			
+			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
+		}
+		/* Assignment to array element of the form:
+		 *   a[i] = e2
+		 */
+		else if(e1.op == TOKindex && ((IndexExp) e1).e1.op == TOKvar)
+		{
+			IndexExp ie = (IndexExp) e1;
+			VarExp ve = (VarExp) ie.e1;
+			VarDeclaration v = ve.var.isVarDeclaration();
+			
+			if(null == v || v.isDataseg(context))
+				return EXP_CANT_INTERPRET;
+			if(null == v.value)
+			{
+				if(null != fp)
+				{
+					error("variable %s is used before initialization", v
+							.toChars(context));
+					return e;
+				}
+				
+				Type t = v.type.toBasetype(context);
+				if(t.ty == Tsarray)
+				{
+					/* This array was void initialized. Create a
+					 * default initializer for it.
+					 * What we should do is fill the array literal with
+					 * null data, so use-before-initialized can be detected.
+					 * But we're too lazy at the moment to do it, as that
+					 * involves redoing Index() and whoever calls it.
+					 */
+					Expression ev = v.type.defaultInit(context);
+					int dim = ((TypeSArray) t).dim.toInteger(context)
+							.intValue();
+					Expressions elements = new Expressions(dim);
+					for(int i = 0; i < dim; i++)
+						elements.add(ev);
+					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
+					ae.type = v.type;
+					v.value = ae;
+				}
+				else
+					return EXP_CANT_INTERPRET;
+			}
+			
+			ArrayLiteralExp ae = null;
+			AssocArrayLiteralExp aae = null;
+			StringExp se = null;
+			if(v.value.op == TOKarrayliteral)
+				ae = (ArrayLiteralExp) v.value;
+			else if(v.value.op == TOKassocarrayliteral)
+				aae = (AssocArrayLiteralExp) v.value;
+			else if(v.value.op == TOKstring)
+				se = (StringExp) v.value;
+			else
+				return EXP_CANT_INTERPRET;
+			
+			Expression index = ie.e2.interpret(istate, context);
+			if(index == EXP_CANT_INTERPRET)
+				return EXP_CANT_INTERPRET;
+			Expression ev = null;
+			if(null != fp || null != ae || null != se) // not for aae, because key might not be there
+			{
+				ev = Index.call(type, v.value, index, context);
+				if(ev == EXP_CANT_INTERPRET)
+					return EXP_CANT_INTERPRET;
+			}
+			
+			if(null != fp)
+				e2 = fp.call(type, ev, e2, context);
+			else
+				e2 = Constfold.Cast(type, type, e2, context);
+			if(e2 == EXP_CANT_INTERPRET)
+				return e2;
+			
+			if(!v.isParameter())
+			{
+				for(int i = 0; true; i++)
+				{
+					if(i == istate.vars.size())
+					{
+						istate.vars.add(v);
+						break;
+					}
+					if(v == (VarDeclaration) istate.vars.get(i))
+						break;
+				}
+			}
+			
+			if(null != ae)
+			{
+				/* Create new array literal reflecting updated elem
+				 */
+				int elemi = index.toInteger(context).intValue();
+				Expressions expsx = new Expressions(ae.elements.size());
+				//expsx.setDim(ae.elements.dim);
+				for(int j = 0; j < ae.elements.size(); j++)
+				{
+					if(j == elemi)
+						expsx.add(e2);
+					else
+						expsx.add(ae.elements.get(j));
+				}
+				v.value = new ArrayLiteralExp(ae.loc, expsx);
+				v.value.type = ae.type;
+			}
+			else if(null != aae)
+			{
+				/* Create new associative array literal reflecting updated key/value
+				 */
+				Expressions keysx = aae.keys;
+				Expressions valuesx = new Expressions(aae.values.size());
+				valuesx.setDim(aae.values.size());
+				int updated = 0;
+				for(int j = aae.values.size(); j > 0;)
+				{
+					j--;
+					Expression ekey = (Expression) aae.keys.get(j);
+					Expression ex = Equal.call(TOKequal, Type.tbool, ekey,
+							index, context);
+					if(ex == EXP_CANT_INTERPRET)
+						return EXP_CANT_INTERPRET;
+					if(ex.isBool(true))
+					{
+						valuesx.set(j, e2);
+						updated = 1;
+					}
+					else
+						valuesx.set(j, aae.values.get(j));
+				}
+				if(0 == updated)
+				{ // Append index/e2 to keysx[]/valuesx[]
+					valuesx.add(e2);
+					keysx = new Expressions(keysx);
+					keysx.add(index);
+				}
+				v.value = new AssocArrayLiteralExp(aae.loc, keysx, valuesx);
+				v.value.type = aae.type;
+			}
+			else if(null != se)
+			{
+				/* Create new string literal reflecting updated elem
+				 */
+				int elemi = index.toInteger(context).intValue();
+				char[] s = new char[se.len + 1];
+				//s = (unsigned char )mem.calloc(se.len + 1, se.sz);
+				System.arraycopy(se.string, 0, s, 0, se.length);
+				//memcpy(s, se.string, se.len  se.sz);
+				int value = e2.toInteger(context).intValue();
+				switch(se.sz)
+				{
+					/* FIXME semantic 
+					 * (I'm not sure what sort of bit manipulation I can do
+					 *  with Java's char[] type) and whether there will be
+					 *  adequate space allocated. The char[] array in StringExp
+					 *  may need to be changed to a byte[] which would suck.
+					 *
+					case 1:        s[elemi] = value; break;
+					case 2:        ((unsigned short )s)[elemi] = value; break;
+					case 4:        ((unsigned )s)[elemi] = value; break;
+					*/
+					
+					//---temporary code for Descent testing---
+					case 1:
+					case 2:
+					case 4:
+						s[elemi] = (char) value;
+						break;
+					//---end temporary code block---
+					
+					default:
+						assert (false);
+						break;
+				}
+				StringExp se2 = new StringExp(se.loc, s);
+				se2.committed = se.committed;
+				se2.postfix = se.postfix;
+				se2.type = se.type;
+				v.value = se2;
+			}
+			else
+			{
+				assert (false);
+			}
+			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
+		}
+		return e;
 	}
 
 }

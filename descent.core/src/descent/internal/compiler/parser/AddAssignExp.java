@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Add;
 
 // DMD 1.020 
 public class AddAssignExp extends BinExp {
@@ -27,7 +28,7 @@ public class AddAssignExp extends BinExp {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretAssignCommon(istate, op, context);
+		return interpretAssignCommon(istate, Add, context);
 	}
 
 	@Override

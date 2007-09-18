@@ -28,7 +28,7 @@ public class EqualExp extends BinExp {
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon2(istate, op, context);
+		return interpretCommon2(istate, Equal, context);
 	}
 
 	@Override
