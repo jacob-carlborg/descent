@@ -165,7 +165,7 @@ public class NewExp extends Expression {
 
 				FuncDeclaration f = cd.ctor;
 				if (f != null) {
-					f = f.overloadResolve(arguments, context);
+					f = f.overloadResolve(arguments, context, this);
 					checkDeprecated(sc, f, context);
 					member = f.isCtorDeclaration();
 					Assert.isNotNull(member);
@@ -197,7 +197,7 @@ public class NewExp extends Expression {
 					}
 					newargs.add(0, e);
 
-					f = f.overloadResolve(newargs, context);
+					f = f.overloadResolve(newargs, context, this);
 					allocator = f.isNewDeclaration();
 					Assert.isNotNull(allocator);
 
@@ -229,7 +229,7 @@ public class NewExp extends Expression {
 					}
 					newargs.add(0, e);
 
-					f = f.overloadResolve(newargs, context);
+					f = f.overloadResolve(newargs, context, this);
 					allocator = f.isNewDeclaration();
 					Assert.isNotNull(allocator);
 

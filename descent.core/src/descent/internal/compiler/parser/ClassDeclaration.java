@@ -26,8 +26,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public final static int OFFSET_RUNTIME = 0x76543210;
 
 	public BaseClasses sourceBaseclasses;
-
 	public BaseClasses baseclasses;
+	
 	public ClassDeclaration baseClass; // null only if this is Object
 	public CtorDeclaration ctor;
 	public CtorDeclaration defaultCtor; // default constructor

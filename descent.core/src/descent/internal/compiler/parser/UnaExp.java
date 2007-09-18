@@ -8,10 +8,12 @@ import static descent.internal.compiler.parser.Constfold.*;
 public abstract class UnaExp extends Expression {
 
 	public Expression e1;
+	public Expression sourceE1;
 
 	public UnaExp(Loc loc, TOK op, Expression e1) {
 		super(loc, op);
 		this.e1 = e1;
+		this.sourceE1 = e1;
 	}
 
 	@Override

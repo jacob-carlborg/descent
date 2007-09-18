@@ -1040,6 +1040,19 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[0], IProblem.ForeachIndexCannotBeRef, 13, 9);
 	}
 	
+	public void testFunctionArguments() {
+		String s = "void foo(int x) {  } void bar() { foo(); }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.ParametersDoesNotMatchParameterTypes, 34, 5);
+	}
+	
+	public void testFunctionArguments_Not() {
+		assertNoSemanticErrors("void foo(int x) { } void bar() { foo(1); }");
+	}
+	
+	
 	/* TODO test for SemanticContext.IN_GCC = true
 	public void testCannotPutCatchStatementInsideFinallyBlock() {
 		String s = "void foo() { try { } finally { try { } catch { } } }";

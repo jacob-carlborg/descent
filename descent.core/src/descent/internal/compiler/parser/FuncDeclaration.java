@@ -469,7 +469,7 @@ public class FuncDeclaration extends Declaration {
 		}
 	}
 
-	public Expression T(InterState istate, Expressions arguments,
+	public Expression interpret(InterState istate, Expressions arguments,
 			SemanticContext context) {
 		if (context.global.errors != 0) {
 			return null;
@@ -822,8 +822,9 @@ public class FuncDeclaration extends Declaration {
 		return false;
 	}
 
+	// Modified to add the caller's start and length, to signal a better error
 	public FuncDeclaration overloadResolve(Expressions arguments,
-			SemanticContext context) {
+			SemanticContext context, ASTDmdNode caller) {
 		TypeFunction tf;
 		Match m = new Match();
 		m.last = MATCHnomatch;
@@ -844,9 +845,7 @@ public class FuncDeclaration extends Declaration {
 			if (m.last == MATCHnomatch) {
 				tf = (TypeFunction) type;
 
-				error(loc, "%s does not match parameter types (%s)", Argument
-						.argsTypesToChars(tf.parameters, tf.varargs, context),
-						buf.toChars());
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, 0, caller.start, caller.length, new String[] { Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
 				return m.anyf; // as long as it's not a FuncAliasDeclaration
 			} else {
 				TypeFunction t1 = (TypeFunction) m.lastf.type;

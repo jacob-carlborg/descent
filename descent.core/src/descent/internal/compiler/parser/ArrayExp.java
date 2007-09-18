@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class ArrayExp extends UnaExp {
 
 	public Expressions arguments;
@@ -10,11 +11,6 @@ public class ArrayExp extends UnaExp {
 	public ArrayExp(Loc loc, Expression e, Expressions arguments) {
 		super(loc, TOK.TOKarray, e);
 		this.arguments = arguments;
-	}
-
-	@Override
-	public int getNodeType() {
-		return ARRAY_EXP;
 	}
 
 	@Override
@@ -27,8 +23,45 @@ public class ArrayExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new ArrayExp(loc, e1.syntaxCopy(), arraySyntaxCopy(arguments));
+	public Expression doInline(InlineDoState ids) {
+		ArrayExp ce;
+
+		ce = (ArrayExp) copy();
+		ce.e1 = e1.doInline(ids);
+		ce.arguments = arrayExpressiondoInline(arguments, ids);
+		return ce;
+	}
+
+	@Override
+	public int getNodeType() {
+		return ARRAY_EXP;
+	}
+
+	@Override
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		return 1 + e1.inlineCost(ics, context)
+				+ arrayInlineCost(ics, arguments, context);
+	}
+
+	@Override
+	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
+		Expression e = this;
+
+		e1 = e1.inlineScan(iss, context);
+		arrayInlineScan(iss, arguments, context);
+
+		return e;
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.index;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		e1.scanForNestedRef(sc, context);
+		arrayExpressionScanForNestedRef(sc, arguments, context);
 	}
 
 	@Override
@@ -42,8 +75,9 @@ public class ArrayExp extends UnaExp {
 		t1 = e1.type.toBasetype(context);
 		if (t1.ty != TY.Tclass && t1.ty != TY.Tstruct) {
 			// Convert to IndexExp
-			if (arguments.size() != 1)
+			if (arguments.size() != 1) {
 				error("only one index allowed to index " + t1.toChars(context));
+			}
 			e = new IndexExp(loc, e1, arguments.get(0));
 			return e.semantic(sc, context);
 		}
@@ -52,8 +86,9 @@ public class ArrayExp extends UnaExp {
 		for (int i = 0; i < arguments.size(); i++) {
 			e = arguments.get(i);
 			e = e.semantic(sc, context);
-			if (null == e.type)
+			if (null == e.type) {
 				error(e.toChars(context) + " has no value");
+			}
 			arguments.set(i, e);
 		}
 
@@ -71,6 +106,11 @@ public class ArrayExp extends UnaExp {
 	}
 
 	@Override
+	public Expression syntaxCopy() {
+		return new ArrayExp(loc, e1.syntaxCopy(), arraySyntaxCopy(arguments));
+	}
+
+	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
@@ -81,8 +121,9 @@ public class ArrayExp extends UnaExp {
 
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
-		if ((type != null) && (type.toBasetype(context).ty == TY.Tvoid))
+		if ((type != null) && (type.toBasetype(context).ty == TY.Tvoid)) {
 			error("voids have no value");
+		}
 		return this;
 	}
 

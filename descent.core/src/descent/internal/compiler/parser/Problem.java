@@ -406,6 +406,8 @@ public class Problem implements IProblem {
 			return "continue is not inside a loop";
 		case ForeachIndexCannotBeRef:
 			return "foreach: index cannot be ref";
+		case ParametersDoesNotMatchParameterTypes:
+			return arguments[0] + " does not match parameter types (" + arguments[1] + ")";
 		default:
 			return "";
 		}

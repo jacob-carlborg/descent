@@ -3,7 +3,70 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tsarray;
+
+// DMD 1.020
 public class Argument extends ASTDmdNode {
+
+	public static void argsToCBuffer(OutBuffer buf, HdrGenState hgs,
+			Arguments arguments, int varargs, SemanticContext context) {
+		buf.writeByte('(');
+		if (arguments != null) {
+			int i;
+			OutBuffer argbuf = new OutBuffer();
+
+			for (i = 0; i < arguments.size(); i++) {
+				Argument arg;
+
+				if (i != 0) {
+					buf.writestring(", ");
+				}
+				arg = arguments.get(i);
+				if ((arg.storageClass & STCout) != 0) {
+					buf.writestring("out ");
+				} else if ((arg.storageClass & STCref) != 0) {
+					buf
+							.writestring((context.global.params.Dversion == 1) ? "inout "
+									: "ref ");
+				} else if ((arg.storageClass & STClazy) != 0) {
+					buf.writestring("lazy ");
+				}
+				argbuf.reset();
+				arg.type.toCBuffer2(argbuf, arg.ident, hgs, context);
+				if (arg.defaultArg != null) {
+					argbuf.writestring(" = ");
+					arg.defaultArg.toCBuffer(argbuf, hgs, context);
+				}
+				buf.write(argbuf);
+			}
+			if (varargs != 0) {
+				if (i != 0 && varargs == 1) {
+					buf.writeByte(',');
+				}
+				buf.writestring("...");
+			}
+		}
+		buf.writeByte(')');
+	}
+
+	public static void argsToDecoBuffer(OutBuffer buf, Arguments arguments,
+			SemanticContext context) {
+		// Write argument types
+		if (arguments != null) {
+			int dim = Argument.dim(arguments, context);
+			for (int i = 0; i < dim; i++) {
+				Argument arg = Argument.getNth(arguments, i, context);
+				arg.toDecoBuffer(buf, context);
+			}
+		}
+	}
 
 	public static String argsTypesToChars(Arguments args, int varargs,
 			SemanticContext context) {
@@ -38,6 +101,20 @@ public class Argument extends ASTDmdNode {
 		buf.writeByte(')');
 
 		return buf.toChars();
+	}
+
+	public static Arguments arraySyntaxCopy(Arguments args) {
+		Arguments a = null;
+
+		if (args != null) {
+			a = new Arguments(args.size());
+			for (int i = 0; i < a.size(); i++) {
+				Argument arg = args.get(i);
+				arg = arg.syntaxCopy();
+				a.add(arg);
+			}
+		}
+		return a;
 	}
 
 	public static int dim(Arguments args, SemanticContext context) {
@@ -90,6 +167,7 @@ public class Argument extends ASTDmdNode {
 			SemanticContext context) {
 		return getNth(args, nth, null, context);
 	}
+
 	public int storageClass;
 
 	public Type type;
@@ -129,8 +207,22 @@ public class Argument extends ASTDmdNode {
 		return ARGUMENT;
 	}
 
-	public Type isLazyArray() {
-		// TODO semantic
+	public Type isLazyArray(SemanticContext context) {
+		{
+			Type tb = type.toBasetype(context);
+			if (tb.ty == Tsarray || tb.ty == Tarray) {
+				Type tel = tb.next.toBasetype(context);
+				if (tel.ty == Tdelegate) {
+					TypeDelegate td = (TypeDelegate) tel;
+					TypeFunction tf = (TypeFunction) td.next;
+
+					if (0 == tf.varargs
+							&& Argument.dim(tf.parameters, context) == 0) {
+						return tf.next; // return type of delegate
+					}
+				}
+			}
+		}
 		return null;
 	}
 
@@ -141,18 +233,24 @@ public class Argument extends ASTDmdNode {
 		return a;
 	}
 
-	public static Arguments arraySyntaxCopy(Arguments args) {
-		Arguments a = null;
-
-		if (args != null) {
-			a = new Arguments(args.size());
-			for (int i = 0; i < a.size(); i++) {
-				Argument arg = args.get(i);
-				arg = arg.syntaxCopy();
-				a.add(arg);
-			}
+	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+		switch (storageClass & (STCin | STCout | STCref | STClazy)) {
+		case 0:
+		case STCin:
+			break;
+		case STCout:
+			buf.writeByte('J');
+			break;
+		case STCref:
+			buf.writeByte('K');
+			break;
+		case STClazy:
+			buf.writeByte('L');
+			break;
+		default:
+			throw new IllegalStateException("assert(0);");
 		}
-		return a;
+		type.toDecoBuffer(buf, context);
 	}
 
 }

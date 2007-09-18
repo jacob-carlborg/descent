@@ -408,7 +408,7 @@ public class TypeFunction extends Type {
 									 * If lazy array of delegates, convert arg(s) to
 									 * delegate(s)
 									 */
-									Type tret = p.isLazyArray();
+									Type tret = p.isLazyArray(context);
 									if(null != tret)
 									{
 										if(tb.next.equals(arg.type))
@@ -484,7 +484,7 @@ public class TypeFunction extends Type {
 								 * If lazy array of delegates, convert arg(s) to
 								 * delegate(s)
 								 */
-								Type tret = p.isLazyArray();
+								Type tret = p.isLazyArray(context);
 								if(null != tret)
 								{
 									if(tb.next.equals(arg.type))

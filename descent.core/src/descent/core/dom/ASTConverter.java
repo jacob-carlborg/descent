@@ -932,8 +932,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.SliceExpression convert(SliceExp a) {
 		descent.core.dom.SliceExpression b = new descent.core.dom.SliceExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression converted = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression converted = convert(a.sourceE1);
 			if (converted != null) {
 				b.setExpression(converted);
 			}
@@ -995,8 +995,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.DotTemplateTypeExpression convert(DotTemplateInstanceExp a) {
 		descent.core.dom.DotTemplateTypeExpression b = new descent.core.dom.DotTemplateTypeExpression(ast);
-		if (a.e1 != null) {
-			b.setExpression(convert(a.e1));
+		if (a.sourceE1 != null) {
+			b.setExpression(convert(a.sourceE1));
 		}
 		if (a.ti != null) {
 			TemplateType convertedTi = convert(a.ti);
@@ -1163,7 +1163,7 @@ public class ASTConverter {
 		}
 		convertExpressions(b.newArguments(), a.newargs);
 		convertExpressions(b.constructorArguments(), a.arguments);
-		convertBaseClasses(b.baseClasses(), a.cd.baseclasses);
+		convertBaseClasses(b.baseClasses(), a.cd.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.cd.members);
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1835,8 +1835,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.FileImportExpression convert(FileExp a) {
 		descent.core.dom.FileImportExpression b = new descent.core.dom.FileImportExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -1879,8 +1879,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.DotIdentifierExpression convert(DotIdExp a) {
 		descent.core.dom.DotIdentifierExpression b = new descent.core.dom.DotIdentifierExpression(ast);
-		if (a.e1 != null) {
-			b.setExpression(convert(a.e1));
+		if (a.sourceE1 != null) {
+			b.setExpression(convert(a.sourceE1));
 		}
 		if (a.ident != null) {
 			SimpleName convertedIdent = convert(a.ident);
@@ -2160,8 +2160,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.DeleteExpression convert(DeleteExp a) {
 		descent.core.dom.DeleteExpression b = new descent.core.dom.DeleteExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2314,8 +2314,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.MixinExpression convert(CompileExp a) {
 		descent.core.dom.MixinExpression b = new descent.core.dom.MixinExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2397,8 +2397,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.ArrayAccess convert(ArrayExp a) {
 		descent.core.dom.ArrayAccess b = new descent.core.dom.ArrayAccess(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setArray(convertedExp);
 			}
@@ -2482,8 +2482,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.AssertExpression convert(AssertExp a) {
 		descent.core.dom.AssertExpression b = new descent.core.dom.AssertExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2523,8 +2523,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.CallExpression convert(CallExp a) {
 		descent.core.dom.CallExpression b = new descent.core.dom.CallExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2553,7 +2553,7 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Expression convert(CastExp a) {
-		descent.core.dom.Expression convertedExp = convert(a.e1);
+		descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 		if (a.tok == null) {
 			descent.core.dom.CastExpression b = new descent.core.dom.CastExpression(ast);
 			if (a.to != null) {
@@ -2562,7 +2562,7 @@ public class ASTConverter {
 					b.setType(convertedType);
 				}
 			}
-			if (a.e1 != null) {
+			if (a.sourceE1 != null) {
 				if (convertedExp != null) {
 					b.setExpression(convertedExp);
 				}
@@ -2839,8 +2839,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.ParenthesizedExpression convert(ParenExp a) {
 		descent.core.dom.ParenthesizedExpression b = new descent.core.dom.ParenthesizedExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -3215,8 +3215,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(UnaExp a, PrefixExpression.Operator op) {
 		PrefixExpression b = new PrefixExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setOperand(convertedExp);
 			}
@@ -3228,8 +3228,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(UnaExp a, PostfixExpression.Operator op) {
 		PostfixExpression b = new PostfixExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setOperand(convertedExp);
 			}

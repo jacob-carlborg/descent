@@ -1,16 +1,11 @@
-AggregateDeclaration.java
 AliasDeclaration.java
 AlignDeclaration.java
 AnonymousAggregateDeclaration.java
-Argument.java
-ArrayExp.java
 ArrayScopeSymbol.java
 AsmBlock.java
 AsmStatement.java
 ASTDmdNode.java
 BinExp.java
-CallExp.java
-CastExp.java
 CatAssignExp.java
 CatExp.java
 Chars.java
@@ -99,5 +94,3 @@ VarDeclaration.java
 VarExp.java
 Version.java
 VersionCondition.java
-
-Last missing port file from 1.007 to 1.020 lexicographically: func.c 

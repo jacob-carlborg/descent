@@ -117,7 +117,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(AddrExp node) {
 		this.buffer.append("&");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -251,7 +251,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(ArrayExp node) {
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		this.buffer.append("[");
 		visitList(node.arguments, ", ");
 		this.buffer.append("]");
@@ -317,7 +317,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(AssertExp node) {
 		this.buffer.append("assert(");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		if (node.msg != null) {
 			this.buffer.append(", ");
 			node.msg.accept(this);
@@ -389,7 +389,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(CallExp node) {
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		this.buffer.append("(");
 		visitList(node.arguments, ", ");
 		this.buffer.append(")");
@@ -433,7 +433,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 			}
 		}
 		this.buffer.append(") ");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -471,7 +471,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(ClassDeclaration node) {
-		visit(node, "class", null, node.baseclasses);
+		visit(node, "class", null, node.sourceBaseclasses);
 		return false;
 	}
 
@@ -504,7 +504,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(ComExp node) {
 		this.buffer.append("~");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -525,7 +525,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(CompileExp node) {
 		this.buffer.append("mixin(");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		this.buffer.append(");");
 		return false;
 	}
@@ -875,7 +875,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(DeleteExp node) {
 		this.buffer.append("delete ");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -914,8 +914,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(DotIdExp node) {
-		if (node.e1 != null) {
-			node.e1.accept(this);
+		if (node.sourceE1 != null) {
+			node.sourceE1.accept(this);
 		}
 		this.buffer.append(".");
 		node.ident.accept(this);
@@ -928,8 +928,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(DotTemplateInstanceExp node) {
-		if (node.e1 != null) {
-			node.e1.accept(this);
+		if (node.sourceE1 != null) {
+			node.sourceE1.accept(this);
 		}
 		this.buffer.append(".");
 		node.ti.accept(this);
@@ -1061,7 +1061,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(FileExp node) {
 		this.buffer.append("import(");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		this.buffer.append(");");
 		return false;
 	}
@@ -1394,7 +1394,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(InterfaceDeclaration node) {
-		visit(node, "interface", null, node.baseclasses);
+		visit(node, "interface", null, node.sourceBaseclasses);
 		return false;
 	}
 
@@ -1585,7 +1585,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(NegExp node) {
 		this.buffer.append("-");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -1598,7 +1598,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		visitList(node.newargs, ", ", "(", ") ");
 		this.buffer.append("class ");
 		visitList(node.arguments, ", ", "(", ") ");
-		visitList(node.cd.baseclasses, ", ");
+		visitList(node.cd.sourceBaseclasses, ", ");
 		this.buffer.append(" {\n");
 		this.indent++;
 		visitList(node.cd.members, LINE_END, EMPTY, LINE_END);
@@ -1662,7 +1662,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(NotExp node) {
 		this.buffer.append("!");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -1712,7 +1712,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(ParenExp node) {
 		this.buffer.append("(");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		this.buffer.append(")");
 		return false;
 	}
@@ -1803,7 +1803,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(PtrExp node) {
 		this.buffer.append("*");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 
@@ -1872,7 +1872,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(SliceExp node) {
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		this.buffer.append("[");
 		if (node.lwr != null && node.upr != null) {
 			node.lwr.accept(this);
@@ -2066,11 +2066,11 @@ public class NaiveASTFlattener implements IASTVisitor {
 		switch(node.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 			ClassDeclaration classDecl = (ClassDeclaration) node;
-			visit(classDecl, "class", parameters, classDecl.baseclasses);
+			visit(classDecl, "class", parameters, classDecl.sourceBaseclasses);
 			break;
 		case ASTDmdNode.INTERFACE_DECLARATION:
 			InterfaceDeclaration intDecl = (InterfaceDeclaration) node;
-			visit(intDecl, "interface", parameters, intDecl.baseclasses);
+			visit(intDecl, "interface", parameters, intDecl.sourceBaseclasses);
 			break;
 		case ASTDmdNode.STRUCT_DECLARATION:
 			StructDeclaration strDecl = (StructDeclaration) node;
@@ -2706,7 +2706,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(UAddExp node) {
 		this.buffer.append("+");
-		node.e1.accept(this);
+		node.sourceE1.accept(this);
 		return false;
 	}
 

@@ -17,17 +17,12 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
+// DMD 1.020
 public class CastExp extends UnaExp {
 
 	public Type to;
 	public TOK tok;
 	public int modifierStart;
-
-	public CastExp(Loc loc, Expression e1, Type t) {
-		super(loc, TOK.TOKcast, e1);
-		this.to = t;
-		this.tok = null;
-	}
 
 	public CastExp(Loc loc, Expression e1, TOK tok, int modifierStart) {
 		super(loc, TOK.TOKcast, e1);
@@ -36,9 +31,10 @@ public class CastExp extends UnaExp {
 		this.tok = tok;
 	}
 
-	@Override
-	public int getNodeType() {
-		return CAST_EXP;
+	public CastExp(Loc loc, Expression e1, Type t) {
+		super(loc, TOK.TOKcast, e1);
+		this.to = t;
+		this.tok = null;
 	}
 
 	@Override
@@ -76,6 +72,94 @@ public class CastExp extends UnaExp {
 			return super.checkSideEffect(flag, context);
 		}
 		return 1;
+	}
+
+	@Override
+	public int getNodeType() {
+		return CAST_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		// Expression e;
+		Expression e1;
+
+		e1 = this.e1.interpret(istate, context);
+		if (e1 == EXP_CANT_INTERPRET) {
+			// goto Lcant;
+			return EXP_CANT_INTERPRET;
+		}
+		return Cast(type, to, e1, context);
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.cast;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		if (type == null) {
+			throw new IllegalStateException("assert(type);");
+		}
+		TOK op1 = e1.op;
+
+		e1 = e1.optimize(result, context);
+		if ((result & WANTinterpret) != 0) {
+			e1 = fromConstInitializer(e1, context);
+		}
+
+		if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
+				&& (type.ty == Tpointer || type.ty == Tarray)
+				&& type.next.equals(e1.type.next)) {
+			e1.type = type;
+			return e1;
+		}
+		/* The first test here is to prevent infinite loops
+		 */
+		if (op1 != TOKarrayliteral && e1.op == TOKarrayliteral) {
+			return e1.castTo(null, to, context);
+		}
+		if (e1.op == TOKnull && (type.ty == Tpointer || type.ty == Tclass)) {
+			e1.type = type;
+			return e1;
+		}
+
+		if ((result & WANTflags) != 0 && type.ty == Tclass
+				&& e1.type.ty == Tclass) {
+			// See if we can remove an unnecessary cast
+			ClassDeclaration cdfrom;
+			ClassDeclaration cdto;
+			int[] offset = { 0 };
+
+			cdfrom = e1.type.isClassHandle();
+			cdto = type.isClassHandle();
+			if (cdto.isBaseOf(cdfrom, offset, context) && offset[0] == 0) {
+				e1.type = type;
+				return e1;
+			}
+		}
+
+		Expression e;
+
+		if (e1.isConst()) {
+			if (e1.op == TOKsymoff) {
+				if (type.size(context) == e1.type.size(context)
+						&& type.toBasetype(context).ty != Tsarray) {
+					e1.type = type;
+					return e1;
+				}
+				return this;
+			}
+			if (to.toBasetype(context).ty == Tvoid) {
+				e = this;
+			} else {
+				e = Cast(type, to, e1, context);
+			}
+		} else {
+			e = this;
+		}
+		return e;
 	}
 
 	@Override
@@ -130,67 +214,6 @@ public class CastExp extends UnaExp {
 		to.toCBuffer(buf, null, hgs, context);
 		buf.writeByte(')');
 		expToCBuffer(buf, hgs, e1, op.precedence, context);
-	}
-
-	@Override
-	public Expression optimize(int result, SemanticContext context) {
-		if (type == null) {
-			throw new IllegalStateException("assert(type);");
-		}
-		TOK op1 = e1.op;
-
-		e1 = e1.optimize(result, context);
-		if ((result & WANTinterpret) != 0)
-			e1 = fromConstInitializer(e1, context);
-
-		if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
-				&& (type.ty == Tpointer || type.ty == Tarray)
-				&& type.next.equals(e1.type.next)) {
-			e1.type = type;
-			return e1;
-		}
-		/* The first test here is to prevent infinite loops
-		 */
-		if (op1 != TOKarrayliteral && e1.op == TOKarrayliteral)
-			return e1.castTo(null, to, context);
-		if (e1.op == TOKnull && (type.ty == Tpointer || type.ty == Tclass)) {
-			e1.type = type;
-			return e1;
-		}
-
-		if ((result & WANTflags) != 0 && type.ty == Tclass
-				&& e1.type.ty == Tclass) {
-			// See if we can remove an unnecessary cast
-			ClassDeclaration cdfrom;
-			ClassDeclaration cdto;
-			int[] offset = { 0 };
-
-			cdfrom = e1.type.isClassHandle();
-			cdto = type.isClassHandle();
-			if (cdto.isBaseOf(cdfrom, offset, context) && offset[0] == 0) {
-				e1.type = type;
-				return e1;
-			}
-		}
-
-		Expression e;
-
-		if (e1.isConst()) {
-			if (e1.op == TOKsymoff) {
-				if (type.size(context) == e1.type.size(context)
-						&& type.toBasetype(context).ty != Tsarray) {
-					e1.type = type;
-					return e1;
-				}
-				return this;
-			}
-			if (to.toBasetype(context).ty == Tvoid)
-				e = this;
-			else
-				e = Cast(type, to, e1, context);
-		} else
-			e = this;
-		return e;
 	}
 
 }

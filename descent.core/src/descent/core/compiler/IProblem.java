@@ -364,6 +364,7 @@ public interface IProblem {
 	int SwitchAlreadyHasDefault = 395;
 	int ContinueNotInLoop = 396;
 	int ForeachIndexCannotBeRef = 397;
+	int ParametersDoesNotMatchParameterTypes = 398;
 	
 	
 	/* Others, needed by JDT */

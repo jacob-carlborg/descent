@@ -240,11 +240,11 @@ public class SourceElementParser implements IASTVisitor {
 		switch(node.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 			ClassDeclaration classDecl = (ClassDeclaration) node;
-			visit(classDecl, 0, classDecl.baseclasses, templateDeclaration);
+			visit(classDecl, 0, classDecl.sourceBaseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.INTERFACE_DECLARATION:
 			InterfaceDeclaration intDecl = (InterfaceDeclaration) node;
-			visit(intDecl, Flags.AccInterface, intDecl.baseclasses, templateDeclaration);
+			visit(intDecl, Flags.AccInterface, intDecl.sourceBaseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.STRUCT_DECLARATION:
 			StructDeclaration strDecl = (StructDeclaration) node;
@@ -292,13 +292,13 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(ClassDeclaration node) {
-		visit(node, 0, node.baseclasses, null);
+		visit(node, 0, node.sourceBaseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(InterfaceDeclaration node) {
-		visit(node, Flags.AccInterface, node.baseclasses, null);
+		visit(node, Flags.AccInterface, node.sourceBaseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}

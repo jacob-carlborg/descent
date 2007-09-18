@@ -1,33 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
-import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
-import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TUPLE;
-import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
-import static descent.internal.compiler.parser.LINK.LINKd;
-import static descent.internal.compiler.parser.PROT.PROTpackage;
-import static descent.internal.compiler.parser.PROT.PROTprivate;
-import static descent.internal.compiler.parser.PROT.PROTprotected;
-import static descent.internal.compiler.parser.STC.STClazy;
-import static descent.internal.compiler.parser.STC.STCout;
-import static descent.internal.compiler.parser.STC.STCref;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TOK.TOKdelegate;
-import static descent.internal.compiler.parser.TOK.TOKdotexp;
-import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
-import static descent.internal.compiler.parser.TOK.TOKsuper;
-import static descent.internal.compiler.parser.TOK.TOKtuple;
-import static descent.internal.compiler.parser.TOK.TOKvar;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tdelegate;
-import static descent.internal.compiler.parser.TY.Tfunction;
-import static descent.internal.compiler.parser.TY.Tsarray;
-import static descent.internal.compiler.parser.TY.Tstruct;
-import static descent.internal.compiler.parser.TY.Ttuple;
-import static descent.internal.compiler.parser.TY.Tvoid;
-import static descent.internal.compiler.parser.MATCH.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +9,42 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TUPLE;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
+import static descent.internal.compiler.parser.LINK.LINKd;
+
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.PROT.PROTpackage;
+import static descent.internal.compiler.parser.PROT.PROTprivate;
+import static descent.internal.compiler.parser.PROT.PROTprotected;
+
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+
+import static descent.internal.compiler.parser.TOK.TOKarray;
+import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKdelegate;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKdsymbol;
+import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
+import static descent.internal.compiler.parser.TOK.TOKfunction;
+import static descent.internal.compiler.parser.TOK.TOKsuper;
+import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.Ttuple;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 // class Object in DMD compiler
 public abstract class ASTDmdNode extends ASTNode {
@@ -432,7 +440,8 @@ public abstract class ASTDmdNode extends ASTNode {
 					inferApplyArgTypesX(fd, arguments, context);
 				}
 			} else {
-				inferApplyArgTypesY((TypeFunction) tab.nextOf(), arguments, context);
+				inferApplyArgTypesY((TypeFunction) tab.nextOf(), arguments,
+						context);
 			}
 			break;
 		}
@@ -476,7 +485,8 @@ public abstract class ASTDmdNode extends ASTNode {
 					break;
 				}
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DivisionByZero, 0, d.start, d.length));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.DivisionByZero, 0, d.start, d.length));
 				break;
 			}
 		}
@@ -793,7 +803,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					}
 					// L2:
 					Type tb2 = p.type.toBasetype(context);
-					Type tret = p.isLazyArray();
+					Type tret = p.isLazyArray(context);
 					switch (tb2.ty) {
 					case Tsarray:
 					case Tarray: { // Create a static array variable v of type
@@ -1513,6 +1523,62 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 			}
 		}
+	}
+
+	public static int arrayInlineCost(InlineCostState ics, List arguments,
+			SemanticContext context) {
+		int cost = 0;
+
+		if (arguments != null) {
+			for (int i = 0; i < arguments.size(); i++) {
+				Expression e = (Expression) arguments.get(i);
+
+				if (e != null)
+					cost += e.inlineCost(ics, context);
+			}
+		}
+		return cost;
+	}
+
+	public static Expressions arrayExpressiondoInline(Expressions a,
+			InlineDoState ids) {
+		Expressions newa = null;
+
+		if (a != null) {
+			newa = new Expressions(a.size());
+
+			for (int i = 0; i < a.size(); i++) {
+				Expression e = (Expression) a.get(i);
+
+				if (e != null) {
+					e = e.doInline(ids);
+					newa.add(e);
+				}
+			}
+		}
+		return newa;
+	}
+
+	public static void arrayInlineScan(InlineScanState iss, List arguments,
+			SemanticContext context) {
+		if (arguments != null) {
+			for (int i = 0; i < arguments.size(); i++) {
+				Expression e = (Expression) arguments.get(i);
+
+				if (e != null) {
+					e = e.inlineScan(iss, context);
+					arguments.set(i, e);
+				}
+			}
+		}
+	}
+
+	public static Expression expType(Type type, Expression e) {
+		if (type != e.type) {
+			e = e.copy();
+			e.type = type;
+		}
+		return e;
 	}
 
 }
