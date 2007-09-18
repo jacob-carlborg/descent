@@ -30,10 +30,10 @@ public class VolatileStatement extends Statement {
 	}
 
 	@Override
-	public Statements flatten(Scope sc) {
+	public Statements flatten(Scope sc, SemanticContext context) {
 		Statements a;
 
-		a = statement != null ? statement.flatten(sc) : null;
+		a = statement != null ? statement.flatten(sc, context) : null;
 		if (a != null) {
 			for (int i = 0; i < a.size(); i++) {
 				Statement s = a.get(i);

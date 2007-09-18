@@ -48,11 +48,11 @@ public class Param {
     String hdrdir;		// write 'header' file to docdir directory
     String hdrname;		// write 'header' file to docname
 
-    int debuglevel;	// debug level
-    List<String> debugids;		// debug identifiers
+    long debuglevel;	// debug level
+    List<char[]> debugids;		// debug identifiers
 
-    int versionlevel;	// version level
-    List<String> versionids;		// version identifiers
+    long versionlevel;	// version level
+    List<char[]> versionids;		// version identifiers
 
     boolean dump_source;
 

@@ -14,8 +14,8 @@ public class TemplateInstance extends ScopeDsymbol {
 	public WithScopeSymbol withsym;
 	public IdentifierExp name;
 
-	public TemplateInstance(IdentifierExp id) {
-		super(null);
+	public TemplateInstance(Loc loc, IdentifierExp id) {
+		super(loc);
 		this.name = id;
 	}
 

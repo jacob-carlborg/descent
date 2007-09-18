@@ -11,9 +11,9 @@ public class TemplateMixin extends TemplateInstance {
 	public int typeStart;
 	public int typeLength;
 
-	public TemplateMixin(IdentifierExp ident, Type tqual,
-			Identifiers idents, Objects tiargs) {
-		super(idents.get(idents.size() - 1));
+	public TemplateMixin(Loc loc, IdentifierExp ident, Type tqual, Identifiers idents,
+			Objects tiargs) {
+		super(loc, idents.get(idents.size() - 1));
 		this.ident = ident;
 		this.tqual = tqual;
 		this.idents = idents;
@@ -56,4 +56,27 @@ public class TemplateMixin extends TemplateInstance {
 		buf.data = null;
 		return s;
 	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		TemplateMixin tm;
+
+		Identifiers ids = new Identifiers(idents.size());
+		for (int i = 0; i < idents.size(); i++) { // Matches TypeQualified::syntaxCopyHelper()
+			IdentifierExp id = (IdentifierExp) idents.get(i);
+			if (id.dyncast() == DYNCAST.DYNCAST_DSYMBOL) {
+				TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
+
+				ti = (TemplateInstance) ti.syntaxCopy(null);
+				id = new TemplateInstanceWrapper(Loc.ZERO, ti);
+			}
+			ids.set(i, id);
+		}
+
+		tm = new TemplateMixin(loc, ident, (Type) (tqual != null ? tqual
+				.syntaxCopy() : null), ids, tiargs);
+		super.syntaxCopy(tm);
+		return tm;
+	}
+
 }

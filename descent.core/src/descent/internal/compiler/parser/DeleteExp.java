@@ -1,23 +1,20 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKindex;
-import static descent.internal.compiler.parser.TY.Taarray;
-import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKindex;
 
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
+// DMD 1.020
 public class DeleteExp extends UnaExp {
 
 	public DeleteExp(Loc loc, Expression e1) {
 		super(loc, TOK.TOKdelete, e1);
 	}
-	
-	@Override
-	public int getNodeType() {
-		return DELETE_EXP;
-	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -26,16 +23,24 @@ public class DeleteExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}
-	
+
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionDoesNotGiveABooleanResult, 0, start, length));
-	    return this;
+		context
+				.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ExpressionDoesNotGiveABooleanResult, 0, start,
+						length));
+		return this;
+	}
+
+	@Override
+	public int getNodeType() {
+		return DELETE_EXP;
 	}
 
 	@Override
@@ -107,11 +112,12 @@ public class DeleteExp extends UnaExp {
 
 		return this;
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring("delete ");
-	    expToCBuffer(buf, hgs, e1, op.precedence, context);
+		expToCBuffer(buf, hgs, e1, op.precedence, context);
 	}
 
 }

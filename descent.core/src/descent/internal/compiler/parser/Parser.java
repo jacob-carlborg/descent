@@ -110,6 +110,7 @@ public class Parser extends Lexer {
 	private final static int PScurly = 4;	// { } statement is required
 	private final static int PScurlyscope = 8;	// { } starts a new scope
 
+	private Module module;
 	private ModuleDeclaration md;
 	private int inBrackets;	
 	
@@ -156,7 +157,7 @@ public class Parser extends Lexer {
 	}
 	
 	public Module parseModuleObj() {
-		Module module = new Module(loc);
+		module = new Module(loc);
 		module.members = parseModule();
 		module.md = md;
 		module.comments = comments.toArray(new Comment[comments.size()]);
@@ -938,9 +939,9 @@ public class Parser extends Lexer {
 			}
 			nextToken();
 			check(TOKrparen);
-			c = new DebugCondition(loc, level, id);
+			c = new DebugCondition(module, loc, level, id);
 		} else {
-			c = new DebugCondition(loc, 1, null);
+			c = new DebugCondition(module, loc, 1, null);
 		}
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
@@ -974,7 +975,7 @@ public class Parser extends Lexer {
 		} else {
 			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
-		c = new VersionCondition(loc, level, id);
+		c = new VersionCondition(module, loc, level, id);
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
 		return c;
@@ -1961,7 +1962,7 @@ public class Parser extends Lexer {
 				break;
 			
 			if (tiargs != null) {
-				TemplateInstance tempinst = new TemplateInstance(id);
+				TemplateInstance tempinst = new TemplateInstance(loc, id);
 			    tempinst.tiargs = tiargs;
 			    tempinst.start = thisStart;
 			    tempinst.length = prevToken.ptr + prevToken.len - thisStart;
@@ -1989,7 +1990,7 @@ public class Parser extends Lexer {
 			id = null;
 		}
 		
-		tm = new TemplateMixin(id, tqual, idents, tiargs);
+		tm = new TemplateMixin(loc, id, tqual, idents, tiargs);
 		tm.setTypeSourceRange(typeStart, typeLength);
 
 		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
@@ -2217,7 +2218,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst = new TemplateInstance(id);
+				tempinst = new TemplateInstance(loc, id);
 				tempinst.tiargs = parseTemplateArgumentList();
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.len - id.start);
 				tid = new TypeInstance(loc, tempinst);
@@ -2343,7 +2344,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst[0] = new TemplateInstance(id[0]);
+				tempinst[0] = new TemplateInstance(loc, id[0]);
 				tempinst[0].tiargs = parseTemplateArgumentList();
 				tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.len - tempinstStart);
 				tid[0].addIdent(new TemplateInstanceWrapper(loc, tempinst[0]));
@@ -5170,7 +5171,7 @@ public class Parser extends Lexer {
 		    {	// identifier!(template-argument-list)
 		    	TemplateInstance tempinst;
 		    	
-		    	tempinst = new TemplateInstance(id);		    	
+		    	tempinst = new TemplateInstance(loc, id);		    	
 		    	nextToken();
 		    	tempinst.tiargs = parseTemplateArgumentList();
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.len - id.start);
@@ -5615,7 +5616,7 @@ public class Parser extends Lexer {
 						// identifier!(template-argument-list)
 						TemplateInstance tempinst;
 						
-						tempinst = new TemplateInstance(id);						
+						tempinst = new TemplateInstance(loc, id);						
 						nextToken();
 						
 						tempinst.tiargs = parseTemplateArgumentList();

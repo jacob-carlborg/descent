@@ -7,5 +7,6 @@ public class Global {
 	public int gag = 1;
 	public int errors;
 	public Param params = new Param();
+	public long debugLevel;
 
 }

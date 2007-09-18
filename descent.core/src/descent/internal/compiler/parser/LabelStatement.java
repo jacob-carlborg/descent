@@ -41,11 +41,11 @@ public class LabelStatement extends Statement {
 	}
 
 	@Override
-	public Statements flatten(Scope sc) {
+	public Statements flatten(Scope sc, SemanticContext context) {
 		Statements a = null;
 
 		if (statement != null) {
-			a = statement.flatten(sc);
+			a = statement.flatten(sc, context);
 			if (a != null) {
 				if (0 == a.size()) {
 					a.add(new ExpStatement(loc, null));

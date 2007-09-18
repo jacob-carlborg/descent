@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class FuncExp extends Expression {
 
 	public FuncLiteralDeclaration fd;
@@ -13,17 +14,28 @@ public class FuncExp extends Expression {
 	}
 
 	@Override
-	public int getNodeType() {
-		return FUNC_EXP;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, fd);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return FUNC_EXP;
+	}
+
+	@Override
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		// Right now, this makes the function be output to the .obj file twice.
+		return COST_MAX;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		// empty
 	}
 
 	@Override
@@ -57,14 +69,15 @@ public class FuncExp extends Expression {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public Expression syntaxCopy() {
 		return new FuncExp(loc, (FuncLiteralDeclaration) fd.syntaxCopy(null));
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring(fd.toChars(context));
 	}
 

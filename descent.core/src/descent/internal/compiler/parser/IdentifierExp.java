@@ -6,6 +6,18 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class IdentifierExp extends Expression {
+	
+	public static int count;
+	public static char[] generateId(char[] id) {
+		StringBuilder s = new StringBuilder();
+		s.append(id);
+		s.append(count);
+		count++;
+		if (count < 0) {
+			count = 0;
+		}
+		return s.toString().toCharArray();
+	}
 
 	public char[] ident;
 

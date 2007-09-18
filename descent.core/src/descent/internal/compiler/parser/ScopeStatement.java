@@ -79,7 +79,7 @@ public class ScopeStatement extends Statement {
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
 
-			a = statement.flatten(sc);
+			a = statement.flatten(sc, context);
 			if (a != null) {
 				statement = new CompoundStatement(loc, a);
 			}

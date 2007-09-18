@@ -113,7 +113,7 @@ public class CompoundStatement extends Statement {
 	}
 
 	@Override
-	public Statements flatten(Scope sc) {
+	public Statements flatten(Scope sc, SemanticContext context) {
 		return statements;
 	}
 
@@ -198,7 +198,7 @@ public class CompoundStatement extends Statement {
 			for (int i = 0; i < statements.size();) {
 				s = statements.get(i);
 				if (s != null) {
-					Statements a = s.flatten(sc);
+					Statements a = s.flatten(sc, context);
 
 					if (a != null) {
 						statements.remove(i);

@@ -23,7 +23,7 @@ public abstract class Statement extends ASTDmdNode {
 		return true;
 	}
 
-	public Statements flatten(Scope sc) {
+	public Statements flatten(Scope sc, SemanticContext context) {
 		return null;
 	}
 

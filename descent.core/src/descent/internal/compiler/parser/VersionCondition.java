@@ -1,9 +1,12 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class VersionCondition extends DVCondition {
 
 	private static char[][] resevered = {
@@ -15,13 +18,31 @@ public class VersionCondition extends DVCondition {
 			{ 'B', 'i', 'g', 'E', 'n', 'd', 'i', 'a', 'n' }, { 'a', 'l', 'l' },
 			{ 'n', 'o', 'n', 'e' }, };
 
-	public VersionCondition(Loc loc, long level, char[] id) {
-		super(loc, level, id);
+	public static void checkPredefined(Loc loc, IdentifierExp ident,
+			SemanticContext context) {
+		for (int i = 0; i < resevered.length; i++) {
+			if (ident.ident != null
+					&& CharOperation.equals(ident.ident, resevered[i])) {
+				// goto Lerror;
+				context
+						.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.VersionIdentifierReserved, 0,
+								ident.start, ident.length,
+								new String[] { new String(ident.ident) }));
+			}
+		}
+
+		if (ident.ident != null && ident.ident[0] == 'D'
+				&& ident.ident[1] == '_') {
+			// goto Lerror;
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.VersionIdentifierReserved, 0, ident.start,
+					ident.length, new String[] { new String(ident.ident) }));
+		}
 	}
 
-	@Override
-	public int getConditionType() {
-		return VERSION;
+	public VersionCondition(Module mod, Loc loc, long level, char[] id) {
+		super(mod, loc, level, id);
 	}
 
 	@Override
@@ -30,6 +51,52 @@ public class VersionCondition extends DVCondition {
 		if (children) {
 		}
 		visitor.endVisit(this);
+	}
+
+	public void addGlobalIdent(IdentifierExp ident, SemanticContext context) {
+		checkPredefined(Loc.ZERO, ident, context);
+		addPredefinedGlobalIdent(ident, context);
+	}
+
+	public void addPredefinedGlobalIdent(IdentifierExp ident,
+			SemanticContext context) {
+		if (null == context.global.params.versionids) {
+			context.global.params.versionids = new ArrayList<char[]>();
+		}
+		context.global.params.versionids.add(ident.ident);
+	}
+
+	@Override
+	public int getConditionType() {
+		return VERSION;
+	}
+
+	@Override
+	public boolean include(Scope sc, ScopeDsymbol s, SemanticContext context) {
+		if (inc == 0) {
+			inc = 2;
+			if (ident != null) {
+				if (findCondition(mod.versionids, ident)) {
+					inc = 1;
+				} else if (findCondition(context.global.params.versionids,
+						ident)) {
+					inc = 1;
+				} else {
+					if (null == mod.versionidsNot) {
+						mod.versionidsNot = new ArrayList<char[]>();
+					}
+					mod.versionidsNot.add(ident);
+				}
+			} else if (level <= context.global.params.versionlevel
+					|| level <= mod.versionlevel) {
+				inc = 1;
+			}
+		}
+		return (inc == 1);
+	}
+
+	public void setGlobalLevel(long level, SemanticContext context) {
+		context.global.params.versionlevel = level;
 	}
 
 	@Override
@@ -52,23 +119,6 @@ public class VersionCondition extends DVCondition {
 			return ident;
 		} else {
 			return String.valueOf(level).toCharArray();
-		}
-	}
-
-	public static void checkPredefined(Loc loc, IdentifierExp ident,
-			SemanticContext context) {
-		for (int i = 0; i < resevered.length; i++) {
-			if (ident.ident != null
-					&& CharOperation.equals(ident.ident, resevered[i])) {
-				// goto Lerror;
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionIdentifierReserved, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
-			}
-		}
-
-		if (ident.ident != null && ident.ident[0] == 'D'
-				&& ident.ident[1] == '_') {
-			// goto Lerror;
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionIdentifierReserved, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
 		}
 	}
 

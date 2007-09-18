@@ -1,12 +1,14 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tstruct;
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class DelegateExp extends UnaExp {
 
 	public FuncDeclaration func;
@@ -15,12 +17,7 @@ public class DelegateExp extends UnaExp {
 		super(loc, TOK.TOKdelegate, e);
 		this.func = f;
 	}
-	
-	@Override
-	public int getNodeType() {
-		return DELEGATE_EXP;
-	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -49,8 +46,8 @@ public class DelegateExp extends UnaExp {
 					if (f != null) {
 						int[] offset = { 0 };
 						if (f.tintro != null
-								&& f.tintro.next.isBaseOf(f.type.next, offset, context)
-								&& offset[0] != 0) {
+								&& f.tintro.next.isBaseOf(f.type.next, offset,
+										context) && offset[0] != 0) {
 							error("cannot form delegate due to covariant return type");
 						}
 						e = new DelegateExp(loc, e1, f);
@@ -67,13 +64,18 @@ public class DelegateExp extends UnaExp {
 			int[] offset = { 0 };
 
 			if (func.tintro != null
-					&& func.tintro.next.isBaseOf(func.type.next, offset, context)
-					&& offset[0] != 0) {
+					&& func.tintro.next.isBaseOf(func.type.next, offset,
+							context) && offset[0] != 0) {
 				error("cannot form delegate due to covariant return type");
 			}
 		}
 		e.type = t;
 		return e;
+	}
+
+	@Override
+	public int getNodeType() {
+		return DELEGATE_EXP;
 	}
 
 	@Override
@@ -96,6 +98,11 @@ public class DelegateExp extends UnaExp {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		return COST_MAX;
 	}
 
 	@Override
@@ -135,7 +142,8 @@ public class DelegateExp extends UnaExp {
 							continue L10;
 						}
 						error("this for %s needs to be type %s not type %s",
-								func.toChars(context), ad.toChars(context), t.toChars(context));
+								func.toChars(context), ad.toChars(context), t
+										.toChars(context));
 					}
 				}
 			}

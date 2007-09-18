@@ -16,21 +16,13 @@ CompileStatement.java
 complex_t.java
 ComplexExp.java
 Condition.java
-ConditionalDeclaration.java
-ConditionalStatement.java
-DebugCondition.java
 Declaration.java
-DelegateExp.java
-DeleteExp.java
 Dsymbol.java
 DsymbolTable.java
-DVCondition.java
 Entity.java
 ForeachRangeStatement.java
 ForeachStatement.java
 ForStatement.java
-FuncExp.java
-FuncLiteralDeclaration.java
 Global.java
 HdrGenState.java
 Id.java
@@ -86,5 +78,3 @@ UniAlpha.javaT
 Utf.java
 VarDeclaration.java
 VarExp.java
-Version.java
-VersionCondition.java
