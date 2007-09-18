@@ -6,12 +6,9 @@ AsmBlock.java
 AsmStatement.java
 ASTDmdNode.java
 BinExp.java
-CatAssignExp.java
-CatExp.java
 Chars.java
 ClassDeclaration.java
 CompileDeclaration.java
-CompileExp.java
 CompileStatement.java
 complex_t.java
 ComplexExp.java
@@ -29,7 +26,6 @@ Id.java
 Identifier.java
 IftypeCondition.java
 Import.java
-IndexExp.java
 IntegerExp.java
 integer_t.java
 Lexer.java
@@ -37,10 +33,6 @@ Loc.java
 Module.java
 MultiImport.java
 MultiStringExp.java
-NegExp.java
-NewAnonClassExp.java
-NewExp.java
-NotExp.java
 NullExp.java
 NumberUtils.java
 OutBuffer.java

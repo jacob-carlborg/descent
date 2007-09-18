@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Neg;
 
+// DMD 1.020
 public class NegExp extends UnaExp {
 
 	public NegExp(Loc loc, Expression e1) {
@@ -46,6 +47,21 @@ public class NegExp extends UnaExp {
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		return interpretCommon(istate, Neg, context);
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		Expression e;
+		
+		e1 = e1.optimize(result, context);
+		if(e1.isConst())
+		{
+			e = Neg.call(type, e1, context);
+		}
+		else
+			e = this;
+		return e;
 	}
 
 }

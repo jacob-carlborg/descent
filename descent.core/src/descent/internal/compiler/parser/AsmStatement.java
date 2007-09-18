@@ -4,7 +4,7 @@ import java.util.List;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-
+// DMD 1.020
 public class AsmStatement extends Statement {
 
 	public List<Token> toklist;

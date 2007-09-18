@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class RemoveExp extends BinExp {
 
 	public RemoveExp(Loc loc, Expression e1, Expression e2) {

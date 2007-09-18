@@ -6,6 +6,7 @@ import java.util.List;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class MultiImport extends Dsymbol {
 	
 	public List<Import> imports;

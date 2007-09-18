@@ -5,6 +5,7 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
+// DMD 1.020
 public class real_t implements Comparable {
 	
 	public final static real_t ZERO = new real_t(BigDecimal.ZERO);
@@ -94,6 +95,13 @@ public class real_t implements Comparable {
 	public boolean isnan()
 	{
 		return value == null && Double.isNaN(nanOrInfinite);
+	}
+
+	@Override
+	public String toString()
+	{
+		// TODO how is NaN or infinite represented in D string buffers?
+		return value.toString();
 	}
 
 }

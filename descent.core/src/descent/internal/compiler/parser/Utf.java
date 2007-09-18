@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+// DMD 1.020
 public class Utf {
 	
 	public static String decodeChar(char[] input, int s, int len, int[] pidx, int[] presult) {

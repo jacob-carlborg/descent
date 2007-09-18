@@ -5,6 +5,7 @@ import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.Constfold.*;
 
+// DMD 1.020
 public abstract class UnaExp extends Expression {
 
 	public Expression e1;
@@ -29,7 +30,7 @@ public abstract class UnaExp extends Expression {
 		return 1 + e1.inlineCost(ics, context);
 	}
 
-	public Expression interpretCommon(InterState istate,
+	public final Expression interpretCommon(InterState istate,
 			UnaExp_fp fp, SemanticContext context) {
 		Expression e;
 		Expression e1;

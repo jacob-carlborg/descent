@@ -8,6 +8,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 2.003
 public class TraitsExp extends Expression {
 
 	public IdentifierExp ident;

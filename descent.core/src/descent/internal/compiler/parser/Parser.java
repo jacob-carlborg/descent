@@ -101,6 +101,7 @@ import java.util.StringTokenizer;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 
+// DMD 1.020 and DMD 2.003
 public class Parser extends Lexer {
 	
 	private final static boolean LTORARRAYDECL = true;

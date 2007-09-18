@@ -4,6 +4,7 @@ import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
 
+// DMD 1.020
 public abstract class Declaration extends Dsymbol {
 
 	public Type type;

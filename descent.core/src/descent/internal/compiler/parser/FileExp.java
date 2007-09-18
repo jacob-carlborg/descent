@@ -22,6 +22,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
  *      used in a string mixin, we'd have to run this. Maybe it could be moved
  *      into optimize(WANTvalue) or otherwise marked as necessary/unnecessary?
  */
+// DMD 1.020
 public class FileExp extends UnaExp {
 
 	public FileExp(Loc loc, Expression e) {

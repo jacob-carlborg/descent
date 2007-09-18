@@ -4,15 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Not;
 
+// DMD 1.020
 public class NotExp extends UnaExp {
 
 	public NotExp(Loc loc, Expression e1) {
 		super(loc, TOK.TOKnot, e1);
-	}
-	
-	@Override
-	public int getNodeType() {
-		return NOT_EXP;
 	}
 	
 	@Override
@@ -25,10 +21,37 @@ public class NotExp extends UnaExp {
 	}
 	
 	@Override
+	public int getNodeType() {
+		return NOT_EXP;
+	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, Not, context);
+	}
+	
+	@Override
 	public boolean isBit() {
 		return true;
 	}
 	
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		Expression e;
+		
+		e1 = e1.optimize(result, context);
+		if(e1.isConst())
+		{
+			e = Not.call(type, e1, context);
+		}
+		else
+		{
+			e = this;
+		}
+		return e;
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		super.semantic(sc, context);
@@ -36,11 +59,6 @@ public class NotExp extends UnaExp {
 	    e1 = e1.checkToBoolean(context);
 	    type = Type.tboolean;
 	    return this;
-	}
-	
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, Not, context);
 	}
 
 }

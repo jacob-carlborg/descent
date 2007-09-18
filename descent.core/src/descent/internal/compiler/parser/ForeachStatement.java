@@ -39,6 +39,7 @@ import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
 import static descent.internal.compiler.parser.TY.Twchar;
 
+// DMD 1.020
 public class ForeachStatement extends Statement {
 
 	private final static char[] _aaApply = { '_', 'a', 'a', 'A', 'p', 'p', 'l',

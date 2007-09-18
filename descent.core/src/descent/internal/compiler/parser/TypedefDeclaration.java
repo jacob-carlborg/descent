@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class TypedefDeclaration extends Declaration {
 
 	public boolean first; // is this the first declaration in a multi

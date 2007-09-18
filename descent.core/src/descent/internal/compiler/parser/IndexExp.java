@@ -4,7 +4,12 @@ import java.math.BigInteger;
 
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Index;
+import static descent.internal.compiler.parser.Constfold.ArrayLength;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 
+// DMD 1.020
 public class IndexExp extends BinExp {
 
 	public VarDeclaration lengthVar;
@@ -19,13 +24,84 @@ public class IndexExp extends BinExp {
 	}
 
 	@Override
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("accept0 fake node");
+	}
+
+	@Override
 	public int getNodeType() {
 		return 0;
 	}
 
 	@Override
-	public void accept0(IASTVisitor visitor) {
-		Assert.fail("accept0 fake node");
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		Expression e;
+		Expression e1;
+		Expression e2;
+		
+		e1 = this.e1.interpret(istate, context);
+		if(e1 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; //goto Lcant;
+			
+		if(e1.op == TOKstring || e1.op == TOKarrayliteral)
+		{
+			/* Set the $ variable
+			 */
+			e = ArrayLength.call(Type.tsize_t, e1, context);
+			if(e == EXP_CANT_INTERPRET)
+				return EXP_CANT_INTERPRET; //goto Lcant;
+			if(null != lengthVar)
+				lengthVar.value = e;
+		}
+		
+		e2 = this.e2.interpret(istate, context);
+		if(e2 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		return Index.call(type, e1, e2, context);
+		
+		//Lcant:
+		//return EXP_CANT_INTERPRET;
+	}
+
+	@Override
+	public Expression modifiableLvalue(Scope sc, Expression e,
+			SemanticContext context) {
+		modifiable = 1;
+		if (e1.op == TOK.TOKstring)
+			error("string literals are immutable");
+		if (e1.type.toBasetype(context).ty == TY.Taarray)
+			e1 = e1.modifiableLvalue(sc, e1, context);
+		return toLvalue(sc, e, context);
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		Expression e;
+
+	    //printf("IndexExp.optimize(result = %d) %s\n", result, toChars());
+	    Expression e1 = this.e1.optimize(WANTvalue | (result & WANTinterpret),
+				context);
+		if((result & WANTinterpret) > 0)
+			e1 = fromConstInitializer(e1, context);
+		e2 = e2.optimize(WANTvalue | (result & WANTinterpret), context);
+		e = Index.call(type, e1, e2, context);
+		if(e == EXP_CANT_INTERPRET)
+			e = this;
+		return e;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context)
+	{
+		e1.scanForNestedRef(sc, context);
+		
+		if(null != lengthVar)
+		{ //printf("lengthVar\n");
+			lengthVar.parent = sc.parent;
+		}
+		e2.scanForNestedRef(sc, context);
 	}
 
 	@Override
@@ -139,22 +215,6 @@ public class IndexExp extends BinExp {
 	}
 
 	@Override
-	public Expression modifiableLvalue(Scope sc, Expression e,
-			SemanticContext context) {
-		modifiable = 1;
-		if (e1.op == TOK.TOKstring)
-			error("string literals are immutable");
-		if (e1.type.toBasetype(context).ty == TY.Taarray)
-			e1 = e1.modifiableLvalue(sc, e1, context);
-		return toLvalue(sc, e, context);
-	}
-
-	@Override
-	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
-		return this;
-	}
-
-	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
@@ -162,5 +222,12 @@ public class IndexExp extends BinExp {
 		expToCBuffer(buf, hgs, e2, PREC.PREC_assign, context);
 		buf.writeByte(']');
 	}
+
+	@Override
+	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
+		return this;
+	}
+	
+	// PERHAPS Expression *doInline(InlineDoState *ids);
 
 }

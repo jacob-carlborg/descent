@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+// DMD 1.020
 public class Expressions extends ArrayList<Expression> {
 
 	private static final long serialVersionUID = 1L;

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class Comment extends ASTDmdNode {
 	
 	public final static int LINE_COMMENT = 1;

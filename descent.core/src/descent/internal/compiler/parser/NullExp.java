@@ -11,6 +11,7 @@ import static descent.internal.compiler.parser.TY.Ttypedef;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class NullExp extends Expression {
 	
 	public boolean committed;	// !=0 if type is committed

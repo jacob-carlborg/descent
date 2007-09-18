@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
+// DMD 1.020
 public class integer_t extends Number {
 	
 	private final static long INT_UPPER = 0xFFFFFFFFL + 1;

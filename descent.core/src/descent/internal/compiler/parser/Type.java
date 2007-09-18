@@ -45,6 +45,7 @@ import static descent.internal.compiler.parser.TY.Tuns8;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
+// DMD 1.020
 public abstract class Type extends ASTDmdNode {
 
 	public final static int PTRSIZE = 4;

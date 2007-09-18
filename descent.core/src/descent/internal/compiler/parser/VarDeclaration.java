@@ -30,6 +30,7 @@ import static descent.internal.compiler.parser.TOK.*;
 
 import static descent.internal.compiler.parser.TY.Taarray;
 
+// DMD 1.020
 public class VarDeclaration extends Declaration {
 
 	public boolean first; // is this the first declaration in a multi

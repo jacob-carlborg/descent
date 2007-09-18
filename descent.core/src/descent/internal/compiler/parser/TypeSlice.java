@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.*;
 
+// DMD 1.020
 public class TypeSlice extends Type {
 
 	public Expression lwr;

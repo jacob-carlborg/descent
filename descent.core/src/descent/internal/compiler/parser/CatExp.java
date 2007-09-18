@@ -3,16 +3,13 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.Cat;
 
+// DMD 1.020
 public class CatExp extends BinExp {
 
 	public CatExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKtilde, e1, e2);
-	}
-	
-	@Override
-	public int getNodeType() {
-		return CAT_EXP;
 	}
 	
 	@Override
@@ -23,6 +20,58 @@ public class CatExp extends BinExp {
 			TreeVisitor.acceptChildren(visitor, e2);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int getNodeType() {
+		return CAT_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		//Expression e;
+		Expression e1;
+		Expression e2;
+		
+		e1 = this.e1.interpret(istate, context);
+		if(e1 == EXP_CANT_INTERPRET)
+		{
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		}
+		e2 = this.e2.interpret(istate, context);
+		if(e2 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; //goto Lcant;
+		return Cat.call(type, e1, e2, context);
+		
+		//Lcant:
+		//	return EXP_CANT_INTERPRET;
+	}
+
+	@Override
+	public char[] opId()
+	{
+		return Id.cat;
+	}
+
+	@Override
+	public char[] opId_r()
+	{
+		return Id.cat_r;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		Expression e;
+		
+		//printf("CatExp.optimize(%d) %s\n", result, toChars());
+		e1 = e1.optimize(result, context);
+		e2 = e2.optimize(result, context);
+		e = Cat.call(type, e1, e2, context);
+		if(e == EXP_CANT_INTERPRET)
+			e = this;
+		return e;
 	}
 
 	@Override

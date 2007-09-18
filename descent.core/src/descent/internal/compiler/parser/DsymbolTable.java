@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+// DMD 1.020
 public class DsymbolTable {
 	
 	private HashtableOfCharArrayAndObject map = new HashtableOfCharArrayAndObject();

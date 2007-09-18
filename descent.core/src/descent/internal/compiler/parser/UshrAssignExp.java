@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Ushr;
 
+// DMD 1.020
 public class UshrAssignExp extends BinExp {
 
 	public UshrAssignExp(Loc loc, Expression e1, Expression e2) {

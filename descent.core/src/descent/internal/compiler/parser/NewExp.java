@@ -13,6 +13,7 @@ import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
+// DMD 1.020
 public class NewExp extends Expression {
 
 	public Expression thisexp;
@@ -36,11 +37,6 @@ public class NewExp extends Expression {
 	}
 
 	@Override
-	public int getNodeType() {
-		return NEW_EXP;
-	}
-
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -55,6 +51,21 @@ public class NewExp extends Expression {
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
+	}
+
+	@Override
+	public int getNodeType() {
+		return NEW_EXP;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context)
+	{
+		if(null != thisexp)
+			thisexp.scanForNestedRef(sc, context);
+		
+		arrayExpressionScanForNestedRef(sc, newargs, context);
+		arrayExpressionScanForNestedRef(sc, arguments, context);
 	}
 
 	@Override

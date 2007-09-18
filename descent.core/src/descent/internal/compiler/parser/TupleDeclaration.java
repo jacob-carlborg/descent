@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.STC.STCin;
 
+// DMD 1.020
 public class TupleDeclaration extends Declaration {
 
 	public Objects objects;

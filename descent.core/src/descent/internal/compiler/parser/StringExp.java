@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class StringExp extends Expression {
 
 	// TODO the string here is the full source, it must

@@ -4,15 +4,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Cat;
 
+// DMD 1.020
 public class CatAssignExp extends BinExp {
 
 	public CatAssignExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKcatass, e1, e2);
-	}
-
-	@Override
-	public int getNodeType() {
-		return CAT_ASSIGN_EXP;
 	}
 
 	@Override
@@ -23,6 +19,22 @@ public class CatAssignExp extends BinExp {
 			TreeVisitor.acceptChildren(visitor, e2);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return CAT_ASSIGN_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretAssignCommon(istate, Cat, context);
+	}
+
+	@Override
+	public char[] opId()
+	{
+		return Id.catass;
 	}
 
 	@Override
@@ -74,11 +86,6 @@ public class CatAssignExp extends BinExp {
 		}
 
 		return e;
-	}
-
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretAssignCommon(istate, Cat, context);
 	}
 
 }

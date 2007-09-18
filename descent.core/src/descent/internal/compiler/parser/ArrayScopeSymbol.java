@@ -16,6 +16,7 @@ import static descent.internal.compiler.parser.TOK.TOKtype;
 
 import static descent.internal.compiler.parser.TY.Ttuple;
 
+// DMD 1.020
 public class ArrayScopeSymbol extends ScopeDsymbol {
 
 	public Expression exp;

@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class NewAnonClassExp extends Expression {
 
 	public Expression thisexp;
@@ -20,11 +21,6 @@ public class NewAnonClassExp extends Expression {
 	}
 
 	@Override
-	public int getNodeType() {
-		return NEW_ANON_CLASS_EXP;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -35,10 +31,15 @@ public class NewAnonClassExp extends Expression {
 		}
 		visitor.endVisit(this);
 	}
-
+	
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
+	}
+
+	@Override
+	public int getNodeType() {
+		return NEW_ANON_CLASS_EXP;
 	}
 
 	@Override

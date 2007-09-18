@@ -47,6 +47,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 // class Object in DMD compiler
+// DMD 1.020
 public abstract class ASTDmdNode extends ASTNode {
 
 	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;

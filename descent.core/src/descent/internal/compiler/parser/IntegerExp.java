@@ -16,6 +16,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class IntegerExp extends Expression {
 
 	private final static BigInteger N_0x8000000000000000 = new BigInteger(

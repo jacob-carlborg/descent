@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.Constfold.BinExp_fp;
 
+// DMD 1.020
 public abstract class BinExp extends Expression {
 
 	public Expression e1;
@@ -483,7 +484,7 @@ public abstract class BinExp extends Expression {
 		return this;
 	}
 	
-	public Expression interpretCommon(InterState istate, BinExp_fp fp,
+	public final Expression interpretCommon(InterState istate, BinExp_fp fp,
 			SemanticContext context) {
 		Expression e;
 		Expression e1;
@@ -505,7 +506,7 @@ public abstract class BinExp extends Expression {
 		return e;
 	}
 
-	public Expression interpretCommon2(InterState istate, BinExp_fp2 fp,
+	public final Expression interpretCommon2(InterState istate, BinExp_fp2 fp,
 			SemanticContext context) {
 		Expression e;
 		Expression e1;
@@ -540,13 +541,13 @@ public abstract class BinExp extends Expression {
 		//	    return EXP_CANT_INTERPRET;
 	}
 	
-	public Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
+	public final Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
 			SemanticContext context)
 	{
 		return interpretAssignCommon(istate, fp, 0, context);
 	}
 	
-	public Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
+	public final Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
 			int post, SemanticContext context)
 	{
 		Expression e = EXP_CANT_INTERPRET;

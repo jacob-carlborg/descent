@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+// DMD 1.020
 public class MultiStringExp extends StringExp {
 	
 	public List<StringExp> strings = new ArrayList<StringExp>(1);

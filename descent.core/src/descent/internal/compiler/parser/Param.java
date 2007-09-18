@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+// DMD 1.020
 public class Param {
 
 	char obj;		// write object file

@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+// DMD 1.020
 public class Loc {
 	
 	public final static Loc ZERO = new Loc();

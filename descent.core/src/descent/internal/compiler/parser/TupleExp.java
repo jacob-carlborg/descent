@@ -6,6 +6,7 @@ import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
 
+// DMD 1.020
 public class TupleExp extends Expression {
 
 	public Expressions exps;
