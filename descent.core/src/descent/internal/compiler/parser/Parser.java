@@ -938,9 +938,9 @@ public class Parser extends Lexer {
 			}
 			nextToken();
 			check(TOKrparen);
-			c = new DebugCondition(level, id);
+			c = new DebugCondition(loc, level, id);
 		} else {
-			c = new DebugCondition(1, null);
+			c = new DebugCondition(loc, 1, null);
 		}
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
@@ -974,7 +974,7 @@ public class Parser extends Lexer {
 		} else {
 			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
-		c = new VersionCondition(level, id);
+		c = new VersionCondition(loc, level, id);
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
 		return c;
@@ -991,7 +991,7 @@ public class Parser extends Lexer {
 			parsingErrorInsertToComplete(prevToken, "(expression)", "StaticIfDeclaration");
 			exp = null;
 		}
-		return new StaticIfCondition(exp);
+		return new StaticIfCondition(loc, exp);
 	}
 	
 	private IftypeCondition parseIftypeCondition() {
@@ -1018,14 +1018,14 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 		} else {
 			parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
-			return new IftypeCondition(null, null, null, null);
+			return new IftypeCondition(loc, null, null, null, null);
 		}
 
 		error(
 				IProblem.IftypeDeprecated, firstTokenLine,
 				firstTokenStart, firstTokenLength);
 
-		return new IftypeCondition(targ, ident[0], tok, tspec);
+		return new IftypeCondition(loc, targ, ident[0], tok, tspec);
 	}
 	
 	private CtorDeclaration parseCtor() {
@@ -1118,6 +1118,7 @@ public class Parser extends Lexer {
 		Arguments arguments = parseParameters(varargs);
 		
 		NewDeclaration f = new NewDeclaration(loc, arguments, varargs[0]);
+		f.newStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;

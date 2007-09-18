@@ -1,12 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.LINK.LINKwindows;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Ttuple;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -14,24 +7,25 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.LINK.LINKwindows;
 
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Ttuple;
+
+// DMD 1.020
 public class InterfaceDeclaration extends ClassDeclaration {
 
-	public InterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseclasses) {
+	public InterfaceDeclaration(Loc loc, IdentifierExp id,
+			BaseClasses baseclasses) {
 		super(loc, id, baseclasses);
 		com = false;
 		if (id != null && CharOperation.equals(id.ident, Id.IUnknown)) { // IUnknown is the root
-														// of all COM
+			// of all COM
 			// objects
 			com = true;
 		}
 	}
 
-	@Override
-	public int getNodeType() {
-		return INTERFACE_DECLARATION;
-	}
-	
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -42,6 +36,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return INTERFACE_DECLARATION;
 	}
 
 	public boolean isBaseOf(BaseClass bc, int[] poffset) {
@@ -260,7 +259,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		}
 		sc.pop();
 	}
-	
+
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		InterfaceDeclaration id;

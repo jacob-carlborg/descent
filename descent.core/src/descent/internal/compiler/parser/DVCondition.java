@@ -7,7 +7,8 @@ public abstract class DVCondition extends Condition {
 	public int startPosition;
 	public int length;
 	
-	public DVCondition(long level, char[] id) {
+	public DVCondition(Loc loc, long level, char[] id) {
+		super(loc);
 		this.level = level;
 		this.ident = id;
 	}

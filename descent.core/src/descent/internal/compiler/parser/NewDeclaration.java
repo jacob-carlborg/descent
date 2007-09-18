@@ -1,28 +1,23 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class NewDeclaration extends FuncDeclaration {
-	
+
 	public Arguments arguments;
 	public int varargs;
-	
+	public int newStart;
+
 	public NewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.classNew), STC.STCstatic, null);
+		super(loc, new IdentifierExp(Loc.ZERO, Id.classNew), STC.STCstatic,
+				null);
 		this.arguments = arguments;
 		this.varargs = varargs;
 	}
-	
-	@Override
-	public int getNodeType() {
-		return NEW_DECLARATION;
-	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -39,12 +34,32 @@ public class NewDeclaration extends FuncDeclaration {
 		}
 		visitor.endVisit(this);
 	}
-	
+
+	@Override
+	public boolean addPostInvariant(SemanticContext context) {
+		return false;
+	}
+
+	@Override
+	public boolean addPreInvariant(SemanticContext context) {
+		return false;
+	}
+
+	@Override
+	public int getNodeType() {
+		return NEW_DECLARATION;
+	}
+
 	@Override
 	public NewDeclaration isNewDeclaration() {
 		return this;
 	}
-	
+
+	@Override
+	public String kind() {
+		return "allocator";
+	}
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		ClassDeclaration cd;
@@ -54,7 +69,10 @@ public class NewDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NewAllocatorsOnlyForClassOrStruct, 0, start, "new".length()));
+			context
+					.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.NewAllocatorsOnlyForClassOrStruct, 0,
+							newStart, 3));
 		}
 		tret = Type.tvoid.pointerTo(context);
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
@@ -65,27 +83,40 @@ public class NewDeclaration extends FuncDeclaration {
 		// Check that there is at least one argument of type uint
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) < 1) {
-			// TODO semantic point out the "new" token
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.AtLeastOneArgumentOfTypeExpected, 0, start, "new".length(), new String[] { "unit" }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.AtLeastOneArgumentOfTypeExpected, 0, newStart, 3,
+					new String[] { "unit" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tuns32)) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FirstArgumentMustBeOfType, 0, a.type.start, a.type.length, new String[] { "uint" }));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.FirstArgumentMustBeOfType, 0, a.type.start,
+						a.type.length, new String[] { "uint" }));
 			}
 		}
 
 		super.semantic(sc, context);
 	}
-	
+
 	@Override
-	public boolean addPreInvariant(SemanticContext context) {
-		return false;
-	}
-	
-	@Override
-	public boolean addPostInvariant(SemanticContext context) {
-		return false;
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		NewDeclaration f;
+
+		f = new NewDeclaration(loc, null, varargs);
+
+		super.syntaxCopy(f);
+
+		f.arguments = Argument.arraySyntaxCopy(arguments);
+
+		return f;
 	}
 
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writestring("new");
+		Argument.argsToCBuffer(buf, hgs, arguments, varargs, context);
+		bodyToCBuffer(buf, hgs, context);
+	}
 
 }

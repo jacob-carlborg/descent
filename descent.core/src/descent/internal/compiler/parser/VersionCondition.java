@@ -15,8 +15,8 @@ public class VersionCondition extends DVCondition {
 			{ 'B', 'i', 'g', 'E', 'n', 'd', 'i', 'a', 'n' }, { 'a', 'l', 'l' },
 			{ 'n', 'o', 'n', 'e' }, };
 
-	public VersionCondition(long level, char[] id) {
-		super(level, id);
+	public VersionCondition(Loc loc, long level, char[] id) {
+		super(loc, level, id);
 	}
 
 	@Override

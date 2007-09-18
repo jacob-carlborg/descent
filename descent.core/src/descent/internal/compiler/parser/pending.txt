@@ -40,7 +40,6 @@ Import.java
 IndexExp.java
 IntegerExp.java
 integer_t.java
-InterfaceDeclaration.java
 Lexer.java
 Loc.java
 Module.java
@@ -48,7 +47,6 @@ MultiImport.java
 MultiStringExp.java
 NegExp.java
 NewAnonClassExp.java
-NewDeclaration.java
 NewExp.java
 NotExp.java
 NullExp.java
@@ -67,14 +65,10 @@ RemoveExp.java
 ScopeDsymbol.java
 SemanticContext.java
 SliceExp.java
-StaticIfCondition.java
-StaticIfDeclaration.java
 StringExp.java
 StringTable.java
 StringValue.java
 StructDeclaration.java
-StructLiteralExp.java
-SuperExp.java
 SymOffExp.java
 TemplateDeclaration.java
 TemplateInstance.java

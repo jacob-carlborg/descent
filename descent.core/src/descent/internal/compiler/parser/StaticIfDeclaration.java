@@ -2,29 +2,32 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
+// DMD 1.020
 public class StaticIfDeclaration extends ConditionalDeclaration {
-	
+
 	public ScopeDsymbol sd;
 	public boolean addisdone;
 
-	public StaticIfDeclaration(Loc loc, Condition condition, Dsymbols decl, Dsymbols elsedecl) {
+	public StaticIfDeclaration(Loc loc, Condition condition, Dsymbols decl,
+			Dsymbols elsedecl) {
 		super(loc, condition, decl, elsedecl);
 	}
-	
+
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum, SemanticContext context) {
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+			SemanticContext context) {
 		/* This is deferred until semantic(), so that
-	     * expressions in the condition can refer to declarations
-	     * in the same scope, such as:
-	     *
-	     * template Foo(int i)
-	     * {
-	     *     const int j = i + 1;
-	     *     static if (j == 3)
-	     *         const int k;
-	     * }
-	     */
-	    this.sd = sd;
+		 * expressions in the condition can refer to declarations
+		 * in the same scope, such as:
+		 *
+		 * template Foo(int i)
+		 * {
+		 *     const int j = i + 1;
+		 *     static if (j == 3)
+		 *         const int k;
+		 * }
+		 */
+		this.sd = sd;
 		int m = 0;
 
 		if (memnum == 0) {
@@ -33,12 +36,12 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 		}
 		return m;
 	}
-	
+
 	@Override
 	public String kind() {
 		return "static if";
 	}
-	
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		Dsymbols d = include(sc, sd, context);
@@ -54,7 +57,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 			}
 		}
 	}
-	
+
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		StaticIfDeclaration dd;

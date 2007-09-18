@@ -8,9 +8,15 @@ public abstract class Condition extends ASTRangeLessNode {
 	public final static int IFTYPE = 2;
 	public final static int STATIC_IF = 3;
 	public final static int VERSION = 4;
-	public boolean inc;
+	
+	public Loc loc;
+	public int inc;
 	
 	public abstract int getConditionType();
+	
+	public Condition(Loc loc) {
+		this.loc = loc;
+	}
 
 	public Condition syntaxCopy() {
 		// TODO semantic

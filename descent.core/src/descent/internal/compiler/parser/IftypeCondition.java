@@ -11,7 +11,8 @@ public class IftypeCondition extends Condition {
 	public TOK tok;
 	public Type tspec;
 
-	public IftypeCondition(Type targ, IdentifierExp ident, TOK tok, Type tspec) {
+	public IftypeCondition(Loc loc, Type targ, IdentifierExp ident, TOK tok, Type tspec) {
+		super(loc);
 		this.targ = targ;
 		this.id = ident;
 		this.tok = tok;
@@ -55,6 +56,6 @@ public class IftypeCondition extends Condition {
 			tspec.toCBuffer(buf, null, hgs, context);
 		}
 		buf.writeByte(')');
-	}
+	}	
 
 }

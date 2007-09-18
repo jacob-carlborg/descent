@@ -5,28 +5,56 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+// DMD 1.020
 public class SuperExp extends ThisExp {
-	
+
 	public SuperExp(Loc loc) {
 		super(loc);
 		op = TOK.TOKsuper;
 	}
-	
-	@Override
-	public int getNodeType() {
-		return SUPER_EXP;
-	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
-	
+	@Override
+	public Expression doInline(InlineDoState ids) {
+		if (ids.vthis == null) {
+			throw new IllegalStateException("assert(ids.vthis);");
+		}
+
+		VarExp ve = new VarExp(loc, ids.vthis);
+		ve.type = type;
+		return ve;
+	}
+
+	@Override
+	public int getNodeType() {
+		return SUPER_EXP;
+	}
+
+	@Override
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		FuncDeclaration fd = ics.fd;
+		if (!ics.hdrscan) {
+			if (fd.isNested() || !ics.hasthis) {
+				return COST_MAX;
+			}
+		}
+		return 1;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
+		super.scanForNestedRef(sc, context);
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		FuncDeclaration fd;
+		@SuppressWarnings("unused")
 		FuncDeclaration fdthis;
 		ClassDeclaration cd;
 		Dsymbol s;
@@ -46,8 +74,7 @@ public class SuperExp extends ThisExp {
 
 				if (s2 == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SuperNotInClass, 0,
-							start, length));
+							IProblem.SuperNotInClass, 0, start, length));
 					// goto Lerr;
 					return semantic_Lerr(sc, context);
 				}
@@ -56,7 +83,8 @@ public class SuperExp extends ThisExp {
 					cd2 = cd2.baseClass;
 					if (cd2 == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ClassHasNoSuper, 0, start, length, new String[] { new String(s2.ident.ident) }));
+								IProblem.ClassHasNoSuper, 0, start, length,
+								new String[] { new String(s2.ident.ident) }));
 						// goto Lerr;
 						return semantic_Lerr(sc, context);
 					}
@@ -82,7 +110,6 @@ public class SuperExp extends ThisExp {
 		}
 		Assert.isNotNull(s);
 		cd = s.isClassDeclaration();
-		// printf("parent is %s %s\n", fd.toParent().kind(),
 		// fd.toParent().toChars());
 		if (cd == null) {
 			// goto Lerr;
@@ -90,7 +117,8 @@ public class SuperExp extends ThisExp {
 		}
 		if (cd.baseClass == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ClassHasNoSuper, 0, start, length, new String[] { new String(cd.ident.ident) }));
+					IProblem.ClassHasNoSuper, 0, start, length,
+					new String[] { new String(cd.ident.ident) }));
 			type = fd.vthis.type;
 		} else {
 			type = cd.baseClass.type;
@@ -105,16 +133,19 @@ public class SuperExp extends ThisExp {
 		sc.callSuper |= Scope.CSXsuper;
 		return this;
 	}
-	
+
 	@Override
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
-    	type = Type.tint32;
-	    return this;
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 0, start,
+				length));
+		type = Type.tint32;
+		return this;
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring("super");
 	}
 
