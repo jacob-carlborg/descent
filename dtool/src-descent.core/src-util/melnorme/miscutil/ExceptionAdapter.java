@@ -48,10 +48,12 @@ public class ExceptionAdapter extends RuntimeException {
         }
 	}
 	
+	@Override
 	public void printStackTrace(java.io.PrintStream ps) {
 		printStackTrace(new melnorme.miscutil.log.StreamPrinter(ps));
 	}
 
+	@Override
 	public void printStackTrace(java.io.PrintWriter pw) {
 		printStackTrace(new melnorme.miscutil.log.WriterPrinter(pw));
 	}
@@ -61,6 +63,7 @@ public class ExceptionAdapter extends RuntimeException {
 		throw originalException;
 	}
 
+	@Override
 	public String toString() {
         //String name = getClass().getName();
         //return name + "\n>> " + getLocalizedMessage();

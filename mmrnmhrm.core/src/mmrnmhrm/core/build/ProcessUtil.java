@@ -84,7 +84,7 @@ public class ProcessUtil {
 				throw result[0]; 
 			}
 
-			Logg.builder.println("»»  Exit value: " + proc.exitValue());
+			Logg.builder.println(">>  Exit value: " + proc.exitValue());
 
 		} finally {
 			thread.join();

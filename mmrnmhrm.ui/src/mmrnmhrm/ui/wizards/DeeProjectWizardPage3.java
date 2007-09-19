@@ -4,7 +4,7 @@
 package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.model.DeeProjectOptions;
-import mmrnmhrm.ui.preferences.DeeProjectCompileOptionsBlock;
+import mmrnmhrm.ui.preferences.DeeProjectOptionsBlock;
 import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 
 import org.eclipse.core.resources.IFile;
@@ -19,7 +19,7 @@ public class DeeProjectWizardPage3 extends WizardPage {
 
 	private static final String PAGE_NAME = "DeeProjectWizardPage3";
 	protected ProjectWizardSecondPage_ fSecondPage;
-	protected DeeProjectCompileOptionsBlock fProjCfg;
+	protected DeeProjectOptionsBlock fProjCfg;
 
 	public DeeProjectWizardPage3(ProjectWizardSecondPage_ secondPage) {
 		super(PAGE_NAME);
@@ -28,7 +28,7 @@ public class DeeProjectWizardPage3 extends WizardPage {
 		setDescription("");
 
 		fSecondPage = secondPage;
-		fProjCfg = new DeeProjectCompileOptionsBlock();
+		fProjCfg = new DeeProjectOptionsBlock();
 	}
 	
 

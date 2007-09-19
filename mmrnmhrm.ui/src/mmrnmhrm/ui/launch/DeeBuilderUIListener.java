@@ -15,10 +15,12 @@ import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class DeeBuildUIListener implements IDeeBuilderListener {
+public class DeeBuilderUIListener implements IDeeBuilderListener {
 
 	//http://wiki.eclipse.org/FAQ_How_do_I_write_to_the_console_from_a_plug-in%3F
 	
+	private static final String CONSOLE_NAME = "mmrnmhrm Dee Build output:";
+
 	public static MessageConsole getConsole(String name) {
 		ConsolePlugin plugin = ConsolePlugin.getDefault();
 		IConsoleManager conMgr = plugin.getConsoleManager();
@@ -32,11 +34,17 @@ public class DeeBuildUIListener implements IDeeBuilderListener {
 		return myConsole;
 	}
 	
+	public void clear() {
+		final MessageConsole myConsole = getConsole(CONSOLE_NAME);
+		myConsole.clearConsole();
+	}
+	
 	//@Override
 	public void println(String line) {
 		// TODO synchronize?
-		String name = "mmrnmhrm Dee Build output:";
-		
+
+		// TODO:, listen for different project outputs
+		String name = CONSOLE_NAME;
 		final MessageConsole myConsole = getConsole(name);
 		
 		MessageConsoleStream out = myConsole.newMessageStream();
@@ -64,5 +72,7 @@ public class DeeBuildUIListener implements IDeeBuilderListener {
 			}
 		});
 	}
+
+
 
 }

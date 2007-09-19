@@ -13,6 +13,11 @@ public class DefSymbol extends Symbol {
 		setParent(parent);
 	}
 
+	
+	protected DefSymbol(String id) {
+		super(id);
+	}
+
 	public DefUnit getDefUnit() {
 		return (DefUnit) super.getParent();
 	}

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import descent.internal.compiler.parser.AttribDeclaration;
+import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Statement;
 import dtool.ast.ASTNeoNode;
@@ -29,8 +30,10 @@ public abstract class DeclarationAttrib extends ASTNeoNode implements INonScoped
 			ASTNeoNode node = this.body.nodes[0];
 			if(node instanceof Definition) {
 				Definition def = (Definition) node;
-				if(def.preComments == null || def.preComments.size() == 0)
-					def.preComments = elem.preDdocs;
+				if(def.preComments == null || def.preComments.length == 0) {
+					def.preComments = elem.preDdocs.toArray(
+							new Comment[elem.preDdocs.size()]);
+				}
 			}
 		}
 	}

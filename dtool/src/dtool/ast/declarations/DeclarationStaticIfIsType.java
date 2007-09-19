@@ -82,7 +82,7 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 			return null;
 		}
 		
-		@Override
+		//@Override
 		public IScope getAdaptedScope() {
 			return this;
 		}

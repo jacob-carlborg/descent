@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.preferences;
 
-import java.util.ArrayList;
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import java.util.List;
 
 import melnorme.miscutil.StringUtil;
@@ -16,8 +17,6 @@ import mmrnmhrm.core.model.DeeProjectOptions;
 import mmrnmhrm.ui.actions.OperationsManager;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -34,9 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import static melnorme.miscutil.Assert.assertNotNull;
-
-public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
+public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	
 	DeeProjectOptions fDeeProjInfo;
 	DeeCompilerOptions overlayOptions;
@@ -55,7 +52,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 
 	private Shell shell;
 	
-	public DeeProjectCompileOptionsBlock() {
+	public DeeProjectOptionsBlock() {
 
 		fBuildType = new SelectionComboDialogField<DeeCompilerOptions.EBuildTypes>();
 		fBuildType.setLabelText("Build Type:");
@@ -113,7 +110,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		fCompilerTool.setButtonLabel("Browse");
 		fCompilerTool.setDialogFieldListener(this);
 		
-		fExtraOptions = new StringDialogField(SWT.BORDER | SWT.SINGLE);
+		fExtraOptions = new StringDialogField(SWT.BORDER | SWT.MULTI);
 		fExtraOptions.setLabelText("Extra Compiler Options (newline separated):");
 		fExtraOptions.setDialogFieldListener(this);
 
@@ -121,7 +118,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 		fOptionsPreview.setLabelText("Compiler Options Preview:");
 	}
 	
-	protected void init(DeeProjectOptions projectInfo) {
+	protected void internalInit(DeeProjectOptions projectInfo) {
 		assertNotNull(projectInfo);
 		fDeeProjInfo = projectInfo;
 		overlayOptions = fDeeProjInfo.compilerOptions.clone();
@@ -129,7 +126,7 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 	}
 	
 	public void init2(IScriptProject scriptProject) {
-		init(DeeModel.getDeeProjectInfo(scriptProject));
+		internalInit(DeeModel.getDeeProjectInfo(scriptProject));
 	}
 
 	
@@ -201,12 +198,8 @@ public class DeeProjectCompileOptionsBlock implements IDialogFieldListener  {
 	}
 
 	private void updateBuildPreview(DeeCompilerOptions options) {
-		List<IFile> previewModules = new ArrayList<IFile>();
-		IFolder outputFolder = fDeeProjInfo.getProject().getFolder(options.outputDir);
-		IFile file = outputFolder.getFile("<files.d>");
-		previewModules.add(file);
 		List<String> text =	BudDeeModuleCompiler.createCommandLine(
-				previewModules, fDeeProjInfo.dltkProj, options);
+				null, fDeeProjInfo.dltkProj, options);
 		fOptionsPreview.setText(StringUtil.collToString(text, "  "));
 	}
 

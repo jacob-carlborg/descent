@@ -63,7 +63,7 @@ public class BlockStatement extends Statement implements IScopeNode {
 		return null;
 	}
 	
-	@Override
+	//@Override
 	public IScope getAdaptedScope() {
 		return this;
 	}

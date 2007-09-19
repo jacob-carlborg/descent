@@ -29,12 +29,12 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 			return this;
 		}
 		
-		@Override
+		//@Override
 		public IScope getAdaptedScope() {
 			return this;
 		}
 
-		@Override
+		//@Override
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
@@ -54,7 +54,7 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 		public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 			return null;
 		}
-		@Override
+		//@Override
 		public String toStringAsElement() {
 			return "<unknown>";
 		}

@@ -6,13 +6,13 @@ import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.IScriptProject;
 
 /**
  * This classes creates a sample project that should exist *before*
@@ -29,7 +29,7 @@ public abstract class SamplePreExistingProject {
 
 	private static final boolean REQUIRE_PREEXISTING_PROJ = false;
 	
-	public static DeeProject sampleDeeProj = null;
+	public static IScriptProject sampleDeeProj = null;
 	public static IProject project;
 	
 
@@ -40,7 +40,7 @@ public abstract class SamplePreExistingProject {
 		if(!project.exists()) {
 			// If the preexisting project doesn't exist, create it
 			try {
-				sampleDeeProj = CoreTestUtils.createAndOpenDeeProject(PREEXISTINGPROJNAME);
+				sampleDeeProj = CoreTestUtils.createAndOpenProject(PREEXISTINGPROJNAME);
 				fillPreExistingSampleProj();
 			} catch (Exception e) {
 				ExceptionAdapter.unchecked(e);
@@ -68,7 +68,7 @@ public abstract class SamplePreExistingProject {
 		folder = (IFolder) CoreTestUtils.copyBundleDirToWorkspaceContainer(bundleDir,
 				project, destDir);
 		if(addSrcFolder)
-			ModelUtil.createAddSourceFolder(sampleDeeProj.dltkProj, folder);
+			ModelUtil.createAddSourceFolder(sampleDeeProj, folder);
 
 		return folder;
 	}

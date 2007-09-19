@@ -4,6 +4,7 @@ package mmrnmhrm.core.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.LangCore;
 
 import org.eclipse.core.resources.IResource;
@@ -115,7 +116,8 @@ public class DeeModel implements IElementChangedListener {
 		try {
 			return loadProjectInfo(project);
 		} catch (CoreException e) {
-			LangCore.log(e);
+			// TODO: maybe check this
+			ExceptionAdapter.unchecked(e);
 			return null;
 		}
 	}

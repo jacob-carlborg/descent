@@ -1,5 +1,8 @@
 package mmrnmhrm.tests;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -7,7 +10,6 @@ import java.net.URL;
 
 import mmrnmhrm.core.CoreUtils;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IContainer;
@@ -24,9 +26,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IScriptProject;
 import org.osgi.framework.Bundle;
-
-import static melnorme.miscutil.Assert.assertNotNull;
-import static melnorme.miscutil.Assert.assertTrue;
 
 
 
@@ -60,11 +59,6 @@ public class CoreTestUtils {
 		return destParent.getFolder(new Path(destname));
 	}
 
-	public static DeeProject createAndOpenDeeProject(String name)
-			throws CoreException {
-		return new DeeProject(createAndOpenProject(name));
-	}
-	
 	public static IScriptProject createAndOpenProject(String name)
 		throws CoreException {
 		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();

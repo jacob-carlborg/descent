@@ -1,13 +1,15 @@
-package mmrnmhrm.ui.launch;
+package mmrnmhrm.ui.wizards;
+
+import mmrnmhrm.ui.preferences.DeeCompilersComboBlock;
 
 import org.eclipse.dltk.internal.debug.ui.interpreters.AbstractInterpreterComboBlock;
 import org.eclipse.dltk.internal.debug.ui.interpreters.AbstractInterpreterContainerWizardPage;
 
 
-public class DeeInterpreterContainerWizardPage extends AbstractInterpreterContainerWizardPage {
+public class DeeCompilerContainerWizardPage extends AbstractInterpreterContainerWizardPage {
 
 	@Override
 	protected AbstractInterpreterComboBlock getInterpreterBlock() {
-		return new RubyInterpreterComboBlock();
+		return new DeeCompilersComboBlock();
 	}
 }

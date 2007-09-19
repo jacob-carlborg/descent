@@ -17,8 +17,8 @@ import org.eclipse.dltk.core.ISourceModule;
 
 public class ModelUtil {
 
-	public static DeeProject getDeeProject(String name) {
-		return new DeeProject(ModelUtil.getModel().getScriptProject(name));
+	public static IScriptProject getDeeProject(String name) {
+		return ModelUtil.getModel().getScriptProject(name);
 	}
 
 	/** Get's a sourceModule's file, apparently getUnderlyingResource()

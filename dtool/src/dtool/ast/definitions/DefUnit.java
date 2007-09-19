@@ -1,9 +1,6 @@
 package dtool.ast.definitions;
 
 import static melnorme.miscutil.Assert.assertNotNull;
-
-import java.util.List;
-
 import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -35,18 +32,31 @@ public abstract class DefUnit extends ASTNeoNode implements	IScopeAdaptable {
 		;
 	}
 	
-	public /*final*/ List<Comment> preComments;
+	public /*final*/ Comment[] preComments;
 	public final Symbol defname;
 	public EArcheType archeType;
 	
 	public DefUnit(Dsymbol elem) {
 		convertNode(elem, false);
 		this.defname = new DefSymbol(elem.ident, this);
-		this.preComments = elem.preDdocs;
+		int size = 0; 
+		if(elem.preDdocs != null)
+			size = elem.preDdocs.size();
 		if(elem.postDdoc != null)
-			this.preComments.add(elem.postDdoc);
+			size = size+1;
+		
+		if(size != 0)
+			this.preComments = new Comment[size];
+		
+		if(elem.preDdocs != null) {
+			for (int i = 0; i < elem.preDdocs.size(); i++) {
+				this.preComments[i] = elem.preDdocs.get(i);
+			}
+		}
+		if(elem.postDdoc != null)
+			this.preComments[size-1] = elem.postDdoc;
 	}
-	
+
 	public DefUnit(IdentifierExp id) {
 		this.defname = new DefSymbol(id, this);
 		this.preComments = null;
@@ -64,11 +74,11 @@ public abstract class DefUnit extends ASTNeoNode implements	IScopeAdaptable {
 	
 	
 	public String getCombinedDocComments() {
-		if(preComments == null || preComments.size() == 0)
+		if(preComments == null || preComments.length == 0)
 			return null;
-		String str = new String(preComments.get(0).string);
-		for (int i = 1; i < preComments.size(); i++) {
-			str = str + "\n" + preComments.get(i).toString();
+		String str = new String(preComments[0].string);
+		for (int i = 1; i < preComments.length; i++) {
+			str = str + "\n" + preComments[i].toString();
 		}
 		return str;
 	}
@@ -82,7 +92,7 @@ public abstract class DefUnit extends ASTNeoNode implements	IScopeAdaptable {
 	 * May be null if the scope is not found. */
 	public abstract IScopeNode getMembersScope();
 
-	@Override
+	//@Override
 	public IScope getAdaptedScope() {
 		return getMembersScope();
 	}

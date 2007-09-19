@@ -1,20 +1,20 @@
 package mmrnmhrm.tests;
 
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.DeeProject;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-
-import static melnorme.miscutil.Assert.assertTrue;
+import org.eclipse.dltk.core.IScriptProject;
 
 /**
  * This classes creates a sample project 
@@ -34,7 +34,7 @@ public abstract class SampleMainProject {
 	public static final String TEST_SRC_TANGO = "tango";
 	
 	public static IProject project;
-	public static DeeProject deeProj = null;
+	public static IScriptProject deeProj = null;
 	
 	public static IFile sampleFile1;
 	public static IFile sampleOutOfModelFile;
@@ -43,7 +43,7 @@ public abstract class SampleMainProject {
 
 	public static void createAndSetupSampleProj() {
 		try {
-			deeProj = CoreTestUtils.createAndOpenDeeProject(SAMPLEPROJNAME);
+			deeProj = CoreTestUtils.createAndOpenProject(SAMPLEPROJNAME);
 			fillSampleProj();
 		} catch (Exception e) {
 			throw ExceptionAdapter.unchecked(e);

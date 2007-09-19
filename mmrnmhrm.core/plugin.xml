@@ -107,7 +107,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="mmrnmhrm.core.launch.DeeLaunchConfiguration"
+            delegate="mmrnmhrm.core.launch.DeeLaunchConfigurationDelegate"
             id="mmrnmhrm.core.deeLaunchConfigurationType"
             modes="run, debug"
             name="%localDeeApplication">

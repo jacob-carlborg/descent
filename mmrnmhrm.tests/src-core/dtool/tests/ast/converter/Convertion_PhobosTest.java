@@ -21,7 +21,7 @@ public class Convertion_PhobosTest extends ConvertionCommonTest {
 	public void testPhobosHeaders() throws CoreException {
 		IFolder folder = 
 			SampleMainProject.project.getFolder(SampleMainProject.TEST_SRC_PHOBOSHD);
-		IProjectFragment fragment = SampleMainProject.deeProj.dltkProj.getProjectFragment(folder);
+		IProjectFragment fragment = SampleMainProject.deeProj.getProjectFragment(folder);
 		//parseElement((LangElement) sourceRoot);
 		parseElement(fragment);
 	}
@@ -30,7 +30,7 @@ public class Convertion_PhobosTest extends ConvertionCommonTest {
 	public void testPhobosInternal() throws CoreException {
 		IFolder folder = 
 			SampleMainProject.project.getFolder(SampleMainProject.TEST_SRC_PHOBOSIMPL);
-		IProjectFragment fragment = SampleMainProject.deeProj.dltkProj.getProjectFragment(folder);
+		IProjectFragment fragment = SampleMainProject.deeProj.getProjectFragment(folder);
 		IProjectFragment sourceRoot = fragment;
 		//parseElement((LangElement) sourceRoot);
 		parseElement(sourceRoot);
@@ -40,7 +40,7 @@ public class Convertion_PhobosTest extends ConvertionCommonTest {
 	public void testTango() throws CoreException {
 		IFolder folder = 
 			SampleMainProject.project.getFolder(SampleMainProject.TEST_SRC_TANGO);
-		IProjectFragment fragment = SampleMainProject.deeProj.dltkProj.getProjectFragment(folder);
+		IProjectFragment fragment = SampleMainProject.deeProj.getProjectFragment(folder);
 		IProjectFragment sourceRoot = fragment;
 		//parseElement((DeeSourceFolder) sourceRoot);
 		parseElement(sourceRoot);

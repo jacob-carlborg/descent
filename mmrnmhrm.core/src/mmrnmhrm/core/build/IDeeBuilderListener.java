@@ -7,8 +7,16 @@ public interface IDeeBuilderListener {
 		public void println(String line) {
 			// Do nothing
 		}
+
+		//@Override
+		public void clear() {
+			// Do nothing
+		}
 		
 	}
 
+	void clear();
+
 	void println(String line);
+
 }

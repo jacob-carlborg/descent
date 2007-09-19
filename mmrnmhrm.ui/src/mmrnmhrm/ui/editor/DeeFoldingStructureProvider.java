@@ -59,7 +59,7 @@ public class DeeFoldingStructureProvider extends
 	@Override
 	protected boolean initiallyCollapseComments(
 			FoldingStructureComputationContext ctx) {
-		return true;
+		return false;
 	}
 	
 	@Override

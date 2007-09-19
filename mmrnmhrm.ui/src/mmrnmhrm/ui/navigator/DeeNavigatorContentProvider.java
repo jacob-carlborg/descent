@@ -2,14 +2,10 @@ package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.swt.SWTUtilExt;
-import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.core.model.DeeProject;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -23,23 +19,14 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, org.ec
 	}
 	
 	public Object[] getChildren(Object element) {
-		if(element instanceof IProject) {
+		/*if(element instanceof IProject) {
 			try {
 				//dltkProj.open(null);
-				return new DeeProject(DLTKCore.create(((IProject)element))).dltkProj.getChildren();
+				return DLTKCore.create((IProject)element).getChildren();
 			} catch (CoreException e) {
 				return null;
 			}
-		}
-		
-		if(element instanceof DeeProject) {
-			try {
-				//dltkProj.open(null);
-				return ((DeeProject) element).dltkProj.getChildren();
-			} catch (CoreException e) {
-				return null;
-			}
-		}
+		}*/
 		
 		return null;
 	}

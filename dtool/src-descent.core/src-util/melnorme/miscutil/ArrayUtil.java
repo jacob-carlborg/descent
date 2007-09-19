@@ -1,6 +1,7 @@
 package melnorme.miscutil;
 
 import java.lang.reflect.Array;
+import java.util.List;
 
 public class ArrayUtil {
 	
@@ -152,7 +153,26 @@ public class ArrayUtil {
         return copy;
     }
 
+    /** Create an array from the given list, with the given run-time 
+     * component type.
+     * If the list is null, a zero-length array is created. */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] createFrom(List<T> list, Class<T> cpType) {
+		if(list == null)
+			return (T[])Array.newInstance(cpType, 0);
+	
+		return list.toArray((T[])Array.newInstance(cpType, list.size()));
+	}
 
+	/** Creates an array with the same size as the given list.
+	 * If the list is null, a zero-length array is created. */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] newSameSize(List<?> list, Class<T> cpType) {
+		if(list == null)
+			return (T[])Array.newInstance(cpType, 0);
+		
+		return (T[])Array.newInstance(cpType, list.size());
+	}
 
 
 }

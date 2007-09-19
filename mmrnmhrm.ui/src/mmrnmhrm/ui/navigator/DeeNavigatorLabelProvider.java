@@ -1,12 +1,12 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
-import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.ui.ModelElementLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -31,7 +31,7 @@ public class DeeNavigatorLabelProvider extends ModelElementLabelProvider {
 
 		if(element instanceof IFolder) {
 			IFolder folder = (IFolder) element;
-			DeeProject deeproj = new DeeProject(DLTKCore.create(folder.getProject()));
+			IScriptProject deeproj = DLTKCore.create(folder.getProject());
 			if(deeproj == null)
 				return null;
 			

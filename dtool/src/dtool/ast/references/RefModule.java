@@ -59,6 +59,7 @@ public class RefModule extends NamedReference {
 		Module targetMod = ReferenceResolver.findModule(originMod, packages, module);
 		return DefUnitSearch.wrapResult(targetMod);
 	}
+	
 	public static class LiteModuleDummy extends DefUnit {
 		public LiteModuleDummy(String defname) {
 			super(new Symbol(defname));
@@ -118,6 +119,5 @@ public class RefModule extends NamedReference {
 		else
 			return str + "." + module;
 	}
-
 
 }

@@ -57,7 +57,7 @@ public class StatementTry extends Statement {
 			return null;
 		}
 		
-		@Override
+		//@Override
 		public IScope getAdaptedScope() {
 			return this;
 		}

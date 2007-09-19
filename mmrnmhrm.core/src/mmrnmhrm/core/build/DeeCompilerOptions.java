@@ -2,6 +2,7 @@ package mmrnmhrm.core.build;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 
 public class DeeCompilerOptions {
 
@@ -20,10 +21,16 @@ public class DeeCompilerOptions {
 	
 	public DeeCompilerOptions(String projname) {
 		buildType = EBuildTypes.EXECUTABLE;
-		artifactName = projname;
+		artifactName = projname + getOSExtension();
 		outputDir = new Path(defaultOutputFolder());
 		buildTool = "bud";
 		extraOptions = "";
+	}
+
+	private static String getOSExtension() {
+		if(Platform.getOS().equals(Platform.OS_WIN32))
+			return ".exe";
+		return "";
 	}
 
 	private String defaultOutputFolder() {

@@ -4,13 +4,13 @@ import static melnorme.miscutil.Assert.assertFail;
 import static melnorme.miscutil.Assert.assertNotNull;
 import static melnorme.miscutil.Assert.assertTrue;
 import melnorme.miscutil.Assert;
-import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.tests.adapters.Mock_Document;
 import mmrnmhrm.ui.editor.DeeEditorTest;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
 import mmrnmhrm.ui.editor.text.DeeCompletionProposal;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -31,7 +31,7 @@ public class CodeCompletion__Common extends UITestWithEditor {
 	String repStr;
 	int prefixLen;
 	
-	protected static void setupWithFile(DeeProject deeProject, String path) throws PartInitException, CoreException {
+	protected static void setupWithFile(IScriptProject deeProject, String path) throws PartInitException, CoreException {
 		UITestWithEditor.setupWithFile(deeProject, path);
 		Assert.isTrue(editor.getScriptSourceViewer() != null);
 		//assist = new DeeCodeContentAssistProcessor(null, editor);

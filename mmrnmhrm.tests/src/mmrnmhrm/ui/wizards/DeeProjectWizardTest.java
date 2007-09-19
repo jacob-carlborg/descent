@@ -179,12 +179,12 @@ public class DeeProjectWizardTest extends BaseUITest {
 	protected boolean checkNoChanges() throws Throwable {
 		if(exceptionThrown)
 			throw exception;
-		return ModelUtil.getDeeProject(NEWPROJNAME).dltkProj.exists() == false;
+		return ModelUtil.getDeeProject(NEWPROJNAME).exists() == false;
 	}
 
 	protected boolean checkProjectCreated() throws Throwable {
 		if(exceptionThrown)
 			throw exception;
-		return ModelUtil.getDeeProject(NEWPROJNAME).dltkProj.exists();
+		return ModelUtil.getDeeProject(NEWPROJNAME).exists();
 	}
 }

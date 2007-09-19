@@ -6,12 +6,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.ArrayUtil;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.dltk.core.ISourceModule;
 
 import descent.internal.compiler.parser.Comment;
+import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
@@ -26,14 +28,32 @@ import dtool.refmodel.IScopeNode;
  */
 public class Module extends DefUnit implements IScopeNode {
 
+	public static class ModuleDefSymbol extends DefSymbol {
+		
+		protected Module module;
+
+		public ModuleDefSymbol(IdentifierExp id) {
+			super(id, null);
+		}
+		
+		public ModuleDefSymbol(String id) {
+			super(id);
+		}
+		
+		@Override
+		public DefUnit getDefUnit() {
+			return module;
+		}
+	}
+
 	public static class DeclarationModule extends ASTNeoNode {
 
-		public String[] packages;
-		public Symbol moduleName;
+		public String[] packages; // non-structural element
+		public Symbol moduleName; 
 		
-		public DeclarationModule(ModuleDeclaration md) {
+		public DeclarationModule(DefSymbol moduleName, ModuleDeclaration md) {
 			setSourceRange(md);
-			this.moduleName = new Symbol(md.id); 
+			this.moduleName = moduleName; 
 		}
 
 		@Override
@@ -57,45 +77,41 @@ public class Module extends DefUnit implements IScopeNode {
 		}
 	}
 
-	private Object moduleUnit; // The compilation unit / Model Element
+	private Object moduleUnit; // The compilation unit/Model Element
 
 	public final DeclarationModule md;
 	public final ASTNeoNode[] members;
-	public final Comment[] preComments;
 
 	
 	public static Module createModule(descent.internal.compiler.parser.Module elem) {
-		Symbol defname;
+		ModuleDefSymbol defname;
 		DeclarationModule md;
 		Comment[] preComments = null;
 
 		ASTNeoNode[] members = Declaration.convertMany(elem.members);
 		
 		if(elem.md == null) {
-			defname = new Symbol("<unnamed>");
+			defname = new ModuleDefSymbol("<unnamed>");
 			md = null;
 		} else  {
-			defname = new Symbol(elem.md.id);
-			md = new DeclarationModule(elem.md);
+			defname = new ModuleDefSymbol(elem.md.id);
+			md = new DeclarationModule(defname, elem.md);
 			
-			if(elem.md.packages != null) {
-				md.packages = new String[elem.md.packages.size()];
-			} else {
-				md.packages = new String[0];
-			}
+			md.packages = ArrayUtil.newSameSize(elem.md.packages, String.class);
+
 			for (int i = 0; i < md.packages.length; i++) {
 				md.packages[i] = new String(elem.md.packages.get(i).ident);
 			}
-			
 
 			preComments = elem.md.preDdocs.toArray(new Comment[elem.md.preDdocs.size()]);
 		}
 		return new Module(defname, preComments, md, members, elem);
 	}
 	
-	public Module(Symbol defname, Comment[] preComments, DeclarationModule md,
+	public Module(ModuleDefSymbol defname, Comment[] preComments, DeclarationModule md,
 			ASTNeoNode[] members, IASTNode sourceRange) {
 		super(defname);
+		defname.module = this;
 		setSourceRange(sourceRange);
 		this.preComments = preComments;
 		this.md = md;

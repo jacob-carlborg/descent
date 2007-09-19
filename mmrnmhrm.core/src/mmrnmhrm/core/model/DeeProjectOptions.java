@@ -1,5 +1,7 @@
 package mmrnmhrm.core.model;
 
+import static melnorme.miscutil.Assert.assertFail;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,14 +16,13 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.IScriptProject;
 import org.ini4j.Ini;
 import org.ini4j.InvalidIniFormatException;
 
 import dtool.Logg;
-
-import static melnorme.miscutil.Assert.assertFail;
 
 
 public class DeeProjectOptions {
@@ -47,14 +48,14 @@ public class DeeProjectOptions {
 		return getProject().getFolder(compilerOptions.outputDir); 
 	}
 	
-
-	
 	public void saveProjectConfigFile() throws CoreException {
 		Ini ini = new Ini();
 		Ini.Section section = ini.add(CFG_FILE_SECTION);
 		
-    	section.put("out", getOutputFolder().getProjectRelativePath().toString());
     	section.put("buildtype", compilerOptions.buildType.toString());
+    	section.put("out", getOutputFolder().getProjectRelativePath().toString());
+    	section.put("outname", compilerOptions.artifactName);
+    	section.put("buildtool", compilerOptions.buildTool);
     	section.put("extraOptions", compilerOptions.extraOptions);
 		
 		writeConfigFile(ini);
@@ -65,13 +66,19 @@ public class DeeProjectOptions {
 	public void loadNewProjectConfig() throws CoreException {
 		IFile projCfgFile = getProject().getFile(CFG_FILE_NAME);
 		if(projCfgFile.exists()) {
-			loadProjectConfigFile();
+			try {
+				loadProjectConfigFile();
+			} catch (FileNotFoundException e) {
+				saveProjectConfigFile();
+			} catch (IOException e) {
+				throw DeeCore.createCoreException("Error loading project file.", e);
+			}
 		} else {
 			saveProjectConfigFile();
 		}
 	}
 
-	public void loadProjectConfigFile() throws CoreException {
+	public void loadProjectConfigFile() throws CoreException, IOException {
 		Ini ini = readConfigFile();
 		
 		Ini.Section section = ini.get(CFG_FILE_SECTION);
@@ -83,10 +90,22 @@ public class DeeProjectOptions {
 		String pathstr = section.get("out");
 		if(pathstr != null)
 			compilerOptions.outputDir = Path.fromPortableString(pathstr);
+
+		String outname = section.get("outname");
+		if(outname != null)
+			compilerOptions.artifactName = outname;
+
+		String buildtool = section.get("buildtool");
+		if(buildtool != null)
+			compilerOptions.buildTool = buildtool;
+
+		String extraOptions = section.get("extraOptions");
+		if(extraOptions != null)
+			compilerOptions.extraOptions = extraOptions;
 	}
 
 
-	private Ini readConfigFile() throws CoreException {
+	private Ini readConfigFile() throws CoreException, IOException {
 		IFile projCfgFile = getProject().getFile(CFG_FILE_NAME);
 		Logg.main.println(projCfgFile.getLocationURI());
 
@@ -98,11 +117,7 @@ public class DeeProjectOptions {
 			}
 		} catch (InvalidIniFormatException e) {
 			throw DeeCore.createCoreException("Error loading project file.", e); 
-		} catch (FileNotFoundException e) {
-			throw DeeCore.createCoreException("Error loading project file.", e); 
-		} catch (IOException e) {
-			throw DeeCore.createCoreException("Error loading project file.", e); 
-		}
+		} 
 		return ini;
 	}
 
@@ -123,5 +138,15 @@ public class DeeProjectOptions {
 		} else {
 			projCfgFile.setContents(is, IResource.NONE, null);
 		}
+	}
+
+	public String getArtifactName() {
+		return compilerOptions.artifactName;
+	}
+
+	public String getArtifactRelPath() {
+		String name = compilerOptions.artifactName;
+		IPath output = compilerOptions.outputDir.append(name);
+		return output.toString();
 	}
 }

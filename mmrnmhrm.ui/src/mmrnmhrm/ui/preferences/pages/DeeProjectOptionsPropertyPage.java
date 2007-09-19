@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.preferences.pages;
 
-import mmrnmhrm.ui.preferences.DeeProjectCompileOptionsBlock;
+import mmrnmhrm.ui.preferences.DeeProjectOptionsBlock;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -12,12 +12,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 
-public class DeeCompileOptionsPropertyPage extends PropertyPage {
+public class DeeProjectOptionsPropertyPage extends PropertyPage {
 	
-	private DeeProjectCompileOptionsBlock fProjCfg;
+	private DeeProjectOptionsBlock fProjCfg;
 
-	public DeeCompileOptionsPropertyPage() {
-		fProjCfg = new DeeProjectCompileOptionsBlock();
+	public DeeProjectOptionsPropertyPage() {
+		fProjCfg = new DeeProjectOptionsBlock();
 	}
 	
 	@Override

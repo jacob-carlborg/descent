@@ -14,14 +14,20 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.launching.AbstractScriptLaunchConfigurationDelegate;
 import org.eclipse.dltk.launching.InterpreterConfig;
 
-public class DeeLaunchConfiguration extends AbstractScriptLaunchConfigurationDelegate {
+public class DeeLaunchConfigurationDelegate extends AbstractScriptLaunchConfigurationDelegate {
 
 	public static class DeeInterpreterConfig extends InterpreterConfig {
-		public DeeInterpreterConfig(File mainScript, File workingDirectory) {
-			super(mainScript, workingDirectory); 
+		
+		IScriptProject deeProj;
+		
+		public DeeInterpreterConfig(File mainScript, File workingDirectory, 
+				IScriptProject deeProj) {
+			super(mainScript, workingDirectory);
+			this.deeProj = deeProj;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -66,8 +72,9 @@ public class DeeLaunchConfiguration extends AbstractScriptLaunchConfigurationDel
 		final File mainScript = new File(getScriptLaunchPath(configuration));
 		final File workingDirectory = getWorkingDirectory(configuration);
 
+		IScriptProject deeProj = getScriptProject(configuration);
 		InterpreterConfig config = new DeeInterpreterConfig(mainScript,
-				workingDirectory);
+				workingDirectory, deeProj);
 
 		// Script arguments
 		String[] scriptArgs = getScriptArguments(configuration);
