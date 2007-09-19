@@ -69,10 +69,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e1;
 	}
 	public Loc loc;
-
 	public TOK op;
-
-	public Type type;
+	public Type type, sourceType;
 
 	public Expression(Loc loc, TOK op) {
 		this.loc = loc;

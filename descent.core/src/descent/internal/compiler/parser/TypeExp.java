@@ -9,6 +9,7 @@ public class TypeExp extends Expression {
 	public TypeExp(Loc loc, Type type) {
 		super(loc, TOK.TOKtype);
 		this.type = type;
+		this.sourceType = type;
 	}
 	
 	@Override
@@ -40,6 +41,11 @@ public class TypeExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		type.toCBuffer(buf, null, hgs, context);
+	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		type.toReferenceString(sb);
 	}
 
 }

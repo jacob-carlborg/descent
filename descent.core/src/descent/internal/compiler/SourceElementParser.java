@@ -792,7 +792,7 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(DeclarationStatement node) {
-		Dsymbol dsymbol = ((DeclarationExp) node.exp).declaration;
+		Dsymbol dsymbol = ((DeclarationExp) node.sourceExp).declaration;
 		switch(dsymbol.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 		case ASTDmdNode.INTERFACE_DECLARATION:

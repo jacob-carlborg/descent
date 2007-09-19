@@ -1607,7 +1607,7 @@ public class ASTConverter {
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
-				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).declaration;
 				if (declaration instanceof VarDeclaration) {
 					varDeclarations.add((VarDeclaration) declaration);
 				}
@@ -1624,7 +1624,7 @@ public class ASTConverter {
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
-				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).declaration;
 				if (declaration instanceof AliasDeclaration) {
 					varDeclarations.add((AliasDeclaration) declaration);
 				}
@@ -1641,7 +1641,7 @@ public class ASTConverter {
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
-				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).declaration;
 				if (declaration instanceof TypedefDeclaration) {
 					varDeclarations.add((TypedefDeclaration) declaration);
 				}
@@ -1846,13 +1846,13 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Statement convert(ExpStatement a) {
-		if (a.exp == null) {
+		if (a.sourceExp == null) {
 			descent.core.dom.EmptyStatement b = new descent.core.dom.EmptyStatement(ast);
 			b.setSourceRange(a.start, a.length);
 			return b;
 		} else {
 			descent.core.dom.ExpressionStatement b = new descent.core.dom.ExpressionStatement(ast);
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2206,7 +2206,7 @@ public class ASTConverter {
 	public descent.core.dom.DeclarationStatement convert(DeclarationStatement a) {
 		descent.core.dom.DeclarationStatement b = new descent.core.dom.DeclarationStatement(ast);
 		
-		Declaration declaration = convertDeclaration(((DeclarationExp) a.exp).declaration);
+		Declaration declaration = convertDeclaration(((DeclarationExp) a.sourceExp).declaration);
 		if (declaration != null) {
 			b.setDeclaration(declaration);
 		}
@@ -2273,43 +2273,31 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Statement convert(CompoundStatement a) {
-//		if (a.synthetic) {
-//			List<descent.core.dom.Statement> stms = new ArrayList<descent.core.dom.Statement>(1);
-//			convertStatements(stms, a.sourceStatements);
-//			if (stms.size() == 1) {
-//				return stms.get(0);
-//			} else if (stms.size() == 0) {
-//				return null;
-//			} else {
-//				throw new IllegalStateException("Should not happen");
-//			}
-//		} else {
-			if (a.manyVars) {
-				Statement firstStatement = a.statements.get(0);
-				
-				if (!(firstStatement instanceof DeclarationStatement)) {
+		if (a.manyVars) {
+			Statement firstStatement = a.statements.get(0);
+			
+			if (!(firstStatement instanceof DeclarationStatement)) {
+				throw new RuntimeException("Can't happen");
+			}
+			
+			DeclarationStatement declStm = (DeclarationStatement) firstStatement;
+			Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).declaration;
+			if (declaration instanceof VarDeclaration) {
+				return convertBlockVars(a);
+			} else if (declaration instanceof AliasDeclaration) {
+				return convertBlockAlias(a);
+			} else {
+				if (!(declaration instanceof TypedefDeclaration)) {
 					throw new RuntimeException("Can't happen");
 				}
-				
-				DeclarationStatement declStm = (DeclarationStatement) firstStatement;
-				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
-				if (declaration instanceof VarDeclaration) {
-					return convertBlockVars(a);
-				} else if (declaration instanceof AliasDeclaration) {
-					return convertBlockAlias(a);
-				} else {
-					if (!(declaration instanceof TypedefDeclaration)) {
-						throw new RuntimeException("Can't happen");
-					}
-					return convertBlockTypedef(a);
-				}
-			} else {
-				descent.core.dom.Block b = new descent.core.dom.Block(ast);
-				convertStatements(b.statements(), a.sourceStatements);
-				b.setSourceRange(a.start, a.length);
-				return b;
+				return convertBlockTypedef(a);
 			}
-//		}
+		} else {
+			descent.core.dom.Block b = new descent.core.dom.Block(ast);
+			convertStatements(b.statements(), a.sourceStatements);
+			b.setSourceRange(a.start, a.length);
+			return b;
+		}
 	}
 	
 	public descent.core.dom.MixinExpression convert(CompileExp a) {
@@ -2851,8 +2839,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.TypeExpression convert(TypeExp a) {
 		descent.core.dom.TypeExpression b = new descent.core.dom.TypeExpression(ast);
-		if (a.type != null) {
-			descent.core.dom.Type convertedType = convert(a.type);
+		if (a.sourceType != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceType);
 			if (convertedType != null) {
 				b.setType(convertedType);
 			}

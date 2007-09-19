@@ -8,11 +8,12 @@ import static descent.internal.compiler.parser.TOK.TOKhalt;
 // DMD 1.020
 public class ExpStatement extends Statement {
 
-	public Expression exp;
+	public Expression exp, sourceExp;
 
 	public ExpStatement(Loc loc, Expression exp) {
 		super(loc);
 		this.exp = exp;
+		this.sourceExp = exp;
 	}
 
 	@Override
@@ -90,6 +91,8 @@ public class ExpStatement extends Statement {
 			exp.checkSideEffect(0, context);
 			exp = exp.optimize(0, context);
 		}
+		
+		sourceExp.reference = exp;
 		return this;
 	}
 

@@ -427,5 +427,12 @@ public class TypeClass extends Type {
 	public void toReferenceString(StringBuilder sb) {
 		sym.toReferenceString(sb);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toReferenceString(sb);
+		return sb.toString();
+	}
 
 }
