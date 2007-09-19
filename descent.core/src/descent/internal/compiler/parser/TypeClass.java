@@ -422,5 +422,10 @@ public class TypeClass extends Type {
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		sym.toReferenceString(sb);
+	}
 
 }

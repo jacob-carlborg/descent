@@ -494,7 +494,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public TY ty;
-	public Type next;
+	public Type next, sourceNext;
 	public String deco;
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
@@ -506,6 +506,7 @@ public abstract class Type extends ASTDmdNode {
 	public Type(TY ty, Type next) {
 		this.ty = ty;
 		this.next = next;
+		this.sourceNext = next;
 	}
 
 	@Override

@@ -392,7 +392,7 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	private void visit(FuncDeclaration node, TemplateDeclaration templateDeclaration) {
-		TypeFunction ty = (TypeFunction) node.type;
+		TypeFunction ty = (TypeFunction) node.sourceType;
 		
 		MethodInfo info = new MethodInfo();
 		info.annotationPositions = NO_LONG;
@@ -543,8 +543,8 @@ public class SourceElementParser implements IASTVisitor {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.type != null) {
-			info.type = node.type.toCharArray();
+		if (node.sourceType != null) {
+			info.type = node.sourceType.toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}
@@ -573,8 +573,8 @@ public class SourceElementParser implements IASTVisitor {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.type != null) {
-			info.type = node.type.toCharArray();
+		if (node.sourceType != null) {
+			info.type = node.sourceType.toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}

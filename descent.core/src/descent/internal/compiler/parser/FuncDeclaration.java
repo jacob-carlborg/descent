@@ -101,6 +101,7 @@ public class FuncDeclaration extends Declaration {
 		super(loc, ident);
 		this.storage_class = storage_class;
 		this.type = type;
+		this.sourceType = type;
 		this.loc = loc;
 		this.vtblIndex = -1;
 		this.inlineStatus = ILSuninitialized;
@@ -1955,6 +1956,27 @@ public class FuncDeclaration extends Declaration {
 			SemanticContext context) {
 		type.toCBuffer(buf, ident, hgs, context);
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		super.toReferenceString(sb);
+		sb.append("(");
+		if (parameters != null) {
+			for(int i = 0; i < parameters.size(); i++) {
+				if (i != 0) {
+					sb.append(", ");
+				}
+				
+				Dsymbol dsymbol = parameters.get(i);
+				if (dsymbol instanceof VarDeclaration) {
+					VarDeclaration var = (VarDeclaration) dsymbol;
+					var.type.toReferenceString(sb);
+				}
+				
+			}
+		}
+		sb.append(")");
 	}
 
 }

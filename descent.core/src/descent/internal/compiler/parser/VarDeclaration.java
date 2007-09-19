@@ -38,7 +38,6 @@ public class VarDeclaration extends Declaration {
 	public VarDeclaration next;
 
 	// declaration?
-	public Type sourceType;
 	public Initializer init;
 	public Initializer sourceInit;
 	public Dsymbol aliassym; // if redone as alias to another symbol

@@ -162,5 +162,10 @@ public class VarExp extends Expression {
 		}
 		return this;
 	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		var.toReferenceString(sb);
+	}
 
 }

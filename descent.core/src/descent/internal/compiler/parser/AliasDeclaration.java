@@ -16,7 +16,6 @@ public class AliasDeclaration extends Declaration {
 	public boolean last; // is this the last declaration in a multi
 	public AliasDeclaration next;
 
-	public Type type;
 	public Type htype;
 	public Dsymbol haliassym;
 	public Dsymbol aliassym;
@@ -41,6 +40,7 @@ public class AliasDeclaration extends Declaration {
 	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
 		super(loc, id);
 		this.type = type;
+		this.sourceType = type;
 		this.aliassym = null;
 		this.htype = null;
 		this.haliassym = null;

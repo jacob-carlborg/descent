@@ -529,5 +529,24 @@ public class Dsymbol extends ASTDmdNode {
 		// TODO semantic
 		return toChars(context);
 	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		if (ident == null) {
+			sb.append("anonymous ");
+			sb.append(kind());
+		} else {
+			if(parent != null) {
+				int oldLength = sb.length();
+				parent.toReferenceString(sb);
+				if (oldLength != sb.length()) {
+					sb.append(".");
+				}
+			}
+			sb.append(kind());
+			sb.append(" ");
+			sb.append(ident.toString());
+		}
+	}
 
 }

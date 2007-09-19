@@ -17,13 +17,15 @@ import descent.internal.compiler.parser.Constfold.BinExp_fp;
 // DMD 1.020
 public abstract class BinExp extends Expression {
 
-	public Expression e1;
-	public Expression e2;
+	public Expression e1, sourceE1;
+	public Expression e2, sourceE2;
 
 	public BinExp(Loc loc, TOK op, Expression e1, Expression e2) {
 		super(loc, op);
 		this.e1 = e1;
+		this.sourceE1 = e1;
 		this.e2 = e2;
+		this.sourceE2 = e2;
 		if (e1 != null && e2 != null) {
 			this.start = e1.start;
 			this.length = e2.start + e2.length - e1.start;

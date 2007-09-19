@@ -215,5 +215,10 @@ public class CastExp extends UnaExp {
 		buf.writeByte(')');
 		expToCBuffer(buf, hgs, e1, op.precedence, context);
 	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		e1.toReferenceString(sb);
+	}
 
 }

@@ -16,10 +16,11 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 // DMD 1.020
 public class NewExp extends Expression {
 
-	public Expression thisexp;
-	public Expressions newargs;
-	public Type newtype;
-	public Expressions arguments;
+	public Expression thisexp, sourceThisexp;
+	public Expressions newargs, sourceNewargs;
+	public Type newtype, sourceNewtype;
+	public Expressions arguments, sourceArguments;
+	
 	public CtorDeclaration member; // constructor function
 	public NewDeclaration allocator; // allocator function
 	public boolean onstack; // allocate on stack
@@ -28,9 +29,13 @@ public class NewExp extends Expression {
 			Type newtype, Expressions arguments) {
 		super(loc, TOK.TOKnew);
 		this.thisexp = thisexp;
+		this.sourceThisexp = thisexp;
 		this.newargs = newargs;
+		this.sourceNewargs = newargs;
 		this.newtype = newtype;
+		this.sourceNewtype = newtype;
 		this.arguments = arguments;
+		this.sourceArguments = new Expressions(arguments);
 		this.member = null;
 		this.allocator = null;
 		this.onstack = false;

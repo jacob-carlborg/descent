@@ -169,14 +169,9 @@ public class Argument extends ASTDmdNode {
 	}
 
 	public int storageClass;
-
-	public Type type;
-
+	public Type type, sourceType;
 	public IdentifierExp ident;
-
-	public Expression defaultArg;
-
-	public Expression sourceDefaultArg;
+	public Expression defaultArg, sourceDefaultArg;
 
 	public Argument(int storageClass, Type type, IdentifierExp ident,
 			Expression defaultArg) {
@@ -186,6 +181,7 @@ public class Argument extends ASTDmdNode {
 		} else {
 			this.type = type;
 		}
+		this.sourceType = type;
 		this.ident = ident;
 		this.defaultArg = defaultArg;
 		this.sourceDefaultArg = defaultArg;

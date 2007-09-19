@@ -268,17 +268,14 @@ public abstract class ASTDmdNode extends ASTNode {
 		public EXP_SOMETHING_INTERPRET() {
 			super(null, null);
 		}
-
 		@Override
 		public int getNodeType() {
 			return 0;
 		}
-
 		@Override
 		public String toChars(SemanticContext context) {
 			return null;
 		}
-
 		@Override
 		protected void accept0(IASTVisitor visitor) {
 		}
@@ -1617,6 +1614,14 @@ public abstract class ASTDmdNode extends ASTNode {
 	    return e;
 	    */
 		return null;
+	}
+	
+	/**
+	 * This is a debug string used by NaiveASTFlattener
+	 * to add resolved information to the string output.
+	 */
+	public void toReferenceString(StringBuilder sb) {
+		sb.append(toString());
 	}
 
 }

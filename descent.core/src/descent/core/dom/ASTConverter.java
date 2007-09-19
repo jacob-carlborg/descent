@@ -664,8 +664,8 @@ public class ASTConverter {
 			start = first.modifiers.get(0).start;
 		}
 		
-		if (first.type != null) {
-			varToReturn.setType(convert(first.type));
+		if (first.sourceType != null) {
+			varToReturn.setType(convert(first.sourceType));
 		}
 		
 		for(Object var : decls) {
@@ -688,8 +688,8 @@ public class ASTConverter {
 			convertModifiers(varToReturn.modifiers(), first.modifiers);
 		}
 		
-		if (first.type != null) {
-			varToReturn.setType(convert(first.type));
+		if (first.sourceType != null) {
+			varToReturn.setType(convert(first.sourceType));
 		}
 		
 		for(Object var : decls) {
@@ -863,8 +863,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.PostfixExpression convert(PostExp a) {
 		descent.core.dom.PostfixExpression b = new descent.core.dom.PostfixExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedOperand = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedOperand = convert(a.sourceE1);
 			if (convertedOperand != null) {
 				b.setOperand(convertedOperand);
 			}
@@ -1141,17 +1141,17 @@ public class ASTConverter {
 	
 	public descent.core.dom.NewExpression convert(NewExp a) {
 		descent.core.dom.NewExpression b = new descent.core.dom.NewExpression(ast);
-		if (a.thisexp != null) {
-			b.setExpression(convert(a.thisexp));
+		if (a.sourceThisexp != null) {
+			b.setExpression(convert(a.sourceThisexp));
 		}
-		if (a.newtype != null) {
-			descent.core.dom.Type convertedType = convert(a.newtype);
+		if (a.sourceNewtype != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceNewtype);
 			if (convertedType != null) {
 				b.setType(convertedType);
 			}
 		}
-		convertExpressions(b.newArguments(), a.newargs);
-		convertExpressions(b.constructorArguments(), a.arguments);
+		convertExpressions(b.newArguments(), a.sourceNewargs);
+		convertExpressions(b.constructorArguments(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -1171,8 +1171,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeSlice a) {
 		descent.core.dom.SliceType b = new descent.core.dom.SliceType(ast);
-		if (a.next != null) {
-			descent.core.dom.Type convertedType = convert(a.next);
+		if (a.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceNext);
 			if (convertedType != null) {
 				b.setComponentType(convertedType);
 			}
@@ -1189,8 +1189,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeSArray a) {
 		descent.core.dom.StaticArrayType b = new descent.core.dom.StaticArrayType(ast);
-		if (a.next != null) {
-			descent.core.dom.Type convertedType = convert(a.next);
+		if (a.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceNext);
 			if (convertedType != null) {
 				b.setComponentType(convertedType);
 			}
@@ -1206,12 +1206,12 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Type convert(TypePointer a) {
-		if (a.next.ty == TY.Tfunction) {
+		if (a.sourceNext.ty == TY.Tfunction) {
 			descent.core.dom.DelegateType b = new descent.core.dom.DelegateType(ast);
 			b.setFunctionPointer(true);
-			TypeFunction ty = (TypeFunction) a.next;
-			if (ty.next != null) {
-				descent.core.dom.Type convertedType = convert(ty.next);
+			TypeFunction ty = (TypeFunction) a.sourceNext;
+			if (ty.sourceNext != null) {
+				descent.core.dom.Type convertedType = convert(ty.sourceNext);
 				if (convertedType != null) {
 					b.setReturnType(convertedType);
 				}
@@ -1222,7 +1222,7 @@ public class ASTConverter {
 			return convertModifiedType(a, b);
 		} else {
 			PointerType b = new PointerType(ast);
-			b.setComponentType(convert(a.next));
+			b.setComponentType(convert(a.sourceNext));
 			b.setSourceRange(a.start, a.length);
 			return convertModifiedType(a, b);
 		}
@@ -1249,9 +1249,9 @@ public class ASTConverter {
 	public descent.core.dom.Type convert(TypeDelegate a) {
 		descent.core.dom.DelegateType b = new descent.core.dom.DelegateType(ast);
 		b.setFunctionPointer(false);
-		TypeFunction ty = (TypeFunction) a.next;
-		if (ty.next != null) {
-			descent.core.dom.Type convertedType = convert(ty.next);
+		TypeFunction ty = (TypeFunction) a.sourceNext;
+		if (ty.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(ty.sourceNext);
 			if (convertedType != null) {
 				b.setReturnType(convertedType);
 			}
@@ -1264,8 +1264,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeAArray a) {
 		descent.core.dom.AssociativeArrayType b = new descent.core.dom.AssociativeArrayType(ast);
-		if (a.next != null) {
-			descent.core.dom.Type convertedType = convert(a.next);
+		if (a.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceNext);
 			if (convertedType != null) {
 				b.setComponentType(convertedType);
 			}
@@ -1282,8 +1282,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeDArray a) {
 		descent.core.dom.DynamicArrayType b = new descent.core.dom.DynamicArrayType(ast);
-		if (a.next != null) {
-			descent.core.dom.Type convertedType = convert(a.next);
+		if (a.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceNext);
 			if (convertedType != null) {
 				b.setComponentType(convertedType);
 			}
@@ -1489,9 +1489,9 @@ public class ASTConverter {
 		} else {
 			b.setSyntax(Syntax.EMPTY);
 		}
-		TypeFunction ty = (TypeFunction) a.fd.type;
-		if (ty.next != null) {
-			descent.core.dom.Type convertedType = convert(ty.next);
+		TypeFunction ty = (TypeFunction) a.fd.sourceType;
+		if (ty.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(ty.sourceNext);
 			if (convertedType != null) {
 				b.setReturnType(convertedType);
 			}
@@ -1505,10 +1505,10 @@ public class ASTConverter {
 	
 	public descent.core.dom.FunctionDeclaration convert(FuncDeclaration a) {
 		descent.core.dom.FunctionDeclaration b = new descent.core.dom.FunctionDeclaration(ast);
-		TypeFunction ty = (TypeFunction) a.type;
+		TypeFunction ty = (TypeFunction) a.sourceType;
 		b.setVariadic(ty.varargs != 0);
-		if (ty.next != null) {
-			descent.core.dom.Type convertedType = convert(ty.next);
+		if (ty.sourceNext != null) {
+			descent.core.dom.Type convertedType = convert(ty.sourceNext);
 			if (convertedType != null) {
 				b.setReturnType(convertedType);
 			}
@@ -2180,8 +2180,8 @@ public class ASTConverter {
 	public descent.core.dom.PrefixExpression convert(IncrementExp a) {
 		descent.core.dom.PrefixExpression b = new descent.core.dom.PrefixExpression(ast);
 		b.setOperator(PrefixExpression.Operator.INCREMENT);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setOperand(convertedExp);
 			}
@@ -2193,8 +2193,8 @@ public class ASTConverter {
 	public descent.core.dom.PrefixExpression convert(DecrementExp a) {
 		descent.core.dom.PrefixExpression b = new descent.core.dom.PrefixExpression(ast);
 		b.setOperator(PrefixExpression.Operator.DECREMENT);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setOperand(convertedExp);
 			}
@@ -2256,19 +2256,19 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setThenExpression(convertedExp);
 			}
 		}
-		if (a.e2 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e2);
+		if (a.sourceE2 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE2);
 			if (convertedExp != null) {
 				b.setElseExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.econd.start, a.e2.start + a.e2.length - a.econd.start);
+		b.setSourceRange(a.econd.start, a.sourceE2.start + a.sourceE2.length - a.econd.start);
 		return b;
 	}
 	
@@ -2376,8 +2376,8 @@ public class ASTConverter {
 		if (a.modifiers != null) {
 			convertModifiers(b.modifiers(), a.modifiers);
 		}
-		if (a.type != null) {
-			descent.core.dom.Type convertedType = convert(a.type);
+		if (a.sourceType != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceType);
 			if (convertedType != null) {
 				b.setType(convertedType);
 			}
@@ -2663,8 +2663,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.InfixExpression convert(CmpExp a) {
 		descent.core.dom.InfixExpression b = new descent.core.dom.InfixExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setLeftOperand(convertedExp);
 			}
@@ -2683,14 +2683,14 @@ public class ASTConverter {
 	    case TOKug: b.setOperator(InfixExpression.Operator.NOT_LESS_EQUALS); break;
 	    case TOKue:  b.setOperator(InfixExpression.Operator.NOT_LESS_GREATER); break;
 		}
-		if (a.e2 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e2);
+		if (a.sourceE2 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE2);
 			if (convertedExp != null) {
 				b.setRightOperand(convertedExp);
 			}
 		}
-		if (a.e1 != null && a.e2 != null) {
-			b.setSourceRange(a.e1.start, a.e2.start + a.e2.length - a.e1.start);
+		if (a.sourceE2 != null && a.sourceE2 != null) {
+			b.setSourceRange(a.sourceE1.start, a.sourceE2.start + a.sourceE2.length - a.sourceE1.start);
 		}
 		return b;
 	}
@@ -2967,8 +2967,8 @@ public class ASTConverter {
 		case ASTDmdNode.ALIAS_DECLARATION: {
 			AliasDeclaration a = (AliasDeclaration) symbol;
 			descent.core.dom.AliasDeclaration b = new descent.core.dom.AliasDeclaration(ast);
-			if (a.type != null) {
-				descent.core.dom.Type convertedType = convert(a.type);
+			if (a.sourceType != null) {
+				descent.core.dom.Type convertedType = convert(a.sourceType);
 				if (convertedType != null) {
 					b.setType(convertedType);
 				}
@@ -3051,8 +3051,8 @@ public class ASTConverter {
 				while(symbol.getNodeType() == ASTDmdNode.ALIAS_DECLARATION) {
 					AliasDeclaration a = (AliasDeclaration) symbol;
 					if (first) {
-						if (a.type != null) {
-							descent.core.dom.Type convertedType = convert(a.type);
+						if (a.sourceType != null) {
+							descent.core.dom.Type convertedType = convert(a.sourceType);
 							if (convertedType != null) {
 								b.setType(convertedType);
 							}
@@ -3177,15 +3177,15 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(BinExp a, Assignment.Operator op) {
 		Assignment b = new Assignment(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setLeftHandSide(convertedExp);
 			}
 		}
 		b.setOperator(op);
-		if (a.e2 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e2);
+		if (a.sourceE2 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE2);
 			if (convertedExp != null) {
 				b.setRightHandSide(convertedExp);
 			}
@@ -3196,15 +3196,15 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(BinExp a, InfixExpression.Operator op) {
 		InfixExpression b = new InfixExpression(ast);
-		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
+		if (a.sourceE1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 			if (convertedExp != null) {
 				b.setLeftOperand(convertedExp);
 			}
 		}
 		b.setOperator(op);
-		if (a.e2 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e2);
+		if (a.sourceE2 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceE2);
 			if (convertedExp != null) {
 				b.setRightOperand(convertedExp);
 			}

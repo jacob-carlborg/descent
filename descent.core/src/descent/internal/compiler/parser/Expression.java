@@ -19,6 +19,13 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public abstract class Expression extends ASTDmdNode implements Cloneable {
+	
+	/**
+	 * Binary expressions holds e1 and sourceE1. If sourceE1 is DotIdExp,
+	 * e1 holds it's resolution information. If I'm sourceE1, this
+	 * field is a reference to e1. 
+	 */
+	public ASTDmdNode reference;
 
 	public static Expressions arraySyntaxCopy(Expressions exps) {
 		Expressions a = null;

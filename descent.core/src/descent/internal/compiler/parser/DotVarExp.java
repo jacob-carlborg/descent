@@ -184,5 +184,10 @@ public class DotVarExp extends UnaExp {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
 	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		var.toReferenceString(sb);
+	}
 
 }

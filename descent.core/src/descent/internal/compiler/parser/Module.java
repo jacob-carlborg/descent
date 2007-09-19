@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import descent.internal.compiler.parser.ast.NaiveASTFlattener;
 
 // DMD 1.020
 public class Module extends Package {
@@ -237,6 +238,15 @@ public class Module extends Package {
 			}
 		} while (deferred.size() < len || context.dprogress != 0); // while making progress
 		nested--;
+	}
+	
+	@Override
+	public void toReferenceString(StringBuilder sb) {
+		if (md != null) {
+			NaiveASTFlattener f = new NaiveASTFlattener();
+			f.visitModuleDeclarationName(md);
+			sb.append(f.toString());
+		}
 	}
 
 }
