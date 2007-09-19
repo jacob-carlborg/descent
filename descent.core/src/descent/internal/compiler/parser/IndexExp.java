@@ -4,10 +4,10 @@ import java.math.BigInteger;
 
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
-import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 
 // DMD 1.020
 public class IndexExp extends BinExp {
@@ -29,76 +29,111 @@ public class IndexExp extends BinExp {
 	}
 
 	@Override
+	public Expression doInline(InlineDoState ids) {
+		IndexExp are = (IndexExp) copy();
+
+		are.e1 = e1.doInline(ids);
+
+		if (lengthVar != null) {
+			VarDeclaration vd = lengthVar;
+			ExpInitializer ie;
+			ExpInitializer ieto;
+			VarDeclaration vto;
+
+			vto = new VarDeclaration(vd.loc, vd.type, vd.ident, vd.init);
+			vto = vd;
+			vto.parent = ids.parent;
+			vto.csym = null;
+			vto.isym = null;
+
+			ids.from.add(vd);
+			ids.to.add(vto);
+
+			if (vd.init != null) {
+				ie = vd.init.isExpInitializer();
+				if (ie == null) {
+					throw new IllegalStateException("assert(ie);");
+				}
+				ieto = new ExpInitializer(ie.loc, ie.exp.doInline(ids));
+				vto.init = ieto;
+			}
+
+			are.lengthVar = vto;
+		}
+		are.e2 = e2.doInline(ids);
+		return are;
+	}
+
+	@Override
 	public int getNodeType() {
 		return 0;
 	}
 
 	@Override
-	public Expression interpret(InterState istate, SemanticContext context)
-	{
+	public Expression interpret(InterState istate, SemanticContext context) {
 		Expression e;
 		Expression e1;
 		Expression e2;
-		
+
 		e1 = this.e1.interpret(istate, context);
-		if(e1 == EXP_CANT_INTERPRET)
-			return EXP_CANT_INTERPRET; //goto Lcant;
-			
-		if(e1.op == TOKstring || e1.op == TOKarrayliteral)
-		{
+		if (e1 == EXP_CANT_INTERPRET) {
+			// goto Lcant;
+		}
+
+		if (e1.op == TOKstring || e1.op == TOKarrayliteral) {
 			/* Set the $ variable
 			 */
 			e = ArrayLength.call(Type.tsize_t, e1, context);
-			if(e == EXP_CANT_INTERPRET)
-				return EXP_CANT_INTERPRET; //goto Lcant;
-			if(null != lengthVar)
+			if (e == EXP_CANT_INTERPRET) {
+				// goto Lcant;
+			}
+			if (lengthVar != null) {
 				lengthVar.value = e;
+			}
 		}
-		
+
 		e2 = this.e2.interpret(istate, context);
-		if(e2 == EXP_CANT_INTERPRET)
-			return EXP_CANT_INTERPRET; //goto Lcant;
+		if (e2 == EXP_CANT_INTERPRET) {
+			// goto Lcant;
+		}
 		return Index.call(type, e1, e2, context);
-		
-		//Lcant:
-		//return EXP_CANT_INTERPRET;
 	}
 
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		modifiable = 1;
-		if (e1.op == TOK.TOKstring)
+		if (e1.op == TOK.TOKstring) {
 			error("string literals are immutable");
-		if (e1.type.toBasetype(context).ty == TY.Taarray)
+		}
+		if (e1.type.toBasetype(context).ty == TY.Taarray) {
 			e1 = e1.modifiableLvalue(sc, e1, context);
+		}
 		return toLvalue(sc, e, context);
 	}
 
 	@Override
-	public Expression optimize(int result, SemanticContext context)
-	{
+	public Expression optimize(int result, SemanticContext context) {
 		Expression e;
 
-	    //printf("IndexExp.optimize(result = %d) %s\n", result, toChars());
-	    Expression e1 = this.e1.optimize(WANTvalue | (result & WANTinterpret),
+		Expression e1 = this.e1.optimize(WANTvalue | (result & WANTinterpret),
 				context);
-		if((result & WANTinterpret) > 0)
+		if ((result & WANTinterpret) != 0) {
 			e1 = fromConstInitializer(e1, context);
+		}
 		e2 = e2.optimize(WANTvalue | (result & WANTinterpret), context);
 		e = Index.call(type, e1, e2, context);
-		if(e == EXP_CANT_INTERPRET)
+		if (e == EXP_CANT_INTERPRET) {
 			e = this;
+		}
 		return e;
 	}
 
 	@Override
-	public void scanForNestedRef(Scope sc, SemanticContext context)
-	{
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
 		e1.scanForNestedRef(sc, context);
-		
-		if(null != lengthVar)
-		{ //printf("lengthVar\n");
+
+		if (lengthVar != null) {
 			lengthVar.parent = sc.parent;
 		}
 		e2.scanForNestedRef(sc, context);
@@ -108,16 +143,18 @@ public class IndexExp extends BinExp {
 	public Expression semantic(Scope sc, SemanticContext context) {
 
 		Expression e;
-		BinExp b;
-		UnaExp u;
+		//BinExp b;
+		//UnaExp u;
 		Type t1;
 		ScopeDsymbol sym;
 
-		if (null != type)
+		if (null != type) {
 			return this;
+		}
 
-		if (null == e1.type)
+		if (null == e1.type) {
 			e1 = e1.semantic(sc, context);
+		}
 		e = this;
 
 		t1 = e1.type.toBasetype(context);
@@ -137,8 +174,9 @@ public class IndexExp extends BinExp {
 		}
 		e2 = resolveProperties(sc, e2, context);
 
-		if (t1.ty == TY.Tsarray || t1.ty == TY.Tarray || t1.ty == TY.Ttuple)
+		if (t1.ty == TY.Tsarray || t1.ty == TY.Tarray || t1.ty == TY.Ttuple) {
 			sc = sc.pop();
+		}
 
 		switch (t1.ty) {
 		case Tpointer:
@@ -151,7 +189,7 @@ public class IndexExp extends BinExp {
 		case Tsarray: {
 			e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
 
-			TypeSArray tsa = (TypeSArray) t1;
+			//TypeSArray tsa = (TypeSArray) t1;
 			e.type = t1.next;
 			break;
 		}
@@ -182,17 +220,17 @@ public class IndexExp extends BinExp {
 				tup = (TypeTuple) t1;
 				length = BigInteger.valueOf(Argument
 						.dim(tup.arguments, context));
+			} else {
+				assert (false);
 			}
 
-			else
-				assert (false);
-
 			if (index.longValue() < length.longValue()) {
-				if (e1.op == TOK.TOKtuple)
+				if (e1.op == TOK.TOKtuple) {
 					e = te.exps.get((int) index.longValue());
-				else
+				} else {
 					e = new TypeExp(e1.loc, Argument.getNth(tup.arguments,
 							(int) index.longValue(), context).type);
+				}
 			}
 
 			else {
@@ -227,7 +265,5 @@ public class IndexExp extends BinExp {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
 	}
-	
-	// PERHAPS Expression *doInline(InlineDoState *ids);
 
 }

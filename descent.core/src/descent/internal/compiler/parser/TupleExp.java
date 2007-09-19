@@ -23,7 +23,7 @@ public class TupleExp extends Expression {
 		type = null;
 
 		for (int i = 0; i < tup.objects.size(); i++) {
-			ASTDmdNode o = (ASTDmdNode) tup.objects.get(i);
+			ASTDmdNode o = tup.objects.get(i);
 			if (o.dyncast() == DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;
 				e = e.syntaxCopy();
@@ -85,6 +85,15 @@ public class TupleExp extends Expression {
 	}
 
 	@Override
+	public Expression doInline(InlineDoState ids) {
+		TupleExp ce;
+
+		ce = (TupleExp) copy();
+		ce.exps = arrayExpressiondoInline(exps, ids);
+		return ce;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -117,53 +126,59 @@ public class TupleExp extends Expression {
 	}
 
 	@Override
-	public Expression interpret(InterState istate, SemanticContext context)
-	{
+	public int inlineCost(InlineCostState ics, SemanticContext context) {
+		return 1 + arrayInlineCost(ics, exps, context);
+	}
+
+	@Override
+	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
+		Expression e = this;
+
+		arrayInlineScan(iss, exps, context);
+
+		return e;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
 		Expressions expsx = null;
-		
-		for(int i = 0; i < exps.size(); i++)
-		{
-			Expression e = (Expression) exps.get(i);
+
+		for (int i = 0; i < exps.size(); i++) {
+			Expression e = exps.get(i);
 			Expression ex;
-			
+
 			ex = e.interpret(istate, context);
-			if(ex == EXP_CANT_INTERPRET)
-			{
+			if (ex == EXP_CANT_INTERPRET) {
+				expsx = null;
 				return ex;
 			}
-			
+
 			/* If any changes, do Copy On Write
 			 */
-			if(ex != e)
-			{
-				if(null == expsx)
-				{ //expsx = new Expressions();
-					//expsx.setDim(exps.dim);
-					//for (int j = 0; j < i; j++)
-					//{
-					//    expsx.data[j] = exps.data[j];
-					//}
-					expsx = new Expressions(exps);
+			if (ex != e) {
+				if (null == expsx) {
+					expsx = new Expressions(exps.size());
+					for (int j = 0; j < i; j++) {
+						expsx.set(j, exps.get(j));
+					}
 				}
 				expsx.set(i, ex);
 			}
 		}
-		if(null != expsx)
-		{
+		if (expsx != null) {
 			TupleExp te = new TupleExp(loc, expsx);
 			expandTuples(te.exps, context);
-			te.type = TypeTuple.newExpressions(te.exps, context);
+			te.type = new TypeTuple(te.exps);
 			return te;
 		}
 		return this;
 	}
 
 	@Override
-	public Expression optimize(int result, SemanticContext context)
-	{
-		for(int i = 0; i < exps.size(); i++)
-		{
-			Expression e = (Expression) exps.get(i);
+	public Expression optimize(int result, SemanticContext context) {
+		for (int i = 0; i < exps.size(); i++) {
+			Expression e = exps.get(i);
+
 			e = e.optimize(WANTvalue | (result & WANTinterpret), context);
 			exps.set(i, e);
 		}
@@ -171,12 +186,12 @@ public class TupleExp extends Expression {
 	}
 
 	@Override
-	public void scanForNestedRef(Scope sc, SemanticContext context)
-	{
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
 		arrayExpressionScanForNestedRef(sc, exps, context);
 	}
 
 	@Override
+
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type != null) {
 			return this;

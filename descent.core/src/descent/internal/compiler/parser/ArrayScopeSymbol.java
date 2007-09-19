@@ -29,19 +29,6 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		exp = e;
 	}
 
-	public ArrayScopeSymbol(TypeTuple t) {
-		type = t;
-	}
-
-	public ArrayScopeSymbol(TupleDeclaration s) {
-		td = s;
-	}
-
-	@Override
-	public void accept0(IASTVisitor visitor) {
-		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
-	}
-
 	public ArrayScopeSymbol(Loc loc, TupleDeclaration s) {
 		super(loc);
 		this.exp = null;
@@ -54,6 +41,19 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		this.exp = null;
 		this.type = t;
 		this.td = null;
+	}
+
+	public ArrayScopeSymbol(TupleDeclaration s) {
+		td = s;
+	}
+
+	public ArrayScopeSymbol(TypeTuple t) {
+		type = t;
+	}
+
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
 	}
 
 	@Override
@@ -103,14 +103,14 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 				if (exp.op == TOKindex) {
 					IndexExp ie = (IndexExp) exp;
 
-					// TODO semantic
+					// TODO semantic I think this logic is ok
 					// pvar = &ie.lengthVar;
 					pvar = ie;
 					ce = ie.e1;
 				} else if (exp.op == TOKslice) {
 					SliceExp se = (SliceExp) exp;
 
-					// TODO semantic
+					// TODO semantic I think this logic is ok
 					// pvar = &se.lengthVar;
 					pvar = se;
 					ce = se.e1;
@@ -159,7 +159,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 						v.storage_class |= STCconst;
 					}
 
-					// TODO semantic
+					// TODO semantic I think this logic is ok
 					// *pvar = v;
 					if (pvar instanceof IndexExp) {
 						((IndexExp) pvar).lengthVar = v;
@@ -167,7 +167,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 						((SliceExp) pvar).lengthVar = v;
 					}
 				}
-				// TODO semantic
+				// TODO semantic I think this logic is ok
 				// return *pvar;
 				if (pvar instanceof IndexExp) {
 					return ((IndexExp) pvar).lengthVar;

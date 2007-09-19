@@ -312,7 +312,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		int i;
-		int offset;
+		// int offset;
 
 		if (ident == null) { // if anonymous class
 			String id = "__anonclass";
@@ -796,7 +796,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			parent = null;
 		}
 
-		String id = super.mangle(context);
+		String id = Dsymbol_mangle(context);
 		parent = parentsave;
 		return id;
 	}

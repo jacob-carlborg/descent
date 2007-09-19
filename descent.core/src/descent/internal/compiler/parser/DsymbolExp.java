@@ -192,7 +192,7 @@ public class DsymbolExp extends Expression {
 
 			TemplateInstance ti = s.isTemplateInstance();
 			if (ti != null && context.global.errors == 0) {
-				if (!ti.semanticdone) {
+				if (0 == ti.semanticdone) {
 					ti.semantic(sc, context);
 				}
 				s = ti.inst.toAlias(context);

@@ -377,6 +377,10 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public String mangle(SemanticContext context) {
+		return Dsymbol_mangle(context);
+	}
+	
+	protected String Dsymbol_mangle(SemanticContext context) {
 		OutBuffer buf = new OutBuffer();
 		String id;
 
@@ -460,7 +464,7 @@ public class Dsymbol extends ASTDmdNode {
 				return null;
 			}
 			ti.tempdecl = td;
-			if (!ti.semanticdone) {
+			if (0 == ti.semanticdone) {
 				ti.semantic(sc, context);
 			}
 			sm = ti.toAlias(context);

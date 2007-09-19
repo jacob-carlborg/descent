@@ -238,7 +238,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	
 	@Override
 	public String mangle(SemanticContext context) {
-		return super.mangle(context);
+		return Dsymbol_mangle(context);
 	}
 
 }

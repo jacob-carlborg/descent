@@ -13,19 +13,20 @@ public class TypedefDeclaration extends Declaration {
 	public boolean first; // is this the first declaration in a multi
 	public boolean last; // is this the last declaration in a multi
 	public TypedefDeclaration next;
-	
+
 	public Type sourceBasetype; // copy of basetype, because it will change
 	public Type basetype;
 	public Type htype;
 	public Type hbasetype;
 	public Initializer init;
 	public int sem; // 0: semantic() has not been run
-					// 1: semantic() is in progress
-					// 2: semantic() has been run
-					// 3: semantic2() has been run
+	// 1: semantic() is in progress
+	// 2: semantic() has been run
+	// 3: semantic2() has been run
 	public boolean inuse;
 
-	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype, Initializer init) {
+	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype,
+			Initializer init) {
 		super(loc, id);
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
@@ -35,6 +36,17 @@ public class TypedefDeclaration extends Declaration {
 		this.init = init;
 		this.sem = 0;
 		this.inuse = false;
+	}
+
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceBasetype);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, init);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -48,19 +60,18 @@ public class TypedefDeclaration extends Declaration {
 	}
 
 	@Override
+	public TypedefDeclaration isTypedefDeclaration() {
+		return this;
+	}
+
+	@Override
 	public String kind() {
 		return "typedef";
 	}
-	
+
 	@Override
-	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, sourceBasetype);
-			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, init);
-		}
-		visitor.endVisit(this);
+	public String mangle(SemanticContext context) {
+		return Dsymbol_mangle(context);
 	}
 
 	@Override
@@ -75,8 +86,7 @@ public class TypedefDeclaration extends Declaration {
 			}
 		} else if (sem == 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, 0,
-					ident.start, ident.length));
+					IProblem.CircularDefinition, 0, ident.start, ident.length));
 		}
 	}
 
@@ -133,7 +143,8 @@ public class TypedefDeclaration extends Declaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring("typedef ");
 		basetype.toCBuffer(buf, ident, hgs, context);
 		if (init != null) {
@@ -142,16 +153,6 @@ public class TypedefDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
-	}
-	
-	@Override
-	public TypedefDeclaration isTypedefDeclaration() {
-		return this;
-	}
-	
-	@Override
-	public String mangle(SemanticContext context) {
-		return super.mangle(context);
 	}
 
 }

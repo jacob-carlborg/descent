@@ -62,7 +62,7 @@ public abstract class TypeQualified extends Type {
 							return;
 						}
 						ti.tempdecl = td;
-						if (!ti.semanticdone) {
+						if (0 == ti.semanticdone) {
 							ti.semantic(sc, context);
 						}
 						sm = ti.toAlias(context);

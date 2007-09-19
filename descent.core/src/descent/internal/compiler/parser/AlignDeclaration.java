@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -19,17 +17,17 @@ public class AlignDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return ALIGN_DECLARATION;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return ALIGN_DECLARATION;
 	}
 
 	@Override
@@ -42,8 +40,9 @@ public class AlignDeclaration extends AttribDeclaration {
 				s.semantic(sc, context);
 			}
 			sc.structalign = salign_save;
-		} else
+		} else {
 			sc.structalign = salign;
+		}
 	}
 
 	@Override
@@ -56,7 +55,8 @@ public class AlignDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.data.append("align (" + salign + ")");
 		super.toCBuffer(buf, hgs, context);
 	}

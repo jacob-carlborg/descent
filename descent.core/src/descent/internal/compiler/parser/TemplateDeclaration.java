@@ -3,6 +3,11 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.STC.STCconst;
+
 // DMD 1.020
 public class TemplateDeclaration extends ScopeDsymbol {
 
@@ -128,7 +133,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			m = MATCH.MATCHnomatch; /* td.deduceMatch(targsi, fargs, dedargs_); */
 			Objects dedargs = dedargs_[0];
 
-			//printf("deduceMatch = %d\n", m);
 			if (m == MATCH.MATCHnomatch) {
 				continue;
 			} else if (m.ordinal() < m_best.ordinal()) {
@@ -138,7 +142,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			} else if (m.ordinal() > m_best.ordinal()) {
 				// Ltd_best:
 				td_ambig = null;
-				/* WTF assert((size_t)td.scope > 0x10000); */
 				td_best = td;
 				m_best = m;
 				//tdargs.setDim(dedargs.dim);
@@ -150,8 +153,10 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			assert (m.ordinal() == m_best.ordinal());
 
 			// Disambiguate by picking the most specialized TemplateDeclaration
-			int c1 = 0; /* TODO td.leastAsSpecialized(td_best); */
-			int c2 = 0; /* TODO td_best.leastAsSpecialized(td); */
+			int c1 = 0;
+			td.leastAsSpecialized(td_best, context);
+			int c2 = 0;
+			td_best.leastAsSpecialized(td, context);
 
 			if (0 != c1 && 0 == c2) {
 				// Ltd:
@@ -160,7 +165,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			} else if (0 == c1 && 0 != c2) {
 				// Ltd_best:
 				td_ambig = null;
-				/* WTF assert((size_t)td.scope > 0x10000); */
 				td_best = td;
 				m_best = m;
 				tdargs = new Objects(dedargs);
@@ -186,8 +190,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		/* The best match is td_best with arguments tdargs.
 		 * Now instantiate the template.
 		 */
-		/* WTF assert((size_t)td_best.scope > 0x10000); */
-		ti = null; /* TODO new TemplateInstance(loc, td_best, tdargs); */
+		ti = new TemplateInstance(loc, td_best, tdargs);
 		ti.semantic(sc, context);
 		fd = ti.toAlias(context).isFuncDeclaration();
 		if (null == fd)
@@ -224,4 +227,204 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return buf.extractData();
 	}
 
+	public static TemplateTupleParameter isVariadic(
+			TemplateParameters parameters) {
+		int dim = parameters.size();
+		TemplateTupleParameter tp = null;
+
+		if (dim != 0)
+			tp = ((TemplateParameter) parameters.get(dim - 1))
+					.isTemplateTupleParameter();
+		return tp;
+	}
+
+	public TemplateTupleParameter isVariadic() {
+		return isVariadic(parameters);
+	}
+
+	public MATCH matchWithInstance(TemplateInstance ti, Objects dedtypes,
+			int flag, SemanticContext context) {
+		MATCH m;
+		int dedtypes_dim = dedtypes.size();
+
+		dedtypes.zero();
+
+		int parameters_dim = parameters.size();
+		boolean variadic = isVariadic() != null;
+
+		// If more arguments than parameters, no match
+		if (ti.tiargs.size() > parameters_dim && !variadic) {
+			return MATCHnomatch;
+		}
+
+		assert (dedtypes_dim == parameters_dim);
+		assert (dedtypes_dim >= ti.tiargs.size() || variadic);
+
+		// Set up scope for parameters
+		// assert((size_t)scope > 0x10000);
+		ScopeDsymbol paramsym = new ScopeDsymbol();
+		paramsym.parent = scope.parent;
+		Scope paramscope = scope.push(paramsym);
+
+		// Attempt type deduction
+		m = MATCHexact;
+		for (int i = 0; i < dedtypes_dim; i++) {
+			MATCH m2;
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			Declaration[] sparam = { null };
+
+			m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes,
+					sparam, context);
+
+			if (m2 == MATCHnomatch) {
+				// goto Lnomatch;
+				m = MATCHnomatch;
+				paramscope.pop();
+				return m;
+			}
+
+			if (m2.ordinal() < m.ordinal())
+				m = m2;
+
+			if (0 == flag)
+				sparam[0].semantic(paramscope, context);
+			if (null == paramscope.insert(sparam[0]))
+				// goto Lnomatch;
+				m = MATCHnomatch;
+			paramscope.pop();
+			return m;
+		}
+
+		if (0 == flag) {
+			// Any parameter left without a type gets the type of its corresponding arg
+			for (int i = 0; i < dedtypes_dim; i++) {
+				if (null == dedtypes.get(i)) {
+					assert (i < ti.tiargs.size());
+					dedtypes.set(i, ti.tiargs.get(i));
+				}
+			}
+		}
+
+		// goto Lret;
+		paramscope.pop();
+		return m;
+	}
+
+	public int leastAsSpecialized(TemplateDeclaration td2,
+			SemanticContext context) {
+		/* This works by taking the template parameters to this template
+		 * declaration and feeding them to td2 as if it were a template
+		 * instance.
+		 * If it works, then this template is at least as specialized
+		 * as td2.
+		 */
+
+		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident); // create dummy template instance
+		Objects dedtypes = new Objects();
+
+		// Set type arguments to dummy template instance to be types
+		// generated from the parameters to this template declaration
+		ti.tiargs = new Objects(parameters.size());
+		for (int i = 0; i < ti.tiargs.size(); i++) {
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+
+			ASTDmdNode p = tp.dummyArg(context);
+			if (p != null)
+				ti.tiargs.set(i, p);
+			else
+				ti.tiargs.ensureCapacity(i);
+		}
+
+		// Temporary Array to hold deduced types
+		//dedtypes.setDim(parameters.dim);
+		dedtypes.ensureCapacity(td2.parameters.size());
+
+		// Attempt a type deduction
+		if (td2.matchWithInstance(ti, dedtypes, 1, context) != null) {
+			/* A non-variadic template is more specialized than a
+			 * variadic one.
+			 */
+			if (isVariadic() != null && null == td2.isVariadic()) {
+				// goto L1;
+				return 0;
+			}
+
+			return 1;
+		}
+		// L1: 
+		return 0;
+	}
+
+	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o,
+			SemanticContext context) {
+		Type targ = isType(o);
+		Expression ea = isExpression(o);
+		Dsymbol sa = isDsymbol(o);
+		Tuple va = isTuple(o);
+
+		Dsymbol s;
+
+		if (targ != null) {
+			s = new AliasDeclaration(Loc.ZERO, tp.ident, targ);
+		} else if (sa != null) {
+			s = new AliasDeclaration(Loc.ZERO, tp.ident, sa);
+		} else if (ea != null) {
+			// tdtypes.data[i] always matches ea here
+			Initializer init = new ExpInitializer(loc, ea);
+			TemplateValueParameter tvp = tp.isTemplateValueParameter();
+			if (tvp == null) {
+				throw new IllegalStateException("assert(tvp);");
+			}
+
+			VarDeclaration v = new VarDeclaration(Loc.ZERO, tvp.valType,
+					tp.ident, init);
+			v.storage_class = STCconst;
+			s = v;
+		} else if (va != null) {
+			s = new TupleDeclaration(loc, tp.ident, va.objects);
+		} else {
+			throw new IllegalStateException("assert(0);");
+		}
+		if (null == sc.insert(s))
+			error("declaration %s is already defined", tp.ident.toChars());
+		s.semantic(sc, context);
+	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		TemplateDeclaration td;
+		TemplateParameters p;
+		Dsymbols d;
+
+		p = null;
+		if (parameters != null) {
+			p = new TemplateParameters();
+			p.ensureCapacity(parameters.size());
+			for (int i = 0; i < p.size(); i++) {
+				TemplateParameter tp = parameters.get(i);
+				p.set(i, tp.syntaxCopy());
+			}
+		}
+		d = Dsymbol.arraySyntaxCopy(members);
+		td = new TemplateDeclaration(loc, ident, p, d);
+		return td;
+	}
+
+	@Override
+	public String kind() {
+		return (onemember != null && onemember.isAggregateDeclaration() != null) ? onemember
+				.kind()
+				: "template";
+	}
+
+	@Override
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
+		TemplateDeclaration f;
+
+		f = s.isTemplateDeclaration();
+		if (null == f)
+			return false;
+		return true;
+	}
+	
 }

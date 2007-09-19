@@ -1,7 +1,3 @@
-AliasDeclaration.java
-AlignDeclaration.java
-AnonymousAggregateDeclaration.java
-ArrayScopeSymbol.java
 AsmBlock.java
 AsmStatement.java
 ASTDmdNode.java
@@ -12,7 +8,6 @@ CompileDeclaration.java
 CompileStatement.java
 complex_t.java
 ComplexExp.java
-Condition.java
 Declaration.java
 Dsymbol.java
 DsymbolTable.java
@@ -24,7 +19,6 @@ Global.java
 HdrGenState.java
 Id.java
 Identifier.java
-IftypeCondition.java
 Import.java
 IntegerExp.java
 integer_t.java
@@ -44,6 +38,7 @@ real_t.java
 RealExp.java
 ScopeDsymbol.java
 SemanticContext.java
+sinteger_t.java
 StringExp.java
 StringTable.java
 StringValue.java
@@ -51,16 +46,12 @@ StructDeclaration.java
 SymOffExp.java
 TemplateDeclaration.java
 TemplateInstance.java
-TemplateInstanceWrapper.java
-TemplateMixin.java
 TOK.java
 Token.java
 TraitsExp.java
-Tuple.java
 TupleDeclaration.java
 Type.java
-TypedefDeclaration.java
-UniAlpha.javaT
+UniAlpha.java
 Utf.java
 VarDeclaration.java
 VarExp.java
