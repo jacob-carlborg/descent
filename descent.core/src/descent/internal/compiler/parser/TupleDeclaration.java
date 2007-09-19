@@ -15,8 +15,7 @@ public class TupleDeclaration extends Declaration {
 	public boolean isexp; // true: expression tuple
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
-	public TupleDeclaration(Loc loc, IdentifierExp ident,
-			Objects objects) {
+	public TupleDeclaration(Loc loc, IdentifierExp ident, Objects objects) {
 		super(loc, ident);
 		this.type = null;
 		this.objects = objects;
@@ -25,20 +24,19 @@ public class TupleDeclaration extends Declaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return TUPLE_DECLARATION;
-	}
-
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			melnorme.miscutil.Assert.failTODO(); // what is
 			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, objects);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public int getNodeType() {
+		return TUPLE_DECLARATION;
 	}
 
 	@Override
@@ -90,15 +88,9 @@ public class TupleDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		Assert.isTrue(false);
-		return null;
-	}
-
-	@Override
 	public boolean needThis() {
 		for (int i = 0; i < objects.size(); i++) {
-			ASTDmdNode o = (ASTDmdNode) objects.get(i);
+			ASTDmdNode o = objects.get(i);
 			if (o.dyncast() == DYNCAST.DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;
 				if (e.op == TOK.TOKdsymbol) {
@@ -111,6 +103,12 @@ public class TupleDeclaration extends Declaration {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		Assert.isTrue(false);
+		return null;
 	}
 
 }

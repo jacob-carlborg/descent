@@ -11,14 +11,12 @@ ComplexExp.java
 Declaration.java
 Dsymbol.java
 DsymbolTable.java
-Entity.java
 ForeachRangeStatement.java
 ForeachStatement.java
 ForStatement.java
 Global.java
 HdrGenState.java
 Id.java
-Identifier.java
 Import.java
 IntegerExp.java
 integer_t.java
@@ -41,7 +39,6 @@ SemanticContext.java
 sinteger_t.java
 StringExp.java
 StringTable.java
-StringValue.java
 StructDeclaration.java
 SymOffExp.java
 TemplateDeclaration.java
@@ -49,7 +46,6 @@ TemplateInstance.java
 TOK.java
 Token.java
 TraitsExp.java
-TupleDeclaration.java
 Type.java
 UniAlpha.java
 Utf.java
