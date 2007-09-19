@@ -2,6 +2,12 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
+import static descent.internal.compiler.parser.TOK.TOKstructliteral;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKaddress;
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.Constfold.Ptr;
 
 // DMD 1.020
 public class PtrExp extends UnaExp {
@@ -16,11 +22,6 @@ public class PtrExp extends UnaExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return PTR_EXP;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -28,7 +29,93 @@ public class PtrExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int getNodeType() {
+		return PTR_EXP;
+	}
 
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		Expression e = EXP_CANT_INTERPRET;
+		
+		// Constant fold (&structliteral + offset)
+		if(e1.op == TOKadd)
+		{
+			AddExp ae = (AddExp) e1;
+			if(ae.e1.op == TOKaddress && ae.e2.op == TOKint64)
+			{
+				AddrExp ade = (AddrExp) ae.e1;
+				Expression ex = ade.e1;
+				ex = ex.interpret(istate, context);
+				if(ex != EXP_CANT_INTERPRET)
+				{
+					if(ex.op == TOKstructliteral)
+					{
+						StructLiteralExp se = (StructLiteralExp) ex;
+						int offset = ae.e2.toInteger(context).intValue();
+						e = se.getField(type, offset, context);
+						if(null == e)
+							e = EXP_CANT_INTERPRET;
+						return e;
+					}
+				}
+			}
+			e = Ptr.call(type, e1, context);
+		}
+		else if(e1.op == TOKsymoff)
+		{
+			SymOffExp soe = (SymOffExp) e1;
+			VarDeclaration v = soe.var.isVarDeclaration();
+			if(null != v)
+			{
+				Expression ev = getVarExp(loc, istate, v, context);
+				if(ev != EXP_CANT_INTERPRET && ev.op == TOKstructliteral)
+				{
+					StructLiteralExp se = (StructLiteralExp) ev;
+					e = se.getField(type, soe.offset.intValue(), context);
+					if(null == e)
+						e = EXP_CANT_INTERPRET;
+				}
+			}
+		}
+		return e;
+	}
+	
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		//printf("PtrExp.optimize(result = x%x) %s\n", result, toChars());
+		e1 = e1.optimize(result, context);
+		// Convert &ex to ex
+		if(e1.op == TOKaddress)
+		{
+			Expression e;
+			Expression ex;
+			
+			ex = ((AddrExp) e1).e1;
+			if(type.equals(ex.type))
+				e = ex;
+			else
+			{
+				e = ex.copy();
+				e.type = type;
+			}
+			return e;
+		}
+		// Constant fold (&structliteral + offset)
+		if(e1.op == TOKadd)
+		{
+			Expression e;
+			e = Ptr.call(type, e1, context);
+			if(e != EXP_CANT_INTERPRET)
+				return e;
+		}
+		
+		return this;
+	}
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Type tb;
@@ -68,13 +155,13 @@ public class PtrExp extends UnaExp {
 		rvalue(context);
 		return this;
 	}
-	
+
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writeByte('*');
 	    expToCBuffer(buf, hgs, e1, op.precedence, context);
 	}
-	
+
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;

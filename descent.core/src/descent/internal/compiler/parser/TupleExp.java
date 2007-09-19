@@ -117,6 +117,66 @@ public class TupleExp extends Expression {
 	}
 
 	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		Expressions expsx = null;
+		
+		for(int i = 0; i < exps.size(); i++)
+		{
+			Expression e = (Expression) exps.get(i);
+			Expression ex;
+			
+			ex = e.interpret(istate, context);
+			if(ex == EXP_CANT_INTERPRET)
+			{
+				return ex;
+			}
+			
+			/* If any changes, do Copy On Write
+			 */
+			if(ex != e)
+			{
+				if(null == expsx)
+				{ //expsx = new Expressions();
+					//expsx.setDim(exps.dim);
+					//for (int j = 0; j < i; j++)
+					//{
+					//    expsx.data[j] = exps.data[j];
+					//}
+					expsx = new Expressions(exps);
+				}
+				expsx.set(i, ex);
+			}
+		}
+		if(null != expsx)
+		{
+			TupleExp te = new TupleExp(loc, expsx);
+			expandTuples(te.exps, context);
+			te.type = TypeTuple.newExpressions(te.exps, context);
+			return te;
+		}
+		return this;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		for(int i = 0; i < exps.size(); i++)
+		{
+			Expression e = (Expression) exps.get(i);
+			e = e.optimize(WANTvalue | (result & WANTinterpret), context);
+			exps.set(i, e);
+		}
+		return this;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context)
+	{
+		arrayExpressionScanForNestedRef(sc, exps, context);
+	}
+
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type != null) {
 			return this;
@@ -155,4 +215,7 @@ public class TupleExp extends Expression {
 		buf.writeByte(')');
 	}
 
+	//PERHAPS int inlineCost(InlineCostState *ics);
+	//PERHAPS Expression *doInline(InlineDoState *ids);
+	//PERHAPS Expression *inlineScan(InlineScanState *iss);
 }

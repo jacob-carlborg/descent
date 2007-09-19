@@ -75,6 +75,12 @@ public class NullExp extends Expression {
 	}
 	
 	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		return this;
+	}
+	
+	@Override
 	public boolean isBool(boolean result) {
 		return result ? false : true;
 	}
@@ -92,10 +98,9 @@ public class NullExp extends Expression {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring("null");
 	}
-	
+
 	@Override
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte('n');
 	}
-
 }

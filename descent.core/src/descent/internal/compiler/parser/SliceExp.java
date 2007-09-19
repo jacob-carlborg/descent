@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.PREC.PREC_assign;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.Constfold.ArrayLength;
 
 // DMD 1.020
 public class SliceExp extends UnaExp {
@@ -27,18 +30,107 @@ public class SliceExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		Expression lwr = null;
-		if (this.lwr != null) {
-			lwr = this.lwr.syntaxCopy();
-		}
+	public void checkEscape(SemanticContext context)
+	{
+		e1.checkEscape(context);
+	}
 
-		Expression upr = null;
-		if (this.upr != null) {
-			upr = this.upr.syntaxCopy();
-		}
+	@Override
+	public int getNodeType() {
+		return SLICE_EXP;
+	}
 
-		return new SliceExp(loc, e1.syntaxCopy(), lwr, upr);
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+		Expression e;
+		Expression e1;
+		Expression lwr;
+		Expression upr;
+		
+		e1 = this.e1.interpret(istate, context);
+		if(e1 == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; // goto Lcant;
+		if(null == this.lwr)
+		{
+			e = e1.castTo(null, type, context);
+			return e.interpret(istate, context);
+		}
+		
+		/* Set the $ variable
+		 */
+		e = ArrayLength.call(Type.tsize_t, e1, context);
+		if(e == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; // goto Lcant;
+		if(null != lengthVar)
+			lengthVar.value = e;
+		
+		/* Evaluate lower and upper bounds of slice
+		 */
+		lwr = this.lwr.interpret(istate, context);
+		if(lwr == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; // goto Lcant;
+		upr = this.upr.interpret(istate, context);
+		if(upr == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET; // goto Lcant;
+			
+		return Constfold.Slice(type, e1, lwr, upr, context);
+		
+		//Lcant:
+		//return EXP_CANT_INTERPRET;
+	}
+
+	@Override
+	public Expression modifiableLvalue(Scope sc, Expression e,
+			SemanticContext context)
+	{
+		error("slice expression %s is not a modifiable lvalue", 
+				toChars(context));
+	    return this;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		Expression e;
+		
+		//printf("SliceExp.optimize(result = %d) %s\n", result, toChars());
+		e = this;
+		e1 = e1.optimize(WANTvalue | (result & WANTinterpret), context);
+		if(null == lwr)
+		{
+			if(e1.op == TOKstring)
+			{ // Convert slice of string literal into dynamic array
+				Type t = e1.type.toBasetype(context);
+				if(null != t.next)
+					e = e1.castTo(null, t.next.arrayOf(context), context);
+			}
+			return e;
+		}
+		if((result & WANTinterpret) > 0)
+			e1 = fromConstInitializer(e1, context);
+		lwr = lwr.optimize(WANTvalue | (result & WANTinterpret), context);
+		upr = upr.optimize(WANTvalue | (result & WANTinterpret), context);
+		e = Constfold.Slice(type, e1, lwr, upr, context);
+		if(e == EXP_CANT_INTERPRET)
+			e = this;
+		return e;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context)
+	{
+		e1.scanForNestedRef(sc, context);
+		
+		if(null != lengthVar)
+		{ //printf("lengthVar\n");
+			lengthVar.parent = sc.parent;
+		}
+		
+		if(null != lwr)
+			lwr.scanForNestedRef(sc, context);
+		if(null != upr)
+			upr.scanForNestedRef(sc, context);
 	}
 
 	@Override
@@ -168,8 +260,50 @@ public class SliceExp extends UnaExp {
 		}
 	}
 
+	@Override
+	public Expression syntaxCopy() {
+		Expression lwr = null;
+		if (this.lwr != null) {
+			lwr = this.lwr.syntaxCopy();
+		}
+
+		Expression upr = null;
+		if (this.upr != null) {
+			upr = this.upr.syntaxCopy();
+		}
+
+		return new SliceExp(loc, e1.syntaxCopy(), lwr, upr);
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context)
+	{
+		expToCBuffer(buf, hgs, e1, op.precedence, context);
+	    buf.writeByte('[');
+	    if (null != upr || null != lwr)
+	    {
+		if (null != lwr)
+		    expToCBuffer(buf, hgs, lwr, PREC_assign, context);
+		else
+		    buf.writeByte('0');
+		buf.writestring("..");
+		if (null != upr)
+		    expToCBuffer(buf, hgs, upr, PREC_assign, context);
+		else
+		    buf.writestring("length");		// BUG: should be array.length
+	    }
+	    buf.writeByte(']');
+	}
+
+	@Override
+	public Expression toLvalue(Scope sc, Expression e, SemanticContext context)
+	{
+		return this;
+	}
+
 	// Lerror:
-	public Expression Lerror(Type t, Expression e, Scope sc,
+	private Expression Lerror(Type t, Expression e, Scope sc,
 			SemanticContext context) {
 		String s;
 		if (t.ty == TY.Tvoid)
@@ -181,10 +315,10 @@ public class SliceExp extends UnaExp {
 		type = Type.terror;
 		return e;
 	}
-
-	@Override
-	public int getNodeType() {
-		return SLICE_EXP;
-	}
+	
+	//PERHAPS void dump(int indent);
+    //PERHAPS int inlineCost(InlineCostState *ics);
+    //PERHAPS Expression *doInline(InlineDoState *ids);
+    //PERHAPS Expression *inlineScan(InlineScanState *iss);
 
 }

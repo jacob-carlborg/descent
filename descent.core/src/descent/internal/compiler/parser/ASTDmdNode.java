@@ -1581,5 +1581,42 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		return e;
 	}
+	
+	public static final Expression getVarExp(Loc loc, InterState istate, 
+			Declaration d, SemanticContext context)
+	{
+	    /* TODO semantic 
+	    Expression e = EXP_CANT_INTERPRET;
+	    VarDeclaration v = d.isVarDeclaration();
+	    SymbolDeclaration s = d.isSymbolDeclaration();
+	    if (v)
+	    {
+	        if (v.isConst() && v.init)
+	        {   e = v.init.toExpression();
+	            if (!e.type)
+	                e.type = v.type;
+	        }
+	        else
+	        {   e = v.value;
+	            if (!e)
+	                error(loc, "variable %s is used before initialization", v.toChars());
+	            else if (e != EXP_CANT_INTERPRET)
+	                e = e.interpret(istate);
+	        }
+	        if (!e)
+	            e = EXP_CANT_INTERPRET;
+	    }
+	    else if (s)
+	    {
+	        if (s.dsym.toInitializer() == s.sym)
+	        {   Expressions exps = new Expressions();
+	            e = new StructLiteralExp(0, s.dsym, exps);
+	            e = e.semantic(null);
+	        }
+	    }
+	    return e;
+	    */
+		return null;
+	}
 
 }
