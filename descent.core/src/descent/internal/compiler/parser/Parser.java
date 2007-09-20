@@ -2462,6 +2462,7 @@ public class Parser extends Lexer {
 								pt = pt.next;
 							}
 							pt.next = ta;
+							pt.sourceNext = ta;
 						} else {
 							ts = ta;
 						}
@@ -2592,6 +2593,7 @@ public class Parser extends Lexer {
 					pt = pt.next;
 				}
 				pt.next = ta;
+				pt.sourceNext = ta;
 			} else {
 				ts = ta;
 			}
@@ -2630,6 +2632,7 @@ public class Parser extends Lexer {
 					pt = pt.next;
 				}
 				pt.next = ta;
+				pt.sourceNext = ta;
 			} else {
 				ts = ta;
 			}

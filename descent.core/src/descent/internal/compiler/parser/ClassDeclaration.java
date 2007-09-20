@@ -61,6 +61,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public ClassDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {
 		super(loc, id);
+		if (this.ident != null) {
+			this.ident.setBinding(this);
+		}
 		if (baseclasses == null) {
 			this.baseclasses = new BaseClasses(0);
 		} else {
