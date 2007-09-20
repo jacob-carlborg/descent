@@ -161,6 +161,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				return true;
 			}
 		}, module.apiLevel));
+		
+		// System.out.println(module);
 	}
 	
 	public static CompilationUnit convert(AST ast, ParseResult parseResult, IProgressMonitor monitor) {

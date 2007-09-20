@@ -73,6 +73,7 @@ public class MinExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
+			assignBinding();
 			return e;
 		}
 
@@ -90,16 +91,19 @@ public class MinExp extends BinExp {
 				e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO,
 						new integer_t(stride), Type.tptrdiff_t));
 				e_.type = Type.tptrdiff_t;
+				assignBinding();
 				return e_;
 			} else if (t2.isintegral()) {
 				e = scaleFactor(sc, context);
 			} else {
 				error("incompatible types for -");
+				assignBinding();
 				return new IntegerExp(loc, 0);
 			}
 		} else if (t2.ty == TY.Tpointer) {
 			type = e2.type;
 			error("can't subtract pointer from %s", e1.type.toChars(context));
+			assignBinding();
 			return new IntegerExp(loc, 0);
 		} else {
 			typeCombine(sc, context);
@@ -129,6 +133,7 @@ public class MinExp extends BinExp {
 			}
 		}
 
+		assignBinding();
 		return e;
 	}
 

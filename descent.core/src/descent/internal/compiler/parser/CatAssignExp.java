@@ -32,8 +32,7 @@ public class CatAssignExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId()
-	{
+	public char[] opId() {
 		return Id.catass;
 	}
 
@@ -45,15 +44,18 @@ public class CatAssignExp extends BinExp {
 		e2 = resolveProperties(sc, e2, context);
 
 		e = op_overload(sc, context);
-		if (null != e)
+		if (null != e) {
+			assignBinding();
 			return e;
+		}
 
 		if (e1.op == TOK.TOKslice) {
 			SliceExp se = (SliceExp) e1;
 
-			if (se.e1.type.toBasetype(context).ty == TY.Tsarray)
+			if (se.e1.type.toBasetype(context).ty == TY.Tsarray) {
 				error("cannot append to static array %s", se.e1.type
 						.toChars(context));
+			}
 		}
 
 		e1 = e1.modifiableLvalue(sc, null, context);
@@ -85,6 +87,7 @@ public class CatAssignExp extends BinExp {
 			e = this;
 		}
 
+		assignBinding();
 		return e;
 	}
 

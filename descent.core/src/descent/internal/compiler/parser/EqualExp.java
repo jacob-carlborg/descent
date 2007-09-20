@@ -92,6 +92,7 @@ public class EqualExp extends BinExp {
 					// They are the same, result is 'true' for ==, 'false' for !=
 					e = new IntegerExp(loc, (op == TOK.TOKequal) ? 1 : 0,
 							Type.tboolean);
+					assignBinding();
 					return e;
 				}
 			}
@@ -103,6 +104,7 @@ public class EqualExp extends BinExp {
 				e = new NotExp(e.loc, e);
 				e = e.semantic(sc, context);
 			}
+			assignBinding();
 			return e;
 		}
 
@@ -128,6 +130,8 @@ public class EqualExp extends BinExp {
 				e2 = e2.castTo(sc, Type.tcomplex80, context);
 			}
 		}
+		
+		assignBinding();
 		return e;
 	}
 

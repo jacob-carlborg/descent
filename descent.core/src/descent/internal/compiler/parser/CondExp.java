@@ -7,11 +7,12 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 // DMD 1.020
 public class CondExp extends BinExp {
 
-	public Expression econd;
+	public Expression econd, sourceEcond;
 
 	public CondExp(Loc loc, Expression econd, Expression e1, Expression e2) {
 		super(loc, TOK.TOKquestion, e1, e2);
 		this.econd = econd;
+		this.sourceEcond = econd;
 	}
 
 	@Override
@@ -214,6 +215,7 @@ public class CondExp extends BinExp {
 			}
 		}
 
+		assignBinding();
 		return this;
 	}
 
@@ -247,6 +249,12 @@ public class CondExp extends BinExp {
 		type = e2.type;
 
 		return pe;
+	}
+	
+	@Override
+	protected void assignBinding() {
+		super.assignBinding();
+		sourceEcond.setBinding(econd.getBinding());
 	}
 
 }

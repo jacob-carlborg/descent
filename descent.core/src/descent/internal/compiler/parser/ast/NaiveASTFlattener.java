@@ -110,9 +110,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(AddAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" += ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -191,23 +194,32 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(AndAndExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" && ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(AndAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" &= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(AndExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" & ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -456,9 +468,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(CatAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" ~= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -482,9 +497,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(CatExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" ~ ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -499,6 +517,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(CmpExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" ");
 		switch(node.op) {
@@ -517,6 +536,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 		}
 		this.buffer.append(" ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -572,7 +593,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(CondExp node) {
-		node.econd.accept(this);
+		node.sourceEcond.accept(this);
 		this.buffer.append(" ? ");
 		node.sourceE1.accept(this);
 		this.buffer.append(" : ");
@@ -897,16 +918,22 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(DivAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" /= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(DivExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" / ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -1045,6 +1072,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(EqualExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		if (node.op == TOK.TOKequal) {
 			this.buffer.append(" == ");
@@ -1052,6 +1080,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(" != ");
 		}
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -1284,14 +1314,17 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(IdentityExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		switch(node.op) {
-		case TOKidentity: this.buffer.append("==="); break;
-		case TOKnotidentity: this.buffer.append("!=="); break;
-		case TOKis: this.buffer.append("is"); break;
-		case TOKnotis: this.buffer.append("!is"); break;
+		case TOKidentity: this.buffer.append(" === "); break;
+		case TOKnotidentity: this.buffer.append(" !== "); break;
+		case TOKis: this.buffer.append(" is "); break;
+		case TOKnotis: this.buffer.append(" !is "); break;
 		}
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -1472,30 +1505,42 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(MinAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" -= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(MinExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" - ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(ModAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" %= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(ModExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" % ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -1566,9 +1611,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(MulAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" *= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -1706,23 +1754,32 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(OrAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" |= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(OrExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" | ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(OrOrExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" || ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -1865,30 +1922,42 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(ShlAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
-		this.buffer.append(" >>= ");
+		this.buffer.append(" <<= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(ShlExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
-		this.buffer.append(" >> ");
+		this.buffer.append(" << ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(ShrAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
-		this.buffer.append(" <<= ");
+		this.buffer.append(" >>= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(ShrExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
-		this.buffer.append(" << ");
+		this.buffer.append(" >> ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -2764,16 +2833,22 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(UshrAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" >>>= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(UshrExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" >>> ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
@@ -2872,16 +2947,22 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(XorAssignExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" ^= ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 
 	public boolean visit(XorExp node) {
+		this.buffer.append("(");
 		node.sourceE1.accept(this);
 		this.buffer.append(" ^ ");
 		node.sourceE2.accept(this);
+		this.buffer.append(")");
+		appendBinding(node);
 		return false;
 	}
 	

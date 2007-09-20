@@ -115,6 +115,7 @@ public class OrOrExp extends BinExp {
 			//If in static if, don't evaluate e2 if we don't have to.
 			e1 = e1.optimize(WANTflags, context);
 			if (e1.isBool(true)) {
+				assignBinding();
 				return new IntegerExp(loc, 1, Type.tboolean);
 			}
 		}
@@ -132,6 +133,7 @@ public class OrOrExp extends BinExp {
 			error(e2.toChars(context) + " is not an expression.");
 		}
 
+		assignBinding();
 		return this;
 	}
 

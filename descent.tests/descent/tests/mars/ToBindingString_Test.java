@@ -1,9 +1,24 @@
 package descent.tests.mars;
 
 import descent.core.dom.AST;
+import descent.internal.compiler.parser.CondExp;
+import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.PostExp;
+import descent.internal.compiler.parser.VarDeclaration;
 
 public class ToBindingString_Test extends Parser_Test {
+	
+	public void testClassBaseClass() {
+		assertToBindingString(
+				"class X { } class Y : X { }",
+				
+				"class X {\n" +
+				"}\n" +
+				"class Y : X<<class X>> {\n" +
+				"}"
+			);
+	}
 	
 	public void testAlias() {
 		assertToBindingString(
@@ -150,47 +165,160 @@ public class ToBindingString_Test extends Parser_Test {
 			);
 	}
 	
+	public void testAddAssignExp() {
+		testBinExpScalar("+=");
+	}
+	
 	public void testAddExp() {
-		assertToBindingString(
-				"void foo() { int x = 2; int z = 2 + x; }",
-				
-				"void foo() {\n" +
-				"  int x = 2;\n" +
-				"  int z = (2 + x<<function foo().variable x>>)<<int>>;\n" +
-				"}"
-			);
+		testBinExpScalar("+");
 	}
 	
-	public void testAddExpOutside() {
-		assertToBindingString(
-				"int x = 2; int z = 2 + x;",
-				
-				"int x = 2;\n" +
-				"int z = (2 + x<<variable x>>)<<int>>;"
-			);
+	public void testAndAndExp() {
+		testBinExpScalar("&&", "bool");
 	}
 	
-	public void testAddExpOutside2() {
-		assertToBindingString(
-				"int x = 2; int z = x + 2;",
-				
-				"int x = 2;\n" +
-				"int z = (x<<variable x>> + 2)<<int>>;"
-			);
+	public void testAndAssignExp() {
+		testBinExpScalar("&=");
 	}
 	
-	public void testAddrExp() {
-		assertToBindingString(
-				"void foo() { int x = 2; int* y = &x; }",
-				
-				"void foo() {\n" +
-				"  int x = 2;\n" +
-				"  int* y = (&x<<function foo().variable x>>)<<int*>>;\n" +
-				"}"
-			);
+	public void testAndExp() {
+		testBinExpScalar("&");
+	}
+	
+//	public void testAssignExp() {
+//		testBinExpScalar("=");
+//	}
+	
+	public void testCatAssignExp() {
+		testBinExpString("~=");
+	}
+	
+	public void testCatExp() {
+		testBinExpString("~");
+	}
+	
+	public void testCmpExp() {
+		testBinExpScalar("<", "bool");
+	}
+	
+//	public void testCommaExp() {
+//		testBinExpScalar(",");
+//	}
+	
+	public void testCondExp() {
+		Module m = getModuleSemanticNoProblems("int x; int y; int z; int w = x ? y : z;", AST.D1);
+		VarDeclaration x = (VarDeclaration) m.members.get(0);
+		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		VarDeclaration z = (VarDeclaration) m.members.get(2);
+		VarDeclaration w = (VarDeclaration) m.members.get(3);
+		CondExp tri = (CondExp) ((ExpInitializer) w.sourceInit).sourceExp;
+		assertSame(x, tri.econd.getBinding());
+		assertSame(y, tri.sourceE1.getBinding());
+		assertSame(z, tri.sourceE2.getBinding());
+	}
+	
+	public void testDivAssignExp() {
+		testBinExpScalar("/=");
+	}
+	
+	public void testDivExp() {
+		testBinExpScalar("/");
+	}
+	
+	public void testEqualExp() {
+		testBinExpScalar("==", "bool");
+	}
+	
+	public void testIdentityExp() {
+		testBinExpScalar("is", "bool");
+	}
+	
+	public void testMinAssignExp() {
+		testBinExpScalar("-=");
+	}
+	
+	public void testMinExp() {
+		testBinExpScalar("-");
+	}
+	
+	public void testModAssignExp() {
+		testBinExpScalar("%=");
+	}
+	
+	public void testModExp() {
+		testBinExpScalar("%");
+	}
+	
+	public void testMulAssignExp() {
+		testBinExpScalar("*=");
+	}
+	
+	public void testMulExp() {
+		testBinExpScalar("*");
+	}
+	
+	public void testOrAssignExp() {
+		testBinExpScalar("|=");
+	}
+	
+	public void testOrExp() {
+		testBinExpScalar("|");
+	}
+	
+	public void testOrOrExp() {
+		testBinExpScalar("||", "bool");
+	}
+	
+	public void testPostExp() {
+		Module m = getModuleSemanticNoProblems("int x; int y = x++;", AST.D1);
+		VarDeclaration x = (VarDeclaration) m.members.get(0);
+		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		PostExp bin = (PostExp) ((ExpInitializer) y.sourceInit).sourceExp;
+		assertSame(x, bin.sourceE1.getBinding());
+	}
+	
+	public void testShlAssignExp() {
+		testBinExpScalar("<<=");
+	}
+	
+	public void testShlExp() {
+		testBinExpScalar("<<");
+	}
+	
+	public void testShrAssignExp() {
+		testBinExpScalar(">>=");
+	}
+	
+	public void testShrExp() {
+		testBinExpScalar(">>");
+	}
+	
+	public void testUshrAssignExp() {
+		testBinExpScalar(">>>=");
+	}
+	
+	public void testUshrExp() {
+		testBinExpScalar(">>>");
+	}
+	
+	public void testXorAssignExp() {
+		testBinExpScalar("^=");
+	}
+	
+	public void testXorExp() {
+		testBinExpScalar("^");
 	}
 	
 	public void testArrayLiteralExp() {
+		assertToBindingString(
+				"int x = 2; int[1] y = [ x ];",
+				
+				"int x = 2;\n" +
+				"int[1] y = [x<<variable x>>];"
+			);
+	}
+	
+	public void testArrayLiteralExpInFunc() {
 		assertToBindingString(
 				"void foo() { int x = 2; int[1] y = [ x ]; }",
 				
@@ -201,20 +329,33 @@ public class ToBindingString_Test extends Parser_Test {
 			);
 	}
 	
-	public void testMulExp() {
-		assertToBindingString(
-				"void foo() { int x = 2; int z = 2 * x; }",
-				
-				"void foo() {\n" +
-				"  int x = 2;\n" +
-				"  int z = (2 * x<<function foo().variable x>>)<<int>>;\n" +
-				"}"
-			);
-	}	
-	
 	protected void assertToBindingString(String actual, String expected) {
 		Module mod = getModuleSemanticNoProblems(actual, AST.D1);
 		assertEquals(expected, mod.toString());
+	}
+	
+	private void testBinExpScalar(String op) {
+		testBinExpScalar(op, "int");
+	}
+	
+	private void testBinExpScalar(String op, String result) {
+		assertToBindingString(
+				"int x; int y; int z = x " + op + " y;",
+				
+				"int x;\n" +
+				"int y;\n" +
+				"int z = (x<<variable x>> " + op + " y<<variable y>>)<<" + result + ">>;"
+			);
+	}
+	
+	private void testBinExpString(String op) {
+		assertToBindingString(
+				"char[] x; char[] y; char[] z = x " + op + " y;",
+				
+				"char[] x;\n" +
+				"char[] y;\n" +
+				"char[] z = (x<<variable x>> " + op + " y<<variable y>>)<<char[]>>;"
+			);
 	}
 
 }

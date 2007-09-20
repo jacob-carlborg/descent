@@ -2250,8 +2250,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.ConditionalExpression convert(CondExp a) {
 		descent.core.dom.ConditionalExpression b = new descent.core.dom.ConditionalExpression(ast);
-		if (a.econd != null) {
-			descent.core.dom.Expression convertedExp = convert(a.econd);
+		if (a.sourceEcond != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceEcond);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2268,7 +2268,7 @@ public class ASTConverter {
 				b.setElseExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.econd.start, a.sourceE2.start + a.sourceE2.length - a.econd.start);
+		b.setSourceRange(a.sourceEcond.start, a.sourceE2.start + a.sourceE2.length - a.sourceEcond.start);
 		return b;
 	}
 	

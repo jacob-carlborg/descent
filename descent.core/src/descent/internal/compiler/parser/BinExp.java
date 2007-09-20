@@ -31,12 +31,6 @@ public abstract class BinExp extends Expression {
 			this.length = e2.start + e2.length - e1.start;
 		}
 	}
-	
-	// This method is not part of DMD
-	protected void assignBinding() {
-		sourceE1.setBinding(e1.getBinding());
-		sourceE2.setBinding(e2.getBinding());
-	}
 
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
@@ -76,6 +70,7 @@ public abstract class BinExp extends Expression {
 
 			e = op_overload(sc, context);
 			if (e != null) {
+				assignBinding();
 				return e;
 			}
 
@@ -90,6 +85,8 @@ public abstract class BinExp extends Expression {
 			e1.checkIntegral(context);
 			e2.checkIntegral(context);
 		}
+		
+		assignBinding();
 		return this;
 	}
 
@@ -102,6 +99,7 @@ public abstract class BinExp extends Expression {
 
 			e = op_overload(sc, context);
 			if (e != null) {
+				assignBinding();
 				return e;
 			}
 
@@ -118,9 +116,12 @@ public abstract class BinExp extends Expression {
 
 			if (op == TOKmodass && e2.type.iscomplex()) {
 				error("cannot perform modulo complex arithmetic");
+				assignBinding();
 				return new IntegerExp(loc, 0);
 			}
 		}
+		
+		assignBinding();
 		return this;
 	}
 
@@ -870,6 +871,17 @@ public abstract class BinExp extends Expression {
 			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
 		}
 		return e;
+	}
+	
+	// Specific for Descent
+	protected void assignBinding() {
+		sourceE1.setBinding(e1.getBinding());
+		sourceE2.setBinding(e2.getBinding());
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return type;
 	}
 
 }

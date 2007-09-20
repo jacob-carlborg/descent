@@ -64,6 +64,8 @@ public class IdentityExp extends BinExp {
 			e1 = e1.castTo(sc, Type.tcomplex80, context);
 			e2 = e2.castTo(sc, Type.tcomplex80, context);
 		}
+		
+		assignBinding();
 		return this;
 	}
 

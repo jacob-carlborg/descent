@@ -75,6 +75,7 @@ public class CmpExp extends BinExp {
 		if (null != e) {
 			e = new CmpExp(loc, op, e, new IntegerExp(loc, 0, Type.tint32));
 			e = e.semantic(sc, context);
+			assignBinding();
 			return e;
 		}
 
@@ -108,6 +109,7 @@ public class CmpExp extends BinExp {
 			e = this;
 		}
 
+		assignBinding();
 		return e;
 	}
 

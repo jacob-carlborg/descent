@@ -354,6 +354,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(i);
 			b.type = b.type.semantic(loc, sc, context);
+			b.sourceType.setBinding(b.getBinding());
 			Type tb = b.type.toBasetype(context);
 
 			if (tb.ty == TY.Ttuple) {

@@ -49,6 +49,7 @@ public class AddAssignExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
+			assignBinding();
 			return e;
 		}
 
@@ -86,6 +87,7 @@ public class AddAssignExp extends BinExp {
 			}
 		}
 
+		assignBinding();
 		return e;
 	}
 

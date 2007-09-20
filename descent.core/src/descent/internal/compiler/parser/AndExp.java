@@ -69,6 +69,7 @@ public class AndExp extends BinExp {
 
 			e = op_overload(sc, context);
 			if (null != e) {
+				assignBinding();
 				return e;
 			}
 
@@ -82,6 +83,8 @@ public class AndExp extends BinExp {
 				e2.checkIntegral(context);
 			}
 		}
+		
+		assignBinding();
 		return this;
 	}
 

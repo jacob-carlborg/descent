@@ -1,21 +1,20 @@
 package descent.tests.mars;
 
-import com.sun.org.apache.bcel.internal.generic.Type;
-
 import descent.core.dom.AST;
-import descent.internal.compiler.parser.AddExp;
 import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.ArrayInitializer;
+import descent.internal.compiler.parser.BinExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.CondExp;
 import descent.internal.compiler.parser.DeclarationExp;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.ExpStatement;
-import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.PostExp;
 import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -26,6 +25,14 @@ public class InternalBindings_Test extends Parser_Test {
 		Module m = getModuleSemanticNoProblems("class X { }", AST.D1);
 		ClassDeclaration cd = (ClassDeclaration) m.members.get(0);
 		assertSame(cd, cd.ident.getBinding());
+	}
+	
+	public void testClassDeclarationBaseClass() {
+		Module m = getModuleSemanticNoProblems("class X { } class Y : X { }", AST.D1);
+		ClassDeclaration x = (ClassDeclaration) m.members.get(0);
+		ClassDeclaration y = (ClassDeclaration) m.members.get(1);
+		assertSame(x, y.sourceBaseclasses.get(0).getBinding());
+		assertSame(x, y.sourceBaseclasses.get(0).sourceType.getBinding());
 	}
 	
 	public void testAlias() {
@@ -123,21 +130,184 @@ public class InternalBindings_Test extends Parser_Test {
 		assertSame(x, call.arguments.get(0).getBinding());
 	}
 	
-	public void testAssignExp() {
-		Module m = getModuleSemanticNoProblems("int x; int y = x;", AST.D1);
+	public void testArrayInitializer() {
+		Module m = getModuleSemanticNoProblems("int x; int[] y = [ x ];", AST.D1);
 		VarDeclaration x = (VarDeclaration) m.members.get(0);
 		VarDeclaration y = (VarDeclaration) m.members.get(1);
-		assertSame(x, y.sourceInit.getBinding());
-		IdentifierExp exp = (IdentifierExp) ((ExpInitializer) y.sourceInit).sourceExp;
-		assertSame(x, exp.getBinding());
+		ArrayInitializer init = (ArrayInitializer) y.sourceInit;
+		assertEquals(x, init.value.get(0).getBinding());
+	}
+	
+	public void testArrayInitializerInFunc() {
+		Module m = getModuleSemanticNoProblems("int x; void foo() { int[] y = [ x ]; }", AST.D1);
+		VarDeclaration x = (VarDeclaration) m.members.get(0);
+		FuncDeclaration foo = (FuncDeclaration) m.members.get(1);
+		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
+		VarDeclaration y = (VarDeclaration) (((DeclarationExp) ((ExpStatement) cs.sourceStatements.get(0)).exp)).declaration;
+		ArrayInitializer init = (ArrayInitializer) y.sourceInit;
+		assertEquals(x, init.value.get(0).getBinding());
+	}
+	
+	public void testAddAssignExp() {
+		testBinExpScalar("+=");
 	}
 	
 	public void testAddExp() {
-		Module m = getModuleSemanticNoProblems("int x; int y = x + 2;", AST.D1);
+		testBinExpScalar("+");
+	}
+	
+	public void testAndAndExp() {
+		testBinExpScalar("&&");
+	}
+	
+	public void testAndAssignExp() {
+		testBinExpScalar("&=");
+	}
+	
+	public void testAndExp() {
+		testBinExpScalar("&");
+	}
+	
+	public void testAssignExp() {
+		testBinExpScalar("=");
+	}
+	
+	public void testCatAssignExp() {
+		testBinExpString("~=");
+	}
+	
+	public void testCatExp() {
+		testBinExpString("~");
+	}
+	
+	public void testCmpExp() {
+		testBinExpScalar("<");
+	}
+	
+//	public void testCommaExp() {
+//		testBinExpScalar(",");
+//	}
+	
+	public void testCondExp() {
+		Module m = getModuleSemanticNoProblems("int x; int y; int z; int w = x ? y : z;", AST.D1);
 		VarDeclaration x = (VarDeclaration) m.members.get(0);
 		VarDeclaration y = (VarDeclaration) m.members.get(1);
-		AddExp add = (AddExp) ((ExpInitializer) y.sourceInit).sourceExp;
-		assertSame(x, add.sourceE1.getBinding());
+		VarDeclaration z = (VarDeclaration) m.members.get(2);
+		VarDeclaration w = (VarDeclaration) m.members.get(3);
+		CondExp tri = (CondExp) ((ExpInitializer) w.sourceInit).sourceExp;
+		assertSame(x, tri.econd.getBinding());
+		assertSame(y, tri.sourceE1.getBinding());
+		assertSame(z, tri.sourceE2.getBinding());
+	}
+	
+	public void testDivAssignExp() {
+		testBinExpScalar("/=");
+	}
+	
+	public void testDivExp() {
+		testBinExpScalar("/");
+	}
+	
+	public void testEqualExp() {
+		testBinExpScalar("==");
+	}
+	
+	public void testIdentityExp() {
+		testBinExpScalar("is");
+	}
+	
+	public void testMinAssignExp() {
+		testBinExpScalar("-=");
+	}
+	
+	public void testMinExp() {
+		testBinExpScalar("-");
+	}
+	
+	public void testModAssignExp() {
+		testBinExpScalar("%=");
+	}
+	
+	public void testModExp() {
+		testBinExpScalar("%");
+	}
+	
+	public void testMulAssignExp() {
+		testBinExpScalar("*=");
+	}
+	
+	public void testMulExp() {
+		testBinExpScalar("*");
+	}
+	
+	public void testOrAssignExp() {
+		testBinExpScalar("|=");
+	}
+	
+	public void testOrExp() {
+		testBinExpScalar("|");
+	}
+	
+	public void testOrOrExp() {
+		testBinExpScalar("||");
+	}
+	
+	public void testPostExp() {
+		Module m = getModuleSemanticNoProblems("int x; int y = x++;", AST.D1);
+		VarDeclaration x = (VarDeclaration) m.members.get(0);
+		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		PostExp bin = (PostExp) ((ExpInitializer) y.sourceInit).sourceExp;
+		assertSame(x, bin.sourceE1.getBinding());
+	}
+	
+	public void testShlAssignExp() {
+		testBinExpScalar("<<=");
+	}
+	
+	public void testShlExp() {
+		testBinExpScalar("<<");
+	}
+	
+	public void testShrAssignExp() {
+		testBinExpScalar(">>=");
+	}
+	
+	public void testShrExp() {
+		testBinExpScalar(">>");
+	}
+	
+	public void testUshrAssignExp() {
+		testBinExpScalar(">>>=");
+	}
+	
+	public void testUshrExp() {
+		testBinExpScalar(">>>");
+	}
+	
+	public void testXorAssignExp() {
+		testBinExpScalar("^=");
+	}
+	
+	public void testXorExp() {
+		testBinExpScalar("^");
+	}
+	
+	private void testBinExpScalar(String op) {
+		testBinExp("int x; int y; int z = x ", op, " y;");
+	}
+	
+	private void testBinExpString(String op) {
+		testBinExp("char[] x; char[] y; char[] z = x ", op, " y;");
+	}
+	
+	private void testBinExp(String pre, String op, String post) {
+		Module m = getModuleSemanticNoProblems(pre + op + post, AST.D1);
+		VarDeclaration x = (VarDeclaration) m.members.get(0);
+		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		VarDeclaration z = (VarDeclaration) m.members.get(2);
+		BinExp bin = (BinExp) ((ExpInitializer) z.sourceInit).sourceExp;
+		assertSame(x, bin.sourceE1.getBinding());
+		assertSame(y, bin.sourceE2.getBinding());
 	}
 
 }

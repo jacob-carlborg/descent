@@ -256,11 +256,28 @@ public class ArrayInitializer extends Initializer {
 		super.setBinding(binding);
 		
 		if (value != null) {
-			ArrayLiteralExp arrayLiteralExp = (ArrayLiteralExp) binding;
-			for(int i = 0; i < value.size(); i++) {
-				value.get(i).setBinding(arrayLiteralExp.elements.get(i).getBinding());
+			if (binding instanceof ArrayLiteralExp) {
+				ArrayLiteralExp arrayLiteralExp = (ArrayLiteralExp) binding;
+				for(int i = 0; i < value.size(); i++) {
+					value.get(i).setBinding(arrayLiteralExp.elements.get(i).getBinding());
+				}
+			} else if (binding instanceof ArrayInitializer) {
+				ArrayInitializer arrayInitializer = (ArrayInitializer) binding;
+				for(int i = 0; i < value.size(); i++) {
+					value.get(i).setBinding(arrayInitializer.value.get(i).getBinding());
+				}
 			}
 		}		
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		ASTDmdNode superBinding = super.getBinding();
+		if (superBinding == null) {
+			return this;
+		}
+		
+		return superBinding;
 	}
 
 }

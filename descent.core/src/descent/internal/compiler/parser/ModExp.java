@@ -66,6 +66,7 @@ public class ModExp extends BinExp {
 		super.semanticp(sc, context);
 		e = op_overload(sc, context);
 		if (null != e) {
+			assignBinding();
 			return e;
 		}
 
@@ -76,9 +77,12 @@ public class ModExp extends BinExp {
 			type = e1.type;
 			if (e2.type.iscomplex()) {
 				error("cannot perform modulo complex arithmetic");
+				assignBinding();
 				return new IntegerExp(Loc.ZERO, 0);
 			}
 		}
+		
+		assignBinding();
 		return this;
 	}
 
