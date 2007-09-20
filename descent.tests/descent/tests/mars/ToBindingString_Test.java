@@ -90,28 +90,24 @@ public class ToBindingString_Test extends Parser_Test {
 	
 	public void testCallExp() {
 		assertToBindingString(
-				"class X { } void bar() { } void foo() { bar(); }",
+				"void bar() { } void foo() { bar(); }",
 				
-				"class X {\n" +
-				"}\n" +
 				"void bar() {\n" +
 				"}\n" +
 				"void foo() {\n" +
-				"  bar()<<function bar()>>;\n" +
+				"  bar<<function bar()>>();\n" +
 				"}"
 			);
 	}
 	
 	public void testCallExpWithScalarArguments() {
 		assertToBindingString(
-				"class X { } void bar(int x) { } void foo() { bar(1); }",
+				"void bar(int x) { } void foo() { bar(1); }",
 				
-				"class X {\n" +
-				"}\n" +
 				"void bar(int x) {\n" +
 				"}\n" +
 				"void foo() {\n" +
-				"  bar(1)<<function bar(int)>>;\n" +
+				"  bar<<function bar(int)>>(1);\n" +
 				"}"
 			);
 	}
@@ -125,7 +121,37 @@ public class ToBindingString_Test extends Parser_Test {
 				"void bar(X<<class X>> x) {\n" +
 				"}\n" +
 				"void foo() {\n" +
-				"  bar(new X<<class X>>)<<function bar(class X)>>;\n" +
+				"  bar<<function bar(class X)>>(new X<<class X>>);\n" +
+				"}"
+			);
+	}
+	
+	public void testCallExpWithMethod() {
+		assertToBindingString(
+				"class X { void bar() { } } void foo() { X x = new X(); x.bar(); }",
+				
+				"class X {\n" +
+				"  void bar() {\n" +
+				"  }\n" +
+				"}\n" +
+				"void foo() {\n" +
+				"  X<<class X>> x = new X<<class X>>;\n" +
+				"  x<<function foo().variable x>>.bar<<class X.function bar()>>();\n" +
+				"}"
+			);
+	}
+	
+	public void testCallExpWithMethodWithArgument() {
+		assertToBindingString(
+				"class X { void bar(int x) { } } void foo() { X x = new X(); x.bar(1); }",
+				
+				"class X {\n" +
+				"  void bar(int x) {\n" +
+				"  }\n" +
+				"}\n" +
+				"void foo() {\n" +
+				"  X<<class X>> x = new X<<class X>>;\n" +
+				"  x<<function foo().variable x>>.bar<<class X.function bar(int)>>(1);\n" +
 				"}"
 			);
 	}
@@ -156,12 +182,13 @@ public class ToBindingString_Test extends Parser_Test {
 			);
 	}
 	
-	public void testInitializer() {
+	public void testReturnStatement() {
 		assertToBindingString(
-				"int x; int y = x;",
+				"void foo(int x) { return x; }",
 				
-				"int x;\n" +
-				"int y = x<<variable x>>;"
+				"void foo(int x) {\n" +
+				"  return x<<function foo(int).variable x>>;\n" +
+				"}"
 			);
 	}
 	

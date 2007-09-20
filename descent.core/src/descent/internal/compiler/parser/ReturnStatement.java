@@ -25,8 +25,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public class ReturnStatement extends Statement {
 
-	public Expression exp;
-	public Expression sourceExp;
+	public Expression exp, sourceExp;
 
 	public ReturnStatement(int loc, Expression exp) {
 		this(new Loc(loc), exp);
@@ -277,6 +276,7 @@ public class ReturnStatement extends Statement {
 						.size() + 1));
 				s = new CompoundStatement(loc, s1, s2);
 			}
+			assignBinding();
 			return s;
 		}
 
@@ -317,8 +317,11 @@ public class ReturnStatement extends Statement {
 				Statement s;
 
 				s = new ExpStatement(loc, exp);
+				assignBinding();
 				return new CompoundStatement(loc, s, gs);
 			}
+			
+			assignBinding();
 			return gs;
 		}
 
@@ -326,10 +329,13 @@ public class ReturnStatement extends Statement {
 			Statement s;
 
 			s = new ExpStatement(loc, exp);
+			assignBinding();
+			
 			exp = null;
 			return new CompoundStatement(loc, s, this);
 		}
 
+		assignBinding();
 		return this;
 	}
 
@@ -352,6 +358,12 @@ public class ReturnStatement extends Statement {
 		}
 		buf.writeByte(';');
 		buf.writenl();
+	}
+	
+	private void assignBinding() {
+		if (sourceExp != null && exp != null) {
+			sourceExp.setBinding(exp.getBinding());
+		}
 	}
 
 }

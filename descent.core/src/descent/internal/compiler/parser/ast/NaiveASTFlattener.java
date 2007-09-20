@@ -422,7 +422,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		this.buffer.append("(");
 		visitList(node.arguments, ", ");
 		this.buffer.append(")");
-		appendBinding(node);		
 		return false;
 	}
 
@@ -1898,9 +1897,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(ReturnStatement node) {
 		printIndent();
 		this.buffer.append("return");
-		if (node.exp != null) {
+		if (node.sourceExp != null) {
 			this.buffer.append(" ");
-			node.exp.accept(this);
+			node.sourceExp.accept(this);
 		}
 		this.buffer.append(";");
 		return false;

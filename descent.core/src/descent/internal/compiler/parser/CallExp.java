@@ -637,10 +637,12 @@ public class CallExp extends UnaExp {
 
 			if (f.tintro.next.isBaseOf(t, offset, context) && offset[0] != 0) {
 				type = f.tintro.next;
+				assignBinding();
 				return castTo(sc, t, context);
 			}
 		}
 
+		assignBinding();
 		return this;
 	}
 

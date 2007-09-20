@@ -189,5 +189,10 @@ public class DotVarExp extends UnaExp {
 	public void appendBinding(StringBuilder sb) {
 		var.appendBinding(sb);
 	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return var;
+	}
 
 }

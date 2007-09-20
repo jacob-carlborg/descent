@@ -19,7 +19,7 @@ public abstract class UnaExp extends Expression {
 	
 	// Specific for Descent
 	protected void assignBinding() {
-		sourceE1.setBinding(e1);
+		sourceE1.setBinding(e1.getBinding());
 	}
 
 	@Override

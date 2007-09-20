@@ -130,6 +130,18 @@ public class InternalBindings_Test extends Parser_Test {
 		assertSame(x, call.arguments.get(0).getBinding());
 	}
 	
+	public void testCallExpWithMethod() {
+		Module m = getModuleSemanticNoProblems("class X { void bar() { } } void foo() { X x = new X(); x.bar(); }", AST.D1);
+		ClassDeclaration x = (ClassDeclaration) m.members.get(0);;
+		FuncDeclaration bar = (FuncDeclaration) x.members.get(0);
+		FuncDeclaration foo = (FuncDeclaration) m.members.get(1);
+		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
+		ExpStatement es = (ExpStatement) cs.sourceStatements.get(1);
+		CallExp call = (CallExp) es.sourceExp;
+		assertSame(bar, call.getBinding());
+		assertSame(bar, call.sourceE1.getBinding());
+	}
+	
 	public void testArrayInitializer() {
 		Module m = getModuleSemanticNoProblems("int x; int[] y = [ x ];", AST.D1);
 		VarDeclaration x = (VarDeclaration) m.members.get(0);
