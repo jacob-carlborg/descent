@@ -164,8 +164,13 @@ public class VarExp extends Expression {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		var.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		var.appendBinding(sb);
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return var;
 	}
 
 }

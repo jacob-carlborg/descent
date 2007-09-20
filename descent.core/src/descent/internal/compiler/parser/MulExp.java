@@ -107,6 +107,7 @@ public class MulExp extends BinExp {
 					e2.type = type;
 					e = new NegExp(loc, this);
 					e = e.semantic(sc, context);
+					assignBinding();
 					return e;
 				} else {
 					type = t2; // t2 is complex
@@ -115,7 +116,14 @@ public class MulExp extends BinExp {
 				type = t1; // t1 is complex
 			}
 		}
+		
+		assignBinding();		
 		return this;
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return type;
 	}
 
 }

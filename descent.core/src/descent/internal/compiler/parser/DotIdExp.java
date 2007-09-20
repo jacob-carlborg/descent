@@ -90,6 +90,8 @@ public class DotIdExp extends UnaExp {
 			e = new IntegerExp(loc, te.exps.size(), Type.tsize_t);
 			return e;
 		}
+		
+		assignBinding();
 
 		if (eright.op == TOKimport) // also used for template alias's
 		{

@@ -166,6 +166,7 @@ public class AddrExp extends UnaExp {
 			if (e1.type == null) {
 				error("cannot take address of %s", e1.toChars(context));
 				type = Type.tint32;
+				assignBinding();
 				return this;
 			}
 			type = e1.type.pointerTo(context);
@@ -180,6 +181,7 @@ public class AddrExp extends UnaExp {
 
 					e = new DelegateExp(loc, dve.e1, f);
 					e = e.semantic(sc, context);
+					assignBinding();					
 					return e;
 				}
 			} else if (e1.op == TOKvar) {
@@ -191,6 +193,7 @@ public class AddrExp extends UnaExp {
 
 					e = new DelegateExp(loc, e1, f);
 					e = e.semantic(sc, context);
+					assignBinding();
 					return e;
 				}
 			} else if (e1.op == TOKarray) {
@@ -198,9 +201,18 @@ public class AddrExp extends UnaExp {
 					error("cannot take address of bit in array");
 				}
 			}
-			return optimize(WANTvalue, context);
+			
+			Expression opt = optimize(WANTvalue, context);
+			assignBinding();
+			return opt;
 		}
+		
 		return this;
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return type;
 	}
 
 }

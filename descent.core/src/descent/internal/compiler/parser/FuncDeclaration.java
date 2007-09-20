@@ -1959,8 +1959,8 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		super.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		super.appendBinding(sb);
 		sb.append("(");
 		if (parameters != null) {
 			for(int i = 0; i < parameters.size(); i++) {
@@ -1971,7 +1971,7 @@ public class FuncDeclaration extends Declaration {
 				Dsymbol dsymbol = parameters.get(i);
 				if (dsymbol instanceof VarDeclaration) {
 					VarDeclaration var = (VarDeclaration) dsymbol;
-					var.type.toReferenceString(sb);
+					var.type.appendBinding(sb);
 				}
 				
 			}

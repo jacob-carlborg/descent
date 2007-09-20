@@ -92,7 +92,7 @@ public class ExpStatement extends Statement {
 			exp = exp.optimize(0, context);
 		}
 		
-		sourceExp.reference = exp;
+		sourceExp.setBinding(exp);
 		return this;
 	}
 

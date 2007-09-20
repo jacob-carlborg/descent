@@ -84,6 +84,7 @@ public class TypedefDeclaration extends Declaration {
 			if (sc.parent.isFuncDeclaration() != null && init != null) {
 				semantic2(sc, context);
 			}
+			ident.setBinding(basetype);
 		} else if (sem == 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CircularDefinition, 0, ident.start, ident.length));
@@ -153,6 +154,10 @@ public class TypedefDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
+	}
+	
+	public ASTDmdNode getBinding() {
+		return ident.getBinding();
 	}
 
 }

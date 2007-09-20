@@ -1615,6 +1615,7 @@ public class Parser extends Lexer {
 			    return new AnonDeclaration(loc, anon == 1, decl);
 			}
 			a.members = decl;
+			a.sourceMembers = new Dsymbols(decl);
 			
 			nextToken();			
 		} else {
@@ -6399,6 +6400,7 @@ public class Parser extends Lexer {
 				}
 				nextToken();
 				cd.members = decl;
+				cd.sourceMembers = new Dsymbols(decl);
 			}
 			
 			e = new NewAnonClassExp(loc, thisexp, newargs, cd, arguments);

@@ -31,6 +31,12 @@ public abstract class BinExp extends Expression {
 			this.length = e2.start + e2.length - e1.start;
 		}
 	}
+	
+	// This method is not part of DMD
+	protected void assignBinding() {
+		sourceE1.setBinding(e1);
+		sourceE2.setBinding(e2);
+	}
 
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);

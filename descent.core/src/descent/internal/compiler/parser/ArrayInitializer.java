@@ -250,5 +250,19 @@ public class ArrayInitializer extends Initializer {
 	public ArrayInitializer isArrayInitializer() {
 		return this;
 	}
+	
+	@Override
+	public void setBinding(ASTDmdNode binding) {
+		super.setBinding(binding);
+		
+		if (value != null) {
+			ExpInitializer expInit = (ExpInitializer) binding;
+			AssignExp assignExp = (AssignExp) expInit.exp;
+			ArrayLiteralExp arrayLiteralExp = (ArrayLiteralExp) assignExp.e2;
+			for(int i = 0; i < value.size(); i++) {
+				value.get(i).setBinding(arrayLiteralExp.elements.get(i).getBinding());
+			}
+		}		
+	}
 
 }

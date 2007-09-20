@@ -8,6 +8,8 @@ import static descent.internal.compiler.parser.PROT.PROTpublic;
 
 // DMD 1.020
 public abstract class AggregateDeclaration extends ScopeDsymbol {
+	
+	public Dsymbols sourceMembers;
 
 	public Type type;
 	public PROT protection;

@@ -241,7 +241,7 @@ public class Module extends Package {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
+	public void appendBinding(StringBuilder sb) {
 		if (md != null) {
 			NaiveASTFlattener f = new NaiveASTFlattener();
 			f.visitModuleDeclarationName(md);

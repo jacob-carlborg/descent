@@ -1,8 +1,6 @@
 package descent.internal.compiler.parser;
 
 // DMD 1.020
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -15,11 +13,14 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 
 public class ArrayLiteralExp extends Expression {
 
-	public Expressions elements;
+	public Expressions elements, sourceElements;
 
-	public ArrayLiteralExp(Loc loc, List<? extends Expression> elements) {
+	public ArrayLiteralExp(Loc loc, Expressions elements) {
 		super(loc, TOK.TOKarrayliteral);
-		this.elements = (Expressions) elements;
+		this.elements = elements;
+		if (this.elements != null) {
+			this.sourceElements = new Expressions(elements);
+		}
 	}
 
 	@Override

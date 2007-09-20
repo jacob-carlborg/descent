@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
@@ -361,7 +358,7 @@ public class TraitsExp extends Expression {
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			List<StringExp> exps = new ArrayList<StringExp>();
+			Expressions exps = new Expressions();
 			Louter: while(true)
 			{
 			    Linner: for(int i = 0; i < sd.members.size(); i++)
@@ -373,8 +370,9 @@ public class TraitsExp extends Expression {
 		
 					    /* Skip if already present in exps[]
 					     */
-					    for(StringExp se2 : exps)
+					    for(Expression exp : exps)
 					    {
+					    	StringExp se2 = (StringExp) exp;
 					    	if(CharOperation.equals(str, se2.string))
 					    		continue Linner;
 					    }

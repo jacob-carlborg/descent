@@ -16,6 +16,11 @@ public abstract class UnaExp extends Expression {
 		this.e1 = e1;
 		this.sourceE1 = e1;
 	}
+	
+	// Specific for Descent
+	protected void assignBinding() {
+		sourceE1.setBinding(e1);
+	}
 
 	@Override
 	public Expression doInline(InlineDoState ids) {

@@ -44,8 +44,8 @@ public class TypeExp extends Expression {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		type.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		type.appendBinding(sb);
 	}
 
 }

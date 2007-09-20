@@ -186,8 +186,8 @@ public class DotVarExp extends UnaExp {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		var.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		var.appendBinding(sb);
 	}
 
 }

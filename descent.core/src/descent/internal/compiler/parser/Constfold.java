@@ -1000,7 +1000,7 @@ public class Constfold
 				
 				ArrayLiteralExp ale = new ArrayLiteralExp(
 						es1.loc,
-						new ArrayList(es1.elements.size() + es2.elements.size()));
+						new Expressions(es1.elements.size() + es2.elements.size()));
 				ale.elements.addAll(es1.elements);
 				ale.elements.addAll(es2.elements);
 				e = ale;

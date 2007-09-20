@@ -38,8 +38,7 @@ public class VarDeclaration extends Declaration {
 	public VarDeclaration next;
 
 	// declaration?
-	public Initializer init;
-	public Initializer sourceInit;
+	public Initializer init, sourceInit;
 	public Dsymbol aliassym; // if redone as alias to another symbol
 	public Type htype;
 	public Initializer hinit;;
@@ -93,7 +92,7 @@ public class VarDeclaration extends Declaration {
 		}
 		visitor.endVisit(this);
 	}
-
+	
 	public Expression callAutoDtor() {
 		Expression e = null;
 
@@ -312,6 +311,7 @@ public class VarDeclaration extends Declaration {
 			TupleDeclaration v2 = new TupleDeclaration(loc, ident, exps);
 			v2.isexp = true;
 			aliassym = v2;
+			assignBindings();
 			return;
 		}
 
@@ -399,6 +399,7 @@ public class VarDeclaration extends Declaration {
 				e = new AssignExp(loc, e1, e);
 				e.type = e1.type;
 				init = new ExpInitializer(loc, e/* .type.defaultInit() */);
+				assignBindings();
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
@@ -457,6 +458,7 @@ public class VarDeclaration extends Declaration {
 							e = init.toExpression(context);
 							if (e == null) {
 								error("is not a static and cannot have static initializer");
+								assignBindings();
 								return;
 							}
 						}
@@ -536,6 +538,8 @@ public class VarDeclaration extends Declaration {
 				}
 			}
 		}
+		
+		assignBindings();
 	}
 
 	@Override
@@ -614,6 +618,23 @@ public class VarDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
+	}
+	
+	public ASTDmdNode getBinding() {
+		if (type != sourceType) {
+			return type;
+		} else {
+			return null;
+		}
+	}
+	
+	private void assignBindings() {
+		if (ident != null) {
+			ident.setBinding(type);
+		}
+		if (sourceInit != null) {
+			sourceInit.setBinding(init);
+		}
 	}
 
 }

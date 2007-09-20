@@ -666,5 +666,10 @@ public class CallExp extends UnaExp {
 			return super.toLvalue(sc, e, context);
 		}
 	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return e1.getBinding();
+	}
 
 }

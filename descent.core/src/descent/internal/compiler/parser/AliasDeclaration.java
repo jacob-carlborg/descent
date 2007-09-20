@@ -39,6 +39,7 @@ public class AliasDeclaration extends Declaration {
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
 		super(loc, id);
+		this.ident.setBinding(this);
 		this.type = type;
 		this.sourceType = type;
 		this.aliassym = null;
@@ -219,6 +220,9 @@ public class AliasDeclaration extends Declaration {
 			}
 		}
 		aliassym = s;
+		if (sourceType != null) {
+			sourceType.setBinding(aliassym);
+		}
 		this.inSemantic = 0;
 	}
 
@@ -279,6 +283,11 @@ public class AliasDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
+	}
+	
+	// Specific for Descent
+	public ASTDmdNode getBinding() {
+		return aliassym;
 	}
 
 }

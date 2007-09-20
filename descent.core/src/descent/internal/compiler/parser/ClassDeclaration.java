@@ -25,7 +25,7 @@ import static descent.internal.compiler.parser.TY.Tclass;
 public class ClassDeclaration extends AggregateDeclaration {
 
 	public final static int OFFSET_RUNTIME = 0x76543210;
-
+	
 	public BaseClasses sourceBaseclasses;
 	public BaseClasses baseclasses;
 	
@@ -84,7 +84,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, sourceBaseclasses);
-			TreeVisitor.acceptChildren(visitor, members);
+			TreeVisitor.acceptChildren(visitor, sourceMembers);
 		}
 		visitor.endVisit(this);
 	}

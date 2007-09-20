@@ -531,14 +531,14 @@ public class Dsymbol extends ASTDmdNode {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
+	public void appendBinding(StringBuilder sb) {
 		if (ident == null) {
 			sb.append("anonymous ");
 			sb.append(kind());
 		} else {
 			if(parent != null) {
 				int oldLength = sb.length();
-				parent.toReferenceString(sb);
+				parent.appendBinding(sb);
 				if (oldLength != sb.length()) {
 					sb.append(".");
 				}
@@ -547,6 +547,11 @@ public class Dsymbol extends ASTDmdNode {
 			sb.append(" ");
 			sb.append(ident.toString());
 		}
+	}
+	
+	@Override
+	public ASTDmdNode getParentBinding() {
+		return parent;
 	}
 
 }

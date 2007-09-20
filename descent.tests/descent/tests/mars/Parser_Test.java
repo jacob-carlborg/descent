@@ -141,6 +141,15 @@ public abstract class Parser_Test extends TestCase {
 		return result.module;
 	}
 	
+	protected Module getModuleSemanticNoProblems(String source, int apiLevel) {
+		ParseResult result = getParseResult(source, apiLevel);
+		CompilationUnitResolver.resolve(result.module);
+		if (!result.module.problems.isEmpty()) {
+			fail(result.module.problems.toString());
+		}
+		return result.module;
+	}
+	
 	protected IProblem[] getModuleProblems(String source) {
 		return getModuleProblems(source, AST.D1);
 	}

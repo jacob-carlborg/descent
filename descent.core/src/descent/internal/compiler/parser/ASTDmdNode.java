@@ -1620,8 +1620,25 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * This is a debug string used by NaiveASTFlattener
 	 * to add resolved information to the string output.
 	 */
-	public void toReferenceString(StringBuilder sb) {
+	public void appendBinding(StringBuilder sb) {
 		sb.append(toString());
+	}
+	
+	// Specific to Descent
+	private ASTDmdNode binding;
+	
+	// Specific to Descent
+	public void setBinding(ASTDmdNode binding) {
+		this.binding = binding;
+	}
+	
+	// Specific to Descent
+	public ASTDmdNode getBinding() {
+		return binding;
+	}
+	
+	public ASTDmdNode getParentBinding() {
+		return null;
 	}
 
 }

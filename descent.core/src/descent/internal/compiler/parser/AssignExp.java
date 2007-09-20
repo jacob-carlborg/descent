@@ -192,15 +192,14 @@ public class AssignExp extends BinExp {
 		type = e1.type;
 		assert (null != type);
 		
-		sourceE1.reference = e1;
-		sourceE2.reference = e2;
+		assignBinding();
 		
 		return this;
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		e2.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		e2.appendBinding(sb);
 	}
 
 }

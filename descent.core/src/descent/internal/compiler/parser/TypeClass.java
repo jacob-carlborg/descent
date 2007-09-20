@@ -424,14 +424,14 @@ public class TypeClass extends Type {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		sym.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		sym.appendBinding(sb);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		toReferenceString(sb);
+		appendBinding(sb);
 		return sb.toString();
 	}
 

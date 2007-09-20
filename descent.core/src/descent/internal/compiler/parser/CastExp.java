@@ -217,8 +217,13 @@ public class CastExp extends UnaExp {
 	}
 	
 	@Override
-	public void toReferenceString(StringBuilder sb) {
-		e1.toReferenceString(sb);
+	public void appendBinding(StringBuilder sb) {
+		e1.appendBinding(sb);
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return e1.getBinding();
 	}
 
 }

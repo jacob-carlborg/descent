@@ -6,11 +6,12 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class DeclarationExp extends Expression {
 
-	public Dsymbol declaration;
+	public Dsymbol declaration, sourceDeclaration;
 
 	public DeclarationExp(Loc loc, Dsymbol declaration) {
 		super(loc, TOK.TOKdeclaration);
 		this.declaration = declaration;
+		this.sourceDeclaration = declaration;
 	}
 
 	@Override

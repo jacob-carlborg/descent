@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 // DMD 1.020
 public abstract class Initializer extends ASTDmdNode {
-
+	
 	public Loc loc;
 
 	public Initializer(Loc loc) {

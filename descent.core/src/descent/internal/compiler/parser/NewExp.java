@@ -35,7 +35,9 @@ public class NewExp extends Expression {
 		this.newtype = newtype;
 		this.sourceNewtype = newtype;
 		this.arguments = arguments;
-		this.sourceArguments = new Expressions(arguments);
+		if (arguments != null) {
+			this.sourceArguments = new Expressions(arguments);
+		}
 		this.member = null;
 		this.allocator = null;
 		this.onstack = false;
@@ -324,6 +326,11 @@ public class NewExp extends Expression {
 			argsToCBuffer(buf, arguments, hgs, context);
 			buf.writeByte(')');
 		}
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return type;
 	}
 
 }
