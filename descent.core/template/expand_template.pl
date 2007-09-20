@@ -55,19 +55,10 @@ while(my $line = <FILE>)
 
 close(FILE);
 
-#foreach(@options)
-#{
-#	while (my ($key, $value) = each(%$_))
-#	{
-#        print "$key => $value\n";
-#    }
-#}
-
-processFile("DefaultCodeFormatterOptions.template.java", "../src/descent/internal/formatter/DefaultCodeFormatterOptions.java");
-processFile("DefaultCodeFormatterConstants.template.java", "../src/descent/core/formatter/DefaultCodeFormatterConstants.java");
-processFile("FormatterMessages.template.java", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.java"); 
-processFile("FormatterMessages.template.properties", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.properties"); 
-processFile("WhiteSpaceOptions.template.java", "../../descent.ui/src/descent/internal/ui/preferences/formatter/WhiteSpaceOptions.java"); 
+#processFile("FormatterMessages.template.java", "../../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.java"); 
+#processFile("FormatterMessages.template.properties", "../../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.properties"); 
+#processFile("WhiteSpaceOptions.template.java", "../../../descent.ui/src/descent/internal/ui/preferences/formatter/WhiteSpaceOptions.java"); 
+processFile($ARGV[1], $ARGV[2]);
 
 sub processFile
 {

@@ -96,318 +96,321 @@ public class Problem implements IProblem {
 	public String getMessage() {
 		switch(id) {
 		case UnterminatedBlockComment:
-			return "Unterminated block comment";
+			return String.format(ProblemMessages.UnterminatedBlockComment);
 		case UnterminatedPlusBlockComment:
-			return "Unterminated plus block comment";
+			return String.format(ProblemMessages.UnterminatedPlusBlockComment);
 		case IncorrectNumberOfHexDigitsInEscapeSequence:
-			return "Escape hex sequence has " + arguments[0] + " digits instead of " + arguments[1];
+			return String.format(ProblemMessages.IncorrectNumberOfHexDigitsInEscapeSequence, arguments[0], arguments[1]);
 		case UndefinedEscapeHexSequence:
-			return "Undefined escape hex sequence";
+			return String.format(ProblemMessages.UndefinedEscapeHexSequence);
 		case UnterminatedStringConstant:
-			return "Unterminated string constant";
+			return String.format(ProblemMessages.UnterminatedStringConstant);
 		case OddNumberOfCharactersInHexString:
-			return "Odd number (" + arguments[0] + ") of hex characters in hex string";
+			return String.format(ProblemMessages.OddNumberOfCharactersInHexString, arguments[0]);
 		case NonHexCharacter:
-			return "Non-hex character: " + arguments[0];
+			return String.format(ProblemMessages.NonHexCharacter, arguments[0]);
 		case UnterminatedCharacterConstant:
-			return "Unterminated character constant";
+			return String.format(ProblemMessages.UnterminatedCharacterConstant);
 		case BinaryDigitExpected:
-			return "Binary digit expected";
+			return String.format(ProblemMessages.BinaryDigitExpected);
 		case OctalDigitExpected:
-			return "Octal digit expected";
+			return String.format(ProblemMessages.OctalDigitExpected);
 		case HexDigitExpected:
-			return "Hex digit expected";
+			return String.format(ProblemMessages.HexDigitExpected);
 		case UnsupportedCharacter:
-			return "Unsupported char: " + arguments[0];
+			return String.format(ProblemMessages.UnsupportedCharacter, arguments[0]);
 		case InvalidUtfCharacter:
-			return "Invalid UTF character: \\U" + arguments[0];
-		case ThreeEqualsIsNoLongerLegal:			
-			return "'===' is no longer legal, use 'is' instead";
+			return String.format(ProblemMessages.InvalidUtfCharacter, arguments[0]);
+		case ThreeEqualsIsNoLongerLegal:
+			return String.format(ProblemMessages.ThreeEqualsIsNoLongerLegal);
 		case NotTwoEqualsIsNoLongerLegal:
-			return "'!==' is no longer legal, use 'is' instead";
+			return String.format(ProblemMessages.NotTwoEqualsIsNoLongerLegal);
 		case LSuffixDeprecated:
-			return "'l' suffix is deprecated, use 'L' instead";
+			return String.format(ProblemMessages.LSuffixDeprecated);
 		case InvalidPragmaSyntax:
-			return "#line integer [\"filespec\"]\\n expected";
+			return String.format(ProblemMessages.InvalidPragmaSyntax);
 		case UnrecognizedCharacterEntity:
-			return "Unrecognized character entity";
+			return String.format(ProblemMessages.UnrecognizedCharacterEntity);
 		case UnterminatedNamedEntity:
-			return "Unterminated named entity";
+			return String.format(ProblemMessages.UnterminatedNamedEntity);
 		case UndefinedEscapeSequence:
-			return "Undefined escape sequence";
+			return String.format(ProblemMessages.UndefinedEscapeSequence);
 		case InvalidUtf8Sequence:
-			return "Invalid input sequence";
+			return String.format(ProblemMessages.InvalidUtf8Sequence);
 		case IntegerOverflow:
-			return "Integer overflow";
+			return String.format(ProblemMessages.IntegerOverflow);
 		case SignedIntegerOverflow:
-			return "Signed integer overflow";
+			return String.format(ProblemMessages.SignedIntegerOverflow);
 		case UnrecognizedToken:
-			return "Unrecognized token";
+			return String.format(ProblemMessages.UnrecognizedToken);
 		case BinaryExponentPartRequired:
-			return "Binary-exponent-part required";
+			return String.format(ProblemMessages.BinaryExponentPartRequired);
 		case ExponentExpected:
-			return "Exponent expected";
+			return String.format(ProblemMessages.ExponentExpected);
 		case ISuffixDeprecated:
-			return "'I' suffix is deprecated, use 'i' instead";
+			return String.format(ProblemMessages.ISuffixDeprecated);
 		case ParsingErrorInsertTokenAfter:
-			return "Syntax error on token \"" + arguments[0] + "\", " + arguments[1] + " expected after this token";
+			return String.format(ProblemMessages.ParsingErrorInsertTokenAfter, arguments[0], arguments[1]);
 		case ParsingErrorDeleteToken:
-			return "Syntax error on token \"" + arguments[0] + "\", delete this token";
+			return String.format(ProblemMessages.ParsingErrorDeleteToken, arguments[0]);
 		case ParsingErrorInsertToComplete:
-			return "Syntax error, insert \"" + arguments[0] + "\" to complete " + arguments[1];
+			return String.format(ProblemMessages.ParsingErrorInsertToComplete, arguments[0], arguments[1]);
 		case EnumDeclarationIsInvalid:
-			return "Enum declaration is invalid";
+			return String.format(ProblemMessages.EnumDeclarationIsInvalid);
 		case MismatchedStringLiteralPostfixes:
-			return "Mismatched string literal postfixes '" + arguments[0] + "' and '" + arguments[1] + "'";
+			return String.format(ProblemMessages.MismatchedStringLiteralPostfixes, arguments[0], arguments[1]);
 		case NoIdentifierForDeclarator:
-			return "No identifier for declarator";
+			return String.format(ProblemMessages.NoIdentifierForDeclarator);
 		case AliasCannotHaveInitializer:
-			return "Alias cannot have initializer";
+			return String.format(ProblemMessages.AliasCannotHaveInitializer);
 		case CStyleCastIllegal:
-			return "C style cast illegal, use cast(...)";
+			return String.format(ProblemMessages.CStyleCastIllegal);
 		case InvalidLinkageIdentifier:
-			return "Valid linkage identifiers are D, C, C++, Pascal, Windows";
+			return String.format(ProblemMessages.InvalidLinkageIdentifier);
 		case VariadicArgumentCannotBeOutOrRef:
-			return "Variadic argument cannot be out or ref";
+			return String.format(ProblemMessages.VariadicArgumentCannotBeOutOrRef);
 		case VariadicNotAllowedInDelete:
-			return "... not allowed in delete function parameter list";
+			return String.format(ProblemMessages.VariadicNotAllowedInDelete);
 		case NoIdentifierForTemplateValueParameter:
-			return "No identifier for template value parameter";
+			return String.format(ProblemMessages.NoIdentifierForTemplateValueParameter);
 		case UnexpectedIdentifierInDeclarator:
-			return "Unexpected identifier in declarator";
+			return String.format(ProblemMessages.UnexpectedIdentifierInDeclarator);
 		case RedundantStorageClass:
-			return "Redundant storage class";
+			return String.format(ProblemMessages.RedundantStorageClass);
 		case UseBracesForAnEmptyStatement:
-			return "Use '{ }' for an empty statement, not a ';'";
+			return String.format(ProblemMessages.UseBracesForAnEmptyStatement);
 		case MultipleDeclarationsMustHaveTheSameType:
-			return"Multiple declarations must have the same type";
+			return String.format(ProblemMessages.MultipleDeclarationsMustHaveTheSameType);
 		case RedundantInStatement:
-			return "Redundant 'in' statement";
+			return String.format(ProblemMessages.RedundantInStatement);
 		case RedundantOutStatement:
-			return "Redundant 'out' statement";
+			return String.format(ProblemMessages.RedundantOutStatement);
 		case StatementExpectedToBeCurlies:
-			return "Statement expected to be { }";
+			return String.format(ProblemMessages.StatementExpectedToBeCurlies);
 		case InvalidScopeIdentifier:
-			return "Valid scope identifiers are exit, failure, or success";
+			return String.format(ProblemMessages.InvalidScopeIdentifier);
 		case OnScopeDeprecated:
-			return arguments[0] + " is deprecated, use scope";
+			return String.format(ProblemMessages.OnScopeDeprecated, arguments[0]);
 		case DollarInvalidOutsideBrackets:
-			return "'$' is valid only inside [] of index or slice";
+			return String.format(ProblemMessages.DollarInvalidOutsideBrackets);
 		case IftypeDeprecated:
-			return "iftype(condition) is deprecated, use static if (is(condition))";
+			return String.format(ProblemMessages.IftypeDeprecated);
 		case IfAutoDeprecated:
-			return "if (v; e) is deprecated, use if (auto v = e)";
+			return String.format(ProblemMessages.IfAutoDeprecated);
 		case VariadicTemplateParameterMustBeTheLastOne:
-			return "Variadic template parameter must be last one";
+			return String.format(ProblemMessages.VariadicTemplateParameterMustBeTheLastOne);
 		case NeedSizeOfRightmostArray:
-			return "Need size of rightmost array";
+			return String.format(ProblemMessages.NeedSizeOfRightmostArray);
 		case ConflictingStorageClass:
-			return "Conflicting storage class";			
-			
+			return String.format(ProblemMessages.ConflictingStorageClass);
 		case DuplicatedSymbol:
-			return "Duplicated symbol " + arguments[0];
+			return String.format(ProblemMessages.DuplicatedSymbol, arguments[0]);
 		case PropertyCanNotBeRedefined:
-			return "Property " + arguments[0] + " cannot be redefined";
+			return String.format(ProblemMessages.PropertyCanNotBeRedefined, arguments[0]);
 		case CircularDefinition:
-			return "Circular definition";
+			return String.format(ProblemMessages.CircularDefinition);
 		case EnumValueOverflow:
-			return "Overflow of enum value";
+			return String.format(ProblemMessages.EnumValueOverflow);
 		case EnumMustHaveAtLeastOneMember:
-			return "Enum must have at least one member";
+			return String.format(ProblemMessages.EnumMustHaveAtLeastOneMember);
 		case EnumBaseTypeMustBeOfIntegralType:
-			return "Base type must be of integral type";
+			return String.format(ProblemMessages.EnumBaseTypeMustBeOfIntegralType);
 		case ForwardReference:
-			return "Forward reference of " + arguments[0];
+			return String.format(ProblemMessages.ForwardReference, arguments[0]);
 		case ForwardReferenceWhenLookingFor:
-			return arguments[0] + " is forward reference when looking for " + arguments[1];
+			return String.format(ProblemMessages.ForwardReferenceWhenLookingFor, arguments[0], arguments[1]);
 		case BaseEnumIsForwardReference:
-			return "Base enum is forward reference";
+			return String.format(ProblemMessages.BaseEnumIsForwardReference);
 		case CannotResolveForwardReference:
-			return "Cannot resolve forward reference";
+			return String.format(ProblemMessages.CannotResolveForwardReference);
 		case EnumIsForwardReference:
-			return "Enum is forward reference";
+			return String.format(ProblemMessages.EnumIsForwardReference);
 		case IntegerConstantExpressionExpected:
-			return "Integer constant expression expected";
+			return String.format(ProblemMessages.IntegerConstantExpressionExpected);
 		case ThisNotInClassOrStruct:
-			return "Not in a struct or class";
+			return String.format(ProblemMessages.ThisNotInClassOrStruct);
 		case ThisOnlyAllowedInNonStaticMemberFunctions:
-			return "'this' is only allowed in non-static member functions";
+			return String.format(ProblemMessages.ThisOnlyAllowedInNonStaticMemberFunctions);
 		case SuperOnlyAllowedInNonStaticMemberFunctions:
-			return "'super' is only allowed in non-static member functions";
+			return String.format(ProblemMessages.SuperOnlyAllowedInNonStaticMemberFunctions);
 		case SuperNotInClass:
-			return "Not in a class";
+			return String.format(ProblemMessages.SuperNotInClass);
 		case ClassHasNoSuper:
-			return "Class " + arguments[0] + " has no 'super'";
+			return String.format(ProblemMessages.ClassHasNoSuper, arguments[0]);
 		case BaseTypeMustBeInterface:
-			return "Base type must be interface";
+			return String.format(ProblemMessages.BaseTypeMustBeInterface);
 		case MemberIsPrivate:
-			return arguments[0] + " is private";
+			return String.format(ProblemMessages.MemberIsPrivate, arguments[0]);
 		case UsedAsAType:
-			return arguments[0] + " cannot be resolved to a type";
+			return String.format(ProblemMessages.UsedAsAType, arguments[0]);
 		case ExternSymbolsCannotHaveInitializers:
-			return "Extern symbols cannot have initializers";
+			return String.format(ProblemMessages.ExternSymbolsCannotHaveInitializers);
 		case VoidsHaveNoValue:
-			return "Voids have no value";
+			return String.format(ProblemMessages.VoidsHaveNoValue);
 		case CannotInferType:
-			return "Cannot infer type from this array initializer";
+			return String.format(ProblemMessages.CannotInferType);
 		case NoDefinition:
-			return "No definition of struct " + arguments[0];
+			return String.format(ProblemMessages.NoDefinition, arguments[0]);
 		case DuplicatedInterfaceInheritance:
-			return "Duplicated interface " + arguments[0] + " for the type " + arguments[1];
+			return String.format(ProblemMessages.DuplicatedInterfaceInheritance, arguments[0], arguments[1]);
 		case BaseTypeMustBeClassOrInterface:
-			return "Base type must be class or interface";
+			return String.format(ProblemMessages.BaseTypeMustBeClassOrInterface);
 		case FieldsNotAllowedInInterfaces:
-			return "Fields are not allowed in interfaces";
+			return String.format(ProblemMessages.FieldsNotAllowedInInterfaces);
 		case UndefinedIdentifier:
-			return arguments[0] + " cannot be resolved";
+			return String.format(ProblemMessages.UndefinedIdentifier, arguments[0]);
 		case NotAMember:
-			return "Template identifier " + arguments[0] + " is not a member of this module";
+			return String.format(ProblemMessages.NotAMember, arguments[0]);
 		case NewAllocatorsOnlyForClassOrStruct:
-			return "New allocators only are for class or struct definitions";
+			return String.format(ProblemMessages.NewAllocatorsOnlyForClassOrStruct);
 		case DeleteDeallocatorsOnlyForClassOrStruct:
-			return "Delete deallocators only are for class or struct definitions";
+			return String.format(ProblemMessages.DeleteDeallocatorsOnlyForClassOrStruct);
 		case ConstructorsOnlyForClass:
-			return "Constructors only are for class definitions";
+			return String.format(ProblemMessages.ConstructorsOnlyForClass);
 		case DestructorsOnlyForClass:
-			return "Destructors only are for class definitions";
+			return String.format(ProblemMessages.DestructorsOnlyForClass);
 		case InvariantsOnlyForClassStructUnion:
-			return "Invariants only are for struct/union/class definitions";
+			return String.format(ProblemMessages.InvariantsOnlyForClassStructUnion);
 		case FunctionDoesNotOverrideAny:
-			return "The function " + arguments[0] + " of type " + arguments[1] + " must override a superclass method";
+			return String.format(ProblemMessages.FunctionDoesNotOverrideAny, arguments[0], arguments[1]);
 		case CannotOverrideFinalFunctions:
-			return "Cannot override the final function " + arguments[0] + " from " + arguments[1];
+			return String.format(ProblemMessages.CannotOverrideFinalFunctions, arguments[0], arguments[1]);
 		case OverrideOnlyForClassMemberFunctions:
-			return "Override only applies to class member functions";
+			return String.format(ProblemMessages.OverrideOnlyForClassMemberFunctions);
 		case FunctionMustReturnAResultOfType:
-			return "Function must return a result of type " + arguments[0];
+			return String.format(ProblemMessages.FunctionMustReturnAResultOfType, arguments[0]);
 		case MoreThanOneInvariant:
-			return "More than one invariant for " + arguments[0];
+			return String.format(ProblemMessages.MoreThanOneInvariant, arguments[0]);
 		case DuplicatedParameter:
-			return "Duplicate parameter " + arguments[0];
+			return String.format(ProblemMessages.DuplicatedParameter, arguments[0]);
 		case SymbolNotFound:
-			return "Symbol " + arguments[0] + " not found";
+			return String.format(ProblemMessages.SymbolNotFound, arguments[0]);
 		case StatementIsNotReachable:
-			return "Statement is not reachable";
+			return String.format(ProblemMessages.StatementIsNotReachable);
 		case VoidFunctionsHaveNoResult:
-			return "Void functions have no result";
+			return String.format(ProblemMessages.VoidFunctionsHaveNoResult);
 		case ReturnStatementsCannotBeInContracts:
-			return "Return statements cannot be in contracts";
+			return String.format(ProblemMessages.ReturnStatementsCannotBeInContracts);
 		case NotAnAggregateType:
-			return arguments[0] + " is not an aggregate type";
+			return String.format(ProblemMessages.NotAnAggregateType, arguments[0]);
 		case UnrecognizedPragma:
-			return "Unrecognized pragma";
+			return String.format(ProblemMessages.UnrecognizedPragma);
 		case AnonCanOnlyBePartOfAnAggregate:
-			return "Anonymous unions can only be part of an aggregate";
+			return String.format(ProblemMessages.AnonCanOnlyBePartOfAnAggregate);
 		case PragmaIsMissingClosingSemicolon:
-			return "pragma is missing closing ';'";
+			return String.format(ProblemMessages.PragmaIsMissingClosingSemicolon);
 		case CannotImplicitlyConvert:
-			return "Type mismatch: cannot implicitly convert from " + arguments[0] + " to " + arguments[1];
+			return String.format(ProblemMessages.CannotImplicitlyConvert, arguments[0], arguments[1]);
 		case ForbiddenReference:
-			return "Forbidden reference";
+			return String.format(ProblemMessages.ForbiddenReference);
 		case DiscouragedReference:
-			return "Discouraged reference";
+			return String.format(ProblemMessages.DiscouragedReference);
 		case Task:
-			return arguments[0];
+			return String.format(ProblemMessages.Task, arguments[0]);
 		case UndefinedType:
-			return "TODO: remove";
+			return String.format(ProblemMessages.UndefinedType);
 		case IsClassPathCorrect:
-			return "TODO: remove";
+			return String.format(ProblemMessages.IsClassPathCorrect);
 		case FunctionsCannotBeConstOrAuto:
-			return "Functions cannot be const or auto";
+			return String.format(ProblemMessages.FunctionsCannotBeConstOrAuto);
 		case NonVirtualFunctionsCannotBeAbstract:
-			return "Non-virtual functions cannot be abstract";
+			return String.format(ProblemMessages.NonVirtualFunctionsCannotBeAbstract);
 		case ModifierCannotBeAppliedToVariables:
-			return arguments[0] + " cannot be applied to variables";
+			return String.format(ProblemMessages.ModifierCannotBeAppliedToVariables, arguments[0]);
 		case StructsCannotBeAbstract:
-			return "structs cannot be abstract";
+			return String.format(ProblemMessages.StructsCannotBeAbstract);
 		case UnionsCannotBeAbstract:
-			return "unions cannot be abstract";
+			return String.format(ProblemMessages.UnionsCannotBeAbstract);
 		case AliasCannotBeConst:
-			return "alias cannot be const";
+			return String.format(ProblemMessages.AliasCannotBeConst);
 		case OneArgumentOfTypeExpected:
-			return "One argument of type " + arguments[0] + " expected";
+			return String.format(ProblemMessages.OneArgumentOfTypeExpected, arguments[0]);
 		case IllegalMainParameters:
-			return "Parameters must be main() or main(char[][] args)";
+			return String.format(ProblemMessages.IllegalMainParameters);
 		case MustReturnIntOrVoidFromMainFunction:
-			return "Must return int or void from main function";
+			return String.format(ProblemMessages.MustReturnIntOrVoidFromMainFunction);
 		case AtLeastOneArgumentOfTypeExpected:
-			return "At least one argument of type " + arguments[0] + " expected";
+			return String.format(ProblemMessages.AtLeastOneArgumentOfTypeExpected, arguments[0]);
 		case FirstArgumentMustBeOfType:
-			return "First argument must be of type " + arguments[0];
+			return String.format(ProblemMessages.FirstArgumentMustBeOfType, arguments[0]);
 		case StringExpectedForPragmaMsg:
-			return "String expected for message";
+			return String.format(ProblemMessages.StringExpectedForPragmaMsg);
 		case LibPragmaMustRecieveASingleArgumentOfTypeString:
-			return "lib pragma must recieve a single argument of type string";
+			return String.format(ProblemMessages.LibPragmaMustRecieveASingleArgumentOfTypeString);
 		case StringExpectedForPragmaLib:
-			return "String expected for library name";
+			return String.format(ProblemMessages.StringExpectedForPragmaLib);
 		case CannotHaveOutOrInoutParameterOfTypeStaticArray:
-			return "Cannot have out or inout parameter of type static array";
+			return String.format(ProblemMessages.CannotHaveOutOrInoutParameterOfTypeStaticArray);
 		case CannotHaveParameterOfTypeVoid:
-			return "Cannot have parameter of type void";
+			return String.format(ProblemMessages.CannotHaveParameterOfTypeVoid);
 		case FunctionsCannotReturnStaticArrays:
-			return "Functions cannot return static arrays";
+			return String.format(ProblemMessages.FunctionsCannotReturnStaticArrays);
 		case UnrecongnizedTrait:
-			return "Unrecongnized trait: " + arguments[0];
+			return String.format(ProblemMessages.UnrecongnizedTrait, arguments[0]);
 		case CanOnlyConcatenateArrays:
-			return "Can only concatenate arrays, not " + arguments[0] +
-				" and " + arguments[1];
+			return String.format(ProblemMessages.CanOnlyConcatenateArrays, arguments[0], arguments[1]);
 		case ArrayIndexOutOfBounds:
-			return "Array index " + arguments[0] + " is out of bounds [0.." +
-				arguments[1] + "]"; 
+			return String.format(ProblemMessages.ArrayIndexOutOfBounds, arguments[0], arguments[1]);
 		case AssertionFailed:
-			return "Assertion failed: " + arguments[0];
+			return String.format(ProblemMessages.AssertionFailed, arguments[0]);
 		case AssertionFailedNoMessage:
-			return "assert(" + arguments[0] + ") failed";
+			return String.format(ProblemMessages.AssertionFailedNoMessage, arguments[0]);
 		case ExpressionIsNotEvaluatableAtCompileTime:
-			return arguments[0] + " is not evaluatable at compile time";
+			return String.format(ProblemMessages.ExpressionIsNotEvaluatableAtCompileTime, arguments[0]);
 		case UndefinedProperty:
-			return "No property '" + arguments[0] + "' for type '" + arguments[1] +"'";
+			return String.format(ProblemMessages.UndefinedProperty, arguments[0], arguments[1]);
 		case DeprecatedProperty:
-			return "The property '" + arguments[0] + "' is deprecated: use '" + arguments[1] + "' instead";
+			return String.format(ProblemMessages.DeprecatedProperty, arguments[0], arguments[1]);
 		case FileNameMustBeString:
-			return "File name argument must be a string, not (" + arguments[0] + ")";
+			return String.format(ProblemMessages.FileNameMustBeString, arguments[0]);
 		case FileImportsMustBeSpecified:
-			return "File " + arguments[0] + " must be specified as a file import";
+			return String.format(ProblemMessages.FileImportsMustBeSpecified, arguments[0]);
 		case FileNotFound:
-			return "File " + arguments[0] + " not found";
+			return String.format(ProblemMessages.FileNotFound, arguments[0]);
 		case ErrorReadingFile:
-			return "Could not read file : " + arguments[0];
+			return String.format(ProblemMessages.ErrorReadingFile, arguments[0]);
 		case ExpressionHasNoEffect:
-			return "Expression has no effect";
+			return String.format(ProblemMessages.ExpressionHasNoEffect);
 		case ConstantIsNotAnLValue:
-			return "Constant is not an lvalue";
+			return String.format(ProblemMessages.ConstantIsNotAnLValue);
 		case VersionIdentifierReserved:
-			return "Version identifier '" + arguments[0] + "' is reserved and cannot be set";
+			return String.format(ProblemMessages.VersionIdentifierReserved, arguments[0]);
 		case CannotPutCatchStatementInsideFinallyBlock:
-			return "Cannot put catch statement inside finally block";
+			return String.format(ProblemMessages.CannotPutCatchStatementInsideFinallyBlock);
 		case ExpressionDoesNotGiveABooleanResult:
-			return "Expression does not give a boolean result";
+			return String.format(ProblemMessages.ExpressionDoesNotGiveABooleanResult);
 		case BreakIsNotInsideALoopOrSwitch:
-			return "break is not inside a loop or switch statement";
+			return String.format(ProblemMessages.BreakIsNotInsideALoopOrSwitch);
 		case CaseIsNotInSwitch:
-			return "case is not inside a switch statement";
+			return String.format(ProblemMessages.CaseIsNotInSwitch);
 		case VersionDeclarationMustBeAtModuleLevel:
-			return "version declaration must be at module level";
+			return String.format(ProblemMessages.VersionDeclarationMustBeAtModuleLevel);
 		case DebugDeclarationMustBeAtModuleLevel:
-			return "debug declaration must be at module level";
+			return String.format(ProblemMessages.DebugDeclarationMustBeAtModuleLevel);
 		case GotoCaseNotInSwitch:
-			return "goto case is not inside a switch statement";
+			return String.format(ProblemMessages.GotoCaseNotInSwitch);
 		case GotoDefaultNotInSwitch:
-			return "goto default is not inside a switch statement";
+			return String.format(ProblemMessages.GotoDefaultNotInSwitch);
 		case LazyVariablesCannotBeLvalues:
-			return "lazy variables cannot be lvalues";
+			return String.format(ProblemMessages.LazyVariablesCannotBeLvalues);
 		case DivisionByZero:
-			return "Division by zero";
+			return String.format(ProblemMessages.DivisionByZero);
 		case DefaultNotInSwitch:
-			return "default is not inside a switch statement";
+			return String.format(ProblemMessages.DefaultNotInSwitch);
 		case SwitchAlreadyHasDefault:
-			return "switch statement already has a default";
+			return String.format(ProblemMessages.SwitchAlreadyHasDefault);
 		case ContinueNotInLoop:
-			return "continue is not inside a loop";
+			return String.format(ProblemMessages.ContinueNotInLoop);
 		case ForeachIndexCannotBeRef:
-			return "foreach: index cannot be ref";
+			return String.format(ProblemMessages.ForeachIndexCannotBeRef);
 		case ParametersDoesNotMatchParameterTypes:
-			return arguments[0] + " does not match parameter types (" + arguments[1] + ")";
+			return String.format(ProblemMessages.ParametersDoesNotMatchParameterTypes, arguments[0], arguments[1]);
+		case IncompatibleParameterStorageClass:
+			return String.format(ProblemMessages.IncompatibleParameterStorageClass);
+		case OutCannotBeFinal:
+			return String.format(ProblemMessages.OutCannotBeFinal);
+		case ScopeCannotBeRefOrOut:
+			return String.format(ProblemMessages.ScopeCannotBeRefOrOut);
 		default:
 			return "";
 		}

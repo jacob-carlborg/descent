@@ -1,0 +1,479 @@
+UnterminatedBlockComment
+	formatString=Unterminated block comment
+	numArgs=0
+UnterminatedPlusBlockComment
+	formatString=Unterminated plus block comment
+	numArgs=0
+IncorrectNumberOfHexDigitsInEscapeSequence
+	formatString=Escape hex sequence has %1$s digits instead of %2$s
+	numArgs=2
+UndefinedEscapeHexSequence
+	formatString=Undefined escape hex sequence
+	numArgs=0
+UnterminatedStringConstant
+	formatString=Unterminated string constant
+	numArgs=0
+OddNumberOfCharactersInHexString
+	formatString=Odd number (%1$s) of hex characters in hex string
+	numArgs=1
+NonHexCharacter
+	formatString=Non-hex character: %1$s
+	numArgs=1
+UnterminatedCharacterConstant
+	formatString=Unterminated character constant
+	numArgs=0
+BinaryDigitExpected
+	formatString=Binary digit expected
+	numArgs=0
+OctalDigitExpected
+	formatString=Octal digit expected
+	numArgs=0
+HexDigitExpected
+	formatString=Hex digit expected
+	numArgs=0
+UnsupportedCharacter
+	formatString=Unsupported char: %1$s
+	numArgs=1
+InvalidUtfCharacter
+	formatString=Invalid UTF character: \\U%1$s
+	numArgs=1
+ThreeEqualsIsNoLongerLegal
+	formatString='===' is no longer legal, use 'is' instead
+	numArgs=0
+NotTwoEqualsIsNoLongerLegal
+	formatString='!==' is no longer legal, use 'is' instead
+	numArgs=0
+LSuffixDeprecated
+	formatString='l' suffix is deprecated, use 'L' instead
+	numArgs=0
+InvalidPragmaSyntax
+	formatString=Invalid pragma syntax
+	numArgs=0
+UnrecognizedCharacterEntity
+	formatString=Unrecognized character entity
+	numArgs=0
+UnterminatedNamedEntity
+	formatString=Unterminated named entity
+	numArgs=0
+UndefinedEscapeSequence
+	formatString=Undefined escape sequence
+	numArgs=0
+InvalidUtf8Sequence
+	formatString=Invalid input sequence
+	numArgs=0
+IntegerOverflow
+	formatString=Integer overflow
+	numArgs=0
+SignedIntegerOverflow
+	formatString=Signed integer overflow
+	numArgs=0
+UnrecognizedToken
+	formatString=Unrecognized token
+	numArgs=0
+BinaryExponentPartRequired
+	formatString=Binary-exponent-part required
+	numArgs=0
+ExponentExpected
+	formatString=Exponent expected
+	numArgs=0
+ISuffixDeprecated
+	formatString='I' suffix is deprecated, use 'i' instead
+	numArgs=0
+ParsingErrorInsertTokenAfter
+	formatString=Syntax error on token "%1$s", %2$s expected after this token
+	numArgs=2
+ParsingErrorDeleteToken
+	formatString=Syntax error on token "%1$s", delete this token
+	numArgs=1
+ParsingErrorInsertToComplete
+	formatString=Syntax error, insert "%1$s" to complete %2$s
+	numArgs=2
+EnumDeclarationIsInvalid
+	formatString=Enum declaration is invalid
+	numArgs=0
+MismatchedStringLiteralPostfixes
+	formatString=Mismatched string literal postfixes '%1$s' and '%2$s'
+	numArgs=2
+NoIdentifierForDeclarator
+	formatString=No identifier for declarator
+	numArgs=0
+AliasCannotHaveInitializer
+	formatString=Alias cannot have initializer
+	numArgs=0
+CStyleCastIllegal
+	formatString=C style cast illegal, use cast(...)
+	numArgs=0
+InvalidLinkageIdentifier
+	formatString=Valid linkage identifiers are D, C, C++, Pascal, Windows
+	numArgs=0
+VariadicArgumentCannotBeOutOrRef
+	formatString=Variadic argument cannot be out or ref
+	numArgs=0
+VariadicNotAllowedInDelete
+	formatString=... not allowed in delete function parameter list
+	numArgs=0
+NoIdentifierForTemplateValueParameter
+	formatString=No identifier for template value parameter
+	numArgs=0
+UnexpectedIdentifierInDeclarator
+	formatString=Unexpected identifier in declarator
+	numArgs=0
+RedundantStorageClass
+	formatString=Redundant storage class
+	numArgs=0
+UseBracesForAnEmptyStatement
+	formatString=Use '{ }' for an empty statement, not a ';'
+	numArgs=0
+MultipleDeclarationsMustHaveTheSameType
+	formatString=Multiple declarations must have the same type
+	numArgs=0
+RedundantInStatement
+	formatString=Redundant 'in' statement
+	numArgs=0
+RedundantOutStatement
+	formatString=Redundant 'out' statement
+	numArgs=0
+StatementExpectedToBeCurlies
+	formatString=Statement expected to be { }
+	numArgs=0
+InvalidScopeIdentifier
+	formatString=Valid scope identifiers are exit, failure, or success
+	numArgs=0
+OnScopeDeprecated
+	formatString=%1$s is deprecated, use scope
+	numArgs=1
+DollarInvalidOutsideBrackets
+	formatString='$' is valid only inside [] of index or slice
+	numArgs=0
+IftypeDeprecated
+	formatString=iftype(condition) is deprecated, use static if (is(condition))
+	numArgs=0
+IfAutoDeprecated
+	formatString=if (v; e) is deprecated, use if (auto v = e)
+	numArgs=0
+VariadicTemplateParameterMustBeTheLastOne
+	formatString=Variadic template parameter must be last one
+	numArgs=0
+NeedSizeOfRightmostArray
+	formatString=Need size of rightmost array
+	numArgs=0
+ConflictingStorageClass
+	formatString=Conflicting storage class
+	numArgs=0
+DuplicatedSymbol
+	formatString=Duplicated symbol %1$s
+	numArgs=1
+PropertyCanNotBeRedefined
+	formatString=Property %1$s cannot be redefined
+	numArgs=1
+CircularDefinition
+	formatString=Circular definition
+	numArgs=0
+EnumValueOverflow
+	formatString=Overflow of enum value
+	numArgs=0
+EnumMustHaveAtLeastOneMember
+	formatString=Enum must have at least one member
+	numArgs=0
+EnumBaseTypeMustBeOfIntegralType
+	formatString=Base type must be of integral type
+	numArgs=0
+ForwardReference
+	formatString=Forward reference of %1$s
+	numArgs=1
+ForwardReferenceWhenLookingFor
+	formatString=%1$s is forward reference when looking for %2$s
+	numArgs=2
+BaseEnumIsForwardReference
+	formatString=Base enum is forward reference
+	numArgs=0
+CannotResolveForwardReference
+	formatString=Cannot resolve forward reference
+	numArgs=0
+EnumIsForwardReference
+	formatString=Enum is forward reference
+	numArgs=0
+IntegerConstantExpressionExpected
+	formatString=Integer constant expression expected
+	numArgs=0
+ThisNotInClassOrStruct
+	formatString=Not in a struct or class
+	numArgs=0
+ThisOnlyAllowedInNonStaticMemberFunctions
+	formatString='this' is only allowed in non-static member functions
+	numArgs=0
+SuperOnlyAllowedInNonStaticMemberFunctions
+	formatString='super' is only allowed in non-static member functions
+	numArgs=0
+SuperNotInClass
+	formatString=Not in a class
+	numArgs=0
+ClassHasNoSuper
+	formatString=Class %1$s has no 'super'
+	numArgs=1
+BaseTypeMustBeInterface
+	formatString=Base type must be interface
+	numArgs=0
+MemberIsPrivate
+	formatString=%1$s is private
+	numArgs=1
+UsedAsAType
+	formatString=%1$s cannot be resolved to a type
+	numArgs=1
+ExternSymbolsCannotHaveInitializers
+	formatString=Extern symbols cannot have initializers
+	numArgs=0
+VoidsHaveNoValue
+	formatString=Voids have no value
+	numArgs=0
+CannotInferType
+	formatString=Cannot infer type from this array initializer
+	numArgs=0
+NoDefinition
+	formatString=No definition of struct %1$s
+	numArgs=1
+DuplicatedInterfaceInheritance
+	formatString=Duplicated interface %1$s for the type %2$s
+	numArgs=2
+BaseTypeMustBeClassOrInterface
+	formatString=Base type must be class or interface
+	numArgs=0
+FieldsNotAllowedInInterfaces
+	formatString=Fields are not allowed in interfaces
+	numArgs=0
+UndefinedIdentifier
+	formatString=%1$s cannot be resolved
+	numArgs=1
+NotAMember
+	formatString=Template identifier %1$s is not a member of this module
+	numArgs=1
+NewAllocatorsOnlyForClassOrStruct
+	formatString=New allocators only are for class or struct definitions
+	numArgs=0
+DeleteDeallocatorsOnlyForClassOrStruct
+	formatString=Delete deallocators only are for class or struct definitions
+	numArgs=0
+ConstructorsOnlyForClass
+	formatString=Constructors only are for class definitions
+	numArgs=0
+DestructorsOnlyForClass
+	formatString=Destructors only are for class definitions
+	numArgs=0
+InvariantsOnlyForClassStructUnion
+	formatString=Invariants only are for struct/union/class definitions
+	numArgs=0
+FunctionDoesNotOverrideAny
+	formatString=The function %1$s of type %2$s must override a superclass method
+	numArgs=2
+CannotOverrideFinalFunctions
+	formatString=Cannot override the final function %1$s from %2$s
+	numArgs=2
+OverrideOnlyForClassMemberFunctions
+	formatString=Override only applies to class member functions
+	numArgs=0
+FunctionMustReturnAResultOfType
+	formatString=Function must return a result of type %1$s
+	numArgs=1
+MoreThanOneInvariant
+	formatString=More than one invariant for %1$s
+	numArgs=1
+DuplicatedParameter
+	formatString=Duplicate parameter %1$s
+	numArgs=1
+SymbolNotFound
+	formatString=Symbol %1$s not found
+	numArgs=1
+StatementIsNotReachable
+	formatString=Statement is not reachable
+	numArgs=0
+VoidFunctionsHaveNoResult
+	formatString=Void functions have no result
+	numArgs=0
+ReturnStatementsCannotBeInContracts
+	formatString=Return statements cannot be in contracts
+	numArgs=0
+NotAnAggregateType
+	formatString=%1$s is not an aggregate type
+	numArgs=1
+UnrecognizedPragma
+	formatString=Unrecognized pragma
+	numArgs=0
+AnonCanOnlyBePartOfAnAggregate
+	formatString=Anonymous unions can only be part of an aggregate
+	numArgs=0
+PragmaIsMissingClosingSemicolon
+	formatString=pragma is missing closing ';'
+	numArgs=0
+CannotImplicitlyConvert
+	formatString=Type mismatch: cannot implicitly convert from %1$s to %2$s
+	numArgs=2
+ForbiddenReference
+	formatString=Forbidden reference
+	numArgs=0
+DiscouragedReference
+	formatString=Discouraged reference
+	numArgs=0
+Task
+	formatString=%1$s
+	numArgs=1
+UndefinedType
+	formatString=TODO: remove
+	numArgs=0
+IsClassPathCorrect
+	formatString=TODO: remove
+	numArgs=0
+FunctionsCannotBeConstOrAuto
+	formatString=Functions cannot be const or auto
+	numArgs=0
+NonVirtualFunctionsCannotBeAbstract
+	formatString=Non-virtual functions cannot be abstract
+	numArgs=0
+ModifierCannotBeAppliedToVariables
+	formatString=%1$s cannot be applied to variables
+	numArgs=1
+StructsCannotBeAbstract
+	formatString=structs cannot be abstract
+	numArgs=0
+UnionsCannotBeAbstract
+	formatString=unions cannot be abstract
+	numArgs=0
+AliasCannotBeConst
+	formatString=alias cannot be const
+	numArgs=0
+OneArgumentOfTypeExpected
+	formatString=One argument of type %1$s expected
+	numArgs=1
+IllegalMainParameters
+	formatString=Parameters must be main() or main(char[][] args)
+	numArgs=0
+MustReturnIntOrVoidFromMainFunction
+	formatString=Must return int or void from main function
+	numArgs=0
+AtLeastOneArgumentOfTypeExpected
+	formatString=At least one argument of type %1$s expected
+	numArgs=1
+FirstArgumentMustBeOfType
+	formatString=First argument must be of type %1$s
+	numArgs=1
+StringExpectedForPragmaMsg
+	formatString=String expected for message
+	numArgs=0
+LibPragmaMustRecieveASingleArgumentOfTypeString
+	formatString=lib pragma must recieve a single argument of type string
+	numArgs=0
+StringExpectedForPragmaLib
+	formatString=String expected for library name
+	numArgs=0
+CannotHaveOutOrInoutParameterOfTypeStaticArray
+	formatString=Cannot have out or inout parameter of type static array
+	numArgs=0
+CannotHaveParameterOfTypeVoid
+	formatString=Cannot have parameter of type void
+	numArgs=0
+FunctionsCannotReturnStaticArrays
+	formatString=Functions cannot return static arrays
+	numArgs=0
+UnrecongnizedTrait
+	formatString=Unrecongnized trait: %1$s
+	numArgs=1
+CanOnlyConcatenateArrays
+	formatString=Can only concatenate arrays, not %1$s and %2$s
+	numArgs=2
+ArrayIndexOutOfBounds
+	formatString=Array index %1$s is out of bounds [0..%2$s]; 
+	numArgs=2
+AssertionFailed
+	formatString=Assertion failed: %1$s
+	numArgs=1
+AssertionFailedNoMessage
+	formatString=assert(%1$s) failed
+	numArgs=1
+ExpressionIsNotEvaluatableAtCompileTime
+	formatString=%1$s is not evaluatable at compile time
+	numArgs=1
+UndefinedProperty
+	formatString=No property '%1$s' for type '%2$s'
+	numArgs=2
+DeprecatedProperty
+	formatString=The property '%1$s' is deprecated: use '%2$s' instead
+	numArgs=2
+FileNameMustBeString
+	formatString=File name argument must be a string, not (%1$s)
+	numArgs=1
+FileImportsMustBeSpecified
+	formatString=File %1$s must be specified as a file import
+	numArgs=1
+FileNotFound
+	formatString=File %1$s not found
+	numArgs=1
+ErrorReadingFile
+	formatString=Could not read file : %1$s
+	numArgs=1
+ExpressionHasNoEffect
+	formatString=Expression has no effect
+	numArgs=0
+ConstantIsNotAnLValue
+	formatString=Constant is not an lvalue
+	numArgs=0
+VersionIdentifierReserved
+	formatString=Version identifier '%1$s' is reserved and cannot be set
+	numArgs=1
+CannotPutCatchStatementInsideFinallyBlock
+	formatString=Cannot put catch statement inside finally block
+	numArgs=0
+ExpressionDoesNotGiveABooleanResult
+	formatString=Expression does not give a boolean result
+	numArgs=0
+BreakIsNotInsideALoopOrSwitch
+	formatString=break is not inside a loop or switch statement
+	numArgs=0
+CaseIsNotInSwitch
+	formatString=case is not inside a switch statement
+	numArgs=0
+VersionDeclarationMustBeAtModuleLevel
+	formatString=version declaration must be at module level
+	numArgs=0
+DebugDeclarationMustBeAtModuleLevel
+	formatString=debug declaration must be at module level
+	numArgs=0
+GotoCaseNotInSwitch
+	formatString=goto case is not inside a switch statement
+	numArgs=0
+GotoDefaultNotInSwitch
+	formatString=goto default is not inside a switch statement
+	numArgs=0
+LazyVariablesCannotBeLvalues
+	formatString=lazy variables cannot be lvalues
+	numArgs=0
+DivisionByZero
+	formatString=Division by zero
+	numArgs=0
+DefaultNotInSwitch
+	formatString=default is not inside a switch statement
+	numArgs=0
+SwitchAlreadyHasDefault
+	formatString=switch statement already has a default
+	numArgs=0
+ContinueNotInLoop
+	formatString=continue is not inside a loop
+	numArgs=0
+ForeachIndexCannotBeRef
+	formatString=foreach: index cannot be ref
+	numArgs=0
+ParametersDoesNotMatchParameterTypes
+	formatString=%1$s does not match parameter types (%2$s)
+	numArgs=2
+IncompatibleParameterStorageClass
+	formatString=<<TODO>>
+	numArgs=0
+OutCannotBeFinal
+	formatString=<<TODO>>
+	numArgs=0
+ScopeCannotBeRefOrOut
+	formatString=<<TODO>>
+	numArgs=0
+
+
+
+
+
