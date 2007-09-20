@@ -189,6 +189,10 @@ public class TypeIdentifier extends TypeQualified {
 	
 	@Override
 	public void setBinding(ASTDmdNode binding) {
+		if (binding == null) {
+			return;
+		}
+		
 		super.setBinding(binding);
 		if (idents == null) {
 			ident.setBinding(binding);

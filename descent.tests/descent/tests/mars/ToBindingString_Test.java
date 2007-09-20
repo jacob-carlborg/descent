@@ -47,7 +47,7 @@ public class ToBindingString_Test extends Parser_Test {
 				
 				"class X {\n" +
 				"}\n" +
-				"typedef X x<<class X>>;"
+				"typedef X<<class X>> x;"
 			);
 	}
 	
@@ -57,7 +57,7 @@ public class ToBindingString_Test extends Parser_Test {
 				
 				"class X {\n" +
 				"}\n" +
-				"X x<<class X>>;"
+				"X<<class X>> x;"
 			);
 	}
 	
@@ -68,7 +68,7 @@ public class ToBindingString_Test extends Parser_Test {
 				"class X {\n" +
 				"}\n" +
 				"void foo() {\n" +
-				"  X x<<class X>> = new X<<class X>>;\n" +
+				"  X<<class X>> x = new X<<class X>>;\n" +
 				"}"
 			);
 	}
@@ -93,7 +93,7 @@ public class ToBindingString_Test extends Parser_Test {
 				
 				"class X {\n" +
 				"}\n" +
-				"void bar(int x<<int>>) {\n" +
+				"void bar(int x) {\n" +
 				"}\n" +
 				"void foo() {\n" +
 				"  bar(1)<<function bar(int)>>;\n" +
@@ -107,7 +107,7 @@ public class ToBindingString_Test extends Parser_Test {
 				
 				"class X {\n" +
 				"}\n" +
-				"void bar(X x<<class X>>) {\n" +
+				"void bar(X<<class X>> x) {\n" +
 				"}\n" +
 				"void foo() {\n" +
 				"  bar(new X<<class X>>)<<function bar(class X)>>;\n" +
@@ -122,7 +122,7 @@ public class ToBindingString_Test extends Parser_Test {
 				"class X {\n" +
 				"}\n" +
 				"void foo() {\n" +
-				"  int x<<int>> = 2;\n" +
+				"  int x = 2;\n" +
 				"  x<<function foo().variable x>> = 3;\n" +
 				"}"
 			);
@@ -135,9 +135,18 @@ public class ToBindingString_Test extends Parser_Test {
 				"class X {\n" +
 				"}\n" +
 				"void foo() {\n" +
-				"  int x<<int>> = 2;\n" +
-				"  int z<<int>> = x<<function foo().variable x>>;\n" +
+				"  int x = 2;\n" +
+				"  int z = x<<function foo().variable x>>;\n" +
 				"}"
+			);
+	}
+	
+	public void testInitializer() {
+		assertToBindingString(
+				"int x; int y = x;",
+				
+				"int x;\n" +
+				"int y = x<<variable x>>;"
 			);
 	}
 	
@@ -146,9 +155,27 @@ public class ToBindingString_Test extends Parser_Test {
 				"void foo() { int x = 2; int z = 2 + x; }",
 				
 				"void foo() {\n" +
-				"  int x<<int>> = 2;\n" +
-				"  int z<<int>> = (2 + x<<function foo().variable x>>)<<int>>;\n" +
+				"  int x = 2;\n" +
+				"  int z = (2 + x<<function foo().variable x>>)<<int>>;\n" +
 				"}"
+			);
+	}
+	
+	public void testAddExpOutside() {
+		assertToBindingString(
+				"int x = 2; int z = 2 + x;",
+				
+				"int x = 2;\n" +
+				"int z = (2 + x<<variable x>>)<<int>>;"
+			);
+	}
+	
+	public void testAddExpOutside2() {
+		assertToBindingString(
+				"int x = 2; int z = x + 2;",
+				
+				"int x = 2;\n" +
+				"int z = (x<<variable x>> + 2)<<int>>;"
 			);
 	}
 	
@@ -157,8 +184,8 @@ public class ToBindingString_Test extends Parser_Test {
 				"void foo() { int x = 2; int* y = &x; }",
 				
 				"void foo() {\n" +
-				"  int x<<int>> = 2;\n" +
-				"  int* y<<int*>> = (&x<<function foo().variable x>>)<<int*>>;\n" +
+				"  int x = 2;\n" +
+				"  int* y = (&x<<function foo().variable x>>)<<int*>>;\n" +
 				"}"
 			);
 	}
@@ -168,8 +195,8 @@ public class ToBindingString_Test extends Parser_Test {
 				"void foo() { int x = 2; int[1] y = [ x ]; }",
 				
 				"void foo() {\n" +
-				"  int x<<int>> = 2;\n" +
-				"  int[1] y<<int[1]>> = [x<<function foo().variable x>>]<<int[]>>;\n" +
+				"  int x = 2;\n" +
+				"  int[1] y = [x<<function foo().variable x>>];\n" +
 				"}"
 			);
 	}
@@ -179,8 +206,8 @@ public class ToBindingString_Test extends Parser_Test {
 				"void foo() { int x = 2; int z = 2 * x; }",
 				
 				"void foo() {\n" +
-				"  int x<<int>> = 2;\n" +
-				"  int z<<int>> = (2 * x<<function foo().variable x>>)<<int>>;\n" +
+				"  int x = 2;\n" +
+				"  int z = (2 * x<<function foo().variable x>>)<<int>>;\n" +
 				"}"
 			);
 	}	

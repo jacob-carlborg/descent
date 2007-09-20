@@ -108,6 +108,12 @@ public class ExpInitializer extends Initializer {
 	@Override
 	public void setBinding(ASTDmdNode binding) {
 		exp.setBinding(binding);
+		sourceExp.setBinding(binding);
+	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return exp.getBinding();
 	}
 
 }

@@ -28,6 +28,9 @@ public class TypedefDeclaration extends Declaration {
 	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype,
 			Initializer init) {
 		super(loc, id);
+		if (this.ident != null) {
+			this.ident.setBinding(this);
+		}
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
 		this.sourceBasetype = basetype;
@@ -84,7 +87,7 @@ public class TypedefDeclaration extends Declaration {
 			if (sc.parent.isFuncDeclaration() != null && init != null) {
 				semantic2(sc, context);
 			}
-			ident.setBinding(basetype);
+			sourceBasetype.setBinding(getBinding());
 		} else if (sem == 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CircularDefinition, 0, ident.start, ident.length));
@@ -157,7 +160,7 @@ public class TypedefDeclaration extends Declaration {
 	}
 	
 	public ASTDmdNode getBinding() {
-		return ident.getBinding();
+		return basetype.getBinding();
 	}
 
 }

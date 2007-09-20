@@ -201,5 +201,10 @@ public class AssignExp extends BinExp {
 	public void appendBinding(StringBuilder sb) {
 		e2.appendBinding(sb);
 	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return e2;
+	}
 
 }

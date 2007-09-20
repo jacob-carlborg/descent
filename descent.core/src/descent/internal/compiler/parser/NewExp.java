@@ -258,6 +258,7 @@ public class NewExp extends Expression {
 					e = new CallExp(loc, e, newargs);
 					e = e.semantic(sc, context);
 					e.type = type.pointerTo(context);
+					assignBindings();
 					return e;
 				}
 
@@ -297,7 +298,14 @@ public class NewExp extends Expression {
 			}
 		}
 
+		assignBindings();
 		return this;
+	}
+	
+	private void assignBindings() {
+		if (sourceNewtype != null) {
+			sourceNewtype.setBinding(getBinding());
+		}
 	}
 
 	@Override
@@ -330,7 +338,7 @@ public class NewExp extends Expression {
 	
 	@Override
 	public ASTDmdNode getBinding() {
-		return type;
+		return newtype.getBinding();
 	}
 
 }

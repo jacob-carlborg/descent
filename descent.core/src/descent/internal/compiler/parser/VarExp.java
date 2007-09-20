@@ -172,5 +172,12 @@ public class VarExp extends Expression {
 	public ASTDmdNode getBinding() {
 		return var;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		appendBinding(sb);
+		return sb.toString();
+	}
 
 }

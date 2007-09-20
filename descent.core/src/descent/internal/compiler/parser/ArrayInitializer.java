@@ -256,9 +256,7 @@ public class ArrayInitializer extends Initializer {
 		super.setBinding(binding);
 		
 		if (value != null) {
-			ExpInitializer expInit = (ExpInitializer) binding;
-			AssignExp assignExp = (AssignExp) expInit.exp;
-			ArrayLiteralExp arrayLiteralExp = (ArrayLiteralExp) assignExp.e2;
+			ArrayLiteralExp arrayLiteralExp = (ArrayLiteralExp) binding;
 			for(int i = 0; i < value.size(); i++) {
 				value.get(i).setBinding(arrayLiteralExp.elements.get(i).getBinding());
 			}

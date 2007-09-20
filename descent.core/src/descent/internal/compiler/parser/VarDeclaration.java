@@ -63,6 +63,9 @@ public class VarDeclaration extends Declaration {
 
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
 		super(loc, id);
+		if (ident != null) {
+			ident.setBinding(this);
+		}
 
 		Assert.isTrue(type != null || init != null);
 
@@ -311,7 +314,7 @@ public class VarDeclaration extends Declaration {
 			TupleDeclaration v2 = new TupleDeclaration(loc, ident, exps);
 			v2.isexp = true;
 			aliassym = v2;
-			assignBindings();
+			assignTypeBinding();
 			return;
 		}
 
@@ -399,7 +402,7 @@ public class VarDeclaration extends Declaration {
 				e = new AssignExp(loc, e1, e);
 				e.type = e1.type;
 				init = new ExpInitializer(loc, e/* .type.defaultInit() */);
-				assignBindings();
+				assignTypeBinding();
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
@@ -458,7 +461,7 @@ public class VarDeclaration extends Declaration {
 							e = init.toExpression(context);
 							if (e == null) {
 								error("is not a static and cannot have static initializer");
-								assignBindings();
+								assignTypeBinding();
 								return;
 							}
 						}
@@ -539,7 +542,7 @@ public class VarDeclaration extends Declaration {
 			}
 		}
 		
-		assignBindings();
+		assignTypeBinding();
 	}
 
 	@Override
@@ -549,6 +552,7 @@ public class VarDeclaration extends Declaration {
 			init = init.semantic(sc, type, context);
 			inuse--;
 		}
+		assignInitBinding();
 	}
 
 	@Override
@@ -622,18 +626,21 @@ public class VarDeclaration extends Declaration {
 	
 	public ASTDmdNode getBinding() {
 		if (type != sourceType) {
-			return type;
+			return type.getBinding();
 		} else {
 			return null;
 		}
 	}
 	
-	private void assignBindings() {
-		if (ident != null) {
-			ident.setBinding(type);
+	private void assignTypeBinding() {
+		if (sourceType != null) {
+			sourceType.setBinding(getBinding());
 		}
+	}
+	
+	private void assignInitBinding() {
 		if (sourceInit != null) {
-			sourceInit.setBinding(init);
+			sourceInit.setBinding(init.getBinding());
 		}
 	}
 

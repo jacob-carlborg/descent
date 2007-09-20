@@ -434,5 +434,10 @@ public class TypeClass extends Type {
 		appendBinding(sb);
 		return sb.toString();
 	}
+	
+	@Override
+	public ASTDmdNode getBinding() {
+		return sym;
+	}
 
 }

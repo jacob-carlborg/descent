@@ -246,6 +246,7 @@ public class TypeFunction extends Type {
 
 				inuse++;
 				arg.type = arg.type.semantic(loc, sc, context);
+				arg.sourceType.setBinding(arg.type.getBinding());
 				if (inuse == 1) {
 					inuse--;
 				}
