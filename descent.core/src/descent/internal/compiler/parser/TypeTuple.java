@@ -26,7 +26,7 @@ public class TypeTuple extends Type {
 		super(Ttuple, null);
 		Arguments arguments = new Arguments();
 		if (exps != null) {
-			arguments.ensureCapacity(exps.size());
+			arguments.setDim(exps.size());
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
 				if (e.type.ty == Ttuple)
@@ -159,7 +159,7 @@ public class TypeTuple extends Type {
 		TypeTuple tt = new TypeTuple();
 		Arguments arguments = new Arguments();
 		if (exps != null) {
-			arguments.ensureCapacity(exps.size());
+			arguments.setDim(exps.size());
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
 				if (e.type.ty == TY.Ttuple) {

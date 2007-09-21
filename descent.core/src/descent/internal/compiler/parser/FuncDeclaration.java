@@ -537,7 +537,7 @@ public class FuncDeclaration extends Declaration {
 						"assert(!dim || parameters.dim == dim);");
 			}
 
-			vsave.ensureCapacity(dim);
+			vsave.setDim(dim);
 
 			for (int i = 0; i < dim; i++) {
 				Expression earg = arguments.get(i);
@@ -594,7 +594,7 @@ public class FuncDeclaration extends Declaration {
 		 */
 		Expressions valueSaves = new Expressions();
 		if (istate != null) {
-			valueSaves.ensureCapacity(istate.vars.size());
+			valueSaves.setDim(istate.vars.size());
 			for (int i = 0; i < istate.vars.size(); i++) {
 				VarDeclaration v = (VarDeclaration) istate.vars.get(i);
 				if (v != null) {

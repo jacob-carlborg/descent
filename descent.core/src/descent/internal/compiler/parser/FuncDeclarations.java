@@ -1,9 +1,7 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 // DMD 1.020
-public class FuncDeclarations extends ArrayList<FuncDeclaration> {
+public class FuncDeclarations extends Array<FuncDeclaration> {
 
 	private static final long serialVersionUID = 1L;
 	

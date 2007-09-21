@@ -1,9 +1,7 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 // DMD 1.020
-public class Identifiers extends ArrayList<IdentifierExp> {
+public class Identifiers extends Array<IdentifierExp> {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -85,7 +85,7 @@ public abstract class BinExp extends Expression {
 			e1.checkIntegral(context);
 			e2.checkIntegral(context);
 		}
-		
+
 		assignBinding();
 		return this;
 	}
@@ -120,7 +120,7 @@ public abstract class BinExp extends Expression {
 				return new IntegerExp(loc, 0);
 			}
 		}
-		
+
 		assignBinding();
 		return this;
 	}
@@ -154,8 +154,8 @@ public abstract class BinExp extends Expression {
 				// and letting back end do it.
 				e2 = new UshrExp(loc, e2, new IntegerExp(loc, 3, t));
 			} else {
-				e2 = new MulExp(loc, e2, new IntegerExp(loc,
-						new integer_t(stride), t));
+				e2 = new MulExp(loc, e2, new IntegerExp(loc, new integer_t(
+						stride), t));
 			}
 			e2.type = t;
 			type = e1.type;
@@ -175,8 +175,8 @@ public abstract class BinExp extends Expression {
 				// BUG: should add runtime check for misaligned offsets
 				e = new UshrExp(loc, e, new IntegerExp(loc, 3, t));
 			} else {
-				e = new MulExp(loc, e, new IntegerExp(loc, new integer_t(
-						stride), t));
+				e = new MulExp(loc, e, new IntegerExp(loc,
+						new integer_t(stride), t));
 			}
 			e.type = t;
 			type = e2.type;
@@ -492,25 +492,25 @@ public abstract class BinExp extends Expression {
 		}
 		return this;
 	}
-	
+
 	public final Expression interpretCommon(InterState istate, BinExp_fp fp,
 			SemanticContext context) {
 		Expression e;
 		Expression e1;
 		Expression e2;
-		
+
 		e1 = this.e1.interpret(istate, context);
-		if(e1 == EXP_CANT_INTERPRET)
+		if (e1 == EXP_CANT_INTERPRET)
 			return EXP_CANT_INTERPRET; //goto Lcant;
-		if(!e1.isConst())
+		if (!e1.isConst())
 			return EXP_CANT_INTERPRET; //goto Lcant;
-			
+
 		e2 = this.e2.interpret(istate, context);
-		if(e2 == EXP_CANT_INTERPRET)
+		if (e2 == EXP_CANT_INTERPRET)
 			return EXP_CANT_INTERPRET; //goto Lcant;
-		if(!e2.isConst())
+		if (!e2.isConst())
 			return EXP_CANT_INTERPRET; //goto Lcant;
-			
+
 		e = fp.call(type, e1, e2, context);
 		return e;
 	}
@@ -543,80 +543,68 @@ public abstract class BinExp extends Expression {
 			return EXP_CANT_INTERPRET;
 		}
 
-		 e = fp.call(op, type, e1, e2, context);
+		e = fp.call(op, type, e1, e2, context);
 		return e;
 
 		//	Lcant:
 		//	    return EXP_CANT_INTERPRET;
 	}
-	
-	public final Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
-			SemanticContext context)
-	{
+
+	public final Expression interpretAssignCommon(InterState istate,
+			BinExp_fp fp, SemanticContext context) {
 		return interpretAssignCommon(istate, fp, 0, context);
 	}
-	
-	public final Expression interpretAssignCommon(InterState istate, BinExp_fp fp,
-			int post, SemanticContext context)
-	{
+
+	public final Expression interpretAssignCommon(InterState istate,
+			BinExp_fp fp, int post, SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
 		Expression e1 = this.e1;
-		
-		if(null != fp)
-		{
-			if(e1.op == TOKcast)
-			{
+
+		if (null != fp) {
+			if (e1.op == TOKcast) {
 				CastExp ce = (CastExp) e1;
 				e1 = ce.e1;
 			}
 		}
-		if(e1 == EXP_CANT_INTERPRET)
+		if (e1 == EXP_CANT_INTERPRET)
 			return e1;
 		Expression e2 = this.e2.interpret(istate, context);
-		if(e2 == EXP_CANT_INTERPRET)
+		if (e2 == EXP_CANT_INTERPRET)
 			return e2;
-		
+
 		/* Assignment to variable of the form:
 		 *        v = e2
 		 */
-		if(e1.op == TOKvar)
-		{
+		if (e1.op == TOKvar) {
 			VarExp ve = (VarExp) e1;
 			VarDeclaration v = ve.var.isVarDeclaration();
-			if(null != v && !v.isDataseg(context))
-			{
+			if (null != v && !v.isDataseg(context)) {
 				/* Chase down rebinding of out and ref
 				 */
-				if(null != v.value && v.value.op == TOKvar)
-				{
+				if (null != v.value && v.value.op == TOKvar) {
 					ve = (VarExp) v.value;
 					v = ve.var.isVarDeclaration();
 					assert (null != v);
 				}
-				
+
 				Expression ev = v.value;
-				if(null != fp && null == ev)
-				{
+				if (null != fp && null == ev) {
 					error("variable %s is used before initialization", v
 							.toChars(context));
 					return e;
 				}
-				if(null != fp)
+				if (null != fp)
 					e2 = fp.call(v.type, ev, e2, context);
 				else
 					e2 = Constfold.Cast(v.type, v.type, e2, context);
-				if(e2 != EXP_CANT_INTERPRET)
-				{
-					if(!v.isParameter())
-					{
-						for(int i = 0; true; i++)
-						{
-							if(i == istate.vars.size())
-							{
+				if (e2 != EXP_CANT_INTERPRET) {
+					if (!v.isParameter()) {
+						for (int i = 0; true; i++) {
+							if (i == istate.vars.size()) {
 								istate.vars.add(v);
 								break;
 							}
-							if(v == (VarDeclaration) istate.vars.get(i))
+							if (v == (VarDeclaration) istate.vars.get(i))
 								break;
 						}
 					}
@@ -628,86 +616,76 @@ public abstract class BinExp extends Expression {
 		/* Assignment to struct member of the form:
 		 *   (symoffexp) = e2
 		 */
-		else if(e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff)
-		{
+		else if (e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff) {
 			SymOffExp soe = (SymOffExp) ((PtrExp) e1).e1;
 			VarDeclaration v = soe.var.isVarDeclaration();
-			
-			if(v.isDataseg(context))
+
+			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
-			if(null != fp && null == v.value)
-			{
+			if (null != fp && null == v.value) {
 				error("variable %s is used before initialization", v
 						.toChars(context));
 				return e;
 			}
-			if(v.value.op != TOKstructliteral)
+			if (v.value.op != TOKstructliteral)
 				return EXP_CANT_INTERPRET;
 			StructLiteralExp se = (StructLiteralExp) v.value;
 			int fieldi = 0 /* TODO semantic se.getFieldIndex(type, soe.offset) */;
-			if(fieldi == -1)
+			if (fieldi == -1)
 				return EXP_CANT_INTERPRET;
 			Expression ev = null /* TODO semantic se.getField(type, soe.offset) */;
-			if(null != fp)
+			if (null != fp)
 				e2 = fp.call(type, ev, e2, context);
 			else
 				e2 = Constfold.Cast(type, type, e2, context);
-			if(e2 == EXP_CANT_INTERPRET)
+			if (e2 == EXP_CANT_INTERPRET)
 				return e2;
-			
-			if(!v.isParameter())
-			{
-				for(int i = 0; true; i++)
-				{
-					if(i == istate.vars.size())
-					{
+
+			if (!v.isParameter()) {
+				for (int i = 0; true; i++) {
+					if (i == istate.vars.size()) {
 						istate.vars.add(v);
 						break;
 					}
-					if(v == (VarDeclaration) istate.vars.get(i))
+					if (v == (VarDeclaration) istate.vars.get(i))
 						break;
 				}
 			}
-			
+
 			/* Create new struct literal reflecting updated fieldi
 			 */
 			Expressions expsx = new Expressions(se.elements.size());
 			//expsx.setDim(se.elements.size());
-			for(int j = 0; j < se.elements.size(); j++)
-			{
-				if(j == fieldi)
+			for (int j = 0; j < se.elements.size(); j++) {
+				if (j == fieldi)
 					expsx.add(e2);
 				else
 					expsx.add(j, se.elements.get(j));
 			}
 			v.value = new StructLiteralExp(se.loc, se.sd, expsx);
 			v.value.type = se.type;
-			
+
 			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
 		}
 		/* Assignment to array element of the form:
 		 *   a[i] = e2
 		 */
-		else if(e1.op == TOKindex && ((IndexExp) e1).e1.op == TOKvar)
-		{
+		else if (e1.op == TOKindex && ((IndexExp) e1).e1.op == TOKvar) {
 			IndexExp ie = (IndexExp) e1;
 			VarExp ve = (VarExp) ie.e1;
 			VarDeclaration v = ve.var.isVarDeclaration();
-			
-			if(null == v || v.isDataseg(context))
+
+			if (null == v || v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
-			if(null == v.value)
-			{
-				if(null != fp)
-				{
+			if (null == v.value) {
+				if (null != fp) {
 					error("variable %s is used before initialization", v
 							.toChars(context));
 					return e;
 				}
-				
+
 				Type t = v.type.toBasetype(context);
-				if(t.ty == Tsarray)
-				{
+				if (t.ty == Tsarray) {
 					/* This array was void initialized. Create a
 					 * default initializer for it.
 					 * What we should do is fill the array literal with
@@ -719,112 +697,98 @@ public abstract class BinExp extends Expression {
 					int dim = ((TypeSArray) t).dim.toInteger(context)
 							.intValue();
 					Expressions elements = new Expressions(dim);
-					for(int i = 0; i < dim; i++)
+					for (int i = 0; i < dim; i++)
 						elements.add(ev);
 					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
 					ae.type = v.type;
 					v.value = ae;
-				}
-				else
+				} else
 					return EXP_CANT_INTERPRET;
 			}
-			
+
 			ArrayLiteralExp ae = null;
 			AssocArrayLiteralExp aae = null;
 			StringExp se = null;
-			if(v.value.op == TOKarrayliteral)
+			if (v.value.op == TOKarrayliteral)
 				ae = (ArrayLiteralExp) v.value;
-			else if(v.value.op == TOKassocarrayliteral)
+			else if (v.value.op == TOKassocarrayliteral)
 				aae = (AssocArrayLiteralExp) v.value;
-			else if(v.value.op == TOKstring)
+			else if (v.value.op == TOKstring)
 				se = (StringExp) v.value;
 			else
 				return EXP_CANT_INTERPRET;
-			
+
 			Expression index = ie.e2.interpret(istate, context);
-			if(index == EXP_CANT_INTERPRET)
+			if (index == EXP_CANT_INTERPRET)
 				return EXP_CANT_INTERPRET;
 			Expression ev = null;
-			if(null != fp || null != ae || null != se) // not for aae, because key might not be there
+			if (null != fp || null != ae || null != se) // not for aae, because key might not be there
 			{
 				ev = Index.call(type, v.value, index, context);
-				if(ev == EXP_CANT_INTERPRET)
+				if (ev == EXP_CANT_INTERPRET)
 					return EXP_CANT_INTERPRET;
 			}
-			
-			if(null != fp)
+
+			if (null != fp)
 				e2 = fp.call(type, ev, e2, context);
 			else
 				e2 = Constfold.Cast(type, type, e2, context);
-			if(e2 == EXP_CANT_INTERPRET)
+			if (e2 == EXP_CANT_INTERPRET)
 				return e2;
-			
-			if(!v.isParameter())
-			{
-				for(int i = 0; true; i++)
-				{
-					if(i == istate.vars.size())
-					{
+
+			if (!v.isParameter()) {
+				for (int i = 0; true; i++) {
+					if (i == istate.vars.size()) {
 						istate.vars.add(v);
 						break;
 					}
-					if(v == (VarDeclaration) istate.vars.get(i))
+					if (v == (VarDeclaration) istate.vars.get(i))
 						break;
 				}
 			}
-			
-			if(null != ae)
-			{
+
+			if (null != ae) {
 				/* Create new array literal reflecting updated elem
 				 */
 				int elemi = index.toInteger(context).intValue();
 				Expressions expsx = new Expressions(ae.elements.size());
 				//expsx.setDim(ae.elements.dim);
-				for(int j = 0; j < ae.elements.size(); j++)
-				{
-					if(j == elemi)
+				for (int j = 0; j < ae.elements.size(); j++) {
+					if (j == elemi)
 						expsx.add(e2);
 					else
 						expsx.add(ae.elements.get(j));
 				}
 				v.value = new ArrayLiteralExp(ae.loc, expsx);
 				v.value.type = ae.type;
-			}
-			else if(null != aae)
-			{
+			} else if (null != aae) {
 				/* Create new associative array literal reflecting updated key/value
 				 */
 				Expressions keysx = aae.keys;
 				Expressions valuesx = new Expressions(aae.values.size());
 				valuesx.setDim(aae.values.size());
 				int updated = 0;
-				for(int j = aae.values.size(); j > 0;)
-				{
+				for (int j = aae.values.size(); j > 0;) {
 					j--;
 					Expression ekey = (Expression) aae.keys.get(j);
 					Expression ex = Equal.call(TOKequal, Type.tbool, ekey,
 							index, context);
-					if(ex == EXP_CANT_INTERPRET)
+					if (ex == EXP_CANT_INTERPRET)
 						return EXP_CANT_INTERPRET;
-					if(ex.isBool(true))
-					{
+					if (ex.isBool(true)) {
 						valuesx.set(j, e2);
 						updated = 1;
-					}
-					else
+					} else
 						valuesx.set(j, aae.values.get(j));
 				}
-				if(0 == updated)
-				{ // Append index/e2 to keysx[]/valuesx[]
+				if (0 == updated) { // Append index/e2 to keysx[]/valuesx[]
 					valuesx.add(e2);
 					keysx = new Expressions(keysx);
 					keysx.add(index);
 				}
 				v.value = new AssocArrayLiteralExp(aae.loc, keysx, valuesx);
 				v.value.type = aae.type;
-			}
-			else if(null != se)
-			{
+			} else if (null != se) {
 				/* Create new string literal reflecting updated elem
 				 */
 				int elemi = index.toInteger(context).intValue();
@@ -833,55 +797,269 @@ public abstract class BinExp extends Expression {
 				System.arraycopy(se.string, 0, s, 0, se.length);
 				//memcpy(s, se.string, se.len  se.sz);
 				int value = e2.toInteger(context).intValue();
-				switch(se.sz)
-				{
-					/* FIXME semantic 
-					 * (I'm not sure what sort of bit manipulation I can do
-					 *  with Java's char[] type) and whether there will be
-					 *  adequate space allocated. The char[] array in StringExp
-					 *  may need to be changed to a byte[] which would suck.
-					 *
-					case 1:        s[elemi] = value; break;
-					case 2:        ((unsigned short )s)[elemi] = value; break;
-					case 4:        ((unsigned )s)[elemi] = value; break;
-					*/
-					
-					//---temporary code for Descent testing---
-					case 1:
-					case 2:
-					case 4:
-						s[elemi] = (char) value;
-						break;
-					//---end temporary code block---
-					
-					default:
-						assert (false);
-						break;
+				switch (se.sz) {
+				/* FIXME semantic 
+				 * (I'm not sure what sort of bit manipulation I can do
+				 *  with Java's char[] type) and whether there will be
+				 *  adequate space allocated. The char[] array in StringExp
+				 *  may need to be changed to a byte[] which would suck.
+				 *
+				 case 1:        s[elemi] = value; break;
+				 case 2:        ((unsigned short )s)[elemi] = value; break;
+				 case 4:        ((unsigned )s)[elemi] = value; break;
+				 */
+
+				//---temporary code for Descent testing---
+				case 1:
+				case 2:
+				case 4:
+					s[elemi] = (char) value;
+					break;
+				//---end temporary code block---
+
+				default:
+					assert (false);
+					break;
 				}
 				StringExp se2 = new StringExp(se.loc, s);
 				se2.committed = se.committed;
 				se2.postfix = se.postfix;
 				se2.type = se.type;
 				v.value = se2;
-			}
-			else
-			{
+			} else {
 				assert (false);
 			}
 			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
 		}
 		return e;
 	}
-	
+
 	// Specific for Descent
 	protected void assignBinding() {
 		sourceE1.setBinding(e1.getBinding());
 		sourceE2.setBinding(e2.getBinding());
 	}
-	
+
 	@Override
 	public ASTDmdNode getBinding() {
 		return type;
+	}
+
+	public Expression op_overload(Scope sc, SemanticContext context) {
+		//AggregateDeclaration ad;
+		Type t1 = e1.type.toBasetype(context);
+		Type t2 = e2.type.toBasetype(context);
+		char[] id = opId();
+		char[] id_r = opId_r();
+
+		Match m;
+		Expressions args1 = new Expressions(1);
+		Expressions args2 = new Expressions(1);
+		int argsset = 0;
+
+		AggregateDeclaration ad1;
+		if (t1.ty == Tclass)
+			ad1 = ((TypeClass) t1).sym;
+		else if (t1.ty == Tstruct)
+			ad1 = ((TypeStruct) t1).sym;
+		else
+			ad1 = null;
+
+		AggregateDeclaration ad2;
+		if (t2.ty == Tclass)
+			ad2 = ((TypeClass) t2).sym;
+		else if (t2.ty == Tstruct)
+			ad2 = ((TypeStruct) t2).sym;
+		else
+			ad2 = null;
+
+		Dsymbol s = null;
+		Dsymbol s_r = null;
+		FuncDeclaration fd = null;
+		TemplateDeclaration td = null;
+		if (ad1 != null && id != null) {
+			s = search_function(ad1, id, context);
+		}
+		if (ad2 != null && id_r != null) {
+			s_r = search_function(ad2, id_r, context);
+		}
+
+		if (s != null || s_r != null) {
+			/* Try:
+			 *	a.opfunc(b)
+			 *	b.opfunc_r(a)
+			 * and see which is better.
+			 */
+			Expression e;
+			FuncDeclaration lastf;
+
+			args1.setDim(1);
+			args1.set(0, e1);
+			args2.setDim(1);
+			args2.set(0, e2);
+			argsset = 1;
+
+			m = new Match();
+			m.last = MATCHnomatch;
+
+			if (s != null) {
+				fd = s.isFuncDeclaration();
+				if (fd != null) {
+					overloadResolveX(m, fd, args2, context);
+				} else {
+					td = s.isTemplateDeclaration();
+					templateResolve(m, td, sc, loc, null, args2, context);
+				}
+			}
+
+			lastf = m.lastf;
+
+			if (s_r != null) {
+				fd = s_r.isFuncDeclaration();
+				if (fd != null) {
+					overloadResolveX(m, fd, args1, context);
+				} else {
+					td = s_r.isTemplateDeclaration();
+					templateResolve(m, td, sc, loc, null, args1, context);
+				}
+			}
+
+			if (m.count > 1) {
+				// Error, ambiguous
+				error("overloads %s and %s both match argument list for %s",
+						m.lastf.type.toChars(context), m.nextf.type
+								.toChars(context), m.lastf.toChars(context));
+			} else if (m.last == MATCHnomatch) {
+				m.lastf = m.anyf;
+			}
+
+			if (op == TOKplusplus || op == TOKminusminus)
+				// Kludge because operator overloading regards e++ and e--
+				// as unary, but it's implemented as a binary.
+				// Rewrite (e1 ++ e2) as e1.postinc()
+				// Rewrite (e1 -- e2) as e1.postdec()
+				e = build_overload(loc, sc, e1, null, id, context);
+			else if (lastf != null && m.lastf == lastf
+					|| m.last == MATCHnomatch)
+				// Rewrite (e1 op e2) as e1.opfunc(e2)
+				e = build_overload(loc, sc, e1, e2, id, context);
+			else
+				// Rewrite (e1 op e2) as e2.opfunc_r(e1)
+				e = build_overload(loc, sc, e2, e1, id_r, context);
+			return e;
+		}
+
+		if (isCommutative()) {
+			s = null;
+			s_r = null;
+			if (ad1 != null && id_r != null) {
+				s_r = search_function(ad1, id_r, context);
+			}
+			if (ad2 != null && id != null) {
+				s = search_function(ad2, id, context);
+			}
+
+			if (s != null || s_r != null) {
+				/* Try:
+				 *	a.opfunc_r(b)
+				 *	b.opfunc(a)
+				 * and see which is better.
+				 */
+				Expression e;
+				FuncDeclaration lastf;
+
+				if (0 == argsset) {
+					args1.setDim(1);
+					args1.set(0, e1);
+					args2.setDim(1);
+					args2.set(0, e2);
+				}
+
+				m = new Match();
+				m.last = MATCHnomatch;
+
+				if (s_r != null) {
+					fd = s_r.isFuncDeclaration();
+					if (fd != null) {
+						overloadResolveX(m, fd, args2, context);
+					} else {
+						td = s_r.isTemplateDeclaration();
+						templateResolve(m, td, sc, loc, null, args2, context);
+					}
+				}
+				lastf = m.lastf;
+
+				if (s != null) {
+					fd = s.isFuncDeclaration();
+					if (fd != null) {
+						overloadResolveX(m, fd, args1, context);
+					} else {
+						td = s.isTemplateDeclaration();
+						templateResolve(m, td, sc, loc, null, args1, context);
+					}
+				}
+
+				if (m.count > 1) {
+					// Error, ambiguous
+					error(
+							"overloads %s and %s both match argument list for %s",
+							m.lastf.type.toChars(context), m.nextf.type
+									.toChars(context), m.lastf.toChars(context));
+				} else if (m.last == MATCHnomatch) {
+					m.lastf = m.anyf;
+				}
+
+				if (lastf != null && m.lastf == lastf || id_r != null
+						&& m.last == MATCHnomatch)
+					// Rewrite (e1 op e2) as e1.opfunc_r(e2)
+					e = build_overload(loc, sc, e1, e2, id_r, context);
+				else
+					// Rewrite (e1 op e2) as e2.opfunc(e1)
+					e = build_overload(loc, sc, e2, e1, id, context);
+
+				// When reversing operands of comparison operators,
+				// need to reverse the sense of the op
+				switch (op) {
+				case TOKlt:
+					op = TOKgt;
+					break;
+				case TOKgt:
+					op = TOKlt;
+					break;
+				case TOKle:
+					op = TOKge;
+					break;
+				case TOKge:
+					op = TOKle;
+					break;
+
+				// Floating point compares
+				case TOKule:
+					op = TOKuge;
+					break;
+				case TOKul:
+					op = TOKug;
+					break;
+				case TOKuge:
+					op = TOKule;
+					break;
+				case TOKug:
+					op = TOKul;
+					break;
+
+				// These are symmetric
+				case TOKunord:
+				case TOKlg:
+				case TOKleg:
+				case TOKue:
+					break;
+				}
+
+				return e;
+			}
+		}
+
+		return null;
 	}
 
 }

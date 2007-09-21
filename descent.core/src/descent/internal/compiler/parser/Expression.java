@@ -49,6 +49,12 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = e.semantic(sc, context);
 		return e;
 	}
+	
+	public static Expression build_overload(Loc loc, Scope sc,
+			Expression ethis, Expression earg, char[] id,
+			SemanticContext context) {
+		return build_overload(loc, sc, ethis, earg, new IdentifierExp(id), context);
+	}
 
 	public static Expression combine(Expression e1, Expression e2) {
 		if (e1 != null) {

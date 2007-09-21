@@ -15,7 +15,7 @@ import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TUPLE;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.MATCH.*;
 
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
@@ -268,14 +268,17 @@ public abstract class ASTDmdNode extends ASTNode {
 		public EXP_SOMETHING_INTERPRET() {
 			super(null, null);
 		}
+
 		@Override
 		public int getNodeType() {
 			return 0;
 		}
+
 		@Override
 		public String toChars(SemanticContext context) {
 			return null;
 		}
+
 		@Override
 		protected void accept0(IASTVisitor visitor) {
 		}
@@ -1039,11 +1042,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
-	public Expression op_overload(Scope sc, SemanticContext context) {
-		// TODO semantic
-		return null;
-	}
-
 	public final int getElementType() {
 		return getNodeType();
 	}
@@ -1654,6 +1652,26 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 	
+	public static void templateResolve(Match m, TemplateDeclaration td,
+			Scope sc, Loc loc, Objects targsi, Expressions arguments,
+			SemanticContext context) {
+		FuncDeclaration fd;
+
+		assert (td != null);
+		fd = td.deduce(sc, loc, targsi, arguments, context);
+		if (null == fd)
+			return;
+		m.anyf = fd;
+		if (m.last.ordinal() >= MATCHexact.ordinal()) {
+			m.nextf = fd;
+			m.count++;
+		} else {
+			m.last = MATCHexact;
+			m.lastf = fd;
+			m.count = 1;
+		}
+	}
+	
 	/**
 	 * This is a debug string used by NaiveASTFlattener
 	 * to add resolved information to the string output.
@@ -1661,20 +1679,20 @@ public abstract class ASTDmdNode extends ASTNode {
 	public void appendBinding(StringBuilder sb) {
 		sb.append(toString());
 	}
-	
+
 	// Specific to Descent
 	private ASTDmdNode binding;
-	
+
 	// Specific to Descent
 	public void setBinding(ASTDmdNode binding) {
 		this.binding = binding;
 	}
-	
+
 	// Specific to Descent
 	public ASTDmdNode getBinding() {
 		return binding;
 	}
-	
+
 	public ASTDmdNode getParentBinding() {
 		return null;
 	}

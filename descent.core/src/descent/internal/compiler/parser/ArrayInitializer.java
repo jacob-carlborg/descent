@@ -132,8 +132,8 @@ public class ArrayInitializer extends Initializer {
 			throw new IllegalStateException("assert(index.dim == value.dim);");
 		}
 
-		ai.index.ensureCapacity(index.size());
-		ai.value.ensureCapacity(value.size());
+		ai.index.setDim(index.size());
+		ai.value.setDim(value.size());
 		for (int i = 0; i < ai.value.size(); i++) {
 			Expression e = index.get(i);
 			if (e != null) {
@@ -154,9 +154,9 @@ public class ArrayInitializer extends Initializer {
 		Expression e;
 
 		keys = new Expressions();
-		keys.ensureCapacity(value.size());
+		keys.setDim(value.size());
 		values = new Expressions();
-		values.ensureCapacity(value.size());
+		values.setDim(value.size());
 
 		for (int i = 0; i < value.size(); i++) {
 			e = index.get(i);

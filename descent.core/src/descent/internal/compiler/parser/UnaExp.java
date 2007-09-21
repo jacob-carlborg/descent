@@ -57,7 +57,6 @@ public abstract class UnaExp extends Expression {
 		// 	return EXP_CANT_INTERPRET;
 	}
 
-	@Override
 	public Expression op_overload(Scope sc, SemanticContext context) {
 		AggregateDeclaration ad = null;
 		Dsymbol fd;
