@@ -272,7 +272,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		if (type == null) {
-			error("%s is not an expression", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, start, length, new String[] { toChars(context) }));
 			type = Type.terror;
 		}
 		if (t.ty == Tbit && isBit()) {
@@ -303,7 +303,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = this;
 		switch (type.toBasetype(context).ty) {
 		case Tvoid:
-			error("void has no value");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, start, length, new String[] { "void" }));
 			break;
 
 		case Tint8:

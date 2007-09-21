@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tsarray;
@@ -199,7 +200,7 @@ public class StructLiteralExp extends Expression {
 			}
 
 			if (null == e.type) {
-				error("%s has no value", e.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
 			}
 			e = resolveProperties(sc, e, context);
 			if (i >= sd.fields.size()) {

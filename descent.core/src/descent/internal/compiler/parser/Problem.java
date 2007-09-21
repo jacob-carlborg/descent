@@ -431,6 +431,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotModifyParameterInContract, arguments[0]);
 		case BothOverloadsMuchArgumentList:
 			return String.format(ProblemMessages.BothOverloadsMuchArgumentList, arguments[0], arguments[1], arguments[2]);
+		case ExpressionHasNoType:
+			return String.format(ProblemMessages.ExpressionHasNoType, arguments[0]);
+		case SymbolNotAnExpression:
+			return String.format(ProblemMessages.SymbolNotAnExpression, arguments[0]);
+		case SymbolHasNoValue:
+			return String.format(ProblemMessages.SymbolHasNoValue, arguments[0]);
+		case TooManyInitializers:
+			return String.format(ProblemMessages.TooManyInitializers, arguments[0]);
+		case SymbolNotAStaticAndCannotHaveStaticInitializer:
+			return String.format(ProblemMessages.SymbolNotAStaticAndCannotHaveStaticInitializer, arguments[0]);
 		default:
 			return "";
 		}

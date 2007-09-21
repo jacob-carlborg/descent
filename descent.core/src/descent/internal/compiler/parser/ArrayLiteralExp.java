@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 // DMD 1.020
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
@@ -134,7 +135,7 @@ public class ArrayLiteralExp extends Expression {
 			e = elements.get(i);
 
 			if (e.type == null) {
-				error("%s has no value", e.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
 			}
 			e = resolveProperties(sc, e, context);
 

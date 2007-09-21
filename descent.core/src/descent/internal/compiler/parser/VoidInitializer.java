@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -46,7 +47,7 @@ public class VoidInitializer extends Initializer {
 
 	@Override
 	public Expression toExpression(SemanticContext context) {
-		error("void initializer has no value");
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, start, length, new String[] { "void initializer" }));
 		return new IntegerExp(loc, 0, Type.tint32);
 	}
 

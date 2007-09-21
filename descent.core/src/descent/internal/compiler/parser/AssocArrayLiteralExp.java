@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Equal;
 
@@ -44,11 +45,11 @@ public class AssocArrayLiteralExp extends Expression {
 				&& tb.next.toBasetype(context).ty != Tvoid) {
 			assert (keys.size() == values.size());
 			for (int i = 0; i < keys.size(); i++) {
-				Expression e = (Expression) values.get(i);
+				Expression e = values.get(i);
 				e = e.castTo(sc, tb.next, context);
 				values.set(i, e);
 
-				e = (Expression) keys.get(i);
+				e = keys.get(i);
 				e = e.castTo(sc, ((TypeAArray) tb).key, context);
 				keys.set(i, e);
 			}
@@ -66,14 +67,15 @@ public class AssocArrayLiteralExp extends Expression {
 		
 		for(int i = 0; i < keys.size(); i++)
 		{
-			Expression key = (Expression) keys.get(i);
-			Expression value = (Expression) values.get(i);
+			Expression key = keys.get(i);
+			Expression value = values.get(i);
 			
 			f |= key.checkSideEffect(2, context);
 			f |= value.checkSideEffect(2, context);
 		}
-		if(flag == 0 && f == 0)
+		if(flag == 0 && f == 0) {
 			super.checkSideEffect(0, context);
+		}
 		return f;
 	}
 
@@ -90,23 +92,28 @@ public class AssocArrayLiteralExp extends Expression {
 		Type tb = t.toBasetype(context);
 		if (tb.ty == Taarray && typeb.ty == Taarray) {
 			for (int i = 0; i < keys.size(); i++) {
-				Expression e = (Expression) keys.get(i);
-				MATCH m = (MATCH) e.implicitConvTo(((TypeAArray) tb).key,
+				Expression e = keys.get(i);
+				MATCH m = e.implicitConvTo(((TypeAArray) tb).key,
 						context);
-				if (m.ordinal() < result.ordinal())
+				if (m.ordinal() < result.ordinal()) {
 					result = m; // remember worst match
-				if (result == MATCHnomatch)
+				}
+				if (result == MATCHnomatch) {
 					break; // no need to check for worse
-				e = (Expression) values.get(i);
-				m = (MATCH) e.implicitConvTo(tb.next, context);
-				if (m.ordinal() < result.ordinal())
+				}
+				e = values.get(i);
+				m = e.implicitConvTo(tb.next, context);
+				if (m.ordinal() < result.ordinal()) {
 					result = m; // remember worst match
-				if (result == MATCHnomatch)
+				}
+				if (result == MATCHnomatch) {
 					break; // no need to check for worse
+				}
 			}
 			return result;
-		} else
+		} else {
 			return super.implicitConvTo(t, context);
+		}
 	}
 
 	@Override
@@ -117,66 +124,76 @@ public class AssocArrayLiteralExp extends Expression {
 		
 		for(int i = 0; i < keys.size(); i++)
 		{
-			Expression ekey = (Expression) keys.get(i);
-			Expression evalue = (Expression) values.get(i);
+			Expression ekey = keys.get(i);
+			Expression evalue = values.get(i);
 			Expression ex;
 			
 			ex = ekey.interpret(istate, context);
-			if(ex == EXP_CANT_INTERPRET)
+			if(ex == EXP_CANT_INTERPRET) {
 				return EXP_CANT_INTERPRET; // goto Lerr;
+			}
 				
 			/*
 			 * If any changes, do Copy On Write
 			 */
 			if(ex != ekey)
 			{
-				if(keysx == keys)
+				if(keysx == keys) {
 					keysx = new Expressions(keys);
+				}
 				keysx.set(i, ex);
 			}
 			
 			ex = evalue.interpret(istate, context);
-			if(ex == EXP_CANT_INTERPRET)
+			if(ex == EXP_CANT_INTERPRET) {
 				return EXP_CANT_INTERPRET; // goto Lerr;
+			}
 				
 			/*
 			 * If any changes, do Copy On Write
 			 */
 			if(ex != evalue)
 			{
-				if(valuesx == values)
+				if(valuesx == values) {
 					valuesx = new Expressions(values);
+				}
 				valuesx.set(i, ex);
 			}
 		}
-		if(keysx != keys)
+		if(keysx != keys) {
 			expandTuples(keysx, context);
-		if(valuesx != values)
+		}
+		if(valuesx != values) {
 			expandTuples(valuesx, context);
-		if(keysx.size() != valuesx.size())
+		}
+		if(keysx.size() != valuesx.size()) {
 			return EXP_CANT_INTERPRET; // goto Lerr;
+		}
 			
 		/*
 		 * Remove duplicate keys
 		 */
 		for(int i = 1; i < keysx.size(); i++)
 		{
-			Expression ekey = (Expression) keysx.get(i - 1);
+			Expression ekey = keysx.get(i - 1);
 			
 			for(int j = i; j < keysx.size(); j++)
 			{
-				Expression ekey2 = (Expression) keysx.get(j);
+				Expression ekey2 = keysx.get(j);
 				Expression ex = Equal.call(TOKequal, Type.tbool, ekey, ekey2,
 						context);
-				if(ex == EXP_CANT_INTERPRET)
+				if(ex == EXP_CANT_INTERPRET) {
 					return EXP_CANT_INTERPRET; // goto Lerr;
+				}
 				if(ex.isBool(true)) // if a match
 				{
 					// Remove ekey
-					if(keysx == keys)
+					if(keysx == keys) {
 						keysx = new Expressions(keys);
-					if(valuesx == values)
+					}
+					if(valuesx == values) {
 						valuesx = new Expressions(values);
+					}
 					keysx.remove(i - 1);
 					valuesx.remove(i - 1);
 					i -= 1; // redo the i'th iteration
@@ -208,7 +225,7 @@ public class AssocArrayLiteralExp extends Expression {
 		assert (keys.size() == values.size());
 		for(int i = 0; i < keys.size(); i++)
 		{
-			Expression e = (Expression) keys.get(i);
+			Expression e = keys.get(i);
 			
 			e = e.optimize(WANTvalue | (result & WANTinterpret), context);
 			keys.set(i, e);
@@ -237,8 +254,8 @@ public class AssocArrayLiteralExp extends Expression {
 		// Run semantic() on each element
 		for(int i = 0; i < keys.size(); i++)
 		{
-			Expression key = (Expression) keys.get(i);
-			Expression value = (Expression) values.get(i);
+			Expression key = keys.get(i);
+			Expression value = values.get(i);
 			
 			key = key.semantic(sc, context);
 			value = value.semantic(sc, context);
@@ -257,33 +274,39 @@ public class AssocArrayLiteralExp extends Expression {
 		}
 		for(int i = 0; i < keys.size(); i++)
 		{
-			Expression key = (Expression) keys.get(i);
-			Expression value = (Expression) values.get(i);
+			Expression key = keys.get(i);
+			Expression value = values.get(i);
 			
-			if(null == key.type)
-				error("%s has no value", key.toChars(context));
-			if(null == value.type)
-				error("%s has no value", value.toChars(context));
+			if(null == key.type) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, key.start, key.length, new String[] { key.toChars(context) }));
+			}
+			if(null == value.type) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, value.start, value.length, new String[] { value.toChars(context) }));
+			}
 			key = resolveProperties(sc, key, context);
 			value = resolveProperties(sc, value, context);
 			
-			if(null == tkey)
+			if(null == tkey) {
 				tkey = key.type;
-			else
+			} else {
 				key = key.implicitCastTo(sc, tkey, context);
+			}
 			keys.set(i, key);
 			
-			if(null == tvalue)
+			if(null == tvalue) {
 				tvalue = value.type;
-			else
+			} else {
 				value = value.implicitCastTo(sc, tvalue, context);
+			}
 			values.set(i, value);
 		}
 		
-		if(null == tkey)
+		if(null == tkey) {
 			tkey = Type.tvoid;
-		if(null == tvalue)
+		}
+		if(null == tvalue) {
 			tvalue = Type.tvoid;
+		}
 		type = new TypeAArray(tvalue, tkey);
 		type = type.semantic(loc, sc, context);
 		return this;
@@ -306,8 +329,9 @@ public class AssocArrayLiteralExp extends Expression {
 			Expression key = keys.get(i);
 			Expression value = values.get(i);
 			
-			if(i != 0)
+			if(i != 0) {
 				buf.writeByte(',');
+			}
 			
 			expToCBuffer(buf, hgs, key, PREC_assign, context);
 			buf.writeByte(':');
@@ -323,8 +347,8 @@ public class AssocArrayLiteralExp extends Expression {
 		buf.writestring("A" + dim);
 		for(int i = 0; i < dim; i++)
 		{
-			Expression key = (Expression) keys.get(i);
-			Expression value = (Expression) values.get(i);
+			Expression key = keys.get(i);
+			Expression value = values.get(i);
 			
 			key.toMangleBuffer(buf, context);
 			value.toMangleBuffer(buf, context);

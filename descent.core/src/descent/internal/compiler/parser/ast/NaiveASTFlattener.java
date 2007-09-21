@@ -420,7 +420,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(CallExp node) {
 		node.sourceE1.accept(this);
 		this.buffer.append("(");
-		visitList(node.arguments, ", ");
+		visitList(node.sourceArguments, ", ");
 		this.buffer.append(")");
 		return false;
 	}
@@ -2203,13 +2203,13 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(StructInitializer node) {
 		this.buffer.append("{ ");
-		if (node.field != null) {
-			for(int i = 0; i < node.field.size(); i++) {
+		if (node.sourceField != null) {
+			for(int i = 0; i < node.sourceField.size(); i++) {
 				if (i != 0) {
 					this.buffer.append(", ");
 				}
-				IdentifierExp index = node.field.get(i);
-				Initializer value = node.value.get(i);
+				IdentifierExp index = node.sourceField.get(i);
+				Initializer value = node.sourceValue.get(i);
 				if (index != null) {
 					index.accept(this);
 					this.buffer.append(": ");

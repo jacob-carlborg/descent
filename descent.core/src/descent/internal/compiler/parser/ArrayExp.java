@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -87,7 +88,7 @@ public class ArrayExp extends UnaExp {
 			e = arguments.get(i);
 			e = e.semantic(sc, context);
 			if (null == e.type) {
-				error(e.toChars(context) + " has no value");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
 			}
 			arguments.set(i, e);
 		}

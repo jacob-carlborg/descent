@@ -40,7 +40,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public class CallExp extends UnaExp {
 
-	public Expressions arguments;
+	public Expressions arguments, sourceArguments;
 
 	public CallExp(Loc loc, Expression e) {
 		super(loc, TOK.TOKcall, e);
@@ -51,6 +51,8 @@ public class CallExp extends UnaExp {
 		super(loc, TOK.TOKcall, e);
 		this.arguments = new Expressions(1);
 		this.arguments.add(earg1);
+		this.sourceArguments = new Expressions(1);
+		this.sourceArguments.add(earg1);
 	}
 
 	public CallExp(Loc loc, Expression e, Expression earg1, Expression earg2) {
@@ -58,11 +60,17 @@ public class CallExp extends UnaExp {
 		this.arguments = new Expressions(2);
 		this.arguments.add(earg1);
 		this.arguments.add(earg2);
+		this.sourceArguments = new Expressions(2);
+		this.sourceArguments.add(earg1);
+		this.sourceArguments.add(earg2);
 	}
 
 	public CallExp(Loc loc, Expression e, Expressions exps) {
 		super(loc, TOK.TOKcall, e);
 		this.arguments = exps;
+		if (exps != null) {
+			this.sourceArguments = new Expressions(arguments);
+		}
 	}
 
 	@Override

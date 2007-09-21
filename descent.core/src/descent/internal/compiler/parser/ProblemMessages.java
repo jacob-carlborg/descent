@@ -178,6 +178,11 @@ final class ProblemMessages extends NLS {
 	public static String CannotChangeReferenceToStaticArray;
 	public static String CannotModifyParameterInContract;
 	public static String BothOverloadsMuchArgumentList;
+	public static String ExpressionHasNoType;
+	public static String SymbolNotAnExpression;
+	public static String SymbolHasNoValue;
+	public static String TooManyInitializers;
+	public static String SymbolNotAStaticAndCannotHaveStaticInitializer;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

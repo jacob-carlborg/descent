@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.*;
@@ -38,9 +39,10 @@ public class AndAndExp extends BinExp {
 		if ((sc.flags & Scope.SCOPEstaticif) > 0) {
 			//If in static if, don't evaluate e2 if we don't have to.
 			e1 = e1.optimize(WANTflags, context);
-			if (e1.isBool(false))
+			if (e1.isBool(false)) {
 				assignBinding();
-				return new IntegerExp(loc, 0, Type.tboolean);
+			}
+			return new IntegerExp(loc, 0, Type.tboolean);
 		}
 
 		e2 = e2.semantic(sc, context);
@@ -49,10 +51,13 @@ public class AndAndExp extends BinExp {
 		e2 = e2.checkToPointer(context);
 
 		type = Type.tboolean;
-		if (e1.type.ty == TY.Tvoid)
+		if (e1.type.ty == TY.Tvoid) {
 			type = Type.tvoid;
+		}
 		if (e2.op == TOK.TOKtype || e2.op == TOK.TOKimport) {
-			error(e2.toChars(context) + " is not an expression.");
+			context.acceptProblem(Problem.newSemanticTypeWarning(
+					IProblem.SymbolNotAnExpression, 0, e2.start, e2.length,
+					new String[] { e2.toChars(context) }));
 		}
 
 		assignBinding();
@@ -85,20 +90,22 @@ public class AndAndExp extends BinExp {
 	public Expression interpret(InterState istate, SemanticContext context) {
 		Expression e = e1.interpret(istate, context);
 		if (e != EXP_CANT_INTERPRET) {
-			if (e.isBool(false))
+			if (e.isBool(false)) {
 				e = new IntegerExp(e1.loc, 0, type);
-			else if (e.isBool(true)) {
+			} else if (e.isBool(true)) {
 				e = e2.interpret(istate, context);
 				if (e != EXP_CANT_INTERPRET) {
-					if (e.isBool(false))
+					if (e.isBool(false)) {
 						e = new IntegerExp(e1.loc, 0, type);
-					else if (e.isBool(true))
+					} else if (e.isBool(true)) {
 						e = new IntegerExp(e1.loc, 1, type);
-					else
+					} else {
 						e = EXP_CANT_INTERPRET;
+					}
 				}
-			} else
+			} else {
 				e = EXP_CANT_INTERPRET;
+			}
 		}
 		return e;
 	}
@@ -116,16 +123,20 @@ public class AndAndExp extends BinExp {
 		} else {
 			e2 = e2.optimize(WANTflags | (result & WANTinterpret), context);
 			if (result > 0 && e2.type.toBasetype(context).ty == Tvoid
-					&& context.global.errors <= 0)
-				error("void has no value");
+					&& context.global.errors <= 0) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolHasNoValue, 0, start, length,
+						new String[] { "void" }));
+			}
 			if (e1.isConst()) {
 				if (e2.isConst()) {
 					boolean n1 = e1.isBool(true);
 					boolean n2 = e2.isBool(true);
 
 					e = new IntegerExp(loc, n1 && n2 ? 1 : 0, type);
-				} else if (e1.isBool(true))
+				} else if (e1.isBool(true)) {
 					e = new BoolExp(loc, e2, type);
+				}
 			}
 		}
 		return e;

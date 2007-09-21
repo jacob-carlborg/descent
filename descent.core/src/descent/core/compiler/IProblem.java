@@ -376,5 +376,10 @@ public interface IProblem {
 	int CannotChangeReferenceToStaticArray = 166;
 	int CannotModifyParameterInContract = 167;
 	int BothOverloadsMuchArgumentList = 168;
+	int ExpressionHasNoType = 169;
+	int SymbolNotAnExpression = 170;
+	int SymbolHasNoValue = 171;
+	int TooManyInitializers = 172;
+	int SymbolNotAStaticAndCannotHaveStaticInitializer = 173;
 
 }

@@ -502,8 +502,19 @@ CannotModifyParameterInContract
 BothOverloadsMuchArgumentList
 	formatString=Overloads %1$s and %2$s both match argument list for %3$s
 	numArgs=3
-	
-	
-	
-	
+ExpressionHasNoType
+	formatString=Expression (%1$s) has no type
+	numArgs=1
+SymbolNotAnExpression
+	formatString=%1$s is not an expression
+	numArgs=1
+SymbolHasNoValue
+	formatString=%1$s has no value
+	numArgs=1
+TooManyInitializers
+	formatString=Too many initializers for %1$s
+	numArgs=1
+SymbolNotAStaticAndCannotHaveStaticInitializer
+	formatString=%1$s is not a static and cannot have static initializer
+	numArgs=1
 	

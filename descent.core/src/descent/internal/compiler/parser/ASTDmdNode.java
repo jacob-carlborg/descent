@@ -562,7 +562,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 
 			else if (e.op == TOKdotexp) {
-				e.error("expression has no value");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
 			}
 		}
 		return e;
@@ -1013,7 +1013,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				Expression arg = exps.get(i);
 
 				if (arg.type == null) {
-					arg.error("%s is not an expression", arg.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, arg.start, arg.length, new String[] { arg.toChars(context) }));
 					arg = new IntegerExp(arg.loc, 0, Type.tint32);
 				}
 

@@ -37,12 +37,12 @@ public abstract class BinExp extends Expression {
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
 		if (e1.type == null) {
-			error("%s has no value", e1.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e1.start, e1.length, new String[] { e1.toChars(context) }));
 			e1.type = Type.terror;
 		}
 		e2 = e2.semantic(sc, context);
 		if (e2.type == null) {
-			error("%s has no value", e2.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e2.start, e2.length, new String[] { e2.toChars(context) }));
 			e2.type = Type.terror;
 		}
 		Assert.isNotNull(e1.type);

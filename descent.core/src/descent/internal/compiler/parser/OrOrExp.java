@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tvoid;
@@ -87,7 +88,7 @@ public class OrOrExp extends BinExp {
 			e2 = e2.optimize(WANTflags | (result & WANTinterpret), context);
 			if (result != 0 && e2.type.toBasetype(context).ty == Tvoid
 					&& 0 != context.global.errors) {
-				error("void has no value");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, start, length, new String[] { "void" }));
 			}
 			if (e1.isConst()) {
 				if (e2.isConst()) {
@@ -130,7 +131,7 @@ public class OrOrExp extends BinExp {
 			type = Type.tvoid;
 		}
 		if (e2.op == TOK.TOKtype || e2.op == TOK.TOKimport) {
-			error(e2.toChars(context) + " is not an expression.");
+			context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, e2.start, e2.length, new String[] { e2.toChars(context) }));
 		}
 
 		assignBinding();

@@ -1052,6 +1052,14 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors("void foo(int x) { } void bar() { foo(1); }");
 	}
 	
+	public void testIncompatibleTypes() {
+		String s = "class X { } void foo() { X x = new X(); x = x + x; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.IncompatibleTypeForOperator, 44, 5);
+	}
+
 	public void testSymbolNotDefined() {
 		String s = "mixin T!();";
 		IProblem[] p = getModuleProblems(s);
@@ -1059,7 +1067,7 @@ public class Semantic1_Test extends Parser_Test {
 		
 		assertError(p[0], IProblem.SymbolNotDefined, 6, 4);
 	}
-	
+
 	public void testSymbolNotATemplate() {
 		String s = "class T { } mixin T!();";
 		IProblem[] p = getModuleProblems(s);
@@ -1083,7 +1091,6 @@ public class Semantic1_Test extends Parser_Test {
 		
 		assertError(p[0], IProblem.NotAnLvalue, 20, 7);
 	}
-	
 	
 	/* TODO test for SemanticContext.IN_GCC = true
 	public void testCannotPutCatchStatementInsideFinallyBlock() {

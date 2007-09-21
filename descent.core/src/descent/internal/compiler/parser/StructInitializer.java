@@ -1,8 +1,7 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
@@ -13,10 +12,10 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 // DMD 1.020
 public class StructInitializer extends Initializer {
 
-	public Identifiers field;
-	public Initializers value;
+	public Identifiers field, sourceField;
+	public Initializers value, sourceValue;
 
-	public List<VarDeclaration> vars; // parallel array of VarDeclaration *'s
+	public Array<VarDeclaration> vars; // parallel array of VarDeclaration *'s
 	public AggregateDeclaration ad; // which aggregate this is for
 
 	public StructInitializer(Loc loc) {
@@ -37,9 +36,13 @@ public class StructInitializer extends Initializer {
 		if (this.field == null) {
 			this.field = new Identifiers();
 			this.value = new Initializers();
+			this.sourceField = new Identifiers();
+			this.sourceValue = new Initializers();
 		}
 		this.field.add(field);
 		this.value.add(value);
+		this.sourceField.add(field);
+		this.sourceValue.add(value);
 	}
 
 	@Override
@@ -67,8 +70,7 @@ public class StructInitializer extends Initializer {
 
 				if (id == null) {
 					if (fieldi >= ad.fields.size()) {
-						error(loc, "too many initializers for %s", ad
-								.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.TooManyInitializers, 0, start, length, new String[] { ad.toChars(context) }));
 						continue;
 					} else {
 						s = ad.fields.get(fieldi);
@@ -97,6 +99,9 @@ public class StructInitializer extends Initializer {
 				if (s != null && (v = s.isVarDeclaration()) != null) {
 					val = val.semantic(sc, v.type, context);
 					value.set(i, val);
+					if (vars == null) {
+						vars = new Array<VarDeclaration>();
+					}
 					vars.set(i, v);
 				} else {
 					error(loc, "%s is not a field of %s", id != null ? id

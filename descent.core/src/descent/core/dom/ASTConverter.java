@@ -2420,10 +2420,10 @@ public class ASTConverter {
 	
 	public descent.core.dom.StructInitializer convert(StructInitializer a) {
 		descent.core.dom.StructInitializer b = new descent.core.dom.StructInitializer(ast);
-		if (a.field != null) {
-			for(int i = 0; i < a.field.size(); i++) {
-				IdentifierExp index = a.field.get(i);
-				Initializer value = a.value.get(i);
+		if (a.sourceField != null) {
+			for(int i = 0; i < a.sourceField.size(); i++) {
+				IdentifierExp index = a.sourceField.get(i);
+				Initializer value = a.sourceValue.get(i);
 				StructInitializerFragment fragment = new StructInitializerFragment(ast);
 				if (index == null) {
 					fragment.setInitializer(convert(value));
@@ -2517,7 +2517,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		convertExpressions(b.arguments(), a.arguments);
+		convertExpressions(b.arguments(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}

@@ -460,7 +460,7 @@ public class VarDeclaration extends Declaration {
 							init = init.semantic(sc, type, context);
 							e = init.toExpression(context);
 							if (e == null) {
-								error("is not a static and cannot have static initializer");
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAStaticAndCannotHaveStaticInitializer, 0, start, length, new String[] { toChars(context) }));
 								assignTypeBinding();
 								return;
 							}

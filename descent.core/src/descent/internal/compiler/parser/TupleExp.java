@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
@@ -37,7 +38,7 @@ public class TupleExp extends Expression {
 				Expression e = new TypeExp(loc, t);
 				exps.add(e);
 			} else {
-				error("%s is not an expression", o.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.start, o.length, new String[] { o.toChars(context) }));
 			}
 		}
 	}
@@ -203,7 +204,7 @@ public class TupleExp extends Expression {
 
 			e = e.semantic(sc, context);
 			if (e.type == null) {
-				error("%s has no value", e.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
 				e.type = Type.terror;
 			}
 			exps.set(i, e);

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -39,7 +40,7 @@ public class TypeTypeof extends TypeQualified {
 			sc.intypeof--;
 			t = exp.type;
 			if (null == t) {
-				error(loc, "expression (%s) has no type", exp.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionHasNoType, 0, exp.start, exp.length, new String[] { exp.toChars(context) }));
 				return tvoid;
 			}
 		}

@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 import melnorme.miscutil.Assert;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 import static descent.internal.compiler.parser.Constfold.Index;
@@ -169,7 +170,7 @@ public class IndexExp extends BinExp {
 
 		e2 = e2.semantic(sc, context);
 		if (null == e2.type) {
-			error("%s has no value", e2.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e2.start, e2.length, new String[] { e2.toChars(context) }));
 			e2.type = Type.terror;
 		}
 		e2 = resolveProperties(sc, e2, context);

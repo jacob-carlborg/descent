@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.STC.STCfield;
@@ -89,7 +90,7 @@ public class DotVarExp extends UnaExp {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						error("%s is not an expression", o.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.start, o.length, new String[] { o.toChars(context) }));
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
