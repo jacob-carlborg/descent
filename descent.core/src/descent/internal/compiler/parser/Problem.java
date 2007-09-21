@@ -413,6 +413,14 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ScopeCannotBeRefOrOut);
 		case IncompatibleTypeForOperator:
 			return String.format(ProblemMessages.IncompatibleTypeForOperator, arguments[0], arguments[1], arguments[2]);
+		case SymbolNotDefined:
+			return String.format(ProblemMessages.SymbolNotDefined, arguments[0]);
+		case SymbolNotATemplate:
+			return String.format(ProblemMessages.SymbolNotATemplate, arguments[0]);
+		case CannotDeleteType:
+			return String.format(ProblemMessages.CannotDeleteType, arguments[0]);
+		case NotAnLvalue:
+			return String.format(ProblemMessages.NotAnLvalue, arguments[0]);
 		default:
 			return "";
 		}

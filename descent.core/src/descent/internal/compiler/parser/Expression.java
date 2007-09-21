@@ -439,7 +439,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		} else if (loc.filename == null) {
 			loc = e.loc;
 		}
-		error("%s is not an lvalue", e.toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnLvalue, 0, start, length, new String[] { e.toChars(context) }));
 		return this;
 	}
 

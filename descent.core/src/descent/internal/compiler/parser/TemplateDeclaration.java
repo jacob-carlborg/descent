@@ -253,12 +253,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		boolean variadic = isVariadic() != null;
 
 		// If more arguments than parameters, no match
-		if (ti.tiargs.size() > parameters_dim && !variadic) {
+		if (size(ti.tiargs) > parameters_dim && !variadic) {
 			return MATCHnomatch;
 		}
 
 		assert (dedtypes_dim == parameters_dim);
-		assert (dedtypes_dim >= ti.tiargs.size() || variadic);
+		assert (dedtypes_dim >= size(ti.tiargs) || variadic);
 
 		// Set up scope for parameters
 		// assert((size_t)scope > 0x10000);

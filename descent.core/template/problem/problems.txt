@@ -475,7 +475,18 @@ ScopeCannotBeRefOrOut
 IncompatibleTypeForOperator
 	formatString=Types %1$s and %2$s are incompatible for %3$s
 	numArgs=3
-
+SymbolNotDefined
+	formatString=%1$s is not defined
+	numArgs=1
+SymbolNotATemplate
+	formatString=%1$s is not a template
+	numArgs=1
+CannotDeleteType
+	formatString=Cannot delete type %1$s
+	numArgs=1
+NotAnLvalue
+	formatString=%1$s is not an lvalue
+	numArgs=1
 	
 	
 	

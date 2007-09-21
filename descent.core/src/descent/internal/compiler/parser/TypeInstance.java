@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -142,7 +143,7 @@ public class TypeInstance extends TypeQualified {
 		}
 
 		if (null == t[0]) {
-			error(loc, "%s is used as a type", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UsedAsAType, 0, start, length, new String[] { toChars(context) }));
 			t[0] = tvoid;
 		}
 		return t[0];

@@ -1673,6 +1673,14 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	/**
+	 * Returns the size of a list which may ne <code>null</code>.
+	 * In such case, 0 is returned.
+	 */
+	protected int size(List list) {
+		return list == null ? 0 : list.size(); 
+	}
+	
+	/**
 	 * This is a debug string used by NaiveASTFlattener
 	 * to add resolved information to the string output.
 	 */

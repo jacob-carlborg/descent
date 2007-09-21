@@ -537,7 +537,7 @@ public class ForeachStatement extends Statement {
 			}
 		}
 
-		if (cases.size() == 0) {
+		if (size(cases) == 0) {
 			// Easy case, a clean exit from the loop
 			s[0] = new ExpStatement(loc, e);
 		} else { // Construct a switch statement around the return value

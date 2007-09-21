@@ -107,7 +107,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 			// If more arguments than parameters,
 			// then this is no match.
-			if (td.parameters.size() < tiargs.size()) {
+			if (size(td.parameters) < size(tiargs)) {
 				if (null == td.isVariadic())
 					continue;
 			}
@@ -132,7 +132,11 @@ public class TemplateInstance extends ScopeDsymbol {
 				td_ambig = null;
 				td_best = td;
 				m_best = m;
-				tdtypes.ensureCapacity(dedtypes.size());
+				if (tdtypes == null) {
+					tdtypes = new Objects(dedtypes.size());
+				} else {
+					tdtypes.ensureCapacity(dedtypes.size());
+				}
 				for (ASTDmdNode a : dedtypes) {
 					tdtypes.add(a);
 				}
@@ -148,7 +152,11 @@ public class TemplateInstance extends ScopeDsymbol {
 					td_ambig = null;
 					td_best = td;
 					m_best = m;
-					tdtypes.ensureCapacity(dedtypes.size());
+					if (tdtypes == null) {
+						tdtypes = new Objects(dedtypes.size());
+					} else {
+						tdtypes.ensureCapacity(dedtypes.size());
+					}
 					for (ASTDmdNode a : dedtypes) {
 						tdtypes.add(a);
 					}
@@ -284,7 +292,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		// TODO semantic
 		// buf.printf("__T%zu%s", id.length(), id);
 		args = tiargs;
-		for (int i = 0; i < args.size(); i++) {
+		for (int i = 0; i < size(args); i++) {
 			ASTDmdNode o = (ASTDmdNode) args.get(i);
 			Type ta = isType(o);
 			Expression ea = isExpression(o);
@@ -537,7 +545,6 @@ public class TemplateInstance extends ScopeDsymbol {
 			if(null == tempdecl || context.global.errors > 0)
 			{
 				inst = this;
-				//printf("error return %p, %d\n", tempdecl, global.errors);
 				return; // error recovery
 			}
 		}
@@ -842,7 +849,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		{
 			nest = true;
 			Objects args = tiargs;
-			for(i = 0; i < args.size(); i++)
+			for(i = 0; i < size(args); i++)
 			{
 				if(i > 0)
 					buf.writeByte(',');
@@ -875,10 +882,10 @@ public class TemplateInstance extends ScopeDsymbol {
 			Expression[] ea = { isExpression(o) };
 			Dsymbol[] sa = { isDsymbol(o) };
 
-			if (ta != null) {
+			if (ta[0] != null) {
 				// It might really be an Expression or an Alias
 				ta[0].resolve(loc, sc, ea, ta, sa, context);
-				if (ea != null) {
+				if (ea[0] != null) {
 					ea[0] = ea[0].semantic(sc, context);
 					ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
 					tiargs.set(j, ea[0]);
@@ -892,7 +899,7 @@ public class TemplateInstance extends ScopeDsymbol {
 						tiargs.addAll(j, d.objects);
 						j--;
 					}
-				} else if (ta != null) {
+				} else if (ta[0] != null) {
 					if (ta[0].ty == Ttuple) { // Expand tuple
 						TypeTuple tt = (TypeTuple) ta[0];
 						int dim = tt.arguments.size();
@@ -901,12 +908,13 @@ public class TemplateInstance extends ScopeDsymbol {
 							tiargs.ensureCapacity(dim);
 							for (int i = 0; i < dim; i++) {
 								Argument arg = (Argument) tt.arguments.get(i);
-								tiargs.add(j + i, arg.type);
+								tiargs.set(j + i, arg.type);
 							}
 						}
 						j--;
-					} else
-						tiargs.add(j, ta[0]);
+					} else {
+						tiargs.set(j, ta[0]);
+					}
 				} else {
 					if (context.global.errors == 0) {
 						throw new IllegalStateException(

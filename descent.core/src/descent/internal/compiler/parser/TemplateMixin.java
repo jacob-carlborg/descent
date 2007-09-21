@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
@@ -125,13 +126,13 @@ public class TemplateMixin extends TemplateInstance {
 				s = s.searchX(loc, sc, id, context);
 			}
 			if (null == s) {
-				error("is not defined");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotDefined, 0, typeStart, typeLength, new String[] { toChars(context) }));
 				inst = this;
 				return;
 			}
 			tempdecl = s.toAlias(context).isTemplateDeclaration();
 			if (null == tempdecl) {
-				error("%s isn't a template", s.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, 0, typeStart, typeLength, new String[] { s.toChars(context) }));
 				inst = this;
 				return;
 			}

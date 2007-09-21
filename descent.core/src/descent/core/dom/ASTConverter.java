@@ -91,7 +91,7 @@ public class ASTConverter {
 		if (module.md != null) {
 			unit.setModuleDeclaration(convert(module.md));
 		}
-		convertDeclarations(unit.declarations(), module.members);
+		convertDeclarations(unit.declarations(), module.sourceMembers);
 		unit.setSourceRange(module.start, module.length);		
 		return unit;
 	}

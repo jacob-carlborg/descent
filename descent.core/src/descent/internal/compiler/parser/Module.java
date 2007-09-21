@@ -24,18 +24,20 @@ public class Module extends Package {
 	public Dsymbols deferred;
 	public boolean needmoduleinfo;
 	public Module importedFrom;
-	
-	public long debuglevel;	// debug level
-	public List<char[]> debugids;		// debug identifiers
-	public List<char[]> debugidsNot;		// forward referenced debug identifiers
-	
+
+	public long debuglevel; // debug level
+	public List<char[]> debugids; // debug identifiers
+	public List<char[]> debugidsNot; // forward referenced debug identifiers
+
 	public long versionlevel;
-	public List<char[]> versionids;		// version identifiers
-	public List<char[]> versionidsNot;	// forward referenced version identifiers
+	public List<char[]> versionids; // version identifiers
+	public List<char[]> versionidsNot; // forward referenced version
+										// identifiers
 
 	public Module(Loc loc) {
 		super(loc);
 		deferred = new Dsymbols();
+		importedFrom = this;
 	}
 
 	@Override
@@ -88,7 +90,8 @@ public class Module extends Package {
 
 		symtab = new DsymbolTable();
 
-		// TODO This is the current replacement of Add import of "object" if this module isn't "object"
+		// TODO This is the current replacement of Add import of "object" if
+		// this module isn't "object"
 		if (ident == null || ident.ident != Id.object) {
 			symtab.insert(context.object);
 			symtab.insert(context.classinfo);
@@ -115,7 +118,9 @@ public class Module extends Package {
 			}
 
 			// Pass 1 semantic routines: do public side of the definition
-			for (Dsymbol s : members) {
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s;
+				s = members.get(i);
 				s.semantic(sc, context);
 			}
 
@@ -149,7 +154,9 @@ public class Module extends Package {
 
 		// Pass 2 semantic routines: do initializers and function bodies
 		if (members != null) {
-			for (Dsymbol s : members) {
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s;
+				s = members.get(i);
 				s.semantic2(sc, context);
 			}
 		}
@@ -174,7 +181,9 @@ public class Module extends Package {
 
 		// Pass 3 semantic routines: do initializers and function bodies
 		if (members != null) {
-			for (Dsymbol s : members) {
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s;
+				s = members.get(i);
 				s.semantic3(sc, context);
 			}
 		}
@@ -236,10 +245,12 @@ public class Module extends Package {
 
 				s.semantic(null, context);
 			}
-		} while (deferred.size() < len || context.dprogress != 0); // while making progress
+		} while (deferred.size() < len || context.dprogress != 0); // while
+																	// making
+																	// progress
 		nested--;
 	}
-	
+
 	@Override
 	public void appendBinding(StringBuilder sb) {
 		if (md != null) {

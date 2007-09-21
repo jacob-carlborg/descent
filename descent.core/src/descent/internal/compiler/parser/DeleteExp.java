@@ -96,7 +96,7 @@ public class DeleteExp extends UnaExp {
 					break;
 				}
 			}
-			error("cannot delete type %s", e1.type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeleteType, 0, start, length, new String[] { e1.type.toChars(context) }));
 			break;
 		}
 

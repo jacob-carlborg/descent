@@ -11,7 +11,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ScopeDsymbol extends Dsymbol {
 
-	public Dsymbols members;
+	public Dsymbols members, sourceMembers;
 	public DsymbolTable symtab;
 	public List<ScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import
@@ -84,7 +84,10 @@ public class ScopeDsymbol extends Dsymbol {
 			// prots = (unsigned char *)mem.realloc(prots, imports.dim *
 			// sizeof(prots[0]));
 			// prots[imports.dim - 1] = protection;
-			prots.set(imports.size() - 1, protection);
+			if (prots == null) {
+				prots = new Array<PROT>();
+			}
+			prots.set(size(imports) - 1, protection);
 		}
 	}
 

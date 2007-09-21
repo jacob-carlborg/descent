@@ -1052,6 +1052,38 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors("void foo(int x) { } void bar() { foo(1); }");
 	}
 	
+	public void testSymbolNotDefined() {
+		String s = "mixin T!();";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.SymbolNotDefined, 6, 4);
+	}
+	
+	public void testSymbolNotATemplate() {
+		String s = "class T { } mixin T!();";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.SymbolNotATemplate, 18, 4);
+	}
+	
+	public void testCannotDeleteType() {
+		String s = "void foo() { delete 1; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(2, p.length);
+		
+		assertError(p[1], IProblem.CannotDeleteType, 13, 8);
+	}
+	
+	public void testNotAnLvalue() {
+		String s = "void foo() { delete new int; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.NotAnLvalue, 20, 7);
+	}
+	
 	
 	/* TODO test for SemanticContext.IN_GCC = true
 	public void testCannotPutCatchStatementInsideFinallyBlock() {

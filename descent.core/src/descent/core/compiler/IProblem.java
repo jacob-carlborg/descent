@@ -367,5 +367,9 @@ public interface IProblem {
 	int OutCannotBeFinal = 157;
 	int ScopeCannotBeRefOrOut = 158;
 	int IncompatibleTypeForOperator = 159;
+	int SymbolNotDefined = 160;
+	int SymbolNotATemplate = 161;
+	int CannotDeleteType = 162;
+	int NotAnLvalue = 163;
 
 }

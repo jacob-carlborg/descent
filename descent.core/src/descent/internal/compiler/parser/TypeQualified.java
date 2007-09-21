@@ -259,16 +259,18 @@ public abstract class TypeQualified extends Type {
 			HdrGenState hgs, SemanticContext context) {
 		int i;
 
-		for (i = 0; i < idents.size(); i++) {
-			IdentifierExp id = idents.get(i);
-
-			buf.writeByte('.');
-
-			if (id.dyncast() == DYNCAST_DSYMBOL) {
-				TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
-				ti.toCBuffer(buf, hgs, context);
-			} else {
-				buf.writestring(id.toChars());
+		if (idents != null) {
+			for (i = 0; i < idents.size(); i++) {
+				IdentifierExp id = idents.get(i);
+	
+				buf.writeByte('.');
+	
+				if (id.dyncast() == DYNCAST_DSYMBOL) {
+					TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
+					ti.toCBuffer(buf, hgs, context);
+				} else {
+					buf.writestring(id.toChars());
+				}
 			}
 		}
 	}

@@ -160,6 +160,7 @@ public class Parser extends Lexer {
 	public Module parseModuleObj() {
 		module = new Module(loc);
 		module.members = parseModule();
+		module.sourceMembers = new Dsymbols(module.members);
 		module.md = md;
 		module.comments = comments.toArray(new Comment[comments.size()]);
 		module.pragmas = pragmas.toArray(new Pragma[pragmas.size()]);
