@@ -411,6 +411,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OutCannotBeFinal);
 		case ScopeCannotBeRefOrOut:
 			return String.format(ProblemMessages.ScopeCannotBeRefOrOut);
+		case IncompatibleTypeForOperator:
+			return String.format(ProblemMessages.IncompatibleTypeForOperator, arguments[0], arguments[1], arguments[2]);
 		default:
 			return "";
 		}

@@ -90,9 +90,9 @@ public class ExpStatement extends Statement {
 			exp = ASTDmdNode.resolveProperties(sc, exp, context);
 			exp.checkSideEffect(0, context);
 			exp = exp.optimize(0, context);
+			sourceExp.setBinding(exp);
 		}
 		
-		sourceExp.setBinding(exp);
 		return this;
 	}
 

@@ -366,5 +366,6 @@ public interface IProblem {
 	int IncompatibleParameterStorageClass = 156;
 	int OutCannotBeFinal = 157;
 	int ScopeCannotBeRefOrOut = 158;
+	int IncompatibleTypeForOperator = 159;
 
 }

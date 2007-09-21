@@ -387,7 +387,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		p = null;
 		if (parameters != null) {
 			p = new TemplateParameters();
-			p.ensureCapacity(parameters.size());
+			p.setDim(parameters.size());
 			for (int i = 0; i < p.size(); i++) {
 				TemplateParameter tp = parameters.get(i);
 				p.set(i, tp.syntaxCopy());

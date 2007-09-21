@@ -472,8 +472,13 @@ OutCannotBeFinal
 ScopeCannotBeRefOrOut
 	formatString=<<TODO>>
 	numArgs=0
+IncompatibleTypeForOperator
+	formatString=Types %1$s and %2$s are incompatible for %3$s
+	numArgs=3
 
-
-
-
-
+	
+	
+	
+	
+	
+	

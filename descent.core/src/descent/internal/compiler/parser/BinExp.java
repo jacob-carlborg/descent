@@ -8,10 +8,12 @@ import static descent.internal.compiler.parser.Constfold.BinExp_fp2;
 import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.Constfold.Equal;
 
+import java.awt.image.ImageProducer;
 import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.Constfold.BinExp_fp;
 
 // DMD 1.020
@@ -126,9 +128,7 @@ public abstract class BinExp extends Expression {
 	}
 
 	public void incompatibleTypes(SemanticContext context) {
-		error("incompatible types for ((%s) %s (%s)): '%s' and '%s'", e1
-				.toChars(context), op.toString(), e2.toChars(context), e1.type
-				.toChars(context), e2.type.toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypeForOperator, 0, e1.start, e2.start + e2.length - e1.start, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
 	}
 
 	public boolean isunsigned() {

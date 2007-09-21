@@ -413,15 +413,17 @@ public class ForeachStatement extends Statement {
 		flde = flde.semantic(sc, context);
 
 		// Resolve any forward referenced goto's
-		for (int j = 0; j < gotos.size(); j++) {
-			CompoundStatement cs = (CompoundStatement) gotos.get(j);
-			GotoStatement gs = (GotoStatement) cs.statements.get(0);
-
-			if (gs.label.statement == null) { // 'Promote' it to this scope, and replace with a return
-				cases.add(gs);
-				s[0] = new ReturnStatement(loc, new IntegerExp(loc, cases
-						.size() + 1));
-				cs.statements.set(0, s[0]);
+		if (gotos != null) {
+			for (int j = 0; j < gotos.size(); j++) {
+				CompoundStatement cs = (CompoundStatement) gotos.get(j);
+				GotoStatement gs = (GotoStatement) cs.statements.get(0);
+	
+				if (gs.label.statement == null) { // 'Promote' it to this scope, and replace with a return
+					cases.add(gs);
+					s[0] = new ReturnStatement(loc, new IntegerExp(loc, cases
+							.size() + 1));
+					cs.statements.set(0, s[0]);
+				}
 			}
 		}
 

@@ -168,6 +168,7 @@ final class ProblemMessages extends NLS {
 	public static String IncompatibleParameterStorageClass;
 	public static String OutCannotBeFinal;
 	public static String ScopeCannotBeRefOrOut;
+	public static String IncompatibleTypeForOperator;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
