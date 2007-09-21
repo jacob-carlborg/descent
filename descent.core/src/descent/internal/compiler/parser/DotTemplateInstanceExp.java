@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKimport;
@@ -110,7 +111,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s = s.toAlias(context);
 		td = s.isTemplateDeclaration();
 		if (td == null) {
-			error("%s is not a template", id);
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, 0, ti.name.start, ti.name.length, new String[] { new String(id) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

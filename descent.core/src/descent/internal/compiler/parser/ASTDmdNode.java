@@ -641,7 +641,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		modifiers.addAll(someModifiers);
 	}
 
-	public void argExpTypesToCBuffer(OutBuffer buf, Expressions arguments,
+	public static void argExpTypesToCBuffer(OutBuffer buf, Expressions arguments,
 			HdrGenState hgs, SemanticContext context) {
 		if (arguments != null) {
 			OutBuffer argbuf = new OutBuffer();
@@ -659,7 +659,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public void argsToCBuffer(OutBuffer buf, Expressions arguments,
+	public static void argsToCBuffer(OutBuffer buf, Expressions arguments,
 			HdrGenState hgs, SemanticContext context) {
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); i++) {
@@ -673,7 +673,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public void arrayExpressionSemantic(Expressions exps, Scope sc,
+	public static void arrayExpressionSemantic(Expressions exps, Scope sc,
 			SemanticContext context) {
 		if (exps != null) {
 			for (int i = 0; i < exps.size(); i++) {
@@ -719,13 +719,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	protected static void error(String s, char[]... s2) {
-		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
-			throw new IllegalStateException("Problem reporting not implemented");
-		}
-	}
-
-	public void expToCBuffer(OutBuffer buf, HdrGenState hgs, Expression e,
+	public static void expToCBuffer(OutBuffer buf, HdrGenState hgs, Expression e,
 			PREC pr, SemanticContext context) {
 		if (e.op.precedence.ordinal() < pr.ordinal()) {
 			buf.writeByte('(');
@@ -1066,7 +1060,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e1;
 	}
 
-	public void argsToCBuffer(OutBuffer buf, HdrGenState hgs,
+	public static void argsToCBuffer(OutBuffer buf, HdrGenState hgs,
 			List<Argument> arguments, int varargs, SemanticContext context) {
 		buf.writeByte('(');
 		if (arguments != null) {

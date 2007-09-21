@@ -371,5 +371,10 @@ public interface IProblem {
 	int SymbolNotATemplate = 161;
 	int CannotDeleteType = 162;
 	int NotAnLvalue = 163;
+	int CannotAliasAnExpression = 164;
+	int CannotAssignToStaticArray = 165;
+	int CannotChangeReferenceToStaticArray = 166;
+	int CannotModifyParameterInContract = 167;
+	int BothOverloadsMuchArgumentList = 168;
 
 }

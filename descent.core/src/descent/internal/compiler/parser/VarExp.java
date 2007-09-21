@@ -79,13 +79,13 @@ public class VarExp extends Expression {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		if (sc.incontract != 0 && var.isParameter()) {
-			error("cannot modify parameter '%s' in contract", var
-					.toChars(context));
+			// TODO the start and length of the problem should be different (should be passed by parameter to this function)
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, 0, start, length, new String[] { var.toChars(context) }));
 		}
 
 		if (type != null && type.toBasetype(context).ty == Tsarray) {
-			error("cannot change reference to static array '%s'", var
-					.toChars(context));
+			// TODO the start and length of the problem should be different (should be passed by parameter to this function)
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotChangeReferenceToStaticArray, 0, start, length, new String[] { var.toChars(context) }));
 		}
 
 		VarDeclaration v = var.isVarDeclaration();

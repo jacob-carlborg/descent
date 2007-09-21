@@ -182,4 +182,9 @@ public class IdentifierExp extends Expression {
 		return new String(ident);
 	}
 
+	public Object toHChars2() {
+		// TODO semantic
+		return toString();
+	}
+
 }

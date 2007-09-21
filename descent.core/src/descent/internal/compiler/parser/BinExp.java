@@ -926,9 +926,8 @@ public abstract class BinExp extends Expression {
 
 			if (m.count > 1) {
 				// Error, ambiguous
-				error("overloads %s and %s both match argument list for %s",
-						m.lastf.type.toChars(context), m.nextf.type
-								.toChars(context), m.lastf.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, 0, start, length, new String[] { m.lastf.type.toChars(context), m.nextf.type
+								.toChars(context), m.lastf.toChars(context) }));
 			} else if (m.last == MATCHnomatch) {
 				m.lastf = m.anyf;
 			}

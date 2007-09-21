@@ -7,14 +7,13 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class ParenExp extends UnaExp {
 
 	public ParenExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKlparen, e);
+		super(loc, e.op, e);
 	}
 	
 	@Override
 	public int getNodeType() {
 		return PAREN_EXP;
-	}
-	
+	}	
 	
 	@Override
 	public void accept0(IASTVisitor visitor) {

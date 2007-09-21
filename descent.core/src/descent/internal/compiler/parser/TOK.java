@@ -183,16 +183,19 @@ public enum TOK implements ITerminalSymbols {
 
 	TOK() {
 		value = this.name();
+		this.precedence = PREC_zero;
 	}
 	
 	TOK(int terminalSymbol) {
 		this.terminalSymbol = terminalSymbol;
+		this.precedence = PREC_zero;
 	}
 
 	TOK(String value, int terminalSymbol) {
 		this.value = value;
 		this.charArrayValue = value.toCharArray();
 		this.terminalSymbol = terminalSymbol;
+		this.precedence = PREC_zero;
 	}
 	
 	TOK(int terminalSymbol, PREC precedence) {

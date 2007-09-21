@@ -48,59 +48,51 @@ public class TypeFunction extends Type {
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
 			TemplateParameters parameters, Objects dedtypes,
-			SemanticContext context)
-	{
+			SemanticContext context) {
 		boolean L1 = true;
-		
+
 		// printf("TypeFunction.deduceType()\n");
 		// printf("\tthis = %d, ", ty); print();
 		// printf("\ttparam = %d, ", tparam.ty); tparam.print();
-		
+
 		// Extra check that function characteristics must match
-		if(null != tparam && tparam.ty == Tfunction)
-		{
-			
+		if (null != tparam && tparam.ty == Tfunction) {
+
 			TypeFunction tp = (TypeFunction) tparam;
-			if(varargs != tp.varargs || linkage != tp.linkage)
+			if (varargs != tp.varargs || linkage != tp.linkage)
 				return MATCHnomatch;
-			
+
 			int nfargs = Argument.dim(this.parameters, context);
 			int nfparams = Argument.dim(tp.parameters, context);
-			
-			try
-			{
+
+			try {
 				/*
 				 * See if tuple match
 				 */
-				if(nfparams > 0 && nfargs >= nfparams - 1)
-				{
+				if (nfparams > 0 && nfargs >= nfparams - 1) {
 					/*
 					 * See if 'A' of the template parameter matches 'A' of the
 					 * type of the last function parameter.
 					 */
 					Argument fparam = (Argument) tp.parameters
 							.get(nfparams - 1);
-					if(fparam.type.ty != Tident)
-					{
+					if (fparam.type.ty != Tident) {
 						// goto L2;
 						L1 = false;
 						throw GOTO_L1;
 					}
 					TypeIdentifier tid = (TypeIdentifier) fparam.type;
-					if(!tid.idents.isEmpty())
-					{
+					if (!tid.idents.isEmpty()) {
 						L1 = false;
 						throw GOTO_L1;
 					}
-					
+
 					/*
 					 * Look through parameters to find tuple matching tid.ident
 					 */
 					int tupi = 0;
-					for(; true; tupi++)
-					{
-						if(tupi == parameters.size())
-						{
+					for (; true; tupi++) {
+						if (tupi == parameters.size()) {
 							// goto L2;
 							L1 = false;
 							throw GOTO_L1;
@@ -109,40 +101,36 @@ public class TypeFunction extends Type {
 								.get(tupi);
 						TemplateTupleParameter tup = t
 								.isTemplateTupleParameter();
-						if(null != tup && tup.ident.equals(tid.ident))
+						if (null != tup && tup.ident.equals(tid.ident))
 							break;
 					}
-					
+
 					/*
 					 * The types of the function arguments [nfparams - 1 ..
 					 * nfargs] now form the tuple argument.
 					 */
 					int tuple_dim = nfargs - (nfparams - 1);
-					
+
 					/*
 					 * See if existing tuple, and whether it matches or not
 					 */
 					Object o = (Object) dedtypes.get(tupi);
-					if(null != o)
-					{ // Existing deduced argument must be a tuple, and must
+					if (null != o) { // Existing deduced argument must be a
+										// tuple, and must
 						// match
 						Tuple t = isTuple((ASTDmdNode) o);
-						if(null == t || t.objects.size() != tuple_dim)
+						if (null == t || t.objects.size() != tuple_dim)
 							return MATCHnomatch;
-						for(int i = 0; i < tuple_dim; i++)
-						{
+						for (int i = 0; i < tuple_dim; i++) {
 							Argument arg = Argument.getNth(this.parameters,
 									nfparams - 1 + i, context);
-							if(!arg.type.equals((Object) t.objects.get(i)))
+							if (!arg.type.equals((Object) t.objects.get(i)))
 								return MATCHnomatch;
 						}
-					}
-					else
-					{ // Create new tuple
+					} else { // Create new tuple
 						Tuple t = new Tuple();
 						t.objects = new Objects(tuple_dim);
-						for(int i = 0; i < tuple_dim; i++)
-						{
+						for (int i = 0; i < tuple_dim; i++) {
 							Argument arg = Argument.getNth(this.parameters,
 									nfparams - 1 + i, context);
 							t.objects.set(i, arg.type);
@@ -154,22 +142,19 @@ public class TypeFunction extends Type {
 					L1 = false;
 				}
 				throw GOTO_L1; // fallthrough
-			}
-			catch(GotoL1 $)
-			{
-				
+			} catch (GotoL1 $) {
+
 				// L1:
-				if(L1 && (nfargs != nfparams))
+				if (L1 && (nfargs != nfparams))
 					return MATCHnomatch;
-				
+
 				// L2:
-				for(int i = 0; i < nfparams; i++)
-				{
+				for (int i = 0; i < nfparams; i++) {
 					Argument a = Argument.getNth(this.parameters, i, context);
 					Argument ap = Argument.getNth(tp.parameters, i, context);
-					if(a.storageClass != ap.storageClass ||
-							null == a.type.deduceType(sc, ap.type, parameters,
-									dedtypes, context))
+					if (a.storageClass != ap.storageClass
+							|| null == a.type.deduceType(sc, ap.type,
+									parameters, dedtypes, context))
 						return MATCHnomatch;
 				}
 			}
@@ -183,22 +168,18 @@ public class TypeFunction extends Type {
 	}
 
 	@Override
-	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context)
-	{
+	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context) {
 		return new TypeInfoFunctionDeclaration(this, context);
 	}
 
 	@Override
-	public Type reliesOnTident()
-	{
-		
-		if(null != parameters)
-		{
-			for(int i = 0; i < parameters.size(); i++)
-			{
+	public Type reliesOnTident() {
+
+		if (null != parameters) {
+			for (int i = 0; i < parameters.size(); i++) {
 				Argument arg = (Argument) parameters.get(i);
 				Type t = arg.type.reliesOnTident();
-				if(null != t)
+				if (null != t)
 					return t;
 			}
 		}
@@ -274,7 +255,7 @@ public class TypeFunction extends Type {
 					arg.defaultArg = arg.defaultArg.implicitCastTo(sc,
 							arg.type, context);
 				}
-				
+
 				/*
 				 * If arg turns out to be a tuple, the number of parameters may
 				 * change.
@@ -304,7 +285,7 @@ public class TypeFunction extends Type {
 		 */
 		return this;
 	}
-	
+
 	@Override
 	public Type syntaxCopy() {
 		Type treturn = next != null ? next.syntaxCopy() : null;
@@ -313,12 +294,6 @@ public class TypeFunction extends Type {
 		return t;
 	}
 
-	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		// TODO semantic
-	}
-	
 	@Override
 	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
 		char mc;
@@ -355,185 +330,216 @@ public class TypeFunction extends Type {
 		next.toDecoBuffer(buf, context);
 		inuse--;
 	}
-	public MATCH callMatch(Expressions args, SemanticContext context)
-	{
+
+	public MATCH callMatch(Expressions args, SemanticContext context) {
 		MATCH match = MATCHexact; // assume exact match
-		
+
 		int nparams = Argument.dim(parameters, context);
 		int nargs = null != args ? args.size() : 0;
-		if(nparams == nargs)
+		if (nparams == nargs)
 			;
-		else if(nargs > nparams)
-		{
-			if(varargs == 0)
-				return MATCHnomatch; //goto Nomatch; // too many args; no match
+		else if (nargs > nparams) {
+			if (varargs == 0)
+				return MATCHnomatch; // goto Nomatch; // too many args; no
+										// match
 			match = MATCHconvert; // match ... with a "conversion" match level
 		}
-		
-		for(int u = 0; u < nparams; u++)
-		{
+
+		for (int u = 0; u < nparams; u++) {
 			MATCH m;
 			Expression arg;
-			
+
 			// BUG: what about out and ref?
-			
+
 			Argument p = Argument.getNth(parameters, u, context);
 			Assert.isTrue(null != p);
-			if(u >= nargs)
-			{
-				if(null != p.defaultArg)
+			if (u >= nargs) {
+				if (null != p.defaultArg)
 					continue;
-				if(varargs == 2 && u + 1 == nparams)
-				{
+				if (varargs == 2 && u + 1 == nparams) {
 					// goto L1;
-					// PERHAPS this was copied & pasted, so i'm not 100% the logic here is right
-					if(varargs == 2 && u + 1 == nparams) // if last varargs param
+					// PERHAPS this was copied & pasted, so i'm not 100% the
+					// logic here is right
+					if (varargs == 2 && u + 1 == nparams) // if last varargs
+															// param
 					{
 						Type tb = p.type.toBasetype(context);
 						TypeSArray tsa;
 						integer_t sz;
-						
-						switch(tb.ty)
-						{
-							case Tsarray:
-								tsa = (TypeSArray) tb;
-								sz = tsa.dim.toInteger(context);
-								if(!sz.equals(nargs - u))
-									return MATCHnomatch; // goto Nomatch;
-							case Tarray:
-								for(; u < nargs; u++)
-								{
-									arg = (Expression) args.get(u);
-									assert(null != arg);
-									/*
-									 * If lazy array of delegates, convert arg(s) to
-									 * delegate(s)
-									 */
-									Type tret = p.isLazyArray(context);
-									if(null != tret)
-									{
-										if(tb.next.equals(arg.type))
-										{
-											m = MATCHexact;
-										}
-										else
-										{
-											m = arg.implicitConvTo(tret, context);
-											if(m == MATCHnomatch)
-											{
-												if(tret.toBasetype(context).ty == Tvoid)
-													m = MATCHconvert;
-											}
-										}
-									}
-									else
-										m = arg.implicitConvTo(tb.next, context);
-									if(m == MATCHnomatch)
-										return MATCHnomatch; // goto Nomatch;
-									if(m.ordinal() < match.ordinal())
-										match = m;
-								}
-								return match; // goto Ldone;
-								
-							case Tclass:
-								// Should see if there's a constructor match?
-								// Or just leave it ambiguous?
-								return match; // goto Ldone;
-								
-							default:
-								return MATCHnomatch; // goto Nomatch;
-						}
-					}
-					return MATCHnomatch; // goto Nomatch;
-				}
-				else
-				{
-					return MATCHnomatch; // goto Nomatch; // not enough arguments
-				}
-			}
-			arg = (Expression) args.get(u);
-			assert(null != arg);
-			if(0 != (p.storageClass & STClazy) && p.type.ty == Tvoid &&
-					arg.type.ty != Tvoid)
-				m = MATCHconvert;
-			else
-				m = arg.implicitConvTo(p.type, context);
-			// printf("\tm = %d\n", m);
-			if(m == MATCHnomatch) // if no match
-			{
-				// L1:
-				if(varargs == 2 && u + 1 == nparams) // if last varargs
-															// param
-				{
-					Type tb = p.type.toBasetype(context);
-					TypeSArray tsa;
-					integer_t sz;
-					
-					switch(tb.ty)
-					{
+
+						switch (tb.ty) {
 						case Tsarray:
 							tsa = (TypeSArray) tb;
 							sz = tsa.dim.toInteger(context);
-							if(!sz.equals(nargs - u))
+							if (!sz.equals(nargs - u))
 								return MATCHnomatch; // goto Nomatch;
 						case Tarray:
-							for(; u < nargs; u++)
-							{
+							for (; u < nargs; u++) {
 								arg = (Expression) args.get(u);
-								assert(null != arg);
+								assert (null != arg);
 								/*
 								 * If lazy array of delegates, convert arg(s) to
 								 * delegate(s)
 								 */
 								Type tret = p.isLazyArray(context);
-								if(null != tret)
-								{
-									if(tb.next.equals(arg.type))
-									{
+								if (null != tret) {
+									if (tb.next.equals(arg.type)) {
 										m = MATCHexact;
-									}
-									else
-									{
+									} else {
 										m = arg.implicitConvTo(tret, context);
-										if(m == MATCHnomatch)
-										{
-											if(tret.toBasetype(context).ty == Tvoid)
+										if (m == MATCHnomatch) {
+											if (tret.toBasetype(context).ty == Tvoid)
 												m = MATCHconvert;
 										}
 									}
-								}
-								else
+								} else
 									m = arg.implicitConvTo(tb.next, context);
-								if(m == MATCHnomatch)
+								if (m == MATCHnomatch)
 									return MATCHnomatch; // goto Nomatch;
-								if(m.ordinal() < match.ordinal())
+								if (m.ordinal() < match.ordinal())
 									match = m;
 							}
 							return match; // goto Ldone;
-							
+
 						case Tclass:
 							// Should see if there's a constructor match?
 							// Or just leave it ambiguous?
 							return match; // goto Ldone;
-							
+
 						default:
 							return MATCHnomatch; // goto Nomatch;
+						}
+					}
+					return MATCHnomatch; // goto Nomatch;
+				} else {
+					return MATCHnomatch; // goto Nomatch; // not enough
+											// arguments
+				}
+			}
+			arg = (Expression) args.get(u);
+			assert (null != arg);
+			if (0 != (p.storageClass & STClazy) && p.type.ty == Tvoid
+					&& arg.type.ty != Tvoid)
+				m = MATCHconvert;
+			else
+				m = arg.implicitConvTo(p.type, context);
+			// printf("\tm = %d\n", m);
+			if (m == MATCHnomatch) // if no match
+			{
+				// L1:
+				if (varargs == 2 && u + 1 == nparams) // if last varargs
+				// param
+				{
+					Type tb = p.type.toBasetype(context);
+					TypeSArray tsa;
+					integer_t sz;
+
+					switch (tb.ty) {
+					case Tsarray:
+						tsa = (TypeSArray) tb;
+						sz = tsa.dim.toInteger(context);
+						if (!sz.equals(nargs - u))
+							return MATCHnomatch; // goto Nomatch;
+					case Tarray:
+						for (; u < nargs; u++) {
+							arg = (Expression) args.get(u);
+							assert (null != arg);
+							/*
+							 * If lazy array of delegates, convert arg(s) to
+							 * delegate(s)
+							 */
+							Type tret = p.isLazyArray(context);
+							if (null != tret) {
+								if (tb.next.equals(arg.type)) {
+									m = MATCHexact;
+								} else {
+									m = arg.implicitConvTo(tret, context);
+									if (m == MATCHnomatch) {
+										if (tret.toBasetype(context).ty == Tvoid)
+											m = MATCHconvert;
+									}
+								}
+							} else
+								m = arg.implicitConvTo(tb.next, context);
+							if (m == MATCHnomatch)
+								return MATCHnomatch; // goto Nomatch;
+							if (m.ordinal() < match.ordinal())
+								match = m;
+						}
+						return match; // goto Ldone;
+
+					case Tclass:
+						// Should see if there's a constructor match?
+						// Or just leave it ambiguous?
+						return match; // goto Ldone;
+
+					default:
+						return MATCHnomatch; // goto Nomatch;
 					}
 				}
-				return MATCHnomatch; //goto Nomatch;
+				return MATCHnomatch; // goto Nomatch;
 			}
-			if(m.ordinal() < match.ordinal())
+			if (m.ordinal() < match.ordinal())
 				match = m; // pick worst match
 		}
-		
+
 		return match;
 	}
-	
+
+	@Override
+	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+			SemanticContext context) {
+		String p = null;
+
+	    if (inuse != 0)
+	    {	inuse = 2;		// flag error to caller
+		return;
+	    }
+	    inuse++;
+	    if (hgs.ddoc != 1)
+	    {
+		switch (linkage)
+		{
+		    case LINKd:		p = null;	break;
+		    case LINKc:		p = "C ";	break;
+		    case LINKwindows:	p = "Windows ";	break;
+		    case LINKpascal:	p = "Pascal ";	break;
+		    case LINKcpp:	p = "C++ ";	break;
+		    default:
+		    	throw new IllegalStateException("assert(0);");
+		}
+	    }
+
+	    if (buf.data.length() != 0)
+	    {
+		if (!hgs.hdrgen && p != null)
+		    buf.prependstring(p);
+		// TODO semantic
+		// buf.bracket('(', ')');
+		assert(ident == null);
+	    }
+	    else
+	    {
+		if (!hgs.hdrgen && p != null)
+		    buf.writestring(p);
+		if (ident != null)
+		{   buf.writeByte(' ');
+		    buf.writestring(ident.toHChars2());
+		}
+	    }
+	    Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
+	    if (next != null&& (null == ident || ident.toHChars2().equals(ident.toChars())))
+		next.toCBuffer2(buf, null, hgs, context);
+	    inuse--;
+	}
+
 	@SuppressWarnings("serial")
-	private static class GotoL1 extends Exception {}
+	private static class GotoL1 extends Exception {
+	}
+
 	private static final GotoL1 GOTO_L1 = new GotoL1();
-	
+
 	// PERHAPS type *toCtype();
-	//PERHAPS enum RET retStyle();
-	//PERHAPS unsigned totym();
+	// PERHAPS enum RET retStyle();
+	// PERHAPS unsigned totym();
 }

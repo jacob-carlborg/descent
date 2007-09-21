@@ -372,7 +372,7 @@ public class Problem implements IProblem {
 		case ExpressionHasNoEffect:
 			return String.format(ProblemMessages.ExpressionHasNoEffect);
 		case ConstantIsNotAnLValue:
-			return String.format(ProblemMessages.ConstantIsNotAnLValue);
+			return String.format(ProblemMessages.ConstantIsNotAnLValue, arguments[0]);
 		case VersionIdentifierReserved:
 			return String.format(ProblemMessages.VersionIdentifierReserved, arguments[0]);
 		case CannotPutCatchStatementInsideFinallyBlock:
@@ -421,6 +421,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotDeleteType, arguments[0]);
 		case NotAnLvalue:
 			return String.format(ProblemMessages.NotAnLvalue, arguments[0]);
+		case CannotAliasAnExpression:
+			return String.format(ProblemMessages.CannotAliasAnExpression, arguments[0]);
+		case CannotAssignToStaticArray:
+			return String.format(ProblemMessages.CannotAssignToStaticArray, arguments[0]);
+		case CannotChangeReferenceToStaticArray:
+			return String.format(ProblemMessages.CannotChangeReferenceToStaticArray, arguments[0]);
+		case CannotModifyParameterInContract:
+			return String.format(ProblemMessages.CannotModifyParameterInContract, arguments[0]);
+		case BothOverloadsMuchArgumentList:
+			return String.format(ProblemMessages.BothOverloadsMuchArgumentList, arguments[0], arguments[1], arguments[2]);
 		default:
 			return "";
 		}

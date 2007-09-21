@@ -413,8 +413,8 @@ ExpressionHasNoEffect
 	formatString=Expression has no effect
 	numArgs=0
 ConstantIsNotAnLValue
-	formatString=Constant is not an lvalue
-	numArgs=0
+	formatString=Constant %1$s is not an lvalue
+	numArgs=1
 VersionIdentifierReserved
 	formatString=Version identifier '%1$s' is reserved and cannot be set
 	numArgs=1
@@ -487,7 +487,21 @@ CannotDeleteType
 NotAnLvalue
 	formatString=%1$s is not an lvalue
 	numArgs=1
-	
+CannotAliasAnExpression
+	formatString=Cannot alias an expression %1$s
+	numArgs=1
+CannotAssignToStaticArray
+	formatString=Cannot assign to static array %1$s
+	numArgs=1
+CannotChangeReferenceToStaticArray
+	formatString=Cannot change reference to static array %1$s
+	numArgs=1
+CannotModifyParameterInContract
+	formatString=Cannot modify parameter '%1$s' in contract
+	numArgs=1
+BothOverloadsMuchArgumentList
+	formatString=Overloads %1$s and %2$s both match argument list for %3$s
+	numArgs=3
 	
 	
 	

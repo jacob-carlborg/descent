@@ -11,6 +11,7 @@ public class HdrGenState {
 	public boolean hdrgen;
 	public boolean tpltMember;
 	public int console;
+	public int ddoc;
 	
 	public FLinitObject FLinit = new FLinitObject();
 

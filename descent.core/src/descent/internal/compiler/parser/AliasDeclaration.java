@@ -163,7 +163,7 @@ public class AliasDeclaration extends Declaration {
 				semantic_L2(sc, context, s[0]); // it's a symbolic alias
 				return;
 			} else {
-				error("cannot alias an expression %s", e[0].toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, 0, sourceType.start, sourceType.length, new String[] { e[0].toChars(context) }));
 				t[0] = e[0].type;
 			}
 		} else if (t[0] != null) {
