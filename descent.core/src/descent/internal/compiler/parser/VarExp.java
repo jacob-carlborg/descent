@@ -70,6 +70,12 @@ public class VarExp extends Expression {
 	}
 
 	@Override
+	public Expression interpret(InterState istate, SemanticContext context)
+	{
+	    return getVarExp(loc, istate, var, context);
+	}
+
+	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		if (sc.incontract != 0 && var.isParameter()) {
@@ -125,6 +131,25 @@ public class VarExp extends Expression {
 	}
 
 	@Override
+	public Expression optimize(int result, SemanticContext context)
+	{
+		if((result & WANTinterpret) > 0)
+		{
+			return fromConstInitializer(this, context);
+		}
+		return this;
+	}
+
+	@Override
+	public void scanForNestedRef(Scope sc, SemanticContext context)
+	{
+		//printf("VarExp.scanForNestedRef(%s)\n", toChars());
+		VarDeclaration v = var.isVarDeclaration();
+		if(null != v)
+			v.checkNestedReference(sc, Loc.ZERO, context);
+	}
+
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			type = var.type;
@@ -143,7 +168,7 @@ public class VarExp extends Expression {
 		}
 		return this;
 	}
-
+	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
@@ -162,7 +187,7 @@ public class VarExp extends Expression {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public void appendBinding(StringBuilder sb) {
 		var.appendBinding(sb);
@@ -171,7 +196,7 @@ public class VarExp extends Expression {
 	@Override
 	public ASTDmdNode getBinding() {
 		return var;
-	}
+}
 	
 	@Override
 	public String toString() {
@@ -179,5 +204,8 @@ public class VarExp extends Expression {
 		appendBinding(sb);
 		return sb.toString();
 	}
-
+	
+	//PERHAPS void dump(int indent);
+	//PERHAPS int inlineCost(InlineCostState *ics);
+	//PERHAPS Expression *doInline(InlineDoState *ids);
 }

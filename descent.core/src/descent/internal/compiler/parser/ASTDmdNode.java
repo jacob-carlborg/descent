@@ -692,31 +692,31 @@ public abstract class ASTDmdNode extends ASTNode {
 		return DYNCAST.DYNCAST_OBJECT;
 	}
 
-	protected void error(Loc loc, String... s) {
+	protected static void error(Loc loc, String... s) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
 	}
 
-	protected void error(String s) {
+	protected static void error(String s) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
 	}
 
-	protected void error(String s, int... s2) {
+	protected static void error(String s, int... s2) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
 	}
 
-	protected void error(String s, String... s2) {
+	protected static void error(String s, String... s2) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
 	}
 
-	protected void error(String s, char[]... s2) {
+	protected static void error(String s, char[]... s2) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
@@ -1579,41 +1579,79 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e;
 	}
 	
-	public static final Expression getVarExp(Loc loc, InterState istate, 
-			Declaration d, SemanticContext context)
+	public static final Expression getVarExp(Loc loc, InterState istate,
+		Declaration d, SemanticContext context)
 	{
-	    /* TODO semantic 
-	    Expression e = EXP_CANT_INTERPRET;
-	    VarDeclaration v = d.isVarDeclaration();
-	    SymbolDeclaration s = d.isSymbolDeclaration();
-	    if (v)
-	    {
-	        if (v.isConst() && v.init)
-	        {   e = v.init.toExpression();
-	            if (!e.type)
-	                e.type = v.type;
-	        }
-	        else
-	        {   e = v.value;
-	            if (!e)
-	                error(loc, "variable %s is used before initialization", v.toChars());
-	            else if (e != EXP_CANT_INTERPRET)
-	                e = e.interpret(istate);
-	        }
-	        if (!e)
-	            e = EXP_CANT_INTERPRET;
-	    }
-	    else if (s)
-	    {
-	        if (s.dsym.toInitializer() == s.sym)
-	        {   Expressions exps = new Expressions();
-	            e = new StructLiteralExp(0, s.dsym, exps);
-	            e = e.semantic(null);
-	        }
-	    }
-	    return e;
-	    */
-		return null;
+		// FIXME this doesn't work, we may need to port over tosym.c
+		Expression e = EXP_CANT_INTERPRET;
+		VarDeclaration v = d.isVarDeclaration();
+		// TODO SymbolDeclaration s = d.isSymbolDeclaration();
+		if(null != v)
+		{
+			if(v.isConst() && null != v.init)
+			{
+				e = v.init.toExpression(context);
+				if(null == e.type)
+					e.type = v.type;
+			}
+			else
+			{
+				e = v.value;
+				if(null == e)
+					error("variable %s is used before initialization", v
+							.toChars(context));
+				else if(e != EXP_CANT_INTERPRET)
+					e = e.interpret(istate, context);
+			}
+			if(null == e)
+				e = EXP_CANT_INTERPRET;
+		}
+		/* TODO else if (s)
+		{
+		   if (s.dsym.toInitializer() == s.sym)
+		   {   Expressions exps = new Expressions();
+		       e = new StructLiteralExp(0, s.dsym, exps);
+		       e = e.semantic(null);
+		   }
+		} */
+		return e;
+	}
+	
+	public static void ObjectToCBuffer(OutBuffer buf, HdrGenState hgs,
+			ASTDmdNode oarg, SemanticContext context)
+	{
+		Type t = isType(oarg);
+		Expression e = isExpression(oarg);
+		Dsymbol s = isDsymbol(oarg);
+		Tuple v = isTuple(oarg);
+		if(null != t)
+			t.toCBuffer(buf, null, hgs, context);
+		else if(null != e)
+			e.toCBuffer(buf, hgs, context);
+		else if(null != s)
+		{
+			String p = null != s.ident ? s.ident.toChars() : s.toChars(context);
+			buf.writestring(p);
+		}
+		else if(null != v)
+		{
+			Objects args = v.objects;
+			for(int i = 0; i < args.size(); i++)
+			{
+				if(i > 0)
+					buf.writeByte(',');
+				ASTDmdNode o = (ASTDmdNode) args.get(i);
+				ObjectToCBuffer(buf, hgs, o, context);
+			}
+		}
+		else if(null == oarg)
+		{
+			buf.writestring("null");
+		}
+		else
+		{
+			assert (false);
+		}
 	}
 	
 	/**

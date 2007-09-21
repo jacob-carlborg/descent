@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -18,7 +21,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public Dsymbol onemember;
 	public TemplateDeclaration overnext; // next overloaded TemplateDeclaration
 	public TemplateDeclaration overroot; // first in overnext list
-
+	List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
+	
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
 		super(loc, id);
@@ -37,72 +41,39 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		visitor.endVisit(this);
 	}
 
-	@Override
-	public void semantic(Scope sc, SemanticContext context) {
-		if (scope != null)
-			return; // semantic() already run
+	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o,
+			SemanticContext context) {
+		Type targ = isType(o);
+		Expression ea = isExpression(o);
+		Dsymbol sa = isDsymbol(o);
+		Tuple va = isTuple(o);
 
-		if (sc.func != null) {
-			error("cannot declare template at function scope %s", sc.func
-					.toChars(context));
-		}
+		Dsymbol s;
 
-		if (context.global.params.useArrayBounds && sc.module != null) {
-			// Generate this function as it may be used
-			// when template is instantiated in other modules
-			sc.module.toModuleArray();
-		}
-
-		if (context.global.params.useAssert && sc.module != null) {
-			// Generate this function as it may be used
-			// when template is instantiated in other modules
-			sc.module.toModuleAssert();
-		}
-
-		/*
-		 * Remember Scope for later instantiations, but make a copy since
-		 * attributes can change.
-		 */
-		this.scope = new Scope(sc, context);
-		this.scope.setNoFree();
-
-		// Set up scope for parameters
-		ScopeDsymbol paramsym = new ScopeDsymbol(loc);
-		paramsym.parent = sc.parent;
-		Scope paramscope = sc.push(paramsym);
-		paramscope.parameterSpecialization = 1;
-
-		for (int i = 0; i < parameters.size(); i++) {
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
-			tp.declareParameter(paramscope, context);
-		}
-
-		for (TemplateParameter tp : parameters) {
-			tp.semantic(paramscope, context);
-		}
-
-		paramscope.pop();
-
-		if (members != null) {
-			Dsymbol[] s = { null };
-			if (Dsymbol.oneMembers(members, s, context)) {
-				if (s[0] != null && s[0].ident != null
-						&& s[0].ident.ident.equals(ident.ident)) {
-					onemember = s[0];
-					s[0].parent = this;
-				}
+		if (targ != null) {
+			s = new AliasDeclaration(Loc.ZERO, tp.ident, targ);
+		} else if (sa != null) {
+			s = new AliasDeclaration(Loc.ZERO, tp.ident, sa);
+		} else if (ea != null) {
+			// tdtypes.data[i] always matches ea here
+			Initializer init = new ExpInitializer(loc, ea);
+			TemplateValueParameter tvp = tp.isTemplateValueParameter();
+			if (tvp == null) {
+				throw new IllegalStateException("assert(tvp);");
 			}
+
+			VarDeclaration v = new VarDeclaration(Loc.ZERO, tvp.valType,
+					tp.ident, init);
+			v.storage_class = STCconst;
+			s = v;
+		} else if (va != null) {
+			s = new TupleDeclaration(loc, tp.ident, va.objects);
+		} else {
+			throw new IllegalStateException("assert(0);");
 		}
-	}
-
-	@Override
-	public TemplateDeclaration isTemplateDeclaration() {
-		return this;
-	}
-
-	@Override
-	public int getNodeType() {
-		return TEMPLATE_DECLARATION;
+		if (null == sc.insert(s))
+			error("declaration %s is already defined", tp.ident.toChars());
+		s.semantic(sc, context);
 	}
 
 	public FuncDeclaration deduce(Scope sc, Loc loc, Objects targsi,
@@ -198,48 +169,77 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return fd;
 	}
 
-	// Lerror:
-	FuncDeclaration Lerror(Expressions fargs, SemanticContext context) {
-		OutBuffer buf = new OutBuffer();
-		HdrGenState hgs = new HdrGenState();
-
-		argExpTypesToCBuffer(buf, fargs, hgs, context);
-		error("cannot deduce template function from argument types (%s)", buf
-				.toChars());
+	public MATCH deduceMatch(Objects targsi, Expressions fargs, Objects dedargs,
+			SemanticContext context)
+	{
+		// TODO semantic
 		return null;
 	}
 
 	@Override
-	public String toChars(SemanticContext context) {
-		OutBuffer buf = new OutBuffer();
-		HdrGenState hgs = new HdrGenState();
-
-		buf.writestring(ident.toChars());
-		buf.writeByte('(');
-		for (int i = 0; i < parameters.size(); i++) {
-			TemplateParameter tp = parameters.get(i);
-			if (i != 0)
-				buf.writeByte(',');
-			tp.toCBuffer(buf, hgs, context);
-		}
-		buf.writeByte(')');
-		buf.writeByte(0);
-		return buf.extractData();
+	public int getNodeType() {
+		return TEMPLATE_DECLARATION;
 	}
 
-	public static TemplateTupleParameter isVariadic(
-			TemplateParameters parameters) {
-		int dim = parameters.size();
-		TemplateTupleParameter tp = null;
-
-		if (dim != 0)
-			tp = ((TemplateParameter) parameters.get(dim - 1))
-					.isTemplateTupleParameter();
-		return tp;
+	@Override
+	public TemplateDeclaration isTemplateDeclaration() {
+		return this;
 	}
 
 	public TemplateTupleParameter isVariadic() {
 		return isVariadic(parameters);
+	}
+
+	@Override
+	public String kind() {
+		return (onemember != null && onemember.isAggregateDeclaration() != null) ? onemember
+				.kind()
+				: "template";
+	}
+
+	public int leastAsSpecialized(TemplateDeclaration td2,
+			SemanticContext context) {
+		/* This works by taking the template parameters to this template
+		 * declaration and feeding them to td2 as if it were a template
+		 * instance.
+		 * If it works, then this template is at least as specialized
+		 * as td2.
+		 */
+
+		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident); // create dummy template instance
+		Objects dedtypes = new Objects();
+
+		// Set type arguments to dummy template instance to be types
+		// generated from the parameters to this template declaration
+		ti.tiargs = new Objects(parameters.size());
+		for (int i = 0; i < ti.tiargs.size(); i++) {
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+
+			ASTDmdNode p = tp.dummyArg(context);
+			if (p != null)
+				ti.tiargs.set(i, p);
+			else
+				ti.tiargs.ensureCapacity(i);
+		}
+
+		// Temporary Array to hold deduced types
+		//dedtypes.setDim(parameters.dim);
+		dedtypes.ensureCapacity(td2.parameters.size());
+
+		// Attempt a type deduction
+		if (td2.matchWithInstance(ti, dedtypes, 1, context) != null) {
+			/* A non-variadic template is more specialized than a
+			 * variadic one.
+			 */
+			if (isVariadic() != null && null == td2.isVariadic()) {
+				// goto L1;
+				return 0;
+			}
+
+			return 1;
+		}
+		// L1: 
+		return 0;
 	}
 
 	public MATCH matchWithInstance(TemplateInstance ti, Objects dedtypes,
@@ -310,84 +310,72 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return m;
 	}
 
-	public int leastAsSpecialized(TemplateDeclaration td2,
-			SemanticContext context) {
-		/* This works by taking the template parameters to this template
-		 * declaration and feeding them to td2 as if it were a template
-		 * instance.
-		 * If it works, then this template is at least as specialized
-		 * as td2.
-		 */
+	@Override
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
+		TemplateDeclaration f;
 
-		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident); // create dummy template instance
-		Objects dedtypes = new Objects();
-
-		// Set type arguments to dummy template instance to be types
-		// generated from the parameters to this template declaration
-		ti.tiargs = new Objects(parameters.size());
-		for (int i = 0; i < ti.tiargs.size(); i++) {
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
-
-			ASTDmdNode p = tp.dummyArg(context);
-			if (p != null)
-				ti.tiargs.set(i, p);
-			else
-				ti.tiargs.ensureCapacity(i);
-		}
-
-		// Temporary Array to hold deduced types
-		//dedtypes.setDim(parameters.dim);
-		dedtypes.ensureCapacity(td2.parameters.size());
-
-		// Attempt a type deduction
-		if (td2.matchWithInstance(ti, dedtypes, 1, context) != null) {
-			/* A non-variadic template is more specialized than a
-			 * variadic one.
-			 */
-			if (isVariadic() != null && null == td2.isVariadic()) {
-				// goto L1;
-				return 0;
-			}
-
-			return 1;
-		}
-		// L1: 
-		return 0;
+		f = s.isTemplateDeclaration();
+		if (null == f)
+			return false;
+		return true;
 	}
 
-	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o,
-			SemanticContext context) {
-		Type targ = isType(o);
-		Expression ea = isExpression(o);
-		Dsymbol sa = isDsymbol(o);
-		Tuple va = isTuple(o);
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		if (scope != null)
+			return; // semantic() already run
 
-		Dsymbol s;
-
-		if (targ != null) {
-			s = new AliasDeclaration(Loc.ZERO, tp.ident, targ);
-		} else if (sa != null) {
-			s = new AliasDeclaration(Loc.ZERO, tp.ident, sa);
-		} else if (ea != null) {
-			// tdtypes.data[i] always matches ea here
-			Initializer init = new ExpInitializer(loc, ea);
-			TemplateValueParameter tvp = tp.isTemplateValueParameter();
-			if (tvp == null) {
-				throw new IllegalStateException("assert(tvp);");
-			}
-
-			VarDeclaration v = new VarDeclaration(Loc.ZERO, tvp.valType,
-					tp.ident, init);
-			v.storage_class = STCconst;
-			s = v;
-		} else if (va != null) {
-			s = new TupleDeclaration(loc, tp.ident, va.objects);
-		} else {
-			throw new IllegalStateException("assert(0);");
+		if (sc.func != null) {
+			error("cannot declare template at function scope %s", sc.func
+					.toChars(context));
 		}
-		if (null == sc.insert(s))
-			error("declaration %s is already defined", tp.ident.toChars());
-		s.semantic(sc, context);
+
+		if (context.global.params.useArrayBounds && sc.module != null) {
+			// Generate this function as it may be used
+			// when template is instantiated in other modules
+			sc.module.toModuleArray();
+		}
+
+		if (context.global.params.useAssert && sc.module != null) {
+			// Generate this function as it may be used
+			// when template is instantiated in other modules
+			sc.module.toModuleAssert();
+		}
+
+		/*
+		 * Remember Scope for later instantiations, but make a copy since
+		 * attributes can change.
+		 */
+		this.scope = new Scope(sc, context);
+		this.scope.setNoFree();
+
+		// Set up scope for parameters
+		ScopeDsymbol paramsym = new ScopeDsymbol(loc);
+		paramsym.parent = sc.parent;
+		Scope paramscope = sc.push(paramsym);
+		paramscope.parameterSpecialization = 1;
+
+		for (int i = 0; i < parameters.size(); i++) {
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			tp.declareParameter(paramscope, context);
+		}
+
+		for (TemplateParameter tp : parameters) {
+			tp.semantic(paramscope, context);
+		}
+
+		paramscope.pop();
+
+		if (members != null) {
+			Dsymbol[] s = { null };
+			if (Dsymbol.oneMembers(members, s, context)) {
+				if (s[0] != null && s[0].ident != null
+						&& s[0].ident.ident.equals(ident.ident)) {
+					onemember = s[0];
+					s[0].parent = this;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -411,20 +399,76 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public String kind() {
-		return (onemember != null && onemember.isAggregateDeclaration() != null) ? onemember
-				.kind()
-				: "template";
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context)
+	{
+		buf.writestring(kind());
+		buf.writeByte(' ');
+		buf.writestring(ident.toChars());
+		buf.writeByte('(');
+		for(int i = 0; i < parameters.size(); i++)
+		{
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			if(i > 0)
+				buf.writeByte(',');
+			tp.toCBuffer(buf, hgs, context);
+		}
+		buf.writeByte(')');
+		
+		if(hgs.hdrgen)
+		{
+			hgs.tpltMember = true;
+			buf.writenl();
+			buf.writebyte('{');
+			buf.writenl();
+			for(int i = 0; i < members.size(); i++)
+			{
+				Dsymbol s = (Dsymbol) members.get(i);
+				s.toCBuffer(buf, hgs, context);
+			}
+			buf.writebyte('}');
+			buf.writenl();
+			hgs.tpltMember = false;
+		}
 	}
 
 	@Override
-	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
-		TemplateDeclaration f;
+	public String toChars(SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		HdrGenState hgs = new HdrGenState();
 
-		f = s.isTemplateDeclaration();
-		if (null == f)
-			return false;
-		return true;
+		buf.writestring(ident.toChars());
+		buf.writeByte('(');
+		for (int i = 0; i < parameters.size(); i++) {
+			TemplateParameter tp = parameters.get(i);
+			if (i != 0)
+				buf.writeByte(',');
+			tp.toCBuffer(buf, hgs, context);
+		}
+		buf.writeByte(')');
+		buf.writeByte(0);
+		return buf.extractData();
 	}
 	
+	// Lerror:
+	private FuncDeclaration Lerror(Expressions fargs, SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		HdrGenState hgs = new HdrGenState();
+
+		argExpTypesToCBuffer(buf, fargs, hgs, context);
+		error("cannot deduce template function from argument types (%s)", buf
+				.toChars());
+		return null;
+	}
+
+	public static TemplateTupleParameter isVariadic(
+			TemplateParameters parameters) {
+		int dim = parameters.size();
+		TemplateTupleParameter tp = null;
+
+		if (dim != 0)
+			tp = ((TemplateParameter) parameters.get(dim - 1))
+					.isTemplateTupleParameter();
+		return tp;
+	}
 }

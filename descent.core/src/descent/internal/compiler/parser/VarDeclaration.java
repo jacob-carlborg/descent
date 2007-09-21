@@ -644,4 +644,6 @@ public class VarDeclaration extends Declaration {
 		}
 	}
 
+    // PERHAPS Symbol *toSymbol();
+
 }
