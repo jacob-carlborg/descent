@@ -1,7 +1,14 @@
 package descent.internal.compiler.parser;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tdchar;
@@ -10,18 +17,13 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
-import java.util.List;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 // DMD 1.020
 public class StringExp extends Expression {
 
 	// TODO the string here is the full source, it must
 	// only be what's enclosed in quotes
 	public char[] string;
+	public char[] sourceString;
 	public char postfix;
 	public char sz; // 1: char, 2: wchar, 4: dchar
 	public boolean committed; // !=0 if type is committed
@@ -29,25 +31,18 @@ public class StringExp extends Expression {
 	
 	public List<StringExp> allStringExps;
 
-	public StringExp(Loc loc, char[] string) {
-		super(loc, TOK.TOKstring);
-		this.sz = 1;
-		this.committed = false;
-		this.postfix = 0;
-		if (string != null) {
-			this.len = string.length - 2;
-		}
+	public StringExp(Loc loc, char[] string, int length) {
+		this(loc, string, length, (char) 0);
 	}
 
-	public StringExp(Loc loc, char[] string, char postfix) {
+	public StringExp(Loc loc, char[] string, int length, char postfix) {
 		super(loc, TOK.TOKstring);
 		this.string = string;
+		this.sourceString = string;
 		this.sz = 1;
 		this.committed = false;
 		this.postfix = postfix;
-		if (string != null) {
-			this.len = string.length - 2;
-		}
+		this.len = length;
 	}
 
 	@Override

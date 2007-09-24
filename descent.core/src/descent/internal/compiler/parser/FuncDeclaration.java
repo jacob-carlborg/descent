@@ -1767,7 +1767,7 @@ public class FuncDeclaration extends Declaration {
 							 */
 								e = new AssertExp(loc, new IntegerExp(loc, 0),
 										new StringExp(loc,
-												missing_return_expression));
+												missing_return_expression, missing_return_expression.length));
 							} else {
 								e = new HaltExp(loc);
 							}
@@ -1876,7 +1876,7 @@ public class FuncDeclaration extends Declaration {
 					} else { // Call invariant virtually
 						ThisExp v = new ThisExp(loc);
 						v.type = vthis.type;
-						Expression se = new StringExp(loc, null_this);
+						Expression se = new StringExp(loc, null_this, null_this.length);
 						se = se.semantic(sc, context);
 						se.type = Type.tchar.arrayOf(context);
 						e = new AssertExp(loc, v, se);

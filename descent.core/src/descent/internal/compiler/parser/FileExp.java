@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class FileExp extends UnaExp {
 	    			e1.start,
 	    			e1.length,
 	    			new String[] { e1.toChars(context) }));
-			return (new StringExp(loc, Id.empty)).semantic(sc, context);
+			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
 	    String filename = new String(((StringExp) e1).string);
@@ -79,7 +78,7 @@ public class FileExp extends UnaExp {
 	    			e1.start,
 	    			e1.length,
 	    			new String[] { filename }));
-			return (new StringExp(loc, Id.empty)).semantic(sc, context);
+			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
 	    if(!file.exists())
@@ -90,13 +89,13 @@ public class FileExp extends UnaExp {
 	    			e1.start,
 	    			e1.length,
 	    			new String[] { file.getAbsolutePath() }));
-			return (new StringExp(loc, Id.empty)).semantic(sc, context);
+			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
 	    try
 	    {
 	    	char[] data = getFile(file);
-	    	return (new StringExp(loc, data)).semantic(sc, context);
+	    	return (new StringExp(loc, data, data.length)).semantic(sc, context);
 	    }
 	    catch(IOException e)
 	    {
@@ -106,7 +105,7 @@ public class FileExp extends UnaExp {
 	    			e1.start,
 	    			e1.length,
 	    			new String[] { file.getAbsolutePath() }));
-	    	return (new StringExp(loc, Id.empty)).semantic(sc, context);
+	    	return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	}
 	

@@ -1,9 +1,7 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-
 import static descent.internal.compiler.parser.ASTDmdNode.EXP_CANT_INTERPRET;
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddress;
@@ -933,8 +931,9 @@ public class Constfold
 				// Concatenate the strings
 				StringExp es1 = (StringExp) e1;
 				StringExp es2 = (StringExp) e2;
-				StringExp es = new StringExp(loc, ASTDmdNode.arrayConcat(
-						es1.string, es2.string));
+				// TODO implement this correctly
+				StringExp es = new StringExp(loc, CharOperation.concat(
+						es1.string, es2.string), es1.len + es2.len);
 				
 				char sz = es1.sz;
 				assert (sz == es2.sz);
@@ -967,7 +966,8 @@ public class Constfold
 				char[] v = new char[]
 				{ (char) e2.toInteger(context).intValue() };
 				
-				es = new StringExp(loc, ASTDmdNode.arrayConcat(es1.string, v));
+				// TODO implement this correctly
+				es = new StringExp(loc, CharOperation.concat(es1.string, v), es1.len + v.length);
 				es.sz = sz;
 				es.committed = es1.committed;
 				t = es1.type;
@@ -984,7 +984,7 @@ public class Constfold
 				char[] v = new char[]
 				{ (char) e1.toInteger(context).intValue() };
 				
-				es = new StringExp(loc, ASTDmdNode.arrayConcat(v, es2.string));
+				es = new StringExp(loc, CharOperation.concat(v, es2.string), v.length + es2.len);
 				es.sz = sz;
 				es.committed = es2.committed;
 				t = es2.type;

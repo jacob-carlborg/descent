@@ -5248,13 +5248,14 @@ public class Parser extends Lexer {
 		case TOKdcharv:  e = new IntegerExp(loc, token.string, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
 
 		case TOKstring: {
-			
 			int startLine = token.lineNumber;
 			
 			List<StringExp> nextStringExps = null;
 			StringExp stringExp = newStringExpForCurrentToken();
 			StringExp lastStringExp = stringExp;
 			
+			char[] s = token.string;
+			int len = token.len;
 			int postfix;
 
 			// cat adjacent strings
@@ -5262,6 +5263,9 @@ public class Parser extends Lexer {
 			while (true) {
 				nextToken();
 				if (token.value == TOKstring) {
+					int len1;
+				    int len2;
+					
 					if (token.postfix != 0) {
 						if (token.postfix != postfix) {
 							error(
@@ -5271,6 +5275,11 @@ public class Parser extends Lexer {
 						}							
 						postfix = token.postfix;
 					}
+
+				    len1 = len;
+				    len2 = token.len;
+				    len = len1 + len2;
+				    s = CharOperation.concat(s, token.string);
 
 					if (token.string != null) {
 						if (nextStringExps == null) {
@@ -5285,6 +5294,7 @@ public class Parser extends Lexer {
 			}
 			
 			stringExp.allStringExps = nextStringExps;
+			stringExp.string = s;
 			e = stringExp;
 			break;
 		}
@@ -6454,13 +6464,13 @@ public class Parser extends Lexer {
 	}
 	
 	private StringExp newStringExpForCurrentToken() {
-		StringExp string = new StringExp(loc, token.string, (char) token.postfix);
+		StringExp string = new StringExp(loc, token.string, token.len, (char) token.postfix);
 		string.setSourceRange(token.ptr, token.len);
 		return string;
 	}
 	
 	private StringExp newStringExpForPreviousToken() {
-		StringExp string = new StringExp(loc, prevToken.string, (char) prevToken.postfix);
+		StringExp string = new StringExp(loc, prevToken.string, token.len, (char) prevToken.postfix);
 		string.setSourceRange(prevToken.ptr, prevToken.len);
 		return string;
 	}

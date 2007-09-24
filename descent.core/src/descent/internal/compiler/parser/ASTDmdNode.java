@@ -1099,20 +1099,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		buf.writeByte(')');
 	}
 
-	/**
-	 * Convenience method for concatenating two arrays of characters.
-	 * 
-	 * @param s1
-	 * @param s2
-	 * @return
-	 */
-	public static char[] arrayConcat(char[] s1, char[] s2) {
-		char[] result = new char[s1.length + s2.length];
-		System.arraycopy(s1, 0, result, 0, s1.length);
-		System.arraycopy(s2, 0, result, s1.length, s2.length);
-		return result;
-	}
-
 	public static void scanVar(Dsymbol s, InlineScanState iss,
 			SemanticContext context) {
 		VarDeclaration vd = s.isVarDeclaration();

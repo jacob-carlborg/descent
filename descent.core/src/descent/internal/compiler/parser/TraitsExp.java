@@ -377,7 +377,7 @@ public class TraitsExp extends Expression {
 					    		continue Linner;
 					    }
 					    
-					    StringExp se = new StringExp(loc, str);
+					    StringExp se = new StringExp(loc, str, str.length);
 					    exps.add(se);
 					}
 			    }

@@ -18,7 +18,6 @@ Id.java
 Import.java
 IntegerExp.java
 integer_t.java
-Lexer.java
 Loc.java
 Module.java
 MultiImport.java
@@ -26,8 +25,6 @@ NumberUtils.java
 OutBuffer.java
 Package.java
 Param.java
-Parser.java
-Problem.java
 Pvirtuals.java
 real_t.java
 RealExp.java
