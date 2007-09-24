@@ -16,8 +16,6 @@ public class LabelStatement extends Statement {
 		super(loc);
 		this.ident = ident;
 		this.statement = statement;
-		this.start = ident.start;
-		this.length = statement.start + statement.length - ident.start;
 	}
 
 	@Override

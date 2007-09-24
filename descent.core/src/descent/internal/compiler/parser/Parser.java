@@ -3274,6 +3274,8 @@ public class Parser extends Lexer {
 				Statement body = parseStatement(PSsemi);
 				
 				s = new LabelStatement(loc, ident, body);
+				s.start = ident.start;
+				s.length = prevToken.ptr + prevToken.len - ident.start;
 				break;
 			}
 			// fallthrough to TOKdot
