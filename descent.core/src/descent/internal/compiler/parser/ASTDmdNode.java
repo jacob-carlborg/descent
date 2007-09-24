@@ -168,7 +168,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int FILE_EXP = 108;
 	public final static int NEG_EXP = 109;
 	public final static int NOT_EXP = 110;
-	public final static int PAREN_EXP = 111;
+	public final static int BOOL_EXP = 111;
 	public final static int PTR_EXP = 112;
 	public final static int SLICE_EXP = 113;
 	public final static int UADD_EXP = 114;
@@ -253,7 +253,6 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int ARRAY_LENGTH_EXP = 194;
 	public final static int DOT_TEMPLATE_EXP = 195;
 	public final static int SWITCH_ERROR_STATEMENT = 196;
-	public final static int BOOL_EXP = 197;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {

@@ -5526,8 +5526,7 @@ public class Parser extends Lexer {
 			int end = token.ptr + token.len;
 			check(TOKrparen);
 
-			e = new ParenExp(loc, e);
-			e.setSourceRange(start, end - start);
+			e.addParenthesis(start, end - start);
 			break;
 
 		case TOKlbracket:

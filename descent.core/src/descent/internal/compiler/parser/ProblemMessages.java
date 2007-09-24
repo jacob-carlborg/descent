@@ -183,6 +183,7 @@ final class ProblemMessages extends NLS {
 	public static String SymbolHasNoValue;
 	public static String TooManyInitializers;
 	public static String SymbolNotAStaticAndCannotHaveStaticInitializer;
+	public static String SymbolNotAType;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

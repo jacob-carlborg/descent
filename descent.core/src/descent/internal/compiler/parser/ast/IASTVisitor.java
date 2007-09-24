@@ -151,7 +151,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	boolean visit(OrExp node);
 	boolean visit(OrOrExp node);
 	boolean visit(Package node);
-	boolean visit(ParenExp node);
 	boolean visit(PostExp node);
 	boolean visit(PragmaDeclaration node);
 	boolean visit(PragmaStatement node);
@@ -385,7 +384,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	void endVisit(OrExp node);
 	void endVisit(OrOrExp node);
 	void endVisit(Package node);
-	void endVisit(ParenExp node);
 	void endVisit(PostExp node);
 	void endVisit(PragmaDeclaration node);
 	void endVisit(PragmaStatement node);

@@ -1787,13 +1787,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(ParenExp node) {
-		this.buffer.append("(");
-		node.sourceE1.accept(this);
-		this.buffer.append(")");
-		return false;
-	}
-
 	public boolean visit(PostExp node) {
 		node.sourceE1.accept(this);
 		if (node.op == TOK.TOKplusplus) {
@@ -3350,9 +3343,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public void endVisit(Package node) {
-	}
-
-	public void endVisit(ParenExp node) {
 	}
 
 	public void endVisit(PostExp node) {

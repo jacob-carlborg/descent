@@ -381,5 +381,6 @@ public interface IProblem {
 	int SymbolHasNoValue = 171;
 	int TooManyInitializers = 172;
 	int SymbolNotAStaticAndCannotHaveStaticInitializer = 173;
+	int SymbolNotAType = 174;
 
 }

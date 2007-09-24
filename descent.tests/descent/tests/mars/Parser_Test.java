@@ -190,15 +190,17 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected void assertError(IProblem p, int errorCode, int start, int length) {
-		assertEquals(errorCode, p.getID());
 		assertTrue(p.isError());
-		assertEquals(start, p.getSourceStart());
-		assertEquals(length, p.getSourceEnd() - p.getSourceStart() + 1);
+		assertProblem(p, errorCode, start, length);
 	}
 	
 	protected void assertWarning(IProblem p, int errorCode, int start, int length) {
-		assertEquals(errorCode, p.getID());
 		assertTrue(p.isWarning());
+		assertProblem(p, errorCode, start, length);
+	}
+	
+	protected void assertProblem(IProblem p, int errorCode, int start, int length) {
+		assertEquals(errorCode, p.getID());
 		assertEquals(start, p.getSourceStart());
 		assertEquals(length, p.getSourceEnd() - p.getSourceStart() + 1);
 	}

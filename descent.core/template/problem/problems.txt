@@ -517,4 +517,13 @@ TooManyInitializers
 SymbolNotAStaticAndCannotHaveStaticInitializer
 	formatString=%1$s is not a static and cannot have static initializer
 	numArgs=1
+SymbolNotAType
+	formatString=%1$s is not a type
+	numArgs=1
+
+	
+	
+	
+	
+	
 	

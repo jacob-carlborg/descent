@@ -977,35 +977,23 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testStatementIsNotReachable() {
-		String s = "void foo() { return; int x; }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertWarning(p[0], IProblem.StatementIsNotReachable, 21, 6);
+		e("void foo() { return; int x; }",
+			IProblem.StatementIsNotReachable, "int x;");
 	}
 	
 	public void testDivisionByZeroWithDiv() {
-		String s = "void foo() { int x = 2 / 0; }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.DivisionByZero, 21, 5);
+		e("void foo() { int x = 2 / 0; }",
+			IProblem.DivisionByZero, "2 / 0");
 	}
 	
 	public void testDivisionByZeroWithMod() {
-		String s = "void foo() { int x = 2 % 0; }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.DivisionByZero, 21, 5);
+		e("void foo() { int x = 2 % 0; }", 
+			IProblem.DivisionByZero, "2 % 0");
 	}
 	
 	public void testDefaultNotInSwitch() {
-		String s = "void foo() { default: }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.DefaultNotInSwitch, 13, 8);
+		e("void foo() { default: }",
+			IProblem.DefaultNotInSwitch, "default:");
 	}
 	
 	public void testDefaultNotInSwitch_Not() {
@@ -1013,19 +1001,13 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testSwitchAlreadyHasDefault() {
-		String s = "void foo() { switch(true) { default: break; default: } }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.SwitchAlreadyHasDefault, 44, 8);
+		s("void foo() { switch(true) { default: break; default: } }",
+			IProblem.SwitchAlreadyHasDefault, "; default:", 2);
 	}
 	
 	public void testContinueNotInLoop() {
-		String s = "void foo() { continue; }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.ContinueNotInLoop, 13, 9);
+		e("void foo() { continue; }", 
+			IProblem.ContinueNotInLoop, "continue;");
 	}
 	
 	public void testContinueNotInLoop_Not() {
@@ -1033,19 +1015,13 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testForeachIndexCannotBeRef() {
-		String s = "void foo() { int[int] x; foreach(ref a, b; x) { } }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.ForeachIndexCannotBeRef, 13, 9);
+		e("void foo() { int[int] x; foreach(ref a, b; x) { } }",
+				IProblem.ForeachIndexCannotBeRef, "ref a");
 	}
 	
 	public void testFunctionArguments() {
-		String s = "void foo(int x) {  } void bar() { foo(); }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.ParametersDoesNotMatchParameterTypes, 34, 5);
+		e("void foo(int x) {  } void bar() { foo(); }",
+			IProblem.ParametersDoesNotMatchParameterTypes, "foo()");
 	}
 	
 	public void testFunctionArguments_Not() {
@@ -1053,43 +1029,55 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testIncompatibleTypes() {
-		String s = "class X { } void foo() { X x = new X(); x = x + x; }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.IncompatibleTypeForOperator, 44, 5);
+		e("class X { } void foo() { X x = new X(); x = x + x; }",
+			IProblem.IncompatibleTypeForOperator, "x + x");
 	}
 
 	public void testSymbolNotDefined() {
-		String s = "mixin T!();";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.SymbolNotDefined, 6, 4);
+		e("mixin T!();",
+			IProblem.SymbolNotDefined, "T!()");
 	}
 
 	public void testSymbolNotATemplate() {
-		String s = "class T { } mixin T!();";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
-		
-		assertError(p[0], IProblem.SymbolNotATemplate, 18, 4);
+		e("class T { } mixin T!();",
+			IProblem.SymbolNotATemplate, "T!()");
 	}
 	
 	public void testCannotDeleteType() {
-		String s = "void foo() { delete 1; }";
-		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
-		
-		assertError(p[1], IProblem.CannotDeleteType, 13, 8);
+		s("void foo() { delete 1; }",
+			IProblem.ConstantIsNotAnLValue, "1",
+			IProblem.CannotDeleteType, "delete 1");
 	}
 	
 	public void testNotAnLvalue() {
-		String s = "void foo() { delete new int; }";
-		IProblem[] p = getModuleProblems(s);
+		e("void foo() { delete new int; }",
+			IProblem.NotAnLvalue, "new int");
+	}
+	
+	private void e(String source, 
+			int problemId1, String problemSource1) {
+		IProblem[] p = getModuleProblems(source);
 		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.NotAnLvalue, 20, 7);
+		assertProblem(p[0], problemId1, source.indexOf(problemSource1), problemSource1.length());
+	}
+	
+	private void s(String source, 
+			int problemId1, String problemSource1, int offset) {
+		IProblem[] p = getModuleProblems(source);
+		assertEquals(1, p.length);
+		
+		assertProblem(p[0], problemId1, source.indexOf(problemSource1) + offset, problemSource1.length() - offset);
+	}
+	
+	private void s(String source, 
+			int problemId1, String problemSource1,
+			int problemId2, String problemSource2) {
+		IProblem[] p = getModuleProblems(source);
+		assertEquals(2, p.length);
+		
+		assertProblem(p[0], problemId1, source.indexOf(problemSource1), problemSource1.length());
+		assertProblem(p[1], problemId2, source.indexOf(problemSource2), problemSource2.length());
 	}
 	
 	/* TODO test for SemanticContext.IN_GCC = true

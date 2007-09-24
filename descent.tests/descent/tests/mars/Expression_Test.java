@@ -221,6 +221,15 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
+	public void testParenthesized2() {
+		String s = " ( a )";
+		ParenthesizedExpression expr = (ParenthesizedExpression) parseExpression(s);
+		
+		assertEquals(ASTNode.PARENTHESIZED_EXPRESSION, expr.getNodeType());
+		assertEquals(ASTNode.SIMPLE_NAME, expr.getExpression().getNodeType());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
 	public void testInfixExpression() {
 		Object[][] objs = {
 				{ "*", InfixExpression.Operator.TIMES },

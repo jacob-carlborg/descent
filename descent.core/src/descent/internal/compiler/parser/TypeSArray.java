@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
@@ -259,7 +260,7 @@ public class TypeSArray extends TypeArray {
 			}
 			ASTDmdNode o = (ASTDmdNode) sd.objects.get(d);
 			if (o.dyncast() != DYNCAST_TYPE) {
-				error("%s is not a type", toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, 0, start, length, new String[] { toChars(context) }));
 				return Type.terror;
 			}
 			t = (Type) o;

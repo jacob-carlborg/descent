@@ -441,6 +441,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.TooManyInitializers, arguments[0]);
 		case SymbolNotAStaticAndCannotHaveStaticInitializer:
 			return String.format(ProblemMessages.SymbolNotAStaticAndCannotHaveStaticInitializer, arguments[0]);
+		case SymbolNotAType:
+			return String.format(ProblemMessages.SymbolNotAType, arguments[0]);
 		default:
 			return "";
 		}

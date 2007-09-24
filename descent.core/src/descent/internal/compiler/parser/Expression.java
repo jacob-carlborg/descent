@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
@@ -19,6 +22,15 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public abstract class Expression extends ASTDmdNode implements Cloneable {
+	
+	public class Parenthesis {
+		public int startPosition;
+		public int length;
+		public Parenthesis(int startPosition, int length) {
+			this.startPosition = startPosition;
+			this.length = length;
+		}
+	}
 	
 	public static Expressions arraySyntaxCopy(Expressions exps) {
 		Expressions a = null;
@@ -70,11 +82,19 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Loc loc;
 	public TOK op;
 	public Type type, sourceType;
+	public List<Parenthesis> parenthesis;
 
 	public Expression(Loc loc, TOK op) {
 		this.loc = loc;
 		this.op = op;
 		this.type = null;
+	}
+	
+	public void addParenthesis(int startPosition, int length) {
+		if (parenthesis == null) {
+			parenthesis = new ArrayList<Parenthesis>();
+		}
+		parenthesis.add(new Parenthesis(startPosition, length));
 	}
 
 	public Expression addressOf(Scope sc, SemanticContext context) {

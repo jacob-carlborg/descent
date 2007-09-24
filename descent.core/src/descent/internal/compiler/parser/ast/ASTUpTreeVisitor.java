@@ -577,10 +577,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(Package.class.getSuperclass().equals(ScopeDsymbol.class));
 		return visit((ScopeDsymbol) node);
 	}
-	public boolean visit(ParenExp node) {
-		Assert.isTrue(ParenExp.class.getSuperclass().equals(UnaExp.class));
-		return visit((UnaExp) node);
-	}
 	public boolean visit(PostExp node) {
 		Assert.isTrue(PostExp.class.getSuperclass().equals(BinExp.class));
 		return visit((BinExp) node);
@@ -1526,10 +1522,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	public void endVisit(Package node) {
 		Assert.isTrue(Package.class.getSuperclass().equals(ScopeDsymbol.class));
 		endVisit((ScopeDsymbol) node);
-	}
-	public void endVisit(ParenExp node) {
-		Assert.isTrue(ParenExp.class.getSuperclass().equals(UnaExp.class));
-		endVisit((UnaExp) node);
 	}
 	public void endVisit(PostExp node) {
 		Assert.isTrue(PostExp.class.getSuperclass().equals(BinExp.class));

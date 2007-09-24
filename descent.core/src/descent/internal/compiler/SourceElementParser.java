@@ -1466,10 +1466,6 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(ParenExp node) {
-		return false;
-	}
-
 	public boolean visit(PostExp node) {
 		return false;
 	}	
@@ -2157,9 +2153,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public void endVisit(Package node) {
-	}
-
-	public void endVisit(ParenExp node) {
 	}
 
 	public void endVisit(PostExp node) {

@@ -57,7 +57,7 @@ public class TypeTypeof extends TypeQualified {
 			if (s != null) {
 				t = s.getType();
 				if (null == t) {
-					error(loc, "%s is not a type", s.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, 0, start, length, new String[] { s.toChars(context) }));
 					return tvoid;
 				}
 			} else {

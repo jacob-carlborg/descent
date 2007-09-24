@@ -60,6 +60,7 @@ import descent.internal.compiler.parser.VoidInitializer;
 import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
+import descent.internal.compiler.parser.Expression.Parenthesis;
 import descent.internal.compiler.parser.Type.Modification;
 
 /**
@@ -334,8 +335,6 @@ public class ASTConverter {
 			return convert((BinExp) symbol, InfixExpression.Operator.OR);
 		case ASTDmdNode.OR_OR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.OR_OR);
-		case ASTDmdNode.PAREN_EXP:
-			return convert((ParenExp) symbol);
 		case ASTDmdNode.POST_EXP:
 			return convert((PostExp) symbol);
 		case ASTDmdNode.PRAGMA_DECLARATION:
@@ -463,9 +462,9 @@ public class ASTConverter {
 		return null;
 	}
 	
-	public descent.core.dom.TraitsExpression convert(TraitsExp a) {
+	public descent.core.dom.Expression convert(TraitsExp a) {
 		descent.core.dom.TraitsExpression b = new descent.core.dom.TraitsExpression(ast);
-		SimpleName name = convert(a.ident);
+		SimpleName name = (SimpleName) convert(a.ident);
 		if (name != null) {
 			b.setName(name);
 		}
@@ -478,10 +477,10 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public AssociativeArrayLiteral convert(AssocArrayLiteralExp a) {
+	public descent.core.dom.Expression convert(AssocArrayLiteralExp a) {
 		AssociativeArrayLiteral b = new AssociativeArrayLiteral(ast);
 		if (a.keys != null) {
 			for(int i = 0; i < a.keys.size(); i++) {
@@ -501,7 +500,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public Declaration convert(StorageClassDeclaration a) {
@@ -828,13 +827,13 @@ public class ASTConverter {
 				b.setType(convertedTarg);
 			}
 			if (a.id != null) {
-				b.setName(convert(a.id));
+				b.setName((SimpleName) convert(a.id));
 			}
 			if (a.tspec != null) {
 				b.setSpecialization(convert(a.tspec));
 			}
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		} else {
 			descent.core.dom.IsTypeSpecializationExpression b = new descent.core.dom.IsTypeSpecializationExpression(ast);
 			b.setSameComparison(a.tok == TOK.TOKequal);
@@ -842,7 +841,7 @@ public class ASTConverter {
 				b.setType(convertedTarg);
 			}
 			if (a.id != null) {
-				b.setName(convert(a.id));
+				b.setName((SimpleName) convert(a.id));
 			}
 			switch(a.tok2) {
 			case TOKtypedef: b.setSpecialization(TypeSpecialization.TYPEDEF); break;
@@ -857,11 +856,11 @@ public class ASTConverter {
 			case TOKsuper: b.setSpecialization(TypeSpecialization.SUPER); break;
 			}
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		}
 	}
 	
-	public descent.core.dom.PostfixExpression convert(PostExp a) {
+	public descent.core.dom.Expression convert(PostExp a) {
 		descent.core.dom.PostfixExpression b = new descent.core.dom.PostfixExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedOperand = convert(a.sourceE1);
@@ -875,13 +874,13 @@ public class ASTConverter {
 			b.setOperator(PostfixExpression.Operator.DECREMENT);
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.PragmaDeclaration convert(PragmaDeclaration a) {
 		descent.core.dom.PragmaDeclaration b = new descent.core.dom.PragmaDeclaration(ast);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		convertExpressions(b.arguments(), a.args);
 		convertDeclarations(b.declarations(), a.decl);
@@ -893,7 +892,7 @@ public class ASTConverter {
 	public descent.core.dom.PragmaStatement convert(PragmaStatement a) {
 		descent.core.dom.PragmaStatement b = new descent.core.dom.PragmaStatement(ast);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		convertExpressions(b.arguments(), a.args);
 		if (a.body != null) {
@@ -906,7 +905,7 @@ public class ASTConverter {
 	public descent.core.dom.TemplateMixinDeclaration convert(TemplateMixin a) {
 		descent.core.dom.TemplateMixinDeclaration b = new descent.core.dom.TemplateMixinDeclaration(ast);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		
 		descent.core.dom.Type convertedType = convertTemplateMixin(a.typeStart, a.typeLength, a.tqual, a.idents, a.tiargs);
@@ -918,7 +917,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.TypeidExpression convert(TypeidExp a) {
+	public descent.core.dom.Expression convert(TypeidExp a) {
 		descent.core.dom.TypeidExpression b = new descent.core.dom.TypeidExpression(ast);
 		if (a.typeidType != null) {
 			descent.core.dom.Type converted = convert(a.typeidType);
@@ -927,10 +926,10 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.SliceExpression convert(SliceExp a) {
+	public descent.core.dom.Expression convert(SliceExp a) {
 		descent.core.dom.SliceExpression b = new descent.core.dom.SliceExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression converted = convert(a.sourceE1);
@@ -945,10 +944,10 @@ public class ASTConverter {
 			b.setToExpression(convert(a.upr));
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.TypeExpression convert(ScopeExp a) {
+	public descent.core.dom.Expression convert(ScopeExp a) {
 		descent.core.dom.TypeExpression b = new descent.core.dom.TypeExpression(ast);
 		if (a.sds != null) {
 			descent.core.dom.Type converted = (descent.core.dom.Type) convert(a.sds);
@@ -957,14 +956,14 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.TemplateType convert(TemplateInstanceWrapper a) {
 		TemplateInstance tempinst = a.tempinst;
 		TemplateType tt = new TemplateType(ast);
 		if (tempinst.name != null) {
-			tt.setName(convert(tempinst.name));
+			tt.setName((SimpleName) convert(tempinst.name));
 		}
 		if (tempinst.tiargs != null) {
 			for(ASTDmdNode node : tempinst.tiargs) {
@@ -981,7 +980,7 @@ public class ASTConverter {
 	public descent.core.dom.TemplateType convert(TemplateInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
 		if (a.name != null) {
-			b.setName(convert(a.name));
+			b.setName((SimpleName) convert(a.name));
 		}
 		for(ASTDmdNode node : a.tiargs) {
 			ASTNode convertedNode = convert(node);
@@ -993,7 +992,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.DotTemplateTypeExpression convert(DotTemplateInstanceExp a) {
+	public descent.core.dom.Expression convert(DotTemplateInstanceExp a) {
 		descent.core.dom.DotTemplateTypeExpression b = new descent.core.dom.DotTemplateTypeExpression(ast);
 		if (a.sourceE1 != null) {
 			b.setExpression(convert(a.sourceE1));
@@ -1005,7 +1004,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.ReturnStatement convert(ReturnStatement a) {
@@ -1031,7 +1030,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.ValueTemplateParameter convert(TemplateValueParameter a) {
 		descent.core.dom.ValueTemplateParameter b = new descent.core.dom.ValueTemplateParameter(ast);
-		b.setName(convert(a.ident));
+		b.setName((SimpleName) convert(a.ident));
 		if (a.valType != null) {
 			descent.core.dom.Type convertedType = convert(a.valType);
 			if (convertedType != null) {
@@ -1050,7 +1049,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.TypeTemplateParameter convert(TemplateTypeParameter a) {
 		descent.core.dom.TypeTemplateParameter b = new descent.core.dom.TypeTemplateParameter(ast);
-		b.setName(convert(a.ident));
+		b.setName((SimpleName) convert(a.ident));
 		if (a.defaultType != null) {
 			b.setDefaultType(convert(a.defaultType));
 		}
@@ -1064,7 +1063,7 @@ public class ASTConverter {
 	public descent.core.dom.TupleTemplateParameter convert(TemplateTupleParameter a) {
 		descent.core.dom.TupleTemplateParameter b = new descent.core.dom.TupleTemplateParameter(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -1076,7 +1075,7 @@ public class ASTConverter {
 	public descent.core.dom.AliasTemplateParameter convert(TemplateAliasParameter a) {
 		descent.core.dom.AliasTemplateParameter b = new descent.core.dom.AliasTemplateParameter(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -1121,7 +1120,7 @@ public class ASTConverter {
 		
 		descent.core.dom.TemplateDeclaration b = new descent.core.dom.TemplateDeclaration(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -1139,7 +1138,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.NewExpression convert(NewExp a) {
+	public descent.core.dom.Expression convert(NewExp a) {
 		descent.core.dom.NewExpression b = new descent.core.dom.NewExpression(ast);
 		if (a.sourceThisexp != null) {
 			b.setExpression(convert(a.sourceThisexp));
@@ -1153,10 +1152,10 @@ public class ASTConverter {
 		convertExpressions(b.newArguments(), a.sourceNewargs);
 		convertExpressions(b.constructorArguments(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.NewAnonymousClassExpression convert(NewAnonClassExp a) {
+	public descent.core.dom.Expression convert(NewAnonClassExp a) {
 		descent.core.dom.NewAnonymousClassExpression b = new descent.core.dom.NewAnonymousClassExpression(ast);
 		if (a.thisexp != null) {
 			b.setExpression(convert(a.thisexp));
@@ -1166,7 +1165,7 @@ public class ASTConverter {
 		convertBaseClasses(b.baseClasses(), a.cd.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.cd.members);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeSlice a) {
@@ -1228,7 +1227,7 @@ public class ASTConverter {
 		}
 	}
 	
-	public descent.core.dom.TypeDotIdentifierExpression convert(TypeDotIdExp a) {
+	public descent.core.dom.Expression convert(TypeDotIdExp a) {
 		descent.core.dom.TypeDotIdentifierExpression b = new descent.core.dom.TypeDotIdentifierExpression(ast);
 		if (a.type != null) {
 			descent.core.dom.Type convertedType = convert(a.type);
@@ -1237,13 +1236,13 @@ public class ASTConverter {
 			}
 		}
 		if (a.ident != null) {
-			SimpleName convertedName = convert(a.ident);
+			SimpleName convertedName = (SimpleName) convert(a.ident);
 			if (convertedName != null) {
 				b.setName(convertedName);
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeDelegate a) {
@@ -1295,7 +1294,7 @@ public class ASTConverter {
 	public descent.core.dom.VariableDeclarationFragment convert(VarDeclaration a) {
 		descent.core.dom.VariableDeclarationFragment b = new descent.core.dom.VariableDeclarationFragment(ast);
 		if (a.ident != null) {
-			SimpleName convertedName = convert(a.ident);
+			SimpleName convertedName = (SimpleName) convert(a.ident);
 			if (convertedName != null) {
 				b.setName(convertedName);
 			}
@@ -1315,7 +1314,7 @@ public class ASTConverter {
 	public descent.core.dom.TypedefDeclarationFragment convert(TypedefDeclaration a) {
 		descent.core.dom.TypedefDeclarationFragment b = new descent.core.dom.TypedefDeclarationFragment(ast);
 		if (a.ident != null) {
-			SimpleName convertedName = convert(a.ident);
+			SimpleName convertedName = (SimpleName) convert(a.ident);
 			if (convertedName != null) {
 				b.setName(convertedName);
 			}
@@ -1351,7 +1350,7 @@ public class ASTConverter {
 	public descent.core.dom.Import convert(Import a) {
 		descent.core.dom.Import b = new descent.core.dom.Import(ast);
 		if (a.aliasId != null) {
-			b.setAlias(convert(a.aliasId));
+			b.setAlias((SimpleName) convert(a.aliasId));
 		}
 		b.setName(convert(a.packages, a.id));
 		if (a.aliases != null) {
@@ -1359,11 +1358,11 @@ public class ASTConverter {
 				IdentifierExp alias = a.aliases.get(i);
 				IdentifierExp name = a.names.get(i);
 				SelectiveImport selective = new SelectiveImport(ast);
-				selective.setName(convert(name));
+				selective.setName((SimpleName) convert(name));
 				if (alias == null) {
 					selective.setSourceRange(name.start, name.length);
 				} else {
-					selective.setAlias(convert(alias));
+					selective.setAlias((SimpleName) convert(alias));
 					selective.setSourceRange(alias.start, name.start + name.length - alias.start);
 				}
 				b.selectiveImports().add(selective);
@@ -1385,7 +1384,7 @@ public class ASTConverter {
 	public descent.core.dom.LabeledStatement convert(LabelStatement a) {
 		descent.core.dom.LabeledStatement b = new descent.core.dom.LabeledStatement(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setLabel(convertedIdent);
 			}
@@ -1479,7 +1478,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.FunctionLiteralDeclarationExpression convert(FuncExp a) {
+	public descent.core.dom.Expression convert(FuncExp a) {
 		descent.core.dom.FunctionLiteralDeclarationExpression b = new descent.core.dom.FunctionLiteralDeclarationExpression(ast);
 		
 		if (a.fd.tok == TOK.TOKdelegate) {
@@ -1500,7 +1499,7 @@ public class ASTConverter {
 		convertArguments(b.arguments(), ty.parameters);
 		fillFunction(b, a.fd);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.FunctionDeclaration convert(FuncDeclaration a) {
@@ -1514,7 +1513,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -1663,7 +1662,7 @@ public class ASTConverter {
 	public descent.core.dom.EnumMember convert(EnumMember a) {
 		descent.core.dom.EnumMember b = new descent.core.dom.EnumMember(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -1678,7 +1677,7 @@ public class ASTConverter {
 	public descent.core.dom.EnumDeclaration convert(EnumDeclaration a) {
 		descent.core.dom.EnumDeclaration b = new descent.core.dom.EnumDeclaration(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -1765,7 +1764,7 @@ public class ASTConverter {
 			b.setPostcondition((Block) convert(a.fensure));
 		}
 		if (a.outId != null) {
-			b.setPostconditionVariableName(convert(a.outId));
+			b.setPostconditionVariableName((SimpleName) convert(a.outId));
 		}
 		if (a.fbody != null) {
 			Block convertedBody = (Block) convert(a.fbody);
@@ -1783,7 +1782,7 @@ public class ASTConverter {
 			b.setPostcondition((Block) convert(a.sourceFensure));
 		}
 		if (a.outId != null) {
-			b.setPostconditionVariableName(convert(a.outId));
+			b.setPostconditionVariableName((SimpleName) convert(a.outId));
 		}
 		if (a.sourceFbody != null) {
 			descent.core.dom.Block convertedBody = (Block) convert(a.sourceFbody);
@@ -1806,7 +1805,7 @@ public class ASTConverter {
 	public descent.core.dom.GotoStatement convert(GotoStatement a) {
 		descent.core.dom.GotoStatement b = new descent.core.dom.GotoStatement(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setLabel(convertedIdent);
 			}
@@ -1833,7 +1832,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.FileImportExpression convert(FileExp a) {
+	public descent.core.dom.Expression convert(FileExp a) {
 		descent.core.dom.FileImportExpression b = new descent.core.dom.FileImportExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -1842,7 +1841,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Statement convert(ExpStatement a) {
@@ -1877,25 +1876,25 @@ public class ASTConverter {
 		return convert(a, a.op == TOK.TOKequal ? InfixExpression.Operator.EQUALS : InfixExpression.Operator.NOT_EQUALS);
 	}
 	
-	public descent.core.dom.DotIdentifierExpression convert(DotIdExp a) {
+	public descent.core.dom.Expression convert(DotIdExp a) {
 		descent.core.dom.DotIdentifierExpression b = new descent.core.dom.DotIdentifierExpression(ast);
 		if (a.sourceE1 != null) {
 			b.setExpression(convert(a.sourceE1));
 		}
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.DollarLiteral convert(DollarExp a) {
+	public descent.core.dom.Expression convert(DollarExp a) {
 		descent.core.dom.DollarLiteral b = new descent.core.dom.DollarLiteral(ast);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.DoStatement convert(DoStatement a) {
@@ -2032,7 +2031,7 @@ public class ASTConverter {
 				}
 			}
 			if (cond.id != null) {
-				b.setName(convert(cond.id));
+				b.setName((SimpleName) convert(cond.id));
 			}
 			if (cond.targ != null) {
 				b.setTestType(convert(cond.targ));
@@ -2108,7 +2107,7 @@ public class ASTConverter {
 					}
 				}
 				if (cond.id != null) {
-					b.setName(convert(cond.id));
+					b.setName((SimpleName) convert(cond.id));
 				}
 				if (cond.targ != null) {
 					b.setTestType(convert(cond.targ));
@@ -2158,7 +2157,7 @@ public class ASTConverter {
 		return ret;
 	}
 	
-	public descent.core.dom.DeleteExpression convert(DeleteExp a) {
+	public descent.core.dom.Expression convert(DeleteExp a) {
 		descent.core.dom.DeleteExpression b = new descent.core.dom.DeleteExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -2167,7 +2166,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
@@ -2177,7 +2176,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.PrefixExpression convert(IncrementExp a) {
+	public descent.core.dom.Expression convert(IncrementExp a) {
 		descent.core.dom.PrefixExpression b = new descent.core.dom.PrefixExpression(ast);
 		b.setOperator(PrefixExpression.Operator.INCREMENT);
 		if (a.sourceE1 != null) {
@@ -2187,10 +2186,10 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.PrefixExpression convert(DecrementExp a) {
+	public descent.core.dom.Expression convert(DecrementExp a) {
 		descent.core.dom.PrefixExpression b = new descent.core.dom.PrefixExpression(ast);
 		b.setOperator(PrefixExpression.Operator.DECREMENT);
 		if (a.sourceE1 != null) {
@@ -2200,7 +2199,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.DeclarationStatement convert(DeclarationStatement a) {
@@ -2242,13 +2241,13 @@ public class ASTConverter {
 	public descent.core.dom.ContinueStatement convert(ContinueStatement a) {
 		descent.core.dom.ContinueStatement b = new descent.core.dom.ContinueStatement(ast);
 		if (a.ident != null) {
-			b.setLabel(convert(a.ident));
+			b.setLabel((SimpleName) convert(a.ident));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
-	public descent.core.dom.ConditionalExpression convert(CondExp a) {
+	public descent.core.dom.Expression convert(CondExp a) {
 		descent.core.dom.ConditionalExpression b = new descent.core.dom.ConditionalExpression(ast);
 		if (a.sourceEcond != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceEcond);
@@ -2269,7 +2268,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.sourceEcond.start, a.sourceE2.start + a.sourceE2.length - a.sourceEcond.start);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Statement convert(CompoundStatement a) {
@@ -2300,7 +2299,7 @@ public class ASTConverter {
 		}
 	}
 	
-	public descent.core.dom.MixinExpression convert(CompileExp a) {
+	public descent.core.dom.Expression convert(CompileExp a) {
 		descent.core.dom.MixinExpression b = new descent.core.dom.MixinExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -2309,7 +2308,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.MixinDeclaration convert(CompileDeclaration a) {
@@ -2328,7 +2327,7 @@ public class ASTConverter {
 	public descent.core.dom.AliasDeclarationFragment convert(AliasDeclaration a) {
 		descent.core.dom.AliasDeclarationFragment b = new descent.core.dom.AliasDeclarationFragment(ast);
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -2371,7 +2370,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.ident != null) {
-			SimpleName convertedIdent = convert(a.ident);
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -2383,7 +2382,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.ArrayAccess convert(ArrayExp a) {
+	public descent.core.dom.Expression convert(ArrayExp a) {
 		descent.core.dom.ArrayAccess b = new descent.core.dom.ArrayAccess(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -2393,7 +2392,7 @@ public class ASTConverter {
 		}
 		convertExpressions(b.indexes(), a.arguments);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.ArrayInitializer convert(ArrayInitializer a) {
@@ -2429,7 +2428,7 @@ public class ASTConverter {
 					fragment.setInitializer(convert(value));
 					fragment.setSourceRange(value.start, value.length);
 				} else {
-					fragment.setName(convert(index));
+					fragment.setName((SimpleName) convert(index));
 					fragment.setInitializer(convert(value));
 					fragment.setSourceRange(index.start, value.start + value.length - index.start);
 				}
@@ -2440,11 +2439,11 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.ArrayLiteral convert(ArrayLiteralExp a) {
+	public descent.core.dom.Expression convert(ArrayLiteralExp a) {
 		descent.core.dom.ArrayLiteral b = new descent.core.dom.ArrayLiteral(ast);
 		convertExpressions(b.arguments(), a.sourceElements);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.AsmBlock convert(AsmBlock a) {
@@ -2468,7 +2467,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.AssertExpression convert(AssertExp a) {
+	public descent.core.dom.Expression convert(AssertExp a) {
 		descent.core.dom.AssertExpression b = new descent.core.dom.AssertExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -2480,7 +2479,7 @@ public class ASTConverter {
 			b.setMessage(convert(a.msg));
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.BaseClass convert(descent.internal.compiler.parser.BaseClass a) {
@@ -2503,13 +2502,13 @@ public class ASTConverter {
 	public descent.core.dom.BreakStatement convert(BreakStatement a) {
 		descent.core.dom.BreakStatement b = new descent.core.dom.BreakStatement(ast);
 		if (a.ident != null) {
-			b.setLabel(convert(a.ident));
+			b.setLabel((SimpleName) convert(a.ident));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
-	public descent.core.dom.CallExpression convert(CallExp a) {
+	public descent.core.dom.Expression convert(CallExp a) {
 		descent.core.dom.CallExpression b = new descent.core.dom.CallExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -2519,7 +2518,7 @@ public class ASTConverter {
 		}
 		convertExpressions(b.arguments(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.SwitchCase convert(CaseStatement a) {
@@ -2556,7 +2555,7 @@ public class ASTConverter {
 				}
 			}
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		} else {
 			descent.core.dom.CastToModifierExpression b = new descent.core.dom.CastToModifierExpression(ast);
 			
@@ -2574,7 +2573,7 @@ public class ASTConverter {
 			
 			b.setExpression(convertedExp);
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		}
 	}
 	
@@ -2587,7 +2586,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		if (a.handler != null) {
 			descent.core.dom.Statement convertedHandler = convert(a.handler);
@@ -2603,7 +2602,7 @@ public class ASTConverter {
 		descent.core.dom.AggregateDeclaration b = new descent.core.dom.AggregateDeclaration(ast);
 		b.setKind(AggregateDeclaration.Kind.INTERFACE);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
@@ -2616,7 +2615,7 @@ public class ASTConverter {
 		descent.core.dom.AggregateDeclaration b = new descent.core.dom.AggregateDeclaration(ast);
 		b.setKind(AggregateDeclaration.Kind.CLASS);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
@@ -2629,7 +2628,7 @@ public class ASTConverter {
 		descent.core.dom.AggregateDeclaration b = new descent.core.dom.AggregateDeclaration(ast);
 		b.setKind(AggregateDeclaration.Kind.STRUCT);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
@@ -2641,7 +2640,7 @@ public class ASTConverter {
 		descent.core.dom.AggregateDeclaration b = new descent.core.dom.AggregateDeclaration(ast);
 		b.setKind(AggregateDeclaration.Kind.UNION);
 		if (a.ident != null) {
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 		}
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
@@ -2649,7 +2648,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.InfixExpression convert(CmpExp a) {
+	public descent.core.dom.Expression convert(CmpExp a) {
 		descent.core.dom.InfixExpression b = new descent.core.dom.InfixExpression(ast);
 		if (a.sourceE1 != null) {
 			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
@@ -2680,7 +2679,7 @@ public class ASTConverter {
 		if (a.sourceE2 != null && a.sourceE2 != null) {
 			b.setSourceRange(a.sourceE1.start, a.sourceE2.start + a.sourceE2.length - a.sourceE1.start);
 		}
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(IntegerExp a) {
@@ -2690,73 +2689,73 @@ public class ASTConverter {
 				b.setBooleanValue(a.value.equals(BigInteger.ONE));
 			}
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		} else if (a.type == Type.tchar || a.type == Type.twchar || a.type == Type.tdchar) {
 			CharacterLiteral b = new CharacterLiteral(ast);
 			if (a.str != null) {
 				b.internalSetEscapedValue(new String(a.str));
 			}
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		} else {
 			descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
 			if (a.str != null) {
 				b.internalSetToken(new String(a.str));
 			}
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertParenthesizedExpression(a, b);
 		}
 	}
 	
-	public descent.core.dom.NumberLiteral convert(RealExp a) {
+	public descent.core.dom.Expression convert(RealExp a) {
 		descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
 		b.internalSetToken(new String(a.str));
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.NullLiteral convert(NullExp a) {
+	public descent.core.dom.Expression convert(NullExp a) {
 		descent.core.dom.NullLiteral b = new descent.core.dom.NullLiteral(ast);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.ThisLiteral convert(ThisExp a) {
+	public descent.core.dom.Expression convert(ThisExp a) {
 		descent.core.dom.ThisLiteral b = new descent.core.dom.ThisLiteral(ast);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.SuperLiteral convert(SuperExp a) {
+	public descent.core.dom.Expression convert(SuperExp a) {
 		descent.core.dom.SuperLiteral b = new descent.core.dom.SuperLiteral(ast);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.StringLiteral convert(StringExp a) {
+	public descent.core.dom.Expression convert(StringExp a) {
 		descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
 		b.internalSetEscapedValue(new String(a.string));
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.StringsExpression convert(MultiStringExp a) {
+	public descent.core.dom.Expression convert(MultiStringExp a) {
 		descent.core.dom.StringsExpression b = new descent.core.dom.StringsExpression(ast);
 		for(StringExp exp : a.strings) {
-			StringLiteral convertedExp = convert(exp);
+			StringLiteral convertedExp = (StringLiteral) convert(exp);
 			if (convertedExp != null) {
 				b.stringLiterals().add(convertedExp);
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeIdentifier a) {
 		descent.core.dom.SimpleType b;
 		if (a.ident != null && !CharOperation.equals(a.ident.ident, Id.empty)) {
 			b = new descent.core.dom.SimpleType(ast);
-			b.setName(convert(a.ident));
+			b.setName((SimpleName) convert(a.ident));
 			b.setSourceRange(a.ident.start, a.ident.length);
 		} else {
 			b = null;
@@ -2788,7 +2787,7 @@ public class ASTConverter {
 	public descent.core.dom.Type convert(TypeInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
 		if (a.tempinst.name != null) {
-			SimpleName convertedIdent = convert(a.tempinst.name);
+			SimpleName convertedIdent = (SimpleName) convert(a.tempinst.name);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -2815,7 +2814,7 @@ public class ASTConverter {
 				q = ast.newQualifiedType(q, tt);
 				q.setSourceRange(start, a.start + a.length - start);
 			} else {
-				descent.core.dom.SimpleName n = convert(idExp);
+				descent.core.dom.SimpleName n = (SimpleName) convert(idExp);
 				descent.core.dom.SimpleType t = ast.newSimpleType(n);
 				t.setSourceRange(n.getStartPosition(), n.getLength());
 				q = ast.newQualifiedType(q, t);
@@ -2825,19 +2824,7 @@ public class ASTConverter {
 		return q;
 	}
 	
-	public descent.core.dom.ParenthesizedExpression convert(ParenExp a) {
-		descent.core.dom.ParenthesizedExpression b = new descent.core.dom.ParenthesizedExpression(ast);
-		if (a.sourceE1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.sourceE1);
-			if (convertedExp != null) {
-				b.setExpression(convertedExp);
-			}
-		}
-		b.setSourceRange(a.start, a.length);
-		return b;
-	}
-	
-	public descent.core.dom.TypeExpression convert(TypeExp a) {
+	public descent.core.dom.Expression convert(TypeExp a) {
 		descent.core.dom.TypeExpression b = new descent.core.dom.TypeExpression(ast);
 		if (a.sourceType != null) {
 			descent.core.dom.Type convertedType = convert(a.sourceType);
@@ -2846,7 +2833,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeBasic a) {
@@ -2903,6 +2890,18 @@ public class ASTConverter {
 			}
 		}
 		
+		return b;
+	}
+	
+	private descent.core.dom.Expression convertParenthesizedExpression(Expression a, descent.core.dom.Expression b) {
+		if (a.parenthesis != null) {
+			for(Parenthesis paren : a.parenthesis) {
+				ParenthesizedExpression c = new ParenthesizedExpression(ast);
+				c.setSourceRange(paren.startPosition, paren.length);
+				c.setExpression(b);
+				b = c;
+			}
+		}		
 		return b;
 	}
 
@@ -3179,7 +3178,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(BinExp a, InfixExpression.Operator op) {
@@ -3198,7 +3197,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(UnaExp a, PrefixExpression.Operator op) {
@@ -3211,7 +3210,7 @@ public class ASTConverter {
 		}
 		b.setOperator(op);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(UnaExp a, PostfixExpression.Operator op) {
@@ -3224,16 +3223,16 @@ public class ASTConverter {
 		}
 		b.setOperator(op);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.SimpleName convert(IdentifierExp a) {
+	public descent.core.dom.Expression convert(IdentifierExp a) {
 		if (a == null || a.ident == null || CharOperation.equals(a.ident, Id.empty)) return null;
 		
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
 		b.internalSetIdentifier(new String(a.ident));
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, Identifiers ids, Objects tiargs) {
@@ -3249,12 +3248,12 @@ public class ASTConverter {
 			descent.core.dom.Type second;
 			if (i == ids.size() - 1) {
 				if (tiargs == null || tiargs.isEmpty()) {
-					descent.core.dom.SimpleName firstName = convert(id);
+					descent.core.dom.SimpleName firstName = (SimpleName) convert(id);
 					second = ast.newSimpleType(firstName);
 					second.setSourceRange(firstName.getStartPosition(), firstName.getLength());
 				} else {
 					TemplateType type = new TemplateType(ast);
-					type.setName(convert(id));
+					type.setName((SimpleName) convert(id));
 					for(ASTDmdNode node : tiargs) {
 						type.arguments().add(convert(node));
 					}
@@ -3265,7 +3264,7 @@ public class ASTConverter {
 				if (id instanceof TemplateInstanceWrapper) {
 					second = convert((TemplateInstanceWrapper) id);
 				} else {
-					descent.core.dom.SimpleName name = convert(id);
+					descent.core.dom.SimpleName name = (SimpleName) convert(id);
 					second = ast.newSimpleType(name);
 					second.setSourceRange(name.getStartPosition(), name.getLength());
 				}
@@ -3285,15 +3284,15 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Name convert(Identifiers packages, IdentifierExp id) {
-		descent.core.dom.SimpleName sIdLast = convert(id);
+		descent.core.dom.SimpleName sIdLast = (SimpleName) convert(id);
 		if (packages == null || packages.isEmpty()) {
 			return sIdLast;
 		} else {
 			IdentifierExp firstId = packages.get(0);
-			descent.core.dom.Name name = convert(firstId);
+			descent.core.dom.Name name = (SimpleName) convert(firstId);
 			for(int i = 1; i < packages.size(); i++) {
 				IdentifierExp sId = packages.get(i);
-				descent.core.dom.SimpleName sName = convert(sId);
+				descent.core.dom.SimpleName sName = (SimpleName) convert(sId);
 				descent.core.dom.QualifiedName qName = ast.newQualifiedName(name, sName);
 				qName.setSourceRange(firstId.start, sId.start + sId.length - firstId.start);
 				name = qName;
@@ -3305,14 +3304,14 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Name convert(IdentifierExp id, Identifiers packages) {
-		descent.core.dom.SimpleName sIdFirst = convert(id);
+		descent.core.dom.SimpleName sIdFirst = (SimpleName) convert(id);
 		if (packages == null || packages.isEmpty()) {
 			return sIdFirst;
 		} else {
 			Name name = sIdFirst;
 			for(int i = 0; i < packages.size(); i++) {
 				IdentifierExp sId = packages.get(i);
-				descent.core.dom.SimpleName sName = convert(sId);
+				descent.core.dom.SimpleName sName = (SimpleName) convert(sId);
 				descent.core.dom.QualifiedName qName = ast.newQualifiedName(name, sName);
 				qName.setSourceRange(id.start, sId.start + sId.length - id.start);
 				name = qName;
