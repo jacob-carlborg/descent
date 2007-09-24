@@ -193,7 +193,7 @@ public class Parser extends Lexer {
 	    Dsymbols decldefs = new Dsymbols();
 	    
 	    // Special treatment if the file starts with Ddoc
-	    if (token.value == TOKidentifier && CharOperation.equals(token.string, Id.Ddoc)) {
+	    if (token.value == TOKidentifier && CharOperation.equals(token.sourceString, Id.Ddoc)) {
 	    	return decldefs;
 	    }
 
@@ -883,7 +883,7 @@ public class Parser extends Lexer {
 		
 		nextToken();
 		if (token.value == TOKidentifier) {
-			char[] id = token.string;
+			char[] id = token.sourceString;
 			int start = token.ptr;
 			int length = token.len;
 			int lineNumber = token.lineNumber;
@@ -928,11 +928,11 @@ public class Parser extends Lexer {
 		if (token.value == TOKlparen) {
 			nextToken();
 			if (token.value == TOKidentifier) {
-				id = token.string;
+				id = token.sourceString;
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
 			} else if (token.value == TOKint32v) {
-				id = token.string;
+				id = token.sourceString;
 				level = token.intValue.longValue();
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
@@ -961,11 +961,11 @@ public class Parser extends Lexer {
 		if (token.value == TOKlparen) {
 			nextToken();
 			if (token.value == TOKidentifier) {
-				id = token.string;
+				id = token.sourceString;
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
 			} else if (token.value == TOKint32v) {
-				id = token.string;
+				id = token.sourceString;
 				level = token.intValue.longValue();
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;				
@@ -3799,7 +3799,7 @@ public class Parser extends Lexer {
 				TOK t2 = TOKon_scope_exit;
 
 				// This char[] instances are reused by the Lexer
-				char[] id = token.string;			
+				char[] id = token.sourceString;			
 				if (id == Id.exit)
 					t2 = TOKon_scope_exit;
 				else if (id == Id.failure)
@@ -5217,16 +5217,16 @@ public class Parser extends Lexer {
 		    nextToken();
 		    break;
 
-		case TOKint32v: e = new IntegerExp(loc, token.string, token.intValue, Type.tint32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKuns32v: e = new IntegerExp(loc, token.string, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKint64v: e = new IntegerExp(loc, token.string, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKuns64v: e = new IntegerExp(loc, token.string, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKfloat32v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.tfloat32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKfloat64v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.tfloat64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKfloat80v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.tfloat80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKimaginary32v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.timaginary32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKimaginary64v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.timaginary64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKimaginary80v: e = new RealExp(loc, token.string, new real_t(token.floatValue), Type.timaginary80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKint32v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tint32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKuns32v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKint64v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKuns64v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKfloat32v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.tfloat32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKfloat64v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.tfloat64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKfloat80v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.tfloat80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKimaginary32v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.timaginary32); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKimaginary64v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.timaginary64); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKimaginary80v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.timaginary80); e.setSourceRange(token.ptr, token.len); nextToken(); break;
 
 		case TOKnull:
 		    e = new NullExp(loc);
@@ -5235,17 +5235,17 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKtrue:
-			e = new IntegerExp(loc, token.string, 1, Type.tbool);
+			e = new IntegerExp(loc, token.sourceString, 1, Type.tbool);
 		    nextToken();
 		    break;
 		case TOKfalse:
-			e = new IntegerExp(loc, token.string, 0, Type.tbool);
+			e = new IntegerExp(loc, token.sourceString, 0, Type.tbool);
 		    nextToken();
 		    break;
 
-		case TOKcharv: e = new IntegerExp(loc, token.string, token.intValue, Type.tchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKwcharv:  e = new IntegerExp(loc, token.string, token.intValue, Type.twchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
-		case TOKdcharv:  e = new IntegerExp(loc, token.string, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKcharv: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKwcharv:  e = new IntegerExp(loc, token.sourceString, token.intValue, Type.twchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
+		case TOKdcharv:  e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.len); nextToken(); break;
 
 		case TOKstring: {
 			int startLine = token.lineNumber;
@@ -5254,7 +5254,7 @@ public class Parser extends Lexer {
 			StringExp stringExp = newStringExpForCurrentToken();
 			StringExp lastStringExp = stringExp;
 			
-			char[] s = token.string;
+			char[] s = token.sourceString;
 			int len = token.len;
 			int postfix;
 
@@ -5279,9 +5279,9 @@ public class Parser extends Lexer {
 				    len1 = len;
 				    len2 = token.len;
 				    len = len1 + len2;
-				    s = CharOperation.concat(s, token.string);
+				    s = CharOperation.concat(s, token.sourceString);
 
-					if (token.string != null) {
+					if (token.sourceString != null) {
 						if (nextStringExps == null) {
 							nextStringExps = new ArrayList<StringExp>();
 							nextStringExps.add(newStringExpForPreviousToken());
@@ -6464,13 +6464,13 @@ public class Parser extends Lexer {
 	}
 	
 	private StringExp newStringExpForCurrentToken() {
-		StringExp string = new StringExp(loc, token.string, token.len, (char) token.postfix);
+		StringExp string = new StringExp(loc, token.sourceString, token.len, (char) token.postfix);
 		string.setSourceRange(token.ptr, token.len);
 		return string;
 	}
 	
 	private StringExp newStringExpForPreviousToken() {
-		StringExp string = new StringExp(loc, prevToken.string, token.len, (char) prevToken.postfix);
+		StringExp string = new StringExp(loc, prevToken.sourceString, token.len, (char) prevToken.postfix);
 		string.setSourceRange(prevToken.ptr, prevToken.len);
 		return string;
 	}
@@ -6495,7 +6495,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKint32v) {
 			return new DebugSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new DebugSymbol(loc, new IdentifierExp(loc, token.string), newVersionForCurrentToken());
+			return new DebugSymbol(loc, new IdentifierExp(loc, token.sourceString), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
@@ -6505,10 +6505,10 @@ public class Parser extends Lexer {
 		Version version;
 		
 		if (token.value == TOKint32v) {
-			version = new Version(loc, token.string);
+			version = new Version(loc, token.sourceString);
 			version.setSourceRange(token.ptr, token.len);
 		} else if (token.value == TOKidentifier) {
-			version = new Version(loc, token.string);
+			version = new Version(loc, token.sourceString);
 			version.setSourceRange(token.ptr, token.len);
 		} else {
 			throw new RuntimeException("Can't happen");
@@ -6637,22 +6637,22 @@ public class Parser extends Lexer {
 			Comment comment;
 			switch(tok) {
 			case TOKlinecomment:
-				comment = new Comment(Comment.LINE_COMMENT, token.string);
+				comment = new Comment(Comment.LINE_COMMENT, token.sourceString);
 				break;
 			case TOKblockcomment:
-				comment = new Comment(Comment.BLOCK_COMMENT, token.string);
+				comment = new Comment(Comment.BLOCK_COMMENT, token.sourceString);
 				break;
 			case TOKpluscomment:
-				comment = new Comment(Comment.PLUS_COMMENT, token.string);
+				comment = new Comment(Comment.PLUS_COMMENT, token.sourceString);
 				break;
 			case TOKdoclinecomment:
-				comment = new Comment(Comment.DOC_LINE_COMMENT, token.string);
+				comment = new Comment(Comment.DOC_LINE_COMMENT, token.sourceString);
 				break;
 			case TOKdocblockcomment:
-				comment = new Comment(Comment.DOC_BLOCK_COMMENT, token.string);
+				comment = new Comment(Comment.DOC_BLOCK_COMMENT, token.sourceString);
 				break;
 			case TOKdocpluscomment:
-				comment = new Comment(Comment.DOC_PLUS_COMMENT, token.string);
+				comment = new Comment(Comment.DOC_PLUS_COMMENT, token.sourceString);
 				break;
 			default:
 				throw new IllegalStateException("Can't happen");
@@ -6670,7 +6670,7 @@ public class Parser extends Lexer {
 		}
 		
 		while(tok == TOKPRAGMA) {
-			if (token.ptr == 0 && token.string.length > 1 && token.string[1] == '!') {
+			if (token.ptr == 0 && token.sourceString.length > 1 && token.sourceString[1] == '!') {
 				// Script line
 				Pragma pragma = new Pragma();
 				pragma.setSourceRange(0, token.len);
@@ -6682,7 +6682,7 @@ public class Parser extends Lexer {
 				
 				// Let's see if it's correct
 				// TODO improve performance
-				StringTokenizer st = new StringTokenizer(new String(token.string).substring(1));
+				StringTokenizer st = new StringTokenizer(new String(token.sourceString).substring(1));
 				if (st.countTokens() != 3) {
 					error(IProblem.InvalidPragmaSyntax, token);
 					setMalformed(pragma);

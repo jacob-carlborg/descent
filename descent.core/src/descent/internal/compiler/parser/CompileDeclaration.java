@@ -52,7 +52,19 @@ public class CompileDeclaration extends AttribDeclaration {
 		Parser p = new Parser(context.apiLevel, se.string);
 		// p.nextToken(); // shouldn't be called, since it's called in Parser (in Descent, not in DMD)
 		p.loc = loc;
-		decl = p.parseDeclDefs(false);
+		Module mod = p.parseModuleObj();
+		decl = mod.members;
+		
+		// TODO semantic do this better
+		if (mod.problems != null) {
+			for (int i = 0; i < mod.problems.size(); i++) {
+				Problem problem = (Problem) mod.problems.get(i);
+				problem.setSourceStart(start);
+				problem.setSourceEnd(start + length - 1);
+				context.acceptProblem(problem);
+			}
+		}
+		
 		if (p.token.value != TOKeof) {
 			error("incomplete mixin declaration (%s)", se.toChars(context));
 		}

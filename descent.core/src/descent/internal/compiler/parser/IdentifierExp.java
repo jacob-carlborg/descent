@@ -43,7 +43,7 @@ public class IdentifierExp extends Expression {
 
 	public IdentifierExp(Loc loc, Token token) {
 		this(loc);
-		this.ident = token.string;
+		this.ident = token.sourceString;
 		this.start = token.ptr;
 		this.length = token.len;
 	}

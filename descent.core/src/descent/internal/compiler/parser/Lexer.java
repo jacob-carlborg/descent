@@ -395,7 +395,7 @@ public class Lexer implements IProblemRequestor {
 	    t.lineNumber = linnum;
 	    t.special = 0;
 	    t.leadingComment = null;
-	    t.string = null;
+	    t.sourceString = null;
 	    
 	    while (true)
 	    {
@@ -1135,7 +1135,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = Id.C;
+				t.sourceString = Id.C;
 				return;
 			}
 			break;
@@ -1145,7 +1145,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = Id.D;
+				t.sourceString = Id.D;
 				return;
 			}
 			break;
@@ -1162,7 +1162,7 @@ public class Lexer implements IProblemRequestor {
 							p++;
 							if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
 								t.value = TOK.TOKidentifier;
-								t.string = Id.Pascal;
+								t.sourceString = Id.Pascal;
 								t.len = 6;
 								p++;
 								return;
@@ -1185,7 +1185,7 @@ public class Lexer implements IProblemRequestor {
 							p++;
 							if (input[p] == 'm' && !Chars.isidchar(input[p+1])) {
 								t.value = TOK.TOKidentifier;
-								t.string = Id.System;
+								t.sourceString = Id.System;
 								t.len = 6;
 								p++;
 								return;
@@ -1210,7 +1210,7 @@ public class Lexer implements IProblemRequestor {
 								p++;
 								if (input[p] == 's' && !Chars.isidchar(input[p+1])) {
 									t.value = TOK.TOKidentifier;
-									t.string = Id.Windows;
+									t.sourceString = Id.Windows;
 									t.len = 7;
 									p++;
 									return;
@@ -1319,7 +1319,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_a;
+					t.sourceString = charArray_a;
 					return;
 				}
 			}
@@ -1381,7 +1381,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_b;
+					t.sourceString = charArray_b;
 					return;
 				}
 			}
@@ -1560,7 +1560,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_c;
+					t.sourceString = charArray_c;
 					return;
 				}
 			}
@@ -1707,7 +1707,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_d;
+					t.sourceString = charArray_d;
 					return;
 				}
 			}
@@ -1747,7 +1747,7 @@ public class Lexer implements IProblemRequestor {
 					p++;
 					if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
 						t.value = TOK.TOKidentifier;
-						t.string = Id.exit;
+						t.sourceString = Id.exit;
 						t.len = 4;
 						p++;
 						return;
@@ -1789,7 +1789,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_e;
+					t.sourceString = charArray_e;
 					return;
 				}
 			}
@@ -1811,7 +1811,7 @@ public class Lexer implements IProblemRequestor {
 								p++;
 								if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
 									t.value = TOK.TOKidentifier;
-									t.string = Id.failure;
+									t.sourceString = Id.failure;
 									t.len = 7;
 									p++;
 									return;
@@ -1826,7 +1826,7 @@ public class Lexer implements IProblemRequestor {
 						p++;
 						if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
 							t.value = TOK.TOKfalse;
-							t.string = TOK.TOKfalse.charArrayValue;
+							t.sourceString = TOK.TOKfalse.charArrayValue;
 							t.len = 5;
 							p++;
 							return;
@@ -1965,7 +1965,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_f;
+					t.sourceString = charArray_f;
 					return;
 				}
 			}
@@ -1987,7 +1987,7 @@ public class Lexer implements IProblemRequestor {
 			} else if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_g;
+				t.sourceString = charArray_g;
 				return;
 			}
 			break;
@@ -1997,7 +1997,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_h;
+				t.sourceString = charArray_h;
 				return;
 			}
 			break;
@@ -2189,7 +2189,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_i;
+					t.sourceString = charArray_i;
 					return;
 				}
 			}
@@ -2200,7 +2200,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_j;
+				t.sourceString = charArray_j;
 				return;
 			}
 			break;
@@ -2210,7 +2210,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_k;
+				t.sourceString = charArray_k;
 				return;
 			}
 			break;
@@ -2240,7 +2240,7 @@ public class Lexer implements IProblemRequestor {
 							p++;
 							if (input[p] == 'h' && !Chars.isidchar(input[p+1])) {
 								t.value = TOK.TOKidentifier;
-								t.string = Id.length;
+								t.sourceString = Id.length;
 								t.len = 6;
 								p++;
 								return;
@@ -2253,7 +2253,7 @@ public class Lexer implements IProblemRequestor {
 				p++;
 				if (input[p] == 'b' && !Chars.isidchar(input[p+1])) {
 					t.value = TOK.TOKidentifier;
-					t.string = Id.lib;
+					t.sourceString = Id.lib;
 					t.len = 3;
 					p++;
 					return;
@@ -2275,7 +2275,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_l;
+					t.sourceString = charArray_l;
 					return;
 				}
 			}
@@ -2336,7 +2336,7 @@ public class Lexer implements IProblemRequestor {
 				p++;
 				if (input[p] == 'g' && !Chars.isidchar(input[p+1])) {
 					t.value = TOK.TOKidentifier;
-					t.string = Id.msg;
+					t.sourceString = Id.msg;
 					t.len = 3;
 					p++;
 					return;
@@ -2346,7 +2346,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_m;
+					t.sourceString = charArray_m;
 					return;
 				}
 			}
@@ -2380,7 +2380,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_n;
+					t.sourceString = charArray_n;
 					return;
 				}
 			}
@@ -2400,7 +2400,7 @@ public class Lexer implements IProblemRequestor {
 							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
 								t.value = TOK.TOKidentifier;
 								t.len = 6;
-								t.string = Id.object;
+								t.sourceString = Id.object;
 								p++;
 								return;
 							}
@@ -2536,7 +2536,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_o;
+					t.sourceString = charArray_o;
 					return;
 				}
 			}
@@ -2650,7 +2650,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_p;
+					t.sourceString = charArray_p;
 					return;
 				}
 			}
@@ -2661,7 +2661,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_q;
+				t.sourceString = charArray_q;
 				return;
 			}
 			break;
@@ -2707,7 +2707,7 @@ public class Lexer implements IProblemRequestor {
 			} else if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_r;
+				t.sourceString = charArray_r;
 				return;
 			}
 			break;
@@ -2755,7 +2755,7 @@ public class Lexer implements IProblemRequestor {
 							p++;
 							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
 								t.value = TOK.TOKidentifier;
-								t.string = Id.size_t;
+								t.sourceString = Id.size_t;
 								t.len = 6;
 								p++;
 								return;
@@ -2791,7 +2791,7 @@ public class Lexer implements IProblemRequestor {
 							p++;
 							if (input[p] == 'g' && !Chars.isidchar(input[p+1])) {
 								t.value = TOK.TOKidentifier;
-								t.string = Id.string;
+								t.sourceString = Id.string;
 								t.len = 6;
 								p++;
 								return;
@@ -2827,7 +2827,7 @@ public class Lexer implements IProblemRequestor {
 								p++;
 								if (input[p] == 's' && !Chars.isidchar(input[p+1])) {
 									t.value = TOK.TOKidentifier;
-									t.string = Id.success;
+									t.sourceString = Id.success;
 									t.len = 7;
 									p++;
 									return;
@@ -2908,7 +2908,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_s;
+					t.sourceString = charArray_s;
 					return;
 				}
 			}
@@ -2974,7 +2974,7 @@ public class Lexer implements IProblemRequestor {
 					p++;
 					if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
 						t.value = TOK.TOKtrue;
-						t.string = TOK.TOKtrue.charArrayValue;
+						t.sourceString = TOK.TOKtrue.charArrayValue;
 						t.len = 4;
 						p++;
 						return;
@@ -3035,7 +3035,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_t;
+					t.sourceString = charArray_t;
 					return;
 				}
 			}
@@ -3158,7 +3158,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_u;
+					t.sourceString = charArray_u;
 					return;
 				}
 			}
@@ -3227,7 +3227,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_v;
+					t.sourceString = charArray_v;
 					return;
 				}
 			}
@@ -3282,7 +3282,7 @@ public class Lexer implements IProblemRequestor {
 				if (!Chars.isidchar(input[p])) {
 					t.value = TOK.TOKidentifier;
 					t.len = 1;
-					t.string = charArray_w;
+					t.sourceString = charArray_w;
 					return;
 				}
 			}
@@ -3293,7 +3293,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_x;
+				t.sourceString = charArray_x;
 				return;
 			}
 			break;
@@ -3303,7 +3303,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_y;
+				t.sourceString = charArray_y;
 				return;
 			}
 			break;
@@ -3313,7 +3313,7 @@ public class Lexer implements IProblemRequestor {
 			if (!Chars.isidchar(input[p])) {
 				t.value = TOK.TOKidentifier;
 				t.len = 1;
-				t.string = charArray_z;
+				t.sourceString = charArray_z;
 				return;
 			}
 			break;
@@ -3336,7 +3336,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKstring;
 										t.special = Token.SPECIAL__DATE__;
-										t.string = Id.DATE;
+										t.sourceString = Id.DATE;
 										t.len = 8;
 										p++;
 										return;
@@ -3359,7 +3359,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKstring;
 										t.special = Token.SPECIAL__FILE__;
-										t.string = Id.FILE;
+										t.sourceString = Id.FILE;
 										t.len = 8;
 										p++;
 										return;
@@ -3382,7 +3382,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKint64v;
 										t.special = Token.SPECIAL__LINE__;
-										t.string = Id.LINE;
+										t.sourceString = Id.LINE;
 										t.len = 8;
 										p++;
 										return;
@@ -3416,7 +3416,7 @@ public class Lexer implements IProblemRequestor {
 														if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 															t.value = TOK.TOKstring;
 															t.special = Token.SPECIAL__TIMESTAMP__;
-															t.string = Id.TIMESTAMP;
+															t.sourceString = Id.TIMESTAMP;
 															t.len = 13;
 															p++;
 															return;
@@ -3432,7 +3432,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKstring;
 										t.special = Token.SPECIAL__TIME__;
-										t.string = Id.TIME;
+										t.sourceString = Id.TIME;
 										t.len = 8;
 										p++;
 										return;
@@ -3461,7 +3461,7 @@ public class Lexer implements IProblemRequestor {
 											if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 												t.value = TOK.TOKstring;
 												t.special = Token.SPECIAL__VENDOR__;
-												t.string = Id.VENDOR;
+												t.sourceString = Id.VENDOR;
 												t.len = 10;
 												p++;
 												return;
@@ -3486,7 +3486,7 @@ public class Lexer implements IProblemRequestor {
 												if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 													t.value = TOK.TOKint64v;
 													t.special = Token.SPECIAL__VERSION__;
-													t.string = Id.VERSION;
+													t.sourceString = Id.VERSION;
 													t.len = 11;
 													p++;
 													return;
@@ -3546,19 +3546,19 @@ public class Lexer implements IProblemRequestor {
 		
 		switch(t.len) {
 		case 2:
-			t.string = optimizedCurrentTokenSource2(t);
+			t.sourceString = optimizedCurrentTokenSource2(t);
 			break;
 		case 3:
-			t.string = optimizedCurrentTokenSource3(t);
+			t.sourceString = optimizedCurrentTokenSource3(t);
 			break;
 		case 4:
-			t.string = optimizedCurrentTokenSource4(t);
+			t.sourceString = optimizedCurrentTokenSource4(t);
 			break;
 		case 5:
-			t.string = optimizedCurrentTokenSource5(t);
+			t.sourceString = optimizedCurrentTokenSource5(t);
 			break;
 		case 6:
-			t.string = optimizedCurrentTokenSource6(t);
+			t.sourceString = optimizedCurrentTokenSource6(t);
 			break;
 		default:
 			t.setString(input, t.ptr, t.len);

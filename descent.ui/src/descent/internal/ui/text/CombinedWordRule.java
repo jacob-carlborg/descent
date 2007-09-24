@@ -112,7 +112,7 @@ public class CombinedWordRule implements IRule {
 		/**
 		 * Initialize with the given content.
 		 *
-		 * @param string the initial content
+		 * @param sourceString the initial content
 		 */
 		public CharacterBuffer(String content) {
 			fContent= content.toCharArray();

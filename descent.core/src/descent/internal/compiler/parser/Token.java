@@ -18,7 +18,8 @@ public class Token {
 	public Token next;
 	public int ptr; // The start position of the token
 	public TOK value;
-	public char[] string; // the string value of the token, if any
+	public char[] string; // the string value of the token, if any. This is for string tokens.
+	public char[] sourceString; // the raw source of the token. This is for any token.
 	public int len; // The length of the token
 	public int postfix;
 	public integer_t intValue;
@@ -42,7 +43,7 @@ public class Token {
 		next = null;
 		ptr = 0;
 		value = TOK.TOKreserved;
-		string = null;
+		sourceString = null;
 		len = 0;
 		postfix = 0;
 		lineNumber = 0;
@@ -54,7 +55,7 @@ public class Token {
 		to.next = from.next;
 		to.ptr = from.ptr;
 		to.value = from.value;
-		to.string = from.string;
+		to.sourceString = from.sourceString;
 		to.len = from.len;
 		to.postfix = from.postfix;
 		to.intValue = from.intValue;
@@ -63,8 +64,8 @@ public class Token {
 	}
 	
 	public void setString(char[] input, int start, int length) {
-		this.string = new char[length];
-		System.arraycopy(input, start, this.string, 0, length);
+		this.sourceString = new char[length];
+		System.arraycopy(input, start, this.sourceString, 0, length);
 	}
 	
 	@Override
@@ -102,7 +103,7 @@ public class Token {
 			case TOKwhitespace:
 			case TOKPRAGMA:
 			case TOKidentifier:
-				return string;
+				return sourceString;
 			default:
 				return value.charArrayValue;
 		}		
@@ -137,9 +138,9 @@ public class Token {
 		case TOKdocpluscomment:
 		case TOKwhitespace:
 		case TOKPRAGMA:
-			return new String(string);
+			return new String(sourceString);
 		case TOKidentifier:
-			return new String(string);
+			return new String(sourceString);
 		default:
 			return value.value;
 	}	
