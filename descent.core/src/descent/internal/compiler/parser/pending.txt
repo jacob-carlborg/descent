@@ -22,7 +22,6 @@ Lexer.java
 Loc.java
 Module.java
 MultiImport.java
-MultiStringExp.java
 NumberUtils.java
 OutBuffer.java
 Package.java

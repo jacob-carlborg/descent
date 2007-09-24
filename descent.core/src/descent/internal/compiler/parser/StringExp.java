@@ -10,6 +10,8 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -24,6 +26,8 @@ public class StringExp extends Expression {
 	public char sz; // 1: char, 2: wchar, 4: dchar
 	public boolean committed; // !=0 if type is committed
 	public int len;
+	
+	public List<StringExp> allStringExps;
 
 	public StringExp(Loc loc, char[] string) {
 		super(loc, TOK.TOKstring);

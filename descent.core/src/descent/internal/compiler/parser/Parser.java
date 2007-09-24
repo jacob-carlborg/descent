@@ -5249,46 +5249,43 @@ public class Parser extends Lexer {
 
 		case TOKstring: {
 			
-			int start = token.ptr;
 			int startLine = token.lineNumber;
-			MultiStringExp stringsExpression = new MultiStringExp(loc);
+			
+			List<StringExp> nextStringExps = null;
 			StringExp stringExp = newStringExpForCurrentToken();
-			stringsExpression.strings.add(stringExp);
+			StringExp lastStringExp = stringExp;
 			
 			int postfix;
-			boolean moreThanOne = false;
 
 			// cat adjacent strings
 			postfix = token.postfix;
 			while (true) {
 				nextToken();
 				if (token.value == TOKstring) {
-					moreThanOne = true;
 					if (token.postfix != 0) {
 						if (token.postfix != postfix) {
 							error(
 									IProblem.MismatchedStringLiteralPostfixes,
-									startLine, stringExp.start, token.ptr + token.len - stringExp.start,
+									startLine, lastStringExp.start, token.ptr + token.len - lastStringExp.start,
 									new String[] { String.valueOf((char) postfix) , String.valueOf((char) token.postfix) });
 						}							
 						postfix = token.postfix;
 					}
 
 					if (token.string != null) {
-						stringExp = newStringExpForCurrentToken();
-						stringsExpression.strings.add(stringExp);
+						if (nextStringExps == null) {
+							nextStringExps = new ArrayList<StringExp>();
+							nextStringExps.add(newStringExpForPreviousToken());
+						}
+						lastStringExp = newStringExpForCurrentToken();
+						nextStringExps.add(lastStringExp);
 					}
 				} else
 					break;
 			}
 			
-			if (moreThanOne) {
-				stringsExpression.doneParsing();
-				stringsExpression.setSourceRange(start, prevToken.ptr + prevToken.len - start);	
-				e = stringsExpression;
-			} else {
-				e = stringExp;
-			}
+			stringExp.allStringExps = nextStringExps;
+			e = stringExp;
 			break;
 		}
 		
@@ -6459,6 +6456,12 @@ public class Parser extends Lexer {
 	private StringExp newStringExpForCurrentToken() {
 		StringExp string = new StringExp(loc, token.string, (char) token.postfix);
 		string.setSourceRange(token.ptr, token.len);
+		return string;
+	}
+	
+	private StringExp newStringExpForPreviousToken() {
+		StringExp string = new StringExp(loc, prevToken.string, (char) prevToken.postfix);
+		string.setSourceRange(prevToken.ptr, prevToken.len);
 		return string;
 	}
 	

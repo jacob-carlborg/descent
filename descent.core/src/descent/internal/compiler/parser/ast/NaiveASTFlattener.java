@@ -1646,11 +1646,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(MultiStringExp node) {
-		visitList(node.strings, " ");
-		return false;
-	}
-
 	public boolean visit(NegExp node) {
 		this.buffer.append("-");
 		node.sourceE1.accept(this);
@@ -2135,7 +2130,11 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(StringExp node) {
-		this.buffer.append(node.string);
+		if (node.allStringExps != null) {
+			visitList(node.allStringExps, " ");
+		} else {
+			this.buffer.append(node.string);
+		}
 		return false;
 	}
 
@@ -3307,9 +3306,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public void endVisit(MultiImport node) {
-	}
-
-	public void endVisit(MultiStringExp node) {
 	}
 
 	public void endVisit(NegExp node) {

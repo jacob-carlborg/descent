@@ -313,8 +313,6 @@ public class ASTConverter {
 			return convert((BinExp) symbol, InfixExpression.Operator.TIMES);
 		case ASTDmdNode.MULTI_IMPORT:
 			return convert((MultiImport) symbol);
-		case ASTDmdNode.MULTI_STRING_EXP:
-			return convert((MultiStringExp) symbol);
 		case ASTDmdNode.NEG_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.NEGATIVE);
 		case ASTDmdNode.NEW_ANON_CLASS_EXP:
@@ -2733,22 +2731,20 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Expression convert(StringExp a) {
-		descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
-		b.internalSetEscapedValue(new String(a.string));
-		b.setSourceRange(a.start, a.length);
-		return convertParenthesizedExpression(a, b);
-	}
-	
-	public descent.core.dom.Expression convert(MultiStringExp a) {
-		descent.core.dom.StringsExpression b = new descent.core.dom.StringsExpression(ast);
-		for(StringExp exp : a.strings) {
-			StringLiteral convertedExp = (StringLiteral) convert(exp);
-			if (convertedExp != null) {
-				b.stringLiterals().add(convertedExp);
+		if (a.allStringExps != null) {
+			StringsExpression b = new StringsExpression(ast);
+			for(StringExp next : a.allStringExps) {
+				b.stringLiterals().add((StringLiteral) convert(next));
 			}
+			StringExp last = a.allStringExps.get(a.allStringExps.size() - 1);			
+			b.setSourceRange(a.start, last.start + last.length - a.start);			
+			return b;
+		} else {
+			descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
+			b.internalSetEscapedValue(new String(a.string));
+			b.setSourceRange(a.start, a.length);
+			return convertParenthesizedExpression(a, b);
 		}
-		b.setSourceRange(a.start, a.length);
-		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeIdentifier a) {

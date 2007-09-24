@@ -1422,10 +1422,6 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(MultiStringExp node) {
-		return false;
-	}
-
 	public boolean visit(NegExp node) {
 		return false;
 	}
@@ -2120,9 +2116,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public void endVisit(MulExp node) {
-	}
-
-	public void endVisit(MultiStringExp node) {
 	}
 
 	public void endVisit(NegExp node) {

@@ -143,7 +143,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int TEMPLATE_INSTANCE_WRAPPER = 83;
 	public final static int IFTYPE_EXP = 84;
 	public final static int INTEGER_EXP = 85;
-	public final static int MULTI_STRING_EXP = 86;
+	public final static int SWITCH_ERROR_STATEMENT = 86;
 	public final static int NEW_ANON_CLASS_EXP = 87;
 	public final static int NEW_EXP = 88;
 	public final static int NULL_EXP = 89;
@@ -251,8 +251,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int COMMENT = 192;
 	public final static int PRAGMA = 193;
 	public final static int ARRAY_LENGTH_EXP = 194;
-	public final static int DOT_TEMPLATE_EXP = 195;
-	public final static int SWITCH_ERROR_STATEMENT = 196;
+	public final static int DOT_TEMPLATE_EXP = 195;	
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {

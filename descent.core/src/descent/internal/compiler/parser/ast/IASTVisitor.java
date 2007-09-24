@@ -139,7 +139,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	boolean visit(MulAssignExp node);
 	boolean visit(MulExp node);
 	boolean visit(MultiImport node);
-	boolean visit(MultiStringExp node);
 	boolean visit(NegExp node);
 	boolean visit(NewAnonClassExp node);
 	boolean visit(NewDeclaration node);
@@ -372,7 +371,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	void endVisit(MulAssignExp node);
 	void endVisit(MulExp node);
 	void endVisit(MultiImport node);
-	void endVisit(MultiStringExp node);
 	void endVisit(NegExp node);
 	void endVisit(NewAnonClassExp node);
 	void endVisit(NewDeclaration node);
