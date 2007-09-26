@@ -191,9 +191,9 @@ public class GdbDebugger implements IDebugger {
 		fState.interpretError(text);
 	}
 	
-//	public void addSearchPath(String path) throws DebugException, IOException {
-//		
-//	}
+	public void addSearchPath(String path) throws DebugException, IOException {
+		// TODO: implement addSearchPath for GDB
+	}
 
 	public void removeBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		try {

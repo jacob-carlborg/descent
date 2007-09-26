@@ -121,14 +121,14 @@ public class SingleThreadCli implements IDebugger {
 		}
 	}
 	
-//	public void addSearchPath(String path) throws DebugException, IOException {
-//		fWriteLock.lock();
-//		try {
-//			fDebugger.addSearchPath(path);
-//		} finally {
-//			fWriteLock.unlock();
-//		}
-//	}
+	public void addSearchPath(String path) throws DebugException, IOException {
+		fWriteLock.lock();
+		try {
+			fDebugger.addSearchPath(path);
+		} finally {
+			fWriteLock.unlock();
+		}
+	}
 
 	public void removeBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		fWriteLock.lock();
