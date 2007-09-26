@@ -45,7 +45,7 @@ public class IdentifierExp extends Expression {
 		this(loc);
 		this.ident = token.sourceString;
 		this.start = token.ptr;
-		this.length = token.len;
+		this.length = token.sourceLen;
 	}
 
 	@Override

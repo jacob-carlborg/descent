@@ -2133,7 +2133,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		if (node.allStringExps != null) {
 			visitList(node.allStringExps, " ");
 		} else {
-			this.buffer.append(node.string);
+			this.buffer.append(node.sourceString);
 		}
 		return false;
 	}

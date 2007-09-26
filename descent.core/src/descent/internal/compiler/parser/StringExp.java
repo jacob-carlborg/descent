@@ -20,29 +20,31 @@ import static descent.internal.compiler.parser.TY.Twchar;
 // DMD 1.020
 public class StringExp extends Expression {
 
-	// TODO the string here is the full source, it must
-	// only be what's enclosed in quotes
-	public char[] string;
 	public char[] sourceString;
+
+	public char[] string;
+	public int len;
 	public char postfix;
 	public char sz; // 1: char, 2: wchar, 4: dchar
 	public boolean committed; // !=0 if type is committed
-	public int len;
-	
+
 	public List<StringExp> allStringExps;
 
-	public StringExp(Loc loc, char[] string, int length) {
-		this(loc, string, length, (char) 0);
+	public StringExp(Loc loc, char[] string) {
+		this(loc, string, string.length);
 	}
 
-	public StringExp(Loc loc, char[] string, int length, char postfix) {
+	public StringExp(Loc loc, char[] string, int len) {
+		this(loc, string, len, (char) 0);
+	}
+
+	public StringExp(Loc loc, char[] string, int len, char postfix) {
 		super(loc, TOK.TOKstring);
 		this.string = string;
-		this.sourceString = string;
+		this.len = len;
 		this.sz = 1;
 		this.committed = false;
 		this.postfix = postfix;
-		this.len = length;
 	}
 
 	@Override
@@ -64,15 +66,17 @@ public class StringExp extends Expression {
 		toCBuffer(out, hdr, context);
 		return out.toChars();
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		// TODO semantic
 		super.toCBuffer(buf, hgs, context);
 	}
 
 	public StringExp toUTF8(Scope sc, SemanticContext context) {
-		if (sz != 1) { // Convert to UTF-8 string
+		if (sz != 1) {
+			// Convert to UTF-8 string
 			committed = false;
 			Expression e = castTo(sc, Type.tchar.arrayOf(context), context);
 			e = e.optimize(WANTvalue, context);
@@ -189,11 +193,6 @@ public class StringExp extends Expression {
 	@Override
 	public boolean isBool(boolean result) {
 		return result ? true : false;
-	}
-
-	public StringExp toUTF8(Scope sc) {
-		// TODO semantic
-		return this;
 	}
 
 }

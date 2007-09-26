@@ -48,7 +48,7 @@ public class CompileDeclaration extends AttribDeclaration {
 			return;
 		}
 		StringExp se = (StringExp) exp;
-		se = se.toUTF8(sc);
+		se = se.toUTF8(sc, context);
 		Parser p = new Parser(context.apiLevel, se.string);
 		// p.nextToken(); // shouldn't be called, since it's called in Parser (in Descent, not in DMD)
 		p.loc = loc;

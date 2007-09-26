@@ -10,7 +10,7 @@ public class Modifier extends ASTDmdNode {
 	public Modifier(Token token) {
 		this.tok = token.value;
 		this.start = token.ptr;
-		this.length = token.len;
+		this.length = token.sourceLen;
 	}
 	
 	@Override

@@ -221,7 +221,7 @@ public class TraitsExp extends Expression {
 			}
 			
 			StringExp se = (StringExp) e;
-			se = se.toUTF8(sc);
+			se = se.toUTF8(sc, context);
 			if (se.sz != 1)
 			{
 				error("string must be chars");

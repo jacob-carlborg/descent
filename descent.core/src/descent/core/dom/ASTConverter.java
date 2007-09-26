@@ -2457,7 +2457,7 @@ public class ASTConverter {
 			for(Token token : a.toklist) {
 				AsmToken asmToken = new AsmToken(ast);
 				asmToken.setToken(token.toString());
-				asmToken.setSourceRange(token.ptr, token.len);
+				asmToken.setSourceRange(token.ptr, token.sourceLen);
 				b.tokens().add(asmToken);
 			}
 		}
@@ -2741,7 +2741,7 @@ public class ASTConverter {
 			return b;
 		} else {
 			descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
-			b.internalSetEscapedValue(new String(a.string));
+			b.internalSetEscapedValue(new String(a.sourceString));
 			b.setSourceRange(a.start, a.length);
 			return convertParenthesizedExpression(a, b);
 		}

@@ -203,7 +203,7 @@ public class Lexer_Test extends TestCase {
 		Lexer lexer = new Lexer(s, true, true, false, true, apiLevel);
 		assertEquals(t, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -212,7 +212,7 @@ public class Lexer_Test extends TestCase {
 		assertEquals(t, lexer.nextToken());
 		assertEquals(s.trim(), new String(lexer.token.sourceString));
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -221,7 +221,7 @@ public class Lexer_Test extends TestCase {
 		assertEquals(TOK.TOKstring, lexer.nextToken());
 		assertEquals(s.trim(), new String(lexer.token.sourceString));
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -231,7 +231,7 @@ public class Lexer_Test extends TestCase {
 		assertEquals(BigInteger.valueOf(value), lexer.token.intValue.bigIntegerValue());
 		assertEquals(s.trim(), new String(lexer.token.sourceString));
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -241,7 +241,7 @@ public class Lexer_Test extends TestCase {
 		assertEquals(BigInteger.valueOf(value), lexer.token.intValue.bigIntegerValue());
 		assertEquals(s.trim(), new String(lexer.token.sourceString));
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -251,7 +251,7 @@ public class Lexer_Test extends TestCase {
 		//assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), new String(lexer.token.sourceString));
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -259,7 +259,7 @@ public class Lexer_Test extends TestCase {
 		Lexer lexer = new Lexer(string, true, true, false, true, AST.D1);
 		assertEquals(tok, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(0, lexer.problems.size());
 	}
 	
@@ -267,7 +267,7 @@ public class Lexer_Test extends TestCase {
 		Lexer lexer = new Lexer(string, true, true, false, true, AST.D1);
 		assertEquals(tok, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(special, lexer.token.special);
 		assertEquals(string.trim(), new String(lexer.token.sourceString));
 		assertSame(id, lexer.token.sourceString);
@@ -278,7 +278,7 @@ public class Lexer_Test extends TestCase {
 		Lexer lexer = new Lexer(string, true, true, false, true, AST.D1);
 		assertEquals(tok, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
-		assertEquals(len, lexer.token.len);
+		assertEquals(len, lexer.token.sourceLen);
 		assertEquals(string.trim(), new String(lexer.token.sourceString));
 		assertSame(id, lexer.token.sourceString);
 		assertEquals(0, lexer.problems.size());

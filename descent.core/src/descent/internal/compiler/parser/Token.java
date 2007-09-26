@@ -18,10 +18,16 @@ public class Token {
 	public Token next;
 	public int ptr; // The start position of the token
 	public TOK value;
-	public char[] string; // the string value of the token, if any. This is for string tokens.
-	public char[] sourceString; // the raw source of the token. This is for any token.
-	public int len; // The length of the token
+	
+	// These three are for string tokens
+	public char[] ustring;
+	public int len;
 	public int postfix;
+	
+	// These two are for range information
+	public char[] sourceString;
+	public int sourceLen;
+	
 	public integer_t intValue;
 	public BigDecimal floatValue;
 	public int lineNumber;
@@ -44,7 +50,7 @@ public class Token {
 		ptr = 0;
 		value = TOK.TOKreserved;
 		sourceString = null;
-		len = 0;
+		sourceLen = 0;
 		postfix = 0;
 		lineNumber = 0;
 		leadingComment = null;
@@ -55,11 +61,14 @@ public class Token {
 		to.next = from.next;
 		to.ptr = from.ptr;
 		to.value = from.value;
-		to.sourceString = from.sourceString;
+		to.ustring = from.ustring;
 		to.len = from.len;
 		to.postfix = from.postfix;
 		to.intValue = from.intValue;
+		
 		to.lineNumber = from.lineNumber;
+		to.sourceString = from.sourceString;
+		to.sourceLen = from.sourceLen;
 		to.leadingComment = from.leadingComment;
 	}
 	

@@ -29,9 +29,9 @@ public class PublicScanner implements IScanner {
 
 	public int getCurrentTokenEndPosition() {
 		if (lexer.token.value == TOK.TOKeof) {
-			return lexer.token.ptr + lexer.token.len;
+			return lexer.token.ptr + lexer.token.sourceLen;
 		} else {
-			return lexer.token.ptr + lexer.token.len - 1;
+			return lexer.token.ptr + lexer.token.sourceLen - 1;
 		}
 	}
 

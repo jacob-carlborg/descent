@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+// TODO this class needs a serious re-implementation
 // DMD 1.020
 public class OutBuffer {
 	
@@ -138,6 +139,10 @@ public class OutBuffer {
 
 	public void writestring(long l) {
 		data.append(l);
+	}
+
+	public int offset() {
+		return data.length();
 	}
 
 }

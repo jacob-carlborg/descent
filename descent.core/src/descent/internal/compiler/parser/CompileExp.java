@@ -37,7 +37,7 @@ public class CompileExp extends UnaExp {
 			return this;
 		}
 		StringExp se = (StringExp) e1;
-		se = se.toUTF8(sc);
+		se = se.toUTF8(sc, context);
 		Parser p = new Parser(context.apiLevel, se.string);
 		p.loc = loc;
 		Expression e = p.parseExpression();
