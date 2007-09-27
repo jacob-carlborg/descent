@@ -106,10 +106,10 @@ public class Parser extends Lexer {
 	
 	private final static boolean LTORARRAYDECL = true;
 	
-	private final static int PSsemi = 1;		// empty ';' statements are allowed
-	private final static int PSscope = 2;	// start a new scope
-	private final static int PScurly = 4;	// { } statement is required
-	private final static int PScurlyscope = 8;	// { } starts a new scope
+	public final static int PSsemi = 1;		// empty ';' statements are allowed
+	public final static int PSscope = 2;	// start a new scope
+	public final static int PScurly = 4;	// { } statement is required
+	public final static int PScurlyscope = 8;	// { } starts a new scope
 
 	private Module module;
 	private ModuleDeclaration md;

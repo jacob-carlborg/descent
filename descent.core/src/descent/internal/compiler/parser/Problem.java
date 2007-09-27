@@ -443,6 +443,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolNotAStaticAndCannotHaveStaticInitializer, arguments[0]);
 		case SymbolNotAType:
 			return String.format(ProblemMessages.SymbolNotAType, arguments[0]);
+		case IncompleteMixinDeclaration:
+			return String.format(ProblemMessages.IncompleteMixinDeclaration, arguments[0]);
 		default:
 			return "";
 		}

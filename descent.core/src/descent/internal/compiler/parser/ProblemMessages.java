@@ -184,6 +184,7 @@ final class ProblemMessages extends NLS {
 	public static String TooManyInitializers;
 	public static String SymbolNotAStaticAndCannotHaveStaticInitializer;
 	public static String SymbolNotAType;
+	public static String IncompleteMixinDeclaration;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

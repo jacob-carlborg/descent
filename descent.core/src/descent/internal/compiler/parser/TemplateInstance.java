@@ -309,9 +309,9 @@ public class TemplateInstance extends ScopeDsymbol {
 					}
 				}
 			} else if (ea != null) {
-				sinteger_t v;
-				real_t r;
-				char p;
+//				sinteger_t v;
+//				real_t r;
+//				char p;
 
 				if (ea.op == TOKvar) {
 					sa = ((VarExp) ea).var;

@@ -382,5 +382,6 @@ public interface IProblem {
 	int TooManyInitializers = 172;
 	int SymbolNotAStaticAndCannotHaveStaticInitializer = 173;
 	int SymbolNotAType = 174;
+	int IncompleteMixinDeclaration = 175;
 
 }

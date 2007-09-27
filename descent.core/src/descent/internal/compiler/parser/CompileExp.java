@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.TOK.TOKeof;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -41,8 +42,19 @@ public class CompileExp extends UnaExp {
 		Parser p = new Parser(context.apiLevel, se.string);
 		p.loc = loc;
 		Expression e = p.parseExpression();
+		
+		// TODO semantic do this better
+		if (p.problems != null) {
+			for (int i = 0; i < p.problems.size(); i++) {
+				Problem problem = (Problem) p.problems.get(i);
+				problem.setSourceStart(start);
+				problem.setSourceEnd(start + length - 1);
+				context.acceptProblem(problem);
+			}
+		}
+		
 		if (p.token.value != TOKeof) {
-			error("incomplete mixin expression (%s)", se.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompleteMixinDeclaration, 0, start, length, new String[] { se.toChars(context) }));
 		}
 		return e.semantic(sc, context);
 	}

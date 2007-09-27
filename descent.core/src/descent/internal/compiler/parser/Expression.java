@@ -474,7 +474,6 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return real_t.ZERO;
 	}
 
-	// TODO semantic should return uinteger_t
 	public integer_t toUInteger(SemanticContext context) {
 		return toInteger(context);
 	}

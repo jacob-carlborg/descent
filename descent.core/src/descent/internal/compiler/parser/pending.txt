@@ -2,16 +2,12 @@ ASTDmdNode.java
 BinExp.java
 Chars.java
 ClassDeclaration.java
-CompileDeclaration.java
-CompileStatement.java
 complex_t.java
 ComplexExp.java
 Declaration.java
 Dsymbol.java
 DsymbolTable.java
 ForeachRangeStatement.java
-ForeachStatement.java
-ForStatement.java
 Global.java
 HdrGenState.java
 Id.java

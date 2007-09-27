@@ -520,7 +520,9 @@ SymbolNotAStaticAndCannotHaveStaticInitializer
 SymbolNotAType
 	formatString=%1$s is not a type
 	numArgs=1
-
+IncompleteMixinDeclaration
+	formatString=incomplete mixin declaration (%1$s)
+	numArgs=1
 	
 	
 	

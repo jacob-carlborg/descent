@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.ArrayLength;
+import static descent.internal.compiler.parser.Constfold.Index;
 
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCforeach;
@@ -47,23 +49,23 @@ public class ForeachStatement extends Statement {
 	private final static char[] _aaApply2 = { '_', 'a', 'a', 'A', 'p', 'p',
 			'l', 'y', '2' };
 
+	public final static String[] fntab = { "cc", "cw", "cd", "wc", "cc", "wd",
+			"dc", "dw", "dd" };
 	public TOK op;
 	public Arguments arguments;
 	public Expression aggr;
+
 	public Expression sourceAggr;
 
 	public Statement body;
-
 	public VarDeclaration key;
+
 	public VarDeclaration value;
 
 	public FuncDeclaration func; // function we're lexically in
-
 	public List cases; // put breaks, continues, gotos and returns here
-	public List gotos; // forward referenced goto's go here
 
-	public final static String[] fntab = { "cc", "cw", "cd", "wc", "cc", "wd",
-			"dc", "dw", "dd" };
+	public List gotos; // forward referenced goto's go here
 
 	public ForeachStatement(Loc loc, TOK op, Arguments arguments,
 			Expression aggr, Statement body) {
@@ -84,6 +86,138 @@ public class ForeachStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public boolean comeFrom() {
+		if (body != null) {
+			return body.comeFrom();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean fallOffEnd(SemanticContext context) {
+		if (body != null) {
+			body.fallOffEnd(context);
+		}
+		return true;
+	}
+
+	@Override
+	public int getNodeType() {
+		return FOREACH_STATEMENT;
+	}
+
+	@Override
+	public boolean hasBreak() {
+		return true;
+	}
+
+	@Override
+	public boolean hasContinue() {
+		return true;
+	}
+
+	@Override
+	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
+		aggr = aggr.inlineScan(iss, context);
+		body = body.inlineScan(iss, context);
+		return this;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		if (istate.start == this) {
+			istate.start = null;
+		}
+		if (istate.start != null) {
+			return null;
+		}
+
+		Expression e = null;
+		Expression eaggr;
+
+		if (value.isOut() || value.isRef()) {
+			return EXP_CANT_INTERPRET;
+		}
+
+		eaggr = aggr.interpret(istate, context);
+		if (eaggr == EXP_CANT_INTERPRET) {
+			return EXP_CANT_INTERPRET;
+		}
+
+		Expression dim = ArrayLength.call(Type.tsize_t, eaggr, context);
+		if (dim == EXP_CANT_INTERPRET) {
+			return EXP_CANT_INTERPRET;
+		}
+
+		Expression keysave = key != null ? key.value : null;
+		Expression valuesave = value.value;
+
+		integer_t d = dim.toUInteger(context);
+		integer_t index;
+
+		if (op == TOKforeach) {
+			for (index = integer_t.ZERO; index.compareTo(d) < 0; index = index
+					.add(1)) {
+				Expression ekey = new IntegerExp(loc, index, Type.tsize_t);
+				if (key != null) {
+					key.value = ekey;
+				}
+				e = Index.call(value.type, eaggr, ekey, context);
+				if (e == EXP_CANT_INTERPRET) {
+					break;
+				}
+				value.value = e;
+
+				e = body != null ? body.interpret(istate, context) : null;
+				if (e == EXP_CANT_INTERPRET) {
+					break;
+				}
+				if (e == EXP_BREAK_INTERPRET) {
+					e = null;
+					break;
+				}
+				if (e == EXP_CONTINUE_INTERPRET) {
+					e = null;
+				} else if (e != null) {
+					break;
+				}
+			}
+		} else // TOKforeach_reverse
+		{
+			for (index = d; !(index = index.subtract(1)).equals(0);) {
+				Expression ekey = new IntegerExp(loc, index, Type.tsize_t);
+				if (key != null) {
+					key.value = ekey;
+				}
+				e = Index.call(value.type, eaggr, ekey, context);
+				if (e == EXP_CANT_INTERPRET) {
+					break;
+				}
+				value.value = e;
+
+				e = body != null ? body.interpret(istate, context) : null;
+				if (e == EXP_CANT_INTERPRET) {
+					break;
+				}
+				if (e == EXP_BREAK_INTERPRET) {
+					e = null;
+					break;
+				}
+				if (e == EXP_CONTINUE_INTERPRET) {
+					e = null;
+				} else if (e != null) {
+					break;
+				}
+			}
+		}
+		value.value = valuesave;
+		if (key != null) {
+			key.value = keysave;
+		}
+		return e;
 	}
 
 	@Override
@@ -115,7 +249,6 @@ public class ForeachStatement extends Statement {
 		 * Check for inference errors
 		 */
 		if (dim != arguments.size()) {
-			// printf("dim = %d, arguments.dim = %d\n", dim, arguments.dim);
 			error("cannot uniquely infer foreach argument types");
 			return this;
 		}
@@ -417,7 +550,7 @@ public class ForeachStatement extends Statement {
 			for (int j = 0; j < gotos.size(); j++) {
 				CompoundStatement cs = (CompoundStatement) gotos.get(j);
 				GotoStatement gs = (GotoStatement) cs.statements.get(0);
-	
+
 				if (gs.label.statement == null) { // 'Promote' it to this scope, and replace with a return
 					cases.add(gs);
 					s[0] = new ReturnStatement(loc, new IntegerExp(loc, cases
@@ -432,7 +565,9 @@ public class ForeachStatement extends Statement {
 			Argument arg = arguments.get(0);
 			if (dim == 2) {
 				if ((arg.storageClass & STCref) != 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachIndexCannotBeRef, 0, arg.start, arg.length));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ForeachIndexCannotBeRef, 0, arg.start,
+							arg.length));
 				}
 				if (!arg.type.equals(taa.index)) {
 					error("foreach: index must be type %s, not %s", taa.index
@@ -563,8 +698,12 @@ public class ForeachStatement extends Statement {
 	}
 
 	@Override
-	public int getNodeType() {
-		return FOREACH_STATEMENT;
+	public Statement syntaxCopy() {
+		Arguments args = Argument.arraySyntaxCopy(arguments);
+		Expression exp = aggr.syntaxCopy();
+		ForeachStatement s = new ForeachStatement(loc, op, args, exp,
+				body != null ? body.syntaxCopy() : null);
+		return s;
 	}
 
 	@Override
@@ -602,32 +741,8 @@ public class ForeachStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		aggr = aggr.inlineScan(iss, context);
-		body = body.inlineScan(iss, context);
-		return this;
-	}
-
-	@Override
-	public boolean comeFrom() {
-		if (body != null)
-			return body.comeFrom();
-		return false;
-	}
-
-	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null)
-			body.fallOffEnd(context);
-		return true;
-	}
-	
-	@Override
-	public Statement syntaxCopy() {
-		Arguments args = Argument.arraySyntaxCopy(arguments);
-	    Expression exp = aggr.syntaxCopy();
-	    ForeachStatement s = new ForeachStatement(loc, op, args, exp, body != null ? body.syntaxCopy() : null);
-	    return s;
+	public boolean usesEH() {
+		return body.usesEH();
 	}
 
 }

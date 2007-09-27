@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 // DMD 1.020
+// This is also an alias of uinteger_t, as defined by DMD
 public class integer_t extends Number {
 	
 	private final static long INT_UPPER = 0xFFFFFFFFL + 1;
@@ -543,7 +544,6 @@ public class integer_t extends Number {
 	
 	private static BigInteger toBigInteger(long value) {
 		return BigInteger.valueOf(value);
-	}
-	
+	}	
 
 }

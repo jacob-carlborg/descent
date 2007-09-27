@@ -34,6 +34,7 @@ public class ComplexExp extends Expression {
 
 	@Override
 	public integer_t toInteger(SemanticContext context) {
+		// TODO missing a cast to sinteger_t, check original source
 		return toReal(context).to_integer_t();
 	}
 

@@ -3,8 +3,6 @@ package descent.internal.compiler.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.eclipse.core.runtime.Assert;
-
 // DMD 1.020
 public class real_t implements Comparable {
 	

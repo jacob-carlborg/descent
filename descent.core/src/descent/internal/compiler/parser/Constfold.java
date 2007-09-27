@@ -525,6 +525,7 @@ public class Constfold
 			}
 			else
 			{
+				// TODO: this is sinteger_t in DMD, and I think in Java it is a long
 				integer_t n1;
 				integer_t n2;
 				integer_t n;
@@ -591,6 +592,7 @@ public class Constfold
 			}
 			else
 			{
+				// TODO: this is sinteger_t in DMD, and I think in Java it is a long
 				integer_t n1;
 				integer_t n2;
 				integer_t n;
@@ -1369,6 +1371,7 @@ public class Constfold
 			}
 			else
 			{
+				// TODO: this is sinteger_t in DMD, and I think in Java it is a long
 				integer_t n1;
 				integer_t n2;
 				

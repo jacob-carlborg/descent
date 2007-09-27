@@ -104,6 +104,8 @@ public class RealExp extends Expression {
 
 	@Override
 	public integer_t toInteger(SemanticContext context) {
+		// TODO the correct implementation is in the next line:
+		// return (sinteger_t) toReal();
 		return value.to_integer_t();
 	}
 

@@ -544,7 +544,7 @@ public class Lexer implements IProblemRequestor {
 					c = escapeSequence();
 					stringbuffer.writeUTF8(c);
 				} while (input[p] == '\\');
-				stringbuffer.writeByte(0);
+				//stringbuffer.writeByte(0);
 				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
 				t.postfix = 0;
 				t.value = TOKstring;
@@ -4099,7 +4099,7 @@ public class Lexer implements IProblemRequestor {
 			case '`':
 				if (c == tc) {
 					t.len = stringbuffer.offset();
-					stringbuffer.writeByte(0);
+					//stringbuffer.writeByte(0);
 					stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
 					stringPostfix(t);
 					return TOKstring;
@@ -4166,7 +4166,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				
 				t.len = stringbuffer.offset();
-				stringbuffer.writeByte(0);
+				//stringbuffer.writeByte(0);
 				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
 				
 				stringPostfix(t);
@@ -4243,7 +4243,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '"':
 				t.len = stringbuffer.offset();
-				stringbuffer.writeByte(0);
+				//stringbuffer.writeByte(0);
 				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
 				
 				stringPostfix(t);

@@ -279,6 +279,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					maxval = number;
 				}
 			} else {
+				// TODO a cast to sinteger_t is missing (I think long in Java)
 				if (number.compareTo(minval) < 0) {
 					minval = number;
 				}
