@@ -244,8 +244,8 @@ public class TypeFunction extends Type {
 				}
 				if ((arg.storageClass & STClazy) == 0 && t.ty == Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotHaveParameterOfTypeVoid, 0, t.start,
-							t.length));
+							IProblem.CannotHaveParameterOfTypeVoid, 0, arg.sourceType.start,
+							arg.sourceType.length));
 				}
 
 				if (arg.defaultArg != null) {

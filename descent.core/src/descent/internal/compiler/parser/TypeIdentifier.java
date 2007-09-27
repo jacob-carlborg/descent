@@ -101,10 +101,7 @@ public class TypeIdentifier extends TypeQualified {
 						this.ident.length, new String[] { new String(
 								this.ident.ident) }));
 			}
-			// TODO see if this change is ok, I change it to error to get
-			// just one error on things like "Clazz x;" where "Clazz is not defined".
-			// (otherwise I get "voids have no value" also).
-			t[0] = terror;
+			t[0] = tvoid;
 		}
 		return t[0];
 	}
