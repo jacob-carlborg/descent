@@ -15,14 +15,14 @@ import descent.debug.core.model.IDebugElementFactory;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.model.IDebuggerListener;
 
-public class SingleThreadCli implements IDebugger {
+public class SingleThreadDebugger implements IDebugger {
 	
 	private final IDebugger fDebugger;
 	private ReentrantLock fReadOutLock;
 	private ReentrantLock fReadErrorLock;
 	private ReentrantLock fWriteLock;
 
-	public SingleThreadCli(IDebugger debugger) {
+	public SingleThreadDebugger(IDebugger debugger) {
 		this.fDebugger = debugger;
 		this.fReadOutLock = new ReentrantLock(true);
 		this.fReadErrorLock = new ReentrantLock(true);

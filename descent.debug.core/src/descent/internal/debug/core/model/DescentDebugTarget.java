@@ -63,7 +63,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		this.fEndCommunicationString = fDebugger.getEndCommunicationString().trim();
 		
 		// Force sending one request at a time
-		this.fDebugger = new SingleThreadCli(this.fDebugger);
+		this.fDebugger = new SingleThreadDebugger(this.fDebugger);
 		
 		IPreferenceStore preferenceStore = DescentDebugPlugin.getDefault().getPreferenceStore();
 		int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DEBUGGER_TIMEOUT);

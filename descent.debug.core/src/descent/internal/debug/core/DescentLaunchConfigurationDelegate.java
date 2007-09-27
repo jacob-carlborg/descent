@@ -16,11 +16,15 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStatusHandler;
+import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import descent.debug.core.AbstractDescentLaunchConfigurationDelegate;
 import descent.debug.core.DescentDebugPlugin;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
+import descent.debug.core.IDescentLaunchingPreferenceConstants;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.utils.ArgumentUtils;
 import descent.debug.core.utils.ProcessFactory;
@@ -53,7 +57,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			}
 			
 			if (mode.equals(ILaunchManager.DEBUG_MODE)) {
-				IDebugger debugger = verifyDebugger();
+				final IDebugger debugger = verifyDebugger();
 				
 				String debuggerPath = verifyDebuggerPath();
 				
@@ -72,7 +76,33 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				Process process = exec(commandArray, getEnvironment(config), wd);
 				monitor.worked(3);
 				
-				IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
+				// Launch the process but wait until the first end communication string
+				// to proceed with the real launching
+				final IPreferenceStore preferenceStore = DescentDebugPlugin.getDefault().getPreferenceStore();
+				final int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DEBUGGER_TIMEOUT);
+				final Object lock = new Object();
+				final IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
+				iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
+
+					public void streamAppended(String text, IStreamMonitor monitor) {
+						if (text.trim().equals(debugger.getEndCommunicationString())) {
+							iprocess.getStreamsProxy().getOutputStreamMonitor().removeListener(this);
+							synchronized(lock) {
+								lock.notify();
+							}
+						}
+					}
+					
+				});
+				
+				synchronized(lock) {
+					try {
+						lock.wait(timeout);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess, debugger);		
 				launch.addDebugTarget(target);
 				
