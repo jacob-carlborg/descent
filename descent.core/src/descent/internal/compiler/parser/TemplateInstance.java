@@ -174,8 +174,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 
 		if (null == td_best) {
-			error("%s does not match any template declaration",
-					toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, 0, start, length, new String[] { toChars(context) }));
 			return null;
 		}
 		if (td_ambig != null) {
@@ -248,8 +247,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					Dsymbol s2 = s.getType().toDsymbol(sc, context);
 					if(null == s2)
 					{
-						error("%s is not a template declaration, it is a %s",
-								id.toChars(), s.kind());
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplateItIs, 0, id.start, id.length, new String[] { id.toChars(), s.kind() }));
 						return null;
 					}
 					s = s2;
@@ -272,8 +270,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				}
 				else
 				{
-					error("%s is not a template declaration, it is a %s", id
-							.toChars(), s.kind());
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplateItIs, 0, id.start, id.length, new String[] { id.toChars(), s.kind() }));
 					return null;
 				}
 			}
@@ -917,8 +914,8 @@ public class TemplateInstance extends ScopeDsymbol {
 					}
 				} else {
 					if (context.global.errors == 0) {
-						throw new IllegalStateException(
-								"assert(context.global.errors);");
+						// TODO 
+						// throw new IllegalStateException("assert(context.global.errors);");
 					}
 					tiargs.set(j, Type.terror);
 				}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
@@ -148,7 +149,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (null == td_best) {
-			error("does not match any template declaration");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, 0, start, length, new String[] { toChars(context) }));
 			Lerror(fargs, context);
 		}
 		if (null != td_ambig) {

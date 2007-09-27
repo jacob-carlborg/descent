@@ -1192,8 +1192,8 @@ public class ASTConverter {
 				b.setComponentType(convertedType);
 			}
 		}
-		if (a.dim != null) {
-			descent.core.dom.Expression convertion = convert(a.dim);
+		if (a.sourceDim != null) {
+			descent.core.dom.Expression convertion = convert(a.sourceDim);
 			if (convertion != null) {
 				b.setSize(convertion);
 			}

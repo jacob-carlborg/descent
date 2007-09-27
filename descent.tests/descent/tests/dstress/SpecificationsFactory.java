@@ -1,14 +1,23 @@
 package descent.tests.dstress;
 
+import descent.internal.compiler.parser.Module;
+
 /**
  * Factory for specifications.
  */
 public class SpecificationsFactory {
 	
-	/**
-	 * A specification that passes when no problem is found
-	 * in the module.
-	 */
+	public static ISpecification TODO(final int apiLevel) {
+		return new ISpecification() {
+			public int getApiLevel() {
+				return apiLevel;
+			}
+			public void validate(char[] source, Module module) throws Exception {
+			}
+		};
+	}
+	
+	
 	public static ISpecification zero(int apiLevel) {
 		return new NoProblemsSpecification(apiLevel);
 	}

@@ -46,7 +46,7 @@ public class ProblemsWithSubstringSpecification implements ISpecification {
 			}
 		
 			if (problem.getSourceEnd() != index + substring.length() - 1) {
-				throw new Exception("Problem number " + i + " expected to have length " + (index + substring.length() - 1) + " but was " + (problem.getSourceEnd() - problem.getSourceStart()));
+				throw new Exception("Problem number " + i + " expected to have length " + substring.length() + " but was " + (problem.getSourceEnd() - problem.getSourceStart() + 1));
 			}
 		}
 	}

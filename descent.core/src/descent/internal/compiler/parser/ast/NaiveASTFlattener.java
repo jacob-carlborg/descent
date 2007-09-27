@@ -2740,7 +2740,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		startModifiedType(node);
 		node.sourceNext.accept(this);
 		this.buffer.append("[");
-		node.dim.accept(this);
+		node.sourceDim.accept(this);
 		this.buffer.append("]");
 		endModifiedType(node);
 		return false;

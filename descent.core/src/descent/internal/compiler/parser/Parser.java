@@ -2584,7 +2584,7 @@ public class Parser extends Lexer {
 			    Expression e = parseExpression();		// [ expression ]
 			    
 			    ta = new TypeSArray(t, e);
-			    ta.setSourceRange(t.start, token.ptr + token.sourceLen - ta.start);
+			    ta.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    check(TOKrbracket);
 			}
 			

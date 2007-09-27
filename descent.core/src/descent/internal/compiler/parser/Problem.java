@@ -445,6 +445,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolNotAType, arguments[0]);
 		case IncompleteMixinDeclaration:
 			return String.format(ProblemMessages.IncompleteMixinDeclaration, arguments[0]);
+		case SymbolNotATemplateItIs:
+			return String.format(ProblemMessages.SymbolNotATemplateItIs, arguments[0], arguments[1]);
+		case SymbolCannotBeDeclaredToBeAFunction:
+			return String.format(ProblemMessages.SymbolCannotBeDeclaredToBeAFunction, arguments[0]);
+		case CannotHaveArrayOfType:
+			return String.format(ProblemMessages.CannotHaveArrayOfType, arguments[0]);
+		case SymbolDoesNotMatchAnyTemplateDeclaration:
+			return String.format(ProblemMessages.SymbolDoesNotMatchAnyTemplateDeclaration, arguments[0]);
+		case IndexOverflowForStaticArray:
+			return String.format(ProblemMessages.IndexOverflowForStaticArray, arguments[0]);
 		default:
 			return "";
 		}

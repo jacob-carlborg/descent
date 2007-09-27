@@ -265,7 +265,7 @@ public class VarDeclaration extends Declaration {
 			tb = type;
 		}
 		if (tb.ty == TY.Tfunction) {
-			error("cannot be declared to be a function");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCannotBeDeclaredToBeAFunction, 0, ident.start, ident.length, new String[] { toChars(context) }));
 			type = Type.terror;
 			tb = type;
 		}

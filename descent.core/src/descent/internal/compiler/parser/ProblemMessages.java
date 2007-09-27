@@ -185,6 +185,11 @@ final class ProblemMessages extends NLS {
 	public static String SymbolNotAStaticAndCannotHaveStaticInitializer;
 	public static String SymbolNotAType;
 	public static String IncompleteMixinDeclaration;
+	public static String SymbolNotATemplateItIs;
+	public static String SymbolCannotBeDeclaredToBeAFunction;
+	public static String CannotHaveArrayOfType;
+	public static String SymbolDoesNotMatchAnyTemplateDeclaration;
+	public static String IndexOverflowForStaticArray;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

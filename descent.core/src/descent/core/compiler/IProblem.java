@@ -383,5 +383,10 @@ public interface IProblem {
 	int SymbolNotAStaticAndCannotHaveStaticInitializer = 173;
 	int SymbolNotAType = 174;
 	int IncompleteMixinDeclaration = 175;
+	int SymbolNotATemplateItIs = 176;
+	int SymbolCannotBeDeclaredToBeAFunction = 177;
+	int CannotHaveArrayOfType = 178;
+	int SymbolDoesNotMatchAnyTemplateDeclaration = 179;
+	int IndexOverflowForStaticArray = 180;
 
 }

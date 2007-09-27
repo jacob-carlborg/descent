@@ -523,6 +523,21 @@ SymbolNotAType
 IncompleteMixinDeclaration
 	formatString=incomplete mixin declaration (%1$s)
 	numArgs=1
+SymbolNotATemplateItIs
+	formatString=%1$s is not a template, it is %2$s
+	numArgs=2
+SymbolCannotBeDeclaredToBeAFunction
+	formatString=%1$s cannot be declared to be a function
+	numArgs=1
+CannotHaveArrayOfType	
+	formatString=Cannot have array of %1$s
+	numArgs=1
+SymbolDoesNotMatchAnyTemplateDeclaration
+	formatString=%1$s does not match any template declaration
+	numArgs=1
+IndexOverflowForStaticArray
+	formatString=Index %1$s overflow for static array
+	numArgs=1
 	
 	
 	
