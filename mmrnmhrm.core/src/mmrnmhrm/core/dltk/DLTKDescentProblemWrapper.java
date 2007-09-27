@@ -31,7 +31,6 @@ final class DLTKDescentProblemWrapper implements
 
 	//@Override
 	public String getOriginatingFileName() {
-		//XXX: shouldn't we return something valid?
 		return new String(problem.getOriginatingFileName());
 	}
 

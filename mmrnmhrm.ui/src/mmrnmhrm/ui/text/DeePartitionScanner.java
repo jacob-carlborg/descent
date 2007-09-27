@@ -21,20 +21,24 @@ public class DeePartitionScanner extends RuleBasedPartitionScanner {
 		super();
 		
 		IToken tkString = new Token(DeePartitions.DEE_STRING);
-		IToken tkComment = new Token(DeePartitions.DEE_COMMENT);
-		IToken tkDocComment = new Token(DeePartitions.DEE_DOCCOMMENT);
+		IToken tkSingleComment = new Token(DeePartitions.DEE_SINGLE_COMMENT);
+		IToken tkSingleDocComment = new Token(DeePartitions.DEE_SINGLE_DOCCOMMENT);
+		IToken tkMultiComment = new Token(DeePartitions.DEE_MULTI_COMMENT);
+		IToken tkMultiDocComment = new Token(DeePartitions.DEE_MULTI_DOCCOMMENT);
+		IToken tkNestedComment = new Token(DeePartitions.DEE_NESTED_COMMENT);
+		IToken tkNestedDocComment = new Token(DeePartitions.DEE_NESTED_DOCCOMMENT);
 		
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
 		rules.add(new SingleLineRule("\"", "\"", tkString, '\\'));
 
 		// FIXME: nesting
-		rules.add(new MultiLineRule("/++", "+/", tkDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		rules.add(new MultiLineRule("/+", "+/", tkComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		rules.add(new MultiLineRule("/**", "*/", tkDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new MultiLineRule("/*", "*/", tkComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
+		rules.add(new MultiLineRule("/++", "+/", tkNestedDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		rules.add(new MultiLineRule("/+", "+/", tkNestedComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		rules.add(new MultiLineRule("/**", "*/", tkMultiDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
+		rules.add(new MultiLineRule("/*", "*/", tkMultiComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		rules.add(new EndOfLineRule("///", tkDocComment)); //$NON-NLS-1$ 
-		rules.add(new EndOfLineRule("//", tkComment)); //$NON-NLS-1$
+		rules.add(new EndOfLineRule("///", tkSingleDocComment)); //$NON-NLS-1$ 
+		rules.add(new EndOfLineRule("//", tkSingleComment)); //$NON-NLS-1$
 		
 		rules.add(new SingleLineRule("\"", "\"", tkString, '\\'));
 

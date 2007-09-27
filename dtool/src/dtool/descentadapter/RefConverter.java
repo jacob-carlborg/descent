@@ -10,7 +10,6 @@ import descent.internal.compiler.parser.TypeInstance;
 import dtool.ast.expressions.ExpReference;
 import dtool.ast.references.RefIdentifier;
 import dtool.ast.references.RefTypeSlice;
-import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.ast.references.TypeDelegate;
 import dtool.ast.references.TypeDynArray;
@@ -18,7 +17,6 @@ import dtool.ast.references.TypeFunction;
 import dtool.ast.references.TypeMapArray;
 import dtool.ast.references.TypePointer;
 import dtool.ast.references.TypeStaticArray;
-import dtool.ast.references.TypeTypeof;
 
 /**
  * This class is a mixin. 
@@ -68,8 +66,7 @@ abstract class RefConverter extends CoreConverter {
 	}
 	
 	public boolean visit(descent.internal.compiler.parser.TypeIdentifier elem) {
-		Reference rootent = ReferenceConverter.convertTypeIdentifier_ToRoot(elem);
-		return endAdapt(ReferenceConverter.convertTypeQualified(rootent, elem));
+		return endAdapt(ReferenceConverter.convertTypeIdentifier(elem));
 	}
 
 	public boolean visit(TypeInstance elem) {
@@ -77,8 +74,7 @@ abstract class RefConverter extends CoreConverter {
 	}
 	
 	public boolean visit(descent.internal.compiler.parser.TypeTypeof elem) {
-		Reference rootent = new TypeTypeof(elem);
-		return endAdapt(ReferenceConverter.convertTypeQualified(rootent, elem));
+		return endAdapt(ReferenceConverter.convertTypeTypeOf(elem));
 	}
 
 	

@@ -30,7 +30,7 @@ public class DialogComposite extends Composite {
 		SWTUtilExt.setRandomColor(this);
 		
 		if(parent.getLayout() instanceof GridLayout) {
-			setLayoutData(LayoutUtil.createDefaultGridData());
+			setLayoutData(SWTLayoutUtil.createDefaultGridData());
 		}
 	}
 

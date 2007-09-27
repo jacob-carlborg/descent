@@ -49,6 +49,7 @@ typeof(typeof(.xpto).foo.bar!(12))			dummy;
 // qualified ref 2 elements
 foo.qref			dummy;
 foo!(42).qref		dummy;
+.foo!(42).qref		dummy;
 typeof(foo).qref	dummy;
 .foo.qref			dummy;
 xpto.foo.qref		dummy;
@@ -126,6 +127,7 @@ void func() {
 	// qualified ref 2 elements
 	foo.qref			++;
 	foo!(42).qref		++;
+	.foo!(42).qref		++;
 	typeof(foo).qref	++;
 	.foo.qref			++;
 	xpto.foo.qref		++;

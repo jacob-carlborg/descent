@@ -7,12 +7,12 @@ import java.util.List;
 
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.StringUtil;
-import mmrnmhrm.core.build.BudDeeModuleCompiler;
+import mmrnmhrm.core.build.DeeBuilder;
 import mmrnmhrm.core.launch.DeeLaunchConfigurationDelegate;
 import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.core.model.DeeProjectOptions;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.debug.ui.launchConfigurations.ScriptArgumentsTab;
@@ -34,9 +34,11 @@ final class DeeScriptArgumentsTab extends ScriptArgumentsTab {
 				// TO DO: check the exception
 				throw ExceptionAdapter.unchecked(e);
 			}
-			DeeProjectOptions deeProjectInfo = DeeModel.getDeeProjectInfo(deeProj);
-			List<String> cmdLine = BudDeeModuleCompiler.createCommandLine(
-					null, deeProj, deeProjectInfo.compilerOptions);
+			
+			List<String> cmdLine = DeeBuilder.getDemoCmdLine(deeProj,
+					DeeModel.getDeeProjectInfo(deeProj),
+					new NullProgressMonitor());
+			
 			fInterpreterArgumentsText.setText(
 					StringUtil.collToString(cmdLine, " "));
 

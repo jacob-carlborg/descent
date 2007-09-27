@@ -9,8 +9,9 @@ import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.ProjectContainerSelectionDialog;
 import melnorme.util.ui.fields.SelectionComboDialogField;
 import melnorme.util.ui.fields.StringDialogField;
-import melnorme.util.ui.swt.LayoutUtil;
-import mmrnmhrm.core.build.BudDeeModuleCompiler;
+import melnorme.util.ui.swt.SWTLayoutUtil;
+import melnorme.util.ui.swt.RowComposite;
+import mmrnmhrm.core.build.DeeBuilder;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProjectOptions;
@@ -21,6 +22,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.core.IScriptProject;
@@ -35,8 +37,8 @@ import org.eclipse.swt.widgets.Shell;
 
 public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	
-	DeeProjectOptions fDeeProjInfo;
-	DeeCompilerOptions overlayOptions;
+	DeeProjectOptions fDeeProjOptions;
+	DeeProjectOptions fOverlayOptions;
 
 	
 	protected SelectionComboDialogField<DeeCompilerOptions.EBuildTypes> fBuildType;
@@ -67,13 +69,13 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 			//@Override
 			public void changeControlPressed(DialogField field) {
 				ProjectContainerSelectionDialog containerDialog;
-				containerDialog	= new ProjectContainerSelectionDialog(getShell(), fDeeProjInfo.getProject());
+				containerDialog	= new ProjectContainerSelectionDialog(getShell(), fDeeProjOptions.getProject());
 				containerDialog.dialog.setTitle("Folder Selection"); 
 				containerDialog.dialog.setMessage("Choose the output location folder.");
 
 				IResource initSelection = null;
 				if (fOutputDir != null) {
-					initSelection = fDeeProjInfo.getProject().findMember(new Path(fOutputDir.getText()));
+					initSelection = fDeeProjOptions.getProject().findMember(new Path(fOutputDir.getText()));
 					containerDialog.dialog.setInitialSelection(initSelection);
 				}
 
@@ -114,14 +116,15 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		fExtraOptions.setLabelText("Extra Compiler Options (newline separated):");
 		fExtraOptions.setDialogFieldListener(this);
 
-		fOptionsPreview = new StringDialogField(SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+		fOptionsPreview = new StringDialogField(SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
 		fOptionsPreview.setLabelText("Compiler Options Preview:");
+		
 	}
 	
 	protected void internalInit(DeeProjectOptions projectInfo) {
 		assertNotNull(projectInfo);
-		fDeeProjInfo = projectInfo;
-		overlayOptions = fDeeProjInfo.compilerOptions.clone();
+		fDeeProjOptions = projectInfo;
+		fOverlayOptions = fDeeProjOptions.clone();
 		updateView();
 	}
 	
@@ -133,40 +136,50 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	public Composite createControl(Composite parent) {
 		Composite content = parent;
 		shell = parent.getShell();
-		Composite comp;
+		content = new RowComposite(parent);
+		
+		RowComposite rowComposite = new RowComposite(content);
+		SWTLayoutUtil.setWidthHint(rowComposite, 200);
+		SWTLayoutUtil.enableDiagonalExpand(rowComposite);
 
-		//Composite topcontent = new RowComposite(parent);
-		//LayoutUtil.enableHorizontalGrabbing(topcontent);
+		
+		//LayoutUtil.enableHorizontalGrabbing(content);
 /*		FieldUtil.doDefaultLayout2(topcontent, false, 
 				fArtifactName, fOutputDir, fCompilerTool);
 		LayoutUtil.enableHorizontalGrabbing(fOutputDir.getTextControl(null));
 		LayoutUtil.setHorizontalSpan(fArtifactName.getTextControl(null), 1);
 		*/
+		Composite comp;
 
-		comp = FieldUtil.createCompose(content, false, fBuildType);
+
+		comp = FieldUtil.createCompose(rowComposite, false, fBuildType);
 		//LayoutUtil.setHorizontalSpan(fBuildType.getLabelControl(null), 1);
-		LayoutUtil.setWidthHint(fBuildType.getLabelControl(null), 100);
-		LayoutUtil.setWidthHint(fBuildType.getComboControl(null), 80);
+		SWTLayoutUtil.setWidthHint(fBuildType.getLabelControl(null), 100);
+		SWTLayoutUtil.setWidthHint(fBuildType.getComboControl(null), 80);
 		
-		comp = FieldUtil.createCompose(content, false, fArtifactName);
-		LayoutUtil.setWidthHint(fArtifactName.getLabelControl(null), 100);
-		LayoutUtil.setWidthHint(fArtifactName.getTextControl(null), 120);
-		
-		comp = FieldUtil.createCompose(content, false, fOutputDir);
-		LayoutUtil.setWidthHint(fOutputDir.getLabelControl(null), 100);
-		LayoutUtil.enableHorizontalGrabbing(fOutputDir.getTextControl(null));
+		comp = FieldUtil.createCompose(rowComposite, false, fArtifactName);
+		SWTLayoutUtil.setWidthHint(fArtifactName.getLabelControl(null), 100);
+		SWTLayoutUtil.setWidthHint(fArtifactName.getTextControl(null), 120);
 
-		comp = FieldUtil.createCompose(content, false, fCompilerTool);
-		LayoutUtil.setWidthHint(fCompilerTool.getLabelControl(null), 100);
-		LayoutUtil.enableHorizontalGrabbing(fCompilerTool.getTextControl(null));
-
-		comp = FieldUtil.createCompose(content, true, fExtraOptions);
-		LayoutUtil.enableDiagonalExpand(comp);
-		LayoutUtil.enableDiagonalExpand(fExtraOptions.getTextControl(null));
 		
-		comp = FieldUtil.createCompose(content, true, fOptionsPreview);
-		LayoutUtil.enableDiagonalExpand(comp);
-		LayoutUtil.enableDiagonalExpand(fOptionsPreview.getTextControl(null));
+		comp = FieldUtil.createCompose(rowComposite, false, fOutputDir);
+		SWTLayoutUtil.setWidthHint(fOutputDir.getLabelControl(null), 100);
+		SWTLayoutUtil.enableHorizontalGrabbing(fOutputDir.getTextControl(null));
+
+		
+		comp = FieldUtil.createCompose(rowComposite, false, fCompilerTool);
+		SWTLayoutUtil.setWidthHint(fCompilerTool.getLabelControl(null), 100);
+		SWTLayoutUtil.enableHorizontalGrabbing(fCompilerTool.getTextControl(null));
+
+		
+		comp = FieldUtil.createCompose(rowComposite, true, fExtraOptions);
+		SWTLayoutUtil.enableDiagonalExpand(comp);
+		SWTLayoutUtil.enableDiagonalExpand(fExtraOptions.getTextControl(null));
+
+		comp = FieldUtil.createCompose(rowComposite, true, fOptionsPreview);
+		SWTLayoutUtil.enableDiagonalExpand(comp);
+		SWTLayoutUtil.enableDiagonalExpand(fOptionsPreview.getTextControl(null));
+
 		return content;
 	}
 
@@ -175,7 +188,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	}
 	
 	private void updateView() {
-		DeeCompilerOptions options = overlayOptions;
+		DeeCompilerOptions options = fOverlayOptions.compilerOptions;
 		fBuildType.setTextWithoutUpdate(options.buildType.toString());
 		fArtifactName.setTextWithoutUpdate(options.artifactName);
 		fOutputDir.setTextWithoutUpdate(options.outputDir.toString());
@@ -187,7 +200,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	
 	//@Override
 	public void dialogFieldChanged(DialogField field) {
-		DeeCompilerOptions options = overlayOptions;
+		DeeCompilerOptions options = fOverlayOptions.compilerOptions;
 		options.buildType = fBuildType.getSelectedObject();
 		options.artifactName = fArtifactName.getText();
 		options.outputDir = new Path(fOutputDir.getText());
@@ -198,16 +211,16 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	}
 
 	private void updateBuildPreview(DeeCompilerOptions options) {
-		List<String> text =	BudDeeModuleCompiler.createCommandLine(
-				null, fDeeProjInfo.dltkProj, options);
-		fOptionsPreview.setText(StringUtil.collToString(text, "  "));
+		List<String> cmdLine = DeeBuilder.getDemoCmdLine(fDeeProjOptions.dltkProj,
+				fOverlayOptions, new NullProgressMonitor());
+		fOptionsPreview.setText(StringUtil.collToString(cmdLine, "  "));
 	}
 
 	public boolean performOk() {
 		return OperationsManager.executeOperation(new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				fDeeProjInfo.compilerOptions = overlayOptions;
-				fDeeProjInfo.saveProjectConfigFile();
+				fDeeProjOptions.compilerOptions = fOverlayOptions.compilerOptions;
+				fDeeProjOptions.saveProjectConfigFile();
 			}
 		}, "Saving Project Compile Option");
 	}

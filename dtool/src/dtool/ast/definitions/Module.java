@@ -23,8 +23,9 @@ import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 /**
- * D Module
- * XXX: What to do when the module name is not defined? Infer from module unit?
+ * D Module.
+ * Uses the fake name "<undefined>" when a module name is not defined.
+ * XXX: Should we infer the module name from the module unit instead?
  */
 public class Module extends DefUnit implements IScopeNode {
 
@@ -125,7 +126,7 @@ public class Module extends DefUnit implements IScopeNode {
 	}
 	
 	public void setModuleUnit(ISourceModule modUnit) {
-		assertTrue(modUnit.exists());
+		//assertTrue(modUnit.exists());
 		if(this.moduleUnit != null)
 			assertTrue(this.moduleUnit.equals(modUnit));
 		this.moduleUnit = modUnit;

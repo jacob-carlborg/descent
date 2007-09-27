@@ -67,5 +67,9 @@ public class Convertion_MiscTest {
 		ConvertionCommonTest.testConversionFromFile("refs.d");
 	}
 
+	@Test
+	public void testDeclAttrib() throws IOException, CoreException {
+		ConvertionCommonTest.testConversionFromFile("declAttrib.d");
+	}
 
 }

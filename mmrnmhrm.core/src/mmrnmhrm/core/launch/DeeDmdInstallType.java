@@ -127,6 +127,7 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
 		try {
+			// FIXME: when used code
 			is.close(); is.close();
 			isr.close(); isr.close();
 			br.close(); br.close();

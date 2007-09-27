@@ -18,13 +18,15 @@ public class DeclarationPragma extends DeclarationAttrib implements IStatement {
 	public DeclarationPragma(PragmaDeclaration elem) {
 		super(elem, elem.decl);
 		this.ident = new Symbol(elem.ident);
-		this.expressions = Expression.convertMany(elem.args);
+		if(elem.args != null)
+			this.expressions = Expression.convertMany(elem.args);
 	}
 	
 	public DeclarationPragma(PragmaStatement elem) {
 		super(elem, elem.body);
 		this.ident = new Symbol(elem.ident);
-		this.expressions = Expression.convertMany(elem.args);
+		if(elem.args != null)
+			this.expressions = Expression.convertMany(elem.args);
 	}
 
 
@@ -34,7 +36,7 @@ public class DeclarationPragma extends DeclarationAttrib implements IStatement {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, expressions);
-			TreeVisitor.acceptChildren(visitor, body.nodes);
+			TreeVisitor.acceptChildren(visitor, NodeList.getNodes(body));
 		}
 		visitor.endVisit(this);
 	}

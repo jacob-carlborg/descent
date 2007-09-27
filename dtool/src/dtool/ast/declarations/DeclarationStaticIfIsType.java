@@ -69,7 +69,7 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 		@Override
 		public void accept0(IASTNeoVisitor visitor) {
 			if (visitor.visit(this)) {
-				TreeVisitor.acceptChildren(visitor, nodelist.nodes);
+				TreeVisitor.acceptChildren(visitor, NodeList.getNodes(nodelist));
 			}
 			visitor.endVisit(this);
 		}
@@ -117,7 +117,7 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 			TreeVisitor.acceptChildren(visitor, defUnit);
 			TreeVisitor.acceptChildren(visitor, specType);
 			TreeVisitor.acceptChildren(visitor, thendeclsScope);
-			TreeVisitor.acceptChildren(visitor, elsedecls.nodes);
+			TreeVisitor.acceptChildren(visitor, NodeList.getNodes(elsedecls));
 		}
 		visitor.endVisit(this);
 	}

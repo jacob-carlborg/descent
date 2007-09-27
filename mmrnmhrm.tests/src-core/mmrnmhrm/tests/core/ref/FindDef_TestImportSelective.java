@@ -19,7 +19,6 @@ public class FindDef_TestImportSelective extends FindDef_CommonImportTest  {
 		staticTestInit(testSrcFile);
 	}
 	
-	// TODO: some test cases are commented due to parser no-source-range bugs
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{

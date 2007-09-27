@@ -29,7 +29,7 @@
          name="Dee Builder"
          point="org.eclipse.core.resources.builders">
       <builder>
-         <run class="mmrnmhrm.core.build.DeeBuilder">
+         <run class="mmrnmhrm.core.build.DeeProjectBuilder">
             <parameter
                   name="comment"
                   value="Builder comment"/>

@@ -1,5 +1,9 @@
 package mmrnmhrm.ui.launch;
 
+import static melnorme.miscutil.Assert.assertFail;
+
+import java.io.IOException;
+
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.util.ui.swt.SWTUtilExt;
 import mmrnmhrm.core.build.IDeeBuilderListener;
@@ -7,13 +11,12 @@ import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+
+import dtool.Logg;
 
 public class DeeBuilderUIListener implements IDeeBuilderListener {
 
@@ -21,22 +24,16 @@ public class DeeBuilderUIListener implements IDeeBuilderListener {
 	
 	private static final String CONSOLE_NAME = "mmrnmhrm Dee Build output:";
 
-	public static MessageConsole getConsole(String name) {
-		ConsolePlugin plugin = ConsolePlugin.getDefault();
-		IConsoleManager conMgr = plugin.getConsoleManager();
-		IConsole[] existing = conMgr.getConsoles();
-		for (int i = 0; i < existing.length; i++)
-			if (name.equals(existing[i].getName()))
-				return (MessageConsole) existing[i];
-		//no console found, so create a new one
-		MessageConsole myConsole = new MessageConsole(name, null);
-		conMgr.addConsoles(new IConsole[]{myConsole});
-		return myConsole;
-	}
-	
+
 	public void clear() {
-		final MessageConsole myConsole = getConsole(CONSOLE_NAME);
+		final MessageConsole myConsole = ConsoleUtil.findConsole(CONSOLE_NAME);
 		myConsole.clearConsole();
+		Logg.main.println("Cleared console");
+		Thread.yield();
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+		}
 	}
 	
 	//@Override
@@ -45,11 +42,19 @@ public class DeeBuilderUIListener implements IDeeBuilderListener {
 
 		// TODO:, listen for different project outputs
 		String name = CONSOLE_NAME;
-		final MessageConsole myConsole = getConsole(name);
-		
+		MessageConsole myConsole =  ConsoleUtil.findConsole(name);
 		MessageConsoleStream out = myConsole.newMessageStream();
+		Logg.main.println("## Writing " + line);
 		out.println(line);
-		//myConsole.activate();
+
+		try {
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			assertFail();
+		}
+		
+		myConsole.activate();
 		if(true) return;
 
 		final String id = IConsoleConstants.ID_CONSOLE_VIEW;

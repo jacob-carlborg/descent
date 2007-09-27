@@ -17,7 +17,7 @@ public class DeeSearchFactory implements ISearchFactory {
 	}
 
 	public DLTKSearchParticipant createSearchParticipant() {
-		return null; // XXX: DTLK: DLTKSearchParticipant?
+		return null; // Use default DLTKSearchParticipant
 	}
 
 	public MatchLocator createMatchLocator(SearchPattern pattern,

@@ -16,32 +16,41 @@ import dtool.descentadapter.DescentASTConverter;
  */
 public class NodeList  {
 	
-	public ASTNeoNode[] nodes;
-	public boolean hasCurlies; // Accurate detection not implement yet
+	public final ASTNeoNode[] nodes;
+	public final boolean hasCurlies; // Accurate detection not implement yet
 
-	private NodeList() {
+	private NodeList(ASTNeoNode[] nodes, boolean hasCurlies) {
+		this.nodes = nodes;
+		this.hasCurlies = hasCurlies;
 	}
 
 	public static NodeList createNodeList(Statement body) {
-		NodeList nodes = new NodeList();
 		if(body instanceof CompoundStatement) {
 			CompoundStatement cst = (CompoundStatement) body;
-			nodes.nodes = DescentASTConverter.convertMany(cst.sourceStatements);
-			nodes.hasCurlies = true; 
+			ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(cst.sourceStatements);
+			return new NodeList(neoNodes, true);
 		} else {
-			nodes.nodes = new ASTNeoNode[] { DescentASTConverter.convertElem(body) };
+			ASTNeoNode[] neoNodes = new ASTNeoNode[] { DescentASTConverter.convertElem(body) };
+			return new NodeList(neoNodes, false);
 		}
-		return nodes;
 	}
 
 	public static NodeList createNodeList(Collection<Dsymbol> decl) {
-		NodeList nodes = new NodeList();
-		if(decl != null)
-			nodes.nodes = DescentASTConverter.convertMany(decl);
-		return nodes;
+		if(decl == null)
+			return null;
+		ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(decl);
+		return new NodeList(neoNodes, false);
 	}
+	
+	public static ASTNeoNode[] getNodes(NodeList nodeList) {
+		if(nodeList == null)
+			return null;
+		return nodeList.nodes;
+	}
+
 
 	public Iterator<ASTNeoNode> getNodeIterator() {
 		return Arrays.asList(nodes).iterator();
 	}
+
 }

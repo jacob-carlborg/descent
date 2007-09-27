@@ -19,10 +19,9 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * SWT Layout Utils.
- * Work in progress.
- * XXX: Partially obsolete org.eclipse.dltk.internal.ui.wizards.dialogfields.LayoutUtil
+ * XXX: DLTK Partially obsolete by org.eclipse.dltk.internal.ui.wizards.dialogfields.LayoutUtil
  */
-public class LayoutUtil {
+public class SWTLayoutUtil {
 
 	/**
 	 * Sets the span of a control. Assumes that GridData is used.
@@ -115,7 +114,7 @@ public class LayoutUtil {
 	
 
 	/** Get's the control's GridData. Creates one if one doesn't exist already. */
-	private static GridData getGD(Control control) {
+	public static GridData getGD(Control control) {
 		Object ld = control.getLayoutData();
 		GridData gd;
 		if(ld == null) {

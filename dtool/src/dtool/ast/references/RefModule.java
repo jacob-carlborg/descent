@@ -19,7 +19,6 @@ import dtool.refmodel.ReferenceResolver;
 
 /** 
  * A module reference (in import declarations only).
- * XXX: should be qualified or not?
  */
 public class RefModule extends NamedReference {
 	

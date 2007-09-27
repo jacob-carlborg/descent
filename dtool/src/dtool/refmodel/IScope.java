@@ -20,7 +20,7 @@ public interface IScope extends IScopeAdaptable {
 	 * FIXME: a scope can be null for now. */
 	List<IScope> getSuperScopes();
 	
-	/** Gets the module of scope. TODO: Define if it can be null */
+	/** Gets the module of the scope. Cannot be null. */
 	IScope getModuleScope();
 	
 	/** For UI printing */

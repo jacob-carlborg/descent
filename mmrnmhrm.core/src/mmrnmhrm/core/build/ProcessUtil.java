@@ -31,8 +31,8 @@ public class ProcessUtil {
 			String line;
 			try {
 				while ((line = reader.readLine()) != null) {
-					Logg.builder.println("»» " + line);
-					DeeBuilder.buildListener.println(line);
+					Logg.builder.println("ï¿½ï¿½ " + line);
+					DeeProjectBuilder.buildListener.println(line);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

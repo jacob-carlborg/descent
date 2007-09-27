@@ -59,12 +59,6 @@ public class DeeMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 	}
 	
 	@Override
-	public void createControl(Composite parent) {
-		// TODO Auto-generated method stub
-		super.createControl(parent);
-	}
-	
-	@Override
 	protected void createMainModuleEditor(Composite parent, String text) {
 		//super.createMainModuleEditor(parent, text);
 		Font font = parent.getFont();

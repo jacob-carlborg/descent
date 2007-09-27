@@ -1,5 +1,7 @@
 package dtool.ast.declarations;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -15,6 +17,7 @@ public class DeclarationAnonMember extends ASTNeoNode implements INonScopedBlock
 
 	public DeclarationAnonMember(AnonDeclaration node) {
 		convertNode(node);
+		assertNotNull(node.decl);
 		this.body = NodeList.createNodeList(node.decl);
 	}
 	

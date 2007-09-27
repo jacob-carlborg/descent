@@ -60,7 +60,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 
 	private boolean exists(ISourceModule modUnit) {
 		return modUnit != null && modUnit.exists()
-		// XXX: Fix for DLTK bug: 
+		// XXX: DLTK bug workaround: 
 		// modUnit.exists() true on external source modules of libraries
 		// we should make a test case for this
 			&& externalReallyExists(modUnit)

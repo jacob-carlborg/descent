@@ -17,6 +17,6 @@ public interface DeeColorConstants {
 	String DEE_DOCCOMMENT = PREFIX + "doccomment";
 	String DEE_COMMENT = PREFIX + "comment";
 	String DEE_DEFAULT = PREFIX + "default";
-	// XXX: use DLTK_SINGLE_LINE_COMMENT constants?
+	// XXX: DLTK: use DLTK_SINGLE_LINE_COMMENT constants?
 
 }

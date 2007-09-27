@@ -1,9 +1,12 @@
 package mmrnmhrm.ui.preferences.pages;
 
+import melnorme.miscutil.ArrayUtil;
+import melnorme.util.ui.swt.ColumnComposite;
 import melnorme.util.ui.swt.RowComposite;
 import mmrnmhrm.core.DeeCorePreferences;
 import mmrnmhrm.ui.ActualPlugin;
 
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.ComboDialogField;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -20,6 +23,9 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchPreferencePage{
 
 	private Button fAdaptedMalformedAST;
+	private ComboDialogField fLangVersion;
+	private String[] labels;
+	private String[] labelValues;
 	
 	public DeeRootPreferencePage() {
 		super("Base preference page");
@@ -47,6 +53,16 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 		gd.horizontalSpan = 2;
 		fStrikethroughCheckBox.setLayoutData(gd);
 		*/
+
+		ColumnComposite holder = new ColumnComposite(content, 2);
+		
+		fLangVersion = new ComboDialogField(SWT.READ_ONLY);
+		fLangVersion.setLabelText("Default Parser Language Version:");
+		labels = new String[] {"D1", "D2"};
+		labelValues = new String[] {"1", "2"};
+		fLangVersion.setItems(labels);
+		fLangVersion.doFillIntoGrid(holder, 2);
+		
 		performDefaults();
 		return content;
 	}
@@ -61,6 +77,8 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 	protected void performDefaults() {
 		fAdaptedMalformedAST.setSelection(DeeCorePreferences.getBoolean(
 				DeeCorePreferences.ADAPT_MALFORMED_DMD_AST));
+		int ix = ArrayUtil.getIndexOfEquals(labelValues, DeeCorePreferences.LANG_VERSION);
+		fLangVersion.setTextWithoutUpdate(labels[ix]);
 		super.performDefaults();
 	}
 	
@@ -68,7 +86,13 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 	public boolean performOk() {
 		DeeCorePreferences.setBoolean(DeeCorePreferences.ADAPT_MALFORMED_DMD_AST, 
 				fAdaptedMalformedAST.getSelection());
+
+		int ix = ArrayUtil.getIndexOfEquals(labels, fLangVersion.getText());
+		DeeCorePreferences.setString(DeeCorePreferences.LANG_VERSION, 
+				labelValues[ix]);
+
 		return super.performOk();
 	}
 	
 }
+

@@ -1,7 +1,7 @@
 package dtool.ast;
 
+import static melnorme.miscutil.Assert.assertTrue;
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.tree.IElement;
 import melnorme.miscutil.tree.IVisitable;
 
@@ -61,8 +61,8 @@ public abstract class ASTNeoNode extends ASTNode
 	}
 	/** Sets the source range end position (start position + length). */
 	public final void setEndPos(int endPos) {
-		AssertIn.isTrue(endPos >= sourceStart());
-		Assert.isTrue(sourceStart() != -1);
+		assertTrue(endPos >= sourceStart());
+		assertTrue(sourceStart() != -1);
 		setEnd(endPos);
 	}
 
@@ -97,8 +97,10 @@ public abstract class ASTNeoNode extends ASTNode
 
 	/******************************/
 	
+	/** All Neo nodes return the same type 
+	 * (until a need arise for otherwise). */
 	public int getElementType() {
-		return 0; // TODO Not DMD element
+		return 0; 
 	}
 
 	//@Override

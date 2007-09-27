@@ -36,8 +36,8 @@ public class DeclarationConditionalDV extends DeclarationConditional {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, thendecls.nodes);
-			TreeVisitor.acceptChildren(visitor, elsedecls.nodes);
+			TreeVisitor.acceptChildren(visitor, NodeList.getNodes(thendecls));
+			TreeVisitor.acceptChildren(visitor, NodeList.getNodes(elsedecls));
 		}
 		visitor.endVisit(this);
 	}

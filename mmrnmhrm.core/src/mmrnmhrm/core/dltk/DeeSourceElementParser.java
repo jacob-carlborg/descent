@@ -2,6 +2,7 @@ package mmrnmhrm.core.dltk;
 
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.DeeCorePreferences;
 import mmrnmhrm.core.LangCore;
 
 import org.eclipse.core.resources.IFile;
@@ -89,8 +90,10 @@ public class DeeSourceElementParser implements ISourceElementParser {
 			throw ExceptionAdapter.unchecked(e);
 		}
 
+		// FIXME use project specific settings
+		int langVersion = DeeCorePreferences.getInt(DeeCorePreferences.LANG_VERSION);
 		
-		moduleDecl = DeeSourceParser.parseModule(source, reporter, filename);
+		moduleDecl = DeeSourceParser.parseModule(source, langVersion, reporter, filename);
 		String str = (filename == null) ? "<null>" : new String(filename);
 		Logg.model.println("ParseModule parsed: ", str);
 		Module neoModule = ParsingUtil.getNeoASTModule(moduleDecl);

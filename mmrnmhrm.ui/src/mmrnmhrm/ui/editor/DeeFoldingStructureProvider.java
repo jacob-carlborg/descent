@@ -30,13 +30,13 @@ public class DeeFoldingStructureProvider extends
 	
 	@Override
 	protected String[] getPartitionTypes() {
-		return DeePartitions.LEGAL_CONTENT_TYPES;
+		return DeePartitions.DEE_PARTITION_TYPES;
 	}
 	
 	@Override
 	protected String getCommentPartition() {
-		// Hum, seems script only wants one comment partition?
-		return DeePartitions.DEE_DOCCOMMENT;
+		// XXX: DLTK limitation: Hum, seems DLTK supports only one comment partition?
+		return DeePartitions.DEE_MULTI_DOCCOMMENT;
 	}
 
 

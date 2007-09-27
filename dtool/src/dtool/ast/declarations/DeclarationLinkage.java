@@ -4,8 +4,9 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LinkDeclaration;
 import dtool.ast.IASTNeoVisitor;
+import dtool.ast.statements.IStatement;
 
-public class DeclarationLinkage extends DeclarationAttrib {
+public class DeclarationLinkage extends DeclarationAttrib implements IStatement {
 
 	public LINK linkage;
 	

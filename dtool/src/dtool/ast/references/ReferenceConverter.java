@@ -1,5 +1,7 @@
 package dtool.ast.references;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.util.List;
 
 import melnorme.miscutil.Assert;
@@ -28,30 +30,33 @@ public abstract class ReferenceConverter {
 		return entity;
 	}
 
-	public static Reference convertTypeQualified(Reference rootent, TypeQualified elem) {
-		if(elem.idents != null && elem.idents.size() > 0){
-			return createQualifiedRefFromIdents(rootent, elem.idents, elem.idents.size());
+	private static Reference convertTypeQualified(TypeQualified elem,
+			Reference rootRef) {
+		if(elem.idents != null){
+			assertTrue(elem.idents.size() > 0);
+			return createQualifiedRefFromIdents(elem.start, rootRef,
+					elem.idents, elem.idents.size());
 		} else {
-			return rootent;
-		}
-	}
-
-	public static Reference convertTemplateInstance(TemplateInstance tplInstance) {
-		return convertTemplateInstance(tplInstance, tplInstance.tiargs);
-	}
-
-	public static Reference convertTypeInstance(TypeInstance elem) {
-		Reference rootRef = convertTemplateInstance(elem.tempinst);
-		if(elem.idents == null) {
 			return rootRef;
-		} else {
-			//Assert.isTrue(elem.idents == null);
-			return createQualifiedRefFromIdents(rootRef, elem.idents, elem.idents.size());
 		}
-		
+	}
+
+	public static Reference convertTypeIdentifier(TypeIdentifier elem) {
+		Reference rootRef = ReferenceConverter.convertTypeIdentifier_ToRoot(elem);
+		return convertTypeQualified(elem, rootRef);
 	}
 	
-	static Reference createQualifiedRefFromIdents(Reference rootRef,
+	public static Reference convertTypeInstance(TypeInstance elem) {
+		Reference rootRef = convertTemplateInstance(elem.tempinst);
+		return convertTypeQualified(elem, rootRef);
+	}
+	
+	public static Reference convertTypeTypeOf(descent.internal.compiler.parser.TypeTypeof elem) {
+		Reference rootRef = new TypeTypeof(elem);
+		return convertTypeQualified(elem, rootRef);
+	}
+	
+	static Reference createQualifiedRefFromIdents(int startPos, Reference rootRef,
 			List<IdentifierExp> idents, int endix) {
 		Assert.isTrue(endix >= 0);
 
@@ -59,21 +64,18 @@ public abstract class ReferenceConverter {
 			return rootRef;
 		}
 		
-		Reference ref;
+		CommonRefQualified ref;
 		if(endix == 1 && rootRef == null) {
 			RefModuleQualified entroot = new RefModuleQualified(idents.get(endix-1));
 			ref = entroot;
 		} else {
 			RefQualified qref = new RefQualified();
-			qref.root = createQualifiedRefFromIdents(rootRef, idents, endix-1);
+			qref.root = createQualifiedRefFromIdents(startPos, rootRef, idents, endix-1);
 			qref.subref = CommonRefSingle.convertToSingleRef(idents.get(endix-1));
-			if(rootRef != null && rootRef.getStartPos() != -1)
-				qref.setStart(rootRef.getStartPos());
-			else
-				qref.setStart(idents.get(0).start);
-			qref.setEndPos(qref.subref.getEndPos());
 			ref = qref;
 		}
+		ref.setStart(startPos);
+		ref.setEndPos(ref.subref.getEndPos());
 		return ref;
 		
 	}
@@ -91,6 +93,10 @@ public abstract class ReferenceConverter {
 		return rootent;
 	}
 	
+	public static Reference convertTemplateInstance(TemplateInstance tplInstance) {
+		return convertTemplateInstance(tplInstance, tplInstance.tiargs);
+	}
+	
 	public static Reference convertTemplateInstance(TemplateInstance tplInstance, List<ASTDmdNode> tiargs) {
 		List<IdentifierExp> idents = tplInstance.idents;
 		int numIdents = idents.size();
@@ -102,7 +108,8 @@ public abstract class ReferenceConverter {
 		} else {
 			RefQualified qref = new RefQualified();
 			Reference rootent = CommonRefSingle.convertToSingleRef(idents.get(0));
-			qref.root = createQualifiedRefFromIdents(rootent, idents, numIdents-1);
+			qref.root = createQualifiedRefFromIdents(tplInstance.start,
+					rootent, idents, numIdents - 1);
 			qref.subref = refTpl;
 			return qref;
 		}

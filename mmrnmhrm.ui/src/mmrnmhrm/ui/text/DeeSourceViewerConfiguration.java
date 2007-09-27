@@ -66,7 +66,7 @@ public class DeeSourceViewerConfiguration extends
 	
 	@Override
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return DeePartitions.LEGAL_CONTENT_TYPES;
+		return DeePartitions.DEE_PARTITION_TYPES;
 	}
 	
 	@Override
@@ -106,13 +106,26 @@ public class DeeSourceViewerConfiguration extends
 		reconciler.setRepairer(dr, DeePartitions.DEE_STRING);
 
 		dr = new DefaultDamagerRepairer(fCommentScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_COMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_COMMENT);
-		
+		reconciler.setDamager(dr, DeePartitions.DEE_SINGLE_COMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_SINGLE_COMMENT);
 		dr = new DefaultDamagerRepairer(fDocScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_DOCCOMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_DOCCOMMENT);
+		reconciler.setDamager(dr, DeePartitions.DEE_SINGLE_DOCCOMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_SINGLE_DOCCOMMENT);
 
+		dr = new DefaultDamagerRepairer(fCommentScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_MULTI_COMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_MULTI_COMMENT);
+		dr = new DefaultDamagerRepairer(fDocScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_MULTI_DOCCOMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_MULTI_DOCCOMMENT);
+
+		dr = new DefaultDamagerRepairer(fCommentScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_NESTED_COMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_NESTED_COMMENT);
+		dr = new DefaultDamagerRepairer(fDocScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_NESTED_DOCCOMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_NESTED_DOCCOMMENT);
+		
 		return reconciler;
 	}
 	
@@ -174,11 +187,17 @@ public class DeeSourceViewerConfiguration extends
 	}
 	
 	@Override
+	public IInformationPresenter getInformationPresenter(
+			ISourceViewer sourceViewer) {
+		return super.getInformationPresenter(sourceViewer);
+	}
+	
+	@Override
 	protected void initializeQuickOutlineContexts(InformationPresenter presenter,
 			IInformationProvider provider) {
-		presenter.setInformationProvider(provider, DeePartitions.DEE_CODE);
-		presenter.setInformationProvider(provider, DeePartitions.DEE_DOCCOMMENT);
-		presenter.setInformationProvider(provider, DeePartitions.DEE_STRING);
+		String[] contentTypes = DeePartitions.DEE_PARTITION_TYPES;
+		for (int i= 0; i < contentTypes.length; i++)
+			presenter.setInformationProvider(provider, contentTypes[i]);
 	}
 
 	private IInformationControlCreator getHierarchyPresenterControlCreator(ISourceViewer sourceViewer) {

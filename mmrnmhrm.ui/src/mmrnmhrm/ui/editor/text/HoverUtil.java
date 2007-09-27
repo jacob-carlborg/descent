@@ -26,9 +26,9 @@ public class HoverUtil {
 			"("+defUnit.getArcheType().toString()+")" +"</span>";
 		
 		String docComments = defUnit.getCombinedDocComments(); 
-		if(docComments == null)
-			str = str + "<br/> <p>No DeeDoc present.</p>";
-		else 
+		if(docComments == null) {
+			//str = str + "<br/> <p>No DeeDoc present.</p>";
+		} else 
 			str = str + "<br/><br/>" + convertToHTMLContent(docComments);
 		return str;
 	}

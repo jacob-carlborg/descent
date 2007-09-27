@@ -7,7 +7,7 @@ import dtool.descentadapter.DescentASTConverter;
 
 public class InfixExpression extends Expression {
 	
-	// XXX: link with token ?
+	// XXX: AST: link this with token ?
 	public interface Type {
 		
 		int MUL = 11;

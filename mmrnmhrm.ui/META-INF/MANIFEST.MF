@@ -23,9 +23,10 @@ Require-Bundle: mmrnmhrm.core,
  org.eclipse.ui.navigator,
  org.eclipse.search,
  org.junit4;visibility:=reexport,
- org.eclipse.debug.ui,
+ org.eclipse.core.filesystem,
  org.eclipse.ui.console,
- org.eclipse.core.filesystem
+ org.eclipse.debug.ui,
+ org.eclipse.dltk.debug
 Eclipse-LazyStart: true
 Bundle-Vendor: %pluginProvider
 Export-Package: mmrnmhrm.ui.editor,

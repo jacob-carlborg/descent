@@ -1,6 +1,5 @@
 package dtool.ast.references;
 
-import java.util.Collections;
 import java.util.List;
 
 import melnorme.miscutil.Assert;
@@ -15,7 +14,7 @@ import dtool.descentadapter.DescentASTConverter;
 
 public class RefTemplateInstance extends CommonRefSingle {
 
-	public List<ASTNeoNode> tiargs;
+	public final ASTNeoNode[] tiargs;
 
 	public RefTemplateInstance(
 			descent.internal.compiler.parser.TemplateInstance elem) {
@@ -29,9 +28,10 @@ public class RefTemplateInstance extends CommonRefSingle {
 		Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
 		Assert.isTrue(tplIdent.ident != null);
 		this.name = new String(tplIdent.ident);
-		this.tiargs = DescentASTConverter.convertManyL(tiargs, this.tiargs);
 		if (this.tiargs == null)
-			this.tiargs = Collections.emptyList();
+			this.tiargs = ASTNeoNode.NO_ELEMENTS;
+		else
+			this.tiargs = DescentASTConverter.convertMany(tiargs);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class RefTemplateInstance extends CommonRefSingle {
 
 	@Override
 	public String toStringAsElement() {
-		return name + "!" + ASTPrinter.toStringAsElements(tiargs, ", ");
+		return name + "!" + ASTPrinter.toStringParamListAsElements(tiargs);
 	}
 
 }

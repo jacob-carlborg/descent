@@ -174,5 +174,15 @@ public class ArrayUtil {
 		return (T[])Array.newInstance(cpType, list.size());
 	}
 
+	/** Finds the index in the given array of the element that
+	 * equal given elem. */
+	public static <T> int getIndexOfEquals(T[] arr, T elem) {
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i].equals(elem));
+				return i;
+		}
+		return -1;
+	}
+
 
 }

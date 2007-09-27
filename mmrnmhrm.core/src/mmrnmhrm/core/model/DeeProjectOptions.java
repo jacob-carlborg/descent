@@ -32,7 +32,6 @@ public class DeeProjectOptions {
 	private static final String CFG_FILE_SECTION = "compileoptions";
 
 	public final IScriptProject dltkProj;
-
 	public DeeCompilerOptions compilerOptions;
 	
 	protected DeeProjectOptions(IScriptProject dltkProj) {
@@ -46,6 +45,13 @@ public class DeeProjectOptions {
 	
 	public IFolder getOutputFolder() {
 		return getProject().getFolder(compilerOptions.outputDir); 
+	}
+	
+	@Override
+	public DeeProjectOptions clone() {
+		DeeProjectOptions options = new DeeProjectOptions(dltkProj);
+		options.compilerOptions = compilerOptions.clone();
+		return options;
 	}
 	
 	public void saveProjectConfigFile() throws CoreException {
@@ -143,10 +149,21 @@ public class DeeProjectOptions {
 	public String getArtifactName() {
 		return compilerOptions.artifactName;
 	}
+	
+	public String getArtifactNameNoExt() {
+		int ix = compilerOptions.artifactName.lastIndexOf('.');
+		if(ix != -1)
+			return compilerOptions.artifactName.substring(0, ix);
+		return compilerOptions.artifactName;
+	}
 
 	public String getArtifactRelPath() {
 		String name = compilerOptions.artifactName;
 		IPath output = compilerOptions.outputDir.append(name);
 		return output.toString();
+	}
+
+	public String getExtraOptions() {
+		return compilerOptions.extraOptions;
 	}
 }

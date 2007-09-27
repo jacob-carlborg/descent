@@ -19,7 +19,6 @@ import dtool.refmodel.IScopeNode;
 
 /**
  * A delegate type;
- * XXX: Do D delegates have linkage?
  */
 public class TypeDelegate extends CommonRefNative {
 

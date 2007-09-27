@@ -14,8 +14,8 @@ import dtool.ast.references.Reference;
 
 public class DeeDefMatcher extends PatternLocator {
 	
-	/** XXX: Global used to pass parameters for the search, due to
-	 * DLTK limitation. */
+	/** XXX: DLTK limitation: A global needed to pass parameters for 
+	 * the search.*/
 	public static DefUnit param_defunit;
 	
 	public DefUnit defunit;

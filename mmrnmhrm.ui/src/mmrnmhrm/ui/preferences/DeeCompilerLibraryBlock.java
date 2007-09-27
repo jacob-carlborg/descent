@@ -28,8 +28,8 @@ public class DeeCompilerLibraryBlock extends AbstractInterpreterLibraryBlock {
 	 */
 	protected static final String DIALOG_SETTINGS_PREFIX = "DeeCompilerLibraryBlock"; //$NON-NLS-1$
 
-	public DeeCompilerLibraryBlock(AddScriptInterpreterDialog d) {
-	    super(d);
+	public DeeCompilerLibraryBlock(AddScriptInterpreterDialog dialog) {
+	    super(dialog);
 	}
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {

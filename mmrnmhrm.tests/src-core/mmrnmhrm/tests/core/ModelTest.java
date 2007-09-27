@@ -32,7 +32,6 @@ public class ModelTest extends BasePluginTest {
 	/*
 	@Test
 	public void test() throws CoreException {
-		//XXX: todo, maybe run as a model operation
 		//if(true)return;
 		DeeModel.getRoot().updateElementRecursive();
 		DeeModel.fireModelChanged();

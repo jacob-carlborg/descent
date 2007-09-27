@@ -1,7 +1,7 @@
 package melnorme.util.ui.fields;
 
 import melnorme.util.ui.swt.ColumnComposite;
-import melnorme.util.ui.swt.LayoutUtil;
+import melnorme.util.ui.swt.SWTLayoutUtil;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.swt.SWT;
@@ -63,7 +63,7 @@ public class FieldUtil {
 
 	private static void modifyLabelSpans(Control[][] controls, int nCulumns) {
 		for (int i = 0; i < controls.length; i++) {
-			LayoutUtil.setHorizontalSpan(controls[i][0], nCulumns);
+			SWTLayoutUtil.setHorizontalSpan(controls[i][0], nCulumns);
 		}
 	}
 

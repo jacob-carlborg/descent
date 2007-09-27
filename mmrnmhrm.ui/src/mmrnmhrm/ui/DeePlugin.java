@@ -2,7 +2,7 @@ package mmrnmhrm.ui;
 
 import melnorme.lang.ui.InitializeAfterLoadJob;
 import melnorme.lang.ui.LangPlugin;
-import mmrnmhrm.core.build.DeeBuilder;
+import mmrnmhrm.core.build.DeeProjectBuilder;
 import mmrnmhrm.ui.launch.DeeBuilderUIListener;
 import mmrnmhrm.ui.text.DeeTextTools;
 
@@ -63,7 +63,7 @@ public class DeePlugin extends LangPlugin {
 	}
 
 	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
-		DeeBuilder.setBuilderListener(new DeeBuilderUIListener());
+		DeeProjectBuilder.setBuilderListener(new DeeBuilderUIListener());
 		// nothing to do
 	}
 

@@ -506,16 +506,6 @@
    </extension>   
    
    <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
-         <view
-               id="mmrnmhrm.ui.views.ASTViewer"
-               ratio="0.5"
-               relationship="right"
-               relative="org.eclipse.ui.views.TaskList"/>
-      </perspectiveExtension>
-   </extension>
-   <extension
          point="org.eclipse.ui.navigator.viewer">
       <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
          <includes>
@@ -619,13 +609,9 @@
                   </test>
                   -->
                   <or>
-               	    <!--
                     <adapt type="org.eclipse.core.resources.IFile">
-                      <test property="matchesName"
-                        value="*">
-                      </test>                    
+                      <test property="org.eclipse.core.resources.name" value="*.exe" />
                     </adapt>
-                    -->
                     <adapt type="org.eclipse.core.resources.IProject">
                       <test property="org.eclipse.core.resources.projectNature"
                         value="mmrnmhrm.core.deenature"/>
@@ -653,5 +639,99 @@
             id="mmrnmhrm.ui.launchConfigurationTypeImage1">
       </launchConfigurationTypeImage>
    </extension>
+   
+   
+   	<extension point="org.eclipse.ui.editorActions">
+		<editorContribution
+			targetID="mmrnmhrm.ui.editors.DeeEditor"
+			id="mmrnmhrm.ui.editor.DeeEditor.BreakpointRulerActions">
+
+			<action label="%ToggleBreakpoint.label"
+				class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+				style="push" actionID="RulerDoubleClick"
+				id="DeeEditor.doubleClickBreakpointAction" />
+		</editorContribution>
+	</extension>
+
+	<extension point="org.eclipse.ui.popupMenus">
+		<viewerContribution
+			id="mmrnmhrm.debug.ui.rulerContribution"
+			targetID="#DeeRulerContext">
+
+			<action label="%EnableDisableBreakpoint.label"
+				id="mmrnmhrm.ui.actions.RulerEnableDisableBreakpointActionDelegate"
+				class="org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
+				menubarPath="debug">
+			</action>
+
+			<action label="%ToggleBreakpoint.label"
+				id="mmrnmhrm.ui.actions.RulerToggleBreakpointActionDelegate"
+				class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+				menubarPath="debug">
+			</action>
+
+			<action
+				class="org.eclipse.dltk.debug.ui.actions.ScriptBreakpointPropertiesRulerActionDelegate"
+				id="mmrnmhrm.debug.ui.ScriptBreakpointPropertiesRulerActionDelegate"
+				label="%BreakpointProperties.label" 
+				menubarPath="group.properties" />
+		</viewerContribution>
+		
+		<viewerContribution 
+			targetID="#DeeEditorContext"
+			id="mmrnmhrm.ui.DebugPopupActions">
+			<visibility>
+				<and>
+					<systemProperty
+						name="org.eclipse.dltk.debug.ui.debuggerActive" value="true">
+					</systemProperty>
+					<objectClass
+						name="org.eclipse.jface.text.ITextSelection">
+					</objectClass>
+				</and>
+			</visibility>
+			<action label="%ScriptWatch.label"
+				icon="$nl$/icons/etool16/watch_exp.gif"
+				class="org.eclipse.dltk.internal.debug.ui.actions.ScriptWatchAction"
+				menubarPath="additions"
+				id="mmrnmhrm.debug.ui.ScriptWatch">
+			</action>
+			<action label="%ScriptInspect.label"
+				icon="$nl$/icons/etool16/insp_sbook.gif"
+				definitionId="org.eclipse.dlkt.debug.ui.commands.ScriptInspect"
+				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptInspectAction"
+				menubarPath="additions"
+				id="mmrnmhrm.debug.ui.ScriptInspect">
+			</action>
+			<action label="%ScriptDisplay.label"
+				icon="$nl$/icons/etool16/disp_sbook.gif"
+				definitionId="org.eclipse.dlkt.debug.ui.commands.ScriptDisplay"
+				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptDisplayAction"
+				menubarPath="additions"
+				id="mmrnmhrm.debug.ui.ScriptDisplay">
+			</action>
+		</viewerContribution>
+	</extension>
+	
+	<extension point="org.eclipse.ui.actionSetPartAssociations">
+		<actionSetPartAssociation
+			targetID="org.eclipse.debug.ui.launchActionSet">
+			<part id="mmrnmhrm.ui.editors.DeeEditor" />
+		</actionSetPartAssociation>
+		<actionSetPartAssociation
+			targetID="org.eclipse.debug.ui.launchActionSet">
+			<part id="org.eclipse.dltk.ui.ScriptExplorer" />
+			<part id="mmrnmhrm.ui.editors.DeeEditor" />
+		</actionSetPartAssociation>
+	</extension>
+
+	<extension point="org.eclipse.dltk.debug.scriptDebugModel">
+      <debugModel
+            debugModelId="descent.debug.core.model"
+            natureId="mmrnmhrm.core.deenature"
+            typeFactory="mmrnmhrm.ui.launch.RubyTypeFactory">
+      </debugModel>
+	</extension>
+   
 
 </plugin>

@@ -7,17 +7,29 @@ public interface DeePartitions {
 	String DEE_PARTITIONING = "___dee_partioning";
 	
 	String DEE_CODE = IDocument.DEFAULT_CONTENT_TYPE;
-	String DEE_COMMENT = "___dee_comment";  
-	String DEE_DOCCOMMENT = "___dee_doc_comment";  
 	String DEE_STRING = "___dee_string";
+
+	String DEE_SINGLE_COMMENT = "___dee_single_comment";  
+	String DEE_SINGLE_DOCCOMMENT = "___dee_single_doccomment";  
+	String DEE_MULTI_COMMENT = "___dee_multi_comment";  
+	String DEE_MULTI_DOCCOMMENT = "___dee_multi_doccomment";  
+	String DEE_NESTED_COMMENT = "___dee_nested_comment";  
+	String DEE_NESTED_DOCCOMMENT = "___dee_nested_doccomment";  
+
 	
-	public static final String[] LEGAL_CONTENT_TYPES = {
+	public static final String[] DEE_PARTITION_TYPES = {
 		IDocument.DEFAULT_CONTENT_TYPE,
-		DeePartitions.DEE_COMMENT,
-		DeePartitions.DEE_DOCCOMMENT,
-		DeePartitions.DEE_STRING
+		DEE_STRING,
+		DEE_SINGLE_COMMENT,
+		DEE_SINGLE_DOCCOMMENT,
+		DEE_MULTI_COMMENT,
+		DEE_MULTI_DOCCOMMENT,
+		DEE_NESTED_COMMENT,
+		DEE_NESTED_DOCCOMMENT,
 	};
 	
-	public static final String[] DEE_PARTITION_TYPES = LEGAL_CONTENT_TYPES;
+	/* Some IDE's use a LEGAL_CONTENT_TYPES without a 
+	IDocument.DEFAULT_CONTENT_TYPE , but I have no idea why. */ 
+	public static final String[] LEGAL_CONTENT_TYPES = DEE_PARTITION_TYPES;
 
 }
