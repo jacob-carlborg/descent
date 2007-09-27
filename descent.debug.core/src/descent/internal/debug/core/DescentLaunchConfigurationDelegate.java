@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -80,27 +82,26 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				// to proceed with the real launching
 				final IPreferenceStore preferenceStore = DescentDebugPlugin.getDefault().getPreferenceStore();
 				final int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DEBUGGER_TIMEOUT);
-				final Object lock = new Object();
+
+				final Semaphore sem = new Semaphore(0);
+				
 				final IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
 				iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
 
 					public void streamAppended(String text, IStreamMonitor monitor) {
 						if (text.trim().equals(debugger.getEndCommunicationString())) {
 							iprocess.getStreamsProxy().getOutputStreamMonitor().removeListener(this);
-							synchronized(lock) {
-								lock.notify();
-							}
+							sem.release();
 						}
 					}
 					
 				});
-				
-				synchronized(lock) {
-					try {
-						lock.wait(timeout);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+
+			
+				try {
+					boolean acquired = sem.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 				
 				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess, debugger);		
