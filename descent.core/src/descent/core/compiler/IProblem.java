@@ -388,5 +388,7 @@ public interface IProblem {
 	int CannotHaveArrayOfType = 178;
 	int SymbolDoesNotMatchAnyTemplateDeclaration = 179;
 	int IndexOverflowForStaticArray = 180;
+	int UnknownSize = 181;
+	int NoSizeYetForForwardReference = 182;
 
 }

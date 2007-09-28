@@ -47,5 +47,12 @@ public class TypeExp extends Expression {
 	public void appendBinding(StringBuilder sb) {
 		type.appendBinding(sb);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		type.appendBinding(sb);
+		return sb.toString();
+	}
 
 }

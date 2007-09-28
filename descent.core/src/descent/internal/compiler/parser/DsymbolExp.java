@@ -236,5 +236,12 @@ public class DsymbolExp extends Expression {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		s.appendBinding(sb);
+		return sb.toString();
+	}
 
 }

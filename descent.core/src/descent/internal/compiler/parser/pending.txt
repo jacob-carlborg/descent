@@ -29,7 +29,6 @@ SemanticContext.java
 sinteger_t.java
 StringExp.java
 StringTable.java
-StructDeclaration.java
 SymOffExp.java
 TOK.java
 Token.java

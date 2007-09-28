@@ -330,6 +330,18 @@ public class TypeStruct extends Type {
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		toDecoBuffer(buf, context);
 	}
+	
+	@Override
+	public void appendBinding(StringBuilder sb) {
+		sym.appendBinding(sb);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sym.appendBinding(sb);
+		return sb.toString();
+	}
 
 	//PERHAPS dt_t **toDt(dt_t **pdt);
 	//PERHAPS type *toCtype();

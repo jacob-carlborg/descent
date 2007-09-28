@@ -14,19 +14,14 @@ import static descent.internal.compiler.parser.STC.STCin;
 
 // DMD 1.020
 public class StructDeclaration extends AggregateDeclaration {
-	
-	public boolean zeroInit;		// !=0 if initialize with 0 fill
+
+	public boolean zeroInit; // !=0 if initialize with 0 fill
 
 	public StructDeclaration(Loc loc, IdentifierExp id) {
 		super(loc, id);
 		this.type = new TypeStruct(this);
 	}
-	
-	@Override
-	public StructDeclaration isStructDeclaration() {
-		return this;
-	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -37,7 +32,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
 	public PROT getAccess(Dsymbol smember) {
 		PROT access_ret = PROTnone;
@@ -49,10 +44,30 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 		return access_ret;
 	}
-	
+
+	@Override
+	public int getNodeType() {
+		return STRUCT_DECLARATION;
+	}
+
+	@Override
+	public StructDeclaration isStructDeclaration() {
+		return this;
+	}
+
+	@Override
+	public String kind() {
+		return "struct";
+	}
+
+	@Override
+	public String mangle(SemanticContext context) {
+		return Dsymbol_mangle(context);
+	}
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-	    Scope sc2;
+		Scope sc2;
 
 		Assert.isNotNull(type);
 		if (members == null) { // if forward reference
@@ -81,9 +96,13 @@ public class StructDeclaration extends AggregateDeclaration {
 		assert (!isAnonymous());
 		if ((sc.stc & STC.STCabstract) != 0) {
 			if (isUnionDeclaration() != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.UnionsCannotBeAbstract, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.UnionsCannotBeAbstract, 0, ident.start,
+						ident.length));
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StructsCannotBeAbstract, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.StructsCannotBeAbstract, 0, ident.start,
+						ident.length));
 			}
 		}
 
@@ -107,8 +126,9 @@ public class StructDeclaration extends AggregateDeclaration {
 		for (int i = 0; i < members_dim; i++) {
 			Dsymbol s = members.get(i);
 			s.semantic(sc2, context);
-			if (isUnionDeclaration() != null)
+			if (isUnionDeclaration() != null) {
 				sc2.offset = 0;
+			}
 		}
 
 		/* The TypeInfo_Struct is expecting an opEquals and opCmp with
@@ -121,12 +141,11 @@ public class StructDeclaration extends AggregateDeclaration {
 		TypeFunction tfeqptr;
 		{
 			Arguments arguments = new Arguments();
-			Argument arg = new Argument(STCin, handle, new IdentifierExp(loc, 
+			Argument arg = new Argument(STCin, handle, new IdentifierExp(loc,
 					Id.p), null);
 
 			arguments.add(arg);
-			tfeqptr = new TypeFunction(arguments, Type.tint32, 0,
-					LINK.LINKd);
+			tfeqptr = new TypeFunction(arguments, Type.tint32, 0, LINK.LINKd);
 			tfeqptr = (TypeFunction) tfeqptr.semantic(loc, sc, context);
 		}
 
@@ -142,15 +161,15 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		char[] id = Id.eq;
 		for (int j = 0; j < 2; j++) {
-			Dsymbol s = Expression.search_function(this, id, context);
+			Dsymbol s = ASTDmdNode.search_function(this, id, context);
 			FuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
 			if (fdx != null) {
 				FuncDeclaration fd = fdx.overloadExactMatch(tfeqptr, context);
 				if (fd == null) {
 					fd = fdx.overloadExactMatch(tfeq, context);
 					if (fd != null) { // Create the thunk, fdptr
-						FuncDeclaration fdptr = new FuncDeclaration(loc, fdx.ident,
-								STC.STCundefined, tfeqptr);
+						FuncDeclaration fdptr = new FuncDeclaration(loc,
+								fdx.ident, STC.STCundefined, tfeqptr);
 						Expression e = new IdentifierExp(loc, Id.p);
 						e = new PtrExp(loc, e);
 						Expressions args = new Expressions();
@@ -230,15 +249,45 @@ public class StructDeclaration extends AggregateDeclaration {
 			semantic3(sc, context);
 		}
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return STRUCT_DECLARATION;
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		StructDeclaration sd;
+
+		if (s != null) {
+			sd = (StructDeclaration) s;
+		} else {
+			sd = new StructDeclaration(loc, ident);
+		}
+		super.syntaxCopy(sd);
+		return sd;
 	}
 	
 	@Override
-	public String mangle(SemanticContext context) {
-		return Dsymbol_mangle(context);
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		int i;
+
+		buf.writestring(kind());
+		if (!isAnonymous()) {
+			buf.writestring(toChars(context));
+		}
+		if (null == members) {
+			buf.writeByte(';');
+			buf.writenl();
+			return;
+		}
+		buf.writenl();
+		buf.writeByte('{');
+		buf.writenl();
+		for (i = 0; i < members.size(); i++) {
+			Dsymbol s = members.get(i);
+
+			buf.writestring("    ");
+			s.toCBuffer(buf, hgs, context);
+		}
+		buf.writeByte('}');
+		buf.writenl();
 	}
 
 }

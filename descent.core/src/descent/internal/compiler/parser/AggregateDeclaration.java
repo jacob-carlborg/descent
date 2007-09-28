@@ -3,6 +3,8 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IProblem;
+
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
@@ -272,10 +274,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public int size(SemanticContext context) {
 		if (null == members) {
-			error(loc, "unknown size");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UnknownSize, 0, start, length));
 		}
 		if (sizeok != 1) {
-			error(loc, "no size yet for forward reference");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoSizeYetForForwardReference, 0, start, length));
 		}
 		return structsize;
 	}

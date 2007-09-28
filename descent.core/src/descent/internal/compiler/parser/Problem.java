@@ -455,6 +455,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolDoesNotMatchAnyTemplateDeclaration, arguments[0]);
 		case IndexOverflowForStaticArray:
 			return String.format(ProblemMessages.IndexOverflowForStaticArray, arguments[0]);
+		case UnknownSize:
+			return String.format(ProblemMessages.UnknownSize);
+		case NoSizeYetForForwardReference:
+			return String.format(ProblemMessages.NoSizeYetForForwardReference);
 		default:
 			return "";
 		}

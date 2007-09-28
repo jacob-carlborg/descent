@@ -538,8 +538,12 @@ SymbolDoesNotMatchAnyTemplateDeclaration
 IndexOverflowForStaticArray
 	formatString=Index %1$s overflow for static array
 	numArgs=1
-	
-	
+UnknownSize
+	formatString=Unknown size
+	numArgs=0
+NoSizeYetForForwardReference
+	formatString=No size yet for forward reference
+	numArgs=0	
 	
 	
 	

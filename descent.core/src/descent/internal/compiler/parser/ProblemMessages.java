@@ -190,6 +190,8 @@ final class ProblemMessages extends NLS {
 	public static String CannotHaveArrayOfType;
 	public static String SymbolDoesNotMatchAnyTemplateDeclaration;
 	public static String IndexOverflowForStaticArray;
+	public static String UnknownSize;
+	public static String NoSizeYetForForwardReference;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
