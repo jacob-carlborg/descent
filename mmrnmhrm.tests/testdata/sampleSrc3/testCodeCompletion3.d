@@ -16,3 +16,5 @@ void func(Tuple!(1, 2) a) {
 
 
 import pack.mod3; // Test complete here, several offsets
+
+/// Test code completion import content and import selection contexts 

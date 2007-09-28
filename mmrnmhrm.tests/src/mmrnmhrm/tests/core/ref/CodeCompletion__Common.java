@@ -40,24 +40,34 @@ public class CodeCompletion__Common extends UITestWithEditor {
 
 
 	protected static final class TestCompletion_Document extends Mock_Document {
-			private final String repStr;
-			private final int repLen;
-			private final int repOffset;
-	
-			private TestCompletion_Document(String repStr, int repLen, int repOffset) {
-				this.repStr = repStr;
-				this.repLen = repLen;
-				this.repOffset = repOffset;
-			}
-	
-			@Override
-			public void replace(int offset, int length, String text)
-					throws BadLocationException {
-				assertTrue(offset == repOffset 
-				&& length == repLen
-				&& text.equals(repStr), "Proposal Mismatch");
-			}
+		private final String repStr;
+		private final int repLen;
+		private final int repOffset;
+
+		private TestCompletion_Document(String repStr, int repLen, int repOffset) {
+			this.repStr = repStr;
+			this.repLen = repLen;
+			this.repOffset = repOffset;
 		}
+
+		@Override
+		public void replace(int offset, int length, String text)
+		throws BadLocationException {
+			assertTrue(offset == repOffset 
+					&& length == repLen
+					&& text.equals(repStr), "Proposal Mismatch");
+		}
+	}
+
+	protected int getTestOffset(String marker) throws ModelException {
+		return srcModule.getSource().indexOf(marker) + marker.length();
+	}
+
+
+
+	protected IDocument getTestDocument() {
+		return DeeEditorTest.getDocument(editor);
+	}
 
 
 

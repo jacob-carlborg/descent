@@ -41,3 +41,4 @@ invariant () {
 	Foo. // qualified ; and . recovery
 }
 
+/// Test code completion recovery

@@ -3,13 +3,14 @@ package mmrnmhrm.tests.core.ref;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.ui.editor.DeeEditorTest;
 
+import org.eclipse.dltk.core.ModelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class CodeCompletion_Test extends CodeCompletion__Common {
+public class CodeCompletion_DupsForwardTest extends CodeCompletion__Common {
 	
 	static final String TEST_SRCFOLDER = SampleMainProject.TEST_SRC3;
-	static final String TEST_SRCFILE = TEST_SRCFOLDER + "/testCodeCompletion.d";
+	static final String TEST_SRCFILE = TEST_SRCFOLDER + "/testCodeCompletion_dups.d";
 
 	/* --- */
 	
@@ -22,12 +23,9 @@ public class CodeCompletion_Test extends CodeCompletion__Common {
 	/* ------------- Tests -------------  */
 	
 	@Test
-	public void test0() throws Exception {
-		//testComputeProposals(0, 0);
-	}
-	@Test
 	public void test1() throws Exception {
-		testComputeProposals(364, 0, "fParam", "test", "func", "foobarvar",
+		int offset = getTestOffset("/+@CC1+/");
+		testComputeProposals(offset, 0, "fParam", "test", "func", "foobarvar",
 				"foovar", "foox", "baz",
 				"FooBar", "ix",  "foo_t", "fooalias", "fooOfModule", "frak", "Foo", "Xpto",
 				"testCodeCompletion",
@@ -35,6 +33,8 @@ public class CodeCompletion_Test extends CodeCompletion__Common {
 				"othervar", "Other"
 				);
 	}
+
+
 	@Test
 	public void test2() throws Exception {
 		testComputeProposals(386, 1, "Param", "unc", "oobarvar",
@@ -56,12 +56,6 @@ public class CodeCompletion_Test extends CodeCompletion__Common {
 				);
 	}
 	
-	@Test
-	public void test4UI() throws Exception {
-	}
-	@Test
-	public void test5UI() throws Exception {
-	}
 	@Test
 	public void test6() throws Exception {
 		// FIXUP because of syntax errors;
