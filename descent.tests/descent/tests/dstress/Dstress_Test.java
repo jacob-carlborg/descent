@@ -142,6 +142,8 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				sb.append(filename);
 				sb.append(": ");
 				sb.append(e.getMessage());
+//				e.printStackTrace();
+//				break;
 			}
 		}
 		

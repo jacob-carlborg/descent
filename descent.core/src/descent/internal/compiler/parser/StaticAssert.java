@@ -63,7 +63,7 @@ public class StaticAssert extends Dsymbol {
 		Expression e;
 
 		e = exp.semantic(sc, context);
-		e = e.optimize(ASTDmdNode.WANTvalue, context);
+		e = e.optimize(WANTvalue | WANTinterpret, context);
 		if (e.isBool(false)) {
 			if (msg != null) {
 				HdrGenState hgs = new HdrGenState();

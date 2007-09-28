@@ -644,7 +644,10 @@ public abstract class BinExp extends Expression {
 				if (e2 != EXP_CANT_INTERPRET) {
 					if (!v.isParameter()) {
 						for (int i = 0; true; i++) {
-							if (i == istate.vars.size()) {
+							if (i == size(istate.vars)) {
+								if (istate.vars == null) {
+									istate.vars = new Dsymbols();
+								}
 								istate.vars.add(v);
 								break;
 							}

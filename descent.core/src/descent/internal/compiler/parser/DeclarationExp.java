@@ -233,5 +233,10 @@ public class DeclarationExp extends Expression {
 			SemanticContext context) {
 		declaration.toCBuffer(buf, hgs, context);
 	}
+	
+	@Override
+	public String toString() {
+		return declaration.toString();
+	}
 
 }

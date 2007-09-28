@@ -1,19 +1,19 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TY.Tbit;
-import static descent.internal.compiler.parser.TY.Tbool;
-import static descent.internal.compiler.parser.TY.Tvoid;
-
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public class TypeBasic extends Type {
@@ -738,7 +738,11 @@ public class TypeBasic extends Type {
 
 	@Override
 	public String toString() {
-		return ty.name;
+		if (ty.name != null) {
+			return ty.name;
+		} else {
+			return ty.toString();
+		}
 	}
 
 	private Expression Lfvalue(Loc loc, real_t fvalue)

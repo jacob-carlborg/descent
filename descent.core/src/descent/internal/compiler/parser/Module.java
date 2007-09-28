@@ -256,7 +256,7 @@ public class Module extends Package {
 		if (md != null) {
 			NaiveASTFlattener f = new NaiveASTFlattener();
 			f.visitModuleDeclarationName(md);
-			sb.append(f.toString());
+			sb.append(f.getResult());
 		}
 	}
 

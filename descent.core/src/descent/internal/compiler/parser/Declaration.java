@@ -7,7 +7,8 @@ import static descent.internal.compiler.parser.STC.STCref;
 // DMD 1.020
 public abstract class Declaration extends Dsymbol {
 
-	public Type type, sourceType;
+	public Type type;
+	public Type sourceType;
 	public int storage_class;
 	public LINK linkage;
 	public PROT protection;

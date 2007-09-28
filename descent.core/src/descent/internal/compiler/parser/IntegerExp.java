@@ -534,5 +534,10 @@ public class IntegerExp extends Expression {
 	public boolean isConst() {
 		return true;
 	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return this;
+	}
 
 }

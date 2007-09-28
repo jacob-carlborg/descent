@@ -937,7 +937,7 @@ public class Constfold
 				StringExp es = new StringExp(loc, CharOperation.concat(
 						es1.string, es2.string), es1.len + es2.len);
 				
-				char sz = es1.sz;
+				int sz = es1.sz;
 				assert (sz == es2.sz);
 				es.sz = sz;
 				es.committed = es1.committed | es2.committed;
@@ -955,7 +955,7 @@ public class Constfold
 				StringExp es1 = (StringExp) e1;
 				StringExp es;
 				int len = es1.len + 1;
-				char sz = es1.sz;
+				int sz = es1.sz;
 				
 				/*
 				 * PERHAPS java's char type is 16 bits wide -- dchar is 32 bits --
@@ -982,7 +982,7 @@ public class Constfold
 				// Concatenate the strings
 				StringExp es2 = (StringExp) e2;
 				StringExp es;
-				char sz = es2.sz;
+				int sz = es2.sz;
 				char[] v = new char[]
 				{ (char) e1.toInteger(context).intValue() };
 				
@@ -1125,7 +1125,7 @@ public class Constfold
 				StringExp es2 = (StringExp) e2;
 				
 				assert (es1.sz == es2.sz);
-				if(es1.len == es2.len && es1.string.equals(es2.string))
+				if(es1.len == es2.len && CharOperation.equals(es1.string, es2.string))
 					cmp = 1;
 				else
 					cmp = 0;
@@ -1491,7 +1491,7 @@ public class Constfold
 			else
 			{
 				int len = iupr - ilwr;
-				char sz = es1.sz;
+				int sz = es1.sz;
 				StringExp es;
 				char[] s = new char[len];
 				System.arraycopy(es1.string, ilwr, s, 0, len);
