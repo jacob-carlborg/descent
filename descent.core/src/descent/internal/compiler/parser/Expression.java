@@ -36,10 +36,12 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		Expressions a = null;
 
 		if (exps != null) {
-			a = new Expressions(exps.size());
-			for (Expression e : exps) {
+			a = new Expressions();
+			a.setDim(exps.size());
+			for(int i = 0; i < exps.size(); i++) {
+				Expression e = exps.get(i);
 				e = e.syntaxCopy();
-				a.add(e);
+				a.set(i, e);
 			}
 		}
 		return a;

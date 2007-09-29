@@ -324,8 +324,7 @@ public class TypeFunction extends Type {
 		}
 		buf.writeByte(mc);
 		// Write argument types
-		// TODO semantic
-		// argsToDecoBuffer(buf, parameters);
+		Argument.argsToDecoBuffer(buf, parameters, context);
 		buf.writeByte('Z' - varargs); // mark end of arg list
 		next.toDecoBuffer(buf, context);
 		inuse--;

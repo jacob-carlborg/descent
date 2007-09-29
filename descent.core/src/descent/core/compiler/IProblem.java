@@ -390,5 +390,7 @@ public interface IProblem {
 	int IndexOverflowForStaticArray = 180;
 	int UnknownSize = 181;
 	int NoSizeYetForForwardReference = 182;
+	int SymbolMatchesMoreThanOneTemplateDeclaration = 183;
+	int ExpressionLeadsToStackOverflowAtCompileTime = 184;
 
 }

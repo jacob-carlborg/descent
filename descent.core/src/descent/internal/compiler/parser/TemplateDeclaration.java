@@ -23,7 +23,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public TemplateDeclaration overnext; // next overloaded TemplateDeclaration
 	public TemplateDeclaration overroot; // first in overnext list
 	List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
-	
+
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
 		super(loc, id);
@@ -72,8 +72,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		} else {
 			throw new IllegalStateException("assert(0);");
 		}
-		if (null == sc.insert(s))
+		if (null == sc.insert(s)) {
 			error("declaration %s is already defined", tp.ident.toChars());
+		}
 		s.semantic(sc, context);
 	}
 
@@ -116,9 +117,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				td_ambig = null;
 				td_best = td;
 				m_best = m;
-				//tdargs.setDim(dedargs.dim);
-				//memcpy(tdargs.data, dedargs.data, tdargs.dim * sizeof(void *));
-				tdargs = new Objects(dedargs); // Looks like a shallow copy
+				tdargs.memcpy(dedargs);
 				continue;
 			}
 
@@ -149,7 +148,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (null == td_best) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, 0, start, length, new String[] { toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, 0,
+					start, length, new String[] { toChars(context) }));
 			Lerror(fargs, context);
 		}
 		if (null != td_ambig) {
@@ -165,16 +166,17 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		ti = new TemplateInstance(loc, td_best, tdargs);
 		ti.semantic(sc, context);
 		fd = ti.toAlias(context).isFuncDeclaration();
-		if (null == fd)
+		if (null == fd) {
 			Lerror(fargs, context);
+		}
 		return fd;
 	}
 
-	public MATCH deduceMatch(Objects targsi, Expressions fargs, Objects dedargs,
-			SemanticContext context)
-	{
+	public MATCH deduceMatch(Objects targsi, Expressions fargs,
+			Objects dedargs, SemanticContext context) {
+		throw new IllegalStateException("Not implemented!");
 		// TODO semantic
-		return null;
+		// return null;
 	}
 
 	@Override
@@ -209,26 +211,30 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident); // create dummy template instance
 		Objects dedtypes = new Objects();
-
+		
 		// Set type arguments to dummy template instance to be types
 		// generated from the parameters to this template declaration
-		ti.tiargs = new Objects(parameters.size());
-		for (int i = 0; i < ti.tiargs.size(); i++) {
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+		if (ti.tiargs == null) {
+			ti.tiargs = new Objects();
+		}
+		ti.tiargs.setDim(size(parameters));
+		
+		for (int i = 0; i < size(ti.tiargs); i++) {
+			TemplateParameter tp = parameters.get(i);
 
 			ASTDmdNode p = tp.dummyArg(context);
-			if (p != null)
+			if (p != null) {
 				ti.tiargs.set(i, p);
-			else
-				ti.tiargs.ensureCapacity(i);
+			} else {
+				ti.tiargs.setDim(i);
+			}
 		}
 
 		// Temporary Array to hold deduced types
-		//dedtypes.setDim(parameters.dim);
-		dedtypes.ensureCapacity(td2.parameters.size());
+		dedtypes.setDim(size(td2.parameters));
 
 		// Attempt a type deduction
-		if (td2.matchWithInstance(ti, dedtypes, 1, context) != null) {
+		if (td2.matchWithInstance(ti, dedtypes, 1, context) != MATCHnomatch) {
 			/* A non-variadic template is more specialized than a
 			 * variadic one.
 			 */
@@ -258,8 +264,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			return MATCHnomatch;
 		}
 
-		assert (dedtypes_dim == parameters_dim);
-		assert (dedtypes_dim >= size(ti.tiargs) || variadic);
+		if (dedtypes_dim != parameters_dim) {
+			throw new IllegalStateException(
+					"assert (dedtypes_dim == parameters_dim);");
+		}
+		if (!(dedtypes_dim >= size(ti.tiargs) || variadic)) {
+			throw new IllegalStateException(
+					"assert (dedtypes_dim >= size(ti.tiargs) || variadic);");
+		}
 
 		// Set up scope for parameters
 		// assert((size_t)scope > 0x10000);
@@ -271,7 +283,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		m = MATCHexact;
 		for (int i = 0; i < dedtypes_dim; i++) {
 			MATCH m2;
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			TemplateParameter tp = parameters.get(i);
 			Declaration[] sparam = { null };
 
 			m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes,
@@ -284,14 +296,17 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				return m;
 			}
 
-			if (m2.ordinal() < m.ordinal())
+			if (m2.ordinal() < m.ordinal()) {
 				m = m2;
+			}
 
-			if (0 == flag)
+			if (0 == flag) {
 				sparam[0].semantic(paramscope, context);
-			if (null == paramscope.insert(sparam[0]))
+			}
+			if (null == paramscope.insert(sparam[0])) {
 				// goto Lnomatch;
 				m = MATCHnomatch;
+			}
 			paramscope.pop();
 			return m;
 		}
@@ -312,19 +327,10 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
-		TemplateDeclaration f;
-
-		f = s.isTemplateDeclaration();
-		if (null == f)
-			return false;
-		return true;
-	}
-
-	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (scope != null)
+		if (scope != null) {
 			return; // semantic() already run
+		}
 
 		if (sc.func != null) {
 			error("cannot declare template at function scope %s", sc.func
@@ -357,7 +363,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		paramscope.parameterSpecialization = 1;
 
 		for (int i = 0; i < parameters.size(); i++) {
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			TemplateParameter tp = parameters.get(i);
 			tp.declareParameter(paramscope, context);
 		}
 
@@ -401,30 +407,27 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
-			SemanticContext context)
-	{
+			SemanticContext context) {
 		buf.writestring(kind());
 		buf.writeByte(' ');
 		buf.writestring(ident.toChars());
 		buf.writeByte('(');
-		for(int i = 0; i < parameters.size(); i++)
-		{
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
-			if(i > 0)
+		for (int i = 0; i < parameters.size(); i++) {
+			TemplateParameter tp = parameters.get(i);
+			if (i > 0) {
 				buf.writeByte(',');
+			}
 			tp.toCBuffer(buf, hgs, context);
 		}
 		buf.writeByte(')');
-		
-		if(hgs.hdrgen)
-		{
+
+		if (hgs.hdrgen) {
 			hgs.tpltMember = true;
 			buf.writenl();
 			buf.writebyte('{');
 			buf.writenl();
-			for(int i = 0; i < members.size(); i++)
-			{
-				Dsymbol s = (Dsymbol) members.get(i);
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s = members.get(i);
 				s.toCBuffer(buf, hgs, context);
 			}
 			buf.writebyte('}');
@@ -442,15 +445,16 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		buf.writeByte('(');
 		for (int i = 0; i < parameters.size(); i++) {
 			TemplateParameter tp = parameters.get(i);
-			if (i != 0)
+			if (i != 0) {
 				buf.writeByte(',');
+			}
 			tp.toCBuffer(buf, hgs, context);
 		}
 		buf.writeByte(')');
-		buf.writeByte(0);
+		//buf.writeByte(0);
 		return buf.extractData();
 	}
-	
+
 	// Lerror:
 	private FuncDeclaration Lerror(Expressions fargs, SemanticContext context) {
 		OutBuffer buf = new OutBuffer();
@@ -467,9 +471,34 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		int dim = parameters.size();
 		TemplateTupleParameter tp = null;
 
-		if (dim != 0)
-			tp = ((TemplateParameter) parameters.get(dim - 1))
-					.isTemplateTupleParameter();
+		if (dim != 0) {
+			tp = (parameters.get(dim - 1)).isTemplateTupleParameter();
+		}
 		return tp;
 	}
+
+	@Override
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
+		TemplateDeclaration pf;
+		TemplateDeclaration f;
+
+		f = s.isTemplateDeclaration();
+		if (null == f)
+			return false;
+		TemplateDeclaration pthis = this;
+		TemplateDeclaration beforePf = null;
+		for (pf = pthis; pf != null; pf = pf.overnext) {
+			beforePf = pf;
+		}
+
+		f.overroot = this;
+		
+		if (beforePf == null) {
+			throw new IllegalStateException("assert(beforeBf)");
+		}
+		
+		beforePf.overnext = f;
+		return true;
+	}
+
 }

@@ -594,8 +594,8 @@ public class FuncDeclaration extends Declaration {
 		 */
 		Expressions valueSaves = new Expressions();
 		if (istate != null) {
-			valueSaves.setDim(istate.vars.size());
-			for (int i = 0; i < istate.vars.size(); i++) {
+			valueSaves.setDim(size(istate.vars));
+			for (int i = 0; i < size(istate.vars); i++) {
 				VarDeclaration v = (VarDeclaration) istate.vars.get(i);
 				if (v != null) {
 					valueSaves.set(i, v.value);
@@ -607,7 +607,12 @@ public class FuncDeclaration extends Declaration {
 		Expression e = null;
 
 		while (true) {
-			e = fbody.interpret(istatex, context);
+			try {
+				e = fbody.interpret(istatex, context);
+			} catch (StackOverflowError error) {
+				istate.stackOverflow = true;
+				e = EXP_CANT_INTERPRET;
+			}
 			if (e == EXP_CANT_INTERPRET) {
 				e = null;
 			}
@@ -636,7 +641,7 @@ public class FuncDeclaration extends Declaration {
 		if (istate != null) {
 			/* Restore the variable values
 			 */
-			for (int i = 0; i < istate.vars.size(); i++) {
+			for (int i = 0; i < size(istate.vars); i++) {
 				VarDeclaration v = (VarDeclaration) istate.vars.get(i);
 				if (v != null) {
 					v.value = valueSaves.get(i);
@@ -820,7 +825,7 @@ public class FuncDeclaration extends Declaration {
 			return overnext.overloadInsert(f, context);
 		}
 		overnext = f;
-		return false;
+		return true;
 	}
 
 	// Modified to add the caller's start and length, to signal a better error
@@ -1503,7 +1508,8 @@ public class FuncDeclaration extends Declaration {
 					if (arg.type.ty == Ttuple) {
 						TypeTuple t = (TypeTuple) arg.type;
 						int dim = Argument.dim(t.arguments, context);
-						Objects exps = new Objects(dim);
+						Objects exps = new Objects();
+						exps.setDim(dim);
 						for (int j = 0; j < dim; j++) {
 							Argument narg = Argument.getNth(t.arguments, j,
 									context);

@@ -10,8 +10,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class TypedefDeclaration extends Declaration {
 
-	public boolean first; // is this the first declaration in a multi
-	public boolean last; // is this the last declaration in a multi
+	public boolean first = true; // is this the first declaration in a multi
+	public boolean last = true; // is this the last declaration in a multi
 	public TypedefDeclaration next;
 
 	public Type sourceBasetype; // copy of basetype, because it will change

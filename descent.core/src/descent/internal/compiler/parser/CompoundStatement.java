@@ -243,7 +243,7 @@ public class CompoundStatement extends Statement {
 								handler = new CompoundStatement(loc,
 										sexception[0], handler);
 
-								List catches = new ArrayList();
+								Array catches = new Array();
 								Catch ctch = new Catch(loc, null,
 										new IdentifierExp(loc, id), handler);
 								catches.add(ctch);
@@ -254,6 +254,7 @@ public class CompoundStatement extends Statement {
 											sfinally[0]);
 								}
 								s = s.semantic(sc, context);
+								// TODO check the method Array::push
 								// statements..setDim(i + 1);
 								statements.add(s);
 								break;
@@ -276,6 +277,7 @@ public class CompoundStatement extends Statement {
 								s = new TryFinallyStatement(loc, body,
 										sfinally[0]);
 								s = s.semantic(sc, context);
+								// TODO check the method Array::push
 								// statements.setDim(i + 1);
 								statements.add(s);
 								break;
@@ -294,13 +296,14 @@ public class CompoundStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy() {
-		Statements a = new Statements(statements.size());
+		Statements a = new Statements();
+		a.setDim(statements.size());
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {
 				s = s.syntaxCopy();
 			}
-			a.add(s);
+			a.set(i, s);
 		}
 		CompoundStatement cs = new CompoundStatement(loc, a);
 		return cs;

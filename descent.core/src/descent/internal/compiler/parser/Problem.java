@@ -459,6 +459,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.UnknownSize);
 		case NoSizeYetForForwardReference:
 			return String.format(ProblemMessages.NoSizeYetForForwardReference);
+		case SymbolMatchesMoreThanOneTemplateDeclaration:
+			return String.format(ProblemMessages.SymbolMatchesMoreThanOneTemplateDeclaration, arguments[0], arguments[1], arguments[2]);
+		case ExpressionLeadsToStackOverflowAtCompileTime:
+			return String.format(ProblemMessages.ExpressionLeadsToStackOverflowAtCompileTime, arguments[0]);
 		default:
 			return "";
 		}

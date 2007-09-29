@@ -91,8 +91,8 @@ public class Module extends Package {
 		symtab = new DsymbolTable();
 
 		// TODO This is the current replacement of Add import of "object" if
-		// this module isn't "object"
-		if (ident == null || ident.ident != Id.object) {
+		// this module isn't "object". Use ident and pass ident to Module's ctor
+		if (md == null || md.id == null || md.id.ident != Id.object) {
 			symtab.insert(context.object);
 			symtab.insert(context.classinfo);
 			symtab.insert(context.typeinfo);

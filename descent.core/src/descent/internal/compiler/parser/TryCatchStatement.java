@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -10,9 +7,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class TryCatchStatement extends Statement {
 
 	public Statement body;
-	public List<Catch> catches;
+	public Array<Catch> catches;
 
-	public TryCatchStatement(Loc loc, Statement body, List<Catch> catches) {
+	public TryCatchStatement(Loc loc, Statement body, Array<Catch> catches) {
 		super(loc);
 		this.body = body;
 		this.catches = catches;
@@ -100,13 +97,14 @@ public class TryCatchStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy() {
-		List<Catch> a = new ArrayList<Catch>(catches.size());
+		Array<Catch> a = new Array<Catch>();
+		a.setDim(catches.size());
 		for (int i = 0; i < a.size(); i++) {
 			Catch c;
 
 			c = catches.get(i);
 			c = c.syntaxCopy();
-			a.add(c);
+			a.set(i, c);
 		}
 		TryCatchStatement s = new TryCatchStatement(loc, body.syntaxCopy(), a);
 		return s;

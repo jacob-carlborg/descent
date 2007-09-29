@@ -136,8 +136,6 @@ public class CatExp extends BinExp {
 						.toBasetype(context).ty == TY.Tsarray)) {
 			e = this;
 		} else {
-			//error("Can only concatenate arrays, not (%s ~ %s)",
-			//		e1.type.toChars(), e2.type.toChars());
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CanOnlyConcatenateArrays, 0, start, length,
 					new String[] { e1.type.toChars(context),

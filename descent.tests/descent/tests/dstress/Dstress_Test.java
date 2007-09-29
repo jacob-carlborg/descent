@@ -27,8 +27,12 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 	private static Set<String> compileFail;
 	
 	static {
+		// Currently, in this files dmd fails to compile but it should
 		compileFail = new HashSet<String>();
 		compileFail.add("array_initialization_33_A.d");
+		compileFail.add("bug_e2ir_520_B.d");
+		compileFail.add("bug_e2ir_772_H.d");
+		compileFail.add("bug_e2ir_772_I.d");
 	}
 	
 	static {
@@ -72,7 +76,7 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 		nocompile.put("a\\array_initialization_18_A.d", TODO(AST.D1));
 	}
 	
-	public void testNoCompile() throws Exception {
+	public void testNoCompile() throws Throwable {
 		int total = nocompile.size();
 		int passed = 0;
 		
@@ -85,11 +89,11 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 			File file = new File(new File(DSTRESS_PATH, "nocompile"), filename);
 			char[] source = getContents(file);
 			
-			Parser parser = new Parser(spec.getApiLevel(), source);
-			Module module = parser.parseModuleObj();
-			CompilationUnitResolver.resolve(module);
-			
 			try {
+				Parser parser = new Parser(spec.getApiLevel(), source);
+				Module module = parser.parseModuleObj();
+				CompilationUnitResolver.resolve(module);
+				
 				spec.validate(source, module);
 				passed++;
 			} catch (Exception e) {
@@ -97,6 +101,10 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				sb.append(filename);
 				sb.append(": ");
 				sb.append(e.getMessage());
+			} catch (Throwable e) {
+				System.out.println(file);
+				e.printStackTrace();
+				throw e;
 			}
 		}
 		
@@ -106,7 +114,7 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 		}
 	}
 	
-	public void testCompile() throws Exception {
+	public void testCompile() throws Throwable {
 		List<File> compile = listRecursive(new File(DSTRESS_PATH, "compile"));
 		
 		int total = compile.size();
@@ -125,7 +133,9 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 			try {
 				Parser parser = new Parser(AST.D1, source);
 				Module module = parser.parseModuleObj();
-				CompilationUnitResolver.resolve(module);
+				
+				// It seems warnings are disabled in dstress
+				CompilationUnitResolver.resolve(module, false /* don't show warnings */);
 				
 				if (module.problems.size() == 0) {
 					passed++;
@@ -144,6 +154,65 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				sb.append(e.getMessage());
 //				e.printStackTrace();
 //				break;
+			} catch (Throwable e) {
+				System.out.println(file);
+				e.printStackTrace();
+				throw e;
+			}
+		}
+		
+		if (sb.length() != 0) {
+			int failed = total - passed;
+			throw new Exception("Failed:" + failed + ", Passed: " + passed + ", Total: " + total + sb.toString());
+		}
+	}
+	
+	// Remove the _ to test a dstress test in particular
+	public void _testCompileDebug() throws Throwable {
+		List<File> compile = new ArrayList<File>();
+		compile.add(new File("c:\\ary\\programacion\\d\\dstress\\compile\\t\\template_44_A.d"));
+		
+		int total = compile.size();
+		int passed = 0;
+		
+		StringBuilder sb = new StringBuilder();
+		
+		for(File file : compile) {
+			String filename = file.getName();
+			
+			if (compileFail.contains(filename)) {
+				continue;
+			}
+			
+			char[] source = getContents(file);
+			try {
+				Parser parser = new Parser(AST.D1, source);
+				Module module = parser.parseModuleObj();
+				
+				// It seems warnings are disabled in dstress
+				CompilationUnitResolver.resolve(module, false /* don't show warnings */);
+				
+				if (module.problems.size() == 0) {
+					passed++;
+				} else {
+					sb.append("\n");
+					sb.append(filename);
+					sb.append(" had ");
+					sb.append(module.problems.size());
+					sb.append(" problem(s): ");
+					sb.append(module.problems);
+				}
+			} catch (Exception e) {
+				sb.append("\n");
+				sb.append(filename);
+				sb.append(": ");
+				sb.append(e.getMessage());
+				e.printStackTrace();
+				break;
+			} catch (Throwable e) {
+				System.out.println(file);
+				e.printStackTrace();
+				throw e;
 			}
 		}
 		

@@ -8,4 +8,7 @@ public class InterState
     Dsymbols vars;		// variables used in this function
     Statement start;		// if !=null, start execution at this statement
     Statement gotoTarget;	// target of EXP_GOTO_INTERPRET result
+    
+    boolean stackOverflow; // for Descent: tells if the evaluation resulted in a stack overflow
+    
 }

@@ -1029,17 +1029,17 @@ public class ASTConverter {
 	public descent.core.dom.ValueTemplateParameter convert(TemplateValueParameter a) {
 		descent.core.dom.ValueTemplateParameter b = new descent.core.dom.ValueTemplateParameter(ast);
 		b.setName((SimpleName) convert(a.ident));
-		if (a.valType != null) {
-			descent.core.dom.Type convertedType = convert(a.valType);
+		if (a.sourceValType != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceValType);
 			if (convertedType != null) {
 				b.setType(convertedType);
 			}
 		}
-		if (a.defaultValue != null) {
-			b.setDefaultValue(convert(a.defaultValue));
+		if (a.sourceDefaultValue != null) {
+			b.setDefaultValue(convert(a.sourceDefaultValue));
 		}
-		if (a.specValue != null) {
-			b.setSpecificValue(convert(a.specValue));
+		if (a.sourceSpecValue != null) {
+			b.setSpecificValue(convert(a.sourceSpecValue));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

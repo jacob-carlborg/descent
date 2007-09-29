@@ -544,6 +544,16 @@ UnknownSize
 NoSizeYetForForwardReference
 	formatString=No size yet for forward reference
 	numArgs=0	
+SymbolMatchesMoreThanOneTemplateDeclaration
+	formatString=%1$s matches more than one template declaration, $2%s and $3%s
+	numArgs=3
+ExpressionLeadsToStackOverflowAtCompileTime
+	formatString=%1$s leads to stack overflow at compile time
+	numArgs=1
+	
+	
+	
+	
 	
 	
 	

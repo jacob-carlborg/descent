@@ -33,8 +33,8 @@ import static descent.internal.compiler.parser.TY.Taarray;
 // DMD 1.020
 public class VarDeclaration extends Declaration {
 
-	public boolean first; // is this the first declaration in a multi
-	public boolean last; // is this the last declaration in a multi
+	public boolean first = true; // is this the first declaration in a multi
+	public boolean last = true; // is this the last declaration in a multi
 	public VarDeclaration next;
 
 	// declaration?
@@ -288,7 +288,8 @@ public class VarDeclaration extends Declaration {
 			 */
 			TypeTuple tt = (TypeTuple) tb;
 			int nelems = Argument.dim(tt.arguments, context);
-			Objects exps = new Objects(nelems);
+			Objects exps = new Objects();
+			exps.setDim(nelems);
 
 			for (int i = 0; i < nelems; i++) {
 				Argument arg = Argument.getNth(tt.arguments, i, context);

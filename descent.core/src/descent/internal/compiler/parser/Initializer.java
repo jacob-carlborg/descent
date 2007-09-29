@@ -13,10 +13,10 @@ public abstract class Initializer extends ASTDmdNode {
 		Initializers a = null;
 
 		if (ai != null) {
-			a = new Initializers(ai.size());
+			a = new Initializers();
+			a.setDim(ai.size());
 			for (int i = 0; i < a.size(); i++) {
 				Initializer e = ai.get(i);
-
 				e = e.syntaxCopy();
 				a.set(i, e);
 			}

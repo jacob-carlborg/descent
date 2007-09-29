@@ -169,13 +169,14 @@ public class UnrolledLoopStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy() {
-		Statements a = new Statements(statements.size());
+		Statements a = new Statements();
+		a.setDim(statements.size());
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {
 				s = s.syntaxCopy();
 			}
-			a.add(s);
+			a.set(i, s);
 		}
 		UnrolledLoopStatement cs = new UnrolledLoopStatement(loc, a);
 		return cs;

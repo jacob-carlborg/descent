@@ -251,7 +251,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int COMMENT = 192;
 	public final static int PRAGMA = 193;
 	public final static int ARRAY_LENGTH_EXP = 194;
-	public final static int DOT_TEMPLATE_EXP = 195;	
+	public final static int DOT_TEMPLATE_EXP = 195;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {
@@ -560,7 +560,9 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 
 			else if (e.op == TOKdotexp) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolHasNoValue, 0, e.start, e.length,
+						new String[] { e.toChars(context) }));
 			}
 		}
 		return e;
@@ -639,8 +641,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		modifiers.addAll(someModifiers);
 	}
 
-	public static void argExpTypesToCBuffer(OutBuffer buf, Expressions arguments,
-			HdrGenState hgs, SemanticContext context) {
+	public static void argExpTypesToCBuffer(OutBuffer buf,
+			Expressions arguments, HdrGenState hgs, SemanticContext context) {
 		if (arguments != null) {
 			OutBuffer argbuf = new OutBuffer();
 
@@ -717,8 +719,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public static void expToCBuffer(OutBuffer buf, HdrGenState hgs, Expression e,
-			PREC pr, SemanticContext context) {
+	public static void expToCBuffer(OutBuffer buf, HdrGenState hgs,
+			Expression e, PREC pr, SemanticContext context) {
 		if (e.op.precedence.ordinal() < pr.ordinal()) {
 			buf.writeByte('(');
 			e.toCBuffer(buf, hgs, context);
@@ -840,7 +842,8 @@ public abstract class ASTDmdNode extends ASTNode {
 					 * Set arg to be: new Tclass(arg0, arg1,
 					 * ..., argn)
 					 */
-						Expressions args = new Expressions(nargs - 1);
+						Expressions args = new Expressions();
+						args.setDim(nargs - 1);
 						for (int u = i; u < nargs; u++) {
 							args.set(u - i, arguments.get(u));
 						}
@@ -855,6 +858,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						break;
 					}
 					arg = arg.semantic(sc, context);
+					arguments.setDim(i + 1);
 					done = 1;
 				}
 
@@ -1011,7 +1015,9 @@ public abstract class ASTDmdNode extends ASTNode {
 				Expression arg = exps.get(i);
 
 				if (arg.type == null) {
-					context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, arg.start, arg.length, new String[] { arg.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeWarning(
+							IProblem.SymbolNotAnExpression, 0, arg.start,
+							arg.length, new String[] { arg.toChars(context) }));
 					arg = new IntegerExp(arg.loc, 0, Type.tint32);
 				}
 
@@ -1519,7 +1525,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		Expressions newa = null;
 
 		if (a != null) {
-			newa = new Expressions(a.size());
+			newa = new Expressions();
+			newa.setDim(a.size());
 
 			for (int i = 0; i < a.size(); i++) {
 				Expression e = (Expression) a.get(i);
@@ -1554,82 +1561,68 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		return e;
 	}
-	
+
 	public static final Expression getVarExp(Loc loc, InterState istate,
-		Declaration d, SemanticContext context)
-	{
+			Declaration d, SemanticContext context) {
 		// FIXME this doesn't work, we may need to port over tosym.c
 		Expression e = EXP_CANT_INTERPRET;
 		VarDeclaration v = d.isVarDeclaration();
 		// TODO SymbolDeclaration s = d.isSymbolDeclaration();
-		if(null != v)
-		{
-			if(v.isConst() && null != v.init)
-			{
+		if (null != v) {
+			if (v.isConst() && null != v.init) {
 				e = v.init.toExpression(context);
-				if(null == e.type)
+				if (null == e.type)
 					e.type = v.type;
-			}
-			else
-			{
+			} else {
 				e = v.value;
-				if(null == e)
+				if (null == e)
 					error("variable %s is used before initialization", v
 							.toChars(context));
-				else if(e != EXP_CANT_INTERPRET)
+				else if (e != EXP_CANT_INTERPRET)
 					e = e.interpret(istate, context);
 			}
-			if(null == e)
+			if (null == e)
 				e = EXP_CANT_INTERPRET;
 		}
 		/* TODO else if (s)
-		{
-		   if (s.dsym.toInitializer() == s.sym)
-		   {   Expressions exps = new Expressions();
-		       e = new StructLiteralExp(0, s.dsym, exps);
-		       e = e.semantic(null);
-		   }
-		} */
+		 {
+		 if (s.dsym.toInitializer() == s.sym)
+		 {   Expressions exps = new Expressions();
+		 e = new StructLiteralExp(0, s.dsym, exps);
+		 e = e.semantic(null);
+		 }
+		 } */
 		return e;
 	}
-	
+
 	public static void ObjectToCBuffer(OutBuffer buf, HdrGenState hgs,
-			ASTDmdNode oarg, SemanticContext context)
-	{
+			ASTDmdNode oarg, SemanticContext context) {
 		Type t = isType(oarg);
 		Expression e = isExpression(oarg);
 		Dsymbol s = isDsymbol(oarg);
 		Tuple v = isTuple(oarg);
-		if(null != t)
+		if (null != t)
 			t.toCBuffer(buf, null, hgs, context);
-		else if(null != e)
+		else if (null != e)
 			e.toCBuffer(buf, hgs, context);
-		else if(null != s)
-		{
+		else if (null != s) {
 			String p = null != s.ident ? s.ident.toChars() : s.toChars(context);
 			buf.writestring(p);
-		}
-		else if(null != v)
-		{
+		} else if (null != v) {
 			Objects args = v.objects;
-			for(int i = 0; i < args.size(); i++)
-			{
-				if(i > 0)
+			for (int i = 0; i < args.size(); i++) {
+				if (i > 0)
 					buf.writeByte(',');
 				ASTDmdNode o = (ASTDmdNode) args.get(i);
 				ObjectToCBuffer(buf, hgs, o, context);
 			}
-		}
-		else if(null == oarg)
-		{
+		} else if (null == oarg) {
 			buf.writestring("null");
-		}
-		else
-		{
+		} else {
 			assert (false);
 		}
 	}
-	
+
 	public static void templateResolve(Match m, TemplateDeclaration td,
 			Scope sc, Loc loc, Objects targsi, Expressions arguments,
 			SemanticContext context) {
@@ -1650,14 +1643,85 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 	
+	public static boolean match(ASTDmdNode o1, ASTDmdNode o2,
+			TemplateDeclaration tempdecl, Scope sc, SemanticContext context) {
+		Type t1 = isType(o1);
+		Type t2 = isType(o2);
+		Expression e1 = isExpression(o1);
+		Expression e2 = isExpression(o2);
+		Dsymbol s1 = isDsymbol(o1);
+		Dsymbol s2 = isDsymbol(o2);
+		Tuple v1 = isTuple(o1);
+		Tuple v2 = isTuple(o2);
+
+		/* A proper implementation of the various equals() overrides
+		 * should make it possible to just do o1->equals(o2), but
+		 * we'll do that another day.
+		 */
+
+		if (t1 != null) {
+			/* if t1 is an instance of ti, then give error
+			 * about recursive expansions.
+			 */
+			Dsymbol s = t1.toDsymbol(sc, context);
+			if (s != null && s.parent != null) {
+				TemplateInstance ti1 = s.parent.isTemplateInstance();
+				if (ti1 != null && ti1.tempdecl == tempdecl) {
+					for (Scope sc1 = sc; sc1 != null; sc1 = sc1.enclosing) {
+						if (sc1.scopesym == ti1) {
+							error(
+									"recursive template expansion for template argument %s",
+									t1.toChars(context));
+							return true; // fake a match
+						}
+					}
+				}
+			}
+
+			if (null == t2 || !t1.equals(t2)) {
+				// goto L1;
+				return false;
+			}
+		} else if (e1 != null) {
+			if (null == e2 || !e1.equals(e2)) {
+				// goto L1;
+				return false;
+			}
+		} else if (s1 != null) {
+			if (null == s2 || !s1.equals(s2) || s1.parent != s2.parent) {
+				// goto L1;
+				return false;
+			}
+		} else if (v1 != null) {
+			if (null == v2) {
+				// goto L1;
+				return false;
+			}
+			if (size(v1.objects) != size(v2.objects)) {
+				// goto L1;
+				return false;
+			}
+			for (int i = 0; i < size(v1.objects); i++) {
+				if (match((ASTDmdNode) v1.objects.get(i),
+						(ASTDmdNode) v2.objects.get(i), tempdecl, sc, context)) {
+					// goto L1;
+					return false;
+				}
+			}
+		}
+		return true; // match
+		//	L1:
+		//	    return 0;	// nomatch;
+	}
+
 	/**
 	 * Returns the size of a list which may ne <code>null</code>.
 	 * In such case, 0 is returned.
 	 */
-	protected int size(List list) {
-		return list == null ? 0 : list.size(); 
+	protected static int size(List list) {
+		return list == null ? 0 : list.size();
 	}
-	
+
 	/**
 	 * This is a debug string used by NaiveASTFlattener
 	 * to add resolved information to the string output.
@@ -1682,5 +1746,5 @@ public abstract class ASTDmdNode extends ASTNode {
 	public ASTDmdNode getParentBinding() {
 		return null;
 	}
-
+	
 }

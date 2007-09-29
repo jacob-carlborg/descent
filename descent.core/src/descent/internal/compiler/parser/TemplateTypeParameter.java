@@ -85,7 +85,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 		MATCH m = MATCHexact;
 		Type ta;
 
-		if (i < tiargs.size()) {
+		if (i < size(tiargs)) {
 			oarg = tiargs.get(i);
 		} else { 
 			// Get default argument instead

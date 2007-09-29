@@ -15,9 +15,9 @@ public class TemplateValueParameter extends TemplateParameter {
 
 	public static Expression edummy = null;
 
-	public Type valType;
-	public Expression specValue;
-	public Expression defaultValue;
+	public Type valType, sourceValType;
+	public Expression specValue, sourceSpecValue;
+	public Expression defaultValue, sourceDefaultValue;
 
 	public TemplateValueParameter(Loc loc, IdentifierExp ident, Type valType,
 			Expression specValue, Expression defaultValue) {
@@ -25,6 +25,10 @@ public class TemplateValueParameter extends TemplateParameter {
 		this.valType = valType;
 		this.specValue = specValue;
 		this.defaultValue = defaultValue;
+		
+		this.sourceValType = valType;
+		this.sourceSpecValue = specValue;
+		this.sourceDefaultValue = defaultValue;
 	}
 
 	@Override

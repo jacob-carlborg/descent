@@ -5,10 +5,14 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.TOK.TOKstring;
 
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
@@ -34,6 +38,10 @@ public class StringExp extends Expression {
 
 	public StringExp(Loc loc, char[] string) {
 		this(loc, string, string.length);
+	}
+
+	public StringExp(Loc loc, char[] string, char postfix) {
+		this(loc, string, string.length, (char) 0);
 	}
 
 	public StringExp(Loc loc, char[] string, int len) {
@@ -193,7 +201,7 @@ public class StringExp extends Expression {
 	public boolean isBool(boolean result) {
 		return result ? true : false;
 	}
-	
+
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		return this;
@@ -271,11 +279,10 @@ public class StringExp extends Expression {
 			newlen = 0;
 			tfty = se.type.next.toBasetype(context).ty;
 			ttty = tb.next.toBasetype(context).ty;
-			
+
 			int x = X(tfty, ttty);
-			if (x == X(Tchar, Tchar) || 
-				x == X(Twchar, Twchar) ||
-				x == X(Tdchar, Tdchar)) {
+			if (x == X(Tchar, Tchar) || x == X(Twchar, Twchar)
+					|| x == X(Tdchar, Tdchar)) {
 				// break;
 			} else if (x == X(Tchar, Twchar)) {
 				for (u[0] = 0; u[0] < len;) {
@@ -384,7 +391,7 @@ public class StringExp extends Expression {
 				newlen = buffer.offset() / 2;
 				buffer.writeUTF16(0);
 				// goto L1;
-			// L1: 
+				// L1: 
 				if (0 == unique) {
 					se = new StringExp(loc, null, 0);
 				}
@@ -443,8 +450,80 @@ public class StringExp extends Expression {
 		return e;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ASTDmdNode)) {
+			return false;
+		}
+
+		ASTDmdNode o = (ASTDmdNode) obj;
+
+		if (o != null && o.dyncast() == DYNCAST_EXPRESSION) {
+			Expression e = (Expression) o;
+
+			if (e.op == TOKstring) {
+				return compare(o) == 0;
+			}
+		}
+		return false;
+	}
+
 	private int X(TY tf, TY tt) {
 		return ((tf.ordinal()) * 256 + (tt.ordinal()));
+	}
+
+	public int compare(ASTDmdNode obj) {
+		// Used to sort case statement expressions so we can do an efficient lookup
+		StringExp se2 = (StringExp) (obj);
+
+		// This is a kludge so isExpression() in template.c will return 5
+		// for StringExp's.
+		if (null == se2)
+			return 5;
+
+		if (se2.op != TOKstring) {
+			throw new IllegalStateException("assert(se2.op == TOKstring);");
+		}
+
+		int len1 = len;
+		int len2 = se2.len;
+
+		if (len1 == len2) {
+			switch (sz) {
+			case 1:
+				// TODO maybe do a CharOperation.compare for comparing char[]
+				return CharOperation.equals(string, se2.string) ? 0 : 1;
+
+			case 2: {
+				// TODO semantic
+//				unsigned u;
+//				d_wchar s1 = (d_wchar) string;
+//				d_wchar s2 = (d_wchar) se2.string;
+//
+//				for (u = 0; u < len; u++) {
+//					if (s1[u] != s2[u])
+//						return s1[u] - s2[u];
+//				}
+			}
+
+			case 4: {
+				// TODO semantic
+//				unsigned u;
+//				d_dchar s1 = (d_dchar) string;
+//				d_dchar s2 = (d_dchar) se2.string;
+//
+//				for (u = 0; u < len; u++) {
+//					if (s1[u] != s2[u])
+//						return s1[u] - s2[u];
+//				}
+			}
+				break;
+
+			default:
+				throw new IllegalStateException("assert(0)");
+			}
+		}
+		return len1 - len2;
 	}
 
 }

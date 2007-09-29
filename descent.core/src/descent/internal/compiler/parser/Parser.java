@@ -758,6 +758,7 @@ public class Parser extends Lexer {
 			    Initializer init = parseInitializer();
 			    VarDeclaration v = new VarDeclaration(loc, null, ident, init);
 			    v.first = first;
+			    v.last = false;
 			    first = false;
 			    
 			    v.storage_class = stc;
@@ -2748,6 +2749,7 @@ public class Parser extends Lexer {
 
 			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
 			v.first = first;
+			v.last = false;
 			first = false;
 			
 			v.storage_class = storage_class;
@@ -2850,6 +2852,7 @@ public class Parser extends Lexer {
 				if (tok == TOKtypedef) {
 					td = new TypedefDeclaration(loc, ident, t, init);
 					td.first = first;
+					td.last = false;
 					v = td;
 					if (previousTypedef != null) {
 						previousTypedef.next = td;
@@ -2862,6 +2865,7 @@ public class Parser extends Lexer {
 					
 					ad = new AliasDeclaration(loc, ident, t);
 					ad.first = first;
+					ad.last = false;
 					v = ad;
 					if (previousAlias != null) {
 						previousAlias.next = ad;
@@ -2952,6 +2956,7 @@ public class Parser extends Lexer {
 				
 				v = new VarDeclaration(loc, t, ident, init);
 				v.first = first;
+				v.last = false;
 				first = false;
 				
 				v.storage_class = storage_class;
@@ -4100,7 +4105,7 @@ public class Parser extends Lexer {
 
 		case TOKtry: {
 			Statement body;
-			List catches = null;
+			Array catches = null;
 			Statement finalbody = null;
 			
 			nextToken();
@@ -4136,7 +4141,7 @@ public class Parser extends Lexer {
 				c.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 				
 				if (catches == null) {
-					catches = new ArrayList();
+					catches = new Array();
 				}
 				
 				catches.add(c);

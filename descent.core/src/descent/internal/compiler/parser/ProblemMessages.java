@@ -192,6 +192,8 @@ final class ProblemMessages extends NLS {
 	public static String IndexOverflowForStaticArray;
 	public static String UnknownSize;
 	public static String NoSizeYetForForwardReference;
+	public static String SymbolMatchesMoreThanOneTemplateDeclaration;
+	public static String ExpressionLeadsToStackOverflowAtCompileTime;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

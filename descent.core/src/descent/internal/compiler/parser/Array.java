@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 
+// TODO this class should be a copy of ArrayList, and
+// setDim just grows the array to dim, plus
+// seting the size field to dim
 public class Array<T> extends ArrayList<T> {
 
 	private static final long serialVersionUID = 1L;
@@ -19,7 +22,9 @@ public class Array<T> extends ArrayList<T> {
 	}
 	
 	public void setDim(int dim) {
-		ensureCapacity(dim);
+		for(int i = size(); i < dim; i++) {
+			add(null);
+		}
 	}
 	
 	@Override
@@ -41,6 +46,12 @@ public class Array<T> extends ArrayList<T> {
 	public void zero() {
 		for(int i = 0; i < size(); i++) {
 			set(i, null);
+		}
+	}
+	
+	public void memcpy(Array<? extends T> other) {
+		for(int i = 0; i < other.size(); i++) {
+			set(i, other.get(i));
 		}
 	}
 

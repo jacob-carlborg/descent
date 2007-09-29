@@ -105,7 +105,9 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		StorageClassDeclaration scd;
 
-		Assert.isNotNull(s);
+		if (s != null) {
+			throw new IllegalStateException("assert(!s);");
+		}
 		scd = new StorageClassDeclaration(loc, stc, Dsymbol
 				.arraySyntaxCopy(decl), modifier, single, colon);
 		return scd;

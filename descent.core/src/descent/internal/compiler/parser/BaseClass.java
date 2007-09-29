@@ -1,9 +1,6 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tfunction;
@@ -80,11 +77,15 @@ public class BaseClass extends ASTDmdNode {
 		}
 	}
 
-	public int fillVtbl(ClassDeclaration cd, List vtbl, int newinstance,
+	public int fillVtbl(ClassDeclaration cd, Array vtbl, int newinstance,
 			SemanticContext context) {
 		ClassDeclaration id = base;
 		int j;
 		int result = 0;
+		
+		if (vtbl != null) {
+			vtbl.setDim(base.vtbl.size());
+		}
 
 		// first entry is ClassInfo reference
 		for (j = base.vtblOffset(); j < base.vtbl.size(); j++) {

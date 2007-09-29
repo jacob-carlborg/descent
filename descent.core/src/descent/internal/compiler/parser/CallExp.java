@@ -5,6 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
@@ -166,8 +167,11 @@ public class CallExp extends UnaExp {
 					} else if (fd.type.toBasetype(context).nextOf().ty == Tvoid) {
 						e = EXP_VOID_INTERPRET;
 					} else {
-						error("cannot evaluate %s at compile time",
-								toChars(context));
+						if (istate.stackOverflow) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0, start, length, new String[] { toChars(context) }));
+						} else {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, 0, start, length, new String[] { toChars(context) }));
+						}
 					}
 				}
 			}

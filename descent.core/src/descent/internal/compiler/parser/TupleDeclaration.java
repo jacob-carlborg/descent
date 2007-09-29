@@ -63,7 +63,8 @@ public class TupleDeclaration extends Declaration {
 			/*
 			 * We know it's a type tuple, so build the TypeTuple
 			 */
-			Arguments args = new Arguments(objects.size());
+			Arguments args = new Arguments();
+			args.setDim(objects.size());
 			for (int i = 0; i < objects.size(); i++) {
 				Type t = (Type) objects.get(i);
 

@@ -345,7 +345,8 @@ public class TemplateMixin extends TemplateInstance {
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		TemplateMixin tm;
 
-		Identifiers ids = new Identifiers(idents.size());
+		Identifiers ids = new Identifiers();
+		ids.setDim(idents.size());
 		for (int i = 0; i < idents.size(); i++) { // Matches TypeQualified::syntaxCopyHelper()
 			IdentifierExp id = idents.get(i);
 			if (id.dyncast() == DYNCAST.DYNCAST_DSYMBOL) {

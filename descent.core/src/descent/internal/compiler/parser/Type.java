@@ -668,12 +668,12 @@ public abstract class Type extends ASTDmdNode {
 			e = defaultInit(context);
 		} else if (CharOperation.equals(ident, Id.mangleof)) {
 			Assert.isNotNull(deco);
-			e = new StringExp(loc, deco.toCharArray(), 'c');
+			e = new StringExp(loc, deco.toCharArray(), deco.length(), 'c');
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else if (CharOperation.equals(ident, Id.stringof)) {
 			char[] s = toChars(context).toCharArray();
-			e = new StringExp(loc, s, 'c');
+			e = new StringExp(loc, s, s.length, 'c');
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else {

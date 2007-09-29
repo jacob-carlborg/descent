@@ -11,8 +11,10 @@ public class Dsymbol extends ASTDmdNode {
 
 	public static Arguments arraySyntaxCopy(Arguments a) {
 		Arguments b = new Arguments();
-		for (Argument s : a) {
-			b.add(s.syntaxCopy());
+		b.setDim(a.size());
+		for(int i = 0; i < a.size(); i++) {
+			Argument s = a.get(i);
+			b.set(i, s.syntaxCopy());
 		}
 		return b;
 	}
@@ -20,8 +22,10 @@ public class Dsymbol extends ASTDmdNode {
 	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
 		Dsymbols b = new Dsymbols();
 		if (a != null) {
-			for (Dsymbol s : a) {
-				b.add(s.syntaxCopy(null));
+			b.setDim(a.size());
+			for(int i = 0; i < a.size(); i++) {
+				Dsymbol s = a.get(i);
+				b.set(i, s.syntaxCopy(null));
 			}
 		}
 		return b;
@@ -392,9 +396,7 @@ public class Dsymbol extends ASTDmdNode {
 			}
 			buf.writestring(p);
 		}
-		// TODO this was %zu -> what's that?
-		buf.writestring(id.length());
-		buf.writestring(id);
+		buf.data.append(id.length()).append("u").append(id);
 		id = buf.toChars();
 		buf.data = null;
 		return id;

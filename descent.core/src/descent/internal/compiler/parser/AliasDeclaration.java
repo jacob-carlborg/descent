@@ -12,8 +12,8 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 // DMD 1.020
 public class AliasDeclaration extends Declaration {
 
-	public boolean first; // is this the first declaration in a multi
-	public boolean last; // is this the last declaration in a multi
+	public boolean first = true; // is this the first declaration in a multi
+	public boolean last = true; // is this the last declaration in a multi
 	public AliasDeclaration next;
 
 	public Type htype;

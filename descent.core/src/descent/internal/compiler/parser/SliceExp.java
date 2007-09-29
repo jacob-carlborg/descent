@@ -234,7 +234,8 @@ public class SliceExp extends UnaExp {
 				//int j2 = (size_t) i2;
 
 				if (e1.op == TOK.TOKtuple) {
-					Expressions exps = new Expressions(i2 - i1);
+					Expressions exps = new Expressions();
+					exps.setDim(i2 - i1);
 					for (int i = 0; i < (i2 - i1); i++) {
 						Expression tmp = (Expression) te.exps.get(i1 + i);
 						exps.set(i, tmp);

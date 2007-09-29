@@ -5,71 +5,71 @@ import java.util.List;
 // DMD 1.020
 public class Param {
 
-	char obj;		// write object file
-    char link;		// perform link
-    char trace;		// insert profiling hooks
-    boolean quiet;		// suppress non-error messages
-    boolean verbose;	// verbose compile
-    char symdebug;	// insert debug symbolic information
-    char optimize;	// run optimizer
-    char cpu;		// target CPU
-    boolean isX86_64;	// generate X86_64 bit code
-    char isLinux;	// generate code for linux
-    char isWindows;	// generate code for Windows
-    char scheduler;	// which scheduler to use
-    boolean useDeprecated = false;	// allow use of deprecated features
-    boolean useAssert = true;	// generate runtime code for assert()'s
-    boolean useInvariants = true;	// generate class invariant checks
-    boolean useIn = true;		// generate precondition checks
-    boolean useOut = true;	// generate postcondition checks
-    boolean useArrayBounds = true; // generate array bounds checks
-    boolean useSwitchError = true; // check for switches without a default
-    boolean useUnitTests = true;	// generate unittest code
-    boolean useInline;	// inline expand functions
-    boolean release;	// build release version
-    boolean preservePaths;	// !=0 means don't strip path from source file
-    boolean warnings = true;	// enable warnings
-    char pic;		// generate position-independent-code for shared libs
-    char cov;		// generate code coverage data
-    char nofloat;	// code should not pull in floating point support
-    int Dversion;	// D version number
+	public char obj;		// write object file
+	public char link;		// perform link
+	public char trace;		// insert profiling hooks
+	public boolean quiet;		// suppress non-error messages
+	public boolean verbose;	// verbose compile
+	public char symdebug;	// insert debug symbolic information
+	public char optimize;	// run optimizer
+	public char cpu;		// target CPU
+	public boolean isX86_64;	// generate X86_64 bit code
+	public char isLinux;	// generate code for linux
+	public char isWindows;	// generate code for Windows
+	public char scheduler;	// which scheduler to use
+	public boolean useDeprecated = false;	// allow use of deprecated features
+	public boolean useAssert = true;	// generate runtime code for assert()'s
+	public boolean useInvariants = true;	// generate class invariant checks
+	public boolean useIn = true;		// generate precondition checks
+	public boolean useOut = true;	// generate postcondition checks
+	public boolean useArrayBounds = true; // generate array bounds checks
+	public boolean useSwitchError = true; // check for switches without a default
+	public boolean useUnitTests = true;	// generate unittest code
+	public boolean useInline;	// inline expand functions
+	public boolean release;	// build release version
+	public boolean preservePaths;	// !=0 means don't strip path from source file
+	public boolean warnings = true;	// enable warnings
+	public char pic;		// generate position-independent-code for shared libs
+	public char cov;		// generate code coverage data
+	public char nofloat;	// code should not pull in floating point support
+	public int Dversion;	// D version number
 
-    String argv0;	// program name
-    List<String> imppath; // array of char*'s of where to look for import modules
-    List<String> fileImppath;	// array of char*'s of where to look for file import modules
-    String objdir;	// .obj file output directory
-    String objname;	// .obj file output name
+	public String argv0;	// program name
+	public List<String> imppath; // array of char*'s of where to look for import modules
+	public List<String> fileImppath;	// array of char*'s of where to look for file import modules
+	public String objdir;	// .obj file output directory
+	public String objname;	// .obj file output name
 
-    char doDocComments;	// process embedded documentation comments
-    String docdir;	// write documentation file to docdir directory
-    String docname;	// write documentation file to docname
-    List<String> ddocfiles;	// macro include files for Ddoc
+	public char doDocComments;	// process embedded documentation comments
+	public String docdir;	// write documentation file to docdir directory
+	public String docname;	// write documentation file to docname
+	public List<String> ddocfiles;	// macro include files for Ddoc
 
-    char doHdrGeneration;	// process embedded documentation comments
-    String hdrdir;		// write 'header' file to docdir directory
-    String hdrname;		// write 'header' file to docname
+	public char doHdrGeneration;	// process embedded documentation comments
+	public String hdrdir;		// write 'header' file to docdir directory
+	public String hdrname;		// write 'header' file to docname
 
-    long debuglevel;	// debug level
-    List<char[]> debugids;		// debug identifiers
+	public long debuglevel;	// debug level
+	public List<char[]> debugids;		// debug identifiers
 
-    long versionlevel;	// version level
-    List<char[]> versionids;		// version identifiers
+	public long versionlevel;	// version level
+	public List<char[]> versionids;		// version identifiers
 
-    boolean dump_source;
+	public boolean dump_source;
 
     // Hidden debug switches
-    char debuga;
-    char debugb;
-    char debugc;
-    char debugf;
-    char debugr;
-    char debugw;
-    char debugx;
-    char debugy;
+	public char debuga;
+	public char debugb;
+	public char debugc;
+	public char debugf;
+	public char debugr;
+	public char debugw;
+	public char debugx;
+	public char debugy;
 
-    char run;		// run resulting executable
-    int runargs_length;
-    String[] runargs;	// arguments for executable
+	public char run;		// run resulting executable
+	public int runargs_length;
+	public  String[] runargs;	// arguments for executable
 
     // Linker stuff
     /*

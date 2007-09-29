@@ -33,6 +33,7 @@ import descent.internal.core.util.Util;
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	private final static boolean RESOLVE = true;
+	private final static boolean WARNINGS_ENABLED_BY_DEFAULT = false;
 	private final static boolean SYSOUT = false;
 	
 	public static class ParseResult {
@@ -148,9 +149,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	}
 	
 	public static void resolve(final Module module) {
+		resolve(module, WARNINGS_ENABLED_BY_DEFAULT);
+	}
+	
+	public static void resolve(final Module module, boolean warningsEnabled) {
 		if (!RESOLVE) return;
 		
-		module.semantic(new SemanticContext(new IProblemRequestor() {
+		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);
 			}
@@ -161,7 +166,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			public boolean isActive() {
 				return true;
 			}
-		}, module.apiLevel));
+		};
+				
+		SemanticContext context = new SemanticContext(problemRequestor, module.apiLevel);
+		context.global.params.warnings = warningsEnabled;
+		module.semantic(context);
 		
 		if (SYSOUT) {
 			System.out.println(module);
