@@ -729,7 +729,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	protected void fatal() {
-		throw new IllegalStateException("Problem reporting not implemented");
+		// throw new IllegalStateException("Problem reporting not implemented");
 	}
 
 	public boolean findCondition(List<char[]> ids, char[] ident) {

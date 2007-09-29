@@ -71,7 +71,10 @@ public class SemanticContext {
 	}
 	
 	public void acceptProblem(IProblem problem) {
-		problemRequestor.acceptProblem(problem);
+		if (global.gag == 0) {
+			problemRequestor.acceptProblem(problem);
+		}
+		global.errors++;
 	}
 	
 	public void multiplyDefined(Dsymbol s1, Dsymbol s2) {
