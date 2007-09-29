@@ -542,6 +542,11 @@ public class integer_t extends Number {
 		}
 	}
 	
+	public integer_t castToSinteger_t() {
+		// TODO implement
+		return this;
+	}
+	
 	private static BigInteger toBigInteger(long value) {
 		return BigInteger.valueOf(value);
 	}	

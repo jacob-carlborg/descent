@@ -30,6 +30,8 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 		// Currently, in this files dmd fails to compile but it should
 		compileFail = new HashSet<String>();
 		compileFail.add("array_initialization_33_A.d");
+		compileFail.add("assert_20_A.d");
+		compileFail.add("assert_20_B.d");
 		compileFail.add("bug_e2ir_520_B.d");
 		compileFail.add("bug_e2ir_772_H.d");
 		compileFail.add("bug_e2ir_772_I.d");
@@ -170,7 +172,7 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 	// Remove the _ to test a dstress test in particular
 	public void _testCompileDebug() throws Throwable {
 		List<File> compile = new ArrayList<File>();
-		compile.add(new File("c:\\ary\\programacion\\d\\dstress\\compile\\t\\template_44_A.d"));
+		compile.add(new File("c:\\ary\\programacion\\d\\dstress\\compile\\a\\assert_14_J.d"));
 		
 		int total = compile.size();
 		int passed = 0;

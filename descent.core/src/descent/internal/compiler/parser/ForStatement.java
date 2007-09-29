@@ -187,7 +187,9 @@ public class ForStatement extends Statement {
 
 		sc.sbreak = this;
 		sc.scontinue = this;
-		body = body.semantic(sc, context);
+		if (body != null) {
+			body = body.semantic(sc, context);
+		}
 		sc.noctor--;
 
 		sc.pop();

@@ -93,6 +93,18 @@ public class StaticAssert extends Dsymbol {
 	}
 
 	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		StaticAssert sa;
+
+		if (s != null) {
+			throw new IllegalStateException("assert(!s);");
+		}
+		sa = new StaticAssert(loc, exp.syntaxCopy(), msg != null ? msg
+				.syntaxCopy() : null);
+		return sa;
+	}
+
+	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring(kind());

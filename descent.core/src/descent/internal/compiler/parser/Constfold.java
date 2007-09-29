@@ -525,13 +525,12 @@ public class Constfold
 			}
 			else
 			{
-				// TODO: this is sinteger_t in DMD, and I think in Java it is a long
 				integer_t n1;
 				integer_t n2;
 				integer_t n;
 				
-				n1 = e1.toInteger(context);
-				n2 = e2.toInteger(context);
+				n1 = e1.toInteger(context).castToSinteger_t();
+				n2 = e2.toInteger(context).castToSinteger_t();
 				if(n2.equals(0))
 				{
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DivisionByZero, 0, e1.start, e2.start + e2.length - e1.start));
@@ -539,7 +538,7 @@ public class Constfold
 					n2 = integer_t.ONE;
 				}
 				if(e1.type.isunsigned() || e2.type.isunsigned())
-					n = /* TODO unsigned ((d_uns64) n1) / ((d_uns64) n2)*/ null;
+					n = n1.castToUns64().divide(n2.castToUns64());
 				else
 					n = n1.divide(n2);
 				e = new IntegerExp(loc, n, type);
@@ -592,13 +591,12 @@ public class Constfold
 			}
 			else
 			{
-				// TODO: this is sinteger_t in DMD, and I think in Java it is a long
 				integer_t n1;
 				integer_t n2;
 				integer_t n;
 				
-				n1 = e1.toInteger(context);
-				n2 = e2.toInteger(context);
+				n1 = e1.toInteger(context).castToSinteger_t();
+				n2 = e2.toInteger(context).castToSinteger_t();
 				if(n2.equals(0))
 				{
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DivisionByZero, 0, e1.start, e2.start + e2.length - e1.start));
@@ -606,7 +604,7 @@ public class Constfold
 					n2 = integer_t.ONE;
 				}
 				if(e1.type.isunsigned() || e2.type.isunsigned())
-					n = null/* TODO unsigned ((d_uns64) n1) % ((d_uns64) n2) */;
+					n = n1.castToUns64().mod(n2.castToUns64());
 				else
 					n = n1.mod(n2);
 				e = new IntegerExp(loc, n, type);
@@ -1371,19 +1369,30 @@ public class Constfold
 			}
 			else
 			{
-				// TODO: this is sinteger_t in DMD, and I think in Java it is a long
 				integer_t n1;
 				integer_t n2;
 				
-				n1 = e1.toInteger(context);
-				n2 = e2.toInteger(context);
+				n1 = e1.toInteger(context).castToSinteger_t();
+				n2 = e2.toInteger(context).castToSinteger_t();
 				if(e1.type.isunsigned() || e2.type.isunsigned())
 				{
 					switch(op)
 					{
-						/* TODO unsigned comparison */
+					case TOKlt:	n = n1.castToUns64().compareTo(n2.castToUns64()) < 0 ? 1 : 0;	break;
+					case TOKle:	n = n1.castToUns64().compareTo(n2.castToUns64()) <= 0 ? 1 : 0;	break;
+					case TOKgt:	n = n1.castToUns64().compareTo(n2.castToUns64()) > 0 ? 1 : 0;	break;
+					case TOKge:	n = n1.castToUns64().compareTo(n2.castToUns64()) >= 0 ? 1 : 0;	break;
+
+					case TOKleg:	n = 1;					break;
+					case TOKlg:	n = n1.castToUns64().compareTo(n2.castToUns64()) != 0 ? 1 : 0;	break;
+					case TOKunord:	n = 0;					break;
+					case TOKue:	n = n1.castToUns64().compareTo(n2.castToUns64()) == 0 ? 1 : 0;	break;
+					case TOKug:	n = n1.castToUns64().compareTo(n2.castToUns64()) > 0 ? 1 : 0;	break;
+					case TOKuge:	n = n1.castToUns64().compareTo(n2.castToUns64()) >= 0 ? 1 : 0;	break;
+					case TOKul:	n = n1.castToUns64().compareTo(n2.castToUns64()) < 0 ? 1 : 0;	break;
+					case TOKule:	n = n1.castToUns64().compareTo(n2.castToUns64()) <= 0 ? 1 : 0;	break;
 						default:
-							assert(false);
+							throw new IllegalStateException("assert(0);");
 					}
 				}
 				else

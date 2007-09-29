@@ -52,16 +52,19 @@ public class IntegerExp extends Expression {
 	public IntegerExp(Loc loc, int value, Type type) {
 		this(loc, new integer_t(value), type);
 	}
+	
+	public IntegerExp(Loc loc, char[] str, int value, Type type) {
+		this(loc, str, new integer_t(value), type);
+	}
 
 	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
 		super(loc, TOK.TOKint64);
 		this.str = str;
+		if (value == null) {
+			System.out.println(value);
+		}
 		this.value = value;
 		this.type = type;
-	}
-
-	public IntegerExp(Loc loc, char[] str, int value, Type type) {
-		this(loc, str, new integer_t(value), type);
 	}
 	
 	@Override
