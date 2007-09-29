@@ -52,7 +52,7 @@ public class TupleDeclaration extends Declaration {
 			/*
 			 * It's only a type tuple if all the Object's are types
 			 */
-			for (int i = 0; i < objects.size(); i++) {
+			for (int i = 0; i < size(objects); i++) {
 				ASTDmdNode o = objects.get(i);
 
 				if (o.dyncast() != DYNCAST.DYNCAST_TYPE) {
@@ -64,8 +64,8 @@ public class TupleDeclaration extends Declaration {
 			 * We know it's a type tuple, so build the TypeTuple
 			 */
 			Arguments args = new Arguments();
-			args.setDim(objects.size());
-			for (int i = 0; i < objects.size(); i++) {
+			args.setDim(size(objects));
+			for (int i = 0; i < size(objects); i++) {
 				Type t = (Type) objects.get(i);
 
 				Argument arg = new Argument(STCin, t, null, null);

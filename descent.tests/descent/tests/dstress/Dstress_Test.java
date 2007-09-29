@@ -35,6 +35,8 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 		compileFail.add("bug_e2ir_520_B.d");
 		compileFail.add("bug_e2ir_772_H.d");
 		compileFail.add("bug_e2ir_772_I.d");
+		compileFail.add("bug_expression_4420_A.d");
+		compileFail.add("bug_expression_4420_B.d");
 	}
 	
 	static {

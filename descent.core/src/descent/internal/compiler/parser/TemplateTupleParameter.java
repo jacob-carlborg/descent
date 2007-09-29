@@ -58,16 +58,16 @@ public class TemplateTupleParameter extends TemplateParameter {
 		/* The rest of the actual arguments (tiargs[]) form the match
 		 * for the variadic parameter.
 		 */
-		if (!(i + 1 == dedtypes.size())) {
+		if (!(i + 1 == size(dedtypes))) {
 			throw new IllegalStateException("assert (i + 1 == dedtypes.size());"); // must be the last one
 		}
 		Tuple ovar;
-		if (i + 1 == tiargs.size() && isTuple(tiargs.get(i)) != null) {
+		if (i + 1 == size(tiargs) && isTuple(tiargs.get(i)) != null) {
 			ovar = isTuple(tiargs.get(i));
 		} else {
 			ovar = new Tuple();
-			if (i < tiargs.size()) {
-				for (int j = 0; j < ovar.objects.size(); j++) {
+			if (i < size(tiargs)) {
+				for (int j = 0; j < size(ovar.objects); j++) {
 					ovar.objects.set(j, tiargs.get(i + j));
 				}
 			}
