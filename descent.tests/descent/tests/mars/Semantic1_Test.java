@@ -1,5 +1,8 @@
 package descent.tests.mars;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 
@@ -977,23 +980,23 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testStatementIsNotReachable() {
-		e("void foo() { return; int x; }",
-			IProblem.StatementIsNotReachable, "int x;");
+		assertSemanticProblems("void foo() { return; int x; }",
+			"int x;", IProblem.StatementIsNotReachable);
 	}
 	
 	public void testDivisionByZeroWithDiv() {
-		e("void foo() { int x = 2 / 0; }",
-			IProblem.DivisionByZero, "2 / 0");
+		assertSemanticProblems("void foo() { int x = 2 / 0; }",
+			"2 / 0", IProblem.DivisionByZero);
 	}
 	
 	public void testDivisionByZeroWithMod() {
-		e("void foo() { int x = 2 % 0; }", 
-			IProblem.DivisionByZero, "2 % 0");
+		assertSemanticProblems("void foo() { int x = 2 % 0; }", 
+			"2 % 0", IProblem.DivisionByZero);
 	}
 	
 	public void testDefaultNotInSwitch() {
-		e("void foo() { default: }",
-			IProblem.DefaultNotInSwitch, "default:");
+		assertSemanticProblems("void foo() { default: }",
+			"default:", IProblem.DefaultNotInSwitch);
 	}
 	
 	public void testDefaultNotInSwitch_Not() {
@@ -1001,13 +1004,13 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testSwitchAlreadyHasDefault() {
-		s("void foo() { switch(true) { default: break; default: } }",
-			IProblem.SwitchAlreadyHasDefault, "; default:", 2);
+		assertSemanticProblems("void foo() { switch(true) { default: break; default: } }",
+			"default:", IProblem.SwitchAlreadyHasDefault, 44);
 	}
 	
 	public void testContinueNotInLoop() {
-		e("void foo() { continue; }", 
-			IProblem.ContinueNotInLoop, "continue;");
+		assertSemanticProblems("void foo() { continue; }", 
+			"continue;", IProblem.ContinueNotInLoop);
 	}
 	
 	public void testContinueNotInLoop_Not() {
@@ -1015,13 +1018,13 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testForeachIndexCannotBeRef() {
-		e("void foo() { int[int] x; foreach(ref a, b; x) { } }",
-				IProblem.ForeachIndexCannotBeRef, "ref a");
+		assertSemanticProblems("void foo() { int[int] x; foreach(ref a, b; x) { } }",
+			"ref a", IProblem.ForeachIndexCannotBeRef);
 	}
 	
 	public void testFunctionArguments() {
-		e("void foo(int x) {  } void bar() { foo(); }",
-			IProblem.ParametersDoesNotMatchParameterTypes, "foo()");
+		assertSemanticProblems("void foo(int x) {  } void bar() { foo(); }",
+			"foo()", IProblem.ParametersDoesNotMatchParameterTypes);
 	}
 	
 	public void testFunctionArguments_Not() {
@@ -1029,55 +1032,113 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testIncompatibleTypes() {
-		e("class X { } void foo() { X x = new X(); x = x + x; }",
-			IProblem.IncompatibleTypeForOperator, "x + x");
+		assertSemanticProblems("class X { } void foo() { X x = new X(); x = x + x; }",
+			"x + x", IProblem.IncompatibleTypeForOperator);
 	}
 
 	public void testSymbolNotDefined() {
-		e("mixin T!();",
-			IProblem.SymbolNotDefined, "T!()");
+		assertSemanticProblems("mixin T!();",
+			"T!()", IProblem.SymbolNotDefined);
 	}
 
 	public void testSymbolNotATemplate() {
-		e("class T { } mixin T!();",
-			IProblem.SymbolNotATemplate, "T!()");
+		assertSemanticProblems("class T { } mixin T!();",
+			"T!()", IProblem.SymbolNotATemplate);
 	}
 	
 	public void testCannotDeleteType() {
-		s("void foo() { delete 1; }",
-			IProblem.ConstantIsNotAnLValue, "1",
-			IProblem.CannotDeleteType, "delete 1");
+		assertSemanticProblems("void foo() { delete 1; }",
+			"1", IProblem.ConstantIsNotAnLValue,
+			"delete 1", IProblem.CannotDeleteType);
 	}
 	
 	public void testNotAnLvalue() {
-		e("void foo() { delete new int; }",
-			IProblem.NotAnLvalue, "new int");
+		assertSemanticProblems("void foo() { delete new int; }",
+				"new int", IProblem.NotAnLvalue);
 	}
 	
-	private void e(String source, 
-			int problemId1, String problemSource1) {
-		IProblem[] p = getModuleProblems(source);
-		assertEquals(1, p.length);
+	/**
+	 * Utility method for testing semantic problems. It is passed the source
+	 * as the first argument, and then a variable list of expected problems.
+	 * 
+	 * The problems must be in the form of the string of the expected problem
+	 * source followed by the problem ID, and optionally by the offset in the
+	 * string to start searching at (passed to Java's String.indexOf()) if the
+	 * source string contains multiple occurances of the problematic substring.
+	 * 
+	 * For example:
+	 * ------------
+	 * assertSemanticProblems("int a; int a;",
+	 *     "a", IProblem.DuplicatedSymbol,
+	 *     "a", IProblem.DuplicatedSymbol, 11);
+	 * ------------
+	 * 
+	 * @param source
+	 * @param problems
+	 */
+	private void assertSemanticProblems(String source, Object... problems)
+	{
+		class SemanticProblem
+		{
+			int problemId;
+			int start;
+			int length;
+		}
 		
-		assertProblem(p[0], problemId1, source.indexOf(problemSource1), problemSource1.length());
-	}
-	
-	private void s(String source, 
-			int problemId1, String problemSource1, int offset) {
-		IProblem[] p = getModuleProblems(source);
-		assertEquals(1, p.length);
-		
-		assertProblem(p[0], problemId1, source.indexOf(problemSource1) + offset, problemSource1.length() - offset);
-	}
-	
-	private void s(String source, 
-			int problemId1, String problemSource1,
-			int problemId2, String problemSource2) {
-		IProblem[] p = getModuleProblems(source);
-		assertEquals(2, p.length);
-		
-		assertProblem(p[0], problemId1, source.indexOf(problemSource1), problemSource1.length());
-		assertProblem(p[1], problemId2, source.indexOf(problemSource2), problemSource2.length());
+		if(problems.length == 0)
+		{
+			assertNoSemanticErrors(source);
+		}
+		else
+		{
+			List<SemanticProblem> semanticProblems = 
+				new ArrayList<SemanticProblem>();
+			
+			// Parse the arguments
+			int argIndex = 0;
+			while(argIndex < problems.length)
+			{
+				SemanticProblem problem = new SemanticProblem();
+				
+				assertTrue(problems[argIndex] instanceof String);
+				String problemString = (String) problems[argIndex];
+				argIndex++;
+				
+				assertTrue(problems[argIndex] instanceof Integer);
+				problem.problemId = ((Integer) problems[argIndex]).intValue();
+				assertTrue(problem.problemId > 0);
+				argIndex++;
+				
+				int offset;
+				if(argIndex < problems.length && problems[argIndex] instanceof Integer)
+				{
+					offset = ((Integer) problems[argIndex]).intValue();
+					assertTrue(offset >= 0);
+					argIndex++;
+				}
+				else
+				{
+					offset = 0;
+				}
+				
+				problem.start = source.indexOf(problemString, offset);
+				assertTrue(problem.start >= 0);
+				problem.length = problemString.length();
+				assertTrue(problem.length > 0);
+				
+				semanticProblems.add(problem);
+			}
+			
+			// Check the module problems
+			IProblem[] p = getModuleProblems(source);
+			assertEquals(semanticProblems.size(), p.length);
+			
+			for(int i = 0; i < semanticProblems.size(); i++)
+			{
+				SemanticProblem sp = semanticProblems.get(i);
+				assertError(p[i], sp.problemId, sp.start, sp.length);
+			}
+		}
 	}
 	
 	/* TODO test for SemanticContext.IN_GCC = true
