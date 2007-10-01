@@ -9,12 +9,13 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 // DMD 1.020
 public class CompileDeclaration extends AttribDeclaration {
 
-	public Expression exp;
+	public Expression exp, sourceExp;
 	public ScopeDsymbol sd;
 
 	public CompileDeclaration(Loc loc, Expression exp) {
 		super(loc, null);
 		this.exp = exp;
+		this.sourceExp = exp;
 	}
 
 	@Override

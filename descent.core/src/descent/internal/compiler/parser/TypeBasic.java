@@ -26,6 +26,12 @@ public class TypeBasic extends Type {
 		toDecoBuffer(out, null /* it's safe to pass null here */);
 		deco = out.extractData();
 	}
+	
+	public TypeBasic(Type singleton) {
+		super(singleton.ty, null, singleton);
+		this.deco = singleton.deco;
+	}
+	
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
@@ -527,26 +533,37 @@ public class TypeBasic extends Type {
 
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (this == to)
+		// See explanation of tbasic member
+		if (to instanceof TypeBasic && this.singleton == ((TypeBasic) to).singleton) {
 			return MATCHexact;
-
-		if (ty == Tvoid || to.ty == Tvoid)
-			return MATCHnomatch;
-		if (true || context.global.params.Dversion == 1) {
-			if (to.ty == Tbool)
-				return MATCHnomatch;
-		} else {
-			if (ty == Tbool || to.ty == Tbool)
-				return MATCHnomatch;
 		}
-		if (to.isTypeBasic() == null)
+		
+		if (this == to) {
+			return MATCHexact;
+		}
+
+		if (ty == Tvoid || to.ty == Tvoid) {
 			return MATCHnomatch;
+		}
+		if (true || context.global.params.Dversion == 1) {
+			if (to.ty == Tbool) {
+				return MATCHnomatch;
+			}
+		} else {
+			if (ty == Tbool || to.ty == Tbool) {
+				return MATCHnomatch;
+			}
+		}
+		if (to.isTypeBasic() == null) {
+			return MATCHnomatch;
+		}
 
 		TypeBasic tob = (TypeBasic) to;
 		if ((ty.flags & TFLAGSintegral) != 0) {
 			// Disallow implicit conversion of integers to imaginary or complex
-			if ((tob.ty.flags & (TFLAGSimaginary | TFLAGScomplex)) != 0)
+			if ((tob.ty.flags & (TFLAGSimaginary | TFLAGScomplex)) != 0) {
 				return MATCHnomatch;
+			}
 
 			// If converting to integral
 			/* TODO semantic
@@ -560,24 +577,28 @@ public class TypeBasic extends Type {
 			 */
 		} else if ((ty.flags & TFLAGSfloating) != 0) {
 			// Disallow implicit conversion of floating point to integer
-			if ((tob.ty.flags & TFLAGSintegral) != 0)
+			if ((tob.ty.flags & TFLAGSintegral) != 0) {
 				return MATCHnomatch;
+			}
 
 			Assert.isTrue((tob.ty.flags & TFLAGSfloating) != 0);
 
 			// Disallow implicit conversion from complex to non-complex
 			if ((ty.flags & TFLAGScomplex) != 0
-					&& (tob.ty.flags & TFLAGScomplex) == 0)
+					&& (tob.ty.flags & TFLAGScomplex) == 0) {
 				return MATCHnomatch;
+			}
 
 			// Disallow implicit conversion of real or imaginary to complex
 			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != 0
-					&& (tob.ty.flags & TFLAGScomplex) != 0)
+					&& (tob.ty.flags & TFLAGScomplex) != 0) {
 				return MATCHnomatch;
+			}
 
 			// Disallow implicit conversion to-from real and imaginary
-			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != (tob.ty.flags & (TFLAGSreal | TFLAGSimaginary)))
+			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != (tob.ty.flags & (TFLAGSreal | TFLAGSimaginary))) {
 				return MATCHnomatch;
+			}
 		}
 		return MATCHconvert;
 	}
@@ -747,9 +768,9 @@ public class TypeBasic extends Type {
 
 	private Expression Lfvalue(Loc loc, real_t fvalue)
 	{
-		if (isreal() || isimaginary())
+		if (isreal() || isimaginary()) {
 			return new RealExp(loc, fvalue, this);
-		else
+		} else
 		{
 			complex_t cvalue = new complex_t(fvalue, fvalue);
 			return new ComplexExp(loc, cvalue, this);

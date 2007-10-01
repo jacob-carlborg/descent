@@ -556,7 +556,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(CompileDeclaration node) {
 		printIndent();
 		this.buffer.append("mixin(");
-		node.exp.accept(this);
+		node.sourceExp.accept(this);
 		this.buffer.append(");");
 		return false;
 	}
@@ -1873,7 +1873,11 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(RealExp node) {
-		this.buffer.append(node.str);
+		if (node.str != null) {
+			this.buffer.append(node.str);
+		} else {
+			this.buffer.append(node.value);
+		}
 		return false;
 	}
 

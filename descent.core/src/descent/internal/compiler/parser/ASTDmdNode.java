@@ -252,6 +252,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int PRAGMA = 193;
 	public final static int ARRAY_LENGTH_EXP = 194;
 	public final static int DOT_TEMPLATE_EXP = 195;
+	public final static int TYPE_REFERENCE = 196;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {
@@ -718,10 +719,15 @@ public abstract class ASTDmdNode extends ASTNode {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
 	}
+	
+	public static final void expToCBuffer(OutBuffer buf, HdrGenState hgs,
+			Expression e, PREC pr, SemanticContext context) {
+		expToCBuffer(buf, hgs, e, pr.ordinal(), context);
+	}
 
 	public static void expToCBuffer(OutBuffer buf, HdrGenState hgs,
-			Expression e, PREC pr, SemanticContext context) {
-		if (e.op.precedence.ordinal() < pr.ordinal()) {
+			Expression e, int pr, SemanticContext context) {
+		if (e.op.precedence.ordinal() < pr) {
 			buf.writeByte('(');
 			e.toCBuffer(buf, hgs, context);
 			buf.writeByte(')');

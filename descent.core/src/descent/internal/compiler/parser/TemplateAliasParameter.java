@@ -88,12 +88,12 @@ public class TemplateAliasParameter extends TemplateParameter {
 		Dsymbol sa;
 		ASTDmdNode oarg;
 
-		if (i < tiargs.size()) {
+		if (i < size(tiargs)) {
 			oarg = tiargs.get(i);
 		} else { // Get default argument instead
 			oarg = defaultArg(sc, context);
 			if (oarg == null) {
-				if (i >= dedtypes.size()) {
+				if (i >= size(dedtypes)) {
 					throw new IllegalStateException("assert(i < dedtypes.dim);");
 				}
 				// It might have already been deduced

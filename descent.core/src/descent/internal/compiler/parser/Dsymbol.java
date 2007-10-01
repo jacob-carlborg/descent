@@ -511,7 +511,7 @@ public class Dsymbol extends ASTDmdNode {
 
 	@Override
 	public String toChars(SemanticContext context) {
-		return ident != null ? ident.toChars() : "__anonymous";
+		return (ident != null && ident.ident != null) ? ident.toChars() : "__anonymous";
 	}
 
 	public Dsymbol toParent() {

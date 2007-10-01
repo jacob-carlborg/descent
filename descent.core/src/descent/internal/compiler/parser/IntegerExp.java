@@ -60,9 +60,6 @@ public class IntegerExp extends Expression {
 	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
 		super(loc, TOK.TOKint64);
 		this.str = str;
-		if (value == null) {
-			System.out.println(value);
-		}
 		this.value = value;
 		this.type = type;
 	}
@@ -390,13 +387,17 @@ public class IntegerExp extends Expression {
 					break;
 
 				case Tint64:
-					/* TODO semantic
+					buf.writestring(v);
+					buf.writestring("L");
+					/* TODO semantic and remove the previous lines
 					 buf.printf("%jdL", v);
 					 */
 					break;
 
 				case Tuns64:
-					/* TODO semantic
+					buf.writestring(v);
+					buf.writestring("LU");
+					/* TODO semantic and remove the previous lines
 					 buf.printf("%juLU", v);
 					 */
 					break;

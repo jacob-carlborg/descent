@@ -8,7 +8,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class ComplexExp extends Expression {
 
 	public complex_t value;
-	public Type type;
 
 	public ComplexExp(Loc loc, complex_t value, Type type) {
 		super(loc, TOK.TOKcomplex80);
@@ -46,12 +45,12 @@ public class ComplexExp extends Expression {
 
 	@Override
 	public real_t toReal(SemanticContext context) {
-		return value.r;
+		return value.re;
 	}
 
 	@Override
 	public real_t toImaginary(SemanticContext context) {
-		return value.i;
+		return value.im;
 	}
 
 	@Override
@@ -68,9 +67,9 @@ public class ComplexExp extends Expression {
 	public boolean isBool(boolean result) {
 		// TODO check this
 		if (result) {
-			return !value.r.to_integer_t().equals(BigInteger.ZERO);
+			return !value.re.to_integer_t().equals(BigInteger.ZERO);
 		} else {
-			return value.r.to_integer_t().equals(BigInteger.ZERO);
+			return value.re.to_integer_t().equals(BigInteger.ZERO);
 		}
 	}
 

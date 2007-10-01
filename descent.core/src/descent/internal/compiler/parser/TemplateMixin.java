@@ -10,10 +10,10 @@ public class TemplateMixin extends TemplateInstance {
 
 	public Identifiers idents;
 	public Type tqual;
-	public Objects tiargs;
+	public Scope scope;
+	
 	public int typeStart;
 	public int typeLength;
-	public Scope scope;
 
 	public TemplateMixin(Loc loc, IdentifierExp ident, Type tqual,
 			Identifiers idents, Objects tiargs) {

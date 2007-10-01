@@ -94,7 +94,6 @@ public class SliceExp extends UnaExp {
 	{
 		Expression e;
 		
-		//printf("SliceExp.optimize(result = %d) %s\n", result, toChars());
 		e = this;
 		e1 = e1.optimize(WANTvalue | (result & WANTinterpret), context);
 		if(null == lwr)

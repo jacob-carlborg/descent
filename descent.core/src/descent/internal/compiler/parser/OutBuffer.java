@@ -145,4 +145,9 @@ public class OutBuffer {
 		return data.length();
 	}
 
+	public void bracket(char left, char right) {
+		data.insert(0, left);
+		data.append(right);
+	}
+
 }

@@ -199,6 +199,12 @@ public interface Id {
 	static final char[] Cpp = { 'C', '+', '+' };
 	static final char[] Ddoc = { 'D', 'd', 'o', 'c' };
 	static final char[] string = { 's', 't', 'r', 'i', 'n', 'g' }; // shared
-	static final char[] size_t = { 's', 'i', 'z', 'e', '_', 't' }; // shared	
+	static final char[] size_t = { 's', 'i', 'z', 'e', '_', 't' }; // shared
+	
+	static final char[] FILE_DUMMY = { 'u', 'n', 'n', 'a', 'm', 'e', 'd', '.', 'd' };
+	static final char[] DATE_DUMMY = { 'J', 'u', 'n', ' ', '2', '6', ' ', '1', '9', '8', '1' };
+	static final char[] TIME_DUMMY = { '2', '1', ':', '0', '0', ':', '0', '0' };
+	static final char[] TIMESTAMP_DUMMY = { 'F', 'r', 'i', ' ', 'J', 'u', 'n', ' ', '2', '6', ' ', '2', '1', ':', '0', '0', ':', '0', '0', ' ', '1', '9', '8', '1' };
+	static final char[] VENDOR_DUMMY = { 'D', 'e', 's', 'c', 'e', 'n', 't' };
 
 }

@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigDecimal;
-
 import descent.core.compiler.CharOperation;
 
 // DMD 1.020
@@ -29,7 +27,7 @@ public class Token {
 	public int sourceLen;
 	
 	public integer_t intValue;
-	public BigDecimal floatValue;
+	public real_t floatValue;
 	public int lineNumber;
 	public Comment leadingComment;
 	public int special;

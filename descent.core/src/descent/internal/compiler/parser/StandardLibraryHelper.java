@@ -21,6 +21,8 @@ import descent.core.dom.CompilationUnitResolver;
  */
 public class StandardLibraryHelper {
 	
+	private final static char[] object_d = { 'o', 'b', 'j', 'e', 'c', 't', '.', 'd' };
+	
 	public ClassDeclaration Object;
 	public ClassDeclaration ClassInfo;
 	public ClassDeclaration TypeInfo;
@@ -66,6 +68,7 @@ public class StandardLibraryHelper {
 		try {
 			String source = getFile(filename);
 			Parser parser = new Parser(apiLevel, source);
+			parser.filename = object_d;
 			Module module = parser.parseModuleObj();
 			for(Dsymbol symbol : module.members) {
 				if (symbol.ident == null || symbol.ident.ident == null) continue;

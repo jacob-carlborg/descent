@@ -59,13 +59,14 @@ public class BaseClass extends ASTDmdNode {
 	}
 
 	public void copyBaseInterfaces(BaseClasses vtblInterfaces) {
-		baseInterfaces = new BaseClasses(base.interfaces.size());
+		baseInterfaces = new BaseClasses();
+		baseInterfaces.memcpy(base.interfaces);
 
-		for (int i = 0; i < base.interfaces.size(); i++) {
+		for (int i = 0; i < size(base.interfaces); i++) {
 			BaseClass b = baseInterfaces.get(i);
 			BaseClass b2 = base.interfaces.get(i);
 
-			if (b2.vtbl.size() != 0) {
+			if (size(b2.vtbl) != 0) {
 				throw new IllegalStateException("assert(b2.vtbl.size() == 0)"); // should not be filled yet
 			}
 			b = b2.clone();

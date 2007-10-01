@@ -260,7 +260,7 @@ public abstract class BinExp extends Expression {
 		buf.writeByte(' ');
 		buf.writestring(op.toString());
 		buf.writeByte(' ');
-		expToCBuffer(buf, hgs, e2, PREC.values()[op.precedence.ordinal() + 1],
+		expToCBuffer(buf, hgs, e2, op.precedence.ordinal() + 1,
 				context);
 	}
 

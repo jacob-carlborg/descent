@@ -5230,12 +5230,12 @@ public class Parser extends Lexer {
 		case TOKuns32v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 		case TOKint64v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 		case TOKuns64v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat32v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.tfloat32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat64v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.tfloat64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat80v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.tfloat80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary32v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.timaginary32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary64v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.timaginary64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary80v: e = new RealExp(loc, token.sourceString, new real_t(token.floatValue), Type.timaginary80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat32v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.tfloat32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat64v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.tfloat64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat80v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.tfloat80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary32v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.timaginary32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary64v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.timaginary64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary80v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.timaginary80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 
 		case TOKnull:
 		    e = new NullExp(loc);
@@ -6547,29 +6547,29 @@ public class Parser extends Lexer {
 	private TypeBasic newTypeBasicForCurrentToken() {
 		TypeBasic t = null;
 		switch(token.value) {
-		case TOKvoid: t = new TypeBasic(TY.Tvoid); break;
-		case TOKint8: t = new TypeBasic(TY.Tint8); break;
-		case TOKuns8: t = new TypeBasic(TY.Tuns8); break;
-		case TOKint16: t = new TypeBasic(TY.Tint16); break;
-		case TOKuns16: t = new TypeBasic(TY.Tuns16); break;
-		case TOKint32: t = new TypeBasic(TY.Tint32); break;
-		case TOKuns32: t = new TypeBasic(TY.Tuns32); break;
-		case TOKint64: t = new TypeBasic(TY.Tint64); break;
-		case TOKuns64: t = new TypeBasic(TY.Tuns64); break;
-		case TOKfloat32: t = new TypeBasic(TY.Tfloat32); break;
-		case TOKfloat64: t = new TypeBasic(TY.Tfloat64); break;
-		case TOKfloat80: t = new TypeBasic(TY.Tfloat80); break;
-		case TOKimaginary32: t = new TypeBasic(TY.Timaginary32); break;
-		case TOKimaginary64: t = new TypeBasic(TY.Timaginary64); break;
-		case TOKimaginary80: t = new TypeBasic(TY.Timaginary80); break;
-		case TOKcomplex32: t = new TypeBasic(TY.Tcomplex32); break;
-		case TOKcomplex64: t = new TypeBasic(TY.Tcomplex64); break;
-		case TOKcomplex80: t = new TypeBasic(TY.Tcomplex80); break;
-		case TOKbit: t = new TypeBasic(TY.Tbit); break;
-		case TOKbool: t = new TypeBasic(TY.Tbool); break;
-		case TOKchar: t = new TypeBasic(TY.Tchar); break;
-		case TOKwchar: t = new TypeBasic(TY.Twchar); break;
-		case TOKdchar: t = new TypeBasic(TY.Tdchar); break;
+		case TOKvoid: t = new TypeBasic(Type.tvoid); break;
+		case TOKint8: t = new TypeBasic(Type.tint8); break;
+		case TOKuns8: t = new TypeBasic(Type.tuns8); break;
+		case TOKint16: t = new TypeBasic(Type.tint16); break;
+		case TOKuns16: t = new TypeBasic(Type.tuns16); break;
+		case TOKint32: t = new TypeBasic(Type.tint32); break;
+		case TOKuns32: t = new TypeBasic(Type.tuns32); break;
+		case TOKint64: t = new TypeBasic(Type.tint64); break;
+		case TOKuns64: t = new TypeBasic(Type.tuns64); break;
+		case TOKfloat32: t = new TypeBasic(Type.tfloat32); break;
+		case TOKfloat64: t = new TypeBasic(Type.tfloat64); break;
+		case TOKfloat80: t = new TypeBasic(Type.tfloat80); break;
+		case TOKimaginary32: t = new TypeBasic(Type.timaginary32); break;
+		case TOKimaginary64: t = new TypeBasic(Type.timaginary64); break;
+		case TOKimaginary80: t = new TypeBasic(Type.timaginary80); break;
+		case TOKcomplex32: t = new TypeBasic(Type.tcomplex32); break;
+		case TOKcomplex64: t = new TypeBasic(Type.tcomplex64); break;
+		case TOKcomplex80: t = new TypeBasic(Type.tcomplex80); break;
+		case TOKbit: t = new TypeBasic(Type.tbit); break;
+		case TOKbool: t = new TypeBasic(Type.tbool); break;
+		case TOKchar: t = new TypeBasic(Type.tchar); break;
+		case TOKwchar: t = new TypeBasic(Type.twchar); break;
+		case TOKdchar: t = new TypeBasic(Type.tdchar); break;
 		}
 		t.setSourceRange(token.ptr, token.sourceLen);
 		return t;

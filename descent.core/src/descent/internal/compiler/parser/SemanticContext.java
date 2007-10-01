@@ -72,7 +72,9 @@ public class SemanticContext {
 	
 	public void acceptProblem(IProblem problem) {
 		if (global.gag == 0) {
-			problemRequestor.acceptProblem(problem);
+			if (problem.getID() != IProblem.VoidsHaveNoValue) {
+				problemRequestor.acceptProblem(problem);
+			}
 		}
 		global.errors++;
 	}

@@ -49,7 +49,7 @@ import static descent.internal.compiler.parser.TY.Twchar;
 public abstract class Type extends ASTDmdNode {
 
 	public final static int PTRSIZE = 4;
-	
+
 	// TODO where to get this value from?
 	public final static int REALSIZE = 8;
 
@@ -501,12 +501,28 @@ public abstract class Type extends ASTDmdNode {
 	public Type arrayof; // array of this type
 	public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
 
+	/*
+	 * In DMD TypeBasic's are only constructed one, so == works.
+	 * In Descent, the parser creates different instances. Our
+	 * hack is to have a reference to that singleton, and use it
+	 * in the == comparison. 
+	 */
+	public Type singleton;
+
 	public List<Modification> modifications;
 
 	public Type(TY ty, Type next) {
 		this.ty = ty;
 		this.next = next;
 		this.sourceNext = next;
+		this.singleton = this;
+	}
+
+	public Type(TY ty, Type next, Type singleton) {
+		this.ty = ty;
+		this.next = next;
+		this.sourceNext = next;
+		this.singleton = singleton;
 	}
 
 	@Override
@@ -612,27 +628,33 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public Type pointerTo(SemanticContext context) {
-		if (pto == null) {
+		if (singleton.pto == null) {
 			Type t;
 
-			t = new TypePointer(this);
-			pto = t.merge(context);
+			t = new TypePointer(singleton);
+			singleton.pto = t.merge(context);
 		}
-		return pto;
+		return singleton.pto;
 	}
 
-	public Type referenceTo() {
-		return null;
+	public Type referenceTo(SemanticContext context) {
+		if (singleton.rto == null) {
+			Type t;
+
+			t = new TypeReference(singleton);
+			singleton.rto = t.merge(context);
+		}
+		return rto;
 	}
 
 	public Type arrayOf(SemanticContext context) {
-		if (arrayof == null) {
+		if (singleton.arrayof == null) {
 			Type t;
 
-			t = new TypeDArray(this);
-			arrayof = t.merge(context);
+			t = new TypeDArray(singleton);
+			singleton.arrayof = t.merge(context);
 		}
-		return arrayof;
+		return singleton.arrayof;
 	}
 
 	public Expression defaultInit(SemanticContext context) {
@@ -739,8 +761,9 @@ public abstract class Type extends ASTDmdNode {
 		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.DeprecatedProperty, 0, ident.start, ident.length,
-						new String[] { ".typeinfo", "typeid(type)" }));
+						IProblem.DeprecatedProperty, 0, ident.start,
+						ident.length, new String[] { ".typeinfo",
+								"typeid(type)" }));
 			}
 			e = getTypeInfo(sc, context);
 			return e;

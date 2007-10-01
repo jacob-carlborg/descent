@@ -150,12 +150,51 @@ public class IdentifierExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.writestring(ident);
-		//		if (hgs.hdrgen) {
-		//			buf.writestring(ident.toHChars2());
-		//		} else {
-		//			buf.writestring(ident.toChars());
-		//		}
+		if (hgs.hdrgen) {
+			buf.writestring(toHChars2());
+		} else {
+			buf.writestring(ident);
+		}
+	}
+	
+	private final static char[] notThis = { '~', 't', 'h', 'i', 's' };
+	private final static char[] invariant = { 'i', 'n', 'v', 'a', 'r', 'i', 'a', 'n', 't' };
+	private final static char[] unittest = { 'u', 'n', 'i', 't', 't', 'e', 's', 't' };
+	private final static char[] staticThis = { 's', 't', 'a', 't', 'i', 'c', ' ', 't', 'h', 'i', 's' };
+	private final static char[] staticNotThis = { 's', 't', 'a', 't', 'i', 'c', ' ', '~', 't', 'h', 'i', 's' };
+	private final static char[] dollar = { '$' };
+	private final static char[] with = { 'w', 'i', 't', 'h' };
+	private final static char[] result = { 'r', 'e', 's', 'u', 'l', 't' };
+	private final static char[] Return = { 'r', 'e', 't', 'u', 'r', 'n' };
+
+	public char[] toHChars2() {
+		char[] p = null;
+
+	    if (CharOperation.equals(ident, Id.ctor)) {
+			p = Id.This;
+		} else if (CharOperation.equals(ident, Id.dtor)) {
+			p = notThis;
+		} else if (CharOperation.equals(ident, Id.classInvariant)) {
+			p = invariant;
+		} else if (CharOperation.equals(ident, Id.unitTest)) {
+			p = unittest;
+		} else if (CharOperation.equals(ident, Id.staticCtor)) {
+			p = staticThis;
+		} else if (CharOperation.equals(ident, Id.staticDtor)) {
+			p = staticNotThis;
+		} else if (CharOperation.equals(ident, Id.dollar)) {
+			p = dollar;
+		} else if (CharOperation.equals(ident, Id.withSym)) {
+			p = with;
+		} else if (CharOperation.equals(ident, Id.result)) {
+			p = result;
+		} else if (CharOperation.equals(ident, Id.returnLabel)) {
+			p = Return;
+		} else {
+			p = ident;
+		}
+
+	    return p;
 	}
 
 	@Override
@@ -180,11 +219,6 @@ public class IdentifierExp extends Expression {
 	@Override
 	public String toString() {
 		return new String(ident);
-	}
-
-	public Object toHChars2() {
-		// TODO semantic
-		return toString();
 	}
 
 }

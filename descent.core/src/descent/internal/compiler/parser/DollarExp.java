@@ -3,10 +3,10 @@ package descent.internal.compiler.parser;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class DollarExp extends Expression {
+public class DollarExp extends IdentifierExp {
 
 	public DollarExp(Loc loc) {
-		super(loc, TOK.TOKdollar);
+		super(loc, Id.dollar);
 	}
 	
 	@Override

@@ -2311,8 +2311,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.MixinDeclaration convert(CompileDeclaration a) {
 		descent.core.dom.MixinDeclaration b = new descent.core.dom.MixinDeclaration(ast);
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}

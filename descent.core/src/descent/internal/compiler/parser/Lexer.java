@@ -83,6 +83,7 @@ import static descent.internal.compiler.parser.TOK.TOKwhitespace;
 import static descent.internal.compiler.parser.TOK.TOKxor;
 import static descent.internal.compiler.parser.TOK.TOKxorass;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,6 +134,11 @@ public class Lexer implements IProblemRequestor {
 	public Token prevToken = new Token();
 
 	public List<IProblem> problems;
+	
+	/**
+	 * The filename to use in __FILE__
+	 */
+	public char[] filename;
 
 	// support for the  poor-line-debuggers ....
 	// remember the position of the cr/lf
@@ -193,8 +199,6 @@ public class Lexer implements IProblemRequestor {
 
 	/* package */Lexer(int apiLevel) {
 		this.apiLevel = apiLevel;
-		//initId();
-		//initKeywords();		
 	}
 
 	protected IProblemReporter reporter;
@@ -3476,7 +3480,9 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_'
 											&& !Chars.isidchar(input[p + 1])) {
 										t.value = TOK.TOKstring;
-										t.special = Token.SPECIAL__DATE__;
+										t.len = Id.DATE_DUMMY.length;
+										t.ustring = Id.DATE_DUMMY;
+										t.special = Token.SPECIAL__DATE__;										
 										t.sourceString = Id.DATE;
 										t.sourceLen = 8;
 										p++;
@@ -3500,6 +3506,12 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_'
 											&& !Chars.isidchar(input[p + 1])) {
 										t.value = TOK.TOKstring;
+										if (filename != null) {
+											t.ustring = filename;
+										} else {
+											t.ustring = Id.FILE_DUMMY;
+										}
+										t.len = t.ustring.length;
 										t.special = Token.SPECIAL__FILE__;
 										t.sourceString = Id.FILE;
 										t.sourceLen = 8;
@@ -3524,6 +3536,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_'
 											&& !Chars.isidchar(input[p + 1])) {
 										t.value = TOK.TOKint64v;
+										t.intValue = new integer_t(linnum);
 										t.special = Token.SPECIAL__LINE__;
 										t.sourceString = Id.LINE;
 										t.sourceLen = 8;
@@ -3560,6 +3573,8 @@ public class Lexer implements IProblemRequestor {
 																&& !Chars
 																		.isidchar(input[p + 1])) {
 															t.value = TOK.TOKstring;
+															t.ustring = Id.TIMESTAMP_DUMMY;
+															t.len = t.ustring.length;
 															t.special = Token.SPECIAL__TIMESTAMP__;
 															t.sourceString = Id.TIMESTAMP;
 															t.sourceLen = 13;
@@ -3577,6 +3592,8 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_'
 											&& !Chars.isidchar(input[p + 1])) {
 										t.value = TOK.TOKstring;
+										t.ustring = Id.TIME_DUMMY;
+										t.len = t.ustring.length;
 										t.special = Token.SPECIAL__TIME__;
 										t.sourceString = Id.TIME;
 										t.sourceLen = 8;
@@ -3608,6 +3625,8 @@ public class Lexer implements IProblemRequestor {
 													&& !Chars
 															.isidchar(input[p + 1])) {
 												t.value = TOK.TOKstring;
+												t.ustring = Id.VENDOR_DUMMY;
+												t.len = t.ustring.length;
 												t.special = Token.SPECIAL__VENDOR__;
 												t.sourceString = Id.VENDOR;
 												t.sourceLen = 10;
@@ -3635,7 +3654,8 @@ public class Lexer implements IProblemRequestor {
 														&& !Chars
 																.isidchar(input[p + 1])) {
 													t.value = TOK.TOKint64v;
-													t.special = Token.SPECIAL__VERSION__;
+													t.intValue = integer_t.ONE;
+													t.special = Token.SPECIAL__VERSION__;													
 													t.sourceString = Id.VERSION;
 													t.sourceLen = 11;
 													p++;
@@ -4337,10 +4357,10 @@ public class Lexer implements IProblemRequestor {
 					tk = TOKdcharv;
 				}
 			}
+			t.intValue = new integer_t(c);
 			break;
 		}
 
-		t.intValue = new integer_t(c);
 		t.sourceLen = p - t.ptr + 1;
 		t.setString(input, t.ptr, t.sourceLen);
 
@@ -4845,11 +4865,11 @@ public class Lexer implements IProblemRequestor {
 		stringbuffer.reset();
 		dblstate = 0;
 		hex = 0;
-		goto_done: while (true) {
+		done: 
+		while (true) {
 			// Get next char from input
 			c = input[p++];
-			boolean writeByte = true;
-			inner_while: while (true) {
+			while (true) {
 				switch (dblstate) {
 				case 0: // opening state
 					if (c == '0') {
@@ -4873,8 +4893,8 @@ public class Lexer implements IProblemRequestor {
 					// !Chars.isdigit inlined
 					if ((c < '0' || c > '9') && !(hex != 0 && Chars.ishex(c))) {
 						if (c == '_') {
-							writeByte = false;
-							break inner_while; // ignore embedded '_'
+							// goto Lnext
+							continue done; // ignore embedded '_'
 						}
 						dblstate++;
 						continue;
@@ -4897,7 +4917,7 @@ public class Lexer implements IProblemRequestor {
 						error(IProblem.BinaryExponentPartRequired, linnum,
 								p - 1, 1);
 					}
-					break goto_done;
+					break done;
 
 				case 5: // looking immediately to right of E
 					dblstate++;
@@ -4913,41 +4933,26 @@ public class Lexer implements IProblemRequestor {
 					break;
 
 				case 8: // past end of exponent digits
-					break goto_done;
+					break done;
 				}
 				break;
 			}
-			if (writeByte) {
-				stringbuffer.writeByte(c);
-			}
+			stringbuffer.writeByte(c);
 		}
 		p--;
-
-		/*
-		 * #if _WIN32 && __DMC__ char *save = __locale_decpoint;
-		 * __locale_decpoint = "."; #endif #ifdef IN_GCC t->float80value =
-		 * real_t::parse((char *)stringbuffer.data, real_t::LongDouble); #else
-		 * t->float80value = strtold((char *)stringbuffer.data, NULL); #endif
-		 * errno = 0;
-		 */
+		
+		t.floatValue = strold(stringbuffer.data);
+		
 		switch (input[p]) {
 		case 'F':
 		case 'f':
-			/*
-			 * #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
-			 * real_t::Float); #else strtof((char *)stringbuffer.data, NULL);
-			 * #endif
-			 */
+			t.floatValue = strof(stringbuffer.data);
 			result = TOKfloat32v;
 			p++;
 			break;
 
 		default:
-			/*
-			 * #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
-			 * real_t::Double); #else strtod((char *)stringbuffer.data, NULL);
-			 * #endif
-			 */
+			t.floatValue = strod(stringbuffer.data);
 			result = TOKfloat64v;
 			break;
 
@@ -4982,6 +4987,24 @@ public class Lexer implements IProblemRequestor {
 		 */
 
 		return result;
+	}
+
+	// TODO implement these functions well
+	private real_t strod(StringBuilder data) {
+		try {
+			BigDecimal bd = new BigDecimal(data.toString());
+			return new real_t(bd);
+		} catch (Exception e) {
+			return real_t.ZERO;
+		}
+	}
+
+	private real_t strof(StringBuilder data) {
+		return strod(data);
+	}
+
+	private real_t strold(StringBuilder data) {
+		return strod(data);
 	}
 
 	private void pragma(Token t) {

@@ -513,8 +513,7 @@ public class TypeFunction extends Type {
 	    {
 		if (!hgs.hdrgen && p != null)
 		    buf.prependstring(p);
-		// TODO semantic
-		// buf.bracket('(', ')');
+		buf.bracket('(', ')');
 		assert(ident == null);
 	    }
 	    else
