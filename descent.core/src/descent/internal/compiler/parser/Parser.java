@@ -5734,13 +5734,17 @@ public class Parser extends Lexer {
 		case TOKplusplus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new IncrementExp(loc, e);
+			AddAssignExp aae = new AddAssignExp(loc, e, new IntegerExp(loc, 1, Type.tint32));
+			aae.isPreIncrement = true;
+			e = aae;
 			break;
 
 		case TOKminusminus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new DecrementExp(loc, e);
+			MinAssignExp mae = new MinAssignExp(loc, e, new IntegerExp(loc, 1, Type.tint32));
+			mae.isPreDecrement = true;
+			e = mae;
 			break;
 
 		case TOKmul:

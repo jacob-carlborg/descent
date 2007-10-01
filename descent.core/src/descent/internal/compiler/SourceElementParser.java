@@ -1210,10 +1210,6 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(DecrementExp node) {
-		return false;
-	}
-
 	public boolean visit(DefaultStatement node) {
 		return true;
 	}
@@ -1355,10 +1351,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public boolean visit(Import node) {
-		return false;
-	}
-
-	public boolean visit(IncrementExp node) {
 		return false;
 	}
 
@@ -1959,9 +1951,6 @@ public class SourceElementParser implements IASTVisitor {
 	public void endVisit(DeclarationStatement node) {
 	}
 
-	public void endVisit(DecrementExp node) {
-	}
-
 	public void endVisit(DefaultStatement node) {
 	}
 
@@ -2068,9 +2057,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public void endVisit(Import node) {
-	}
-
-	public void endVisit(IncrementExp node) {
 	}
 
 	public void endVisit(IndexExp node) {

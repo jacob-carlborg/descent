@@ -110,11 +110,16 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(AddAssignExp node) {
-		this.buffer.append("(");
-		node.sourceE1.accept(this);
-		this.buffer.append(" += ");
-		node.sourceE2.accept(this);
-		this.buffer.append(")");
+		if (node.isPreIncrement) {
+			this.buffer.append("++");
+			node.sourceE1.accept(this);
+		} else {
+			this.buffer.append("(");
+			node.sourceE1.accept(this);
+			this.buffer.append(" += ");
+			node.sourceE2.accept(this);
+			this.buffer.append(")");
+		}
 		appendBinding(node);
 		return false;
 	}
@@ -852,12 +857,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(DecrementExp node) {
-		this.buffer.append("--");
-		node.sourceE1.accept(this);		
-		return false;
-	}
-
 	public boolean visit(DefaultStatement node) {
 		printIndent();
 		this.buffer.append("default:\n");
@@ -1411,12 +1410,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		return false;
 	}
 
-	public boolean visit(IncrementExp node) {
-		this.buffer.append("++");
-		node.sourceE1.accept(this);		
-		return false;
-	}
-
 	public boolean visit(IndexExp node) {
 		// semantic node
 		return false;
@@ -1504,11 +1497,16 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(MinAssignExp node) {
-		this.buffer.append("(");
-		node.sourceE1.accept(this);
-		this.buffer.append(" -= ");
-		node.sourceE2.accept(this);
-		this.buffer.append(")");
+		if (node.isPreDecrement) {
+			this.buffer.append("--");
+			node.sourceE1.accept(this);
+		} else {
+			this.buffer.append("(");
+			node.sourceE1.accept(this);
+			this.buffer.append(" -= ");
+			node.sourceE2.accept(this);
+			this.buffer.append(")");
+		}
 		appendBinding(node);
 		return false;
 	}
@@ -3129,9 +3127,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public void endVisit(DeclarationStatement node) {
 	}
 
-	public void endVisit(DecrementExp node) {
-	}
-
 	public void endVisit(DefaultStatement node) {
 	}
 
@@ -3253,9 +3248,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public void endVisit(Import node) {
-	}
-
-	public void endVisit(IncrementExp node) {
 	}
 
 	public void endVisit(IndexExp node) {

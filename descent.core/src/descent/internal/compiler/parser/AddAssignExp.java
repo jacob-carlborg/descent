@@ -6,7 +6,9 @@ import static descent.internal.compiler.parser.Constfold.Add;
 
 // DMD 1.020 
 public class AddAssignExp extends BinExp {
-
+	
+	public boolean isPreIncrement;
+	
 	public AddAssignExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKaddass, e1, e2);
 	}

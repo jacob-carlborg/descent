@@ -265,6 +265,10 @@ public class ReturnStatement extends Statement {
 
 				v = new VarExp(loc, fd.vresult);
 				s = new ReturnStatement(loc, v);
+				
+				if (sc.fes.cases == null) {
+					sc.fes.cases = new Objects();
+				}
 				sc.fes.cases.add(s);
 
 				// Construct: { vresult = exp; return cases.dim + 1; }

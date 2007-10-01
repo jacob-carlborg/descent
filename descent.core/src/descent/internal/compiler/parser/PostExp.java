@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.TOK.TOKplusplus;
 
 // DMD 1.020
 public class PostExp extends BinExp {
-
+	
 	public PostExp(Loc loc, TOK op, Expression e) {
 		super(loc, op, e, new IntegerExp(Loc.ZERO, 1, Type.tint32));
 	}

@@ -96,7 +96,10 @@ public class Constfold {
 					if (ade.e1.op == TOKstructliteral) {
 						StructLiteralExp se = (StructLiteralExp) ade.e1;
 						int offset = ae.e2.toInteger(context).intValue();
-						Expression e = null /* TODO semantic se.getField(type, offset) */;
+						Expression e = null /*
+											 * TODO semantic se.getField(type,
+											 * offset)
+											 */;
 						if (null == e)
 							e = EXP_CANT_INTERPRET;
 						return e;
@@ -153,7 +156,7 @@ public class Constfold {
 		}
 	};
 
-	//--------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 	public static interface BinExp_fp {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context);
@@ -269,73 +272,76 @@ public class Constfold {
 				e = new RealExp(loc, e1.toImaginary(context).subtract(
 						e2.toImaginary(context)), type);
 			} else if (type.iscomplex()) {
-				/* TODO semantic
-				 // This rigamarole is necessary so that -0.0 doesn't get
-				 // converted to +0.0 by doing an extraneous add with +0.0
-				 complex_t c1;
-				 real_t r1;
-				 real_t i1;
-				 
-				 complex_t c2;
-				 real_t r2;
-				 real_t i2;
-				 
-				 complex_t v;
-				 int x;
-				 
-				 if (e1.type.isreal())
-				 {   r1 = e1.toReal();
-				 x = 0;
-				 }
-				 else if (e1.type.isimaginary())
-				 {   i1 = e1.toImaginary();
-				 x = 3;
-				 }
-				 else
-				 {   c1 = e1.toComplex();
-				 x = 6;
-				 }
-				 
-				 if (e2.type.isreal())
-				 {   r2 = e2.toReal();
-				 }
-				 else if (e2.type.isimaginary())
-				 {   i2 = e2.toImaginary();
-				 x += 1;
-				 }
-				 else
-				 {   c2 = e2.toComplex();
-				 x += 2;
-				 }
-				 
-				 switch (x)
-				 {
-				 #if __DMC__
-				 case 0+0:	v = (complex_t) (r1 - r2);	break;
-				 case 0+1:	v = r1 - i2  I;		break;
-				 case 0+2:	v = r1 - c2;			break;
-				 case 3+0:	v = i1  I - r2;		break;
-				 case 3+1:	v = (complex_t) ((i1 - i2)  I); break;
-				 case 3+2:	v = i1  I - c2;		break;
-				 case 6+0:	v = c1 - r2;			break;
-				 case 6+1:	v = c1 - i2  I;		break;
-				 case 6+2:	v = c1 - c2;			break;
-				 #else
-				 case 0+0:	v = complex_t(r1 - r2, 0);	break;
-				 case 0+1:	v = complex_t(r1, -i2);		break;
-				 case 0+2:	v = complex_t(r1 - creall(c2), -cimagl(c2));	break;
-				 case 3+0:	v = complex_t(-r2, i1);		break;
-				 case 3+1:	v = complex_t(0, i1 - i2);	break;
-				 case 3+2:	v = complex_t(-creall(c2), i1 - cimagl(c2));	break;
-				 case 6+0:	v = complex_t(creall(c1) - r2, cimagl(c1));	break;
-				 case 6+1:	v = complex_t(creall(c1), cimagl(c1) - i2);	break;
-				 case 6+2:	v = c1 - c2;			break;
-				 #endif
-				 default: assert(0);
-				 }
-				 e = new ComplexExp(loc, v, type);
-				 */
-				e = null;
+				// This rigamarole is necessary so that -0.0 doesn't get
+				// converted to +0.0 by doing an extraneous add with +0.0
+				complex_t c1 = complex_t.ZERO;
+				real_t r1 = real_t.ZERO;
+				real_t i1 = real_t.ZERO;
+
+				complex_t c2 = complex_t.ZERO;
+				;
+				real_t r2 = real_t.ZERO;
+				real_t i2 = real_t.ZERO;
+
+				complex_t v = complex_t.ZERO;
+				;
+				int x;
+
+				if (e1.type.isreal()) {
+					r1 = e1.toReal(context);
+					x = 0;
+				} else if (e1.type.isimaginary()) {
+					i1 = e1.toImaginary(context);
+					x = 3;
+				} else {
+					c1 = e1.toComplex(context);
+					x = 6;
+				}
+
+				if (e2.type.isreal()) {
+					r2 = e2.toReal(context);
+				} else if (e2.type.isimaginary()) {
+					i2 = e2.toImaginary(context);
+					x += 1;
+				} else {
+					c2 = e2.toComplex(context);
+					x += 2;
+				}
+
+				switch (x) {
+				case 0 + 0:
+					v = new complex_t(r1.subtract(r2), real_t.ZERO);
+					break;
+				case 0 + 1:
+					v = new complex_t(r1, i2.negate());
+					break;
+				case 0 + 2:
+					v = new complex_t(r1.subtract(creall(c2)), cimagl(c2)
+							.negate());
+					break;
+				case 3 + 0:
+					v = new complex_t(r2.negate(), i1);
+					break;
+				case 3 + 1:
+					v = new complex_t(real_t.ZERO, i1.subtract(i2));
+					break;
+				case 3 + 2:
+					v = new complex_t(creall(c2).negate(), i1
+							.subtract(cimagl(c2)));
+					break;
+				case 6 + 0:
+					v = new complex_t(creall(c1).subtract(r2), cimagl(c1));
+					break;
+				case 6 + 1:
+					v = new complex_t(creall(c1), cimagl(c1).subtract(i2));
+					break;
+				case 6 + 2:
+					v = c1.subtract(c2);
+					break;
+				default:
+					throw new IllegalStateException("assert(0);");
+				}
+				e = new ComplexExp(loc, v, type);
 			} else if (e1.op == TOKsymoff) {
 				SymOffExp soe = (SymOffExp) e1;
 				e = new SymOffExp(loc, soe.var, soe.offset.subtract(e2
@@ -541,44 +547,32 @@ public class Constfold {
 			value = e1.toInteger(context);
 			count = e2.toInteger(context).intValue();
 			switch (e1.type.toBasetype(context).ty) {
-			/* TODO just calling bigInteger.shiftRight() method won't
-			 * correctly truncate bits
-			 case Tint8:
-			 value = (d_int8)(value) >> count;
-			 break;
-			 
-			 case Tuns8:
-			 value = (d_uns8)(value) >> count;
-			 break;
-			 
-			 case Tint16:
-			 value = (d_int16)(value) >> count;
-			 break;
-			 
-			 case Tuns16:
-			 value = (d_uns16)(value) >> count;
-			 break;
-			 
-			 case Tint32:
-			 value = (d_int32)(value) >> count;
-			 break;
-			 
-			 case Tuns32:
-			 value = (d_uns32)(value) >> count;
-			 break;
-			 
-			 case Tint64:
-			 value = (d_int64)(value) >> count;
-			 break;
-			 
-			 case Tuns64:
-			 value = (d_uns64)(value) >> count;
-			 break;
-			 */
-			default:
-				assert (false);
-				value = null;
+			case Tint8:
+				value = value.castToInt8().shiftRight(count);
 				break;
+			case Tuns8:
+				value = value.castToUns8().shiftRight(count);
+				break;
+			case Tint16:
+				value = value.castToInt16().shiftRight(count);
+				break;
+			case Tuns16:
+				value = value.castToUns16().shiftRight(count);
+				break;
+			case Tint32:
+				value = value.castToInt32().shiftRight(count);
+				break;
+			case Tuns32:
+				value = value.castToUns32().shiftRight(count);
+				break;
+			case Tint64:
+				value = value.castToInt64().shiftRight(count);
+				break;
+			case Tuns64:
+				value = value.castToUns64().shiftRight(count);
+				break;
+			default:
+				throw new IllegalStateException("assert(0);");
 			}
 			e = new IntegerExp(loc, value, type);
 			return e;
@@ -596,29 +590,19 @@ public class Constfold {
 			value = e1.toInteger(context);
 			count = e2.toInteger(context).intValue();
 			switch (e1.type.toBasetype(context).ty) {
-			/* TODO just calling bigInteger.shiftRight() method won't
-			 * correctly truncate bits
-			 case Tint8:
-			 case Tuns8:
-			 assert(0);		// no way to trigger this
-			 value = (value & 0xFF) >> count;
-			 break;
-			 
-			 case Tint16:
-			 case Tuns16:
-			 assert(0);		// no way to trigger this
-			 value = (value & 0xFFFF) >> count;
-			 break;
-			 
-			 case Tint32:
-			 case Tuns32:
-			 value = (value & 0xFFFFFFFF) >> count;
-			 break;
-			 
-			 case Tint64:
-			 case Tuns64:
-			 value = (d_uns64)(value) >> count;
-			 break;
+			/*
+			 * TODO just calling bigInteger.shiftRight() method won't correctly
+			 * truncate bits case Tint8: case Tuns8: assert(0); // no way to
+			 * trigger this value = (value & 0xFF) >> count; break;
+			 * 
+			 * case Tint16: case Tuns16: assert(0); // no way to trigger this
+			 * value = (value & 0xFFFF) >> count; break;
+			 * 
+			 * case Tint32: case Tuns32: value = (value & 0xFFFFFFFF) >> count;
+			 * break;
+			 * 
+			 * case Tint64: case Tuns64: value = (d_uns64)(value) >> count;
+			 * break;
 			 */
 			default:
 				assert (false);
@@ -759,20 +743,20 @@ public class Constfold {
 
 				Type tn = e.type.toBasetype(context);
 				if (tn.ty == Tchar || tn.ty == Twchar || tn.ty == Tdchar) {
-					 // Create a StringExp
-					 char[] s = new char[1];
-					 StringExp es;
-					 int len = 1;
-					 int sz = tn.size(context);
-					 integer_t v = e.toInteger(context);
-					 
-					 // TODO check that this is ok
-					 s[0] = (char) v.intValue();
-					 
-					 es = new StringExp(loc, s, len);
-					 es.sz = sz;
-					 es.committed = true;
-					 e = es;
+					// Create a StringExp
+					char[] s = new char[1];
+					StringExp es;
+					int len = 1;
+					int sz = tn.size(context);
+					integer_t v = e.toInteger(context);
+
+					// TODO check that this is ok
+					s[0] = (char) v.intValue();
+
+					es = new StringExp(loc, s, len);
+					es.sz = sz;
+					es.committed = true;
+					e = es;
 				} else {
 					// Create an ArrayLiteralExp
 					Expressions elements = new Expressions(1);
@@ -1032,7 +1016,7 @@ public class Constfold {
 					r2 = e2.toImaginary(context);
 				}
 
-				if (r1.isnan() || r2.isnan()) // if unordered
+				if (r1.isNaN() || r2.isNaN()) // if unordered
 				{
 					cmp = 0;
 				} else {
@@ -1073,7 +1057,7 @@ public class Constfold {
 					r2 = e2.toImaginary(context);
 				}
 				// Don't rely on compiler, handle NAN arguments separately
-				if (r1.isnan() || r2.isnan()) // if unordered
+				if (r1.isNaN() || r2.isNaN()) // if unordered
 				{
 					switch (op) {
 					case TOKlt:
@@ -1297,7 +1281,7 @@ public class Constfold {
 		}
 	};
 
-	//--------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 	public static final Expression Slice(Type type, Expression e1,
 			Expression lwr, Expression upr, SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
@@ -1309,7 +1293,8 @@ public class Constfold {
 			int iupr = upr.toInteger(context).intValue();
 
 			if (iupr > es1.len || ilwr > iupr) {
-				// TODO semantic e1.error("string slice [%ju .. %ju] is out of bounds", ilwr, iupr);
+				// TODO semantic e1.error("string slice [%ju .. %ju] is out of
+				// bounds", ilwr, iupr);
 			} else {
 				int len = iupr - ilwr;
 				int sz = es1.sz;
@@ -1443,7 +1428,8 @@ public class Constfold {
 			e.type = type;
 		} else {
 			// TODO semantic uncomment below
-			// error("cannot cast %s to %s", e1.type.toChars(context), type.toChars(context));
+			// error("cannot cast %s to %s", e1.type.toChars(context),
+			// type.toChars(context));
 			e = new IntegerExp(loc, 0, type);
 		}
 		return e;

@@ -74,7 +74,7 @@ public class TryCatchStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		body = body.semanticScope(sc, null /*this*/, null, context);
 
-		for (int i = 0; i < catches.size(); i++) {
+		for (int i = 0; i < size(catches); i++) {
 			Catch c;
 
 			c = catches.get(i);

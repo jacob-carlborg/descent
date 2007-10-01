@@ -128,7 +128,7 @@ public class Lexer implements IProblemRequestor {
 	public int p;
 	public int end;
 	public char[] input;
-	public Loc loc;
+	public Loc loc = new Loc();
 
 	public Token token;
 	public Token prevToken = new Token();

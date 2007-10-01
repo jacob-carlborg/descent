@@ -16,7 +16,7 @@ public class Loc {
 
 	public String toChars() {
 		// TODO semantic
-		return null;
+		return "";
 	}
 
 }

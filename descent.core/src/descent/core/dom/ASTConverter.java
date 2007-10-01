@@ -129,7 +129,12 @@ public class ASTConverter {
 		
 		switch(symbol.getNodeType()) {
 		case ASTDmdNode.ADD_ASSIGN_EXP:
-			return convert((BinExp) symbol, Assignment.Operator.PLUS_ASSIGN);
+			AddAssignExp aae = (AddAssignExp) symbol;
+			if (aae.isPreIncrement) {
+				return convertPreIncrement(aae);
+			} else {
+				return convert((BinExp) symbol, Assignment.Operator.PLUS_ASSIGN);
+			}
 		case ASTDmdNode.ADD_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.PLUS);
 		case ASTDmdNode.ADDR_EXP:
@@ -211,8 +216,6 @@ public class ASTConverter {
 			return convert((DeclarationExp) symbol);
 		case ASTDmdNode.DECLARATION_STATEMENT:
 			return convert((DeclarationStatement) symbol);
-		case ASTDmdNode.DECREMENT_EXP:
-			return convert((DecrementExp) symbol);
 		case ASTDmdNode.DEFAULT_STATEMENT:
 			return convert((DefaultStatement) symbol);
 		case ASTDmdNode.DELETE_DECLARATION:
@@ -277,8 +280,6 @@ public class ASTConverter {
 			return convert((Import) symbol);
 		case ASTDmdNode.IN_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.IN);
-		case ASTDmdNode.INCREMENT_EXP:
-			return convert((IncrementExp) symbol);
 		case ASTDmdNode.INTEGER_EXP:
 			return convert((IntegerExp) symbol);
 		case ASTDmdNode.INTERFACE_DECLARATION:
@@ -290,7 +291,12 @@ public class ASTConverter {
 		case ASTDmdNode.LINK_DECLARATION:
 			return convert((LinkDeclaration) symbol);
 		case ASTDmdNode.MIN_ASSIGN_EXP:
-			return convert((BinExp) symbol, Assignment.Operator.MINUS_ASSIGN);
+			MinAssignExp mae = (MinAssignExp) symbol;
+			if (mae.isPreDecrement) {
+				return convertPreDecrement(mae);
+			} else {
+				return convert((BinExp) symbol, Assignment.Operator.MINUS_ASSIGN);
+			}
 		case ASTDmdNode.MIN_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.MINUS);
 		case ASTDmdNode.PROT_DECLARATION:
@@ -2174,7 +2180,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Expression convert(IncrementExp a) {
+	public descent.core.dom.Expression convertPreIncrement(AddAssignExp a) {
 		descent.core.dom.PrefixExpression b = new descent.core.dom.PrefixExpression(ast);
 		b.setOperator(PrefixExpression.Operator.INCREMENT);
 		if (a.sourceE1 != null) {
@@ -2187,7 +2193,7 @@ public class ASTConverter {
 		return convertParenthesizedExpression(a, b);
 	}
 	
-	public descent.core.dom.Expression convert(DecrementExp a) {
+	public descent.core.dom.Expression convertPreDecrement(MinAssignExp a) {
 		descent.core.dom.PrefixExpression b = new descent.core.dom.PrefixExpression(ast);
 		b.setOperator(PrefixExpression.Operator.DECREMENT);
 		if (a.sourceE1 != null) {

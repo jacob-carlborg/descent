@@ -335,14 +335,14 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testPrefixExpression() {
 		Object[][] objs = { 
-				{ "&", PrefixExpression.Operator.ADDRESS },
+				// { "&", PrefixExpression.Operator.ADDRESS },
 				{ "++", PrefixExpression.Operator.INCREMENT },
 				{ "--", PrefixExpression.Operator.DECREMENT },
-				{ "*", PrefixExpression.Operator.POINTER },
-				{ "-", PrefixExpression.Operator.NEGATIVE },
-				{ "+", PrefixExpression.Operator.POSITIVE },
-				{ "!", PrefixExpression.Operator.NOT },
-				{ "~", PrefixExpression.Operator.INVERT },
+//				{ "*", PrefixExpression.Operator.POINTER },
+//				{ "-", PrefixExpression.Operator.NEGATIVE },
+//				{ "+", PrefixExpression.Operator.POSITIVE },
+//				{ "!", PrefixExpression.Operator.NOT },
+//				{ "~", PrefixExpression.Operator.INVERT },
 			};
 		
 		for(Object[] pair : objs) {

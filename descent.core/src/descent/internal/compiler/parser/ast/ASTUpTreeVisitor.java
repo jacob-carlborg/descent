@@ -277,10 +277,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(DeclarationStatement.class.getSuperclass().equals(ExpStatement.class));
 		return visit((ExpStatement) node);
 	}
-	public boolean visit(DecrementExp node) {
-		Assert.isTrue(DecrementExp.class.getSuperclass().equals(MinAssignExp.class));
-		return visit((MinAssignExp) node);
-	}
 	public boolean visit(DefaultStatement node) {
 		Assert.isTrue(DefaultStatement.class.getSuperclass().equals(Statement.class));
 		return visit((Statement) node);
@@ -444,10 +440,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	public boolean visit(Import node) {
 		Assert.isTrue(Import.class.getSuperclass().equals(Dsymbol.class));
 		return visit((Dsymbol) node);
-	}
-	public boolean visit(IncrementExp node) {
-		Assert.isTrue(IncrementExp.class.getSuperclass().equals(AddAssignExp.class));
-		return visit((AddAssignExp) node);
 	}
 	public boolean visit(IndexExp node) {
 		Assert.isTrue(IndexExp.class.getSuperclass().equals(BinExp.class));
@@ -1219,10 +1211,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(DeclarationStatement.class.getSuperclass().equals(ExpStatement.class));
 		endVisit((ExpStatement) node);
 	}
-	public void endVisit(DecrementExp node) {
-		Assert.isTrue(DecrementExp.class.getSuperclass().equals(MinAssignExp.class));
-		endVisit((MinAssignExp) node);
-	}
 	public void endVisit(DefaultStatement node) {
 		Assert.isTrue(DefaultStatement.class.getSuperclass().equals(Statement.class));
 		endVisit((Statement) node);
@@ -1386,10 +1374,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	public void endVisit(Import node) {
 		Assert.isTrue(Import.class.getSuperclass().equals(Dsymbol.class));
 		endVisit((Dsymbol) node);
-	}
-	public void endVisit(IncrementExp node) {
-		Assert.isTrue(IncrementExp.class.getSuperclass().equals(AddAssignExp.class));
-		endVisit((AddAssignExp) node);
 	}
 	public void endVisit(IndexExp node) {
 		Assert.isTrue(IndexExp.class.getSuperclass().equals(BinExp.class));

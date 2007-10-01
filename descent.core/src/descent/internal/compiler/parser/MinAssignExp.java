@@ -6,6 +6,8 @@ import static descent.internal.compiler.parser.Constfold.Min;
 
 // DMD 1.020
 public class MinAssignExp extends BinExp {
+	
+	public boolean isPreDecrement;
 
 	public MinAssignExp(Loc loc, Expression e1, Expression e2) {
 		super(loc, TOK.TOKminass, e1, e2);
