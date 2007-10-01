@@ -750,8 +750,6 @@ public class Constfold {
 			Loc loc = e1.loc;
 			Type t;
 
-			// printf("Cat(e1 = %s, e2 = %s)\n", e1.toChars(), e2.toChars());
-
 			if ((e1.op == TOKnull && e2.op == TOKint64)
 					|| (e1.op == TOKint64 && e2.op == TOKnull)) {
 				if (e1.op == TOKnull && e2.op == TOKint64)
@@ -761,26 +759,20 @@ public class Constfold {
 
 				Type tn = e.type.toBasetype(context);
 				if (tn.ty == Tchar || tn.ty == Twchar || tn.ty == Tdchar) {
-					/* TODO semantic -- this MIGHT be string concatenation, I
-					 * can't really tell...
 					 // Create a StringExp
-					 void* s;
+					 char[] s = new char[1];
 					 StringExp es;
-					 size_t len = 1;
-					 int sz = tn.size();
-					 integer_t v = e.toInteger();
+					 int len = 1;
+					 int sz = tn.size(context);
+					 integer_t v = e.toInteger(context);
 					 
-					 s = mem.malloc((len + 1) * sz);
-					 memcpy((unsigned char *)s, &v, sz);
-					 
-					 // Add terminating 0
-					 memset((unsigned char *)s + len * sz, 0, sz);
+					 // TODO check that this is ok
+					 s[0] = (char) v.intValue();
 					 
 					 es = new StringExp(loc, s, len);
 					 es.sz = sz;
-					 es.committed = 1;
+					 es.committed = true;
 					 e = es;
-					 */
 				} else {
 					// Create an ArrayLiteralExp
 					Expressions elements = new Expressions(1);

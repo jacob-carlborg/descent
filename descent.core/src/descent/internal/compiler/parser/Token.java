@@ -53,6 +53,9 @@ public class Token {
 		lineNumber = 0;
 		leadingComment = null;
 		intValue = null;
+		floatValue = null;
+		ustring = null;
+		len = 0;
 	}
 	
 	public static void assign(Token to, Token from) {
@@ -63,6 +66,7 @@ public class Token {
 		to.len = from.len;
 		to.postfix = from.postfix;
 		to.intValue = from.intValue;
+		to.floatValue = from.floatValue;
 		
 		to.lineNumber = from.lineNumber;
 		to.sourceString = from.sourceString;

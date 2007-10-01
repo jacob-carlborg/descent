@@ -90,7 +90,7 @@ public class TupleDeclaration extends Declaration {
 
 	@Override
 	public boolean needThis() {
-		for (int i = 0; i < objects.size(); i++) {
+		for (int i = 0; i < size(objects); i++) {
 			ASTDmdNode o = objects.get(i);
 			if (o.dyncast() == DYNCAST.DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;

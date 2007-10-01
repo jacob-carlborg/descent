@@ -24,7 +24,7 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 	
 	@Override
 	public DYNCAST dyncast() {
-		return DYNCAST.DYNCAST_OBJECT;
+		return DYNCAST.DYNCAST_DSYMBOL;
 	}
 	
 	@Override

@@ -97,8 +97,11 @@ public class real_t {
 
 	@Override
 	public String toString() {
-		// TODO how is NaN or infinite represented in D string buffers?
-		return value.toString();
+		if (isnan()) {
+			return "nan";
+		} else{
+			return value.toString();
+		}
 	}
 
 }

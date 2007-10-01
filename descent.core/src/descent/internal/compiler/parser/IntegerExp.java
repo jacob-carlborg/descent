@@ -10,8 +10,6 @@ import static descent.internal.compiler.parser.TY.Tuns64;
 
 import java.math.BigInteger;
 
-import org.eclipse.core.runtime.Assert;
-
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -60,6 +58,9 @@ public class IntegerExp extends Expression {
 	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
 		super(loc, TOK.TOKint64);
 		this.str = str;
+		if (value == null) {
+			throw new IllegalStateException("assert(value)");
+		}
 		this.value = value;
 		this.type = type;
 	}
@@ -417,7 +418,7 @@ public class IntegerExp extends Expression {
 					break;
 
 				default:
-					Assert.isTrue(false);
+					throw new IllegalStateException("assert(0);");
 				}
 			}
 		} else if (v.and(N_0x8000000000000000).compareTo(BigInteger.ZERO) != 0) {
@@ -497,7 +498,7 @@ public class IntegerExp extends Expression {
 			}
 
 			default:
-				Assert.isTrue(false);
+				throw new IllegalStateException("assert(0);");
 			}
 			break;
 		}

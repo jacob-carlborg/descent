@@ -17,6 +17,28 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public class TypeBasic extends Type {
+	
+	public final static integer_t FLT_DIG = new integer_t(6);
+	public final static integer_t DBL_DIG = new integer_t(15);
+	public final static integer_t LDBL_DIG = DBL_DIG;
+	public final static real_t FLT_EPSILON = new real_t(1.192092896e-07F);
+	public final static real_t DBL_EPSILON = new real_t(2.2204460492503131e-016);
+	public final static real_t LDBL_EPSILON = DBL_EPSILON;
+	public final static integer_t FLT_MANT_DIG = new integer_t(24);
+	public final static integer_t DBL_MANT_DIG = new integer_t(53);
+	public final static integer_t LDBL_MANT_DIG = DBL_MANT_DIG;
+	public final static integer_t FLT_MAX_10_EXP = new integer_t(38);
+	public final static integer_t DBL_MAX_10_EXP = new integer_t(308);
+	public final static integer_t LDBL_MAX_10_EXP = DBL_MAX_10_EXP;
+	public final static integer_t FLT_MAX_EXP = new integer_t(128);
+	public final static integer_t DBL_MAX_EXP = new integer_t(1024);
+	public final static integer_t LDBL_MAX_EXP = DBL_MAX_EXP;
+	public final static integer_t FLT_MIN_10_EXP = new integer_t(-37);
+	public final static integer_t DBL_MIN_10_EXP = new integer_t(-307);
+	public final static integer_t LDBL_MIN_10_EXP = DBL_MIN_10_EXP;
+	public final static integer_t FLT_MIN_EXP = new integer_t(-125);
+	public final static integer_t DBL_MIN_EXP = new integer_t(-1021);
+	public final static integer_t LDBL_MIN_EXP = DBL_MIN_EXP;	
 
 	public TypeBasic(TY ty) {
 		super(ty, null);
@@ -26,12 +48,12 @@ public class TypeBasic extends Type {
 		toDecoBuffer(out, null /* it's safe to pass null here */);
 		deco = out.extractData();
 	}
-	
+
 	public TypeBasic(Type singleton) {
 		super(singleton.ty, null, singleton);
 		this.deco = singleton.deco;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
@@ -39,28 +61,28 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public int alignsize(SemanticContext context)
-	{
+	public int alignsize(SemanticContext context) {
 		int sz;
 
-	    switch (ty)
-	    {
+		switch (ty) {
 		case Tfloat80:
 		case Timaginary80:
 		case Tcomplex80:
-		    sz = 2;
-		    break;
+			sz = 2;
+			break;
 
 		default:
-		    sz = size(Loc.ZERO, context);
-		    break;
-	    }
-	    return sz;
+			sz = size(Loc.ZERO, context);
+			break;
+		}
+		return sz;
 	}
+
 	@Override
 	public boolean builtinTypeInfo() {
 		return true;
 	}
+
 	@Override
 	public Expression defaultInit(SemanticContext context) {
 		BigInteger value;
@@ -90,6 +112,7 @@ public class TypeBasic extends Type {
 		}
 		return new IntegerExp(Loc.ZERO, new integer_t(value), this);
 	}
+
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
@@ -112,7 +135,7 @@ public class TypeBasic extends Type {
 				// goto L1;
 				e = e.castTo(sc, t, context);
 				break;
-			// L1: 
+			// L1:
 			// e = e.castTo(sc, t, context);
 			// break;
 
@@ -134,7 +157,7 @@ public class TypeBasic extends Type {
 				t = tfloat80; // goto L2;
 				e = new RealExp(Loc.ZERO, 0.0, t);
 				break;
-			// L2: 
+			// L2:
 			// e = new RealExp(Loc.ZERO, 0.0, t);
 			// break;
 
@@ -166,7 +189,7 @@ public class TypeBasic extends Type {
 				e = e.castTo(sc, t, context);
 				e.type = t2;
 				break;
-			// L3: 
+			// L3:
 			// e = e.castTo(sc, t, context);
 			// e.type = t2;
 			// break;
@@ -186,7 +209,7 @@ public class TypeBasic extends Type {
 				// goto L4;
 				e.type = t;
 				break;
-			// L4: 
+			// L4:
 			// e.type = t;
 			// break;
 
@@ -204,329 +227,313 @@ public class TypeBasic extends Type {
 		}
 		return e;
 	}
+
 	@Override
 	public int getNodeType() {
 		return TYPE_BASIC;
 	}
+
 	@Override
 	public Expression getProperty(Loc loc, char[] ident, int start, int length,
-			SemanticContext context)
-	{
+			SemanticContext context) {
 		Expression e;
 		integer_t ivalue;
 		real_t fvalue;
-		
-		//printf("TypeBasic.getProperty('%s')\n", ident.toChars());
-		if(CharOperation.equals(ident, Id.max))
-		{
+
+		// printf("TypeBasic.getProperty('%s')\n", ident.toChars());
+		if (CharOperation.equals(ident, Id.max)) {
 			// TODO ensure the Java max/min values are the same as the D ones
-			switch(ty)
-			{
-				case Tint8:
-					ivalue = new integer_t(0x7F);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns8:
-					ivalue = new integer_t(0xFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tint16:
-					ivalue = new integer_t(0x7FFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns16:
-					ivalue = new integer_t(0xFFFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tint32:
-					ivalue = new integer_t(0x7FFFFFFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns32:
-					ivalue = new integer_t(0xFFFFFFFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tint64:
-					ivalue = new integer_t(new BigInteger("7FFFFFFFFFFFFFFF", 16));
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns64:
-					ivalue = new integer_t(new BigInteger("FFFFFFFFFFFFFFFF", 16));
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tbit:
-					ivalue = new integer_t(1);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tbool:
-					ivalue = new integer_t(1);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tchar:
-					ivalue = new integer_t(0xFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Twchar:
-					ivalue = new integer_t(0xFFFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tdchar:
-					ivalue = new integer_t(0x10FFFF);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-					
-				case Tcomplex32:
-				case Timaginary32:
-				case Tfloat32:
-					fvalue = new real_t(Float.MAX_VALUE);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
-				case Tcomplex64:
-				case Timaginary64:
-				case Tfloat64:
-					fvalue = new real_t(Double.MAX_VALUE);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
-				case Tcomplex80:
-				case Timaginary80:
-				case Tfloat80:
-					fvalue = new real_t(0 /* TODO LDBL_MAX */);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
+			switch (ty) {
+			case Tint8:
+				ivalue = new integer_t(0x7F);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns8:
+				ivalue = new integer_t(0xFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tint16:
+				ivalue = new integer_t(0x7FFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns16:
+				ivalue = new integer_t(0xFFFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tint32:
+				ivalue = new integer_t(0x7FFFFFFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns32:
+				ivalue = new integer_t(0xFFFFFFFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tint64:
+				ivalue = new integer_t(new BigInteger("7FFFFFFFFFFFFFFF", 16));
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns64:
+				ivalue = new integer_t(new BigInteger("FFFFFFFFFFFFFFFF", 16));
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tbit:
+				ivalue = new integer_t(1);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tbool:
+				ivalue = new integer_t(1);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tchar:
+				ivalue = new integer_t(0xFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Twchar:
+				ivalue = new integer_t(0xFFFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tdchar:
+				ivalue = new integer_t(0x10FFFF);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				fvalue = new real_t(Float.MAX_VALUE);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				fvalue = new real_t(Double.MAX_VALUE);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				fvalue = new real_t(0 /* TODO LDBL_MAX */);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			}
+		} else if (CharOperation.equals(ident, Id.min)) {
+			switch (ty) {
+			case Tint8:
+				ivalue = new integer_t(-128);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns8:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tint16:
+				ivalue = new integer_t(Short.MIN_VALUE);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns16:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tint32:
+				ivalue = new integer_t(Integer.MIN_VALUE);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns32:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tint64:
+				ivalue = new integer_t(Long.MIN_VALUE);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tuns64:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tbit:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tbool:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tchar:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Twchar:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+			case Tdchar:
+				ivalue = new integer_t(0);
+				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				fvalue = new real_t(Float.MIN_VALUE);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				fvalue = new real_t(Double.MIN_VALUE);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				fvalue = new real_t(0 /* TODO LDBL_MIN */);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			}
+		} else if (CharOperation.equals(ident, Id.nan)) {
+			switch (ty) {
+			case Tcomplex32:
+			case Tcomplex64:
+			case Tcomplex80:
+			case Timaginary32:
+			case Timaginary64:
+			case Timaginary80:
+			case Tfloat32:
+			case Tfloat64:
+			case Tfloat80: {
+				fvalue = new real_t(Double.NaN);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			}
+			}
+		} else if (CharOperation.equals(ident, Id.infinity)) {
+			switch (ty) {
+			case Tcomplex32:
+			case Tcomplex64:
+			case Tcomplex80:
+			case Timaginary32:
+			case Timaginary64:
+			case Timaginary80:
+			case Tfloat32:
+			case Tfloat64:
+			case Tfloat80:
+				fvalue = new real_t(Double.POSITIVE_INFINITY);
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
 			}
 		}
-		else if(CharOperation.equals(ident, Id.min))
-		{
-			switch(ty)
-			{
-				case Tint8:
-					ivalue = new integer_t(-128);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns8:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tint16:
-					ivalue = new integer_t(Short.MIN_VALUE);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns16:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tint32:
-					ivalue = new integer_t(Integer.MIN_VALUE);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns32:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tint64:
-					ivalue = new integer_t(Long.MIN_VALUE);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tuns64:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tbit:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tbool:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tchar:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Twchar:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-				case Tdchar:
-					ivalue = new integer_t(0);
-					return new IntegerExp(loc, ivalue, this); //goto Livalue;
-					
-				case Tcomplex32:
-				case Timaginary32:
-				case Tfloat32:
-					fvalue = new real_t(Float.MIN_VALUE);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
-				case Tcomplex64:
-				case Timaginary64:
-				case Tfloat64:
-					fvalue = new real_t(Double.MIN_VALUE);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
-				case Tcomplex80:
-				case Timaginary80:
-				case Tfloat80:
-					fvalue = new real_t(0 /* TODO LDBL_MIN */);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
+
+		else if (CharOperation.equals(ident, Id.dig)) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				ivalue = FLT_DIG;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				ivalue = DBL_DIG;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				ivalue = LDBL_DIG;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			}
+		} else if (ident == Id.epsilon) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				fvalue = FLT_EPSILON;
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				fvalue = DBL_EPSILON;
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				fvalue = LDBL_EPSILON;
+				return Lfvalue(loc, fvalue); // goto Lfvalue;
+			}
+		} else if (ident == Id.mant_dig) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				ivalue = FLT_MANT_DIG;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				ivalue = DBL_MANT_DIG;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				ivalue = LDBL_MANT_DIG;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			}
+		} else if (ident == Id.max_10_exp) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				ivalue = FLT_MAX_10_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				ivalue = DBL_MAX_10_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				ivalue = LDBL_MAX_10_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			}
+		} else if (ident == Id.max_exp) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				ivalue = FLT_MAX_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				ivalue = DBL_MAX_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				ivalue = LDBL_MAX_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			}
+		} else if (ident == Id.min_10_exp) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				ivalue = FLT_MIN_10_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				ivalue = DBL_MIN_10_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				ivalue = LDBL_MIN_10_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			}
+		} else if (ident == Id.min_exp) {
+			switch (ty) {
+			case Tcomplex32:
+			case Timaginary32:
+			case Tfloat32:
+				ivalue = FLT_MIN_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex64:
+			case Timaginary64:
+			case Tfloat64:
+				ivalue = DBL_MIN_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
+			case Tcomplex80:
+			case Timaginary80:
+			case Tfloat80:
+				ivalue = LDBL_MIN_EXP;
+				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+																	// Lint;
 			}
 		}
-		else if(CharOperation.equals(ident, Id.nan))
-		{
-			switch(ty)
-			{
-				case Tcomplex32:
-				case Tcomplex64:
-				case Tcomplex80:
-				case Timaginary32:
-				case Timaginary64:
-				case Timaginary80:
-				case Tfloat32:
-				case Tfloat64:
-				case Tfloat80:
-				{
-					fvalue = new real_t(Double.NaN);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
-				}
-			}
-		}
-		else if(CharOperation.equals(ident, Id.infinity))
-		{
-			switch(ty)
-			{
-				case Tcomplex32:
-				case Tcomplex64:
-				case Tcomplex80:
-				case Timaginary32:
-				case Timaginary64:
-				case Timaginary80:
-				case Tfloat32:
-				case Tfloat64:
-				case Tfloat80:
-					fvalue = new real_t(Double.POSITIVE_INFINITY);
-					return Lfvalue(loc, fvalue); // goto Lfvalue;
-			}
-		}
-		
-		/* TODO semantic (I'm not even sure what all this means & have no idea
-		 *                where those constants are defined)
-		else if (CharOperation.equals(ident, Id.dig))
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	ivalue = FLT_DIG;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	ivalue = DBL_DIG;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:	
-		    	ivalue = LDBL_DIG;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		}
-		}
-		else if (ident == Id.epsilon)
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	fvalue = FLT_EPSILON;
-		    	return Lfvalue(loc, fvalue); // goto Lfvalue;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	fvalue = DBL_EPSILON;
-		    	return Lfvalue(loc, fvalue); // goto Lfvalue;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:
-		    	fvalue = LDBL_EPSILON;
-		    	return Lfvalue(loc, fvalue); // goto Lfvalue;
-		}
-		}
-		else if (ident == Id.mant_dig)
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	ivalue = FLT_MANT_DIG;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	ivalue = DBL_MANT_DIG;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:
-		    	ivalue = LDBL_MANT_DIG;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		}
-		}
-		else if (ident == Id.max_10_exp)
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	ivalue = FLT_MAX_10_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	ivalue = DBL_MAX_10_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:
-		    	ivalue = LDBL_MAX_10_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		}
-		}
-		else if (ident == Id.max_exp)
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	ivalue = FLT_MAX_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	ivalue = DBL_MAX_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:
-		    	ivalue = LDBL_MAX_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		}
-		}
-		else if (ident == Id.min_10_exp)
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	ivalue = FLT_MIN_10_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	ivalue = DBL_MIN_10_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:
-		    	ivalue = LDBL_MIN_10_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		}
-		}
-		else if (ident == Id.min_exp)
-		{
-		switch (ty)
-		{
-		    case Tcomplex32:
-		    case Timaginary32:
-		    case Tfloat32:
-		    	ivalue = FLT_MIN_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex64:
-		    case Timaginary64:
-		    case Tfloat64:
-		    	ivalue = DBL_MIN_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		    case Tcomplex80:
-		    case Timaginary80:
-		    case Tfloat80:
-		    	ivalue = LDBL_MIN_EXP;
-		    	return new IntegerExp(loc, ivalue, Type.tint32); // goto Lint;
-		}
-		}
-		*/
 
 		return super.getProperty(loc, ident, start, length, context);
 	}
@@ -534,10 +541,11 @@ public class TypeBasic extends Type {
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		// See explanation of tbasic member
-		if (to instanceof TypeBasic && this.singleton == ((TypeBasic) to).singleton) {
+		if (to instanceof TypeBasic
+				&& this.singleton == ((TypeBasic) to).singleton) {
 			return MATCHexact;
 		}
-		
+
 		if (this == to) {
 			return MATCHexact;
 		}
@@ -566,14 +574,12 @@ public class TypeBasic extends Type {
 			}
 
 			// If converting to integral
-			/* TODO semantic
-			 if (false && context.global.params.Dversion > 1 && tob.flags & TFLAGSintegral) {
-			 d_uns64 sz = size(0);
-			 d_uns64 tosz = tob.size(0);
-
-			 if (sz > tosz)
-			 return MATCHnomatch;
-			 }
+			/*
+			 * TODO semantic if (false && context.global.params.Dversion > 1 &&
+			 * tob.flags & TFLAGSintegral) { d_uns64 sz = size(0); d_uns64 tosz =
+			 * tob.size(0);
+			 * 
+			 * if (sz > tosz) return MATCHnomatch; }
 			 */
 		} else if ((ty.flags & TFLAGSfloating) != 0) {
 			// Disallow implicit conversion of floating point to integer
@@ -649,10 +655,8 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context)
-	{
-		switch (ty)
-	    {
+	public boolean isZeroInit(SemanticContext context) {
+		switch (ty) {
 		case Tchar:
 		case Twchar:
 		case Tdchar:
@@ -665,9 +669,9 @@ public class TypeBasic extends Type {
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
-		    return false;		// no
-	    }
-	    return true;			// yes
+			return false; // no
+		}
+		return true; // yes
 	}
 
 	@Override
@@ -736,10 +740,9 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public Type syntaxCopy()
-	{
+	public Type syntaxCopy() {
 		// No semantic analysis done on basic types, no need to copy
-	    return this;
+		return this;
 	}
 
 	@Override
@@ -766,12 +769,10 @@ public class TypeBasic extends Type {
 		}
 	}
 
-	private Expression Lfvalue(Loc loc, real_t fvalue)
-	{
+	private Expression Lfvalue(Loc loc, real_t fvalue) {
 		if (isreal() || isimaginary()) {
 			return new RealExp(loc, fvalue, this);
-		} else
-		{
+		} else {
 			complex_t cvalue = new complex_t(fvalue, fvalue);
 			return new ComplexExp(loc, cvalue, this);
 		}

@@ -13,6 +13,9 @@ public class RealExp extends Expression {
 	public RealExp(Loc loc, char[] str, real_t value, Type type) {
 		super(loc, TOK.TOKfloat64);
 		this.str = str;
+		if (value == null) {
+			throw new IllegalStateException("assert(value)");
+		}
 		this.value = value;
 		this.type = type;
 	}

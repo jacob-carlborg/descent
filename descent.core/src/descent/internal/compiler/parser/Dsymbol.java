@@ -20,8 +20,9 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
-		Dsymbols b = new Dsymbols();
+		Dsymbols b = null;
 		if (a != null) {
+			b = new Dsymbols();
 			b.setDim(a.size());
 			for(int i = 0; i < a.size(); i++) {
 				Dsymbol s = a.get(i);
@@ -448,7 +449,6 @@ public class Dsymbol extends ASTDmdNode {
 			break;
 
 		case DYNCAST_DSYMBOL: { // It's a template instance
-			//printf("\ttemplate instance id\n");
 			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
 			TemplateInstance ti = st.isTemplateInstance();
 			id = ti.name;

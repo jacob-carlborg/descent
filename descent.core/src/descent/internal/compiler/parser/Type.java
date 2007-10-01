@@ -988,7 +988,7 @@ public abstract class Type extends ASTDmdNode {
 			throw new IllegalStateException("assert(tparam.ty == Tident);");
 		}
 		TypeIdentifier tident = (TypeIdentifier) tparam;
-		if (tident.idents.size() == 0) {
+		if (size(tident.idents) == 0) {
 			IdentifierExp id = tident.ident;
 
 			for (int i = 0; i < parameters.size(); i++) {

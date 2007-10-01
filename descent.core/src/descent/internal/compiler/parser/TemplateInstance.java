@@ -111,7 +111,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				}
 			}
 
-			dedtypes.setDim(td.parameters.size());
+			dedtypes.setDim(size(td.parameters));
 			if (null == td.scope) {
 				error("forward reference to template declaration %s", td
 						.toChars(context));
@@ -288,6 +288,8 @@ public class TemplateInstance extends ScopeDsymbol {
 			Expression ea = isExpression(o);
 			Dsymbol sa = isDsymbol(o);
 			Tuple va = isTuple(o);
+			
+			boolean gotoLsa = false;
 			if (ta != null) {
 				buf.writeByte('T');
 				if (ta.deco != null) {
@@ -307,6 +309,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					sa = ((VarExp) ea).var;
 					ea = null;
 					// goto Lsa;
+					gotoLsa = true;
 					buf.writeByte('S');
 					Declaration d = sa.isDeclaration();
 					if (d != null && null == d.type.deco) {
@@ -316,26 +319,31 @@ public class TemplateInstance extends ScopeDsymbol {
 						buf.data.append(p2.length()).append("u").append(p2);
 					}
 				}
-				if (ea.op == TOKfunction) {
-					sa = ((FuncExp) ea).fd;
-					ea = null;
-					// goto Lsa;
-					buf.writeByte('S');
-					Declaration d = sa.isDeclaration();
-					if (d != null && null == d.type.deco) {
-						error("forward reference of %s", d.toChars(context));
-					} else {
-						String p2 = sa.mangle(context);
-						buf.data.append(p2.length()).append("u").append(p2);
+				if (!gotoLsa) {
+					if (ea.op == TOKfunction) {
+						sa = ((FuncExp) ea).fd;
+						ea = null;
+						// goto Lsa;
+						gotoLsa = true;
+						buf.writeByte('S');
+						Declaration d = sa.isDeclaration();
+						if (d != null && null == d.type.deco) {
+							error("forward reference of %s", d.toChars(context));
+						} else {
+							String p2 = sa.mangle(context);
+							buf.data.append(p2.length()).append("u").append(p2);
+						}
+					}
+					if (!gotoLsa) {
+						buf.writeByte('V');
+						if (ea.op == TOKtuple) {
+							ASTDmdNode.error("tuple is not a valid template value argument");
+							continue;
+						}
+						buf.writestring(ea.type.deco);
+						ea.toMangleBuffer(buf, context);
 					}
 				}
-				buf.writeByte('V');
-				if (ea.op == TOKtuple) {
-					ASTDmdNode.error("tuple is not a valid template value argument");
-					continue;
-				}
-				buf.writestring(ea.type.deco);
-				ea.toMangleBuffer(buf, context);
 			} else if (sa != null) {
 				// Lsa: 
 				buf.writeByte('S');
@@ -810,7 +818,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (null == tiargs) {
 			return;
 		}
-		for (int j = 0; j < tiargs.size(); j++) {
+		for (int j = 0; j < size(tiargs); j++) {
 			ASTDmdNode o = tiargs.get(j);
 			Type[] ta = { isType(o) };
 			Expression[] ea = { isExpression(o) };
