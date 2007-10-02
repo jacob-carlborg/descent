@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
-
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
 // DMD 1.020
 public abstract class AggregateDeclaration extends ScopeDsymbol {
-	
+
 	public Type type;
 	public PROT protection;
 	public int storage_class;
@@ -35,6 +34,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public DeleteDeclaration aggDelete; // deallocator
 
 	public List<VarDeclaration> fields;
+	
+	// Back end
+    Symbol stag;		// tag symbol for debug data
+    Symbol sinit;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(loc, id);
@@ -113,12 +116,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 		if (alignsize < memalignsize) {
 			alignsize = memalignsize;
-			// printf("\talignsize = %d\n", alignsize);
 		}
 
 		v.storage_class |= STC.STCfield;
-		// printf(" addField '%s' to '%s' at offset %d, size = %d\n",
-		// v.toChars(), toChars(), v.offset, memsize);
 		if (fields == null) {
 			fields = new ArrayList<VarDeclaration>();
 		}
@@ -274,12 +274,22 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public int size(SemanticContext context) {
 		if (null == members) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UnknownSize, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UnknownSize, 0, start, length));
 		}
 		if (sizeok != 1) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoSizeYetForForwardReference, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.NoSizeYetForForwardReference, 0, start, length));
 		}
 		return structsize;
+	}
+
+	public Symbol toInitializer() {
+		// TODO semantic back-end
+		if (null == sinit) {
+			sinit = new Symbol();
+		}
+		return sinit;
 	}
 
 }

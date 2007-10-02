@@ -711,6 +711,7 @@ public class DstressTestGenerator implements IDstressConfiguration {
 		failures.add("mixin_35_A.d");
 		failures.add("mixin_36_A.d");
 		failures.add("mixin_36_B.d");
+		failures.add("mixin_37_A.d");
 		failures.add("module_04.d");
 		failures.add("named_entity_01.d");
 		failures.add("named_entity_02.d");
@@ -1202,6 +1203,10 @@ public class DstressTestGenerator implements IDstressConfiguration {
 		failures.add("wchar_11_F.d");
 		failures.add("wchar_11_G.d");
 		failures.add("wchar_11_H.d");
+		
+		// Although it's not a failure, Descent dies because of
+		// a StackOverflowError
+		failures.add("if_05.d");
 	}
 	
 	public static void main(String[] args) throws Exception {

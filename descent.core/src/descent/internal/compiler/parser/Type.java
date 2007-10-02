@@ -88,7 +88,7 @@ public abstract class Type extends ASTDmdNode {
 	public final static Type tchar = new TypeBasic(TY.Tchar);
 	public final static Type twchar = new TypeBasic(TY.Twchar);
 	public final static Type tdchar = new TypeBasic(TY.Tdchar);
-	public final static Type terror = new TypeBasic(TY.Terror); // for error recovery
+	public final static Type terror = new TypeBasic(TY.Tint32); // for error recovery
 	public final static Type tindex = tint32;
 	public final static Type tboolean = tbool;
 	public final static Type tsize_t = tuns32;
@@ -977,11 +977,6 @@ public abstract class Type extends ASTDmdNode {
 		return this;
 	}
 
-	public Expression getInternalTypeInfo(Scope sc) {
-		// TODO semantic
-		return null;
-	}
-
 	public int templateParameterLookup(Type tparam,
 			TemplateParameters parameters) {
 		if (tparam.ty != Tident) {
@@ -1109,6 +1104,57 @@ public abstract class Type extends ASTDmdNode {
 		e = new VarExp(Loc.ZERO, t.vtinfo);
 		e = e.addressOf(sc, context);
 		e.type = t.vtinfo.type; // do this so we don't get redundant dereference
+		return e;
+	}
+
+	private static TypeInfoDeclaration[] internalTI = new TypeInfoDeclaration[TY.values().length];
+
+	public Expression getInternalTypeInfo(Scope sc, SemanticContext context) {
+		TypeInfoDeclaration tid;
+		Expression e;
+		Type t;
+
+		t = toBasetype(context);
+		switch (t.ty) {
+		case Tsarray:
+			t = t.next.arrayOf(context); // convert to corresponding dynamic array type
+			break;
+
+		case Tclass:
+			if (((TypeClass) t).sym.isInterfaceDeclaration() != null) {
+				break;
+			}
+			// goto Linternal;
+			return getInternalTypeInfo_Linternal(sc, t, context);
+
+		case Tarray:
+			if (t.next.ty != Tclass) {
+				break;
+			}
+			//goto Linternal;
+			return getInternalTypeInfo_Linternal(sc, t, context);
+
+		case Tfunction:
+		case Tdelegate:
+		case Tpointer:
+			// Linternal: 
+			return getInternalTypeInfo_Linternal(sc, t, context);
+
+		default:
+			break;
+		}
+		return t.getTypeInfo(sc, context);
+	}
+	
+	private Expression getInternalTypeInfo_Linternal(Scope sc, Type t, SemanticContext context) {
+		TypeInfoDeclaration tid = internalTI[t.ty.ordinal()];
+		if (null == tid) {
+			tid = new TypeInfoDeclaration(t, 1, context);
+			internalTI[t.ty.ordinal()] = tid;
+		}
+		Expression e = new VarExp(Loc.ZERO, tid);
+		e = e.addressOf(sc, context);
+		e.type = tid.type; // do this so we don't get redundant dereference
 		return e;
 	}
 

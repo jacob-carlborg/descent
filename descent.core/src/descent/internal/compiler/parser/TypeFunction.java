@@ -319,6 +319,10 @@ public class TypeFunction extends Type {
 		case LINKcpp:
 			mc = 'R';
 			break;
+		// Added for Descent
+		case LINKsystem:
+			mc = context._WIN32 ? 'W' : 'U';
+			break;
 		default:
 			throw new IllegalStateException("assert(0);");
 		}
@@ -504,6 +508,14 @@ public class TypeFunction extends Type {
 		    case LINKwindows:	p = "Windows ";	break;
 		    case LINKpascal:	p = "Pascal ";	break;
 		    case LINKcpp:	p = "C++ ";	break;
+		    // Added for Descent
+		    case LINKsystem:
+		    	if (context._WIN32) {
+		    		p = "Windows ";
+		    	} else {
+		    		p = "C ";
+		    	}
+		    	break;
 		    default:
 		    	throw new IllegalStateException("assert(0);");
 		}

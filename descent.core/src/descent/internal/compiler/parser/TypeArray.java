@@ -95,7 +95,7 @@ public abstract class TypeArray extends Type {
 			arguments.add(e);
 			if (next.ty != Tbit) {
 				arguments.add(n.ty == Tsarray ? n.getTypeInfo(sc, context) // don't convert to dynamic array
-						: n.getInternalTypeInfo(sc));
+						: n.getInternalTypeInfo(sc, context));
 			}
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);

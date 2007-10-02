@@ -115,7 +115,7 @@ public class TypeAArray extends TypeArray {
 			ec = new VarExp(Loc.ZERO, fd);
 			arguments = new Expressions();
 			arguments.add(e.addressOf(sc, context));
-			arguments.add(key.getInternalTypeInfo(sc));
+			arguments.add(key.getInternalTypeInfo(sc, context));
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = this;
 		} else {

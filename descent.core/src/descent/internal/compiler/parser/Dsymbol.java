@@ -503,6 +503,10 @@ public class Dsymbol extends ASTDmdNode {
 	public Dsymbol toAlias(SemanticContext context) {
 		return this;
 	}
+	
+	public Symbol toSymbol() {
+		throw new IllegalStateException("assert(0); // implement");
+	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {

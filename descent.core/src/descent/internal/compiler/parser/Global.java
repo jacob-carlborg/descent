@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 public class Global {
 	
-	public int structalign;
+	public int structalign = 8;
 	public String version;
 	public int gag;
 	public int errors;

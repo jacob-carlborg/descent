@@ -92,14 +92,11 @@ public class TypeIdentifier extends TypeQualified {
 		} else {
 			if (s[0] != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UsedAsAType, 0, s[0].ident.start,
-						s[0].ident.length, new String[] { new String(
-								s[0].ident.ident) }));
+						IProblem.UsedAsAType, 0, start, length, new String[] { toChars(context) }));
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UsedAsAType, 0, this.ident.start,
-						this.ident.length, new String[] { new String(
-								this.ident.ident) }));
+						IProblem.UsedAsAType, 0, this.start,
+						this.length, new String[] { toChars(context) }));
 			}
 			t[0] = tvoid;
 		}

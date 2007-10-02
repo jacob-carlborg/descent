@@ -12,11 +12,6 @@ public class NegExp extends UnaExp {
 	}
 
 	@Override
-	public int getNodeType() {
-		return NEG_EXP;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -24,7 +19,35 @@ public class NegExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
-	
+
+	@Override
+	public int getNodeType() {
+		return NEG_EXP;
+	}
+
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return interpretCommon(istate, Neg, context);
+	}
+
+	@Override
+	public char[] opId() {
+		return Id.neg;
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		Expression e;
+
+		e1 = e1.optimize(result, context);
+		if (e1.isConst()) {
+			e = Neg.call(type, e1, context);
+		} else {
+			e = this;
+		}
+		return e;
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
@@ -42,26 +65,6 @@ public class NegExp extends UnaExp {
 			type = e1.type;
 		}
 		return this;
-	}
-	
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return interpretCommon(istate, Neg, context);
-	}
-
-	@Override
-	public Expression optimize(int result, SemanticContext context)
-	{
-		Expression e;
-		
-		e1 = e1.optimize(result, context);
-		if(e1.isConst())
-		{
-			e = Neg.call(type, e1, context);
-		}
-		else
-			e = this;
-		return e;
 	}
 
 }

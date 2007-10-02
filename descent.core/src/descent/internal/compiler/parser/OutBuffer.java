@@ -111,10 +111,12 @@ public class OutBuffer {
 
 	public void write4(int c) {
 		// TODO semantic
+		data.append((char) c);
 	}
 
 	public void writeUTF16(int i) {
 		// TODO semantic
+		data.append((char) i);
 	}
 
 	public void prependstring(String string) {

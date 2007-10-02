@@ -240,7 +240,6 @@ public class TypeBasic extends Type {
 		integer_t ivalue;
 		real_t fvalue;
 
-		// printf("TypeBasic.getProperty('%s')\n", ident.toChars());
 		if (CharOperation.equals(ident, Id.max)) {
 			// TODO ensure the Java max/min values are the same as the D ones
 			switch (ty) {

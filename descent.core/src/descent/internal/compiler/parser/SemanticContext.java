@@ -14,6 +14,10 @@ public class SemanticContext {
 	public boolean BREAKABI = true;
 	public boolean IN_GCC = false;
 	public boolean _DH = true;
+	
+	// If DMD is being run on Win32
+	public boolean _WIN32 = true;
+	
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;
 	public Global global = new Global();

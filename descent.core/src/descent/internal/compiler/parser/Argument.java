@@ -121,7 +121,8 @@ public class Argument extends ASTDmdNode {
 	public static int dim(Arguments args, SemanticContext context) {
 		int n = 0;
 		if (args != null) {
-			for (Argument arg : args) {
+			for(int i = 0; i < size(args); i++) {
+				Argument arg = args.get(i);
 				Type t = arg.type.toBasetype(context);
 
 				if (t.ty == TY.Ttuple) {
@@ -142,7 +143,8 @@ public class Argument extends ASTDmdNode {
 		}
 
 		int n = 0;
-		for (Argument arg : args) {
+		for(int i = 0; i < size(args); i++) {
+			Argument arg = args.get(i);
 			Type t = arg.type.toBasetype(context);
 
 			if (t.ty == TY.Ttuple) {
