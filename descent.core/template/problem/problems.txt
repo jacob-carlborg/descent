@@ -550,10 +550,15 @@ SymbolMatchesMoreThanOneTemplateDeclaration
 ExpressionLeadsToStackOverflowAtCompileTime
 	formatString=%1$s leads to stack overflow at compile time
 	numArgs=1
-	
-	
-	
-	
+StringIndexOutOfBounds
+	formatString=String index %1$su is out of bounds [0 .. %2$su]
+	numArgs=2
+CannotCreateInstanceOfAbstractClass
+	formatString=Cannot create instance of abstract class %1$s
+	numArgs=1
+CannotCreateInstanceOfInterface
+	formatString=Cannot create instance of interface %1$s
+	numArgs=1
 	
 	
 	

@@ -194,6 +194,9 @@ final class ProblemMessages extends NLS {
 	public static String NoSizeYetForForwardReference;
 	public static String SymbolMatchesMoreThanOneTemplateDeclaration;
 	public static String ExpressionLeadsToStackOverflowAtCompileTime;
+	public static String StringIndexOutOfBounds;
+	public static String CannotCreateInstanceOfAbstractClass;
+	public static String CannotCreateInstanceOfInterface;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -127,9 +127,15 @@ public class StructInitializer extends Initializer {
 			errors = 1;
 		}
 		if (errors != 0) {
-			field.clear();
-			value.clear();
-			vars.clear();
+			if (field != null) {
+				field.clear();
+			}
+			if (value != null) {
+				value.clear();
+			}
+			if (vars != null) {
+				vars.clear();
+			}
 		}
 		return this;
 	}

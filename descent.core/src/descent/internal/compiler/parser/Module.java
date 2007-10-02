@@ -66,7 +66,15 @@ public class Module extends Package {
 
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
+		if (context.global.errors > 0) {
+			return;
+		}
+		
 		semantic2(null, context);
+		if (context.global.errors > 0) {
+			return;
+		}
+		
 		semantic3(null, context);
 	}
 
@@ -137,14 +145,17 @@ public class Module extends Package {
 	public void semantic2(Scope scope, SemanticContext context) {
 		if (deferred != null && deferred.size() > 0) {
 			for (Dsymbol sd : deferred) {
-				sd.error("unable to resolve forward reference in definition");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotResolveForwardReference, 0, sd.start, sd.length));
 			}
 			return;
 		}
 		if (semanticstarted >= 2) {
 			return;
 		}
-		Assert.isTrue(semanticstarted == 1);
+		
+		if (semanticstarted != 1) {
+			throw new IllegalStateException("assert(semanticstarted == 1);");
+		}
 		semanticstarted = 2;
 
 		// Note that modules get their own scope, from scratch.
@@ -171,7 +182,10 @@ public class Module extends Package {
 		if (semanticstarted >= 3) {
 			return;
 		}
-		Assert.isTrue(semanticstarted == 2);
+		
+		if (semanticstarted != 2) {
+			throw new IllegalStateException("assert(semanticstarted == 2);");
+		}
 		semanticstarted = 3;
 
 		// Note that modules get their own scope, from scratch.

@@ -84,8 +84,11 @@ public class SemanticContext {
 	}
 	
 	public void multiplyDefined(Dsymbol s1, Dsymbol s2) {
-		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, s2.ident.start, s2.ident.length, new String[] { new String(s2.ident.ident) }));
-		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, s1.ident.start, s1.ident.length, new String[] { new String(s1.ident.ident) }));		
+		ASTDmdNode n2 = s2 instanceof TemplateInstance ? ((TemplateInstance) s2).name : s2.ident;
+		ASTDmdNode n1 = s1 instanceof TemplateInstance ? ((TemplateInstance) s1).name : s1.ident;
+		
+		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, n2.start, n2.length, new String[] { s2.toChars(this) }));
+		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, n1.start, n1.length, new String[] { s1.toChars(this) }));		
 	}
 	
 	private int generatedIds;	

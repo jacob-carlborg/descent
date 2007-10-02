@@ -50,6 +50,10 @@ public class Array<T> extends ArrayList<T> {
 	}
 	
 	public void memcpy(Array<? extends T> other) {
+		if (other == null) {
+			return;
+		}
+		
 		for(int i = 0; i < other.size(); i++) {
 			set(i, other.get(i));
 		}

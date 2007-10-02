@@ -259,8 +259,8 @@ public class VarDeclaration extends Declaration {
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STClazy) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VoidsHaveNoValue, 0, sourceType.start,
-					sourceType.length));
+					IProblem.VoidsHaveNoValue, 0, sourceType == null ? start : sourceType.start,
+							sourceType == null ? length : sourceType.length));
 			type = Type.terror;
 			tb = type;
 		}

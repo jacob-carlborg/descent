@@ -62,7 +62,9 @@ public class Catch extends ASTDmdNode {
 			var.parent = sc.parent;
 			sc.insert(var);
 		}
-		handler = handler.semantic(sc, context);
+		if (handler != null) {
+			handler = handler.semantic(sc, context);
+		}
 
 		sc.pop();
 	}

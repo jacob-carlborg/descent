@@ -463,6 +463,12 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolMatchesMoreThanOneTemplateDeclaration, arguments[0], arguments[1], arguments[2]);
 		case ExpressionLeadsToStackOverflowAtCompileTime:
 			return String.format(ProblemMessages.ExpressionLeadsToStackOverflowAtCompileTime, arguments[0]);
+		case StringIndexOutOfBounds:
+			return String.format(ProblemMessages.StringIndexOutOfBounds, arguments[0], arguments[1]);
+		case CannotCreateInstanceOfAbstractClass:
+			return String.format(ProblemMessages.CannotCreateInstanceOfAbstractClass, arguments[0]);
+		case CannotCreateInstanceOfInterface:
+			return String.format(ProblemMessages.CannotCreateInstanceOfInterface, arguments[0]);
 		default:
 			return "";
 		}

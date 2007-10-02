@@ -155,6 +155,12 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	public static void resolve(final Module module, boolean warningsEnabled) {
 		if (!RESOLVE) return;
 		
+		// First adhere to DMD: if there are syntaxis errors, don't do
+		// semantic analysis.
+		if (module.problems != null && module.problems.size() > 0) {
+			return;
+		}
+		
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);

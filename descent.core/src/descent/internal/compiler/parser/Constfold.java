@@ -100,8 +100,9 @@ public class Constfold {
 											 * TODO semantic se.getField(type,
 											 * offset)
 											 */;
-						if (null == e)
+						if (null == e) {
 							e = EXP_CANT_INTERPRET;
+						}
 						return e;
 					}
 				}
@@ -140,8 +141,9 @@ public class Constfold {
 				int dim = ale.keys.size();
 
 				e = new IntegerExp(loc, dim, type);
-			} else
+			} else {
 				e = EXP_CANT_INTERPRET;
+			}
 			return e;
 		}
 	};
@@ -387,13 +389,13 @@ public class Constfold {
 					c = e1.toComplex(context).multiply(e2.toComplex(context));
 				}
 
-				if (type.isreal())
+				if (type.isreal()) {
 					e = new RealExp(loc, c.re, type);
-				else if (type.isimaginary())
+				} else if (type.isimaginary()) {
 					e = new RealExp(loc, c.im, type);
-				else if (type.iscomplex())
+				} else if (type.iscomplex()) {
 					e = new ComplexExp(loc, c, type);
-				else {
+				} else {
 					assert (false);
 					e = null;
 				}
@@ -434,13 +436,13 @@ public class Constfold {
 					c = e1.toComplex(context).divide(e2.toComplex(context));
 				}
 
-				if (type.isreal())
+				if (type.isreal()) {
 					e = new RealExp(loc, c.re, type);
-				else if (type.isimaginary())
+				} else if (type.isimaginary()) {
 					e = new RealExp(loc, c.im, type);
-				else if (type.iscomplex())
+				} else if (type.iscomplex()) {
 					e = new ComplexExp(loc, c, type);
-				else {
+				} else {
 					assert (false);
 					e = null;
 				}
@@ -458,10 +460,11 @@ public class Constfold {
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
-				if (e1.type.isunsigned() || e2.type.isunsigned())
+				if (e1.type.isunsigned() || e2.type.isunsigned()) {
 					n = n1.castToUns64().divide(n2.castToUns64());
-				else
+				} else {
 					n = n1.divide(n2);
+				}
 				e = new IntegerExp(loc, n, type);
 			}
 			return e;
@@ -490,13 +493,13 @@ public class Constfold {
 					c = null;
 				}
 
-				if (type.isreal())
+				if (type.isreal()) {
 					e = new RealExp(loc, c.re, type);
-				else if (type.isimaginary())
+				} else if (type.isimaginary()) {
 					e = new RealExp(loc, c.im, type);
-				else if (type.iscomplex())
+				} else if (type.iscomplex()) {
 					e = new ComplexExp(loc, c, type);
-				else {
+				} else {
 					assert (false);
 					e = null;
 				}
@@ -514,10 +517,11 @@ public class Constfold {
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
-				if (e1.type.isunsigned() || e2.type.isunsigned())
+				if (e1.type.isunsigned() || e2.type.isunsigned()) {
 					n = n1.castToUns64().mod(n2.castToUns64());
-				else
+				} else {
 					n = n1.mod(n2);
+				}
 				e = new IntegerExp(loc, n, type);
 			}
 			return e;
@@ -656,19 +660,17 @@ public class Constfold {
 			Expression e = EXP_CANT_INTERPRET;
 			Loc loc = e1.loc;
 
-			// printf("Index(e1 = %s, e2 = %s)\n", e1.toChars(), e2.toChars());
 			assert (null != e1.type);
 			if (e1.op == TOKstring && e2.op == TOKint64) {
 				StringExp es1 = (StringExp) e1;
-				int i = e2.toInteger(context).intValue();
+				integer_t i = e2.toInteger(context);
 
-				if (i >= es1.len)
-					e1.error("string index %ju is out of bounds [0 .. %zu]", i,
-							es1.len);
-				else {
+				if (i.compareTo(es1.len) >= 0) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringIndexOutOfBounds, 0, e2.start, e2.length, new String[] { i.toString(), String.valueOf(es1.len) }));
+				} else {
 					integer_t value;
 
-					value = new integer_t(es1.string[i]);
+					value = new integer_t(es1.string[i.intValue()]);
 					e = new IntegerExp(loc, value, type);
 				}
 			} else if (e1.type.toBasetype(context).ty == Tsarray
@@ -683,7 +685,7 @@ public class Constfold {
 				} else if (e1.op == TOKarrayliteral
 						&& 0 == e1.checkSideEffect(2, context)) {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
-					e = (Expression) ale.elements.get(i);
+					e = ale.elements.get(i);
 					e.type = type;
 				}
 			} else if (e1.type.toBasetype(context).ty == Tarray
@@ -698,7 +700,7 @@ public class Constfold {
 						// bounds %s[0 .. %u]", i, e1.toChars(),
 						// ale.elements.dim);
 					} else {
-						e = (Expression) ale.elements.get(i);
+						e = ale.elements.get(i);
 						e.type = type;
 					}
 				}
@@ -711,13 +713,14 @@ public class Constfold {
 				int i = ae.keys.size();
 				while (true) {
 					i--;
-					Expression ekey = (Expression) ae.keys.get(i);
+					Expression ekey = ae.keys.get(i);
 					Expression ex = Equal.call(TOKequal, Type.tbool, ekey, e2,
 							context);
-					if (ex == EXP_CANT_INTERPRET)
+					if (ex == EXP_CANT_INTERPRET) {
 						return ex;
+					}
 					if (ex.isBool(true)) {
-						e = (Expression) ae.values.get(i);
+						e = ae.values.get(i);
 						e.type = type;
 						break;
 					}
@@ -736,10 +739,11 @@ public class Constfold {
 
 			if ((e1.op == TOKnull && e2.op == TOKint64)
 					|| (e1.op == TOKint64 && e2.op == TOKnull)) {
-				if (e1.op == TOKnull && e2.op == TOKint64)
+				if (e1.op == TOKnull && e2.op == TOKint64) {
 					e = e2;
-				else
+				} else {
 					e = e1;
+				}
 
 				Type tn = e.type.toBasetype(context);
 				if (tn.ty == Tchar || tn.ty == Twchar || tn.ty == Tdchar) {
@@ -780,10 +784,11 @@ public class Constfold {
 				assert (sz == es2.sz);
 				es.sz = sz;
 				es.committed = es1.committed | es2.committed;
-				if (es1.committed)
+				if (es1.committed) {
 					t = es1.type;
-				else
+				} else {
 					t = es2.type;
+				}
 				es.type = type;
 				e = es;
 			}
@@ -940,57 +945,61 @@ public class Constfold {
 
 				assert (es1.sz == es2.sz);
 				if (es1.len == es2.len
-						&& CharOperation.equals(es1.string, es2.string))
+						&& CharOperation.equals(es1.string, es2.string)) {
 					cmp = 1;
-				else
+				} else {
 					cmp = 0;
+				}
 			} else if (e1.op == TOKarrayliteral && e2.op == TOKarrayliteral) {
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
 
 				if ((null == es1.elements || es1.elements.isEmpty())
-						&& (null == es2.elements || es2.elements.isEmpty()))
+						&& (null == es2.elements || es2.elements.isEmpty())) {
 					cmp = 1; // both arrays are empty
-				else if (null == es1.elements || es2.elements.isEmpty())
+				} else if (null == es1.elements || es2.elements.isEmpty()) {
 					cmp = 0;
-				else if (es1.elements.size() != es2.elements.size())
+				} else if (es1.elements.size() != es2.elements.size()) {
 					cmp = 0;
-				else {
+				} else {
 					cmp = 1;
 					for (int i = 0; i < es1.elements.size(); i++) {
-						Expression ee1 = (Expression) es1.elements.get(i);
-						Expression ee2 = (Expression) es2.elements.get(i);
+						Expression ee1 = es1.elements.get(i);
+						Expression ee2 = es2.elements.get(i);
 
 						Expression v = call(TOKequal, Type.tint32, ee1, ee2,
 								context);
-						if (v == EXP_CANT_INTERPRET)
+						if (v == EXP_CANT_INTERPRET) {
 							return EXP_CANT_INTERPRET;
+						}
 						cmp = v.toInteger(context).intValue();
-						if (cmp == 0)
+						if (cmp == 0) {
 							break;
+						}
 					}
 				}
 			} else if (e1.op == TOKstructliteral && e2.op == TOKstructliteral) {
 				StructLiteralExp es1 = (StructLiteralExp) e1;
 				StructLiteralExp es2 = (StructLiteralExp) e2;
 
-				if (es1.sd != es2.sd)
+				if (es1.sd != es2.sd) {
 					cmp = 0;
-				else if ((null == es1.elements || es1.elements.isEmpty())
-						&& (null == es2.elements || es2.elements.isEmpty()))
+				} else if ((null == es1.elements || es1.elements.isEmpty())
+						&& (null == es2.elements || es2.elements.isEmpty())) {
 					cmp = 1; // both arrays are empty
-				else if (null == es1.elements || null == es2.elements)
+				} else if (null == es1.elements || null == es2.elements) {
 					cmp = 0;
-				else if (es1.elements.size() != es2.elements.size())
+				} else if (es1.elements.size() != es2.elements.size()) {
 					cmp = 0;
-				else {
+				} else {
 					cmp = 1;
 					for (int i = 0; i < es1.elements.size(); i++) {
-						Expression ee1 = (Expression) es1.elements.get(i);
-						Expression ee2 = (Expression) es2.elements.get(i);
+						Expression ee1 = es1.elements.get(i);
+						Expression ee2 = es2.elements.get(i);
 
-						if (ee1 == ee2)
+						if (ee1 == ee2) {
 							continue;
+						}
 						if (null == ee1 || null == ee2) {
 							cmp = 0;
 							break;
@@ -998,11 +1007,13 @@ public class Constfold {
 
 						Expression v = call(TOKequal, Type.tint32, ee1, ee2,
 								context);
-						if (v == EXP_CANT_INTERPRET)
+						if (v == EXP_CANT_INTERPRET) {
 							return EXP_CANT_INTERPRET;
+						}
 						cmp = v.toInteger(context).intValue();
-						if (cmp == 0)
+						if (cmp == 0) {
 							break;
+						}
 					}
 				}
 			} else if (!e1.isConst() || !e2.isConst()) {
@@ -1031,8 +1042,9 @@ public class Constfold {
 			} else {
 				return EXP_CANT_INTERPRET;
 			}
-			if (op == TOKnotequal)
+			if (op == TOKnotequal) {
 				cmp ^= 1;
+			}
 			e = new IntegerExp(loc, cmp, type);
 			return e;
 		}
@@ -1274,8 +1286,9 @@ public class Constfold {
 				cmp = false;
 			}
 
-			if (op == TOKnotidentity)
+			if (op == TOKnotidentity) {
 				cmp = !cmp;
+			}
 
 			return new IntegerExp(loc, cmp ? 1 : 0, type);
 		}
@@ -1316,14 +1329,15 @@ public class Constfold {
 			int iupr = upr.toInteger(context).intValue();
 
 			if (iupr > es1.elements.size() || ilwr > iupr) {
-				e1.error("array slice [%ju .. %ju] is out of bounds", ilwr,
+				ASTDmdNode.error("array slice [%ju .. %ju] is out of bounds", ilwr,
 						iupr);
 			} else {
 				Expressions elements = new Expressions();
 				elements.setDim(iupr - ilwr);
 
-				for (int i = ilwr; i < iupr; i++)
+				for (int i = ilwr; i < iupr; i++) {
 					elements.add(es1.elements.get(i));
+				}
 				e = new ArrayLiteralExp(e1.loc, elements);
 				e.type = type;
 			}
@@ -1336,17 +1350,19 @@ public class Constfold {
 		Expression e = EXP_CANT_INTERPRET;
 		Loc loc = e1.loc;
 
-		if (type.equals(e1.type) && to.equals(type))
+		if (type.equals(e1.type) && to.equals(type)) {
 			return e1;
+		}
 
-		if (!e1.isConst())
+		if (!e1.isConst()) {
 			return EXP_CANT_INTERPRET;
+		}
 
 		Type tb = to.toBasetype(context);
-		if (tb.ty == Tbool)
+		if (tb.ty == Tbool) {
 			e = new IntegerExp(loc, e1.toInteger(context).equals(0) ? 0 : 1,
 					type);
-		else if (type.isintegral()) {
+		} else if (type.isintegral()) {
 			if (e1.type.isfloating()) {
 				integer_t result;
 				real_t r = e1.toReal(context);
@@ -1384,10 +1400,11 @@ public class Constfold {
 				}
 
 				e = new IntegerExp(loc, result, type);
-			} else if (type.isunsigned())
+			} else if (type.isunsigned()) {
 				e = new IntegerExp(loc, e1.toUInteger(context), type);
-			else
+			} else {
 				e = new IntegerExp(loc, e1.toInteger(context), type);
+			}
 		} else if (tb.isreal()) {
 			real_t value = e1.toReal(context);
 
@@ -1400,11 +1417,11 @@ public class Constfold {
 			complex_t value = e1.toComplex(context);
 
 			e = new ComplexExp(loc, value, type);
-		} else if (tb.isscalar(context))
+		} else if (tb.isscalar(context)) {
 			e = new IntegerExp(loc, e1.toInteger(context), type);
-		else if (tb.ty == Tvoid)
+		} else if (tb.ty == Tvoid) {
 			e = EXP_CANT_INTERPRET;
-		else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
+		} else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
 			StructDeclaration sd = tb.toDsymbol(null, context)
 					.isStructDeclaration();
 			if (sd == null) {
@@ -1412,7 +1429,7 @@ public class Constfold {
 			}
 			Expressions elements = new Expressions();
 			for (int i = 0; i < sd.fields.size(); i++) {
-				Dsymbol s = (Dsymbol) sd.fields.get(i);
+				Dsymbol s = sd.fields.get(i);
 				VarDeclaration v = s.isVarDeclaration();
 				if (v == null) {
 					throw new IllegalStateException("assert(v);");
@@ -1420,8 +1437,9 @@ public class Constfold {
 
 				Expression exp = new IntegerExp(0);
 				exp = Cast(v.type, v.type, exp, context);
-				if (exp == EXP_CANT_INTERPRET)
+				if (exp == EXP_CANT_INTERPRET) {
 					return exp;
+				}
 				elements.add(exp);
 			}
 			e = new StructLiteralExp(loc, sd, elements);

@@ -6,6 +6,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 
@@ -122,14 +123,13 @@ public class NewExp extends Expression {
 				TypeClass tc = (TypeClass) (tb);
 				ClassDeclaration cd = tc.sym.isClassDeclaration();
 				if (cd.isInterfaceDeclaration() != null) {
-					error("cannot create instance of interface %s", cd
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, 0, start, length, new String[] { cd.toChars(context) }));
 				} else if (cd.isAbstract()) {
-					error("cannot create instance of abstract class %s", cd
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfAbstractClass, 0, start, length, new String[] { cd.toChars(context) }));
 				}
 				checkDeprecated(sc, cd, context);
-				if (cd.isNested()) { /* We need a 'this' pointer for the nested class.
+				if (cd.isNested()) { 
+				/* We need a 'this' pointer for the nested class.
 				 * Ensure we have the right one.
 				 */
 					Dsymbol s = cd.toParent2();

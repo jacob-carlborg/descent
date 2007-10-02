@@ -392,5 +392,8 @@ public interface IProblem {
 	int NoSizeYetForForwardReference = 182;
 	int SymbolMatchesMoreThanOneTemplateDeclaration = 183;
 	int ExpressionLeadsToStackOverflowAtCompileTime = 184;
+	int StringIndexOutOfBounds = 185;
+	int CannotCreateInstanceOfAbstractClass = 186;
+	int CannotCreateInstanceOfInterface = 187;
 
 }

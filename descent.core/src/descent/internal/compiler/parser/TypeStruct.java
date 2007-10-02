@@ -198,7 +198,10 @@ public class TypeStruct extends Type {
 		}
 
 		d = s.isDeclaration();
-		assert (null != d);
+		
+		if (d == null) {
+			throw new IllegalStateException("assert(d);");
+		}
 
 		if (e.op == TOKtype) {
 			FuncDeclaration fd = sc.func;
