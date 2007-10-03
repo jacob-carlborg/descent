@@ -439,7 +439,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
             }
         }
         
-        throw new IllegalStateException("Nothing returned at end of deduceMatch");
+        return Lmatch(nargsi, dedargs, dedtypes, paramscope, match, context);
     }
 	
 	// return Lmatch(nargsi, dedargs, dedtypes, paramscope, match, context);
@@ -456,8 +456,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			if (null == oarg) {
 				if (null != o) {
 					if (null != tp.specialization())
-						error(
-								"specialization not allowed for deduced parameter %s",
+						error("specialization not allowed for deduced parameter %s",
 								tp.ident.toChars());
 				} else {
 					o = tp.defaultArg(paramscope, context);
