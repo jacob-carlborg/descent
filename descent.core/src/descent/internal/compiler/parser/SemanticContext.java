@@ -76,19 +76,9 @@ public class SemanticContext {
 	
 	public void acceptProblem(IProblem problem) {
 		if (global.gag == 0) {
-			if (problem.getID() != IProblem.VoidsHaveNoValue) {
-				problemRequestor.acceptProblem(problem);
-			}
+			problemRequestor.acceptProblem(problem);
 		}
 		global.errors++;
-	}
-	
-	public void multiplyDefined(Dsymbol s1, Dsymbol s2) {
-		ASTDmdNode n2 = s2 instanceof TemplateInstance ? ((TemplateInstance) s2).name : s2.ident;
-		ASTDmdNode n1 = s1 instanceof TemplateInstance ? ((TemplateInstance) s1).name : s1.ident;
-		
-		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, n2.start, n2.length, new String[] { s2.toChars(this) }));
-		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, n1.start, n1.length, new String[] { s1.toChars(this) }));		
 	}
 	
 	private int generatedIds;	

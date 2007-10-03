@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.*;
@@ -96,8 +97,7 @@ public class WithStatement extends Statement {
 				sym = new WithScopeSymbol(this);
 				sym.parent = sc.scopesym;
 			} else {
-				error("with expressions must be class objects, not '%s'",
-						exp.type.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.WithExpressionsMustBeClassObject, 0, sourceExp.start, sourceExp.length, new String[] { exp.type.toChars(context) }));
 				return null;
 			}
 		}

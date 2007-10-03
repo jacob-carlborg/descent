@@ -208,7 +208,7 @@ public class IntegerExp extends Expression {
 			return MATCHconvert;
 
 		case Twchar:
-			if (!cast(value, ty).equals(value)) {
+			if (!value.castToUns16().equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;

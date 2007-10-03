@@ -203,8 +203,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.NeedSizeOfRightmostArray);
 		case ConflictingStorageClass:
 			return String.format(ProblemMessages.ConflictingStorageClass);
-		case DuplicatedSymbol:
-			return String.format(ProblemMessages.DuplicatedSymbol, arguments[0]);
+		case SymbolConflictsWithSymbolAtLocation:
+			return String.format(ProblemMessages.SymbolConflictsWithSymbolAtLocation, arguments[0], arguments[1], arguments[2], arguments[3]);
+		case SymbolAtLocationConflictsWithSymbolAtLocation:
+			return String.format(ProblemMessages.SymbolAtLocationConflictsWithSymbolAtLocation, arguments[0], arguments[1], arguments[2], arguments[3]);
 		case PropertyCanNotBeRedefined:
 			return String.format(ProblemMessages.PropertyCanNotBeRedefined, arguments[0]);
 		case CircularDefinition:
@@ -300,7 +302,7 @@ public class Problem implements IProblem {
 		case PragmaIsMissingClosingSemicolon:
 			return String.format(ProblemMessages.PragmaIsMissingClosingSemicolon);
 		case CannotImplicitlyConvert:
-			return String.format(ProblemMessages.CannotImplicitlyConvert, arguments[0], arguments[1]);
+			return String.format(ProblemMessages.CannotImplicitlyConvert, arguments[0], arguments[1], arguments[2]);
 		case ForbiddenReference:
 			return String.format(ProblemMessages.ForbiddenReference);
 		case DiscouragedReference:
@@ -469,6 +471,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotCreateInstanceOfAbstractClass, arguments[0]);
 		case CannotCreateInstanceOfInterface:
 			return String.format(ProblemMessages.CannotCreateInstanceOfInterface, arguments[0]);
+		case WithExpressionsMustBeClassObject:
+			return String.format(ProblemMessages.WithExpressionsMustBeClassObject, arguments[0]);
+		case DeclarationIsAlreadyDefined:
+			return String.format(ProblemMessages.DeclarationIsAlreadyDefined, arguments[0]);
 		default:
 			return "";
 		}

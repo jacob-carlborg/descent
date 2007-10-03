@@ -105,6 +105,23 @@ public class ScopeDsymbol extends Dsymbol {
 	public String kind() {
 		return "ScopeDsymbol";
 	}
+	
+	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
+		ASTDmdNode n2 = s2 instanceof TemplateInstance ? ((TemplateInstance) s2).name : s2.ident;
+		ASTDmdNode n1 = s1 instanceof TemplateInstance ? ((TemplateInstance) s1).name : s1.ident;
+		
+		if (loc != null && loc.filename != null) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
+					0, n2.start, n2.length, new String[] { s1.toPrettyChars(context), s1.locToChars(context), s2.toPrettyChars(context), s2.locToChars(context) }));
+		} else {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolConflictsWithSymbolAtLocation, 
+					0, n1.start, n1.length, new String[] { s1.toChars(context), s2.kind(),
+						    s2.toPrettyChars(context),
+						    s2.locToChars(context)}));
+		}		
+	}
 
 	public Dsymbol nameCollision(Dsymbol s, SemanticContext context) {
 		Dsymbol sprev;
@@ -125,7 +142,7 @@ public class ScopeDsymbol extends Dsymbol {
 				return sprev;
 			}
 		}
-		context.multiplyDefined(s, sprev);
+		multiplyDefined(Loc.ZERO, s, sprev, context);
 		return sprev;
 	}
 
@@ -169,7 +186,7 @@ public class ScopeDsymbol extends Dsymbol {
 								.isImport() == null
 								&& i2.parent.isImport() == null && i1.ident
 								.equals(i2.ident))))) {
-							context.multiplyDefined(s, s2);
+							multiplyDefined(loc, s, s2, context);
 							break;
 						}
 					}

@@ -170,7 +170,7 @@ public class AliasDeclaration extends Declaration {
 			type = t[0];
 		}
 		if (overnext != null) {
-			context.multiplyDefined(this, overnext);
+			ScopeDsymbol.multiplyDefined(Loc.ZERO, this, overnext, context);
 		}
 		this.inSemantic = 0;
 		return;
@@ -178,7 +178,7 @@ public class AliasDeclaration extends Declaration {
 
 	public void semantic_L1(Scope sc, SemanticContext context) {
 		if (overnext != null) {
-			context.multiplyDefined(this, overnext);
+			ScopeDsymbol.multiplyDefined(Loc.ZERO, this, overnext, context);
 		}
 		type = type.semantic(loc, sc, context);
 		this.inSemantic = 0;
@@ -205,7 +205,7 @@ public class AliasDeclaration extends Declaration {
 				if (overnext != null) {
 					FuncAliasDeclaration fa = new FuncAliasDeclaration(loc, f);
 					if (!fa.overloadInsert(overnext, context)) {
-						context.multiplyDefined(f, overnext);
+						ScopeDsymbol.multiplyDefined(Loc.ZERO, f, overnext, context);
 					}
 					overnext = null;
 					s = fa;
@@ -213,7 +213,7 @@ public class AliasDeclaration extends Declaration {
 				}
 			}
 			if (overnext != null) {
-				context.multiplyDefined(s, overnext);
+				ScopeDsymbol.multiplyDefined(Loc.ZERO, s, overnext, context);
 			}
 			if (s == this) {
 				s = null;

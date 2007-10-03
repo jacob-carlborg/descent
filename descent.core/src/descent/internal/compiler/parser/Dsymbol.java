@@ -97,7 +97,7 @@ public class Dsymbol extends ASTDmdNode {
 
 				s2 = sd.symtab.lookup(ident);
 				if (!s2.overloadInsert(this, context)) {
-					context.multiplyDefined(this, s2);
+					ScopeDsymbol.multiplyDefined(Loc.ZERO, this, s2, context);
 				}
 			}
 			if (sd.isAggregateDeclaration() != null
@@ -558,6 +558,11 @@ public class Dsymbol extends ASTDmdNode {
 	@Override
 	public ASTDmdNode getParentBinding() {
 		return parent;
+	}
+
+	public String locToChars(SemanticContext context) {
+		// TODO semantic
+		return "";
 	}
 
 }

@@ -6,9 +6,9 @@ import java.math.BigInteger;
 // This is also an alias of uinteger_t, as defined by DMD
 public class integer_t extends Number {
 	
-	private final static long INT_UPPER = 0xFFFFFFFFL + 1;
-	private final static int SHORT_UPPER = 0xFFFF + 1;
-	private final static int BYTE_UPPER = 0xFF + 1;
+	private final static long MAX_INT = 0xFFFFFFFFL;
+	private final static int MAX_SHORT = 0xFFFF;
+	private final static int MAX_BYTE = 0xFF;
 
 	public final static integer_t ZERO = new integer_t(0);
 	public final static integer_t ONE = new integer_t(1);
@@ -426,13 +426,13 @@ public class integer_t extends Number {
 	public integer_t castToUns32() {
 		long b = this.longValue();
 		if (b < 0) {
-			b %= INT_UPPER;
+			b %= MAX_INT + 1;
 			if (b < 0) {
-				b += INT_UPPER;
+				b += MAX_INT;
 			}
 		}
-		if (b > INT_UPPER) {
-			b %= INT_UPPER;
+		if (b > MAX_INT) {
+			b %= MAX_INT + 1;
 		}
 		return new integer_t(toBigInteger(b));
 	}
@@ -444,13 +444,13 @@ public class integer_t extends Number {
 	public integer_t castToUns16() {
 		int b = this.intValue();
 		if (b < 0) {
-			b %= SHORT_UPPER;
+			b %= MAX_SHORT + 1;
 			if (b < 0) {
-				b += SHORT_UPPER;
+				b += MAX_SHORT;
 			}
 		}
-		if (b > SHORT_UPPER) {
-			b %= SHORT_UPPER;
+		if (b > MAX_SHORT) {
+			b %= MAX_SHORT + 1;
 		}
 		return new integer_t(b);
 	}
@@ -462,13 +462,13 @@ public class integer_t extends Number {
 	public integer_t castToUns8() {
 		short b = this.shortValue();
 		if (b < 0) {
-			b %= BYTE_UPPER;
+			b %= MAX_BYTE + 1;
 			if (b < 0) {
-				b += BYTE_UPPER;
+				b += MAX_BYTE;
 			}
 		}
-		if (b > BYTE_UPPER) {
-			b %= BYTE_UPPER;
+		if (b > MAX_BYTE) {
+			b %= MAX_BYTE + 1;
 		}
 		return new integer_t(b);
 	}

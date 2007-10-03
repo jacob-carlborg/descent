@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.Assert;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -177,8 +178,7 @@ public class DeclarationExp extends Expression {
 		// Must be unique in both.
 		if (s.ident != null) {
 			if (sc.insert(s) == null) {
-				error("declaration %s is already defined", s
-						.toPrettyChars(context));
+				context.acceptProblem(Problem.newSyntaxError(IProblem.DeclarationIsAlreadyDefined, 0, s.start, s.length, new String[] { s.toChars(context) } ));
 			} else if (sc.func != null) {
 				//VarDeclaration v = s.isVarDeclaration();
 				if ((s.isFuncDeclaration() != null /*|| v && v.storage_class & STCstatic*/)

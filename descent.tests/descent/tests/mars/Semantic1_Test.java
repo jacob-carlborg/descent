@@ -11,55 +11,49 @@ public class Semantic1_Test extends Parser_Test {
 	public void testDuplicatedVar1() {
 		String s = "int a; int a;";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
-		assertError(p[1], IProblem.DuplicatedSymbol, 11, 1);
+		assertError(p[0], IProblem.SymbolConflictsWithSymbolAtLocation, 11, 1);
 	}
 
 	public void testDuplicatedVar2() {
 		String s = "int a, a;";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
-		assertError(p[1], IProblem.DuplicatedSymbol, 7, 1);
+		assertError(p[0], IProblem.SymbolConflictsWithSymbolAtLocation, 7, 1);
 	}
 
 	public void testDuplicatedSymbol() {
 		String s = "int a; class a { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
-		assertError(p[1], IProblem.DuplicatedSymbol, 13, 1);
+		assertError(p[0], IProblem.SymbolConflictsWithSymbolAtLocation, 13, 1);
 	}
 
 	public void testDuplicatedSymbolWithProt() {
 		String s = "int a; public class a { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
-		assertError(p[1], IProblem.DuplicatedSymbol, 20, 1);
+		assertError(p[0], IProblem.SymbolConflictsWithSymbolAtLocation, 20, 1);
 	}
 
 	public void testDuplicatedSymbolWithStorageClass() {
 		String s = "int a; static class a { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
-		assertError(p[1], IProblem.DuplicatedSymbol, 20, 1);
+		assertError(p[0], IProblem.SymbolConflictsWithSymbolAtLocation, 20, 1);
 	}
 
 	public void testDuplicatedSymbolWithLink() {
 		String s = "int a; extern { int a; }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
-		assertError(p[1], IProblem.DuplicatedSymbol, 20, 1);
+		assertError(p[0], IProblem.SymbolConflictsWithSymbolAtLocation, 20, 1);
 	}
 
 	public void testPropertiesCannotBeRedefined() {
@@ -206,10 +200,11 @@ public class Semantic1_Test extends Parser_Test {
 	public void testUsedAsAType() {
 		String s = " class X  { } Y y;";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(3, p.length);
 
 		assertError(p[0], IProblem.UndefinedIdentifier, 14, 1);
 		assertError(p[1], IProblem.UsedAsAType, 14, 1);
+		assertError(p[2], IProblem.VoidsHaveNoValue, 14, 1);
 	}
 
 	public void testUsedAsAType_Not() {
@@ -283,17 +278,19 @@ public class Semantic1_Test extends Parser_Test {
 	public void testBaseTypeWrong() {
 		String s = " int x; class A : x { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
 		assertError(p[0], IProblem.UsedAsAType, 18, 1);
+		assertError(p[1], IProblem.BaseTypeMustBeClassOrInterface, 18, 1);
 	}
 
 	public void testInterfaceTypeWrong() {
 		String s = " class B { } int x; class A : B, x { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
 		assertError(p[0], IProblem.UsedAsAType, 33, 1);
+		assertError(p[1], IProblem.BaseTypeMustBeClassOrInterface, 33, 1);
 	}
 
 	public void testInterfaceCannotDeclareFields() {
@@ -357,7 +354,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testNewAllocatorsOnlyForClassOrStruct_Not() {
-		assertNoSemanticErrors(" class X { new(uint x) { } } ");
+		assertNoSemanticErrors(" class X { new(uint x) { return null; } } ");
 	}
 	
 	public void testDeleteDeallocatorsOnlyForClassOrStruct() {
@@ -467,12 +464,11 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testFunctionsCannotReturnAStaticArray() {
-		String s = " int[3] bla() { }";
+		String s = " int[3] bla() { return null; }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.FunctionsCannotReturnStaticArrays, 1, 6);
-		assertError(p[1], IProblem.FunctionMustReturnAResultOfType, 8, 3);
 	}
 	
 	public void testCannotHaveOutOrInoutParameterOfStaticArray() {
@@ -663,9 +659,10 @@ public class Semantic1_Test extends Parser_Test {
 	public void testVoidFunctionsHaveNoResult() {
 		String s = " void bla() out(id) { } body { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
 		assertError(p[0], IProblem.VoidFunctionsHaveNoResult, 16, 2);
+		assertError(p[1], IProblem.VoidsHaveNoValue, 1, 4);
 	}
 	
 	public void testReturnInPrecondition() {

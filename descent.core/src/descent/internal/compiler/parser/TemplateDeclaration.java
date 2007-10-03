@@ -85,7 +85,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			throw new IllegalStateException("assert(0);");
 		}
 		if (null == sc.insert(s)) {
-			error("declaration %s is already defined", tp.ident.toChars());
+			context.acceptProblem(Problem.newSyntaxError(IProblem.DeclarationIsAlreadyDefined, 0, s.start, s.length, new String[] { tp.ident.toChars(context) } ));
 		}
 		s.semantic(sc, context);
 	}

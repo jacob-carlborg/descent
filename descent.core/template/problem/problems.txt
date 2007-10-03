@@ -160,9 +160,12 @@ NeedSizeOfRightmostArray
 ConflictingStorageClass
 	formatString=Conflicting storage class
 	numArgs=0
-DuplicatedSymbol
-	formatString=Duplicated symbol %1$s
-	numArgs=1
+SymbolConflictsWithSymbolAtLocation
+	formatString=%1$s conflicts with %2$s %3$s at %4$s
+	numArgs=4
+SymbolAtLocationConflictsWithSymbolAtLocation
+	formatString=%1$s at %2$s conflicts with %3$s at %4$s
+	numArgs=4
 PropertyCanNotBeRedefined
 	formatString=Property %1$s cannot be redefined
 	numArgs=1
@@ -242,7 +245,7 @@ FieldsNotAllowedInInterfaces
 	formatString=Fields are not allowed in interfaces
 	numArgs=0
 UndefinedIdentifier
-	formatString=%1$s cannot be resolved
+	formatString=Undefined identifier %1$s
 	numArgs=1
 NotAMember
 	formatString=Template identifier %1$s is not a member of this module
@@ -305,8 +308,8 @@ PragmaIsMissingClosingSemicolon
 	formatString=pragma is missing closing ';'
 	numArgs=0
 CannotImplicitlyConvert
-	formatString=Type mismatch: cannot implicitly convert from %1$s to %2$s
-	numArgs=2
+	formatString=Cannot implicitly convert expression (%1$s) of type %2$s to %3$s
+	numArgs=3
 ForbiddenReference
 	formatString=Forbidden reference
 	numArgs=0
@@ -559,7 +562,12 @@ CannotCreateInstanceOfAbstractClass
 CannotCreateInstanceOfInterface
 	formatString=Cannot create instance of interface %1$s
 	numArgs=1
-	
+WithExpressionsMustBeClassObject
+	formatString=With expressions must be class objects, not '%1$s'
+	numArgs=1
+DeclarationIsAlreadyDefined
+	formatString=Declaration %1$s is already defined
+	numArgs=1
 	
 	
 	

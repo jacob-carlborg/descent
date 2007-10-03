@@ -64,7 +64,8 @@ final class ProblemMessages extends NLS {
 	public static String VariadicTemplateParameterMustBeTheLastOne;
 	public static String NeedSizeOfRightmostArray;
 	public static String ConflictingStorageClass;
-	public static String DuplicatedSymbol;
+	public static String SymbolConflictsWithSymbolAtLocation;
+	public static String SymbolAtLocationConflictsWithSymbolAtLocation;
 	public static String PropertyCanNotBeRedefined;
 	public static String CircularDefinition;
 	public static String EnumValueOverflow;
@@ -197,6 +198,8 @@ final class ProblemMessages extends NLS {
 	public static String StringIndexOutOfBounds;
 	public static String CannotCreateInstanceOfAbstractClass;
 	public static String CannotCreateInstanceOfInterface;
+	public static String WithExpressionsMustBeClassObject;
+	public static String DeclarationIsAlreadyDefined;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -42,10 +42,10 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 	static {
 		nocompile = new LinkedHashMap<String, ISpecification>();
 		nocompile.put("a\\alias_18.d", one(AST.D1, IProblem.AliasCannotBeConst, "const"));
-		nocompile.put("a\\alias_26_A.d", two(AST.D1, IProblem.DuplicatedSymbol, "alias void a;", 11, 1, IProblem.DuplicatedSymbol, "void main(){", 5, 4));
-		nocompile.put("a\\alias_26_B.d", two(AST.D1, IProblem.DuplicatedSymbol, "alias void a;", 11, 1, IProblem.DuplicatedSymbol, "void main(){", 5, 4));
-		nocompile.put("a\\alias_26_C.d", two(AST.D1, IProblem.DuplicatedSymbol, "alias int a;", 10, 1, IProblem.DuplicatedSymbol, "void main(){", 5, 4));
-		nocompile.put("a\\alias_26_D.d", two(AST.D1, IProblem.DuplicatedSymbol, "alias void a;", 11, 1, IProblem.DuplicatedSymbol, "void main(){", 5, 4));
+		nocompile.put("a\\alias_26_A.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "void main(){", 5, 4));
+		nocompile.put("a\\alias_26_B.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "alias void a;", 11, 1));
+		nocompile.put("a\\alias_26_C.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "void main(){", 5, 4));
+		nocompile.put("a\\alias_26_D.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "void main(){", 5, 4));
 		nocompile.put("a\\alias_28_A.d", TODO(AST.D1));
 		nocompile.put("a\\alias_28_B.d", one(AST.D1, IProblem.UndefinedProperty, "A.x", 2, 1));
 		nocompile.put("a\\alias_28_C.d", one(AST.D1, IProblem.UndefinedProperty, "a.x", 2, 1));
@@ -55,9 +55,9 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 		nocompile.put("a\\alias_30_A.d", one(AST.D1, IProblem.CircularDefinition, "Foo;", 0, 3));
 		nocompile.put("a\\alias_30_B.d", one(AST.D1, IProblem.CircularDefinition, "Foo;", 0, 3));
 		nocompile.put("a\\alias_30_C.d", one(AST.D1, IProblem.CircularDefinition, "Foo;", 0, 3));
-		nocompile.put("a\\alias_30_D.d", two(AST.D1, IProblem.DuplicatedSymbol, "struct Foo", 7, 3, IProblem.DuplicatedSymbol, "Foo;", 0, 3));
-		nocompile.put("a\\alias_30_E.d", two(AST.D1, IProblem.DuplicatedSymbol, "class Foo", 6, 3, IProblem.DuplicatedSymbol, "Foo;", 0, 3));
-		nocompile.put("a\\alias_30_F.d", two(AST.D1, IProblem.DuplicatedSymbol, "template Foo", 9, 3, IProblem.DuplicatedSymbol, "Foo;", 0, 3));
+		nocompile.put("a\\alias_30_D.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "Foo;", 0, 3));
+		nocompile.put("a\\alias_30_E.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "Foo;", 0, 3));
+		nocompile.put("a\\alias_30_F.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "Foo;", 0, 3));
 		nocompile.put("a\\alias_30_G.d", one(AST.D1, IProblem.CircularDefinition, "alias b a;", 8, 1));
 		nocompile.put("a\\alias_30_L.d", one(AST.D1, IProblem.CircularDefinition, "alias a a;", 8, 1));
 		nocompile.put("a\\alias_33_A.d", four(AST.D1, IProblem.UndefinedIdentifier, "alias UNDEFINED", 6, 9, IProblem.UndefinedIdentifier, "alias UNDEFINED", 6, 9, IProblem.UsedAsAType, "alias UNDEFINED", 6, 9, IProblem.VoidsHaveNoValue, "ALIAS x", 0, 5));
@@ -72,9 +72,9 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 		nocompile.put("a\\alias_37_B.d", one(AST.D1, IProblem.CannotHaveArrayOfType, "foo[3]"));
 		nocompile.put("a\\alias_37_C.d", one(AST.D1, IProblem.CannotHaveArrayOfType, "foo[3]"));
 		nocompile.put("a\\alias_37_D.d", one(AST.D1, IProblem.SymbolCannotBeDeclaredToBeAFunction, "foo x;", 4, 1));
-		nocompile.put("a\\alias_39_A.d", two(AST.D1, IProblem.UndefinedIdentifier, "(y);", 0, 1, IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, "mixin Foo!(y);", 0, 13));
+		nocompile.put("a\\alias_39_A.d", two(AST.D1, IProblem.UndefinedIdentifier, "(y);", 1, 1, IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, "mixin Foo!(y);", 0, 13));
 		nocompile.put("a\\alias_39_B.d", TODO(AST.D1));
-		nocompile.put("a\\alias_41_B.d", two(AST.D1, IProblem.DuplicatedSymbol, ";\r\nalias Foo Bar;", 13, 3, IProblem.DuplicatedSymbol, "struct Foo", 7, 3));
+		nocompile.put("a\\alias_41_B.d", one(AST.D1, IProblem.SymbolConflictsWithSymbolAtLocation, "struct Foo", 7, 3));
 		nocompile.put("a\\alias_42_C.d", TODO(AST.D1));
 		nocompile.put("a\\array_initialization_10.d", one(AST.D1, IProblem.IndexOverflowForStaticArray, "int.max/32"));
 		nocompile.put("a\\array_initialization_18_A.d", TODO(AST.D1));

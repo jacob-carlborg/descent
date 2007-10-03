@@ -573,13 +573,14 @@ public class TypeBasic extends Type {
 			}
 
 			// If converting to integral
-			/*
-			 * TODO semantic if (false && context.global.params.Dversion > 1 &&
-			 * tob.flags & TFLAGSintegral) { d_uns64 sz = size(0); d_uns64 tosz =
-			 * tob.size(0);
-			 * 
-			 * if (sz > tosz) return MATCHnomatch; }
-			 */
+			int sz = size(Loc.ZERO, context);
+			int tosz = tob.size(Loc.ZERO, context);
+
+		    /* Can't convert to smaller size or, if same size, change sign
+		     */
+		    if (sz > tosz) {
+		    	return MATCHnomatch;
+		    }
 		} else if ((ty.flags & TFLAGSfloating) != 0) {
 			// Disallow implicit conversion of floating point to integer
 			if ((tob.ty.flags & TFLAGSintegral) != 0) {
