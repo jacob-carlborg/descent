@@ -1,7 +1,9 @@
 package descent.tests.dstress;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 	
 	public static void main(String[] args) throws Exception {
 		generateCompile();
-		generateNoCompile();		
+		generateNoCompile();
 	}
 	
 	private static void generateCompile() throws Exception {
@@ -99,17 +101,21 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 			sb.append("\tpublic void test_")
 				.append(file.getName().replace('.', '_'))
 				.append("() throws Exception {\r\n");
-			sb.append("\t\tnocompile(\"").append(file.getAbsolutePath().replace("\\", "\\\\")).append("\");\r\n");
+			sb.append("\t\tnocompile(");
+			sb.append("\"").append(file.getAbsolutePath().replace("\\", "\\\\")).append("\"");
+			sb.append(", ");
+			sb.append(errors(file));
+			sb.append(");\r\n");
 			sb.append("\t}\r\n\r\n");
 		}
 		
-		sb.append("\tprivate void nocompile(String file) throws Exception {\r\n");
+		sb.append("\tprivate void nocompile(String file, int expectedErrors) throws Exception {\r\n");
 		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
 		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
 		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
 		sb.append("\t\tCompilationUnitResolver.resolve(module, false);\r\n");
-		sb.append("\t\tif (module.problems.isEmpty()) {\r\n");
-		sb.append("\t\t\tfail();\r\n");
+		sb.append("\t\tif (module.problems.size() != expectedErrors) {\r\n");
+		sb.append("\t\t\tfail(\"Expected \" + expectedErrors + \" errors but were \" + module.problems.size() + \": \" + module.problems.toString());\r\n");
 		sb.append("\t\t}\r\n");
 		sb.append("\t}\r\n\r\n");
 		
@@ -152,6 +158,19 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				acumulator.add(subFile);
 			}
 		}
+	}
+	
+	private static int errors(File file) throws Exception {
+		Process process = Runtime.getRuntime().exec("dmd " + file.getAbsolutePath() + " -o-");
+		InputStreamReader reader = new InputStreamReader(process.getInputStream());
+		BufferedReader br = new BufferedReader(reader);
+		
+		int count = 0;
+		while(br.readLine() != null) {
+			count++;
+		}
+		br.close();
+		return count;
 	}
 
 }
