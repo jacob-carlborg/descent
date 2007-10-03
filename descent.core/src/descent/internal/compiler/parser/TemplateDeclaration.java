@@ -8,9 +8,15 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.STC.STCconst;
+
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public class TemplateDeclaration extends ScopeDsymbol {
@@ -187,12 +193,298 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		return fd;
 	}
-
+	
+	private static class GotoL1 extends Exception {}
+	private static final GotoL1 GOTO_L1 = new GotoL1();
+	
+	private static class GotoL2 extends Exception {}
+	private static final GotoL2 GOTO_L2 = new GotoL2();
+	
 	public MATCH deduceMatch(Objects targsi, Expressions fargs,
-			Objects dedargs, SemanticContext context) {
-		throw new IllegalStateException("Not implemented!");
-		// TODO semantic
-		// return null;
+                             Objects dedargs, SemanticContext context)
+    {
+        int i;
+        int nfparams;
+        int nfparams2;
+        int nfargs;
+        int nargsi;
+        MATCH match = MATCHexact;
+        FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
+        TypeFunction fdtype;
+        TemplateTupleParameter tp;
+        Objects dedtypes = new Objects(); // for T:T*, the dedargs is the T*,
+        // dedtypes is the T
+        
+        // PERHAPS assert((int)scope > 0x10000);
+        
+        dedargs.setDim(parameters.size());
+        dedargs.zero();
+        
+        dedtypes.setDim(parameters.size());
+        dedtypes.zero();
+        
+        // Set up scope for parameters
+        ScopeDsymbol paramsym = new ScopeDsymbol();
+        paramsym.parent = scope.parent;
+        Scope paramscope = scope.push(paramsym);
+        
+        nargsi = 0;
+        if (null != targsi)
+        { // Set initial template arguments
+        
+            nargsi = targsi.size();
+            if (nargsi > parameters.size())
+                return Lnomatch(paramscope); // goto Lnomatch;
+                
+            //memcpy(dedargs.data, targsi.data, nargsi * sizeof(dedargs.data));
+            for(i = 0; i < nargsi; i++)
+            {
+                dedargs.set(i, targsi.get(i));
+            }
+            
+            for (i = 0; i < nargsi; i++)
+            {
+                TemplateParameter $tp = (TemplateParameter) parameters.get(i);
+                MATCH m;
+                Declaration[] sparam = new Declaration[1];
+                
+                m = $tp.matchArg(paramscope, dedargs, i, parameters, dedtypes,
+                        sparam, context);
+                if (m == MATCHnomatch)
+                    return Lnomatch(paramscope); // goto Lnomatch;
+                if (m.ordinal() < match.ordinal())
+                    match = m;
+                
+                sparam[0].semantic(paramscope, context);
+                if (null == paramscope.insert(sparam[0]))
+                    return Lnomatch(paramscope); // goto Lnomatch;
+            }
+        }
+        
+        assert (fd.type.ty == Tfunction);
+        fdtype = (TypeFunction) fd.type;
+        
+        nfparams = Argument.dim(fdtype.parameters, context); // number of
+        // function
+        // parameters
+        nfparams2 = nfparams;
+        nfargs = fargs.size(); // number of function arguments
+        
+        /*
+         * Check for match of function arguments with variadic template
+         * parameter, such as:
+         * 
+         * template Foo(T, A...) { void Foo(T t, A a); } void main() {
+         * Foo(1,2,3); }
+         */
+        tp = isVariadic();
+        try
+        {
+            if (null != tp)
+            {
+                if (nfparams == 0) // if no function parameters
+                {
+                    Tuple t = new Tuple();
+                    // printf("t = %p\n", t);
+                    dedargs.set(parameters.size() - 1, t);
+                    throw GOTO_L2;
+                }
+                else if (nfargs < nfparams - 1)
+                {
+                    throw GOTO_L1;
+                }
+                else
+                {
+                    /*
+                     * See if 'A' of the template parameter matches 'A' of the
+                     * type of the last function parameter.
+                     */
+                    Argument fparam = (Argument) fdtype.parameters
+                            .get(nfparams - 1);
+                    if (fparam.type.ty != Tident)
+                    {
+                        throw GOTO_L1;
+                    }
+                    TypeIdentifier tid = (TypeIdentifier) fparam.type;
+                    if (!tp.ident.equals(tid.ident) || tid.idents.size() > 0)
+                    {
+                        throw GOTO_L1;
+                    }
+                    if (fdtype.varargs > 0) // variadic function doesn't
+                        return Lnomatch(paramscope); // goto Lnomatch; // go
+                                                        // with
+                    // variadic template
+                    
+                    /*
+                     * The types of the function arguments [nfparams - 1 ..
+                     * nfargs] now form the tuple argument.
+                     */
+                    Tuple t = new Tuple();
+                    dedargs.set(parameters.size() - 1, t);
+                    
+                    int tuple_dim = nfargs - (nfparams - 1);
+                    t.objects.setDim(tuple_dim);
+                    for (i = 0; i < tuple_dim; i++)
+                    {
+                        Expression farg = (Expression) fargs.get(nfparams - 1
+                                + i);
+                        t.objects.set(i, farg.type);
+                    }
+                    nfparams2--; // don't consider the last parameter for
+                                    // type
+                    // deduction
+                    throw GOTO_L2;
+                }
+            }
+            throw GOTO_L1;
+        }
+        // L1:
+        catch (GotoL1 $)
+        {
+            if (nfparams == nfargs)
+                ;
+            else if (nfargs > nfparams)
+            {
+                if (fdtype.varargs == 0)
+                    return Lnomatch(paramscope); // goto Lnomatch; // too
+                                                    // many
+                // args,
+                // no match
+                match = MATCHconvert; // match ... with a conversion
+            }
+        }
+        catch (GotoL2 $)
+        {
+            // Fallthrough
+        }
+        // L2:
+        // Loop through the function parameters
+        for (i = 0; i < nfparams2; i++)
+        {
+            Argument fparam = Argument.getNth(fdtype.parameters, i, context);
+            Expression farg;
+            MATCH m;
+            
+            if (i >= nfargs) // if not enough arguments
+            {
+                if (null != fparam.defaultArg)
+                {
+                    /*
+                     * Default arguments do not participate in template argument
+                     * deduction.
+                     */
+                    return Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
+                            context); // goto
+                    // Lmatch;
+                }
+            }
+            else
+            {
+                farg = (Expression) fargs.get(i);
+                
+                m = farg.type.deduceType(scope, fparam.type, parameters,
+                        dedtypes, context);
+                // printf("\tdeduceType m = %d\n", m);
+                
+                /*
+                 * If no match, see if there's a conversion to a delegate
+                 */
+                if (MATCHnomatch == m
+                        && fparam.type.toBasetype(context).ty == Tdelegate)
+                {
+                    TypeDelegate td = (TypeDelegate) fparam.type
+                            .toBasetype(context);
+                    TypeFunction tf = (TypeFunction) td.nextOf();
+                    
+                    if (tf.varargs == 0
+                            && Argument.dim(tf.parameters, context) == 0)
+                    {
+                        m = farg.type.deduceType(scope, tf.nextOf(),
+                                parameters, dedtypes, context);
+                        if (MATCHnomatch == m
+                                && tf.nextOf().toBasetype(context).ty == Tvoid)
+                            m = MATCHconvert;
+                    }
+                    // printf("\tm2 = %d\n", m);
+                }
+                
+                if (m != MATCHnomatch)
+                {
+                    if (m.ordinal() < match.ordinal())
+                        match = m; // pick worst match
+                    continue;
+                }
+            }
+            if (!(fdtype.varargs == 2 && i + 1 == nfparams))
+                return Lnomatch(paramscope); // goto Lnomatch;
+                
+            /*
+             * Check for match with function parameter T...
+             */
+            Type t = fparam.type;
+            switch (t.ty)
+            {
+                // Perhaps we can do better with this, see
+                // TypeFunction.callMatch()
+                case Tsarray:
+                case Tarray:
+                case Tclass:
+                case Tident:
+                    return Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
+                            context); // goto
+                    // Lmatch;
+                    
+                default:
+                    return Lnomatch(paramscope); // goto Lnomatch;
+            }
+        }
+        
+        throw new IllegalStateException("Nothing returned at end of deduceMatch");
+    }
+	
+	// return Lmatch(nargsi, dedargs, dedtypes, paramscope, match, context);
+	// Lmatch:
+	private MATCH Lmatch(int nargsi, Objects dedargs, Objects dedtypes,
+			Scope paramscope, MATCH match, SemanticContext context) {
+		/* Fill in any missing arguments with their defaults.
+	     */
+		for (int i = nargsi; i < dedargs.size(); i++) {
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			ASTDmdNode oarg = (ASTDmdNode) dedargs.get(i);
+			ASTDmdNode o = (ASTDmdNode) dedtypes.get(i);
+			// printf("1dedargs[%d] = %p, dedtypes[%d] = %p\n", i, oarg, i, o);
+			if (null == oarg) {
+				if (null != o) {
+					if (null != tp.specialization())
+						error(
+								"specialization not allowed for deduced parameter %s",
+								tp.ident.toChars());
+				} else {
+					o = tp.defaultArg(paramscope, context);
+					if (null == o) {
+						// goto Lnomatch;
+						paramscope.pop();
+						// printf("\tnomatch\n");
+						return MATCHnomatch;
+					}
+				}
+				declareParameter(paramscope, tp, o, context);
+				dedargs.set(i, o);
+			}
+		}
+
+		paramscope.pop();
+		return match;
+	}
+	
+	// return Lnomatch(paramscope);
+	// Lnomatch:
+	private MATCH Lnomatch(Scope paramscope)
+	{
+		//Lnomatch:
+		paramscope.pop();
+	    //printf("\tnomatch\n");
+	    return MATCHnomatch;
 	}
 
 	@Override
