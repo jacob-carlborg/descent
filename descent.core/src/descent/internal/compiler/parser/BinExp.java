@@ -292,7 +292,7 @@ public abstract class BinExp extends Expression {
 
 			if (t1b.ty == ty1) // if no promotions
 			{
-				if (t1 == t2) {
+				if (t1.singleton == t2.singleton) {
 					if (type == null) {
 						type = t1;
 					}
@@ -319,7 +319,7 @@ public abstract class BinExp extends Expression {
 		}
 
 		t = t1;
-		if (t1 == t2) {
+		if (t1.singleton == t2.singleton) {
 			if ((t1.ty == Tstruct || t1.ty == Tclass)
 					&& (op == TOKmin || op == TOKadd)) {
 				return typeCombine_Lincompatible_End(t, context);
@@ -391,7 +391,7 @@ public abstract class BinExp extends Expression {
 			Type t1n = t1.next;
 			Type t2n = t2.next;
 
-			assert (t1n != t2n);
+			assert (t1n.singleton != t2n.singleton);
 			if (t1n.ty == Tvoid) {
 				t = t2;
 			} else if (t2n.ty == Tvoid) {

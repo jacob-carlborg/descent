@@ -568,6 +568,35 @@ WithExpressionsMustBeClassObject
 DeclarationIsAlreadyDefined
 	formatString=Declaration %1$s is already defined
 	numArgs=1
+VersionDefinedAfterUse
+	formatString=Version %1$s defined after use
+	numArgs=1
+DebugDefinedAfterUse
+	formatString=Debug %1$s defined after use
+	numArgs=1	
+NotEnoughArguments
+	formatString=Not enough arguments
+	numArgs=0
+CanOnlySynchronizeOnClassObjects
+	formatString=Can only synchronize on class objects, not '%1$s'
+	numArgs=1
+CannotDeduceTemplateFunctionFromArgumentTypes
+	formatString=Cannot deduce template function from argument types (%1$s)
+	numArgs=1
+ArrayDimensionExceedsMax
+	formatString=Array dimension %1$s exceeds max of %2$su
+	numArgs=2
+AStructIsNotAValidInitializerFor
+	formatString=A struct is not a valid initializer for a %1$s
+	numArgs=1
+CannotUseArrayToInitialize
+	formatString=Cannot use array to initialize %1$s
+	numArgs=1
+	
+	
+	
+	
+	
 	
 	
 	

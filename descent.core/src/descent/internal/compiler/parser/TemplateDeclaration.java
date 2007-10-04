@@ -565,8 +565,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		HdrGenState hgs = new HdrGenState();
 
 		argExpTypesToCBuffer(buf, fargs, hgs, context);
-		error("cannot deduce template function from argument types (%s)", buf
-				.toChars());
+		// TODO semantic the source range is bad
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeduceTemplateFunctionFromArgumentTypes, 0, start, length, new String[] { buf.toChars() }));
 		return null;
 	}
 

@@ -398,5 +398,13 @@ public interface IProblem {
 	int CannotCreateInstanceOfInterface = 188;
 	int WithExpressionsMustBeClassObject = 189;
 	int DeclarationIsAlreadyDefined = 190;
+	int VersionDefinedAfterUse = 191;
+	int DebugDefinedAfterUse = 192;
+	int NotEnoughArguments = 193;
+	int CanOnlySynchronizeOnClassObjects = 194;
+	int CannotDeduceTemplateFunctionFromArgumentTypes = 195;
+	int ArrayDimensionExceedsMax = 196;
+	int AStructIsNotAValidInitializerFor = 197;
+	int CannotUseArrayToInitialize = 198;
 
 }

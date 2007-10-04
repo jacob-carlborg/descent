@@ -10,7 +10,7 @@ import java.util.List;
 public class DstressTestGenerator extends DstressTestGeneratorBase {
 	
 	public static void main(String[] args) throws Exception {
-		generateCompile();
+		//generateCompile();
 		generateNoCompile();
 	}
 	
@@ -101,11 +101,19 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 			sb.append("\tpublic void test_")
 				.append(file.getName().replace('.', '_'))
 				.append("() throws Exception {\r\n");
-			sb.append("\t\tnocompile(");
-			sb.append("\"").append(file.getAbsolutePath().replace("\\", "\\\\")).append("\"");
-			sb.append(", ");
-			sb.append(errors(file));
-			sb.append(");\r\n");
+			
+			String fullFilename = file.getAbsolutePath().replace("\\", "\\\\");
+			if (syntaxErrors.contains(name)) {
+				sb.append("\t\tnocompileSyntaxError(");
+				sb.append("\"").append(fullFilename).append("\"");
+				sb.append(");\r\n");
+			} else {
+				sb.append("\t\tnocompile(");
+				sb.append("\"").append(fullFilename).append("\"");
+				sb.append(", ");
+				sb.append(errors(file));
+				sb.append(");\r\n");
+			}
 			sb.append("\t}\r\n\r\n");
 		}
 		
@@ -116,6 +124,16 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\t\tCompilationUnitResolver.resolve(module, false);\r\n");
 		sb.append("\t\tif (module.problems.size() != expectedErrors) {\r\n");
 		sb.append("\t\t\tfail(\"Expected \" + expectedErrors + \" errors but were \" + module.problems.size() + \": \" + module.problems.toString());\r\n");
+		sb.append("\t\t}\r\n");
+		sb.append("\t}\r\n\r\n");
+		
+		sb.append("\tprivate void nocompileSyntaxError(String file) throws Exception {\r\n");
+		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
+		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
+		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
+		sb.append("\t\tCompilationUnitResolver.resolve(module, false);\r\n");
+		sb.append("\t\tif (module.problems.isEmpty()) {\r\n");
+		sb.append("\t\t\tfail(\"Expected at least one error\");\r\n");
 		sb.append("\t\t}\r\n");
 		sb.append("\t}\r\n\r\n");
 		

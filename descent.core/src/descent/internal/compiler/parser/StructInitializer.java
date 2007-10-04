@@ -122,8 +122,7 @@ public class StructInitializer extends Initializer {
 			ExpInitializer ie = new ExpInitializer(loc, e);
 			return ie.semantic(sc, t, context);
 		} else {
-			error(loc, "a struct is not a valid initializer for a %s", t
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.AStructIsNotAValidInitializerFor, 0, start, length, new String[] { t.toChars(context) }));
 			errors = 1;
 		}
 		if (errors != 0) {

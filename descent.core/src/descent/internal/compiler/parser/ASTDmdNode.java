@@ -858,7 +858,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					}
 					default:
 						if (arg == null) {
-							error("not enough arguments");
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotEnoughArguments, 0, start, length));
 							return;
 						}
 						break;

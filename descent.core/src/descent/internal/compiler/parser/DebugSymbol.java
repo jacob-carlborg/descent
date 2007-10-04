@@ -45,7 +45,7 @@ public class DebugSymbol extends Dsymbol {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, 0, start, length));
 			} else {
 				if (findCondition(m.debugidsNot, ident)) {
-					error("defined after use");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, 0, start, length, new String[] { ident.toString() } ));
 				}
 				if (null == m.debugids) {
 					m.debugids = new ArrayList<char[]>();

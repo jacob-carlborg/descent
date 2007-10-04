@@ -200,6 +200,14 @@ final class ProblemMessages extends NLS {
 	public static String CannotCreateInstanceOfInterface;
 	public static String WithExpressionsMustBeClassObject;
 	public static String DeclarationIsAlreadyDefined;
+	public static String VersionDefinedAfterUse;
+	public static String DebugDefinedAfterUse;
+	public static String NotEnoughArguments;
+	public static String CanOnlySynchronizeOnClassObjects;
+	public static String CannotDeduceTemplateFunctionFromArgumentTypes;
+	public static String ArrayDimensionExceedsMax;
+	public static String AStructIsNotAValidInitializerFor;
+	public static String CannotUseArrayToInitialize;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -2243,13 +2243,13 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(SynchronizedStatement node) {
 		printIndent();
 		this.buffer.append("synchronized");
-		if (node.exp != null) {
+		if (node.sourceExp != null) {
 			this.buffer.append("(");
-			node.exp.accept(this);
+			node.sourceExp.accept(this);
 			this.buffer.append(")");
 		}
 		this.buffer.append(" ");
-		node.body.accept(this);
+		node.sourceBody.accept(this);
 		return false;
 	}
 

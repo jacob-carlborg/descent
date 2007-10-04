@@ -5,6 +5,49 @@ import java.util.Set;
 
 public class DstressTestGeneratorBase implements IDstressConfiguration {
 	
+	// Files where only syntax errors are reported. The number
+	// of errors reported, then, is not important. At least one
+	// should be reported
+	protected static Set<String> syntaxErrors;
+	static {
+		syntaxErrors = new HashSet<String>();
+		syntaxErrors.add("array_initialization_22_A.d");
+		syntaxErrors.add("array_initialization_22_C.d");
+		syntaxErrors.add("array_initialization_22_F.d");
+		syntaxErrors.add("bang_01_B.d");
+		syntaxErrors.add("bang_01_C.d");
+		for(int i = 1; i <= 3; i++) {
+			syntaxErrors.add("string_postfix_0" + i + "_B.d");
+		}
+		for(char c = 'A'; c <= 'Z'; c++) {
+			syntaxErrors.add("string_postfix_04_" + c + ".d");
+		}
+		for(char c = 'A'; c <= 'Z'; c++) {
+			if (c == 'C' || c == 'D' || c == 'W') {
+				continue;
+			}
+			syntaxErrors.add("string_postfix_05_" + c + ".d");
+		}
+		for(char c = 'A'; c <= 'F'; c++) {
+			syntaxErrors.add("template_struct_08_" + c + ".d");
+		}
+		syntaxErrors.add("this_02.d");
+		syntaxErrors.add("unchecked_01_B.d");
+		syntaxErrors.add("undef_01.d");
+		syntaxErrors.add("unittest_06.d");
+		syntaxErrors.add("using_01_A.d");
+		syntaxErrors.add("using_01_B.d");
+		syntaxErrors.add("using_01_D.d");
+		syntaxErrors.add("using_03_E.d");
+		syntaxErrors.add("ucent_01.d");
+		syntaxErrors.add("variadic_argument_01.d");
+		syntaxErrors.add("virtual_01_A.d");
+		syntaxErrors.add("virtual_01_B.d");
+		syntaxErrors.add("virtual_01_C.d");
+		syntaxErrors.add("warning_01_A.d");
+		syntaxErrors.add("warning_01_B.d");
+	}
+	
 	protected static Set<String> failures;
 	static {
 		failures = new HashSet<String>();

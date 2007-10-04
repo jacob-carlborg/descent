@@ -1957,14 +1957,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.SynchronizedStatement convert(SynchronizedStatement a) {
 		descent.core.dom.SynchronizedStatement b = new descent.core.dom.SynchronizedStatement(ast);
-		if (a.body != null) {
-			descent.core.dom.Statement convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}

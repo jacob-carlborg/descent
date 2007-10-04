@@ -1,11 +1,15 @@
 package descent.internal.compiler.parser;
 
+import java.math.BigInteger;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class ArrayInitializer extends Initializer {
+	
+	private final static integer_t amax = new integer_t(new BigInteger("80000000", 16));
 
 	public Expressions index;
 	public Initializers value;
@@ -88,8 +92,7 @@ public class ArrayInitializer extends Initializer {
 			break;
 
 		default:
-			error(loc, "cannot use array to initialize %s", type
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUseArrayToInitialize, 0, this.start, this.length, new String[] { type.toChars(context) }));
 			return this;
 		}
 
@@ -117,10 +120,9 @@ public class ArrayInitializer extends Initializer {
 				dim = length;
 			}
 		}
-		// TODO semantic
-		//	    unsigned long amax = 0x80000000;
-		//	    if ((unsigned long) dim * t.next.size() >= amax)
-		//		error(loc, "array dimension %u exceeds max of %ju", dim, amax / t.next.size());
+	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
+	    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, 0, this.start, this.length, new String[] { String.valueOf(dim), amax.divide(t.next.size(context)).toString() }));
+	    }
 		return this;
 	}
 

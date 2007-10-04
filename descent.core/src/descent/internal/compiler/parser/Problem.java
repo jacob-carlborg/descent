@@ -475,6 +475,22 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.WithExpressionsMustBeClassObject, arguments[0]);
 		case DeclarationIsAlreadyDefined:
 			return String.format(ProblemMessages.DeclarationIsAlreadyDefined, arguments[0]);
+		case VersionDefinedAfterUse:
+			return String.format(ProblemMessages.VersionDefinedAfterUse, arguments[0]);
+		case DebugDefinedAfterUse:
+			return String.format(ProblemMessages.DebugDefinedAfterUse, arguments[0]);
+		case NotEnoughArguments:
+			return String.format(ProblemMessages.NotEnoughArguments);
+		case CanOnlySynchronizeOnClassObjects:
+			return String.format(ProblemMessages.CanOnlySynchronizeOnClassObjects, arguments[0]);
+		case CannotDeduceTemplateFunctionFromArgumentTypes:
+			return String.format(ProblemMessages.CannotDeduceTemplateFunctionFromArgumentTypes, arguments[0]);
+		case ArrayDimensionExceedsMax:
+			return String.format(ProblemMessages.ArrayDimensionExceedsMax, arguments[0], arguments[1]);
+		case AStructIsNotAValidInitializerFor:
+			return String.format(ProblemMessages.AStructIsNotAValidInitializerFor, arguments[0]);
+		case CannotUseArrayToInitialize:
+			return String.format(ProblemMessages.CannotUseArrayToInitialize, arguments[0]);
 		default:
 			return "";
 		}

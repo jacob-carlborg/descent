@@ -1,18 +1,19 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class SynchronizedStatement extends Statement {
 
-	public Expression exp;
-	public Statement body;
+	public Expression exp, sourceExp;
+	public Statement body, sourceBody;
 
 	public SynchronizedStatement(Loc loc, Expression exp, Statement body) {
 		super(loc);
-		this.exp = exp;
-		this.body = body;
+		this.exp = this.sourceExp = exp;
+		this.body = this.sourceBody = body;
 	}
 
 	@Override
@@ -65,8 +66,7 @@ public class SynchronizedStatement extends Statement {
 			exp = resolveProperties(sc, exp, context);
 			cd = exp.type.isClassHandle();
 			if (null == cd) {
-				error("can only synchronize on class objects, not '%s'",
-						exp.type.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlySynchronizeOnClassObjects, 0, exp.start, exp.length, new String[] { exp.type.toChars(context) }));
 			} else if (cd.isInterfaceDeclaration() != null) {
 				Type t = new TypeIdentifier(Loc.ZERO, new IdentifierExp(
 						Id.Object));

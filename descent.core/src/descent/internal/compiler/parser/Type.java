@@ -816,7 +816,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (this == to) {
+		if (this.singleton == to.singleton) {
 			return MATCH.MATCHexact;
 		}
 		return MATCH.MATCHnomatch;

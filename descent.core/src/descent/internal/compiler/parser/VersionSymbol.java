@@ -46,7 +46,7 @@ public class VersionSymbol extends Dsymbol {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, 0, start, length));
 			} else {
 				if (findCondition(m.versionidsNot, ident)) {
-					error("defined after use");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDefinedAfterUse, 0, start, length, new String[] { ident.toString() } ));
 				}
 				if (null == m.versionids) {
 					m.versionids = new ArrayList<char[]>();
