@@ -677,10 +677,10 @@ public abstract class BinExp extends Expression {
 			if (v.value.op != TOKstructliteral)
 				return EXP_CANT_INTERPRET;
 			StructLiteralExp se = (StructLiteralExp) v.value;
-			int fieldi = 0 /* TODO semantic se.getFieldIndex(type, soe.offset) */;
+			int fieldi = se.getFieldIndex(type, soe.offset.intValue(), context);
 			if (fieldi == -1)
 				return EXP_CANT_INTERPRET;
-			Expression ev = null /* TODO semantic se.getField(type, soe.offset) */;
+			Expression ev = se.getField(type, soe.offset.intValue(), context);
 			if (null != fp)
 				e2 = fp.call(type, ev, e2, context);
 			else

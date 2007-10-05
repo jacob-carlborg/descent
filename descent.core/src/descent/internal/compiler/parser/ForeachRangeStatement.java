@@ -87,9 +87,6 @@ public class ForeachRangeStatement extends Statement {
 
 	    sc.noctor++;
 
-	    /* WTF did key come from?
-	     * key = new VarDeclaration(loc, arg.type, arg.ident, null);
-	     */
 	    VarDeclaration key = new VarDeclaration(loc, arg.type, arg.ident, null);
 	    DeclarationExp de = new DeclarationExp(loc, key);
 	    de.semantic(sc, context);

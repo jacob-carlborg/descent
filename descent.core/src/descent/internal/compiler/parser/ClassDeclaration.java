@@ -695,19 +695,28 @@ public class ClassDeclaration extends AggregateDeclaration {
 			defaultCtor = ctor;
 		}
 
-		/*
-		 * TODO semantic // Allocate instance of each new interface for (i = 0;
-		 * i < vtblInterfaces.dim; i++) { BaseClass *b = (BaseClass
-		 * *)vtblInterfaces.data[i]; unsigned thissize = PTRSIZE;
-		 * 
-		 * alignmember(structalign, thissize, &sc.offset); assert(b.offset ==
-		 * 0); b.offset = sc.offset; // Take care of single inheritance offsets
-		 * while (b.baseInterfaces_dim) { b = &b.baseInterfaces[0]; b.offset =
-		 * sc.offset; }
-		 * 
-		 * sc.offset += thissize; if (alignsize < thissize) alignsize =
-		 * thissize;
-		 */
+		 // Allocate instance of each new interface
+        for (i = 0; i < vtblInterfaces.size(); i++)
+        {
+            BaseClass b = (BaseClass) vtblInterfaces.get(i);
+            int thissize = Type.PTRSIZE;
+            
+            int[] p_sc_offset = new int[]
+            { sc.offset };
+            alignmember(structalign, thissize, p_sc_offset);
+            sc.offset = p_sc_offset[0];
+            Assert.isTrue(b.offset == 0);
+            b.offset = sc.offset; // Take care of single inheritance offsets
+            while (b.baseInterfaces.size() > 0)
+            {
+                b = b.baseInterfaces.get(0);
+                b.offset = sc.offset;
+            }
+            
+            sc.offset += thissize;
+            if (alignsize < thissize)
+                alignsize = thissize;
+        }
 
 		structsize = sc.offset;
 		sizeok = 1;

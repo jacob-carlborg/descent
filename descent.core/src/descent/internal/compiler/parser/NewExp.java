@@ -268,8 +268,7 @@ public class NewExp extends Expression {
 				for (int i = 0; i < arguments.size(); i++) {
 					if (tb.ty != Tarray) {
 						error("too many arguments for array");
-						// TODO semantic
-						// arguments.dim = i;
+						arguments.setDim(i);
 						break;
 					}
 

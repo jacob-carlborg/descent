@@ -333,6 +333,11 @@ public class Dsymbol extends ASTDmdNode {
 	public StructDeclaration isStructDeclaration() {
 		return null;
 	}
+	
+	public SymbolDeclaration isSymbolDeclaration()
+	{
+	    return null;
+	}
 
 	public TemplateDeclaration isTemplateDeclaration() {
 		return null;

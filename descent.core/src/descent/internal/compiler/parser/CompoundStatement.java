@@ -254,8 +254,6 @@ public class CompoundStatement extends Statement {
 											sfinally[0]);
 								}
 								s = s.semantic(sc, context);
-								// TODO check the method Array::push
-								// statements..setDim(i + 1);
 								statements.add(s);
 								break;
 							}
@@ -277,8 +275,6 @@ public class CompoundStatement extends Statement {
 								s = new TryFinallyStatement(loc, body,
 										sfinally[0]);
 								s = s.semantic(sc, context);
-								// TODO check the method Array::push
-								// statements.setDim(i + 1);
 								statements.add(s);
 								break;
 							}

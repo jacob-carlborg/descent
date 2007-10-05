@@ -14,5 +14,10 @@ public class SymbolDeclaration extends Declaration {
 		this.dsym = dsym;
 		storage_class |= STCconst;
 	}
+
+    public SymbolDeclaration isSymbolDeclaration()
+    {
+        return this;
+    }
 	
 }

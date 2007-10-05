@@ -126,6 +126,5 @@ public class AssertExp extends UnaExp {
 	// PERHAPS int inlineCost(InlineCostState *ics);
 	// PERHAPS Expression *doInline(InlineDoState *ids);
 	// PERHAPS Expression *inlineScan(InlineScanState *iss);
-	// PERHAPS elem *toElem(IRState *irs);
 
 }

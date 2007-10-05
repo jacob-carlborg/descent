@@ -22,8 +22,18 @@ public class Array<T> extends ArrayList<T> {
 	}
 	
 	public void setDim(int dim) {
-		for(int i = size(); i < dim; i++) {
-			add(null);
+		if(size() < dim)
+		{
+		    for(int i = size(); i < dim; i++) {
+		        add(null);
+		    }
+		}
+		else if(size() > dim)
+		{
+		    while(size() > dim)
+		    {
+		        remove(size() - 1);
+		    }
 		}
 	}
 	

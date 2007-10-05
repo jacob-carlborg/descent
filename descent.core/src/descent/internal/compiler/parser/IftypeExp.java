@@ -177,7 +177,7 @@ public class IftypeExp extends Expression {
 
 			Objects dedtypes = new Objects(1);
 
-			m = null; /* TODO semantic targ.deduceType(null, tspec, parameters, dedtypes); */
+			m = targ.deduceType(null, tspec, parameters, dedtypes, context);
 			if (m == MATCH.MATCHnomatch
 					|| (m != MATCH.MATCHexact && tok == TOK.TOKequal)) {
 				return new IntegerExp(Loc.ZERO, 0); // goto Lno;

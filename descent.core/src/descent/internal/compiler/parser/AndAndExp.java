@@ -141,6 +141,4 @@ public class AndAndExp extends BinExp {
 		}
 		return e;
 	}
-
-	// PERHAPS elem *toElem(IRState *irs);
 }

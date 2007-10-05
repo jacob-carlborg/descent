@@ -1569,37 +1569,43 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static final Expression getVarExp(Loc loc, InterState istate,
-			Declaration d, SemanticContext context) {
-		// FIXME this doesn't work, we may need to port over tosym.c
-		Expression e = EXP_CANT_INTERPRET;
-		VarDeclaration v = d.isVarDeclaration();
-		// TODO SymbolDeclaration s = d.isSymbolDeclaration();
-		if (null != v) {
-			if (v.isConst() && null != v.init) {
-				e = v.init.toExpression(context);
-				if (null == e.type)
-					e.type = v.type;
-			} else {
-				e = v.value;
-				if (null == e)
-					error("variable %s is used before initialization", v
-							.toChars(context));
-				else if (e != EXP_CANT_INTERPRET)
-					e = e.interpret(istate, context);
-			}
-			if (null == e)
-				e = EXP_CANT_INTERPRET;
-		}
-		/* TODO else if (s)
-		 {
-		 if (s.dsym.toInitializer() == s.sym)
-		 {   Expressions exps = new Expressions();
-		 e = new StructLiteralExp(0, s.dsym, exps);
-		 e = e.semantic(null);
-		 }
-		 } */
-		return e;
-	}
+                                             Declaration d,
+                                             SemanticContext context)
+    {
+        Expression e = EXP_CANT_INTERPRET;
+        VarDeclaration v = d.isVarDeclaration();
+        SymbolDeclaration s = d.isSymbolDeclaration();
+        if (null != v)
+        {
+            if (v.isConst() && null != v.init)
+            {
+                e = v.init.toExpression(context);
+                if (null == e.type)
+                    e.type = v.type;
+            }
+            else
+            {
+                e = v.value;
+                if (null == e)
+                    error("variable %s is used before initialization", v
+                            .toChars(context));
+                else if (e != EXP_CANT_INTERPRET)
+                    e = e.interpret(istate, context);
+            }
+            if (null == e)
+                e = EXP_CANT_INTERPRET;
+        }
+        else if (null != s)
+        {
+            if (s.dsym.toInitializer() == s.sym)
+            {
+                Expressions exps = new Expressions();
+                e = new StructLiteralExp(Loc.ZERO, s.dsym, exps);
+                e = e.semantic(null, context);
+            }
+        }
+        return e;
+    }
 
 	public static void ObjectToCBuffer(OutBuffer buf, HdrGenState hgs,
 			ASTDmdNode oarg, SemanticContext context) {

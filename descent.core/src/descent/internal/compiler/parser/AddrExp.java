@@ -137,7 +137,7 @@ public class AddrExp extends UnaExp {
 					TypeSArray ts = (TypeSArray) ve.type;
 					integer_t dim = ts.dim.toInteger(context);
 					if (index.compareTo(0) < 0 || index.compareTo(dim) >= 0) {
-						// TODO test this error
+						// PERHAPS test this error
 						context.acceptProblem(Problem.newSemanticTypeError(
 				    			IProblem.ArrayIndexOutOfBounds,
 				    			0,

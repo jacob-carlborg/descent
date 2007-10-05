@@ -96,10 +96,7 @@ public class Constfold {
 					if (ade.e1.op == TOKstructliteral) {
 						StructLiteralExp se = (StructLiteralExp) ade.e1;
 						int offset = ae.e2.toInteger(context).intValue();
-						Expression e = null /*
-											 * TODO semantic se.getField(type,
-											 * offset)
-											 */;
+						Expression e = se.getField(type, offset, context);
 						if (null == e) {
 							e = EXP_CANT_INTERPRET;
 						}
@@ -680,8 +677,10 @@ public class Constfold {
 				int i = e2.toInteger(context).intValue();
 
 				if (i >= length) {
-					// TODO semantic e2.error("array index %ju is out of bounds
-					// %s[0 .. %ju]", i, e1.toChars(context), length);
+				    e2.error("array index %ju is out of bounds %s[0 .. %ju]", 
+				            Integer.toString(i),
+				            e1.toChars(context),
+				            Integer.toString(length));
 				} else if (e1.op == TOKarrayliteral
 						&& 0 == e1.checkSideEffect(2, context)) {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
@@ -696,9 +695,9 @@ public class Constfold {
 						&& 0 == e1.checkSideEffect(2, context)) {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
 					if (i >= ale.elements.size()) {
-						// TODO semantic e2.error("array index %ju is out of
-						// bounds %s[0 .. %u]", i, e1.toChars(),
-						// ale.elements.dim);
+					    e2.error("array index %ju is out of bounds %s[0 .. %u]", 
+					            Integer.toString(i), e1.toChars(context), 
+					            Integer.toString(ale.elements.size()));
 					} else {
 						e = ale.elements.get(i);
 						e.type = type;
@@ -754,7 +753,6 @@ public class Constfold {
 					int sz = tn.size(context);
 					integer_t v = e.toInteger(context);
 
-					// TODO check that this is ok
 					s[0] = (char) v.intValue();
 
 					es = new StringExp(loc, s, len);
@@ -1306,8 +1304,7 @@ public class Constfold {
 			int iupr = upr.toInteger(context).intValue();
 
 			if (iupr > es1.len || ilwr > iupr) {
-				// TODO semantic e1.error("string slice [%ju .. %ju] is out of
-				// bounds", ilwr, iupr);
+				e1.error("string slice [%ju .. %ju] is out of bounds", ilwr, iupr);
 			} else {
 				int len = iupr - ilwr;
 				int sz = es1.sz;
@@ -1445,9 +1442,8 @@ public class Constfold {
 			e = new StructLiteralExp(loc, sd, elements);
 			e.type = type;
 		} else {
-			// TODO semantic uncomment below
-			// error("cannot cast %s to %s", e1.type.toChars(context),
-			// type.toChars(context));
+			ASTDmdNode.error("cannot cast %s to %s", e1.type.toChars(context),
+			        type.toChars(context));
 			e = new IntegerExp(loc, 0, type);
 		}
 		return e;
