@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tdelegate;
@@ -141,9 +142,8 @@ public class DelegateExp extends UnaExp {
 							loop = true;
 							continue L10;
 						}
-						error("this for %s needs to be type %s not type %s",
-								func.toChars(context), ad.toChars(context), t
-										.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, 0, start, length, new String[] { func.toChars(context), ad.toChars(context), t
+								.toChars(context) }));
 					}
 				}
 			}

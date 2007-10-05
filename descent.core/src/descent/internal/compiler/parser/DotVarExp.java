@@ -160,10 +160,8 @@ public class DotVarExp extends UnaExp {
 								loop = true;
 								continue L1;
 							}
-							error(
-									"this for %s needs to be type %s not type %s",
-									var.toChars(context), ad.toChars(context),
-									t.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, 0, start, length, new String[] { var.toChars(context), ad.toChars(context),
+									t.toChars(context) }));
 						}
 					}
 				}

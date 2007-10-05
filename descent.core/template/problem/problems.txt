@@ -592,7 +592,18 @@ AStructIsNotAValidInitializerFor
 CannotUseArrayToInitialize
 	formatString=Cannot use array to initialize %1$s
 	numArgs=1
-	
+MemberIsNotAccessible
+	formatString=Member %1$s is not accessible
+	numArgs=1
+SymbolIsNotAccessible
+	formatString=%1$s %2$s.%3$s is not accessible from %$4s
+	numArgs=4
+ThisForSymbolNeedsToBeType
+	formatString=this for %1$s needs to be type %2$s not type %3$s
+	numArgs=3
+SymbolHasForwardReferences
+	formatString=%1$s has forward references
+	numArgs=1
 	
 	
 	

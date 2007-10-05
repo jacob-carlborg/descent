@@ -208,6 +208,10 @@ final class ProblemMessages extends NLS {
 	public static String ArrayDimensionExceedsMax;
 	public static String AStructIsNotAValidInitializerFor;
 	public static String CannotUseArrayToInitialize;
+	public static String MemberIsNotAccessible;
+	public static String SymbolIsNotAccessible;
+	public static String ThisForSymbolNeedsToBeType;
+	public static String SymbolHasForwardReferences;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

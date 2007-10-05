@@ -128,7 +128,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 		if (d != null && d.size() > 0) {
 			for (Dsymbol s : d) {
-				s.semantic2(sc, context);
+				s.semantic3(sc, context);
 			}
 		}
 	}

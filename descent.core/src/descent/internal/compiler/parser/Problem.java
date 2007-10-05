@@ -491,6 +491,14 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.AStructIsNotAValidInitializerFor, arguments[0]);
 		case CannotUseArrayToInitialize:
 			return String.format(ProblemMessages.CannotUseArrayToInitialize, arguments[0]);
+		case MemberIsNotAccessible:
+			return String.format(ProblemMessages.MemberIsNotAccessible, arguments[0]);
+		case SymbolIsNotAccessible:
+			return String.format(ProblemMessages.SymbolIsNotAccessible, arguments[0], arguments[1], arguments[2], arguments[3]);
+		case ThisForSymbolNeedsToBeType:
+			return String.format(ProblemMessages.ThisForSymbolNeedsToBeType, arguments[0], arguments[1], arguments[2]);
+		case SymbolHasForwardReferences:
+			return String.format(ProblemMessages.SymbolHasForwardReferences, arguments[0]);
 		default:
 			return "";
 		}

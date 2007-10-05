@@ -603,9 +603,9 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (e == null) {
 			if (d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d)) {
-				error("%s %s.%s is not accessible from %s", d.kind(), d
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, 0, start, length, new String[] { d.kind(), d
 						.getModule().toChars(context), d.toChars(context),
-						sc.module.toChars(context));
+						sc.module.toChars(context) }));
 			}
 		} else if (e.type.ty == Tclass) { // Do access check
 			ClassDeclaration cd;

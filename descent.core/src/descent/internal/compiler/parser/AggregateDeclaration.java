@@ -74,7 +74,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			result = accessCheckX(smember, f, this, cdscope);
 		}
 		if (!result) {
-			error("member %s is not accessible", smember.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, 0, start, length, new String[] { smember.toChars(context) }));
 		}
 	}
 
@@ -244,8 +244,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		if (scope != null) {
-			error("has forward references");
-			return;
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, 0, start, length, new String[] { toChars(context) }));
 		}
 		if (members != null) {
 			sc = sc.push(this);

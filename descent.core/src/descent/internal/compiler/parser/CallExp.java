@@ -426,10 +426,8 @@ public class CallExp extends UnaExp {
 								loopL10 = true;
 								continue L10;
 							}
-							error(
-									"this for %s needs to be type %s not type %s",
-									f.toChars(context), ad.toChars(context), t
-											.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, 0, start, length, new String[] { f.toChars(context), ad.toChars(context), t
+											.toChars(context) }));
 						}
 					}
 				}

@@ -406,5 +406,9 @@ public interface IProblem {
 	int ArrayDimensionExceedsMax = 196;
 	int AStructIsNotAValidInitializerFor = 197;
 	int CannotUseArrayToInitialize = 198;
+	int MemberIsNotAccessible = 199;
+	int SymbolIsNotAccessible = 200;
+	int ThisForSymbolNeedsToBeType = 201;
+	int SymbolHasForwardReferences = 202;
 
 }
