@@ -302,7 +302,7 @@ public interface IProblem {
 	int OverrideOnlyForClassMemberFunctions = 92;
 	int FunctionMustReturnAResultOfType = 93;
 	int MoreThanOneInvariant = 94;
-	int DuplicatedParameter = 95;
+	int ParameterMultiplyDefined = 95;
 	int SymbolNotFound = 96;
 	int StatementIsNotReachable = 97;
 	int VoidFunctionsHaveNoResult = 98;
@@ -406,9 +406,11 @@ public interface IProblem {
 	int ArrayDimensionExceedsMax = 196;
 	int AStructIsNotAValidInitializerFor = 197;
 	int CannotUseArrayToInitialize = 198;
-	int MemberIsNotAccessible = 199;
-	int SymbolIsNotAccessible = 200;
-	int ThisForSymbolNeedsToBeType = 201;
-	int SymbolHasForwardReferences = 202;
+	int CircularReferenceTo = 199;
+	int ParameterIsAlreadyDefined = 200;
+	int MemberIsNotAccessible = 201;
+	int SymbolIsNotAccessible = 202;
+	int ThisForSymbolNeedsToBeType = 203;
+	int SymbolHasForwardReferences = 204;
 
 }

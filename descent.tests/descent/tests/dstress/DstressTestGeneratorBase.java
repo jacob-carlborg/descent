@@ -14,6 +14,7 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		syntaxErrors.add("array_initialization_22_A.d");
 		syntaxErrors.add("array_initialization_22_C.d");
 		syntaxErrors.add("array_initialization_22_F.d");
+		syntaxErrors.add("at_01_A.d");
 		syntaxErrors.add("bang_01_B.d");
 		syntaxErrors.add("bang_01_C.d");
 		for(int i = 1; i <= 3; i++) {

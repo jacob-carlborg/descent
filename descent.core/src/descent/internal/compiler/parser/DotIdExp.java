@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKimport;
@@ -113,7 +114,7 @@ public class DotIdExp extends UnaExp {
 				VarDeclaration v = s.isVarDeclaration();
 				if (v != null) {
 					if (v.inuse != 0) {
-						error("circular reference to '%s'", v.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, 0, start, length, new String[] { v.toChars(context) }));
 						type = Type.tint32;
 						return this;
 					}

@@ -104,7 +104,7 @@ final class ProblemMessages extends NLS {
 	public static String OverrideOnlyForClassMemberFunctions;
 	public static String FunctionMustReturnAResultOfType;
 	public static String MoreThanOneInvariant;
-	public static String DuplicatedParameter;
+	public static String ParameterMultiplyDefined;
 	public static String SymbolNotFound;
 	public static String StatementIsNotReachable;
 	public static String VoidFunctionsHaveNoResult;
@@ -208,6 +208,8 @@ final class ProblemMessages extends NLS {
 	public static String ArrayDimensionExceedsMax;
 	public static String AStructIsNotAValidInitializerFor;
 	public static String CannotUseArrayToInitialize;
+	public static String CircularReferenceTo;
+	public static String ParameterIsAlreadyDefined;
 	public static String MemberIsNotAccessible;
 	public static String SymbolIsNotAccessible;
 	public static String ThisForSymbolNeedsToBeType;

@@ -532,7 +532,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedParameter, 15, 1);
+		assertError(p[0], IProblem.ParameterMultiplyDefined, 15, 1);
 	}
 	
 	public void testDuplicatedAliasTemplateParameter() {
@@ -540,7 +540,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedParameter, 21, 1);
+		assertError(p[0], IProblem.ParameterMultiplyDefined, 21, 1);
 	}
 	
 	public void testDuplicatedValueTemplateParameter() {
@@ -548,7 +548,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedParameter, 19, 1);
+		assertError(p[0], IProblem.ParameterMultiplyDefined, 19, 1);
 	}
 	
 	public void testDuplicatedTupleTemplateParameter() {
@@ -556,7 +556,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DuplicatedParameter, 15, 1);
+		assertError(p[0], IProblem.ParameterMultiplyDefined, 15, 1);
 	}
 	
 	public void testSpecAliasTemplateParameterSymbolNotFound() {

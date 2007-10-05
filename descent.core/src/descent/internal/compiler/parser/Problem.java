@@ -283,8 +283,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.FunctionMustReturnAResultOfType, arguments[0]);
 		case MoreThanOneInvariant:
 			return String.format(ProblemMessages.MoreThanOneInvariant, arguments[0]);
-		case DuplicatedParameter:
-			return String.format(ProblemMessages.DuplicatedParameter, arguments[0]);
+		case ParameterMultiplyDefined:
+			return String.format(ProblemMessages.ParameterMultiplyDefined, arguments[0]);
 		case SymbolNotFound:
 			return String.format(ProblemMessages.SymbolNotFound, arguments[0]);
 		case StatementIsNotReachable:
@@ -491,6 +491,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.AStructIsNotAValidInitializerFor, arguments[0]);
 		case CannotUseArrayToInitialize:
 			return String.format(ProblemMessages.CannotUseArrayToInitialize, arguments[0]);
+		case CircularReferenceTo:
+			return String.format(ProblemMessages.CircularReferenceTo, arguments[0]);
+		case ParameterIsAlreadyDefined:
+			return String.format(ProblemMessages.ParameterIsAlreadyDefined, arguments[0], arguments[1]);
 		case MemberIsNotAccessible:
 			return String.format(ProblemMessages.MemberIsNotAccessible, arguments[0]);
 		case SymbolIsNotAccessible:

@@ -98,8 +98,7 @@ public class DsymbolExp extends Expression {
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
 					if (v.init != null) {
 						if (v.inuse != 0) {
-							error("circular reference to '%s'", v
-									.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, 0, start, length, new String[] { v.toChars(context) }));
 							type = Type.tint32;
 							return this;
 						}

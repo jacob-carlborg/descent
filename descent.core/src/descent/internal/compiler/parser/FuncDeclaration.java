@@ -1486,8 +1486,7 @@ public class FuncDeclaration extends Declaration {
 					}
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
-						error("parameter %s.%s is already defined",
-								toChars(context), v.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, 0, start, length, new String[] { toChars(context), v.toChars(context) }));
 					} else {
 						parameters.add(v);
 					}
@@ -1525,8 +1524,7 @@ public class FuncDeclaration extends Declaration {
 								arg.ident, exps);
 						v.isexp = true;
 						if (sc2.insert(v) == null) {
-							error("parameter %s.%s is already defined",
-									toChars(context), v.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, 0, start, length, new String[] { toChars(context), v.toChars(context) }));
 						}
 						localsymtab.insert(v);
 						v.parent = this;

@@ -280,8 +280,8 @@ FunctionMustReturnAResultOfType
 MoreThanOneInvariant
 	formatString=More than one invariant for %1$s
 	numArgs=1
-DuplicatedParameter
-	formatString=Duplicate parameter %1$s
+ParameterMultiplyDefined
+	formatString=Parameter '%1$s' multiply defined
 	numArgs=1
 SymbolNotFound
 	formatString=Symbol %1$s not found
@@ -592,6 +592,12 @@ AStructIsNotAValidInitializerFor
 CannotUseArrayToInitialize
 	formatString=Cannot use array to initialize %1$s
 	numArgs=1
+CircularReferenceTo
+	formatString=Circular reference to '%1$s'
+	numArgs=1
+ParameterIsAlreadyDefined
+	formatString=Parameter %1$s.%2$s is already defined
+	numArgs=2
 MemberIsNotAccessible
 	formatString=Member %1$s is not accessible
 	numArgs=1
@@ -604,6 +610,7 @@ ThisForSymbolNeedsToBeType
 SymbolHasForwardReferences
 	formatString=%1$s has forward references
 	numArgs=1
+	
 	
 	
 	
