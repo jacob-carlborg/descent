@@ -297,7 +297,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKimport:
-				s = parseImport(false);
+				s = parseImport(decldefs, false, token.ptr);
 				break;
 
 			case TOKtemplate:
@@ -433,7 +433,7 @@ public class Parser extends Lexer {
 					attachLeadingComments = prevToken.value == TOKrcurly;
 					break;
 				} else if (token.value == TOKimport) {
-					s = parseImport(true);
+					s = parseImport(decldefs, true, prevToken.ptr);
 				} else {
 					stc = STCstatic;
 					
@@ -758,7 +758,6 @@ public class Parser extends Lexer {
 			    Initializer init = parseInitializer();
 			    VarDeclaration v = new VarDeclaration(loc, null, ident, init);
 			    v.first = first;
-			    v.last = false;
 			    first = false;
 			    
 			    v.storage_class = stc;
@@ -776,7 +775,6 @@ public class Parser extends Lexer {
 			    if (token.value == TOKsemicolon) {
 			    	v.setSourceRange(start, token.ptr + token.sourceLen - start);
 					nextToken();
-					v.last = true;
 				} else if (token.value == TOKcomma) {
 					v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					nextToken();
@@ -792,7 +790,6 @@ public class Parser extends Lexer {
 					parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
 							.toString());
 					v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.sourceLen - firstToken.ptr);
-					v.last = true;
 				}
 				break;
 			}
@@ -2054,14 +2051,11 @@ public class Parser extends Lexer {
 		return tiargs;
 	}
 	
-	private MultiImport parseImport(boolean isstatic) {
-		MultiImport multiImport = new MultiImport(loc);
-
+	private Import parseImport(Dsymbols decldefs, boolean isstatic, int start) {
 		Import s = null;
 		IdentifierExp id = null;
 		IdentifierExp aliasid = null;
 		Identifiers a = null;
-		int start = token.ptr;
 		int sStart = 0;
 		
 		boolean repeat = true;
@@ -2110,8 +2104,15 @@ public class Parser extends Lexer {
 					nextToken();
 				}
 
-				s = new Import(loc, a, id, aliasid);
-				multiImport.addImport(s);
+				Import prev = s;
+				s = new Import(loc, a, id, aliasid, isstatic);
+				s.first = prev == null;
+				decldefs.add(s);
+				if (prev == null) {
+					s.firstStart = start;
+				} else {
+					prev.next = s;
+				}
 
 				/*
 				 * Look for : alias=name, alias=name; syntax.
@@ -2154,12 +2155,13 @@ public class Parser extends Lexer {
 			} while (token.value == TOKcomma);
 		}
 		
-		multiImport.isstatic = isstatic;
-		multiImport.setSourceRange(start, token.ptr + token.sourceLen - start);
+		if (s != null) {
+			s.lastLength = token.ptr + token.sourceLen - s.start;
+		}
 
 		check(TOKsemicolon);
 
-		return multiImport;
+		return null;
 	}
 	
 	private Type parseType() {
@@ -2749,7 +2751,6 @@ public class Parser extends Lexer {
 
 			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
 			v.first = first;
-			v.last = false;
 			first = false;
 			
 			v.storage_class = storage_class;
@@ -2765,7 +2766,6 @@ public class Parser extends Lexer {
 				v.setSourceRange(start, token.ptr + token.sourceLen - start);
 				nextToken();
 				v.preDdocs = lastComments;
-				v.last = true;
 				attachLeadingComments(v);
 				adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 			} else if (token.value == TOKcomma) {
@@ -2852,7 +2852,6 @@ public class Parser extends Lexer {
 				if (tok == TOKtypedef) {
 					td = new TypedefDeclaration(loc, ident, t, init);
 					td.first = first;
-					td.last = false;
 					v = td;
 					if (previousTypedef != null) {
 						previousTypedef.next = td;
@@ -2865,7 +2864,6 @@ public class Parser extends Lexer {
 					
 					ad = new AliasDeclaration(loc, ident, t);
 					ad.first = first;
-					ad.last = false;
 					v = ad;
 					if (previousAlias != null) {
 						previousAlias.next = ad;
@@ -2888,9 +2886,7 @@ public class Parser extends Lexer {
 			    }
 				
 				switch (token.value) {
-				case TOKsemicolon:
-					if (td != null) td.last = true;
-					if (ad != null) ad.last = true;					
+				case TOKsemicolon:			
 					v.setSourceRange(nextTypdefOrAliasStart, token.ptr + token.sourceLen - nextTypdefOrAliasStart);
 					nextToken();
 					v.preDdocs = lastComments;
@@ -2904,8 +2900,6 @@ public class Parser extends Lexer {
 					continue;
 
 				default:
-					if (td != null) td.last = true;
-					if (ad != null) ad.last = true;
 					v.setSourceRange(nextTypdefOrAliasStart, prevToken.ptr + prevToken.sourceLen - nextTypdefOrAliasStart);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
@@ -2956,7 +2950,6 @@ public class Parser extends Lexer {
 				
 				v = new VarDeclaration(loc, t, ident, init);
 				v.first = first;
-				v.last = false;
 				first = false;
 				
 				v.storage_class = storage_class;
@@ -2970,7 +2963,6 @@ public class Parser extends Lexer {
 				
 				switch (token.value) {
 				case TOKsemicolon:
-					v.last = true;
 					v.setSourceRange(nextVarStart, token.ptr + token.sourceLen - nextVarStart);
 					nextToken();
 					v.preDdocs = lastComments;
@@ -2984,7 +2976,6 @@ public class Parser extends Lexer {
 					continue;
 
 				default:
-					v.last = true;
 					v.setSourceRange(nextVarStart, prevToken.ptr + prevToken.sourceLen - nextVarStart);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;

@@ -160,7 +160,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 			}
 		}
 		this.buffer.append(node.ident);
-		if (node.last) {					
+		if (node.next == null) {					
 			this.buffer.append(";");
 			if (node.postDdoc != null) {
 				this.buffer.append(" ");
@@ -1384,6 +1384,19 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(Import node) {
+		if (!node.first) {
+			return false;
+		}
+		
+		visitPreDDocss(node.preDdocs);
+		printIndent();
+		visitModifiers(node.modifiers);
+		
+		if (node.isstatic) {
+			this.buffer.append("static ");
+		}
+		this.buffer.append("import ");
+		
 		if (node.aliasId != null) {
 			node.aliasId.accept(this);
 			this.buffer.append(" = ");
@@ -1407,6 +1420,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 				node.names.get(i).accept(this);
 			}
 		}
+		
+		this.buffer.append(";");
 		return false;
 	}
 
@@ -1624,23 +1639,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 		node.sourceE2.accept(this);
 		this.buffer.append(")");
 		appendBinding(node);
-		return false;
-	}
-
-	public boolean visit(MultiImport node) {
-		visitPreDDocss(node.preDdocs);
-		printIndent();
-		visitModifiers(node.modifiers);
-		if (node.isstatic) {
-			this.buffer.append("static ");
-		}
-		this.buffer.append("import ");
-		visitList(node.imports, ", ");
-		this.buffer.append(";");
-		if (node.postDdoc != null) {
-			this.buffer.append(" ");
-			node.postDdoc.accept(this);
-		}
 		return false;
 	}
 
@@ -2567,7 +2565,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		if (node.ident != null) {
 			this.buffer.append(node.ident);
 		}
-		if (node.last) {					
+		if (node.next == null) {					
 			this.buffer.append(";");
 			if (node.postDdoc != null) {
 				this.buffer.append(" ");
@@ -2869,7 +2867,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(" = ");
 			node.sourceInit.accept(this);
 		}
-		if (node.last) {					
+		if (node.next == null) {					
 			this.buffer.append(";");
 			if (node.postDdoc != null) {
 				this.buffer.append(" ");
@@ -3305,9 +3303,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public void endVisit(MulExp node) {
-	}
-
-	public void endVisit(MultiImport node) {
 	}
 
 	public void endVisit(NegExp node) {

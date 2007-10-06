@@ -11,7 +11,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class TypedefDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi
-	public boolean last = true; // is this the last declaration in a multi
 	public TypedefDeclaration next;
 
 	public Type sourceBasetype; // copy of basetype, because it will change

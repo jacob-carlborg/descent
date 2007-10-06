@@ -6,6 +6,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class Import extends Dsymbol {
 	
+	public boolean first = true; // Is this the first import in a multi?
+	public Import next;
+	
 	public Identifiers packages;
 	public IdentifierExp id;
 	public IdentifierExp aliasId;
@@ -14,12 +17,17 @@ public class Import extends Dsymbol {
 	public Identifiers aliases;
 	public Module mod;
 	public Package pkg;
+	public boolean isstatic;
 	
-	public Import(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId) {
+	public int firstStart;
+	public int lastLength;
+	
+	public Import(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId, boolean isstatic) {
 		super(loc);
 		this.packages = packages;
 		this.id = id;
 		this.aliasId = aliasId;
+		this.isstatic = isstatic;
 	}
 	
 	@Override

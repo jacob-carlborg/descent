@@ -317,8 +317,6 @@ public class ASTConverter {
 			return convert((BinExp) symbol, Assignment.Operator.TIMES_ASSIGN);
 		case ASTDmdNode.MUL_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.TIMES);
-		case ASTDmdNode.MULTI_IMPORT:
-			return convert((MultiImport) symbol);
 		case ASTDmdNode.NEG_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.NEGATIVE);
 		case ASTDmdNode.NEW_ANON_CLASS_EXP:
@@ -1335,45 +1333,44 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.ImportDeclaration convert(MultiImport a) {
-		descent.core.dom.ImportDeclaration b = new descent.core.dom.ImportDeclaration(ast);
-		b.setStatic(a.isstatic);
-		if (a.imports != null) {
-			for(Import imp : a.imports) {
-				descent.core.dom.Import convertedImp = convert(imp);
-				if (convertedImp != null) {
-					b.imports().add(convertedImp);
+	public descent.core.dom.ImportDeclaration convert(Import a) {
+		Import first = a;
+		Import last = a;
+		
+		descent.core.dom.ImportDeclaration c = new descent.core.dom.ImportDeclaration(ast);
+		c.setStatic(a.isstatic);
+		
+		while(a != null) {
+			descent.core.dom.Import b = new descent.core.dom.Import(ast);
+			if (a.aliasId != null) {
+				b.setAlias((SimpleName) convert(a.aliasId));
+			}
+			b.setName(convert(a.packages, a.id));
+			if (a.aliases != null) {
+				for(int i = 0; i < a.aliases.size(); i++) {
+					IdentifierExp alias = a.aliases.get(i);
+					IdentifierExp name = a.names.get(i);
+					SelectiveImport selective = new SelectiveImport(ast);
+					selective.setName((SimpleName) convert(name));
+					if (alias == null) {
+						selective.setSourceRange(name.start, name.length);
+					} else {
+						selective.setAlias((SimpleName) convert(alias));
+						selective.setSourceRange(alias.start, name.start + name.length - alias.start);
+					}
+					b.selectiveImports().add(selective);
 				}
 			}
+			b.setSourceRange(a.start, a.length);
+			
+			c.imports().add(b);
+			
+			last = a;
+			a = a.next;
 		}
-		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
-		return b;
-	}
-	
-	public descent.core.dom.Import convert(Import a) {
-		descent.core.dom.Import b = new descent.core.dom.Import(ast);
-		if (a.aliasId != null) {
-			b.setAlias((SimpleName) convert(a.aliasId));
-		}
-		b.setName(convert(a.packages, a.id));
-		if (a.aliases != null) {
-			for(int i = 0; i < a.aliases.size(); i++) {
-				IdentifierExp alias = a.aliases.get(i);
-				IdentifierExp name = a.names.get(i);
-				SelectiveImport selective = new SelectiveImport(ast);
-				selective.setName((SimpleName) convert(name));
-				if (alias == null) {
-					selective.setSourceRange(name.start, name.length);
-				} else {
-					selective.setAlias((SimpleName) convert(alias));
-					selective.setSourceRange(alias.start, name.start + name.length - alias.start);
-				}
-				b.selectiveImports().add(selective);
-			}
-		}
-		b.setSourceRange(a.start, a.length);
-		return b;
+		fillDeclaration(c, first);
+		c.setSourceRange(first.firstStart, last.start + last.lastLength - first.firstStart);
+		return c;
 	}
 	
 	public descent.core.dom.ExternDeclaration convert(LinkDeclaration a) {
@@ -2989,6 +2986,14 @@ public class ASTConverter {
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = source.get(i);
 			switch(symbol.getNodeType()) {
+			case ASTDmdNode.IMPORT:
+				Import import1 = (Import) symbol;
+				destination.add(convert(import1));
+				while(import1.next != null) {
+					i++;
+					import1 = import1.next;
+				}
+				break;
 			case ASTDmdNode.VAR_DECLARATION: {
 				descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
 				int start = -1;
@@ -3021,7 +3026,7 @@ public class ASTConverter {
 						break;
 					}
 					
-					if (a.last) {
+					if (a.next == null) {
 						break;
 					}
 					
@@ -3064,7 +3069,7 @@ public class ASTConverter {
 						break;
 					}
 					
-					if (a.last) {
+					if (a.next == null) {
 						break;
 					}
 					
@@ -3107,7 +3112,7 @@ public class ASTConverter {
 						break;
 					}
 					
-					if (a.last) {
+					if (a.next == null) {
 						break;
 					}
 					

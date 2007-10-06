@@ -517,10 +517,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(MulExp.class.getSuperclass().equals(BinExp.class));
 		return visit((BinExp) node);
 	}
-	public boolean visit(MultiImport node) {
-		Assert.isTrue(MultiImport.class.getSuperclass().equals(Dsymbol.class));
-		return visit((Dsymbol) node);
-	}
 	public boolean visit(NegExp node) {
 		Assert.isTrue(NegExp.class.getSuperclass().equals(UnaExp.class));
 		return visit((UnaExp) node);
@@ -1450,10 +1446,6 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	public void endVisit(MulExp node) {
 		Assert.isTrue(MulExp.class.getSuperclass().equals(BinExp.class));
 		endVisit((BinExp) node);
-	}
-	public void endVisit(MultiImport node) {
-		Assert.isTrue(MultiImport.class.getSuperclass().equals(Dsymbol.class));
-		endVisit((Dsymbol) node);
 	}
 	public void endVisit(NegExp node) {
 		Assert.isTrue(NegExp.class.getSuperclass().equals(UnaExp.class));

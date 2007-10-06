@@ -13,7 +13,6 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 public class AliasDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi
-	public boolean last = true; // is this the last declaration in a multi
 	public AliasDeclaration next;
 
 	public Type htype;

@@ -34,7 +34,6 @@ import static descent.internal.compiler.parser.TY.Taarray;
 public class VarDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi
-	public boolean last = true; // is this the last declaration in a multi
 	public VarDeclaration next;
 
 	// declaration?

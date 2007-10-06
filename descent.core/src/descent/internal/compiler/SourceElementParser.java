@@ -312,35 +312,6 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 	
-	public boolean visit(MultiImport parent) {
-		if (parent.imports != null && parent.imports.size() > 0) {
-			int length = parent.imports.size();
-			for(int index = 0; index < length; index++) {
-				Import node = parent.imports.get(index);
-				
-				int start, end;
-				if (index == 0) {
-					start = startOf(parent);
-				} else {
-					start = startOf(node);
-				}
-				if (index == length - 1) {
-					end = endOf(parent);
-				} else {
-					end = endOf(node);
-				}
-				
-				int flags = parent.isstatic ? Flags.AccStatic : 0;
-				
-				flattener.reset();
-				node.accept(flattener);			
-				requestor.acceptImport(start, end, flattener.getResult(), false, flags);
-			}
-		}
-		pushLevelInAttribDeclarationStack();
-		return false;
-	}
-	
 	public boolean visit(StructDeclaration node) {
 		visit(node, Flags.AccStruct, null, null);
 		pushLevelInAttribDeclarationStack();
@@ -777,6 +748,36 @@ public class SourceElementParser implements IASTVisitor {
 		return false;
 	}
 	
+	public boolean visit(Import node) {
+		if (!node.first) {
+			return false;
+		}
+		
+		while(node != null) {
+			int start, end;
+			if (node.first) {
+				start = node.firstStart;
+			} else {
+				start = startOf(node);
+			}
+			if (node.next == null) {
+				end = node.start + node.lastLength - 1;
+			} else {
+				end = endOf(node);
+			}
+			
+			int flags = node.isstatic ? Flags.AccStatic : 0;
+			
+			flattener.reset();
+			node.accept(flattener);			
+			requestor.acceptImport(start, end, flattener.getResult(), false, flags);
+			
+			node = node.next;
+		}
+		pushLevelInAttribDeclarationStack();
+		return false;
+	}
+	
 	public boolean visit(ProtDeclaration node) {
 		if (node.single) {
 			pushAttribDeclaration(node);
@@ -821,10 +822,6 @@ public class SourceElementParser implements IASTVisitor {
 	// ------------------------------------------------------------------------	
 	
 	public void endVisit(ModuleDeclaration node) {
-		popLevelInAttribDeclarationStack();
-	}
-
-	public void endVisit(MultiImport node) {
 		popLevelInAttribDeclarationStack();
 	}
 
@@ -996,6 +993,10 @@ public class SourceElementParser implements IASTVisitor {
 	
 	public void endVisit(ConditionalDeclaration node) {
 		requestor.exitConditional(endOfDeclaration(node));
+		popLevelInAttribDeclarationStack();
+	}
+	
+	public void endVisit(Import node) {
 		popLevelInAttribDeclarationStack();
 	}
 	
@@ -1347,10 +1348,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public boolean visit(IftypeExp node) {
-		return false;
-	}
-
-	public boolean visit(Import node) {
 		return false;
 	}
 
@@ -2054,9 +2051,6 @@ public class SourceElementParser implements IASTVisitor {
 	}
 
 	public void endVisit(IftypeExp node) {
-	}
-
-	public void endVisit(Import node) {
 	}
 
 	public void endVisit(IndexExp node) {
