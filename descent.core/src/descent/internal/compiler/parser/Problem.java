@@ -503,6 +503,54 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ThisForSymbolNeedsToBeType, arguments[0], arguments[1], arguments[2]);
 		case SymbolHasForwardReferences:
 			return String.format(ProblemMessages.SymbolHasForwardReferences, arguments[0]);
+		case CannotHaveAssociativeArrayOfKey:
+			return String.format(ProblemMessages.CannotHaveAssociativeArrayOfKey, arguments[0]);
+		case CannotHaveAssociativeArrayOf:
+			return String.format(ProblemMessages.CannotHaveAssociativeArrayOf, arguments[0]);
+		case CannotHaveArrayOfAuto:
+			return String.format(ProblemMessages.CannotHaveArrayOfAuto, arguments[0]);
+		case EnclosingLabelForBreakNotFound:
+			return String.format(ProblemMessages.EnclosingLabelForBreakNotFound, arguments[0]);
+		case EnclosingLabelForContinueNotFound:
+			return String.format(ProblemMessages.EnclosingLabelForContinueNotFound, arguments[0]);
+		case CannotAppendTypeToType:
+			return String.format(ProblemMessages.CannotAppendTypeToType, arguments[0], arguments[1]);
+		case CannotAppendToStaticArray:
+			return String.format(ProblemMessages.CannotAppendToStaticArray, arguments[0]);
+		case ExpressionIsVoidAndHasNoValue:
+			return String.format(ProblemMessages.ExpressionIsVoidAndHasNoValue, arguments[0]);
+		case NeedMemberFunctionOpCmpForSymbolToCompare:
+			return String.format(ProblemMessages.NeedMemberFunctionOpCmpForSymbolToCompare, arguments[0], arguments[1]);
+		case CompareNotDefinedForComplexOperands:
+			return String.format(ProblemMessages.CompareNotDefinedForComplexOperands);
+		case NeedThisForAddressOfSymbol:
+			return String.format(ProblemMessages.NeedThisForAddressOfSymbol, arguments[0]);
+		case RecursiveMixinInstantiation:
+			return String.format(ProblemMessages.RecursiveMixinInstantiation);
+		case SymbolIsNotOfIntegralType:
+			return String.format(ProblemMessages.SymbolIsNotOfIntegralType, arguments[0], arguments[1]);
+		case DeleteAAKeyDeprecated:
+			return String.format(ProblemMessages.DeleteAAKeyDeprecated);
+		case SymbolIsDeprecated:
+			return String.format(ProblemMessages.SymbolIsDeprecated, arguments[0]);
+		case ShadowingDeclarationIsDeprecated:
+			return String.format(ProblemMessages.ShadowingDeclarationIsDeprecated, arguments[0]);
+		case ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies:
+			return String.format(ProblemMessages.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies);
+		case CannotReturnExpressionFromConstructor:
+			return String.format(ProblemMessages.CannotReturnExpressionFromConstructor);
+		case CaseNotFound:
+			return String.format(ProblemMessages.CaseNotFound, arguments[0]);
+		case CircularInheritanceOfInterface:
+			return String.format(ProblemMessages.CircularInheritanceOfInterface);
+		case ArgumentToMixinMustBeString:
+			return String.format(ProblemMessages.ArgumentToMixinMustBeString, arguments[0]);
+		case CannotAccessFrameOfFunction:
+			return String.format(ProblemMessages.CannotAccessFrameOfFunction, arguments[0]);
+		case OperationNotAllowedOnBool:
+			return String.format(ProblemMessages.OperationNotAllowedOnBool, arguments[0]);
+		case SymbolIsNotAScalar:
+			return String.format(ProblemMessages.SymbolIsNotAScalar, arguments[0], arguments[1]);
 		default:
 			return "";
 		}

@@ -7,6 +7,7 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -22,7 +23,7 @@ public class SymOffExp extends Expression {
 		this.offset = offset;
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null && v.needThis()) {
-			error("need 'this' for address of %s", v.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedThisForAddressOfSymbol, 0, start, length, new String[] { v.toChars(context) }));
 		}
 	}
 

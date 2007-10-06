@@ -220,7 +220,7 @@ public class TemplateMixin extends TemplateInstance {
 					throw new IllegalStateException("assert(0);");
 				}
 			}
-			error("recursive mixin instantiation");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveMixinInstantiation, 0, start, length));
 			return;
 		}
 

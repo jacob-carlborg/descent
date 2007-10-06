@@ -33,7 +33,7 @@ public class CompileExp extends UnaExp {
 		e1 = resolveProperties(sc, e1, context);
 		e1 = e1.optimize(WANTvalue | WANTinterpret, context);
 		if (e1.op != TOKstring) {
-			error("argument to mixin must be a string, not (%s)", e1.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, 0, start, length, new String[] { e1.toChars(context) }));
 			type = Type.terror;
 			return this;
 		}

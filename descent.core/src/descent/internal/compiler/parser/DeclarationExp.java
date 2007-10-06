@@ -196,8 +196,7 @@ public class DeclarationExp extends Expression {
 								&& scx.scopesym.symtab != null
 								&& (s2 = scx.scopesym.symtab.lookup(s.ident)) != null
 								&& s != s2) {
-							error("shadowing declaration %s is deprecated", s
-									.toPrettyChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ShadowingDeclarationIsDeprecated, 0, start, length, new String[] { s.toPrettyChars(context) }));
 						}
 					}
 				}

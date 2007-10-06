@@ -13,7 +13,7 @@ public class ArrayInitializer extends Initializer {
 
 	public Expressions index;
 	public Initializers value;
-	public int dim; // length of array being initialized
+	public long dim; // length of array being initialized
 	public Type type; // type that array will be used to initialize
 	public int sem; // !=0 if semantic() is run
 
@@ -77,7 +77,7 @@ public class ArrayInitializer extends Initializer {
 	@Override
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
 		int i;
-		int length;
+		long length;
 
 		if (sem != 0) {
 			return this;
@@ -106,14 +106,16 @@ public class ArrayInitializer extends Initializer {
 				idx = idx.semantic(sc, context);
 				idx = idx.optimize(WANTvalue | WANTinterpret, context);
 				index.set(i, idx);
-				length = idx.toInteger(context).intValue();
+				length = idx.toInteger(context).longValue();
 			}
 
 			val = value.get(i);
 			val = val.semantic(sc, t.next, context);
 			value.set(i, val);
 			length++;
-			if (length == 0) {
+			// This was length == 0 in DMD, with length
+			// an unsigned. So in a long, it's:
+			if (length == (Integer.MAX_VALUE + 1) * 2) {
 				error("array dimension overflow");
 			}
 			if (length > dim) {

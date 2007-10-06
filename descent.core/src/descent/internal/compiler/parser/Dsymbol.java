@@ -135,7 +135,7 @@ public class Dsymbol extends ASTDmdNode {
 				}
 			}
 
-			error("is deprecated");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, 0, start, length, new String[] { toChars(context) }));
 		}
 	}
 

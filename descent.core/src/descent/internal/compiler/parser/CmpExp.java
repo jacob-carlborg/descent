@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Cmp;
 
@@ -95,15 +96,15 @@ public class CmpExp extends BinExp {
 		} else if (t1.ty == TY.Tstruct || t2.ty == TY.Tstruct
 				|| (t1.ty == TY.Tclass && t2.ty == TY.Tclass)) {
 			if (t2.ty == TY.Tstruct) {
-				error("need member function opCmp() for %s %s to compare", t2
-						.toDsymbol(sc, context).kind(), t2.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, 0, start, length, new String[] { t2
+						.toDsymbol(sc, context).kind(), t2.toChars(context) }));
 			} else {
-				error("need member function opCmp() for %s %s to compare", t1
-						.toDsymbol(sc, context).kind(), t1.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, 0, start, length, new String[] { t1
+						.toDsymbol(sc, context).kind(), t1.toChars(context) }));
 			}
 			e = this;
 		} else if (t1.iscomplex() || t2.iscomplex()) {
-			error("compare not defined for complex operands");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CompareNotDefinedForComplexOperands, 0, start, length));
 			e = new IntegerExp(loc, 0);
 		} else {
 			e = this;

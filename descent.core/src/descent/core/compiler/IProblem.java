@@ -412,5 +412,29 @@ public interface IProblem {
 	int SymbolIsNotAccessible = 202;
 	int ThisForSymbolNeedsToBeType = 203;
 	int SymbolHasForwardReferences = 204;
+	int CannotHaveAssociativeArrayOfKey = 205;
+	int CannotHaveAssociativeArrayOf = 206;
+	int CannotHaveArrayOfAuto = 207;
+	int EnclosingLabelForBreakNotFound = 208;
+	int EnclosingLabelForContinueNotFound = 209;
+	int CannotAppendTypeToType = 210;
+	int CannotAppendToStaticArray = 211;
+	int ExpressionIsVoidAndHasNoValue = 212;
+	int NeedMemberFunctionOpCmpForSymbolToCompare = 213;
+	int CompareNotDefinedForComplexOperands = 214;
+	int NeedThisForAddressOfSymbol = 215;
+	int RecursiveMixinInstantiation = 216;
+	int SymbolIsNotOfIntegralType = 217;
+	int DeleteAAKeyDeprecated = 218;
+	int SymbolIsDeprecated = 219;
+	int ShadowingDeclarationIsDeprecated = 220;
+	int ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies = 221;
+	int CannotReturnExpressionFromConstructor = 222;
+	int CaseNotFound = 223;
+	int CircularInheritanceOfInterface = 224;
+	int ArgumentToMixinMustBeString = 225;
+	int CannotAccessFrameOfFunction = 226;
+	int OperationNotAllowedOnBool = 227;
+	int SymbolIsNotAScalar = 228;
 
 }

@@ -105,7 +105,7 @@ public class DeleteExp extends UnaExp {
 			Type tb1 = ae.e1.type.toBasetype(context);
 			if (tb1.ty == Taarray) {
 				if (!context.global.params.useDeprecated) {
-					error("delete aa[key] deprecated, use aa.remove(key)");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeleteAAKeyDeprecated, 0, start, length));
 				}
 			}
 		}

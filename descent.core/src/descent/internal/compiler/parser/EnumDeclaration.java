@@ -255,7 +255,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			if (isAnonymous()) {
 				for (Scope scx = sce.enclosing; scx != null; scx = scx.enclosing) {
 					if (scx.scopesym != null) {
-						if (scx.scopesym.symtab != null) {
+						if (scx.scopesym.symtab == null) {
 							scx.scopesym.symtab = new DsymbolTable();
 						}
 						em.addMember(sce, scx.scopesym, 1, context);

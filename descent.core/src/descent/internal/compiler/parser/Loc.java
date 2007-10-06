@@ -5,7 +5,7 @@ public class Loc {
 	
 	public final static Loc ZERO = new Loc();
 	
-	public String filename;
+	public String filename = "unknown.d";
 	
 	public Loc() {
 	}

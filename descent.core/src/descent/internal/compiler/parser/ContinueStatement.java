@@ -102,8 +102,7 @@ public class ContinueStatement extends Statement {
 					return this;
 				}
 			}
-			error("enclosing label '%s' for continue not found", ident
-					.toChars());
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, 0, start, length, new String[] { ident.toChars() }));
 		} else if (null == sc.scontinue) {
 			if (sc.fes != null) {
 				Statement s;

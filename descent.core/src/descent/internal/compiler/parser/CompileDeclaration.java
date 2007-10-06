@@ -46,8 +46,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		exp = resolveProperties(sc, exp, context);
 		exp = exp.optimize(WANTvalue | WANTinterpret, context);
 		if (exp.op != TOKstring) {
-			error("argument to mixin must be a string, not (%s)", exp
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, 0, start, length, new String[] { exp.toChars(context) }));
 			return;
 		}
 		StringExp se = (StringExp) exp;

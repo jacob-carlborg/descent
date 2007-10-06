@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Equal;
 import static descent.internal.compiler.parser.TOK.TOKequal;
@@ -189,7 +190,7 @@ public class SwitchStatement extends Statement {
 						}
 					}
 				}
-				gcs.error("case %s not found", gcs.exp.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseNotFound, 0, start, length, new String[] { gcs.exp.toChars(context) }));
 				// Lfoundcase: ;
 			}
 		}

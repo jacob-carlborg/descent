@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -176,20 +177,18 @@ public class TypeAArray extends TypeArray {
 		case Tfunction:
 		case Tvoid:
 		case Tnone:
-			error(loc, "can't have associative array key of %s", key
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveAssociativeArrayOfKey, 0, start, length, new String[] { key.toChars(context) }));
 			break;
 		}
 		next = next.semantic(loc, sc, context);
 		switch (next.toBasetype(context).ty) {
 		case Tfunction:
 		case Tnone:
-			error(loc, "can't have associative array of %s", next
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveAssociativeArrayOf, 0, start, length, new String[] { next.toChars(context) }));
 			break;
 		}
 		if (next.isauto()) {
-			error(loc, "cannot have array of auto %s", next.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfAuto, 0, start, length, new String[] { next.toChars(context) }));
 		}
 
 		return merge(context);

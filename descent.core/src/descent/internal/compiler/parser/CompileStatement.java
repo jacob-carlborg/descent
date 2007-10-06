@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Parser.PScurlyscope;
 import static descent.internal.compiler.parser.Parser.PSsemi;
@@ -37,8 +38,7 @@ public class CompileStatement extends Statement {
 		exp = exp.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret,
 				context);
 		if (exp.op != TOK.TOKstring) {
-			error("argument to mixin must be a string, not (%s)", exp
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, 0, start, length, new String[] { exp.toChars(context) }));
 			return this;
 		}
 		StringExp se = (StringExp) exp;

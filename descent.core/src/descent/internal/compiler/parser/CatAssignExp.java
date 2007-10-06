@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Cat;
 
@@ -53,8 +54,7 @@ public class CatAssignExp extends BinExp {
 			SliceExp se = (SliceExp) e1;
 
 			if (se.e1.type.toBasetype(context).ty == TY.Tsarray) {
-				error("cannot append to static array %s", se.e1.type
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAppendToStaticArray, 0, start, length, new String[] { se.e1.type.toChars(context) }));
 			}
 		}
 
@@ -81,8 +81,8 @@ public class CatAssignExp extends BinExp {
 		}
 
 		else {
-			error("cannot append type %s to type %s", tb2.toChars(context), tb1
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAppendTypeToType, 0, start, length, new String[] { tb2.toChars(context), tb1
+					.toChars(context) }));
 			type = Type.tint32;
 			e = this;
 		}

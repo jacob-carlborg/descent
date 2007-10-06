@@ -610,6 +610,78 @@ ThisForSymbolNeedsToBeType
 SymbolHasForwardReferences
 	formatString=%1$s has forward references
 	numArgs=1
+CannotHaveAssociativeArrayOfKey
+	formatString=Cannot have associative array key of %1$s
+	numArgs=1
+CannotHaveAssociativeArrayOf
+	formatString=Cannot have associative array of %1$s
+	numArgs=1
+CannotHaveArrayOfAuto
+	formatString=Cannot have array of auto %1$s
+	numArgs=1	
+EnclosingLabelForBreakNotFound
+	formatString=Enclosing label '%1$s' for break not found
+	numArgs=1
+EnclosingLabelForContinueNotFound
+	formatString=Enclosing label '%1$s' for continue not found
+	numArgs=1
+CannotAppendTypeToType
+	formatString=Cannot append type %1$s to type %2$s
+	numArgs=2
+CannotAppendToStaticArray
+	formatString=Cannot append to static array %1$s
+	numArgs=1
+ExpressionIsVoidAndHasNoValue
+	formatString=Expression %1$s is void and has no value
+	numArgs=1
+NeedMemberFunctionOpCmpForSymbolToCompare
+	formatString=Need member function opCmp() for %1$s %2$s to compare
+	numArgs=2
+CompareNotDefinedForComplexOperands
+	formatString=Compare not defined for complex operands
+	numArgs=0
+NeedThisForAddressOfSymbol
+	formatString=Need 'this' for address of %1$s
+	numArgs=1
+RecursiveMixinInstantiation
+	formatString=Recursive mixin instantiation
+	numArgs=0
+SymbolIsNotOfIntegralType
+	formatString='%1$s' is not of integral type, it is a %2$s
+	numArgs=2
+DeleteAAKeyDeprecated
+	formatString=Delete aa[key] deprecated, use aa.remove(key)
+	numArgs=0
+SymbolIsDeprecated
+	formatString=%1$s is deprecated
+	numArgs=1
+ShadowingDeclarationIsDeprecated
+	formatString=Shadowing declaration %1$s is deprecated
+	numArgs=1
+ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies
+	formatString=Return statements cannot be in finally, scope(exit) or scope(success) bodies
+	numArgs=0
+CannotReturnExpressionFromConstructor
+	formatString=Cannot return expression from constructor
+	numArgs=0
+CaseNotFound
+	formatString=case %1$s not found
+	numArgs=1
+CircularInheritanceOfInterface
+	formatString=Circular inheritance of interface
+	numArgs=0
+ArgumentToMixinMustBeString
+	formatString=Argument to mixin must be a string, not (%1$s)
+	numArgs=1
+CannotAccessFrameOfFunction
+	formatString=Cannot access frame of function %1$s
+	numArgs=1	
+OperationNotAllowedOnBool
+	formatString=Operation not allowed on bool '%1$s'
+	numArgs=1
+SymbolIsNotAScalar
+	formatString='%1$s' is not a scalar, it is a %2$s
+	numArgs=2
 	
 	
 	

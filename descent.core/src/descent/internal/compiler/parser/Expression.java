@@ -152,8 +152,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkIntegral(SemanticContext context) {
 		if (!type.isintegral()) {
-			error("'%s' is not of integral type, it is a %s", toChars(context),
-					type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotOfIntegralType, 0, start, length, new String[] { toChars(context),
+					type.toChars(context) }));
 			return new IntegerExp(loc, 0);
 		}
 		return this;
@@ -161,14 +161,14 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkNoBool(SemanticContext context) {
 		if (type.toBasetype(context).ty == Tbool) {
-			error("operation not allowed on bool '%s'", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.OperationNotAllowedOnBool, 0, start, length, new String[] { toChars(context) }));
 		}
 	}
 
 	public void checkScalar(SemanticContext context) {
 		if (!type.isscalar(context)) {
-			error("'%s' is not a scalar, it is a %s", toChars(context), type
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAScalar, 0, start, length, new String[] { toChars(context), type
+					.toChars(context) }));
 		}
 	}
 
@@ -386,7 +386,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void rvalue(SemanticContext context) {
 		if (type != null && type.toBasetype(context).ty == Tvoid) {
-			error("expression %s is void and has no value", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsVoidAndHasNoValue, 0, start, length, new String[] { toChars(context) }));
 		}
 	}
 

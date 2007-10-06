@@ -424,8 +424,7 @@ public class FuncDeclaration extends Declaration {
 			if (thisfd != null) {
 				if (!thisfd.isNested() && null == thisfd.vthis) {
 					// goto Lerr;
-					error(loc, "cannot access frame of function %s", fd
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAccessFrameOfFunction, 0, start, length, new String[] { fd.toChars(context) }));
 					return 1;
 				}
 			} else {
@@ -433,14 +432,12 @@ public class FuncDeclaration extends Declaration {
 				if (thiscd != null) {
 					if (!thiscd.isNested()) {
 						// goto Lerr;
-						error(loc, "cannot access frame of function %s", fd
-								.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAccessFrameOfFunction, 0, start, length, new String[] { fd.toChars(context) }));
 						return 1;
 					}
 				} else {
 					// goto Lerr;
-					error(loc, "cannot access frame of function %s", fd
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAccessFrameOfFunction, 0, start, length, new String[] { fd.toChars(context) }));
 					return 1;
 				}
 			}

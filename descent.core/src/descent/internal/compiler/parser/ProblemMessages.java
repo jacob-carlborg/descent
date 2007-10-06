@@ -214,6 +214,30 @@ final class ProblemMessages extends NLS {
 	public static String SymbolIsNotAccessible;
 	public static String ThisForSymbolNeedsToBeType;
 	public static String SymbolHasForwardReferences;
+	public static String CannotHaveAssociativeArrayOfKey;
+	public static String CannotHaveAssociativeArrayOf;
+	public static String CannotHaveArrayOfAuto;
+	public static String EnclosingLabelForBreakNotFound;
+	public static String EnclosingLabelForContinueNotFound;
+	public static String CannotAppendTypeToType;
+	public static String CannotAppendToStaticArray;
+	public static String ExpressionIsVoidAndHasNoValue;
+	public static String NeedMemberFunctionOpCmpForSymbolToCompare;
+	public static String CompareNotDefinedForComplexOperands;
+	public static String NeedThisForAddressOfSymbol;
+	public static String RecursiveMixinInstantiation;
+	public static String SymbolIsNotOfIntegralType;
+	public static String DeleteAAKeyDeprecated;
+	public static String SymbolIsDeprecated;
+	public static String ShadowingDeclarationIsDeprecated;
+	public static String ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies;
+	public static String CannotReturnExpressionFromConstructor;
+	public static String CaseNotFound;
+	public static String CircularInheritanceOfInterface;
+	public static String ArgumentToMixinMustBeString;
+	public static String CannotAccessFrameOfFunction;
+	public static String OperationNotAllowedOnBool;
+	public static String SymbolIsNotAScalar;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

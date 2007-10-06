@@ -137,14 +137,14 @@ public class ReturnStatement extends Statement {
 					length));
 		}
 		if (sc.tf != null || scx.tf != null) {
-			error("return statements cannot be in finally, scope(exit) or scope(success) bodies");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies, 0, start, length));
 		}
 
 		if (fd.isCtorDeclaration() != null) {
 			// Constructors implicitly do:
 			//	return this;
 			if (exp != null && exp.op != TOKthis) {
-				error("cannot return expression from constructor");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotReturnExpressionFromConstructor, 0, start, length));
 			}
 			exp = new ThisExp(loc);
 		}
