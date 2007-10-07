@@ -101,8 +101,10 @@ public class DeeMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 			// TO DO: check the exception
 			throw ExceptionAdapter.unchecked(e);
 		}
-		DeeProjectOptions deeProjectInfo = DeeModel.getDeeProjectInfo(deeProj);
-		fMainText.setText(deeProjectInfo.getArtifactRelPath());
+		if(deeProj != null) {
+			DeeProjectOptions deeProjectInfo = DeeModel.getDeeProjectInfo(deeProj);
+			fMainText.setText(deeProjectInfo.getArtifactRelPath());
+		}
 
 	}
 

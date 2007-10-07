@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import mmrnmhrm.org.eclipse.dltk.ui.preferences.AbstractScriptEditorColoringConfigurationBlock;
 import mmrnmhrm.ui.text.DeeDocumentSetupParticipant;
 import mmrnmhrm.ui.text.DeePartitions;
 import mmrnmhrm.ui.text.DeeSimpleSourceViewerConfiguration;
 import mmrnmhrm.ui.text.color.DeeColorConstants;
-import mmrnmrhm.org.eclipse.dltk.ui.preferences.AbstractScriptEditorColoringConfigurationBlock;
 
 import org.eclipse.dltk.internal.ui.editor.ScriptSourceViewer;
 import org.eclipse.dltk.ui.preferences.IPreferenceConfigurationBlock;

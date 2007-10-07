@@ -4,8 +4,8 @@
 package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.model.DeeProjectOptions;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 import mmrnmhrm.ui.preferences.DeeProjectOptionsBlock;
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;

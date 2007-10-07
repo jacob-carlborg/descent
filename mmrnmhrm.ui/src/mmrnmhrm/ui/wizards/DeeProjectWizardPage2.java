@@ -4,10 +4,10 @@
 package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.model.DeeNature;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.preferences.DeeBuildpathsBlock;
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;

@@ -34,13 +34,14 @@ final class DeeScriptArgumentsTab extends ScriptArgumentsTab {
 				// TO DO: check the exception
 				throw ExceptionAdapter.unchecked(e);
 			}
-			
-			List<String> cmdLine = DeeBuilder.getDemoCmdLine(deeProj,
-					DeeModel.getDeeProjectInfo(deeProj),
-					new NullProgressMonitor());
-			
-			fInterpreterArgumentsText.setText(
-					StringUtil.collToString(cmdLine, " "));
+			if(deeProj != null) {
+				List<String> cmdLine = DeeBuilder.getDemoCmdLine(deeProj,
+						DeeModel.getDeeProjectInfo(deeProj),
+						new NullProgressMonitor());
+				
+				fInterpreterArgumentsText.setText(
+						StringUtil.collToString(cmdLine, " "));
+			}
 
 		}
 	}

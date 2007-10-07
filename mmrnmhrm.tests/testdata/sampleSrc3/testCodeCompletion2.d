@@ -20,15 +20,15 @@ class FooBar : Foo {
 	void func(int a, int);
 
 	void test1() {
-		f // non qualified ; recovery
+		f/+@CC1+/ // non qualified ; recovery
 	}
 	
 	void test2() {
-		Foo.f // qualified ; recovery
+		Foo.f/+@CC2+/ // qualified ; recovery
 	}
 	
 	void test3() {
-		.f // qualified ; and . recovery
+		.f/+@CC3+/ // qualified ; and . recovery
 	}
 	
 }
@@ -38,7 +38,7 @@ import nonexistantmodule.blah; // Test this in the face of non-existant
 import nonexistantmodule;
 
 invariant () {
-	Foo. // qualified ; and . recovery
+	Foo./+@CC4+/ // qualified ; and . recovery
 }
 
 /// Test code completion recovery

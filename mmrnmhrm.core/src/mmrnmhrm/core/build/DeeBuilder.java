@@ -28,7 +28,7 @@ import org.eclipse.dltk.core.IScriptProject;
 import dtool.Logg;
 
 public class DeeBuilder {
-	
+
 	private List<String> buildModules;
 	private List<String> buildElements;
 	private IPath compilerPath;
@@ -120,6 +120,7 @@ public class DeeBuilder {
 
 	}
 
+	
 	protected void processResource(IPath entrypath, IResource resource) {
 		if(resource.getType() == IResource.FILE) {
 			String modUnitName = resource.getName();
@@ -134,7 +135,6 @@ public class DeeBuilder {
 		}
 	}
 
-	
 	protected void compileModules(IScriptProject deeProj,
 			IProgressMonitor monitor) throws CoreException {
 		
@@ -176,11 +176,12 @@ public class DeeBuilder {
 			cmdline.add("-DCPATH"+compilerPath.toOSString());
 		
 
-		cmdline.add("-od"+options.getOutputFolder().getProjectRelativePath());
+		IPath outputPath = options.getOutputFolder().getProjectRelativePath();
+		cmdline.add("-od"+outputPath);
 
 		cmdline.add("-Rn");
 		String appname;
-		appname = options.getArtifactName();
+		appname = outputPath.append(options.getArtifactName()).toOSString();
 		cmdline.add("-T"+appname);
 		if(options.getExtraOptions().length() != 0) {
 			String[] extrasOpts = options.getExtraOptions().split("\r\n|\n");

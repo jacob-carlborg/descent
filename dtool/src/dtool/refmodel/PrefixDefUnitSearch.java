@@ -13,7 +13,6 @@ import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.Module;
 import dtool.ast.expressions.Expression;
 import dtool.ast.references.CommonRefQualified;
-import dtool.ast.references.CommonRefSingle;
 import dtool.ast.references.NamedReference;
 import dtool.ast.references.RefIdentifier;
 import dtool.ast.references.RefImportSelection;
@@ -74,6 +73,8 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 			IDefUnitMatchAccepter defUnitAccepter) {
 
 		if(session.invokeNode != null) {
+			// Give no results if durring a code completion session the
+			// cursor goes behind the invoked reference node.
 			if(offset < session.invokeNode.getOffset()) 
 				return null; // return without doing matches
 		}
@@ -122,7 +123,8 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 			if(node instanceof RefIdentifier) {
 				RefIdentifier refIdent = (RefIdentifier) node;
 				if(!parserAdapter.isQualifiedDotFixSearch) {
-					setupPrefixedSearch(searchOptions, offset, refIdent);
+					setupPrefixedSearch2(searchOptions, 
+							offset, refIdent.getOffset(), refIdent.name);
 				}
 			} else if(node instanceof CommonRefQualified) {
 				//CommonRefQualified refQual = (CommonRefQualified) node;
@@ -134,7 +136,8 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 				int idEndPos = refTpl.getStartPos() + refTpl.name.length();
 				
 				if(offset <= idEndPos) {
-					setupPrefixedSearch(searchOptions, offset, refTpl);
+					setupPrefixedSearch2(searchOptions, 
+							offset, refTpl.getOffset(), refTpl.name);
 				} else if(lastToken.value == TOK.TOKnot) {
 					return "Invalid Context:" + lastToken;
 				}
@@ -171,15 +174,6 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		return null;
 	}
 
-	@Deprecated
-	private static void setupPrefixedSearch(PrefixSearchOptions searchOptions, 
-			final int offset, CommonRefSingle refTpl) {
-		int prefixLen = offset - refTpl.getOffset(); //get *Name* offset
-		searchOptions.prefixLen = prefixLen;
-		searchOptions.rplLen = refTpl.name.length() - prefixLen;
-		searchOptions.searchPrefix = refTpl.name.substring(0, prefixLen);
-	}
-	
 	private static void setupPrefixedSearch2(PrefixSearchOptions searchOptions, 
 			final int offset, int nameOffset, String name) {
 		int prefixLen = offset - nameOffset; 

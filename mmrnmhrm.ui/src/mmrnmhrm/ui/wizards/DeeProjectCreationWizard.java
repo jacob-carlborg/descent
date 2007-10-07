@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.wizards;
 
 
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;

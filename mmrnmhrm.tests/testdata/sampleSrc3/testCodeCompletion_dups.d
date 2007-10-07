@@ -20,10 +20,10 @@ alias Foo fooalias;
 struct foo_t {};
 int ix;
 
-void func(int a, List!(Foo) a);
-void func(int bbb, List!(Foo) bbb); // same as previous
-void func(char a, List!(Foo) a);
-void func(int a, List!(Bar) a); // same as previous
+void func(int aaa, List!(Foo) aaa);
+void func(int bbb, List!(Foo) bbb); // same as previous, doesn't show up
+char func(char a, List!(Foo) a); // immediate param overload
+void func(int a, List!(Bar) a); // complex param overload 
 void func();
 
 
@@ -34,14 +34,15 @@ class FooBar : Foo {
 	void test(int fParam) {
 		int foolocal1; 
 
+		.f/+@CC1+/; 
+
 		{
 			int foolocalinner;
-			f/+@CC1+/;  
+			f/+@CC2+/;
+			
+			int foolocalinner2;
 		}    
 
-		f/+@CC2+/; 
-		
-		.f/+@CC3+/; 
 		
 		
 		int foolocal2; 
@@ -49,8 +50,8 @@ class FooBar : Foo {
 	
 	int func(int a, List!(Foo) a);
 	int func(int bbb, List!(Foo) bbb); // same as previous
-	int func(char a, List!(Foo) a);
-	int func(int a, List!(Bar) a); // same as previous
+	char func(char a, List!(Foo) a);
+	int func(int a, List!(Bar) a); 
 	int func();
 }
 

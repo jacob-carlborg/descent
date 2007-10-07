@@ -2,11 +2,11 @@ package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.ModelUtil;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.TestAccessor;
 import mmrnmhrm.tests.BaseUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.adapters.TestAccessor_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.TestAccessor;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;

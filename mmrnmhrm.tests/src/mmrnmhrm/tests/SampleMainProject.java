@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
+import mmrnmhrm.core.dltk.ParsingUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 
 import org.eclipse.core.resources.IFile;
@@ -16,12 +17,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.IScriptProject;
 
+import dtool.ast.definitions.Module;
+import dtool.tests.DToolTests;
+
 /**
  * This classes creates a sample project 
  * in which tests can be based upon.
  */
 public abstract class SampleMainProject {
-
+	
 
 	public static final String SAMPLEPROJNAME = "SampleProj";
 
@@ -33,9 +37,11 @@ public abstract class SampleMainProject {
 	public static final String TEST_SRC_PHOBOSIMPL = "phobos-internal";
 	public static final String TEST_SRC_TANGO = "tango";
 	
+	static { DToolTests.loadTestProjects(); }
+
 	public static IProject project;
-	public static IScriptProject deeProj = null;
-	
+	public static IScriptProject deeProj;
+
 	public static IFile sampleFile1;
 	public static IFile sampleOutOfModelFile;
 	public static IFile sampleNonExistantFile;
@@ -90,10 +96,9 @@ public abstract class SampleMainProject {
 		return file;
 	}
 	
-	/** Gets a CompilationUnit from the sample project. 
-	 * CompilationUnit must be on the build path. */
-	public static CompilationUnit getCompilationUnit(String filepath) throws CoreException {
-		return new CompilationUnit(getFile(filepath));
+	public static Module getModule(String filepath) throws CoreException {
+		CompilationUnit cunit = new CompilationUnit(getFile(filepath));
+		return ParsingUtil.getNeoASTModule(cunit.modUnit);
 	}
 	
 }

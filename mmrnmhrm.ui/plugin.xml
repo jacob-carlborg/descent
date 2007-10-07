@@ -690,21 +690,21 @@
 					</objectClass>
 				</and>
 			</visibility>
+			<!-- icon="$nl$/icons/etool16/watch_exp.gif" -->
 			<action label="%ScriptWatch.label"
-				icon="$nl$/icons/etool16/watch_exp.gif"
 				class="org.eclipse.dltk.internal.debug.ui.actions.ScriptWatchAction"
 				menubarPath="additions"
 				id="mmrnmhrm.debug.ui.ScriptWatch">
 			</action>
+			<!-- icon="$nl$/icons/etool16/insp_sbook.gif" -->
 			<action label="%ScriptInspect.label"
-				icon="$nl$/icons/etool16/insp_sbook.gif"
 				definitionId="org.eclipse.dlkt.debug.ui.commands.ScriptInspect"
 				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptInspectAction"
 				menubarPath="additions"
 				id="mmrnmhrm.debug.ui.ScriptInspect">
 			</action>
+			<!-- icon="$nl$/icons/etool16/disp_sbook.gif" -->
 			<action label="%ScriptDisplay.label"
-				icon="$nl$/icons/etool16/disp_sbook.gif"
 				definitionId="org.eclipse.dlkt.debug.ui.commands.ScriptDisplay"
 				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptDisplayAction"
 				menubarPath="additions"

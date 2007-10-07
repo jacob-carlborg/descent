@@ -32,21 +32,21 @@ class FooBar : Foo {
 	void func(int a, List!(Foo) a);
 	
 	void test(int fParam) {
-		/+@CC1+/; // 0 char prefix
-		/+@CC2+/f; // 1 char prefix 
-		/+@CC3+/foo; // 3 char prefix
+		/+CC1@+/; // 0 char prefix
+		/+CC2@+/f; // 1 char prefix 
+		/+CC3@+/foo; // 3 char prefix
 		
-		/+@CC4+/fo; // 2 char prefix, with common prefix
+		/+CC4@+/fo; // 2 char prefix, with common prefix
 		
 		f; // Also test interactive keyboard events?
 		
-		/+@CC6+/Foo ; // Qualified 0 char prefix
-		/+@CC6b+/Foo.f; // Qualified 1 char prefix
+		/+CC6@+/Foo ; // Qualified 0 char prefix
+		/+CC6b@+/Foo.f; // Qualified 1 char prefix
 		
-		/+@CC7+/ ; // Module Qualified 0 char prefix
-		/+@CC7b+/.f; // Module Qualified 1 char prefix
+		/+CC7@+/ ; // Module Qualified 0 char prefix
+		/+CC7b@+/.f; // Module Qualified 1 char prefix
 		
-		/+@CC8+/Xpto.xptofoo.f; // Module Qualified 
+		/+CC8@+/Xpto.xptofoo.f; // Module Qualified 
 	}
 }
 

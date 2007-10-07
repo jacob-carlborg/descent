@@ -36,7 +36,7 @@ public class CoreTestUtils {
 	static IContainer copyBundleDirToWorkspaceContainer(String srcpath, IContainer destParent, String destname)
 			throws CoreException, URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(DeeTestsPlugin.PLUGIN_ID);
-		IPath bundlesrcpath = new Path(DeeTestsPlugin.TESTDATA + srcpath);
+		IPath bundlesrcpath = new Path(ITestDataConstants.TESTDATA + srcpath);
 		URL sourceURL = FileLocator.find(bundle, bundlesrcpath, null);
 		assertNotNull(sourceURL);
 		IFolder linkFolder = destParent.getFolder(new Path("__"+destname+"link"));

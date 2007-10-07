@@ -29,7 +29,7 @@ Require-Bundle: mmrnmhrm.core,
  org.eclipse.dltk.debug
 Eclipse-LazyStart: true
 Bundle-Vendor: %pluginProvider
-Export-Package: mmrnmhrm.ui.editor,
- mmrnmhrm.ui.wizards,
- mmrnmrhm.org.eclipse.dltk.ui.wizards
+Export-Package: mmrnmhrm.org.eclipse.dltk.ui.wizards,
+ mmrnmhrm.ui.editor,
+ mmrnmhrm.ui.wizards
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

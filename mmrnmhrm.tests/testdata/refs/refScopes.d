@@ -1,13 +1,13 @@
 
-int mx;                                          
+int /+T1@+/mx;                                          
                                           
-int mxref = mx; // same scope (to module)
+int mxref = /+R1@+/mx; // same scope (to module)
 
 class Foo {
-	int mxref = mx; // 1 outer scope (to module)
-	int foox;
+	int mxref = /+R2@+/mx; // 1 outer scope (to module)
+	int /+T3@+/foox;
 	
-	int func(int a) in { 
+	int func(int /+T5@+/a) in { 
 		int mx;	int foox; // decoys
 	} out(mx) {
 		int mx;	int foox; // decoys
@@ -15,26 +15,29 @@ class Foo {
 		{ 
 			int mx;	int foox; // decoys
 		}
-		mx++; // 2 outer scope (to module)
-		foox++; // 1 outer scope (to class)
-		a++; // 1 outer scope (to function param)
+		/+R3@+/mx++; // 2 outer scope (to module)
+		/+R4@+/foox++; // 1 outer scope (to class)
+		/+R5@+/a++; // 1 outer scope (to function param)
 	}	
 }
 
 class FooBar : Foo, IFooBar {
 
 	void func(int a) {
-		foox++; // 1 super scope (to class)
-		ibarx++; // 2 super scope (to interface)
-		ifoobarx++; // 1 super scope (to interface)
+		/+R6@+/foox++; // 1 super scope (to class)
+		/+R7@+/ibarx++; // 2 super scope (to interface)
+		/+R8@+/ifoobarx++; // 1 super scope (to interface)
+		
+		int /+T8b@+/foox; // decoy
+		/+R8b@+/foox++;
 	}
 
 }
 
 interface IBar {
-	static int ibarx;
+	static int /+T7@+/ibarx;
 }
 
 interface IFooBar : IBar {
-	static int ifoobarx = ibarx; // 1 super scope (to interface)
+	static int /+T8@+/ifoobarx = /+R9@+/ibarx; // 1 super scope (to interface)
 }

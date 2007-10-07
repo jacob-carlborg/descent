@@ -6,8 +6,8 @@ package mmrnmhrm.ui.wizards;
 import java.util.Observable;
 
 import mmrnmhrm.core.model.DeeNature;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
 import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
-import mmrnmrhm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
 
 import org.eclipse.dltk.debug.ui.DLTKDebugUIPlugin;
 import org.eclipse.dltk.launching.IInterpreterInstall;

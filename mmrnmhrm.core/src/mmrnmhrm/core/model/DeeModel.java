@@ -21,6 +21,7 @@ import org.eclipse.dltk.core.IScriptProject;
 import dtool.Logg;
 
 import static melnorme.miscutil.Assert.assertFail;
+import static melnorme.miscutil.Assert.assertNotNull;
 
 /**
  * The D Model. 
@@ -108,7 +109,9 @@ public class DeeModel implements IElementChangedListener {
 		deeInfos.put(project, deeProj);
 	}
 	
+	
 	public static DeeProjectOptions getDeeProjectInfo(IScriptProject project) {
+		assertNotNull(project);
 		if(instance.deeInfos.containsKey(project)) {
 			DeeProjectOptions info = instance.deeInfos.get(project);
 			return info;

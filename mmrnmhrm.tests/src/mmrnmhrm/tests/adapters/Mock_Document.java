@@ -225,6 +225,7 @@ public class Mock_Document implements IDocument {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public int search(int startOffset, String findString,
 			boolean forwardSearch, boolean caseSensitive, boolean wholeWord)
 			throws BadLocationException {
