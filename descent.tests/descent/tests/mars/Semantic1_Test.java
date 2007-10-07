@@ -653,7 +653,7 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.CannotImplicitlyConvert, 21, 5);
-		assertEquals("Type mismatch: cannot implicitly convert from char[3u] to bool", p[0].getMessage());
+		assertEquals("Cannot implicitly convert expression (\"hey\") of type char[3u] to bool", p[0].getMessage());
 	}
 	
 	public void testVoidFunctionsHaveNoResult() {

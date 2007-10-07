@@ -6,6 +6,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.compiler.parser.ast.NaiveASTFlattener;
@@ -100,7 +101,8 @@ public class Module extends Package {
 
 		// TODO This is the current replacement of Add import of "object" if
 		// this module isn't "object". Use ident and pass ident to Module's ctor
-		if (md == null || md.id == null || md.id.ident != Id.object) {
+		if (md == null || md.id == null || 
+				!CharOperation.equals(md.id.ident, Id.object)) {
 			symtab.insert(context.object);
 			symtab.insert(context.classinfo);
 			symtab.insert(context.typeinfo);
