@@ -25,6 +25,13 @@ public class Module extends Package {
 	public Dsymbols deferred;
 	public boolean needmoduleinfo;
 	public Module importedFrom;
+	
+	public boolean insearch;
+	
+	/* PERHAPS single-cached searching... I think we can do better than this
+	public char[] searchCacheIdent;
+	public int searchCacheFlags;
+	public Dsymbol searchCacheSymbol; */
 
 	public long debuglevel; // debug level
 	public List<char[]> debugids; // debug identifiers
@@ -236,6 +243,21 @@ public class Module extends Package {
 
 	public static int nested;
 
+	public void addDefferedSemantic(Dsymbol s)
+	{
+		// Don't add it if it is already there
+		for (int i = 0; i < deferred.size(); i++)
+		{
+			Dsymbol sd = (Dsymbol) deferred.get(i);
+
+			if (sd == s)
+				return;
+		}
+
+		//printf("Module.addDeferredSemantic('%s')\n", s.toChars());
+		deferred.add(s);
+	}
+	
 	public void runDeferredSemantic(SemanticContext context) {
 		int len;
 
@@ -276,4 +298,54 @@ public class Module extends Package {
 		}
 	}
 
+	@Override
+	public String kind()
+	{
+		return "module";
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context)
+	{
+		// TODO Auto-generated method stub
+		super.toCBuffer(buf, hgs, context);
+	}
+
+	@Override
+	public Dsymbol search(Loc loc, char[] ident, int flags,
+			SemanticContext context)
+	{
+		/* Since modules can be circularly referenced,
+		 * need to stop infinite recursive searches.
+		 */
+
+		//printf("%s Module.search('%s', flags = %d) insearch = %d\n", toChars(), ident.toChars(), flags, insearch);
+		Dsymbol s;
+		if (insearch)
+			s = null;
+		/* PERHPAS single-cached searching
+		else if (CharOperation.equals(searchCacheIdent, ident)
+				&& searchCacheFlags == flags)
+			s = searchCacheSymbol; */
+		else
+		{
+			insearch = true;
+			s = super.search(loc, ident, flags, context);
+			insearch = false;
+			
+			/* searchCacheIdent = ident;
+			searchCacheSymbol = s;
+			searchCacheFlags = flags; */
+		}
+		return s;
+	}
+	
+	public boolean needModuleInfo()
+	{
+		return needmoduleinfo /* global.params.cov */;
+	}
+	
+	// PERHAPS void inlineScan();
+	
 }

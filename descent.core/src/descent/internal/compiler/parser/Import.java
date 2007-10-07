@@ -36,11 +36,6 @@ public class Import extends Dsymbol {
 	}
 	
 	@Override
-	public Import isImport() {
-		return this;
-	}
-	
-	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -53,13 +48,6 @@ public class Import extends Dsymbol {
 		visitor.endVisit(this);
 	}
 	
-	@Override
-	public Dsymbol toAlias(SemanticContext context) {
-		if (aliasId != null)
-			return mod;
-		return this;
-	}
-
 	public void addAlias(IdentifierExp name, IdentifierExp alias) {
 		if (names == null) {
 			names = new Identifiers();
@@ -69,11 +57,6 @@ public class Import extends Dsymbol {
 		aliases.add(alias);
 	}
 	
-	@Override
-	public int getNodeType() {
-		return IMPORT;
-	}
-
 	@Override
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context)
@@ -102,6 +85,73 @@ public class Import extends Dsymbol {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getNodeType() {
+		return IMPORT;
+	}
+	
+	@Override
+	public Import isImport() {
+		return this;
+	}
+
+	@Override
+	public String kind()
+	{
+		return isstatic ? "static import" : "import";
+	}
+
+	public void load(Scope sc, SemanticContext context)
+	{
+		//printf("Import.load('%s')\n", toChars());
+		/* TODO I think if we implement our own caching scheme, we won't need
+                this.
+        
+        DsymbolTable dst;
+		Dsymbol s;
+        
+		// See if existing module
+		dst = Package.resolve(packages, null, pkg);
+
+		s = dst.lookup(id);
+		if (null != s)
+		{
+			if (null != s.isModule())
+				mod = (Module) s;
+			else
+				error("package and module have the same name");
+		}
+		*/
+
+		if (null == mod)
+		{
+			// Load module
+			StringBuffer fqn = new StringBuffer();
+			for (IdentifierExp pack : packages)
+			{
+				fqn.append(pack.ident);
+				fqn.append(".");
+			}
+			fqn.append(id.ident);
+			mod = context.loadModule(fqn.toString());
+
+			// dst.insert(id, mod); // id may be different from mod.ident, if so then insert alias
+			// TODO I think this means we're just going to have to deal with aliases
+			// in our caching scheme, but make sure to check
+			
+			
+			if (null == mod.importedFrom)
+				mod.importedFrom = null != sc ? sc.module.importedFrom : null /* TODO Module.rootModule */;
+		}
+		
+		if (null == pkg)
+			pkg = mod;
+		
+		mod.semantic(context); // PERHAPS depending on our caching schem, we may not need to do this
+
+		//printf("-Import.load('%s'), pkg = %p\n", toChars(), pkg);
 	}
 
 	@Override
@@ -170,6 +220,36 @@ public class Import extends Dsymbol {
 		if (mod.needmoduleinfo)
 			sc.module.needmoduleinfo = true;
 	}
+	
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s)
+	{
+		assert (null == s);
+
+		Import si;
+		si = new Import(loc, packages, id, aliasId, isstatic);
+
+		for (int i = 0; i < names.size(); i++)
+		{
+			si.addAlias(names.get(i), aliases.get(i));
+		}
+
+		return si;
+	}
+	
+	public Dsymbol toAlias()
+	{
+		if (null != aliasId)
+			return mod;
+		return this;
+	}
+
+	@Override
+	public Dsymbol toAlias(SemanticContext context) {
+		if (aliasId != null)
+			return mod;
+		return this;
+	}
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
@@ -195,19 +275,6 @@ public class Import extends Dsymbol {
 		}
 		buf.printf(new String(id.ident) + ";");
 		buf.writenl();
-	}
-	
-	public Dsymbol toAlias()
-	{
-		if (null != aliasId)
-			return mod;
-		return this;
-	}
-	
-	public void load(Scope sc, SemanticContext context)
-	{
-		// TODO semantic: load imports (see how the JDT does it, implement
-		// caching, etc, etc.)
 	}
 
 }

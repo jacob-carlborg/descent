@@ -12,4 +12,9 @@ public abstract class Package extends ScopeDsymbol {
 		return this;
 	}
 
+	@Override
+	public String kind()
+	{
+		return "package";
+	}
 }

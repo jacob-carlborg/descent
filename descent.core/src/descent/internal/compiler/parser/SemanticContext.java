@@ -111,5 +111,11 @@ public class SemanticContext {
 		}
 		return fd;
 	}
+	
+	public Module loadModule(String fullyQualifiedName)
+	{
+		return null;
+		// TODO module loading
+	}
 
 }
