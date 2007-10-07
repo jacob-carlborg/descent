@@ -1,0 +1,1664 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>[ini4j]</title>
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../style.css" TITLE="Style">
+</head>
+<body>
+<TABLE cellspacing="0" cellpadding="2"><TBODY>
+    <!-- C:\ Documents and Settings\ szkiba\ work\ main\ src\ classes\ org\ ini4j\ IniPreferences.java -->
+  <TR>
+    <TD colspan="6" class="reportHeader">
+    <TABLE width="100%"><TR>
+    <TD valign="top" class="titleText">Clover coverage report - <a href="http://www.ini4j.org/" target="_top"> [ini4j]</a><DIV class="timestamp"><b>Coverage timestamp:</b>&nbsp;Sze nov. 30 2005 08:31:05 CET</DIV>
+            <DIV class="navBar"><a href="../../pkgs-summary.html"><b>Overview</b></a>&nbsp;&nbsp;&nbsp;<a href="pkg-summary.html"><b>Package</b></a>&nbsp;&nbsp;&nbsp;<font class="navBarCurrent">File</font></DIV>
+    
+<DIV class="navBarLink">
+&nbsp;&nbsp;&nbsp;
+    <A HREF="../../index.html" TARGET="_top">FRAMES</A>&nbsp;&nbsp;
+<A HREF="IniPreferences.html" TARGET="_top">NO FRAMES</A>&nbsp;&nbsp;
+    </DIV>
+
+</TD>
+         <td class="headerStats" valign="top" width="40%" align="right">
+        <table align="right">
+         <tr>
+           <td nowrap><b>file stats:</b></td>
+           <td align="right"><b>LOC:</b></td>
+           <td align="right">380</td>
+           <td width="10%">&nbsp;</td>
+           <td align="right"><b>Methods:</b></td>
+           <td align="right">26</td>
+         </tr>
+         <tr>
+           <td></td>
+           <td align="right"><b>NCLOC:</b></td>
+           <td align="right">129</td>
+           <td width="10%">&nbsp;</td>
+           <td align="right"><b>Classes:</b></td>
+           <td align="right">2</td>
+         </tr>
+      </table>
+     </td>
+    </TR></TABLE>
+   </TD>
+  </TR>
+
+<TR><TD class="hbreak" colspan="6">&nbsp;</TD></TR>
+  <TR>
+    <TD class="graphHeaderLeft"><b>&nbsp;Source file</b></TD>
+    <TD class="graphHeader">Conditionals</TD>
+    <TD class="graphHeader">Statements</TD>
+    <TD class="graphHeader">Methods</TD>
+    <TD class="graphHeader" align="left" colspan="2"><B>TOTAL</B></TD>
+  </TR>   
+  <TR>
+    <TD class="graphItem">
+        	   IniPreferences.java
+	    </TD>
+   
+    <TD class="graphPercent" align="center">100%</TD>
+    <TD class="graphPercent" align="center">100%</TD>
+    <TD class="graphPercent" align="center">100%</TD>
+    <TD class="graphBarLeft" align="center"><B>100%</B></TD>
+    <TD class="graphBar">
+            <TABLE class="barGraph" cellspacing="0">
+        <TBODY>
+          <TR>
+	   	    <TD class="fullcover"><img alt="coverage" src="../../img/trans.gif" width="200" height="12"></TD> 
+	   	  </TR>
+	</TBODY>
+      </TABLE>
+          </TD>
+  </TR> 
+</TBODY></TABLE><TABLE cellspacing="0" cellpadding="0" class="srcView"><TBODY>
+<TR><TD align="right" class="lineCount">
+&nbsp;1</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">/*</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;2</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * Copyright 2005 [ini4j] Development Team</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;3</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;4</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * Licensed under the Apache License, Version 2.0 (the "License");</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;5</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * you may not use this file except in compliance with the License.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;6</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * You may obtain a copy of the License at</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;7</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;8</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *     http://www.apache.org/licenses/LICENSE-2.0</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;9</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;10</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * Unless required by applicable law or agreed to in writing, software</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;11</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * distributed under the License is distributed on an "AS IS" BASIS,</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;12</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;13</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * See the License for the specific language governing permissions and</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;14</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * limitations under the License.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;15</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> */</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;16</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;17</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">package</span> org.ini4j;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;18</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;19</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.util.prefs.*;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;20</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.io.*;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;21</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.net.URL;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;22</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+<A name="IniPreferences">&nbsp;23</A></TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">public</span> <span class="keyword">class</span> IniPreferences <span class="keyword">extends</span> AbstractPreferences</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;24</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">{</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;25</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/** frequently used empty String array */</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;26</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String[] EMPTY = {};</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;27</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;28</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/** underlaying &lt;code&gt;Ini&lt;/code&gt; implementation */</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;29</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> Ini _ini;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;30</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+<A name="SectionPreferences">&nbsp;31</A></TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">protected</span> <span class="keyword">class</span> SectionPreferences <span class="keyword">extends</span> AbstractPreferences</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;32</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;33</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/** underlaying &lt;code&gt;Section&lt;/code&gt; implementation */</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;34</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">private</span> Ini.Section _section;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;35</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;36</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;37</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Constructs a new SectionPreferences instance on top of Ini.Section instance.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;38</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;39</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> parent parent preferences node</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;40</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * @parem section underlaying Ini.Section instance</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;41</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> isNew indicate is this a new node or already existing one</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;42</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;43</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 43: method entered 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 43: method entered 15 times.">        SectionPreferences(IniPreferences parent, Ini.Section section, <span class="keyword">boolean</span> isNew)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;44</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;45</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 45: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 45: statement executed 15 times.">            <span class="keyword">super</span>(parent, section.getName());</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;46</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 46: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 46: statement executed 15 times.">            _section = section;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;47</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 47: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 47: statement executed 15 times.">            newNode = isNew;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;48</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;49</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;50</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;51</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;childSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;52</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#childSpi(String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;53</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;54</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * This implementation doesn't support this operation.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;55</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;56</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> UnsupportedOperationException this implementation allways throws this exception</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;57</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> name child name</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;58</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@return</span> child node</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;59</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;60</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 60: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 60: method entered 1 time.">        <span class="keyword">protected</span> AbstractPreferences childSpi(String name) <span class="keyword">throws</span> UnsupportedOperationException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;61</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;62</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 62: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 62: statement executed 1 time.">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;63</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;64</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;65</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;66</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;childrenNamesSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;67</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#childrenNamesSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;68</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;69</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * This implementation allways returns an empty array.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;70</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;71</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@return</span> an emty array.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;72</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;73</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;74</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 74: method entered 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 74: method entered 4 times.">        <span class="keyword">protected</span> String[] childrenNamesSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;75</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;76</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 76: statement executed 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 76: statement executed 4 times.">            <span class="keyword">return</span> EMPTY;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;77</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;78</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;79</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;80</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;flushSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;81</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#flushSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;82</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;83</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * This implementation does nothing.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;84</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;85</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;86</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;87</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 87: method entered 10 times.">&nbsp;10</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 87: method entered 10 times.">        <span class="keyword">protected</span> <span class="keyword">void</span> flushSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;88</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;89</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            ;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;90</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;91</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;92</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;93</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;getSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;94</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#getSpi(String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;95</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@return</span> if the value associated with the specified key at this preference node, or null if there is no association for this key, or the association cannot be determined at this time.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;96</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> key key to getvalue for</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;97</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;98</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 98: method entered 47 times.">&nbsp;47</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 98: method entered 47 times.">        <span class="keyword">protected</span> String getSpi(String key)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;99</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;100</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 100: statement executed 47 times.">&nbsp;47</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 100: statement executed 47 times.">            <span class="keyword">return</span> _section.fetch(key);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;101</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;102</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;103</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;104</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;keysSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;105</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#keysSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;106</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;107</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@return</span> an array of the keys that have an associated value in this preference node.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;108</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;109</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;110</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 110: method entered 10 times.">&nbsp;10</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 110: method entered 10 times.">        <span class="keyword">protected</span> String[] keysSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;111</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;112</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 112: statement executed 10 times.">&nbsp;10</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 112: statement executed 10 times.">            <span class="keyword">return</span> _section.keySet().toArray(EMPTY);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;113</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;114</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;115</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;116</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;putSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;117</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#putSpi(String,String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;118</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;119</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> key key to set value for</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;120</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> value new value of key</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;121</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;122</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 122: method entered 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 122: method entered 14 times.">        <span class="keyword">protected</span> <span class="keyword">void</span> putSpi(String key, String value)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;123</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;124</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 124: statement executed 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 124: statement executed 14 times.">            _section.put(key, value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;125</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;126</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;127</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;128</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;removeNodeSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;129</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#removeNodeSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;130</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;131</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;132</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;133</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 133: method entered 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 133: method entered 2 times.">        <span class="keyword">protected</span> <span class="keyword">void</span> removeNodeSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;134</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;135</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 135: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 135: statement executed 2 times.">            _ini.remove(_section);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;136</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;137</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;138</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;139</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;removeSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;140</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#removeSpi(String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;141</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@param</span> key key to remove</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;142</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;143</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 143: method entered 13 times.">&nbsp;13</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 143: method entered 13 times.">        <span class="keyword">protected</span> <span class="keyword">void</span> removeSpi(String key)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;144</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;145</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 145: statement executed 13 times.">&nbsp;13</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 145: statement executed 13 times.">            _section.remove(key);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;146</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;147</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;148</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;149</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;syncSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;150</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.AbstractPreferences#syncSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;151</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;152</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * This implementation does nothing.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;153</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;154</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;155</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;156</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 156: method entered 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 156: method entered 5 times.">        <span class="keyword">protected</span> <span class="keyword">void</span> syncSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;157</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;158</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            ;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;159</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;160</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;161</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;162</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;sync&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;163</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.Preferences#sync()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;164</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;165</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * This implementation just call parent's &lt;code&gt;sync()&lt;/code&gt; method.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;166</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;167</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;168</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;169</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 169: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 169: method entered 1 time.">        <span class="keyword">public</span> <span class="keyword">void</span> sync() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;170</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;171</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 171: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 171: statement executed 1 time.">            parent().sync();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;172</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;173</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;174</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;175</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * Implements the &lt;CODE&gt;flush&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;176</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * {@link java.util.prefs.Preferences#flush()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;177</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;178</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * This implementation just call parent's &lt;code&gt;flush()&lt;/code&gt; method.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;179</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;180</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;181</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">         */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;182</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 182: method entered 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 182: method entered 3 times.">        <span class="keyword">public</span> <span class="keyword">void</span> flush() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;183</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;184</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 184: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 184: statement executed 3 times.">            parent().flush();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;185</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;186</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;187</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;188</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;189</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Constructs a new preferences node on top of &lt;code&gt;Ini&lt;/code&gt; instance.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;190</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;191</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> ini underlaying &lt;code&gt;Ini&lt;/code&gt; instance</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;192</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;193</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 193: method entered 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 193: method entered 14 times.">    <span class="keyword">public</span> IniPreferences(Ini ini)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;194</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;195</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 195: statement executed 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 195: statement executed 14 times.">        <span class="keyword">super</span>(<span class="keyword">null</span>, <span class="string">""</span>);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;196</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 196: statement executed 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 196: statement executed 14 times.">        _ini = ini;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;197</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;198</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;199</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;200</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Constructs a new preferences node based on newly loaded &lt;code&gt;Ini&lt;/code&gt; instance.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;201</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;202</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This is just a helper constructor, to make simpler constructing &lt;code&gt;IniPreferences&lt;/code&gt;</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;203</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * directly from &lt;code&gt;Reader&lt;/code&gt;.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;204</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;205</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> input the &lt;code&gt;Reader&lt;/code&gt; containing &lt;code&gt;Ini&lt;/code&gt; data</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;206</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> IOException if an I/O error occured</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;207</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> InvalidIniFormatException if &lt;code&gt;Ini&lt;/code&gt; parsing error occured</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;208</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;209</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 209: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 209: method entered 1 time.">    <span class="keyword">public</span> IniPreferences(Reader input) <span class="keyword">throws</span> IOException, InvalidIniFormatException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;210</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;211</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 211: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 211: statement executed 1 time.">        <span class="keyword">super</span>(<span class="keyword">null</span>, <span class="string">""</span>);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;212</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 212: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 212: statement executed 1 time.">        _ini = <span class="keyword">new</span> Ini(input);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;213</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;214</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;215</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;216</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Constructs a new preferences node based on newly loaded &lt;code&gt;Ini&lt;/code&gt; instance.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;217</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;218</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This is just a helper constructor, to make simpler constructing &lt;code&gt;IniPreferences&lt;/code&gt;</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;219</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * directly from &lt;code&gt;InputStream&lt;/code&gt;.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;220</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;221</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> input the &lt;code&gt;InputStream&lt;/code&gt; containing &lt;code&gt;Ini&lt;/code&gt; data</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;222</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> IOException if an I/O error occured</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;223</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> InvalidIniFormatException if &lt;code&gt;Ini&lt;/code&gt; parsing error occured</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;224</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;225</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 225: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 225: method entered 1 time.">    <span class="keyword">public</span> IniPreferences(InputStream input) <span class="keyword">throws</span> IOException, InvalidIniFormatException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;226</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;227</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 227: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 227: statement executed 1 time.">        <span class="keyword">super</span>(<span class="keyword">null</span>, <span class="string">""</span>);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;228</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 228: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 228: statement executed 1 time.">        _ini = <span class="keyword">new</span> Ini(input);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;229</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;230</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;231</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;232</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Constructs a new preferences node based on newly loaded &lt;code&gt;Ini&lt;/code&gt; instance.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;233</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;234</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This is just a helper constructor, to make simpler constructing &lt;code&gt;IniPreferences&lt;/code&gt;</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;235</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * directly from &lt;code&gt;URL&lt;/code&gt;.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;236</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;237</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> input the &lt;code&gt;URL&lt;/code&gt; containing &lt;code&gt;Ini&lt;/code&gt; data</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;238</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> IOException if an I/O error occured</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;239</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> InvalidIniFormatException if &lt;code&gt;Ini&lt;/code&gt; parsing error occured</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;240</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;241</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 241: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 241: method entered 1 time.">    <span class="keyword">public</span> IniPreferences(URL input) <span class="keyword">throws</span> IOException, InvalidIniFormatException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;242</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;243</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 243: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 243: statement executed 1 time.">        <span class="keyword">super</span>(<span class="keyword">null</span>, <span class="string">""</span>);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;244</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 244: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 244: statement executed 1 time.">        _ini = <span class="keyword">new</span> Ini(input);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;245</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;246</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;247</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;248</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;childSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;249</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#childSpi(String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;250</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> name child name</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;251</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@return</span> child node</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;252</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;253</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 253: method entered 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 253: method entered 15 times.">    <span class="keyword">protected</span> AbstractPreferences childSpi(String name)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;254</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;255</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 255: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 255: statement executed 15 times.">        Ini.Section sec = _ini.get(name);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;256</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 256: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 256: statement executed 15 times.">        <span class="keyword">boolean</span> isNew = sec == <span class="keyword">null</span>;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;257</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;258</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 258: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 258: statement executed 15 times.">        <span class="keyword">if</span> ( isNew )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;259</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;260</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 260: statement executed 6 times.">&nbsp;6</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 260: statement executed 6 times.">            sec = _ini.add(name);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;261</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;262</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;263</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 263: statement executed 15 times.">&nbsp;15</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 263: statement executed 15 times.">        <span class="keyword">return</span> <span class="keyword">new</span> SectionPreferences(<span class="keyword">this</span>, sec, isNew);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;264</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;265</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;266</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;267</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;childrenNamesSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;268</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#childrenNamesSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;269</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@return</span> an array containing the names of the children of this preference node.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;270</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;271</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;272</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 272: method entered 6 times.">&nbsp;6</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 272: method entered 6 times.">    <span class="keyword">protected</span> String[] childrenNamesSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;273</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;274</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 274: statement executed 6 times.">&nbsp;6</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 274: statement executed 6 times.">        <span class="keyword">return</span> _ini.keySet().toArray(EMPTY);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;275</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;276</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;277</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;278</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;flushSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;279</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#flushSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;280</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;281</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This implementation does nothing.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;282</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;283</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;284</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;285</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 285: method entered 6 times.">&nbsp;6</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 285: method entered 6 times.">    <span class="keyword">protected</span> <span class="keyword">void</span> flushSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;286</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;287</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        ;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;288</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;289</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;290</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;291</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;getSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;292</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#getSpi(String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;293</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;294</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This implementation doesn't support this operation, so allways throws UnsupportedOperationException.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;295</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;296</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@return</span> if the value associated with the specified key at this preference node, or null if there is no association for this key, or the association cannot be determined at this time.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;297</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> key key to getvalue for</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;298</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> UnsupportedOperationException this implementation allways throws this exception</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;299</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;300</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 300: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 300: method entered 1 time.">    <span class="keyword">protected</span> String getSpi(String key) <span class="keyword">throws</span> UnsupportedOperationException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;301</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;302</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 302: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 302: statement executed 1 time.">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;303</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;304</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;305</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;306</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;keysSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;307</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#keysSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;308</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;309</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This implementation allways return an empty array.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;310</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;311</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@return</span> an empty array.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;312</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;313</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;314</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 314: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 314: method entered 1 time.">    <span class="keyword">protected</span> String[] keysSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;315</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;316</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 316: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 316: statement executed 1 time.">        <span class="keyword">return</span> EMPTY;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;317</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;318</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;319</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;320</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;putSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;321</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#putSpi(String,String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;322</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;323</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This implementation doesn;t support this operation, so allways throws UnsupportedOperationException.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;324</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;325</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> key key to set value for</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;326</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> value new value for key</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;327</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> UnsupportedOperationException this implementation allways throws this exception</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;328</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;329</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 329: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 329: method entered 1 time.">    <span class="keyword">protected</span> <span class="keyword">void</span> putSpi(String key, String value) <span class="keyword">throws</span> UnsupportedOperationException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;330</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;331</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 331: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 331: statement executed 1 time.">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;332</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;333</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;334</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;335</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;removeNodeSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;336</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#removeNodeSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;337</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;338</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This implementation doesn;t support this operation, so allways throws UnsupportedOperationException.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;339</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> UnsupportedOperationException this implementation allways throws this exception</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;340</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> BackingStoreException this implementation never throws this exception</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;341</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;342</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 342: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 342: method entered 1 time.">    <span class="keyword">protected</span> <span class="keyword">void</span> removeNodeSpi() <span class="keyword">throws</span> BackingStoreException, UnsupportedOperationException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;343</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;344</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 344: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 344: statement executed 1 time.">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;345</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;346</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;347</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;348</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;removeSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;349</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#removeSpi(String)}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;350</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@param</span> key key to remove</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;351</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> UnsupportedOperationException this implementation allways throws this exception</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;352</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;353</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 353: method entered 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 353: method entered 1 time.">    <span class="keyword">protected</span> <span class="keyword">void</span> removeSpi(String key) <span class="keyword">throws</span> UnsupportedOperationException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;354</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;355</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 355: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 355: statement executed 1 time.">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;356</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;357</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;358</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;359</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Implements the &lt;CODE&gt;syncSpi&lt;/CODE&gt; method as per the specification in</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;360</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * {@link java.util.prefs.AbstractPreferences#syncSpi()}.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;361</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;362</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * This implementation does nothing.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;363</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;364</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@throws</span> BackingStoreException if this operation cannot be completed due to a failure in the backing store, or inability to communicate with it.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;365</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;366</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 366: method entered 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 366: method entered 3 times.">    <span class="keyword">protected</span> <span class="keyword">void</span> syncSpi() <span class="keyword">throws</span> BackingStoreException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;367</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;368</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        ;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;369</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;370</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;371</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="comment">/**</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;372</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * Provide access to underlaying {@link org.ini4j.Ini} implementation.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;373</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;374</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     * <span class="javadoc">@return</span> &lt;code&gt;Ini&lt;/code&gt; implementation</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;375</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">     */</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;376</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 376: method entered 8 times.">&nbsp;8</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 376: method entered 8 times.">    <span class="keyword">protected</span> Ini getIni()</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;377</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;378</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 378: statement executed 8 times.">&nbsp;8</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 378: statement executed 8 times.">        <span class="keyword">return</span> _ini;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;379</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;380</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">}</SPAN></TD></TR></TBODY></TABLE>
+<TABLE width="100%"><TR><TD class="hbreak" colspan="6">&nbsp;</TD></TR>
+<TR><TD class="footer" colspan="6">
+<table>
+<tr>
+ <td><a target="_new" href="http://www.cenqua.com/clover?5EK"><img alt="Clover" src="../../img/logo.gif" border="0"></a></td><td nowrap><i>Report generated by </i><a target="_new" href="http://www.cenqua.com/clover?5EK">Clover Code Coverage v1.3.11</a><i><BR>Sze nov. 30 2005 08:31:05 CET</i>.</td>
+<td>&nbsp;</td><td style="BORDER-LEFT: #9c9c9c 1px solid;">&nbsp;</td><td>Open Source License registered to the ini4j Project. This license of Clover is provided to support the development of ini4j only. </td>
+</tr>
+</table>
+</td>
+</tr></TABLE>

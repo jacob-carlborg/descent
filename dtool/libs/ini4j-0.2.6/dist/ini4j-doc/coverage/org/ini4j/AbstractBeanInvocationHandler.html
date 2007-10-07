@@ -1,0 +1,1877 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>[ini4j]</title>
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../style.css" TITLE="Style">
+</head>
+<body>
+<TABLE cellspacing="0" cellpadding="2"><TBODY>
+    <!-- C:\ Documents and Settings\ szkiba\ work\ main\ src\ classes\ org\ ini4j\ AbstractBeanInvocationHandler.java -->
+  <TR>
+    <TD colspan="6" class="reportHeader">
+    <TABLE width="100%"><TR>
+    <TD valign="top" class="titleText">Clover coverage report - <a href="http://www.ini4j.org/" target="_top"> [ini4j]</a><DIV class="timestamp"><b>Coverage timestamp:</b>&nbsp;Sze nov. 30 2005 08:31:05 CET</DIV>
+            <DIV class="navBar"><a href="../../pkgs-summary.html"><b>Overview</b></a>&nbsp;&nbsp;&nbsp;<a href="pkg-summary.html"><b>Package</b></a>&nbsp;&nbsp;&nbsp;<font class="navBarCurrent">File</font></DIV>
+    
+<DIV class="navBarLink">
+&nbsp;&nbsp;&nbsp;
+    <A HREF="../../index.html" TARGET="_top">FRAMES</A>&nbsp;&nbsp;
+<A HREF="AbstractBeanInvocationHandler.html" TARGET="_top">NO FRAMES</A>&nbsp;&nbsp;
+    </DIV>
+
+</TD>
+         <td class="headerStats" valign="top" width="40%" align="right">
+        <table align="right">
+         <tr>
+           <td nowrap><b>file stats:</b></td>
+           <td align="right"><b>LOC:</b></td>
+           <td align="right">409</td>
+           <td width="10%">&nbsp;</td>
+           <td align="right"><b>Methods:</b></td>
+           <td align="right">15</td>
+         </tr>
+         <tr>
+           <td></td>
+           <td align="right"><b>NCLOC:</b></td>
+           <td align="right">352</td>
+           <td width="10%">&nbsp;</td>
+           <td align="right"><b>Classes:</b></td>
+           <td align="right">1</td>
+         </tr>
+      </table>
+     </td>
+    </TR></TABLE>
+   </TD>
+  </TR>
+
+<TR><TD class="hbreak" colspan="6">&nbsp;</TD></TR>
+  <TR>
+    <TD class="graphHeaderLeft"><b>&nbsp;Source file</b></TD>
+    <TD class="graphHeader">Conditionals</TD>
+    <TD class="graphHeader">Statements</TD>
+    <TD class="graphHeader">Methods</TD>
+    <TD class="graphHeader" align="left" colspan="2"><B>TOTAL</B></TD>
+  </TR>   
+  <TR>
+    <TD class="graphItem">
+        	   AbstractBeanInvocationHandler.java
+	    </TD>
+   
+    <TD class="graphPercent" align="center">98%</TD>
+    <TD class="graphPercent" align="center">100%</TD>
+    <TD class="graphPercent" align="center">100%</TD>
+    <TD class="graphBarLeft" align="center"><B>99,2%</B></TD>
+    <TD class="graphBar">
+            <TABLE class="barGraph" cellspacing="0">
+        <TBODY>
+          <TR>
+	               <TD class="covered"><img alt="coverage" src="../../img/trans.gif"
+                   width="198" height="12"></TD>
+            <TD class="uncovered"><img alt="coverage" src="../../img/trans.gif"
+                   width="2" height="12"></TD>
+	   	  </TR>
+	</TBODY>
+      </TABLE>
+          </TD>
+  </TR> 
+</TBODY></TABLE><TABLE cellspacing="0" cellpadding="0" class="srcView"><TBODY>
+<TR><TD align="right" class="lineCount">
+&nbsp;1</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment">/*</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;2</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * Copyright 2005 [ini4j] Development Team</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;3</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;4</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * Licensed under the Apache License, Version 2.0 (the "License");</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;5</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * you may not use this file except in compliance with the License.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;6</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * You may obtain a copy of the License at</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;7</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;8</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *     http://www.apache.org/licenses/LICENSE-2.0</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;9</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> *</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;10</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * Unless required by applicable law or agreed to in writing, software</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;11</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * distributed under the License is distributed on an "AS IS" BASIS,</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;12</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;13</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * See the License for the specific language governing permissions and</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;14</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> * limitations under the License.</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;15</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="comment"> */</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;16</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">package</span> org.ini4j;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;17</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;18</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.beans.*;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;19</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.lang.reflect.*;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;20</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.io.*;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;21</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.net.URL;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;22</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.net.URI;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;23</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"><span class="keyword">import</span> java.util.*;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;24</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine"></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+<A name="AbstractBeanInvocationHandler">&nbsp;25</A></TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">abstract <span class="keyword">class</span> AbstractBeanInvocationHandler <span class="keyword">implements</span> InvocationHandler</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;26</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">{</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;27</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String PARSE_METHOD = <span class="string">"valueOf"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;28</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String ADD_PREFIX = <span class="string">"add"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;29</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">int</span> ADD_PREFIX_LEN = ADD_PREFIX.length();</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;30</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String REMOVE_PREFIX = <span class="string">"remove"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;31</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">int</span> REMOVE_PREFIX_LEN = REMOVE_PREFIX.length();</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;32</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String PROPERTY_CHANGE_LISTENER = <span class="string">"PropertyChangeListener"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;33</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String VETOABLE_CHANGE_LISTENER = <span class="string">"VetoableChangeListener"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;34</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String READ_PREFIX = <span class="string">"get"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;35</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String READ_BOOLEAN_PREFIX = <span class="string">"is"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;36</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String WRITE_PREFIX = <span class="string">"set"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;37</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final String HAS_PREFIX = <span class="string">"has"</span>;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;38</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">int</span> READ_PREFIX_LEN = READ_PREFIX.length();</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;39</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">int</span> READ_BOOLEAN_PREFIX_LEN = READ_BOOLEAN_PREFIX.length();</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;40</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">int</span> WRITE_PREFIX_LEN = WRITE_PREFIX.length();</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;41</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">int</span> HAS_PREFIX_LEN = HAS_PREFIX.length();</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;42</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;43</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> PropertyChangeSupport _pcSupport;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;44</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> VetoableChangeSupport _vcSupport;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;45</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">private</span> Object _proxy;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;46</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;47</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 47: method entered 119 times.">&nbsp;119</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 47: method entered 119 times.">    <span class="keyword">protected</span> AbstractBeanInvocationHandler()</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;48</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;49</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        ;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;50</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;51</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;52</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 52: method entered 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 52: method entered 1083 times.">    <span class="keyword">public</span> Object invoke(Object proxy, Method method, Object[] args) <span class="keyword">throws</span> PropertyVetoException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;53</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;54</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 54: statement executed 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 54: statement executed 1083 times.">        Object ret = <span class="keyword">null</span>;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;55</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 55: statement executed 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 55: statement executed 1083 times.">        String name = method.getName();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;56</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 56: statement executed 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 56: statement executed 1083 times.">        String property;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;57</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;58</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 58: statement executed 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 58: statement executed 1083 times.">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;59</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;60</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 60: statement executed 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 60: statement executed 1083 times.">            <span class="keyword">if</span> ( _proxy == <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;61</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;62</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 62: statement executed 114 times.">&nbsp;114</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 62: statement executed 114 times.">                _proxy = proxy;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;63</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;64</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;65</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;66</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 66: statement executed 1083 times.">&nbsp;1083</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 66: statement executed 1083 times.">        <span class="keyword">if</span> ( name.startsWith(READ_PREFIX) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;67</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;68</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 68: statement executed 585 times.">&nbsp;585</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 68: statement executed 585 times.">            property = Introspector.decapitalize(name.substring(READ_PREFIX_LEN));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;69</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 69: statement executed 585 times.">&nbsp;585</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 69: statement executed 585 times.">            ret = getProperty(property, method.getReturnType());</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;70</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;71</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 71: statement executed 498 times.">&nbsp;498</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 71: statement executed 498 times.">        <span class="keyword">else</span> <span class="keyword">if</span> ( name.startsWith(READ_BOOLEAN_PREFIX) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;72</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;73</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 73: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 73: statement executed 1 time.">            property = Introspector.decapitalize(name.substring(READ_BOOLEAN_PREFIX_LEN));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;74</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 74: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 74: statement executed 1 time.">            ret = getProperty(property, method.getReturnType());</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;75</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;76</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 76: statement executed 497 times.">&nbsp;497</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 76: statement executed 497 times.">        <span class="keyword">else</span> <span class="keyword">if</span> ( name.startsWith(WRITE_PREFIX) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;77</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;78</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 78: statement executed 69 times.">&nbsp;69</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 78: statement executed 69 times.">            property = Introspector.decapitalize(name.substring(WRITE_PREFIX_LEN));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;79</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 79: statement executed 69 times.">&nbsp;69</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 79: statement executed 69 times.">            setProperty(property, args[0], method.getParameterTypes()[0]);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;80</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;81</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 81: statement executed 428 times.">&nbsp;428</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 81: statement executed 428 times.">        <span class="keyword">else</span> <span class="keyword">if</span> ( name.startsWith(ADD_PREFIX) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;82</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;83</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 83: statement executed 7 times.">&nbsp;7</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 83: statement executed 7 times.">            String listener = name.substring(ADD_PREFIX_LEN);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;84</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;85</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 85: statement executed 7 times.">&nbsp;7</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 85: statement executed 7 times.">            <span class="keyword">if</span> ( listener.equals(PROPERTY_CHANGE_LISTENER) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;86</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;87</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 87: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 87: statement executed 3 times.">                addPropertyChangeListener((String)args[0], (PropertyChangeListener)args[1]);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;88</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;89</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 89: statement executed 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 89: statement executed 4 times.">            <span class="keyword">else</span> <span class="keyword">if</span> ( listener.equals(VETOABLE_CHANGE_LISTENER) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;90</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;91</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 91: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 91: statement executed 3 times.">                addVetoableChangeListener((String)args[0], (VetoableChangeListener)args[1]);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;92</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;93</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;94</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 94: statement executed 421 times.">&nbsp;421</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 94: statement executed 421 times.">        <span class="keyword">else</span> <span class="keyword">if</span> ( name.startsWith(REMOVE_PREFIX) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;95</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;96</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 96: statement executed 11 times.">&nbsp;11</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 96: statement executed 11 times.">            String listener = name.substring(REMOVE_PREFIX_LEN);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;97</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;98</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 98: statement executed 11 times.">&nbsp;11</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 98: statement executed 11 times.">            <span class="keyword">if</span> ( listener.equals(PROPERTY_CHANGE_LISTENER) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;99</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;100</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 100: statement executed 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 100: statement executed 5 times.">                removePropertyChangeListener((String)args[0], (PropertyChangeListener)args[1]);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;101</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;102</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 102: statement executed 6 times.">&nbsp;6</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 102: statement executed 6 times.">            <span class="keyword">else</span> <span class="keyword">if</span> ( listener.equals(VETOABLE_CHANGE_LISTENER) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;103</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;104</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 104: statement executed 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 104: statement executed 5 times.">                removeVetoableChangeListener((String)args[0], (VetoableChangeListener)args[1]);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;105</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;106</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;107</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 107: statement executed 410 times.">&nbsp;410</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 107: statement executed 410 times.">        <span class="keyword">else</span> <span class="keyword">if</span> ( name.startsWith(HAS_PREFIX) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;108</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;109</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 109: statement executed 367 times.">&nbsp;367</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 109: statement executed 367 times.">            property = Introspector.decapitalize(name.substring(HAS_PREFIX_LEN));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;110</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 110: statement executed 367 times.">&nbsp;367</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 110: statement executed 367 times.">            ret = Boolean.valueOf(hasProperty(property));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;111</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;112</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;113</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 113: statement executed 1082 times.">&nbsp;1082</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 113: statement executed 1082 times.">        <span class="keyword">return</span> ret;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;114</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;115</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;116</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 116: method entered 594 times.">&nbsp;594</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 116: method entered 594 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> Object getProperty(String property, Class&lt;?&gt; clazz)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;117</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;118</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 118: statement executed 594 times.">&nbsp;594</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 118: statement executed 594 times.">        Object o;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;119</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;120</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 120: statement executed 594 times.">&nbsp;594</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 120: statement executed 594 times.">        <span class="keyword">try</span></A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;121</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;122</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 122: statement executed 594 times.">&nbsp;594</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 122: statement executed 594 times.">            o = getPropertySpi(property, clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;123</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;124</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 124: statement executed 594 times.">&nbsp;594</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 124: statement executed 594 times.">            <span class="keyword">if</span> ( o == <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;125</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;126</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 126: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 126: statement executed 2 times.">                o = zero(clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;127</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;128</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 128: statement executed 592 times.">&nbsp;592</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 128: statement executed 592 times.">            <span class="keyword">else</span> <span class="keyword">if</span> ( (o <span class="keyword">instanceof</span> String) &amp;&amp; ! clazz.equals(String.<span class="keyword">class</span>) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;129</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;130</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 130: statement executed 454 times.">&nbsp;454</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 130: statement executed 454 times.">                o = parseValue((String)o, clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;131</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;132</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;133</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">catch</span> (Exception x)</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;134</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;135</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 135: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 135: statement executed 1 time.">            o = zero(clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;136</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;137</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;138</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 138: statement executed 594 times.">&nbsp;594</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 138: statement executed 594 times.">        <span class="keyword">return</span> o;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;139</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;140</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;141</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">protected</span> abstract Object getPropertySpi(String property, Class&lt;?&gt; clazz);</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;142</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;143</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 143: method entered 70 times.">&nbsp;70</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 143: method entered 70 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> setProperty(String property, Object value, Class&lt;?&gt; clazz) <span class="keyword">throws</span> PropertyVetoException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;144</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;145</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 145: statement executed 70 times.">&nbsp;70</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 145: statement executed 70 times.">        <span class="keyword">try</span></A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;146</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;147</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 147: statement executed 70 times.">&nbsp;70</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 147: statement executed 70 times.">            <span class="keyword">boolean</span> pc = (_pcSupport != <span class="keyword">null</span>) &amp;&amp; _pcSupport.hasListeners(property);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;148</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 148: statement executed 70 times.">&nbsp;70</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 148: statement executed 70 times.">            <span class="keyword">boolean</span> vc = (_vcSupport != <span class="keyword">null</span>) &amp;&amp; _vcSupport.hasListeners(property);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;149</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 149: statement executed 70 times.">&nbsp;70</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 149: statement executed 70 times.">            Object old = ( pc || vc ) ? getProperty(property, clazz) : <span class="keyword">null</span>;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;150</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;151</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 151: statement executed 70 times.">&nbsp;70</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 151: statement executed 70 times.">            <span class="keyword">if</span> ( vc )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;152</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;153</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 153: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 153: statement executed 2 times.">                fireVetoableChange(property,old, value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;154</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;155</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;156</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 156: statement executed 69 times.">&nbsp;69</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 156: statement executed 69 times.">            <span class="keyword">if</span> ( clazz.equals(String.<span class="keyword">class</span>) &amp;&amp; !(value <span class="keyword">instanceof</span> String) )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;157</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;158</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 158: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 158: statement executed 1 time.">                value = value.toString();</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;159</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;160</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;161</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 161: statement executed 69 times.">&nbsp;69</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 161: statement executed 69 times.">            setPropertySpi(property, value, clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;162</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;163</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 163: statement executed 68 times.">&nbsp;68</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 163: statement executed 68 times.">            <span class="keyword">if</span> ( pc )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;164</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;165</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 165: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 165: statement executed 2 times.">                firePropertyChange(property,old,value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;166</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;167</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;168</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">catch</span> (PropertyVetoException x)</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;169</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;170</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 170: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 170: statement executed 1 time.">            <span class="keyword">throw</span> x;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;171</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;172</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">catch</span> (Exception x)</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;173</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;174</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            ;</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;175</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;176</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;177</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;178</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">protected</span> abstract <span class="keyword">void</span> setPropertySpi(String property, Object value, Class&lt;?&gt; clazz);</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;179</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;180</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 180: method entered 370 times.">&nbsp;370</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 180: method entered 370 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> hasProperty(String property)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;181</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;182</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 182: statement executed 370 times.">&nbsp;370</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 182: statement executed 370 times.">        <span class="keyword">boolean</span> ret;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;183</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;184</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 184: statement executed 370 times.">&nbsp;370</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 184: statement executed 370 times.">        <span class="keyword">try</span></A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;185</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;186</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 186: statement executed 370 times.">&nbsp;370</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 186: statement executed 370 times.">            ret = hasPropertySpi(property);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;187</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;188</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">catch</span> (Exception x)</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;189</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;190</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 190: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 190: statement executed 1 time.">            ret = <span class="keyword">false</span>;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;191</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;192</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;193</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 193: statement executed 370 times.">&nbsp;370</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 193: statement executed 370 times.">        <span class="keyword">return</span> ret;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;194</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;195</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;196</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    <span class="keyword">protected</span> abstract <span class="keyword">boolean</span> hasPropertySpi(String property);</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;197</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;198</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 198: method entered 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 198: method entered 3 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> addPropertyChangeListener(String property, PropertyChangeListener listener)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;199</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;200</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 200: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 200: statement executed 3 times.">        <span class="keyword">if</span> ( _pcSupport == <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;201</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;202</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 202: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 202: statement executed 1 time.">            _pcSupport = <span class="keyword">new</span> PropertyChangeSupport(_proxy);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;203</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;204</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;205</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 205: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 205: statement executed 3 times.">        _pcSupport.addPropertyChangeListener(property, listener);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;206</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;207</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;208</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 208: method entered 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 208: method entered 5 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> removePropertyChangeListener(String property, PropertyChangeListener listener)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;209</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;210</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 210: statement executed 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 210: statement executed 5 times.">        <span class="keyword">if</span> ( _pcSupport != <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;211</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;212</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 212: statement executed 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 212: statement executed 4 times.">            _pcSupport.removePropertyChangeListener(property, listener);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;213</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;214</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;215</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;216</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 216: method entered 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 216: method entered 3 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> addVetoableChangeListener(String property, VetoableChangeListener listener)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;217</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;218</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 218: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 218: statement executed 3 times.">        <span class="keyword">if</span> ( _vcSupport == <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;219</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;220</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 220: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 220: statement executed 1 time.">            _vcSupport = <span class="keyword">new</span> VetoableChangeSupport(_proxy);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;221</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;222</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 222: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 222: statement executed 3 times.">        _vcSupport.addVetoableChangeListener(property, listener);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;223</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;224</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;225</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 225: method entered 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 225: method entered 5 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> removeVetoableChangeListener(String property, VetoableChangeListener listener)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;226</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;227</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 227: statement executed 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 227: statement executed 5 times.">        <span class="keyword">if</span> ( _vcSupport != <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;228</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;229</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 229: statement executed 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 229: statement executed 4 times.">            _vcSupport.removeVetoableChangeListener(property, listener);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;230</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;231</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;232</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;233</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 233: method entered 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 233: method entered 3 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> firePropertyChange(String property, Object oldValue, Object newValue)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;234</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;235</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 235: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 235: statement executed 3 times.">        <span class="keyword">if</span> ( _pcSupport != <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;236</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;237</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 237: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 237: statement executed 2 times.">            _pcSupport.firePropertyChange(property, oldValue, newValue);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;238</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;239</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;240</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;241</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 241: method entered 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 241: method entered 3 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> fireVetoableChange(String property, Object oldValue, Object newValue) <span class="keyword">throws</span> PropertyVetoException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;242</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;243</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 243: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 243: statement executed 3 times.">        <span class="keyword">if</span> ( _vcSupport != <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;244</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;245</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 245: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 245: statement executed 2 times.">            _vcSupport.fireVetoableChange(property, oldValue, newValue);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;246</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;247</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;248</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;249</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 249: method entered 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 249: method entered 2 times.">    <span class="keyword">protected</span> <span class="keyword">synchronized</span> Object getProxy()</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;250</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;251</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 251: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 251: statement executed 2 times.">        <span class="keyword">return</span> _proxy;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;252</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;253</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;254</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 254: method entered 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 254: method entered 14 times.">    <span class="keyword">protected</span> <span class="keyword">static</span> Object zero(Class clazz)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;255</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;256</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 256: statement executed 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 256: statement executed 14 times.">        Object o = <span class="keyword">null</span>;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;257</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;258</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 258: statement executed 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 258: statement executed 14 times.">        <span class="keyword">if</span> ( clazz.isPrimitive() )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;259</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;260</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 260: statement executed 10 times.">&nbsp;10</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 260: statement executed 10 times.">            <span class="keyword">if</span> (clazz == Boolean.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;261</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;262</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 262: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 262: statement executed 2 times.">                o =  Boolean.FALSE;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;263</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;264</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 264: statement executed 8 times.">&nbsp;8</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 264: statement executed 8 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Byte.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;265</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;266</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 266: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 266: statement executed 2 times.">                o = <span class="keyword">new</span> Byte((<span class="keyword">byte</span>)0);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;267</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;268</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 268: statement executed 6 times.">&nbsp;6</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 268: statement executed 6 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Character.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;269</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;270</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 270: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 270: statement executed 1 time.">                o = <span class="keyword">new</span> Character('\0');</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;271</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;272</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 272: statement executed 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 272: statement executed 5 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Double.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;273</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;274</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 274: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 274: statement executed 1 time.">                o = <span class="keyword">new</span> Double(0.0);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;275</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;276</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 276: statement executed 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 276: statement executed 4 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Float.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;277</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;278</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 278: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 278: statement executed 1 time.">                o = <span class="keyword">new</span> Float(0.0f);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;279</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;280</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 280: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 280: statement executed 3 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Integer.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;281</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;282</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 282: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 282: statement executed 1 time.">                o = <span class="keyword">new</span> Integer(0);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;283</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;284</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 284: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 284: statement executed 2 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Long.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;285</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;286</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 286: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 286: statement executed 1 time.">                o = <span class="keyword">new</span> Long(0L);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;287</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;288</TD>
+<TD align="right" class="coverageCountHilight">
+<A title="Line 288: expression evaluated to true 1 time, false 0 times.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLineHilight"><A title="Line 288: expression evaluated to true 1 time, false 0 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Short.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;289</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;290</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 290: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 290: statement executed 1 time.">                o = <span class="keyword">new</span> Short((<span class="keyword">short</span>)0);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;291</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;292</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;293</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 293: statement executed 14 times.">&nbsp;14</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 293: statement executed 14 times.">        <span class="keyword">return</span> o;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;294</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;295</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;296</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 296: method entered 474 times.">&nbsp;474</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 296: method entered 474 times.">    <span class="keyword">protected</span> <span class="keyword">static</span>  Object parseValue(String value, Class clazz) <span class="keyword">throws</span> IllegalArgumentException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;297</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;298</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 298: statement executed 474 times.">&nbsp;474</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 298: statement executed 474 times.">        <span class="keyword">if</span> (clazz == <span class="keyword">null</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;299</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;300</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 300: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 300: statement executed 1 time.">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"null argument"</span>);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;301</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;302</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;303</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 303: statement executed 473 times.">&nbsp;473</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 303: statement executed 473 times.">        Object o = <span class="keyword">null</span>;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;304</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;305</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 305: statement executed 473 times.">&nbsp;473</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 305: statement executed 473 times.">        <span class="keyword">if</span> ( value == <span class="keyword">null</span> )</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;306</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;307</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 307: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 307: statement executed 1 time.">            o = zero(clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;308</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;309</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 309: statement executed 472 times.">&nbsp;472</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 309: statement executed 472 times.">        <span class="keyword">else</span> <span class="keyword">if</span> (clazz.isPrimitive())</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;310</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;311</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 311: statement executed 351 times.">&nbsp;351</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 311: statement executed 351 times.">            <span class="keyword">try</span></A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;312</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;313</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 313: statement executed 351 times.">&nbsp;351</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 313: statement executed 351 times.">                <span class="keyword">if</span> (clazz == Boolean.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;314</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;315</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 315: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 315: statement executed 2 times.">                    o = Boolean.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;316</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;317</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 317: statement executed 349 times.">&nbsp;349</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 317: statement executed 349 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Byte.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;318</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;319</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 319: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 319: statement executed 1 time.">                    o = Byte.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;320</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;321</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 321: statement executed 348 times.">&nbsp;348</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 321: statement executed 348 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Character.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;322</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;323</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 323: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 323: statement executed 1 time.">                    o = <span class="keyword">new</span> Character(value.charAt(0));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;324</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;325</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 325: statement executed 347 times.">&nbsp;347</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 325: statement executed 347 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Double.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;326</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;327</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 327: statement executed 245 times.">&nbsp;245</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 327: statement executed 245 times.">                    o = Double.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;328</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;329</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 329: statement executed 102 times.">&nbsp;102</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 329: statement executed 102 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Float.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;330</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;331</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 331: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 331: statement executed 1 time.">                    o = Float.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;332</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;333</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 333: statement executed 101 times.">&nbsp;101</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 333: statement executed 101 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Integer.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;334</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;335</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 335: statement executed 99 times.">&nbsp;99</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 335: statement executed 99 times.">                    o = Integer.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;336</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;337</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 337: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 337: statement executed 2 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Long.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;338</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;339</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 339: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 339: statement executed 1 time.">                    o = Long.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;340</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;341</TD>
+<TD align="right" class="coverageCountHilight">
+<A title="Line 341: expression evaluated to true 1 time, false 0 times.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLineHilight"><A title="Line 341: expression evaluated to true 1 time, false 0 times.">                <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Short.TYPE)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;342</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;343</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 343: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 343: statement executed 1 time.">                    o = Short.valueOf(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;344</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;345</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;346</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            <span class="keyword">catch</span> (Exception x)</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;347</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;348</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 348: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 348: statement executed 1 time.">                <span class="keyword">throw</span> (IllegalArgumentException) <span class="keyword">new</span> IllegalArgumentException().initCause(x);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;349</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;350</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;351</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">else</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;352</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;353</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 353: statement executed 121 times.">&nbsp;121</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 353: statement executed 121 times.">            <span class="keyword">if</span> (clazz == String.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;354</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;355</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 355: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 355: statement executed 1 time.">                o = value;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;356</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;357</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 357: statement executed 120 times.">&nbsp;120</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 357: statement executed 120 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Character.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;358</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;359</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 359: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 359: statement executed 1 time.">                o = <span class="keyword">new</span> Character(value.charAt(0));</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;360</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;361</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            <span class="keyword">else</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;362</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;363</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 363: statement executed 119 times.">&nbsp;119</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 363: statement executed 119 times.">                o = parseSpecialValue(value, clazz);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;364</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;365</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;366</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;367</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 367: statement executed 470 times.">&nbsp;470</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 367: statement executed 470 times.">        <span class="keyword">return</span> o;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;368</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;369</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;370</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 370: method entered 119 times.">&nbsp;119</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 370: method entered 119 times.">    <span class="keyword">protected</span> <span class="keyword">static</span> Object parseSpecialValue(String value, Class clazz)  <span class="keyword">throws</span> IllegalArgumentException</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;371</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;372</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 372: statement executed 119 times.">&nbsp;119</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 372: statement executed 119 times.">        Object o;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;373</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        </SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;374</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 374: statement executed 119 times.">&nbsp;119</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 374: statement executed 119 times.">        <span class="keyword">try</span></A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;375</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;376</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 376: statement executed 119 times.">&nbsp;119</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 376: statement executed 119 times.">            <span class="keyword">if</span> (clazz == File.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;377</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;378</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 378: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 378: statement executed 1 time.">                o = <span class="keyword">new</span> File(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;379</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;380</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 380: statement executed 118 times.">&nbsp;118</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 380: statement executed 118 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == URL.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;381</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;382</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 382: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 382: statement executed 2 times.">                o = <span class="keyword">new</span> URL(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;383</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;384</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 384: statement executed 116 times.">&nbsp;116</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 384: statement executed 116 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == URI.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;385</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;386</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 386: statement executed 111 times.">&nbsp;111</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 386: statement executed 111 times.">                o = <span class="keyword">new</span> URI(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;387</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;388</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 388: statement executed 5 times.">&nbsp;5</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 388: statement executed 5 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == Class.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;389</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;390</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 390: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 390: statement executed 1 time.">                o = Class.forName(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;391</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;392</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 392: statement executed 4 times.">&nbsp;4</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 392: statement executed 4 times.">            <span class="keyword">else</span> <span class="keyword">if</span> (clazz == TimeZone.<span class="keyword">class</span>)</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;393</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;394</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 394: statement executed 1 time.">&nbsp;1</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 394: statement executed 1 time.">                o = TimeZone.getTimeZone(value);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;395</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;396</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            <span class="keyword">else</span></SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;397</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            {</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;398</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">                <span class="comment">// look for "valueOf" converter method</span></SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;399</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 399: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 399: statement executed 3 times.">                Method parser = clazz.getMethod(PARSE_METHOD, <span class="keyword">new</span> Class[] {String.<span class="keyword">class</span>});</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;400</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 400: statement executed 3 times.">&nbsp;3</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 400: statement executed 3 times.">                o = parser.invoke(<span class="keyword">null</span>, <span class="keyword">new</span> Object[] {value});</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;401</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">            }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;402</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;403</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        <span class="keyword">catch</span> (Exception x)</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;404</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        {</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;405</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 405: statement executed 2 times.">&nbsp;2</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 405: statement executed 2 times.">            <span class="keyword">throw</span> (IllegalArgumentException) <span class="keyword">new</span> IllegalArgumentException().initCause(x);</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;406</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">        }</SPAN></TD></TR><TR><TD align="right" class="lineCountHilight">
+&nbsp;407</TD>
+<TD align="right" class="lineCountHilight">
+<A title="Line 407: statement executed 117 times.">&nbsp;117</A>
+</TD><TD class="srcCell"><SPAN class="srcLine"><A title="Line 407: statement executed 117 times.">        <span class="keyword">return</span> o;</A>
+</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;408</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">    }</SPAN></TD></TR><TR><TD align="right" class="lineCount">
+&nbsp;409</TD>
+<TD align="right" class="coverageCount">
+&nbsp;&nbsp;
+</TD><TD class="srcCell"><SPAN class="srcLine">}</SPAN></TD></TR></TBODY></TABLE>
+<TABLE width="100%"><TR><TD class="hbreak" colspan="6">&nbsp;</TD></TR>
+<TR><TD class="footer" colspan="6">
+<table>
+<tr>
+ <td><a target="_new" href="http://www.cenqua.com/clover?5EK"><img alt="Clover" src="../../img/logo.gif" border="0"></a></td><td nowrap><i>Report generated by </i><a target="_new" href="http://www.cenqua.com/clover?5EK">Clover Code Coverage v1.3.11</a><i><BR>Sze nov. 30 2005 08:31:05 CET</i>.</td>
+<td>&nbsp;</td><td style="BORDER-LEFT: #9c9c9c 1px solid;">&nbsp;</td><td>Open Source License registered to the ini4j Project. This license of Clover is provided to support the development of ini4j only. </td>
+</tr>
+</table>
+</td>
+</tr></TABLE>
