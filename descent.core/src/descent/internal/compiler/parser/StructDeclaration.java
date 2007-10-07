@@ -200,7 +200,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 			scope = scx != null ? scx : new Scope(sc, context);
 			scope.setNoFree();
-			scope.module.addDeferredSemantic(this);
+			scope.module.addDeferredSemantic(this, context);
 			return;
 		}
 
@@ -217,7 +217,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		sizeok = 1;
 
-		context.dprogress++;
+		context.Module_dprogress++;
 
 		// Determine if struct is all zeros or not
 		zeroInit = true;

@@ -1406,21 +1406,21 @@ public class FuncDeclaration extends Declaration {
 				if (f.linkage == LINK.LINKd) { // Declare _arguments[]
 					if (context.BREAKABI) {
 						v_arguments = new VarDeclaration(loc,
-								context.typeinfotypelist.type,
+								context.Type_typeinfotypelist.type,
 								Id._arguments_typeinfo, null);
 						v_arguments.storage_class = STCparameter | STCin;
 						v_arguments.semantic(sc2, context);
 						sc2.insert(v_arguments);
 						v_arguments.parent = this;
 
-						t = context.typeinfo.type.arrayOf(context);
+						t = context.Type_typeinfo.type.arrayOf(context);
 						_arguments = new VarDeclaration(loc, t, Id._arguments,
 								null);
 						_arguments.semantic(sc2, context);
 						sc2.insert(_arguments);
 						_arguments.parent = this;
 					} else {
-						t = context.typeinfo.type.arrayOf(context);
+						t = context.Type_typeinfo.type.arrayOf(context);
 						v_arguments = new VarDeclaration(loc, t, Id._arguments,
 								null);
 						v_arguments.storage_class = STCparameter | STCin;

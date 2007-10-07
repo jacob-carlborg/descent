@@ -10,7 +10,7 @@ import java.util.List;
 public class DstressTestGenerator extends DstressTestGeneratorBase {
 	
 	public static void main(String[] args) throws Exception {
-		//generateCompile();
+		generateCompile();
 		generateNoCompile();
 	}
 	
@@ -23,6 +23,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"\r\n" + 
 				"import descent.core.dom.AST;\r\n" + 
 				"import descent.core.dom.CompilationUnitResolver;\r\n" + 
+				"import descent.internal.compiler.parser.Global;\r\n" +
 				"import descent.internal.compiler.parser.Module;\r\n" + 
 				"import descent.internal.compiler.parser.Parser;\r\n" + 
 				"import descent.tests.mars.Parser_Test;\r\n\r\n");
@@ -50,8 +51,11 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\tprivate void compile(String file) throws Exception {\r\n");
 		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
 		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
-		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
-		sb.append("\t\tCompilationUnitResolver.resolve(module, false);\r\n");
+		sb.append("\t\tModule module = parser.parseModuleObj();\r\n");
+		sb.append("\t\tGlobal global = new Global();\r\n"); 
+		sb.append("\t\tglobal.params.warnings = false;\r\n");
+		sb.append("\t\tglobal.path.add(\"").append(IDstressConfiguration.DSTRESS_WHERE_PATH.replace("\\", "\\\\")).append("\");\r\n");
+		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
 		sb.append("\t\tif (!module.problems.isEmpty()) {\r\n");
 		sb.append("\t\t\tfail(module.problems.toString());\r\n");
 		sb.append("\t\t}\r\n");
@@ -83,6 +87,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"\r\n" + 
 				"import descent.core.dom.AST;\r\n" + 
 				"import descent.core.dom.CompilationUnitResolver;\r\n" + 
+				"import descent.internal.compiler.parser.Global;\r\n" +
 				"import descent.internal.compiler.parser.Module;\r\n" + 
 				"import descent.internal.compiler.parser.Parser;\r\n" + 
 				"import descent.tests.mars.Parser_Test;\r\n\r\n");
@@ -121,7 +126,10 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
 		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
 		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
-		sb.append("\t\tCompilationUnitResolver.resolve(module, false);\r\n");
+		sb.append("\t\tGlobal global = new Global();\r\n"); 
+		sb.append("\t\tglobal.params.warnings = false;\r\n");
+		sb.append("\t\tglobal.path.add(\"").append(IDstressConfiguration.DSTRESS_WHERE_PATH.replace("\\", "\\\\")).append("\");\r\n");
+		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
 		sb.append("\t\tif (module.problems.size() != expectedErrors) {\r\n");
 		sb.append("\t\t\tfail(\"Expected \" + expectedErrors + \" errors but were \" + module.problems.size() + \": \" + module.problems.toString());\r\n");
 		sb.append("\t\t}\r\n");
@@ -131,7 +139,10 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
 		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
 		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
-		sb.append("\t\tCompilationUnitResolver.resolve(module, false);\r\n");
+		sb.append("\t\tGlobal global = new Global();\r\n"); 
+		sb.append("\t\tglobal.params.warnings = false;\r\n");
+		sb.append("\t\tglobal.path.add(\"").append(IDstressConfiguration.DSTRESS_WHERE_PATH.replace("\\", "\\\\")).append("\");\r\n");
+		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
 		sb.append("\t\tif (module.problems.isEmpty()) {\r\n");
 		sb.append("\t\t\tfail(\"Expected at least one error\");\r\n");
 		sb.append("\t\t}\r\n");

@@ -3,7 +3,6 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
 // DMD 1.020
@@ -64,23 +63,29 @@ public class Import extends Dsymbol {
 			SemanticContext context) {
 		int result = 0;
 
-		if (size(names) == 0)
+		if (size(names) == 0) {
 			return super.addMember(sc, sd, memnum, context);
+		}
 
-		if (null != aliasId)
+		if (null != aliasId) {
 			result = super.addMember(sc, sd, memnum, context);
+		}
 
 		for (int i = 0; i < size(names); i++) {
 			IdentifierExp name = names.get(i);
 			IdentifierExp alias = aliases.get(i);
 
-			if (null == alias)
+			if (null == alias) {
 				alias = name;
+			}
 
 			TypeIdentifier tname = new TypeIdentifier(loc, name);
 			AliasDeclaration ad = new AliasDeclaration(loc, alias, tname);
 			result |= ad.addMember(sc, sd, memnum, context);
 
+			if (aliasdecls == null) {
+				aliasdecls = new Dsymbols();
+			}
 			aliasdecls.add(ad);
 		}
 
@@ -103,50 +108,41 @@ public class Import extends Dsymbol {
 	}
 
 	public void load(Scope sc, SemanticContext context) {
-		//printf("Import.load('%s')\n", toChars());
-		/* TODO I think if we implement our own caching scheme, we won't need
-		 this.
-		 
-		 DsymbolTable dst;
-		 Dsymbol s;
-		 
-		 // See if existing module
-		 dst = Package.resolve(packages, null, pkg);
+		DsymbolTable dst;
+		Dsymbol s;
 
-		 s = dst.lookup(id);
-		 if (null != s)
-		 {
-		 if (null != s.isModule())
-		 mod = (Module) s;
-		 else
-		 error("package and module have the same name");
-		 }
-		 */
+		// See if existing module
+		Package[] ppkg = { pkg };
+		dst = Package.resolve(packages, null, ppkg, context);
+		pkg = ppkg[0];
+
+		s = dst.lookup(id);
+		if (null != s) {
+			if (null != s.isModule()) {
+				mod = (Module) s;
+			} else {
+				error("package and module have the same name");
+			}
+		}
 
 		if (null == mod) {
 			// Load module
-			StringBuffer fqn = new StringBuffer();
-			for (IdentifierExp pack : packages) {
-				fqn.append(pack.ident);
-				fqn.append(".");
+			mod = Module.load(loc, packages, id, context);
+			dst.insert(id, mod); // id may be different from mod->ident,
+							     // if so then insert alias
+
+			if (null == mod.importedFrom) {
+				mod.importedFrom = null != sc ? sc.module.importedFrom : context.Module_rootModule;
 			}
-			fqn.append(id.ident);
-			mod = context.loadModule(fqn.toString());
-
-			// dst.insert(id, mod); // id may be different from mod.ident, if so then insert alias
-			// TODO I think this means we're just going to have to deal with aliases
-			// in our caching scheme, but make sure to check
-
-			if (null == mod.importedFrom)
-				mod.importedFrom = null != sc ? sc.module.importedFrom : null /* TODO Module.rootModule */;
 		}
 
-		if (null == pkg)
+		if (null == pkg) {
 			pkg = mod;
+		}
 
-		mod.semantic(context); // PERHAPS depending on our caching schem, we may not need to do this
-
-		//printf("-Import.load('%s'), pkg = %p\n", toChars(), pkg);
+		context.muteProblems++;
+		mod.semantic(context);
+		context.muteProblems--;
 	}
 
 	@Override
@@ -158,8 +154,9 @@ public class Import extends Dsymbol {
 	@Override
 	public Dsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
-		if (null == pkg)
+		if (null == pkg) {
 			load(null, context);
+		}
 
 		// Forward it to the package/module
 		return pkg.search(loc, ident, flags, context);
@@ -167,34 +164,37 @@ public class Import extends Dsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		//printf("Import.semantic('%s')\n", toChars());
-
 		load(sc, context);
 
 		if (null != mod) {
 
-			if (!isstatic && null == aliasId && names.isEmpty()) {
+			if (!isstatic && null == aliasId && 0 == size(names)) {
 				/* Default to private importing
 				 */
 				PROT prot = sc.protection;
-				if (sc.explicitProtection == 0)
+				if (sc.explicitProtection == 0) {
 					prot = PROTprivate;
+				}
 				sc.scopesym.importScope(mod, prot);
 			}
 
 			// Modules need a list of each imported module
-			// RETHINK sc.module.aimports.push(mod);
+			if (sc.module.aimports == null) {
+				sc.module.aimports = new Array();
+			}
+			sc.module.aimports.add(mod);
 
-			if (mod.needmoduleinfo)
+			if (mod.needmoduleinfo) {
 				sc.module.needmoduleinfo = true;
+			}
 
 			sc = sc.push(mod);
-			for (int i = 0; i < aliasdecls.size(); i++) {
+			for (int i = 0; i < size(aliasdecls); i++) {
 				Dsymbol s = (Dsymbol) aliasdecls.get(i);
 
-				//printf("\tImport alias semantic('%s')\n", s.toChars());
-				if (null == mod.search(loc, names.get(i), 0, context))
+				if (null == mod.search(loc, names.get(i), 0, context)) {
 					error("%s not found", (names.get(i)).toChars());
+				}
 
 				s.semantic(sc, context);
 			}
@@ -205,8 +205,9 @@ public class Import extends Dsymbol {
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		mod.semantic2(sc, context);
-		if (mod.needmoduleinfo)
+		if (mod.needmoduleinfo) {
 			sc.module.needmoduleinfo = true;
+		}
 	}
 
 	@Override
@@ -224,33 +225,37 @@ public class Import extends Dsymbol {
 	}
 
 	public Dsymbol toAlias() {
-		if (null != aliasId)
+		if (null != aliasId) {
 			return mod;
+		}
 		return this;
 	}
 
 	@Override
 	public Dsymbol toAlias(SemanticContext context) {
-		if (aliasId != null)
+		if (aliasId != null) {
 			return mod;
+		}
 		return this;
 	}
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		if (hgs.hdrgen && CharOperation.equals(id.ident, Id.object))
+		if (hgs.hdrgen && CharOperation.equals(id.ident, Id.object)) {
 			return; // object is imported by default
+		}
 
-		if (isstatic)
+		if (isstatic) {
 			buf.writestring("static ");
+		}
 		buf.writestring("import ");
 		if (null != aliasId) {
 			buf.printf(aliasId.toChars() + " = ");
 		}
 		if (null != packages && packages.size() > 0) {
 			for (int i = 0; i < packages.size(); i++) {
-				IdentifierExp pid = (IdentifierExp) packages.get(i);
+				IdentifierExp pid = packages.get(i);
 				buf.printf(new String(pid.ident) + ".");
 			}
 		}

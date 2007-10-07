@@ -122,7 +122,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 					);
 			Module module = parser.parseModuleObj();
 			
-			CompilationUnitResolver.resolve(module);
+			CompilationUnitResolver.resolve(module, unit);
 			
 			removeTasks(file);
 			removeProblems(file);

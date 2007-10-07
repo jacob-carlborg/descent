@@ -234,10 +234,10 @@ public class ToBindingString_Test extends Parser_Test {
 	
 	public void testCondExp() {
 		Module m = getModuleSemanticNoProblems("int x; int y; int z; int w = x ? y : z;", AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		VarDeclaration y = (VarDeclaration) m.members.get(1);
-		VarDeclaration z = (VarDeclaration) m.members.get(2);
-		VarDeclaration w = (VarDeclaration) m.members.get(3);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		VarDeclaration y = (VarDeclaration) m.sourceMembers.get(1);
+		VarDeclaration z = (VarDeclaration) m.sourceMembers.get(2);
+		VarDeclaration w = (VarDeclaration) m.sourceMembers.get(3);
 		CondExp tri = (CondExp) ((ExpInitializer) w.sourceInit).sourceExp;
 		assertSame(x, tri.econd.getBinding());
 		assertSame(y, tri.sourceE1.getBinding());
@@ -298,8 +298,8 @@ public class ToBindingString_Test extends Parser_Test {
 	
 	public void testPostExp() {
 		Module m = getModuleSemanticNoProblems("int x; int y = x++;", AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		VarDeclaration y = (VarDeclaration) m.sourceMembers.get(1);
 		PostExp bin = (PostExp) ((ExpInitializer) y.sourceInit).sourceExp;
 		assertSame(x, bin.sourceE1.getBinding());
 	}

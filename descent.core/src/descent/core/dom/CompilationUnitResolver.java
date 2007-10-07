@@ -14,7 +14,10 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
@@ -25,6 +28,7 @@ import descent.internal.compiler.IErrorHandlingPolicy;
 import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
@@ -33,7 +37,6 @@ import descent.internal.core.util.Util;
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	private final static boolean RESOLVE = true;
-	private final static boolean WARNINGS_ENABLED_BY_DEFAULT = false;
 	private final static boolean SYSOUT = false;
 	
 	public static class ParseResult {
@@ -148,11 +151,20 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return result;
 	}
 	
-	public static void resolve(final Module module) {
-		resolve(module, WARNINGS_ENABLED_BY_DEFAULT);
+	public static void resolve(final Module module, ICompilationUnit unit) {
+		// Add the package fragment root as an import path
+		IPackageFragmentRoot root = (IPackageFragmentRoot) unit.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+		Global global = new Global();
+		global.path.add(root.getResource().getLocation().toOSString());
+		
+		resolve(module, global);
 	}
 	
-	public static void resolve(final Module module, boolean warningsEnabled) {
+	public static void resolve(final Module module) {
+		resolve(module, new Global());
+	}
+	
+	public static void resolve(final Module module, Global global) {
 		if (!RESOLVE) return;
 		
 		// First adhere to DMD: if there are syntaxis errors, don't do
@@ -174,8 +186,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			}
 		};
 				
-		SemanticContext context = new SemanticContext(problemRequestor, module.apiLevel);
-		context.global.params.warnings = warningsEnabled;
+		SemanticContext context = new SemanticContext(problemRequestor, module, global);
 		module.semantic(context);
 		
 		if (SYSOUT) {

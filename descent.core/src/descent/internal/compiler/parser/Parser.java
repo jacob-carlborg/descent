@@ -110,14 +110,16 @@ public class Parser extends Lexer {
 	public final static int PSscope = 2;	// start a new scope
 	public final static int PScurly = 4;	// { } statement is required
 	public final static int PScurlyscope = 8;	// { } starts a new scope
+	
+	public SemanticContext context;
 
 	private Module module;
 	private ModuleDeclaration md;
 	private int inBrackets;	
 	
-	int apiLevel;
-	List<Comment> comments;
-	List<Pragma> pragmas;
+	private int apiLevel;
+	private List<Comment> comments;
+	private List<Pragma> pragmas;
 	private int lastDocCommentRead = 0;
 	private boolean appendLeadingComments = true;
 	
@@ -158,7 +160,13 @@ public class Parser extends Lexer {
 	}
 	
 	public Module parseModuleObj() {
-		module = new Module(filename, null);
+		module = new Module(filename == null ? null : new String(filename), null);
+		parseModuleObj(module);
+		return module;
+	}
+	
+	public void parseModuleObj(Module module) {
+		this.module = module;
 		module.members = parseModule();
 		module.sourceMembers = new Dsymbols(module.members);
 		module.md = md;
@@ -174,7 +182,6 @@ public class Parser extends Lexer {
 		module.problems = problems;
 		module.start = 0;
 		module.length = this.end;
-		return module;
 	}
 	
 	private void addTaskTagsToProblems() {

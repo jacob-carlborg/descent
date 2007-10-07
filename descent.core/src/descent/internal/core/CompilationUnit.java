@@ -59,6 +59,7 @@ import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
@@ -188,8 +189,9 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// compute other problems if needed
 	// CompilationUnit compilationUnitDeclaration = null;
 	try {
-		if (computeProblems) {	
-			CompilationUnitResolver.resolve(module);
+		if (computeProblems) {
+			
+			CompilationUnitResolver.resolve(module, this);
 			
 			if (problems == null) {
 				// report problems to the problem requestor

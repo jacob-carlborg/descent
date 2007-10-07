@@ -10,78 +10,104 @@ import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 
 public class SemanticContext {
-	
+
 	public boolean BREAKABI = true;
 	public boolean IN_GCC = false;
 	public boolean _DH = true;
-	
+
 	// If DMD is being run on Win32
 	public boolean _WIN32 = true;
-	
+
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;
-	public Global global = new Global();
-	
+	public Global global;
+
 	// TODO file imports should be selectable in a dialog or something
 	public Map<String, File> fileImports = new HashMap<String, File>();
+
+	public ClassDeclaration ClassDeclaration_object;
+	public ClassDeclaration ClassDeclaration_classinfo;
+	public ClassDeclaration Type_typeinfo;
+	public ClassDeclaration Type_typeinfoclass;
+	public ClassDeclaration Type_typeinfointerface;
+	public ClassDeclaration Type_typeinfostruct;
+	public ClassDeclaration Type_typeinfotypedef;
+	public ClassDeclaration Type_typeinfopointer;
+	public ClassDeclaration Type_typeinfoarray;
+	public ClassDeclaration Type_typeinfostaticarray;
+	public ClassDeclaration Type_typeinfoassociativearray;
+	public ClassDeclaration Type_typeinfoenum;
+	public ClassDeclaration Type_typeinfofunction;
+	public ClassDeclaration Type_typeinfodelegate;
+	public ClassDeclaration Type_typeinfotypelist;
+
+	public Type Type_tvoidptr;
 	
-	public ClassDeclaration object; // ClassDeclaration::object
-	public ClassDeclaration classinfo; // ClassDeclaration::classinfo
-	public ClassDeclaration typeinfo;
-	public ClassDeclaration typeinfoclass;
-	public ClassDeclaration typeinfointerface;
-	public ClassDeclaration typeinfostruct;
-	public ClassDeclaration typeinfotypedef;
-	public ClassDeclaration typeinfopointer;
-	public ClassDeclaration typeinfoarray;
-	public ClassDeclaration typeinfostaticarray;
-	public ClassDeclaration typeinfoassociativearray;
-	public ClassDeclaration typeinfoenum;
-	public ClassDeclaration typeinfofunction;
-	public ClassDeclaration typeinfodelegate;
-	public ClassDeclaration typeinfotypelist;
-	
-	public ClassDeclaration moduleinfo;
-	
-	public Type tvoidptr;
-	public int dprogress;
-	
+	public Module Module_rootModule;
+	public DsymbolTable Module_modules;
+	public Array Module_amodules;
+	public Dsymbols Module_deferred;
+	public int Module_dprogress;
+	public ClassDeclaration Module_moduleinfo;
+
 	public DsymbolTable st;
-	public int apiLevel;
-	
-	public SemanticContext(IProblemRequestor problemRequestor, int apiLevel) {
+	public int muteProblems = 0;
+
+	public SemanticContext(IProblemRequestor problemRequestor, Module module, Global global) {
 		this.problemRequestor = problemRequestor;
-		this.apiLevel = apiLevel;
+		this.Module_rootModule = module;
+		this.global = global;
 		this.typeStringTable = new StringTable();
+
+		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		
-		StandardLibraryHelper slh = StandardLibraryHelper.getInstance(apiLevel);
-		this.object = slh.Object;
-		this.classinfo = slh.ClassInfo;
-		this.typeinfo = slh.TypeInfo;
-		this.typeinfoclass = slh.TypeInfo_Class;
-		this.typeinfointerface = slh.TypeInfo_Interface;
-		this.typeinfostruct = slh.TypeInfo_Struct;
-		this.typeinfotypedef = slh.TypeInfo_Typedef;
-		this.typeinfopointer = slh.TypeInfo_Pointer;
-		this.typeinfoarray = slh.TypeInfo_Array;
-		this.typeinfostaticarray = slh.TypeInfo_StaticArray;
-		this.typeinfoassociativearray = slh.TypeInfo_AssociativeArray;
-		this.typeinfoenum = slh.TypeInfo_Enum;
-		this.typeinfofunction = slh.TypeInfo_Function;
-		this.typeinfodelegate = slh.TypeInfo_Delegate;
-		this.typeinfotypelist = slh.TypeInfo_Tuple;
-		
-		this.tvoidptr = Type.tvoid.pointerTo(this);
+		Module_init();
+		afterParse(module);
+	}
+
+	private void Module_init() {
+		this.Module_modules = new DsymbolTable();
 	}
 	
+	/*
+	 * This code is invoked by DMD after parsing a module.
+	 */
+	public void afterParse(Module module) {
+		DsymbolTable dst;
+
+		if (module.md != null) {
+			module.ident = module.md.id;
+			Dsymbol[] pparent = { module.parent };
+			dst = Package.resolve(module.md.packages, pparent, null, this);
+			module.parent = pparent[0];
+		} else {
+			dst = Module_modules;
+		}
+
+		// Update global list of modules
+		if (null == dst.insert(module)) {
+			if (module.md != null) {
+				module.error("is in multiple packages %s", module.md.toChars(this));
+			} else {
+				module.error("is in multiple defined");
+			}
+		} else {
+			if (Module_amodules == null) {
+				Module_amodules = new Dsymbols();
+			}
+			Module_amodules.add(module);
+		}
+	}
+
 	public void acceptProblem(IProblem problem) {
-		if (global.gag == 0) {
+		if (global.gag == 0 && muteProblems == 0) {
 			problemRequestor.acceptProblem(problem);
 		}
 		global.errors++;
 	}
-	
+
 	private int generatedIds;	
+
 	public IdentifierExp generateId(String prefix) {
 		String name = prefix + ++generatedIds;
 		char[] id = name.toCharArray();
@@ -103,7 +129,8 @@ public class SemanticContext {
 			Assert.isTrue(fd.type.nextOf().equals(treturn));
 		} else {
 			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
-			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(id), STC.STCstatic, tf);
+			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(id),
+					STC.STCstatic, tf);
 			fd.protection = PROT.PROTpublic;
 			fd.linkage = LINK.LINKc;
 
@@ -111,9 +138,8 @@ public class SemanticContext {
 		}
 		return fd;
 	}
-	
-	public Module loadModule(String fullyQualifiedName)
-	{
+
+	public Module loadModule(String fullyQualifiedName) {
 		return null;
 		// TODO module loading
 	}

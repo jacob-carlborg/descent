@@ -682,8 +682,9 @@ OperationNotAllowedOnBool
 SymbolIsNotAScalar
 	formatString='%1$s' is not a scalar, it is a %2$s
 	numArgs=2
-	
-	
+ImportCannotBeResolved
+	formatString=The import %1$s cannot be resolved
+	numArgs=1
 	
 	
 	

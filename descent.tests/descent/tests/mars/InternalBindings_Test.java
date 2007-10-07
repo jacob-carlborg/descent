@@ -23,22 +23,22 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testClassDeclarationIdentifier() {
 		Module m = getModuleSemanticNoProblems("class X { }", AST.D1);
-		ClassDeclaration cd = (ClassDeclaration) m.members.get(0);
+		ClassDeclaration cd = (ClassDeclaration) m.sourceMembers.get(0);
 		assertSame(cd, cd.ident.getBinding());
 	}
 	
 	public void testClassDeclarationBaseClass() {
 		Module m = getModuleSemanticNoProblems("class X { } class Y : X { }", AST.D1);
-		ClassDeclaration x = (ClassDeclaration) m.members.get(0);
-		ClassDeclaration y = (ClassDeclaration) m.members.get(1);
+		ClassDeclaration x = (ClassDeclaration) m.sourceMembers.get(0);
+		ClassDeclaration y = (ClassDeclaration) m.sourceMembers.get(1);
 		assertSame(x, y.sourceBaseclasses.get(0).getBinding());
 		assertSame(x, y.sourceBaseclasses.get(0).sourceType.getBinding());
 	}
 	
 	public void testAlias() {
 		Module m = getModuleSemanticNoProblems("class X { } alias X x;", AST.D1);
-		ClassDeclaration cd = (ClassDeclaration) m.members.get(0);
-		AliasDeclaration alias = (AliasDeclaration) m.members.get(1);
+		ClassDeclaration cd = (ClassDeclaration) m.sourceMembers.get(0);
+		AliasDeclaration alias = (AliasDeclaration) m.sourceMembers.get(1);
 		assertSame(cd, alias.getBinding());
 		assertSame(cd, alias.sourceType.getBinding());
 		assertSame(alias, alias.ident.getBinding());
@@ -46,10 +46,10 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testAliasWithNesting() {
 		Module m = getModuleSemanticNoProblems("class X { class Y { void Z() { } } } alias X.Y.Z x;", AST.D1);
-		ClassDeclaration x = (ClassDeclaration) m.members.get(0);
-		ClassDeclaration y = (ClassDeclaration) x.members.get(0);
-		FuncDeclaration z = (FuncDeclaration) y.members.get(0);
-		AliasDeclaration alias = (AliasDeclaration) m.members.get(1);
+		ClassDeclaration x = (ClassDeclaration) m.sourceMembers.get(0);
+		ClassDeclaration y = (ClassDeclaration) x.sourceMembers.get(0);
+		FuncDeclaration z = (FuncDeclaration) y.sourceMembers.get(0);
+		AliasDeclaration alias = (AliasDeclaration) m.sourceMembers.get(1);
 		assertSame(z, alias.getBinding());
 		assertSame(z, alias.sourceType.getBinding());
 		
@@ -63,8 +63,8 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testTypedef() {
 		Module m = getModuleSemanticNoProblems("class X { } typedef X x;", AST.D1);
-		ClassDeclaration cd = (ClassDeclaration) m.members.get(0);
-		TypedefDeclaration typedef = (TypedefDeclaration) m.members.get(1);
+		ClassDeclaration cd = (ClassDeclaration) m.sourceMembers.get(0);
+		TypedefDeclaration typedef = (TypedefDeclaration) m.sourceMembers.get(1);
 		assertSame(cd, typedef.getBinding());
 		assertSame(cd, typedef.sourceBasetype.getBinding());
 		assertSame(typedef, typedef.ident.getBinding());
@@ -76,8 +76,8 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testVarDeclaration() {
 		Module m = getModuleSemanticNoProblems("class X { } X x;", AST.D1);
-		ClassDeclaration cd = (ClassDeclaration) m.members.get(0);
-		VarDeclaration var = (VarDeclaration) m.members.get(1);
+		ClassDeclaration cd = (ClassDeclaration) m.sourceMembers.get(0);
+		VarDeclaration var = (VarDeclaration) m.sourceMembers.get(1);
 		assertSame(cd, var.getBinding());
 		assertSame(cd, var.sourceType.getBinding());
 		assertSame(var, var.ident.getBinding());
@@ -85,8 +85,8 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testNewExp() {
 		Module m = getModuleSemanticNoProblems("class X { } void foo() { X x = new X(); }", AST.D1);
-		ClassDeclaration cd = (ClassDeclaration) m.members.get(0);
-		FuncDeclaration f = (FuncDeclaration) m.members.get(1);
+		ClassDeclaration cd = (ClassDeclaration) m.sourceMembers.get(0);
+		FuncDeclaration f = (FuncDeclaration) m.sourceMembers.get(1);
 		CompoundStatement cs = (CompoundStatement) f.sourceFbody;
 		ExpStatement es = (ExpStatement) cs.sourceStatements.get(0);
 		VarDeclaration var = (VarDeclaration) ((DeclarationExp) es.exp).declaration;
@@ -100,8 +100,8 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testCallExp() {
 		Module m = getModuleSemanticNoProblems("void bar() { } void foo() { bar(); }", AST.D1);
-		FuncDeclaration bar = (FuncDeclaration) m.members.get(0);
-		FuncDeclaration foo = (FuncDeclaration) m.members.get(1);
+		FuncDeclaration bar = (FuncDeclaration) m.sourceMembers.get(0);
+		FuncDeclaration foo = (FuncDeclaration) m.sourceMembers.get(1);
 		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
 		ExpStatement es = (ExpStatement) cs.sourceStatements.get(0);
 		CallExp call = (CallExp) es.sourceExp;
@@ -110,8 +110,8 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testCallExpWithScalarArguments() {
 		Module m = getModuleSemanticNoProblems("void bar(int x) { } void foo() { bar(1); }", AST.D1);
-		FuncDeclaration bar = (FuncDeclaration) m.members.get(0);
-		FuncDeclaration foo = (FuncDeclaration) m.members.get(1);
+		FuncDeclaration bar = (FuncDeclaration) m.sourceMembers.get(0);
+		FuncDeclaration foo = (FuncDeclaration) m.sourceMembers.get(1);
 		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
 		ExpStatement es = (ExpStatement) cs.sourceStatements.get(0);
 		CallExp call = (CallExp) es.sourceExp;
@@ -120,9 +120,9 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testCallExpWithClassArguments() {
 		Module m = getModuleSemanticNoProblems("class X { } void bar(X x) { } void foo() { bar(new X); }", AST.D1);
-		ClassDeclaration x = (ClassDeclaration) m.members.get(0);
-		FuncDeclaration bar = (FuncDeclaration) m.members.get(1);
-		FuncDeclaration foo = (FuncDeclaration) m.members.get(2);
+		ClassDeclaration x = (ClassDeclaration) m.sourceMembers.get(0);
+		FuncDeclaration bar = (FuncDeclaration) m.sourceMembers.get(1);
+		FuncDeclaration foo = (FuncDeclaration) m.sourceMembers.get(2);
 		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
 		ExpStatement es = (ExpStatement) cs.sourceStatements.get(0);
 		CallExp call = (CallExp) es.sourceExp;
@@ -132,9 +132,9 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testCallExpWithMethod() {
 		Module m = getModuleSemanticNoProblems("class X { void bar() { } } void foo() { X x = new X(); x.bar(); }", AST.D1);
-		ClassDeclaration x = (ClassDeclaration) m.members.get(0);;
-		FuncDeclaration bar = (FuncDeclaration) x.members.get(0);
-		FuncDeclaration foo = (FuncDeclaration) m.members.get(1);
+		ClassDeclaration x = (ClassDeclaration) m.sourceMembers.get(0);;
+		FuncDeclaration bar = (FuncDeclaration) x.sourceMembers.get(0);
+		FuncDeclaration foo = (FuncDeclaration) m.sourceMembers.get(1);
 		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
 		ExpStatement es = (ExpStatement) cs.sourceStatements.get(1);
 		CallExp call = (CallExp) es.sourceExp;
@@ -144,16 +144,16 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testArrayInitializer() {
 		Module m = getModuleSemanticNoProblems("int x; int[] y = [ x ];", AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		VarDeclaration y = (VarDeclaration) m.sourceMembers.get(1);
 		ArrayInitializer init = (ArrayInitializer) y.sourceInit;
 		assertEquals(x, init.value.get(0).getBinding());
 	}
 	
 	public void testArrayInitializerInFunc() {
 		Module m = getModuleSemanticNoProblems("int x; void foo() { int[] y = [ x ]; }", AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		FuncDeclaration foo = (FuncDeclaration) m.members.get(1);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		FuncDeclaration foo = (FuncDeclaration) m.sourceMembers.get(1);
 		CompoundStatement cs = (CompoundStatement) foo.sourceFbody;
 		VarDeclaration y = (VarDeclaration) (((DeclarationExp) ((ExpStatement) cs.sourceStatements.get(0)).exp)).declaration;
 		ArrayInitializer init = (ArrayInitializer) y.sourceInit;
@@ -202,10 +202,10 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testCondExp() {
 		Module m = getModuleSemanticNoProblems("int x; int y; int z; int w = x ? y : z;", AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		VarDeclaration y = (VarDeclaration) m.members.get(1);
-		VarDeclaration z = (VarDeclaration) m.members.get(2);
-		VarDeclaration w = (VarDeclaration) m.members.get(3);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		VarDeclaration y = (VarDeclaration) m.sourceMembers.get(1);
+		VarDeclaration z = (VarDeclaration) m.sourceMembers.get(2);
+		VarDeclaration w = (VarDeclaration) m.sourceMembers.get(3);
 		CondExp tri = (CondExp) ((ExpInitializer) w.sourceInit).sourceExp;
 		assertSame(x, tri.econd.getBinding());
 		assertSame(y, tri.sourceE1.getBinding());
@@ -266,8 +266,8 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	public void testPostExp() {
 		Module m = getModuleSemanticNoProblems("int x; int y = x++;", AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		VarDeclaration y = (VarDeclaration) m.members.get(1);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		VarDeclaration y = (VarDeclaration) m.sourceMembers.get(1);
 		PostExp bin = (PostExp) ((ExpInitializer) y.sourceInit).sourceExp;
 		assertSame(x, bin.sourceE1.getBinding());
 	}
@@ -314,9 +314,9 @@ public class InternalBindings_Test extends Parser_Test {
 	
 	private void testBinExp(String pre, String op, String post) {
 		Module m = getModuleSemanticNoProblems(pre + op + post, AST.D1);
-		VarDeclaration x = (VarDeclaration) m.members.get(0);
-		VarDeclaration y = (VarDeclaration) m.members.get(1);
-		VarDeclaration z = (VarDeclaration) m.members.get(2);
+		VarDeclaration x = (VarDeclaration) m.sourceMembers.get(0);
+		VarDeclaration y = (VarDeclaration) m.sourceMembers.get(1);
+		VarDeclaration z = (VarDeclaration) m.sourceMembers.get(2);
 		BinExp bin = (BinExp) ((ExpInitializer) z.sourceInit).sourceExp;
 		assertSame(x, bin.sourceE1.getBinding());
 		assertSame(y, bin.sourceE2.getBinding());

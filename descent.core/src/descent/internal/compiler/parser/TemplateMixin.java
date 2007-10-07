@@ -158,7 +158,7 @@ public class TemplateMixin extends TemplateInstance {
 					// Forward reference
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
-					scope.module.addDeferredSemantic(this);
+					scope.module.addDeferredSemantic(this, context);
 				}
 				return;
 			}

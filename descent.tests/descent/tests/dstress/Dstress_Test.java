@@ -12,6 +12,7 @@ import java.util.Set;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
+import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.tests.mars.Parser_Test;
@@ -138,8 +139,9 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				Parser parser = new Parser(AST.D1, source);
 				Module module = parser.parseModuleObj();
 				
-				// It seems warnings are disabled in dstress
-				CompilationUnitResolver.resolve(module, false /* don't show warnings */);
+				Global global = new Global();
+				global.params.warnings = false;
+				CompilationUnitResolver.resolve(module, global);
 				
 				if (module.problems.size() == 0) {
 					passed++;
@@ -193,8 +195,9 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				Parser parser = new Parser(AST.D1, source);
 				Module module = parser.parseModuleObj();
 				
-				// It seems warnings are disabled in dstress
-				CompilationUnitResolver.resolve(module, false /* don't show warnings */);
+				Global global = new Global();
+				global.params.warnings = false;
+				CompilationUnitResolver.resolve(module, global);
 				
 				if (module.problems.size() == 0) {
 					passed++;

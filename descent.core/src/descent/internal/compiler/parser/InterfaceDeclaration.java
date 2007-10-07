@@ -199,7 +199,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 					// Forward reference of base, try again later
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
-					scope.module.addDeferredSemantic(this);
+					scope.module.addDeferredSemantic(this, context);
 					return;
 				}
 			}

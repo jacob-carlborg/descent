@@ -238,6 +238,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotAccessFrameOfFunction;
 	public static String OperationNotAllowedOnBool;
 	public static String SymbolIsNotAScalar;
+	public static String ImportCannotBeResolved;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

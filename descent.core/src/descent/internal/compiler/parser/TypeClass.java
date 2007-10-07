@@ -149,11 +149,11 @@ public class TypeClass extends Type {
 			if (CharOperation.equals(ident.ident, Id.classinfo)) {
 				Type t;
 
-				if (context.classinfo == null) {
+				if (context.ClassDeclaration_classinfo == null) {
 					throw new IllegalStateException(
 							"assert(ClassDeclaration.classinfo);");
 				}
-				t = context.classinfo.type;
+				t = context.ClassDeclaration_classinfo.type;
 				if (e.op == TOKtype || e.op == TOKdottype) {
 					if (sym.vclassinfo == null) {
 						sym.vclassinfo = new ClassInfoDeclaration(sym, context);

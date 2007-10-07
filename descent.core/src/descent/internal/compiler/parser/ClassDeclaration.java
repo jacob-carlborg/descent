@@ -419,7 +419,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 							// tc.sym.toChars());
 							scope = scx != null ? scx : new Scope(sc, context);
 							scope.setNoFree();
-							scope.module.addDeferredSemantic(this);
+							scope.module.addDeferredSemantic(this, context);
 							return;
 						} else {
 							baseClass = tc.sym;
@@ -477,7 +477,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					// baseClass.toChars());
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
-					scope.module.addDeferredSemantic(this);
+					scope.module.addDeferredSemantic(this, context);
 					return;
 				}
 			}
@@ -492,7 +492,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			TypeClass tc;
 			Type bt;
 
-			if (context.object == null) {
+			if (context.ClassDeclaration_object == null) {
 				error("missing or corrupt object.d");
 				fatal();
 			}
@@ -648,7 +648,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			scope = scx != null ? scx : new Scope(sc, context);
 			scope.setNoFree();
-			scope.module.addDeferredSemantic(this);
+			scope.module.addDeferredSemantic(this, context);
 
 			// printf("\tsemantic('%s') failed\n", toChars());
 			return;
@@ -721,7 +721,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		structsize = sc.offset;
 		sizeok = 1;
 
-		context.dprogress++;
+		context.Module_dprogress++;
 
 		sc.pop();
 	}
@@ -803,8 +803,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 				|| CharOperation.equals(ident.ident, Id.TypeInfo_Class)
 				|| CharOperation.equals(ident.ident, Id.TypeInfo_Typedef)
 				|| CharOperation.equals(ident.ident, Id.TypeInfo_Tuple)
-				|| this == context.object || this == context.classinfo
-				|| this == context.moduleinfo
+				|| this == context.ClassDeclaration_object || this == context.ClassDeclaration_classinfo
+				|| this == context.Module_moduleinfo
 				|| ident.toChars().startsWith("TypeInfo_")) {
 			parent = null;
 		}

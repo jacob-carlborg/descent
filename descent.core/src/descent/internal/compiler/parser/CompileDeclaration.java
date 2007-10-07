@@ -52,7 +52,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		}
 		StringExp se = (StringExp) exp;
 		se = se.toUTF8(sc, context);
-		Parser p = new Parser(context.apiLevel, se.string);
+		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
 		// p.nextToken();
 		p.loc = loc;
 		decl = p.parseModule();

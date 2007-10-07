@@ -436,5 +436,6 @@ public interface IProblem {
 	int CannotAccessFrameOfFunction = 226;
 	int OperationNotAllowedOnBool = 227;
 	int SymbolIsNotAScalar = 228;
+	int ImportCannotBeResolved = 229;
 
 }

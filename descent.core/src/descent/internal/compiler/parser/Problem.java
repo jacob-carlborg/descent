@@ -551,6 +551,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OperationNotAllowedOnBool, arguments[0]);
 		case SymbolIsNotAScalar:
 			return String.format(ProblemMessages.SymbolIsNotAScalar, arguments[0], arguments[1]);
+		case ImportCannotBeResolved:
+			return String.format(ProblemMessages.ImportCannotBeResolved, arguments[0]);
 		default:
 			return "";
 		}

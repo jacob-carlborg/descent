@@ -6,10 +6,14 @@ public class DsymbolTable {
 	private HashtableOfCharArrayAndObject map = new HashtableOfCharArrayAndObject();
 	
 	public Dsymbol insert(Dsymbol dsymbol) {
-		if (map.containsKey(dsymbol.ident.ident)) {
+		return insert(dsymbol.ident, dsymbol);
+	}
+	
+	public Dsymbol insert(IdentifierExp ident, Dsymbol dsymbol) {
+		if (map.containsKey(ident.ident)) {
 			return null;
 		}
-		map.put(dsymbol.ident.ident, dsymbol);
+		map.put(ident.ident, dsymbol);
 		return dsymbol;
 	}
 

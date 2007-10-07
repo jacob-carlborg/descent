@@ -8,5 +8,10 @@ public class Global {
 	public int errors;
 	public Param params = new Param();
 	public long debugLevel;
+	public Array<String> path = new Array<String>();
+	
+	public Global() {
+		path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
+	}
 
 }

@@ -1591,7 +1591,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(LINE_END);
 		}
 		
-		visitList(node.members, LINE_END);
+		visitList(node.sourceMembers, LINE_END);
 		return false;
 	}
 

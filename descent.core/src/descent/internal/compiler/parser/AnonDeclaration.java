@@ -115,12 +115,12 @@ public class AnonDeclaration extends AttribDeclaration {
 				if (sc.anonAgg == null) {
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
-					scope.module.addDeferredSemantic(this);
+					scope.module.addDeferredSemantic(this, context);
 				}
 				return;
 			}
 			if (sem == 0) {
-				context.dprogress++;
+				context.Module_dprogress++;
 				sem = 1;
 			} else {
 				;
