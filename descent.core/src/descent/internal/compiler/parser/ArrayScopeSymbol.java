@@ -24,31 +24,20 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	public TupleDeclaration td; // for tuples of objects
 
 	public ArrayScopeSymbol(Expression e) {
-		super(Loc.ZERO);
 		Assert.isTrue(e.op == TOK.TOKindex || e.op == TOK.TOKslice);
 		exp = e;
 	}
 
-	public ArrayScopeSymbol(Loc loc, TupleDeclaration s) {
-		super(loc);
+	public ArrayScopeSymbol(TupleDeclaration s) {
 		this.exp = null;
 		this.type = null;
 		this.td = s;
 	}
 
-	public ArrayScopeSymbol(Loc loc, TypeTuple t) {
-		super(loc);
+	public ArrayScopeSymbol(TypeTuple t) {
 		this.exp = null;
 		this.type = t;
 		this.td = null;
-	}
-
-	public ArrayScopeSymbol(TupleDeclaration s) {
-		td = s;
-	}
-
-	public ArrayScopeSymbol(TypeTuple t) {
-		type = t;
 	}
 
 	@Override

@@ -13,12 +13,13 @@ public class DebugSymbol extends Dsymbol {
 	public Version version;
 
 	public DebugSymbol(Loc loc, IdentifierExp ident, Version version) {
-		super(loc, ident);
+		super(ident);
+		this.loc = loc;
 		this.version = version;
 	}
 
 	public DebugSymbol(Loc loc, long level, Version version) {
-		super(loc);
+		this.loc = loc;
 		this.level = level;
 		this.version = version;
 	}

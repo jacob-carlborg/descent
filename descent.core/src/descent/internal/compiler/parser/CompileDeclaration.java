@@ -13,7 +13,8 @@ public class CompileDeclaration extends AttribDeclaration {
 	public ScopeDsymbol sd;
 
 	public CompileDeclaration(Loc loc, Expression exp) {
-		super(loc, null);
+		super(null);
+		this.loc = loc;
 		this.exp = exp;
 		this.sourceExp = exp;
 	}

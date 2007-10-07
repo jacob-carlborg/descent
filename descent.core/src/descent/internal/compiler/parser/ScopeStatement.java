@@ -75,7 +75,7 @@ public class ScopeStatement extends Statement {
 		if (statement != null) {
 			Statements a;
 
-			sym = new ScopeDsymbol(loc);
+			sym = new ScopeDsymbol();
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
 

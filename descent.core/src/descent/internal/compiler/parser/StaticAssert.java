@@ -11,7 +11,8 @@ public class StaticAssert extends Dsymbol {
 	public Expression msg;
 
 	public StaticAssert(Loc loc, Expression exp, Expression msg) {
-		super(loc);
+		super(IdentifierExp.EMPTY);
+		this.loc = loc;
 		this.exp = exp;
 		this.msg = msg;
 	}

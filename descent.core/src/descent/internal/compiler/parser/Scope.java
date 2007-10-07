@@ -25,7 +25,7 @@ public class Scope {
 
 		sc = new Scope(context);
 		sc.module = module;
-		sc.scopesym = new ScopeDsymbol(Loc.ZERO);
+		sc.scopesym = new ScopeDsymbol();
 		sc.scopesym.symtab = new DsymbolTable();
 
 		// Add top level package as member of this global scope

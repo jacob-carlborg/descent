@@ -3,9 +3,6 @@ package descent.internal.compiler.parser;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -41,9 +38,11 @@ public class Module extends Package {
 	public List<char[]> versionids; // version identifiers
 	public List<char[]> versionidsNot; // forward referenced version
 										// identifiers
+	
+	public char[] arg;
 
-	public Module(Loc loc) {
-		super(loc);
+	public Module(char[] filename, IdentifierExp ident) {
+		super(ident);
 		deferred = new Dsymbols();
 		importedFrom = this;
 	}

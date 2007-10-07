@@ -9,7 +9,8 @@ public class SymbolDeclaration extends Declaration {
 	public StructDeclaration dsym;
 	
 	public SymbolDeclaration(Loc loc, Symbol s, StructDeclaration dsym) {
-		super(loc, new IdentifierExp(s.Sident));
+		super(new IdentifierExp(s.Sident));
+		this.loc = loc;
 		sym = s;
 		this.dsym = dsym;
 		storage_class |= STCconst;

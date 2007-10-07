@@ -158,7 +158,7 @@ public class Parser extends Lexer {
 	}
 	
 	public Module parseModuleObj() {
-		module = new Module(loc);
+		module = new Module(filename, null);
 		module.members = parseModule();
 		module.sourceMembers = new Dsymbols(module.members);
 		module.md = md;
@@ -429,7 +429,7 @@ public class Parser extends Lexer {
 						nextToken();
 						aelse = parseBlock();
 					}					
-					s = new StaticIfDeclaration(loc, condition, a, aelse);
+					s = new StaticIfDeclaration(condition, a, aelse);
 					attachLeadingComments = prevToken.value == TOKrcurly;
 					break;
 				} else if (token.value == TOKimport) {
@@ -499,7 +499,7 @@ public class Parser extends Lexer {
 					LINK linksave = linkage;
 					LINK linkage = parseLinkage();
 					a = parseBlock();
-					s = new LinkDeclaration(loc, linkage, a);
+					s = new LinkDeclaration(linkage, a);
 					attachLeadingComments = prevToken.value == TOKrcurly;
 					linkage = linksave;
 					break;
@@ -520,7 +520,7 @@ public class Parser extends Lexer {
 				
 				boolean isColon = token.value == TOKcolon;
 				a = parseBlock(isSingle);
-				s = new ProtDeclaration(loc, prot, a, modifier, isSingle[0], isColon);
+				s = new ProtDeclaration(prot, a, modifier, isSingle[0], isColon);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 				
@@ -543,7 +543,7 @@ public class Parser extends Lexer {
 					n = new Global().structalign; // default
 				}
 				a = parseBlock();
-				s = new AlignDeclaration(loc, (int) n, a);
+				s = new AlignDeclaration((int) n, a);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
@@ -606,7 +606,7 @@ public class Parser extends Lexer {
 					aelse = parseBlock();
 				}
 				
-				s = new ConditionalDeclaration(loc, debugCondition, a, aelse);
+				s = new ConditionalDeclaration(debugCondition, a, aelse);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
@@ -637,7 +637,7 @@ public class Parser extends Lexer {
 					aelse = parseBlock();
 				}
 				
-				s = new ConditionalDeclaration(loc, versionCondition, a, aelse);
+				s = new ConditionalDeclaration(versionCondition, a, aelse);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
@@ -651,7 +651,7 @@ public class Parser extends Lexer {
 					aelse = parseBlock();
 				}				
 
-				s = new ConditionalDeclaration(loc, iftypeCondition, a, aelse);
+				s = new ConditionalDeclaration(iftypeCondition, a, aelse);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
@@ -804,7 +804,7 @@ public class Parser extends Lexer {
 				return null;
 			}
 			
-			s = new StorageClassDeclaration(loc, stc, a, modifier, isSingle[0], isColon);
+			s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
 			modifiers.remove(modifier);
 			s.modifiers = modifiers;
 		}
@@ -2881,7 +2881,7 @@ public class Parser extends Lexer {
 			    	// TODO: this is never reached by tests
 			    	Dsymbols ax = new Dsymbols();
 			    	ax.add(v);
-			    	Dsymbol s = new LinkDeclaration(null, link, ax);
+			    	Dsymbol s = new LinkDeclaration(link, ax);
 			    	a.add(s);
 			    }
 				
@@ -2918,7 +2918,7 @@ public class Parser extends Lexer {
 				} else {
 					Dsymbols ax = new Dsymbols();
 					ax.add(f);
-					s = new LinkDeclaration(loc, link, ax);
+					s = new LinkDeclaration(link, ax);
 				}
 					
 				if (tpl != null) { // it's a function template

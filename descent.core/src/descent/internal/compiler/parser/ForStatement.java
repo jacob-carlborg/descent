@@ -167,7 +167,7 @@ public class ForStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		ScopeDsymbol sym = new ScopeDsymbol(loc);
+		ScopeDsymbol sym = new ScopeDsymbol();
 		sym.parent = sc.scopesym;
 		sc = sc.push(sym);
 		if (init != null) {

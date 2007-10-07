@@ -14,9 +14,9 @@ public class ProtDeclaration extends AttribDeclaration {
 	public PROT protection;
 	public boolean colon;
 
-	public ProtDeclaration(Loc loc, PROT p, Dsymbols decl,
+	public ProtDeclaration(PROT p, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {
-		super(loc, decl);
+		super(decl);
 		this.protection = p;
 		this.modifier = modifier;
 		this.single = single;
@@ -66,7 +66,7 @@ public class ProtDeclaration extends AttribDeclaration {
 		if (s != null) {
 			throw new IllegalStateException("assert(s);");
 		}
-		pd = new ProtDeclaration(loc, protection,
+		pd = new ProtDeclaration(protection,
 				Dsymbol.arraySyntaxCopy(decl), modifier, single, colon);
 		return pd;
 	}

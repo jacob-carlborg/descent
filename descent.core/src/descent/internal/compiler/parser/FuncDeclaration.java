@@ -98,7 +98,8 @@ public class FuncDeclaration extends Declaration {
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
 			Type type) {
-		super(loc, ident);
+		super(ident);
+		this.loc = loc;
 		this.storage_class = storage_class;
 		this.type = type;
 		this.sourceType = type;
@@ -1345,7 +1346,7 @@ public class FuncDeclaration extends Declaration {
 
 			localsymtab = new DsymbolTable();
 
-			ss = new ScopeDsymbol(loc);
+			ss = new ScopeDsymbol();
 			ss.parent = sc.scopesym;
 			sc2 = sc.push(ss);
 			sc2.func = this;
@@ -1543,7 +1544,7 @@ public class FuncDeclaration extends Declaration {
 			if (fensure != null || addPostInvariant(context)) {
 				ScopeDsymbol sym;
 
-				sym = new ScopeDsymbol(loc);
+				sym = new ScopeDsymbol();
 				sym.parent = sc2.scopesym;
 				sc2 = sc2.push(sym);
 
@@ -1637,7 +1638,7 @@ public class FuncDeclaration extends Declaration {
 				}
 
 				if (fensure != null) {
-					returnLabel = new LabelDsymbol(loc, Id.returnLabel);
+					returnLabel = new LabelDsymbol(Id.returnLabel);
 					LabelStatement ls = new LabelStatement(loc,
 							new IdentifierExp(loc, Id.returnLabel), fensure);
 					ls.isReturnLabel = true;

@@ -139,6 +139,7 @@ public class Lexer implements IProblemRequestor {
 	 * The filename to use in __FILE__
 	 */
 	public char[] filename;
+	public char[] moduleId;
 
 	// support for the  poor-line-debuggers ....
 	// remember the position of the cr/lf

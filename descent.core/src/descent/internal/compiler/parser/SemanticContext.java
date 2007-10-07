@@ -103,7 +103,7 @@ public class SemanticContext {
 			Assert.isTrue(fd.type.nextOf().equals(treturn));
 		} else {
 			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
-			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Loc.ZERO, id), STC.STCstatic, tf);
+			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(id), STC.STCstatic, tf);
 			fd.protection = PROT.PROTpublic;
 			fd.linkage = LINK.LINKc;
 

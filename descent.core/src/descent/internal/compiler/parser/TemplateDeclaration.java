@@ -44,7 +44,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
-		super(loc, id);
+		super(id);
+		this.loc = loc;
 		this.parameters = parameters;
 		this.members = decldefs;
 	}
@@ -708,7 +709,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		this.scope.setNoFree();
 
 		// Set up scope for parameters
-		ScopeDsymbol paramsym = new ScopeDsymbol(loc);
+		ScopeDsymbol paramsym = new ScopeDsymbol();
 		paramsym.parent = sc.parent;
 		Scope paramscope = sc.push(paramsym);
 		paramscope.parameterSpecialization = 1;

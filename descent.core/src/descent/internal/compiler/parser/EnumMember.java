@@ -9,7 +9,8 @@ public class EnumMember extends Dsymbol {
 	public Expression value;
 
 	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
-		super(loc, id);
+		super(id);
+		this.loc = loc;
 		this.value = value;
 		if (value == null) {
 			start = id.start;

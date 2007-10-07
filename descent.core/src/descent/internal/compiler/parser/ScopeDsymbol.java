@@ -22,17 +22,9 @@ public class ScopeDsymbol extends Dsymbol {
 		this.imports = null;
 		this.prots = null;
 	}
-
-	public ScopeDsymbol(Loc loc) {
-		super(loc);
-		this.members = null;
-		this.symtab = null;
-		this.imports = null;
-		this.prots = null;
-	}
-
-	public ScopeDsymbol(Loc loc, IdentifierExp id) {
-		super(loc, id);
+	
+	public ScopeDsymbol(IdentifierExp id) {
+		super(id);
 		this.members = null;
 		this.symtab = null;
 		this.imports = null;
@@ -210,7 +202,7 @@ public class ScopeDsymbol extends Dsymbol {
 		if (s != null) {
 			sd = (ScopeDsymbol) s;
 		} else {
-			sd = new ScopeDsymbol(loc, ident);
+			sd = new ScopeDsymbol(ident);
 		}
 		sd.members = arraySyntaxCopy(members);
 		return sd;

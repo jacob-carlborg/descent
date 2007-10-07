@@ -16,7 +16,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 
 	public PragmaDeclaration(Loc loc, IdentifierExp ident,
 			Expressions args, Dsymbols decl) {
-		super(loc, decl);
+		super(decl);
+		this.loc = loc;
 		this.ident = ident;
 		this.args = args;
 	}

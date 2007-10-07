@@ -56,9 +56,9 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public Modifier modifier;
 	public boolean colon;
 
-	public StorageClassDeclaration(Loc loc, int stc, Dsymbols decl,
+	public StorageClassDeclaration(int stc, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {
-		super(loc, decl);
+		super(decl);
 		this.stc = stc;
 		this.single = single;
 		this.modifier = modifier;
@@ -108,7 +108,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		scd = new StorageClassDeclaration(loc, stc, Dsymbol
+		scd = new StorageClassDeclaration(stc, Dsymbol
 				.arraySyntaxCopy(decl), modifier, single, colon);
 		return scd;
 	}

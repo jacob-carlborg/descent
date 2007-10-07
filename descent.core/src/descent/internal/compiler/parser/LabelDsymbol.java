@@ -9,15 +9,11 @@ public class LabelDsymbol extends Dsymbol {
 	public LabelStatement statement;
 
 	public LabelDsymbol(IdentifierExp ident) {
-		this(Loc.ZERO, ident);
+		super(ident);
 	}
 
-	public LabelDsymbol(Loc loc, char[] ident) {
-		super(loc, new IdentifierExp(Loc.ZERO, ident));
-	}
-
-	public LabelDsymbol(Loc loc, IdentifierExp ident) {
-		super(loc, ident);
+	public LabelDsymbol(char[] ident) {
+		this(new IdentifierExp(ident));
 	}
 
 	@Override

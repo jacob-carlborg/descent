@@ -26,7 +26,8 @@ public class TypedefDeclaration extends Declaration {
 
 	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype,
 			Initializer init) {
-		super(loc, id);
+		super(id);
+		this.loc = loc;
 		if (this.ident != null) {
 			this.ident.setBinding(this);
 		}

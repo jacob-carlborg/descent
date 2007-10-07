@@ -12,9 +12,9 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	public Condition condition;
 	public Dsymbols elsedecl;
 
-	public ConditionalDeclaration(Loc loc, Condition condition, Dsymbols decl,
+	public ConditionalDeclaration(Condition condition, Dsymbols decl,
 			Dsymbols elsedecl) {
-		super(loc, decl);
+		super(decl);
 		this.condition = condition;
 		this.elsedecl = elsedecl;
 	}
@@ -57,7 +57,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 		ConditionalDeclaration dd;
 
 		Assert.isTrue(s == null);
-		dd = new ConditionalDeclaration(loc, condition.syntaxCopy(), Dsymbol
+		dd = new ConditionalDeclaration(condition.syntaxCopy(), Dsymbol
 				.arraySyntaxCopy(decl), Dsymbol.arraySyntaxCopy(elsedecl));
 		return dd;
 	}

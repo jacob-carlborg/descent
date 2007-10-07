@@ -6,8 +6,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 
 	public Dsymbols decl;
 
-	public AttribDeclaration(Loc loc, Dsymbols decl) {
-		super(loc);
+	public AttribDeclaration(Dsymbols decl) {
 		this.decl = decl;
 	}
 

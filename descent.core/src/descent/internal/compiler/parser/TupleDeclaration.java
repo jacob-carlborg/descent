@@ -16,7 +16,8 @@ public class TupleDeclaration extends Declaration {
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
 	public TupleDeclaration(Loc loc, IdentifierExp ident, Objects objects) {
-		super(loc, ident);
+		super(ident);
+		this.loc = loc;
 		this.type = null;
 		this.objects = objects;
 		this.isexp = false;

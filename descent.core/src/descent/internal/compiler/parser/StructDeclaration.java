@@ -168,7 +168,7 @@ public class StructDeclaration extends AggregateDeclaration {
 				if (fd == null) {
 					fd = fdx.overloadExactMatch(tfeq, context);
 					if (fd != null) { // Create the thunk, fdptr
-						FuncDeclaration fdptr = new FuncDeclaration(loc,
+						FuncDeclaration fdptr = new FuncDeclaration(loc, 
 								fdx.ident, STC.STCundefined, tfeqptr);
 						Expression e = new IdentifierExp(loc, Id.p);
 						e = new PtrExp(loc, e);

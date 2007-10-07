@@ -22,10 +22,11 @@ public class AliasDeclaration extends Declaration {
 	public int inSemantic;
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
-		super(loc, id);
+		super(id);
 
 		Assert.isTrue(s != this);
 
+		this.loc = loc;
 		this.type = null;
 		this.aliassym = s;
 		this.htype = null;
@@ -37,7 +38,8 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
-		super(loc, id);
+		super(id);
+		this.loc = loc;
 		this.ident.setBinding(this);
 		this.type = type;
 		this.sourceType = type;

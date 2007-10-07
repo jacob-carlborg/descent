@@ -61,13 +61,14 @@ public class VarDeclaration extends Declaration {
 	}
 
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
-		super(loc, id);
+		super(id);
 		if (ident != null) {
 			ident.setBinding(this);
 		}
 
 		Assert.isTrue(type != null || init != null);
 
+		this.loc = loc;
 		this.type = type;
 		this.sourceType = type;
 		this.init = init;

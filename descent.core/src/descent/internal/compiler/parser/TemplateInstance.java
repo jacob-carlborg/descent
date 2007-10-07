@@ -37,7 +37,8 @@ public class TemplateInstance extends ScopeDsymbol {
 	// [int, char, 100]
 
 	public TemplateInstance(Loc loc, IdentifierExp id) {
-		super(loc);
+		super(null);
+		this.loc = loc;
 		this.name = id;
 	}
 

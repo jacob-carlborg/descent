@@ -208,7 +208,7 @@ public class IfStatement extends Statement {
 			 * Declare arg, which we will set to be the result
 			 * of condition.
 			 */
-			ScopeDsymbol sym = new ScopeDsymbol(loc);
+			ScopeDsymbol sym = new ScopeDsymbol();
 			sym.parent = sc.scopesym;
 			scd = sc.push(sym);
 

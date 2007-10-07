@@ -66,12 +66,7 @@ public class Dsymbol extends ASTDmdNode {
 	public Dsymbol() {
 	}
 
-	public Dsymbol(Loc loc) {
-		this.loc = loc;
-	}
-
-	public Dsymbol(Loc loc, IdentifierExp ident) {
-		this(loc);
+	public Dsymbol(IdentifierExp ident) {
 		this.ident = ident;
 		this.c_ident = null;
 		this.parent = null;

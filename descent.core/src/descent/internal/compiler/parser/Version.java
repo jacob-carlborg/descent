@@ -8,7 +8,7 @@ public class Version extends Dsymbol {
 	public char[] value;
 	
 	public Version(Loc loc, char[] value) {
-		super(loc);
+		this.loc = loc;
 		this.value = value;
 	}
 	

@@ -19,7 +19,8 @@ public class AnonDeclaration extends AttribDeclaration {
 	public int sem; // 1 if successful semantic()
 
 	public AnonDeclaration(Loc loc, boolean isunion, Dsymbols decl) {
-		super(loc, decl);
+		super(decl);
+		this.loc = loc;
 		this.isunion = isunion;
 	}
 

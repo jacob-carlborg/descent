@@ -7,13 +7,8 @@ public class WithScopeSymbol extends ScopeDsymbol {
 
 	public WithStatement withstate;
 
-	public WithScopeSymbol(Loc loc, WithStatement withstate) {
-		super(loc);
-		this.withstate = withstate;
-	}
-
 	public WithScopeSymbol(WithStatement withstate) {
-		this(Loc.ZERO, withstate);
+		this.withstate = withstate;
 	}
 
 	@Override

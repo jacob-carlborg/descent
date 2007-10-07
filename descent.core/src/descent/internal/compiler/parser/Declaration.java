@@ -13,12 +13,8 @@ public abstract class Declaration extends Dsymbol {
 	public LINK linkage;
 	public PROT protection;
 
-	public Declaration(Loc loc) {
-		this(loc, null);
-	}
-
-	public Declaration(Loc loc, IdentifierExp ident) {
-		super(loc, ident);
+	public Declaration(IdentifierExp ident) {
+		super(ident);
 		this.type = null;
 		this.storage_class = STC.STCundefined;
 		this.protection = PROT.PROTundefined;

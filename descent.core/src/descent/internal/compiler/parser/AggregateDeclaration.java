@@ -40,7 +40,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
     Symbol sinit;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id);
+		super(id);
+		this.loc = loc;
 		fields = new ArrayList<VarDeclaration>(0);
 	}
 

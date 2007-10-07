@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -13,8 +11,8 @@ public class LinkDeclaration extends AttribDeclaration {
 
 	public LINK linkage;
 
-	public LinkDeclaration(Loc loc, LINK linkage, Dsymbols decl) {
-		super(loc, decl);
+	public LinkDeclaration(LINK linkage, Dsymbols decl) {
+		super(decl);
 		this.linkage = linkage;
 	}
 
@@ -68,7 +66,7 @@ public class LinkDeclaration extends AttribDeclaration {
 		LinkDeclaration ld;
 
 		Assert.isNotNull(s);
-		ld = new LinkDeclaration(loc, linkage, Dsymbol.arraySyntaxCopy(decl));
+		ld = new LinkDeclaration(linkage, Dsymbol.arraySyntaxCopy(decl));
 		return ld;
 	}
 

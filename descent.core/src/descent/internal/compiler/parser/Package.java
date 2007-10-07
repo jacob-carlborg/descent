@@ -2,9 +2,9 @@ package descent.internal.compiler.parser;
 
 // DMD 1.020
 public abstract class Package extends ScopeDsymbol {
-	
-	public Package(Loc loc) {
-		super(loc);
+
+	public Package(IdentifierExp ident) {
+		super(ident);
 	}
 
 	@Override
@@ -13,8 +13,7 @@ public abstract class Package extends ScopeDsymbol {
 	}
 
 	@Override
-	public String kind()
-	{
+	public String kind() {
 		return "package";
 	}
 }

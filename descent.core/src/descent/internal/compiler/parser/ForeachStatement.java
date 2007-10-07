@@ -355,7 +355,7 @@ public class ForeachStatement extends Statement {
 			}
 		}
 
-		sym = new ScopeDsymbol(loc);
+		sym = new ScopeDsymbol();
 		sym.parent = sc.scopesym;
 		sc = sc.push(sym);
 

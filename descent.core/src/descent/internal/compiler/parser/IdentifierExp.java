@@ -7,6 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class IdentifierExp extends Expression {
 	
+	public final static IdentifierExp EMPTY = new IdentifierExp(Id.empty);
+	
 	public static int count;
 	public static char[] generateId(char[] id) {
 		StringBuilder s = new StringBuilder();

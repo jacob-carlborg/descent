@@ -25,7 +25,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 	integer_t defaultval; // default initializer
 
 	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
-		super(loc, id);
+		super(id);
+		this.loc = loc;
 		this.type = new TypeEnum(this);
 		this.memtype = memtype;
 		this.maxval = integer_t.ZERO;
