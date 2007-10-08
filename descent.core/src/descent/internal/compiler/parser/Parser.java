@@ -126,33 +126,39 @@ public class Parser extends Lexer {
 	private LINK linkage = LINKd;
 
 	public Parser(int apiLevel, String source) {
-		this(apiLevel, source, 0, source.length());
+		this(apiLevel, source.toCharArray(), 0, source.length(), null);
 	}
 	
 	public Parser(int apiLevel, char[] source) {
 		this(apiLevel, source, 0, source.length);
 	}
 	
-	public Parser(int apiLevel, String source, int offset, int length) {
-		this(apiLevel, source.toCharArray(), offset, length);
+	public Parser(int apiLevel, char[] source, char[] filename) {
+		this(apiLevel, source, 0, source.length, filename);
 	}
 	
 	public Parser(int apiLevel, char[] source, int offset, 
 			int length) {
-		this(apiLevel, source, offset, length, null, null, false);
+		this(apiLevel, source, offset, length, null, null, false, null);
 	}
 	
 	public Parser(int apiLevel, char[] source, int offset, 
-			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive) {
+			int length, char[] filename) {
+		this(apiLevel, source, offset, length, null, null, false, filename);
+	}
+	
+	public Parser(int apiLevel, char[] source, int offset, 
+			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename) {
 		super(source, offset, length, 
 				true /* tokenize comments */, 
 				true /* tokenize pragmas */,
 				false /* don't tokenize whitespace */, 
 				true /* record line separators */,
-				apiLevel);
+				apiLevel, 
+				filename);
 		this.apiLevel = apiLevel;
-		comments = new ArrayList<Comment>();
-		pragmas = new ArrayList<Pragma>();
+		this.comments = new ArrayList<Comment>();
+		this.pragmas = new ArrayList<Pragma>();
 		this.taskTags = taskTags;
 		this.taskPriorities = taskPriorities;
 		this.isTaskCaseSensitive = isTaskCaseSensitive;
@@ -160,11 +166,27 @@ public class Parser extends Lexer {
 	}
 	
 	public Module parseModuleObj() {
-		module = new Module(filename == null ? null : new String(filename), null);
+		char[] theFilename = filename == null ? null : getName(filename);
+		module = new Module(theFilename == null ? null : new String(theFilename), theFilename == null ? null : new IdentifierExp(theFilename));
 		parseModuleObj(module);
 		return module;
 	}
 	
+	private char[] getName(char[] filename) {
+		int indexOfSlash = CharOperation.lastIndexOf('/', filename);
+		if (indexOfSlash < 0) {
+			indexOfSlash = CharOperation.lastIndexOf('\\', filename);
+		}
+		if (indexOfSlash < 0) {
+			indexOfSlash = -1;
+		}
+		int indexOfDot = CharOperation.lastIndexOf('.', filename);
+		if (indexOfDot < 0) {
+			indexOfDot = filename.length;
+		}		
+		return CharOperation.subarray(filename, indexOfSlash + 1, indexOfDot);
+	}
+
 	public void parseModuleObj(Module module) {
 		this.module = module;
 		module.members = parseModule();
@@ -5302,6 +5324,7 @@ public class Parser extends Lexer {
 			
 			stringExp.allStringExps = nextStringExps;
 			stringExp.string = s;
+			stringExp.len = len;
 			e = stringExp;
 			break;
 		}

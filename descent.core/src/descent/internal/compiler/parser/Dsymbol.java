@@ -380,6 +380,25 @@ public class Dsymbol extends ASTDmdNode {
 	public String kind() {
 		return "symbol";
 	}
+	
+	public String kindForError(SemanticContext context) {
+		StringBuilder sb = new StringBuilder();
+		String p = locToChars(context);
+		if (p != null) {
+			sb.append(p);
+			sb.append(": ");
+		}
+		if (isAnonymous()) {
+			sb.append(kind());
+			sb.append(" ");
+		} else {
+			sb.append(kind());
+			sb.append(" ");
+			sb.append(toPrettyChars(context));
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
 
 	public String mangle(SemanticContext context) {
 		return Dsymbol_mangle(context);
@@ -561,8 +580,12 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public String locToChars(SemanticContext context) {
-		// TODO semantic
-		return "";
+	    Module m = getModule();
+
+//	    if (m != null && m.srcfile != null) {
+//	    	loc.filename = m.srcfile.toString().toCharArray();
+//	    }
+	    return loc.toChars();
 	}
 
 }

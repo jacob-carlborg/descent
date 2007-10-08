@@ -100,6 +100,7 @@ public class SemanticContext {
 	}
 
 	public void acceptProblem(IProblem problem) {
+//		System.out.println(problem);
 		if (global.gag == 0 && muteProblems == 0) {
 			problemRequestor.acceptProblem(problem);
 		}

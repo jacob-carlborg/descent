@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // DMD 1.020
@@ -70,6 +71,18 @@ public class Param {
 	public char run;		// run resulting executable
 	public int runargs_length;
 	public  String[] runargs;	// arguments for executable
+	
+	public Param() {
+		versionids = new ArrayList<char[]>();
+		versionids.add("DigitalMars".toCharArray());
+		versionids.add("Windows".toCharArray());
+		versionids.add("Win32".toCharArray());
+		versionids.add("X86".toCharArray());
+		versionids.add("LittleEndian".toCharArray());
+		versionids.add("D_InlineAsm".toCharArray());
+		versionids.add("D_InlineAsm_X86".toCharArray());
+		versionids.add("all".toCharArray());
+	}
 
     // Linker stuff
     /*

@@ -34,6 +34,12 @@ public class Import extends Dsymbol {
 		this.packages = packages;
 		this.aliasId = aliasId;
 		this.isstatic = isstatic;
+
+		if (aliasId != null) {
+			this.ident = aliasId;
+		} else if (packages != null && packages.size() > 0) {
+			this.ident = packages.get(0);
+		}
 	}
 
 	@Override
@@ -129,10 +135,11 @@ public class Import extends Dsymbol {
 			// Load module
 			mod = Module.load(loc, packages, id, context);
 			dst.insert(id, mod); // id may be different from mod->ident,
-							     // if so then insert alias
+			// if so then insert alias
 
 			if (null == mod.importedFrom) {
-				mod.importedFrom = null != sc ? sc.module.importedFrom : context.Module_rootModule;
+				mod.importedFrom = null != sc ? sc.module.importedFrom
+						: context.Module_rootModule;
 			}
 		}
 
@@ -141,7 +148,7 @@ public class Import extends Dsymbol {
 		}
 
 		context.muteProblems++;
-		mod.semantic(context);
+		mod.semantic(null, context);
 		context.muteProblems--;
 	}
 

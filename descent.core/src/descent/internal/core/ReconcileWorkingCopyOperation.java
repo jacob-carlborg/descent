@@ -160,7 +160,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				}
 				
 				// TODO JDT verify this
-				Parser parser = new Parser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents());
+				Parser parser = new Parser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents(), workingCopy.getFileName());
 				Module module = parser.parseModuleObj();
 				
 			    //CompilationUnitDeclaration unit = null;

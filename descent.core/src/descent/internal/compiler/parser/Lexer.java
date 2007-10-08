@@ -128,7 +128,7 @@ public class Lexer implements IProblemRequestor {
 	public int p;
 	public int end;
 	public char[] input;
-	public Loc loc = new Loc();
+	public Loc loc;
 
 	public Token token;
 	public Token prevToken = new Token();
@@ -136,10 +136,9 @@ public class Lexer implements IProblemRequestor {
 	public List<IProblem> problems;
 	
 	/**
-	 * The filename to use in __FILE__
+	 * The filename of the module being parsed.
 	 */
 	public char[] filename;
-	public char[] moduleId;
 
 	// support for the  poor-line-debuggers ....
 	// remember the position of the cr/lf
@@ -241,37 +240,38 @@ public class Lexer implements IProblemRequestor {
 		this.end = offset + length;
 		this.p = offset;
 	}
+	
+	public Lexer(String source, boolean tokenizeComments,
+			boolean tokenizePragmas, boolean tokenizeWhiteSpace,
+			boolean recordLineSeparator, int apiLevel, char[] filename) {
+		this(source.toCharArray(), 0, source.length(), tokenizeComments, tokenizePragmas,
+				tokenizeWhiteSpace, recordLineSeparator, apiLevel, filename);
+	}
 
 	public Lexer(String source, boolean tokenizeComments,
 			boolean tokenizePragmas, boolean tokenizeWhiteSpace,
 			boolean recordLineSeparator, int apiLevel) {
-		this(source.toCharArray(), tokenizeComments, tokenizePragmas,
-				tokenizeWhiteSpace, recordLineSeparator, apiLevel);
+		this(source.toCharArray(), 0, source.length(), tokenizeComments, tokenizePragmas,
+				tokenizeWhiteSpace, recordLineSeparator, apiLevel, null);
 	}
-
-	public Lexer(char[] source, boolean tokenizeComments,
-			boolean tokenizePragmas, boolean tokenizeWhiteSpace,
-			boolean recordLineSeparator, int apiLevel) {
-		this(source, 0, source.length, tokenizeComments, tokenizePragmas,
-				tokenizeWhiteSpace, recordLineSeparator, apiLevel);
-	}
-
-	public Lexer(String source, int offset, int length,
+	
+	public Lexer(char[] source, int offset, int length,
 			boolean tokenizeComments, boolean tokenizePragmas,
 			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
 			int apiLevel) {
-		this(source.toCharArray(), offset, length, tokenizeComments,
-				tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator,
-				apiLevel);
+		this(source, offset, length, tokenizeComments, tokenizePragmas,
+				tokenizeWhiteSpace, recordLineSeparator, apiLevel, null);
 	}
 
 	public Lexer(char[] source, int offset, int length,
 			boolean tokenizeComments, boolean tokenizePragmas,
 			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
-			int apiLevel) {
+			int apiLevel, char[] filename) {
 		this(apiLevel);
 		reset(source, offset, length, tokenizeComments, tokenizePragmas,
 				tokenizeWhiteSpace, recordLineSeparator);
+		this.filename = filename;
+		this.loc = new Loc(filename, 1);
 	}
 
 	public void error(int id, int line, int offset, int length,

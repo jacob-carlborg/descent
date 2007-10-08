@@ -849,7 +849,7 @@ public class FuncDeclaration extends Declaration {
 			if (m.last == MATCHnomatch) {
 				tf = (TypeFunction) type;
 
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, 0, caller.start, caller.length, new String[] { Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, 0, caller.start, caller.length, new String[] { kindForError(context) + Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
 				return m.anyf; // as long as it's not a FuncAliasDeclaration
 			} else {
 				TypeFunction t1 = (TypeFunction) m.lastf.type;

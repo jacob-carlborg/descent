@@ -176,8 +176,8 @@ public class StringExp extends Expression {
 					switch (t.ty) {
 					case Tsarray:
 						if (type.ty == Tsarray
-								&& ((TypeSArray) type).dim.toInteger(context) != ((TypeSArray) t).dim
-										.toInteger(context)) {
+								&& !((TypeSArray) type).dim.toInteger(context).equals(((TypeSArray) t).dim
+										.toInteger(context))) {
 							return MATCHnomatch;
 						}
 					case Tarray:

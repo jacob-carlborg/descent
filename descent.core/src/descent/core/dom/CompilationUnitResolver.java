@@ -101,15 +101,16 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	}
 	
 	public static ParseResult parse(int apiLevel,
-			descent.internal.compiler.env.ICompilationUnit sourceUnit, 
+			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			Map options, 
 			boolean statementsRecovery) {
 		
-		return parse(apiLevel, sourceUnit.getContents(), options, statementsRecovery);
+		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, statementsRecovery);
 	}
 	
 	public static ParseResult parse(int apiLevel,
-			char[] source, 
+			char[] source,
+			char[] filename, 
 			Map options, 
 			boolean statementsRecovery) {
 		
@@ -120,13 +121,14 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				parser = new Parser(apiLevel, source, 0, source.length, 
 						Util.toCharArrays(taskTags.split(",")),
 						Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
-						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE))
+						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE)),
+						filename
 						);
 			} else {
-				parser = new Parser(apiLevel, source, 0, source.length);
+				parser = new Parser(apiLevel, source, 0, source.length, filename);
 			}
 		} else {
-			parser = new Parser(apiLevel, source, 0, source.length);
+			parser = new Parser(apiLevel, source, 0, source.length, filename);
 		}
 		
 		PublicScanner scanner = new PublicScanner(true, true, true, true, apiLevel);

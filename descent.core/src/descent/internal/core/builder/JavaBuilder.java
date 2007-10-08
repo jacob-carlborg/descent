@@ -19,6 +19,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelMarker;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
 import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
@@ -111,6 +112,9 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			ICompilationUnit unit = (ICompilationUnit) element;
 			String source = unit.getSource();
 			
+			IPackageFragmentRoot root = (IPackageFragmentRoot) unit.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+			char[] filename = unit.getPath().removeFirstSegments(root.getPath().segmentCount()).toString().toCharArray();
+			
 			Parser parser = new Parser(
 					getApiLevel(javaProject), 
 					source.toCharArray(), 
@@ -118,7 +122,8 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 					source.length(),
 					getTaskTags(javaProject),
 					getTaskPriorities(javaProject),
-					getTaskCaseSensitive(javaProject)
+					getTaskCaseSensitive(javaProject),
+					filename
 					);
 			Module module = parser.parseModuleObj();
 			

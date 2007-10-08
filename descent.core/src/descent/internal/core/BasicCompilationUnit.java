@@ -109,6 +109,10 @@ public char[] getContents() {
 public char[] getFileName() {
 	return this.fileName;
 }
+public char[] getImportPath() {
+	// TODO
+	return this.fileName;
+}
 public char[] getMainTypeName() {
 	if (this.mainTypeName == null) {
 		int start = CharOperation.lastIndexOf('/', this.fileName) + 1;

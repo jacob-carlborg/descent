@@ -2,21 +2,40 @@ package descent.internal.compiler.parser;
 
 // DMD 1.020
 public class Loc {
-	
+
 	public final static Loc ZERO = new Loc();
-	
-	public String filename = "unknown.d";
-	
+
+	public int linnum;
+	public char[] filename;
+
 	public Loc() {
+		this.linnum = 0;
+		this.filename = null;
+	}
+
+	public Loc(int linnum) {
+		this.linnum = linnum;
+		this.filename = null;
 	}
 	
-	public Loc(int value) {
-		
+	public Loc(char[] filename, int linnum) {
+		this.linnum = linnum;
+		this.filename = filename;
 	}
 
 	public String toChars() {
-		// PERHAPS semantic (i'm not sure if this is even ever used)
-		return "";
+		OutBuffer buf = new OutBuffer();
+
+		if (filename != null) {
+			buf.writestring(filename);
+		}
+//
+//		if (linnum != 0) {
+//			buf.writestring("(");
+//			buf.writestring(linnum);
+//			buf.writestring(")");
+//		}
+		return buf.extractData();
 	}
 
 }

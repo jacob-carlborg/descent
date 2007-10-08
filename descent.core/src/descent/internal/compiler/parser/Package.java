@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 // DMD 1.020
 public class Package extends ScopeDsymbol {
 
@@ -9,7 +11,7 @@ public class Package extends ScopeDsymbol {
 		Dsymbol parent = null;
 
 		if (ppkg != null) {
-			ppkg = null;
+			ppkg[0] = null;
 		}
 
 		if (packages != null) {
@@ -30,7 +32,7 @@ public class Package extends ScopeDsymbol {
 						throw new IllegalStateException(
 								"assert(p.isPackage());");
 					}
-					if (null == p.isModule()) {
+					if (null != p.isModule()) {
 						ASTDmdNode.error("module and package have the same name");
 						// TODO semantic
 						// fatal();
@@ -63,4 +65,5 @@ public class Package extends ScopeDsymbol {
 	public String kind() {
 		return "package";
 	}
+	
 }

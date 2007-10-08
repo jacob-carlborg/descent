@@ -361,6 +361,7 @@ public class Module extends Package {
 		/* Search along global.path for .di file, then .d file.
 		 */
 		File result = null;
+		String resultRelative = null;
 
 		File fdi = new File(filename + ".di");
 		File fd = new File(filename + ".d");
@@ -377,11 +378,13 @@ public class Module extends Package {
 				File n = new File(p, fdi.toString());
 				if (n.exists()) {
 					result = n;
+					resultRelative = fdi.toString();
 					break;
 				}
 				n = new File(p, fd.toString());
 				if (n.exists()) {
 					result = n;
+					resultRelative = fd.toString();
 					break;
 				}
 			}
@@ -401,7 +404,7 @@ public class Module extends Package {
 			return m;
 		}
 
-		Parser parser = new Parser(context.Module_rootModule.apiLevel, contents);
+		Parser parser = new Parser(context.Module_rootModule.apiLevel, contents, resultRelative.toCharArray());
 		parser.parseModuleObj(m);
 
 		context.afterParse(m);

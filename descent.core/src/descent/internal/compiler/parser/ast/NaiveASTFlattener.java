@@ -1774,7 +1774,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(Package node) {
-		// compiler node
+		this.buffer.append(node.ident);
 		return false;
 	}
 

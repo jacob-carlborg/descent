@@ -698,8 +698,9 @@ public int getElementType() {
 /**
  * @see descent.internal.compiler.env.IDependent#getFileName()
  */
-public char[] getFileName(){
-	return getPath().toString().toCharArray();
+public char[] getFileName() {
+	IPackageFragmentRoot root = (IPackageFragmentRoot) getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+	return getPath().removeFirstSegments(root.getPath().segmentCount()).toString().toCharArray();
 }
 
 /*
