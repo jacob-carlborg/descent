@@ -299,10 +299,22 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlbracket);
 		if(prefs.insert_space_after_opening_bracket_in_array_literals)
 			scribe.space();
-		formatCSV(node.fragments(),
-				prefs.insert_space_before_comma_in_array_literal,
-				prefs.insert_space_after_comma_in_array_literal,
-				prefs.alignment_for_array_literals);
+		
+		if (node.fragments().size() > 0 && 
+				node.fragments().get(0).getInitializer().getNodeType() == ASTNode.ARRAY_INITIALIZER) {
+			scribe.printNewLine();
+			scribe.indent();
+			formatTwoDimensional(node.fragments(),
+					prefs.insert_space_before_comma_in_array_literal,
+					prefs.alignment_for_array_literals);
+			scribe.unIndent();
+			scribe.printNewLine();
+		} else {
+			formatCSV(node.fragments(),
+					prefs.insert_space_before_comma_in_array_literal,
+					prefs.insert_space_after_comma_in_array_literal,
+					prefs.alignment_for_array_literals);
+		}
 		// Support trailing comma
 		if(isNextToken(TOK.TOKcomma))
 		{
@@ -2568,6 +2580,47 @@ public class CodeFormatterVisitor extends ASTVisitor
 					if(insertSpacesAfterComma) {
 						scribe.space();
 					}
+				}
+		
+				scribe.alignFragment(listAlignment, i);
+				values.get(i).accept(this);
+				scribe.exitAlignment(listAlignment, true);
+				done = true;
+			}
+			catch(AlignmentException e)
+			{
+				scribe.redoAlignment(e);
+			}
+		}
+	}
+	
+	private void formatTwoDimensional(List<? extends ASTNode> values, 
+			boolean insertSpacesBeforeComma,
+			int alignment)
+	{
+		int len = values.size();
+		if(len == 0)
+			return;
+		
+		Alignment listAlignment = scribe.createAlignment(
+				uid(),
+				alignment,
+				len,
+				scribe.lexer.p);
+		scribe.enterAlignment(listAlignment);
+		
+		boolean done = false;
+		while(!done)
+		{
+			try
+			{
+				int i = 0;
+				for (; i < len - 1; i++)
+				{
+					scribe.alignFragment(listAlignment, i);
+					values.get(i).accept(this);
+					scribe.printNextToken(TOK.TOKcomma, insertSpacesBeforeComma);
+					scribe.printNewLine();
 				}
 		
 				scribe.alignFragment(listAlignment, i);
