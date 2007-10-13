@@ -239,6 +239,20 @@ final class ProblemMessages extends NLS {
 	public static String OperationNotAllowedOnBool;
 	public static String SymbolIsNotAScalar;
 	public static String ImportCannotBeResolved;
+	public static String SymbolIsNotAVariable;
+	public static String CatchHidesCatch;
+	public static String ArithmeticOrStringTypeExpectedForValueParameter;
+	public static String FunctionsCannotReturnAFunction;
+	public static String FunctionsCannotReturnATuple;
+	public static String FunctionsCannotReturnAuto;
+	public static String RecursiveType;
+	public static String VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter;
+	public static String SymbolMustBeAFunction;
+	public static String FunctionExpectedBeforeCall;
+	public static String FunctionExpectedBeforeCallNotSymbolOfType;
+	public static String CircularReferenceOfTypedef;
+	public static String StringSliceIsOutOfBounds;
+	public static String ErrorInstantiating;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

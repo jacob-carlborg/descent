@@ -215,7 +215,7 @@ public class DsymbolExp extends Expression {
 		}
 
 		// Lerr:
-		error("%s '%s' is not a variable", s.kind(), s.toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, 0, s.start, s.length, new String[] { s.kind(), s.toChars(context) }));
 		type = Type.terror;
 		return this;
 	}

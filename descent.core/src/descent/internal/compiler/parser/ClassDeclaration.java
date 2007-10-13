@@ -401,7 +401,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CircularDefinition, 0,
 									firstBaseClass.sourceType.start,
-									firstBaseClass.sourceType.length));
+									firstBaseClass.sourceType.length, new String[] { toChars(context) }));
 							baseclasses.remove(0);
 							// goto L7;
 							gotoL7 = true;

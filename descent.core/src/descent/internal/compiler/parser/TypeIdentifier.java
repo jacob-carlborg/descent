@@ -84,9 +84,8 @@ public class TypeIdentifier extends TypeQualified {
 
 				if (tt.sym.sem == 1) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							//"Circular reference of typedef " + tt.sym.ident,
-							IProblem.CircularDefinition, 0, tt.sym.ident.start,
-							tt.sym.ident.length));
+							IProblem.CircularReferenceOfTypedef, 0, tt.sym.ident.start,
+							tt.sym.ident.length, new String[] { tt.sym.ident.toString() }));
 				}
 			}
 		} else {

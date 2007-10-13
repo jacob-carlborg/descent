@@ -526,8 +526,7 @@ public class CallExp extends UnaExp {
 					}
 				}
 			} else if (t1 == null) {
-				error("function expected before (), not '%s'", e1
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, 0, start, length, new String[] { e1.toChars(context) }));
 				type = Type.terror;
 				return this;
 			} else if (t1.ty != Tfunction) {
@@ -566,8 +565,7 @@ public class CallExp extends UnaExp {
 					loopLagain = true;
 					continue Lagain;
 				} else {
-					error("function expected before (), not %s of type %s", e1
-							.toChars(context), e1.type.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCallNotSymbolOfType, 0, start, length, new String[] { e1.toChars(context), e1.type.toChars(context) }));
 					type = Type.terror;
 					return this;
 				}

@@ -205,9 +205,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		if (!(valType.isintegral() || valType.isfloating() || valType
 				.isString(context))
 				&& valType.ty != TY.Tident) {
-			error(
-					"arithmetic/string type expected for value-parameter, not %s",
-					valType.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArithmeticOrStringTypeExpectedForValueParameter, 0, start, length, new String[] { valType.toChars(context) }));
 		}
 
 		if (specValue != null) {

@@ -264,8 +264,7 @@ public class AliasDeclaration extends Declaration {
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, 0, ident.start, ident.length,
-					new String[] { "Circular alias declaration" }));
+					IProblem.CircularDefinition, 0, ident.start, ident.length, new String[] { toChars(context) }));
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;

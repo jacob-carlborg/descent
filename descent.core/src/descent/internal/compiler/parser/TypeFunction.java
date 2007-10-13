@@ -59,8 +59,9 @@ public class TypeFunction extends Type {
 		if (null != tparam && tparam.ty == Tfunction) {
 
 			TypeFunction tp = (TypeFunction) tparam;
-			if (varargs != tp.varargs || linkage != tp.linkage)
+			if (varargs != tp.varargs || linkage != tp.linkage) {
 				return MATCHnomatch;
+			}
 
 			int nfargs = Argument.dim(this.parameters, context);
 			int nfparams = Argument.dim(tp.parameters, context);
@@ -74,7 +75,7 @@ public class TypeFunction extends Type {
 					 * See if 'A' of the template parameter matches 'A' of the
 					 * type of the last function parameter.
 					 */
-					Argument fparam = (Argument) tp.parameters
+					Argument fparam = tp.parameters
 							.get(nfparams - 1);
 					if (fparam.type.ty != Tident) {
 						// goto L2;
@@ -97,12 +98,13 @@ public class TypeFunction extends Type {
 							L1 = false;
 							throw GOTO_L1;
 						}
-						TemplateParameter t = (TemplateParameter) parameters
+						TemplateParameter t = parameters
 								.get(tupi);
 						TemplateTupleParameter tup = t
 								.isTemplateTupleParameter();
-						if (null != tup && tup.ident.equals(tid.ident))
+						if (null != tup && tup.ident.equals(tid.ident)) {
 							break;
+						}
 					}
 
 					/*
@@ -114,18 +116,20 @@ public class TypeFunction extends Type {
 					/*
 					 * See if existing tuple, and whether it matches or not
 					 */
-					Object o = (Object) dedtypes.get(tupi);
+					Object o = dedtypes.get(tupi);
 					if (null != o) { // Existing deduced argument must be a
 										// tuple, and must
 						// match
 						Tuple t = isTuple((ASTDmdNode) o);
-						if (null == t || t.objects.size() != tuple_dim)
+						if (null == t || t.objects.size() != tuple_dim) {
 							return MATCHnomatch;
+						}
 						for (int i = 0; i < tuple_dim; i++) {
 							Argument arg = Argument.getNth(this.parameters,
 									nfparams - 1 + i, context);
-							if (!arg.type.equals((Object) t.objects.get(i)))
+							if (!arg.type.equals(t.objects.get(i))) {
 								return MATCHnomatch;
+							}
 						}
 					} else { // Create new tuple
 						Tuple t = new Tuple();
@@ -145,8 +149,9 @@ public class TypeFunction extends Type {
 			} catch (GotoL1 $) {
 
 				// L1:
-				if (L1 && (nfargs != nfparams))
+				if (L1 && (nfargs != nfparams)) {
 					return MATCHnomatch;
+				}
 
 				// L2:
 				for (int i = 0; i < nfparams; i++) {
@@ -154,8 +159,9 @@ public class TypeFunction extends Type {
 					Argument ap = Argument.getNth(tp.parameters, i, context);
 					if (a.storageClass != ap.storageClass
 							|| null == a.type.deduceType(sc, ap.type,
-									parameters, dedtypes, context))
+									parameters, dedtypes, context)) {
 						return MATCHnomatch;
+					}
 				}
 			}
 		}
@@ -177,10 +183,11 @@ public class TypeFunction extends Type {
 
 		if (null != parameters) {
 			for (int i = 0; i < parameters.size(); i++) {
-				Argument arg = (Argument) parameters.get(i);
+				Argument arg = parameters.get(i);
 				Type t = arg.type.reliesOnTident();
-				if (null != t)
+				if (null != t) {
 					return t;
+				}
 			}
 		}
 		return next.reliesOnTident();
@@ -208,15 +215,16 @@ public class TypeFunction extends Type {
 			next = Type.terror;
 		}
 		if (next.toBasetype(context).ty == Tfunction) {
-			error("functions cannot return a function");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAFunction, 0, start, length));
 			next = Type.terror;
 		}
 		if (next.toBasetype(context).ty == Ttuple) {
-			error("functions cannot return a tuple");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnATuple, 0, start, length));
 			next = Type.terror;
 		}
-		if (next.isauto() && (sc.flags & SCOPEctor) == 0)
-			error("functions cannot return auto %s", next.toChars(context));
+		if (next.isauto() && (sc.flags & SCOPEctor) == 0) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, 0, start, length, new String[] { next.toChars(context) }));
+		}
 
 		if (parameters != null) {
 			int dim = Argument.dim(parameters, context);
@@ -250,7 +258,7 @@ public class TypeFunction extends Type {
 
 				if (arg.defaultArg != null) {
 					arg.defaultArg = arg.defaultArg.semantic(sc, context);
-					arg.defaultArg = Expression.resolveProperties(sc,
+					arg.defaultArg = ASTDmdNode.resolveProperties(sc,
 							arg.defaultArg, context);
 					arg.defaultArg = arg.defaultArg.implicitCastTo(sc,
 							arg.type, context);
@@ -269,14 +277,14 @@ public class TypeFunction extends Type {
 		deco = merge(context).deco;
 
 		if (inuse != 0) {
-			error("recursive type");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveType, 0, start, length));
 			inuse = 0;
 			return terror;
 		}
 
 		if (varargs != 0 && linkage != LINK.LINKd
 				&& Argument.dim(parameters, context) == 0) {
-			error("variadic functions with non-D linkage must have at least one parameter");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter, 0, start, length));
 		}
 
 		/*
@@ -339,11 +347,12 @@ public class TypeFunction extends Type {
 
 		int nparams = Argument.dim(parameters, context);
 		int nargs = null != args ? args.size() : 0;
-		if (nparams == nargs)
+		if (nparams == nargs) {
 			;
-		else if (nargs > nparams) {
-			if (varargs == 0)
+		} else if (nargs > nparams) {
+			if (varargs == 0) {
 				return MATCHnomatch; // goto Nomatch; // too many args; no
+			}
 										// match
 			match = MATCHconvert; // match ... with a "conversion" match level
 		}
@@ -357,8 +366,9 @@ public class TypeFunction extends Type {
 			Argument p = Argument.getNth(parameters, u, context);
 			Assert.isTrue(null != p);
 			if (u >= nargs) {
-				if (null != p.defaultArg)
+				if (null != p.defaultArg) {
 					continue;
+				}
 				if (varargs == 2 && u + 1 == nparams) {
 					// goto L1;
 					// PERHAPS this was copied & pasted, so i'm not 100% the
@@ -374,11 +384,12 @@ public class TypeFunction extends Type {
 						case Tsarray:
 							tsa = (TypeSArray) tb;
 							sz = tsa.dim.toInteger(context);
-							if (!sz.equals(nargs - u))
+							if (!sz.equals(nargs - u)) {
 								return MATCHnomatch; // goto Nomatch;
+							}
 						case Tarray:
 							for (; u < nargs; u++) {
-								arg = (Expression) args.get(u);
+								arg = args.get(u);
 								assert (null != arg);
 								/*
 								 * If lazy array of delegates, convert arg(s) to
@@ -391,16 +402,20 @@ public class TypeFunction extends Type {
 									} else {
 										m = arg.implicitConvTo(tret, context);
 										if (m == MATCHnomatch) {
-											if (tret.toBasetype(context).ty == Tvoid)
+											if (tret.toBasetype(context).ty == Tvoid) {
 												m = MATCHconvert;
+											}
 										}
 									}
-								} else
+								} else {
 									m = arg.implicitConvTo(tb.next, context);
-								if (m == MATCHnomatch)
+								}
+								if (m == MATCHnomatch) {
 									return MATCHnomatch; // goto Nomatch;
-								if (m.ordinal() < match.ordinal())
+								}
+								if (m.ordinal() < match.ordinal()) {
 									match = m;
+								}
 							}
 							return match; // goto Ldone;
 
@@ -419,13 +434,14 @@ public class TypeFunction extends Type {
 											// arguments
 				}
 			}
-			arg = (Expression) args.get(u);
+			arg = args.get(u);
 			assert (null != arg);
 			if (0 != (p.storageClass & STClazy) && p.type.ty == Tvoid
-					&& arg.type.ty != Tvoid)
+					&& arg.type.ty != Tvoid) {
 				m = MATCHconvert;
-			else
+			} else {
 				m = arg.implicitConvTo(p.type, context);
+			}
 			// printf("\tm = %d\n", m);
 			if (m == MATCHnomatch) // if no match
 			{
@@ -441,11 +457,12 @@ public class TypeFunction extends Type {
 					case Tsarray:
 						tsa = (TypeSArray) tb;
 						sz = tsa.dim.toInteger(context);
-						if (!sz.equals(nargs - u))
+						if (!sz.equals(nargs - u)) {
 							return MATCHnomatch; // goto Nomatch;
+						}
 					case Tarray:
 						for (; u < nargs; u++) {
-							arg = (Expression) args.get(u);
+							arg = args.get(u);
 							assert (null != arg);
 							/*
 							 * If lazy array of delegates, convert arg(s) to
@@ -458,16 +475,20 @@ public class TypeFunction extends Type {
 								} else {
 									m = arg.implicitConvTo(tret, context);
 									if (m == MATCHnomatch) {
-										if (tret.toBasetype(context).ty == Tvoid)
+										if (tret.toBasetype(context).ty == Tvoid) {
 											m = MATCHconvert;
+										}
 									}
 								}
-							} else
+							} else {
 								m = arg.implicitConvTo(tb.next, context);
-							if (m == MATCHnomatch)
+							}
+							if (m == MATCHnomatch) {
 								return MATCHnomatch; // goto Nomatch;
-							if (m.ordinal() < match.ordinal())
+							}
+							if (m.ordinal() < match.ordinal()) {
 								match = m;
+							}
 						}
 						return match; // goto Ldone;
 
@@ -482,8 +503,9 @@ public class TypeFunction extends Type {
 				}
 				return MATCHnomatch; // goto Nomatch;
 			}
-			if (m.ordinal() < match.ordinal())
+			if (m.ordinal() < match.ordinal()) {
 				match = m; // pick worst match
+			}
 		}
 
 		return match;
@@ -523,23 +545,26 @@ public class TypeFunction extends Type {
 
 	    if (buf.data.length() != 0)
 	    {
-		if (!hgs.hdrgen && p != null)
-		    buf.prependstring(p);
+		if (!hgs.hdrgen && p != null) {
+			buf.prependstring(p);
+		}
 		buf.bracket('(', ')');
 		assert(ident == null);
 	    }
 	    else
 	    {
-		if (!hgs.hdrgen && p != null)
-		    buf.writestring(p);
+		if (!hgs.hdrgen && p != null) {
+			buf.writestring(p);
+		}
 		if (ident != null)
 		{   buf.writeByte(' ');
 		    buf.writestring(ident.toHChars2());
 		}
 	    }
 	    Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
-	    if (next != null&& (null == ident || ident.toHChars2().equals(ident.toChars())))
-		next.toCBuffer2(buf, null, hgs, context);
+	    if (next != null&& (null == ident || ident.toHChars2().equals(ident.toChars()))) {
+			next.toCBuffer2(buf, null, hgs, context);
+		}
 	    inuse--;
 	}
 

@@ -437,5 +437,19 @@ public interface IProblem {
 	int OperationNotAllowedOnBool = 227;
 	int SymbolIsNotAScalar = 228;
 	int ImportCannotBeResolved = 229;
+	int SymbolIsNotAVariable = 230;
+	int CatchHidesCatch = 231;
+	int ArithmeticOrStringTypeExpectedForValueParameter = 232;
+	int FunctionsCannotReturnAFunction = 233;
+	int FunctionsCannotReturnATuple = 234;
+	int FunctionsCannotReturnAuto = 235;
+	int RecursiveType = 236;
+	int VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter = 237;
+	int SymbolMustBeAFunction = 238;
+	int FunctionExpectedBeforeCall = 239;
+	int FunctionExpectedBeforeCallNotSymbolOfType = 240;
+	int CircularReferenceOfTypedef = 241;
+	int StringSliceIsOutOfBounds = 242;
+	int ErrorInstantiating = 243;
 
 }

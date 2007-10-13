@@ -33,6 +33,7 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 			syntaxErrors.add("template_struct_08_" + c + ".d");
 		}
 		syntaxErrors.add("this_02.d");
+		syntaxErrors.add("throw_06.d");
 		syntaxErrors.add("unchecked_01_B.d");
 		syntaxErrors.add("undef_01.d");
 		syntaxErrors.add("unittest_06.d");
@@ -42,6 +43,7 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		syntaxErrors.add("using_03_E.d");
 		syntaxErrors.add("ucent_01.d");
 		syntaxErrors.add("variadic_argument_01.d");
+		syntaxErrors.add("version_12.d");
 		syntaxErrors.add("virtual_01_A.d");
 		syntaxErrors.add("virtual_01_B.d");
 		syntaxErrors.add("virtual_01_C.d");

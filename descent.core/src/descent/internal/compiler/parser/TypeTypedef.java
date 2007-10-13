@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
@@ -155,7 +156,7 @@ public class TypeTypedef extends Type {
 			return false; // assume not
 		}
 		if (sym.inuse) {
-			sym.error("circular definition");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, 0, start, length, new String[] { toChars(context) }));
 			sym.basetype = Type.terror;
 		}
 		sym.inuse = true;
@@ -183,7 +184,7 @@ public class TypeTypedef extends Type {
 	@Override
 	public Type toBasetype(SemanticContext context) {
 		if (sym.inuse) {
-			sym.error("circular definition");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, 0, start, length, new String[] { toChars(context) }));
 			sym.basetype = Type.terror;
 			return Type.terror;
 		}

@@ -90,7 +90,7 @@ public class TypedefDeclaration extends Declaration {
 			sourceBasetype.setBinding(getBinding());
 		} else if (sem == 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, 0, ident.start, ident.length));
+					IProblem.CircularDefinition, 0, ident.start, ident.length, new String[] { toChars(context) }));
 		}
 	}
 

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PREC.PREC_assign;
 import static descent.internal.compiler.parser.TOK.TOKstring;
@@ -250,7 +251,7 @@ public class SliceExp extends UnaExp {
 				}
 				e = e.semantic(sc, context);
 			} else {
-				error("string slice [%ju .. %ju] is out of bounds", i1, i2);
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, 0, start, length, new String[] { String.valueOf(i1), String.valueOf(i2) }));
 				e = e1;
 			}
 			return e;

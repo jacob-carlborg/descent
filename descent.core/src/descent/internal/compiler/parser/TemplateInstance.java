@@ -683,7 +683,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		// Give additional context info if error occurred during instantiation
 		if (context.global.errors != errorsave) {
-			error("error instantiating");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, 0, start, length));
 			errors = 1;
 			if (context.global.gag > 0) {
 				tempdecl.instances.remove(tempdecl_instance_idx);

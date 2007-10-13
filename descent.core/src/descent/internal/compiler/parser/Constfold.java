@@ -1304,7 +1304,7 @@ public class Constfold {
 			int iupr = upr.toInteger(context).intValue();
 
 			if (iupr > es1.len || ilwr > iupr) {
-				e1.error("string slice [%ju .. %ju] is out of bounds", ilwr, iupr);
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, 0, e1.start, e1.length, new String[] { String.valueOf(ilwr), String.valueOf(iupr) }));
 			} else {
 				int len = iupr - ilwr;
 				int sz = es1.sz;

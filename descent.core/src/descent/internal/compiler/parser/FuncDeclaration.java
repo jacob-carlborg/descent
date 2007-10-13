@@ -918,7 +918,9 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		if (type.ty != Tfunction) {
-			error("%s must be a function", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolMustBeAFunction, 0, start,
+					length, new String[] { toChars(context) }));
 			return;
 		}
 		f = (TypeFunction) (type);

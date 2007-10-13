@@ -210,7 +210,7 @@ public class Problem implements IProblem {
 		case PropertyCanNotBeRedefined:
 			return String.format(ProblemMessages.PropertyCanNotBeRedefined, arguments[0]);
 		case CircularDefinition:
-			return String.format(ProblemMessages.CircularDefinition);
+			return String.format(ProblemMessages.CircularDefinition, arguments[0]);
 		case EnumValueOverflow:
 			return String.format(ProblemMessages.EnumValueOverflow);
 		case EnumMustHaveAtLeastOneMember:
@@ -553,6 +553,34 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolIsNotAScalar, arguments[0], arguments[1]);
 		case ImportCannotBeResolved:
 			return String.format(ProblemMessages.ImportCannotBeResolved, arguments[0]);
+		case SymbolIsNotAVariable:
+			return String.format(ProblemMessages.SymbolIsNotAVariable, arguments[0], arguments[1]);
+		case CatchHidesCatch:
+			return String.format(ProblemMessages.CatchHidesCatch, arguments[0], arguments[1]);
+		case ArithmeticOrStringTypeExpectedForValueParameter:
+			return String.format(ProblemMessages.ArithmeticOrStringTypeExpectedForValueParameter, arguments[0]);
+		case FunctionsCannotReturnAFunction:
+			return String.format(ProblemMessages.FunctionsCannotReturnAFunction);
+		case FunctionsCannotReturnATuple:
+			return String.format(ProblemMessages.FunctionsCannotReturnATuple);
+		case FunctionsCannotReturnAuto:
+			return String.format(ProblemMessages.FunctionsCannotReturnAuto, arguments[0]);
+		case RecursiveType:
+			return String.format(ProblemMessages.RecursiveType);
+		case VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter:
+			return String.format(ProblemMessages.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter);
+		case SymbolMustBeAFunction:
+			return String.format(ProblemMessages.SymbolMustBeAFunction, arguments[0]);
+		case FunctionExpectedBeforeCall:
+			return String.format(ProblemMessages.FunctionExpectedBeforeCall, arguments[0]);
+		case FunctionExpectedBeforeCallNotSymbolOfType:
+			return String.format(ProblemMessages.FunctionExpectedBeforeCallNotSymbolOfType, arguments[0], arguments[1]);
+		case CircularReferenceOfTypedef:
+			return String.format(ProblemMessages.CircularReferenceOfTypedef, arguments[0]);
+		case StringSliceIsOutOfBounds:
+			return String.format(ProblemMessages.StringSliceIsOutOfBounds, arguments[0], arguments[1]);
+		case ErrorInstantiating:
+			return String.format(ProblemMessages.ErrorInstantiating);
 		default:
 			return "";
 		}

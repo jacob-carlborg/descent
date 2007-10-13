@@ -19,7 +19,6 @@ public class SemanticContext {
 	public boolean _WIN32 = true;
 
 	private IProblemRequestor problemRequestor;
-	public StringTable typeStringTable;
 	public Global global;
 
 	// TODO file imports should be selectable in a dialog or something
@@ -57,7 +56,6 @@ public class SemanticContext {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
-		this.typeStringTable = new StringTable();
 
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		

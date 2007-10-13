@@ -170,8 +170,8 @@ PropertyCanNotBeRedefined
 	formatString=Property %1$s cannot be redefined
 	numArgs=1
 CircularDefinition
-	formatString=Circular definition
-	numArgs=0
+	formatString=%1$s Circular definition
+	numArgs=1
 EnumValueOverflow
 	formatString=Overflow of enum value
 	numArgs=0
@@ -685,6 +685,49 @@ SymbolIsNotAScalar
 ImportCannotBeResolved
 	formatString=The import %1$s cannot be resolved
 	numArgs=1
+SymbolIsNotAVariable
+	formatString=%1$s '%2$s' is not a variable
+	numArgs=2
+CatchHidesCatch
+	formatString=catch at %1$s hides catch at %2$s
+	numArgs=2
+ArithmeticOrStringTypeExpectedForValueParameter
+	formatString=Arithmetic/string type expected for value-parameter, not %1$s
+	numArgs=1
+FunctionsCannotReturnAFunction
+	formatString=Functions cannot return a function
+	numArgs=0
+FunctionsCannotReturnATuple
+	formatString=Functions cannot return a tuple
+	numArgs=0
+FunctionsCannotReturnAuto
+	formatString=Functions cannot return auto %1$s
+	numArgs=1
+RecursiveType
+	formatString=Recursive type
+	numArgs=0
+VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter
+	formatString=Variadic functions with non-D linkage must have at least one parameter
+	numArgs=0
+SymbolMustBeAFunction
+	formatString=%1$s must be a function
+	numArgs=1
+FunctionExpectedBeforeCall
+	formatString=Function expected before (), not '%1$s'
+	numArgs=1
+FunctionExpectedBeforeCallNotSymbolOfType
+	formatString=Function expected before (), not '%1$s' of type %2$s
+	numArgs=2
+CircularReferenceOfTypedef
+	formatString=Circular reference of typedef %1$s
+	numArgs=1
+StringSliceIsOutOfBounds
+	formatString=String slice [%1$su .. %2$su] is out of bounds
+	numArgs=2
+ErrorInstantiating
+	formatString=Error instantiating
+	numArgs=0
+	
 	
 	
 	

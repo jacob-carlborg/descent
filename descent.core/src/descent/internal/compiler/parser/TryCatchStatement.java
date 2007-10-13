@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -88,7 +89,7 @@ public class TryCatchStatement extends Statement {
 
 				if (c.type.toBasetype(context).implicitConvTo(
 						cj.type.toBasetype(context), context) != null) {
-					error("catch at %s hides catch at %s", sj, si);
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CatchHidesCatch, 0, cj.start, cj.length, new String[] { sj, si }));
 				}
 			}
 		}
