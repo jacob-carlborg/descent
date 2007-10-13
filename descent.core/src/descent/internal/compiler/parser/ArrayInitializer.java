@@ -54,7 +54,7 @@ public class ArrayInitializer extends Initializer {
 				if (index.get(i) != null) {
 					// goto Lno;
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotInferType, 0, start, length));
+							IProblem.CannotInferTypeFromThisArrayInitializer, 0, start, length));
 					return Type.terror;
 				}
 			}
@@ -70,7 +70,7 @@ public class ArrayInitializer extends Initializer {
 		}
 
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.CannotInferType, 0, start, length));
+				IProblem.CannotInferTypeFromThisArrayInitializer, 0, start, length));
 		return Type.terror;
 	}
 

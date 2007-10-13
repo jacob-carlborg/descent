@@ -855,15 +855,12 @@ public class FuncDeclaration extends Declaration {
 				TypeFunction t1 = (TypeFunction) m.lastf.type;
 				TypeFunction t2 = (TypeFunction) m.nextf.type;
 
-				error(
-						loc,
-						"called with argument types:\n\t(%s)\nmatches both:\n\t%s%s\nand:\n\t%s%s",
-						buf.toChars(), m.lastf.toPrettyChars(context), Argument
-								.argsTypesToChars(t1.parameters, t1.varargs,
-										context), m.nextf
-								.toPrettyChars(context), Argument
-								.argsTypesToChars(t2.parameters, t2.varargs,
-										context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CalledWithArgumentTypesMatchesBoth, 0, caller.start, caller.length, new String[] { buf.toChars(), m.lastf.toPrettyChars(context), Argument
+						.argsTypesToChars(t1.parameters, t1.varargs,
+								context), m.nextf
+						.toPrettyChars(context), Argument
+						.argsTypesToChars(t2.parameters, t2.varargs,
+								context) }));
 				return m.lastf;
 			}
 		}
@@ -956,7 +953,7 @@ public class FuncDeclaration extends Declaration {
 			//|| isInvariantDeclaration()
 			//|| isUnitTestDeclaration()
 			) {
-				error("special member functions not allowed for %ss", sd.kind());
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SpecialMemberFunctionsNotAllowedForSymbol, 0, start, length, new String[] { sd.kind() }));
 			}
 		}
 
@@ -968,12 +965,10 @@ public class FuncDeclaration extends Declaration {
 					|| isInvariantDeclaration() != null
 					|| isUnitTestDeclaration() != null
 					|| isNewDeclaration() != null || isDelete()) {
-				error("special function not allowed in interface %s", id
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SpecialFunctionsNotAllowedInInterface, 0, start, length, new String[] { id.toChars(context) }));
 			}
 			if (fbody != null) {
-				error("function body is not abstract in interface %s", id
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionBodyIsNotAbstractInInterface, 0, start, length, new String[] { id.toChars(context) }));
 			}
 		}
 

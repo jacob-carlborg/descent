@@ -86,10 +86,10 @@ public class BreakStatement extends Statement {
 					Statement s = ls.statement;
 
 					if (!s.hasBreak()) {
-						error("label '%s' has no break", ident.toChars());
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.LabelHasNoBreak, 0, start, length, new String[] { ident.toChars() }));
 					}
 					if (ls.tf != sc.tf) {
-						error("cannot break out of finally block");
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotBreakOutOfFinallyBlock, 0, start, length));
 					}
 					return this;
 				}

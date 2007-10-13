@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Mod;
 
@@ -76,7 +77,9 @@ public class ModExp extends BinExp {
 		if (type.isfloating()) {
 			type = e1.type;
 			if (e2.type.iscomplex()) {
-				error("cannot perform modulo complex arithmetic");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotPerformModuloComplexArithmetic, 0, start,
+						length));
 				assignBinding();
 				return new IntegerExp(Loc.ZERO, 0);
 			}

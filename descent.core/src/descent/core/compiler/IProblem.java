@@ -285,7 +285,7 @@ public interface IProblem {
 	int UsedAsAType = 75;
 	int ExternSymbolsCannotHaveInitializers = 76;
 	int VoidsHaveNoValue = 77;
-	int CannotInferType = 78;
+	int CannotInferTypeFromThisArrayInitializer = 78;
 	int NoDefinition = 79;
 	int DuplicatedInterfaceInheritance = 80;
 	int BaseTypeMustBeClassOrInterface = 81;
@@ -451,5 +451,38 @@ public interface IProblem {
 	int CircularReferenceOfTypedef = 241;
 	int StringSliceIsOutOfBounds = 242;
 	int ErrorInstantiating = 243;
+	int CaseMustBeAnIntegralOrStringConstant = 244;
+	int DuplicateCaseInSwitchStatement = 245;
+	int SpecialMemberFunctionsNotAllowedForSymbol = 246;
+	int SpecialFunctionsNotAllowedInInterface = 247;
+	int FunctionBodyIsNotAbstractInInterface = 248;
+	int SuperClassConstructorCallMustBeInAConstructor = 249;
+	int ClassConstructorCallMustBeInAConstructor = 250;
+	int NoSuperClassConstructor = 251;
+	int ConstructorCallsNotAllowedInLoopsOrAfterLabels = 252;
+	int MultipleConstructorCalls = 253;
+	int ExpressionIsNotConstantOrDoesNotEvaluateToABool = 254;
+	int StaticIfConditionalCannotBeAtGlobalScope = 255;
+	int CannotBreakOutOfFinallyBlock = 256;
+	int LabelHasNoBreak = 257;
+	int CannotGotoInOrOutOfFinallyBlock = 258;
+	int CalledWithArgumentTypesMatchesBoth = 259;
+	int SymbolIsNotAnArithmeticType = 260;
+	int CannotPerformModuloComplexArithmetic = 261;
+	int OperatorNotAllowedOnBoolExpression = 262;
+	int ForeachKeyTypeMustBeIntOrUint = 263;
+	int ForeachKeyCannotBeOutOrRef = 264;
+	int NoReverseIterationOnAssociativeArrays = 265;
+	int OnlyOneOrTwoArgumentsForAssociativeArrayForeach = 266;
+	int OnlyOneOrTwoArgumentsForArrayForeach = 267;
+	int ForeachTargetIsNotAnArrayOf = 268;
+	int ForeachValueCannotBeOutAndTypeBit = 269;
+	int ForeachKeyCannotBeInout = 270;
+	int ForeachValueOfUTFConversionCannotBeInout = 271;
+	int CannotInferTypeForSymbol = 272;
+	int NoStorageClassForSymbol = 273;
+	int OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach = 274;
+	int CannotUniquelyInferForeachArgumentTypes = 275;
+	int InvalidForeachAggregate = 276;
 
 }

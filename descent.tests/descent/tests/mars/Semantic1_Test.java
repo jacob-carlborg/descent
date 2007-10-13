@@ -216,7 +216,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.CannotInferType, 10, 2);
+		assertError(p[0], IProblem.CannotInferTypeFromThisArrayInitializer, 10, 2);
 	}
 
 	public void testCannotInferTypeFromArrayInitializer2() {
@@ -224,7 +224,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.CannotInferType, 10, 9);
+		assertError(p[0], IProblem.CannotInferTypeFromThisArrayInitializer, 10, 9);
 	}
 
 	public void testVariableCannotBeSynchronized() {

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -31,6 +32,7 @@ public class StaticIfCondition extends Condition {
 	public boolean include(Scope sc, ScopeDsymbol s, SemanticContext context) {
 		if (inc == 0) {
 			if (null == sc) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticIfConditionalCannotBeAtGlobalScope, 0, start, length));
 				error(loc, "static if conditional cannot be at global scope");
 				inc = 2;
 				return false;
@@ -47,10 +49,7 @@ public class StaticIfCondition extends Condition {
 			} else if (e.isBool(false)) {
 				inc = 2;
 			} else {
-				e
-						.error(
-								"expression %s is not constant or does not evaluate to a bool",
-								e.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotConstantOrDoesNotEvaluateToABool, 0, exp.start, exp.length, new String[] { e.toChars(context) }));
 				inc = 2;
 			}
 		}

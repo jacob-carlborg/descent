@@ -504,6 +504,8 @@ public class StringExp extends Expression {
 //					if (s1[u] != s2[u])
 //						return s1[u] - s2[u];
 //				}
+				// temporary workarround:
+				return CharOperation.equals(string, se2.string) ? 0 : 1;
 			}
 
 			case 4: {
@@ -516,8 +518,9 @@ public class StringExp extends Expression {
 //					if (s1[u] != s2[u])
 //						return s1[u] - s2[u];
 //				}
+				// temporary workarround:
+				return CharOperation.equals(string, se2.string) ? 0 : 1;
 			}
-				break;
 
 			default:
 				throw new IllegalStateException("assert(0)");

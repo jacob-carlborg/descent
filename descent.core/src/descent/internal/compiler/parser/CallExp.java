@@ -191,8 +191,7 @@ public class CallExp extends UnaExp {
 				if (eresult != null) {
 					e = eresult;
 				} else if ((result & WANTinterpret) != 0) {
-					error("cannot evaluate %s at compile time",
-							toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0, start, length, new String[] { toChars(context) }));
 				}
 			}
 		}
@@ -466,22 +465,21 @@ public class CallExp extends UnaExp {
 				}
 				if (cd == null || cd.baseClass == null
 						|| sc.func.isCtorDeclaration() == null) {
-					error("super class constructor call must be in a constructor");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperClassConstructorCallMustBeInAConstructor, 0, start, length));
 					type = Type.terror;
 					return this;
 				} else {
 					f = cd.baseClass.ctor;
 					if (f == null) {
-						error("no super class constructor for %s", cd.baseClass
-								.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoSuperClassConstructor, 0, start, length, new String[] { cd.baseClass.toChars(context) }));
 						type = Type.terror;
 						return this;
 					} else {
 						if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-							error("constructor calls not allowed in loops or after labels");
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, 0, start, length));
 						}
 						if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-							error("multiple constructor calls");
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, 0, start, length));
 						}
 						sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 
@@ -500,15 +498,15 @@ public class CallExp extends UnaExp {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
 				if (cd == null || sc.func.isCtorDeclaration() == null) {
-					error("class constructor call must be in a constructor");
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ClassConstructorCallMustBeInAConstructor, 0, start, length));
 					type = Type.terror;
 					return this;
 				} else {
 					if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-						error("constructor calls not allowed in loops or after labels");
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, 0, start, length));
 					}
 					if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-						error("multiple constructor calls");
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, 0, start, length));
 					}
 					sc.callSuper |= CSXany_ctor | CSXthis_ctor;
 

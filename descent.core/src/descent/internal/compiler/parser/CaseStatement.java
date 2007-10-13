@@ -85,8 +85,7 @@ public class CaseStatement extends Statement {
 			exp = exp.implicitCastTo(sc, sw.condition.type, context);
 			exp = exp.optimize(WANTvalue | WANTinterpret, context);
 			if (exp.op != TOKstring && exp.op != TOKint64) {
-				error("case must be a string or an integral constant, not %s",
-						exp.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, 0, exp.start, exp.length, new String[] { exp.toChars(context) }));
 				exp = new IntegerExp(0);
 			}
 
@@ -95,8 +94,7 @@ public class CaseStatement extends Statement {
 
 				//printf("comparing '%s' with '%s'\n", exp.toChars(), cs.exp.toChars());
 				if (cs.exp.equals(exp)) {
-					error("duplicate case %s in switch statement", exp
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicateCaseInSwitchStatement, 0, exp.start, exp.length, new String[] { exp.toChars(context) }));
 					break;
 				}
 			}

@@ -87,7 +87,7 @@ final class ProblemMessages extends NLS {
 	public static String UsedAsAType;
 	public static String ExternSymbolsCannotHaveInitializers;
 	public static String VoidsHaveNoValue;
-	public static String CannotInferType;
+	public static String CannotInferTypeFromThisArrayInitializer;
 	public static String NoDefinition;
 	public static String DuplicatedInterfaceInheritance;
 	public static String BaseTypeMustBeClassOrInterface;
@@ -253,6 +253,39 @@ final class ProblemMessages extends NLS {
 	public static String CircularReferenceOfTypedef;
 	public static String StringSliceIsOutOfBounds;
 	public static String ErrorInstantiating;
+	public static String CaseMustBeAnIntegralOrStringConstant;
+	public static String DuplicateCaseInSwitchStatement;
+	public static String SpecialMemberFunctionsNotAllowedForSymbol;
+	public static String SpecialFunctionsNotAllowedInInterface;
+	public static String FunctionBodyIsNotAbstractInInterface;
+	public static String SuperClassConstructorCallMustBeInAConstructor;
+	public static String ClassConstructorCallMustBeInAConstructor;
+	public static String NoSuperClassConstructor;
+	public static String ConstructorCallsNotAllowedInLoopsOrAfterLabels;
+	public static String MultipleConstructorCalls;
+	public static String ExpressionIsNotConstantOrDoesNotEvaluateToABool;
+	public static String StaticIfConditionalCannotBeAtGlobalScope;
+	public static String CannotBreakOutOfFinallyBlock;
+	public static String LabelHasNoBreak;
+	public static String CannotGotoInOrOutOfFinallyBlock;
+	public static String CalledWithArgumentTypesMatchesBoth;
+	public static String SymbolIsNotAnArithmeticType;
+	public static String CannotPerformModuloComplexArithmetic;
+	public static String OperatorNotAllowedOnBoolExpression;
+	public static String ForeachKeyTypeMustBeIntOrUint;
+	public static String ForeachKeyCannotBeOutOrRef;
+	public static String NoReverseIterationOnAssociativeArrays;
+	public static String OnlyOneOrTwoArgumentsForAssociativeArrayForeach;
+	public static String OnlyOneOrTwoArgumentsForArrayForeach;
+	public static String ForeachTargetIsNotAnArrayOf;
+	public static String ForeachValueCannotBeOutAndTypeBit;
+	public static String ForeachKeyCannotBeInout;
+	public static String ForeachValueOfUTFConversionCannotBeInout;
+	public static String CannotInferTypeForSymbol;
+	public static String NoStorageClassForSymbol;
+	public static String OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach;
+	public static String CannotUniquelyInferForeachArgumentTypes;
+	public static String InvalidForeachAggregate;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -239,7 +239,7 @@ public class ForeachStatement extends Statement {
 		aggr = aggr.semantic(sc, context);
 		aggr = resolveProperties(sc, aggr, context);
 		if (aggr.type == null) {
-			error("invalid foreach aggregate %s", aggr.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.InvalidForeachAggregate, 0, start, length, new String[] { aggr.toChars(context) }));
 			return this;
 		}
 
@@ -249,7 +249,7 @@ public class ForeachStatement extends Statement {
 		 * Check for inference errors
 		 */
 		if (dim != arguments.size()) {
-			error("cannot uniquely infer foreach argument types");
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUniquelyInferForeachArgumentTypes, 0, start, length));
 			return this;
 		}
 
@@ -258,7 +258,7 @@ public class ForeachStatement extends Statement {
 		if (tab.ty == Ttuple) // don't generate new scope for tuple loops
 		{
 			if (dim < 1 || dim > 2) {
-				error("only one (value) or two (key,value) arguments for tuple foreach");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach, 0, start, length));
 				return s;
 			}
 
@@ -288,14 +288,13 @@ public class ForeachStatement extends Statement {
 
 				if (dim == 2) { // Declare key
 					if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
-						error("no storage class for %s", arg.ident.toChars());
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, 0, start, length, new String[] { arg.ident.toChars() }));
 					}
 					TY keyty = arg.type.ty;
 					if ((keyty != Tint32 && keyty != Tuns32)
 							|| (context.global.params.isX86_64
 									&& keyty != Tint64 && keyty != Tuns64)) {
-						error("foreach: key type must be int or uint, not %s",
-								arg.type.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, 0, arg.start, arg.length, new String[] { arg.type.toChars(context) }));
 					}
 					Initializer ie = new ExpInitializer(loc, new IntegerExp(
 							loc, k));
@@ -308,7 +307,7 @@ public class ForeachStatement extends Statement {
 				}
 				// Declare value
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
-					error("no storage class for %s", arg.ident.toChars());
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, 0, start, length, new String[] { arg.ident.toChars() }));
 				}
 				Dsymbol var;
 				if (te != null) {
@@ -350,7 +349,7 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = arguments.get(i);
 			if (arg.type == null) {
-				error("cannot infer type for %s", arg.ident.toChars());
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferTypeForSymbol, 0, start, length, new String[] { arg.ident.toChars() }));
 				return this;
 			}
 		}
@@ -365,7 +364,7 @@ public class ForeachStatement extends Statement {
 		case Tarray:
 		case Tsarray:
 			if (dim < 1 || dim > 2) {
-				error("only one or two arguments for array foreach");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForArrayForeach, 0, start, length));
 				break;
 			}
 
@@ -384,12 +383,12 @@ public class ForeachStatement extends Statement {
 				if (tnv.ty != tn.ty
 						&& (tnv.ty == Tchar || tnv.ty == Twchar || tnv.ty == Tdchar)) {
 					if ((arg.storageClass & STCref) != 0) {
-						error("foreach: value of UTF conversion cannot be inout");
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueOfUTFConversionCannotBeInout, 0, start, length));
 					}
 					if (dim == 2) {
 						arg = arguments.get(0);
 						if ((arg.storageClass & STCref) != 0) {
-							error("foreach: key cannot be inout");
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeInout, 0, start, length));
 						}
 					}
 					// goto Lapply;
@@ -426,36 +425,34 @@ public class ForeachStatement extends Statement {
 					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context),
 							context);
 				} else {
-					error("foreach: %s is not an array of %s", tab
-							.toChars(context), value.type.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachTargetIsNotAnArrayOf, 0, start, length, new String[] { tab.toChars(context), value.type.toChars(context) }));
 				}
 			}
 
 			if ((value.storage_class & STCout) != 0
 					&& value.type.toBasetype(context).ty == Tbit) {
-				error("foreach: value cannot be out and type bit");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueCannotBeOutAndTypeBit, 0, start, length));
 			}
 
 			if (key != null
 					&& ((key.type.ty != Tint32 && key.type.ty != Tuns32) || (context.global.params.isX86_64
 							&& key.type.ty != Tint64 && key.type.ty != Tuns64))) {
-				error("foreach: key type must be int or uint, not %s", key.type
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, 0, key.start, key.length, new String[] { key.type.toChars(context) }));
 			}
 
 			if (key != null && (key.storage_class & STCout | STCref) != 0) {
-				error("foreach: key cannot be out or ref");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeOutOrRef, 0, key.start, key.length));
 			}
 			break;
 
 		case Taarray:
 			taa = (TypeAArray) tab;
 			if (dim < 1 || dim > 2) {
-				error("only one or two arguments for associative array foreach");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForAssociativeArrayForeach, 0, start, length));
 				break;
 			}
 			if (op == TOKforeach_reverse) {
-				error("no reverse iteration on associative arrays");
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoReverseIterationOnAssociativeArrays, 0, start, length));
 			}
 			// goto Lapply
 			Statement[] ps = { null };

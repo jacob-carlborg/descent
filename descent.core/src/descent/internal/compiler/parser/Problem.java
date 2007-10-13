@@ -249,8 +249,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ExternSymbolsCannotHaveInitializers);
 		case VoidsHaveNoValue:
 			return String.format(ProblemMessages.VoidsHaveNoValue);
-		case CannotInferType:
-			return String.format(ProblemMessages.CannotInferType);
+		case CannotInferTypeFromThisArrayInitializer:
+			return String.format(ProblemMessages.CannotInferTypeFromThisArrayInitializer);
 		case NoDefinition:
 			return String.format(ProblemMessages.NoDefinition, arguments[0]);
 		case DuplicatedInterfaceInheritance:
@@ -581,6 +581,72 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.StringSliceIsOutOfBounds, arguments[0], arguments[1]);
 		case ErrorInstantiating:
 			return String.format(ProblemMessages.ErrorInstantiating);
+		case CaseMustBeAnIntegralOrStringConstant:
+			return String.format(ProblemMessages.CaseMustBeAnIntegralOrStringConstant, arguments[0]);
+		case DuplicateCaseInSwitchStatement:
+			return String.format(ProblemMessages.DuplicateCaseInSwitchStatement, arguments[0]);
+		case SpecialMemberFunctionsNotAllowedForSymbol:
+			return String.format(ProblemMessages.SpecialMemberFunctionsNotAllowedForSymbol, arguments[0]);
+		case SpecialFunctionsNotAllowedInInterface:
+			return String.format(ProblemMessages.SpecialFunctionsNotAllowedInInterface, arguments[0]);
+		case FunctionBodyIsNotAbstractInInterface:
+			return String.format(ProblemMessages.FunctionBodyIsNotAbstractInInterface, arguments[0]);
+		case SuperClassConstructorCallMustBeInAConstructor:
+			return String.format(ProblemMessages.SuperClassConstructorCallMustBeInAConstructor);
+		case ClassConstructorCallMustBeInAConstructor:
+			return String.format(ProblemMessages.ClassConstructorCallMustBeInAConstructor);
+		case NoSuperClassConstructor:
+			return String.format(ProblemMessages.NoSuperClassConstructor, arguments[0]);
+		case ConstructorCallsNotAllowedInLoopsOrAfterLabels:
+			return String.format(ProblemMessages.ConstructorCallsNotAllowedInLoopsOrAfterLabels);
+		case MultipleConstructorCalls:
+			return String.format(ProblemMessages.MultipleConstructorCalls);
+		case ExpressionIsNotConstantOrDoesNotEvaluateToABool:
+			return String.format(ProblemMessages.ExpressionIsNotConstantOrDoesNotEvaluateToABool, arguments[0]);
+		case StaticIfConditionalCannotBeAtGlobalScope:
+			return String.format(ProblemMessages.StaticIfConditionalCannotBeAtGlobalScope);
+		case CannotBreakOutOfFinallyBlock:
+			return String.format(ProblemMessages.CannotBreakOutOfFinallyBlock);
+		case LabelHasNoBreak:
+			return String.format(ProblemMessages.LabelHasNoBreak, arguments[0]);
+		case CannotGotoInOrOutOfFinallyBlock:
+			return String.format(ProblemMessages.CannotGotoInOrOutOfFinallyBlock);
+		case CalledWithArgumentTypesMatchesBoth:
+			return String.format(ProblemMessages.CalledWithArgumentTypesMatchesBoth, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+		case SymbolIsNotAnArithmeticType:
+			return String.format(ProblemMessages.SymbolIsNotAnArithmeticType, arguments[0]);
+		case CannotPerformModuloComplexArithmetic:
+			return String.format(ProblemMessages.CannotPerformModuloComplexArithmetic);
+		case OperatorNotAllowedOnBoolExpression:
+			return String.format(ProblemMessages.OperatorNotAllowedOnBoolExpression, arguments[0]);
+		case ForeachKeyTypeMustBeIntOrUint:
+			return String.format(ProblemMessages.ForeachKeyTypeMustBeIntOrUint, arguments[0]);
+		case ForeachKeyCannotBeOutOrRef:
+			return String.format(ProblemMessages.ForeachKeyCannotBeOutOrRef);
+		case NoReverseIterationOnAssociativeArrays:
+			return String.format(ProblemMessages.NoReverseIterationOnAssociativeArrays);
+		case OnlyOneOrTwoArgumentsForAssociativeArrayForeach:
+			return String.format(ProblemMessages.OnlyOneOrTwoArgumentsForAssociativeArrayForeach);
+		case OnlyOneOrTwoArgumentsForArrayForeach:
+			return String.format(ProblemMessages.OnlyOneOrTwoArgumentsForArrayForeach);
+		case ForeachTargetIsNotAnArrayOf:
+			return String.format(ProblemMessages.ForeachTargetIsNotAnArrayOf, arguments[0], arguments[1]);
+		case ForeachValueCannotBeOutAndTypeBit:
+			return String.format(ProblemMessages.ForeachValueCannotBeOutAndTypeBit);
+		case ForeachKeyCannotBeInout:
+			return String.format(ProblemMessages.ForeachKeyCannotBeInout);
+		case ForeachValueOfUTFConversionCannotBeInout:
+			return String.format(ProblemMessages.ForeachValueOfUTFConversionCannotBeInout);
+		case CannotInferTypeForSymbol:
+			return String.format(ProblemMessages.CannotInferTypeForSymbol, arguments[0]);
+		case NoStorageClassForSymbol:
+			return String.format(ProblemMessages.NoStorageClassForSymbol, arguments[0]);
+		case OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach:
+			return String.format(ProblemMessages.OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach);
+		case CannotUniquelyInferForeachArgumentTypes:
+			return String.format(ProblemMessages.CannotUniquelyInferForeachArgumentTypes);
+		case InvalidForeachAggregate:
+			return String.format(ProblemMessages.InvalidForeachAggregate, arguments[0]);
 		default:
 			return "";
 		}

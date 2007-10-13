@@ -153,15 +153,18 @@ public abstract class BinExp extends Expression {
 			e1.checkScalar(context);
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
-				error("operator not allowed on bool expression %s",
-						toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.OperatorNotAllowedOnBoolExpression, 0, start,
+						length, new String[] { toChars(context) }));
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);
 			e2.checkArithmetic(context);
 
 			if (op == TOKmodass && e2.type.iscomplex()) {
-				error("cannot perform modulo complex arithmetic");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotPerformModuloComplexArithmetic, 0, start,
+						length));
 				assignBinding();
 				return new IntegerExp(loc, 0);
 			}

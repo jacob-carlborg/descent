@@ -138,7 +138,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkArithmetic(SemanticContext context) {
 		if (!type.isintegral() && !type.isfloating()) {
-			error("'%s' is not an arithmetic type", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolIsNotAnArithmeticType, 0, start,
+					length, new String[] { toChars(context) }));
 		}
 	}
 

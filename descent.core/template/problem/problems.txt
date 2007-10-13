@@ -229,7 +229,7 @@ ExternSymbolsCannotHaveInitializers
 VoidsHaveNoValue
 	formatString=Voids have no value
 	numArgs=0
-CannotInferType
+CannotInferTypeFromThisArrayInitializer
 	formatString=Cannot infer type from this array initializer
 	numArgs=0
 NoDefinition
@@ -727,6 +727,112 @@ StringSliceIsOutOfBounds
 ErrorInstantiating
 	formatString=Error instantiating
 	numArgs=0
+CaseMustBeAnIntegralOrStringConstant
+	formatString=Case must be a string or an integral constant, not %1$s
+	numArgs=1
+DuplicateCaseInSwitchStatement
+	formatString=Duplicate case %1$s in switch statement
+	numArgs=1
+SpecialMemberFunctionsNotAllowedForSymbol
+	formatString=Special member functions not allowed for %1$ss
+	numArgs=1
+SpecialFunctionsNotAllowedInInterface
+	formatString=Special function not allowed in interface %1$s
+	numArgs=1
+FunctionBodyIsNotAbstractInInterface
+	formatString=Function body is not abstract in interface %1$s
+	numArgs=1
+SuperClassConstructorCallMustBeInAConstructor
+	formatString=super class constructor call must be in a constructor
+	numArgs=0
+ClassConstructorCallMustBeInAConstructor
+	formatString=class constructor call must be in a constructor
+	numArgs=0
+NoSuperClassConstructor
+	formatString=No super class constructor for %1$s
+	numArgs=1
+ConstructorCallsNotAllowedInLoopsOrAfterLabels
+	formatString=Constructor calls not allowed in loops or after labels
+	numArgs=0
+MultipleConstructorCalls
+	formatString=Multiple constructor calls
+	numArgs=0
+ExpressionIsNotConstantOrDoesNotEvaluateToABool
+	formatString=Expression %1$s is not constant or does not evaluate to a bool
+	numArgs=1
+StaticIfConditionalCannotBeAtGlobalScope
+	formatString=static if conditional cannot be at global scope
+	numArgs=0
+CannotBreakOutOfFinallyBlock
+	formatString=Cannot break out of finally block
+	numArgs=0	
+LabelHasNoBreak
+	formatString=Label '%1$s' has no break
+	numArgs=1
+CannotGotoInOrOutOfFinallyBlock
+	formatString=Cannot goto in or out of finally block
+	numArgs=0
+CalledWithArgumentTypesMatchesBoth
+	formatString=Called with argument types: (%1$s) matches both:  %2$s%3$s and: %4$s%5$s
+	numArgs=5
+SymbolIsNotAnArithmeticType
+	formatString='%1$s' is not an arithmetic type
+	numArgs=1
+CannotPerformModuloComplexArithmetic
+	formatString=Cannot perform modulo complex arithmetic
+	numArgs=0
+OperatorNotAllowedOnBoolExpression
+	formatString=Operator not allowed on bool expression %1$s
+	numArgs=1
+ForeachKeyTypeMustBeIntOrUint
+	formatString=foreach: key type must be int or uint, not %1$s
+	numArgs=1
+ForeachKeyCannotBeOutOrRef
+	formatString=foreach: key cannot be out or ref
+	numArgs=0
+NoReverseIterationOnAssociativeArrays
+	formatString=No reverse iteration on associative arrays
+	numArgs=0
+OnlyOneOrTwoArgumentsForAssociativeArrayForeach
+	formatString=Only one or two arguments for associative array foreach
+	numArgs=0
+OnlyOneOrTwoArgumentsForArrayForeach
+	formatString=Only one or two arguments for array foreach
+	numArgs=0
+ForeachTargetIsNotAnArrayOf
+	formatString=foreach: %1$s is not an array of %2$s
+	numArgs=2
+ForeachValueCannotBeOutAndTypeBit
+	formatString=foreach: value cannot be out and type bit
+	numArgs=0
+ForeachKeyCannotBeInout
+	formatString=foreach: key cannot be inout
+	numArgs=0
+ForeachValueOfUTFConversionCannotBeInout
+	formatString=foreach: value of UTF conversion cannot be inout
+	numArgs=0
+CannotInferTypeForSymbol
+	formatString=Cannot infer type for %1$s
+	numArgs=1
+NoStorageClassForSymbol
+	formatString=no storage class for %1$s
+	numArgs=1
+OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach
+	formatString=Only one (value) or two (key,value) arguments for tuple foreach
+	numArgs=0
+CannotUniquelyInferForeachArgumentTypes
+	formatString=Cannot uniquely infer foreach argument types
+	numArgs=0
+InvalidForeachAggregate
+	formatString=Invalid foreach aggregate %1$s
+	numArgs=1
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
