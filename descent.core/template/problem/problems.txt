@@ -955,18 +955,111 @@ ReturnExpressionExpected
 ReturnWithoutCallingConstructor
 	formatString=Return without calling constructor
 	numArgs=0
-
-
-
-
-
-
-
-
-
-
-
-
+ModuleIsInMultiplePackages
+	formatString=Is in multiple packages %s
+	numArgs=1
+ModuleIsInMultipleDefined
+	formatString=Is in multiple defined
+	numArgs=0
+NeedUpperAndLowerBoundToSlicePointer
+	formatString=Need upper and lower bound to slice pointer
+	numArgs=0
+NeedUpperAndLowerBoundToSliceTuple
+	formatString=Need upper and lower bound to slice tuple
+	numArgs=0
+CannotConvertStringLiteralToVoidPointer
+	formatString=Cannot convert string literal to void*
+	numArgs=0
+SymbolIsNotAPreInstanceInitializableField
+	formatString=%1$s is not a per-instance initializable field
+	numArgs=1
+NoCaseStatementFollowingGoto
+	formatString=No case statement following goto case;
+	numArgs=0
+SwitchStatementHasNoDefault
+	formatString=Switch statement has no default
+	numArgs=0
+SymbolIsNotAFunctionTemplate
+	formatString=%1$s is not a function template
+	numArgs=1
+TupleIsNotAValidTemplateValueArgument
+	formatString=Tuple is not a valid template value argument
+	numArgs=0
+IncompatibleArgumentsForTemplateInstantiation
+	formatString=Incompatible arguments for template instantiation
+	numArgs=0
+ThrowStatementsCannotBeInContracts
+	formatString=Throw statements cannot be in contracts
+	numArgs=0
+CanOnlyThrowClassObjects
+	formatString=Can only throw class objects, not type %1$s
+	numArgs=1
+StringExpectedAsSecondArgument
+	formatString=String expected as second argument
+	numArgs=0
+WrongNumberOfArguments
+	formatString=Wrong number of arguments %1$s
+	numArgs=1
+StringMustBeChars
+	formatString=String must be chars
+	numArgs=0
+InvalidFirstArgument
+	formatString=Invalid first argument
+	numArgs=0
+FirstArgumentIsNotAClass
+	formatString=First argument is not a class
+	numArgs=0
+ArgumentHasNoMembers
+	formatString=Argument has no members
+	numArgs=0
+KindSymbolHasNoMembers
+	formatString=%1$s %$2s has no members
+	numArgs=2
+DotOffsetDeprecated
+	formatString=.offset deprecated, use .offsetof
+	numArgs=0
+NoClassInfoForComInterfaceObjects
+	formatString=No .classinfo for COM interface objects
+	numArgs=0
+CannotMakeReferenceToABit
+	formatString=Cannot make reference to a bit
+	numArgs=0
+CannotFormTupleOfTuples
+	formatString=Cannot form tuple of tuples
+	numArgs=0
+MissingInitializerInStaticConstructorForConstVariable
+	formatString=Missing initializer in static constructor for const variable
+	numArgs=0
+GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto
+	formatString=Globals, statics, fields, ref and out parameters cannot be auto
+	numArgs=0	
+ReferenceToScopeClassMustBeScope
+	formatString=Reference to scope class must be scop
+	numArgs=0
+NumberOfKeysMustMatchNumberOfValues
+	formatString=Number of keys is %1$s, must match number of values %2$s
+	numArgs=2
+ExpectedNumberArguments
+	formatString=Expected %1$su arguments, not %2$su
+	numArgs=2	
+ArraySliceIfOutOfBounds
+	formatString=Array slice [%1$su .. %2$su] is out of bounds
+	numArgs=2
+InvalidUCS32Char
+	formatString=Invalid UCS-32 char \U%1$s
+	numArgs=1
+TupleIndexExceedsBounds
+	formatString=Tuple index %1$su exceeds %2$s
+	numArgs=2
+SliceIsOutOfRange
+	formatString=Slice [%1$su..%2$su] is out of range of [0..%3$s]
+	numArgs=3
+	
+	
+	
+	
+	
+	
 
 
 

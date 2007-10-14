@@ -85,9 +85,13 @@ public class SemanticContext {
 		// Update global list of modules
 		if (null == dst.insert(module)) {
 			if (module.md != null) {
-				module.error("is in multiple packages %s", module.md.toChars(this));
+				acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ModuleIsInMultiplePackages, 0, module.md.start,
+						module.md.length, new String[] { module.md.toChars(this) }));
 			} else {
-				module.error("is in multiple defined");
+				acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ModuleIsInMultipleDefined, 0, module.md.start,
+						module.md.length));
 			}
 		} else {
 			if (Module_amodules == null) {

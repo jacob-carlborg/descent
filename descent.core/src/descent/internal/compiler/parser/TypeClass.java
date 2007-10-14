@@ -166,7 +166,9 @@ public class TypeClass extends Type {
 					e.type = t.pointerTo(context);
 					if (sym.isInterfaceDeclaration() != null) {
 						if (sym.isCOMclass()) {
-							error("no .classinfo for COM interface objects");
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.NoClassInfoForComInterfaceObjects, 0, start,
+									length));
 						}
 						e.type = e.type.pointerTo(context);
 						e = new PtrExp(e.loc, e);

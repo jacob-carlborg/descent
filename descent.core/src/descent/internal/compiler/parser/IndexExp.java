@@ -237,8 +237,9 @@ public class IndexExp extends BinExp {
 			}
 
 			else {
-				error("array index [%ju] is outside array bounds [0 .. %zu]",
-						(int) index.longValue(), (int) length.longValue());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ArrayIndexOutOfBounds, 0, this.start,
+						this.length, new String[] { index.toString(), length.toString() }));
 				e = e1;
 			}
 			break;

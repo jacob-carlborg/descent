@@ -643,7 +643,7 @@ public abstract class Type extends ASTDmdNode {
 		if (singleton.rto == null) {
 			Type t;
 
-			t = new TypeReference(singleton);
+			t = new TypeReference(singleton, context);
 			singleton.rto = t.merge(context);
 		}
 		return rto;
@@ -742,7 +742,9 @@ public abstract class Type extends ASTDmdNode {
 		if (null != v) {
 			if (CharOperation.equals(ident.ident, Id.offset)) {
 				if (!context.global.params.useDeprecated) {
-					error(".offset deprecated, use .offsetof");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.DotOffsetDeprecated, 0, start,
+							length));
 				}
 				//goto Loffset;
 				if (0 != (v.storage_class & STCfield)) {

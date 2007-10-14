@@ -172,7 +172,9 @@ public class SwitchStatement extends Statement {
 				GotoCaseStatement gcs = (GotoCaseStatement) gotoCases.get(i);
 	
 				if (null == gcs.exp) {
-					gcs.error("no case statement following goto case;");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.NoCaseStatementFollowingGoto, 0, start,
+							length));
 					break;
 				}
 	
@@ -199,7 +201,9 @@ public class SwitchStatement extends Statement {
 			hasNoDefault = 1;
 
 			if (context.global.params.warnings) {
-				error("warning - switch statement has no default");
+				context.acceptProblem(Problem.newSemanticTypeWarning(
+						IProblem.SwitchStatementHasNoDefault, 0, start,
+						length));
 			}
 
 			// Generate runtime error if the default is hit

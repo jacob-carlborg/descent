@@ -3,14 +3,20 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Treference;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeReference extends Type {
+	
+	private SemanticContext context;
 
-	public TypeReference(Type t) {
+	public TypeReference(Type t, SemanticContext context) {
 		super(Treference, t);
+		this.context = context;
 		if (t.ty == Tbit) {
-			error("cannot make reference to a bit");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotMakeReferenceToABit, 0, start,
+					length));
 		}
 	}
 
@@ -20,7 +26,7 @@ public class TypeReference extends Type {
 		if (t == next)
 			t = this;
 		else
-			t = new TypeReference(t);
+			t = new TypeReference(t, context);
 		return t;
 	}
 

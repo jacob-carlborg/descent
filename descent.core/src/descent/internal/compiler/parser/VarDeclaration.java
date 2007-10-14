@@ -124,7 +124,9 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public void checkCtorConstInit(SemanticContext context) {
 		if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
-			error("missing initializer in static constructor for const variable");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.MissingInitializerInStaticConstructorForConstVariable, 0, start,
+					length));
 		}
 	}
 
@@ -381,13 +383,17 @@ public class VarDeclaration extends Declaration {
 		if (type.isauto() && !noauto) {
 			if ((storage_class & (STCfield | STCout | STCref | STCstatic)) != 0
 					|| fd == null) {
-				error("globals, statics, fields, ref and out parameters cannot be auto");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto, 0, start,
+						length));
 			}
 
 			if ((storage_class & (STCauto | STCscope)) == 0) {
 				if ((storage_class & STCparameter) == 0
 						&& CharOperation.equals(ident.ident, Id.withSym)) {
-					error("reference to scope class must be scope");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ReferenceToScopeClassMustBeScope, 0, start,
+							length, new String[] { toChars(context) }));
 				}
 			}
 		}

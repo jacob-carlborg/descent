@@ -23,15 +23,18 @@ public class TypeTuple extends Type {
 		this.arguments = arguments;
 	}
 	
-	public TypeTuple(Expressions exps) {
+	public TypeTuple(Expressions exps, SemanticContext context) {
 		super(Ttuple, null);
 		Arguments arguments = new Arguments();
 		if (exps != null) {
 			arguments.setDim(exps.size());
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
-				if (e.type.ty == Ttuple)
-					e.error("cannot form tuple of tuples");
+				if (e.type.ty == Ttuple) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotFormTupleOfTuples, 0, e.start,
+							e.length, new String[] { toChars(context) }));
+				}
 				Argument arg = new Argument(STCin, e.type, null, null);
 				arguments.set(i, arg);
 			}
@@ -166,7 +169,9 @@ public class TypeTuple extends Type {
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
 				if (e.type.ty == TY.Ttuple) {
-					e.error("cannot form tuple of tuples");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotFormTupleOfTuples, 0, e.start,
+							e.length));
 				}
 				Argument arg = new Argument(STCin, e.type, null, null);
 				arguments.set(i, arg);

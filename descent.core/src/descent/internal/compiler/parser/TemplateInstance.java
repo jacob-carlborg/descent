@@ -338,7 +338,9 @@ public class TemplateInstance extends ScopeDsymbol {
 					if (!gotoLsa) {
 						buf.writeByte('V');
 						if (ea.op == TOKtuple) {
-							ASTDmdNode.error("tuple is not a valid template value argument");
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.TupleIsNotAValidTemplateValueArgument, 0, start,
+									length));
 							continue;
 						}
 						buf.writestring(ea.type.deco);
@@ -506,7 +508,9 @@ public class TemplateInstance extends ScopeDsymbol {
 			tdtypes.setDim(tempdecl.parameters.size());
 			if (MATCHnomatch == tempdecl.matchWithInstance(this, tdtypes, 0,
 					context)) {
-				error("incompatible arguments for template instantiation");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.IncompatibleArgumentsForTemplateInstantiation, 0, start,
+						length));
 				inst = this;
 				return;
 			}

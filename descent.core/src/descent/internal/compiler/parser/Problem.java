@@ -733,6 +733,72 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ReturnExpressionExpected);
 		case ReturnWithoutCallingConstructor:
 			return String.format(ProblemMessages.ReturnWithoutCallingConstructor);
+		case ModuleIsInMultiplePackages:
+			return String.format(ProblemMessages.ModuleIsInMultiplePackages, arguments[0]);
+		case ModuleIsInMultipleDefined:
+			return String.format(ProblemMessages.ModuleIsInMultipleDefined);
+		case NeedUpperAndLowerBoundToSlicePointer:
+			return String.format(ProblemMessages.NeedUpperAndLowerBoundToSlicePointer);
+		case NeedUpperAndLowerBoundToSliceTuple:
+			return String.format(ProblemMessages.NeedUpperAndLowerBoundToSliceTuple);
+		case CannotConvertStringLiteralToVoidPointer:
+			return String.format(ProblemMessages.CannotConvertStringLiteralToVoidPointer);
+		case SymbolIsNotAPreInstanceInitializableField:
+			return String.format(ProblemMessages.SymbolIsNotAPreInstanceInitializableField, arguments[0]);
+		case NoCaseStatementFollowingGoto:
+			return String.format(ProblemMessages.NoCaseStatementFollowingGoto);
+		case SwitchStatementHasNoDefault:
+			return String.format(ProblemMessages.SwitchStatementHasNoDefault);
+		case SymbolIsNotAFunctionTemplate:
+			return String.format(ProblemMessages.SymbolIsNotAFunctionTemplate, arguments[0]);
+		case TupleIsNotAValidTemplateValueArgument:
+			return String.format(ProblemMessages.TupleIsNotAValidTemplateValueArgument);
+		case IncompatibleArgumentsForTemplateInstantiation:
+			return String.format(ProblemMessages.IncompatibleArgumentsForTemplateInstantiation);
+		case ThrowStatementsCannotBeInContracts:
+			return String.format(ProblemMessages.ThrowStatementsCannotBeInContracts);
+		case CanOnlyThrowClassObjects:
+			return String.format(ProblemMessages.CanOnlyThrowClassObjects, arguments[0]);
+		case StringExpectedAsSecondArgument:
+			return String.format(ProblemMessages.StringExpectedAsSecondArgument);
+		case WrongNumberOfArguments:
+			return String.format(ProblemMessages.WrongNumberOfArguments, arguments[0]);
+		case StringMustBeChars:
+			return String.format(ProblemMessages.StringMustBeChars);
+		case InvalidFirstArgument:
+			return String.format(ProblemMessages.InvalidFirstArgument);
+		case FirstArgumentIsNotAClass:
+			return String.format(ProblemMessages.FirstArgumentIsNotAClass);
+		case ArgumentHasNoMembers:
+			return String.format(ProblemMessages.ArgumentHasNoMembers);
+		case KindSymbolHasNoMembers:
+			return String.format(ProblemMessages.KindSymbolHasNoMembers, arguments[0], arguments[1]);
+		case DotOffsetDeprecated:
+			return String.format(ProblemMessages.DotOffsetDeprecated);
+		case NoClassInfoForComInterfaceObjects:
+			return String.format(ProblemMessages.NoClassInfoForComInterfaceObjects);
+		case CannotMakeReferenceToABit:
+			return String.format(ProblemMessages.CannotMakeReferenceToABit);
+		case CannotFormTupleOfTuples:
+			return String.format(ProblemMessages.CannotFormTupleOfTuples);
+		case MissingInitializerInStaticConstructorForConstVariable:
+			return String.format(ProblemMessages.MissingInitializerInStaticConstructorForConstVariable);
+		case GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto:
+			return String.format(ProblemMessages.GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto);
+		case ReferenceToScopeClassMustBeScope:
+			return String.format(ProblemMessages.ReferenceToScopeClassMustBeScope);
+		case NumberOfKeysMustMatchNumberOfValues:
+			return String.format(ProblemMessages.NumberOfKeysMustMatchNumberOfValues, arguments[0], arguments[1]);
+		case ExpectedNumberArguments:
+			return String.format(ProblemMessages.ExpectedNumberArguments, arguments[0], arguments[1]);
+		case ArraySliceIfOutOfBounds:
+			return String.format(ProblemMessages.ArraySliceIfOutOfBounds, arguments[0], arguments[1]);
+		case InvalidUCS32Char:
+			return String.format(ProblemMessages.InvalidUCS32Char, arguments[0]);
+		case TupleIndexExceedsBounds:
+			return String.format(ProblemMessages.TupleIndexExceedsBounds, arguments[0], arguments[1]);
+		case SliceIsOutOfRange:
+			return String.format(ProblemMessages.SliceIsOutOfRange, arguments[0], arguments[1], arguments[2]);
 		default:
 			return "";
 		}

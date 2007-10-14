@@ -203,7 +203,9 @@ public class TypeSArray extends TypeArray {
 				sc = sc.pop();
 
 				if (d >= td.objects.size()) {
-					error("tuple index %ju exceeds %u", d, td.objects.size());
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.TupleIndexExceedsBounds, 0, start,
+							length, new String[] { String.valueOf(d), String.valueOf(td.objects.size()) }));
 					super.resolve(loc, sc, pe, pt, ps, context); // goto
 					// Ldefault;
 				}
@@ -256,7 +258,9 @@ public class TypeSArray extends TypeArray {
 			int d = dim.toUInteger(context).intValue();
 
 			if (d >= sd.objects.size()) {
-				error("tuple index %ju exceeds %u", d, sd.objects.size());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TupleIndexExceedsBounds, 0, start,
+						length, new String[] { String.valueOf(d), String.valueOf(sd.objects.size()) }));
 				return Type.terror;
 			}
 			ASTDmdNode o = (ASTDmdNode) sd.objects.get(d);
@@ -322,7 +326,9 @@ public class TypeSArray extends TypeArray {
 			int d = dim.toUInteger(context).intValue();
 
 			if (d >= tt.arguments.size()) {
-				error("tuple index %ju exceeds %u", d, tt.arguments.size());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TupleIndexExceedsBounds, 0, start,
+						length, new String[] { String.valueOf(d), String.valueOf(tt.arguments.size()) }));
 				return Type.terror;
 			}
 			Argument arg = (Argument) tt.arguments.get(d);

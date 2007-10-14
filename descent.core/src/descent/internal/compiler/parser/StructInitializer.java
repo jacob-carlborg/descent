@@ -87,8 +87,9 @@ public class StructInitializer extends Initializer {
 					// Find out which field index it is
 					for (fieldi = 0; true; fieldi++) {
 						if (fieldi >= ad.fields.size()) {
-							s
-									.error("is not a per-instance initializable field");
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.SymbolIsNotAPreInstanceInitializableField, 0, s.start,
+									s.length, new String[] { s.toChars(context) }));
 							break;
 						}
 						if (s == ad.fields.get(fieldi)) {

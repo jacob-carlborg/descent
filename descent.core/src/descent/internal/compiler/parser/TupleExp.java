@@ -170,7 +170,7 @@ public class TupleExp extends Expression {
 		if (expsx != null) {
 			TupleExp te = new TupleExp(loc, expsx);
 			expandTuples(te.exps, context);
-			te.type = new TypeTuple(te.exps);
+			te.type = new TypeTuple(te.exps, context);
 			return te;
 		}
 		return this;

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -46,13 +47,16 @@ public class ThrowStatement extends Statement {
 		fd.hasReturnExp |= 2;
 
 		if (sc.incontract != 0) {
-			error("Throw statements cannot be in contracts");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ThrowStatementsCannotBeInContracts, 0, start,
+					length));
 		}
 		exp = exp.semantic(sc, context);
 		exp = resolveProperties(sc, exp, context);
 		if (null == exp.type.toBasetype(context).isClassHandle()) {
-			error("can only throw class objects, not type %s", exp.type
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CanOnlyThrowClassObjects, 0, exp.start,
+					exp.length, new String[] { exp.type.toChars(context) }));
 		}
 		return this;
 	}

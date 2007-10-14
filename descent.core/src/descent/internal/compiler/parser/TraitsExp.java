@@ -201,22 +201,28 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if(dim != 2)
 			{
-				error("wrong number of arguments %d", dim);
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.WrongNumberOfArguments, 0, start,
+						length, new String[] { String.valueOf(dim) }));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ASTDmdNode o = args.get(0);
-			Expression e = null; /* TODO semantic isExpression((Object) args.get(1)); */
+			Expression e = isExpression((ASTDmdNode) args.get(1));
 			if(null == e)
 			{ 
-				error("string expected as second argument");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.StringExpectedAsSecondArgument, 0, start,
+						length));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			e = e.optimize(WANTvalue | WANTinterpret, context);
 			if(e.op != TOK.TOKstring)
 			{
-				error("string expected as second argument");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.StringExpectedAsSecondArgument, 0, start,
+						length));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -224,7 +230,9 @@ public class TraitsExp extends Expression {
 			se = se.toUTF8(sc, context);
 			if (se.sz != 1)
 			{
-				error("string must be chars");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.StringMustBeChars, 0, start,
+						length));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -243,7 +251,9 @@ public class TraitsExp extends Expression {
 			}
 			else
 			{
-				error("invalid first argument");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.InvalidFirstArgument, 0, start,
+						length));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 	
@@ -312,22 +322,28 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
 			{
-				error("wrong number of arguments %d", dim);
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.WrongNumberOfArguments, 0, start,
+						length, new String[] { String.valueOf(dim) }));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ASTDmdNode o = args.get(0);
-			Dsymbol s = null; /* TODO semantic getDsymbol(o); */
+			Dsymbol s = getDsymbol(o, context);
 			if(null == s)
 			{
-				error("first argument is not a class");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.FirstArgumentIsNotAClass, 0, start,
+						length));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ClassDeclaration cd = s.isClassDeclaration();
 			if (null == cd)
 			{
-			    error("first argument is not a class");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.FirstArgumentIsNotAClass, 0, start,
+						length));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			return new IntegerExp(loc, cd.structsize, Type.tsize_t);
@@ -339,22 +355,28 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
 			{
-				error("wrong number of arguments %d", dim);
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.WrongNumberOfArguments, 0, start,
+						length, new String[] { String.valueOf(dim) }));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ASTDmdNode o = args.get(0);
-			Dsymbol s = null;/* TODO semantic getDsymbol(o); */
+			Dsymbol s = getDsymbol(o, context);
 			if (null == s)
 			{
-			    error("argument has no members");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ArgumentHasNoMembers, 0, start,
+						length));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ScopeDsymbol sd = s.isScopeDsymbol();
 			if(null == sd)
 			{
-			    error("%s %s has no members", s.kind(), s.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.KindSymbolHasNoMembers, 0, start,
+						length, new String[] { s.kind(), s.toChars(context) }));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			

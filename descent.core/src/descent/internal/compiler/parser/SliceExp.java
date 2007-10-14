@@ -150,8 +150,11 @@ public class SliceExp extends UnaExp {
 		Type t = e1.type.toBasetype(context);
 
 		if (t.ty == TY.Tpointer) {
-			if (null == lwr || null == upr)
-				error("need upper and lower bound to slice pointer");
+			if (null == lwr || null == upr) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.NeedUpperAndLowerBoundToSlicePointer, 0, start,
+						length));
+			}
 		} else if (t.ty == TY.Tarray || t.ty == TY.Tsarray) {
 		} else if (t.ty == TY.Tclass || t.ty == TY.Tstruct) {
 			if (t.ty == TY.Tclass)
@@ -179,7 +182,9 @@ public class SliceExp extends UnaExp {
 			if (null == lwr && null == upr) {
 				return e1;
 			} else if (null == lwr || null == upr) {
-				error("need upper and lower bound to slice tuple");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.NeedUpperAndLowerBoundToSliceTuple, 0, start,
+						length));
 				return Lerror(t, e, sc, context);
 			}
 		} else {

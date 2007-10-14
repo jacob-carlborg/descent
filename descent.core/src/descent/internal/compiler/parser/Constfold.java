@@ -1326,8 +1326,9 @@ public class Constfold {
 			int iupr = upr.toInteger(context).intValue();
 
 			if (iupr > es1.elements.size() || ilwr > iupr) {
-				ASTDmdNode.error("array slice [%ju .. %ju] is out of bounds", ilwr,
-						iupr);
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ArraySliceIfOutOfBounds, 0, es1.start,
+						es1.length, new String[] { String.valueOf(ilwr), String.valueOf(iupr) }));
 			} else {
 				Expressions elements = new Expressions();
 				elements.setDim(iupr - ilwr);

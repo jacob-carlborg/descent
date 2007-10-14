@@ -696,18 +696,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		return DYNCAST.DYNCAST_OBJECT;
 	}
 
-	protected static void error(String s) {
-		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
-			throw new IllegalStateException("Problem reporting not implemented");
-		}
-	}
-
-	protected static void error(String s, int... s2) {
-		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
-			throw new IllegalStateException("Problem reporting not implemented");
-		}
-	}
-
 	protected static void error(String s, String... s2) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
@@ -757,7 +745,9 @@ public abstract class ASTDmdNode extends ASTNode {
 		int nparams = Argument.dim(tf.parameters, context);
 
 		if (nargs > nparams && tf.varargs == 0) {
-			error("expected %zu arguments, not %zu", nparams, nargs);
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ExpectedNumberArguments, 0, start,
+					length, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
 		}
 
 		n = (nargs > nparams) ? nargs : nparams; // n = max(nargs, nparams)
@@ -780,7 +770,9 @@ public abstract class ASTDmdNode extends ASTNode {
 						if (tf.varargs == 2 && i + 1 == nparams) {
 							// goto L2;
 						}
-						error("expected %zu arguments, not %zu", nparams, nargs);
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ExpectedNumberArguments, 0, start,
+								length, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
 						break;
 					}
 					arg = p.defaultArg.copy();
@@ -791,8 +783,9 @@ public abstract class ASTDmdNode extends ASTNode {
 				if (tf.varargs == 2 && i + 1 == nparams) {
 					if (arg.implicitConvTo(p.type, context) != MATCH.MATCHnomatch) {
 						if (nargs != nparams) {
-							error("expected %zu arguments, not %zu", nparams,
-									nargs);
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.ExpectedNumberArguments, 0, start,
+									length, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
 						}
 						// goto L1;
 					}

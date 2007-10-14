@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 
@@ -214,7 +215,9 @@ public class StringExp extends Expression {
 		int unique;
 
 		if (!committed && t.ty == Tpointer && t.next.ty == Tvoid) {
-			error("cannot convert string literal to void*");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotConvertStringLiteralToVoidPointer, 0, start,
+					length));
 		}
 
 		tb = t.toBasetype(context);
@@ -362,7 +365,9 @@ public class StringExp extends Expression {
 				for (u[0] = 0; u[0] < len; u[0]++) {
 					c[0] = se.string[u[0]];
 					if (!Utf.isValidDchar(c[0])) {
-						error("invalid UCS-32 char \\U%08x", c[0]);
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InvalidUCS32Char, 0, start,
+								length, new String[] { String.valueOf(c[0]) })); // TODO format in hexa
 					} else {
 						buffer.writeUTF8(c[0]);
 					}
@@ -382,7 +387,9 @@ public class StringExp extends Expression {
 				for (u[0] = 0; u[0] < len; u[0]++) {
 					c[0] = se.string[u[0]];
 					if (!Utf.isValidDchar(c[0])) {
-						error("invalid UCS-32 char \\U%08x", c[0]);
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InvalidUCS32Char, 0, start,
+								length, new String[] { String.valueOf(c[0]) })); // TODO format in hexa
 					} else {
 						buffer.writeUTF16(c[0]);
 					}

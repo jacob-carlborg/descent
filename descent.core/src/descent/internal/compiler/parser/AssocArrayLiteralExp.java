@@ -267,8 +267,9 @@ public class AssocArrayLiteralExp extends Expression {
 		expandTuples(values, context);
 		if(keys.size() != values.size())
 		{
-			error("number of keys is %u, must match number of values %u", keys
-					.size(), values.size());
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.NumberOfKeysMustMatchNumberOfValues, 0, start,
+					length, new String[] { String.valueOf(keys.size()), String.valueOf(values.size()) }));
 			keys.clear();
 			values.clear();
 		}

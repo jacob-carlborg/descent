@@ -115,7 +115,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			if (null == td.onemember
 					|| null == td.onemember.toAlias(context)
 							.isFuncDeclaration()) {
-				error("is not a function template");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolIsNotAFunctionTemplate, 0, start,
+						length, new String[] { toChars(context) }));
 				return Lerror(fargs, context);
 			}
 
