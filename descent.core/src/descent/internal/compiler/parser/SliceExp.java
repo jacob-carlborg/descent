@@ -85,8 +85,9 @@ public class SliceExp extends UnaExp {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context)
 	{
-		error("slice expression %s is not a modifiable lvalue", 
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.SliceExpressionIsNotAModifiableLvalue, 0, start,
+				length, new String[] { toChars(context) }));
 	    return this;
 	}
 
@@ -317,7 +318,9 @@ public class SliceExp extends UnaExp {
 		else
 			s = t.toChars(context);
 
-		error("%s cannot be sliced with []", s);
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.SymbolCannotBeSlicedWithBrackets, 0, start,
+				length, new String[] { s }));
 		type = Type.terror;
 		return e;
 	}

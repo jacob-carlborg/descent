@@ -290,7 +290,9 @@ public class NewExp extends Expression {
 					if (arg.op == TOKint64
 							&& arg.toInteger(context)
 									.compareTo(BigInteger.ZERO) < 0) {
-						error("negative array index %s", arg.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.NegativeArrayIndex, 0, start,
+								length, new String[] { arg.toChars(context) }));
 					}
 					arguments.set(i, arg);
 					tb = tb.next.toBasetype(context);
@@ -304,9 +306,9 @@ public class NewExp extends Expression {
 
 				type = type.pointerTo(context);
 			} else {
-				error(
-						"new can only create structs, dynamic arrays or class objects, not %s's",
-						type.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.NewCanOnlyCreateStructsDynamicArraysAndClassObjects, 0, start,
+						length, new String[] { type.toChars(context) }));
 				type = type.pointerTo(context);
 			}
 		}

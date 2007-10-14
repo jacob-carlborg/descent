@@ -58,7 +58,9 @@ public abstract class TypeQualified extends Type {
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							error("%s is not a template", id.toChars());
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.SymbolIsNotATemplate, 0, start,
+									length, new String[] { id.toChars() }));
 							return;
 						}
 						ti.tempdecl = td;
@@ -171,7 +173,9 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (t.ty == TY.Tinstance && t != this && t.deco == null) {
-			error("forward reference to '%s'", t.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForwardReferenceToSymbol, 0, start,
+					length, new String[] { t.toChars(context) }));
 			return;
 		}
 
@@ -181,7 +185,9 @@ public abstract class TypeQualified extends Type {
 
 				for (scx = sc; true; scx = scx.enclosing) {
 					if (scx == null) {
-						error("forward reference to '%s'", t.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ForwardReferenceToSymbol, 0, start,
+								length, new String[] { t.toChars(context) }));
 						return;
 					}
 					if (scx.scopesym == scopesym) {
@@ -198,7 +204,9 @@ public abstract class TypeQualified extends Type {
 			pt[0] = t.merge(context);
 		}
 		if (s == null) {
-			error("identifier '%s' is not defined", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UndefinedIdentifier, 0, start,
+					length, new String[] { toChars(context) }));
 		}
 	}
 
@@ -211,8 +219,9 @@ public abstract class TypeQualified extends Type {
 	}
 
 	public void resolveHelper_Lerror(IdentifierExp id, SemanticContext context) {
-		error("identifier '%s' of '%s' is not defined", id.toChars(),
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.IdentifierOfSymbolIsNotDefined, 0, start,
+				length, new String[] { id.toChars(), toChars(context) }));
 	}
 
 	@Override

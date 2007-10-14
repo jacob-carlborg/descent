@@ -37,11 +37,13 @@ public class VarExp extends Expression {
 			// if reference type
 			if (tb.ty == Tarray || tb.ty == Tsarray || tb.ty == Tclass) {
 				if ((v.isAuto() || v.isScope()) && !v.noauto) {
-					error("escaping reference to auto local %s", v
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.EscapingReferenceToAutoLocal, 0, start,
+							length, new String[] { v.toChars(context) }));
 				} else if ((v.storage_class & STCvariadic) != 0) {
-					error("escaping reference to variadic parameter %s", v
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.EscapingReferenceToVariadicParameter, 0, start,
+							length, new String[] { v.toChars(context) }));
 				}
 			}
 		}
@@ -93,7 +95,9 @@ public class VarExp extends Expression {
 				&& v.canassign == 0
 				&& (var.isConst() || (context.global.params.Dversion > 1 && var
 						.isFinal()))) {
-			error("cannot modify final variable '%s'", var.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotModifyFinalVariable, 0, start,
+					length, new String[] { var.toChars(context) }));
 		}
 
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor

@@ -205,8 +205,9 @@ public class StructLiteralExp extends Expression {
 			}
 			e = resolveProperties(sc, e, context);
 			if (i >= sd.fields.size()) {
-				error("more initializers than fields of %s", sd
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.MoreInitiailizersThanFields, 0, start,
+						length, new String[] { sd.toChars(context) }));
 				break;
 			}
 			Dsymbol s = sd.fields.get(i);
@@ -215,7 +216,9 @@ public class StructLiteralExp extends Expression {
 				throw new IllegalStateException("assert(v);");
 			}
 			if (v.offset < offset) {
-				error("overlapping initialization for %s", v.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.OverlappingInitiailization, 0, start,
+						length, new String[] { v.toChars(context) }));
 			}
 			offset = v.offset + v.type.size(context);
 
@@ -248,9 +251,9 @@ public class StructLiteralExp extends Expression {
 				if (v.init != null) {
 					e = v.init.toExpression(context);
 					if (null == e) {
-						error(
-								"cannot make expression out of initializer for %s",
-								v.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotMakeExpressionOutOfInitializer, 0, start,
+								length, new String[] { v.toChars(context) }));
 					}
 				} else {
 					e = v.type.defaultInit(context);

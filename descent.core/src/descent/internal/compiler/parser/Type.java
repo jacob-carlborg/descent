@@ -785,7 +785,9 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public int size(Loc loc, SemanticContext context) {
-		error("no size for type %s", toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.NoSizeForType, 0, start,
+				length, new String[] { toChars(context) }));
 		return 1;
 	}
 

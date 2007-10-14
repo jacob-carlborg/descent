@@ -340,8 +340,11 @@ public class TypeSArray extends TypeArray {
 			tbn = next = tint32;
 			break;
 		}
-		if (tbn.isauto())
-			error("cannot have array of auto %s", tbn.toChars(context));
+		if (tbn.isauto()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotHaveArrayOfAuto, 0, start,
+					length, new String[] { tbn.toChars(context) }));
+		}
 
 		return merge(context);
 	}

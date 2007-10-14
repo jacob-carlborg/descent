@@ -71,7 +71,9 @@ public class WithStatement extends Statement {
 
 			sym = es.type.toDsymbol(sc, context).isScopeDsymbol();
 			if (sym == null) {
-				error("%s has no members", es.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolHasNoMembers, 0, start,
+						length, new String[] { es.toChars(context) }));
 				body = body.semantic(sc, context);
 				return this;
 			}

@@ -1021,6 +1021,9 @@ FirstArgumentIsNotAClass
 ArgumentHasNoMembers
 	formatString=Argument has no members
 	numArgs=0
+SymbolHasNoMembers
+	formatString=%1$s has no members
+	numArgs=1
 KindSymbolHasNoMembers
 	formatString=%1$s %$2s has no members
 	numArgs=2
@@ -1071,6 +1074,15 @@ VariableIsUsedBeforeInitialization
 	numArgs=1
 EscapingReferenceToLocal
 	formatString=Escaping reference to local %1$s
+	numArgs=1
+EscapingReferenceToAutoLocal
+	formatString=Escaping reference to auto local %1$s
+	numArgs=1
+EscapingReferenceToLocalVariable
+	formatString=Escaping reference to local variable %1$s
+	numArgs=1
+EscapingReferenceToVariadicParameter
+	formatString=Escaping reference to variadic parameter %1$s
 	numArgs=1
 CanOnlyCatchClassObjects
 	formatString=Can only catch class objects, not '%1$s'
@@ -1207,6 +1219,101 @@ NoConstructorForSymbol
 NoAllocatorForSymbol
 	formatString=No allocator for %1$s
 	numArgs=1
+NegativeArrayIndex
+	formatString=Negative array index %1$s
+	numArgs=1
+NewCanOnlyCreateStructsDynamicArraysAndClassObjects
+	formatString=new can only create structs, dynamic arrays or class objects, not %1$s's
+	numArgs=1
+MismatchedFunctionReturnTypeInference
+	formatString=Mismatched function return type inference of %1$s and %2$s
+	numArgs=2
+ShiftLeftExceeds
+	formatString=Shift left by %1$sd exceeds %2$su
+	numArgs=2
+SymbolCannotBeSlicedWithBrackets
+	formatString=%1$s cannot be sliced with []
+	numArgs=1
+SliceExpressionIsNotAModifiableLvalue
+	formatString=Slice expression %1$s is not a modifiable lvalue
+	numArgs=1
+SymbolIsNotAMemberOf
+	formatString='%1$s' is not a member of '%2$s'
+	numArgs=2
+MoreInitiailizersThanFields
+	formatString=More initializers than fields of %1$s
+	numArgs=1
+OverlappingInitiailization
+	formatString=Overlapping initialization for %1$s
+	numArgs=1
+CannotMakeExpressionOutOfInitializer
+	formatString=Cannot make expression out of initializer for %1$s
+	numArgs=1
+NoDefaultOrCaseInSwitchStatement
+	formatString=No default or case for %1$s in switch statement
+	numArgs=1
+SymbolIsNotASymbol
+	formatString=%1$s is not a symbol
+	numArgs=1
+ForwardReferenceToTemplate
+	formatString=Forward reference to template %1$s
+	numArgs=1
+ForwardReferenceToTemplateDeclaration
+	formatString=Forward reference to template declaration %1$s
+	numArgs=1
+SpecializationNotAllowedForDeducedParameter
+	formatString=Specialization not allowed for deduced parameter %1$s
+	numArgs=1
+CannotDeclareTemplateAtFunctionScope
+	formatString=Cannot declare template at function scope %1$s
+	numArgs=1
+TemplateHasNoValue
+	formatString=Template %1$s has no value
+	numArgs=1
+InconsistentNestingLevels
+	formatString=Inconsistent nesting levels %1$s and %2$s
+	numArgs=2
+CannotUseLocalAsTemplateParameter
+	formatString=Cannot use local '%1$s' as template parameter
+	numArgs=1
+NoSizeForType
+	formatString=No size for type %1$s
+	numArgs=1
+SymbolDotSymbolIsNotADeclaration
+	formatString=%1$s.%2$s is not a declaration
+	numArgs=2
+ThisIsRequiredButIsNotABaseClassOf
+	formatString='this' is required, but %1$s is not a base class of %2$s
+	numArgs=2
+ForwardReferenceToSymbol
+	formatString=forward reference to '%1$s'
+	numArgs=1
+IdentifierOfSymbolIsNotDefined
+	formatString=Identifier '%1$s' of '%2$s' is not defined
+	numArgs=2
+StructIsForwardReferenced
+	formatString=struct %1$s is forward referenced
+	numArgs=1
+CannotUseTemplateToAddFieldToAggregate
+	formatString=Cannot use template to add field to aggregate '%1$s'
+	numArgs=1
+CannotModifyFinalVariable
+	formatString=Cannot modify final variable '%1$s'
+	numArgs=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

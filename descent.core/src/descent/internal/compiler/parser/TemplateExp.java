@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -24,7 +25,9 @@ public class TemplateExp extends Expression {
     
     @Override
     public void rvalue(SemanticContext context) {
-    	 error("template %s has no value", toChars(context));
+    	context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.TemplateHasNoValue, 0, start,
+				length, new String[] { toChars(context) }));
     }
 
 	@Override

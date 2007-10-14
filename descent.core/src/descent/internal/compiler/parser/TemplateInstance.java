@@ -114,8 +114,9 @@ public class TemplateInstance extends ScopeDsymbol {
 
 			dedtypes.setDim(size(td.parameters));
 			if (null == td.scope) {
-				error("forward reference to template declaration %s", td
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForwardReferenceToTemplateDeclaration, 0, start,
+						length, new String[] { td.toChars(context) }));
 				return null;
 			}
 			m = td.matchWithInstance(this, dedtypes, 0, context);
@@ -200,7 +201,9 @@ public class TemplateInstance extends ScopeDsymbol {
 			id = name;
 			s = sc.search(loc, id, scopesym, context);
 			if (null == s) {
-				error("identifier '%s' is not defined", id.toChars());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.UndefinedIdentifier, 0, start,
+						length, new String[] { id.toChars() }));
 				return null;
 			}
 			withsym = scopesym[0].isWithScopeSymbol();
@@ -314,7 +317,9 @@ public class TemplateInstance extends ScopeDsymbol {
 					buf.writeByte('S');
 					Declaration d = sa.isDeclaration();
 					if (d != null && null == d.type.deco) {
-						error("forward reference of %s", d.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ForwardReferenceOfSymbol, 0, start,
+								length, new String[] { d.toChars(context) }));
 					} else {
 						String p2 = sa.mangle(context);
 						buf.data.append(p2.length()).append("u").append(p2);
@@ -329,7 +334,9 @@ public class TemplateInstance extends ScopeDsymbol {
 						buf.writeByte('S');
 						Declaration d = sa.isDeclaration();
 						if (d != null && null == d.type.deco) {
-							error("forward reference of %s", d.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.ForwardReferenceOfSymbol, 0, start,
+									length, new String[] { d.toChars(context) }));
 						} else {
 							String p2 = sa.mangle(context);
 							buf.data.append(p2.length()).append("u").append(p2);
@@ -352,7 +359,9 @@ public class TemplateInstance extends ScopeDsymbol {
 				buf.writeByte('S');
 				Declaration d = sa.isDeclaration();
 				if (d != null && null == d.type.deco) {
-					error("forward reference of %s", d.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ForwardReferenceOfSymbol, 0, start,
+							length, new String[] { d.toChars(context) }));
 				} else {
 					String p = sa.mangle(context);
 					buf.data.append(p.length()).append("u").append(p);
@@ -420,16 +429,16 @@ public class TemplateInstance extends ScopeDsymbol {
 						// if module level template
 						if (null != tempdecl.toParent().isModule()) {
 							if (null != isnested && isnested != d.toParent()) {
-								error("inconsistent nesting levels %s and %s",
-										isnested.toChars(context), d.toParent()
-												.toChars(context));
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.InconsistentNestingLevels, 0, start,
+										length, new String[] { isnested.toChars(context), d.toParent().toChars(context) }));
 							}
 							isnested = d.toParent();
 							nested = true;
 						} else {
-							error(
-									"cannot use local '%s' as template parameter",
-									d.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.CannotUseLocalAsTemplateParameter, 0, start,
+									length, new String[] { d.toChars(context) }));
 						}
 					}
 				}
@@ -608,8 +617,9 @@ public class TemplateInstance extends ScopeDsymbol {
 		// Create our own scope for the template parameters
 		Scope scope = tempdecl.scope;
 		if (null == scope) {
-			error("forward reference to template declaration %s\n", tempdecl
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForwardReferenceToTemplateDeclaration, 0, start,
+					length, new String[] { tempdecl.toChars(context) }));
 			return;
 		}
 		argsym = new ScopeDsymbol();

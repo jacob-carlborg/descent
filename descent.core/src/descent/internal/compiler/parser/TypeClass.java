@@ -240,8 +240,9 @@ public class TypeClass extends Type {
 
 		d = s.isDeclaration();
 		if (null == d) {
-			e.error("%s.%s is not a declaration", e.toChars(context), ident
-					.toChars());
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolDotSymbolIsNotADeclaration, 0, start,
+					length, new String[] { e.toChars(context), ident.toChars() }));
 			return new IntegerExp(e.loc, 1, Type.tint32);
 		}
 
@@ -266,11 +267,9 @@ public class TypeClass extends Type {
 						} else if ((null == cd || !cd.isBaseOf(thiscd, null,
 								context))
 								&& null == d.isFuncDeclaration()) {
-							e
-									.error(
-											"'this' is required, but %s is not a base class of %s",
-											e.type.toChars(context), thiscd
-													.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.ThisIsRequiredButIsNotABaseClassOf, 0, start,
+									length, new String[] { e.type.toChars(context), thiscd.toChars(context) }));
 						}
 					}
 				}

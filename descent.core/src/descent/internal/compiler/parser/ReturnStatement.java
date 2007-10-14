@@ -184,10 +184,9 @@ public class ReturnStatement extends Statement {
 			} else if (fd.inferRetType) {
 				if (fd.type.next != null) {
 					if (!exp.type.equals(fd.type.next)) {
-						error(
-								"mismatched function return type inference of %s and %s",
-								exp.type.toChars(context), fd.type.next
-										.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.MismatchedFunctionReturnTypeInference, 0, start,
+								length, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
 					}
 				} else {
 					fd.type.next = exp.type;
@@ -203,9 +202,9 @@ public class ReturnStatement extends Statement {
 		} else if (fd.inferRetType) {
 			if (fd.type.next != null) {
 				if (fd.type.next.ty != Tvoid) {
-					error(
-							"mismatched function return type inference of void and %s",
-							fd.type.next.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.MismatchedFunctionReturnTypeInference, 0, start,
+							length, new String[] { "void", fd.type.next.toChars(context) }));
 				}
 			} else {
 				fd.type.next = Type.tvoid;

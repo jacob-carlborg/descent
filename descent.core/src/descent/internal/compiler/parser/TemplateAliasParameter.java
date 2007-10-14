@@ -51,7 +51,9 @@ public class TemplateAliasParameter extends TemplateParameter {
 		if (defaultAlias != null) {
 			s = defaultAlias.toDsymbol(sc, context);
 			if (null == s) {
-				error("%s is not a symbol", defaultAlias.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolIsNotASymbol, 0, start,
+						length, new String[] { defaultAlias.toChars(context) }));
 			}
 		}
 		return s;

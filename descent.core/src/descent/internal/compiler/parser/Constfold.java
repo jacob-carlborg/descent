@@ -697,7 +697,7 @@ public class Constfold {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
 					if (i >= ale.elements.size()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ArrayIndexOutOfBounds2, 0, ale.|start,
+								IProblem.ArrayIndexOutOfBounds2, 0, ale.start,
 								ale.length, new String[] { Integer.toString(i), e1.toChars(context), 
 							            Integer.toString(ale.elements.size()) }));
 					} else {

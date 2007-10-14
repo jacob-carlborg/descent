@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
 
@@ -119,7 +120,9 @@ public class TypeStruct extends Type {
 		Declaration d;
 
 		if (null == sym.members) {
-			error("struct %s is forward referenced", sym.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.StructIsForwardReferenced, 0, start,
+					length, new String[] { sym.toChars(context) }));
 			return new IntegerExp(e.loc, 0, Type.tint32);
 		}
 
@@ -232,7 +235,9 @@ public class TypeStruct extends Type {
 
 		if (null != v) {
 			if (v.toParent() != sym) {
-				sym.error("'%s' is not a member", v.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolIsNotAMember, 0, start,
+						length, new String[] { v.toChars(context) }));
 			}
 
 			// *(&e + offset)

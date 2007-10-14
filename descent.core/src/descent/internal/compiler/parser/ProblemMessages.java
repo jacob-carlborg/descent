@@ -351,6 +351,7 @@ final class ProblemMessages extends NLS {
 	public static String InvalidFirstArgument;
 	public static String FirstArgumentIsNotAClass;
 	public static String ArgumentHasNoMembers;
+	public static String SymbolHasNoMembers;
 	public static String KindSymbolHasNoMembers;
 	public static String DotOffsetDeprecated;
 	public static String NoClassInfoForComInterfaceObjects;
@@ -368,6 +369,9 @@ final class ProblemMessages extends NLS {
 	public static String CannotTakeAddressOf;
 	public static String VariableIsUsedBeforeInitialization;
 	public static String EscapingReferenceToLocal;
+	public static String EscapingReferenceToAutoLocal;
+	public static String EscapingReferenceToLocalVariable;
+	public static String EscapingReferenceToVariadicParameter;
 	public static String CanOnlyCatchClassObjects;
 	public static String BaseClassIsForwardReferenced;
 	public static String BaseIsForwardReferenced;
@@ -413,6 +417,33 @@ final class ProblemMessages extends NLS {
 	public static String ThisForNestedClassMustBeOfType;
 	public static String NoConstructorForSymbol;
 	public static String NoAllocatorForSymbol;
+	public static String NegativeArrayIndex;
+	public static String NewCanOnlyCreateStructsDynamicArraysAndClassObjects;
+	public static String MismatchedFunctionReturnTypeInference;
+	public static String ShiftLeftExceeds;
+	public static String SymbolCannotBeSlicedWithBrackets;
+	public static String SliceExpressionIsNotAModifiableLvalue;
+	public static String SymbolIsNotAMemberOf;
+	public static String MoreInitiailizersThanFields;
+	public static String OverlappingInitiailization;
+	public static String CannotMakeExpressionOutOfInitializer;
+	public static String NoDefaultOrCaseInSwitchStatement;
+	public static String SymbolIsNotASymbol;
+	public static String ForwardReferenceToTemplate;
+	public static String ForwardReferenceToTemplateDeclaration;
+	public static String SpecializationNotAllowedForDeducedParameter;
+	public static String CannotDeclareTemplateAtFunctionScope;
+	public static String TemplateHasNoValue;
+	public static String InconsistentNestingLevels;
+	public static String CannotUseLocalAsTemplateParameter;
+	public static String NoSizeForType;
+	public static String SymbolDotSymbolIsNotADeclaration;
+	public static String ThisIsRequiredButIsNotABaseClassOf;
+	public static String ForwardReferenceToSymbol;
+	public static String IdentifierOfSymbolIsNotDefined;
+	public static String StructIsForwardReferenced;
+	public static String CannotUseTemplateToAddFieldToAggregate;
+	public static String CannotModifyFinalVariable;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

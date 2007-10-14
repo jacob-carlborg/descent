@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Shl;
 
@@ -52,8 +53,9 @@ public class ShlExp extends BinExp {
 			integer_t i2 = e2.toInteger(context);
 			if (i2.compareTo(0) < 0
 					|| i2.compareTo(e1.type.size(context) * 8) > 0) {
-				error("shift left by %jd exceeds %zu", i2.toString(), String
-						.valueOf(e2.type.size(context) * 8));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ShiftLeftExceeds, 0, start,
+						length, new String[] { i2.toString(), String.valueOf(e2.type.size(context) * 8) }));
 				e2 = new IntegerExp(0);
 			}
 			if (e1.isConst()) {

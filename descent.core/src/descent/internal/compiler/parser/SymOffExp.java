@@ -73,7 +73,9 @@ public class SymOffExp extends Expression {
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (!v.isDataseg(context)) {
-				error("escaping reference to local variable %s", v.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.EscapingReferenceToLocalVariable, 0, start,
+						length, new String[] { toChars(context) }));
 			}
 		}
 	}

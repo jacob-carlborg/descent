@@ -116,8 +116,9 @@ public class SwitchStatement extends Statement {
 		}
 		if (null == s) {
 			if (hasNoDefault != 0) {
-				error("no default or case for %s in switch statement",
-						econdition.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.NoDefaultOrCaseInSwitchStatement, 0, start,
+						length, new String[] { econdition.toChars(context) }));
 			}
 			s = sdefault;
 		}

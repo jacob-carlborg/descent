@@ -777,6 +777,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.FirstArgumentIsNotAClass);
 		case ArgumentHasNoMembers:
 			return String.format(ProblemMessages.ArgumentHasNoMembers);
+		case SymbolHasNoMembers:
+			return String.format(ProblemMessages.SymbolHasNoMembers, arguments[0]);
 		case KindSymbolHasNoMembers:
 			return String.format(ProblemMessages.KindSymbolHasNoMembers, arguments[0], arguments[1]);
 		case DotOffsetDeprecated:
@@ -811,6 +813,12 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.VariableIsUsedBeforeInitialization, arguments[0]);
 		case EscapingReferenceToLocal:
 			return String.format(ProblemMessages.EscapingReferenceToLocal, arguments[0]);
+		case EscapingReferenceToAutoLocal:
+			return String.format(ProblemMessages.EscapingReferenceToAutoLocal, arguments[0]);
+		case EscapingReferenceToLocalVariable:
+			return String.format(ProblemMessages.EscapingReferenceToLocalVariable, arguments[0]);
+		case EscapingReferenceToVariadicParameter:
+			return String.format(ProblemMessages.EscapingReferenceToVariadicParameter, arguments[0]);
 		case CanOnlyCatchClassObjects:
 			return String.format(ProblemMessages.CanOnlyCatchClassObjects, arguments[0]);
 		case BaseClassIsForwardReferenced:
@@ -901,6 +909,60 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.NoConstructorForSymbol, arguments[0]);
 		case NoAllocatorForSymbol:
 			return String.format(ProblemMessages.NoAllocatorForSymbol, arguments[0]);
+		case NegativeArrayIndex:
+			return String.format(ProblemMessages.NegativeArrayIndex, arguments[0]);
+		case NewCanOnlyCreateStructsDynamicArraysAndClassObjects:
+			return String.format(ProblemMessages.NewCanOnlyCreateStructsDynamicArraysAndClassObjects, arguments[0]);
+		case MismatchedFunctionReturnTypeInference:
+			return String.format(ProblemMessages.MismatchedFunctionReturnTypeInference, arguments[0], arguments[1]);
+		case ShiftLeftExceeds:
+			return String.format(ProblemMessages.ShiftLeftExceeds, arguments[0], arguments[1]);
+		case SymbolCannotBeSlicedWithBrackets:
+			return String.format(ProblemMessages.SymbolCannotBeSlicedWithBrackets, arguments[0]);
+		case SliceExpressionIsNotAModifiableLvalue:
+			return String.format(ProblemMessages.SliceExpressionIsNotAModifiableLvalue, arguments[0]);
+		case SymbolIsNotAMemberOf:
+			return String.format(ProblemMessages.SymbolIsNotAMemberOf, arguments[0], arguments[1]);
+		case MoreInitiailizersThanFields:
+			return String.format(ProblemMessages.MoreInitiailizersThanFields, arguments[0]);
+		case OverlappingInitiailization:
+			return String.format(ProblemMessages.OverlappingInitiailization, arguments[0]);
+		case CannotMakeExpressionOutOfInitializer:
+			return String.format(ProblemMessages.CannotMakeExpressionOutOfInitializer, arguments[0]);
+		case NoDefaultOrCaseInSwitchStatement:
+			return String.format(ProblemMessages.NoDefaultOrCaseInSwitchStatement, arguments[0]);
+		case SymbolIsNotASymbol:
+			return String.format(ProblemMessages.SymbolIsNotASymbol, arguments[0]);
+		case ForwardReferenceToTemplate:
+			return String.format(ProblemMessages.ForwardReferenceToTemplate, arguments[0]);
+		case ForwardReferenceToTemplateDeclaration:
+			return String.format(ProblemMessages.ForwardReferenceToTemplateDeclaration, arguments[0]);
+		case SpecializationNotAllowedForDeducedParameter:
+			return String.format(ProblemMessages.SpecializationNotAllowedForDeducedParameter, arguments[0]);
+		case CannotDeclareTemplateAtFunctionScope:
+			return String.format(ProblemMessages.CannotDeclareTemplateAtFunctionScope, arguments[0]);
+		case TemplateHasNoValue:
+			return String.format(ProblemMessages.TemplateHasNoValue, arguments[0]);
+		case InconsistentNestingLevels:
+			return String.format(ProblemMessages.InconsistentNestingLevels, arguments[0], arguments[1]);
+		case CannotUseLocalAsTemplateParameter:
+			return String.format(ProblemMessages.CannotUseLocalAsTemplateParameter, arguments[0]);
+		case NoSizeForType:
+			return String.format(ProblemMessages.NoSizeForType, arguments[0]);
+		case SymbolDotSymbolIsNotADeclaration:
+			return String.format(ProblemMessages.SymbolDotSymbolIsNotADeclaration, arguments[0], arguments[1]);
+		case ThisIsRequiredButIsNotABaseClassOf:
+			return String.format(ProblemMessages.ThisIsRequiredButIsNotABaseClassOf, arguments[0], arguments[1]);
+		case ForwardReferenceToSymbol:
+			return String.format(ProblemMessages.ForwardReferenceToSymbol, arguments[0]);
+		case IdentifierOfSymbolIsNotDefined:
+			return String.format(ProblemMessages.IdentifierOfSymbolIsNotDefined, arguments[0], arguments[1]);
+		case StructIsForwardReferenced:
+			return String.format(ProblemMessages.StructIsForwardReferenced, arguments[0]);
+		case CannotUseTemplateToAddFieldToAggregate:
+			return String.format(ProblemMessages.CannotUseTemplateToAddFieldToAggregate, arguments[0]);
+		case CannotModifyFinalVariable:
+			return String.format(ProblemMessages.CannotModifyFinalVariable, arguments[0]);
 		default:
 			return "";
 		}

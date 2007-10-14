@@ -374,8 +374,9 @@ public class VarDeclaration extends Declaration {
 				// If it's a member template
 				AggregateDeclaration ad = ti.tempdecl.isMember();
 				if (ad != null && storage_class != STCundefined) {
-					error("cannot use template to add field to aggregate '%s'",
-							ad.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotUseTemplateToAddFieldToAggregate, 0, start,
+							length, new String[] { ad.toChars(context) }));
 				}
 			}
 		}

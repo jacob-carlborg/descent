@@ -79,8 +79,9 @@ public class StructInitializer extends Initializer {
 					//s = ad.symtab.lookup(id);
 					s = ad.search(loc, id, 0, context);
 					if (null == s) {
-						error("'%s' is not a member of '%s'", id.toChars(), t
-								.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.SymbolIsNotAMemberOf, 0, start,
+								length, new String[] { id.toChars(), t.toChars(context) }));
 						continue;
 					}
 

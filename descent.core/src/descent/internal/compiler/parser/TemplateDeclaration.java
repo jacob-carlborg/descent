@@ -109,7 +109,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		for (TemplateDeclaration td = this; null != td; td = td.overnext) {
 			if (null == td.scope) {
-				error("forward reference to template %s", td.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForwardReferenceToTemplate, 0, start,
+						length, new String[] { td.toChars(context) }));
 				return Lerror(fargs, context);
 			}
 			if (null == td.onemember
@@ -178,10 +180,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			return Lerror(fargs, context);
 		}
 		if (null != td_ambig) {
-			error(
-					"%s matches more than one function template declaration, %s and %s",
-					toChars(context), td_best.toChars(context), td_ambig
-							.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolMatchesMoreThanOneTemplateDeclaration, 0, start,
+					length, new String[] { toChars(context), td_best.toChars(context), td_ambig.toChars(context) }));
 		}
 
 		/*
@@ -458,9 +459,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			// printf("1dedargs[%d] = %p, dedtypes[%d] = %p\n", i, oarg, i, o);
 			if (null == oarg) {
 				if (null != o) {
-					if (null != tp.specialization())
-						error("specialization not allowed for deduced parameter %s",
-								tp.ident.toChars());
+					if (null != tp.specialization()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.SpecializationNotAllowedForDeducedParameter, 0, start,
+								length, new String[] { tp.ident.toChars() }));
+					}
 				} else {
 					o = tp.defaultArg(paramscope, context);
 					if (null == o) {
@@ -687,8 +690,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (sc.func != null) {
-			error("cannot declare template at function scope %s", sc.func
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotDeclareTemplateAtFunctionScope, 0, start,
+					length, new String[] { sc.func.toChars(context) }));
 		}
 
 		if (context.global.params.useArrayBounds && sc.module != null) {
