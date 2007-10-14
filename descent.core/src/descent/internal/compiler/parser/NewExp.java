@@ -96,9 +96,9 @@ public class NewExp extends Expression {
 					type = newtype.semantic(loc, sc, context);
 					sc = sc.pop();
 				} else {
-					error(
-							"'this' for nested class must be a class type, not %s",
-							thisexp.type.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ThisForNestedClassMustBeAClassType, 0, start,
+							length, new String[] { thisexp.type.toChars(context) }));
 					type = newtype.semantic(loc, sc, context);
 				}
 			} else {
@@ -113,8 +113,10 @@ public class NewExp extends Expression {
 			preFunctionArguments(loc, sc, arguments, context);
 
 			if (thisexp != null && tb.ty != Tclass) {
-				error("e.new is only for allocating nested classes, not %s", tb
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, 0, start,
+						length, new String[] { tb
+								.toChars(context) }));
 			}
 
 			if (tb.ty == Tclass) {
@@ -141,10 +143,9 @@ public class NewExp extends Expression {
 							thisexp = new ThisExp(loc);
 							for (Dsymbol sp = sc.parent; true; sp = sp.parent) {
 								if (sp == null) {
-									error(
-											"outer class %s 'this' needed to 'new' nested class %s",
-											cdn.toChars(context), cd
-													.toChars(context));
+									context.acceptProblem(Problem.newSemanticTypeError(
+											IProblem.OuterClassThisNeededToNewNestedClass, 0, start,
+											length, new String[] { cdn.toChars(context), cd.toChars(context) }));
 									break;
 								}
 								ClassDeclaration cdp = sp.isClassDeclaration();
@@ -168,10 +169,9 @@ public class NewExp extends Expression {
 						if (cdthis != null) {
 							if (cdthis != cdn
 									&& !cdn.isBaseOf(cdthis, null, context)) {
-								error(
-										"'this' for nested class must be of type %s, not %s",
-										cdn.toChars(context), thisexp.type
-												.toChars(context));
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.ThisForNestedClassMustBeOfType, 0, start,
+										length, new String[] { cdn.toChars(context), thisexp.type.toChars(context) }));
 							}
 						}
 					} else if (thisexp != null) {
@@ -203,7 +203,9 @@ public class NewExp extends Expression {
 					functionArguments(loc, sc, tf, arguments, context);
 				} else {
 					if (arguments != null && arguments.size() > 0) {
-						error("no constructor for %s", cd.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.NoConstructorForSymbol, 0, start,
+								length, new String[] { cd.toChars(context) }));
 					}
 				}
 
@@ -227,7 +229,9 @@ public class NewExp extends Expression {
 					functionArguments(loc, sc, tf, newargs, context);
 				} else {
 					if (newargs != null && newargs.size() > 0) {
-						error("no allocator for %s", cd.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.NoAllocatorForSymbol, 0, start,
+								length, new String[] { cd.toChars(context) }));
 					}
 				}
 
@@ -238,7 +242,9 @@ public class NewExp extends Expression {
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {
-					error("no constructor for %s", type.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.NoConstructorForSymbol, 0, start,
+							length, new String[] { type.toChars(context) }));
 				}
 
 				if (f != null) {
@@ -291,7 +297,9 @@ public class NewExp extends Expression {
 				}
 			} else if (tb.isscalar(context)) {
 				if (arguments != null && arguments.size() > 0) {
-					error("no constructor for %s", type.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.NoConstructorForSymbol, 0, start,
+							length, new String[] { type.toChars(context) }));
 				}
 
 				type = type.pointerTo(context);

@@ -164,7 +164,9 @@ public class AddrExp extends UnaExp {
 			super.semantic(sc, context);
 			e1 = e1.toLvalue(sc, null, context);
 			if (e1.type == null) {
-				error("cannot take address of %s", e1.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotTakeAddressOf, 0, e1.start,
+						e1.length, new String[] { e1.toChars(context) }));
 				type = Type.tint32;
 				assignBinding();
 				return this;

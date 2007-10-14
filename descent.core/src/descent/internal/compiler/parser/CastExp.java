@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Cast;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
@@ -55,7 +56,9 @@ public class CastExp extends UnaExp {
 			VarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null) {
 				if (!v.isDataseg(context) && !v.isParameter()) {
-					error("escaping reference to local %s", v.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.EscapingReferenceToLocal, 0, start,
+							length, new String[] { v.toChars(context) }));
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Scope.CSXlabel;
 
@@ -86,7 +87,9 @@ public class LabelStatement extends Statement {
 
 		ls = fd.searchLabel(ident);
 		if (ls.statement != null) {
-			error("Label '%s' already defined", ls.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.LabelIsAlreadyDefined, 0, start,
+					length, new String[] { ls.toChars(context) }));
 		} else {
 			ls.statement = this;
 		}

@@ -473,15 +473,17 @@ public class Dsymbol extends ASTDmdNode {
 			id = ti.name;
 			sm = s.search(loc, id, 0, context);
 			if (null == sm) {
-				error("template identifier %s is not a member of %s %s", id
-						.toChars(), s.kind(), s.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TemplateIdentifierIsNotAMemberOf, 0, start,
+						length, new String[] { id.toChars(), s.kind(), s.toChars(context) }));
 				return null;
 			}
 			sm = sm.toAlias(context);
 			TemplateDeclaration td = sm.isTemplateDeclaration();
 			if (null == td) {
-				error("%s is not a template, it is a %s", id.toChars(), sm
-						.kind());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolIsNotATemplate, 0, start,
+						length, new String[] { id.toChars(), sm.kind() }));
 				return null;
 			}
 			ti.tempdecl = td;
@@ -511,7 +513,9 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public int size(SemanticContext context) {
-		error("Dsymbol '%s' has no size\n", toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.DSymbolHasNoSize, 0, start,
+				length, new String[] { toChars(context) }));
 		return 0;
 	}
 

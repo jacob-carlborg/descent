@@ -191,8 +191,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkToBoolean(SemanticContext context) {
 		if (type.checkBoolean(context)) {
-			error("expression %s of type %s does not have a boolean value",
-					toChars(context), type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ExpressionOfTypeDoesNotHaveABooleanValue, 0, start,
+					length, new String[] { toChars(context), type.toChars(context) }));
 		}
 		return this;
 	}
@@ -262,10 +263,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					return e.implicitCastTo(sc, t, context);
 				}
 
-				error(
-						"warning - implicit conversion of expression (%s) of type %s to %s can cause loss of data",
-						toChars(context), type.toChars(context), t
-								.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeWarning(
+						IProblem.ImplicitConversionCanCauseLossOfData, 0, start,
+						length, new String[] { toChars(context), type.toChars(context), t.toChars(context) }));
 			}
 			return castTo(sc, t, context);
 		}
@@ -281,10 +281,13 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		 * void delegate(E) EDG; } Should eventually
 		 * make it work.
 		 */
-			error("forward reference to type %s", t.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForwardReferenceToType, 0, start,
+					length, new String[] { t.toChars(context) }));
 		} else if (t.reliesOnTident() != null) {
-			error("forward reference to type %s", t.reliesOnTident().toChars(
-					context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForwardReferenceToType, 0, start,
+					length, new String[] { t.reliesOnTident().toChars(context) }));
 		}
 
 		context.acceptProblem(Problem.newSemanticTypeError(
@@ -423,8 +426,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public complex_t toComplex(SemanticContext context) {
-		error("Floating point constant expression expected instead of %s",
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.FloatingPointConstantExpressionExpected, 0, start,
+				length, new String[] { toChars(context) }));
 		return complex_t.ZERO;
 	}
 
@@ -446,8 +450,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public real_t toImaginary(SemanticContext context) {
-		error("Floating point constant expression expected instead of %s",
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.FloatingPointConstantExpressionExpected, 0, start,
+				length, new String[] { toChars(context) }));
 		return real_t.ZERO;
 	}
 
@@ -468,13 +473,15 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
-		error("expression %s is not a valid template value argument",
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.ExpressionIsNotAValidTemplateValueArgument, 0, start,
+				length, new String[] { toChars(context) }));
 	}
 
 	public real_t toReal(SemanticContext context) {
-		error("Floating point constant expression expected instead of %s",
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.FloatingPointConstantExpressionExpected, 0, start,
+				length, new String[] { toChars(context) }));
 		return real_t.ZERO;
 	}
 

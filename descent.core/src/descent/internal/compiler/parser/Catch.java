@@ -55,8 +55,9 @@ public class Catch extends ASTDmdNode {
 		}
 		type = type.semantic(loc, sc, context);
 		if (type.toBasetype(context).isClassHandle() == null) {
-			error("can only catch class objects, not '%s'", type
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CanOnlyCatchClassObjects, 0, start,
+					length, new String[] { type.toChars(context) }));
 		} else if (ident != null) {
 			var = new VarDeclaration(loc, type, ident, null);
 			var.parent = sc.parent;

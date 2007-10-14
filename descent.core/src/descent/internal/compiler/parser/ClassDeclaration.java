@@ -224,8 +224,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 */
 			if (cd.baseClass != null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
-				cd.error("base class is forward referenced by %s",
-						toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.BaseClassIsForwardReferenced, 0, start,
+						length, new String[] { toChars(context) }));
 			}
 
 			cd = cd.baseClass;
@@ -295,8 +296,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 				if (b.base != null) {
 					if (b.base.symtab == null) {
-						error("base %s is forward referenced", b.base.ident
-								.toChars());
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.BaseIsForwardReferenced, 0, start,
+								length, new String[] { b.base.ident
+										.toChars() }));
 					} else {
 						s = b.base.search(loc, ident, flags, context);
 						if (s == this) {
@@ -518,8 +521,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		if (baseClass != null) {
 			if ((baseClass.storage_class & STCfinal) != 0) {
-				error("cannot inherit from final class %s", baseClass
-						.toString());
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotInheritFromFinalClass, 0, start,
+						length, new String[] { baseClass
+								.toString() }));
 			}
 
 			interfaces.remove(0);
@@ -558,14 +563,16 @@ public class ClassDeclaration extends AggregateDeclaration {
 			{ // Use the base class's 'this' member
 				isnested = true;
 				if ((storage_class & STC.STCstatic) != 0) {
-					error("static class cannot inherit from nested class %s",
-							baseClass.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.StaticClassCannotInheritFromNestedClass, 0, start,
+							length, new String[] { baseClass.toChars(context) }));
 				}
 				if (toParent2() != baseClass.toParent2()) {
-					error("super class %s is nested within %s, not %s",
-							baseClass.toChars(context), baseClass.toParent2()
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SuperClassIsNestedWithin, 0, start,
+							length, new String[] { baseClass.toChars(context), baseClass.toParent2()
 									.toChars(context), toParent2().toChars(
-									context));
+											context) }));
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
 				Dsymbol s = toParent2();

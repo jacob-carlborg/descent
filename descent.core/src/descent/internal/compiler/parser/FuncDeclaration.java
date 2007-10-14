@@ -1005,16 +1005,15 @@ public class FuncDeclaration extends Declaration {
 						int cov = type.covariant(fdv.type, context);
 
 						if (cov == 2) {
-							error(
-									"of type %s overrides but is not covariant with %s of type %s",
-									type.toChars(context), fdv
-											.toPrettyChars(context), fdv.type
-											.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.FunctionOfTypeOverridesButIsNotCovariant, 0, start,
+									length, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
 						}
 						if (cov == 1) {
 							if (fdv.isFinal()) {
-								error("cannot override final function %s", fdv
-										.toPrettyChars(context));
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.CannotOverrideFinalFunction, 0, start,
+										length, new String[] { fdv.toPrettyChars(context) }));
 							}
 							if (fdv.toParent() == parent) {
 								// If both are mixins, then error.
@@ -1134,11 +1133,9 @@ public class FuncDeclaration extends Declaration {
 					if (fdv != null && fdv.ident.ident == ident.ident) {
 						int cov = type.covariant(fdv.type, context);
 						if (cov == 2) {
-							error(
-									"of type %s overrides but is not covariant with %s of type %s",
-									type.toChars(context), fdv
-											.toPrettyChars(context), fdv.type
-											.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.FunctionOfTypeOverridesButIsNotCovariant, 0, start,
+									length, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
 						}
 						if (cov == 1) {
 							Type ti = null;
@@ -1159,10 +1156,9 @@ public class FuncDeclaration extends Declaration {
 							}
 							if (ti != null) {
 								if (tintro != null && !tintro.equals(ti)) {
-									error(
-											"incompatible covariant types %s and %s",
-											tintro.toChars(context), ti
-													.toChars(context));
+									context.acceptProblem(Problem.newSemanticTypeError(
+											IProblem.IncompatibleCovariantTypes, 0, start,
+											length, new String[] { tintro.toChars(context), ti.toChars(context) }));
 								}
 								tintro = ti;
 							}
@@ -1216,9 +1212,9 @@ public class FuncDeclaration extends Declaration {
 				// If it's a member template
 				ClassDeclaration cd2 = ti.tempdecl.isClassMember();
 				if (cd2 != null) {
-					error(
-							"cannot use template to add virtual function to class '%s'",
-							cd2.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotUseTemplateToAddVirtualFunctionToClass, 0, start,
+							length, new String[] { cd2.toChars(context) }));
 				}
 			}
 		}
@@ -1587,8 +1583,9 @@ public class FuncDeclaration extends Declaration {
 					v.semantic(sc2, context);
 					sc2.incontract++;
 					if (sc2.insert(v) == null) {
-						error("out result %s is already defined", v
-								.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.OutResultIsAlreadyDefined, 0, start,
+								length, new String[] { v.toChars(context) }));
 					}
 					v.parent = this;
 					vresult = v;
@@ -1713,8 +1710,9 @@ public class FuncDeclaration extends Declaration {
 							VarDeclaration v = cd.fields.get(i);
 
 							if (!v.ctorinit && v.isCtorinit()) {
-								error("missing initializer for const field %s",
-										v.toChars(context));
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.MissingInitializerForConstField, 0, start,
+										length, new String[] { v.toChars(context) }));
 							}
 						}
 					}

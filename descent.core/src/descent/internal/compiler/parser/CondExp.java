@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 
@@ -129,8 +130,9 @@ public class CondExp extends BinExp {
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
-		error("conditional expression %s is not a modifiable lvalue",
-				toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.ConditionalExpressionIsNotAModifiableLvalue, 0, start,
+				length, new String[] { toChars(context) }));
 		return this;
 	}
 

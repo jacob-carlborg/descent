@@ -201,7 +201,9 @@ public class DotIdExp extends UnaExp {
 			    return e;
 			}
 
-			error("undefined identifier %s", toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UndefinedIdentifier, 0, start,
+					length, new String[] { toChars(context) }));
 			type = Type.tvoid;
 			return this;
 		} else if (e1.type.ty == Tpointer && !CharOperation.equals(ident.ident, Id.init)

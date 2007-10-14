@@ -203,7 +203,9 @@ public class Import extends Dsymbol {
 				Dsymbol s = (Dsymbol) aliasdecls.get(i);
 
 				if (null == mod.search(loc, names.get(i), 0, context)) {
-					error("%s not found", (names.get(i)).toChars());
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SomethingNotFound, 0, start,
+							length, new String[] { (names.get(i)).toChars() }));
 				}
 
 				s.semantic(sc, context);

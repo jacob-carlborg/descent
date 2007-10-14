@@ -246,8 +246,9 @@ public class IndexExp extends BinExp {
 		}
 
 		default: {
-			error("%s must be an array or pointer type, not %s", e1
-					.toChars(context), e1.type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolMustBeAnArrayOfPointerType, 0, start,
+					length, new String[] { e1.toChars(context), e1.type.toChars(context) }));
 			type = Type.tint32;
 			break;
 		}

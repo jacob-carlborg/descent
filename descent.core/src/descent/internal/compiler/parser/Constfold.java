@@ -677,10 +677,11 @@ public class Constfold {
 				int i = e2.toInteger(context).intValue();
 
 				if (i >= length) {
-				    e2.error("array index %ju is out of bounds %s[0 .. %ju]", 
-				            Integer.toString(i),
-				            e1.toChars(context),
-				            Integer.toString(length));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ArrayIndexOutOfBounds2, 0, e1.start,
+							e1.length, new String[] { String.valueOf(i),
+						            e1.toChars(context),
+						            String.valueOf(length) }));
 				} else if (e1.op == TOKarrayliteral
 						&& 0 == e1.checkSideEffect(2, context)) {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
@@ -695,9 +696,10 @@ public class Constfold {
 						&& 0 == e1.checkSideEffect(2, context)) {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
 					if (i >= ale.elements.size()) {
-					    e2.error("array index %ju is out of bounds %s[0 .. %u]", 
-					            Integer.toString(i), e1.toChars(context), 
-					            Integer.toString(ale.elements.size()));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ArrayIndexOutOfBounds2, 0, ale.|start,
+								ale.length, new String[] { Integer.toString(i), e1.toChars(context), 
+							            Integer.toString(ale.elements.size()) }));
 					} else {
 						e = ale.elements.get(i);
 						e.type = type;
@@ -1443,8 +1445,10 @@ public class Constfold {
 			e = new StructLiteralExp(loc, sd, elements);
 			e.type = type;
 		} else {
-			ASTDmdNode.error("cannot cast %s to %s", e1.type.toChars(context),
-			        type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotCastSymbolToSymbol, 0, e1.start,
+					e1.length, new String[] { e1.type.toChars(context),
+					        type.toChars(context) }));
 			e = new IntegerExp(loc, 0, type);
 		}
 		return e;

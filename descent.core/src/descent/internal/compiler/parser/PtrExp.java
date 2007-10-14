@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
@@ -148,7 +149,9 @@ public class PtrExp extends UnaExp {
 			break;
 
 		default:
-			error("can only * a pointer, not a '%s'", e1.type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CanOnlyDereferenceAPointer, 0, start,
+					length, new String[] { e1.type.toChars(context) }));
 			type = Type.tint32;
 			break;
 		}

@@ -89,8 +89,9 @@ public class CmpExp extends BinExp {
 		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
 			if (!t1.next.equals(t2.next)) {
-				error("array comparison type mismatch, %s vs %s", t1.next
-						.toChars(context), t2.next.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ArrayComparisonTypeMismatch, 0, start,
+						length, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
 			}
 			e = this;
 		} else if (t1.ty == TY.Tstruct || t2.ty == TY.Tstruct

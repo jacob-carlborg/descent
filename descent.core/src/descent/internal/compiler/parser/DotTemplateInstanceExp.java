@@ -71,8 +71,9 @@ public class DotTemplateInstanceExp extends UnaExp {
 					s = ((TypeStruct) t1).sym;
 				} else {
 					// goto L1;
-					error("template %s is not a member of %s", ti
-							.toChars(context), e1.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.TemplateIsNotAMemberOf, 0, start,
+							length, new String[] { ti.toChars(context), e1.toChars(context) }));
 					return new IntegerExp(loc, 0);
 				}
 			}
@@ -83,16 +84,18 @@ public class DotTemplateInstanceExp extends UnaExp {
 			t1 = t1.next.toBasetype(context);
 			if (t1.ty != Tstruct) {
 				// goto L1;
-				error("template %s is not a member of %s", ti.toChars(context),
-						e1.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TemplateIsNotAMemberOf, 0, start,
+						length, new String[] { ti.toChars(context), e1.toChars(context) }));
 				return new IntegerExp(loc, 0);
 			}
 			s = t1.toDsymbol(sc, context);
 			eleft = e1;
 		} else {
 			// L1:
-			error("template %s is not a member of %s", ti.toChars(context), e1
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.TemplateIsNotAMemberOf, 0, start,
+					length, new String[] { ti.toChars(context), e1.toChars(context) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}
@@ -101,8 +104,9 @@ public class DotTemplateInstanceExp extends UnaExp {
 		id = ti.name.ident;
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
-			error("template identifier %s is not a member of %s %s", new String(id), s.kind(),
-					new String(s.ident.ident));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.TemplateIdentifierIsNotAMemberOf, 0, start,
+					length, new String[] { new String(id), s.kind(), new String(s.ident.ident) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

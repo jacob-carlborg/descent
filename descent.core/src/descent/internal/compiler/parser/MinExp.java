@@ -105,7 +105,9 @@ public class MinExp extends BinExp {
 			}
 		} else if (t2.ty == TY.Tpointer) {
 			type = e2.type;
-			error("can't subtract pointer from %s", e1.type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotSubtractPointerFromSymbol, 0, start,
+					length, new String[] { e1.type.toChars(context) }));
 			assignBinding();
 			return new IntegerExp(loc, 0);
 		} else {

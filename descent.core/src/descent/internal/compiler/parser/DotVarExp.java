@@ -62,9 +62,9 @@ public class DotVarExp extends UnaExp {
 						continue;
 					} else {
 						String p = var.isStatic() ? "static " : "";
-						error(
-								"can only initialize %sconst member %s inside %sconstructor",
-								p, var.toChars(context), p);
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, 0, start,
+								length, new String[] { p, var.toChars(context), p }));
 					}
 				}
 				break;
@@ -94,7 +94,9 @@ public class DotVarExp extends UnaExp {
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
-							error("%s is not a member", e.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.SymbolIsNotAMember, 0, start,
+									length, new String[] { e.toChars(context) }));
 						} else {
 							DsymbolExp ve = (DsymbolExp) e;
 

@@ -388,6 +388,9 @@ CanOnlyConcatenateArrays
 ArrayIndexOutOfBounds
 	formatString=Array index %1$s is out of bounds [0..%2$s]; 
 	numArgs=2
+ArrayIndexOutOfBounds2
+	formatString=Array index %1$su is out of bounds %2$s[0 .. %3$su]
+	numArgs=3
 AssertionFailed
 	formatString=Assertion failed: %1$s
 	numArgs=1
@@ -574,6 +577,9 @@ WithExpressionsMustBeClassObject
 DeclarationIsAlreadyDefined
 	formatString=Declaration %1$s is already defined
 	numArgs=1
+DeclarationIsAlreadyDefinedInAnotherScope
+	formatString=Declaration %1$s is already defined in another scope in %2$s
+	numArgs=2
 VersionDefinedAfterUse
 	formatString=Version %1$s defined after use
 	numArgs=1
@@ -853,6 +859,9 @@ SymbolIsNotAFieldOfSymbol
 RecursiveTemplateExpansion
 	formatString=Recursive template expansion
 	numArgs=0
+RecursiveTemplateExpansionForTemplateArgument
+	formatString=Recursive template expansion for template argument %1$s
+	numArgs=1
 IndexIsNotATypeOrExpression
 	formatString=Index is not a type or an expression
 	numArgs=0
@@ -1054,12 +1063,154 @@ TupleIndexExceedsBounds
 SliceIsOutOfRange
 	formatString=Slice [%1$su..%2$su] is out of range of [0..%3$s]
 	numArgs=3
-	
-	
-	
-	
-	
-	
+CannotTakeAddressOf
+	formatString=Cannot take address of %1$s
+	numArgs=1
+VariableIsUsedBeforeInitialization
+	formatString=Variable %1$s is used before initialization
+	numArgs=1
+EscapingReferenceToLocal
+	formatString=Escaping reference to local %1$s
+	numArgs=1
+CanOnlyCatchClassObjects
+	formatString=Can only catch class objects, not '%1$s'
+	numArgs=1
+BaseClassIsForwardReferenced
+	formatString=Base class is forward referenced by %1$s
+	numArgs=1
+BaseIsForwardReferenced
+	formatString=Base %1$s is forward referenced
+	numArgs=1
+CannotInheritFromFinalClass
+	formatString=Cannot inherit from final class %1$s
+	numArgs=1
+StaticClassCannotInheritFromNestedClass
+	formatString=Static class cannot inherit from nested class %1$s
+	numArgs=1
+SuperClassIsNestedWithin
+	formatString=Super class %1$s is nested within %2$s, not %3$s
+	numArgs=3
+ArrayComparisonTypeMismatch
+	formatString=Array comparison type mismatch, %1$s vs %2$s
+	numArgs=2
+ConditionalExpressionIsNotAModifiableLvalue
+	formatString=Conditional expression %1$s is not a modifiable lvalue
+	numArgs=1
+CannotCastSymbolToSymbol
+	formatString=Cannot cast %1$s to %2$s
+	numArgs=2
+CannotDeleteInstanceOfComInterface
+	formatString=Cannot delete instance of COM interface %1$s
+	numArgs=1
+TemplateIsNotAMemberOf
+	formatString=Template %s is not a member of %1$s
+	numArgs=2
+TemplateIdentifierIsNotAMemberOf
+	formatString=Template identifier %1$s is not a member of %2$s %3$s
+	numArgs=3
+CanOnlyInitiailizeConstMemberInsideConstructor
+	formatString=Can only initialize %1$sconst member %2$s inside %3$sconstructor
+	numArgs=3
+SymbolIsNotAMember
+	formatString=%1$s is not a member
+	numArgs=1
+SymbolIsNotATemplate
+	formatString=%1$s is not a template, it is a %2$s
+	numArgs=2
+DSymbolHasNoSize
+	formatString=Dsymbol '%1$s' has no size
+	numArgs=1
+ExpressionOfTypeDoesNotHaveABooleanValue
+	formatString=Expression %1$s of type %2$s does not have a boolean value
+	numArgs=2
+ImplicitConversionCanCauseLossOfData
+	formatString=Implicit conversion of expression (%1$s) of type %2$s to %3$s can cause loss of data
+	numArgs=3
+ForwardReferenceToType
+	formatString=Forward reference to type %1$s
+	numArgs=1
+FloatingPointConstantExpressionExpected
+	formatString=Floating point constant expression expected instead of %1$s
+	numArgs=1
+ExpressionIsNotAValidTemplateValueArgument
+	formatString=Expression %1$s is not a valid template value argument
+	numArgs=1
+InvalidRangeLowerBound
+	formatString=Invalid range lower bound %1$s
+	numArgs=1
+InvalidRangeUpperBound
+	formatString=Invalid range uper bound %1$s
+	numArgs=1
+SymbolIsNotAScalarType
+	formatString=%1$s is not a scalar type
+	numArgs=1
+ForeachIndexMustBeType
+	formatString=foreach: index must be type %1$s, not %2$s
+	numArgs=2
+ForeachValueMustBeType
+	formatString=foreach: value must be type %1$s, not %2$s
+	numArgs=2
+OpApplyFunctionMustReturnAnInt
+	formatString=opApply() function for %1$s must return an int
+	numArgs=1
+FunctionOfTypeOverridesButIsNotCovariant
+	formatString=%1$s of type %2$s overrides but is not covariant with %3$s of type %4$s
+	numArgs=4
+CannotOverrideFinalFunction
+	formatString=Cannot override final function %1$s
+	numArgs=1
+IncompatibleCovariantTypes
+	formatString=Incompatible covariant types %1$s and %2$s
+	numArgs=2
+CannotUseTemplateToAddVirtualFunctionToClass
+	formatString=Cannot use template to add virtual function to class '%1$s'
+	numArgs=1
+OutResultIsAlreadyDefined
+	formatString=Out result %1$s is already defined
+	numArgs=1
+MissingInitializerForConstField
+	formatString=Missing initializer for const field %1$s
+	numArgs=1
+SomethingNotFound
+	formatString=%1$s not found
+	numArgs=1
+SymbolMustBeAnArrayOfPointerType
+	formatString=%1$s must be an array or pointer type, not %2$s
+	numArgs=2
+RvalueOfInExpressionMustBeAnAssociativeArray
+	formatString=rvalue of in expression must be an associative array, not %1$s
+	numArgs=1
+InterfaceInheritsFromDuplicateInterface
+	formatString=%1$s inherits from duplicate interface %2$s
+	numArgs=2
+LabelIsAlreadyDefined
+	formatString=Label '%1$s' already defined
+	numArgs=1
+CannotSubtractPointerFromSymbol
+	formatString=Cannot subtract pointer from %1$s
+	numArgs=1
+ThisForNestedClassMustBeAClassType
+	formatString='this' for nested class must be a class type, not %1$s
+	numArgs=1
+CanOnlyDereferenceAPointer
+	formatString=Can only * a pointer, not a '%1$s'
+	numArgs=1
+OuterClassThisNeededToNewNestedClass
+	formatString=Outer class %1$s 'this' needed to 'new' nested class %2$s
+	numArgs=2
+ThisForNestedClassMustBeOfType
+	formatString='this' for nested class must be of type %1$s, not %2$s
+	numArgs=2
+NoConstructorForSymbol
+	formatString=No constructor for %1$s
+	numArgs=1
+NoAllocatorForSymbol
+	formatString=No allocator for %1$s
+	numArgs=1
+
+
+
+
 
 
 

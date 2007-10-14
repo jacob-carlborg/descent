@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -56,9 +57,9 @@ public class InExp extends BinExp {
 
 		Type t2b = e2.type.toBasetype(context);
 		if (t2b.ty != TY.Taarray) {
-			error(
-					"rvalue of in expression must be an associative array, not %s",
-					e2.type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.RvalueOfInExpressionMustBeAnAssociativeArray, 0, start,
+					length, new String[] { e2.type.toChars(context) }));
 			type = Type.terror;
 		} else {
 			TypeAArray ta = (TypeAArray) t2b;

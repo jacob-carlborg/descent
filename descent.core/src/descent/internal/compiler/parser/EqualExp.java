@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Equal;
 
@@ -117,8 +118,9 @@ public class EqualExp extends BinExp {
 		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
 			if (!t1.next.equals(t2.next)) {
-				error("array comparison type mismatch, %s vs %s", t1.next
-						.toChars(context), t2.next.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ArrayComparisonTypeMismatch, 0, start,
+						length, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
 			}
 		}
 

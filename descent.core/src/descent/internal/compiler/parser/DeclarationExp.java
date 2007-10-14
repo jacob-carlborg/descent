@@ -183,9 +183,9 @@ public class DeclarationExp extends Expression {
 				//VarDeclaration v = s.isVarDeclaration();
 				if ((s.isFuncDeclaration() != null /*|| v && v.storage_class & STCstatic*/)
 						&& sc.func.localsymtab.insert(s) == null) {
-					error(
-							"declaration %s is already defined in another scope in %s",
-							s.toPrettyChars(context), sc.func.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.DeclarationIsAlreadyDefinedInAnotherScope, 0, start,
+							length, new String[] { s.toPrettyChars(context), sc.func.toChars(context) }));
 				} else if (!context.global.params.useDeprecated) { // Disallow shadowing
 
 					for (Scope scx = sc.enclosing; scx != null

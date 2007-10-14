@@ -1577,9 +1577,11 @@ public abstract class ASTDmdNode extends ASTNode {
             else
             {
                 e = v.value;
-                if (null == e)
-                    error("variable %s is used before initialization", v
-                            .toChars(context));
+                if (null == e) {
+                	context.acceptProblem(Problem.newSemanticTypeError(
+        					IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
+        					v.length, new String[] { v.toChars(context) }));
+                }
                 else if (e != EXP_CANT_INTERPRET)
                     e = e.interpret(istate, context);
             }
@@ -1672,9 +1674,9 @@ public abstract class ASTDmdNode extends ASTNode {
 				if (ti1 != null && ti1.tempdecl == tempdecl) {
 					for (Scope sc1 = sc; sc1 != null; sc1 = sc1.enclosing) {
 						if (sc1.scopesym == ti1) {
-							error(
-									"recursive template expansion for template argument %s",
-									t1.toChars(context));
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.RecursiveTemplateExpansionForTemplateArgument, 0, t1.start,
+									t1.length, new String[] { t1.toChars(context) }));
 							return true; // fake a match
 						}
 					}

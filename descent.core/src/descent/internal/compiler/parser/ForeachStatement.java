@@ -567,14 +567,16 @@ public class ForeachStatement extends Statement {
 							arg.length));
 				}
 				if (!arg.type.equals(taa.index)) {
-					error("foreach: index must be type %s, not %s", taa.index
-							.toChars(context), arg.type.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ForeachIndexMustBeType, 0, start,
+							length, new String[] { taa.index.toChars(context), arg.type.toChars(context) }));
 				}
 				arg = arguments.get(1);
 			}
 			if (!arg.type.equals(taa.next)) {
-				error("foreach: value must be type %s, not %s", taa.next
-						.toChars(context), arg.type.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForeachValueMustBeType, 0, start,
+						length, new String[] { taa.next.toChars(context), arg.type.toChars(context) }));
 			}
 
 			/*
@@ -650,8 +652,9 @@ public class ForeachStatement extends Statement {
 			e = new CallExp(loc, aggr, exps);
 			e = e.semantic(sc, context);
 			if (e.type != Type.tint32) {
-				error("opApply() function for %s must return an int", tab
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.OpApplyFunctionMustReturnAnInt, 0, start,
+						length, new String[] { tab.toChars(context) }));
 			}
 		} else {
 			/*
@@ -664,8 +667,9 @@ public class ForeachStatement extends Statement {
 			e = new CallExp(loc, ec, exps);
 			e = e.semantic(sc, context);
 			if (e.type != Type.tint32) {
-				error("opApply() function for %s must return an int", tab
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.OpApplyFunctionMustReturnAnInt, 0, start,
+						length, new String[] { tab.toChars(context) }));
 			}
 		}
 

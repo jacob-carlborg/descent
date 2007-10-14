@@ -355,6 +355,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CanOnlyConcatenateArrays, arguments[0], arguments[1]);
 		case ArrayIndexOutOfBounds:
 			return String.format(ProblemMessages.ArrayIndexOutOfBounds, arguments[0], arguments[1]);
+		case ArrayIndexOutOfBounds2:
+			return String.format(ProblemMessages.ArrayIndexOutOfBounds2, arguments[0], arguments[1], arguments[2]);
 		case AssertionFailed:
 			return String.format(ProblemMessages.AssertionFailed, arguments[0]);
 		case AssertionFailedNoMessage:
@@ -479,6 +481,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.WithExpressionsMustBeClassObject, arguments[0]);
 		case DeclarationIsAlreadyDefined:
 			return String.format(ProblemMessages.DeclarationIsAlreadyDefined, arguments[0]);
+		case DeclarationIsAlreadyDefinedInAnotherScope:
+			return String.format(ProblemMessages.DeclarationIsAlreadyDefinedInAnotherScope, arguments[0], arguments[1]);
 		case VersionDefinedAfterUse:
 			return String.format(ProblemMessages.VersionDefinedAfterUse, arguments[0]);
 		case DebugDefinedAfterUse:
@@ -665,6 +669,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolIsNotAFieldOfSymbol, arguments[0], arguments[1]);
 		case RecursiveTemplateExpansion:
 			return String.format(ProblemMessages.RecursiveTemplateExpansion);
+		case RecursiveTemplateExpansionForTemplateArgument:
+			return String.format(ProblemMessages.RecursiveTemplateExpansionForTemplateArgument, arguments[0]);
 		case IndexIsNotATypeOrExpression:
 			return String.format(ProblemMessages.IndexIsNotATypeOrExpression);
 		case CannotHavePointerToSymbol:
@@ -799,6 +805,102 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.TupleIndexExceedsBounds, arguments[0], arguments[1]);
 		case SliceIsOutOfRange:
 			return String.format(ProblemMessages.SliceIsOutOfRange, arguments[0], arguments[1], arguments[2]);
+		case CannotTakeAddressOf:
+			return String.format(ProblemMessages.CannotTakeAddressOf, arguments[0]);
+		case VariableIsUsedBeforeInitialization:
+			return String.format(ProblemMessages.VariableIsUsedBeforeInitialization, arguments[0]);
+		case EscapingReferenceToLocal:
+			return String.format(ProblemMessages.EscapingReferenceToLocal, arguments[0]);
+		case CanOnlyCatchClassObjects:
+			return String.format(ProblemMessages.CanOnlyCatchClassObjects, arguments[0]);
+		case BaseClassIsForwardReferenced:
+			return String.format(ProblemMessages.BaseClassIsForwardReferenced, arguments[0]);
+		case BaseIsForwardReferenced:
+			return String.format(ProblemMessages.BaseIsForwardReferenced, arguments[0]);
+		case CannotInheritFromFinalClass:
+			return String.format(ProblemMessages.CannotInheritFromFinalClass, arguments[0]);
+		case StaticClassCannotInheritFromNestedClass:
+			return String.format(ProblemMessages.StaticClassCannotInheritFromNestedClass, arguments[0]);
+		case SuperClassIsNestedWithin:
+			return String.format(ProblemMessages.SuperClassIsNestedWithin, arguments[0], arguments[1], arguments[2]);
+		case ArrayComparisonTypeMismatch:
+			return String.format(ProblemMessages.ArrayComparisonTypeMismatch, arguments[0], arguments[1]);
+		case ConditionalExpressionIsNotAModifiableLvalue:
+			return String.format(ProblemMessages.ConditionalExpressionIsNotAModifiableLvalue, arguments[0]);
+		case CannotCastSymbolToSymbol:
+			return String.format(ProblemMessages.CannotCastSymbolToSymbol, arguments[0], arguments[1]);
+		case CannotDeleteInstanceOfComInterface:
+			return String.format(ProblemMessages.CannotDeleteInstanceOfComInterface, arguments[0]);
+		case TemplateIsNotAMemberOf:
+			return String.format(ProblemMessages.TemplateIsNotAMemberOf, arguments[0], arguments[1]);
+		case TemplateIdentifierIsNotAMemberOf:
+			return String.format(ProblemMessages.TemplateIdentifierIsNotAMemberOf, arguments[0], arguments[1], arguments[2]);
+		case CanOnlyInitiailizeConstMemberInsideConstructor:
+			return String.format(ProblemMessages.CanOnlyInitiailizeConstMemberInsideConstructor, arguments[0], arguments[1], arguments[2]);
+		case SymbolIsNotAMember:
+			return String.format(ProblemMessages.SymbolIsNotAMember, arguments[0]);
+		case SymbolIsNotATemplate:
+			return String.format(ProblemMessages.SymbolIsNotATemplate, arguments[0], arguments[1]);
+		case DSymbolHasNoSize:
+			return String.format(ProblemMessages.DSymbolHasNoSize, arguments[0]);
+		case ExpressionOfTypeDoesNotHaveABooleanValue:
+			return String.format(ProblemMessages.ExpressionOfTypeDoesNotHaveABooleanValue, arguments[0], arguments[1]);
+		case ImplicitConversionCanCauseLossOfData:
+			return String.format(ProblemMessages.ImplicitConversionCanCauseLossOfData, arguments[0], arguments[1], arguments[2]);
+		case ForwardReferenceToType:
+			return String.format(ProblemMessages.ForwardReferenceToType, arguments[0]);
+		case FloatingPointConstantExpressionExpected:
+			return String.format(ProblemMessages.FloatingPointConstantExpressionExpected, arguments[0]);
+		case ExpressionIsNotAValidTemplateValueArgument:
+			return String.format(ProblemMessages.ExpressionIsNotAValidTemplateValueArgument, arguments[0]);
+		case InvalidRangeLowerBound:
+			return String.format(ProblemMessages.InvalidRangeLowerBound, arguments[0]);
+		case InvalidRangeUpperBound:
+			return String.format(ProblemMessages.InvalidRangeUpperBound, arguments[0]);
+		case SymbolIsNotAScalarType:
+			return String.format(ProblemMessages.SymbolIsNotAScalarType, arguments[0]);
+		case ForeachIndexMustBeType:
+			return String.format(ProblemMessages.ForeachIndexMustBeType, arguments[0], arguments[1]);
+		case ForeachValueMustBeType:
+			return String.format(ProblemMessages.ForeachValueMustBeType, arguments[0], arguments[1]);
+		case OpApplyFunctionMustReturnAnInt:
+			return String.format(ProblemMessages.OpApplyFunctionMustReturnAnInt, arguments[0]);
+		case FunctionOfTypeOverridesButIsNotCovariant:
+			return String.format(ProblemMessages.FunctionOfTypeOverridesButIsNotCovariant, arguments[0], arguments[1], arguments[2], arguments[3]);
+		case CannotOverrideFinalFunction:
+			return String.format(ProblemMessages.CannotOverrideFinalFunction, arguments[0]);
+		case IncompatibleCovariantTypes:
+			return String.format(ProblemMessages.IncompatibleCovariantTypes, arguments[0], arguments[1]);
+		case CannotUseTemplateToAddVirtualFunctionToClass:
+			return String.format(ProblemMessages.CannotUseTemplateToAddVirtualFunctionToClass, arguments[0]);
+		case OutResultIsAlreadyDefined:
+			return String.format(ProblemMessages.OutResultIsAlreadyDefined, arguments[0]);
+		case MissingInitializerForConstField:
+			return String.format(ProblemMessages.MissingInitializerForConstField, arguments[0]);
+		case SomethingNotFound:
+			return String.format(ProblemMessages.SomethingNotFound, arguments[0]);
+		case SymbolMustBeAnArrayOfPointerType:
+			return String.format(ProblemMessages.SymbolMustBeAnArrayOfPointerType, arguments[0], arguments[1]);
+		case RvalueOfInExpressionMustBeAnAssociativeArray:
+			return String.format(ProblemMessages.RvalueOfInExpressionMustBeAnAssociativeArray, arguments[0]);
+		case InterfaceInheritsFromDuplicateInterface:
+			return String.format(ProblemMessages.InterfaceInheritsFromDuplicateInterface, arguments[0], arguments[1]);
+		case LabelIsAlreadyDefined:
+			return String.format(ProblemMessages.LabelIsAlreadyDefined, arguments[0]);
+		case CannotSubtractPointerFromSymbol:
+			return String.format(ProblemMessages.CannotSubtractPointerFromSymbol, arguments[0]);
+		case ThisForNestedClassMustBeAClassType:
+			return String.format(ProblemMessages.ThisForNestedClassMustBeAClassType, arguments[0]);
+		case CanOnlyDereferenceAPointer:
+			return String.format(ProblemMessages.CanOnlyDereferenceAPointer, arguments[0]);
+		case OuterClassThisNeededToNewNestedClass:
+			return String.format(ProblemMessages.OuterClassThisNeededToNewNestedClass, arguments[0], arguments[1]);
+		case ThisForNestedClassMustBeOfType:
+			return String.format(ProblemMessages.ThisForNestedClassMustBeOfType, arguments[0], arguments[1]);
+		case NoConstructorForSymbol:
+			return String.format(ProblemMessages.NoConstructorForSymbol, arguments[0]);
+		case NoAllocatorForSymbol:
+			return String.format(ProblemMessages.NoAllocatorForSymbol, arguments[0]);
 		default:
 			return "";
 		}

@@ -636,8 +636,9 @@ public abstract class BinExp extends Expression {
 
 				Expression ev = v.value;
 				if (null != fp && null == ev) {
-					error("variable %s is used before initialization", v
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
+							v.length, new String[] { v.toChars(context) }));
 					return e;
 				}
 				if (null != fp)
@@ -673,8 +674,9 @@ public abstract class BinExp extends Expression {
 			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
 			if (null != fp && null == v.value) {
-				error("variable %s is used before initialization", v
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
+						v.length, new String[] { v.toChars(context) }));
 				return e;
 			}
 			if (v.value.op != TOKstructliteral)
@@ -729,8 +731,9 @@ public abstract class BinExp extends Expression {
 				return EXP_CANT_INTERPRET;
 			if (null == v.value) {
 				if (null != fp) {
-					error("variable %s is used before initialization", v
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
+							v.length, new String[] { v.toChars(context) }));
 					return e;
 				}
 
@@ -1051,10 +1054,9 @@ public abstract class BinExp extends Expression {
 
 				if (m.count > 1) {
 					// Error, ambiguous
-					error(
-							"overloads %s and %s both match argument list for %s",
-							m.lastf.type.toChars(context), m.nextf.type
-									.toChars(context), m.lastf.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.BothOverloadsMuchArgumentList, 0, start,
+							length, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
 				} else if (m.last == MATCHnomatch) {
 					m.lastf = m.anyf;
 				}

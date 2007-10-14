@@ -184,8 +184,9 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				for (int j = 0; j < i; j++) {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
-						error("inherits from duplicate interface %s", b2.base
-								.toChars(context));
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InterfaceInheritsFromDuplicateInterface, 0, start,
+								length, new String[] { toChars(context), b2.base.toChars(context) }));
 					}
 				}
 

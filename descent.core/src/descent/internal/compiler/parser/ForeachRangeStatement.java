@@ -49,14 +49,18 @@ public class ForeachRangeStatement extends Statement {
 		lwr = lwr.semantic(sc, context);
 		lwr = resolveProperties(sc, lwr, context);
 		if (null == lwr.type) {
-			error("invalid range lower bound %s", lwr.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.InvalidRangeLowerBound, 0, start,
+					length, new String[] { lwr.toChars(context) }));
 			return this;
 		}
 
 		upr = upr.semantic(sc, context);
 		upr = resolveProperties(sc, upr, context);
 		if (null == upr.type) {
-			error("invalid range upper bound %s", upr.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.InvalidRangeUpperBound, 0, start,
+					length, new String[] { upr.toChars(context) }));
 			return this;
 		}
 
@@ -73,8 +77,11 @@ public class ForeachRangeStatement extends Statement {
 			upr = ea.e2;
 		}
 
-		if (!arg.type.isscalar(context))
-			error("%s is not a scalar type", arg.type.toChars(context));
+		if (!arg.type.isscalar(context)) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolIsNotAnArithmeticType, 0, start,
+					length, new String[] { arg.type.toChars(context) }));
+		}
 
 		sym = new ScopeDsymbol();
 		sym.parent = sc.scopesym;

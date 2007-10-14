@@ -125,8 +125,9 @@ public class BaseClass extends ASTDmdNode {
 			} else {
 				// BUG: should mark this class as abstract?
 				if (!cd.isAbstract()) {
-					cd.error("interface function %s.%s isn't implemented", id
-							.toChars(context), ifd.ident.toChars());
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.InterfaceFunctionIsNotImplemented, 0, start,
+							length, new String[] { id.toChars(context), ifd.ident.toChars() }));
 				}
 				fd = null;
 			}

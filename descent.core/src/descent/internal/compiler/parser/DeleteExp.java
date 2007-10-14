@@ -59,8 +59,9 @@ public class DeleteExp extends UnaExp {
 			ClassDeclaration cd = tc.sym;
 
 			if (cd.isInterfaceDeclaration() != null && cd.isCOMclass()) {
-				error("cannot delete instance of COM interface %s", cd
-						.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotDeleteInstanceOfComInterface, 0, start,
+						length, new String[] { cd.toChars(context) }));
 			}
 			break;
 		}
