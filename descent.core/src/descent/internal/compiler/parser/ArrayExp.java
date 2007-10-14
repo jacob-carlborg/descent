@@ -77,7 +77,9 @@ public class ArrayExp extends UnaExp {
 		if (t1.ty != TY.Tclass && t1.ty != TY.Tstruct) {
 			// Convert to IndexExp
 			if (arguments.size() != 1) {
-				error("only one index allowed to index " + t1.toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.OnlyOneIndexAllowedToIndex, 0, start,
+						length, new String[] { t1.toChars(context) }));
 			}
 			e = new IndexExp(loc, e1, arguments.get(0));
 			return e.semantic(sc, context);
@@ -98,8 +100,9 @@ public class ArrayExp extends UnaExp {
 
 		e = op_overload(sc, context);
 		if (null == e) {
-			error("no [] operator overload for type "
-					+ e1.type.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.NoOpIndexOperatorOverloadForType, 0, start,
+					length, new String[] { e1.type.toChars(context) }));
 			e = e1;
 		}
 
@@ -123,7 +126,9 @@ public class ArrayExp extends UnaExp {
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if ((type != null) && (type.toBasetype(context).ty == TY.Tvoid)) {
-			error("voids have no value");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.VoidsHaveNoValue, 0, start,
+					length));
 		}
 		return this;
 	}

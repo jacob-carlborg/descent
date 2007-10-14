@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.*;
@@ -115,8 +116,9 @@ public class TypeSlice extends Type {
 		Type tbn = next.toBasetype(context);
 		if(tbn.ty != Ttuple)
 		{
-			error(loc, "can only slice tuple types, not %s", tbn
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CanOnlySliceTupleTypes, 0, start,
+					length, new String[] { tbn.toChars(context) }));
 			return Type.terror;
 		}
 		TypeTuple tt = (TypeTuple) tbn;

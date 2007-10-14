@@ -175,7 +175,7 @@ public abstract class BinExp extends Expression {
 	}
 
 	public void incompatibleTypes(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypeForOperator, 0, e1.start, e2.start + e2.length - e1.start, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypesForOperator, 0, e1.start, e2.start + e2.length - e1.start, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
 	}
 
 	public boolean isunsigned() {

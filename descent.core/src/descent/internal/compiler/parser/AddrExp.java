@@ -198,7 +198,9 @@ public class AddrExp extends UnaExp {
 				}
 			} else if (e1.op == TOKarray) {
 				if (e1.type.toBasetype(context).ty == Tbit) {
-					error("cannot take address of bit in array");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotTakeAddressOfBitInArray, 0, start,
+							length));
 				}
 			}
 			

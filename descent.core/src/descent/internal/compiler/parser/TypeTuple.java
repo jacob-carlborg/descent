@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.Assert;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.STC.STCin;
@@ -84,8 +85,10 @@ public class TypeTuple extends Type {
 		if (CharOperation.equals(ident, Id.length)) {
 			e = new IntegerExp(loc, arguments.size(), Type.tsize_t);
 		} else {
-			error(loc, "no property '%s' for tuple '%s'", new String(ident),
-					toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.NoPropertyForTuple, 0, start,
+					length, new String[] { new String(ident),
+							toChars(context) }));
 			e = new IntegerExp(loc, 1, Type.tint32);
 		}
 		return e;

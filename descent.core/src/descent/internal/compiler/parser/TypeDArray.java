@@ -137,7 +137,9 @@ public class TypeDArray extends TypeArray {
 			break;
 		}
 		if (tn.isauto()) {
-			error(loc, "cannot have array of auto %s", tn.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotHaveArrayOfAuto, 0, start,
+					length, new String[] { tn.toChars(context) }));
 		}
 		if (next != tn) {
 			//deco = NULL;			// redo

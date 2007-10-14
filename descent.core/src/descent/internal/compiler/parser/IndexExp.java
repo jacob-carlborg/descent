@@ -105,7 +105,9 @@ public class IndexExp extends BinExp {
 			SemanticContext context) {
 		modifiable = 1;
 		if (e1.op == TOK.TOKstring) {
-			error("string literals are immutable");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.StringLiteralsAreImmutable, 0, start,
+					length));
 		}
 		if (e1.type.toBasetype(context).ty == TY.Taarray) {
 			e1 = e1.modifiableLvalue(sc, e1, context);

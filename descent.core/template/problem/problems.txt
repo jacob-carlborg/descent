@@ -181,9 +181,12 @@ EnumMustHaveAtLeastOneMember
 EnumBaseTypeMustBeOfIntegralType
 	formatString=Base type must be of integral type
 	numArgs=0
-ForwardReference
+ForwardReferenceOfSymbol
 	formatString=Forward reference of %1$s
 	numArgs=1
+ForwardReferenceOfSymbolDotSymbol
+	formatString=Forward reference of %1$s.%2$s
+	numArgs=2
 ForwardReferenceWhenLookingFor
 	formatString=%1$s is forward reference when looking for %2$s
 	numArgs=2
@@ -475,9 +478,12 @@ OutCannotBeFinal
 ScopeCannotBeRefOrOut
 	formatString=<<TODO>>
 	numArgs=0
-IncompatibleTypeForOperator
+IncompatibleTypesForOperator
 	formatString=Types %1$s and %2$s are incompatible for %3$s
 	numArgs=3
+IncompatibleTypesForMinus
+	formatString=Incompatible types for -
+	numArgs=0
 SymbolNotDefined
 	formatString=%1$s is not defined
 	numArgs=1
@@ -769,6 +775,9 @@ CannotBreakOutOfFinallyBlock
 LabelHasNoBreak
 	formatString=Label '%1$s' has no break
 	numArgs=1
+LabelHasNoContinue
+	formatString=Label '%1$s' has no continue
+	numArgs=1
 CannotGotoInOrOutOfFinallyBlock
 	formatString=Cannot goto in or out of finally block
 	numArgs=0
@@ -814,6 +823,9 @@ ForeachValueOfUTFConversionCannotBeInout
 CannotInferTypeForSymbol
 	formatString=Cannot infer type for %1$s
 	numArgs=1
+CannotInferTypeFromInitializer
+	formatString=Cannot infer type from initializer
+	numArgs=0
 NoStorageClassForSymbol
 	formatString=no storage class for %1$s
 	numArgs=1
@@ -826,17 +838,136 @@ CannotUniquelyInferForeachArgumentTypes
 InvalidForeachAggregate
 	formatString=Invalid foreach aggregate %1$s
 	numArgs=1
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+NotAnAssociativeArrayInitializer
+	formatString=Not an associative array initializer
+	numArgs=0
+ArrayInitializersAsExpressionsNotAllowed
+	formatString=Array initializers as expressions are not allowed
+	numArgs=0
+IftypeConditionCannotBeAtGlobalScope
+	formatString=Iftype conditional cannot be at global scope
+	numArgs=0
+SymbolIsNotAFieldOfSymbol
+	formatString=%1$s is not a field of %2$s
+	numArgs=2
+RecursiveTemplateExpansion
+	formatString=Recursive template expansion
+	numArgs=0
+IndexIsNotATypeOrExpression
+	formatString=Index is not a type or an expression
+	numArgs=0
+CannotHavePointerToSymbol
+	formatString=Cannot have pointer to %1$s
+	numArgs=1
+SizeOfTypeIsNotKnown
+	formatString=Size of type %1$s is not known
+	numArgs=1
+CanOnlySliceTupleTypes
+	formatString=Can only slice tuple types, not %1$s
+	numArgs=1
+NoPropertyForTuple
+	formatString=no property '%1$s' for tuple '%2$s'
+	numArgs=2
+CannotResolveDotProperty
+	formatString=Cannot resolve .property for %1$s
+	numArgs=1
+CannotTakeAddressOfBitInArray
+	formatString=Cannot take address of bit in array
+	numArgs=0
+OnlyOneIndexAllowedToIndex
+	formatString=Only one index allowed to index %1$s
+	numArgs=1
+NoOpIndexOperatorOverloadForType
+	formatString=No [] operator overload for type %1$s
+	numArgs=1
+ArrayDimensionOverflow
+	formatString=Array dimension overflow
+	numArgs=0
+OperatorAssignmentOverloadWithOpIndexIllegal
+	formatString=Operator [] assignment overload with opIndex(i, value) illegal, use opIndexAssign(value, i)
+	numArgs=0
+CannotHaveOutOrInoutArgumentOfBitInArray
+	formatString=Cannot have out or inout argument of bit in array
+	numArgs=0
+SymbolIsAliasedToAFunction
+	formatString=%1$s is aliased to a function
+	numArgs=1
+LinkageDoesNotMatchInterfaceFunction
+	formatString=Linkage doesn't match interface function
+	numArgs=0
+InterfaceFunctionIsNotImplemented
+	formatString=Interface function %1$s.%2$s is not implemented
+	numArgs=2
+ExpectedKeyAsArgumentToRemove
+	formatString=Expected key as argument to aa.remove()
+	numArgs=0
+CyclicConstructorCall
+	formatString=Cyclic constructor call
+	numArgs=0
+MissingOrCurruptObjectDotD
+	formatString=Missing or corrupt object.d
+	numArgs=0
+CannotContinueOutOfFinallyBlock
+	formatString=Cannot continue out of finally block
+	numArgs=0	
+ForwardDeclaration
+	formatString=Forward declaration
+	numArgs=0
+CannotFormDelegateDueToCovariantReturnType
+	formatString=Cannot form delegate due to covariant return type
+	numArgs=0
+ForeachRangeKeyCannotHaveStorageClass
+	formatString=foreach range: key cannot have storage class
+	numArgs=0
+MultipleOverridesOfSameFunction
+	formatString=Multiple overrides of same function
+	numArgs=0
+IdentityAssignmentOperatorOverloadIsIllegal
+	formatString=Identity assignment operator overload is illegal
+	numArgs=0
+LiteralsCannotBeClassMembers
+	formatString=Literals cannot be class members
+	numArgs=0
+NoMatchForImplicitSuperCallInConstructor
+	formatString=No match for implicit super() call in constructor
+	numArgs=0
+NoReturnAtEndOfFunction
+	formatString=No return at end of function
+	numArgs=0
+CanOnlyDeclareTypeAliasesWithinStaticIfConditionals
+	formatString=Can only declare type aliases within static if conditionals
+	numArgs=0
+PackageAndModuleHaveTheSameName
+	formatString=Package and module have the same name
+	numArgs=0
+StringLiteralsAreImmutable
+	formatString=String literals are immutable
+	numArgs=0
+ExpressionDotNewIsOnlyForAllocatingNestedClasses
+	formatString=e.new is only for allocating nested classes
+	numArgs=0	
+TooManyArgumentsForArray
+	formatString=Too many arguments for array
+	numArgs=0
+ReturnExpressionExpected
+	formatString=Return expression expected
+	numArgs=0
+ReturnWithoutCallingConstructor
+	formatString=Return without calling constructor
+	numArgs=0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

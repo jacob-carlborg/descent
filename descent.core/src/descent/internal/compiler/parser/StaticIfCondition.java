@@ -33,7 +33,6 @@ public class StaticIfCondition extends Condition {
 		if (inc == 0) {
 			if (null == sc) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticIfConditionalCannotBeAtGlobalScope, 0, start, length));
-				error(loc, "static if conditional cannot be at global scope");
 				inc = 2;
 				return false;
 			}

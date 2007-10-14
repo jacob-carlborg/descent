@@ -217,7 +217,9 @@ public abstract class TypeQualified extends Type {
 
 	@Override
 	public int size(Loc loc, SemanticContext context) {
-		error(this.loc, "size of type %s is not known", toChars(context));
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.SizeOfTypeIsNotKnown, 0, start,
+				length, new String[] { toChars(context) }));
 		return 1;
 	}
 

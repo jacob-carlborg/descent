@@ -29,8 +29,9 @@ public class TypeEnum extends Type {
 	@Override
 	public int alignsize(SemanticContext context) {
 		if (null == sym.memtype) {
-			error(Loc.ZERO, "enum %s is forward referenced", sym
-					.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.EnumIsForwardReference, 0, start,
+					length, new String[] { sym.toChars(context) }));
 			return 4;
 		}
 		return sym.memtype.alignsize(context);
@@ -89,37 +90,37 @@ public class TypeEnum extends Type {
 		if (CharOperation.equals(ident, Id.max)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
-				error(loc, "forward reference of %s.%s", toChars(context),
-						new String(ident));
-				return new IntegerExp(Loc.ZERO, 0, this);
+				return getProperty_Lfwd(ident, context);
 			}
 			e = new IntegerExp(Loc.ZERO, sym.maxval, this);
 		} else if (CharOperation.equals(ident, Id.min)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
-				error(loc, "forward reference of %s.%s", toChars(context),
-						new String(ident));
-				return new IntegerExp(Loc.ZERO, 0, this);
+				return getProperty_Lfwd(ident, context);
 			}
 			e = new IntegerExp(Loc.ZERO, sym.minval, this);
 		} else if (CharOperation.equals(ident, Id.init)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
-				error(loc, "forward reference of %s.%s", toChars(context),
-						new String(ident));
-				return new IntegerExp(Loc.ZERO, 0, this);
+				return getProperty_Lfwd(ident, context);
 			}
 			e = defaultInit(context);
 		} else {
 			if (null == sym.memtype) {
 				// goto Lfwd;
-				error(loc, "forward reference of %s.%s", toChars(context),
-						new String(ident));
-				return new IntegerExp(Loc.ZERO, 0, this);
+				return getProperty_Lfwd(ident, context);
 			}
 			e = sym.memtype.getProperty(loc, ident, start, length, context);
 		}
 		return e;
+	}
+
+	private Expression getProperty_Lfwd(char[] ident, SemanticContext context) {
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.ForwardReferenceOfSymbolDotSymbol, 0, start, length,
+				new String[] { toChars(context),
+						new String(ident) }));
+		return new IntegerExp(Loc.ZERO, 0, this);
 	}
 
 	@Override
@@ -180,7 +181,9 @@ public class TypeEnum extends Type {
 	@Override
 	public int size(Loc loc, SemanticContext context) {
 		if (null == sym.memtype) {
-			error(loc, "enum %s is forward referenced", sym.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.EnumIsForwardReference, 0, start,
+					length, new String[] { sym.toChars(context) }));
 			return 4;
 		}
 		return sym.memtype.size(loc, context);

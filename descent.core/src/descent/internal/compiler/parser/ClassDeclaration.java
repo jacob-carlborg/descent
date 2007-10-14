@@ -493,7 +493,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 			Type bt;
 
 			if (context.ClassDeclaration_object == null) {
-				error("missing or corrupt object.d");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.MissingOrCurruptObjectDotD, 0, start,
+						length));
 				fatal();
 			}
 			bt = tbase.semantic(loc, sc, context).toBasetype(context);

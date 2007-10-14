@@ -1029,15 +1029,21 @@ public class FuncDeclaration extends Declaration {
 								if (!gotoL1) {
 									if (context.BREAKABI) {
 										if (this.parent.isClassDeclaration() == null) {
-											error("multiple overrides of same function");
+											context.acceptProblem(Problem.newSemanticTypeError(
+													IProblem.MultipleOverridesOfSameFunction, 0, start,
+													length));
 										}
 									} else {
 										if (this.parent.isClassDeclaration() == null
 												&& isDtorDeclaration() == null) {
-											error("multiple overrides of same function");
+											context.acceptProblem(Problem.newSemanticTypeError(
+													IProblem.MultipleOverridesOfSameFunction, 0, start,
+													length));
 										}
 									}
-									error("multiple overrides of same function");
+									context.acceptProblem(Problem.newSemanticTypeError(
+											IProblem.MultipleOverridesOfSameFunction, 0, start,
+											length));
 								}
 							}
 
@@ -1265,7 +1271,7 @@ public class FuncDeclaration extends Declaration {
 			if (nparams == 0) {
 				if (f.varargs != 0) {
 					// goto Lassignerr;
-					error("identity assignment operator overload is illegal");
+					semantic_Lassignerr(context);
 					return;
 				}
 			} else {
@@ -1277,13 +1283,13 @@ public class FuncDeclaration extends Declaration {
 								.implicitConvTo(tb, context) != MATCH.MATCHnomatch)) {
 					if (nparams == 1) {
 						// goto Lassignerr;}
-						error("identity assignment operator overload is illegal");
+						semantic_Lassignerr(context);
 						return;
 					}
 					Argument arg1 = Argument.getNth(f.parameters, 1, context);
 					if (arg1.defaultArg != null) {
 						// goto Lassignerr;
-						error("identity assignment operator overload is illegal");
+						semantic_Lassignerr(context);
 						return;
 					}
 				}
@@ -1296,6 +1302,12 @@ public class FuncDeclaration extends Declaration {
 		scope = new Scope(sc, context);
 		scope.setNoFree();
 		return;
+	}
+
+	private final void semantic_Lassignerr(SemanticContext context) {
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.IdentityAssignmentOperatorOverloadIsIllegal, 0, start,
+				length));
 	}
 
 	@Override
@@ -1368,7 +1380,9 @@ public class FuncDeclaration extends Declaration {
 				VarDeclaration v;
 
 				if (isFuncLiteralDeclaration() != null && isNested()) {
-					error("literals cannot be class members");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.LiteralsCannotBeClassMembers, 0, start,
+							length));
 					return;
 				} else {
 					Assert.isTrue(!isNested()); // can't be both member and
@@ -1719,7 +1733,9 @@ public class FuncDeclaration extends Declaration {
 						e = e.semantic(sc2, context);
 						context.global.gag--;
 						if (errors != context.global.errors) {
-							error("no match for implicit super() call in constructor");
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.NoMatchForImplicitSuperCallInConstructor, 0, start,
+									length));
 						}
 
 						Statement s = new ExpStatement(loc, e);
@@ -1748,7 +1764,9 @@ public class FuncDeclaration extends Declaration {
 							Expression e;
 
 							if (context.global.params.warnings) {
-								error("warning - no return at end of function");
+								context.acceptProblem(Problem.newSemanticTypeWarning(
+										IProblem.NoReturnAtEndOfFunction, 0, start,
+										length, new String[] { toChars(context) }));
 							}
 
 							if (context.global.params.useAssert

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
@@ -127,7 +128,9 @@ public class Import extends Dsymbol {
 			if (null != s.isModule()) {
 				mod = (Module) s;
 			} else {
-				error("package and module have the same name");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.PackageAndModuleHaveTheSameName, 0, start,
+						length));
 			}
 		}
 

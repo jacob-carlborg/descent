@@ -163,8 +163,8 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(2, p.length);
 
-		assertError(p[0], IProblem.ForwardReference, 6, 1);
-		assertError(p[1], IProblem.ForwardReference, 15, 1);
+		assertError(p[0], IProblem.ForwardReferenceOfSymbol, 6, 1);
+		assertError(p[1], IProblem.ForwardReferenceOfSymbol, 15, 1);
 	}
 
 	public void testAliasForwardReference_Not() {
@@ -1030,7 +1030,7 @@ public class Semantic1_Test extends Parser_Test {
 	
 	public void testIncompatibleTypes() {
 		assertSemanticProblems("class X { } void foo() { X x = new X(); x = x + x; }",
-			"x + x", IProblem.IncompatibleTypeForOperator);
+			"x + x", IProblem.IncompatibleTypesForOperator);
 	}
 
 	public void testSymbolNotDefined() {

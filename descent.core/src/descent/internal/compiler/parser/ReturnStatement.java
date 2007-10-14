@@ -216,7 +216,9 @@ public class ReturnStatement extends Statement {
 				}
 			}
 		} else if (tbret.ty != Tvoid) { // if non-void return
-			error("return expression expected");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ReturnExpressionExpected, 0, start,
+					length));
 		}
 
 		if (sc.fes != null) {
@@ -306,7 +308,9 @@ public class ReturnStatement extends Statement {
 
 		if ((sc.callSuper & CSXany_ctor) != 0
 				&& (sc.callSuper & (CSXthis_ctor | CSXsuper_ctor)) == 0) {
-			error("return without calling constructor");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ReturnWithoutCallingConstructor, 0, start,
+					length, new String[] { toChars(context) }));
 		}
 
 		sc.callSuper |= CSXreturn;

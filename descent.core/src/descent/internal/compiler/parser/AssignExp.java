@@ -83,7 +83,9 @@ public class AssignExp extends BinExp {
 						Expression e = new DotIdExp(loc, ae.e1,
 								new IdentifierExp(Loc.ZERO, id));
 
-						error("operator [] assignment overload with opIndex(i, value) illegal, use opIndexAssign(value, i)");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.OperatorAssignmentOverloadWithOpIndexIllegal, 0, start,
+								length));
 
 						e = new CallExp(loc, e, ae.arguments.get(0), e2);
 						e = e.semantic(sc, context);

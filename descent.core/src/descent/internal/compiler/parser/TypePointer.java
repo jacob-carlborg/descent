@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
@@ -87,7 +88,9 @@ public class TypePointer extends Type {
 		Type n = next.semantic(loc, sc, context);
 		switch (n.toBasetype(context).ty) {
 		case Ttuple:
-			error(loc, "can't have pointer to %s", n.toChars(context));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotHavePointerToSymbol, 0, start,
+					length, new String[] { n.toChars(context) }));
 			n = tint32;
 			break;
 		}

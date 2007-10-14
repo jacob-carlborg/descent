@@ -159,7 +159,9 @@ public class TypeAArray extends TypeArray {
 			} else if (t[0] != null) {
 				index = t[0];
 			} else {
-				index.error(loc, "index is not a type or an expression");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.IndexIsNotATypeOrExpression, 0, start,
+						length));
 			}
 		} else {
 			index = index.semantic(loc, sc, context);

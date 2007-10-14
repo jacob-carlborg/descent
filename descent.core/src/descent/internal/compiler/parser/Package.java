@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -33,7 +34,9 @@ public class Package extends ScopeDsymbol {
 								"assert(p.isPackage());");
 					}
 					if (null != p.isModule()) {
-						ASTDmdNode.error("module and package have the same name");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.PackageAndModuleHaveTheSameName, 0, 0,
+								0));
 						// TODO semantic
 						// fatal();
 						break;

@@ -492,7 +492,9 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 
 		if (semanticdone != 0) {
-			error(loc, "recursive template expansion");
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.RecursiveTemplateExpansion, 0, start,
+					length));
 			//		inst = this;
 			return;
 		}

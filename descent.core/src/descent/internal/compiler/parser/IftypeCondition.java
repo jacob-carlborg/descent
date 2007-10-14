@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.core.dom.IftypeDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -57,7 +58,9 @@ public class IftypeCondition extends Condition {
 	public boolean include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
 		if (inc == 0) {
 			if (null == sc) {
-				error(loc, "iftype conditional cannot be at global scope");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.IftypeConditionCannotBeAtGlobalScope, 0, start,
+						length));
 				inc = 2;
 				return false;
 			}

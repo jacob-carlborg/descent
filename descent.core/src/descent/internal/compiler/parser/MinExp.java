@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
@@ -96,7 +97,9 @@ public class MinExp extends BinExp {
 			} else if (t2.isintegral()) {
 				e = scaleFactor(sc, context);
 			} else {
-				error("incompatible types for -");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.IncompatibleTypesForMinus, 0, start,
+						length));
 				assignBinding();
 				return new IntegerExp(loc, 0);
 			}

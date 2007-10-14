@@ -93,11 +93,14 @@ public class ContinueStatement extends Statement {
 					Statement s = ls.statement;
 
 					if (!s.hasContinue()) {
-						error("label '%s' has no continue", ident
-								.toChars());
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.LabelHasNoContinue, 0, start,
+								length, new String[] { ident.toChars() }));
 					}
 					if (ls.tf != sc.tf) {
-						error("cannot continue out of finally block");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotContinueOutOfFinallyBlock, 0, start,
+								length));
 					}
 					return this;
 				}

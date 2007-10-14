@@ -217,8 +217,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.EnumMustHaveAtLeastOneMember);
 		case EnumBaseTypeMustBeOfIntegralType:
 			return String.format(ProblemMessages.EnumBaseTypeMustBeOfIntegralType);
-		case ForwardReference:
-			return String.format(ProblemMessages.ForwardReference, arguments[0]);
+		case ForwardReferenceOfSymbol:
+			return String.format(ProblemMessages.ForwardReferenceOfSymbol, arguments[0]);
+		case ForwardReferenceOfSymbolDotSymbol:
+			return String.format(ProblemMessages.ForwardReferenceOfSymbolDotSymbol, arguments[0], arguments[1]);
 		case ForwardReferenceWhenLookingFor:
 			return String.format(ProblemMessages.ForwardReferenceWhenLookingFor, arguments[0], arguments[1]);
 		case BaseEnumIsForwardReference:
@@ -413,8 +415,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OutCannotBeFinal);
 		case ScopeCannotBeRefOrOut:
 			return String.format(ProblemMessages.ScopeCannotBeRefOrOut);
-		case IncompatibleTypeForOperator:
-			return String.format(ProblemMessages.IncompatibleTypeForOperator, arguments[0], arguments[1], arguments[2]);
+		case IncompatibleTypesForOperator:
+			return String.format(ProblemMessages.IncompatibleTypesForOperator, arguments[0], arguments[1], arguments[2]);
+		case IncompatibleTypesForMinus:
+			return String.format(ProblemMessages.IncompatibleTypesForMinus);
 		case SymbolNotDefined:
 			return String.format(ProblemMessages.SymbolNotDefined, arguments[0]);
 		case SymbolNotATemplate:
@@ -609,6 +613,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotBreakOutOfFinallyBlock);
 		case LabelHasNoBreak:
 			return String.format(ProblemMessages.LabelHasNoBreak, arguments[0]);
+		case LabelHasNoContinue:
+			return String.format(ProblemMessages.LabelHasNoContinue, arguments[0]);
 		case CannotGotoInOrOutOfFinallyBlock:
 			return String.format(ProblemMessages.CannotGotoInOrOutOfFinallyBlock);
 		case CalledWithArgumentTypesMatchesBoth:
@@ -639,6 +645,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ForeachValueOfUTFConversionCannotBeInout);
 		case CannotInferTypeForSymbol:
 			return String.format(ProblemMessages.CannotInferTypeForSymbol, arguments[0]);
+		case CannotInferTypeFromInitializer:
+			return String.format(ProblemMessages.CannotInferTypeFromInitializer);
 		case NoStorageClassForSymbol:
 			return String.format(ProblemMessages.NoStorageClassForSymbol, arguments[0]);
 		case OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach:
@@ -647,6 +655,84 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotUniquelyInferForeachArgumentTypes);
 		case InvalidForeachAggregate:
 			return String.format(ProblemMessages.InvalidForeachAggregate, arguments[0]);
+		case NotAnAssociativeArrayInitializer:
+			return String.format(ProblemMessages.NotAnAssociativeArrayInitializer);
+		case ArrayInitializersAsExpressionsNotAllowed:
+			return String.format(ProblemMessages.ArrayInitializersAsExpressionsNotAllowed);
+		case IftypeConditionCannotBeAtGlobalScope:
+			return String.format(ProblemMessages.IftypeConditionCannotBeAtGlobalScope);
+		case SymbolIsNotAFieldOfSymbol:
+			return String.format(ProblemMessages.SymbolIsNotAFieldOfSymbol, arguments[0], arguments[1]);
+		case RecursiveTemplateExpansion:
+			return String.format(ProblemMessages.RecursiveTemplateExpansion);
+		case IndexIsNotATypeOrExpression:
+			return String.format(ProblemMessages.IndexIsNotATypeOrExpression);
+		case CannotHavePointerToSymbol:
+			return String.format(ProblemMessages.CannotHavePointerToSymbol, arguments[0]);
+		case SizeOfTypeIsNotKnown:
+			return String.format(ProblemMessages.SizeOfTypeIsNotKnown, arguments[0]);
+		case CanOnlySliceTupleTypes:
+			return String.format(ProblemMessages.CanOnlySliceTupleTypes, arguments[0]);
+		case NoPropertyForTuple:
+			return String.format(ProblemMessages.NoPropertyForTuple, arguments[0], arguments[1]);
+		case CannotResolveDotProperty:
+			return String.format(ProblemMessages.CannotResolveDotProperty, arguments[0]);
+		case CannotTakeAddressOfBitInArray:
+			return String.format(ProblemMessages.CannotTakeAddressOfBitInArray);
+		case OnlyOneIndexAllowedToIndex:
+			return String.format(ProblemMessages.OnlyOneIndexAllowedToIndex, arguments[0]);
+		case NoOpIndexOperatorOverloadForType:
+			return String.format(ProblemMessages.NoOpIndexOperatorOverloadForType, arguments[0]);
+		case ArrayDimensionOverflow:
+			return String.format(ProblemMessages.ArrayDimensionOverflow);
+		case OperatorAssignmentOverloadWithOpIndexIllegal:
+			return String.format(ProblemMessages.OperatorAssignmentOverloadWithOpIndexIllegal);
+		case CannotHaveOutOrInoutArgumentOfBitInArray:
+			return String.format(ProblemMessages.CannotHaveOutOrInoutArgumentOfBitInArray);
+		case SymbolIsAliasedToAFunction:
+			return String.format(ProblemMessages.SymbolIsAliasedToAFunction, arguments[0]);
+		case LinkageDoesNotMatchInterfaceFunction:
+			return String.format(ProblemMessages.LinkageDoesNotMatchInterfaceFunction);
+		case InterfaceFunctionIsNotImplemented:
+			return String.format(ProblemMessages.InterfaceFunctionIsNotImplemented, arguments[0], arguments[1]);
+		case ExpectedKeyAsArgumentToRemove:
+			return String.format(ProblemMessages.ExpectedKeyAsArgumentToRemove);
+		case CyclicConstructorCall:
+			return String.format(ProblemMessages.CyclicConstructorCall);
+		case MissingOrCurruptObjectDotD:
+			return String.format(ProblemMessages.MissingOrCurruptObjectDotD);
+		case CannotContinueOutOfFinallyBlock:
+			return String.format(ProblemMessages.CannotContinueOutOfFinallyBlock);
+		case ForwardDeclaration:
+			return String.format(ProblemMessages.ForwardDeclaration);
+		case CannotFormDelegateDueToCovariantReturnType:
+			return String.format(ProblemMessages.CannotFormDelegateDueToCovariantReturnType);
+		case ForeachRangeKeyCannotHaveStorageClass:
+			return String.format(ProblemMessages.ForeachRangeKeyCannotHaveStorageClass);
+		case MultipleOverridesOfSameFunction:
+			return String.format(ProblemMessages.MultipleOverridesOfSameFunction);
+		case IdentityAssignmentOperatorOverloadIsIllegal:
+			return String.format(ProblemMessages.IdentityAssignmentOperatorOverloadIsIllegal);
+		case LiteralsCannotBeClassMembers:
+			return String.format(ProblemMessages.LiteralsCannotBeClassMembers);
+		case NoMatchForImplicitSuperCallInConstructor:
+			return String.format(ProblemMessages.NoMatchForImplicitSuperCallInConstructor);
+		case NoReturnAtEndOfFunction:
+			return String.format(ProblemMessages.NoReturnAtEndOfFunction);
+		case CanOnlyDeclareTypeAliasesWithinStaticIfConditionals:
+			return String.format(ProblemMessages.CanOnlyDeclareTypeAliasesWithinStaticIfConditionals);
+		case PackageAndModuleHaveTheSameName:
+			return String.format(ProblemMessages.PackageAndModuleHaveTheSameName);
+		case StringLiteralsAreImmutable:
+			return String.format(ProblemMessages.StringLiteralsAreImmutable);
+		case ExpressionDotNewIsOnlyForAllocatingNestedClasses:
+			return String.format(ProblemMessages.ExpressionDotNewIsOnlyForAllocatingNestedClasses);
+		case TooManyArgumentsForArray:
+			return String.format(ProblemMessages.TooManyArgumentsForArray);
+		case ReturnExpressionExpected:
+			return String.format(ProblemMessages.ReturnExpressionExpected);
+		case ReturnWithoutCallingConstructor:
+			return String.format(ProblemMessages.ReturnWithoutCallingConstructor);
 		default:
 			return "";
 		}

@@ -696,12 +696,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		return DYNCAST.DYNCAST_OBJECT;
 	}
 
-	protected static void error(Loc loc, String... s) {
-		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
-			throw new IllegalStateException("Problem reporting not implemented");
-		}
-	}
-
 	protected static void error(String s) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
@@ -884,7 +878,9 @@ public abstract class ASTDmdNode extends ASTNode {
 					// Don't have a way yet to do a pointer to a bit in array
 					if (arg.op == TOKarray
 							&& arg.type.toBasetype(context).ty == Tbit) {
-						error("cannot have out or inout argument of bit in array");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, 0, start,
+								length));
 					}
 				}
 
@@ -1406,7 +1402,9 @@ public abstract class ASTDmdNode extends ASTNode {
 				} else {
 					f = d.isFuncDeclaration();
 					if (null == f) {
-						d.error("is aliased to a function");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.SymbolIsAliasedToAFunction, 0, a.start,
+								a.length, new String[] { a.toChars(context) }));
 						break; // BUG: should print error message?
 					}
 					if (fp.call(param, f, context) != 0) {

@@ -192,11 +192,11 @@ public class AliasDeclaration extends Declaration {
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReference, 0, tempType.start,
+					IProblem.ForwardReferenceOfSymbol, 0, tempType.start,
 					tempType.length, new String[] { tempType.toString() }));
 			context
 					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReference, 0, v.ident.start,
+							IProblem.ForwardReferenceOfSymbol, 0, v.ident.start,
 							v.ident.length, new String[] { new String(
 									v.ident.ident) }));
 			s = null;

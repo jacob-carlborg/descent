@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
+
 // DMD 1.020
 public abstract class Initializer extends ASTDmdNode {
 	
@@ -25,7 +27,9 @@ public abstract class Initializer extends ASTDmdNode {
 	}
 
 	public Type inferType(Scope sc, SemanticContext context) {
-		error("cannot infer type from initializer");
+		context.acceptProblem(Problem.newSemanticTypeError(
+				IProblem.CannotInferTypeFromInitializer, 0, start,
+				length));
 		return Type.terror;
 	}
 	

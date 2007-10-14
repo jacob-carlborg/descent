@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -43,8 +44,11 @@ public class IftypeExp extends Expression {
 		Type tded = null;
 
 		//printf("IftypeExp.semantic()\n");
-		if (null != id && ((sc.flags & Scope.SCOPEstaticif) == 0))
-			error("can only declare type aliases within static if conditionals");
+		if (null != id && ((sc.flags & Scope.SCOPEstaticif) == 0)) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CanOnlySliceTupleTypes, 0, start,
+					length));
+		}
 
 		int errors_save = context.global.errors;
 		context.global.errors = 0;

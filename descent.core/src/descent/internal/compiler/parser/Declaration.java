@@ -4,6 +4,8 @@ import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
 
+import descent.core.compiler.IProblem;
+
 // DMD 1.020
 public abstract class Declaration extends Dsymbol {
 
@@ -139,7 +141,9 @@ public abstract class Declaration extends Dsymbol {
 				return ident.toChars();
 
 			case LINKdefault:
-				error("forward declaration");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForwardDeclaration, 0, start,
+						length));
 				return ident.toChars();
 
 			default:

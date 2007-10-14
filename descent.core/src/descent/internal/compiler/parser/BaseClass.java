@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tfunction;
@@ -104,14 +105,18 @@ public class BaseClass extends ASTDmdNode {
 			if (fd != null && !fd.isAbstract()) {
 				// Check that calling conventions match
 				if (fd.linkage != ifd.linkage) {
-					fd.error("linkage doesn't match interface function");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.LinkageDoesNotMatchInterfaceFunction, 0, start,
+							length));
 				}
 
 				// Check that it is current
 				if (newinstance != 0 && fd.toParent() != cd
 						&& ifd.toParent() == base) {
-					cd.error("interface function %s.%s is not implemented", id
-							.toChars(context), ifd.ident.toChars());
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.InterfaceFunctionIsNotImplemented, 0, start,
+							length, new String[] { id
+									.toChars(context), ifd.ident.toChars() }));
 				}
 
 				if (fd.toParent() == cd) {

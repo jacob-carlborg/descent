@@ -175,10 +175,14 @@ public class NewExp extends Expression {
 							}
 						}
 					} else if (thisexp != null) {
-						error("e.new is only for allocating nested classes");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, 0, start,
+								length));
 					}
 				} else if (thisexp != null) {
-					error("e.new is only for allocating nested classes");
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, 0, start,
+							length));
 				}
 
 				FuncDeclaration f = cd.ctor;
@@ -267,7 +271,9 @@ public class NewExp extends Expression {
 					&& (arguments != null && arguments.size() > 0)) {
 				for (int i = 0; i < arguments.size(); i++) {
 					if (tb.ty != Tarray) {
-						error("too many arguments for array");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.TooManyArgumentsForArray, 0, start,
+								length));
 						arguments.setDim(i);
 						break;
 					}

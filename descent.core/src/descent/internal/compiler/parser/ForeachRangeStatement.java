@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 2.003
@@ -85,8 +86,11 @@ public class ForeachRangeStatement extends Statement {
 		DeclarationExp de = new DeclarationExp(loc, key);
 		de.semantic(sc, context);
 
-		if (0 < key.storage_class)
-			error("foreach range: key cannot have storage class");
+		if (0 < key.storage_class) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForeachRangeKeyCannotHaveStorageClass, 0, start,
+					length));
+		}
 
 		sc.sbreak = this;
 		sc.scontinue = this;

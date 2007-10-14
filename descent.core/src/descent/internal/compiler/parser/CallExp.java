@@ -240,7 +240,9 @@ public class CallExp extends UnaExp {
 				if (e1ty == Taarray
 						&& CharOperation.equals(dotid.ident.ident, Id.remove)) {
 					if (arguments == null || arguments.size() != 1) {
-						error("expected key as argument to aa.remove()");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ExpectedKeyAsArgumentToRemove, 0, start,
+								length));
 						// goto Lagain;
 						gotoLagain = true;
 					}
@@ -520,7 +522,9 @@ public class CallExp extends UnaExp {
 					// BUG: this should really be done by checking the static
 					// call graph
 					if (f == sc.func) {
-						error("cyclic constructor call");
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CyclicConstructorCall, 0, start,
+								length, new String[] { toChars(context) }));
 					}
 				}
 			} else if (t1 == null) {

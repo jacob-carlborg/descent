@@ -116,7 +116,9 @@ public class ArrayInitializer extends Initializer {
 			// This was length == 0 in DMD, with length
 			// an unsigned. So in a long, it's:
 			if (length == (Integer.MAX_VALUE + 1) * 2) {
-				error("array dimension overflow");
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ArrayDimensionOverflow, 0, this.start,
+						this.length));
 			}
 			if (length > dim) {
 				dim = length;
@@ -166,33 +168,29 @@ public class ArrayInitializer extends Initializer {
 			e = index.get(i);
 			if (null == e) {
 				// goto Lno;
-				keys = null;
-				values = null;
-				error(loc, "not an associative array initializer");
-				return this;
+				return toAssocArrayInitializer_Lno(context);
 			}
 			keys.set(i, e);
 
 			Initializer iz = value.get(i);
 			if (null == iz) {
 				// goto Lno;
-				keys = null;
-				values = null;
-				error(loc, "not an associative array initializer");
-				return this;
+				return toAssocArrayInitializer_Lno(context);
 			}
 			e = iz.toExpression(context);
 			if (null == e) {
 				// goto Lno;
-				keys = null;
-				values = null;
-				error(loc, "not an associative array initializer");
-				return this;
+				return toAssocArrayInitializer_Lno(context);
 			}
 			values.set(i, e);
 		}
 		e = new AssocArrayLiteralExp(loc, keys, values);
 		return new ExpInitializer(loc, e);
+	}
+
+	private Initializer toAssocArrayInitializer_Lno(SemanticContext context) {
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAssociativeArrayInitializer, 0, start, length));
+		return this;
 	}
 
 	@Override
@@ -225,23 +223,17 @@ public class ArrayInitializer extends Initializer {
 		for (int i = 0; i < value.size(); i++) {
 			if (index.get(i) != null) {
 				// goto Lno;
-				elements = null;
-				error(loc, "array initializers as expressions are not allowed");
-				return null;
+				return toExpression_Lno(context);
 			}
 			Initializer iz = value.get(i);
 			if (null == iz) {
 				// goto Lno;
-				elements = null;
-				error(loc, "array initializers as expressions are not allowed");
-				return null;
+				return toExpression_Lno(context);
 			}
 			Expression ex = iz.toExpression(context);
 			if (null == ex) {
 				// goto Lno;
-				elements = null;
-				error(loc, "array initializers as expressions are not allowed");
-				return null;
+				return toExpression_Lno(context);
 			}
 			elements.add(ex);
 		}
@@ -250,6 +242,11 @@ public class ArrayInitializer extends Initializer {
 		return e;
 	}
 	
+	private Expression toExpression_Lno(SemanticContext context) {
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayInitializersAsExpressionsNotAllowed, 0, start, length));
+		return null;
+	}
+
 	@Override
 	public ArrayInitializer isArrayInitializer() {
 		return this;

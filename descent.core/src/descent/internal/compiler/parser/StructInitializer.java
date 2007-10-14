@@ -104,9 +104,11 @@ public class StructInitializer extends Initializer {
 					}
 					vars.set(i, v);
 				} else {
-					error(loc, "%s is not a field of %s", id != null ? id
-							.toChars() : s.toChars(context), ad
-							.toChars(context));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolIsNotAFieldOfSymbol, 0, start,
+							length, new String[] { id != null ? id
+									.toChars() : s.toChars(context), ad
+									.toChars(context) }));
 					errors = 1;
 				}
 				fieldi++;

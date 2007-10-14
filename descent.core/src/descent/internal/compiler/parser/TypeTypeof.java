@@ -61,7 +61,9 @@ public class TypeTypeof extends TypeQualified {
 					return tvoid;
 				}
 			} else {
-				error(loc, "cannot resolve .property for %s", toChars(context));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotResolveDotProperty, 0, start,
+						length, new String[] { toChars(context) }));
 				return tvoid;
 			}
 		}
