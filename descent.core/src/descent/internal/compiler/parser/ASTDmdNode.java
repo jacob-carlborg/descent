@@ -695,12 +695,6 @@ public abstract class ASTDmdNode extends ASTNode {
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_OBJECT;
 	}
-
-	protected static void error(String s, String... s2) {
-		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
-			throw new IllegalStateException("Problem reporting not implemented");
-		}
-	}
 	
 	public static final void expToCBuffer(OutBuffer buf, HdrGenState hgs,
 			Expression e, PREC pr, SemanticContext context) {

@@ -963,6 +963,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotUseTemplateToAddFieldToAggregate, arguments[0]);
 		case CannotModifyFinalVariable:
 			return String.format(ProblemMessages.CannotModifyFinalVariable, arguments[0]);
+		case InvalidUtf8Sequence2:
+			return String.format(ProblemMessages.InvalidUtf8Sequence2);
+		case Utf16HighValuePastEndOfString:
+			return String.format(ProblemMessages.Utf16HighValuePastEndOfString);
+		case Utf16LowValueOutOfRange:
+			return String.format(ProblemMessages.Utf16LowValueOutOfRange);
+		case UnpairedUtf16Value:
+			return String.format(ProblemMessages.UnpairedUtf16Value);
+		case IllegalUtf16Value:
+			return String.format(ProblemMessages.IllegalUtf16Value);
 		default:
 			return "";
 		}

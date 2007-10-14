@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
+
 // DMD 1.020
 public class Utf {
 
@@ -8,7 +10,7 @@ public class Utf {
 	 * @param s the index in the character array
 	 * @param len the length to decode
 	 */
-	public static String decodeChar(char[] input, int s, int len, int[] pidx,
+	public static int decodeChar(char[] input, int s, int len, int[] pidx,
 			int[] presult) {
 		int V;
 		int i = pidx[0];
@@ -75,7 +77,7 @@ public class Utf {
 
 		pidx[0] = i;
 		presult[0] = V;
-		return null;
+		return -1;
 	}
 
 	public static boolean isValidDchar(long c) {
@@ -83,16 +85,16 @@ public class Utf {
 				|| (c > 0xDFFF && c <= 0x10FFFF && c != 0xFFFE && c != 0xFFFF);
 	}
 
-	private static String decodeChar_Lerr(char[] input, int s, int i,
+	private static int decodeChar_Lerr(char[] input, int s, int i,
 			int[] pidx, int[] presult) {
 		presult[0] = input[s + i];
 		pidx[0] = i + 1;
-		return "invalid UTF-8 sequence";
+		return IProblem.InvalidUtf8Sequence2;
 	}
 
-	public static String decodeWchar(char[] input, int s, int len, int[] pidx,
+	public static int decodeWchar(char[] input, int s, int len, int[] pidx,
 			int[] presult) {
-		String msg;
+		int msg;
 		int i = pidx[0];
 		int u = input[s + i];
 
@@ -102,24 +104,24 @@ public class Utf {
 				int u2;
 
 				if (i + 1 == len) {
-					msg = "surrogate UTF-16 high value past end of string";
+					msg = IProblem.Utf16HighValuePastEndOfString; //"surrogate UTF-16 high value past end of string";
 					// goto Lerr;
 					return decodeWchar_Lerr(input, s, i, pidx, presult, msg);
 				}
 				u2 = input[s + i + 1];
 				if (u2 < 0xDC00 || u2 > 0xDFFF) {
-					msg = "surrogate UTF-16 low value out of range";
+					msg = IProblem.Utf16LowValueOutOfRange; //"surrogate UTF-16 low value out of range";
 					// goto Lerr;
 					return decodeWchar_Lerr(input, s, i, pidx, presult, msg);
 				}
 				u = ((u - 0xD7C0) << 10) + (u2 - 0xDC00);
 				i += 2;
 			} else if (u >= 0xDC00 && u <= 0xDFFF) {
-				msg = "unpaired surrogate UTF-16 value";
+				msg = IProblem.UnpairedUtf16Value; //"unpaired surrogate UTF-16 value";
 				// goto Lerr;
 				return decodeWchar_Lerr(input, s, i, pidx, presult, msg);
 			} else if (u == 0xFFFE || u == 0xFFFF) {
-				msg = "illegal UTF-16 value";
+				msg = IProblem.IllegalUtf16Value; //"illegal UTF-16 value";
 				// goto Lerr;
 				return decodeWchar_Lerr(input, s, i, pidx, presult, msg);
 			} else
@@ -131,11 +133,11 @@ public class Utf {
 		assert (Utf.isValidDchar(u));
 		pidx[0] = i;
 		presult[0] = u;
-		return null;
+		return -1;
 	}
 
-	private static String decodeWchar_Lerr(char[] input, int s, int i,
-			int[] pidx, int[] presult, String msg) {
+	private static int decodeWchar_Lerr(char[] input, int s, int i,
+			int[] pidx, int[] presult, int msg) {
 		presult[0] = input[s + i];
 		pidx[0] = i + 1;
 		return msg;

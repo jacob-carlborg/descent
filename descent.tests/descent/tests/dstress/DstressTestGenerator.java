@@ -113,11 +113,21 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				sb.append("\"").append(fullFilename).append("\"");
 				sb.append(");\r\n");
 			} else {
+				List<String> errors = errors(file);
 				sb.append("\t\tnocompile(");
 				sb.append("\"").append(fullFilename).append("\"");
 				sb.append(", ");
-				sb.append(errors(file));
-				sb.append(");\r\n");
+				sb.append(errors.size());
+				sb.append(");\r\n\r\n");
+				for(String error : errors)
+				{
+					sb.append("\t\t// ");
+					// Need to replace a backslash-u with \ u
+					// so Eclipse doesn't complain about an invalid
+					// unicode sequence (even in comments!)
+					sb.append(error.replace("\\u", "\\ u"));
+					sb.append("\r\n");
+				}
 			}
 			sb.append("\t}\r\n\r\n");
 		}
@@ -160,7 +170,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\r\n");
 		sb.append("}\r\n");
 		
-		FileWriter fw = new FileWriter("descent/tests/dstress/DstressNoCompile_Test.java");
+		FileWriter fw = new FileWriter("C:/Users/xycos/workspace/descent.tests/descent/tests/dstress/DstressNoCompile_Test.java");
 		fw.write(sb.toString());
 		fw.close();
 	}
@@ -189,17 +199,23 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		}
 	}
 	
-	private static int errors(File file) throws Exception {
+	private static List<String> errors(File file) throws Exception {
+		System.out.println("Processing " + file.getName() + "...");
 		Process process = Runtime.getRuntime().exec("dmd " + file.getAbsolutePath() + " -o-");
 		InputStreamReader reader = new InputStreamReader(process.getInputStream());
 		BufferedReader br = new BufferedReader(reader);
 		
-		int count = 0;
-		while(br.readLine() != null) {
-			count++;
+		List<String> errors = new ArrayList<String>();
+		
+		String line;
+		while((line = br.readLine()) != null) {
+			if(!line.equals("")) {
+				errors.add(line);
+			}
 		}
 		br.close();
-		return count;
+		
+		return errors;
 	}
 
 }

@@ -1300,6 +1300,21 @@ CannotUseTemplateToAddFieldToAggregate
 CannotModifyFinalVariable
 	formatString=Cannot modify final variable '%1$s'
 	numArgs=1
+InvalidUtf8Sequence2
+	formatString=Invalid UTF-8 Sequence
+	numArgs=0
+Utf16HighValuePastEndOfString
+	formatString=Surrogate UTF-16 high value past end of string
+	numArgs=0
+Utf16LowValueOutOfRange
+	formatString=Surrogate UTF-16 low value out of range
+	numArgs=0
+UnpairedUtf16Value
+	formatString=Unpaired surrogate UTF-16 value
+	numArgs=0
+IllegalUtf16Value
+	formatString=Illegal UTF-16 Value
+	numArgs=0
 
 
 

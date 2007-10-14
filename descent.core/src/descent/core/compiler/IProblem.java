@@ -642,5 +642,10 @@ public interface IProblem {
 	int StructIsForwardReferenced = 432;
 	int CannotUseTemplateToAddFieldToAggregate = 433;
 	int CannotModifyFinalVariable = 434;
+	int InvalidUtf8Sequence2 = 435;
+	int Utf16HighValuePastEndOfString = 436;
+	int Utf16LowValueOutOfRange = 437;
+	int UnpairedUtf16Value = 438;
+	int IllegalUtf16Value = 439;
 
 }

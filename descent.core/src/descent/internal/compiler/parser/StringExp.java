@@ -100,7 +100,7 @@ public class StringExp extends Expression {
 		if (type == null) {
 			OutBuffer buffer = new OutBuffer();
 			int newlen = 0;
-			String p;
+			int p;
 			int[] u = { 0 };
 			int[] c = { 0 };
 
@@ -109,8 +109,9 @@ public class StringExp extends Expression {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeChar(string, 0, len, u, c);
 					// utf_decodeChar((unsigned char )string, len, &u, &c);
-					if (p != null) {
-						error("%s", p);
+					if (p >= 0) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
 						break;
 					} else {
 						buffer.write4(c[0]);
@@ -129,8 +130,9 @@ public class StringExp extends Expression {
 			case 'w':
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeChar(string, 0, len, u, c);
-					if (p != null) {
-						error("%s", p);
+					if (p >= 0) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
 						break;
 					} else {
 						buffer.writeUTF16(c[0]);
@@ -272,7 +274,7 @@ public class StringExp extends Expression {
 
 		TY tfty;
 		TY ttty;
-		String p;
+		int p;
 		int[] u = { 0 };
 		int[] c = { 0 };
 		int newlen;
@@ -290,8 +292,9 @@ public class StringExp extends Expression {
 			} else if (x == X(Tchar, Twchar)) {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeChar(se.string, 0, len, u, c);
-					if (p != null) {
-						error("%s", p);
+					if (p >= 0) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
 					} else {
 						buffer.writeUTF16(c[0]);
 					}
@@ -309,8 +312,9 @@ public class StringExp extends Expression {
 			} else if (x == X(Tchar, Tdchar)) {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeChar(se.string, 0, len, u, c);
-					if (p != null) {
-						error("%s", p);
+					if (p >= 0) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
 					}
 					buffer.write4(c[0]);
 					newlen++;
@@ -327,8 +331,9 @@ public class StringExp extends Expression {
 			} else if (x == X(Twchar, Tchar)) {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeWchar(se.string, 0, len, u, c);
-					if (p != null) {
-						error("%s", p);
+					if (p >= 0) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
 					} else {
 						buffer.writeUTF8(c[0]);
 					}
@@ -346,8 +351,9 @@ public class StringExp extends Expression {
 			} else if (x == X(Twchar, Tdchar)) {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeWchar(se.string, 0, len, u, c);
-					if (p != null) {
-						error("%s", p);
+					if (p >= 0) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
 					}
 					buffer.write4(c[0]);
 					newlen++;

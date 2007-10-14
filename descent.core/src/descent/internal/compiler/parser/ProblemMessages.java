@@ -444,6 +444,11 @@ final class ProblemMessages extends NLS {
 	public static String StructIsForwardReferenced;
 	public static String CannotUseTemplateToAddFieldToAggregate;
 	public static String CannotModifyFinalVariable;
+	public static String InvalidUtf8Sequence2;
+	public static String Utf16HighValuePastEndOfString;
+	public static String Utf16LowValueOutOfRange;
+	public static String UnpairedUtf16Value;
+	public static String IllegalUtf16Value;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
