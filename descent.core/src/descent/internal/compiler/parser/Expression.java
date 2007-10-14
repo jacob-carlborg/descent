@@ -468,7 +468,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		} else if (loc.filename == null) {
 			loc = e.loc;
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnLvalue, 0, start, length, new String[] { e.toChars(context) }));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnLvalue, 0, e.start, e.length, new String[] { e.toChars(context) }));
 		return this;
 	}
 

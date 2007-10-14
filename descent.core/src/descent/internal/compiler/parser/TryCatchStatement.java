@@ -89,7 +89,7 @@ public class TryCatchStatement extends Statement {
 
 				if (c.type.toBasetype(context).implicitConvTo(
 						cj.type.toBasetype(context), context) != null) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CatchHidesCatch, 0, cj.start, cj.length, new String[] { sj, si }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CatchHidesCatch, 0, cj.start, 5 /* "catch".length() */, new String[] { sj, si }));
 				}
 			}
 		}

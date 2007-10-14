@@ -8,14 +8,14 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class Catch extends ASTDmdNode {
 
 	public Loc loc;
-	public Type type;
+	public Type type, sourceType;
 	public IdentifierExp ident;
 	public VarDeclaration var;
 	public Statement handler;
 
 	public Catch(Loc loc, Type type, IdentifierExp id, Statement handler) {
 		this.loc = loc;
-		this.type = type;
+		this.type = sourceType = type;
 		this.ident = id;
 		this.handler = handler;
 	}
@@ -56,8 +56,8 @@ public class Catch extends ASTDmdNode {
 		type = type.semantic(loc, sc, context);
 		if (type.toBasetype(context).isClassHandle() == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlyCatchClassObjects, 0, start,
-					length, new String[] { type.toChars(context) }));
+					IProblem.CanOnlyCatchClassObjects, 0, sourceType.start,
+					sourceType.length, new String[] { type.toChars(context) }));
 		} else if (ident != null) {
 			var = new VarDeclaration(loc, type, ident, null);
 			var.parent = sc.parent;

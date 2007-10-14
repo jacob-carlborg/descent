@@ -2580,8 +2580,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.CatchClause convert(Catch a) {
 		descent.core.dom.CatchClause b = new descent.core.dom.CatchClause(ast);
-		if (a.type != null) {
-			descent.core.dom.Type convertedType = convert(a.type);
+		if (a.sourceType != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceType);
 			if (convertedType != null) {
 				b.setType(convertedType);
 			}
