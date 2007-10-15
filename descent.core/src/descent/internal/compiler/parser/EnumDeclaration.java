@@ -19,7 +19,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	private final static long N_0x8000000000000000 = 0x8000000000000000L;
 
 	public Type type; // the TypeEnum
-	public Type memtype; // type of the members
+	public Type memtype, sourceMemtype; // type of the members
 	integer_t maxval;
 	integer_t minval;
 	integer_t defaultval; // default initializer
@@ -28,7 +28,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		super(id);
 		this.loc = loc;
 		this.type = new TypeEnum(this);
-		this.memtype = memtype;
+		this.memtype = this.sourceMemtype = memtype;
 		this.maxval = integer_t.ZERO;
 		this.minval = integer_t.ZERO;
 		this.defaultval = integer_t.ZERO;
@@ -80,19 +80,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 		Type t;
 		Scope sce;
 
-		// EXTRA
-		int errorStart, errorLength;
-		if (ident == null) {
-			// Use "enum" to mark errors
-			errorStart = start;
-			errorLength = 4;
-		} else {
-			// Use the name to mark errors
-			errorStart = ident.start;
-			errorLength = ident.length;
-		}
-		// EXTRA
-
 		if (symtab != null) { // if already done
 			return;
 		}
@@ -112,8 +99,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 					context);
 			if (sym.memtype == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.BaseEnumIsForwardReference, 0, memtype.start,
-						memtype.length));
+						IProblem.BaseEnumIsForwardReference, 0, sourceMemtype.start,
+						sourceMemtype.length));
 				memtype = Type.tint32;
 			}
 		}
@@ -121,7 +108,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		if (!memtype.isintegral()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.EnumBaseTypeMustBeOfIntegralType, 0,
-					memtype.start, memtype.length));
+					sourceMemtype.start, sourceMemtype.length));
 			memtype = Type.tint32;
 		}
 
@@ -136,8 +123,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 		if (members.size() == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumMustHaveAtLeastOneMember, 0, errorStart,
-					errorLength));
+					IProblem.EnumMustHaveAtLeastOneMember, 0, getErrorStart(),
+					getErrorLength()));
 		}
 
 		boolean first = true;
@@ -346,6 +333,24 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 		buf.writeByte('}');
 		buf.writenl();
+	}
+	
+	@Override
+	public int getErrorStart() {
+		if (ident != null) {
+			return ident.getErrorStart();
+		} else {
+			return start;
+		}
+	}
+	
+	@Override
+	public int getErrorLength() {
+		if (ident != null) {
+			return ident.getLength();
+		} else {
+			return 4; // "enum".length()
+		}
 	}
 
 }

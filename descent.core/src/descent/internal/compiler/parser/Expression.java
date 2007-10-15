@@ -190,7 +190,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public Expression checkToBoolean(SemanticContext context) {
-		if (type.checkBoolean(context)) {
+		if (!type.checkBoolean(context)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ExpressionOfTypeDoesNotHaveABooleanValue, 0, start,
 					length, new String[] { toChars(context), type.toChars(context) }));

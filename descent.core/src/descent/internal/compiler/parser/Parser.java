@@ -1075,12 +1075,14 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 		nextToken();
 		
+		int thisStart = token.ptr;
+		
 		check(TOKthis);
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
 		DtorDeclaration f = new DtorDeclaration(loc);
-		f.notThisStart = start;
+		f.thisStart = thisStart;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return f;
@@ -1094,6 +1096,8 @@ public class Parser extends Lexer {
 	    check(TOKrparen);
 
 	    StaticCtorDeclaration f = new StaticCtorDeclaration(loc);
+	    f.thisStart = start;
+	    
 		f.setSourceRange(start, 0);
 	    parseContracts(f);
 	    return f;
@@ -1103,11 +1107,14 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 		nextToken();
 		
+		int thisStart = token.ptr;
+		
 		check(TOKthis);
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
 		StaticDtorDeclaration f = new StaticDtorDeclaration(loc);
+		f.thisStart = thisStart;
 		f.setSourceRange(start, 0);
 	    parseContracts(f);
 	    return f;
@@ -1700,8 +1707,10 @@ public class Parser extends Lexer {
 		PROT protection = PROT.PROTpublic;
 		BaseClasses baseclasses = new BaseClasses();
 		Modifier modifier = null;
+		
+		int start = token.ptr;
 
-		for (; true; nextToken()) {
+		for (; true; nextToken()) {			
 			switch (token.value) {
 			case TOKidentifier:
 				break;
@@ -1720,8 +1729,14 @@ public class Parser extends Lexer {
 			}
 			BaseClass b = new BaseClass(parseBasicType(), modifier, protection);
 			baseclasses.add(b);
+			
+			b.start = start;
+			b.length = prevToken.ptr + prevToken.sourceLen - b.start;
+			
 			if (token.value != TOKcomma) {
 				break;
+			} else {
+				start = peek(token).ptr;
 			}
 		}
 		return baseclasses;

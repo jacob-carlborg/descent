@@ -11,7 +11,7 @@ import descent.internal.ui.infoviews.DdocSection;
 
 public class DdocParserTests extends TestCase {
 	
-	public void testOneLine() {
+	public void testOneLine() {		
 		DdocSection[] sections = parse(
 			"/**\r\n" +
 			" * Line one.\r\n" +
@@ -679,5 +679,5 @@ public class DdocParserTests extends TestCase {
 		
 		assertFalse(ddoc.isDitto());
 	}
-
+	
 }

@@ -75,6 +75,10 @@ public class DotIdExp extends UnaExp {
 		}
 
 		super.semantic(sc, context);
+		
+		// Reassign source range to the member
+		e1.start = ident.start;
+		e1.length = ident.length;
 
 		if (e1.op == TOKdotexp) {
 			DotExp de = (DotExp) e1;

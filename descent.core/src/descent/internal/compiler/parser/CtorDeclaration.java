@@ -76,7 +76,7 @@ public class CtorDeclaration extends FuncDeclaration {
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ConstructorsOnlyForClass, 0, thisStart, 4));
+					IProblem.ConstructorsOnlyForClass, 0, getErrorStart(), getErrorLength()));
 			tret = Type.tvoid;
 		} else {
 			tret = cd.type; // .referenceTo();
@@ -140,6 +140,16 @@ public class CtorDeclaration extends FuncDeclaration {
 	@Override
 	public String toChars(SemanticContext context) {
 		return "this";
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return thisStart;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 4; // "this".length()
 	}
 
 }

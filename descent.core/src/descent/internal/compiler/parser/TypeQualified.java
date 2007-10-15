@@ -179,7 +179,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 
-		if (t != this) {
+		if (t.singleton != this.singleton) {
 			if (t.reliesOnTident() != null) {
 				Scope scx;
 

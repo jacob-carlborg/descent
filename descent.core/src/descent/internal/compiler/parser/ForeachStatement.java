@@ -53,11 +53,9 @@ public class ForeachStatement extends Statement {
 			"dc", "dw", "dd" };
 	public TOK op;
 	public Arguments arguments;
-	public Expression aggr;
+	public Expression aggr, sourceAggr;
 
-	public Expression sourceAggr;
-
-	public Statement body;
+	public Statement body, sourceBody;
 	public VarDeclaration key;
 
 	public VarDeclaration value;
@@ -72,9 +70,8 @@ public class ForeachStatement extends Statement {
 		super(loc);
 		this.op = op;
 		this.arguments = arguments;
-		this.sourceAggr = aggr;
-		this.aggr = aggr;
-		this.body = body;
+		this.aggr = this.sourceAggr = aggr;
+		this.body = this.sourceBody = body;
 	}
 
 	@Override
@@ -349,7 +346,7 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = arguments.get(i);
 			if (arg.type == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferTypeForSymbol, 0, start, length, new String[] { arg.ident.toChars() }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferTypeForSymbol, 0, arg.getErrorStart(), arg.getErrorLength(), new String[] { arg.ident.toChars() }));
 				return this;
 			}
 		}
@@ -498,7 +495,7 @@ public class ForeachStatement extends Statement {
 		tret = func.type.next;
 
 		// Need a variable to hold value from any return statements in body.
-		if (sc.func.vresult == null && tret != null && tret != Type.tvoid) {
+		if (sc.func.vresult == null && tret != null && tret.singleton != Type.tvoid) {
 			VarDeclaration v;
 
 			v = new VarDeclaration(loc, tret, Id.result, null);

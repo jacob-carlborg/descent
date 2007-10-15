@@ -5,6 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class StaticCtorDeclaration extends FuncDeclaration {
+	
+	public int thisStart; // where the "this" keyword starts
 
 	public StaticCtorDeclaration(Loc loc) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.staticCtor), STC.STCstatic,
@@ -96,6 +98,16 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 		}
 		buf.writestring("static this()");
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return thisStart;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 4; // "this".length()
 	}
 
 }

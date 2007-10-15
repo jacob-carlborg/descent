@@ -79,7 +79,7 @@ public class SuperExp extends ThisExp {
 					return semantic_Lerr(sc, context);
 				}
 				cd2 = s2.isClassDeclaration();
-				if (cd2 == null) {
+				if (cd2 != null) {
 					cd2 = cd2.baseClass;
 					if (cd2 == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(

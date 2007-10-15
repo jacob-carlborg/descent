@@ -7,7 +7,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class DtorDeclaration extends FuncDeclaration {
 
-	public int notThisStart;
+	public int thisStart;
 
 	public DtorDeclaration(Loc loc) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.dtor), STC.STCundefined, null);
@@ -71,7 +71,7 @@ public class DtorDeclaration extends FuncDeclaration {
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.DestructorsOnlyForClass, 0, notThisStart, 5));
+					IProblem.DestructorsOnlyForClass, 0, getErrorStart(), getErrorLength()));
 		} else {
 			if (cd.dtors == null) {
 				cd.dtors = new FuncDeclarations();
@@ -107,6 +107,16 @@ public class DtorDeclaration extends FuncDeclaration {
 		}
 		buf.writestring("~this()");
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return thisStart;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 4; // "this".length()
 	}
 
 }

@@ -81,6 +81,14 @@ public class Semantic1_Test extends Parser_Test {
 
 		assertError(p[0], IProblem.EnumBaseTypeMustBeOfIntegralType, 9, 6);
 	}
+	
+	public void testEnumBaseTypeMustBeOfIntegralType2() {
+		String s = "class p { } enum x : p { a }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.EnumBaseTypeMustBeOfIntegralType, 21, 1);
+	}
 
 	public void testEnumBaseTypeMustBeOfIntegralType_OK() {
 		assertNoSemanticErrors("enum x : int { a }");
@@ -418,7 +426,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.DestructorsOnlyForClass, 1, 5);
+		assertError(p[0], IProblem.DestructorsOnlyForClass, 2, 4);
 	}
 	
 	public void testDestructorsOnlyForClass_Not() {
@@ -514,17 +522,19 @@ public class Semantic1_Test extends Parser_Test {
 	public void testConstructorNotAllowedInStruct() {
 		String s = " struct x { this() { } }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
 		assertError(p[0], IProblem.ConstructorsOnlyForClass, 12, 4);
+		assertError(p[1], IProblem.SpecialMemberFunctionsNotAllowedForSymbol, 12, 4);
 	}
 	
 	public void testDestructorNotAllowedInStruct() {
 		String s = " struct x { ~this() { } }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
-		assertError(p[0], IProblem.DestructorsOnlyForClass, 12, 5);
+		assertError(p[0], IProblem.DestructorsOnlyForClass, 13, 4);
+		assertError(p[1], IProblem.SpecialMemberFunctionsNotAllowedForSymbol, 13, 4);
 	}
 	
 	public void testDuplicatedTypeTemplateParameter() {
@@ -674,12 +684,19 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testThisOnlyAllowedInNonStaticMemberFunctions() {
-		String s = " void bla() { this; }";
+		String s = " void bla() { this = 2; }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 14, 4);
-		assertError(p[1], IProblem.ExpressionHasNoEffect, 14, 4);
+	}
+	
+	public void testSuperOnlyAllowedInNonStaticMemberFunctions() {
+		String s = " void bla() { super = 2; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 14, 5);
 	}
 	
 	public void testUndefinedIdentifier() {
@@ -699,7 +716,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.NotAnAggregateType, 32, 1);
+		assertError(p[0], IProblem.CannotInferTypeForSymbol, 29, 1);
 	}
 	
 	public void testNotAnAggregateType_OK() {
@@ -799,12 +816,13 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors(" bool a = __traits(isVirtualFunction);", AST.D2);
 		assertNoSemanticErrors(" bool a = __traits(isAbstractFunction);", AST.D2);
 		assertNoSemanticErrors(" bool a = __traits(isFinalFunction);", AST.D2);
-		assertNoSemanticErrors(" bool a = __traits(hasMember);", AST.D2);
-		assertNoSemanticErrors(" bool a = __traits(getMember);", AST.D2);
-		assertNoSemanticErrors(" bool a = __traits(getVirtualFunctions);", AST.D2);
-		assertNoSemanticErrors(" bool a = __traits(classInstanceSize);", AST.D2);
-		assertNoSemanticErrors(" bool a = __traits(allMembers);", AST.D2);
-		assertNoSemanticErrors(" bool a = __traits(derivedMembers);", AST.D2);
+		// TODO arguments must be passed in order to not fail
+		// assertNoSemanticErrors(" bool a = __traits(hasMember);", AST.D2);
+		// assertNoSemanticErrors(" bool a = __traits(getMember);", AST.D2);
+		// assertNoSemanticErrors(" bool a = __traits(getVirtualFunctions);", AST.D2);
+		// assertNoSemanticErrors(" bool a = __traits(classInstanceSize);", AST.D2);
+		// assertNoSemanticErrors(" bool a = __traits(allMembers);", AST.D2);
+		// assertNoSemanticErrors(" bool a = __traits(derivedMembers);", AST.D2);
 	}
 	
 	public void testCanOnlyConcatenateArrays() {
@@ -977,8 +995,11 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testStatementIsNotReachable() {
-		assertSemanticProblems("void foo() { return; int x; }",
-			"int x;", IProblem.StatementIsNotReachable);
+		String s = "void foo() { return; int x; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertWarning(p[0], IProblem.StatementIsNotReachable, 21, 6);
 	}
 	
 	public void testDivisionByZeroWithDiv() {
@@ -1021,7 +1042,8 @@ public class Semantic1_Test extends Parser_Test {
 	
 	public void testFunctionArguments() {
 		assertSemanticProblems("void foo(int x) {  } void bar() { foo(); }",
-			"foo()", IProblem.ParametersDoesNotMatchParameterTypes);
+			"foo()", IProblem.ParametersDoesNotMatchParameterTypes,
+			"foo()", IProblem.ExpectedNumberArguments);
 	}
 	
 	public void testFunctionArguments_Not() {
@@ -1053,6 +1075,67 @@ public class Semantic1_Test extends Parser_Test {
 		assertSemanticProblems("void foo() { delete new int; }",
 				"new int", IProblem.NotAnLvalue);
 	}
+	
+	public void testNoMatchForImplicitSuperConstructor1() {
+		assertSemanticProblems(
+				"class A { this(int x) { } }\r\n" + 
+				"class B : A { }", 
+				"B", IProblem.NoMatchForImplicitSuperCallInConstructor);
+	}
+	
+	public void testNoMatchForImplicitSuperConstructor2() {
+		String s = "class A { this(int x) { } } class B : A { this() { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.NoMatchForImplicitSuperCallInConstructor, 42, 4);
+	}
+	
+	public void testClassConstructorCallMustBeInConstructor() {
+		assertSemanticProblems(
+				"void foo() { this(); }", 
+				"this", IProblem.ClassConstructorCallMustBeInAConstructor);
+	}
+	
+	public void testSuperClassConstructorCallMustBeInConstructor() {
+		assertSemanticProblems(
+				"void foo() { super(); }", 
+				"super", IProblem.SuperClassConstructorCallMustBeInAConstructor);
+	}
+	
+	public void testThisIsNotInAStructOrClassScope() {
+		assertSemanticProblems(
+				"void foo() { typeof(this) x; }", 
+				"this", IProblem.ThisNotInClassOrStruct,
+				"this", IProblem.ThisOnlyAllowedInNonStaticMemberFunctions);
+	}
+	
+	public void testSuperIsNotInAClassScope() {
+		assertSemanticProblems(
+				"void foo() { typeof(super) x; }", 
+				"super", IProblem.SuperNotInClass,
+				"super", IProblem.SuperOnlyAllowedInNonStaticMemberFunctions);
+	}
+	
+	public void testBaseTypeMustBeInterface() {
+		assertSemanticProblems(
+				"class B { } interface A : B { }", 
+				"B", IProblem.BaseTypeMustBeInterface, 10);
+	}
+	
+	public void testBaseTypeMustBeInterface2() {
+		assertSemanticProblems(
+				"class B { } interface A : private B { }", 
+				"B", IProblem.BaseTypeMustBeInterface, 10);
+	}
+	
+	public void testCannotInferTypeFromThisArrayInitializer() {
+		assertSemanticProblems(
+				"auto x = [1: 1, 2u];", 
+				"[1: 1, 2u]", IProblem.CannotInferTypeFromThisArrayInitializer);
+	}
+	
+	
 	
 	/**
 	 * Utility method for testing semantic problems. It is passed the source

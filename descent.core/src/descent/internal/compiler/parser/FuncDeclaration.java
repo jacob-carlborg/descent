@@ -953,7 +953,7 @@ public class FuncDeclaration extends Declaration {
 			//|| isInvariantDeclaration()
 			//|| isUnitTestDeclaration()
 			) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SpecialMemberFunctionsNotAllowedForSymbol, 0, start, length, new String[] { sd.kind() }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SpecialMemberFunctionsNotAllowedForSymbol, 0, getErrorStart(), getErrorLength(), new String[] { sd.kind() }));
 			}
 		}
 
@@ -1731,9 +1731,18 @@ public class FuncDeclaration extends Declaration {
 						e = e.semantic(sc2, context);
 						context.global.gag--;
 						if (errors != context.global.errors) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.NoMatchForImplicitSuperCallInConstructor, 0, start,
-									length));
+							
+							// I may be a synthetic node. In that case, mark
+							// the error in the class' name
+							if (this.synthetic) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.NoMatchForImplicitSuperCallInConstructor, 0, parent.getErrorStart(),
+										parent.getErrorLength()));
+							} else {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.NoMatchForImplicitSuperCallInConstructor, 0, getErrorStart(),
+										getErrorLength()));
+							}
 						}
 
 						Statement s = new ExpStatement(loc, e);

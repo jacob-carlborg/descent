@@ -34,6 +34,8 @@ public class TypedefDeclaration extends Declaration {
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
 		this.sourceBasetype = basetype;
+		// TODO I don't have a context to pass
+		// this.basetype = basetype.toBasetype(context);
 		this.htype = null;
 		this.hbasetype = null;
 		this.init = init;

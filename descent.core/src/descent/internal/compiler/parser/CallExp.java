@@ -168,9 +168,9 @@ public class CallExp extends UnaExp {
 						e = EXP_VOID_INTERPRET;
 					} else {
 						if (istate.stackOverflow) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0, start, length, new String[] { toChars(context) }));
-						} else {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, 0, start, length, new String[] { toChars(context) }));
+						} else {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0, start, length, new String[] { toChars(context) }));
 						}
 					}
 				}
@@ -467,7 +467,7 @@ public class CallExp extends UnaExp {
 				}
 				if (cd == null || cd.baseClass == null
 						|| sc.func.isCtorDeclaration() == null) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperClassConstructorCallMustBeInAConstructor, 0, start, length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperClassConstructorCallMustBeInAConstructor, 0, getErrorStart(), getErrorLength()));
 					type = Type.terror;
 					return this;
 				} else {
@@ -500,7 +500,7 @@ public class CallExp extends UnaExp {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
 				if (cd == null || sc.func.isCtorDeclaration() == null) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ClassConstructorCallMustBeInAConstructor, 0, start, length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ClassConstructorCallMustBeInAConstructor, 0, getErrorStart(), getErrorLength()));
 					type = Type.terror;
 					return this;
 				} else {
@@ -682,6 +682,16 @@ public class CallExp extends UnaExp {
 	@Override
 	public ASTDmdNode getBinding() {
 		return e1.getBinding();
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return e1.getErrorStart();
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return e1.getErrorLength();
 	}
 
 }

@@ -45,7 +45,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		fields = new ArrayList<VarDeclaration>(0);
 	}
 
-	public void accessCheck(Scope sc, Dsymbol smember, SemanticContext context) {
+	// The "reference" is not in DMD. It holds the source range of the node
+	// that needs the access check, so that we can point errors in the correct place
+	public void accessCheck(Scope sc, Dsymbol smember, SemanticContext context, ASTDmdNode reference) {
 		boolean result;
 
 		FuncDeclaration f = sc.func;
@@ -75,7 +77,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			result = accessCheckX(smember, f, this, cdscope);
 		}
 		if (!result) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, 0, start, length, new String[] { smember.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, 0, reference.start, reference.length, new String[] { smember.toChars(context) }));
 		}
 	}
 

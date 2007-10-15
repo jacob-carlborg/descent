@@ -203,8 +203,8 @@ public class SwitchStatement extends Statement {
 
 			if (context.global.params.warnings) {
 				context.acceptProblem(Problem.newSemanticTypeWarning(
-						IProblem.SwitchStatementHasNoDefault, 0, start,
-						length));
+						IProblem.SwitchStatementHasNoDefault, 0, getErrorStart(),
+						getErrorLength()));
 			}
 
 			// Generate runtime error if the default is hit
@@ -261,6 +261,16 @@ public class SwitchStatement extends Statement {
 	@Override
 	public boolean usesEH() {
 		return body != null ? body.usesEH() : false;
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 6; // "switch".length()
 	}
 
 }

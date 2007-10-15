@@ -94,8 +94,6 @@ public abstract class Type extends ASTDmdNode {
 	public final static Type tsize_t = tuns32;
 	public final static Type tptrdiff_t = tint32;
 	public final static Type tshiftcnt = tint32;
-	
-	public final static StringTable stringTable = new StringTable();
 
 	public static boolean impcnvWarn[][];
 	public static TY impcnvResult[][];
@@ -575,7 +573,7 @@ public abstract class Type extends ASTDmdNode {
 				next = next.merge(context);
 			}
 			toDecoBuffer(buf, context);
-			sv = stringTable.update(buf.toString());
+			sv = context.stringTable.update(buf.toString());
 			if (sv.ptrvalue != null) {
 				t = (Type) sv.ptrvalue;
 				assert t.deco != null;

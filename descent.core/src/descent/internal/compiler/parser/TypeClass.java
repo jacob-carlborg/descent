@@ -310,6 +310,8 @@ public class TypeClass extends Type {
 		}
 
 		de = new DotVarExp(e.loc, e, d);
+		de.start = e.start;
+		de.length = e.length;
 		return de.semantic(sc, context);
 	}
 

@@ -17,6 +17,7 @@ import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
+import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 
 public abstract class Parser_Test extends TestCase {
@@ -137,7 +138,11 @@ public abstract class Parser_Test extends TestCase {
 	
 	protected Module getModuleSemantic(String source, int apiLevel) {
 		ParseResult result = getParseResult(source, apiLevel);
-		CompilationUnitResolver.resolve(result.module);
+		
+		Global global = new Global();
+		global.params.warnings = true;
+		
+		CompilationUnitResolver.resolve(result.module, global);
 		return result.module;
 	}
 	

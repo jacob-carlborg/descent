@@ -9,13 +9,13 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 // DMD 1.020
 public class CaseStatement extends Statement {
 
-	public Expression exp;
-	public Statement statement;
+	public Expression exp, sourceExp;
+	public Statement statement, sourceStatement;
 
 	public CaseStatement(Loc loc, Expression exp, Statement s) {
 		super(loc);
-		this.exp = exp;
-		this.statement = s;
+		this.exp = sourceExp = exp;
+		this.statement = sourceStatement = s;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class CaseStatement extends Statement {
 			exp = exp.implicitCastTo(sc, sw.condition.type, context);
 			exp = exp.optimize(WANTvalue | WANTinterpret, context);
 			if (exp.op != TOKstring && exp.op != TOKint64) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, 0, exp.start, exp.length, new String[] { exp.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, 0, sourceExp.start, sourceExp.length, new String[] { exp.toChars(context) }));
 				exp = new IntegerExp(0);
 			}
 
@@ -94,7 +94,7 @@ public class CaseStatement extends Statement {
 
 				//printf("comparing '%s' with '%s'\n", exp.toChars(), cs.exp.toChars());
 				if (cs.exp.equals(exp)) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicateCaseInSwitchStatement, 0, exp.start, exp.length, new String[] { exp.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicateCaseInSwitchStatement, 0, getErrorStart(), getErrorLength(), new String[] { exp.toChars(context) }));
 					break;
 				}
 			}
@@ -137,6 +137,16 @@ public class CaseStatement extends Statement {
 	@Override
 	public boolean usesEH() {
 		return statement.usesEH();
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return sourceExp.start + sourceExp.length - start;
 	}
 
 }

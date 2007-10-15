@@ -591,5 +591,21 @@ public class Dsymbol extends ASTDmdNode {
 //	    }
 	    return loc.toChars();
 	}
+	
+	@Override
+	public int getErrorStart() {
+		if (ident != null) {
+			return ident.getErrorStart();
+		}
+		return super.getErrorStart();
+	}
+	
+	@Override
+	public int getErrorLength() {
+		if (ident != null) {
+			return ident.getErrorLength();
+		}
+		return super.getErrorLength();
+	}
 
 }

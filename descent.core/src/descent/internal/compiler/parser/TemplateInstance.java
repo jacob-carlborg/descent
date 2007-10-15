@@ -901,6 +901,16 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 		}
 	}
+	
+	@Override
+	public int getErrorStart() {
+		return name.getErrorStart();
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return name.getErrorLength();
+	}
 
 	// PERHAPS void inlineScan();
 }

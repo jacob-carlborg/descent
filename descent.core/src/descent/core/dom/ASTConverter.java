@@ -1538,8 +1538,8 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		if (a.body != null) {
-			descent.core.dom.Statement convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
@@ -1683,8 +1683,8 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		if (a.memtype != null) {
-			b.setBaseType(convert(a.memtype));
+		if (a.sourceMemtype != null) {
+			b.setBaseType(convert(a.sourceMemtype));
 		}
 		if (a.members != null) {
 			for(Dsymbol symbol : a.members) {
@@ -2526,15 +2526,15 @@ public class ASTConverter {
 		descent.core.dom.SwitchCase b = new descent.core.dom.SwitchCase(ast);
 		
 		CaseStatement x = a;
-		while(x.statement instanceof CaseStatement) {
-			b.expressions().add(convert(x.exp));
-			x = (CaseStatement) x.statement;
+		while(x.sourceStatement instanceof CaseStatement) {
+			b.expressions().add(convert(x.sourceExp));
+			x = (CaseStatement) x.sourceStatement;
 		}
-		if (x.exp != null) {
-			b.expressions().add(convert(x.exp));
+		if (x.sourceExp != null) {
+			b.expressions().add(convert(x.sourceExp));
 		}
-		if (x.statement != null && ((CompoundStatement) x.statement).statements.size() > 0) {
-			convertStatements(b.statements(), ((CompoundStatement) x.statement).statements);
+		if (x.sourceStatement != null && ((CompoundStatement) x.sourceStatement).statements.size() > 0) {
+			convertStatements(b.statements(), ((CompoundStatement) x.sourceStatement).statements);
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

@@ -170,7 +170,7 @@ PropertyCanNotBeRedefined
 	formatString=Property %1$s cannot be redefined
 	numArgs=1
 CircularDefinition
-	formatString=%1$s Circular definition
+	formatString=%1$s circular definition
 	numArgs=1
 EnumValueOverflow
 	formatString=Overflow of enum value
@@ -203,7 +203,7 @@ IntegerConstantExpressionExpected
 	formatString=Integer constant expression expected
 	numArgs=0
 ThisNotInClassOrStruct
-	formatString=Not in a struct or class
+	formatString='this' is not in a struct or class scope
 	numArgs=0
 ThisOnlyAllowedInNonStaticMemberFunctions
 	formatString='this' is only allowed in non-static member functions
@@ -212,7 +212,7 @@ SuperOnlyAllowedInNonStaticMemberFunctions
 	formatString='super' is only allowed in non-static member functions
 	numArgs=0
 SuperNotInClass
-	formatString=Not in a class
+	formatString='super' is not in a class scope
 	numArgs=0
 ClassHasNoSuper
 	formatString=Class %1$s has no 'super'
@@ -1052,7 +1052,7 @@ NumberOfKeysMustMatchNumberOfValues
 	formatString=Number of keys is %1$s, must match number of values %2$s
 	numArgs=2
 ExpectedNumberArguments
-	formatString=Expected %1$su arguments, not %2$su
+	formatString=Expected %1$s arguments, not %2$s
 	numArgs=2	
 ArraySliceIfOutOfBounds
 	formatString=Array slice [%1$su .. %2$su] is out of bounds

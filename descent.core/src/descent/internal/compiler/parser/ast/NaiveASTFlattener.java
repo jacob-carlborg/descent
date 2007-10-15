@@ -434,12 +434,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 		List<Expression> exps = new Expressions();
 		
 		CaseStatement x = node;
-		while(x.statement instanceof CaseStatement) {
-			exps.add(x.exp);
-			x = (CaseStatement) x.statement;
+		while(x.sourceStatement instanceof CaseStatement) {
+			exps.add(x.sourceExp);
+			x = (CaseStatement) x.sourceStatement;
 		}
-		if (x.exp != null) {
-			exps.add(x.exp);
+		if (x.sourceExp != null) {
+			exps.add(x.sourceExp);
 		}
 		
 		printIndent();
@@ -448,8 +448,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 		this.buffer.append(":\n");
 		
 		indent++;
-		if (x.statement != null && ((CompoundStatement) x.statement).statements.size() > 0) {
-			visitList(((CompoundStatement) x.statement).statements, "\n");
+		if (x.sourceStatement != null && ((CompoundStatement) x.sourceStatement).statements.size() > 0) {
+			visitList(((CompoundStatement) x.sourceStatement).statements, "\n");
 		}
 		indent--;
 		return false;
@@ -1043,9 +1043,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(" ");
 			node.ident.accept(this);
 		}
-		if (node.memtype != null) {
+		if (node.sourceMemtype != null) {
 			this.buffer.append(" : ");
-			node.memtype.accept(this);
+			node.sourceMemtype.accept(this);
 		}
 		this.buffer.append(" {\n");
 		this.indent++;
@@ -1149,8 +1149,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 			node.sourceAggr.accept(this);
 		}
 		this.buffer.append(") ");
-		if (node.body != null) {
-			node.body.accept(this);
+		if (node.sourceBody != null) {
+			node.sourceBody.accept(this);
 		}
 		return false;
 	}

@@ -48,6 +48,8 @@ public class SemanticContext {
 	public Dsymbols Module_deferred;
 	public int Module_dprogress;
 	public ClassDeclaration Module_moduleinfo;
+	
+	public StringTable stringTable;
 
 	public DsymbolTable st;
 	public int muteProblems = 0;
@@ -56,6 +58,7 @@ public class SemanticContext {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
+		this.stringTable = new StringTable();
 
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		
