@@ -31,16 +31,22 @@ public class IntegerExp extends Expression {
 	public char[] str;
 	public integer_t value;
 
-	public IntegerExp(Loc loc, integer_t value) {
-		this(loc, CharOperation.NO_CHAR, value, Type.tint32);
-	}
-
-	public IntegerExp(Loc loc, integer_t value, Type type) {
-		this(loc, null, value, type);
-	}
-	
 	public IntegerExp(int value) {
 		this(Loc.ZERO, value);
+	}
+
+	public IntegerExp(Loc loc, char[] str, int value, Type type) {
+		this(loc, str, new integer_t(value), type);
+	}
+	
+	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
+		super(loc, TOK.TOKint64);
+		this.str = str;
+		if (value == null) {
+			throw new IllegalStateException("assert(value)");
+		}
+		this.value = value;
+		this.type = type;
 	}
 
 	public IntegerExp(Loc loc, int value) {
@@ -51,18 +57,12 @@ public class IntegerExp extends Expression {
 		this(loc, new integer_t(value), type);
 	}
 	
-	public IntegerExp(Loc loc, char[] str, int value, Type type) {
-		this(loc, str, new integer_t(value), type);
+	public IntegerExp(Loc loc, integer_t value) {
+		this(loc, CharOperation.NO_CHAR, value, Type.tint32);
 	}
 
-	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
-		super(loc, TOK.TOKint64);
-		this.str = str;
-		if (value == null) {
-			throw new IllegalStateException("assert(value)");
-		}
-		this.value = value;
-		this.type = type;
+	public IntegerExp(Loc loc, integer_t value, Type type) {
+		this(loc, null, value, type);
 	}
 	
 	@Override
@@ -273,9 +273,19 @@ public class IntegerExp extends Expression {
 	}
 
 	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return this;
+	}
+
+	@Override
 	public boolean isBool(boolean result) {
 		return result ? value.compareTo(BigInteger.ZERO) != 0 : value
 				.compareTo(BigInteger.ZERO) == 0;
+	}
+
+	@Override
+	public boolean isConst() {
+		return true;
 	}
 
 	@Override
@@ -341,9 +351,9 @@ public class IntegerExp extends Expression {
 						break;
 					}
 				case Tchar:
-					if (v.equals('\''))
-					    buf.writestring("'\\''");
-					else if (Chars.isprint(v) && !v.equals('\\')) {
+					if (v.equals('\'')) {
+						buf.writestring("'\\''");
+					} else if (Chars.isprint(v) && !v.equals('\\')) {
 					    buf.writestring("'");
 						buf.writestring((char) v.intValue());
 						buf.writestring("'");
@@ -430,6 +440,11 @@ public class IntegerExp extends Expression {
 	}
 
 	@Override
+	public char[] toCharArray() {
+		return str;
+	}
+
+	@Override
 	public String toChars(SemanticContext context) {
 		return super.toChars(context);
 	}
@@ -443,7 +458,7 @@ public class IntegerExp extends Expression {
 	public real_t toImaginary(SemanticContext context) {
 		return real_t.ZERO;
 	}
-
+	
 	@Override
 	public integer_t toInteger(SemanticContext context) {
 		Type t;
@@ -504,7 +519,7 @@ public class IntegerExp extends Expression {
 		}
 		return value;
 	}
-
+	
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (e == null) {
@@ -516,7 +531,18 @@ public class IntegerExp extends Expression {
 				0, e.start, e.length, new String[] { e.toChars(context) }));
 		return this;
 	}
-
+	
+	@Override
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
+		// TODO what's %jd. I've ommited the "d" printing here
+		if (value.longValue() < 0) {
+			buf.writestring("N");
+			buf.writestring(value.negate());
+		} else {
+			buf.writestring(value);
+		}
+	}
+	
 	@Override
 	public real_t toReal(SemanticContext context) {
 		Type t;
@@ -528,21 +554,6 @@ public class IntegerExp extends Expression {
 		} else {
 			return new real_t(value.castToInt64());
 		}
-	}
-	
-	@Override
-	public char[] toCharArray() {
-		return str;
-	}
-	
-	@Override
-	public boolean isConst() {
-		return true;
-	}
-	
-	@Override
-	public Expression interpret(InterState istate, SemanticContext context) {
-		return this;
 	}
 
 }

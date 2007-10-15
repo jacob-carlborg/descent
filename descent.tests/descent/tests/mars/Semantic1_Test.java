@@ -1135,6 +1135,22 @@ public class Semantic1_Test extends Parser_Test {
 				"[1: 1, 2u]", IProblem.CannotInferTypeFromThisArrayInitializer);
 	}
 	
+	public void testFoo() {
+		assertSemanticProblems(
+				"class X {\r\n" + 
+				"	bool opApply(int delegate(ref int) dg) {\r\n" + 
+				"		return 1;\r\n" + 
+				"	}\r\n" + 
+				"}\r\n" + 
+				"\r\n" + 
+				"void foo() {\r\n" + 
+				"	foreach(x; new X()) {\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"new X()", IProblem.OpApplyFunctionMustReturnAnInt);
+	}
+	
 	
 	
 	/**

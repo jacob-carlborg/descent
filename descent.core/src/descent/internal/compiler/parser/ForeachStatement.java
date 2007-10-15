@@ -648,7 +648,7 @@ public class ForeachStatement extends Statement {
 			exps.add(flde);
 			e = new CallExp(loc, aggr, exps);
 			e = e.semantic(sc, context);
-			if (e.type != Type.tint32) {
+			if (e.type.singleton != Type.tint32) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.OpApplyFunctionMustReturnAnInt, 0, start,
 						length, new String[] { tab.toChars(context) }));
@@ -661,12 +661,21 @@ public class ForeachStatement extends Statement {
 					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply));
 			Expressions exps = new Expressions();
 			exps.add(flde);
+			
+			// TODO: kludge to not lose source ranges, fixme
+			int oldSourceAggrStart = sourceAggr.start;
+			int oldSourceAggrLength = sourceAggr.length;
+			
 			e = new CallExp(loc, ec, exps);
 			e = e.semantic(sc, context);
-			if (e.type != Type.tint32) {
+			
+			sourceAggr.start = oldSourceAggrStart;
+			sourceAggr.length = oldSourceAggrLength;
+			
+			if (e.type.singleton != Type.tint32) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OpApplyFunctionMustReturnAnInt, 0, start,
-						length, new String[] { tab.toChars(context) }));
+						IProblem.OpApplyFunctionMustReturnAnInt, 0, sourceAggr.start,
+						sourceAggr.length, new String[] { tab.toChars(context) }));
 			}
 		}
 
