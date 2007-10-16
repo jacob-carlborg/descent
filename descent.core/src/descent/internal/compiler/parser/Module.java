@@ -225,15 +225,13 @@ public class Module extends Package {
 		// TODO semantic
 	}
 
-	public static int nested;
-
 	public void runDeferredSemantic(SemanticContext context) {
 		int len;
 
-		if (nested != 0) {
+		if (context.Module_nested) {
 			return;
 		}
-		nested++;
+		context.Module_nested = true;
 
 		do {
 			context.Module_dprogress = 0;
@@ -257,7 +255,7 @@ public class Module extends Package {
 				|| context.Module_dprogress != 0); // while
 		// making
 		// progress
-		nested--;
+		context.Module_nested = false;
 	}
 
 	@Override

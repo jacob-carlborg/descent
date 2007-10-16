@@ -41,7 +41,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		}
 	}
 
-	static SCstring[] table = { new SCstring(STCauto, TOKauto),
+	static final SCstring[] table = { new SCstring(STCauto, TOKauto),
 			new SCstring(STCscope, TOKscope),
 			new SCstring(STCstatic, TOKstatic),
 			new SCstring(STCextern, TOKextern),

@@ -48,6 +48,11 @@ public class SemanticContext {
 	public Dsymbols Module_deferred;
 	public int Module_dprogress;
 	public ClassDeclaration Module_moduleinfo;
+	public boolean Module_nested = false;
+	public int ASTDmdNode_idn;
+	public int CompoundStatement_num;
+	public Dsymbol TemplateAliasParameter_sdummy = null;
+	public Expression TemplateValueParameter_edummy = null;
 	
 	public StringTable stringTable;
 

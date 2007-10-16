@@ -95,11 +95,11 @@ public abstract class Type extends ASTDmdNode {
 	public final static Type tptrdiff_t = tint32;
 	public final static Type tshiftcnt = tint32;
 
-	public static boolean impcnvWarn[][];
-	public static TY impcnvResult[][];
-	public static TY impcnvType1[][];
-	public static TY impcnvType2[][];
-	public static Type basic[];
+	public static final boolean impcnvWarn[][];
+	public static final TY impcnvResult[][];
+	public static final TY impcnvType1[][];
+	public static final TY impcnvType2[][];
+	public static final Type basic[];
 
 	static {
 		int TMAX = TY.values().length;
@@ -1111,7 +1111,7 @@ public abstract class Type extends ASTDmdNode {
 		return e;
 	}
 
-	private static TypeInfoDeclaration[] internalTI = new TypeInfoDeclaration[TY.values().length];
+	private static final TypeInfoDeclaration[] internalTI = new TypeInfoDeclaration[TY.values().length];
 
 	public Expression getInternalTypeInfo(Scope sc, SemanticContext context) {
 		TypeInfoDeclaration tid;

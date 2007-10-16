@@ -287,8 +287,6 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static Expression EXP_GOTO_INTERPRET = new EXP_SOMETHING_INTERPRET();
 	public final static Expression EXP_VOID_INTERPRET = new EXP_SOMETHING_INTERPRET();
 
-	private static int idn;
-
 	/***************************************************************************
 	 * Helper function for ClassDeclaration::accessCheck() Returns: 0 no access
 	 * 1 access
@@ -795,7 +793,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					case Tarray: { // Create a static array variable v of type
 						// arg.type
 
-						char[] id = ("_arrayArg" + (++idn)).toCharArray();
+						char[] id = ("_arrayArg" + (++context.ASTDmdNode_idn)).toCharArray();
 						Type t = new TypeSArray(tb2.next, new IntegerExp(loc,
 								nargs - i));
 						t = t.semantic(loc, sc, context);

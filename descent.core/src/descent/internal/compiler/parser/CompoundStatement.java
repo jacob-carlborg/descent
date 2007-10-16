@@ -8,10 +8,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class CompoundStatement extends Statement {
-
-	// Move to another class, maybe SemanticContext?
-	public static int num;
+public class CompoundStatement extends Statement {	
 
 	public boolean manyVars; 	// if true, the block is just to group variable declarations,
 								// alias declarations or typedef declarations
@@ -236,7 +233,7 @@ public class CompoundStatement extends Statement {
 								body = new CompoundStatement(loc, a2);
 								body = new ScopeStatement(loc, body);
 
-								char[] id = ("__o" + ++num).toCharArray();
+								char[] id = ("__o" + ++context.CompoundStatement_num).toCharArray();
 
 								Statement handler = new ThrowStatement(loc,
 										new IdentifierExp(loc, id));

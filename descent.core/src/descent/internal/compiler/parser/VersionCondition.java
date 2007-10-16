@@ -9,7 +9,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class VersionCondition extends DVCondition {
 
-	private static char[][] resevered = {
+	private static final char[][] resevered = {
 			{ 'D', 'i', 'g', 'i', 't', 'a', 'l', 'M', 'a', 'r', 's' },
 			{ 'X', '8', '6' }, { 'X', '8', '6', '_', '6', '4' },
 			{ 'W', 'i', 'n', 'd', 'o', 'w', 's' }, { 'W', 'i', 'n', '3', '2' },

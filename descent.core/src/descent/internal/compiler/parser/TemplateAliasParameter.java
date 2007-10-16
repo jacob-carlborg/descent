@@ -10,8 +10,6 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 // DMD 1.020
 public class TemplateAliasParameter extends TemplateParameter {
 
-	public static Dsymbol sdummy = null;
-
 	public Type specAliasT;
 	public Type defaultAlias;
 	public Dsymbol specAlias;
@@ -65,10 +63,10 @@ public class TemplateAliasParameter extends TemplateParameter {
 
 		s = specAlias;
 		if (null == s) {
-			if (null == sdummy) {
-				sdummy = new Dsymbol();
+			if (null == context.TemplateAliasParameter_sdummy) {
+				context.TemplateAliasParameter_sdummy = new Dsymbol();
 			}
-			s = sdummy;
+			s = context.TemplateAliasParameter_sdummy;
 		}
 		return s;
 	}
@@ -116,7 +114,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		}
 
 		if (specAlias != null) {
-			if (null == sa || sa == sdummy) {
+			if (null == sa || sa == context.TemplateAliasParameter_sdummy) {
 				// goto Lnomatch;
 				psparam = null;
 				return MATCHnomatch;

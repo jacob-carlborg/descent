@@ -25,7 +25,7 @@ public class Entity {
 		return -1;
 	}
 	
-	static Object[][] namesA={
+	static final Object[][] namesA={
 		{ "Aacgr", 	0x0386, },
 		{ "aacgr", 	0x03AC, },
 		{ "Aacute",	0x00C1, },
@@ -71,7 +71,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesB ={
+	static final Object[][] namesB ={
 		{ "barwed",	0x22BC, },
 		{ "Barwed",	0x2306, },
 		{ "bcong", 	0x224C, },
@@ -143,7 +143,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesC={
+	static final Object[][] namesC={
 		{ "Cacute",	0x0106, },
 		{ "cacute",	0x0107, },
 		{ "cap",   	0x2229, },
@@ -193,7 +193,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesD={
+	static final Object[][] namesD={
 		{ "dagger",	0x2020, },
 		{ "Dagger",	0x2021, },
 		{ "daleth",	0x2138, },
@@ -242,7 +242,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesE={
+	static final Object[][] namesE={
 		{ "Eacgr", 	0x0388, },
 		{ "eacgr", 	0x03AD, },
 		{ "Eacute",	0x00C9, },
@@ -298,7 +298,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesF={
+	static final Object[][] namesF={
 		{ "Fcy",   	0x0424, },
 		{ "fcy",   	0x0444, },
 		{ "female",	0x2640, },
@@ -330,7 +330,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesG={
+	static final Object[][] namesG={
 		{ "gacute",	0x01F5, },
 		{ "Gamma", 	0x0393, },
 		{ "gamma", 	0x03B3, },
@@ -370,7 +370,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesH={
+	static final Object[][] namesH={
 		{ "hairsp",	0x200A, },
 		{ "half",  	0x00BD, },
 		{ "hamilt",	0x210B, },
@@ -391,7 +391,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesI={
+	static final Object[][] namesI={
 		{ "Iacgr", 	0x038A, },
 		{ "iacgr", 	0x03AF, },
 		{ "Iacute",	0x00CD, },
@@ -438,7 +438,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesJ={
+	static final Object[][] namesJ={
 		{ "Jcirc", 	0x0134, },
 		{ "jcirc", 	0x0135, },
 		{ "Jcy",   	0x0419, },
@@ -450,7 +450,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesK={
+	static final Object[][] namesK={
 		{ "kappa", 	0x03BA, },
 		{ "kappav",	0x03F0, },
 		{ "Kcedil",	0x0136, },
@@ -469,7 +469,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesL={
+	static final Object[][] namesL={
 		{ "lAarr", 	0x21DA, },
 		{ "Lacute",	0x0139, },
 		{ "lacute",	0x013A, },
@@ -543,7 +543,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesM={
+	static final Object[][] namesM={
 		{ "macr",  	0x00AF, },
 		{ "male",  	0x2642, },
 		{ "malt",  	0x2720, },
@@ -567,7 +567,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesN={
+	static final Object[][] namesN={
 		{ "nabla", 	0x2207, },
 		{ "Nacute",	0x0143, },
 		{ "nacute",	0x0144, },
@@ -644,7 +644,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesO={
+	static final Object[][] namesO={
 		{ "Oacgr", 	0x038C, },
 		{ "oacgr", 	0x03CC, },
 		{ "Oacute",	0x00D3, },
@@ -695,7 +695,7 @@ public class Entity {
 		{ null,		0		},
 	};
 
-	static Object[][] namesP={
+	static final Object[][] namesP={
 		{ "par",   	0x2225, },
 		{ "para",  	0x00B6, },
 		{ "part",  	0x2202, },
@@ -742,13 +742,13 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesQ={
+	static final Object[][] namesQ={
 		{ "quest", 	0x003F, },
 		{ "quot",  	0x0022, },
 		{ null,		0 },
 	};
 
-	static Object[][] namesR={
+	static final Object[][] namesR={
 		{ "rAarr", 	0x21DB, },
 		{ "Racute",	0x0154, },
 		{ "racute",	0x0155, },
@@ -801,7 +801,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesS={
+	static final Object[][] namesS={
 		{ "Sacute",	0x015A, },
 		{ "sacute",	0x015B, },
 		{ "samalg",	0x2210, },
@@ -885,7 +885,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesT={
+	static final Object[][] namesT={
 		{ "target",	0x2316, },
 		{ "tau",   	0x03C4, },
 		{ "Tcaron",	0x0164, },
@@ -926,7 +926,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesU={
+	static final Object[][] namesU={
 		{ "Uacgr", 	0x038E, },
 		{ "uacgr", 	0x03CD, },
 		{ "Uacute",	0x00DA, },
@@ -977,7 +977,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesV={
+	static final Object[][] namesV={
 		{ "varr",  	0x2195, },
 		{ "vArr",  	0x21D5, },
 		{ "Vcy",   	0x0412, },
@@ -1001,7 +1001,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesW={
+	static final Object[][] namesW={
 		{ "Wcirc", 	0x0174, },
 		{ "wcirc", 	0x0175, },
 		{ "wedgeq",	0x2259, },
@@ -1010,7 +1010,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesX={
+	static final Object[][] namesX={
 		{ "xcirc", 	0x25CB, },
 		{ "xdtri", 	0x25BD, },
 		{ "Xgr",   	0x039E, },
@@ -1025,7 +1025,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesY={
+	static final Object[][] namesY={
 		{ "Yacute",	0x00DD, },
 		{ "yacute",	0x00FD, },
 		{ "YAcy",  	0x042F, },
@@ -1044,7 +1044,7 @@ public class Entity {
 		{ null,		0 },
 	};
 
-	static Object[][] namesZ={
+	static final Object[][] namesZ={
 		{ "Zacute",	0x0179, },
 		{ "zacute",	0x017A, },
 		{ "Zcaron",	0x017D, },
@@ -1061,7 +1061,7 @@ public class Entity {
 		{ null, 0 },
 	};
 	
-	static Object[][][] namesTable = { 
+	static final Object[][][] namesTable = { 
 		namesA, namesB, namesC, namesD, namesE, namesF, namesG, namesH, namesI,
 		namesJ, namesK, namesL, namesM, namesN, namesO, namesP, namesQ, namesR,
 		namesS, namesT, namesU, namesV, namesW, namesX, namesY, namesZ, null

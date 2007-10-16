@@ -72,10 +72,10 @@ public class TemplateValueParameter extends TemplateParameter {
 		e = specValue;
 		if (null == e) {
 			// Create a dummy value
-			if (null == edummy) {
-				edummy = valType.defaultInit(context);
+			if (null == context.TemplateValueParameter_edummy) {
+				context.TemplateValueParameter_edummy = valType.defaultInit(context);
 			}
-			e = edummy;
+			e = context.TemplateValueParameter_edummy;
 		}
 		return e;
 	}
@@ -128,7 +128,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		}
 
 		if (specValue != null) {
-			if (null == ei || ei == edummy) {
+			if (null == ei || ei == context.TemplateValueParameter_edummy) {
 				// goto Lnomatch;
 				psparam = null;
 				return MATCHnomatch;
