@@ -243,8 +243,6 @@ public class TypeSArray extends TypeArray {
 
 	@Override
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
-		//printf("TypeSArray.semantic() %s\n", toChars());
-
 		Type t = null;
 		Expression e = null;
 		Dsymbol s = null;

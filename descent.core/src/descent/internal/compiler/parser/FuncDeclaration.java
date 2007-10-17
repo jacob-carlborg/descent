@@ -1491,7 +1491,7 @@ public class FuncDeclaration extends Declaration {
 					}
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, 0, start, length, new String[] { toChars(context), v.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, 0, arg.ident.start, arg.ident.length, new String[] { toChars(context), v.toChars(context) }));
 					} else {
 						parameters.add(v);
 					}

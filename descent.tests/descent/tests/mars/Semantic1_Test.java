@@ -1278,7 +1278,96 @@ public class Semantic1_Test extends Parser_Test {
 	public void testExpressionHasNoEffect() {
 		assertSemanticProblems(
 				"void foo() { [1, 2, 3].length; }", 
-				"[1, 2, 3].length", IProblem.ExpressionHasNoEffect);
+				"[1, 2, 3].length;", IProblem.ExpressionHasNoEffect);
+	}
+	
+	// TODO we'll need to implement the ::toDt methods for this
+	public void testTooManyInitiailizersForArray() {
+		assertSemanticProblems(
+				"const int[1] a = [1, 2];", 
+				"[1, 2]", IProblem.TooManyInitializers);
+	}
+	
+	public void testTooManyInitiailizersForStruct() {
+		assertSemanticProblems(
+				"struct Struct {\r\n" + 
+				"	int x;\r\n" + 
+				"}\r\n" + 
+				"Struct b = { 1, 2 };", 
+				"{ 1, 2 }", IProblem.TooManyInitializers);
+	}
+	
+	public void testCannotHaveArrayOfTypeInTypeDArray() {
+		assertSemanticProblems(
+				"int foo() {\r\n" + 
+				"	return 2;\r\n" + 
+				"}\r\n" + 
+				"typeof(foo)[] x;", 
+				"typeof(foo)[]", IProblem.CannotHaveArrayOfType);
+	}
+	
+	public void testCannotHaveArrayOfTypeInTypeSArray() {
+		assertSemanticProblems(
+				"int foo() {\r\n" + 
+				"	return 2;\r\n" + 
+				"}\r\n" + 
+				"typeof(foo)[3] x;", 
+				"typeof(foo)[3]", IProblem.CannotHaveArrayOfType);
+	}
+	
+	// TODO why dmd reports errors twice? grrr...
+	public void testStringIndexOutOfBounds() {
+		assertSemanticProblems(
+				"const char c = \"hola\"[5];", 
+				"5", IProblem.StringIndexOutOfBounds,
+				"5", IProblem.StringIndexOutOfBounds);
+	}
+	
+	public void testVersionDefinedAfterUse() {
+		assertSemanticProblems(
+				"version (foo) {\r\n" + 
+				"	\r\n" + 
+				"} else {\r\n" + 
+				"	version = foo;\r\n" + 
+				"}", 
+				"version = foo;", IProblem.VersionDefinedAfterUse);
+	}
+	
+	public void testDebugDefinedAfterUse() {
+		assertSemanticProblems(
+				"debug (foo) {\r\n" + 
+				"	\r\n" + 
+				"} else {\r\n" + 
+				"	debug = foo;\r\n" + 
+				"}", 
+				"debug = foo;", IProblem.DebugDefinedAfterUse);
+	}
+	
+	public void testWithExpressionsMustBeClassObjects() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	with(1) {\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"1", IProblem.WithExpressionsMustBeClassObject);
+	}
+	
+	public void testCanOnlySynchronizeOnClassObjects() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	synchronized(1) {\r\n" + 
+				"	\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"1", IProblem.CanOnlySynchronizeOnClassObjects);
+	}
+
+	public void testParameterIsAlreadyDefined() {
+		assertSemanticProblems(
+				"void foo(int x, int x) {\r\n" + 
+				"}", 
+				"x", IProblem.ParameterIsAlreadyDefined, 15);
 	}
 	
 	/**

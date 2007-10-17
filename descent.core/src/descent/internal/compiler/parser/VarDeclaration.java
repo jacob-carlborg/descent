@@ -460,8 +460,6 @@ public class VarDeclaration extends Declaration {
 					Type t;
 					int dim;
 
-					// printf("fd = '%s', var = '%s'\n", fd.toChars(),
-					// toChars());
 					if (ei == null) {
 						Expression e = init.toExpression(context);
 						if (e == null) {
