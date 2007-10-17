@@ -45,6 +45,7 @@ public class NegExp extends UnaExp {
 		} else {
 			e = this;
 		}
+		e.copySourceRange(this);
 		return e;
 	}
 

@@ -58,21 +58,23 @@ public class TypeDArray extends TypeArray {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
+		Expression oe = e;
+		
 		if (CharOperation.equals(ident.ident, Id.length)) {
 			if (e.op == TOKstring) {
 				StringExp se = (StringExp) e;
-
-				return new IntegerExp(se.loc, se.len, Type.tindex);
+				e = new IntegerExp(se.loc, se.len, Type.tindex);
+			} else {
+				e = new ArrayLengthExp(e.loc, e);
+				e.type = Type.tsize_t;
 			}
-			e = new ArrayLengthExp(e.loc, e);
-			e.type = Type.tsize_t;
-			return e;
 		} else if (CharOperation.equals(ident.ident, Id.ptr)) {
 			e = e.castTo(sc, next.pointerTo(context), context);
-			return e;
 		} else {
 			e = super.dotExp(sc, e, ident, context);
 		}
+		e.start = oe.start;
+		e.length = ident.start + ident.length - oe.start;
 		return e;
 	}
 

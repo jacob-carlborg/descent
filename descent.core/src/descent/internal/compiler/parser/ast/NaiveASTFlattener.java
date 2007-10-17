@@ -294,13 +294,13 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(ArrayInitializer node) {
 		this.buffer.append("[");
-		if (node.index != null) {
-			for(int i = 0; i < node.index.size(); i++) {
+		if (node.sourceIndex != null) {
+			for(int i = 0; i < node.sourceIndex.size(); i++) {
 				if (i != 0) {
 					this.buffer.append(", ");
 				}
-				Expression index = node.index.get(i);
-				Initializer value = node.value.get(i);
+				Expression index = node.sourceIndex.get(i);
+				Initializer value = node.sourceValue.get(i);
 				if (index != null) {
 					index.accept(this);
 					this.buffer.append(": ");

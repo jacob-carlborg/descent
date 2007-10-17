@@ -92,6 +92,7 @@ public class MinExp extends BinExp {
 				e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO,
 						new integer_t(stride), Type.tptrdiff_t));
 				e_.type = Type.tptrdiff_t;
+				e_.copySourceRange(this);
 				assignBinding();
 				return e_;
 			} else if (t2.isintegral()) {

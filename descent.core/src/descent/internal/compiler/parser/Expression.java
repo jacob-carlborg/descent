@@ -133,6 +133,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			}
 		}
 		e.type = t;
+		e.copySourceRange(this);
 		return e;
 	}
 

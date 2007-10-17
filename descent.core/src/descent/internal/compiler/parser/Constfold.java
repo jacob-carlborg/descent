@@ -61,6 +61,7 @@ public class Constfold {
 				e = new IntegerExp(loc, e1.toInteger(context).negate(), type);
 			}
 
+			e.copySourceRange(e1);
 			return e;
 		}
 	};
@@ -71,6 +72,7 @@ public class Constfold {
 			Loc loc = e1.loc;
 
 			e = new IntegerExp(loc, e1.toInteger(context).complement(), type);
+			e.copySourceRange(e1);
 			return e;
 		}
 	};
@@ -82,6 +84,7 @@ public class Constfold {
 
 			// And, for the crowd's amusement, we now have a triple-negative!
 			e = new IntegerExp(loc, e1.isBool(false) ? 1 : 0, type);
+			e.copySourceRange(e1);
 			return e;
 		}
 	};
@@ -114,6 +117,7 @@ public class Constfold {
 			Loc loc = e1.loc;
 
 			e = new IntegerExp(loc, e1.isBool(true) ? 1 : 0, type);
+			e.copySourceRange(e1);
 			return e;
 		}
 	};
@@ -122,7 +126,7 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
 			Loc loc = e1.loc;
-
+			
 			if (e1.op == TOKstring) {
 				StringExp es1 = (StringExp) e1;
 
@@ -141,6 +145,7 @@ public class Constfold {
 			} else {
 				e = EXP_CANT_INTERPRET;
 			}
+			e.copySourceRange(e1);
 			return e;
 		}
 	};
@@ -254,6 +259,7 @@ public class Constfold {
 				e = new IntegerExp(loc, e1.toInteger(context).add(
 						e2.toInteger(context)), type);
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -350,6 +356,7 @@ public class Constfold {
 				e = new IntegerExp(loc, e1.toInteger(context).subtract(
 						e2.toInteger(context)), type);
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -400,6 +407,7 @@ public class Constfold {
 				e = new IntegerExp(loc, e1.toInteger(context).multiply(
 						e2.toInteger(context)), type);
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -464,6 +472,7 @@ public class Constfold {
 				}
 				e = new IntegerExp(loc, n, type);
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -521,6 +530,7 @@ public class Constfold {
 				}
 				e = new IntegerExp(loc, n, type);
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -533,6 +543,8 @@ public class Constfold {
 
 			e = new IntegerExp(loc, e1.toInteger(context).shiftLeft(
 					e2.toInteger(context)), type);
+			e.start = e1.start;
+			e.length = e2.start + e2.length - e1.start;
 			return e;
 		}
 	};
@@ -576,6 +588,7 @@ public class Constfold {
 				throw new IllegalStateException("assert(0);");
 			}
 			e = new IntegerExp(loc, value, type);
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -591,26 +604,29 @@ public class Constfold {
 			value = e1.toInteger(context);
 			count = e2.toInteger(context).intValue();
 			switch (e1.type.toBasetype(context).ty) {
-			/*
-			 * TODO just calling bigInteger.shiftRight() method won't correctly
-			 * truncate bits case Tint8: case Tuns8: assert(0); // no way to
-			 * trigger this value = (value & 0xFF) >> count; break;
-			 * 
-			 * case Tint16: case Tuns16: assert(0); // no way to trigger this
-			 * value = (value & 0xFFFF) >> count; break;
-			 * 
-			 * case Tint32: case Tuns32: value = (value & 0xFFFFFFFF) >> count;
-			 * break;
-			 * 
-			 * case Tint64: case Tuns64: value = (d_uns64)(value) >> count;
-			 * break;
-			 */
-			default:
-				assert (false);
-				value = null;
+			case Tint8:
+			case Tuns8:
+				throw new IllegalStateException("assert(0);"); // no way to trigger this
+
+			case Tint16:
+			case Tuns16:
+				throw new IllegalStateException("assert(0);"); // no way to trigger this
+
+			case Tint32:
+			case Tuns32:
+				value = (value.and(0xFFFFFFFFL)).shiftRight(count);
 				break;
+
+			case Tint64:
+			case Tuns64:
+				value = value.castToUns64().shiftRight(count);
+				break;
+
+			default:
+				throw new IllegalStateException("assert(0);");
 			}
 			e = new IntegerExp(loc, value, type);
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -623,6 +639,8 @@ public class Constfold {
 
 			e = new IntegerExp(loc, e1.toInteger(context).and(
 					e2.toInteger(context)), type);
+			e.start = e1.start;
+			e.length = e2.start + e2.length - e1.start;
 			return e;
 		}
 	};
@@ -635,6 +653,7 @@ public class Constfold {
 
 			e = new IntegerExp(loc, e1.toInteger(context).or(
 					e2.toInteger(context)), type);
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -647,6 +666,7 @@ public class Constfold {
 
 			e = new IntegerExp(loc, e1.toInteger(context).xor(
 					e2.toInteger(context)), type);
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -690,18 +710,18 @@ public class Constfold {
 				}
 			} else if (e1.type.toBasetype(context).ty == Tarray
 					&& e2.op == TOKint64) {
-				int i = e2.toInteger(context).intValue();
+				integer_t i = e2.toInteger(context).castToUns64();
 
 				if (e1.op == TOKarrayliteral
 						&& 0 == e1.checkSideEffect(2, context)) {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
-					if (i >= ale.elements.size()) {
+					if (i.compareTo(ale.elements.size()) >= 0) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ArrayIndexOutOfBounds2, 0, ale.start,
-								ale.length, new String[] { Integer.toString(i), e1.toChars(context), 
+								IProblem.ArrayIndexOutOfBounds2, 0, e2.start,
+								e2.length, new String[] { i.toString(), e1.toChars(context), 
 							            Integer.toString(ale.elements.size()) }));
 					} else {
-						e = ale.elements.get(i);
+						e = ale.elements.get(i.intValue());
 						e.type = type;
 					}
 				}
@@ -727,6 +747,7 @@ public class Constfold {
 					}
 				}
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -916,6 +937,7 @@ public class Constfold {
 					e = se.castTo(null, type, context);
 				}
 			}
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -1046,6 +1068,7 @@ public class Constfold {
 				cmp ^= 1;
 			}
 			e = new IntegerExp(loc, cmp, type);
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -1263,6 +1286,7 @@ public class Constfold {
 				}
 			}
 			e = new IntegerExp(loc, n, type);
+			e.copySourceRange(e1, e2);
 			return e;
 		}
 	};
@@ -1290,7 +1314,9 @@ public class Constfold {
 				cmp = !cmp;
 			}
 
-			return new IntegerExp(loc, cmp ? 1 : 0, type);
+			Expression e = new IntegerExp(loc, cmp ? 1 : 0, type);
+			e.copySourceRange(e1, e2);
+			return e;
 		}
 	};
 
@@ -1451,6 +1477,7 @@ public class Constfold {
 					        type.toChars(context) }));
 			e = new IntegerExp(loc, 0, type);
 		}
+		e.copySourceRange(e1);
 		return e;
 	}
 

@@ -11,8 +11,8 @@ public class ArrayInitializer extends Initializer {
 	
 	private final static integer_t amax = new integer_t(new BigInteger("80000000", 16));
 
-	public Expressions index;
-	public Initializers value;
+	public Expressions index, sourceIndex;
+	public Initializers value, sourceValue;
 	public long dim; // length of array being initialized
 	public Type type; // type that array will be used to initialize
 	public int sem; // !=0 if semantic() is run
@@ -35,9 +35,13 @@ public class ArrayInitializer extends Initializer {
 		if (this.index == null) {
 			this.index = new Expressions();
 			this.value = new Initializers();
+			this.sourceIndex = new Expressions();
+			this.sourceValue = new Initializers();
 		}
 		this.index.add(index);
 		this.value.add(value);
+		this.sourceIndex.add(index);
+		this.sourceValue.add(value);
 		dim = 0;
 		type = null;
 	}
@@ -239,6 +243,7 @@ public class ArrayInitializer extends Initializer {
 		}
 		e = new ArrayLiteralExp(loc, elements);
 		e.type = type;
+		e.copySourceRange(this);
 		return e;
 	}
 	

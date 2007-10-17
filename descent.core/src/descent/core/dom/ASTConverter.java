@@ -2398,10 +2398,10 @@ public class ASTConverter {
 	
 	public descent.core.dom.ArrayInitializer convert(ArrayInitializer a) {
 		descent.core.dom.ArrayInitializer b = new descent.core.dom.ArrayInitializer(ast);
-		if (a.index != null) {
-			for(int i = 0; i < a.index.size(); i++) {
-				Expression index = a.index.get(i);
-				Initializer value = a.value.get(i);
+		if (a.sourceIndex != null) {
+			for(int i = 0; i < a.sourceIndex.size(); i++) {
+				Expression index = a.sourceIndex.get(i);
+				Initializer value = a.sourceValue.get(i);
 				ArrayInitializerFragment fragment = new ArrayInitializerFragment(ast);
 				if (index == null) {
 					fragment.setInitializer(convert(value));

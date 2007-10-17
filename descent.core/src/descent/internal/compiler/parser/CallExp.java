@@ -195,6 +195,7 @@ public class CallExp extends UnaExp {
 				}
 			}
 		}
+		e.copySourceRange(this);
 		return e;
 	}
 

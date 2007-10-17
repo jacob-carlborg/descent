@@ -1774,4 +1774,14 @@ public abstract class ASTDmdNode extends ASTNode {
 		return null;
 	}
 	
+	public final void copySourceRange(ASTDmdNode other) {
+		this.start = other.start;
+		this.length = other.length;
+	}
+	
+	public final void copySourceRange(ASTDmdNode first, ASTDmdNode last) {
+		this.start = first.start;
+		this.length = last.start + last.length - first.start;
+	}
+	
 }

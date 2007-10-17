@@ -61,6 +61,8 @@ public class ShlExp extends BinExp {
 			if (e1.isConst()) {
 				e = new IntegerExp(loc, e1.toInteger(context).shiftLeft(
 						e2.toInteger(context)), type);
+				e.start = e1.start;
+				e.length = e2.start + e2.length - e1.start;
 			}
 		}
 		return e;

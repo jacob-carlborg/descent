@@ -313,7 +313,7 @@ public class integer_t extends Number {
 	public integer_t shiftRight(long value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t optimize
-			return new integer_t(longValue << value);
+			return new integer_t(longValue >> value);
 		} else {
 			// TODO integer_t this cast may be wrong
 			return new integer_t(bigIntegerValue.shiftRight((int) value));

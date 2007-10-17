@@ -61,7 +61,6 @@ public class CatExp extends BinExp {
 	public Expression optimize(int result, SemanticContext context) {
 		Expression e;
 
-		//printf("CatExp.optimize(%d) %s\n", result, toChars());
 		e1 = e1.optimize(result, context);
 		e2 = e2.optimize(result, context);
 		e = Cat.call(type, e1, e2, context);

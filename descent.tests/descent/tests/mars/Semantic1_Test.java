@@ -666,6 +666,21 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals("Cannot implicitly convert expression (\"hey\") of type char[3u] to bool", p[0].getMessage());
 	}
 	
+	public void testCannotImplicitlyConvertInConstfold() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; \r\n" + 
+				"const int x = v[(\"h\" ~ \"ola\")];", 
+				"\"h\" ~ \"ola\"", IProblem.CannotImplicitlyConvert);
+	}
+	
+	public void testCannotImplicitlyConvertInConstfold2() {
+		assertSemanticProblems(
+				"const int* x;\r\n" + 
+				"const int* y;\r\n" + 
+				"const int* z = x - y;", 
+				"x - y", IProblem.CannotImplicitlyConvert);
+	}
+	
 	public void testVoidFunctionsHaveNoResult() {
 		String s = " void bla() out(id) { } body { }";
 		IProblem[] p = getModuleProblems(s);
@@ -1135,7 +1150,7 @@ public class Semantic1_Test extends Parser_Test {
 				"[1: 1, 2u]", IProblem.CannotInferTypeFromThisArrayInitializer);
 	}
 	
-	public void testFoo() {
+	public void testOpApplyFunctionMustReturnAnInt() {
 		assertSemanticProblems(
 				"class X {\r\n" + 
 				"	bool opApply(int delegate(ref int) dg) {\r\n" + 
@@ -1151,7 +1166,120 @@ public class Semantic1_Test extends Parser_Test {
 				"new X()", IProblem.OpApplyFunctionMustReturnAnInt);
 	}
 	
+	public void testArrayIndexOutOfBounds2() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[3];", 
+				"3", IProblem.ArrayIndexOutOfBounds2, 30);
+	}
 	
+	public void testArrayIndexOutOfBounds2WithAdd() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[1 + 2];", 
+				"1 + 2", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithMinus() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[5 - 2];", 
+				"5 - 2", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithMul() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[5 * 2];", 
+				"5 * 2", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithDiv() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[10 / 2];", 
+				"10 / 2", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithMod() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[9 % 10];", 
+				"9 % 10", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithLength() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[v.length];", 
+				"v.length", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithNeg() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int y = -3; const int x = v[-y];", 
+				"-y", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithIndex() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[v[2]];", 
+				"v[2]", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithCat() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[(\"a\" ~ \"bc\").length];", 
+				"(\"a\" ~ \"bc\").length", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithShl() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[1 << 2];", 
+				"1 << 2", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithShr() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[10 >> 1];", 
+				"10 >> 1", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithUshr() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[10 >>> 1];", 
+				"10 >>> 1", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithAnd() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[10 & 10];", 
+				"10 & 10", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithOr() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[10 | 10];", 
+				"10 | 10", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithXor() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; const int x = v[10 ^ 0];", 
+				"10 ^ 0", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testArrayIndexOutOfBounds2WithCall() {
+		assertSemanticProblems(
+				"const int[] v = [1, 2, 3]; int foo() { return 3; } const int x = v[foo( )];", 
+				"foo( )", IProblem.ArrayIndexOutOfBounds2);
+	}
+	
+	public void testIncompatibleTypesForMinus() {
+		assertSemanticProblems(
+				"const int* x;\r\n" + 
+				"const int z = x - \"a\";", 
+				"x - \"a\"", IProblem.IncompatibleTypesForMinus);
+	}
+	
+	public void testExpressionHasNoEffect() {
+		assertSemanticProblems(
+				"void foo() { [1, 2, 3].length; }", 
+				"[1, 2, 3].length", IProblem.ExpressionHasNoEffect);
+	}
 	
 	/**
 	 * Utility method for testing semantic problems. It is passed the source

@@ -240,6 +240,7 @@ public class StringExp extends Expression {
 			se.type = type;
 			se.sz = sz;
 			se.committed = false;
+			se.copySourceRange(this);
 			unique = 1; // this is the only instance
 		}
 		se.type = type.toBasetype(context);
