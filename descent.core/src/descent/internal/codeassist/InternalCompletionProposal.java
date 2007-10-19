@@ -31,7 +31,7 @@ public class InternalCompletionProposal {
 	static final char[][] ARGS3 = new char[][]{ARG0, ARG1, ARG2};
 	static final char[][] ARGS4 = new char[][]{ARG0, ARG1, ARG2, ARG3};
 	
-	//protected CompletionEngine completionEngine;
+	protected CompletionEngine completionEngine;
 	protected NameLookup nameLookup;
 	
 	protected char[] declarationPackageName;

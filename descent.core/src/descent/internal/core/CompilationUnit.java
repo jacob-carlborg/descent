@@ -27,9 +27,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PerformanceStats;
 
+import descent.core.CompletionRequestor;
 import descent.core.Flags;
 import descent.core.IBuffer;
 import descent.core.IBufferFactory;
+import descent.core.ICodeAssist;
 import descent.core.ICompilationUnit;
 import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
@@ -59,7 +61,6 @@ import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.impl.CompilerOptions;
-import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
@@ -267,122 +268,33 @@ protected void closing(Object info) {
 		super.closing(info);
 	} // else the buffer of a working copy must remain open for the lifetime of the working copy
 }
-/**
- * @see ICodeAssist#codeComplete(int, ICompletionRequestor)
- * @deprecated
- */
-/* TODO JDT code completion
-public void codeComplete(int offset, ICompletionRequestor requestor) throws JavaModelException {
-	codeComplete(offset, requestor, DefaultWorkingCopyOwner.PRIMARY);
-}
-*/
-/**
- * @see ICodeAssist#codeComplete(int, ICompletionRequestor, WorkingCopyOwner)
- * @deprecated
- */
-/* TODO JDT code completion
-public void codeComplete(int offset, ICompletionRequestor requestor, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
-	if (requestor == null) {
-		throw new IllegalArgumentException("Completion requestor cannot be null"); //$NON-NLS-1$
-	}
-	codeComplete(offset, new descent.internal.codeassist.CompletionRequestorWrapper(requestor), workingCopyOwner);
-}
-*/
-/**
- * @see ICodeAssist#codeComplete(int, ICodeCompletionRequestor)
- * @deprecated - use codeComplete(int, ICompletionRequestor)
- */
-/* TODO JDT code completion
-public void codeComplete(int offset, final ICodeCompletionRequestor requestor) throws JavaModelException {
-	
-	if (requestor == null){
-		codeComplete(offset, (ICompletionRequestor)null);
-		return;
-	}
-	codeComplete(
-		offset,
-		new ICompletionRequestor(){
-			public void acceptAnonymousType(char[] superTypePackageName,char[] superTypeName,char[][] parameterPackageNames,char[][] parameterTypeNames,char[][] parameterNames,char[] completionName,int modifiers,int completionStart,int completionEnd, int relevance){
-				// ignore
-			}
-			public void acceptClass(char[] packageName, char[] className, char[] completionName, int modifiers, int completionStart, int completionEnd, int relevance) {
-				requestor.acceptClass(packageName, className, completionName, modifiers, completionStart, completionEnd);
-			}
-			public void acceptError(IProblem error) {
-				// was disabled in 1.0
-			}
-			public void acceptField(char[] declaringTypePackageName, char[] declaringTypeName, char[] fieldName, char[] typePackageName, char[] typeName, char[] completionName, int modifiers, int completionStart, int completionEnd, int relevance) {
-				requestor.acceptField(declaringTypePackageName, declaringTypeName, fieldName, typePackageName, typeName, completionName, modifiers, completionStart, completionEnd);
-			}
-			public void acceptInterface(char[] packageName,char[] interfaceName,char[] completionName,int modifiers,int completionStart,int completionEnd, int relevance) {
-				requestor.acceptInterface(packageName, interfaceName, completionName, modifiers, completionStart, completionEnd);
-			}
-			public void acceptKeyword(char[] keywordName,int completionStart,int completionEnd, int relevance){
-				requestor.acceptKeyword(keywordName, completionStart, completionEnd);
-			}
-			public void acceptLabel(char[] labelName,int completionStart,int completionEnd, int relevance){
-				requestor.acceptLabel(labelName, completionStart, completionEnd);
-			}
-			public void acceptLocalVariable(char[] localVarName,char[] typePackageName,char[] typeName,int modifiers,int completionStart,int completionEnd, int relevance){
-				// ignore
-			}
-			public void acceptMethod(char[] declaringTypePackageName,char[] declaringTypeName,char[] selector,char[][] parameterPackageNames,char[][] parameterTypeNames,char[][] parameterNames,char[] returnTypePackageName,char[] returnTypeName,char[] completionName,int modifiers,int completionStart,int completionEnd, int relevance){
-				// skip parameter names
-				requestor.acceptMethod(declaringTypePackageName, declaringTypeName, selector, parameterPackageNames, parameterTypeNames, returnTypePackageName, returnTypeName, completionName, modifiers, completionStart, completionEnd);
-			}
-			public void acceptMethodDeclaration(char[] declaringTypePackageName,char[] declaringTypeName,char[] selector,char[][] parameterPackageNames,char[][] parameterTypeNames,char[][] parameterNames,char[] returnTypePackageName,char[] returnTypeName,char[] completionName,int modifiers,int completionStart,int completionEnd, int relevance){
-				// ignore
-			}
-			public void acceptModifier(char[] modifierName,int completionStart,int completionEnd, int relevance){
-				requestor.acceptModifier(modifierName, completionStart, completionEnd);
-			}
-			public void acceptPackage(char[] packageName,char[] completionName,int completionStart,int completionEnd, int relevance){
-				requestor.acceptPackage(packageName, completionName, completionStart, completionEnd);
-			}
-			public void acceptType(char[] packageName,char[] typeName,char[] completionName,int completionStart,int completionEnd, int relevance){
-				requestor.acceptType(packageName, typeName, completionName, completionStart, completionEnd);
-			}
-			public void acceptVariableName(char[] typePackageName,char[] typeName,char[] varName,char[] completionName,int completionStart,int completionEnd, int relevance){
-				// ignore
-			}
-		});
-}
-*/
 
 /* (non-Javadoc)
  * @see descent.core.ICodeAssist#codeComplete(int, descent.core.CompletionRequestor)
  */
-/* TODO JDT code completion
 public void codeComplete(int offset, CompletionRequestor requestor) throws JavaModelException {
 	codeComplete(offset, requestor, DefaultWorkingCopyOwner.PRIMARY);
 }
-*/
 
 /* (non-Javadoc)
  * @see descent.core.ICodeAssist#codeComplete(int, descent.core.CompletionRequestor, descent.core.WorkingCopyOwner)
  */
-/* TODO JDT code completion
 public void codeComplete(int offset, CompletionRequestor requestor, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	codeComplete(this, isWorkingCopy() ? (descent.internal.compiler.env.ICompilationUnit) getOriginalElement() : this, offset, requestor, workingCopyOwner);
 }
-*/
 
 /**
  * @see ICodeAssist#codeSelect(int, int)
  */
-/* TODO JDT code completion
 public IJavaElement[] codeSelect(int offset, int length) throws JavaModelException {
 	return codeSelect(offset, length, DefaultWorkingCopyOwner.PRIMARY);
 }
-*/
 /**
  * @see ICodeAssist#codeSelect(int, int, WorkingCopyOwner)
  */
-/* TODO JDT code completion
 public IJavaElement[] codeSelect(int offset, int length, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	return super.codeSelect(this, offset, length, workingCopyOwner);
 }
-*/
 /**
  * @see IWorkingCopy#commit(boolean, IProgressMonitor)
  * @deprecated

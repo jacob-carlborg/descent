@@ -20,8 +20,10 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.PerformanceStats;
 
 import descent.core.BufferChangedEvent;
+import descent.core.CompletionRequestor;
 import descent.core.IBuffer;
 import descent.core.IBufferChangedListener;
 import descent.core.IBufferFactory;
@@ -29,6 +31,8 @@ import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
 import descent.core.IOpenable;
 import descent.core.JavaModelException;
+import descent.core.WorkingCopyOwner;
+import descent.internal.codeassist.CompletionEngine;
 import descent.internal.core.util.Util;
 
 
@@ -104,7 +108,6 @@ protected void closing(Object info) {
 	closeBuffer();
 }
 
-/* TODO JDT code completion
 protected void codeComplete(descent.internal.compiler.env.ICompilationUnit cu, descent.internal.compiler.env.ICompilationUnit unitToSkip, int position, CompletionRequestor requestor, WorkingCopyOwner owner) throws JavaModelException {
 	if (requestor == null) {
 		throw new IllegalArgumentException("Completion requestor cannot be null"); //$NON-NLS-1$
@@ -140,6 +143,8 @@ protected void codeComplete(descent.internal.compiler.env.ICompilationUnit cu, d
 	}
 }
 protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUnit cu, int offset, int length, WorkingCopyOwner owner) throws JavaModelException {
+	return NO_ELEMENTS;
+	/* TODO JDT code select
 	PerformanceStats performanceStats = SelectionEngine.PERF
 		? PerformanceStats.getStats(JavaModelManager.SELECTION_PERF, this)
 		: null;
@@ -172,8 +177,8 @@ protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUn
 		System.out.println(Thread.currentThread() + " TIME SPENT in NameLoopkup#seekTypesInBinaryPackage: " + environment.nameLookup.timeSpentInSeekTypesInBinaryPackage + "ms");  //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	return requestor.getElements();
+	*/
 }
-*/
 
 /*
  * Returns a new element info for this element.

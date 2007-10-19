@@ -2940,6 +2940,28 @@
 		</provider>
 	</extension>
    
+	<!-- content assist processors - do not change their order -->  
+	<!-- java and javadoc category -->
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="javaTypeProposalCategory"
+		name="%JavaTypesCategory">
+		<proposalCategory
+			icon="$nl$/icons/full/elcl16/jtypeassist_co.gif"/>
+	</extension>
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="javaNoTypeProposalCategory"
+		name="%JavaProposalCategory">
+		<proposalCategory
+			icon="$nl$/icons/full/elcl16/javaassist_co.gif"/>
+	</extension>
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="defaultProposalCategory"
+		name="%DefaultProposalCategory">
+		<proposalCategory/>
+	</extension>
    <extension
 		point="descent.ui.javaCompletionProposalComputer"
 		id="templateProposalCategory"
@@ -2947,7 +2969,35 @@
 		<proposalCategory
 			icon="$nl$/icons/full/elcl16/templateprop_co.gif"/>
 	</extension>
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="textProposalCategory"
+		name="%TextProposalCategory">
+		<proposalCategory
+			icon="$nl$/icons/full/elcl16/wordassist_co.gif"/>
+	</extension>
    
+   <!-- java completions -->   
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="JavaTypeCompletionProposalComputer">
+		<javaCompletionProposalComputer 
+			class="descent.internal.ui.text.java.JavaTypeCompletionProposalComputer"
+			categoryId="descent.ui.javaTypeProposalCategory">
+			<partition type="__dftl_partition_content_type"/>
+			<partition type="__java_string"/>
+		</javaCompletionProposalComputer>
+	</extension>
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="JavaNoTypeCompletionProposalComputer">
+		<javaCompletionProposalComputer 
+			class="descent.internal.ui.text.java.JavaNoTypeCompletionProposalComputer"
+			categoryId="descent.ui.javaNoTypeProposalCategory">
+			<partition type="__dftl_partition_content_type"/>
+			<partition type="__java_string"/>
+		</javaCompletionProposalComputer>
+	</extension>
    <!-- template proposals -->
 	<extension
 		point="descent.ui.javaCompletionProposalComputer"

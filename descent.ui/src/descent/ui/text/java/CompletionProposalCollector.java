@@ -515,8 +515,11 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	protected boolean isFiltered(CompletionProposal proposal) {
 		if (isIgnored(proposal.getKind()))
 			return true;
+		/* TODO JDT completion proposals check this
 		char[] declaringType= getDeclaringType(proposal);
 		return declaringType!= null && TypeFilter.isFiltered(declaringType);
+		*/
+		return false;
 	}
 
 	/**

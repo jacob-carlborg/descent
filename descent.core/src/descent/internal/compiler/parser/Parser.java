@@ -234,6 +234,10 @@ public class Parser extends Lexer {
 			
 			nextToken();
 			if (token.value != TOKidentifier) {
+				
+				// Issue a creation of an empty module declaration
+				newModuleDeclaration(null, null);
+				
 				parsingErrorDeleteToken(prevToken);
 				
 				decldefs = parseDeclDefs(false);
@@ -263,7 +267,7 @@ public class Parser extends Lexer {
 					id = newIdentifierExp();
 				}
 
-				md = new ModuleDeclaration(a, id);
+				md = newModuleDeclaration(a, id);
 				md.setSourceRange(start, token.ptr + token.sourceLen - start);
 				md.preDdocs = moduleDocComments;
 
@@ -287,7 +291,7 @@ public class Parser extends Lexer {
 		}
 		return decldefs;
 	}
-	
+
 	private Dsymbols parseModule_LErr(Dsymbols decldefs) {
 		while (token.value != TOKsemicolon && token.value != TOKeof)
 	    	nextToken();
@@ -2149,7 +2153,7 @@ public class Parser extends Lexer {
 				}
 
 				Import prev = s;
-				s = new Import(loc, a, id, aliasid, isstatic);
+				s = newImport(loc, a, id, aliasid, isstatic);
 				s.first = prev == null;
 				decldefs.add(s);
 				if (prev == null) {
@@ -6791,6 +6795,20 @@ public class Parser extends Lexer {
 			lastDocCommentRead = comments.size();	
 		}
 		prevToken.leadingComment = (Comment) comment;		
+	}
+	
+	/**
+	 * Creates a ModuleDeclaration with the given packages and module name. The
+	 * current token is the token following the last token of the module declaration.
+	 * packages and module can be null at the same time, meaning "module " is written
+	 * in the source code.
+	 */
+	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module) {
+		return new ModuleDeclaration(packages, module);
+	}
+	
+	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) {
+		return new Import(loc, packages, module, aliasid, isstatic);
 	}
 
 	

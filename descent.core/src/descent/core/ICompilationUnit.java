@@ -31,10 +31,7 @@ import descent.core.dom.CompilationUnit;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface ICompilationUnit extends IJavaElement, ISourceReference, IParent, IOpenable, IWorkingCopy, ISourceManipulation 
-/* TODO JDT code completion
-, ICodeAssist 
-*/ 
+public interface ICompilationUnit extends IJavaElement, ISourceReference, IParent, IOpenable, IWorkingCopy, ISourceManipulation , ICodeAssist
 {
 /**
  * Constant indicating that a reconcile operation should not return an AST.

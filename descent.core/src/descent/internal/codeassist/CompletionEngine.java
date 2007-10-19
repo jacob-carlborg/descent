@@ -1,0 +1,146 @@
+package descent.internal.codeassist;
+
+import java.io.File;
+import java.util.Map;
+
+import descent.core.CompletionProposal;
+import descent.core.CompletionRequestor;
+import descent.core.IJavaProject;
+import descent.core.compiler.CharOperation;
+import descent.core.dom.AST;
+import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
+import descent.internal.codeassist.complete.CompletionParser;
+import descent.internal.codeassist.impl.Engine;
+import descent.internal.compiler.env.ICompilationUnit;
+import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.util.HashtableOfObject;
+import descent.internal.core.SearchableEnvironment;
+
+/**
+ * This class is the entry point for source completions.
+ * It contains two public APIs used to call CodeAssist on a given source with
+ * a given environment, assisting position and storage (and possibly options).
+ */
+public class CompletionEngine extends Engine {
+	
+	public static boolean DEBUG = false;
+	public static boolean PERF = false;
+	
+	IJavaProject javaProject;
+	CompletionParser parser;
+	CompletionRequestor requestor;
+	
+	char[] fileName = null;
+	int startPosition, actualCompletionPosition, endPosition, offset;
+	
+	char[] source;
+	char[] completionToken;
+	char[] qualifiedCompletionToken;
+	
+	public HashtableOfObject typeCache;
+	
+	/**
+	 * The CompletionEngine is responsible for computing source completions.
+	 *
+	 * It requires a searchable name environment, which supports some
+	 * specific search APIs, and a requestor to feed back the results to a UI.
+	 *
+	 *  @param nameEnvironment descent.internal.codeassist.ISearchableNameEnvironment
+	 *      used to resolve type/package references and search for types/packages
+	 *      based on partial names.
+	 *
+	 *  @param requestor descent.internal.codeassist.ICompletionRequestor
+	 *      since the engine might produce answers of various forms, the engine 
+	 *      is associated with a requestor able to accept all possible completions.
+	 *
+	 *  @param settings java.util.Map
+	 *		set of options used to configure the code assist engine.
+	 */
+	public CompletionEngine(
+			SearchableEnvironment nameEnvironment,
+			CompletionRequestor requestor,
+			Map settings,
+			IJavaProject javaProject) {
+		super(settings);
+		this.javaProject = javaProject;
+		this.requestor = requestor;
+		this.nameEnvironment = nameEnvironment;
+		this.typeCache = new HashtableOfObject(5);
+	}
+
+	/**
+	 * Ask the engine to compute a completion at the specified position
+	 * of the given compilation unit.
+	 *
+	 *  No return
+	 *      completion results are answered through a requestor.
+	 *
+	 *  @param sourceUnit descent.internal.compiler.env.ICompilationUnit
+	 *      the source of the current compilation unit.
+	 *
+	 *  @param completionPosition int
+	 *      a position in the source where the completion is taking place. 
+	 *      This position is relative to the source provided.
+	 */
+	public void complete(ICompilationUnit sourceUnit, int completionPosition, int pos) {
+		if(DEBUG) {
+			System.out.print("COMPLETION IN "); //$NON-NLS-1$
+			System.out.print(sourceUnit.getFileName());
+			System.out.print(" AT POSITION "); //$NON-NLS-1$
+			System.out.println(completionPosition);
+			System.out.println("COMPLETION - Source :"); //$NON-NLS-1$
+			System.out.println(sourceUnit.getContents());
+		}
+		this.requestor.beginReporting();
+		try {
+			this.source = sourceUnit.getContents();	
+			this.fileName = sourceUnit.getFileName();
+			this.actualCompletionPosition = completionPosition; // - 1;
+			this.offset = pos;
+			CompletionParser parser = new CompletionParser(AST.D2, source);
+			parser.cursorLocation = completionPosition;
+			
+			parser.parseModuleObj();
+			ASTDmdNode assistNode = parser.getAssistNode();
+			if (assistNode == null) {
+				return;
+			}
+			
+			if (assistNode instanceof CompletionOnModuleDeclaration) {
+				CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
+				
+				complete(node);
+			}
+		} finally {
+			this.requestor.endReporting();
+		}
+	}
+	
+	private void complete(CompletionOnModuleDeclaration node) {
+		// If no name, suggest the source file's name
+		if (node.packages == null && node.id == null) {
+			// Remove extension
+			char[] completion = fileName;					
+			int index = CharOperation.lastIndexOf('.', fileName);
+			if (index != -1) {
+				completion = CharOperation.subarray(this.fileName, 0, index);
+			}
+			
+			// Replace file separator with .
+			CharOperation.replace(completion, '/', '.');
+			
+			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
+			proposal.setCompletion(completion);
+			proposal.setReplaceRange(this.actualCompletionPosition, this.actualCompletionPosition);
+			this.requestor.accept(proposal);
+		}
+	}
+
+	protected CompletionProposal createProposal(int kind, int completionOffset) {
+		CompletionProposal proposal = CompletionProposal.create(kind, completionOffset - this.offset);
+		proposal.nameLookup = this.nameEnvironment.nameLookup;
+		proposal.completionEngine = this;
+		return proposal;
+	}
+
+}

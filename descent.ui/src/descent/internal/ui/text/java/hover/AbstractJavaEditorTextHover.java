@@ -25,14 +25,17 @@ import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.keys.IBindingService;
 import org.osgi.framework.Bundle;
 
+import descent.core.ICodeAssist;
 import descent.core.IJavaElement;
 import descent.internal.corext.util.Messages;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.javaeditor.WorkingCopyManager;
 import descent.internal.ui.text.HTMLTextPresenter;
 import descent.internal.ui.text.JavaWordFinder;
 import descent.ui.PreferenceConstants;
@@ -68,14 +71,15 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 		return fEditor;
 	}
 
-	/* TODO JDT code completion
 	protected ICodeAssist getCodeAssist() {
 		if (fEditor != null) {
 			IEditorInput input= fEditor.getEditorInput();
+			/* TODO JDT binary
 			if (input instanceof IClassFileEditorInput) {
 				IClassFileEditorInput cfeInput= (IClassFileEditorInput) input;
 				return cfeInput.getClassFile();
 			}
+			*/
 
 			WorkingCopyManager manager= JavaPlugin.getDefault().getWorkingCopyManager();
 			return manager.getWorkingCopy(input, false);
@@ -83,7 +87,6 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 
 		return null;
 	}
-	*/
 
 	/*
 	 * @see ITextHover#getHoverRegion(ITextViewer, int)
