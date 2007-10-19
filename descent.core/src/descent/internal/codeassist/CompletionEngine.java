@@ -13,6 +13,8 @@ import descent.internal.codeassist.complete.CompletionParser;
 import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.SearchableEnvironment;
 
@@ -21,7 +23,7 @@ import descent.internal.core.SearchableEnvironment;
  * It contains two public APIs used to call CodeAssist on a given source with
  * a given environment, assisting position and storage (and possibly options).
  */
-public class CompletionEngine extends Engine {
+public class CompletionEngine extends Engine implements RelevanceConstants {
 	
 	public static boolean DEBUG = false;
 	public static boolean PERF = false;
@@ -117,23 +119,51 @@ public class CompletionEngine extends Engine {
 	}
 	
 	private void complete(CompletionOnModuleDeclaration node) {
-		// If no name, suggest the source file's name
-		if (node.packages == null && node.id == null) {
-			// Remove extension
-			char[] completion = fileName;					
-			int index = CharOperation.lastIndexOf('.', fileName);
-			if (index != -1) {
-				completion = CharOperation.subarray(this.fileName, 0, index);
+		char[] fqn = computeFQN(node.packages, node.id);
+		
+		// Remove file extension
+		char[] suggestedModuleName = fileName;
+		int index = CharOperation.lastIndexOf('.', fileName);
+		if (index != -1) {
+			suggestedModuleName = CharOperation.subarray(this.fileName, 0, index);
+		}
+		
+		// Replace file separator with .
+		CharOperation.replace(suggestedModuleName, '/', '.');
+		
+		if (CharOperation.prefixEquals(fqn, suggestedModuleName)) {
+			int start = this.actualCompletionPosition;
+			if (node.packages != null)
+			{
+				start = node.packages.get(0).start;
+			} else if (node.id != null) {
+				start = node.id.start;
 			}
-			
-			// Replace file separator with .
-			CharOperation.replace(completion, '/', '.');
-			
 			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
-			proposal.setCompletion(completion);
-			proposal.setReplaceRange(this.actualCompletionPosition, this.actualCompletionPosition);
+			proposal.setCompletion(suggestedModuleName);
+			proposal.setReplaceRange(start, this.actualCompletionPosition);
+			proposal.setRelevance(R_EXACT_NAME);
 			this.requestor.accept(proposal);
 		}
+	}
+
+	private char[] computeFQN(Identifiers packages, IdentifierExp id) {
+		// TODO Descent char[] optimize, don't use StringBuilder
+		StringBuilder sb = new StringBuilder();
+		if (packages != null) {
+			for(int i = 0; i < packages.size(); i++) {
+				sb.append(packages.get(i).toCharArray());
+				sb.append('.');
+			}
+		}
+		
+		if (id != null) {
+			sb.append(id.toCharArray());
+		}
+		
+		char[] ret = new char[sb.length()];
+		sb.getChars(0, sb.length(), ret, 0);
+		return ret;
 	}
 
 	protected CompletionProposal createProposal(int kind, int completionOffset) {

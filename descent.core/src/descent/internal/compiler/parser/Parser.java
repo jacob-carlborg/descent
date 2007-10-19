@@ -235,7 +235,8 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value != TOKidentifier) {
 				
-				// Issue a creation of an empty module declaration
+				// Issue a creation of an empty module declaration,
+				// in case subclasses are interested
 				newModuleDeclaration(null, null);
 				
 				parsingErrorDeleteToken(prevToken);
@@ -256,6 +257,11 @@ public class Parser extends Lexer {
 					a.add(id);
 					nextToken();
 					if (token.value != TOKidentifier) {
+						
+						// Issue a creation of an empty module declaration,
+						// in case subclasses are interested
+						newModuleDeclaration(a, null);
+						
 						parsingErrorInsertTokenAfter(prevToken, ";");
 						
 						decldefs = parseDeclDefs(false);
