@@ -12,6 +12,7 @@ import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionParser;
+import descent.internal.codeassist.complete.ICompletionOnKeyword;
 import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
@@ -45,6 +46,7 @@ public class CompletionEngine extends Engine
 	public HashtableOfObject typeCache;
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
+	HashtableOfObject knownKeywords = new HashtableOfObject(10);
 	
 	/**
 	 * The CompletionEngine is responsible for computing source completions.
@@ -103,8 +105,7 @@ public class CompletionEngine extends Engine
 			this.source = sourceUnit.getContents();	
 			this.fileName = sourceUnit.getFileName();
 			this.actualCompletionPosition = completionPosition; // - 1;
-			this.offset = pos;
-			
+			this.offset = pos;			
 			
 			// Get the sourceUnit's fqn
 			sourceUnitFqn = fileName;
@@ -121,20 +122,33 @@ public class CompletionEngine extends Engine
 			
 			parser.parseModuleObj();
 			ASTDmdNode assistNode = parser.getAssistNode();
-			if (assistNode == null) {
-				return;
+			
+			// First the assist node
+			if (assistNode != null) {
+				if (assistNode instanceof CompletionOnModuleDeclaration && 
+						!requestor.isIgnored(CompletionProposal.PACKAGE_REF)) {
+					CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
+					completeModuleDeclaration(node);
+				} else if (assistNode instanceof CompletionOnImport &&
+						!requestor.isIgnored(CompletionProposal.PACKAGE_REF)) {
+					CompletionOnImport node = (CompletionOnImport) assistNode;
+					completeImport(node);
+				} else if (assistNode instanceof CompletionOnArgumentName) {
+					CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
+					completeArgumentName(node);
+				}
 			}
 			
-			if (assistNode instanceof CompletionOnModuleDeclaration) {
-				CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
-				completeModuleDeclaration(node);
-			} else if (assistNode instanceof CompletionOnImport) {
-				CompletionOnImport node = (CompletionOnImport) assistNode;
-				completeImport(node);
-			} else if (assistNode instanceof CompletionOnArgumentName) {
-				CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
-				completeArgumentName(node);
+			// Then the keywords
+			if (parser.getKeywordCompletions() != null && 
+					!requestor.isIgnored(CompletionProposal.KEYWORD)) {
+				for(ICompletionOnKeyword node : parser.getKeywordCompletions()) {
+					this.startPosition = actualCompletionPosition - node.getToken().length;
+					this.endPosition = actualCompletionPosition;
+					findKeywords(node.getToken(), node.getPossibleKeywords(), node.canCompleteEmptyToken());
+				}
 			}
+			
 		} finally {
 			this.requestor.endReporting();
 		}
@@ -152,7 +166,7 @@ public class CompletionEngine extends Engine
 			this.endPosition++;
 		}
 		
-		if (CharOperation.prefixEquals(fqnBeforeCursor, sourceUnitFqn)) {
+		if (CharOperation.prefixEquals(fqnBeforeCursor, sourceUnitFqn, false)) {
 			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
 			proposal.setCompletion(sourceUnitFqn);
 			proposal.setReplaceRange(this.startPosition, this.endPosition);
@@ -182,6 +196,72 @@ public class CompletionEngine extends Engine
 	private void completeArgumentName(CompletionOnArgumentName node) {
 		
 	}
+	
+	private void findKeywords(char[] keyword, char[][] choices, boolean canCompleteEmptyToken) {
+		if(choices == null || choices.length == 0) return;
+		
+		int length = keyword.length;
+		if (canCompleteEmptyToken || length > 0)
+			for (int i = 0; i < choices.length; i++)
+				if (length <= choices[i].length
+					&& CharOperation.prefixEquals(keyword, choices[i], false /* ignore case */
+				)){
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(keyword, choices[i]);
+//					relevance += computeRelevanceForRestrictions(IAccessRule.K_ACCESSIBLE); // no access restriction for keywors
+					
+//					if(CharOperation.equals(choices[i], Keywords.TRUE) || CharOperation.equals(choices[i], Keywords.FALSE)) {
+//						relevance += computeRelevanceForExpectingType(TypeBinding.BOOLEAN);
+//						relevance += computeRelevanceForQualification(false);
+//					}
+//					this.noProposal = false;
+					if(!this.requestor.isIgnored(CompletionProposal.KEYWORD)) {
+						if (knownKeywords.containsKey(choices[i])) {
+							continue;
+						}
+						knownKeywords.put(choices[i], this);
+						
+						CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
+						proposal.setName(choices[i]);
+						proposal.setCompletion(choices[i]);
+						proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+						proposal.setRelevance(relevance);
+						this.requestor.accept(proposal);
+					}
+				}
+	}
+	
+	int computeBaseRelevance(){
+		return R_DEFAULT;
+	}
+	
+	int computeRelevanceForInterestingProposal(){
+		return R_INTERESTING;
+	}
+	
+	int computeRelevanceForCaseMatching(char[] token, char[] proposalName){
+		if (this.options.camelCaseMatch) {
+			if(CharOperation.equals(token, proposalName, true /* do not ignore case */)) {
+				return R_CASE + R_EXACT_NAME;
+			} else if (CharOperation.prefixEquals(token, proposalName, true /* do not ignore case */)) {
+				return R_CASE;
+			} else if (CharOperation.camelCaseMatch(token, proposalName)){
+				return R_CAMEL_CASE;
+			} else if(CharOperation.equals(token, proposalName, false /* ignore case */)) {
+				return R_EXACT_NAME;
+			}
+		} else if (CharOperation.prefixEquals(token, proposalName, true /* do not ignore case */)) {
+			if(CharOperation.equals(token, proposalName, true /* do not ignore case */)) {
+				return R_CASE + R_EXACT_NAME;
+			} else {
+				return R_CASE;
+			}
+		} else if(CharOperation.equals(token, proposalName, false /* ignore case */)) {
+			return R_EXACT_NAME;
+		}
+		return 0;
+	}
 
 	protected CompletionProposal createProposal(int kind, int completionOffset) {
 		CompletionProposal proposal = CompletionProposal.create(kind, completionOffset - this.offset);
@@ -200,7 +280,7 @@ public class CompletionEngine extends Engine
 		
 		CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
 		proposal.setCompletion(fullyQualifiedName);
-		proposal.setReplaceRange(this.startPosition, this.endPosition);
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		this.requestor.accept(proposal);
 	}
 

@@ -33,5 +33,10 @@ public class CompletionOnModule_Test extends AbstractCompletionTest {
 		assertCompletions("foo", "test.d", "module foo.", 9, // fo[cursor]o. 
 				CompletionProposal.PACKAGE_REF, "foo.test", 7, 11);
 	}
+	
+	public void testDefaultPackageWithNonEmptyModuleNameIgnoreCase() throws Exception {
+		assertCompletions(null, "test.d", "module TE", 9, 
+				CompletionProposal.PACKAGE_REF, "test", 7, 9);
+	}
 
 }

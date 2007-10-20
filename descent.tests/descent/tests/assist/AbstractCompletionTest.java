@@ -1,5 +1,8 @@
 package descent.tests.assist;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
 import descent.tests.model.AbstractModelTest;
@@ -13,6 +16,8 @@ public abstract class AbstractCompletionTest extends AbstractModelTest {
 	 *     CompletionProposal.PACKAGE_REF, "test", 7, 7); 
 	 *     // type, completion, replace start, replace end
 	 *     // (more like the previous like can follow)
+	 *     
+	 * You should expect the completions in lexicograpical order.
 	 */
 	protected void assertCompletions(
 			String packageName, 
@@ -25,6 +30,14 @@ public abstract class AbstractCompletionTest extends AbstractModelTest {
 		
 		ICompilationUnit unit = createCompilationUnit(packageName, filename, contents);
 		unit.codeComplete(cursorLocation, req);
+		
+		Collections.sort(req.proposals, new Comparator<CompletionProposal>() {
+
+			public int compare(CompletionProposal o1, CompletionProposal o2) {
+				return new String(o1.getCompletion()).compareTo(new String(o2.getCompletion()));
+			}
+			
+		});
 		
 		int num = 0;
 		for(int i = 0; i < expectations.length; i++) {

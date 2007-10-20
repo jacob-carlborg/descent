@@ -1,5 +1,6 @@
 package descent.internal.ui.text.java;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,7 +31,8 @@ public class JavaTypeCompletionProposalComputer extends JavaCompletionProposalCo
 		collector.setIgnored(CompletionProposal.ANNOTATION_ATTRIBUTE_REF, true);
 		collector.setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, true);
 		collector.setIgnored(CompletionProposal.FIELD_REF, true);
-		collector.setIgnored(CompletionProposal.KEYWORD, true);
+		// collector.setIgnored(CompletionProposal.KEYWORD, true);
+		collector.setIgnored(CompletionProposal.KEYWORD, false);
 		collector.setIgnored(CompletionProposal.LABEL_REF, true);
 		collector.setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, true);
 		collector.setIgnored(CompletionProposal.METHOD_DECLARATION, true);
@@ -56,6 +58,7 @@ public class JavaTypeCompletionProposalComputer extends JavaCompletionProposalCo
 	 * @see descent.internal.ui.text.java.JavaCompletionProposalComputer#computeCompletionProposals(org.eclipse.jface.text.contentassist.TextContentAssistInvocationContext, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public List computeCompletionProposals(ContentAssistInvocationContext context, IProgressMonitor monitor) {
+		/* TODO Descent see why there are two: JavaTypeCompletionProposal and JavaNoTypeCompletionProposal
 		List types= super.computeCompletionProposals(context, monitor);
 		if (context instanceof JavaContentAssistInvocationContext) {
 			JavaContentAssistInvocationContext javaContext= (JavaContentAssistInvocationContext) context;
@@ -90,6 +93,8 @@ public class JavaTypeCompletionProposalComputer extends JavaCompletionProposalCo
 			}
 		}
 		return types;
+		*/
+		return Collections.EMPTY_LIST;
 	}
 
 	private IJavaCompletionProposal createTypeProposal(int relevance, String fullyQualifiedType, JavaContentAssistInvocationContext context) throws JavaModelException {

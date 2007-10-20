@@ -41,4 +41,13 @@ public class CompletionOnImport_Test extends AbstractCompletionTest {
 				);
 	}
 	
+	public void testShowManyIgnoreCase() throws Exception {
+		createCompilationUnit("foo", "file.d", "");
+		createCompilationUnit("foo.bar", "other.d", "");
+		assertCompletions("foo", "test.d", "import fO", 9,
+				CompletionProposal.PACKAGE_REF, "foo.file", 7, 9,
+				CompletionProposal.PACKAGE_REF, "foo.bar.other", 7, 9
+				);
+	}
+	
 }

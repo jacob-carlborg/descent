@@ -53,6 +53,8 @@ public class JavaPluginImages {
 	/*
 	 * Keys for images available from the Java-UI plug-in image registry.
 	 */
+	public static final String IMG_OBJS_MODULE= NAME_PREFIX + "module_obj.gif"; 		//$NON-NLS-1$
+	
 	public static final String IMG_MISC_PUBLIC= NAME_PREFIX + "methpub_obj.gif"; 			//$NON-NLS-1$
 	public static final String IMG_MISC_PROTECTED= NAME_PREFIX + "methpro_obj.gif"; 		//$NON-NLS-1$
 	public static final String IMG_MISC_PRIVATE= NAME_PREFIX + "methpri_obj.gif"; 		//$NON-NLS-1$
@@ -208,6 +210,8 @@ public class JavaPluginImages {
 	/*
 	 * Set of predefined Image Descriptors.
 	 */
+	public static final ImageDescriptor DESC_OBJS_MODULE= createManagedFromKey(T_OBJ, IMG_OBJS_MODULE);
+	
 	public static final ImageDescriptor DESC_VIEW_ERRORWARNING_TAB= createUnManaged(T_EVIEW, "errorwarning_tab.gif"); //$NON-NLS-1$
 	public static final ImageDescriptor DESC_VIEW_CLASSFILEGENERATION_TAB= createUnManaged(T_EVIEW, "classfilegeneration_tab.gif"); //$NON-NLS-1$
 	public static final ImageDescriptor DESC_VIEW_JDKCOMPLIANCE_TAB= createUnManaged(T_EVIEW, "jdkcompliance_tab.gif"); //$NON-NLS-1$
