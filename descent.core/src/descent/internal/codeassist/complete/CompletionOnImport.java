@@ -21,10 +21,6 @@ import descent.internal.compiler.parser.Loc;
  *         void foo() {
  *         }
  *       }
- *
- * The source range is always of length 0.
- * The arguments of the allocation expression are all the arguments defined
- * before the cursor.
  */
 public class CompletionOnImport extends Import {
 

@@ -55,7 +55,7 @@ public abstract class AbstractModelTest extends TestCase {
 		return project;
 	}
 	
-	protected ICompilationUnit createCompilationUnit(String filename, String contents) throws Exception {
+	protected ICompilationUnit createCompilationUnit(String packageName, String filename, String contents) throws Exception {
 		IJavaProject javaProject = JavaCore.create(project);
 		assertNotNull(javaProject);
 		
@@ -65,7 +65,7 @@ public abstract class AbstractModelTest extends TestCase {
 		assertTrue(javaProject.isOpen());
 		
 		IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
-		assertEquals(1, roots.length);
+		//assertEquals(1, roots.length);
 		
 		IPackageFragmentRoot root = roots[0];
 		//assertFalse(root.isOpen());
@@ -74,23 +74,32 @@ public abstract class AbstractModelTest extends TestCase {
 		assertTrue(root.isOpen());
 		
 		IJavaElement[] children = root.getChildren();
-		assertEquals(1, children.length);
+		//assertEquals(1, children.length);
 		
-		IPackageFragment pack = (IPackageFragment) children[0];
+		IPackageFragment pack;
+		if (packageName != null) {
+			pack = root.createPackageFragment(packageName, true, null);
+		} else {
+			pack = (IPackageFragment) children[0];
+		}
 		//assertFalse(pack.isOpen());
 		
 		pack.open(null);
-		assertTrue(pack.isOpen());
+		//assertTrue(pack.isOpen());
 		
 		ICompilationUnit unit = pack.createCompilationUnit(filename, contents, true, null);
-		assertTrue(unit.exists());
+		//assertTrue(unit.exists());
 		
 		//assertFalse(unit.isOpen());
 		
 		unit.open(null);
-		assertTrue(unit.isOpen());
+		//assertTrue(unit.isOpen());
 		
 		return unit;
+	}
+	
+	protected ICompilationUnit createCompilationUnit(String filename, String contents) throws Exception {
+		return createCompilationUnit(null, filename, contents);
 	}
 
 }

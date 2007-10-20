@@ -1,6 +1,5 @@
 package descent.internal.codeassist;
 
-import java.io.File;
 import java.util.Map;
 
 import descent.core.CompletionProposal;
@@ -8,13 +7,12 @@ import descent.core.CompletionRequestor;
 import descent.core.IJavaProject;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
+import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionParser;
 import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
-import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.SearchableEnvironment;
 
@@ -110,7 +108,9 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 			
 			if (assistNode instanceof CompletionOnModuleDeclaration) {
 				CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
-				
+				complete(node);
+			} else if (assistNode instanceof CompletionOnArgumentName) {
+				CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
 				complete(node);
 			}
 		} finally {
@@ -118,8 +118,13 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 		}
 	}
 	
+	private void complete(CompletionOnArgumentName node) {
+		
+	}
+
 	private void complete(CompletionOnModuleDeclaration node) {
-		char[] fqn = computeFQN(node.packages, node.id);
+		char[] fqn = node.getFQN();
+		char[] fqnBeforeCursor = CharOperation.subarray(fqn, 0, this.actualCompletionPosition - node.getModuleNameStart());
 		
 		// Remove file extension
 		char[] suggestedModuleName = fileName;
@@ -131,39 +136,22 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 		// Replace file separator with .
 		CharOperation.replace(suggestedModuleName, '/', '.');
 		
-		if (CharOperation.prefixEquals(fqn, suggestedModuleName)) {
-			int start = this.actualCompletionPosition;
-			if (node.packages != null)
-			{
-				start = node.packages.get(0).start;
-			} else if (node.id != null) {
-				start = node.id.start;
+		if (CharOperation.prefixEquals(fqnBeforeCursor, suggestedModuleName)) {
+			int start = node.getModuleNameStart();
+			int end = node.getModuleNameEnd();
+			
+			// Also include the next dot, if any
+			if (end < this.source.length && this.source[end] == '.') {
+				end++;
 			}
+			
 			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
 			proposal.setCompletion(suggestedModuleName);
-			proposal.setReplaceRange(start, this.actualCompletionPosition);
+			proposal.setReplaceRange(start, end);
+			proposal.setTokenRange(start, end);
 			proposal.setRelevance(R_EXACT_NAME);
 			this.requestor.accept(proposal);
 		}
-	}
-
-	private char[] computeFQN(Identifiers packages, IdentifierExp id) {
-		// TODO Descent char[] optimize, don't use StringBuilder
-		StringBuilder sb = new StringBuilder();
-		if (packages != null) {
-			for(int i = 0; i < packages.size(); i++) {
-				sb.append(packages.get(i).toCharArray());
-				sb.append('.');
-			}
-		}
-		
-		if (id != null) {
-			sb.append(id.toCharArray());
-		}
-		
-		char[] ret = new char[sb.length()];
-		sb.getChars(0, sb.length(), ret, 0);
-		return ret;
 	}
 
 	protected CompletionProposal createProposal(int kind, int completionOffset) {

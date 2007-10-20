@@ -1288,7 +1288,7 @@ public class Parser extends Lexer {
 					}
 					varargs = 2;
 					
-					a = new Argument(storageClass, at, ai, ae);
+					a = newArgument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
@@ -1297,7 +1297,7 @@ public class Parser extends Lexer {
 				}
 				
 				if (at != null || ai != null || ae != null) {
-					a = new Argument(storageClass, at, ai, ae);
+					a = newArgument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
@@ -1463,7 +1463,7 @@ public class Parser extends Lexer {
 					}
 					varargs = 2;
 					
-					a = new Argument(storageClass, at, ai, ae);
+					a = newArgument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
@@ -1472,7 +1472,7 @@ public class Parser extends Lexer {
 				}
 				
 				if (at != null || ai != null || ae != null) {
-					a = new Argument(storageClass, at, ai, ae);
+					a = newArgument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
@@ -1491,7 +1491,7 @@ public class Parser extends Lexer {
 		check(TOKrparen);
 		pvarargs[0] = varargs;
 		return arguments;
-	}
+	}	
 
 	private int parseParametersD2_L2(int storageClass, int stc) {
 		if ((storageClass & stc) != 0
@@ -6815,6 +6815,10 @@ public class Parser extends Lexer {
 	
 	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) {
 		return new Import(loc, packages, module, aliasid, isstatic);
+	}
+	
+	protected Argument newArgument(int storageClass, Type at, IdentifierExp ai, Expression ae) {
+		return new Argument(storageClass, at, ai, ae);
 	}
 
 	
