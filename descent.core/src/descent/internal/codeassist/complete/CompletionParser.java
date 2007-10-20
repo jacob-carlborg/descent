@@ -26,8 +26,8 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module) {
-		int start = CompletionOnModuleDeclaration.getModuleNameStart(packages, module, cursorLocation);
-		int end = CompletionOnModuleDeclaration.getModuleNameEnd(packages, module, cursorLocation);
+		int start = CompletionUtils.getFqnStart(packages, module, cursorLocation);
+		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 		
 		if (start <= cursorLocation && cursorLocation <= end) {
 			assistNode = new CompletionOnModuleDeclaration(packages, module, cursorLocation);
@@ -38,9 +38,12 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) {
-		if (prevToken.ptr + prevToken.sourceLen == cursorLocation) {
-			assistNode = new CompletionOnImport(loc, packages, module, aliasid, isstatic);
+	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) { 
+		int start = CompletionUtils.getFqnStart(packages, module, cursorLocation);
+		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
+	
+		if (start <= cursorLocation && cursorLocation <= end) {
+			assistNode = new CompletionOnImport(loc, packages, module, aliasid, isstatic, cursorLocation);
 			return (Import) assistNode;
 		} else {
 			return super.newImport(loc, packages, module, aliasid, isstatic);

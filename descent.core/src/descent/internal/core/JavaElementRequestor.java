@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 
+import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IMethod;
@@ -58,6 +59,12 @@ public class JavaElementRequestor implements IJavaElementRequestor {
 	 * if no package fragment results have been received.
 	 */
 	protected ArrayList fPackageFragments= null;
+	
+	/**
+	 * A collection of the resulting compilation units, or <code>null</code>
+	 * if no compilation unti results have been received.
+	 */
+	protected ArrayList fCompilationUnits = null;
 
 	/**
 	 * A collection of the resulting types, or <code>null</code>
@@ -117,6 +124,15 @@ public void acceptPackageFragment(IPackageFragment packageFragment) {
 		fPackageFragments= new ArrayList();
 	}
 	fPackageFragments.add(packageFragment);
+}
+/**
+ * @see IJavaElementRequestor
+ */
+public void acceptCompilationUnit(ICompilationUnit compilationUnit) {
+	if (fCompilationUnits== null) {
+		fCompilationUnits= new ArrayList();
+	}
+	fCompilationUnits.add(compilationUnit);
 }
 /**
  * @see IJavaElementRequestor

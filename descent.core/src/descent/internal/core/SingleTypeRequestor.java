@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IMethod;
@@ -54,6 +55,12 @@ public void acceptMethod(IMethod method) {
  */
 public void acceptPackageFragment(IPackageFragment packageFragment) {
 	// implements interface method
+}
+/**
+ * @see IJavaElementRequestor
+ */
+public void acceptCompilationUnit(ICompilationUnit compilationUnit) {
+	//	 implements interface method
 }
 /**
  * @see IJavaElementRequestor

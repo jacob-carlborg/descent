@@ -23,9 +23,20 @@ import descent.internal.compiler.parser.Loc;
  *       }
  */
 public class CompletionOnImport extends Import {
+	
+	public int completePosition;
 
-	public CompletionOnImport(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId, boolean isstatic) {
+	public CompletionOnImport(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId, boolean isstatic, int completePosition) {
 		super(loc, packages, id, aliasId, isstatic);
+		this.completePosition = completePosition;
+	}
+	
+	public int getFqnStart() {
+		return CompletionUtils.getFqnStart(packages, id, completePosition);
+	}
+	
+	public int getFqnEnd() {
+		return CompletionUtils.getFqnEnd(packages, id, completePosition);
 	}
 
 }

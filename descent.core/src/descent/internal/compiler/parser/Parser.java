@@ -235,8 +235,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value != TOKidentifier) {
 				
-				// Issue a creation of an empty module declaration,
-				// in case subclasses are interested
+				// Issue a creation of an empty module declaration
 				newModuleDeclaration(null, null);
 				
 				parsingErrorDeleteToken(prevToken);
@@ -258,8 +257,7 @@ public class Parser extends Lexer {
 					nextToken();
 					if (token.value != TOKidentifier) {
 						
-						// Issue a creation of an empty module declaration,
-						// in case subclasses are interested
+						// Issue a creation of an empty module declaration
 						newModuleDeclaration(a, null);
 						
 						parsingErrorInsertTokenAfter(prevToken, ";");
@@ -2128,6 +2126,10 @@ public class Parser extends Lexer {
 				}
 
 				if (token.value != TOKidentifier) {
+					
+					// Issue a creation of an empty import declaration
+					newImport(loc, null, null, aliasid, isstatic);
+					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					break;
 				}
@@ -2148,9 +2150,12 @@ public class Parser extends Lexer {
 					if (a == null) {
 						a = new Identifiers();
 					}
-					a.add(id);					
+					a.add(id);
 					nextToken();
 					if (token.value != TOKidentifier) {
+						// Issue a creation of an empty import declaration
+						newImport(loc, a, null, aliasid, isstatic);
+						
 						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						break;
 					}

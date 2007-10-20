@@ -1,5 +1,6 @@
 package descent.internal.codeassist;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import descent.core.CompletionProposal;
@@ -8,9 +9,11 @@ import descent.core.IJavaProject;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
+import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionParser;
 import descent.internal.codeassist.impl.Engine;
+import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.util.HashtableOfObject;
@@ -21,7 +24,8 @@ import descent.internal.core.SearchableEnvironment;
  * It contains two public APIs used to call CodeAssist on a given source with
  * a given environment, assisting position and storage (and possibly options).
  */
-public class CompletionEngine extends Engine implements RelevanceConstants {
+public class CompletionEngine extends Engine 
+	implements RelevanceConstants, ISearchRequestor {
 	
 	public static boolean DEBUG = false;
 	public static boolean PERF = false;
@@ -31,6 +35,7 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 	CompletionRequestor requestor;
 	
 	char[] fileName = null;
+	char[] sourceUnitFqn = null;
 	int startPosition, actualCompletionPosition, endPosition, offset;
 	
 	char[] source;
@@ -38,6 +43,8 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 	char[] qualifiedCompletionToken;
 	
 	public HashtableOfObject typeCache;
+	
+	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	
 	/**
 	 * The CompletionEngine is responsible for computing source completions.
@@ -97,6 +104,18 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 			this.fileName = sourceUnit.getFileName();
 			this.actualCompletionPosition = completionPosition; // - 1;
 			this.offset = pos;
+			
+			
+			// Get the sourceUnit's fqn
+			sourceUnitFqn = fileName;
+			int index = CharOperation.lastIndexOf('.', fileName);
+			if (index != -1) {
+				sourceUnitFqn = CharOperation.subarray(this.fileName, 0, index);
+			} else {
+				sourceUnitFqn = Arrays.copyOf(sourceUnitFqn, sourceUnitFqn.length);
+			}
+			CharOperation.replace(sourceUnitFqn, '/', '.');
+			
 			CompletionParser parser = new CompletionParser(AST.D2, source);
 			parser.cursorLocation = completionPosition;
 			
@@ -108,50 +127,60 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 			
 			if (assistNode instanceof CompletionOnModuleDeclaration) {
 				CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
-				complete(node);
+				completeModuleDeclaration(node);
+			} else if (assistNode instanceof CompletionOnImport) {
+				CompletionOnImport node = (CompletionOnImport) assistNode;
+				completeImport(node);
 			} else if (assistNode instanceof CompletionOnArgumentName) {
 				CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
-				complete(node);
+				completeArgumentName(node);
 			}
 		} finally {
 			this.requestor.endReporting();
 		}
 	}
 	
-	private void complete(CompletionOnArgumentName node) {
-		
-	}
-
-	private void complete(CompletionOnModuleDeclaration node) {
+	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {
 		char[] fqn = node.getFQN();
-		char[] fqnBeforeCursor = CharOperation.subarray(fqn, 0, this.actualCompletionPosition - node.getModuleNameStart());
+		char[] fqnBeforeCursor = CharOperation.subarray(fqn, 0, this.actualCompletionPosition - node.getFqnStart());
 		
-		// Remove file extension
-		char[] suggestedModuleName = fileName;
-		int index = CharOperation.lastIndexOf('.', fileName);
-		if (index != -1) {
-			suggestedModuleName = CharOperation.subarray(this.fileName, 0, index);
+		this.startPosition = node.getFqnStart();
+		this.endPosition = node.getFqnEnd();
+		
+		// Also include the next dot, if any
+		if (this.endPosition < this.source.length && this.source[this.endPosition] == '.') {
+			this.endPosition++;
 		}
 		
-		// Replace file separator with .
-		CharOperation.replace(suggestedModuleName, '/', '.');
-		
-		if (CharOperation.prefixEquals(fqnBeforeCursor, suggestedModuleName)) {
-			int start = node.getModuleNameStart();
-			int end = node.getModuleNameEnd();
-			
-			// Also include the next dot, if any
-			if (end < this.source.length && this.source[end] == '.') {
-				end++;
-			}
-			
+		if (CharOperation.prefixEquals(fqnBeforeCursor, sourceUnitFqn)) {
 			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
-			proposal.setCompletion(suggestedModuleName);
-			proposal.setReplaceRange(start, end);
-			proposal.setTokenRange(start, end);
-			proposal.setRelevance(R_EXACT_NAME);
+			proposal.setCompletion(sourceUnitFqn);
+			proposal.setReplaceRange(this.startPosition, this.endPosition);
 			this.requestor.accept(proposal);
 		}
+	}
+	
+	private void completeImport(CompletionOnImport node) {
+		char[] fqn = node.getFQN();
+		char[] fqnBeforeCursor = CharOperation.subarray(fqn, 0, this.actualCompletionPosition - node.getFqnStart());
+		
+		if (fqnBeforeCursor.length == 0) {
+			return;
+		}
+		
+		this.startPosition = node.getFqnStart();
+		this.endPosition = node.getFqnEnd();
+		
+		// Also include the next dot, if any
+		if (this.endPosition < this.source.length && this.source[this.endPosition] == '.') {
+			this.endPosition++;
+		}
+		
+		nameEnvironment.findCompilationUnits(fqnBeforeCursor, this);
+	}
+	
+	private void completeArgumentName(CompletionOnArgumentName node) {
+		
 	}
 
 	protected CompletionProposal createProposal(int kind, int completionOffset) {
@@ -159,6 +188,27 @@ public class CompletionEngine extends Engine implements RelevanceConstants {
 		proposal.nameLookup = this.nameEnvironment.nameLookup;
 		proposal.completionEngine = this;
 		return proposal;
+	}
+
+	public void acceptCompilationUnit(char[] fullyQualifiedName) {
+		if (knownCompilationUnits.containsKey(fullyQualifiedName)
+				|| CharOperation.equals(fullyQualifiedName, this.sourceUnitFqn) ) {
+			return;
+		}
+		
+		knownCompilationUnits.put(fullyQualifiedName, this);
+		
+		CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
+		proposal.setCompletion(fullyQualifiedName);
+		proposal.setReplaceRange(this.startPosition, this.endPosition);
+		this.requestor.accept(proposal);
+	}
+
+	public void acceptPackage(char[] packageName) {
+		
+	}
+
+	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, int modifiers, AccessRestriction accessRestriction) {
 	}
 
 }

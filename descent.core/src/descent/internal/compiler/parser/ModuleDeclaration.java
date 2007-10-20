@@ -44,22 +44,7 @@ public class ModuleDeclaration extends ASTDmdNode {
 	}
 	
 	public char[] getFQN() {
-		// TODO Descent char[] optimize, don't use StringBuilder
-		StringBuilder sb = new StringBuilder();
-		if (packages != null) {
-			for(int i = 0; i < packages.size(); i++) {
-				sb.append(packages.get(i).toCharArray());
-				sb.append('.');
-			}
-		}
-		
-		if (id != null) {
-			sb.append(id.toCharArray());
-		}
-		
-		char[] ret = new char[sb.length()];
-		sb.getChars(0, sb.length(), ret, 0);
-		return ret;	
+		return getFQN(packages, id);
 	}
 
 }

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IMethod;
@@ -29,6 +30,7 @@ public void acceptInitializer(IInitializer initializer);
 public void acceptMemberType(IType type);
 public void acceptMethod(IMethod method);
 public void acceptPackageFragment(IPackageFragment packageFragment);
+public void acceptCompilationUnit(ICompilationUnit compilationUnit);
 public void acceptType(IType type);
 /**
  * Returns <code>true</code> if this IJavaElementRequestor does

@@ -881,6 +881,107 @@ public class NameLookup implements SuffixConstants {
 			}
 		}
 	}
+	
+	/**
+	 * Notifies the given requestor of all compilation units
+	 * (package name + module name) with the
+	 * given name.
+	 * Checks the requestor at regular intervals to see if the
+	 * requestor has canceled. The domain of
+	 * the search is bounded by the <code>IJavaProject</code>
+	 * this <code>NameLookup</code> was obtained from.
+	 *
+	 * @param partialMatch partial name matches qualify when <code>true</code>;
+	 *	only exact name matches qualify when <code>false</code>
+	 */
+	public void seekCompilationUnits(String name, boolean partialMatch, IJavaElementRequestor requestor) {
+/*		if (VERBOSE) {
+			Util.verbose(" SEEKING PACKAGE FRAGMENTS");  //$NON-NLS-1$
+			Util.verbose(" -> name: " + name);  //$NON-NLS-1$
+			Util.verbose(" -> partial match:" + partialMatch);  //$NON-NLS-1$
+		}
+		// TODO Descent optimize and clean up
+*/		if (partialMatch) {
+			String[] splittedName = Util.splitOn('.', name, 0, name.length());
+			String[] splittedNameBefore = new String[splittedName.length - 1];
+			System.arraycopy(splittedName, 0, splittedNameBefore, 0, splittedName.length - 1);
+			
+			Object[][] keys = this.packageFragments.keyTable;
+			for (int i = 0, length = keys.length; i < length; i++) {
+				if (requestor.isCanceled())
+					return;
+				String[] pkgName = (String[]) keys[i];
+				if (pkgName != null && 
+						(splittedNameBefore.length == 0 || 
+								Util.startsWithIgnoreCase(pkgName, splittedNameBefore))) {
+					String[] moduleName = new String[pkgName.length + 1];
+					System.arraycopy(pkgName, 0, moduleName, 0, pkgName.length);
+					
+					Object value = this.packageFragments.valueTable[i];
+					if (value instanceof PackageFragmentRoot) {
+						PackageFragmentRoot root = (PackageFragmentRoot) value;
+						PackageFragment frag = root.getPackageFragment(pkgName);
+						try {
+							for(ICompilationUnit unit : frag.getCompilationUnits()) {
+								moduleName[moduleName.length - 1] = unit.getElementName();
+								if (Util.startsWithIgnoreCase(moduleName, splittedName)) {
+									requestor.acceptCompilationUnit(unit);
+								}
+							}
+							for(ICompilationUnit unit : frag.getClassFiles()) {
+								moduleName[moduleName.length - 1] = unit.getElementName();
+								if (Util.startsWithIgnoreCase(moduleName, splittedName)) {
+									requestor.acceptCompilationUnit(unit);
+								}
+							}
+						} catch (JavaModelException e) {
+							
+						}
+					} else {
+						IPackageFragmentRoot[] roots = (IPackageFragmentRoot[]) value;
+						for (int j = 0, length2 = roots.length; j < length2; j++) {
+							if (requestor.isCanceled())
+								return;
+							PackageFragmentRoot root = (PackageFragmentRoot) roots[j];
+							PackageFragment frag = root.getPackageFragment(pkgName);
+							try {
+								for(ICompilationUnit unit : frag.getCompilationUnits()) {
+									moduleName[moduleName.length - 1] = unit.getElementName();
+									if (Util.startsWithIgnoreCase(moduleName, splittedName)) {
+										requestor.acceptCompilationUnit(unit);
+									}
+								}
+								for(ICompilationUnit unit : frag.getClassFiles()) {
+									moduleName[moduleName.length - 1] = unit.getElementName();
+									if (Util.startsWithIgnoreCase(moduleName, splittedName)) {
+										requestor.acceptCompilationUnit(unit);
+									}
+								}
+							} catch (JavaModelException e) {
+								
+							}		
+						}
+					}
+				}
+			}
+		} else {
+			String[] splittedName = Util.splitOn('.', name, 0, name.length());
+			Object value = this.packageFragments.get(splittedName);
+			if (value instanceof PackageFragmentRoot) {
+				requestor.acceptPackageFragment(((PackageFragmentRoot) value).getPackageFragment(splittedName));
+			} else {
+				IPackageFragmentRoot[] roots = (IPackageFragmentRoot[]) value;
+				if (roots != null) {
+					for (int i = 0, length = roots.length; i < length; i++) {
+						if (requestor.isCanceled())
+							return;
+						PackageFragmentRoot root = (PackageFragmentRoot) roots[i];
+						requestor.acceptPackageFragment(root.getPackageFragment(splittedName));
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Notifies the given requestor of all types (classes and interfaces) in the

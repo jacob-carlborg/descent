@@ -274,5 +274,9 @@ public class Import extends Dsymbol {
 		buf.printf(new String(id.ident) + ";");
 		buf.writenl();
 	}
+	
+	public char[] getFQN() {
+		return getFQN(packages, id);
+	}
 
 }

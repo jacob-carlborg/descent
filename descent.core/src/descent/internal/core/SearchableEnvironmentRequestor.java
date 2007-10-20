@@ -22,6 +22,7 @@ import descent.internal.codeassist.ISearchRequestor;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.env.AccessRestriction;
+import descent.internal.core.util.Util;
 
 /**
  * Implements <code>IJavaElementRequestor</code>, wrappering and forwarding
@@ -84,6 +85,28 @@ public void acceptInitializer(IInitializer initializer) {
  */
 public void acceptPackageFragment(IPackageFragment packageFragment) {
 	this.requestor.acceptPackage(packageFragment.getElementName().toCharArray());
+}
+/**
+ * @see IJavaElementRequestor
+ */
+@Override
+public void acceptCompilationUnit(descent.core.ICompilationUnit compilationUnit) {
+	StringBuilder sb = new StringBuilder();
+	
+	IJavaElement parent = compilationUnit.getParent();
+	if (parent != null && parent.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
+		String elementName = parent.getElementName();
+		if (elementName.length() > 0) {
+			sb.append(elementName);
+			sb.append(".");
+		}
+	}
+	
+	sb.append(Util.getNameWithoutJavaLikeExtension(compilationUnit.getElementName()));
+	
+	char[] fqn = new char[sb.length()]; 
+	sb.getChars(0, sb.length(), fqn, 0);
+	this.requestor.acceptCompilationUnit(fqn);
 }
 /**
  * @see IJavaElementRequestor

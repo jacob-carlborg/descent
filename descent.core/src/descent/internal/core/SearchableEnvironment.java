@@ -121,12 +121,26 @@ public class SearchableEnvironment
 	/**
 	 * Find the packages that start with the given prefix.
 	 * A valid prefix is a qualified name separated by periods
-	 * (ex. java.util).
+	 * (ex. std.stdio).
 	 * The packages found are passed to:
 	 *    ISearchRequestor.acceptPackage(char[][] packageName)
 	 */
 	public void findPackages(char[] prefix, ISearchRequestor requestor) {
 		this.nameLookup.seekPackageFragments(
+			new String(prefix),
+			true,
+			new SearchableEnvironmentRequestor(requestor));
+	}
+	
+	/**
+	 * Find the compilation units that start with the given prefix.
+	 * A valid prefix is a qualified name separated by periods
+	 * (ex. std.stdio).
+	 * The packages found are passed to:
+	 *    ISearchRequestor.acceptCompilationUnit(char[][] fullyQualifiedName)
+	 */
+	public void findCompilationUnits(char[] prefix, ISearchRequestor requestor) {
+		this.nameLookup.seekCompilationUnits(
 			new String(prefix),
 			true,
 			new SearchableEnvironmentRequestor(requestor));

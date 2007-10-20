@@ -78,4 +78,13 @@ public interface ISearchRequestor {
 	 *    The default package is represented by an empty array.
 	 */
 	public void acceptPackage(char[] packageName);
+	
+	/**
+	 * One result of the search consists of a new compilation unit.
+	 *
+	 * NOTE - All compilation unit names are presented in their readable form:
+	 *    Package names are in the form "a.b.c".
+	 *    The default package is represented by an empty array.
+	 */
+	public void acceptCompilationUnit(char[] fullyQualifiedName);
 }
