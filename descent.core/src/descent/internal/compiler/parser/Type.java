@@ -105,29 +105,29 @@ public abstract class Type extends ASTDmdNode {
 		int TMAX = TY.values().length;
 
 		basic = new Type[TMAX];
-		basic[Tvoid.ordinal()] = new TypeBasic(Tvoid);
-		basic[Tint8.ordinal()] = new TypeBasic(Tint8);
-		basic[Tuns8.ordinal()] = new TypeBasic(Tuns8);
-		basic[Tint16.ordinal()] = new TypeBasic(Tint16);
-		basic[Tuns16.ordinal()] = new TypeBasic(Tuns16);
-		basic[Tint32.ordinal()] = new TypeBasic(Tint32);
-		basic[Tuns32.ordinal()] = new TypeBasic(Tuns32);
-		basic[Tint64.ordinal()] = new TypeBasic(Tint64);
-		basic[Tuns64.ordinal()] = new TypeBasic(Tuns64);
-		basic[Tfloat32.ordinal()] = new TypeBasic(Tfloat32);
-		basic[Tfloat64.ordinal()] = new TypeBasic(Tfloat64);
-		basic[Tfloat80.ordinal()] = new TypeBasic(Tfloat80);
-		basic[Timaginary32.ordinal()] = new TypeBasic(Timaginary32);
-		basic[Timaginary64.ordinal()] = new TypeBasic(Timaginary64);
-		basic[Timaginary80.ordinal()] = new TypeBasic(Timaginary80);
-		basic[Tcomplex32.ordinal()] = new TypeBasic(Tcomplex32);
-		basic[Tcomplex64.ordinal()] = new TypeBasic(Tcomplex64);
-		basic[Tcomplex80.ordinal()] = new TypeBasic(Tcomplex80);
-		basic[Tbit.ordinal()] = new TypeBasic(Tbit);
-		basic[Tbool.ordinal()] = new TypeBasic(Tbool);
-		basic[Tchar.ordinal()] = new TypeBasic(Tchar);
-		basic[Twchar.ordinal()] = new TypeBasic(Twchar);
-		basic[Tdchar.ordinal()] = new TypeBasic(Tdchar);
+		basic[Tvoid.ordinal()] = tvoid; // new TypeBasic(Tvoid);
+		basic[Tint8.ordinal()] = tint8; // new TypeBasic(Tint8);
+		basic[Tuns8.ordinal()] = tuns8; //new TypeBasic(Tuns8);
+		basic[Tint16.ordinal()] = tint16; //new TypeBasic(Tint16);
+		basic[Tuns16.ordinal()] = tuns16; //new TypeBasic(Tuns16);
+		basic[Tint32.ordinal()] = tint32; //new TypeBasic(Tint32);
+		basic[Tuns32.ordinal()] = tuns32; //new TypeBasic(Tuns32);
+		basic[Tint64.ordinal()] = tint64; //new TypeBasic(Tint64);
+		basic[Tuns64.ordinal()] = tuns64; //new TypeBasic(Tuns64);
+		basic[Tfloat32.ordinal()] = tfloat32; //new TypeBasic(Tfloat32);
+		basic[Tfloat64.ordinal()] = tfloat64; //new TypeBasic(Tfloat64);
+		basic[Tfloat80.ordinal()] = tfloat80; //new TypeBasic(Tfloat80);
+		basic[Timaginary32.ordinal()] = timaginary32; //new TypeBasic(Timaginary32);
+		basic[Timaginary64.ordinal()] = timaginary64; //new TypeBasic(Timaginary64);
+		basic[Timaginary80.ordinal()] = timaginary80; //new TypeBasic(Timaginary80);
+		basic[Tcomplex32.ordinal()] = tcomplex32; //new TypeBasic(Tcomplex32);
+		basic[Tcomplex64.ordinal()] = tcomplex64; //new TypeBasic(Tcomplex64);
+		basic[Tcomplex80.ordinal()] = tcomplex80; //new TypeBasic(Tcomplex80);
+		basic[Tbit.ordinal()] = tbit; //new TypeBasic(Tbit);
+		basic[Tbool.ordinal()] = tbool; //new TypeBasic(Tbool);
+		basic[Tchar.ordinal()] = tchar; //new TypeBasic(Tchar);
+		basic[Twchar.ordinal()] = twchar; //new TypeBasic(Twchar);
+		basic[Tdchar.ordinal()] = tdchar; //new TypeBasic(Tdchar);
 
 		impcnvResult = new TY[TMAX][];
 		impcnvType1 = new TY[TMAX][];
@@ -822,7 +822,7 @@ public abstract class Type extends ASTDmdNode {
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		if (this.singleton == to.singleton) {
 			return MATCH.MATCHexact;
-		}
+		}		
 		return MATCH.MATCHnomatch;
 	}
 
@@ -922,7 +922,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public Type syntaxCopy() {
-		// TODO semantic
+		Assert.isTrue(false); // assert(0);
 		return this;
 	}
 
@@ -1100,8 +1100,7 @@ public abstract class Type extends ASTDmdNode {
 					m.members.add(t.vtinfo);
 				} else // if in obj generation pass
 				{
-					// TODO semantic
-					// t.vtinfo.toObjFile();
+					Assert.isTrue(false);
 				}
 			}
 		}
@@ -1110,8 +1109,6 @@ public abstract class Type extends ASTDmdNode {
 		e.type = t.vtinfo.type; // do this so we don't get redundant dereference
 		return e;
 	}
-
-	private static final TypeInfoDeclaration[] internalTI = new TypeInfoDeclaration[TY.values().length];
 
 	public Expression getInternalTypeInfo(Scope sc, SemanticContext context) {
 		TypeInfoDeclaration tid;
@@ -1151,10 +1148,10 @@ public abstract class Type extends ASTDmdNode {
 	}
 	
 	private Expression getInternalTypeInfo_Linternal(Scope sc, Type t, SemanticContext context) {
-		TypeInfoDeclaration tid = internalTI[t.ty.ordinal()];
+		TypeInfoDeclaration tid = context.Type_internalTI[t.ty.ordinal()];
 		if (null == tid) {
 			tid = new TypeInfoDeclaration(t, 1, context);
-			internalTI[t.ty.ordinal()] = tid;
+			context.Type_internalTI[t.ty.ordinal()] = tid;
 		}
 		Expression e = new VarExp(Loc.ZERO, tid);
 		e = e.addressOf(sc, context);

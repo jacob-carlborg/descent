@@ -23,7 +23,7 @@ public class SemanticContext {
 
 	// TODO file imports should be selectable in a dialog or something
 	public Map<String, File> fileImports = new HashMap<String, File>();
-
+	
 	public ClassDeclaration ClassDeclaration_object;
 	public ClassDeclaration ClassDeclaration_classinfo;
 	public ClassDeclaration Type_typeinfo;
@@ -53,20 +53,21 @@ public class SemanticContext {
 	public int CompoundStatement_num;
 	public Dsymbol TemplateAliasParameter_sdummy = null;
 	public Expression TemplateValueParameter_edummy = null;
+	public TypeInfoDeclaration[] Type_internalTI = new TypeInfoDeclaration[TY.values().length];
 	
 	public StringTable stringTable;
 
 	public DsymbolTable st;
 	public int muteProblems = 0;
 
-	public SemanticContext(IProblemRequestor problemRequestor, Module module, Global global) {
+	public SemanticContext(IProblemRequestor problemRequestor, Module module,
+			Global global) {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
 		this.stringTable = new StringTable();
-
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
-		
+
 		Module_init();
 		afterParse(module);
 	}
