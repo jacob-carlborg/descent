@@ -24,6 +24,14 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 	}
 
 	public HashtableOfCharArrayAndObject(int size) {
+		init(size);
+	}
+	
+	public void clear() {
+		init(13);
+	}
+	
+	private void init(int size) {
 		this.elementSize = 0;
 		this.threshold = size; // size represents the expected number of elements
 		int extraRoom = (int) (size * 1.75f);

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import descent.core.CompletionProposal;
 import descent.core.CompletionRequestor;
-import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
@@ -22,12 +21,21 @@ import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
-import descent.internal.compiler.parser.DsymbolTable;
+import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.InterfaceDeclaration;
+import descent.internal.compiler.parser.LabelStatement;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.UnionDeclaration;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
@@ -248,15 +256,68 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeGotoStatement(CompletionOnGotoStatement node) {
-		// TODO: a full semantic pass is not needed: optimize
-		doSemantic(this.module);
+		final HashtableOfCharArrayAndObject labelsMap = new HashtableOfCharArrayAndObject();		
+		module.accept(new AstVisitorAdapter() {
+			
+			private FuncDeclaration func;
+			
+			@Override
+			public boolean visit(FuncDeclaration node) {
+				if (inRange(node)) {
+					func = node;
+					labelsMap.clear();
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+			@Override
+			public boolean visit(LabelStatement node) {
+				if (func != null && func.start <= node.start && node.start <= func.start + func.length) {
+					labelsMap.put(node.ident.ident, this);
+				}
+				return true;
+			}
+			
+			@Override
+			public boolean visit(EnumDeclaration node) {
+				return false;
+			}
+			
+			@Override
+			public boolean visit(ClassDeclaration node) {
+				return inRange(node);
+			}
+			
+			@Override
+			public boolean visit(InterfaceDeclaration node) {
+				return inRange(node);
+			}
+			
+			@Override
+			public boolean visit(StructDeclaration node) {
+				return inRange(node);
+			}
+			
+			@Override
+			public boolean visit(UnionDeclaration node) {
+				return inRange(node);
+			}
+			
+			@Override
+			public boolean visit(TemplateDeclaration node) {
+				return inRange(node);
+			}
+			
+			private boolean inRange(ASTDmdNode node) {
+				return node.start <= CompletionEngine.this.actualCompletionPosition &&
+					CompletionEngine.this.actualCompletionPosition <= node.start + node.length;
+			}
+			
+		});
 		
-		DsymbolTable table = node.fd.labtab;
-		if (table == null) {
-			return;
-		}
-		
-		char[][] labels = table.keys();
+		char[][] labels = labelsMap.keys();
 		if (labels != null) {
 			char[] prefix;
 			if (node.ident == null || node.ident.ident == null) {
