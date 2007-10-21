@@ -5,10 +5,14 @@ import java.util.Map;
 
 import descent.core.CompletionProposal;
 import descent.core.CompletionRequestor;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
+import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionParser;
@@ -18,6 +22,10 @@ import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.DsymbolTable;
+import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.util.HashtableOfObject;
@@ -39,6 +47,8 @@ public class CompletionEngine extends Engine
 	IJavaProject javaProject;
 	CompletionParser parser;
 	CompletionRequestor requestor;
+	
+	Module module;
 	
 	char[] fileName = null;
 	char[] sourceUnitFqn = null;
@@ -123,9 +133,10 @@ public class CompletionEngine extends Engine
 			CharOperation.replace(sourceUnitFqn, '/', '.');
 			
 			CompletionParser parser = new CompletionParser(AST.D2, source);
+			parser.filename = this.fileName;
 			parser.cursorLocation = completionPosition;
 			
-			parser.parseModuleObj();
+			this.module = parser.parseModuleObj();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
 			// First the assist node
@@ -141,6 +152,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnArgumentName) {
 					CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
 					completeArgumentName(node);
+				} else if (assistNode instanceof CompletionOnGotoStatement) {
+					CompletionOnGotoStatement node = (CompletionOnGotoStatement) assistNode;
+					completeGotoStatement(node);
 				}
 			}
 			
@@ -158,7 +172,27 @@ public class CompletionEngine extends Engine
 			this.requestor.endReporting();
 		}
 	}
-	
+
+	private void doSemantic(Module module) {
+		Global global = new Global();
+		
+		IPackageFragmentRoot[] roots;
+		try {
+			roots = this.javaProject.getAllPackageFragmentRoots();
+			for(IPackageFragmentRoot root : roots) {
+				if (root.getResource() == null) {
+					global.path.add(root.getPath().toOSString());
+				} else {
+					global.path.add(root.getResource().getLocation().toOSString());
+				}
+			}
+		} catch (JavaModelException e) {
+		}
+		
+		SemanticContext context = new SemanticContext(null, module, global);
+		module.semantic(context);
+	}
+
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {
 		char[] fqn = node.getFQN();
 		char[] fqnBeforeCursor = CharOperation.subarray(fqn, 0, this.actualCompletionPosition - node.getFqnStart());
@@ -211,6 +245,42 @@ public class CompletionEngine extends Engine
 		}
 		
 		findVariableNames(name, node.type, findExcludedNames(node));
+	}
+	
+	private void completeGotoStatement(CompletionOnGotoStatement node) {
+		// TODO: a full semantic pass is not needed: optimize
+		doSemantic(this.module);
+		
+		DsymbolTable table = node.fd.labtab;
+		if (table == null) {
+			return;
+		}
+		
+		char[][] labels = table.keys();
+		if (labels != null) {
+			char[] prefix;
+			if (node.ident == null || node.ident.ident == null) {
+				this.startPosition = this.actualCompletionPosition;
+				this.endPosition = this.actualCompletionPosition;
+				prefix = CharOperation.NO_CHAR;
+			} else {
+				this.startPosition = node.ident.start;
+				this.endPosition = node.ident.start + node.ident.length;
+				prefix = node.ident.ident;
+			}
+			
+			for(char[] label : labels) {
+				if (label != null) {
+					if (CharOperation.prefixEquals(prefix, label, false) && !CharOperation.equals(prefix, label)) {
+						CompletionProposal proposal = this.createProposal(CompletionProposal.LABEL_REF, this.actualCompletionPosition);
+						proposal.setName(label);
+						proposal.setCompletion(label);
+						proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+						CompletionEngine.this.requestor.accept(proposal);
+					}
+				}
+			}
+		}
 	}
 	
 	private char[][] findExcludedNames(CompletionOnArgumentName node) {

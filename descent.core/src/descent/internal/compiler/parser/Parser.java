@@ -4236,7 +4236,7 @@ public class Parser extends Lexer {
 					nextToken();
 				}
 				
-				s = new GotoStatement(loc, ident);
+				s = newGotoStatement(loc, ident);
 			}
 			check(TOKsemicolon);
 			break;
@@ -6959,6 +6959,10 @@ public class Parser extends Lexer {
 	
 	protected Argument newArgument(int storageClass, Type at, IdentifierExp ai, Expression ae) {
 		return new Argument(storageClass, at, ai, ae);
+	}
+	
+	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
+		return new GotoStatement(loc, ident);
 	}
 	
 	/**

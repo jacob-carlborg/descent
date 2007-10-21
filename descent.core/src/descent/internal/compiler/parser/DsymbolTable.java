@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+
 // DMD 1.020
 public class DsymbolTable {
 	
@@ -23,6 +24,13 @@ public class DsymbolTable {
 	
 	public Dsymbol lookup(char[] ident) {
 		return (Dsymbol) map.get(ident);
+	}
+	
+	/**
+	 * Note: null entries may be present in the returned array.
+	 */
+	public char[][] keys() {
+		return map.keys();
 	}
 	
 	@Override

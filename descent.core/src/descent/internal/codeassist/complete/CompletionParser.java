@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
@@ -76,6 +77,20 @@ public class CompletionParser extends Parser {
 			return (Argument) assistNode;
 		} else {
 			return super.newArgument(storageClass, at, ai, ae);
+		}
+	}
+	
+	@Override
+	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
+				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
+		
+			includeExpectations = false;
+			
+			assistNode = new CompletionOnGotoStatement(loc, ident);
+			return (GotoStatement) assistNode;
+		} else {			
+			return super.newGotoStatement(loc, ident);
 		}
 	}
 	

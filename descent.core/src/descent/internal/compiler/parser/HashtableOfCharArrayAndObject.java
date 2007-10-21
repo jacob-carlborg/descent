@@ -125,6 +125,10 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 	public int size() {
 		return elementSize;
 	}
+	
+	public char[][] keys() {
+		return keyTable;
+	}
 
 	@Override
 	public String toString() {
