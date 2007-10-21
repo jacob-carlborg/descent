@@ -2618,6 +2618,14 @@ public class Parser extends Lexer {
 				int saveStart = t.start;
 
 				t = new TypeFunction(arguments, t, varargs, linkage);
+				
+				// Assign parent of arguments
+				if (arguments != null) {
+					for(int i = 0; i < arguments.size(); i++) {
+						arguments.get(i).parentType = (TypeFunction) t;
+					}
+				}
+				
 				if (save == TOKdelegate) {
 					t = new TypeDelegate(t);
 				} else {
@@ -2750,10 +2758,18 @@ public class Parser extends Lexer {
 			}
 
 			int[] pointer2_varargs = { varargs };
-			arguments = parseParameters(pointer2_varargs);
+			arguments = parseParameters(pointer2_varargs);			
 			varargs = pointer2_varargs[0];
 			
 			ta = new TypeFunction(arguments, t, varargs, linkage);
+			
+			// Assign parent of arguments
+			if (arguments != null) {
+				for(int i = 0; i < arguments.size(); i++) {
+					arguments.get(i).parentType = (TypeFunction) ta;
+				}
+			}
+			
 			ta.setSourceRange(t.start, t.length);
 			
 			if (ts != t) {

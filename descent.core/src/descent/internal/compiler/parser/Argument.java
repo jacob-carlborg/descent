@@ -176,6 +176,7 @@ public class Argument extends ASTDmdNode {
 	public Type sourceType;
 	public IdentifierExp ident;
 	public Expression defaultArg, sourceDefaultArg;
+	public TypeFunction parentType; // Added field to keep track of the argument's parent
 
 	public Argument(int storageClass, Type type, IdentifierExp ident,
 			Expression defaultArg) {

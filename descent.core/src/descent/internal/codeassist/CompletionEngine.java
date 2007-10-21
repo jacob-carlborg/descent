@@ -17,7 +17,12 @@ import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.util.HashtableOfObject;
+import descent.internal.core.INamingRequestor;
+import descent.internal.core.InternalNamingConventions;
 import descent.internal.core.SearchableEnvironment;
 
 /**
@@ -194,7 +199,100 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeArgumentName(CompletionOnArgumentName node) {
+		char[] name;
+		if (node.ident == null || node.ident.ident == null) {
+			this.startPosition = this.actualCompletionPosition;
+			this.endPosition = this.actualCompletionPosition;
+			name = CharOperation.NO_CHAR;
+		} else {
+			this.startPosition = node.ident.start;
+			this.endPosition = node.ident.start + node.ident.length;
+			name = node.ident.ident;
+		}
 		
+		findVariableNames(name, node.type, findExcludedNames(node));
+	}
+	
+	private char[][] findExcludedNames(CompletionOnArgumentName node) {
+		TypeFunction parent = node.parentType;
+		if (parent == null || parent.parameters == null) {
+			return CharOperation.NO_CHAR_CHAR;
+		}
+		
+		char[][] excluded = new char[parent.parameters.size() - 1][];
+		for(int i = 0, j = 0; i < parent.parameters.size(); i++) {
+			Argument arg = parent.parameters.get(i);
+			if (arg == node) {
+				continue;
+			}
+			
+			if (arg.ident == null || arg.ident.ident == null) {
+				excluded[j] = CharOperation.NO_CHAR;
+			} else {
+				excluded[j] = arg.ident.ident;
+			}
+			j++;
+		}
+		return excluded;
+	}
+
+	private void findVariableNames(char[] name, Type type, char[][] excludeNames){
+		// compute variable name for non base type
+		final char[] t = name;
+		INamingRequestor namingRequestor = new INamingRequestor() {
+			public void acceptNameWithPrefixAndSuffix(char[] name, boolean isFirstPrefix, boolean isFirstSuffix, int reusedCharacters) {
+				accept(
+						name,
+						(isFirstPrefix ? R_NAME_FIRST_PREFIX : R_NAME_PREFIX) + (isFirstSuffix ? R_NAME_FIRST_SUFFIX : R_NAME_SUFFIX),
+						reusedCharacters);
+			}
+
+			public void acceptNameWithPrefix(char[] name, boolean isFirstPrefix, int reusedCharacters) {
+				accept(name, isFirstPrefix ? R_NAME_FIRST_PREFIX :  R_NAME_PREFIX, reusedCharacters);
+			}
+
+			public void acceptNameWithSuffix(char[] name, boolean isFirstSuffix, int reusedCharacters) {
+				accept(name, isFirstSuffix ? R_NAME_FIRST_SUFFIX : R_NAME_SUFFIX, reusedCharacters);
+			}
+
+			public void acceptNameWithoutPrefixAndSuffix(char[] name,int reusedCharacters) {
+				accept(name, 0, reusedCharacters);
+			}
+			void accept(char[] name, int prefixAndSuffixRelevance, int reusedCharacters){
+				if (CharOperation.prefixEquals(t, name, false)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(t, name);
+					relevance += prefixAndSuffixRelevance;
+					if(reusedCharacters > 0) relevance += R_NAME_LESS_NEW_CHARACTERS;
+					//relevance += computeRelevanceForRestrictions(IAccessRule.K_ACCESSIBLE); // no access restriction for variable name
+					
+					// accept result
+					//CompletionEngine.this.noProposal = false;
+					if(!CompletionEngine.this.requestor.isIgnored(CompletionProposal.VARIABLE_DECLARATION)) {
+						CompletionProposal proposal = CompletionEngine.this.createProposal(CompletionProposal.VARIABLE_DECLARATION, CompletionEngine.this.actualCompletionPosition);
+						//proposal.setSignature(getSignature(typeBinding));
+						//proposal.setPackageName(q);
+						//proposal.setTypeName(displayName);
+						proposal.setName(name);
+						proposal.setCompletion(name);
+						//proposal.setFlags(Flags.AccDefault);
+						proposal.setReplaceRange(CompletionEngine.this.startPosition - CompletionEngine.this.offset, CompletionEngine.this.endPosition - CompletionEngine.this.offset);
+						proposal.setRelevance(relevance);
+						CompletionEngine.this.requestor.accept(proposal);
+					}
+				}
+			}
+		};
+		
+		InternalNamingConventions.suggestArgumentNames(
+				this.javaProject, 
+				CharOperation.NO_CHAR, 
+				InternalNamingConventions.readableName(type), 
+				0, 
+				name, 
+				excludeNames, 
+				namingRequestor);
 	}
 	
 	private void findKeywords(char[] keyword, char[][] choices, boolean canCompleteEmptyToken) {

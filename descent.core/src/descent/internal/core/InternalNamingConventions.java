@@ -21,7 +21,12 @@ import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;
 import descent.internal.codeassist.impl.AssistOptions;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ScannerHelper;
+import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeAArray;
+import descent.internal.compiler.parser.TypeInstance;
+import descent.internal.compiler.parser.TypeSlice;
 
 public class InternalNamingConventions {
 	private static final char[] DEFAULT_NAME = "name".toCharArray(); //$NON-NLS-1$
@@ -302,9 +307,9 @@ public class InternalNamingConventions {
 		boolean previousIsUpperCase = false;
 		boolean previousIsLetter = true;
 		for(int i = sourceName.length - 1 ; i >= 0 ; i--){
-			boolean isUpperCase = ScannerHelper.isUpperCase(sourceName[i]);
+			boolean isUpperCase = ScannerHelper.isUpperCase(sourceName[i]) || i == 0;
 			boolean isLetter = ScannerHelper.isLetter(sourceName[i]);
-			if(isUpperCase && !previousIsUpperCase && previousIsLetter){
+			if(isUpperCase && /* !previousIsUpperCase && */ previousIsLetter){
 				char[] name = CharOperation.subarray(sourceName,i,sourceName.length);
 				if(name.length > 1){
 					if(nameCount == names.length) {
@@ -431,4 +436,85 @@ public class InternalNamingConventions {
 					return false;
 			return true;
 	}
+	
+	/**
+	 * Returns a readable name for the given type.
+	 */
+	public static final char[] readableName(Type type) {
+		StringBuilder sb = new StringBuilder();
+		
+		appendReadableName(type, sb);
+		
+		char[] ret = new char[sb.length()];
+		sb.getChars(0, sb.length(), ret, 0);
+		return ret;
+	}
+	
+	private static final void appendReadableName(Type type, StringBuilder sb) {
+		switch(type.getNodeType()) {
+		case ASTDmdNode.TYPE_A_ARRAY:
+			TypeAArray taa = (TypeAArray) type;			
+			appendUppercaseReadableName(taa.index, sb);			
+			sb.append("To");
+			appendUppercaseReadableName(taa.next, sb);
+			break;
+		case ASTDmdNode.TYPE_BASIC:
+			sb.append(type.toCharArray());
+			break;
+		case ASTDmdNode.TYPE_D_ARRAY:
+			appendReadableName(type.next, sb);
+			if (sb.length() == 0 || sb.charAt(sb.length() - 1) != 's') {
+				sb.append('s');
+			}
+			break;
+		case ASTDmdNode.TYPE_DELEGATE:
+			appendReadableName(type.next, sb);
+			sb.append("Dg");
+			break;
+		case ASTDmdNode.TYPE_DOT_ID_EXP:
+			sb.append(type.toCharArray());
+			break;
+		case ASTDmdNode.TYPE_FUNCTION:
+			appendReadableName(type.next, sb);
+			break;
+		case ASTDmdNode.TYPE_IDENTIFIER:
+			sb.append(type.toCharArray());
+			break;
+		case ASTDmdNode.TYPE_INSTANCE:
+			TypeInstance ti = (TypeInstance) type;
+			sb.append(ti.tempinst.name);
+			break;
+		case ASTDmdNode.TYPE_POINTER:
+			if (type.next.getNodeType() == ASTDmdNode.TYPE_FUNCTION) {
+				appendReadableName(type.next.next, sb);
+				sb.append("Func");
+			} else {
+				sb.append('p');
+				appendUppercaseReadableName(type.next, sb);
+			}
+			break;
+		case ASTDmdNode.TYPE_S_ARRAY:
+			appendReadableName(type.next, sb);
+			if (sb.length() == 0 || sb.charAt(sb.length() - 1) != 's') {
+				sb.append('s');
+			}
+			break;
+		case ASTDmdNode.TYPE_SLICE:
+			appendReadableName(type.next, sb);
+			break;
+		case ASTDmdNode.TYPE_TYPEOF:
+			sb.append("typeof");
+			break;
+		}
+	}
+	
+	private static final void appendUppercaseReadableName(Type type, StringBuilder sb) {
+		StringBuilder sb2 = new StringBuilder();
+		appendReadableName(type, sb2);
+		if (sb2.length() > 0) {
+			sb2.setCharAt(0, Character.toUpperCase(sb2.charAt(0)));
+		}
+		sb.append(sb2);
+	}
+	
 }

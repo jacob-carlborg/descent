@@ -22,6 +22,7 @@ public class CompletionParser extends Parser {
 	public int cursorLocation;
 	private ASTDmdNode assistNode;
 	private List<ICompletionOnKeyword> keywordCompletions;
+	private boolean includeExpectations = true;
 
 	public CompletionParser(int apiLevel, char[] source) {
 		super(apiLevel, source);
@@ -41,6 +42,8 @@ public class CompletionParser extends Parser {
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 		
 		if (start <= cursorLocation && cursorLocation <= end) {
+			includeExpectations = false;
+			
 			assistNode = new CompletionOnModuleDeclaration(packages, module, cursorLocation);
 			return (ModuleDeclaration) assistNode;
 		} else {
@@ -54,6 +57,8 @@ public class CompletionParser extends Parser {
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 	
 		if (start <= cursorLocation && cursorLocation <= end) {
+			includeExpectations = false;
+			
 			assistNode = new CompletionOnImport(loc, packages, module, aliasid, isstatic, cursorLocation);
 			return (Import) assistNode;
 		} else {
@@ -63,7 +68,10 @@ public class CompletionParser extends Parser {
 
 	@Override
 	protected Argument newArgument(int storageClass, Type at, IdentifierExp ai, Expression ae) {
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
+				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
+			includeExpectations = false;
+			
 			assistNode = new CompletionOnArgumentName(storageClass, at, ai, ae);
 			return (Argument) assistNode;
 		} else {
@@ -73,7 +81,14 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected void expect(char[][] toks) {
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen) {
+		// If we are completing already a more important thing, exclude
+		// the keyword completion
+		if (!includeExpectations) {
+			return;
+		}
+		
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen
+				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
 			if (keywordCompletions == null) {
 				keywordCompletions = new ArrayList<ICompletionOnKeyword>();
 			}
