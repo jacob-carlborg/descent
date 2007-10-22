@@ -11,6 +11,7 @@ import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.GotoStatement;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
@@ -20,7 +21,9 @@ import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
+import descent.internal.compiler.parser.VersionSymbol;
 
 public class CompletionParser extends Parser {
 	
@@ -28,6 +31,10 @@ public class CompletionParser extends Parser {
 	private ASTDmdNode assistNode;
 	private List<ICompletionOnKeyword> keywordCompletions;
 	private boolean includeExpectations = true;
+	
+	// Versions found in the source file: useful for suggesting a
+	// version identifier in a CompletionOnVersionCondition
+	public HashtableOfCharArrayAndObject versions;
 
 	public CompletionParser(int apiLevel, char[] source) {
 		super(apiLevel, source);
@@ -153,7 +160,15 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected VersionCondition newVersionCondition(Module module, Loc loc, long level, char[] id) {
-		if (inCompletion() && level == 1 && !(id != null && id.length == 1 && id[0] == '1')) {
+		boolean isId = level == 1 && !(id != null && id.length == 1 && id[0] == '1');
+		if (isId && id != null) {
+			if (versions == null) {
+				versions = new HashtableOfCharArrayAndObject();
+			}
+			versions.put(id, this);
+		}
+		
+		if (inCompletion() && isId) {
 			includeExpectations = false;
 			
 			assistNode = new CompletionOnVersionCondition(module, loc, level, id);
@@ -161,6 +176,17 @@ public class CompletionParser extends Parser {
 		} else {
 			return super.newVersionCondition(module, loc, level, id);
 		}
+	}
+	
+	@Override
+	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp id, Version version) {
+		if (id != null && id.ident != null) {
+			if (versions == null) {
+				versions = new HashtableOfCharArrayAndObject();
+			}
+			versions.put(id.ident, this);
+		}
+		return super.newVersionSymbol(loc, id, version);
 	}
 	
 	private boolean inCompletion() {

@@ -150,7 +150,7 @@ public class CompletionEngine extends Engine
 			}
 			CharOperation.replace(sourceUnitFqn, '/', '.');
 			
-			CompletionParser parser = new CompletionParser(AST.D2, source);
+			parser = new CompletionParser(AST.D2, source);
 			parser.filename = this.fileName;
 			parser.cursorLocation = completionPosition;
 			
@@ -380,17 +380,30 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeVersionCondition(CompletionOnVersionCondition node) {
-		// TODO For now, suggest the predefined versions. Later, visit the file
-		// to see what other versions the user used, and also use the
-		// versions defined in the UI (which doesn't exist yet)
 		char[] name = node.ident == null ? CharOperation.NO_CHAR : node.ident;
 		this.startPosition = this.actualCompletionPosition - name.length;
 		this.endPosition = this.actualCompletionPosition;
+		
+		// Suggest the versions found in the source file
+		HashtableOfCharArrayAndObject versions = parser.versions;
+		if (versions == null) {
+			versions = new HashtableOfCharArrayAndObject();
+		}
+		
+		// And also the predefined
 		for(char[] predefined : VersionCondition.resevered) {
-			if (CharOperation.prefixEquals(name, predefined, false) && !CharOperation.equals(name, predefined)) {
+			versions.put(predefined, this);
+		}
+		
+		for(char[] id : versions.keys()) {
+			if (id == null) {
+				continue;
+			}
+			
+			if (CharOperation.prefixEquals(name, id, false) && !CharOperation.equals(name, id)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
-				proposal.setName(predefined);
-				proposal.setCompletion(predefined);
+				proposal.setName(id);
+				proposal.setCompletion(id);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}

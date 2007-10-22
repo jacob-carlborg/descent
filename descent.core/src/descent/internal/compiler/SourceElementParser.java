@@ -997,6 +997,10 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public void endVisit(Import node) {
+		if (!node.first) {
+			return;
+		}
+		
 		popLevelInAttribDeclarationStack();
 	}
 	

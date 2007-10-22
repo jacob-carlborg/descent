@@ -1062,14 +1062,19 @@ public class Parser extends Lexer {
 				idTokenStart = token.ptr;
 				idTokenLength = token.sourceLen;
 				
-				nextToken();			
+				nextToken();
 				c = newVersionCondition(module, loc, level, id);
 				check(TOKrparen);				
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 				
 				c = newVersionCondition(module, loc, level, id);
-				nextToken();				
+				
+				// For improved syntax error recovery
+				if (token.value != TOKrparen) {
+					nextToken();
+				}
+				nextToken();
 			}			
 		} else {
 			c = newVersionCondition(module, loc, level, id);
@@ -6739,12 +6744,12 @@ public class Parser extends Lexer {
 		if (token.value == TOKint32v) {
 			return new VersionSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new VersionSymbol(loc, newIdentifierExp(), newVersionForCurrentToken());
+			return newVersionSymbol(loc, newIdentifierExp(), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
 	}
-	
+
 	private VoidInitializer newVoidInitializerForToken(Token token) {
 		VoidInitializer voidInitializer = new VoidInitializer(loc);
 		voidInitializer.setSourceRange(token.ptr, token.sourceLen);
@@ -6992,6 +6997,10 @@ public class Parser extends Lexer {
 	
 	protected VersionCondition newVersionCondition(Module module, Loc loc, long level, char[] id) {
 		return new VersionCondition(module, loc, level, id);
+	}
+	
+	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp id, Version version) {
+		return new VersionSymbol(loc, id, version);
 	}
 	
 	/**
