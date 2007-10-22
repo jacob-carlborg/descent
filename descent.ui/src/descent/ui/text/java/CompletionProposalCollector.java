@@ -407,6 +407,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.JAVADOC_BLOCK_TAG:
 			case CompletionProposal.JAVADOC_PARAM_REF:
 				return createJavadocSimpleProposal(proposal);
+			case CompletionProposal.VERSION_REF:
+				return createVersionProposal(proposal);
 			/* TODO JDT UI javadoc
 			case CompletionProposal.JAVADOC_INLINE_TAG:
 				return createJavadocInlineTagProposal(proposal);
@@ -747,6 +749,17 @@ public class CompletionProposalCollector extends CompletionRequestor {
 		int length= getLength(proposal);
 		String label= fLabelProvider.createSimpleLabel(proposal);
 		Image image= getImage(fLabelProvider.createPackageImageDescriptor(proposal));
+		int relevance= computeRelevance(proposal);
+
+		return new JavaCompletionProposal(completion, start, length, image, label, relevance);
+	}
+	
+	private IJavaCompletionProposal createVersionProposal(CompletionProposal proposal) {
+		String completion= String.valueOf(proposal.getCompletion());
+		int start= proposal.getReplaceStart();
+		int length= getLength(proposal);
+		String label= fLabelProvider.createSimpleLabel(proposal);
+		Image image= getImage(fLabelProvider.createVersionImageDescriptor(proposal));
 		int relevance= computeRelevance(proposal);
 
 		return new JavaCompletionProposal(completion, start, length, image, label, relevance);

@@ -629,6 +629,14 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @since 3.2
 	 */
 	public static final int JAVADOC_INLINE_TAG = 20;
+	
+	/**
+	 * Completion is a version identifier.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int VERSION_REF = 21;
 
 	/**
 	 * First valid completion kind.
@@ -642,7 +650,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = JAVADOC_INLINE_TAG;
+	protected static final int LAST_KIND = VERSION_REF;
 	
 	/**
 	 * Kind of completion request.
@@ -1770,6 +1778,9 @@ public final class CompletionProposal extends InternalCompletionProposal {
 				break;
 			case CompletionProposal.JAVADOC_VALUE_REF :
 				buffer.append("JAVADOC_VALUE_REF"); //$NON-NLS-1$
+				break;
+			case CompletionProposal.VERSION_REF:
+				buffer.append("VERSION_REF"); //$NON-NLS-1$
 				break;
 			default :
 				buffer.append("PROPOSAL"); //$NON-NLS-1$

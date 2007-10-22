@@ -232,6 +232,7 @@ public class ParameterGuesser {
 			setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, true);
 			setIgnored(CompletionProposal.METHOD_REF, false);
 			setIgnored(CompletionProposal.PACKAGE_REF, true);
+			setIgnored(CompletionProposal.VERSION_REF, true);
 			setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, true);
 			setIgnored(CompletionProposal.VARIABLE_DECLARATION, true);
 			setIgnored(CompletionProposal.TYPE_REF, true);

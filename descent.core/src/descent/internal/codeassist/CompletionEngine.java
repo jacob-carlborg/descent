@@ -401,7 +401,7 @@ public class CompletionEngine extends Engine
 			}
 			
 			if (CharOperation.prefixEquals(name, id, false) && !CharOperation.equals(name, id)) {
-				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(CompletionProposal.VERSION_REF, this.actualCompletionPosition);
 				proposal.setName(id);
 				proposal.setCompletion(id);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);

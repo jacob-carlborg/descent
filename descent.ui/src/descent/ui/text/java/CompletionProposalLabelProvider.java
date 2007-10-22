@@ -509,6 +509,9 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.JAVADOC_PARAM_REF:
 				descriptor = JavaPluginImages.DESC_OBJS_JAVADOCTAG;
 				break;
+			case CompletionProposal.VERSION_REF:
+				descriptor= JavaPluginImages.DESC_OBJS_VERSION_DECLARATION;
+				break;
 			default:
 				descriptor= null;
 				Assert.isTrue(false);
@@ -541,6 +544,10 @@ public class CompletionProposalLabelProvider {
 
 	ImageDescriptor createPackageImageDescriptor(CompletionProposal proposal) {
 		return decorateImageDescriptor(JavaPluginImages.DESC_OBJS_PACKAGE, proposal);
+	}
+	
+	ImageDescriptor createVersionImageDescriptor(CompletionProposal proposal) {
+		return decorateImageDescriptor(JavaPluginImages.DESC_OBJS_VERSION_DECLARATION, proposal);
 	}
 
 	/**
