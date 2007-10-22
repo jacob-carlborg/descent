@@ -11,6 +11,8 @@ import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
+import descent.internal.codeassist.complete.CompletionOnBreakStatement;
+import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
@@ -22,19 +24,25 @@ import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
+import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LabelStatement;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.UnionDeclaration;
+import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.INamingRequestor;
@@ -162,7 +170,13 @@ public class CompletionEngine extends Engine
 					completeArgumentName(node);
 				} else if (assistNode instanceof CompletionOnGotoStatement) {
 					CompletionOnGotoStatement node = (CompletionOnGotoStatement) assistNode;
-					completeGotoStatement(node);
+					completeGotoBreakOrContinueStatement(node.ident, false /* don't check in loop */);
+				} else if (assistNode instanceof CompletionOnBreakStatement) {
+					CompletionOnBreakStatement node = (CompletionOnBreakStatement) assistNode;
+					completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
+				} else if (assistNode instanceof CompletionOnContinueStatement) {
+					CompletionOnContinueStatement node = (CompletionOnContinueStatement) assistNode;
+					completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
 				}
 			}
 			
@@ -241,21 +255,11 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeArgumentName(CompletionOnArgumentName node) {
-		char[] name;
-		if (node.ident == null || node.ident.ident == null) {
-			this.startPosition = this.actualCompletionPosition;
-			this.endPosition = this.actualCompletionPosition;
-			name = CharOperation.NO_CHAR;
-		} else {
-			this.startPosition = node.ident.start;
-			this.endPosition = node.ident.start + node.ident.length;
-			name = node.ident.ident;
-		}
-		
+		char[] name = computePrefixAndSourceRange(node.ident);
 		findVariableNames(name, node.type, findExcludedNames(node));
 	}
 	
-	private void completeGotoStatement(CompletionOnGotoStatement node) {
+	private void completeGotoBreakOrContinueStatement(IdentifierExp ident, final boolean inLoop) {
 		final HashtableOfCharArrayAndObject labelsMap = new HashtableOfCharArrayAndObject();		
 		module.accept(new AstVisitorAdapter() {
 			
@@ -263,6 +267,25 @@ public class CompletionEngine extends Engine
 			
 			@Override
 			public boolean visit(FuncDeclaration node) {
+				return visitFunc(node);
+			}
+			
+			@Override
+			public boolean visit(UnitTestDeclaration node) {
+				return visitFunc(node);
+			}
+			
+			@Override
+			public boolean visit(InvariantDeclaration node) {
+				return visitFunc(node);
+			}
+			
+			@Override
+			public boolean visit(FuncLiteralDeclaration node) {
+				return visitFunc(node);
+			}
+			
+			private boolean visitFunc(FuncDeclaration node) {
 				if (inRange(node)) {
 					func = node;
 					labelsMap.clear();
@@ -274,40 +297,11 @@ public class CompletionEngine extends Engine
 			
 			@Override
 			public boolean visit(LabelStatement node) {
-				if (func != null && func.start <= node.start && node.start <= func.start + func.length) {
+				if (func != null && func.start <= node.start && node.start <= func.start + func.length
+						&& (!inLoop || isRelevant(node))) {
 					labelsMap.put(node.ident.ident, this);
 				}
 				return true;
-			}
-			
-			@Override
-			public boolean visit(EnumDeclaration node) {
-				return false;
-			}
-			
-			@Override
-			public boolean visit(ClassDeclaration node) {
-				return inRange(node);
-			}
-			
-			@Override
-			public boolean visit(InterfaceDeclaration node) {
-				return inRange(node);
-			}
-			
-			@Override
-			public boolean visit(StructDeclaration node) {
-				return inRange(node);
-			}
-			
-			@Override
-			public boolean visit(UnionDeclaration node) {
-				return inRange(node);
-			}
-			
-			@Override
-			public boolean visit(TemplateDeclaration node) {
-				return inRange(node);
 			}
 			
 			private boolean inRange(ASTDmdNode node) {
@@ -315,21 +309,57 @@ public class CompletionEngine extends Engine
 					CompletionEngine.this.actualCompletionPosition <= node.start + node.length;
 			}
 			
+			private boolean isRelevant(LabelStatement node) {
+				Statement stm = node.statement;
+				while(stm != null) {
+					int type = stm.getNodeType();
+					if (type == ASTDmdNode.WHILE_STATEMENT ||
+						type == ASTDmdNode.DO_STATEMENT ||
+						type == ASTDmdNode.FOR_STATEMENT) {
+						return true;
+					} else if (type == ASTDmdNode.COMPOUND_STATEMENT) {
+						CompoundStatement cs = (CompoundStatement) stm;
+						if (cs.sourceStatements != null && cs.sourceStatements.size() > 0) {
+							stm = cs.sourceStatements.get(0);
+						} else {
+							return false;
+						}
+					} else {
+						return false;
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public boolean visit(EnumDeclaration node) {
+				return false;
+			}			
+			@Override
+			public boolean visit(ClassDeclaration node) {
+				return inRange(node);
+			}			
+			@Override
+			public boolean visit(InterfaceDeclaration node) {
+				return inRange(node);
+			}			
+			@Override
+			public boolean visit(StructDeclaration node) {
+				return inRange(node);
+			}			
+			@Override
+			public boolean visit(UnionDeclaration node) {
+				return inRange(node);
+			}			
+			@Override
+			public boolean visit(TemplateDeclaration node) {
+				return inRange(node);
+			}			
 		});
 		
 		char[][] labels = labelsMap.keys();
 		if (labels != null) {
-			char[] prefix;
-			if (node.ident == null || node.ident.ident == null) {
-				this.startPosition = this.actualCompletionPosition;
-				this.endPosition = this.actualCompletionPosition;
-				prefix = CharOperation.NO_CHAR;
-			} else {
-				this.startPosition = node.ident.start;
-				this.endPosition = node.ident.start + node.ident.length;
-				prefix = node.ident.ident;
-			}
-			
+			char[] prefix = computePrefixAndSourceRange(ident);			
 			for(char[] label : labels) {
 				if (label != null) {
 					if (CharOperation.prefixEquals(prefix, label, false) && !CharOperation.equals(prefix, label)) {
@@ -342,6 +372,20 @@ public class CompletionEngine extends Engine
 				}
 			}
 		}
+	}
+	
+	private char[] computePrefixAndSourceRange(IdentifierExp ident) {
+		char[] prefix;
+		if (ident == null || ident.ident == null) {
+			this.startPosition = this.actualCompletionPosition;
+			this.endPosition = this.actualCompletionPosition;
+			prefix = CharOperation.NO_CHAR;
+		} else {
+			this.startPosition = ident.start;
+			this.endPosition = ident.start + ident.length;
+			prefix = ident.ident;
+		}
+		return prefix;
 	}
 	
 	private char[][] findExcludedNames(CompletionOnArgumentName node) {

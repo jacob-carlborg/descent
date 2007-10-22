@@ -1195,7 +1195,7 @@ public class Parser extends Lexer {
 
 	    InvariantDeclaration invariant = new InvariantDeclaration(loc);
 	    invariant.invariantStart = start;
-	    invariant.fbody = parseStatement(PScurly);
+	    invariant.setFbody(parseStatement(PScurly));
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return invariant;
 	}
@@ -1205,7 +1205,7 @@ public class Parser extends Lexer {
 		nextToken();
 		
 		UnitTestDeclaration unitTest = new UnitTestDeclaration(loc);
-		unitTest.fbody = parseStatement(PScurly);
+		unitTest.setFbody(parseStatement(PScurly));
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return unitTest;
 	}
@@ -4190,7 +4190,7 @@ public class Parser extends Lexer {
 				ident = null;
 			check(TOKsemicolon);
 			
-			s = new BreakStatement(loc, ident);
+			s = newBreakStatement(loc, ident);
 			break;
 		}
 
@@ -4207,7 +4207,7 @@ public class Parser extends Lexer {
 			
 			check(TOKsemicolon);
 			
-			s = new ContinueStatement(loc, ident);
+			s = newContinueStatement(loc, ident);
 			break;
 		}
 
@@ -6127,6 +6127,9 @@ public class Parser extends Lexer {
 		}
 
 		e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+		if (e instanceof FuncExp) {
+			((FuncExp) e).fd.setSourceRange(e.start, e.length);
+		}
 
 		return e;
 	}
@@ -6963,6 +6966,14 @@ public class Parser extends Lexer {
 	
 	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
 		return new GotoStatement(loc, ident);
+	}
+	
+	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
+		return new ContinueStatement(loc, ident);
+	}
+
+	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
+		return new BreakStatement(loc, ident);
 	}
 	
 	/**

@@ -90,8 +90,9 @@ public class VarDeclaration extends Declaration {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, sourceInit);
 		}
 		visitor.endVisit(this);
 	}

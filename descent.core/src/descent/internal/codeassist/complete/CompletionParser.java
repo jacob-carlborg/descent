@@ -6,7 +6,9 @@ import java.util.List;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.Chars;
+import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -91,6 +93,34 @@ public class CompletionParser extends Parser {
 			return (GotoStatement) assistNode;
 		} else {			
 			return super.newGotoStatement(loc, ident);
+		}
+	}
+	
+	@Override
+	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
+				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
+		
+			includeExpectations = false;
+			
+			assistNode = new CompletionOnBreakStatement(loc, ident);
+			return (BreakStatement) assistNode;
+		} else {			
+			return super.newBreakStatement(loc, ident);
+		}
+	}
+	
+	@Override
+	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
+				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
+		
+			includeExpectations = false;
+			
+			assistNode = new CompletionOnContinueStatement(loc, ident);
+			return (ContinueStatement) assistNode;
+		} else {			
+			return super.newContinueStatement(loc, ident);
 		}
 	}
 	
