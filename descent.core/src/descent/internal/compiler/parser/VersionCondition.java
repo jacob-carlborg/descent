@@ -9,13 +9,17 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class VersionCondition extends DVCondition {
 
-	private static final char[][] resevered = {
+	public static final char[][] resevered = {
 			{ 'D', 'i', 'g', 'i', 't', 'a', 'l', 'M', 'a', 'r', 's' },
-			{ 'X', '8', '6' }, { 'X', '8', '6', '_', '6', '4' },
-			{ 'W', 'i', 'n', 'd', 'o', 'w', 's' }, { 'W', 'i', 'n', '3', '2' },
-			{ 'W', 'i', 'n', '6', '4' }, { 'l', 'i', 'n', 'u', 'x' },
+			{ 'X', '8', '6' }, 
+			{ 'X', '8', '6', '_', '6', '4' },
+			{ 'W', 'i', 'n', 'd', 'o', 'w', 's' }, 
+			{ 'W', 'i', 'n', '3', '2' },
+			{ 'W', 'i', 'n', '6', '4' }, 
+			{ 'l', 'i', 'n', 'u', 'x' },
 			{ 'L', 'i', 't', 't', 'l', 'e', 'E', 'n', 'd', 'i', 'a', 'n' },
-			{ 'B', 'i', 'g', 'E', 'n', 'd', 'i', 'a', 'n' }, { 'a', 'l', 'l' },
+			{ 'B', 'i', 'g', 'E', 'n', 'd', 'i', 'a', 'n' }, 
+			{ 'a', 'l', 'l' },
 			{ 'n', 'o', 'n', 'e' }, };
 
 	public static void checkPredefined(Loc loc, IdentifierExp ident,

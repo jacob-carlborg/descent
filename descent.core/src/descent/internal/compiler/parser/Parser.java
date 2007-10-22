@@ -1052,20 +1052,34 @@ public class Parser extends Lexer {
 				id = token.sourceString;
 				idTokenStart = token.ptr;
 				idTokenLength = token.sourceLen;
+				
+				nextToken();			
+				c = newVersionCondition(module, loc, level, id);			
+				check(TOKrparen);
 			} else if (token.value == TOKint32v) {
 				id = token.sourceString;
 				level = token.intValue.longValue();
 				idTokenStart = token.ptr;
-				idTokenLength = token.sourceLen;				
+				idTokenLength = token.sourceLen;
+				
+				nextToken();			
+				c = newVersionCondition(module, loc, level, id);
+				check(TOKrparen);				
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
-			}
-			nextToken();
-			check(TOKrparen);
+				
+				c = newVersionCondition(module, loc, level, id);
+				nextToken();				
+			}			
 		} else {
+			c = newVersionCondition(module, loc, level, id);
+			
 			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
-		c = new VersionCondition(module, loc, level, id);
+		
+		// Don't bring the "c = ..." statement here: it needs to be
+		// created after the identifier for completion parser
+		
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
 		return c;
@@ -6974,6 +6988,10 @@ public class Parser extends Lexer {
 
 	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
 		return new BreakStatement(loc, ident);
+	}
+	
+	protected VersionCondition newVersionCondition(Module module, Loc loc, long level, char[] id) {
+		return new VersionCondition(module, loc, level, id);
 	}
 	
 	/**

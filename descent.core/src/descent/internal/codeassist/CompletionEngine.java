@@ -16,6 +16,7 @@ import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
+import descent.internal.codeassist.complete.CompletionOnVersionCondition;
 import descent.internal.codeassist.complete.CompletionParser;
 import descent.internal.codeassist.complete.ICompletionOnKeyword;
 import descent.internal.codeassist.impl.Engine;
@@ -43,6 +44,7 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
+import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.INamingRequestor;
@@ -177,6 +179,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnContinueStatement) {
 					CompletionOnContinueStatement node = (CompletionOnContinueStatement) assistNode;
 					completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
+				} else if (assistNode instanceof CompletionOnVersionCondition) {
+					CompletionOnVersionCondition node = (CompletionOnVersionCondition) assistNode;
+					completeVersionCondition(node);
 				}
 			}
 			
@@ -370,6 +375,24 @@ public class CompletionEngine extends Engine
 						CompletionEngine.this.requestor.accept(proposal);
 					}
 				}
+			}
+		}
+	}
+	
+	private void completeVersionCondition(CompletionOnVersionCondition node) {
+		// TODO For now, suggest the predefined versions. Later, visit the file
+		// to see what other versions the user used, and also use the
+		// versions defined in the UI (which doesn't exist yet)
+		char[] name = node.ident == null ? CharOperation.NO_CHAR : node.ident;
+		this.startPosition = this.actualCompletionPosition - name.length;
+		this.endPosition = this.actualCompletionPosition;
+		for(char[] predefined : VersionCondition.resevered) {
+			if (CharOperation.prefixEquals(name, predefined, false) && !CharOperation.equals(name, predefined)) {
+				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
+				proposal.setName(predefined);
+				proposal.setCompletion(predefined);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
 			}
 		}
 	}

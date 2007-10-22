@@ -15,10 +15,12 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Loc;
+import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.VersionCondition;
 
 public class CompletionParser extends Parser {
 	
@@ -71,8 +73,7 @@ public class CompletionParser extends Parser {
 
 	@Override
 	protected Argument newArgument(int storageClass, Type at, IdentifierExp ai, Expression ae) {
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
-				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
+		if (inCompletion()) {
 			includeExpectations = false;
 			
 			assistNode = new CompletionOnArgumentName(storageClass, at, ai, ae);
@@ -84,9 +85,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
-				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
-		
+		if (inCompletion()) {		
 			includeExpectations = false;
 			
 			assistNode = new CompletionOnGotoStatement(loc, ident);
@@ -98,9 +97,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
-				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
-		
+		if (inCompletion()) {
 			includeExpectations = false;
 			
 			assistNode = new CompletionOnBreakStatement(loc, ident);
@@ -112,9 +109,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
-				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
-		
+		if (inCompletion()) {
 			includeExpectations = false;
 			
 			assistNode = new CompletionOnContinueStatement(loc, ident);
@@ -132,8 +127,7 @@ public class CompletionParser extends Parser {
 			return;
 		}
 		
-		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen
-				&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot) {
+		if (inCompletion()) {
 			if (keywordCompletions == null) {
 				keywordCompletions = new ArrayList<ICompletionOnKeyword>();
 			}
@@ -155,6 +149,23 @@ public class CompletionParser extends Parser {
 			}
 			keywordCompletions.add(new CompletionOnKeyword(tokValue, toks));
 		}
+	}
+	
+	@Override
+	protected VersionCondition newVersionCondition(Module module, Loc loc, long level, char[] id) {
+		if (inCompletion() && level == 1 && !(id != null && id.length == 1 && id[0] == '1')) {
+			includeExpectations = false;
+			
+			assistNode = new CompletionOnVersionCondition(module, loc, level, id);
+			return (VersionCondition) assistNode;
+		} else {
+			return super.newVersionCondition(module, loc, level, id);
+		}
+	}
+	
+	private boolean inCompletion() {
+		return prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
+			&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot;
 	}
 
 }
