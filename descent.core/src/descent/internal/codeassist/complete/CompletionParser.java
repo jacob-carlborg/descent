@@ -164,7 +164,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	private boolean inCompletion() {
-		return prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr
+		return prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen
 			&& prevToken.value != TOK.TOKdot && prevToken.value != TOK.TOKslice && prevToken.value != TOK.TOKdotdotdot;
 	}
 

@@ -36,8 +36,8 @@ public class CompletionOnImport_Test extends AbstractCompletionTest {
 		createCompilationUnit("foo", "file.d", "");
 		createCompilationUnit("foo.bar", "other.d", "");
 		assertCompletions("foo", "test.d", "import f", 8,
-				CompletionProposal.PACKAGE_REF, "foo.file", 7, 8,
-				CompletionProposal.PACKAGE_REF, "foo.bar.other", 7, 8
+				CompletionProposal.PACKAGE_REF, "foo.bar.other", 7, 8,
+				CompletionProposal.PACKAGE_REF, "foo.file", 7, 8
 				);
 	}
 	
@@ -45,8 +45,8 @@ public class CompletionOnImport_Test extends AbstractCompletionTest {
 		createCompilationUnit("foo", "file.d", "");
 		createCompilationUnit("foo.bar", "other.d", "");
 		assertCompletions("foo", "test.d", "import fO", 9,
-				CompletionProposal.PACKAGE_REF, "foo.file", 7, 9,
-				CompletionProposal.PACKAGE_REF, "foo.bar.other", 7, 9
+				CompletionProposal.PACKAGE_REF, "foo.bar.other", 7, 9,
+				CompletionProposal.PACKAGE_REF, "foo.file", 7, 9
 				);
 	}
 	
