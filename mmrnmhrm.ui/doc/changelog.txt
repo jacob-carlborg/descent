@@ -1,0 +1,52 @@
+= Mmrnmhrm Change Log =
+
+== Mmrnmhrm 0.2.1 development stream (unreleased) ==
+ * Fixed major bug with document syntax highlighting and partitions.
+ * Improved name lookup: statement blocks and enum bodies are now supported correctly (they don't see forward definitions anymore).
+ * Improved Code completion: duplicates or occluded names are no longer presented.
+ * Can now set, view, and remove Descent-compatible breakpoints in Mmrnmhrm's editor (these will work with Descent's debugger).
+ * DDoc text and code completion hovers are now processed and presented as HTML instead of raw characters, thanks to Ary Mazana's Descent DDoc parser. ([http://svn.dsource.org/projects/descent/downloads/images/mmrnmhrm_html_ddoc_hover.png pic])
+ * Fixed some Neo AST bugs.
+ * Minor builder changes (builder still work in progress).
+
+== Mmrnmhrm 0.2.0 (2007-09-18) ==
+
+ * Major rewrite of Mmrnmhrm to use the DTLK framework.
+ * Huge Model improvements:
+  * Rich JDT-like project model, (with build path support for source and zip folders, local and external libraries, build path variables and containers, build path access rules, as well as UI boilerplate code for build path management and navigation)
+  * Supports caching and indexing (improved performance in large projects)
+  * Supports resource delta processing (no more need for manual refreshing)
+  * Added support for DMD+Phobos install location and Standard Library
+ * Updated the parser to latest Descent parser (now supports D 2.0)
+ * Added editor folding
+ * Added JDT-like Quick Outline
+ * Added JDT-like Open Type Dialog
+ * Selections in selective imports no longer considered definitions, they are now considered references. This behavior is now according to the spec.
+ * Added special code completion context for module names in imports (completion shows available modules for importing).
+ * Added special code completion context for name selections in selective imports (completion shows available names for selection).
+ * Added initial semantic search: 
+   * Search for definitions based on a text pattern.
+   * Search for all references to a given definition.
+ * Added very basic builder support (using BUD (http://www.dsource.org/projects/build))
+ * Added very basic launch support (debugging not supported)
+
+== Mmrnmhrm 0.1 - (2007-08-17) ==
+Initial public release 
+
+ * New Project Wizard  
+ * Very basic D Project Model (src-folders only, uncached, no resource listening)
+ * Project Configuration Page
+ * D Editor:
+  * Syntax Highlighting
+  * Content Outline
+ * Syntax Highlighting configuration page
+ * Find Definition: Locates any definition unit: Module, class, struct/union, variable, function parameter, template, template parameter, alias, typedef, named enums, enum members, unnamed enum members, named mixins, import aliases, import selections. Unsupported:
+   * Searching inside unnamed mixins, and the scope of the with() statement.
+   * Special reference targets: goto labels, version/debug identifiers.
+   * Most expression reference nodes (including function calls).
+   * Special references (new, delete, this, super).
+   * Some native references (int, void, arrays, functions, etc.).
+   * Function or template overload resolution (if there are several matches, lists all homonyms).
+ * Basic Code Completion
+   * with some minor syntax recovery
+ * An AST Viewer (for IDE debugging purposes only)
