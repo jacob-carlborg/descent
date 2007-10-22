@@ -17,7 +17,7 @@ int ix;
 class FooBar : Foo {
 	intum foobarvar;
 	
-	void func(int a, int);
+	void func();
 
 	void test1() {
 		f/+@CC1+/ // non qualified ; recovery

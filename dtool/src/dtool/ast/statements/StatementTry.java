@@ -57,10 +57,10 @@ public class StatementTry extends Statement {
 			return null;
 		}
 		
-		//@Override
-		public IScope getAdaptedScope() {
-			return this;
+		public boolean hasSequentialLookup() {
+			return false;
 		}
+
 	}
 
 	public IStatement body;

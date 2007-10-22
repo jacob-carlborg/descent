@@ -229,16 +229,7 @@ public abstract class AbstractCompletionProposal implements
 		return fReplacementString;
 	}
 	
-	private static final class ControlCreator extends AbstractReusableInformationControlCreator {
 
-		@SuppressWarnings("restriction")
-		@Override
-		public IInformationControl doCreateInformationControl(Shell parent) {
-			return new org.eclipse.jface.internal.text.html.BrowserInformationControl(
-					parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
-		}
-	}
-	
 	/** Returns the style information for displaying HTML (Javadoc) content. */
 	protected String getCSSStyles() {
 		if (fgCSSStyles == null) {
@@ -261,6 +252,14 @@ public abstract class AbstractCompletionProposal implements
 		return fCreator;
 	}
 
+	private static final class ControlCreator extends AbstractReusableInformationControlCreator {
+		@SuppressWarnings("restriction")
+		@Override
+		public IInformationControl doCreateInformationControl(Shell parent) {
+			return new org.eclipse.jface.internal.text.html.BrowserInformationControl(
+					parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
+		}
+	}
 
 	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
 		//if (getProposalInfo() != null) {

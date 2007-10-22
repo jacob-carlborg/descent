@@ -8,7 +8,7 @@ import mmrnmhrm.org.eclipse.dltk.ui.preferences.AbstractScriptEditorColoringConf
 import mmrnmhrm.ui.text.DeeDocumentSetupParticipant;
 import mmrnmhrm.ui.text.DeePartitions;
 import mmrnmhrm.ui.text.DeeSimpleSourceViewerConfiguration;
-import mmrnmhrm.ui.text.color.DeeColorConstants;
+import mmrnmhrm.ui.text.color.IDeeColorConstants;
 
 import org.eclipse.dltk.internal.ui.editor.ScriptSourceViewer;
 import org.eclipse.dltk.ui.preferences.IPreferenceConfigurationBlock;
@@ -31,23 +31,23 @@ public class DeeSourceColoringConfigurationBlock extends
 
 	private static final String[][] fSyntaxColorListModel = new String[][] {
 			{ "Comment",
-				DeeColorConstants.DEE_COMMENT, sDocumentationCategory },
+				IDeeColorConstants.DEE_COMMENT, sDocumentationCategory },
 			{ "Doc Comment",
-				DeeColorConstants.DEE_DOCCOMMENT, sDocumentationCategory },
+				IDeeColorConstants.DEE_DOCCOMMENT, sDocumentationCategory },
 				
 				
 				{ "Keywords",
-					DeeColorConstants.DEE_KEYWORD, sCoreCategory },
+					IDeeColorConstants.DEE_KEYWORD, sCoreCategory },
 				{ "Basic Types",
-					DeeColorConstants.DEE_STRING, sCoreCategory },
+					IDeeColorConstants.DEE_STRING, sCoreCategory },
 				{ "Literals",
-					DeeColorConstants.DEE_LITERALS, sCoreCategory },
+					IDeeColorConstants.DEE_LITERALS, sCoreCategory },
                 { "Strings",
-					DeeColorConstants.DEE_STRING, sCoreCategory },
+					IDeeColorConstants.DEE_STRING, sCoreCategory },
                 { "Operators",
-					DeeColorConstants.DEE_OPERATORS, sCoreCategory },
+					IDeeColorConstants.DEE_OPERATORS, sCoreCategory },
 				{ "Default",
-					DeeColorConstants.DEE_DEFAULT, sCoreCategory },							
+					IDeeColorConstants.DEE_DEFAULT, sCoreCategory },							
 			};
 	
 

@@ -66,6 +66,10 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public boolean hasSequentialLookup() {
+		return true;
+	}
 
 	@SuppressWarnings("unchecked")
 	public Iterator<EnumMember> getMembersIterator() {

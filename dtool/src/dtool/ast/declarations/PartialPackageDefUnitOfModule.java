@@ -34,9 +34,9 @@ public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 	@Override
 	public String toStringAsElement() {
 		if(module != null)
-			return getName() + "." + module.toStringAsElement();
+			return getName() /*+ "." + module.toStringAsElement()*/;
 		else {
-			return getName() + "." + moduleRef.module;
+			return getName() /*+ "." + moduleRef.module*/;
 		}
 	}
 

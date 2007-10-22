@@ -5,14 +5,12 @@ import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.ast.ASTNeoNode;
-import dtool.refmodel.IScope;
-import dtool.refmodel.IScopeAdaptable;
 import dtool.refmodel.IScopeNode;
 
 /**
  * Abstract class for all AST elements that define a new named entity.
  */
-public abstract class DefUnit extends ASTNeoNode implements	IScopeAdaptable {
+public abstract class DefUnit extends ASTNeoNode {
 	
 
 	static public enum EArcheType {
@@ -91,11 +89,6 @@ public abstract class DefUnit extends ASTNeoNode implements	IScopeAdaptable {
 	 * in the DefUnit node, but on other cases the scope is somewhere else.
 	 * May be null if the scope is not found. */
 	public abstract IScopeNode getMembersScope();
-
-	//@Override
-	public IScope getAdaptedScope() {
-		return getMembersScope();
-	}
 	
 	@Override
 	public String toStringAsElement() {

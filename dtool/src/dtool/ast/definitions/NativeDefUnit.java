@@ -15,6 +15,7 @@ import dtool.refmodel.IScopeNode;
 
 public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, IScopeNode {
 
+	/** A module like class, contained all native defunits. */
 	public static class NativesScope implements IScope {
 
 		public NativesScope() {
@@ -28,15 +29,15 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 		public IScope getModuleScope() {
 			return this;
 		}
-		
-		//@Override
-		public IScope getAdaptedScope() {
-			return this;
-		}
 
 		//@Override
 		public List<IScope> getSuperScopes() {
 			return null;
+		}
+		
+		//@Override
+		public boolean hasSequentialLookup() {
+			return false;
 		}
 		
 		@Override
@@ -82,6 +83,10 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 	
 	@Override
 	public abstract IScopeNode getMembersScope();
+	
+	public boolean hasSequentialLookup() {
+		return false;
+	}
 	
 	//public abstract IScope getSuperScope();
 

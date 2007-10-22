@@ -106,6 +106,10 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		return null;
 	}
 	
+	public boolean hasSequentialLookup() {
+		return false;
+	}
+	
 
 	public Iterator<IFunctionParameter> getMembersIterator() {
 		return params.iterator();

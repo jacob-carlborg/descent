@@ -150,10 +150,18 @@ public class Module extends DefUnit implements IScopeNode {
 		return this;
 	}
 	
+	//@Override
 	public List<IScope> getSuperScopes() {
 		return null;
 	}
+	
+	//@Override
+	public boolean hasSequentialLookup() {
+		return false;
+	}
 
+
+	//@Override
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(members).iterator();
 	}

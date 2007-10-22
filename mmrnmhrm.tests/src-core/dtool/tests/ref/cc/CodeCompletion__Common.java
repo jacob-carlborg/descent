@@ -5,6 +5,7 @@ import static melnorme.miscutil.Assert.assertNotNull;
 import static melnorme.miscutil.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -60,11 +61,16 @@ public class CodeCompletion__Common {
 		
 		final ArrayList<DefUnit> results;
 		results = new ArrayList<DefUnit>();
+		//LinkedList<DefUnit> list;
 		
 		IDefUnitMatchAccepter defUnitAccepter = new IDefUnitMatchAccepter() {
 			public void accept(DefUnit defUnit, PrefixSearchOptions searchOptions) {
 				results.add(defUnit);
-			};
+			}
+
+			public Iterator<DefUnit> getResultsIterator() {
+				return results.iterator();
+			}
 			
 		};
 		
@@ -82,14 +88,15 @@ public class CodeCompletion__Common {
 	
 	protected static void checkProposals(int repOffset, int repLen, int prefixLen,
 			ArrayList<DefUnit> results, String... expectedProposals) {
-		boolean[] proposalsMatched = new boolean[expectedProposals.length];
+		int expectedLength = expectedProposals.length;
+		boolean[] proposalsMatched = new boolean[expectedLength];
 
-		assertTrue(results.size() == expectedProposals.length, 
-				"Size mismatch, expected: "+expectedProposals.length
+		assertTrue(results.size() == expectedLength, 
+				"Size mismatch, expected: " + expectedLength
 				+" got: "+ results.size());
 		
 		for (int i = 0; i < results.size(); i++) {
-			String defName = results.get(i).getName();
+			String defName = results.get(i).toStringAsElement();
 
 			String repStr;
 			// Find this proposal in the expecteds
@@ -100,7 +107,8 @@ public class CodeCompletion__Common {
 				if(defName.substring(prefixLen).equals(repStr))
 					break;
 
-				if(j == expectedProposals.length-1)
+				// if end of cicle
+				if(j == expectedLength-1)
 					assertFail("Got Unmatched proposal:"+defName);
 				
 			}

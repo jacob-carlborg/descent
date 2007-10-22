@@ -14,6 +14,7 @@ import dtool.ast.references.ReferenceConverter;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
+import static melnorme.miscutil.Assert.assertFail;
 import static melnorme.miscutil.Assert.assertNotNull;
 
 public class FunctionParameter extends DefUnit implements IFunctionParameter {
@@ -27,9 +28,10 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 		setSourceRange(elem);
 		
 		
-		if(elem.type instanceof TypeBasic && ((TypeBasic)elem.type).ty.name == null)
+		if(elem.type instanceof TypeBasic && ((TypeBasic)elem.type).ty.name == null) {
+			assertFail();
 			this.type = null;
-		else 
+		} else 
 			this.type = ReferenceConverter.convertType(elem.type);
 		assertNotNull(this.type);
 		this.storageClass = elem.storageClass;

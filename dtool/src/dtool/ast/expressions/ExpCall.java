@@ -44,7 +44,7 @@ public class ExpCall extends Expression {
 			return Collections.singleton(targetDefUnit);
 		}
 		
-		DefUnitSearch search = new DefUnitSearch("opCall", this);
+		DefUnitSearch search = new DefUnitSearch("opCall", null);
 		ReferenceResolver.findDefUnitInScope(defUnit.getMembersScope(), search);
 		for (Iterator<DefUnit> iter = search.getDefUnits().iterator(); iter.hasNext();) {
 			DefUnit defOpCall = iter.next();

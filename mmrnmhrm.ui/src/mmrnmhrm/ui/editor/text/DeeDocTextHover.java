@@ -4,7 +4,6 @@ import melnorme.lang.ui.EditorUtil;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -19,7 +18,7 @@ import dtool.ast.references.Reference;
 /** 
  *  TODO Learn more about DefaultTextHover
  */
-public class DeeTextHover extends AbstractTextHover implements ITextHoverExtension {
+public class DeeDocTextHover extends AbstractTextHover {
 
 	public static class NodeRegion implements IRegion {
 
@@ -38,7 +37,7 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 		}
 	}
 	
-	public DeeTextHover(ISourceViewer sourceViewer, ITextEditor textEditor) {
+	public DeeDocTextHover(ISourceViewer sourceViewer, ITextEditor textEditor) {
 		super(sourceViewer);
 		Assert.isNotNull(textEditor);
 		this.fEditor = textEditor;
@@ -92,8 +91,9 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 		}
 		if(info != null)
 			return HoverUtil.getCompleteHoverInfo(info, getCSSStyles());
-
+		
 		return null;
 	}
+
 
 }

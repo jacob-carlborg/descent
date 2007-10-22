@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
+import descent.core.dom.CompilationUnitResolver;
 
 
 /**
@@ -101,7 +102,7 @@ public class StandardLibraryHelper {
 					TypeInfo_Tuple = (ClassDeclaration) symbol;
 				}
 			}
-			//CompilationUnitResolver.resolve(module);
+			CompilationUnitResolver.resolve(module);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -41,6 +41,10 @@ public class OperationsManager {
 		};
 		return get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
 	}
+	
+	public static boolean executeSimple(ISimpleRunnable op, String opName) {
+		return get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
+	}
 
 
 	public void instanceDoOperation(String opName, ISimpleRunnable op) {
@@ -48,6 +52,11 @@ public class OperationsManager {
 	}
 	
 	public boolean doOperation(String opName, Shell shell, ISimpleRunnable op) {
+		return doOperation(opName, shell, op, true);
+	}
+	
+	public boolean doOperation(String opName, Shell shell, ISimpleRunnable op,
+			boolean handleRuntimeExceptions) {
 		this.opName = opName;
 		aboutToDoOperation();
 		
@@ -59,6 +68,11 @@ public class OperationsManager {
 			return false;
 		} catch(RuntimeException re) {
 			opResult = IStatus.ERROR;
+			if(handleRuntimeExceptions) {
+				ExceptionHandler.handle(re, opName, 
+						"Program Error (see log for more details)");
+				return false;
+			}
 			throw re;
 		} 
 		
@@ -104,6 +118,9 @@ public class OperationsManager {
 			return;
 		
 		MessageDialog.openError(shell, title, message);	}
+
+
+
 
 
 

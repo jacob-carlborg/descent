@@ -5,8 +5,8 @@ import java.util.Map;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
 import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector;
-import mmrnmhrm.ui.editor.text.DeeTextHover;
-import mmrnmhrm.ui.text.color.DeeColorConstants;
+import mmrnmhrm.ui.editor.text.DeeDocTextHover;
+import mmrnmhrm.ui.text.color.IDeeColorConstants;
 
 import org.eclipse.dltk.internal.ui.editor.EditorUtility;
 import org.eclipse.dltk.internal.ui.editor.ScriptSourceViewer;
@@ -56,11 +56,11 @@ public class DeeSourceViewerConfiguration extends
 	protected void initializeScanners() {
 		fCodeScanner = new DeeCodeScanner(getColorManager(), fPreferenceStore);
 		fStringScanner = new SingleTokenScriptScanner(getColorManager(),
-				fPreferenceStore, DeeColorConstants.DEE_STRING);
+				fPreferenceStore, IDeeColorConstants.DEE_STRING);
 		fCommentScanner = new SingleTokenScriptScanner(getColorManager(),
-				fPreferenceStore, DeeColorConstants.DEE_COMMENT);
+				fPreferenceStore, IDeeColorConstants.DEE_COMMENT);
 		fDocScanner = new SingleTokenScriptScanner(getColorManager(),
-				fPreferenceStore, DeeColorConstants.DEE_DOCCOMMENT);
+				fPreferenceStore, IDeeColorConstants.DEE_DOCCOMMENT);
 	}
 
 	
@@ -132,7 +132,7 @@ public class DeeSourceViewerConfiguration extends
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer,
 			String contentType, int stateMask) {
-		return new DeeTextHover(sourceViewer, getEditor());
+		return new DeeDocTextHover(sourceViewer, getEditor());
 	}
 	
 	@Override @SuppressWarnings("unchecked")

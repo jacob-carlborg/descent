@@ -6,9 +6,12 @@ import java.util.List;
 import descent.internal.compiler.parser.ast.IASTNode;
 
 /**
- * Gives access to the scope's DefUnits, and to super scopes. 
+ * A scope is a list of declarations and or statements.
+ * Some of those declarations may be DefUnits.
+ * A scope may have several super scopes, and has exactly one outer scope.
+ * A scope may be a statement block, which has different lookup rules. 
  */
-public interface IScope extends IScopeAdaptable {
+public interface IScope {
 
 
 	/** Gets all members of this scope, DefUnit or not. 
@@ -23,6 +26,12 @@ public interface IScope extends IScopeAdaptable {
 	/** Gets the module of the scope. Cannot be null. */
 	IScope getModuleScope();
 	
+	/** Returns whether this scope has a sequential lookup, 
+	 * such as statement scopes. */
+	boolean hasSequentialLookup();
+	
 	/** For UI printing */
 	String toStringAsElement();
+
+
 }

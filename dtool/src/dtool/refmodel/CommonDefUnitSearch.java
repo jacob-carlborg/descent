@@ -26,23 +26,31 @@ public abstract class CommonDefUnitSearch {
 	
 
 	/** Flag for stop searching when suitable matches are found. */
-	protected boolean findOnlyOne;
+	protected final boolean findOnlyOne;
 	/** The scope where the reference is located. 
 	 * Used for protection access restrictions. */
-	protected IScopeNode refScope;
-
+	protected final IScopeNode refScope;
+	/** The offset of the reference. 
+	 * Used to check availability in statement scopes. */
+	protected final int refOffset;
 	/** Cached value of the reference's module scope. */
 	protected IScope refModuleScope; 
 	/** The scopes that have already been searched */
 	protected ArrayList<IScope> searchedScopes;
 
 
-	
-	public CommonDefUnitSearch(IScopeNode refScope) {
-		this.searchedScopes = new ArrayList<IScope>(4);
-		this.refScope = refScope;
+	public CommonDefUnitSearch(IScopeNode refScope, int refOffset) {
+		this(refScope, refOffset, false);
 	}
 	
+	public CommonDefUnitSearch(IScopeNode refScope, int refOffset, boolean findOneOnly) { 
+		this.searchedScopes = new ArrayList<IScope>(4);
+		this.refScope = refScope;
+		this.refOffset = refOffset;
+		this.findOnlyOne = findOneOnly;
+	}
+	
+
 	/** Return whether we have already search the given scope or not. */
 	public boolean hasSearched(IScope scope) {
 		if(searchedScopes.contains(scope))

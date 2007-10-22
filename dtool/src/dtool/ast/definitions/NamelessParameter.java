@@ -11,6 +11,11 @@ import dtool.ast.references.ReferenceConverter;
 
 import static melnorme.miscutil.Assert.assertNotNull;
 
+
+/** 
+ * A nameless function parameter, such as in: <br>
+ * <code> void func(int, int); </code>
+ */
 public class NamelessParameter extends ASTNeoNode implements IFunctionParameter {
 
 	public final Reference type;

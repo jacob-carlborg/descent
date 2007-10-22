@@ -28,7 +28,7 @@ public class RefTemplateInstance extends CommonRefSingle {
 		Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
 		Assert.isTrue(tplIdent.ident != null);
 		this.name = new String(tplIdent.ident);
-		if (this.tiargs == null)
+		if (tiargs == null)
 			this.tiargs = ASTNeoNode.NO_ELEMENTS;
 		else
 			this.tiargs = DescentASTConverter.convertMany(tiargs);

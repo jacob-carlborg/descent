@@ -1,6 +1,9 @@
 package dtool.refmodel;
 
 import static melnorme.miscutil.Assert.assertFail;
+import static melnorme.miscutil.Assert.assertNotNull;
+
+import java.util.Iterator;
 
 import org.eclipse.dltk.core.ISourceModule;
 
@@ -37,8 +40,9 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 	private IDefUnitMatchAccepter defUnitAccepter;
 
 	public PrefixDefUnitSearch(PrefixSearchOptions searchOptions,
+			IScopeNode refScope, int refOffset,
 			IDefUnitMatchAccepter defUnitAccepter) {
-		super(null);
+		super(refScope, refOffset);
 		this.searchOptions = searchOptions;
 		this.defUnitAccepter = defUnitAccepter;
 	}
@@ -60,11 +64,24 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 	
 	@Override
 	public void addMatch(DefUnit defUnit) {
-		defUnitAccepter.accept(defUnit, searchOptions);
+		if(notOccluded(defUnit))
+			defUnitAccepter.accept(defUnit, searchOptions);
 	}
 	
+	public boolean notOccluded(DefUnit newDefUnit) {
+		Iterator<DefUnit> iter = defUnitAccepter.getResultsIterator();
+		while (iter.hasNext()) {
+			DefUnit	defunit = iter.next();
+			if(defunit.toStringAsElement().equals(newDefUnit.toStringAsElement()))
+				return false;
+		}
+		return true;
+	};
+
 	public static interface IDefUnitMatchAccepter {
 		void accept(DefUnit defUnit, PrefixSearchOptions searchOptions);
+
+		Iterator<DefUnit> getResultsIterator();
 	}
 
 	public static String doCompletionSearch(final int offset,
@@ -110,12 +127,16 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		/* ============================================== */
 		// : Do actual completion search
 		
-		PrefixSearchOptions searchOptions = new PrefixSearchOptions();
-		PrefixDefUnitSearch search = new PrefixDefUnitSearch(searchOptions, defUnitAccepter);
 		
 		ASTNeoNode node = ASTNodeFinder.findElement(neoModule, offset);
+		assertNotNull(node);
 		session.invokeNode = node;
-		search.refScope = NodeUtil.getScopeNode(node);
+		PrefixSearchOptions searchOptions = new PrefixSearchOptions();
+		IScopeNode refScope = NodeUtil.getScopeNode(node);
+		PrefixDefUnitSearch search;
+		search = new PrefixDefUnitSearch(searchOptions,
+				refScope, offset, defUnitAccepter);
+
 		
 		if(node instanceof NamedReference)  {
 			NamedReference namedRef = (NamedReference) node;
@@ -123,8 +144,8 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 			if(node instanceof RefIdentifier) {
 				RefIdentifier refIdent = (RefIdentifier) node;
 				if(!parserAdapter.isQualifiedDotFixSearch) {
-					setupPrefixedSearch2(searchOptions, 
-							offset, refIdent.getOffset(), refIdent.name);
+					setupPrefixedSearch(searchOptions, offset, 
+							refIdent.getOffset(), refIdent.name);
 				}
 			} else if(node instanceof CommonRefQualified) {
 				//CommonRefQualified refQual = (CommonRefQualified) node;
@@ -136,17 +157,19 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 				int idEndPos = refTpl.getStartPos() + refTpl.name.length();
 				
 				if(offset <= idEndPos) {
-					setupPrefixedSearch2(searchOptions, 
-							offset, refTpl.getOffset(), refTpl.name);
+					setupPrefixedSearch(searchOptions, offset, 
+							refTpl.getOffset(), refTpl.name);
 				} else if(lastToken.value == TOK.TOKnot) {
 					return "Invalid Context:" + lastToken;
 				}
 			} else if(node instanceof RefModule) {
 				RefModule refMod = (RefModule) node;
-				setupPrefixedSearch2(searchOptions, offset, refMod.getOffset(), refMod.toStringAsElement());
+				setupPrefixedSearch(searchOptions, offset, 
+						refMod.getOffset(), refMod.toStringAsElement());
 			} else if (node instanceof RefImportSelection) {
 				RefImportSelection refImpSel = (RefImportSelection) node;
-				setupPrefixedSearch2(searchOptions, offset, refImpSel.getOffset(), refImpSel.name);
+				setupPrefixedSearch(searchOptions, offset, 
+						refImpSel.getOffset(), refImpSel.name);
 			} else {
 				assertFail();
 			}
@@ -157,9 +180,11 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 			return "Don't know how to complete for node: "+node+"(TODO)";
 		}
 		
-		// Determine a scope for an unprefix search
+		// Since picked node was not a reference,
+		// determine appropriate scope search parameters
 		IScopeNode scope;
 		while(true) {
+			assertNotNull(node);
 			scope = isValidCompletionScope(node);
 			if(scope != null)
 				break;
@@ -174,7 +199,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		return null;
 	}
 
-	private static void setupPrefixedSearch2(PrefixSearchOptions searchOptions, 
+	private static void setupPrefixedSearch(PrefixSearchOptions searchOptions, 
 			final int offset, int nameOffset, String name) {
 		int prefixLen = offset - nameOffset; 
 		searchOptions.prefixLen = prefixLen;

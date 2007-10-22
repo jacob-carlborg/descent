@@ -22,17 +22,17 @@ public class CodeCompletion_DefUnitsTest extends CodeCompletion__Common {
 	
 	@Test
 	public void test1() throws Exception {
-		ccTester.testComputeProposals(576, 0, 
+		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC1+/"), 0, 
 				"IfTypeDefUnit",
 				"parameter",
-				"func", 
+				"func(asdf.qwer parameter)", 
 				"Class",
 				
 				"sampledefs",
 				"Alias",
 				"Enum",
 				"Interface",
-				"StructXXX",
+				"Struct",
 				"Typedef",
 				"Union",
 				"variable",
@@ -51,7 +51,7 @@ public class CodeCompletion_DefUnitsTest extends CodeCompletion__Common {
 
 	@Test
 	public void test2() throws Exception {
-		ccTester.testComputeProposals(622, 1, 
+		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC2+/"), 1, 
 				"numMemberA", "numMemberB"
 			);
 	}

@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import dtool.ast.declarations.PartialPackageDefUnit;
 import dtool.ast.definitions.DefUnit;
-import dtool.ast.expressions.Resolvable;
+import dtool.ast.references.Reference;
 
 /**
  * Normal DefUnit search, 
@@ -18,14 +18,27 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 	private ArrayList<DefUnit> defunits;
 	protected boolean matchesArePartialDefUnits = false;
 
-	public DefUnitSearch(String name, Resolvable searchref) {
-		this(name, searchref, false);
+	@Deprecated
+	public DefUnitSearch(String searchName, Reference searchref) {
+		this(searchName, searchref, -1, false);
 	}
 	
-	public DefUnitSearch(String searchName, Resolvable searchref, boolean findOneOnly) {
-		super(NodeUtil.getOuterScope(searchref));
+	@Deprecated
+	public DefUnitSearch(String searchName, Reference searchref, int refOffset) {
+		this(searchName, searchref, refOffset, false);
+	}
+	
+	@Deprecated
+	public DefUnitSearch(String searchName, Reference searchref,
+			 boolean findOneOnly) {
+		this(searchName, searchref, -1, findOneOnly);
+	}
+	
+	@Deprecated
+	public DefUnitSearch(String searchName, Reference searchref,
+			int refOffset, boolean findOneOnly) {
+		super(NodeUtil.getOuterScope(searchref), refOffset, findOneOnly);
 		this.searchName = searchName;
-		this.findOnlyOne = findOneOnly;
 		//defunits = new ArrayDeque<DefUnit>(4);
 	}
 	

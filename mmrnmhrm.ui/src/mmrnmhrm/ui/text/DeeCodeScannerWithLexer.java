@@ -4,7 +4,7 @@ import java.util.List;
 
 import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.ExceptionAdapter;
-import mmrnmhrm.ui.text.color.DeeColorConstants;
+import mmrnmhrm.ui.text.color.IDeeColorConstants;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
 
 import org.eclipse.dltk.ui.text.AbstractScriptScanner;
@@ -47,15 +47,15 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 	}
 	
 	private static String fgTokenProperties[] = new String[] {
-		DeeColorConstants.DEE_SPECIAL,
-		DeeColorConstants.DEE_STRING,
-		DeeColorConstants.DEE_LITERALS,
-		DeeColorConstants.DEE_OPERATORS,
-		DeeColorConstants.DEE_BASICTYPES,
-		DeeColorConstants.DEE_KEYWORD,
-		DeeColorConstants.DEE_DOCCOMMENT,
-		DeeColorConstants.DEE_COMMENT,
-		DeeColorConstants.DEE_DEFAULT
+		IDeeColorConstants.DEE_SPECIAL,
+		IDeeColorConstants.DEE_STRING,
+		IDeeColorConstants.DEE_LITERALS,
+		IDeeColorConstants.DEE_OPERATORS,
+		IDeeColorConstants.DEE_BASICTYPES,
+		IDeeColorConstants.DEE_KEYWORD,
+		IDeeColorConstants.DEE_DOCCOMMENT,
+		IDeeColorConstants.DEE_COMMENT,
+		IDeeColorConstants.DEE_DEFAULT
 	};
 
 	@Override
@@ -152,23 +152,23 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 		if(tok == TOK.TOKwhitespace)
 			return org.eclipse.jface.text.rules.Token.WHITESPACE;
 
-		if(tok == TOK.TOKstring && isEnabled(DeeColorConstants.DEE_STRING)) {
-			return getToken(DeeColorConstants.DEE_STRING);
+		if(tok == TOK.TOKstring && isEnabled(IDeeColorConstants.DEE_STRING)) {
+			return getToken(IDeeColorConstants.DEE_STRING);
 		}
-		if(TokenUtil.isLiteral(tok) && isEnabled(DeeColorConstants.DEE_LITERALS)) {
-			return getToken(DeeColorConstants.DEE_LITERALS);
+		if(TokenUtil.isLiteral(tok) && isEnabled(IDeeColorConstants.DEE_LITERALS)) {
+			return getToken(IDeeColorConstants.DEE_LITERALS);
 		}
-		if(TokenUtil.isBasicType(tok) && isEnabled(DeeColorConstants.DEE_BASICTYPES)) {
-			return getToken(DeeColorConstants.DEE_BASICTYPES);
+		if(TokenUtil.isBasicType(tok) && isEnabled(IDeeColorConstants.DEE_BASICTYPES)) {
+			return getToken(IDeeColorConstants.DEE_BASICTYPES);
 		}
-		if(TokenUtil.isKeyword(tok) && isEnabled(DeeColorConstants.DEE_KEYWORD)) {
-			return getToken(DeeColorConstants.DEE_KEYWORD);
+		if(TokenUtil.isKeyword(tok) && isEnabled(IDeeColorConstants.DEE_KEYWORD)) {
+			return getToken(IDeeColorConstants.DEE_KEYWORD);
 		}
-		if(TokenUtil.isOperator(tok) && isEnabled(DeeColorConstants.DEE_OPERATORS)) {
-			return getToken(DeeColorConstants.DEE_OPERATORS);
+		if(TokenUtil.isOperator(tok) && isEnabled(IDeeColorConstants.DEE_OPERATORS)) {
+			return getToken(IDeeColorConstants.DEE_OPERATORS);
 		}
-		if(isEnabled(DeeColorConstants.DEE_DEFAULT)) {
-			return getToken(DeeColorConstants.DEE_DEFAULT);
+		if(isEnabled(IDeeColorConstants.DEE_DEFAULT)) {
+			return getToken(IDeeColorConstants.DEE_DEFAULT);
 		}
 		
 		return DEFAULT_TOKEN;

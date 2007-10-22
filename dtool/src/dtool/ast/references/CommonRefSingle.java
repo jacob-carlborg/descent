@@ -11,7 +11,6 @@ import dtool.ast.definitions.DefUnit;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.NodeUtil;
 import dtool.refmodel.PrefixDefUnitSearch;
 import dtool.refmodel.ReferenceResolver;
 
@@ -45,7 +44,8 @@ public abstract class CommonRefSingle extends NamedReference {
 	
 	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
-		DefUnitSearch search = new DefUnitSearch(name, this, findOneOnly);
+		DefUnitSearch search = new DefUnitSearch(name, this, this.getOffset(),
+				findOneOnly);
 		CommonRefSingle.doSearchForPossiblyQualifiedSingleRef(search, this);
 		return search.getDefUnits();
 	}
@@ -72,7 +72,8 @@ public abstract class CommonRefSingle extends NamedReference {
 				// continue using outer scope as the lookup
 			}
 		}
-		IScopeNode lookupScope = NodeUtil.getOuterScope(refSingle);
+
+		IScopeNode lookupScope = ReferenceResolver.getStartingScope(refSingle);
 		ReferenceResolver.findDefUnitInExtendedScope(lookupScope, search);
 	}
 

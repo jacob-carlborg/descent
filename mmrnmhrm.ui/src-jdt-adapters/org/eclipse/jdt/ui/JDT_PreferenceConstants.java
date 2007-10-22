@@ -32,9 +32,9 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
  * 
  * @since 2.0
   */
-public class PreferenceConstants {
+public class JDT_PreferenceConstants {
 
-	private PreferenceConstants() {
+	private JDT_PreferenceConstants() {
 	}
 	
 	/**

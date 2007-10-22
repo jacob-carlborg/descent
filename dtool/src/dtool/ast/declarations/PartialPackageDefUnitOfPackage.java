@@ -21,7 +21,7 @@ public class PartialPackageDefUnitOfPackage extends PartialPackageDefUnit  {
 	
 	@Override
 	public String toStringAsElement() {
-		return getName() + "." + child.toStringAsElement();
+		return getName() /*+ "." + child.toStringAsElement()*/;
 	}
 
 }

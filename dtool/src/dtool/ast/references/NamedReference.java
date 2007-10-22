@@ -14,7 +14,7 @@ public abstract class NamedReference extends Reference {
 
 	
 	/** Return wheter this reference can match the given defunit.
-	 * This is a very lightweight method that only compared the defunit's 
+	 * This is a very lightweight method that only compares the defunit's 
 	 * name with the identifier of this reference, if any.
 	 * XXX: Qualified refs, how should they compare? 
 	 */

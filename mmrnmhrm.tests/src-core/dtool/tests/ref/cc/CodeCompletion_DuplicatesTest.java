@@ -23,38 +23,37 @@ public class CodeCompletion_DuplicatesTest extends CodeCompletion__Common {
 	
 	@Test
 	public void test1() throws Exception {
-		int offset = getMarkerStartOffset("/+@CC1+/"+1);
+		int offset = getMarkerStartOffset("/+@CC1+/");
 		ccTester.testComputeProposals(offset, 1, 
 				
-				"func(int a, List!(Foo) a)",
-				"func(int bbb, List!(Foo) bbb)",
-				"func(char a, List!(Foo) a)",
-				"func(int a, List!(Bar) a)",
-				"func()",
+				"unc(int a, List!(Foo) a)",
+				"unc(int bbb, List!(Foo) bbb)",
+				"unc(char a, List!(Foo) a)",
+				"unc(int a, List!(Bar) a)",
+				"unc()",
 				
 		
-				"foo_t", "fooalias" 
+				"oo_t", "ooalias" 
 				);
 	}
 	
 	@Test
 	public void test2() throws Exception {
-		int offset = getMarkerStartOffset("/+@CC2+/"+1);
+		int offset = getMarkerStartOffset("/+@CC2+/");
 		ccTester.testComputeProposals(offset, 1, 
-				"oolocalinner", "foolocal1", "fParam", "foobarvar",
+				"oolocalinner", "oolocal1", "Param", "oobarvar",
 				
-				"func(int a, List!(Foo) a)",
-				"func(int bbb, List!(Foo) bbb)",
-				"func(char a, List!(Foo) a)",
-				"func(int a, List!(Bar) a)",
-				"func()",
+				"unc(int a, List!(Foo) a)",
+				"unc(int bbb, List!(Foo) bbb)",
+				"unc(char a, List!(Foo) a)",
+				"unc(int a, List!(Bar) a)",
+				"unc()",
 				
-				"foovar", "foox", 
+				"oovar", "oox", 
 				
-				"foo_t", "fooalias" 
+				"oo_t", "ooalias" 
 				);
 	}
-
 
 
 }

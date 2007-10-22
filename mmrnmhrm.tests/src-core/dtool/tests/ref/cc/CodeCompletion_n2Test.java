@@ -23,7 +23,7 @@ public class CodeCompletion_n2Test extends CodeCompletion__Common {
 	@Test
 	public void test1() throws Exception {
 		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC1+/"), 1, 
-				"unc", "oobarvar",
+				"unc()", "oobarvar",
 				"oovar", "oox",  "oo_t", "ooOfModule"
 				);
 	}

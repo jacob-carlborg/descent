@@ -57,6 +57,7 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 		}
 	}
 	
+	/** This is a special scope, where the IsTypeDefUnit is available. */
 	public class IsTypeScope extends ASTNeoNode implements IScopeNode {
 
 		public NodeList nodelist;
@@ -82,10 +83,10 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 			return null;
 		}
 		
-		//@Override
-		public IScope getAdaptedScope() {
-			return this;
+		public boolean hasSequentialLookup() {
+			return false;
 		}
+		
 	}
 	
 	public IsTypeScope thendeclsScope;

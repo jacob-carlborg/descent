@@ -71,5 +71,10 @@ public class Convertion_MiscTest {
 	public void testDeclAttrib() throws IOException, CoreException {
 		ConvertionCommonTest.testConversionFromFile("declAttrib.d");
 	}
+	
+	@Test
+	public void testForeach() throws IOException, CoreException {
+		ConvertionCommonTest.testConversionFromFile("for_each.d");
+	}
 
 }

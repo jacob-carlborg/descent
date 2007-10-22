@@ -31,14 +31,14 @@ template Template(
 		this() {}
 		~this() {}
 		
-		void func(asf.dfg parameter) {
+		void func(asdf.qwer parameter) {
 			static if(is(T IfTypeDefUnit : Foo)) {
-				
+				/+@CC1+/
 			}
 			
 			{
 				Enum e;
-				e = Enum.E;
+				e = Enum.E/+@CC2+/;
 			}
 		}
 	}

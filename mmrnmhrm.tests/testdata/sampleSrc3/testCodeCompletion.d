@@ -47,6 +47,7 @@ class FooBar : Foo {
 		/+CC7b@+/.f; // Module Qualified 1 char prefix
 		
 		/+CC8@+/Xpto.xptofoo.f; // Module Qualified 
+		int fDecoy;
 	}
 }
 

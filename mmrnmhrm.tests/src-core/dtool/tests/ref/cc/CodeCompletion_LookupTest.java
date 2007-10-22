@@ -28,33 +28,46 @@ public class CodeCompletion_LookupTest extends CodeCompletion__Common {
 	@Test
 	public void test1() throws Exception {
 		ccTester.testComputeProposals(getMarkerEndOffset("/+CC1@+/"), 0,
-				"fParam", "test", "func", "foobarvar",
+				"fParam",
+				"foobarvar", "ix", "func(int a, List!(Foo) a)", "test(int fParam)",  
 				"foovar", "foox", "baz",
-				"FooBar", "ix",  "foo_t", "fooalias", "fooOfModule", "frak", "Foo", "Xpto",
-				"testCodeCompletion",
+				"Foo", "fooOfModule", "frak", "fooalias", "foo_t", 
+				/*"ix",*/ "FooBar", "Xpto", "func(char b, List!(Foo) b)", "func()",
 				"pack", "nonexistantmodule",
-				"othervar", "Other"
+				"othervar", "Other",
+				"testCodeCompletion"
 				);
 	}
 	@Test
 	public void test2() throws Exception {
 		ccTester.testComputeProposals(getMarkerEndOffset("/+CC2@+/")+1, 1,
-				"Param", "unc", "oobarvar",
+				"Param", "unc(int a, List!(Foo) a)", "oobarvar",
 				"oovar", "oox", 
+				"unc(char b, List!(Foo) b)", "unc()",
 				/*"FooBar",*/  "oo_t", "ooalias", "ooOfModule", "rak" /*,"Foo",*/
 				);
 		
 		// same test, but characters ahead of offset
 		ccTester.testComputeProposalsWithRepLen(getMarkerEndOffset("/+CC3@+/")+1, 1, 2,
-				"Param", "unc", "oobarvar",
+				"Param", "unc(int a, List!(Foo) a)", "oobarvar",
 				"oovar", "oox", 
+				"unc(char b, List!(Foo) b)", "unc()",
 				/*"FooBar",*/  "oo_t", "ooalias", "ooOfModule", "rak" /*,"Foo",*/
 				);
 	}
 
 	@Test
 	public void test3() throws Exception {
-		ccTester.testComputeProposals(getMarkerEndOffset("/+CC4@+/")+3, 3, "barvar",
+		ccTester.testComputeProposals(getMarkerEndOffset("/+CC3@+/")+3, 3, 
+				"barvar",
+				"var", "x", "_t", "alias", "OfModule"
+				);
+	}
+	
+	@Test
+	public void test4() throws Exception {
+		ccTester.testComputeProposals(getMarkerEndOffset("/+CC4@+/")+2, 3, 
+				"barvar",
 				"var", "x", "_t", "alias", "OfModule"
 				);
 	}
@@ -62,7 +75,7 @@ public class CodeCompletion_LookupTest extends CodeCompletion__Common {
 	@Test
 	public void test6() throws Exception {
 		// FIXUP because of syntax errors;
-		srcModule.getBuffer().replace(getMarkerEndOffset("/+CC6@+/"), 1, ".");
+		srcModule.getBuffer().replace(getMarkerEndOffset("/+CC6@+/")+3, 1, ".");
 		try {
 			ccTester.testComputeProposals(getMarkerEndOffset("/+CC6@+/")+4, 0, 
 					"foovar", "foox", "baz");
@@ -77,7 +90,7 @@ public class CodeCompletion_LookupTest extends CodeCompletion__Common {
 		ccTester.testComputeProposalsWithRepLen(offset+1, 1, 2,
 				"oo", "ooBar");
 		// Test at end of qualified ref
-		ccTester.testComputeProposals(offset+4, 1,
+		ccTester.testComputeProposals(offset+5, 1,
 				"oovar", "oox");
 	}
 	
@@ -87,7 +100,7 @@ public class CodeCompletion_LookupTest extends CodeCompletion__Common {
 		try {
 			ccTester.testComputeProposals(getMarkerEndOffset("/+CC7@+/")+1, 0,
 					"Foo", "fooOfModule", "frak",
-					"fooalias", "foo_t", "ix", "FooBar", "Xpto",
+					"fooalias", "foo_t", "ix", "FooBar", "Xpto", "func(char b, List!(Foo) b)", "func()",
 					"pack", "nonexistantmodule",
 					"othervar", "Other");
 		} finally {
@@ -100,6 +113,7 @@ public class CodeCompletion_LookupTest extends CodeCompletion__Common {
 	public void test7b() throws Exception {
 		ccTester.testComputeProposals(getMarkerEndOffset("/+CC7b@+/")+2, 1, 
 				"ooOfModule", "rak",
+				"unc(char b, List!(Foo) b)", "unc()",
 				"ooalias", "oo_t");
 	}
 

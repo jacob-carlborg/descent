@@ -54,13 +54,16 @@ public class DefinitionTemplate extends Definition implements IScopeNode {
 		return this;
 	}
 
-	
-	
 	public List<IScope> getSuperScopes() {
 		// TODO: template super scope
 		return null;
 	}
 	
+	//@Override
+	public boolean hasSequentialLookup() {
+		return false;
+	}
+
 
 	public Iterator<? extends IASTNode> getMembersIterator() {
 		// TODO: check if in a template invocation

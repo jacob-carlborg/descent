@@ -48,6 +48,10 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 		return members.iterator();
 	}
 	
+	public boolean hasSequentialLookup() {
+		return false;
+	}
+	
 	@Override
 	public String toStringForHoverSignature() {
 		String str = getArcheType().toString() 

@@ -43,16 +43,17 @@ public class RefImportSelection extends NamedReference
 	
 	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
-		DefUnitSearch search = new DefUnitSearch(name, (Reference) this, findOneOnly);
+		DefUnitSearch search = new DefUnitSearch(name, this, findOneOnly);
 		RefModule refMod = impSel.moduleRef;
-		CommonRefQualified.findDefUnitInDefUnitScopes(refMod.findTargetDefUnits(findOneOnly), search);
+		CommonRefQualified.findDefUnitInMultipleDefUnitScopes(refMod.findTargetDefUnits(findOneOnly), search);
 		return search.getDefUnits();
 	}
 	
 	@Override
 	public void doSearch(PrefixDefUnitSearch search) {
 		RefModule refMod = impSel.moduleRef;
-		CommonRefQualified.findDefUnitInDefUnitScopes(refMod.findTargetDefUnits(false), search);
+		CommonRefQualified.findDefUnitInMultipleDefUnitScopes(
+				refMod.findTargetDefUnits(false), search);
 	}
 	
 }

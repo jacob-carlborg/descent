@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.editor.text;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
@@ -65,12 +66,19 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 	public static ICompletionProposal[] computeProposals(final int offset,
 			ISourceModule moduleUnit, String source, CompletionSession session) {
 		
+		final ArrayList<DefUnit> defUnitResults = new ArrayList<DefUnit>();
 		final ArrayList<ICompletionProposal> results;
 		results = new ArrayList<ICompletionProposal>();
 		
 		IDefUnitMatchAccepter defUnitAccepter = new IDefUnitMatchAccepter() {
+
+			public Iterator<DefUnit> getResultsIterator() {
+				return defUnitResults.iterator();
+			};
+			
 			public void accept(DefUnit defUnit, PrefixSearchOptions searchOptions) {
 				String rplStr = defUnit.getName().substring(searchOptions.prefixLen);
+				defUnitResults.add(defUnit);
 				results.add(new DeeCompletionProposal(
 						rplStr,
 						offset,
@@ -81,8 +89,8 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 						defUnit,
 						null // context information
 						));
-			};
-			
+			}
+
 		};
 		
 		

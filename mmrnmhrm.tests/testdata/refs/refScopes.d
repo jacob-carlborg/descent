@@ -41,3 +41,12 @@ interface IBar {
 interface IFooBar : IBar {
 	static int /+T8@+/ifoobarx = /+R9@+/ibarx; // 1 super scope (to interface)
 }
+
+void func(int a, int dummy = /+R10@+/a) {
+}
+int /+T10@+/a;
+
+const int /+TEa@+/B = 2;
+
+enum Enum { A = /+REa@+/B, /+TEb@+/B, C = /+REb@+/B };
+

@@ -3,7 +3,7 @@ package mmrnmhrm.ui.text;
 import java.util.ArrayList;
 import java.util.List;
 
-import mmrnmhrm.ui.text.color.DeeColorConstants;
+import mmrnmhrm.ui.text.color.IDeeColorConstants;
 
 import org.eclipse.dltk.ui.text.AbstractScriptScanner;
 import org.eclipse.dltk.ui.text.IColorManager;
@@ -27,15 +27,15 @@ public class DeeCodeScanner extends AbstractScriptScanner {
 	}
 	
 	private static String fgTokenProperties[] = new String[] {
-		DeeColorConstants.DEE_SPECIAL,
-		DeeColorConstants.DEE_STRING,
-		DeeColorConstants.DEE_LITERALS,
-		DeeColorConstants.DEE_OPERATORS,
-		DeeColorConstants.DEE_BASICTYPES,
-		DeeColorConstants.DEE_KEYWORD,
-		DeeColorConstants.DEE_DOCCOMMENT,
-		DeeColorConstants.DEE_COMMENT,
-		DeeColorConstants.DEE_DEFAULT
+		IDeeColorConstants.DEE_SPECIAL,
+		IDeeColorConstants.DEE_STRING,
+		IDeeColorConstants.DEE_LITERALS,
+		IDeeColorConstants.DEE_OPERATORS,
+		IDeeColorConstants.DEE_BASICTYPES,
+		IDeeColorConstants.DEE_KEYWORD,
+		IDeeColorConstants.DEE_DOCCOMMENT,
+		IDeeColorConstants.DEE_COMMENT,
+		IDeeColorConstants.DEE_DEFAULT
 	};
 
 	@Override
@@ -47,12 +47,12 @@ public class DeeCodeScanner extends AbstractScriptScanner {
 	protected List createRules() {
 		List<IRule> rules = new ArrayList<IRule>();
 		
-		IToken tkKeyword = getToken(DeeColorConstants.DEE_KEYWORD);
-		IToken tkBasics = getToken(DeeColorConstants.DEE_BASICTYPES);
+		IToken tkKeyword = getToken(IDeeColorConstants.DEE_KEYWORD);
+		IToken tkBasics = getToken(IDeeColorConstants.DEE_BASICTYPES);
 //		IToken tkOperators = getToken(DeeColorConstants.DEE_OPERATORS);
-		IToken tkLiterals = getToken(DeeColorConstants.DEE_LITERALS);
-		IToken tkString = getToken(DeeColorConstants.DEE_STRING);
-		IToken tkOther = getToken(DeeColorConstants.DEE_DEFAULT);
+		IToken tkLiterals = getToken(IDeeColorConstants.DEE_LITERALS);
+		IToken tkString = getToken(IDeeColorConstants.DEE_STRING);
+		IToken tkOther = getToken(IDeeColorConstants.DEE_DEFAULT);
 		
 		rules.add(new SingleLineRule("'", "'", tkString, '\\'));
 		

@@ -3,7 +3,7 @@ package mmrnmhrm.ui.text.color;
 /**
  * Color preference constants used in the Dee preference store. 
  */
-public interface DeeColorConstants {
+public interface IDeeColorConstants {
 
 	/** Prefix for D preference keys. */
 	String PREFIX = "dee.coloring."; 

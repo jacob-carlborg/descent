@@ -63,9 +63,13 @@ public class BlockStatement extends Statement implements IScopeNode {
 		return null;
 	}
 	
-	//@Override
-	public IScope getAdaptedScope() {
-		return this;
+	public boolean hasSequentialLookup() {
+		return true;
 	}
+	
+	//@Override
+	/*public IScope getAdaptedScope() {
+		return this;
+	}*/
 
 }

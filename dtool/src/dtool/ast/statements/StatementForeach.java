@@ -17,7 +17,7 @@ public class StatementForeach extends Statement {
 
 	public StatementForeach(ForeachStatement elem) {
 		convertNode(elem);
-		// TODO: foreach parameters, unitest too.
+		// TODO: implement foreach parameters, and unittest them.
 		//this.params = new IFunctionParameter[elem.arguments.size()]; 
 		//DescentASTConverter.convertMany(elem.arguments.toArray(), this.params);
 		this.iterable = Expression.convert(elem.sourceAggr);

@@ -12,7 +12,6 @@ package melnorme.lang.ui;
 
 
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 
 import mmrnmhrm.ui.DeePlugin;
 
@@ -67,7 +66,7 @@ public class ExceptionHandler {
 	 * @param title the dialog window's window title
 	 * @param message message to be displayed by the dialog window
 	 */
-	public static void handle(InvocationTargetException e, String title, String message) {
+	public static void handle(Throwable e, String title, String message) {
 		handle(e, DeePlugin.getActiveWorkbenchShell(), title, message);
 	}
 	
@@ -79,7 +78,7 @@ public class ExceptionHandler {
 	 * @param title the dialog window's window title
 	 * @param message message to be displayed by the dialog window
 	 */
-	public static void handle(InvocationTargetException e, Shell parent, String title, String message) {
+	public static void handle(Throwable e, Shell parent, String title, String message) {
 		fgInstance.perform(e, parent, title, message);
 	}
 
@@ -95,7 +94,7 @@ public class ExceptionHandler {
 		}
 	}
 
-	protected void perform(InvocationTargetException e, Shell shell, String title, String message) {
+	protected void perform(Throwable e, Shell shell, String title, String message) {
 		Throwable target= e.getCause();
 		if (target instanceof CoreException) {
 			perform((CoreException)target, shell, title, message);

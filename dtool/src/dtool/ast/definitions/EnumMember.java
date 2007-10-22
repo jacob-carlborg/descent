@@ -13,7 +13,7 @@ public class EnumMember extends DefUnit {
 
 	public EnumMember(descent.internal.compiler.parser.EnumMember elem) {
 		super(elem);
-		convertNode(elem.ident);
+		convertNode(elem);
 		this.value = Expression.convert(elem.value);
 	}
 

@@ -25,6 +25,8 @@ public class NodeList  {
 	}
 
 	public static NodeList createNodeList(Statement body) {
+		if(body == null)
+			return null;
 		if(body instanceof CompoundStatement) {
 			CompoundStatement cst = (CompoundStatement) body;
 			ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(cst.sourceStatements);

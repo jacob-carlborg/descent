@@ -69,4 +69,16 @@ public class FindDef_ScopeRulesTest extends FindDef__SingleModuleCommon  {
 				sourceModule, getMarkerEndOffset("/+T7@+/"));
 	}
 	
+	
+	@Test public void test10() throws CoreException {
+		assertFindReF(sourceModule, getMarkerEndOffset("/+R10@+/"), 
+				sourceModule, getMarkerEndOffset("/+T10@+/"));
+	}
+	
+	@Test public void testE() throws CoreException {
+		assertFindReF(sourceModule, getMarkerEndOffset("/+REa@+/"), 
+				sourceModule, getMarkerEndOffset("/+TEa@+/"));
+		assertFindReF(sourceModule, getMarkerEndOffset("/+REb@+/"), 
+				sourceModule, getMarkerEndOffset("/+TEb@+/"));
+	}
 }

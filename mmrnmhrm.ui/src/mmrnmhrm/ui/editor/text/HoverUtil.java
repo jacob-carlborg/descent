@@ -4,18 +4,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.jdt.ui.JDT_PreferenceConstants;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.FontData;
 import org.osgi.framework.Bundle;
 
+import descent.internal.ddoc.Ddoc;
+import dtool.DeeDocAccessor;
 import dtool.ast.definitions.DefUnit;
 
 public class HoverUtil {
+
+	private static final Map<String, String> EMPTY_MAP = Collections.emptyMap();
 
 	public static String getDefUnitHoverInfoWithDeeDoc(DefUnit defUnit) {
 		String sig = defUnit.toStringForHoverSignature();
@@ -24,17 +30,29 @@ public class HoverUtil {
 		str = "<b>" +str+ "</b>" 
 		+"  <span style=\"color: #915F6D;\" >" +
 			"("+defUnit.getArcheType().toString()+")" +"</span>";
+
 		
+		Ddoc ddoc = DeeDocAccessor.getDdoc(defUnit);
+		if(ddoc != null) {
+			StringBuffer stringBuffer = DeeDocAccessor.transform(ddoc, EMPTY_MAP);
+			str += "<br/><br/>" + stringBuffer.toString();
+		}
+		return str;
+		
+		/*
 		String docComments = defUnit.getCombinedDocComments(); 
 		if(docComments == null) {
 			//str = str + "<br/> <p>No DeeDoc present.</p>";
-		} else 
+		} else { 
 			str = str + "<br/><br/>" + convertToHTMLContent(docComments);
+		}
 		return str;
+		*/
 	}
 
 	@SuppressWarnings("restriction")
 	private static String convertToHTMLContent(String str) {
+		
 		str = org.eclipse.jface.internal.text.html.
 			HTMLPrinter.convertToHTMLContent(str);
 		str = str.replace("\n", "<br/>");
@@ -82,11 +100,13 @@ public class HoverUtil {
 	static String setupCSS(String fgCSSStyles) {
 		String css= fgCSSStyles;
 		if (css != null) {
-			FontData fontData= JFaceResources.getFontRegistry().getFontData(PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
+			FontData fontData= JFaceResources.getFontRegistry().
+				getFontData(JDT_PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
 			css= org.eclipse.jface.internal.text.html.
 				HTMLPrinter.convertTopLevelFont(css, fontData);
 		}
 		return css;
+		
 	}
 
 }

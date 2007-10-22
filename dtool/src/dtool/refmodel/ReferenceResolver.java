@@ -13,8 +13,10 @@ import dtool.ast.declarations.ImportStatic;
 import dtool.ast.declarations.PartialPackageDefUnitOfPackage;
 import dtool.ast.declarations.DeclarationImport.ImportFragment;
 import dtool.ast.definitions.DefUnit;
+import dtool.ast.definitions.DefinitionFunction;
 import dtool.ast.definitions.Module;
 import dtool.ast.definitions.Module.DeclarationModule;
+import dtool.ast.references.CommonRefSingle;
 import dtool.ast.references.RefImportSelection;
 import dtool.refmodel.pluginadapters.IModuleResolver;
 
@@ -144,47 +146,51 @@ public class ReferenceResolver {
 	private static void findDefUnitInImmediateScope(IScope scope, CommonDefUnitSearch search) {
 		Iterator<IASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 		
-		findDefUnits(search, iter);
+		findDefUnits(search, iter, scope.hasSequentialLookup(), false, null);
+	}
+	
+	private static void findDefUnitInSecondaryScope(IScope scope, CommonDefUnitSearch search) {
+		Iterator<IASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
+
+		IScope thisModule = scope.getModuleScope();
+		findDefUnits(search, iter, scope.hasSequentialLookup(), true, thisModule);
 	}
 
+
 	private static void findDefUnits(CommonDefUnitSearch search,
-			Iterator<? extends IASTNode> iter) {
+			Iterator<? extends IASTNode> iter, boolean isStatementScope, 
+			boolean importsOnly, IScope thisModule) {
+		
+		IScope refsModule = search.getReferenceModuleScope();
+		int refOffset = search.refOffset;
 		
 		while(iter.hasNext()) {
 			IASTNode elem = iter.next();
+			
+			if (elem instanceof INonScopedBlock) {
+				INonScopedBlock container = ((INonScopedBlock) elem);
+				findDefUnits(search, container.getMembersIterator(), 
+						isStatementScope, importsOnly, thisModule);
+				if(search.isFinished() && search.findOnlyOne)
+					return; // Return if we only want one match in the scope
+			} 
+						
+			// Check if the reference is before the point of definition
+			if(isStatementScope && refOffset < elem.getEndPos()) {
+				/* XXX: Technically we could return right away, since
+				 * no further nodes should match, but keep going in case 
+				 * there are source range errors. */ 
+				continue;
+			}
 
-			if(elem instanceof DefUnit) {
+			if(!importsOnly && elem instanceof DefUnit) {
 				DefUnit defunit = (DefUnit) elem;
 				if(search.matches(defunit)) {
 					search.addMatch(defunit);
 					if(search.isFinished() && search.findOnlyOne)
 						return; // Return if we only want one match in the scope
 				}
-			} else if (elem instanceof INonScopedBlock) {
-				INonScopedBlock container = ((INonScopedBlock) elem);
-				findDefUnits(search, container.getMembersIterator());
-				if(search.isFinished() && search.findOnlyOne)
-					return; // Return if we only want one match in the scope
-			} 
-		}
-	}
-	
-	private static void findDefUnitInSecondaryScope(IScope scope, CommonDefUnitSearch search) {
-		Iterator<IASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
-				
-		IScope thisModule = scope.getModuleScope();
-		findSecondaryDefUnits(search, iter, thisModule);
-	}
-
-	private static void findSecondaryDefUnits(CommonDefUnitSearch search,
-			Iterator<? extends IASTNode> iter, IScope thisModule) {
-		
-		IScope refsModule = search.getReferenceModuleScope();
-		
-		while(iter.hasNext()) {
-			IASTNode elem = iter.next();
-
-			if(elem instanceof DeclarationImport) {
+			} else if(importsOnly && elem instanceof DeclarationImport) {
 				DeclarationImport declImport = (DeclarationImport) elem;
 
 				if(!refsModule.equals(thisModule) && !declImport.isTransitive)
@@ -194,14 +200,11 @@ public class ReferenceResolver {
 					impFrag.searchInSecondaryScope(search);
 					// continue regardless of search.findOnlyOne because of partial packages
 				}
-
-			} else if (elem instanceof INonScopedBlock) {
-				INonScopedBlock container = ((INonScopedBlock) elem);
-				findSecondaryDefUnits(search, container.getMembersIterator(), thisModule);
 			} 
 
 		}
 	}
+
 	
 	/* ====================  import lookup  ==================== */
 
@@ -252,6 +255,16 @@ public class ReferenceResolver {
 					search.addMatch(selFrag);
 			} */
 		}
+	}
+
+	public static IScopeNode getStartingScope(CommonRefSingle refSingle) {
+		IScopeNode scope = NodeUtil.getOuterScope(refSingle);
+		if(scope instanceof DefinitionFunction) {
+			// Skip it as this scope can't look into itself
+			scope = NodeUtil.getOuterScope(scope);
+			
+		}
+		return scope;
 	}
 
 

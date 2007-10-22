@@ -51,10 +51,10 @@ public abstract class CommonRefQualified extends NamedReference
 	
 	public static void doQualifiedSearch(CommonDefUnitSearch search, CommonRefQualified qref) {
 		Collection<DefUnit> defunits = qref.findRootDefUnits();
-		findDefUnitInDefUnitScopes(defunits, search);
+		findDefUnitInMultipleDefUnitScopes(defunits, search);
 	}
 	
-	public static void findDefUnitInDefUnitScopes(
+	public static void findDefUnitInMultipleDefUnitScopes(
 			Collection<DefUnit> defunits, CommonDefUnitSearch search) {
 		if(defunits == null)
 			return;

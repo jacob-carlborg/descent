@@ -74,4 +74,8 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 		return null;
 	}
 	
+	public boolean hasSequentialLookup() {
+		return false;
+	}
+	
 }
