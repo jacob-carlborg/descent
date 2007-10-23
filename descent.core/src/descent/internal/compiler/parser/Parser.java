@@ -4127,34 +4127,60 @@ public class Parser extends Lexer {
 		case TOKcase: {
 			Expression exp;
 			Statements statements;
-			List cases = new ArrayList(); // array of Expression's
+			// List cases = new ArrayList(); // array of Expression's
+			
+			// Note: this code was changed a little from DMD to support
+			// better code completion
+			List<CaseStatement> caseStatements = new ArrayList<CaseStatement>();
 
 			while (true) {
+				int caseEnd = token.ptr + token.sourceLen;
+				
 				nextToken();
+				
+				int expStart = token.ptr;
+				int expLength = token.sourceLen;
+				
 				exp = parseAssignExp();
-				cases.add(exp);
-				if (token.value != TOKcomma)
+				caseStatements.add(newCaseStatement(loc, exp, null, caseEnd, expStart, expLength));			
+				// cases.add(exp);
+				
+				if (token.value != TOKcomma) {
 					break;
+				}
 			}
 			check(TOKcolon);
 
 			statements = new Statements();
 			while (token.value != TOKcase && token.value != TOKdefault
 					&& token.value != TOKrcurly) {
+				
+				if (token.value == TOKeof) {
+					break;
+				}
+				
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
 			
 			s = newBlock(statements);
 			
 			/*
+			FIXME this can bring incompatibilities between Descent and DMD: put back!
 			s = new ScopeStatement(s);
 			*/
 
 			// Keep cases in order by building the case statements backwards
-			for (int i = cases.size(); i != 0; i--) {
-				exp = (Expression) cases.get(i - 1);
-				s = new CaseStatement(loc, exp, s);
+//			for (int i = cases.size(); i != 0; i--) {
+//				exp = (Expression) cases.get(i - 1);
+//				s = new CaseStatement(loc, exp, s);
+//			}
+			
+			for(int i = caseStatements.size(); i != 0; i--) {
+				CaseStatement cs = caseStatements.get(i - 1);
+				cs.setStatement(s);
+				s = cs;
 			}
+			
 			break;
 		}
 
@@ -5815,7 +5841,7 @@ public class Parser extends Lexer {
 			parsingErrorInsertTokenAfter(prevToken, "Expression");
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
-			e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+			e = new ErrorExp();
 	    	e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
@@ -7001,6 +7027,10 @@ public class Parser extends Lexer {
 	
 	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp id, Version version) {
 		return new VersionSymbol(loc, id, version);
+	}
+	
+	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
+		return new CaseStatement(loc, exp, statement);
 	}
 	
 	/**

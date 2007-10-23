@@ -11,6 +11,8 @@ public class CaseStatement extends Statement {
 
 	public Expression exp, sourceExp;
 	public Statement statement, sourceStatement;
+	
+	public SwitchStatement sw; // descent
 
 	public CaseStatement(Loc loc, Expression exp, Statement s) {
 		super(loc);
@@ -77,6 +79,7 @@ public class CaseStatement extends Statement {
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		SwitchStatement sw = sc.sw;
+		this.sw = sw;
 
 		exp = exp.semantic(sc, context);
 		if (sw != null) {
@@ -119,6 +122,10 @@ public class CaseStatement extends Statement {
 		return this;
 	}
 	
+	public void setStatement(Statement s) {
+		this.statement = this.sourceStatement = s;
+	}
+	
 	@Override
 	public Statement syntaxCopy() {
 		CaseStatement s = new CaseStatement(loc, exp.syntaxCopy(), statement.syntaxCopy());
@@ -148,5 +155,7 @@ public class CaseStatement extends Statement {
 	public int getErrorLength() {
 		return sourceExp.start + sourceExp.length - start;
 	}
+
+	
 
 }

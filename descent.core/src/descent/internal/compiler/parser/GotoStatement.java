@@ -10,8 +10,6 @@ public class GotoStatement extends Statement {
 	public IdentifierExp ident;
 	public LabelDsymbol label;
 	public TryFinallyStatement tf;
-	
-	public FuncDeclaration fd; // descent: The parent function declaration after the first semantic pass is done
 
 	public GotoStatement(Loc loc, IdentifierExp ident) {
 		super(loc);
@@ -57,16 +55,13 @@ public class GotoStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		FuncDeclaration fd = sc.parent.isFuncDeclaration();
-		this.fd = fd; // descent
-		tf = sc.tf;
-		
 		if (ident == null) {
-			// It's a broken node, it has already syntax errors,
-			// but assign fd and tf first
+			// It's a broken node, it has already syntax errors
 			return this;
 		}
 		
+		FuncDeclaration fd = sc.parent.isFuncDeclaration();
+		tf = sc.tf;
 		label = fd.searchLabel(ident);
 		if (null == label.statement && sc.fes != null) {
 			/* Either the goto label is forward referenced or it

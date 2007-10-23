@@ -368,6 +368,7 @@ public class CompletionProposalLabelProvider {
 	String createLabelWithTypeAndDeclaration(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getCompletion());
+		/* TODO JDT code complete
 		char[] typeName= Signature.getSignatureSimpleName(proposal.getSignature());
 		if (typeName.length > 0) {
 			buf.append("    "); //$NON-NLS-1$
@@ -381,7 +382,7 @@ public class CompletionProposalLabelProvider {
 				buf.append(declaration);
 			}
 		}
-
+		*/
 		return buf.toString();
 	}
 
@@ -543,7 +544,7 @@ public class CompletionProposalLabelProvider {
 	}
 
 	ImageDescriptor createPackageImageDescriptor(CompletionProposal proposal) {
-		return decorateImageDescriptor(JavaPluginImages.DESC_OBJS_PACKAGE, proposal);
+		return decorateImageDescriptor(JavaPluginImages.DESC_OBJS_MODULE, proposal);
 	}
 	
 	ImageDescriptor createVersionImageDescriptor(CompletionProposal proposal) {

@@ -229,6 +229,11 @@ public class Bugs_Test extends Parser_Test {
 		getCompilationUnit(s);	
 	}
 	
+	public void testCaseOpen() {
+		String s = "void foo() { switch(1) case ";
+		getCompilationUnit(s);	
+	}
+	
 	public void testDstress_run_t_typeof_16_A() {
 		String s = "char[] name = (typeof(o)).classinfo.name;";
 		getCompilationUnit(s);	

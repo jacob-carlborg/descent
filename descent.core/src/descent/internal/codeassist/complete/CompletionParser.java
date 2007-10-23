@@ -1,14 +1,17 @@
 package descent.internal.codeassist.complete;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.BreakStatement;
+import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ContinueStatement;
+import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
@@ -19,6 +22,7 @@ import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.Version;
@@ -45,7 +49,11 @@ public class CompletionParser extends Parser {
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
-		return keywordCompletions;
+		if (includeExpectations) {
+			return keywordCompletions;
+		} else {
+			return Collections.EMPTY_LIST;
+		}
 	}
 	
 	@Override
@@ -187,6 +195,20 @@ public class CompletionParser extends Parser {
 			versions.put(id.ident, this);
 		}
 		return super.newVersionSymbol(loc, id, version);
+	}
+	
+	@Override
+	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
+		// exp.start is -1 if it's an error expression
+		if (caseEnd <= cursorLocation && cursorLocation <= expStart + expLength && exp != null && (exp instanceof ErrorExp || 
+				(exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP))) {
+			includeExpectations = false;
+			
+			assistNode = new CompletionOnCaseStatement(loc, exp, statement);
+			return (CaseStatement) assistNode;
+		} else {
+			return super.newCaseStatement(loc, exp, statement, caseEnd, expStart, expLength);
+		}
 	}
 	
 	private boolean inCompletion() {

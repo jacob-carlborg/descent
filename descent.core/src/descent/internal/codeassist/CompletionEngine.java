@@ -3,6 +3,7 @@ package descent.internal.codeassist;
 import java.util.Arrays;
 import java.util.Map;
 
+import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.CompletionRequestor;
 import descent.core.IJavaProject;
@@ -12,6 +13,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
+import descent.internal.codeassist.complete.CompletionOnCaseStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
@@ -24,9 +26,15 @@ import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.CaseStatement;
+import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
+import descent.internal.compiler.parser.ErrorExp;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
@@ -39,11 +47,15 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
+import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
@@ -157,6 +169,8 @@ public class CompletionEngine extends Engine
 			this.module = parser.parseModuleObj();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
+			this.requestor.acceptContext(buildContext());
+			
 			// First the assist node
 			if (assistNode != null) {
 				if (assistNode instanceof CompletionOnModuleDeclaration && 
@@ -182,6 +196,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnVersionCondition) {
 					CompletionOnVersionCondition node = (CompletionOnVersionCondition) assistNode;
 					completeVersionCondition(node);
+				} else if (assistNode instanceof CompletionOnCaseStatement) {
+					CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
+					completeCaseStatement(node);
 				}
 			}
 			
@@ -194,10 +211,18 @@ public class CompletionEngine extends Engine
 					findKeywords(node.getToken(), node.getPossibleKeywords(), node.canCompleteEmptyToken());
 				}
 			}
-			
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			this.requestor.endReporting();
 		}
+	}
+
+	private CompletionContext buildContext() {
+		// TODO Descent completion context
+		CompletionContext context = new CompletionContext();
+		context.setOffset(this.offset);
+		return context;
 	}
 
 	private void doSemantic(Module module) {
@@ -404,6 +429,106 @@ public class CompletionEngine extends Engine
 				CompletionProposal proposal = this.createProposal(CompletionProposal.VERSION_REF, this.actualCompletionPosition);
 				proposal.setName(id);
 				proposal.setCompletion(id);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}
+	}
+	
+	private void completeCaseStatement(CompletionOnCaseStatement node) {
+		doSemantic(module);
+		
+		// Check to see if the condition is an enum, and suggest
+		// the members of it
+		SwitchStatement sw = node.sw;
+		if (sw == null) {
+			return;
+		}
+		
+		// TODO maybe make each node implement something like
+		// "findEnumDeclaration"
+		TypeEnum typeEnum;
+		
+		Expression condition = sw.condition;
+		if (condition == null) {
+			return;
+		} else if (condition instanceof VarExp) {
+			VarExp var = (VarExp) condition;
+			Type type = var.type;
+			if (type == null || !(type instanceof TypeEnum)) {
+				return;
+			}
+			
+			typeEnum = (TypeEnum) type;	
+		} else if (condition instanceof CastExp) {
+			CastExp castExp = (CastExp) condition;
+			if (castExp.e1 == null || !(castExp.e1 instanceof VarExp)) {
+				return;
+			}
+			
+			VarExp varExp = (VarExp) castExp.e1;
+			if (varExp.var == null || !(varExp.var instanceof VarDeclaration)) {
+				return;
+			}
+			
+			VarDeclaration varDeclaration = (VarDeclaration) varExp.var;
+			if (varDeclaration.type == null || !(varDeclaration.type instanceof TypeEnum)) {
+				return;
+			}
+			
+			typeEnum = (TypeEnum) varDeclaration.type;
+		} else {
+			return;
+		}
+		
+		EnumDeclaration enumDeclaration = typeEnum.sym;
+		if (enumDeclaration == null) {
+			return;
+		}
+		
+		if (enumDeclaration.members == null) {
+			return;
+		}
+		
+		char[] name;
+		Expression caseExp = node.originalExpression;
+		if (caseExp instanceof ErrorExp) {
+			name = CharOperation.NO_CHAR;
+			this.startPosition = this.actualCompletionPosition;
+			this.endPosition = this.actualCompletionPosition;
+		} else if (caseExp instanceof IdentifierExp) {
+			IdentifierExp idExp = (IdentifierExp) caseExp;
+			name = idExp.ident;
+			this.startPosition = idExp.start;
+			this.endPosition = this.actualCompletionPosition;
+		} else {
+			return;
+		}
+		
+		HashtableOfCharArrayAndObject excludedNames = new HashtableOfCharArrayAndObject();
+		if (sw.cases != null) {
+			for(Object caseObject : sw.cases) {
+				CaseStatement caseStatement = (CaseStatement) caseObject;
+				Expression exp = caseStatement.sourceExp;
+				if (exp != null) {
+					excludedNames.put(exp.toCharArray(), this);
+				}
+			}
+		}
+		
+		for(Dsymbol symbol : enumDeclaration.members) {
+			if (!(symbol instanceof EnumMember)) {
+				continue;
+			}
+			
+			EnumMember member = (EnumMember) symbol;
+			
+			char[] proposition = CharOperation.concat(enumDeclaration.ident.ident, member.ident.ident, '.');
+			if (!excludedNames.containsKey(proposition) &&
+					CharOperation.prefixEquals(name, proposition, false)) {
+				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+				proposal.setName(proposition);
+				proposal.setCompletion(proposition);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
