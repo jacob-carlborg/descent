@@ -55,5 +55,21 @@ public class CompletionOnCaseStatement extends AbstractCompletionTest {
 				CompletionProposal.FIELD_REF, "Foo.b", s.length() - 1, s.length(),
 				CompletionProposal.FIELD_REF, "Foo.c", s.length() - 1, s.length());
 	}
+	
+	public void testEmptyInComma() throws Exception {
+		String s = "enum Foo { a, b, c } void foo() { Foo f = Foo.a; switch(f) { case Foo.b, ";
+		
+		assertCompletions(null, "test.d", s, s.length(), 
+				CompletionProposal.FIELD_REF, "Foo.a", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "Foo.c", s.length(), s.length());
+	}
+	
+	public void testSomeForMember() throws Exception {
+		String s = "enum Foo { one, two, three } void foo() { Foo f = Foo.a; switch(f) { case t";
+		
+		assertCompletions(null, "test.d", s, s.length(), 
+				CompletionProposal.FIELD_REF, "Foo.three", s.length() - 1, s.length(),
+				CompletionProposal.FIELD_REF, "Foo.two", s.length() - 1, s.length());
+	}
 
 }

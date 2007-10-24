@@ -25,6 +25,7 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
@@ -208,6 +209,18 @@ public class CompletionParser extends Parser {
 			return (CaseStatement) assistNode;
 		} else {
 			return super.newCaseStatement(loc, exp, statement, caseEnd, expStart, expLength);
+		}
+	}
+	
+	@Override
+	protected TypeDotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
+		if (prevToken.ptr + prevToken.sourceLen == cursorLocation || token.ptr + token.sourceLen == cursorLocation) {
+			includeExpectations = false;
+			
+			assistNode = new CompletionOnTypeDotIdExp(loc, t, exp);
+			return (TypeDotIdExp) assistNode;
+		} else {
+			return super.newTypeDotIdExp(loc, t, exp);
 		}
 	}
 	

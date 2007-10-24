@@ -18,6 +18,7 @@ import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
+import descent.internal.codeassist.complete.CompletionOnTypeDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnVersionCondition;
 import descent.internal.codeassist.complete.CompletionParser;
 import descent.internal.codeassist.complete.ICompletionOnKeyword;
@@ -39,6 +40,7 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
@@ -48,8 +50,10 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SwitchStatement;
+import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.UnionDeclaration;
@@ -73,6 +77,10 @@ public class CompletionEngine extends Engine
 	
 	public static boolean DEBUG = false;
 	public static boolean PERF = false;
+	
+	private static final char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
+	private static final char[][] integralTypesProperties = { Id.max, Id.min };
+	private static final char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
 	
 	IJavaProject javaProject;
 	CompletionParser parser;
@@ -199,6 +207,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnCaseStatement) {
 					CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
 					completeCaseStatement(node);
+				} else if (assistNode instanceof CompletionOnTypeDotIdExp) {
+					CompletionOnTypeDotIdExp node = (CompletionOnTypeDotIdExp) assistNode;
+					completeTypeDotIdExp(node);
 				}
 			}
 			
@@ -516,6 +527,82 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
+		completeEnumMembers(name, enumDeclaration, excludedNames, true /* use fqn */);
+	}
+	
+	private void completeTypeDotIdExp(CompletionOnTypeDotIdExp node) {
+		Type type = node.type;
+		if (type == null) {
+			return;
+		}
+		
+		// For now, just complete basic types
+		// TODO: complete properties for other types
+		
+		// If it's a basic type, no semantic analysis is needed
+		if (type.getNodeType() == ASTDmdNode.TYPE_BASIC) {
+			completeBasicType((TypeBasic) type, node.ident);
+		} else {
+			// else, do semantic, then see what the type is
+			// it's typeof(exp)
+			doSemantic(module);
+			
+			Type resolvedType = node.resolvedType;
+			if (resolvedType != null) {
+				switch(resolvedType.getNodeType()) {
+				case ASTDmdNode.TYPE_BASIC:
+					completeBasicType((TypeBasic) resolvedType, node.ident);
+					break;
+				case ASTDmdNode.TYPE_ENUM:
+					TypeEnum te = (TypeEnum) resolvedType;
+					EnumDeclaration enumDeclaration = te.sym;
+					if (enumDeclaration != null) {
+						char[] name = computePrefixAndSourceRange(node.ident);
+						
+						// Suggest enum members
+						completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
+						
+						// And also all type's properties
+						suggestProperties(name, allTypesProperties);
+					}
+					break;
+				}
+			}
+		}
+	}
+	
+	private void completeBasicType(TypeBasic type, IdentifierExp ident) {
+		// Nothing for type void
+		if (type.ty == TY.Tvoid) {
+			return;
+		}
+		
+		char[] name = computePrefixAndSourceRange(ident);
+		
+		suggestProperties(name, allTypesProperties);
+		
+		if (type.isintegral()) {
+			suggestProperties(name, integralTypesProperties);
+		}
+		
+		if (type.isfloating()) {
+			suggestProperties(name, floatingPointTypesProperties);
+		}
+	}
+
+	private void suggestProperties(char[] name, char[][] properties) {
+		for(char[] property : properties) {
+			if (CharOperation.prefixEquals(name, property, false)) {
+				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+				proposal.setName(property);
+				proposal.setCompletion(property);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}
+	}
+	
+	private void completeEnumMembers(char[] name, EnumDeclaration enumDeclaration, HashtableOfCharArrayAndObject excludedNames, boolean useQualifiedName) {
 		for(Dsymbol symbol : enumDeclaration.members) {
 			if (!(symbol instanceof EnumMember)) {
 				continue;
@@ -523,7 +610,12 @@ public class CompletionEngine extends Engine
 			
 			EnumMember member = (EnumMember) symbol;
 			
-			char[] proposition = CharOperation.concat(enumDeclaration.ident.ident, member.ident.ident, '.');
+			char[] proposition;
+			if (useQualifiedName) {
+				proposition = CharOperation.concat(enumDeclaration.ident.ident, member.ident.ident, '.');
+			} else {
+				proposition = member.ident.ident;
+			}
 			if (!excludedNames.containsKey(proposition) &&
 					CharOperation.prefixEquals(name, proposition, false)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
@@ -534,10 +626,10 @@ public class CompletionEngine extends Engine
 			}
 		}
 	}
-	
+
 	private char[] computePrefixAndSourceRange(IdentifierExp ident) {
 		char[] prefix;
-		if (ident == null || ident.ident == null) {
+		if (ident == null || ident.ident == null || CharOperation.equals(ident.ident, CharOperation.NO_CHAR)) {
 			this.startPosition = this.actualCompletionPosition;
 			this.endPosition = this.actualCompletionPosition;
 			prefix = CharOperation.NO_CHAR;

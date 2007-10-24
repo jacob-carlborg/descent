@@ -220,7 +220,10 @@ public class DotIdExp extends UnaExp {
 		} else {
 			e = e1.type.dotExp(sc, e1, ident, context);			
 			e = e.semantic(sc, context);
-			ident.setBinding(e.getBinding());
+			
+			if (ident != null) {
+				ident.setBinding(e.getBinding());
+			}
 			return e;
 		}
 	}

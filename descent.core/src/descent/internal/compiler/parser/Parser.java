@@ -5550,12 +5550,14 @@ public class Parser extends Lexer {
 			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+			    	// Change from DMD
+					e = newTypeDotIdExp(loc, t, new IdentifierExp(Id.empty));
+			    	//e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.sourceLen);
 		    		nextToken();
 		    		break;
 			    }
-			    e = new TypeDotIdExp(loc, t, newIdentifierExp());
+			    e = newTypeDotIdExp(loc, t, newIdentifierExp());
 			    e.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    nextToken();
 			    break;
@@ -5582,12 +5584,14 @@ public class Parser extends Lexer {
 			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+			    	// Change from DMD
+					e = newTypeDotIdExp(loc, t, new IdentifierExp(Id.empty));
+			    	//e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.sourceLen);
 			    	nextToken();
 			    	break;
 			    }
-			    e = new TypeDotIdExp(loc, t, newIdentifierExp());
+			    e = newTypeDotIdExp(loc, t, newIdentifierExp());
 			    e.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    nextToken();
 			    break;
@@ -6140,11 +6144,11 @@ public class Parser extends Lexer {
 						if (token.value != TOKidentifier) {
 							parsingErrorInsertTokenAfter(prevToken, "Identifier");
 							// Change from DMD
-							e = new TypeDotIdExp(loc, t, null);
+							e = newTypeDotIdExp(loc, t, null);
 							e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 							return e;
 						}
-						e = new TypeDotIdExp(loc, t, newIdentifierExp());
+						e = newTypeDotIdExp(loc, t, newIdentifierExp());
 						e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 						nextToken();
 						e = parsePostExp(e);
@@ -7031,6 +7035,10 @@ public class Parser extends Lexer {
 	
 	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
 		return new CaseStatement(loc, exp, statement);
+	}
+	
+	protected TypeDotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
+		return new TypeDotIdExp(loc, t, exp);
 	}
 	
 	/**
