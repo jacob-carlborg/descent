@@ -5876,7 +5876,7 @@ public class Parser extends Lexer {
 						tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 						e = new DotTemplateInstanceExp(loc, e, tempinst);
 					} else {
-						e = new DotIdExp(loc, e, id);
+						e = newDotIdExp(loc, e, id);
 						e.start = start;
 						e.length = id.start + id.length - start;
 					}
@@ -5885,6 +5885,9 @@ public class Parser extends Lexer {
 					e = parseNewExp(e);
 					continue;
 				} else {
+					// signal a new DotIdExp anyway
+					e = newDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}
 				break;
@@ -7039,6 +7042,10 @@ public class Parser extends Lexer {
 	
 	protected TypeDotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
 		return new TypeDotIdExp(loc, t, exp);
+	}
+	
+	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
+		return new DotIdExp(loc, e, id);
 	}
 	
 	/**

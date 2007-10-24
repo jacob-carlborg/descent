@@ -15,6 +15,7 @@ import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
+import descent.internal.codeassist.complete.CompletionOnDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
@@ -210,6 +211,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnTypeDotIdExp) {
 					CompletionOnTypeDotIdExp node = (CompletionOnTypeDotIdExp) assistNode;
 					completeTypeDotIdExp(node);
+				} else if (assistNode instanceof CompletionOnDotIdExp) {
+					CompletionOnDotIdExp node = (CompletionOnDotIdExp) assistNode;
+					completeDotIdExp(node);
 				}
 			}
 			
@@ -536,48 +540,61 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// For now, just complete basic types
-		// TODO: complete properties for other types
+		// For now, just complete basic types and enums
 		
 		// If it's a basic type, no semantic analysis is needed
 		if (type.getNodeType() == ASTDmdNode.TYPE_BASIC) {
-			completeBasicType((TypeBasic) type, node.ident);
+			char[] name = computePrefixAndSourceRange(node.ident);
+			completeBasicType((TypeBasic) type, name);
 		} else {
 			// else, do semantic, then see what the type is
 			// it's typeof(exp)
 			doSemantic(module);
 			
-			Type resolvedType = node.resolvedType;
-			if (resolvedType != null) {
-				switch(resolvedType.getNodeType()) {
-				case ASTDmdNode.TYPE_BASIC:
-					completeBasicType((TypeBasic) resolvedType, node.ident);
-					break;
-				case ASTDmdNode.TYPE_ENUM:
-					TypeEnum te = (TypeEnum) resolvedType;
-					EnumDeclaration enumDeclaration = te.sym;
-					if (enumDeclaration != null) {
-						char[] name = computePrefixAndSourceRange(node.ident);
-						
-						// Suggest enum members
-						completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
-						
-						// And also all type's properties
-						suggestProperties(name, allTypesProperties);
-					}
-					break;
-				}
-			}
+			completeType(node.resolvedType, node.ident);
 		}
 	}
 	
-	private void completeBasicType(TypeBasic type, IdentifierExp ident) {
-		// Nothing for type void
-		if (type.ty == TY.Tvoid) {
+	private void completeDotIdExp(CompletionOnDotIdExp node) {
+		if (node.e1 == null) {
+			return;
+		}
+		
+		doSemantic(module);
+
+		completeType(node.e1.type, node.ident);
+	}
+
+	private void completeType(Type type, IdentifierExp ident) {
+		if (type == null) {
 			return;
 		}
 		
 		char[] name = computePrefixAndSourceRange(ident);
+		
+		switch(type.getNodeType()) {
+		case ASTDmdNode.TYPE_BASIC:
+			completeBasicType((TypeBasic) type, name);
+			break;
+		case ASTDmdNode.TYPE_ENUM:
+			TypeEnum te = (TypeEnum) type;
+			EnumDeclaration enumDeclaration = te.sym;
+			if (enumDeclaration != null) {
+				// Suggest enum members
+				completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
+				
+				// And also all type's properties
+				suggestProperties(name, allTypesProperties);
+			}
+			break;
+		}
+	}
+	
+	private void completeBasicType(TypeBasic type, char[] name) {
+		// Nothing for type void
+		if (type.ty == TY.Tvoid) {
+			return;
+		}
 		
 		suggestProperties(name, allTypesProperties);
 		
