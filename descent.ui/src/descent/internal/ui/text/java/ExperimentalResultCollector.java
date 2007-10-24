@@ -44,7 +44,11 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 	}
 
 	private IJavaCompletionProposal createMethodReferenceProposal(CompletionProposal methodProposal) {
-		String completion= String.valueOf(methodProposal.getCompletion());
+		// String completion= String.valueOf(methodProposal.getCompletion());
+		
+		return super.createJavaCompletionProposal(methodProposal);
+
+		/* TODO JDT code complete method
 		// super class' behavior if this is not a normal completion or has no
 		// parameters
 		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getParameterCount(methodProposal.getSignature()) == 0 || getContext().isInJavadoc())
@@ -57,6 +61,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		else
 			proposal= new ExperimentalProposal(methodProposal, getInvocationContext());
 		return proposal;
+		*/
 	}
 
 	/*

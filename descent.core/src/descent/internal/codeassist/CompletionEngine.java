@@ -1,6 +1,7 @@
 package descent.internal.codeassist;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import descent.core.CompletionContext;
@@ -55,8 +56,10 @@ import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
+import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -545,7 +548,7 @@ public class CompletionEngine extends Engine
 		// If it's a basic type, no semantic analysis is needed
 		if (type.getNodeType() == ASTDmdNode.TYPE_BASIC) {
 			char[] name = computePrefixAndSourceRange(node.ident);
-			completeBasicType((TypeBasic) type, name);
+			completeTypeBasic((TypeBasic) type, name);
 		} else {
 			// else, do semantic, then see what the type is
 			// it's typeof(exp)
@@ -570,27 +573,24 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		char[] name = computePrefixAndSourceRange(ident);
-		
+		char[] name = computePrefixAndSourceRange(ident);		
 		switch(type.getNodeType()) {
 		case ASTDmdNode.TYPE_BASIC:
-			completeBasicType((TypeBasic) type, name);
+			completeTypeBasic((TypeBasic) type, name);
+			break;
+		case ASTDmdNode.TYPE_CLASS:
+			completeTypeClass((TypeClass) type, name);
+			break;
+		case ASTDmdNode.TYPE_STRUCT:
+			completeTypeStruct((TypeStruct) type, name);
 			break;
 		case ASTDmdNode.TYPE_ENUM:
-			TypeEnum te = (TypeEnum) type;
-			EnumDeclaration enumDeclaration = te.sym;
-			if (enumDeclaration != null) {
-				// Suggest enum members
-				completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
-				
-				// And also all type's properties
-				suggestProperties(name, allTypesProperties);
-			}
+			completeTypeEnum((TypeEnum) type, name);
 			break;
 		}
 	}
-	
-	private void completeBasicType(TypeBasic type, char[] name) {
+
+	private void completeTypeBasic(TypeBasic type, char[] name) {
 		// Nothing for type void
 		if (type.ty == TY.Tvoid) {
 			return;
@@ -605,6 +605,145 @@ public class CompletionEngine extends Engine
 		if (type.isfloating()) {
 			suggestProperties(name, floatingPointTypesProperties);
 		}
+	}
+	
+	private void completeTypeClass(TypeClass type, char[] name) {
+		ClassDeclaration decl = type.sym;
+		if (decl == null) {
+			return;
+		}
+		
+		// Suggest fields
+		suggestFields(decl.fields, name);
+		
+		// Then virtual functions
+		suggestFunctions(decl.vtbl, name);
+		
+		// Then functions
+		suggestFunctions(decl.vtblFinal, name);
+		
+		// And also all type's properties
+		suggestProperties(name, allTypesProperties);
+	}
+	
+	private void completeTypeStruct(TypeStruct type, char[] name) {
+		StructDeclaration decl = type.sym;
+		if (decl == null) {
+			return;
+		}
+		
+		// Suggest fields
+		suggestFields(decl.fields, name);
+		
+		// And functions
+		suggestFunctions(decl.members, name);
+		
+		// And also all type's properties
+		suggestProperties(name, allTypesProperties);
+	}
+	
+	private void completeTypeEnum(TypeEnum type, char[] name) {
+		EnumDeclaration enumDeclaration = type.sym;
+		if (enumDeclaration == null) {
+			return;
+		}
+		
+		// Suggest enum members
+		completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
+		
+		// And also all type's properties
+		suggestProperties(name, allTypesProperties);
+	}
+	
+	private void suggestFields(List<VarDeclaration> list, char[] name) {
+		if (list == null) {
+			return;
+		}
+		
+		for(VarDeclaration var : list) {
+			if (CharOperation.prefixEquals(name, var.ident.ident, false)) {
+				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+				proposal.setName(var.ident.ident);
+				proposal.setCompletion(var.ident.ident);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}
+	}
+	
+	private void suggestFunctions(List list, char[] name) {
+		if (list == null) {
+			return;
+		}
+		
+		for(Object obj : list) {
+			if (!(obj instanceof FuncDeclaration)) {
+				continue;
+			}
+			
+			FuncDeclaration func = (FuncDeclaration) obj;
+			if (CharOperation.prefixEquals(name, func.ident.ident, false)) {
+				CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
+				proposal.setName(getNameForFuncProposal(func));
+				proposal.setCompletion(getCompletionForFuncProposal(func));
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}
+	}
+
+	private char[] getCompletionForFuncProposal(FuncDeclaration func) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(func.ident.ident);
+		sb.append('(');
+		TypeFunction tf = (TypeFunction) func.type;
+		if (tf.parameters != null) {						
+			for(int i = 0; i < tf.parameters.size(); i++) {
+				if (i != 0) {
+					sb.append(", ");
+				}
+				
+				Argument arg = tf.parameters.get(i);
+				if (arg.ident != null && arg.ident.ident != null) {
+					sb.append(arg.ident.ident);
+				}
+			}
+		}
+		sb.append(')');
+		
+		char[] ret = new char[sb.length()];
+		sb.getChars(0, sb.length(), ret, 0);
+		return ret;
+	}
+
+	private char[] getNameForFuncProposal(FuncDeclaration func) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(func.ident.ident);
+		sb.append('(');
+		
+		TypeFunction tf = (TypeFunction) func.type;
+		if (tf.parameters != null) {						
+			for(int i = 0; i < tf.parameters.size(); i++) {
+				if (i != 0) {
+					sb.append(", ");
+				}
+				
+				Argument arg = tf.parameters.get(i);
+				if (arg.type != null) {
+					sb.append(arg.type.toCharArray());
+					sb.append(' ');
+				}
+				
+				if (arg.ident != null && arg.ident.ident != null) {
+					sb.append(arg.ident.ident);
+				}
+			}
+		}
+		sb.append(')');
+		
+		char[] ret = new char[sb.length()];
+		sb.getChars(0, sb.length(), ret, 0);
+		return ret;
 	}
 
 	private void suggestProperties(char[] name, char[][] properties) {

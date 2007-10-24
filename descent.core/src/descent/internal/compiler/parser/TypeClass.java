@@ -433,9 +433,7 @@ public class TypeClass extends Type {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		appendBinding(sb);
-		return sb.toString();
+		return new String(sym.ident.ident);
 	}
 	
 	@Override

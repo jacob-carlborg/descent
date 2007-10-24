@@ -106,7 +106,10 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	}
 
 	private boolean computeHasParameters() throws IllegalArgumentException {
+		/* TODO JDT code complete method has parameters
 		return Signature.getParameterCount(fProposal.getSignature()) > 0;
+		*/
+		return false;
 	}
 
 	/**
@@ -143,6 +146,9 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		if (!hasArgumentList())
 			return super.computeReplacementString();
 		
+		return new String(fProposal.getCompletion());
+		
+		/* TODO JDT code complete replacement string for method
 		// we're inserting a method plus the argument list - respect formatter preferences
 		StringBuffer buffer= new StringBuffer();
 		buffer.append(fProposal.getName());
@@ -170,6 +176,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		buffer.append(RPAREN);
 
 		return buffer.toString();
+		*/
 
 	}
 	
@@ -201,6 +208,11 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		 * 4) by parameter type names
 		 */
 		char[] name= fProposal.getName();
+		
+		StringBuffer buf = new StringBuffer();
+		buf.append(name);
+		
+		/* TODO JDT code complete method sort string
 		char[] parameterList= Signature.toCharArray(fProposal.getSignature(), null, null, false, false);
 		int parameterCount= Signature.getParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters
 		StringBuffer buf= new StringBuffer(name.length + 2 + parameterList.length);
@@ -209,6 +221,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		buf.append('\0'); // separator
 		buf.append(parameterCount);
 		buf.append(parameterList);
+		*/
 		return buf.toString();
 	}
 	

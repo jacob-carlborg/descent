@@ -454,6 +454,7 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension5#getAdditionalProposalInfo(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
+		/* TODO JDT code complete return proposal info
 		if (getProposalInfo() != null) {
 			String info= getProposalInfo().getInfo(monitor);
 			if (info != null && info.length() > 0) {
@@ -465,6 +466,7 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 			}
 			return info;
 		}
+		*/
 		return null;
 	}
 	

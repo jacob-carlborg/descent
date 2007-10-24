@@ -62,11 +62,13 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 	
 	private void appendBinding(ASTDmdNode node) {
+		/* disabled for the moment		
 		if (node.getBinding() != null) {
 			this.buffer.append("<<");
 			node.getBinding().appendBinding(this.buffer);
 			this.buffer.append(">>");
 		}
+		*/
 	}
 	
 	void printIndent() {

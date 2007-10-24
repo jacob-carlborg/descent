@@ -179,6 +179,7 @@ public class CompletionProposalLabelProvider {
 		// method name
 		nameBuffer.append(methodProposal.getName());
 
+		/* TODO JDT code complete method parameters and return types
 		// parameters
 		nameBuffer.append('(');
 		appendUnboundedParameterList(nameBuffer, methodProposal);
@@ -197,6 +198,7 @@ public class CompletionProposalLabelProvider {
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
 		declaringType= Signature.getSimpleName(declaringType);
 		nameBuffer.append(declaringType);
+		*/
 
 		return nameBuffer.toString();
 	}

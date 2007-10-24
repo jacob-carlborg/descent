@@ -343,9 +343,7 @@ public class TypeStruct extends Type {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sym.appendBinding(sb);
-		return sb.toString();
+		return new String(sym.ident.ident);
 	}
 
 	//PERHAPS dt_t **toDt(dt_t **pdt);
