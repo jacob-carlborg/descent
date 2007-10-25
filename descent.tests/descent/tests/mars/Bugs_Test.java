@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.Block;
 import descent.core.dom.CallExpression;
@@ -232,6 +233,18 @@ public class Bugs_Test extends Parser_Test {
 	public void testCaseOpen() {
 		String s = "void foo() { switch(1) case ";
 		getCompilationUnit(s);	
+	}
+	
+	public void testAutoMissingSemicolon() {
+		String s = "void foo() { auto x = 2 }";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getProblems().length);
+		assertError(cu.getProblems()[0], IProblem.ParsingErrorInsertTokenAfter, 22, 1);
+	}
+	
+	public void testStrangeBug() {
+		String s = "struct foo { int a, b; } foo f = { ";
+		getCompilationUnit(s);
 	}
 	
 	public void testDstress_run_t_typeof_16_A() {

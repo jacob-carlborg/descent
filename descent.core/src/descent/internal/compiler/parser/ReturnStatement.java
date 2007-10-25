@@ -185,8 +185,8 @@ public class ReturnStatement extends Statement {
 				if (fd.type.next != null) {
 					if (!exp.type.equals(fd.type.next)) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.MismatchedFunctionReturnTypeInference, 0, start,
-								length, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
+								IProblem.MismatchedFunctionReturnTypeInference, 0, sourceExp.start,
+								sourceExp.length, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
 					}
 				} else {
 					fd.type.next = exp.type;

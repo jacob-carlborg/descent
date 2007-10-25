@@ -192,7 +192,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 				b.base = tc.sym;
 				if (b.base == this || isBaseOf2(b.base)) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularInheritanceOfInterface, 0, start, length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularInheritanceOfInterface, 0, b.getErrorStart(), b.getErrorLength()));
 					baseclasses.remove(i);
 					continue;
 				}

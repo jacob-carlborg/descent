@@ -2291,15 +2291,15 @@
       <specification
             annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
             annotationType="descent.ui.error"
-            />
+            symbolicIcon="error"/>
       <specification
             annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
             annotationType="descent.ui.warning"
-            />
+            symbolicIcon="warning"/>
       <specification
             annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
             annotationType="descent.ui.info"
-            />
+            symbolicIcon="info"/>
        <specification
             annotationType="descent.ui.occurrences"
             label="%OccurrenceAnnotation.label"

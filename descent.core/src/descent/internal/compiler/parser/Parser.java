@@ -2940,6 +2940,8 @@ public class Parser extends Lexer {
 					start = token.ptr;
 					continue;
 				}
+			} else {
+				parsingErrorInsertTokenAfter(prevToken, ";");
 			}
 			
 			return a;
@@ -3266,6 +3268,7 @@ public class Parser extends Lexer {
 		     * Treat { } as a struct initializer.
 		     */
 		    braces = 1;
+		    loop:
 			for (t = peek(token); true; t = peek(t)) {
 				switch (t.value) {
 				case TOKsemicolon:
@@ -3284,7 +3287,8 @@ public class Parser extends Lexer {
 						break;
 					}
 					continue;
-
+				case TOKeof:
+					break loop;
 				default:
 					continue;
 				}
@@ -3323,6 +3327,10 @@ public class Parser extends Lexer {
 				case TOKrcurly: // allow trailing comma's
 					is.setSourceRange(start, token.ptr + token.sourceLen - start);
 					nextToken();
+					break;
+				
+				case TOKeof:
+					parsingErrorInsertTokenAfter(prevToken, "}");
 					break;
 
 				default:

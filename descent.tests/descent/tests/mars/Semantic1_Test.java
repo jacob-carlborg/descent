@@ -1370,6 +1370,102 @@ public class Semantic1_Test extends Parser_Test {
 				"x", IProblem.ParameterIsAlreadyDefined, 15);
 	}
 	
+	public void testNewCanOnlyCreateStructsDynamicArraysAndClassObjects() {
+		assertSemanticProblems(
+				"void foo() { void* x = new foo; }", 
+				"foo", IProblem.UsedAsAType, 20,
+				"new foo", IProblem.NewCanOnlyCreateStructsDynamicArraysAndClassObjects
+				);
+	}
+	
+	public void testTooManyInitializersForStructLiteral() {
+		assertSemanticProblems(
+				"struct str { int a, b; } str x = { 1, 2, 3 };", 
+				"{ 1, 2, 3 }", IProblem.TooManyInitializers
+				);
+	}
+	
+	public void testMismatchedFunctionReturnTypeInference() {
+		assertSemanticProblems(
+				"auto x = { if (true) return 1; else return 1.0; };", 
+				"1.0", IProblem.MismatchedFunctionReturnTypeInference
+				);
+	}
+	
+	public void testShiftLeftExceeds() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	byte x = 2;\r\n" + 
+				"	int y = x << 33;\r\n" + 
+				"}", 
+				"x << 33", IProblem.ShiftLeftExceeds
+				);
+	}
+	
+	public void testSymbolCannotBeSliced() {
+		assertSemanticProblems(
+				"int y = 1[0 .. 3];", 
+				"1[0 .. 3]", IProblem.SymbolCannotBeSlicedWithBrackets
+				);
+	}
+	
+	public void testSymbolIsNotAMemberOf() {
+		assertSemanticProblems(
+				"struct foo {\r\n" + 
+				"	int x;\r\n" + 
+				"}\r\n" + 
+				"\r\n" + 
+				"foo f = {y: 1};", 
+				"y", IProblem.SymbolIsNotAMemberOf
+				);
+	}
+	
+	public void testCanOnlyDereferenceAPointer() {
+		assertSemanticProblems("int x = *2;", 
+				"*2", IProblem.CanOnlyDereferenceAPointer
+				);
+	}
+	
+	public void testSymbolMustBeAnArrayOfPointerType() {
+		assertSemanticProblems("int y = y[0];", 
+				"y[0]", IProblem.SymbolMustBeAnArrayOfPointerType
+				);
+	}
+	
+	public void testCircularInheritanceOfInterface() {
+		assertSemanticProblems(
+				"interface A : B {\r\n" + 
+				"}\r\n" + 
+				"interface B : A {\r\n" + 
+				"}", 
+				"A", IProblem.CircularInheritanceOfInterface, 20
+				);
+	}
+	
+	public void testCannotReturnExpressionFromConstructor() {
+		assertSemanticProblems(
+				"class Foo {\r\n" + 
+				"	this() {\r\n" + 
+				"		return 1;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"return 1", IProblem.CannotReturnExpressionFromConstructor
+				);
+	}
+	
+	public void testReturnInFinally() {
+		assertSemanticProblems(
+				"int foo() {\r\n" + 
+				"	try {\r\n" + 
+				"	} finally {\r\n" + 
+				"		return 1;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"return 1;", IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies,
+				"foo", IProblem.NoReturnAtEndOfFunction
+				);
+	}
+	
 	/**
 	 * Utility method for testing semantic problems. It is passed the source
 	 * as the first argument, and then a variable list of expected problems.

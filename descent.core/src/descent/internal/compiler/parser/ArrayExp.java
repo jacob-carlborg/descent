@@ -82,6 +82,7 @@ public class ArrayExp extends UnaExp {
 						length, new String[] { t1.toChars(context) }));
 			}
 			e = new IndexExp(loc, e1, arguments.get(0));
+			e.copySourceRange(this);
 			return e.semantic(sc, context);
 		}
 

@@ -80,8 +80,8 @@ public class StructInitializer extends Initializer {
 					s = ad.search(loc, id, 0, context);
 					if (null == s) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.SymbolIsNotAMemberOf, 0, start,
-								length, new String[] { id.toChars(), t.toChars(context) }));
+								IProblem.SymbolIsNotAMemberOf, 0, id.start,
+								id.length, new String[] { id.toChars(), t.toChars(context) }));
 						continue;
 					}
 

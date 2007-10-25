@@ -1772,8 +1772,8 @@ public class FuncDeclaration extends Declaration {
 
 							if (context.global.params.warnings) {
 								context.acceptProblem(Problem.newSemanticTypeWarning(
-										IProblem.NoReturnAtEndOfFunction, 0, start,
-										length, new String[] { toChars(context) }));
+										IProblem.NoReturnAtEndOfFunction, 0, getErrorStart(),
+										getErrorLength(), new String[] { toChars(context) }));
 							}
 
 							if (context.global.params.useAssert
