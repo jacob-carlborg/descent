@@ -40,7 +40,7 @@ public class AddrExp extends UnaExp {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb != type) {
+		if (tb.singleton != type.singleton) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			VarExp ve;
@@ -109,7 +109,7 @@ public class AddrExp extends UnaExp {
 			Expression ex;
 
 			ex = ((PtrExp) e1).e1;
-			if (type.equals(ex.type)) {
+			if (type.singleton.equals(ex.type.singleton)) {
 				e = ex;
 			} else {
 				e = ex.copy();
@@ -168,7 +168,6 @@ public class AddrExp extends UnaExp {
 						IProblem.CannotTakeAddressOf, 0, e1.start,
 						e1.length, new String[] { e1.toChars(context) }));
 				type = Type.tint32;
-				assignBinding();
 				return this;
 			}
 			type = e1.type.pointerTo(context);
@@ -182,8 +181,7 @@ public class AddrExp extends UnaExp {
 					Expression e;
 
 					e = new DelegateExp(loc, dve.e1, f);
-					e = e.semantic(sc, context);
-					assignBinding();					
+					e = e.semantic(sc, context);	
 					return e;
 				}
 			} else if (e1.op == TOKvar) {
@@ -195,7 +193,6 @@ public class AddrExp extends UnaExp {
 
 					e = new DelegateExp(loc, e1, f);
 					e = e.semantic(sc, context);
-					assignBinding();
 					return e;
 				}
 			} else if (e1.op == TOKarray) {
@@ -207,16 +204,10 @@ public class AddrExp extends UnaExp {
 			}
 			
 			Expression opt = optimize(WANTvalue, context);
-			assignBinding();
 			return opt;
 		}
 		
 		return this;
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return type;
 	}
 
 }

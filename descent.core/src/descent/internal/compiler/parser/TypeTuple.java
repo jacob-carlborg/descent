@@ -85,7 +85,7 @@ public class TypeTuple extends Type {
 			SemanticContext context) {
 		Expression e;
 
-		if (CharOperation.equals(ident, Id.length)) {
+		if (equals(ident, Id.length)) {
 			e = new IntegerExp(loc, arguments.size(), Type.tsize_t);
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(

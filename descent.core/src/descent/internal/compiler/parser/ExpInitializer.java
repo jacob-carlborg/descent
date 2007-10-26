@@ -99,21 +99,5 @@ public class ExpInitializer extends Initializer {
 	public Expression toExpression(SemanticContext context) {
 		return exp;
 	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		exp.type.appendBinding(sb);
-	}
-	
-	@Override
-	public void setBinding(ASTDmdNode binding) {
-		exp.setBinding(binding);
-		sourceExp.setBinding(binding);
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return exp.getBinding();
-	}
 
 }

@@ -122,7 +122,7 @@ public class TypeClass extends Type {
 			s = sym.search(e.loc, ident, 0, context);
 		}
 
-		if (CharOperation.equals(ident.ident, Id.tupleof) && !gotoL1) {
+		if (equals(ident, Id.tupleof) && !gotoL1) {
 			/* Create a TupleExp
 			 */
 			Expressions exps = new Expressions(sym.fields.size());
@@ -140,13 +140,13 @@ public class TypeClass extends Type {
 			// See if it's a base class
 			ClassDeclaration cbase;
 			for (cbase = sym.baseClass; null != cbase; cbase = cbase.baseClass) {
-				if (CharOperation.equals(ident.ident, cbase.ident.ident)) {
+				if (equals(ident, cbase.ident)) {
 					e = new DotTypeExp(Loc.ZERO, e, cbase);
 					return e;
 				}
 			}
 
-			if (CharOperation.equals(ident.ident, Id.classinfo)) {
+			if (equals(ident, Id.classinfo)) {
 				Type t;
 
 				if (context.ClassDeclaration_classinfo == null) {
@@ -179,7 +179,7 @@ public class TypeClass extends Type {
 				return e;
 			}
 
-			else if (CharOperation.equals(ident.ident, Id.typeinfo)) {
+			else if (equals(ident, Id.typeinfo)) {
 				if (!context.global.params.useDeprecated) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DeprecatedProperty, 0, ident.start,
@@ -189,7 +189,7 @@ public class TypeClass extends Type {
 				return getTypeInfo(sc, context);
 			}
 
-			else if (CharOperation.equals(ident.ident, Id.outer)
+			else if (equals(ident, Id.outer)
 					&& null != sym.vthis) {
 				s = sym.vthis;
 			}
@@ -427,18 +427,8 @@ public class TypeClass extends Type {
 	}
 	
 	@Override
-	public void appendBinding(StringBuilder sb) {
-		sym.appendBinding(sb);
-	}
-	
-	@Override
 	public String toString() {
 		return new String(sym.ident.ident);
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return sym;
 	}
 
 }

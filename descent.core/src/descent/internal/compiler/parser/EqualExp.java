@@ -93,7 +93,6 @@ public class EqualExp extends BinExp {
 					// They are the same, result is 'true' for ==, 'false' for !=
 					e = new IntegerExp(loc, (op == TOK.TOKequal) ? 1 : 0,
 							Type.tboolean);
-					assignBinding();
 					return e;
 				}
 			}
@@ -105,7 +104,6 @@ public class EqualExp extends BinExp {
 				e = new NotExp(e.loc, e);
 				e = e.semantic(sc, context);
 			}
-			assignBinding();
 			return e;
 		}
 
@@ -125,7 +123,7 @@ public class EqualExp extends BinExp {
 		}
 
 		else {
-			if (e1.type != e2.type && e1.type.isfloating()
+			if (e1.type.singleton != e2.type.singleton && e1.type.isfloating()
 					&& e2.type.isfloating()) {
 				// Cast both to complex
 				e1 = e1.castTo(sc, Type.tcomplex80, context);
@@ -133,7 +131,6 @@ public class EqualExp extends BinExp {
 			}
 		}
 		
-		assignBinding();
 		return e;
 	}
 

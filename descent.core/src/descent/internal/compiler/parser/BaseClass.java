@@ -152,10 +152,5 @@ public class BaseClass extends ASTDmdNode {
 			return super.toCharArray();
 		}
 	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return type.getBinding();
-	}
 
 }

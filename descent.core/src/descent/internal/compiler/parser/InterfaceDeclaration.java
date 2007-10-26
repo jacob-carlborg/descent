@@ -4,7 +4,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
@@ -19,7 +18,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			BaseClasses baseclasses) {
 		super(loc, id, baseclasses);
 		com = false;
-		if (id != null && CharOperation.equals(id.ident, Id.IUnknown)) { // IUnknown is the root
+		if (id != null && equals(id, Id.IUnknown)) { // IUnknown is the root
 			// of all COM
 			// objects
 			com = true;

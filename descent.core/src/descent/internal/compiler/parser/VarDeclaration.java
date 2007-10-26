@@ -62,9 +62,6 @@ public class VarDeclaration extends Declaration {
 
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
 		super(id);
-		if (ident != null) {
-			ident.setBinding(this);
-		}
 
 		Assert.isTrue(type != null || init != null);
 
@@ -318,7 +315,6 @@ public class VarDeclaration extends Declaration {
 			TupleDeclaration v2 = new TupleDeclaration(loc, ident, exps);
 			v2.isexp = true;
 			aliassym = v2;
-			assignTypeBinding();
 			return;
 		}
 
@@ -392,7 +388,7 @@ public class VarDeclaration extends Declaration {
 
 			if ((storage_class & (STCauto | STCscope)) == 0) {
 				if ((storage_class & STCparameter) == 0
-						&& CharOperation.equals(ident.ident, Id.withSym)) {
+						&& equals(ident, Id.withSym)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ReferenceToScopeClassMustBeScope, 0, start,
 							length, new String[] { toChars(context) }));
@@ -411,7 +407,6 @@ public class VarDeclaration extends Declaration {
 				e = new AssignExp(loc, e1, e);
 				e.type = e1.type;
 				init = new ExpInitializer(loc, e/* .type.defaultInit() */);
-				assignTypeBinding();
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
@@ -468,7 +463,6 @@ public class VarDeclaration extends Declaration {
 							e = init.toExpression(context);
 							if (e == null) {
 								context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAStaticAndCannotHaveStaticInitializer, 0, start, length, new String[] { toChars(context) }));
-								assignTypeBinding();
 								return;
 							}
 						}
@@ -548,8 +542,6 @@ public class VarDeclaration extends Declaration {
 				}
 			}
 		}
-		
-		assignTypeBinding();
 	}
 
 	@Override
@@ -559,7 +551,6 @@ public class VarDeclaration extends Declaration {
 			init = init.semantic(sc, type, context);
 			inuse--;
 		}
-		assignInitBinding();
 	}
 
 	@Override
@@ -629,26 +620,6 @@ public class VarDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
-	}
-	
-	public ASTDmdNode getBinding() {
-		if (type != sourceType) {
-			return type.getBinding();
-		} else {
-			return null;
-		}
-	}
-	
-	private void assignTypeBinding() {
-		if (sourceType != null) {
-			sourceType.setBinding(getBinding());
-		}
-	}
-	
-	private void assignInitBinding() {
-		if (sourceInit != null) {
-			sourceInit.setBinding(init.getBinding());
-		}
 	}
 
     // PERHAPS Symbol *toSymbol();

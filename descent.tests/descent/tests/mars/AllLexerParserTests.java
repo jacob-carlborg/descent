@@ -42,8 +42,6 @@ public class AllLexerParserTests {
 		suite.addTestSuite(ExtendedSourceRange_Test.class);
 		suite.addTestSuite(LexerReplacements_Test.class);
 		//suite.addTestSuite(Semantic1_Test.class);
-		suite.addTestSuite(InternalBindings_Test.class);
-		suite.addTestSuite(ToBindingString_Test.class);
 		suite.addTestSuite(ASTConvertion_Test.class);
 		suite.addTestSuite(ScannerTests.class);
 		suite.addTestSuite(integer_t_Test.class);

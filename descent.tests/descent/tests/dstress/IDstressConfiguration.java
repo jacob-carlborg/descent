@@ -10,6 +10,6 @@ public interface IDstressConfiguration {
 	 */
 	public final static String DSTRESS_PATH = "c:\\ary\\programacion\\d\\dstress";
 	
-	public final static String DSTRESS_WHERE_PATH = new File(DSTRESS_PATH).getParent();
+	public final static String DSTRESS_WHERE_PATH = new File(DSTRESS_PATH)/*.getParent()*/.toString();
 
 }

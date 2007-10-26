@@ -97,9 +97,9 @@ public class Dsymbol extends ASTDmdNode {
 			}
 			if (sd.isAggregateDeclaration() != null
 					|| sd.isEnumDeclaration() != null) {
-				if (CharOperation.equals(ident.ident, Id.__sizeof)
-						|| CharOperation.equals(ident.ident, Id.alignof)
-						|| CharOperation.equals(ident.ident, Id.mangleof)) {
+				if (equals(ident, Id.__sizeof)
+						|| equals(ident, Id.alignof)
+						|| equals(ident, Id.mangleof)) {
 					context.acceptProblem(Problem.newSemanticMemberError(
 							IProblem.PropertyCanNotBeRedefined, 0, ident.start,
 							ident.length,
@@ -557,30 +557,6 @@ public class Dsymbol extends ASTDmdNode {
 	public String toPrettyChars(SemanticContext context) {
 		// TODO semantic
 		return toChars(context);
-	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		if (ident == null) {
-			sb.append("anonymous ");
-			sb.append(kind());
-		} else {
-			if(parent != null) {
-				int oldLength = sb.length();
-				parent.appendBinding(sb);
-				if (oldLength != sb.length()) {
-					sb.append(".");
-				}
-			}
-			sb.append(kind());
-			sb.append(" ");
-			sb.append(ident.toString());
-		}
-	}
-	
-	@Override
-	public ASTDmdNode getParentBinding() {
-		return parent;
 	}
 
 	public String locToChars(SemanticContext context) {

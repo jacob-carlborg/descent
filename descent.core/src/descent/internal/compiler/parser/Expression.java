@@ -115,7 +115,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = this;
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb != type) {
+		if (tb.singleton != type.singleton) {
 			if (tb.ty == Tbit && isBit()) {
 				;
 			}
@@ -487,7 +487,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public integer_t toUInteger(SemanticContext context) {
-		return toInteger(context);
+		return toInteger(context).castToUns64();
 	}
 
 }

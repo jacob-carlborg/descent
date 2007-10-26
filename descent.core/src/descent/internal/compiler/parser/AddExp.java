@@ -73,7 +73,6 @@ public class AddExp extends BinExp {
 
 			e = op_overload(sc, context);
 			if (null != e) {
-				assignBinding();
 				return e;
 			}
 
@@ -82,7 +81,7 @@ public class AddExp extends BinExp {
 
 			if ((tb1.ty == TY.Tarray || tb1.ty == TY.Tsarray)
 					&& (tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray)
-					&& (tb1.next.equals(tb2.next))) {
+					&& (tb1.next.singleton.equals(tb2.next.singleton))) {
 				type = e1.type;
 				e = this;
 			} else if ((tb1.ty == TY.Tpointer && e2.type.isintegral())
@@ -116,16 +115,10 @@ public class AddExp extends BinExp {
 				e = this;
 			}
 			
-			assignBinding();
 			return e;
 		}
 		
 		return this;
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return type;
 	}
 
 }

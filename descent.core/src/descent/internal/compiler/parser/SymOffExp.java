@@ -45,7 +45,7 @@ public class SymOffExp extends Expression {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb != type) {
+		if (tb.singleton != type.singleton) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			FuncDeclaration f;

@@ -87,19 +87,19 @@ public class TypeEnum extends Type {
 			SemanticContext context) {
 		Expression e;
 
-		if (CharOperation.equals(ident, Id.max)) {
+		if (equals(ident, Id.max)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
 			e = new IntegerExp(Loc.ZERO, sym.maxval, this);
-		} else if (CharOperation.equals(ident, Id.min)) {
+		} else if (equals(ident, Id.min)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
 			e = new IntegerExp(Loc.ZERO, sym.minval, this);
-		} else if (CharOperation.equals(ident, Id.init)) {
+		} else if (equals(ident, Id.init)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);

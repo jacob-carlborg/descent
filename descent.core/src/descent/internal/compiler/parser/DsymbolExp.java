@@ -87,7 +87,7 @@ public class DsymbolExp extends Expression {
 			v = s.isVarDeclaration();
 			if (v != null) {
 				if (type == null) {
-					type = v.type;
+					type = v.type.singleton;
 					if (v.type == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, 0, start, length,
@@ -121,7 +121,7 @@ public class DsymbolExp extends Expression {
 				e = new VarExp(loc, v);
 				e.start = start;
 				e.length = length;
-				e.type = type;
+				e.type = type.singleton;
 				e = e.semantic(sc, context);
 				return e.deref();
 			}
@@ -234,13 +234,6 @@ public class DsymbolExp extends Expression {
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		s.appendBinding(sb);
-		return sb.toString();
 	}
 
 }

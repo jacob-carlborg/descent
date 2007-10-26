@@ -49,7 +49,7 @@ public class PragmaStatement extends Statement {
 
 		// msg and lib char[] instances are reused by Lexer
 
-		if (CharOperation.equals(ident.ident, Id.msg)) {
+		if (equals(ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
 					Expression e = args.get(i);
@@ -65,7 +65,7 @@ public class PragmaStatement extends Statement {
 					}
 				}
 			}
-		} else if (CharOperation.equals(ident.ident, Id.lib)) {
+		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem

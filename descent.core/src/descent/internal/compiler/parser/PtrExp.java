@@ -96,7 +96,7 @@ public class PtrExp extends UnaExp {
 			Expression ex;
 			
 			ex = ((AddrExp) e1).e1;
-			if(type.equals(ex.type))
+			if(type.singleton.equals(ex.type.singleton))
 				e = ex;
 			else
 			{

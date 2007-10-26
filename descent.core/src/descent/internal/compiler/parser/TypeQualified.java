@@ -74,7 +74,7 @@ public abstract class TypeQualified extends Type {
 					if (sm == null) {
 						v = s.isVarDeclaration();
 						if (v != null
-								&& CharOperation.equals(id.ident, Id.length)) {
+								&& equals(id, Id.length)) {
 							if (v.isConst()
 									&& v.getExpInitializer(context) != null) {
 								e = v.getExpInitializer(context).exp;

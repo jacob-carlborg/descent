@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -65,7 +66,7 @@ public class ContinueStatement extends Statement {
 					{
 						for (; scx != null; scx = scx.enclosing) {
 							ls = scx.slabel;
-							if (ls != null && ls.ident == ident
+							if (ls != null && equals(ls.ident, ident)
 									&& ls.statement == sc.fes) {
 								// Replace continue ident; with return 0;
 								return new ReturnStatement(0, new IntegerExp(0));
@@ -89,7 +90,7 @@ public class ContinueStatement extends Statement {
 				}
 
 				ls = scx.slabel;
-				if (ls != null && ls.ident == ident) {
+				if (ls != null && equals(ls.ident, ident)) {
 					Statement s = ls.statement;
 
 					if (!s.hasContinue()) {

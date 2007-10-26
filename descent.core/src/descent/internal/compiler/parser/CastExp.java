@@ -70,7 +70,7 @@ public class CastExp extends UnaExp {
 		 *  cast(void)
 		 *  cast(classtype)func()
 		 */
-		if (!to.equals(Type.tvoid)
+		if (!to.singleton.equals(Type.tvoid)
 				&& !(to.ty == Tclass && e1.op == TOKcall && e1.type.ty == Tclass)) {
 			return super.checkSideEffect(flag, context);
 		}
@@ -114,7 +114,7 @@ public class CastExp extends UnaExp {
 
 		if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
 				&& (type.ty == Tpointer || type.ty == Tarray)
-				&& type.next.equals(e1.type.next)) {
+				&& type.next.singleton.equals(e1.type.next.singleton)) {
 			e1.type = type;
 			return e1;
 		}
@@ -217,16 +217,6 @@ public class CastExp extends UnaExp {
 		to.toCBuffer(buf, null, hgs, context);
 		buf.writeByte(')');
 		expToCBuffer(buf, hgs, e1, op.precedence, context);
-	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		e1.appendBinding(sb);
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return e1.getBinding();
 	}
 
 }

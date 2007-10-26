@@ -36,10 +36,10 @@ public class TypeDelegate extends Type {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		if (CharOperation.equals(ident.ident, Id.ptr)) {
+		if (equals(ident, Id.ptr)) {
 			e.type = context.Type_tvoidptr;
 			return e;
-		} else if (CharOperation.equals(ident.ident, Id.funcptr)) {
+		} else if (equals(ident, Id.funcptr)) {
 			e = e.addressOf(sc, context);
 			e.type = context.Type_tvoidptr;
 			e = new AddExp(e.loc, e, new IntegerExp(PTRSIZE));

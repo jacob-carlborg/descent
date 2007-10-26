@@ -68,7 +68,6 @@ public class XorExp extends BinExp {
 			super.semanticp(sc, context);
 			e = op_overload(sc, context);
 			if (null != e) {
-				assignBinding();
 				return e;
 			}
 			if (e1.type.toBasetype(context).ty == TY.Tbool
@@ -82,7 +81,6 @@ public class XorExp extends BinExp {
 			}
 		}
 		
-		assignBinding();
 		return this;
 	}
 

@@ -126,7 +126,7 @@ public class TypeStruct extends Type {
 			return new IntegerExp(e.loc, 0, Type.tint32);
 		}
 
-		if (CharOperation.equals(ident.ident, Id.tupleof)) {
+		if (equals(ident, Id.tupleof)) {
 			/* Create a TupleExp
 			 */
 			Expressions exps = new Expressions(sym.fields.size());
@@ -334,11 +334,6 @@ public class TypeStruct extends Type {
 	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		toDecoBuffer(buf, context);
-	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		sym.appendBinding(sb);
 	}
 	
 	@Override

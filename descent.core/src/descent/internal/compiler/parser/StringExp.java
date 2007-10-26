@@ -244,7 +244,7 @@ public class StringExp extends Expression {
 			unique = 1; // this is the only instance
 		}
 		se.type = type.toBasetype(context);
-		if (tb == se.type) {
+		if (tb.singleton == se.type.singleton) {
 			se.type = t;
 			se.committed = true;
 			return se;
@@ -541,6 +541,74 @@ public class StringExp extends Expression {
 			}
 		}
 		return len1 - len2;
+	}
+	
+	@Override
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
+		char m;
+	    OutBuffer tmp = new OutBuffer();
+	    int p;
+	    int[] c = { 0 };
+	    int[] u = { 0 };
+	    char[] q;
+	    int qlen;
+
+	    /* Write string in UTF-8 format
+	     */
+	    switch (sz)
+	    {	case 1:
+		    m = 'a';
+		    q = string;
+		    qlen = len;
+		    break;
+		case 2:
+		    m = 'w';
+		    for (u[0] = 0; u[0] < len; )
+		    {
+		    	p = Utf.decodeWchar(string, 0, len, u, c);
+				if (p >= 0) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							p, 0, start, length, new String[0]));
+				} else {
+					tmp.writeUTF8(c[0]);
+				}
+	                p = Utf.decodeWchar(string, 0, len, u, c);
+	                if (p >= 0)
+	                	context.acceptProblem(Problem.newSemanticTypeError(
+								p, 0, start, length, new String[0]));
+	                else
+	                    tmp.writeUTF8(c[0]);
+		    }
+		    q = tmp.data.toString().toCharArray();
+		    qlen = tmp.data.length();
+		    break;
+		case 4:
+		    m = 'd';
+	            for (u[0] = 0; u[0] < len; u[0]++)
+	            {
+	                c[0] = string[u[0]];
+	                if (!Utf.isValidDchar(c[0])) {
+	                	context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InvalidUCS32Char, 0, start,
+								length, new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+	                }
+	                else
+	                    tmp.writeUTF8(c[0]);
+	            }
+	            q = tmp.data.toString().toCharArray();
+			    qlen = tmp.data.length();
+		    break;
+		default:
+			throw new IllegalStateException("assert(0);");
+	    }
+	    buf.writeByte(m);
+	    buf.data.append(qlen).append("_");
+	    for (int i = 0; i < qlen; i++) {
+	    	buf.data.append(q[i]);
+	    	/* TODO semantic append correctly and remove the line above
+	    	buf.printf("%02x", q[i]);
+	    	*/
+	    }
 	}
 
 }

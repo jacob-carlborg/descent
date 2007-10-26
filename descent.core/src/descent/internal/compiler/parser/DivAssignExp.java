@@ -45,7 +45,6 @@ public class DivAssignExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -69,7 +68,6 @@ public class DivAssignExp extends BinExp {
 				e2.type = t1;
 				e = new AssignExp(loc, e1, e2);
 				e.type = t1;
-				assignBinding();
 				return e;
 			} else if (t1.isimaginary()) {
 				switch (t1.ty) {
@@ -88,12 +86,10 @@ public class DivAssignExp extends BinExp {
 				e2 = e2.castTo(sc, t2, context);
 				e = new AssignExp(loc, e1, e2);
 				e.type = t1;
-				assignBinding();
 				return e;
 			}
 		}
 		
-		assignBinding();
 		return this;
 	}
 

@@ -194,19 +194,7 @@ public class AssignExp extends BinExp {
 		type = e1.type;
 		assert (null != type);
 		
-		assignBinding();
-		
 		return this;
-	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		e2.appendBinding(sb);
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return e2;
 	}
 
 }

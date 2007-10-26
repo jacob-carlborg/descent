@@ -191,23 +191,6 @@ public class VarExp extends Expression {
 		}
 		return this;
 	}
-
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		var.appendBinding(sb);
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return var;
-}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		appendBinding(sb);
-		return sb.toString();
-	}
 	
 	//PERHAPS void dump(int indent);
 	//PERHAPS int inlineCost(InlineCostState *ics);

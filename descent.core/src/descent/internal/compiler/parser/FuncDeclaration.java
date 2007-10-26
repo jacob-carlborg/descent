@@ -473,11 +473,11 @@ public class FuncDeclaration extends Declaration {
 		if (context.global.errors != 0) {
 			return null;
 		}
-		if (CharOperation.equals(ident.ident, Id.aaLen)) {
+		if (equals(ident, Id.aaLen)) {
 			return interpret_aaLen(istate, arguments, context);
-		} else if (CharOperation.equals(ident.ident, Id.aaKeys)) {
+		} else if (equals(ident, Id.aaKeys)) {
 			return interpret_aaKeys(istate, arguments, context);
-		} else if (CharOperation.equals(ident.ident, Id.aaValues)) {
+		} else if (equals(ident, Id.aaValues)) {
 			return interpret_aaValues(istate, arguments, context);
 		}
 
@@ -661,7 +661,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean isDllMain() {
-		return CharOperation.equals(ident.ident, Id.DllMain)
+		return equals(ident, Id.DllMain)
 				&& linkage != LINKc && null == isMember();
 	}
 
@@ -681,7 +681,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean isMain() {
-		return ident != null && CharOperation.equals(ident.ident, Id.main)
+		return ident != null && equals(ident, Id.main)
 				&& linkage != LINK.LINKc && isMember() == null && !isNested();
 	}
 
@@ -724,7 +724,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean isWinMain() {
-		return CharOperation.equals(ident.ident, Id.WinMain)
+		return equals(ident, Id.WinMain)
 				&& linkage != LINKc && null == isMember();
 	}
 
@@ -1001,7 +1001,7 @@ public class FuncDeclaration extends Declaration {
 					// BUG: should give error if argument types match,
 					// but return type does not?
 
-					if (fdv != null && fdv.ident.ident == ident.ident) {
+					if (fdv != null && equals(fdv.ident, ident)) {
 						int cov = type.covariant(fdv.type, context);
 
 						if (cov == 2) {
@@ -1130,7 +1130,7 @@ public class FuncDeclaration extends Declaration {
 				for (vi = 0; vi < b.base.vtbl.size() && !gotoL2; vi++) {
 					Dsymbol s = (Dsymbol) b.base.vtbl.get(vi);
 					FuncDeclaration fdv = s.isFuncDeclaration();
-					if (fdv != null && fdv.ident.ident == ident.ident) {
+					if (fdv != null && equals(fdv.ident, ident)) {
 						int cov = type.covariant(fdv.type, context);
 						if (cov == 2) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -1257,7 +1257,7 @@ public class FuncDeclaration extends Declaration {
 			}
 		}
 
-		if (ident != null && CharOperation.equals(ident.ident, Id.assign)
+		if (equals(ident, Id.assign)
 				&& (sd != null || cd != null)) { // Disallow
 			// identity
 			// assignment
@@ -1980,27 +1980,6 @@ public class FuncDeclaration extends Declaration {
 			SemanticContext context) {
 		type.toCBuffer(buf, ident, hgs, context);
 		bodyToCBuffer(buf, hgs, context);
-	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		super.appendBinding(sb);
-		sb.append("(");
-		if (parameters != null) {
-			for(int i = 0; i < parameters.size(); i++) {
-				if (i != 0) {
-					sb.append(", ");
-				}
-				
-				Dsymbol dsymbol = parameters.get(i);
-				if (dsymbol instanceof VarDeclaration) {
-					VarDeclaration var = (VarDeclaration) dsymbol;
-					var.type.appendBinding(sb);
-				}
-				
-			}
-		}
-		sb.append(")");
 	}
 
 }

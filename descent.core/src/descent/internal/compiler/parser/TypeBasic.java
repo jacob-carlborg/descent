@@ -118,7 +118,7 @@ public class TypeBasic extends Type {
 			SemanticContext context) {
 		Type t;
 
-		if (CharOperation.equals(ident.ident, Id.re)) {
+		if (equals(ident, Id.re)) {
 			switch (ty) {
 			case Tcomplex32:
 				t = tfloat32;
@@ -164,7 +164,7 @@ public class TypeBasic extends Type {
 			default:
 				return getProperty(e.loc, ident, context);
 			}
-		} else if (CharOperation.equals(ident.ident, Id.im)) {
+		} else if (equals(ident, Id.im)) {
 			Type t2;
 
 			switch (ty) {
@@ -240,7 +240,7 @@ public class TypeBasic extends Type {
 		integer_t ivalue;
 		real_t fvalue;
 
-		if (CharOperation.equals(ident, Id.max)) {
+		if (equals(ident, Id.max)) {
 			// TODO ensure the Java max/min values are the same as the D ones
 			switch (ty) {
 			case Tint8:
@@ -299,7 +299,7 @@ public class TypeBasic extends Type {
 				fvalue = new real_t(0 /* TODO LDBL_MAX */);
 				return Lfvalue(loc, fvalue); // goto Lfvalue;
 			}
-		} else if (CharOperation.equals(ident, Id.min)) {
+		} else if (equals(ident, Id.min)) {
 			switch (ty) {
 			case Tint8:
 				ivalue = new integer_t(-128);
@@ -357,7 +357,7 @@ public class TypeBasic extends Type {
 				fvalue = new real_t(0 /* TODO LDBL_MIN */);
 				return Lfvalue(loc, fvalue); // goto Lfvalue;
 			}
-		} else if (CharOperation.equals(ident, Id.nan)) {
+		} else if (equals(ident, Id.nan)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Tcomplex64:
@@ -372,7 +372,7 @@ public class TypeBasic extends Type {
 				return Lfvalue(loc, fvalue); // goto Lfvalue;
 			}
 			}
-		} else if (CharOperation.equals(ident, Id.infinity)) {
+		} else if (equals(ident, Id.infinity)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Tcomplex64:
@@ -388,7 +388,7 @@ public class TypeBasic extends Type {
 			}
 		}
 
-		else if (CharOperation.equals(ident, Id.dig)) {
+		else if (equals(ident, Id.dig)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:
@@ -409,7 +409,7 @@ public class TypeBasic extends Type {
 				return new IntegerExp(loc, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
-		} else if (ident == Id.epsilon) {
+		} else if (equals(ident, Id.epsilon)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:
@@ -427,7 +427,7 @@ public class TypeBasic extends Type {
 				fvalue = LDBL_EPSILON;
 				return Lfvalue(loc, fvalue); // goto Lfvalue;
 			}
-		} else if (ident == Id.mant_dig) {
+		} else if (equals(ident, Id.mant_dig)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:
@@ -448,7 +448,7 @@ public class TypeBasic extends Type {
 				return new IntegerExp(loc, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
-		} else if (ident == Id.max_10_exp) {
+		} else if (equals(ident, Id.max_10_exp)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:
@@ -469,7 +469,7 @@ public class TypeBasic extends Type {
 				return new IntegerExp(loc, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
-		} else if (ident == Id.max_exp) {
+		} else if (equals(ident, Id.max_exp)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:
@@ -490,7 +490,7 @@ public class TypeBasic extends Type {
 				return new IntegerExp(loc, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
-		} else if (ident == Id.min_10_exp) {
+		} else if (equals(ident, Id.min_10_exp)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:
@@ -511,7 +511,7 @@ public class TypeBasic extends Type {
 				return new IntegerExp(loc, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
-		} else if (ident == Id.min_exp) {
+		} else if (equals(ident, Id.min_exp)) {
 			switch (ty) {
 			case Tcomplex32:
 			case Timaginary32:

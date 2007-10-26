@@ -152,7 +152,7 @@ public class CallExp extends UnaExp {
 			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) { // Inline .dup
 				if (fd.ident != null
-						&& CharOperation.equals(fd.ident.ident, Id.adDup)
+						&& equals(fd.ident, Id.adDup)
 						&& arguments != null && arguments.size() == 2) {
 					e = arguments.get(1);
 					e = e.interpret(istate, context);
@@ -239,7 +239,7 @@ public class CallExp extends UnaExp {
 			if (dotid.e1.type != null) {
 				TY e1ty = dotid.e1.type.toBasetype(context).ty;
 				if (e1ty == Taarray
-						&& CharOperation.equals(dotid.ident.ident, Id.remove)) {
+						&& equals(dotid.ident, Id.remove)) {
 					if (arguments == null || arguments.size() != 1) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ExpectedKeyAsArgumentToRemove, 0, start,
@@ -648,12 +648,10 @@ public class CallExp extends UnaExp {
 
 			if (f.tintro.next.isBaseOf(t, offset, context) && offset[0] != 0) {
 				type = f.tintro.next;
-				assignBinding();
 				return castTo(sc, t, context);
 			}
 		}
 
-		assignBinding();
 		return this;
 	}
 
@@ -678,11 +676,6 @@ public class CallExp extends UnaExp {
 		} else {
 			return super.toLvalue(sc, e, context);
 		}
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return e1.getBinding();
 	}
 	
 	@Override

@@ -90,13 +90,11 @@ public class DotIdExp extends UnaExp {
 			eright = e1;
 		}
 
-		if (e1.op == TOKtuple && !CharOperation.equals(ident.ident, Id.length)) {
+		if (e1.op == TOKtuple && !equals(ident, Id.length)) {
 			TupleExp te = (TupleExp) e1;
 			e = new IntegerExp(loc, te.exps.size(), Type.tsize_t);
 			return e;
 		}
-		
-		assignBinding();
 
 		if (eright.op == TOKimport) // also used for template alias's
 		{
@@ -198,7 +196,7 @@ public class DotIdExp extends UnaExp {
 
 				throw new IllegalStateException("assert(0);");
 			}
-			else if (CharOperation.equals(ident.ident, Id.stringof))
+			else if (equals(ident, Id.stringof))
 			{   String s2 = ie.toChars(context);
 			    e = new StringExp(loc, s2.toCharArray(), 'c');
 			    e = e.semantic(sc, context);
@@ -210,20 +208,16 @@ public class DotIdExp extends UnaExp {
 					length, new String[] { toChars(context) }));
 			type = Type.tvoid;
 			return this;
-		} else if (e1.type.ty == Tpointer && !CharOperation.equals(ident.ident, Id.init)
-				&& !CharOperation.equals(ident.ident, Id.__sizeof) && !CharOperation.equals(ident.ident, Id.alignof)
-				&& !CharOperation.equals(ident.ident, Id.offsetof) && !CharOperation.equals(ident.ident, Id.mangleof)
-				&& !CharOperation.equals(ident.ident, Id.stringof)) {
+		} else if (e1.type.ty == Tpointer && !equals(ident, Id.init)
+				&& !equals(ident, Id.__sizeof) && !equals(ident, Id.alignof)
+				&& !equals(ident, Id.offsetof) && !equals(ident, Id.mangleof)
+				&& !equals(ident, Id.stringof)) {
 			e = new PtrExp(loc, e1);
 			e.type = e1.type.next;
 			return e.type.dotExp(sc, e, ident, context);
 		} else {
 			e = e1.type.dotExp(sc, e1, ident, context);			
 			e = e.semantic(sc, context);
-			
-			if (ident != null) {
-				ident.setBinding(e.getBinding());
-			}
 			return e;
 		}
 	}

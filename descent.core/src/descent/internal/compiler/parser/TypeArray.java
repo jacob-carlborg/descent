@@ -26,7 +26,7 @@ public abstract class TypeArray extends Type {
 			SemanticContext context) {
 		Type n = this.next.toBasetype(context); // uncover any typedef's
 
-		if (CharOperation.equals(ident.ident, Id.reverse)
+		if (equals(ident, Id.reverse)
 				&& (n.ty == Tchar || n.ty == Twchar)) {
 			Expression ec;
 			FuncDeclaration fd;
@@ -41,7 +41,7 @@ public abstract class TypeArray extends Type {
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
-		} else if (CharOperation.equals(ident.ident, Id.sort)
+		} else if (equals(ident, Id.sort)
 				&& (n.ty == Tchar || n.ty == Twchar)) {
 			Expression ec;
 			FuncDeclaration fd;
@@ -56,8 +56,8 @@ public abstract class TypeArray extends Type {
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
-		} else if (CharOperation.equals(ident.ident, Id.reverse)
-				|| CharOperation.equals(ident.ident, Id.dup)) {
+		} else if (equals(ident, Id.reverse)
+				|| equals(ident, Id.dup)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;
@@ -68,7 +68,7 @@ public abstract class TypeArray extends Type {
 				throw new IllegalStateException("assert(size);");
 			}
 
-			dup = CharOperation.equals(ident.ident, Id.dup);
+			dup = equals(ident, Id.dup);
 			fd = context.genCfunc(Type.tindex, dup ? Id.adDup : Id.adReverse);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
@@ -82,7 +82,7 @@ public abstract class TypeArray extends Type {
 			}
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
-		} else if (CharOperation.equals(ident.ident, Id.sort)) {
+		} else if (equals(ident, Id.sort)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;

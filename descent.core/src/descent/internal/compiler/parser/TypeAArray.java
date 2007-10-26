@@ -64,7 +64,7 @@ public class TypeAArray extends TypeArray {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		if (CharOperation.equals(ident.ident, Id.length)) {
+		if (equals(ident, Id.length)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;
@@ -75,7 +75,7 @@ public class TypeAArray extends TypeArray {
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = fd.type.next;
-		} else if (CharOperation.equals(ident.ident, Id.keys)) {
+		} else if (equals(ident, Id.keys)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;
@@ -91,7 +91,7 @@ public class TypeAArray extends TypeArray {
 			arguments.add(new IntegerExp(Loc.ZERO, size, Type.tsize_t));
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = index.arrayOf(context);
-		} else if (CharOperation.equals(ident.ident, Id.values)) {
+		} else if (equals(ident, Id.values)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;
@@ -107,7 +107,7 @@ public class TypeAArray extends TypeArray {
 					Type.tsize_t));
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
-		} else if (CharOperation.equals(ident.ident, Id.rehash)) {
+		} else if (equals(ident, Id.rehash)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;

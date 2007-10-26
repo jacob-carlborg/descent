@@ -235,7 +235,6 @@ public class TypeFunction extends Type {
 
 				inuse++;
 				arg.type = arg.type.semantic(loc, sc, context);
-				arg.sourceType.setBinding(arg.type.getBinding());
 				if (inuse == 1) {
 					inuse--;
 				}
@@ -397,7 +396,7 @@ public class TypeFunction extends Type {
 								 */
 								Type tret = p.isLazyArray(context);
 								if (null != tret) {
-									if (tb.next.equals(arg.type)) {
+									if (tb.next.singleton.equals(arg.type.singleton)) {
 										m = MATCHexact;
 									} else {
 										m = arg.implicitConvTo(tret, context);
@@ -470,7 +469,7 @@ public class TypeFunction extends Type {
 							 */
 							Type tret = p.isLazyArray(context);
 							if (null != tret) {
-								if (tb.next.equals(arg.type)) {
+								if (tb.next.singleton.equals(arg.type.singleton)) {
 									m = MATCHexact;
 								} else {
 									m = arg.implicitConvTo(tret, context);

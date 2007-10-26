@@ -183,7 +183,7 @@ public class ReturnStatement extends Statement {
 			if (fd.returnLabel != null && tbret.ty != Tvoid) {
 			} else if (fd.inferRetType) {
 				if (fd.type.next != null) {
-					if (!exp.type.equals(fd.type.next)) {
+					if (!exp.type.singleton.equals(fd.type.next.singleton)) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.MismatchedFunctionReturnTypeInference, 0, sourceExp.start,
 								sourceExp.length, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
@@ -281,7 +281,6 @@ public class ReturnStatement extends Statement {
 						.size() + 1));
 				s = new CompoundStatement(loc, s1, s2);
 			}
-			assignBinding();
 			return s;
 		}
 
@@ -324,11 +323,9 @@ public class ReturnStatement extends Statement {
 				Statement s;
 
 				s = new ExpStatement(loc, exp);
-				assignBinding();
 				return new CompoundStatement(loc, s, gs);
 			}
 			
-			assignBinding();
 			return gs;
 		}
 
@@ -336,13 +333,11 @@ public class ReturnStatement extends Statement {
 			Statement s;
 
 			s = new ExpStatement(loc, exp);
-			assignBinding();
 			
 			exp = null;
 			return new CompoundStatement(loc, s, this);
 		}
 
-		assignBinding();
 		return this;
 	}
 
@@ -365,12 +360,6 @@ public class ReturnStatement extends Statement {
 		}
 		buf.writeByte(';');
 		buf.writenl();
-	}
-	
-	private void assignBinding() {
-		if (sourceExp != null && exp != null) {
-			sourceExp.setBinding(exp.getBinding());
-		}
 	}
 
 }

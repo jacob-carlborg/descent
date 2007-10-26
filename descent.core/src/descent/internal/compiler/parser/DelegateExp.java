@@ -35,7 +35,7 @@ public class DelegateExp extends UnaExp {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb != type) {
+		if (tb.singleton != type.singleton) {
 			// Look for delegates to functions where the functions are
 			// overloaded.
 			FuncDeclaration f;

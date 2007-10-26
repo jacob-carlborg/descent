@@ -58,8 +58,8 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	@Override
 	public Dsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
-		if (CharOperation.equals(ident, Id.length)
-				|| CharOperation.equals(ident, Id.dollar)) {
+		if (equals(ident, Id.length)
+				|| equals(ident, Id.dollar)) {
 			Expression pvar;
 			Expression ce;
 

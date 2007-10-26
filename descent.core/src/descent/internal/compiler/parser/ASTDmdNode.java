@@ -721,7 +721,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public boolean findCondition(List<char[]> ids, char[] ident) {
 		if (ids != null) {
 			for (char[] id : ids) {
-				if (CharOperation.equals(id, ident)) {
+				if (equals(id, ident)) {
 					return true;
 				}
 			}
@@ -1278,8 +1278,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			for (int i = 0; i < ids.size(); i++) {
 				char[] id = ids.get(i);
 
-				if (ident.ident != null
-						&& CharOperation.equals(id, ident.ident)) {
+				if (equals(id, ident)) {
 					return true;
 				}
 			}
@@ -1548,7 +1547,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static Expression expType(Type type, Expression e) {
-		if (type != e.type) {
+		if (type.singleton != e.type.singleton) {
 			e = e.copy();
 			e.type = type;
 		}
@@ -1748,31 +1747,6 @@ public abstract class ASTDmdNode extends ASTNode {
 	public int getErrorLength() {
 		return length;
 	}
-
-	/**
-	 * This is a debug string used by NaiveASTFlattener
-	 * to add resolved information to the string output.
-	 */
-	public void appendBinding(StringBuilder sb) {
-		sb.append(toString());
-	}
-
-	// Specific to Descent
-	private ASTDmdNode binding;
-
-	// Specific to Descent
-	public void setBinding(ASTDmdNode binding) {
-		this.binding = binding;
-	}
-
-	// Specific to Descent
-	public ASTDmdNode getBinding() {
-		return binding;
-	}
-
-	public ASTDmdNode getParentBinding() {
-		return null;
-	}
 	
 	public final void copySourceRange(ASTDmdNode other) {
 		this.start = other.start;
@@ -1802,5 +1776,80 @@ public abstract class ASTDmdNode extends ASTNode {
 		sb.getChars(0, sb.length(), ret, 0);
 		return ret;	
 	}
+	
+	public static void realToMangleBuffer(OutBuffer buf, real_t value) {
+		/* Rely on %A to get portable mangling.
+	     * Must munge result to get only identifier characters.
+	     *
+	     * Possible values from %A	=> mangled result
+	     * NAN			=> NAN
+	     * -INF			=> NINF
+	     * INF			=> INF
+	     * -0X1.1BC18BA997B95P+79	=> N11BC18BA997B95P79
+	     * 0X1.9P+2			=> 19P2
+	     */
+
+	    if (value.isNaN())
+		buf.writestring("NAN");	// no -NAN bugs
+	    else
+	    {
+	    	/* TODO semantic
+			char buffer[32];
+			int n = sprintf(buffer, "%LA", value);
+			assert(n > 0 && n < sizeof(buffer));
+			for (int i = 0; i < n; i++)
+			{   char c = buffer[i];
+	
+			    switch (c)
+			    {
+				case '-':
+				    buf.writeByte('N');
+				    break;
+	
+				case '+':
+				case 'X':
+				case '.':
+				    break;
+	
+				case '0':
+				    if (i < 2)
+					break;		// skip leading 0X
+				default:
+				    buf.writeByte(c);
+				    break;
+			    }
+			}
+			*/
+	    }
+	}
+	
+	public static final boolean equals(IdentifierExp e1, IdentifierExp e2) {
+		if (e1 == null && e2 == null) {
+			return true;
+		} 
+		if ((e1 == null) != (e2 == null)) {
+			return false;
+		}
+		return equals(e1.ident, e2.ident);
+	}
+	
+	public static final boolean equals(char[] e1, char[] e2) {
+		return CharOperation.equals(e1, e2);
+	}
+	
+	public static final boolean equals(char[] e1, IdentifierExp e2) {
+		if (e2 == null) {
+			return false;
+		}
+		return CharOperation.equals(e1, e2.ident);
+	}
+	
+	public static final boolean equals(IdentifierExp e1, char[] e2) {
+		if (e1 == null) {
+			return false;
+		}
+		return CharOperation.equals(e1.ident, e2);
+	}
+	
 	
 }

@@ -67,7 +67,6 @@ public class ModExp extends BinExp {
 		super.semanticp(sc, context);
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -80,12 +79,10 @@ public class ModExp extends BinExp {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotPerformModuloComplexArithmetic, 0, start,
 						length));
-				assignBinding();
 				return new IntegerExp(Loc.ZERO, 0);
 			}
 		}
 		
-		assignBinding();
 		return this;
 	}
 

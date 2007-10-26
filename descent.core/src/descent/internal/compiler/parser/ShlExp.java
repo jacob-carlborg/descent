@@ -76,7 +76,6 @@ public class ShlExp extends BinExp {
 			super.semanticp(sc, context);
 			e = op_overload(sc, context);
 			if (null != e) {
-				assignBinding();
 				return e;
 			}
 			e1 = e1.checkIntegral(context);
@@ -86,7 +85,6 @@ public class ShlExp extends BinExp {
 			type = e1.type;
 		}
 		
-		assignBinding();
 		return this;
 	}
 

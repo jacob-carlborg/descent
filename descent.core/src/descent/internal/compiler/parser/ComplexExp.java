@@ -52,6 +52,11 @@ public class ComplexExp extends Expression {
 	public real_t toImaginary(SemanticContext context) {
 		return value.im;
 	}
+	
+	@Override
+	public complex_t toComplex(SemanticContext context) {
+		return value;
+	}
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
@@ -82,7 +87,7 @@ public class ComplexExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOK.TOKcomplex80) {
 				ComplexExp ne = (ComplexExp) o;
-				return type.equals(ne.type) && value.equals(ne.value);
+				return type.singleton.equals(ne.type.singleton) && value.equals(ne.value);
 			}
 		}
 
@@ -101,14 +106,28 @@ public class ComplexExp extends Expression {
 	
 	@Override
 	public String toChars(SemanticContext context) {
-		// TODO semantic toChars
-		return super.toChars(context);
+		StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		sb.append(complex_t.creall(value));
+		sb.append("+");
+		sb.append(complex_t.cimagl(value));
+		sb.append("i)");
+		return sb.toString();
 	}
 	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		// TODO semantic
-		super.toCBuffer(buf, hgs, context);
+		buf.data.append(toString());
+	}
+	
+	@Override
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
+		buf.writeByte('c');
+	    real_t r = toReal(context);
+	    realToMangleBuffer(buf, r);
+	    buf.writeByte('c');	// separate the two
+	    r = toImaginary(context);
+	    realToMangleBuffer(buf, r);
 	}
 
 }

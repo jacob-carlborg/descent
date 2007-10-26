@@ -116,9 +116,9 @@ public class TypeSArray extends TypeArray {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		if (CharOperation.equals(ident.ident, Id.length)) {
+		if (equals(ident, Id.length)) {
 			e = dim;
-		} else if (CharOperation.equals(ident.ident, Id.ptr)) {
+		} else if (equals(ident, Id.ptr)) {
 			e = e.castTo(sc, next.pointerTo(context), context);
 		} else {
 			e = super.dotExp(sc, e, ident, context);

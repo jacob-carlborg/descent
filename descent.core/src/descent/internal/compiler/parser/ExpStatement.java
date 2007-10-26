@@ -91,7 +91,6 @@ public class ExpStatement extends Statement {
 			exp.copySourceRange(this);			
 			exp.checkSideEffect(0, context);
 			exp = exp.optimize(0, context);
-			sourceExp.setBinding(exp);
 		}
 		
 		return this;

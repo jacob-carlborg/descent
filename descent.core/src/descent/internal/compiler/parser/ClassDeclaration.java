@@ -61,9 +61,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public ClassDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {
 		super(loc, id);
-		if (this.ident != null) {
-			this.ident.setBinding(this);
-		}
 		if (baseclasses == null) {
 			this.baseclasses = new BaseClasses(0);
 		} else {
@@ -106,7 +103,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			for (int i = 0; i < vtbl.size(); i++) {
 				FuncDeclaration fd = (FuncDeclaration) vtbl.get(i);
 
-				if (ident == fd.ident && fd.type.covariant(tf, context) == 1) {
+				if (equals(ident, fd.ident) && fd.type.covariant(tf, context) == 1) {
 					return fd;
 				}
 			}
@@ -357,7 +354,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(i);
 			b.type = b.type.semantic(loc, sc, context);
-			b.sourceType.setBinding(b.getBinding());
 			Type tb = b.type.toBasetype(context);
 
 			if (tb.ty == TY.Ttuple) {
@@ -488,7 +484,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		// If no base class, and this is not an Object, use Object as base class
-		if (baseClass == null && !CharOperation.equals(ident.ident, Id.Object)) {
+		if (baseClass == null && !equals(ident, Id.Object)) {
 			// BUG: what if Object is redefined in an inner scope?
 			Type tbase = new TypeIdentifier(loc, Id.Object);
 			BaseClass b;
@@ -801,18 +797,18 @@ public class ClassDeclaration extends AggregateDeclaration {
 		/* These are reserved to the compiler, so keep simple
 		 * names for them.
 		 */
-		if (CharOperation.equals(ident.ident, Id.Exception)) {
+		if (equals(ident, Id.Exception)) {
 			if (parent.ident != null
-					&& CharOperation.equals(parent.ident.ident, Id.object)) {
+					&& equals(parent.ident, Id.object)) {
 				parent = null;
 			}
-		} else if (CharOperation.equals(ident.ident, Id.TypeInfo)
+		} else if (equals(ident, Id.TypeInfo)
 				||
 				//		CharOperation.equals(ident.ident, Id.Exception) ||
-				CharOperation.equals(ident.ident, Id.TypeInfo_Struct)
-				|| CharOperation.equals(ident.ident, Id.TypeInfo_Class)
-				|| CharOperation.equals(ident.ident, Id.TypeInfo_Typedef)
-				|| CharOperation.equals(ident.ident, Id.TypeInfo_Tuple)
+				equals(ident, Id.TypeInfo_Struct)
+				|| equals(ident, Id.TypeInfo_Class)
+				|| equals(ident, Id.TypeInfo_Typedef)
+				|| equals(ident, Id.TypeInfo_Tuple)
 				|| this == context.ClassDeclaration_object || this == context.ClassDeclaration_classinfo
 				|| this == context.Module_moduleinfo
 				|| ident.toChars().startsWith("TypeInfo_")) {

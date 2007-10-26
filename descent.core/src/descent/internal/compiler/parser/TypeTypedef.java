@@ -72,7 +72,7 @@ public class TypeTypedef extends Type {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		if (CharOperation.equals(ident.ident, Id.init)) {
+		if (equals(ident, Id.init)) {
 			return super.dotExp(sc, e, ident, context);
 		}
 		return sym.basetype.dotExp(sc, e, ident, context);

@@ -50,11 +50,12 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		
 		sb.append("\tprivate void compile(String file) throws Exception {\r\n");
 		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
-		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
+		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n");
+		sb.append("\t\tparser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n");
 		sb.append("\t\tModule module = parser.parseModuleObj();\r\n");
 		sb.append("\t\tGlobal global = new Global();\r\n"); 
 		sb.append("\t\tglobal.params.warnings = false;\r\n");
-		sb.append("\t\tglobal.path.add(\"").append(IDstressConfiguration.DSTRESS_WHERE_PATH.replace("\\", "\\\\")).append("\");\r\n");
+		sb.append("\t\tglobal.path.add(DSTRESS_WHERE_PATH);\r\n");
 		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
 		sb.append("\t\tif (!module.problems.isEmpty()) {\r\n");
 		sb.append("\t\t\tfail(module.problems.toString());\r\n");
@@ -138,7 +139,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
 		sb.append("\t\tGlobal global = new Global();\r\n"); 
 		sb.append("\t\tglobal.params.warnings = false;\r\n");
-		sb.append("\t\tglobal.path.add(\"").append(IDstressConfiguration.DSTRESS_WHERE_PATH.replace("\\", "\\\\")).append("\");\r\n");
+		sb.append("\t\tglobal.path.add(DSTRESS_WHERE_PATH);\r\n");
 		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
 		sb.append("\t\tif (module.problems.size() != expectedErrors) {\r\n");
 		sb.append("\t\t\tfail(\"Expected \" + expectedErrors + \" errors but were \" + module.problems.size() + \": \" + module.problems.toString());\r\n");
@@ -151,7 +152,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
 		sb.append("\t\tGlobal global = new Global();\r\n"); 
 		sb.append("\t\tglobal.params.warnings = false;\r\n");
-		sb.append("\t\tglobal.path.add(\"").append(IDstressConfiguration.DSTRESS_WHERE_PATH.replace("\\", "\\\\")).append("\");\r\n");
+		sb.append("\t\tglobal.path.add(DSTRESS_WHERE_PATH);\r\n");
 		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
 		sb.append("\t\tif (module.problems.isEmpty()) {\r\n");
 		sb.append("\t\t\tfail(\"Expected at least one error\");\r\n");

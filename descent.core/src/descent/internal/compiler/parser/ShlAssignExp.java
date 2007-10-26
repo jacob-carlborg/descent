@@ -45,7 +45,6 @@ public class ShlAssignExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -58,7 +57,6 @@ public class ShlAssignExp extends BinExp {
 		e2 = e2.checkIntegral(context);
 		e2 = e2.castTo(sc, Type.tshiftcnt, context);
 		
-		assignBinding();
 		return this;
 	}
 

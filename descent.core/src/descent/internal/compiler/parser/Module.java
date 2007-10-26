@@ -8,7 +8,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import descent.internal.compiler.parser.ast.NaiveASTFlattener;
 
 // DMD 1.020
 public class Module extends Package {
@@ -259,21 +258,6 @@ public class Module extends Package {
 	}
 
 	@Override
-	public void appendBinding(StringBuilder sb) {
-		if (md != null) {
-			sb.append(kind());
-			sb.append(" ");
-			NaiveASTFlattener f = new NaiveASTFlattener();
-			f.visitModuleDeclarationName(md);
-			sb.append(f.getResult());
-		} else if (moduleName != null) {
-			sb.append(kind());
-			sb.append(" ");
-			sb.append(moduleName);
-		}
-	}
-
-	@Override
 	public String kind() {
 		return "module";
 	}
@@ -296,7 +280,7 @@ public class Module extends Package {
 		Dsymbol s;
 		if (insearch) {
 			s = null;
-		} else if (CharOperation.equals(searchCacheIdent, ident)
+		} else if (equals(searchCacheIdent, ident)
 				&& searchCacheFlags == flags) {
 			s = searchCacheSymbol;
 		} else {
@@ -414,49 +398,35 @@ public class Module extends Package {
 					continue;
 				}
 
-				if (CharOperation.equals(symbol.ident.ident, Id.Object)) {
+				if (equals(symbol.ident, Id.Object)) {
 					context.ClassDeclaration_object = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.ClassInfo)) {
+				} else if (equals(symbol.ident, Id.ClassInfo)) {
 					context.ClassDeclaration_classinfo = (ClassDeclaration) symbol;
-				} else if (CharOperation
-						.equals(symbol.ident.ident, Id.TypeInfo)) {
+				} else if (equals(symbol.ident, Id.TypeInfo)) {
 					context.Type_typeinfo = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Class)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Class)) {
 					context.Type_typeinfoclass = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Interface)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Interface)) {
 					context.Type_typeinfointerface = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Struct)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Struct)) {
 					context.Type_typeinfostruct = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Typedef)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Typedef)) {
 					context.Type_typeinfotypedef = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Pointer)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Pointer)) {
 					context.Type_typeinfopointer = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Array)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Array)) {
 					context.Type_typeinfoarray = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_StaticArray)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_StaticArray)) {
 					context.Type_typeinfostaticarray = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_AssociativeArray)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_AssociativeArray)) {
 					context.Type_typeinfoassociativearray = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Enum)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Enum)) {
 					context.Type_typeinfoenum = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Function)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Function)) {
 					context.Type_typeinfofunction = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Delegate)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Delegate)) {
 					context.Type_typeinfodelegate = (ClassDeclaration) symbol;
-				} else if (CharOperation.equals(symbol.ident.ident,
-						Id.TypeInfo_Tuple)) {
+				} else if (equals(symbol.ident, Id.TypeInfo_Tuple)) {
 					context.Type_typeinfotypelist = (ClassDeclaration) symbol;
 				}
 			}

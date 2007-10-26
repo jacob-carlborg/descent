@@ -30,7 +30,7 @@ public class CondExp extends BinExp {
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Expression e = this;
 
-		if (type != t) {
+		if (type.singleton != t.singleton) {
 			if (true || e1.op == TOKstring || e2.op == TOKstring) {
 				e = new CondExp(loc, econd, e1.castTo(sc, t, context), e2
 						.castTo(sc, t, context));
@@ -193,7 +193,7 @@ public class CondExp extends BinExp {
 			type = Type.tvoid;
 		}
 
-		else if (t1 == t2) {
+		else if (t1.singleton == t2.singleton) {
 			type = t1;
 		}
 
@@ -217,7 +217,6 @@ public class CondExp extends BinExp {
 			}
 		}
 
-		assignBinding();
 		return this;
 	}
 
@@ -251,12 +250,6 @@ public class CondExp extends BinExp {
 		type = e2.type;
 
 		return pe;
-	}
-	
-	@Override
-	protected void assignBinding() {
-		super.assignBinding();
-		sourceEcond.setBinding(econd.getBinding());
 	}
 
 }

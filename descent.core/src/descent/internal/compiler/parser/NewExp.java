@@ -268,7 +268,6 @@ public class NewExp extends Expression {
 					e = new CallExp(loc, e, newargs);
 					e = e.semantic(sc, context);
 					e.type = type.pointerTo(context);
-					assignBindings();
 					return e;
 				}
 
@@ -312,15 +311,7 @@ public class NewExp extends Expression {
 				type = type.pointerTo(context);
 			}
 		}
-
-		assignBindings();
 		return this;
-	}
-	
-	private void assignBindings() {
-		if (sourceNewtype != null) {
-			sourceNewtype.setBinding(getBinding());
-		}
 	}
 
 	@Override
@@ -349,11 +340,6 @@ public class NewExp extends Expression {
 			argsToCBuffer(buf, arguments, hgs, context);
 			buf.writeByte(')');
 		}
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return newtype.getBinding();
 	}
 
 }

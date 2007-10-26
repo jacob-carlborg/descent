@@ -40,9 +40,8 @@ public class AndAndExp extends BinExp {
 			//If in static if, don't evaluate e2 if we don't have to.
 			e1 = e1.optimize(WANTflags, context);
 			if (e1.isBool(false)) {
-				assignBinding();
+				return new IntegerExp(loc, 0, Type.tboolean);
 			}
-			return new IntegerExp(loc, 0, Type.tboolean);
 		}
 
 		e2 = e2.semantic(sc, context);
@@ -60,7 +59,6 @@ public class AndAndExp extends BinExp {
 					new String[] { e2.toChars(context) }));
 		}
 
-		assignBinding();
 		return this;
 	}
 

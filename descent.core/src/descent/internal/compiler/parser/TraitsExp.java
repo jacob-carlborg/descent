@@ -44,7 +44,7 @@ public class TraitsExp extends Expression {
 		//int dim = null != args ? args.size() : 0;
 	    char[] ident = this.ident.ident;
 		
-	    if (CharOperation.equals(ident, Id.isArithmetic))
+	    if (equals(ident, Id.isArithmetic))
 	    {
 	    	//ISTYPE(t.isintegral() || t.isfloating())
 	    	return isType(new ISTYPE_Conditional()
@@ -56,7 +56,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isFloating))
+	    else if (equals(ident, Id.isFloating))
 	    {
 	    	//ISTYPE(t.isfloating())
 	    	return isType(new ISTYPE_Conditional()
@@ -68,7 +68,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isIntegral))
+	    else if (equals(ident, Id.isIntegral))
 	    {
 	    	//ISTYPE(t.isintegral())
 	    	return isType(new ISTYPE_Conditional()
@@ -80,7 +80,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isScalar))
+	    else if (equals(ident, Id.isScalar))
 	    {
 	    	//ISTYPE(t.isscalar())
 	    	return isType(new ISTYPE_Conditional()
@@ -92,7 +92,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isUnsigned))
+	    else if (equals(ident, Id.isUnsigned))
 	    {
 	    	//ISTYPE(t.isunsigned())
 	    	return isType(new ISTYPE_Conditional()
@@ -104,7 +104,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isAssociativeArray))
+	    else if (equals(ident, Id.isAssociativeArray))
 	    {
 	    	//ISTYPE(t.toBasetype().ty == Taarray)
 	    	return isType(new ISTYPE_Conditional()
@@ -116,7 +116,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isStaticArray))
+	    else if (equals(ident, Id.isStaticArray))
 	    {
 	    	//ISTYPE(t.toBasetype().ty == Tsarray)
 	    	return isType(new ISTYPE_Conditional()
@@ -128,7 +128,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isAbstractClass))
+	    else if (equals(ident, Id.isAbstractClass))
 	    {
 	    	//ISTYPE(t.toBasetype().ty == Tclass && ((TypeClass *)t.toBasetype()).sym.isAbstract())
 	    	return isType(new ISTYPE_Conditional()
@@ -141,7 +141,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isFinalClass))
+	    else if (equals(ident, Id.isFinalClass))
 	    {
 			//ISTYPE(t.toBasetype().ty == Tclass && ((TypeClass *)t.toBasetype()).sym.storage_class & STCfinal)
 	    	return isType(new ISTYPE_Conditional()
@@ -155,7 +155,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isAbstractFunction))
+	    else if (equals(ident, Id.isAbstractFunction))
 	    {
 	    	//ISDSYMBOL((f = s.isFuncDeclaration()) != NULL && f.isAbstract())
 	    	return isDSymbol(new ISDSYMBOL_Conditional()
@@ -168,7 +168,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isVirtualFunction))
+	    else if (equals(ident, Id.isVirtualFunction))
 	    {
 	    	//ISDSYMBOL((f = s.isFuncDeclaration()) != NULL && f.isVirtual())
 	    	return isDSymbol(new ISDSYMBOL_Conditional()
@@ -181,7 +181,7 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.isFinalFunction))
+	    else if (equals(ident, Id.isFinalFunction))
 	    {
 	    	//ISDSYMBOL((f = s.isFuncDeclaration()) != NULL && f.isFinal())
 	    	return isDSymbol(new ISDSYMBOL_Conditional()
@@ -194,9 +194,9 @@ public class TraitsExp extends Expression {
 	    	});
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.hasMember) ||
-	    		CharOperation.equals(ident, Id.getMember) ||
-	    		CharOperation.equals(ident, Id.getVirtualFunctions))
+	    else if (equals(ident, Id.hasMember) ||
+	    		equals(ident, Id.getMember) ||
+	    		equals(ident, Id.getVirtualFunctions))
 	    {
 	    	int dim = null != args ? args.size() : 0;
 			if(dim != 2)
@@ -257,7 +257,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 	
-			if(CharOperation.equals(ident, Id.hasMember))
+			if(equals(ident, Id.hasMember))
 			{
 				/* Take any errors as meaning it wasn't found
 			     */
@@ -274,12 +274,12 @@ public class TraitsExp extends Expression {
 			    else
 			    	return new IntegerExp(loc, 1, Type.tbool);
 			}
-			else if(ident.equals(Id.getMember))
+			else if(equals(ident, Id.getMember))
 			{
 			    e = e.semantic(sc, context);
 			    return e;
 			}
-			else if(CharOperation.equals(ident, Id.getVirtualFunctions))
+			else if(equals(ident, Id.getVirtualFunctions))
 			{
 			    e = e.semantic(sc, context);
 	
@@ -317,7 +317,7 @@ public class TraitsExp extends Expression {
 			    assert(false);
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.classInstanceSize))
+	    else if (equals(ident, Id.classInstanceSize))
 	    {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
@@ -349,8 +349,8 @@ public class TraitsExp extends Expression {
 			return new IntegerExp(loc, cd.structsize, Type.tsize_t);
 	    }
 	    
-	    else if (CharOperation.equals(ident, Id.allMembers)
-	    		|| CharOperation.equals(ident, Id.derivedMembers))
+	    else if (equals(ident, Id.allMembers)
+	    		|| equals(ident, Id.derivedMembers))
 	    {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
@@ -395,7 +395,7 @@ public class TraitsExp extends Expression {
 					    for(Expression exp : exps)
 					    {
 					    	StringExp se2 = (StringExp) exp;
-					    	if(CharOperation.equals(str, se2.string))
+					    	if(equals(str, se2.string))
 					    		continue Linner;
 					    }
 					    
@@ -406,7 +406,7 @@ public class TraitsExp extends Expression {
 			    ClassDeclaration cd = sd.isClassDeclaration();
 			    if (null != cd &&
 			    		null != cd.baseClass &&
-			    		CharOperation.equals(ident, Id.allMembers))
+			    		equals(ident, Id.allMembers))
 			    	sd = cd.baseClass;	// do again with base class
 			    else
 			    	break Louter;

@@ -254,7 +254,7 @@ public class Import extends Dsymbol {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		if (hgs.hdrgen && CharOperation.equals(id.ident, Id.object)) {
+		if (hgs.hdrgen && equals(id, Id.object)) {
 			return; // object is imported by default
 		}
 

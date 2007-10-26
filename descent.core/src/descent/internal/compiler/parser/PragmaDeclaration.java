@@ -52,7 +52,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 	public void semantic(Scope sc, SemanticContext context) { // Should be
 		// merged with PragmaStatement
 
-		if (CharOperation.equals(ident.ident, Id.msg)) {
+		if (equals(ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
 					Expression e = args.get(i);
@@ -73,7 +73,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 						IProblem.PragmaIsMissingClosingSemicolon, 0, start, 6));
 			}
 			return;
-		} else if (CharOperation.equals(ident.ident, Id.lib)) {
+		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem

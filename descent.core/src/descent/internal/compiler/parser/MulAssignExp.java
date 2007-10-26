@@ -45,7 +45,6 @@ public class MulAssignExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -86,7 +85,6 @@ public class MulAssignExp extends BinExp {
 			}
 		}
 		
-		assignBinding();
 		return this;
 	}
 

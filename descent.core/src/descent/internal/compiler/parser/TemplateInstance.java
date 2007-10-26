@@ -214,7 +214,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			TemplateInstance ti;
 			if (null != s.parent
 					&& null != (ti = s.parent.isTemplateInstance())) {
-				if ((ti.name == id || ti.toAlias(context).ident == id)
+				if ((equals(ti.name, id) || equals(ti.toAlias(context).ident, id))
 						&& null != ti.tempdecl) {
 					/* This is so that one can refer to the enclosing
 					 * template, even if it has the same name as a member
@@ -252,9 +252,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				TemplateInstance $ti = null != s.parent ? s.parent
 						.isTemplateInstance() : null;
 				if (null != $ti
-						&& (CharOperation.equals($ti.name.ident, id.ident) || CharOperation
-								.equals($ti.toAlias(context).ident.ident,
-										id.ident)) && null != $ti.tempdecl) {
+						&& (equals($ti.name, id) || equals($ti.toAlias(context).ident, id)) && null != $ti.tempdecl) {
 					/* This is so that one can refer to the enclosing
 					 * template, even if it has the same name as a member
 					 * of the template, if it has a !(arguments)

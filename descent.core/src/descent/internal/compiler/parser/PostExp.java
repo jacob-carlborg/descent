@@ -54,7 +54,6 @@ public class PostExp extends BinExp {
 
 			e = op_overload(sc, context);
 			if (null != e) {
-				assignBinding();
 				return e;
 			}
 
@@ -70,7 +69,6 @@ public class PostExp extends BinExp {
 			e.type = e1.type;
 		}
 		
-		assignBinding();
 		return e;
 	}
 

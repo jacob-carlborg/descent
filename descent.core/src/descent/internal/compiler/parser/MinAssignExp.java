@@ -51,7 +51,6 @@ public class MinAssignExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -72,7 +71,6 @@ public class MinAssignExp extends BinExp {
 			e = this;
 		}
 		
-		assignBinding();
 		return e;
 	}
 

@@ -245,7 +245,7 @@ public class Scope {
 		Dsymbol s;
 		Scope sc;
 
-		if (CharOperation.equals(ident.ident, Id.empty)) {
+		if (ASTDmdNode.equals(ident, Id.empty)) {
 			// Look for module scope
 			for (sc = this; sc != null; sc = sc.enclosing) {
 				assert (sc != sc.enclosing);
@@ -268,7 +268,7 @@ public class Scope {
 				s = sc.scopesym.search(loc, ident, 0, context);
 				if (s != null) {
 					if ((context.global.params.warnings || context.global.params.Dversion > 1)
-							&& CharOperation.equals(ident.ident, Id.length)
+							&& ASTDmdNode.equals(ident, Id.length)
 							&& sc.scopesym.isArrayScopeSymbol() != null
 							&& sc.enclosing != null
 							&& sc.enclosing.search(loc, ident, null, context) != null) {

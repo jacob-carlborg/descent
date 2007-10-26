@@ -185,15 +185,5 @@ public class DotVarExp extends UnaExp {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
 	}
-	
-	@Override
-	public void appendBinding(StringBuilder sb) {
-		var.appendBinding(sb);
-	}
-	
-	@Override
-	public ASTDmdNode getBinding() {
-		return var;
-	}
 
 }

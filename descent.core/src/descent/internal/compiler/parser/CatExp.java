@@ -81,7 +81,6 @@ public class CatExp extends BinExp {
 		super.semanticp(sc, context);
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -95,7 +94,7 @@ public class CatExp extends BinExp {
 		 */
 
 		if ((tb1.ty == TY.Tsarray || tb1.ty == TY.Tarray)
-				&& e2.type.equals(tb1.next)) {
+				&& e2.type.singleton.equals(tb1.next.singleton)) {
 			type = tb1.next.arrayOf(context);
 			if (tb2.ty == TY.Tarray) {
 				// Make e2 into [e2]
@@ -104,12 +103,11 @@ public class CatExp extends BinExp {
 				e2 = new ArrayLiteralExp(e2.loc, elements);
 				e2.type = type;
 			}
-			assignBinding();
 			return this;
 		}
 
 		else if ((tb2.ty == TY.Tsarray || tb2.ty == TY.Tarray)
-				&& e1.type.equals(tb2.next)) {
+				&& e1.type.singleton.equals(tb2.next.singleton)) {
 			type = tb2.next.arrayOf(context);
 			if (tb1.ty == TY.Tarray) {
 				// Make e1 into [e1]
@@ -118,7 +116,6 @@ public class CatExp extends BinExp {
 				e1 = new ArrayLiteralExp(e1.loc, elements);
 				e1.type = type;
 			}
-			assignBinding();
 			return this;
 		}
 
@@ -130,7 +127,7 @@ public class CatExp extends BinExp {
 
 		if (e1.op == TOK.TOKstring && e2.op == TOK.TOKstring) {
 			e = optimize(WANTvalue, context);
-		} else if (e1.type.equals(e2.type)
+		} else if (e1.type.singleton.equals(e2.type.singleton)
 				&& (e1.type.toBasetype(context).ty == TY.Tarray || e1.type
 						.toBasetype(context).ty == TY.Tsarray)) {
 			e = this;
@@ -143,7 +140,6 @@ public class CatExp extends BinExp {
 			e = this;
 		}
 		e.type = e.type.semantic(loc, sc, context);
-		assignBinding();
 		return e;
 	}
 }

@@ -67,7 +67,6 @@ public class DivExp extends BinExp {
 
 		e = op_overload(sc, context);
 		if (null != e) {
-			assignBinding();
 			return e;
 		}
 
@@ -85,7 +84,6 @@ public class DivExp extends BinExp {
 					e2.type = t1;
 					e = new NegExp(loc, this);
 					e = e.semantic(sc, context);
-					assignBinding();
 					return e;
 				}
 			} else if (t2.isreal()) {
@@ -113,7 +111,6 @@ public class DivExp extends BinExp {
 			}
 		}
 		
-		assignBinding();
 		return this;
 	}
 

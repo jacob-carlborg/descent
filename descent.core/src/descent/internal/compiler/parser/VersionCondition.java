@@ -26,7 +26,7 @@ public class VersionCondition extends DVCondition {
 			SemanticContext context) {
 		for (int i = 0; i < resevered.length; i++) {
 			if (ident.ident != null
-					&& CharOperation.equals(ident.ident, resevered[i])) {
+					&& equals(ident, resevered[i])) {
 				// goto Lerror;
 				context
 						.acceptProblem(Problem.newSemanticTypeError(

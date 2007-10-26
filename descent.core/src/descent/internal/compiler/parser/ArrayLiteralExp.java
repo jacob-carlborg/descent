@@ -165,6 +165,7 @@ public class ArrayLiteralExp extends Expression {
 		if (t0 == null) {
 			t0 = Type.tvoid;
 		}
+		// PERHAPS singleton
 		type = new TypeSArray(t0, new IntegerExp(loc, elements.size()));
 		type = type.semantic(loc, sc, context);
 		return this;

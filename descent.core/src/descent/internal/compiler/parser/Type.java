@@ -670,30 +670,30 @@ public abstract class Type extends ASTDmdNode {
 			SemanticContext context) {
 		Expression e = null;
 
-		if (CharOperation.equals(ident, Id.__sizeof)) {
+		if (equals(ident, Id.__sizeof)) {
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
-		} else if (CharOperation.equals(ident, Id.size)) {
+		} else if (equals(ident, Id.size)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.DeprecatedProperty, 0, start, length,
 					new String[] { ".size", ".sizeof" }));
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
-		} else if (CharOperation.equals(ident, Id.alignof)) {
+		} else if (equals(ident, Id.alignof)) {
 			e = new IntegerExp(loc, alignsize(context), Type.tsize_t);
-		} else if (CharOperation.equals(ident, Id.typeinfo)) {
+		} else if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.DeprecatedProperty, 0, start, length,
 						new String[] { "typeinfo", ".typeid(type)" }));
 			}
 			e = getTypeInfo(null, context);
-		} else if (CharOperation.equals(ident, Id.init)) {
+		} else if (equals(ident, Id.init)) {
 			e = defaultInit(context);
-		} else if (CharOperation.equals(ident, Id.mangleof)) {
+		} else if (equals(ident, Id.mangleof)) {
 			Assert.isNotNull(deco);
 			e = new StringExp(loc, deco.toCharArray(), deco.length(), 'c');
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
-		} else if (CharOperation.equals(ident, Id.stringof)) {
+		} else if (equals(ident, Id.stringof)) {
 			char[] s = toChars(context).toCharArray();
 			e = new StringExp(loc, s, s.length, 'c');
 			Scope sc = new Scope(context);
@@ -738,7 +738,7 @@ public abstract class Type extends ASTDmdNode {
 			v = ve.var.isVarDeclaration();
 		}
 		if (null != v) {
-			if (CharOperation.equals(ident.ident, Id.offset)) {
+			if (equals(ident, Id.offset)) {
 				if (!context.global.params.useDeprecated) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DotOffsetDeprecated, 0, start,
@@ -749,18 +749,18 @@ public abstract class Type extends ASTDmdNode {
 					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
 					return e;
 				}
-			} else if (CharOperation.equals(ident.ident, Id.offsetof)) {
+			} else if (equals(ident, Id.offsetof)) {
 				//Loffset:
 				if (0 != (v.storage_class & STCfield)) {
 					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
 					return e;
 				}
-			} else if (CharOperation.equals(ident.ident, Id.init)) {
+			} else if (equals(ident, Id.init)) {
 				return defaultInit(context);
 			}
 		}
 
-		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
+		if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.DeprecatedProperty, 0, ident.start,
@@ -771,7 +771,7 @@ public abstract class Type extends ASTDmdNode {
 			return e;
 		}
 
-		if (CharOperation.equals(ident.ident, Id.stringof)) {
+		if (equals(ident, Id.stringof)) {
 			char[] s = e.toChars(context).toCharArray();
 			e = new StringExp(e.loc, s, 'c');
 			Scope _sc = new Scope(context);
@@ -813,14 +813,17 @@ public abstract class Type extends ASTDmdNode {
 		Type t = (Type) o;
 
 		// deco strings are unique and semantic() has been run
-		if (this == o || (t != null && deco != null && deco.equals(t.deco))) {
+		if (this.singleton == t.singleton || (t != null && singleton.deco != null && singleton.deco.equals(t.singleton.deco))) {
 			return true;
 		}
 		return false;
 	}
 
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (this.singleton == to.singleton) {
+		if (this.singleton == to.singleton
+				// TODO: see if this is valid
+				|| this.deco.equals(to.deco)
+				) {
 			return MATCH.MATCHexact;
 		}		
 		return MATCH.MATCHnomatch;

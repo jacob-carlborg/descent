@@ -179,24 +179,5 @@ public class TypeIdentifier extends TypeQualified {
 		}
 		return e;
 	}
-	
-	@Override
-	public void setBinding(ASTDmdNode binding) {
-		if (binding == null) {
-			return;
-		}
-		
-		super.setBinding(binding);
-		if (idents == null) {
-			ident.setBinding(binding);
-		} else {
-			ASTDmdNode parent = binding;
-			for(int i = idents.size() - 1; i >= 0; i--) {
-				idents.get(i).setBinding(parent);
-				parent = parent.getParentBinding();
-			}
-			ident.setBinding(parent);
-		}
-	}
 
 }

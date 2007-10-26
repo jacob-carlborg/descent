@@ -65,7 +65,6 @@ public class UshrExp extends BinExp {
 
 			e = op_overload(sc, context);
 			if (null != e) {
-				assignBinding();
 				return e;
 			}
 
@@ -76,7 +75,6 @@ public class UshrExp extends BinExp {
 			type = e1.type;
 		}
 		
-		assignBinding();
 		return this;
 	}
 

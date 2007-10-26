@@ -68,7 +68,7 @@ public class IdentifierExp extends Expression {
 		}
 
 		IdentifierExp i = (IdentifierExp) o;
-		return CharOperation.equals(ident, i.ident);
+		return equals(this, i);
 	}
 
 	@Override
@@ -120,8 +120,8 @@ public class IdentifierExp extends Expression {
 
 					if (ti != null
 							&& ti.isTemplateMixin() == null
-							&& (ti.name.equals(f.ident) || 
-									ti.toAlias(context).ident == f.ident)
+							&& (equals(ti.name, f.ident) || 
+									equals(ti.toAlias(context).ident, f.ident))
 							&& ti.tempdecl != null
 							&& ti.tempdecl.onemember != null) {
 						TemplateDeclaration tempdecl = ti.tempdecl;
@@ -172,25 +172,25 @@ public class IdentifierExp extends Expression {
 	public char[] toHChars2() {
 		char[] p = null;
 
-	    if (CharOperation.equals(ident, Id.ctor)) {
+	    if (equals(ident, Id.ctor)) {
 			p = Id.This;
-		} else if (CharOperation.equals(ident, Id.dtor)) {
+		} else if (equals(ident, Id.dtor)) {
 			p = notThis;
-		} else if (CharOperation.equals(ident, Id.classInvariant)) {
+		} else if (equals(ident, Id.classInvariant)) {
 			p = invariant;
-		} else if (CharOperation.equals(ident, Id.unitTest)) {
+		} else if (equals(ident, Id.unitTest)) {
 			p = unittest;
-		} else if (CharOperation.equals(ident, Id.staticCtor)) {
+		} else if (equals(ident, Id.staticCtor)) {
 			p = staticThis;
-		} else if (CharOperation.equals(ident, Id.staticDtor)) {
+		} else if (equals(ident, Id.staticDtor)) {
 			p = staticNotThis;
-		} else if (CharOperation.equals(ident, Id.dollar)) {
+		} else if (equals(ident, Id.dollar)) {
 			p = dollar;
-		} else if (CharOperation.equals(ident, Id.withSym)) {
+		} else if (equals(ident, Id.withSym)) {
 			p = with;
-		} else if (CharOperation.equals(ident, Id.result)) {
+		} else if (equals(ident, Id.result)) {
 			p = result;
-		} else if (CharOperation.equals(ident, Id.returnLabel)) {
+		} else if (equals(ident, Id.returnLabel)) {
 			p = Return;
 		} else {
 			p = ident;
