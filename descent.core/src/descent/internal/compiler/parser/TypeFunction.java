@@ -396,7 +396,7 @@ public class TypeFunction extends Type {
 								 */
 								Type tret = p.isLazyArray(context);
 								if (null != tret) {
-									if (tb.next.singleton.equals(arg.type.singleton)) {
+									if (tb.next.equals(arg.type)) {
 										m = MATCHexact;
 									} else {
 										m = arg.implicitConvTo(tret, context);
@@ -469,7 +469,7 @@ public class TypeFunction extends Type {
 							 */
 							Type tret = p.isLazyArray(context);
 							if (null != tret) {
-								if (tb.next.singleton.equals(arg.type.singleton)) {
+								if (tb.next.equals(arg.type)) {
 									m = MATCHexact;
 								} else {
 									m = arg.implicitConvTo(tret, context);

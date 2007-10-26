@@ -37,7 +37,7 @@ public class NullExp extends Expression {
 		e = this;
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb.singleton != type.singleton) {
+		if (!same(tb, type)) {
 			// NULL implicitly converts to any pointer type or dynamic array
 			if (type.ty == Tpointer
 					&& type.next.ty == Tvoid
@@ -58,7 +58,7 @@ public class NullExp extends Expression {
 	
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
-		if (this.type.singleton.equals(t.singleton)) {
+		if (this.type.equals(t)) {
 			return MATCHexact;
 		}
 		// NULL implicitly converts to any pointer type or dynamic array

@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -90,7 +89,7 @@ public class TypeDelegate extends Type {
 	@Override
 	public Type syntaxCopy() {
 		Type t = next.syntaxCopy();
-		if (t == next) {
+		if (same(t, next)) {
 			t = this;
 		} else {
 			t = new TypeDelegate(t);

@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKstring;
@@ -19,10 +18,7 @@ public class DsymbolExp extends Expression {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, s);
-		}
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
@@ -87,7 +83,7 @@ public class DsymbolExp extends Expression {
 			v = s.isVarDeclaration();
 			if (v != null) {
 				if (type == null) {
-					type = v.type.singleton;
+					type = v.type;
 					if (v.type == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, 0, start, length,
@@ -121,7 +117,7 @@ public class DsymbolExp extends Expression {
 				e = new VarExp(loc, v);
 				e.start = start;
 				e.length = length;
-				e.type = type.singleton;
+				e.type = type;
 				e = e.semantic(sc, context);
 				return e.deref();
 			}

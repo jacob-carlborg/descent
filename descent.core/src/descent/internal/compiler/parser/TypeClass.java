@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.Assert;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
@@ -32,7 +30,8 @@ public class TypeClass extends Type {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		Assert.fail("Accept0 on fake class");
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -424,11 +423,6 @@ public class TypeClass extends Type {
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
-	}
-	
-	@Override
-	public String toString() {
-		return new String(sym.ident.ident);
 	}
 
 }

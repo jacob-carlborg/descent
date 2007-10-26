@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 

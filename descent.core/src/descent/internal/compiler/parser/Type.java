@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
@@ -818,12 +817,20 @@ public abstract class Type extends ASTDmdNode {
 		}
 		return false;
 	}
+	
+	// This is a fix for "Type == Type". We can't use that anymore here,
+	// because:
+	// 1. Each different semantic pass creates different types
+	// 2. Later types will be hidden in an interface (I guess)
+	public boolean same(Type t) {
+		return this == t || 
+			(t != null && 
+					(singleton == t.singleton || 
+							(this.singleton.deco != null && t.singleton.deco != null && this.singleton.deco.equals(t.singleton.deco))));
+	}
 
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (this.singleton == to.singleton
-				// TODO: see if this is valid
-				|| this.deco.equals(to.deco)
-				) {
+		if (same(this, to)) {
 			return MATCH.MATCHexact;
 		}		
 		return MATCH.MATCHnomatch;

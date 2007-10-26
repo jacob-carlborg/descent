@@ -33,7 +33,8 @@ public class SymOffExp extends Expression {
 	
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 
@@ -45,7 +46,7 @@ public class SymOffExp extends Expression {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb.singleton != type.singleton) {
+		if (!same(tb, type)) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			FuncDeclaration f;

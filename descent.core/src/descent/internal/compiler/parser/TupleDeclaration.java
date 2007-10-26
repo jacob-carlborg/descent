@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -26,12 +24,7 @@ public class TupleDeclaration extends Declaration {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, type);
-			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, objects);
-		}
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 

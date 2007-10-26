@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 // DMD 1.020
 public class Arguments extends Array<Argument> {
 

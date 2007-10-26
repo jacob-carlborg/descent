@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
@@ -541,7 +540,7 @@ public class TypeBasic extends Type {
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		// See explanation of tbasic member
 		if (to instanceof TypeBasic
-				&& this.singleton == ((TypeBasic) to).singleton) {
+				&& same(this, ((TypeBasic) to))) {
 			return MATCHexact;
 		}
 

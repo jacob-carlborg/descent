@@ -19,7 +19,8 @@ public class ArrayLengthExp extends UnaExp {
 
 	@Override
 	protected void accept0(IASTVisitor visitor) {
-		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

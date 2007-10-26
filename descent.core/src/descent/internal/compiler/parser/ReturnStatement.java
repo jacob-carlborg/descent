@@ -183,7 +183,7 @@ public class ReturnStatement extends Statement {
 			if (fd.returnLabel != null && tbret.ty != Tvoid) {
 			} else if (fd.inferRetType) {
 				if (fd.type.next != null) {
-					if (!exp.type.singleton.equals(fd.type.next.singleton)) {
+					if (!exp.type.equals(fd.type.next)) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.MismatchedFunctionReturnTypeInference, 0, sourceExp.start,
 								sourceExp.length, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));

@@ -40,7 +40,7 @@ public class AddrExp extends UnaExp {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb.singleton != type.singleton) {
+		if (same(tb, type)) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			VarExp ve;
@@ -109,7 +109,7 @@ public class AddrExp extends UnaExp {
 			Expression ex;
 
 			ex = ((PtrExp) e1).e1;
-			if (type.singleton.equals(ex.type.singleton)) {
+			if (type.equals(ex.type)) {
 				e = ex;
 			} else {
 				e = ex.copy();

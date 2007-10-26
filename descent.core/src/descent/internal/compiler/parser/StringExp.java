@@ -244,7 +244,7 @@ public class StringExp extends Expression {
 			unique = 1; // this is the only instance
 		}
 		se.type = type.toBasetype(context);
-		if (tb.singleton == se.type.singleton) {
+		if (same(tb, se.type)) {
 			se.type = t;
 			se.committed = true;
 			return se;

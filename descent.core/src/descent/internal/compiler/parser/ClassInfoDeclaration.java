@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 // DMD 1.020
 public class ClassInfoDeclaration extends VarDeclaration {
 
@@ -13,6 +15,12 @@ public class ClassInfoDeclaration extends VarDeclaration {
 			SemanticContext context) {
 		super(loc, context.ClassDeclaration_classinfo.type, cd.ident, null);
 		this.cd = cd;
+	}
+	
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

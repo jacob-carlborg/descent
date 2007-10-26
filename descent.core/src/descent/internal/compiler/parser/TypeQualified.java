@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 
@@ -179,7 +178,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 
-		if (t.singleton != this.singleton) {
+		if (!same(t, this)) {
 			if (t.reliesOnTident() != null) {
 				Scope scx;
 

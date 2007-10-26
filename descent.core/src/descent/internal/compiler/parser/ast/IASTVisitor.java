@@ -36,6 +36,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	boolean visit(Argument node);
 	boolean visit(ArrayExp node);
 	boolean visit(ArrayInitializer node);
+	boolean visit(ArrayLengthExp node);
 	boolean visit(ArrayLiteralExp node);
 	boolean visit(ArrayScopeSymbol node);
 	boolean visit(AsmBlock node);
@@ -265,6 +266,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	void endVisit(Argument node);
 	void endVisit(ArrayExp node);
 	void endVisit(ArrayInitializer node);
+	void endVisit(ArrayLengthExp node);
 	void endVisit(ArrayLiteralExp node);
 	void endVisit(ArrayScopeSymbol node);
 	void endVisit(AsmBlock node);

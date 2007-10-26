@@ -115,7 +115,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = this;
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb.singleton != type.singleton) {
+		if (!same(tb, type)) {
 			if (tb.ty == Tbit && isBit()) {
 				;
 			}

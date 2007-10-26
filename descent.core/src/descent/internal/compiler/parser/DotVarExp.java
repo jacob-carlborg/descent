@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
@@ -27,10 +25,7 @@ public class DotVarExp extends UnaExp {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
-		}
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 

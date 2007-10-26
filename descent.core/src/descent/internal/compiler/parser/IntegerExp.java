@@ -1,18 +1,19 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TY.Tenum;
-import static descent.internal.compiler.parser.TY.Tint32;
-import static descent.internal.compiler.parser.TY.Tuns32;
-import static descent.internal.compiler.parser.TY.Tuns64;
-
 import java.math.BigInteger;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
+import static descent.internal.compiler.parser.TY.Tenum;
+import static descent.internal.compiler.parser.TY.Tint32;
+import static descent.internal.compiler.parser.TY.Tuns32;
+import static descent.internal.compiler.parser.TY.Tuns64;
 
 // DMD 1.020
 public class IntegerExp extends Expression {
@@ -85,7 +86,7 @@ public class IntegerExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOK.TOKint64) {
 				IntegerExp ne = (IntegerExp) o;
-				return type.singleton.equals(ne.type.singleton) && value.equals(ne.value);
+				return type.equals(ne.type) && value.equals(ne.value);
 			}
 		}
 

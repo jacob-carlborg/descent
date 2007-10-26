@@ -23,7 +23,7 @@ public class TypeReference extends Type {
 	@Override
 	public Type syntaxCopy() {
 		Type t = next.syntaxCopy();
-		if (t == next)
+		if (same(t, next))
 			t = this;
 		else
 			t = new TypeReference(t, context);

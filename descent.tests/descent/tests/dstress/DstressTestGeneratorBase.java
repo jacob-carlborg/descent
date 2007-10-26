@@ -1176,6 +1176,7 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("typedef_22_A.d");
 		failures.add("typedef_22_B.d");
 		failures.add("typedef_23_C.d");
+		failures.add("typedef_24_A.d");
 		failures.add("typeid_14.d");
 		failures.add("typeid_17.d");
 		failures.add("typeid_20.d");

@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -12,7 +11,8 @@ public class HaltExp extends Expression {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		Assert.fail("Accept0 fake node");
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

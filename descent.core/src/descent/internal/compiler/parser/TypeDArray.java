@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -158,7 +157,7 @@ public class TypeDArray extends TypeArray {
 	@Override
 	public Type syntaxCopy() {
 		Type t = next.syntaxCopy();
-		if (t == next) {
+		if (same(t, next)) {
 			t = this;
 		} else {
 			t = new TypeDArray(t);

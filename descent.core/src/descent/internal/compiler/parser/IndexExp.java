@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
-import melnorme.miscutil.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
@@ -26,7 +25,8 @@ public class IndexExp extends BinExp {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		Assert.fail("accept0 fake node");
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -106,8 +106,7 @@ public class IndexExp extends BinExp {
 		modifiable = 1;
 		if (e1.op == TOK.TOKstring) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.StringLiteralsAreImmutable, 0, start,
-					length));
+					IProblem.StringLiteralsAreImmutable, 0, start, length));
 		}
 		if (e1.type.toBasetype(context).ty == TY.Taarray) {
 			e1 = e1.modifiableLvalue(sc, e1, context);
@@ -172,7 +171,9 @@ public class IndexExp extends BinExp {
 
 		e2 = e2.semantic(sc, context);
 		if (null == e2.type) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e2.start, e2.length, new String[] { e2.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolHasNoValue, 0, e2.start, e2.length,
+					new String[] { e2.toChars(context) }));
 			e2.type = Type.terror;
 		}
 		e2 = resolveProperties(sc, e2, context);
@@ -239,7 +240,8 @@ public class IndexExp extends BinExp {
 			else {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ArrayIndexOutOfBounds, 0, this.start,
-						this.length, new String[] { index.toString(), length.toString() }));
+						this.length, new String[] { index.toString(),
+								length.toString() }));
 				e = e1;
 			}
 			break;
@@ -248,7 +250,8 @@ public class IndexExp extends BinExp {
 		default: {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.SymbolMustBeAnArrayOfPointerType, 0, start,
-					length, new String[] { e1.toChars(context), e1.type.toChars(context) }));
+					length, new String[] { e1.toChars(context),
+							e1.type.toChars(context) }));
 			type = Type.tint32;
 			break;
 		}

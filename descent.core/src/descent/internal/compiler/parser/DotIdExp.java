@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
@@ -125,7 +124,7 @@ public class DotIdExp extends UnaExp {
 						if (v.init != null) {
 							ExpInitializer ei = v.init.isExpInitializer();
 							if (ei != null) {
-								if (ei.exp.type.singleton == type.singleton) {
+								if (same(ei.exp.type, type)) {
 									e = ei.exp.copy(); // make copy so we can change loc
 									e.loc = loc;
 									return e;

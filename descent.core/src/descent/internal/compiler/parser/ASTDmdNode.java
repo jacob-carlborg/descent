@@ -1547,7 +1547,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static Expression expType(Type type, Expression e) {
-		if (type.singleton != e.type.singleton) {
+		if (!same(type, e.type)) {
 			e = e.copy();
 			e.type = type;
 		}
@@ -1849,6 +1849,16 @@ public abstract class ASTDmdNode extends ASTNode {
 			return false;
 		}
 		return CharOperation.equals(e1.ident, e2);
+	}
+	
+	public static final boolean same(Type t1, Type t2) {
+		if (t1 == null && t2 == null) {
+			return true;
+		} 
+		if ((t1 == null) != (t2 == null)) {
+			return false;
+		}
+		return t1.same(t2);
 	}
 	
 	

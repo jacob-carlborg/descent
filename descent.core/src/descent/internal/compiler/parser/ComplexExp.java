@@ -87,7 +87,7 @@ public class ComplexExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOK.TOKcomplex80) {
 				ComplexExp ne = (ComplexExp) o;
-				return type.singleton.equals(ne.type.singleton) && value.equals(ne.value);
+				return type.equals(ne.type) && value.equals(ne.value);
 			}
 		}
 

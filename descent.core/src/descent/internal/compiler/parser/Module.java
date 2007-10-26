@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

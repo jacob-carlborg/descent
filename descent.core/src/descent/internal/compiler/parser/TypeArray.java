@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import descent.core.compiler.CharOperation;
-
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tsarray;

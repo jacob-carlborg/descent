@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 // DMD 1.020
 public class TypeInfoDeclaration extends VarDeclaration {
 	
@@ -11,6 +13,12 @@ public class TypeInfoDeclaration extends VarDeclaration {
 		this.storage_class = STC.STCstatic;
 		this.protection = PROT.PROTpublic;
 		this.linkage = LINK.LINKc;
+	}
+	
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 	
 	@Override

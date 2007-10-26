@@ -437,7 +437,7 @@ public class ForeachStatement extends Statement {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, 0, key.start, key.length, new String[] { key.type.toChars(context) }));
 			}
 
-			if (key != null && (key.storage_class & STCout | STCref) != 0) {
+			if (key != null && (key.storage_class & (STCout | STCref)) != 0) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeOutOrRef, 0, key.start, key.length));
 			}
 			break;
@@ -495,7 +495,7 @@ public class ForeachStatement extends Statement {
 		tret = func.type.next;
 
 		// Need a variable to hold value from any return statements in body.
-		if (sc.func.vresult == null && tret != null && tret.singleton != Type.tvoid) {
+		if (sc.func.vresult == null && tret != null && !same(tret, Type.tvoid)) {
 			VarDeclaration v;
 
 			v = new VarDeclaration(loc, tret, Id.result, null);
@@ -672,7 +672,7 @@ public class ForeachStatement extends Statement {
 			sourceAggr.start = oldSourceAggrStart;
 			sourceAggr.length = oldSourceAggrLength;
 			
-			if (e.type.singleton != Type.tint32) {
+			if (!same(e.type, Type.tint32)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.OpApplyFunctionMustReturnAnInt, 0, sourceAggr.start,
 						sourceAggr.length, new String[] { tab.toChars(context) }));

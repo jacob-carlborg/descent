@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.STC.STCconst;
@@ -42,7 +41,8 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

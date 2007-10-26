@@ -101,7 +101,7 @@ public class TypedefDeclaration extends Declaration {
 
 				ExpInitializer ie = init.isExpInitializer();
 				if (ie != null) {
-					if (ie.exp.type.singleton == basetype.singleton) {
+					if (same(ie.exp.type, basetype)) {
 						ie.exp.type = type;
 					}
 				}

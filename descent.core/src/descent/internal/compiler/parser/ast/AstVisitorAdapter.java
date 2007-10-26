@@ -49,6 +49,9 @@ public class AstVisitorAdapter implements IASTVisitor {
 
 	public void endVisit(ArrayInitializer node) {
 	}
+	
+	public void endVisit(ArrayLengthExp node) {
+	}
 
 	public void endVisit(ArrayLiteralExp node) {
 	}
@@ -756,6 +759,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(ArrayInitializer node) {
+		return true;
+	}
+	
+	public boolean visit(ArrayLengthExp node) {
 		return true;
 	}
 

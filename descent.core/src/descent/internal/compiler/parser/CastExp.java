@@ -70,7 +70,7 @@ public class CastExp extends UnaExp {
 		 *  cast(void)
 		 *  cast(classtype)func()
 		 */
-		if (!to.singleton.equals(Type.tvoid)
+		if (!to.equals(Type.tvoid)
 				&& !(to.ty == Tclass && e1.op == TOKcall && e1.type.ty == Tclass)) {
 			return super.checkSideEffect(flag, context);
 		}
@@ -114,7 +114,7 @@ public class CastExp extends UnaExp {
 
 		if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
 				&& (type.ty == Tpointer || type.ty == Tarray)
-				&& type.next.singleton.equals(e1.type.next.singleton)) {
+				&& type.next.equals(e1.type.next)) {
 			e1.type = type;
 			return e1;
 		}

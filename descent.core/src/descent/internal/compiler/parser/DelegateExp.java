@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -21,10 +20,7 @@ public class DelegateExp extends UnaExp {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
-		}
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
@@ -35,7 +31,7 @@ public class DelegateExp extends UnaExp {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (tb.singleton != type.singleton) {
+		if (!same(tb, type)) {
 			// Look for delegates to functions where the functions are
 			// overloaded.
 			FuncDeclaration f;

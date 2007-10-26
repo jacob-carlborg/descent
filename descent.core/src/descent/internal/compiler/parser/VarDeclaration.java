@@ -4,7 +4,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTexport;
@@ -25,8 +24,9 @@ import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtemplateparameter;
 import static descent.internal.compiler.parser.STC.STCundefined;
 
+import static descent.internal.compiler.parser.TOK.TOKconstruct;
 import static descent.internal.compiler.parser.TOK.TOKint64;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 
 import static descent.internal.compiler.parser.TY.Taarray;
 

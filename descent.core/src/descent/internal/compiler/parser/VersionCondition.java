@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
 
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

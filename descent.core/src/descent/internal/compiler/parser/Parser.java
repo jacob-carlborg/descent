@@ -2989,7 +2989,7 @@ public class Parser extends Lexer {
 			}
 			if (tfirst == null)
 				tfirst = t;
-			else if (t != tfirst) {
+			else if (t.singleton != tfirst.singleton) {
 				// TODO check this, should be doing this
 				if (ident != null) {
 					error(IProblem.MultipleDeclarationsMustHaveTheSameType,

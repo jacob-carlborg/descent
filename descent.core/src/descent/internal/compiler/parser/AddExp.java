@@ -81,7 +81,7 @@ public class AddExp extends BinExp {
 
 			if ((tb1.ty == TY.Tarray || tb1.ty == TY.Tsarray)
 					&& (tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray)
-					&& (tb1.next.singleton.equals(tb2.next.singleton))) {
+					&& (tb1.next.equals(tb2.next))) {
 				type = e1.type;
 				e = this;
 			} else if ((tb1.ty == TY.Tpointer && e2.type.isintegral())

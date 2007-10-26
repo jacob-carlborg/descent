@@ -53,7 +53,7 @@ public class TypePointer extends Type {
 
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (this == to) {
+		if (same(this, to)) {
 			return MATCHexact;
 		}
 		if (to.ty == Tpointer && to.next != null) {
@@ -109,7 +109,7 @@ public class TypePointer extends Type {
 	@Override
 	public Type syntaxCopy() {
 		Type t = next.syntaxCopy();
-		if (t == next) {
+		if (same(t, next)) {
 			t = this;
 		} else {
 			t = new TypePointer(t);

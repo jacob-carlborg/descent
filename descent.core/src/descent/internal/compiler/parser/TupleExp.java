@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
@@ -45,10 +44,7 @@ public class TupleExp extends Expression {
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChildren(visitor, exps);
-		}
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 

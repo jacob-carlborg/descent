@@ -94,7 +94,7 @@ public class CatExp extends BinExp {
 		 */
 
 		if ((tb1.ty == TY.Tsarray || tb1.ty == TY.Tarray)
-				&& e2.type.singleton.equals(tb1.next.singleton)) {
+				&& e2.type.equals(tb1.next)) {
 			type = tb1.next.arrayOf(context);
 			if (tb2.ty == TY.Tarray) {
 				// Make e2 into [e2]
@@ -107,7 +107,7 @@ public class CatExp extends BinExp {
 		}
 
 		else if ((tb2.ty == TY.Tsarray || tb2.ty == TY.Tarray)
-				&& e1.type.singleton.equals(tb2.next.singleton)) {
+				&& e1.type.equals(tb2.next)) {
 			type = tb2.next.arrayOf(context);
 			if (tb1.ty == TY.Tarray) {
 				// Make e1 into [e1]
@@ -127,7 +127,7 @@ public class CatExp extends BinExp {
 
 		if (e1.op == TOK.TOKstring && e2.op == TOK.TOKstring) {
 			e = optimize(WANTvalue, context);
-		} else if (e1.type.singleton.equals(e2.type.singleton)
+		} else if (e1.type.equals(e2.type)
 				&& (e1.type.toBasetype(context).ty == TY.Tarray || e1.type
 						.toBasetype(context).ty == TY.Tsarray)) {
 			e = this;

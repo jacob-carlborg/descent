@@ -26,7 +26,8 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
-import static descent.internal.compiler.parser.complex_t.*;
+import static descent.internal.compiler.parser.complex_t.cimagl;
+import static descent.internal.compiler.parser.complex_t.creall;
 
 /**
  * A class to hold constant-folding functions used by the interpreter. The
@@ -152,7 +153,7 @@ public class Constfold {
 
 	public static final UnaExp_fp expType = new UnaExp_fp() {
 		public Expression call(Type type, Expression e, SemanticContext context) {
-			if (!type.singleton.equals(e.type.singleton)) {
+			if (!type.equals(e.type)) {
 				e = e.copy();
 				e.type = type;
 			}
@@ -856,7 +857,7 @@ public class Constfold {
 				es.type = type;
 				e = es;
 			} else if (e1.op == TOKarrayliteral && e2.op == TOKarrayliteral
-					&& e1.type.singleton.equals(e2.type.singleton)) {
+					&& e1.type.equals(e2.type)) {
 				// Concatenate the arrays
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
@@ -926,7 +927,7 @@ public class Constfold {
 					t = e2.type;
 				}
 				Type tb = t.toBasetype(context);
-				if (tb.ty == Tarray && tb.next.singleton.equals(e.type.singleton)) {
+				if (tb.ty == Tarray && tb.next.equals(e.type)) {
 					Expressions expressions = new Expressions(1);
 					expressions.add(e);
 					e = new ArrayLiteralExp(loc, expressions);
@@ -1376,7 +1377,7 @@ public class Constfold {
 		Expression e = EXP_CANT_INTERPRET;
 		Loc loc = e1.loc;
 
-		if (type.singleton.equals(e1.type.singleton) && to.singleton.equals(type.singleton)) {
+		if (type.equals(e1.type) && to.equals(type)) {
 			return e1;
 		}
 

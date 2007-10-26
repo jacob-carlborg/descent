@@ -110,7 +110,7 @@ public class TypeTypeof extends TypeQualified {
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		Type t = semantic(Loc.ZERO, sc, context);
-		if (t == this) {
+		if (same(t, this)) {
 			return null;
 		}
 		return t.toDsymbol(sc, context);

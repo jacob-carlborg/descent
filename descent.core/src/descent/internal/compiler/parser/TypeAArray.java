@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -205,7 +204,7 @@ public class TypeAArray extends TypeArray {
 	public Type syntaxCopy() {
 		Type t = next.syntaxCopy();
 		Type ti = index.syntaxCopy();
-		if (t == next && ti == index) {
+		if (same(t, next) && same(ti, index)) {
 			t = this;
 		} else {
 			t = new TypeAArray(t, ti);
