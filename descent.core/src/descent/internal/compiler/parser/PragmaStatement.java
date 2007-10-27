@@ -59,8 +59,7 @@ public class PragmaStatement extends Statement {
 
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.StringExpectedForPragmaMsg, 0,
-								e.start, e.length));
+								IProblem.StringExpectedForPragmaMsg, e));
 					}
 				}
 			}
@@ -68,9 +67,9 @@ public class PragmaStatement extends Statement {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem
-								.newSemanticTypeError(
+								.newSemanticTypeErrorLoc(
 										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
-										0, start, "pragma".length()));
+										this));
 			} else {
 				Expression e = args.get(0);
 				e = e.semantic(sc, context);
@@ -78,14 +77,13 @@ public class PragmaStatement extends Statement {
 				args.set(0, e);
 				if (e.op != TOK.TOKstring) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.StringExpectedForPragmaLib, 0, e.start,
-							e.length));
+							IProblem.StringExpectedForPragmaLib, e));
 
 				}
 			}
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
+					IProblem.UnrecognizedPragma, ident));
 		}
 
 		if (body != null) {
@@ -132,6 +130,16 @@ public class PragmaStatement extends Statement {
 		PragmaStatement s = new PragmaStatement(loc, ident, Expression
 				.arraySyntaxCopy(args), b);
 		return s;
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 6; // "pragma".length()
 	}
 
 }

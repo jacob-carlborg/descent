@@ -86,8 +86,7 @@ public class SliceExp extends UnaExp {
 			SemanticContext context)
 	{
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.SliceExpressionIsNotAModifiableLvalue, 0, start,
-				length, new String[] { toChars(context) }));
+				IProblem.SliceExpressionIsNotAModifiableLvalue, this, new String[] { toChars(context) }));
 	    return this;
 	}
 
@@ -153,8 +152,7 @@ public class SliceExp extends UnaExp {
 		if (t.ty == TY.Tpointer) {
 			if (null == lwr || null == upr) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NeedUpperAndLowerBoundToSlicePointer, 0, start,
-						length));
+						IProblem.NeedUpperAndLowerBoundToSlicePointer, this));
 			}
 		} else if (t.ty == TY.Tarray || t.ty == TY.Tsarray) {
 		} else if (t.ty == TY.Tclass || t.ty == TY.Tstruct) {
@@ -184,8 +182,7 @@ public class SliceExp extends UnaExp {
 				return e1;
 			} else if (null == lwr || null == upr) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NeedUpperAndLowerBoundToSliceTuple, 0, start,
-						length));
+						IProblem.NeedUpperAndLowerBoundToSliceTuple, this));
 				return Lerror(t, e, sc, context);
 			}
 		} else {
@@ -257,7 +254,7 @@ public class SliceExp extends UnaExp {
 				}
 				e = e.semantic(sc, context);
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, 0, start, length, new String[] { String.valueOf(i1), String.valueOf(i2) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, this, new String[] { String.valueOf(i1), String.valueOf(i2) }));
 				e = e1;
 			}
 			return e;
@@ -319,8 +316,7 @@ public class SliceExp extends UnaExp {
 			s = t.toChars(context);
 
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.SymbolCannotBeSlicedWithBrackets, 0, start,
-				length, new String[] { s }));
+				IProblem.SymbolCannotBeSlicedWithBrackets, this, new String[] { s }));
 		type = Type.terror;
 		return e;
 	}

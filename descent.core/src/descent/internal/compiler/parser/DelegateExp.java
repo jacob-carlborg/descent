@@ -46,8 +46,7 @@ public class DelegateExp extends UnaExp {
 								&& f.tintro.next.isBaseOf(f.type.next, offset,
 										context) && offset[0] != 0) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CannotFormDelegateDueToCovariantReturnType, 0, start,
-									length));
+									IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 						}
 						e = new DelegateExp(loc, e1, f);
 						e.type = t;
@@ -55,8 +54,7 @@ public class DelegateExp extends UnaExp {
 					}
 					if (func.tintro != null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CannotFormDelegateDueToCovariantReturnType, 0, start,
-								length));
+								IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 					}
 				}
 			}
@@ -68,8 +66,7 @@ public class DelegateExp extends UnaExp {
 					&& func.tintro.next.isBaseOf(func.type.next, offset,
 							context) && offset[0] != 0) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotFormDelegateDueToCovariantReturnType, 0, start,
-						length));
+						IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 			}
 		}
 		e.type = t;
@@ -144,7 +141,7 @@ public class DelegateExp extends UnaExp {
 							loop = true;
 							continue L10;
 						}
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, 0, start, length, new String[] { func.toChars(context), ad.toChars(context), t
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { func.toChars(context), ad.toChars(context), t
 								.toChars(context) }));
 					}
 				}

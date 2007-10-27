@@ -167,9 +167,9 @@ public class CallExp extends UnaExp {
 						e = EXP_VOID_INTERPRET;
 					} else {
 						if (istate.stackOverflow) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, 0, start, length, new String[] { toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, new String[] { toChars(context) }));
 						} else {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0, start, length, new String[] { toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
 						}
 					}
 				}
@@ -190,7 +190,7 @@ public class CallExp extends UnaExp {
 				if (eresult != null) {
 					e = eresult;
 				} else if ((result & WANTinterpret) != 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, 0, start, length, new String[] { toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
 				}
 			}
 		}
@@ -241,8 +241,7 @@ public class CallExp extends UnaExp {
 						&& equals(dotid.ident, Id.remove)) {
 					if (arguments == null || arguments.size() != 1) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ExpectedKeyAsArgumentToRemove, 0, start,
-								length));
+								IProblem.ExpectedKeyAsArgumentToRemove, this));
 						// goto Lagain;
 						gotoLagain = true;
 					}
@@ -427,7 +426,7 @@ public class CallExp extends UnaExp {
 								loopL10 = true;
 								continue L10;
 							}
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, 0, start, length, new String[] { f.toChars(context), ad.toChars(context), t
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { f.toChars(context), ad.toChars(context), t
 											.toChars(context) }));
 						}
 					}
@@ -467,21 +466,21 @@ public class CallExp extends UnaExp {
 				}
 				if (cd == null || cd.baseClass == null
 						|| sc.func.isCtorDeclaration() == null) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperClassConstructorCallMustBeInAConstructor, 0, getErrorStart(), getErrorLength()));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SuperClassConstructorCallMustBeInAConstructor, this));
 					type = Type.terror;
 					return this;
 				} else {
 					f = cd.baseClass.ctor;
 					if (f == null) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoSuperClassConstructor, 0, start, length, new String[] { cd.baseClass.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, new String[] { cd.baseClass.toChars(context) }));
 						type = Type.terror;
 						return this;
 					} else {
 						if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, 0, start, length));
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, this));
 						}
 						if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, 0, start, length));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
 						}
 						sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 
@@ -500,15 +499,15 @@ public class CallExp extends UnaExp {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
 				if (cd == null || sc.func.isCtorDeclaration() == null) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ClassConstructorCallMustBeInAConstructor, 0, getErrorStart(), getErrorLength()));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ClassConstructorCallMustBeInAConstructor, getLineNumber(), getErrorStart(), getErrorLength()));
 					type = Type.terror;
 					return this;
 				} else {
 					if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, 0, start, length));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, getLineNumber(), getErrorStart(), getErrorLength()));
 					}
 					if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, 0, start, length));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
 					}
 					sc.callSuper |= CSXany_ctor | CSXthis_ctor;
 
@@ -523,12 +522,11 @@ public class CallExp extends UnaExp {
 					// call graph
 					if (f == sc.func) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CyclicConstructorCall, 0, start,
-								length, new String[] { toChars(context) }));
+								IProblem.CyclicConstructorCall, this, new String[] { toChars(context) }));
 					}
 				}
 			} else if (t1 == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, 0, start, length, new String[] { e1.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, this, new String[] { e1.toChars(context) }));
 				type = Type.terror;
 				return this;
 			} else if (t1.ty != Tfunction) {
@@ -567,7 +565,7 @@ public class CallExp extends UnaExp {
 					loopLagain = true;
 					continue Lagain;
 				} else {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCallNotSymbolOfType, 0, start, length, new String[] { e1.toChars(context), e1.type.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCallNotSymbolOfType, this, new String[] { e1.toChars(context), e1.type.toChars(context) }));
 					type = Type.terror;
 					return this;
 				}

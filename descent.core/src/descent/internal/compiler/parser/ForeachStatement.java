@@ -236,7 +236,7 @@ public class ForeachStatement extends Statement {
 		aggr = aggr.semantic(sc, context);
 		aggr = resolveProperties(sc, aggr, context);
 		if (aggr.type == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.InvalidForeachAggregate, 0, start, length, new String[] { aggr.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.InvalidForeachAggregate, this, new String[] { aggr.toChars(context) }));
 			return this;
 		}
 
@@ -246,7 +246,7 @@ public class ForeachStatement extends Statement {
 		 * Check for inference errors
 		 */
 		if (dim != arguments.size()) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUniquelyInferForeachArgumentTypes, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUniquelyInferForeachArgumentTypes, this));
 			return this;
 		}
 
@@ -255,7 +255,7 @@ public class ForeachStatement extends Statement {
 		if (tab.ty == Ttuple) // don't generate new scope for tuple loops
 		{
 			if (dim < 1 || dim > 2) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach, this));
 				return s;
 			}
 
@@ -285,13 +285,13 @@ public class ForeachStatement extends Statement {
 
 				if (dim == 2) { // Declare key
 					if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, 0, start, length, new String[] { arg.ident.toChars() }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, this, new String[] { arg.ident.toChars() }));
 					}
 					TY keyty = arg.type.ty;
 					if ((keyty != Tint32 && keyty != Tuns32)
 							|| (context.global.params.isX86_64
 									&& keyty != Tint64 && keyty != Tuns64)) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, 0, arg.start, arg.length, new String[] { arg.type.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, arg, new String[] { arg.type.toChars(context) }));
 					}
 					Initializer ie = new ExpInitializer(loc, new IntegerExp(
 							loc, k));
@@ -304,7 +304,7 @@ public class ForeachStatement extends Statement {
 				}
 				// Declare value
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, 0, start, length, new String[] { arg.ident.toChars() }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, this, new String[] { arg.ident.toChars() }));
 				}
 				Dsymbol var;
 				if (te != null) {
@@ -346,7 +346,7 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = arguments.get(i);
 			if (arg.type == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferTypeForSymbol, 0, arg.getErrorStart(), arg.getErrorLength(), new String[] { arg.ident.toChars() }));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotInferTypeForSymbol, arg, new String[] { arg.ident.toChars() }));
 				return this;
 			}
 		}
@@ -361,7 +361,7 @@ public class ForeachStatement extends Statement {
 		case Tarray:
 		case Tsarray:
 			if (dim < 1 || dim > 2) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForArrayForeach, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForArrayForeach, this));
 				break;
 			}
 
@@ -380,12 +380,12 @@ public class ForeachStatement extends Statement {
 				if (tnv.ty != tn.ty
 						&& (tnv.ty == Tchar || tnv.ty == Twchar || tnv.ty == Tdchar)) {
 					if ((arg.storageClass & STCref) != 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueOfUTFConversionCannotBeInout, 0, start, length));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueOfUTFConversionCannotBeInout, this));
 					}
 					if (dim == 2) {
 						arg = arguments.get(0);
 						if ((arg.storageClass & STCref) != 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeInout, 0, start, length));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeInout, this));
 						}
 					}
 					// goto Lapply;
@@ -422,34 +422,34 @@ public class ForeachStatement extends Statement {
 					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context),
 							context);
 				} else {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachTargetIsNotAnArrayOf, 0, start, length, new String[] { tab.toChars(context), value.type.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachTargetIsNotAnArrayOf, sourceAggr, new String[] { tab.toChars(context), value.type.toChars(context) }));
 				}
 			}
 
 			if ((value.storage_class & STCout) != 0
 					&& value.type.toBasetype(context).ty == Tbit) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueCannotBeOutAndTypeBit, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueCannotBeOutAndTypeBit, this));
 			}
 
 			if (key != null
 					&& ((key.type.ty != Tint32 && key.type.ty != Tuns32) || (context.global.params.isX86_64
 							&& key.type.ty != Tint64 && key.type.ty != Tuns64))) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, 0, key.start, key.length, new String[] { key.type.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, key, new String[] { key.type.toChars(context) }));
 			}
 
 			if (key != null && (key.storage_class & (STCout | STCref)) != 0) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeOutOrRef, 0, key.start, key.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyCannotBeOutOrRef, key));
 			}
 			break;
 
 		case Taarray:
 			taa = (TypeAArray) tab;
 			if (dim < 1 || dim > 2) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForAssociativeArrayForeach, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForAssociativeArrayForeach, this));
 				break;
 			}
 			if (op == TOKforeach_reverse) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoReverseIterationOnAssociativeArrays, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoReverseIterationOnAssociativeArrays, this));
 			}
 			// goto Lapply
 			Statement[] ps = { null };
@@ -470,8 +470,7 @@ public class ForeachStatement extends Statement {
 
 		default:
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NotAnAggregateType, 0, sourceAggr.start,
-					sourceAggr.length, new String[] { aggr.type.toString() }));
+					IProblem.NotAnAggregateType, sourceAggr, new String[] { aggr.type.toString() }));
 			break;
 		}
 		sc.noctor--;
@@ -560,20 +559,17 @@ public class ForeachStatement extends Statement {
 			if (dim == 2) {
 				if ((arg.storageClass & STCref) != 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForeachIndexCannotBeRef, 0, arg.start,
-							arg.length));
+							IProblem.ForeachIndexCannotBeRef, arg));
 				}
 				if (!arg.type.equals(taa.index)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForeachIndexMustBeType, 0, start,
-							length, new String[] { taa.index.toChars(context), arg.type.toChars(context) }));
+							IProblem.ForeachIndexMustBeType, this, new String[] { taa.index.toChars(context), arg.type.toChars(context) }));
 				}
 				arg = arguments.get(1);
 			}
 			if (!arg.type.equals(taa.next)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForeachValueMustBeType, 0, start,
-						length, new String[] { taa.next.toChars(context), arg.type.toChars(context) }));
+						IProblem.ForeachValueMustBeType, this, new String[] { taa.next.toChars(context), arg.type.toChars(context) }));
 			}
 
 			/*
@@ -650,8 +646,7 @@ public class ForeachStatement extends Statement {
 			e = e.semantic(sc, context);
 			if (e.type.singleton != Type.tint32) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OpApplyFunctionMustReturnAnInt, 0, start,
-						length, new String[] { tab.toChars(context) }));
+						IProblem.OpApplyFunctionMustReturnAnInt, this, new String[] { tab.toChars(context) }));
 			}
 		} else {
 			/*
@@ -674,8 +669,7 @@ public class ForeachStatement extends Statement {
 			
 			if (!same(e.type, Type.tint32)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OpApplyFunctionMustReturnAnInt, 0, sourceAggr.start,
-						sourceAggr.length, new String[] { tab.toChars(context) }));
+						IProblem.OpApplyFunctionMustReturnAnInt, sourceAggr, new String[] { tab.toChars(context) }));
 			}
 		}
 

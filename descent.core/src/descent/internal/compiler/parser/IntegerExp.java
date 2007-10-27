@@ -529,7 +529,7 @@ public class IntegerExp extends Expression {
 			loc = e.loc;
 		}
 		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstantIsNotAnLValue, 
-				0, e.start, e.length, new String[] { e.toChars(context) }));
+				e, new String[] { e.toChars(context) }));
 		return this;
 	}
 	

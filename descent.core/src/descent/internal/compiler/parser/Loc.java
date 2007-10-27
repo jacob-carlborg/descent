@@ -22,6 +22,10 @@ public class Loc {
 		this.linnum = linnum;
 		this.filename = filename;
 	}
+	
+	public Loc clone() {
+		return new Loc(filename, linnum);
+	}
 
 	public String toChars() {
 		OutBuffer buf = new OutBuffer();

@@ -88,7 +88,7 @@ public class TypedefDeclaration extends Declaration {
 			}
 		} else if (sem == 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, 0, ident.start, ident.length, new String[] { toChars(context) }));
+					IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
 		}
 	}
 

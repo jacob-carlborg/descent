@@ -396,7 +396,7 @@ public class Parser extends Lexer {
 				    Expression e = parseAssignExp();
 				    check(TOKrparen);
 				    check(TOKsemicolon);
-				    s = new CompileDeclaration(loc, e);
+				    s = new CompileDeclaration(loc(), e);
 				    break;
 				}
 
@@ -464,8 +464,7 @@ public class Parser extends Lexer {
 					} else {
 						stc = STCinvariant;
 						
-						Modifier modifier = new Modifier(token);
-						modifier.setSourceRange(token.ptr, token.sourceLen);
+						Modifier modifier = newModifier();
 						
 						// goto Lstc;
 						nextToken();
@@ -494,8 +493,6 @@ public class Parser extends Lexer {
 				return decldefs;
 
 			case TOKstatic:
-				int staticTokenStart = token.ptr;
-				int staticTokenLength = token.sourceLen;
 				nextToken();
 				
 				expect(afterStaticExpectations);
@@ -525,8 +522,7 @@ public class Parser extends Lexer {
 					
 					// goto Lstc2;
 					
-					Modifier modifier = new Modifier(prevToken);
-					modifier.setSourceRange(staticTokenStart, staticTokenLength);
+					Modifier modifier = newModifier(prevToken);
 					
 					s = parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
 				}
@@ -541,8 +537,7 @@ public class Parser extends Lexer {
 				} else {
 					stc = STCconst;
 					
-					Modifier modifier = new Modifier(token);
-					modifier.setSourceRange(token.ptr, token.sourceLen);
+					Modifier modifier = newModifier();
 					
 					// goto Lstc;
 					nextToken();
@@ -559,8 +554,7 @@ public class Parser extends Lexer {
 			case TOKdeprecated:
 				stc = STC.fromTOK(token.value);
 				
-				Modifier modifier = new Modifier(token);
-				modifier.setSourceRange(token.ptr, token.sourceLen);
+				Modifier modifier = newModifier();
 				
 				// goto Lstc;
 				nextToken();
@@ -572,8 +566,7 @@ public class Parser extends Lexer {
 				if (peek(token).value != TOKlparen) {
 					stc = STCextern;
 					
-					modifier = new Modifier(token);
-					modifier.setSourceRange(token.ptr, token.sourceLen);
+					modifier = newModifier();
 					
 					// goto Lstc;
 					nextToken();
@@ -598,8 +591,7 @@ public class Parser extends Lexer {
 				
 				prot = PROT.fromTOK(token.value);
 				
-				modifier = new Modifier(token);
-				modifier.setSourceRange(token.ptr, token.sourceLen);
+				modifier = newModifier();
 				
 				// goto Lprot;
 				nextToken();
@@ -662,7 +654,7 @@ public class Parser extends Lexer {
 					a = parseBlock();
 				}
 				
-				s = new PragmaDeclaration(loc, ident, args, a);
+				s = new PragmaDeclaration(loc(), ident, args, a);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
@@ -765,6 +757,14 @@ public class Parser extends Lexer {
 		return decldefs;
 	}
 	
+	private Modifier newModifier() {
+		return new Modifier(token, linnum);
+	}
+	
+	private Modifier newModifier(Token token) {
+		return new Modifier(token, linnum);
+	}
+
 	private Dsymbol parseDeclDefs_Lerror() {
 		while (token.value != TOKsemicolon && token.value != TOKeof)
 		    nextToken();
@@ -800,8 +800,7 @@ public class Parser extends Lexer {
 						} else {
 						    stc |= STCinvariant;
 						}
-						modifier = new Modifier(token);
-				    	modifier.setSourceRange(token.ptr, token.sourceLen);
+						modifier = newModifier();
 				    	modifiers.add(modifier);
 				    	nextToken();
 				    	break;
@@ -821,8 +820,7 @@ public class Parser extends Lexer {
 			    case TOKdeprecated:
 			    	stc |= STC.fromTOK(token.value);
 			    	
-			    	modifier = new Modifier(token);
-			    	modifier.setSourceRange(token.ptr, token.sourceLen);
+			    	modifier = newModifier();
 			    	modifiers.add(modifier);
 			    	nextToken();
 			    	break;
@@ -846,7 +844,7 @@ public class Parser extends Lexer {
 			    nextToken();
 			    nextToken();
 			    Initializer init = parseInitializer();
-			    VarDeclaration v = new VarDeclaration(loc, null, ident, init);
+			    VarDeclaration v = new VarDeclaration(loc(), null, ident, init);
 			    v.first = first;
 			    first = false;
 			    
@@ -958,7 +956,7 @@ public class Parser extends Lexer {
 		check(TOKrparen);
 		check(TOKsemicolon);
 
-		return new StaticAssert(loc, exp, msg);
+		return new StaticAssert(loc(), exp, msg);
 	}
 	
 	private LINK parseLinkage() {
@@ -1029,9 +1027,9 @@ public class Parser extends Lexer {
 			}
 			nextToken();
 			check(TOKrparen);
-			c = new DebugCondition(module, loc, level, id);
+			c = new DebugCondition(module, loc(), level, id);
 		} else {
-			c = new DebugCondition(module, loc, 1, null);
+			c = new DebugCondition(module, loc(), 1, null);
 		}
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
@@ -1054,7 +1052,7 @@ public class Parser extends Lexer {
 				idTokenLength = token.sourceLen;
 				
 				nextToken();			
-				c = newVersionCondition(module, loc, level, id);			
+				c = newVersionCondition(module, loc(), level, id);			
 				check(TOKrparen);
 			} else if (token.value == TOKint32v) {
 				id = token.sourceString;
@@ -1063,12 +1061,12 @@ public class Parser extends Lexer {
 				idTokenLength = token.sourceLen;
 				
 				nextToken();
-				c = newVersionCondition(module, loc, level, id);
+				c = newVersionCondition(module, loc(), level, id);
 				check(TOKrparen);				
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 				
-				c = newVersionCondition(module, loc, level, id);
+				c = newVersionCondition(module, loc(), level, id);
 				
 				// For improved syntax error recovery
 				if (token.value != TOKrparen) {
@@ -1077,7 +1075,7 @@ public class Parser extends Lexer {
 				nextToken();
 			}			
 		} else {
-			c = newVersionCondition(module, loc, level, id);
+			c = newVersionCondition(module, loc(), level, id);
 			
 			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
@@ -1101,7 +1099,7 @@ public class Parser extends Lexer {
 			parsingErrorInsertToComplete(prevToken, "(expression)", "StaticIfDeclaration");
 			exp = null;
 		}
-		return new StaticIfCondition(loc, exp);
+		return new StaticIfCondition(loc(), exp);
 	}
 	
 	private IftypeCondition parseIftypeCondition() {
@@ -1128,14 +1126,14 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 		} else {
 			parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
-			return new IftypeCondition(loc, null, null, null, null);
+			return new IftypeCondition(loc(), null, null, null, null);
 		}
 
 		error(
 				IProblem.IftypeDeprecated, firstTokenLine,
 				firstTokenStart, firstTokenLength);
 
-		return new IftypeCondition(loc, targ, ident[0], tok, tspec);
+		return new IftypeCondition(loc(), targ, ident[0], tok, tspec);
 	}
 	
 	private CtorDeclaration parseCtor() {
@@ -1144,7 +1142,7 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 	    nextToken();
 	    Arguments arguments = parseParameters(varargs);
-	    CtorDeclaration f = new CtorDeclaration(loc, arguments, varargs[0]);
+	    CtorDeclaration f = new CtorDeclaration(loc(), arguments, varargs[0]);
 	    f.thisStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1162,7 +1160,7 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		DtorDeclaration f = new DtorDeclaration(loc);
+		DtorDeclaration f = new DtorDeclaration(loc());
 		f.thisStart = thisStart;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1176,7 +1174,7 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 
-	    StaticCtorDeclaration f = new StaticCtorDeclaration(loc);
+	    StaticCtorDeclaration f = new StaticCtorDeclaration(loc());
 	    f.thisStart = start;
 	    
 		f.setSourceRange(start, 0);
@@ -1195,7 +1193,7 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		StaticDtorDeclaration f = new StaticDtorDeclaration(loc);
+		StaticDtorDeclaration f = new StaticDtorDeclaration(loc());
 		f.thisStart = thisStart;
 		f.setSourceRange(start, 0);
 	    parseContracts(f);
@@ -1212,7 +1210,7 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 	    }
 
-	    InvariantDeclaration invariant = new InvariantDeclaration(loc);
+	    InvariantDeclaration invariant = new InvariantDeclaration(loc());
 	    invariant.invariantStart = start;
 	    invariant.setFbody(parseStatement(PScurly));
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1223,7 +1221,7 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 		nextToken();
 		
-		UnitTestDeclaration unitTest = new UnitTestDeclaration(loc);
+		UnitTestDeclaration unitTest = new UnitTestDeclaration(loc());
 		unitTest.setFbody(parseStatement(PScurly));
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return unitTest;
@@ -1236,7 +1234,7 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 		Arguments arguments = parseParameters(varargs);
 		
-		NewDeclaration f = new NewDeclaration(loc, arguments, varargs[0]);
+		NewDeclaration f = new NewDeclaration(loc(), arguments, varargs[0]);
 		f.newStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1259,7 +1257,7 @@ public class Parser extends Lexer {
 	    			startLine, name);
 	    }
 		
-		DeleteDeclaration f = new DeleteDeclaration(loc, arguments);
+		DeleteDeclaration f = new DeleteDeclaration(loc(), arguments);
 		f.deleteStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1310,27 +1308,27 @@ public class Parser extends Lexer {
 				switch(token.value) {
 					case TOKin:
 						storageClass = STCin;
-						modifiers.add(new Modifier(token));
+						modifiers.add(newModifier());
 						nextToken();
 						break;
 					case TOKout:
 						storageClass = STCout;
-						modifiers.add(new Modifier(token));
+						modifiers.add(newModifier());
 						nextToken();
 						break;
 					case TOKinout:
 						storageClass = STCref;
-						modifiers.add(new Modifier(token));
+						modifiers.add(newModifier());
 						nextToken();
 						break;
 					case TOKref:
 						storageClass = STCref;
-						modifiers.add(new Modifier(token));
+						modifiers.add(newModifier());
 						nextToken();
 						break;
 					case TOKlazy:
 						storageClass = STClazy;
-						modifiers.add(new Modifier(token));
+						modifiers.add(newModifier());
 						nextToken();
 						break;
 				}
@@ -1430,7 +1428,7 @@ public class Parser extends Lexer {
 				    	break;
 				    } else {
 					    stc = STCconst;
-					    modifiers.add(new Modifier(token));
+					    modifiers.add(newModifier());
 					    // goto L2;
 					    storageClass = parseParametersD2_L2(storageClass, stc);
 					    continue loopFor;
@@ -1441,56 +1439,56 @@ public class Parser extends Lexer {
 				    	break;
 				    } else {
 					    stc = STCinvariant;
-					    modifiers.add(new Modifier(token));
+					    modifiers.add(newModifier());
 					    // goto L2;
 					    storageClass = parseParametersD2_L2(storageClass, stc);
 					    continue loopFor;
 				    }
 				case TOKin:
 					stc = STCin;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKout:
 					stc = STCout;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKinout:
 					stc = STCref;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKref:
 					stc = STCref;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKlazy:
 					stc = STClazy;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKscope:
 					stc = STCscope;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKfinal:
 					stc = STCfinal;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKstatic:
 					stc = STCstatic;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					// goto L2;
 					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
@@ -1608,7 +1606,7 @@ public class Parser extends Lexer {
 			t = null;
 		}
 		
-		EnumDeclaration e = new EnumDeclaration(loc, id, t);
+		EnumDeclaration e = new EnumDeclaration(loc(), id, t);
 		
 		if (token.value == TOKsemicolon && id != null) {
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
@@ -1632,7 +1630,7 @@ public class Parser extends Lexer {
 						value = parseAssignExp();
 					}
 					
-					EnumMember em = new EnumMember(loc, ident, value);
+					EnumMember em = new EnumMember(loc(), ident, value);
 					e.addMember(em);
 					if (token.value == TOKrcurly) {
 						;
@@ -1698,21 +1696,21 @@ public class Parser extends Lexer {
 			}
 			
 			if (firstToken.value == TOKclass) {
-				a = new ClassDeclaration(loc, id, baseClasses);
+				a = new ClassDeclaration(loc(), id, baseClasses);
 			} else {
-				a = new InterfaceDeclaration(loc, id, baseClasses);
+				a = new InterfaceDeclaration(loc(), id, baseClasses);
 			}
 			break;			
 		case TOKstruct:
 			if (id != null) {
-				a = new StructDeclaration(loc, id);
+				a = new StructDeclaration(loc(), id);
 			} else {
 				anon = 2;
 			}
 			break;
 		case TOKunion:
 			if (id != null) {
-				a = new UnionDeclaration(loc, id);
+				a = new UnionDeclaration(loc(), id);
 			} else {
 				anon = 1;
 			}
@@ -1732,7 +1730,7 @@ public class Parser extends Lexer {
 			}
 			if (anon != 0) {
 				nextToken();
-			    return new AnonDeclaration(loc, anon == 1, decl);
+			    return new AnonDeclaration(loc(), anon == 1, decl);
 			}
 			a.members = decl;
 			a.sourceMembers = new Dsymbols(decl);
@@ -1752,16 +1750,16 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken,  word + "Body", word + "Declaration");
 				switch(firstToken.value) {
 				case TOKclass:
-					a = new ClassDeclaration(loc, id, baseClasses);
+					a = new ClassDeclaration(loc(), id, baseClasses);
 					break;
 				case TOKinterface:
-					a = new InterfaceDeclaration(loc, id, baseClasses);
+					a = new InterfaceDeclaration(loc(), id, baseClasses);
 					break;
 				case TOKstruct:
-					a = new StructDeclaration(loc, id);
+					a = new StructDeclaration(loc(), id);
 					break;
 				case TOKunion:
-					a = new UnionDeclaration(loc, id);
+					a = new UnionDeclaration(loc(), id);
 					break;
 				}
 			}		
@@ -1779,7 +1777,7 @@ public class Parser extends Lexer {
 			// Wrap a template around the aggregate declaration
 			decldefs = new Dsymbols();
 			decldefs.add(a);
-			tempdecl = new TemplateDeclaration(loc, id, tpl, decldefs);
+			tempdecl = new TemplateDeclaration(loc(), id, tpl, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
 			tempdecl.wrapper = true;
 			return tempdecl;
@@ -1807,8 +1805,7 @@ public class Parser extends Lexer {
 			case TOKpublic:
 				protection = PROT.fromTOK(token.value);
 				
-				modifier = new Modifier(token);
-				modifier.setSourceRange(token.ptr, token.sourceLen);
+				modifier = newModifier();
 				continue;
 			default:
 				parsingErrorInsertTokenAfter(prevToken, "Type");
@@ -1866,7 +1863,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 
-		TemplateDeclaration tempdecl = new TemplateDeclaration(loc, id, tpl, decldefs);
+		TemplateDeclaration tempdecl = new TemplateDeclaration(loc(), id, tpl, decldefs);
 		tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		
 		if (malformed[0]) {
@@ -1952,7 +1949,7 @@ public class Parser extends Lexer {
 						}
 					}
 					
-					tp = new TemplateAliasParameter(loc, tp_ident, tp_spectype, tp_defaulttype);
+					tp = new TemplateAliasParameter(loc(), tp_ident, tp_spectype, tp_defaulttype);
 				} else if (t.value == TOKcolon || t.value == TOKassign
 						|| t.value == TOKcomma || t.value == TOKrparen) { // TypeParameter
 					if (token.value != TOKidentifier) {
@@ -1984,7 +1981,7 @@ public class Parser extends Lexer {
 						}
 					}
 					
-					tp = new TemplateTypeParameter(loc, tp_ident, tp_spectype, tp_defaulttype);
+					tp = new TemplateTypeParameter(loc(), tp_ident, tp_spectype, tp_defaulttype);
 				}
 			    else if (token.value == TOKidentifier && t.value == TOKdotdotdot)
 			    {	// ident...
@@ -1998,7 +1995,7 @@ public class Parser extends Lexer {
 					nextToken();
 					nextToken();
 					
-					tp = new TemplateTupleParameter(loc, tp_ident);
+					tp = new TemplateTupleParameter(loc(), tp_ident);
 				} else { 
 					// ValueParameter
 					if (apiLevel < D2) {
@@ -2029,7 +2026,7 @@ public class Parser extends Lexer {
 						tp_defaultvalue = parseCondExp();
 					}
 					
-					tp = new TemplateValueParameter(loc, tp_ident, tp_valtype, tp_specvalue, tp_defaultvalue);
+					tp = new TemplateValueParameter(loc(), tp_ident, tp_valtype, tp_specvalue, tp_defaultvalue);
 				}
 				tp.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 				
@@ -2061,7 +2058,7 @@ public class Parser extends Lexer {
 		int typeStart = token.ptr;
 		tqual = null;
 		if (token.value == TOKdot) {
-			id = new IdentifierExp(loc, Id.empty); // Id::empty
+			id = new IdentifierExp(loc(), Id.empty); // Id::empty
 		} else {
 			if (token.value == TOKtypeof) {
 				Expression exp;
@@ -2070,7 +2067,7 @@ public class Parser extends Lexer {
 				check(TOKlparen);
 				exp = parseExpression();
 				check(TOKrparen);
-				tqual = new TypeTypeof(loc, exp);
+				tqual = new TypeTypeof(loc(), exp);
 				tqual.setSourceRange(typeStart, prevToken.ptr + prevToken.sourceLen - typeStart);
 				
 				check(TOKdot);				
@@ -2098,11 +2095,11 @@ public class Parser extends Lexer {
 				break;
 			
 			if (tiargs != null) {
-				TemplateInstance tempinst = new TemplateInstance(loc, id);
+				TemplateInstance tempinst = new TemplateInstance(loc(), id);
 			    tempinst.tiargs = tiargs;
 			    tempinst.start = thisStart;
 			    tempinst.length = prevToken.ptr + prevToken.sourceLen - thisStart;
-			    id = new TemplateInstanceWrapper(loc, tempinst); // "(PIdentifier *)tempinst;" cant work in Java 
+			    id = new TemplateInstanceWrapper(loc(), tempinst); // "(PIdentifier *)tempinst;" cant work in Java 
 			    tiargs = null;
 			}
 			idents.add(id);
@@ -2126,7 +2123,7 @@ public class Parser extends Lexer {
 			id = null;
 		}
 		
-		tm = new TemplateMixin(loc, id, tqual, idents, tiargs);
+		tm = new TemplateMixin(loc(), id, tqual, idents, tiargs);
 		tm.setTypeSourceRange(typeStart, typeLength);
 
 		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
@@ -2211,7 +2208,7 @@ public class Parser extends Lexer {
 				if (token.value != TOKidentifier) {
 					
 					// Issue a creation of an empty import declaration
-					newImport(loc, null, null, aliasid, isstatic);
+					newImport(loc(), null, null, aliasid, isstatic);
 					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					break;
@@ -2237,7 +2234,7 @@ public class Parser extends Lexer {
 					nextToken();
 					if (token.value != TOKidentifier) {
 						// Issue a creation of an empty import declaration
-						newImport(loc, a, null, aliasid, isstatic);
+						newImport(loc(), a, null, aliasid, isstatic);
 						
 						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						break;
@@ -2247,7 +2244,7 @@ public class Parser extends Lexer {
 				}
 
 				Import prev = s;
-				s = newImport(loc, a, id, aliasid, isstatic);
+				s = newImport(loc(), a, id, aliasid, isstatic);
 				s.first = prev == null;
 				decldefs.add(s);
 				if (prev == null) {
@@ -2368,10 +2365,10 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst = new TemplateInstance(loc, id);
+				tempinst = new TemplateInstance(loc(), id);
 				tempinst.tiargs = parseTemplateArgumentList();
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
-				tid = new TypeInstance(loc, tempinst);
+				tid = new TypeInstance(loc(), tempinst);
 				tid.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				// goto Lident2;
 				{
@@ -2390,7 +2387,7 @@ public class Parser extends Lexer {
 
 			}
 			// Lident:
-			tid = new TypeIdentifier(loc, id);
+			tid = new TypeIdentifier(loc(), id);
 			// Lident2:
 			{
 			Type[] p_t = { t };
@@ -2407,9 +2404,9 @@ public class Parser extends Lexer {
 			break;
 
 		case TOKdot:
-			id = new IdentifierExp(loc, Id.empty);
+			id = new IdentifierExp(loc(), Id.empty);
 			// goto Lident;
-			tid = new TypeIdentifier(loc, id);
+			tid = new TypeIdentifier(loc(), id);
 			{
 			Type[] p_t = { t };
 			IdentifierExp[] p_id = { id };
@@ -2433,7 +2430,7 @@ public class Parser extends Lexer {
 			exp = parseExpression();
 			check(TOKrparen);
 			
-			tid = new TypeTypeof(loc, exp);
+			tid = new TypeTypeof(loc(), exp);
 			tid.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			((TypeTypeof) tid).setTypeofSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
@@ -2494,10 +2491,10 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst[0] = new TemplateInstance(loc, id[0]);
+				tempinst[0] = new TemplateInstance(loc(), id[0]);
 				tempinst[0].tiargs = parseTemplateArgumentList();
 				tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
-				tid[0].addIdent(new TemplateInstanceWrapper(loc, tempinst[0]));
+				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
 			} else {
 				tid[0].addIdent(id[0]);
 			}
@@ -2861,8 +2858,7 @@ public class Parser extends Lexer {
 			case TOKdeprecated:
 				stc = STC.fromTOK(token.value);
 				
-				Modifier currentModifier = new Modifier(token);
-				currentModifier.setSourceRange(token.ptr, token.sourceLen);
+				Modifier currentModifier = newModifier();
 				if ((storage_class & stc) != 0) {
 					error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 				}
@@ -2875,8 +2871,7 @@ public class Parser extends Lexer {
 				if (peek(token).value != TOKlparen) {
 					stc = STC.fromTOK(token.value);
 					
-					currentModifier = new Modifier(token);
-					currentModifier.setSourceRange(token.ptr, token.sourceLen);
+					currentModifier = newModifier(token);
 					if ((storage_class & stc) != 0) {
 						error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 					}
@@ -2912,7 +2907,7 @@ public class Parser extends Lexer {
 			nextToken();
 			Initializer init = parseInitializer();
 
-			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
+			VarDeclaration v = new VarDeclaration(loc(), null, ident, init);
 			v.first = first;
 			first = false;
 			
@@ -3016,7 +3011,7 @@ public class Parser extends Lexer {
 				TypedefDeclaration td = null;
 				AliasDeclaration ad = null;
 				if (tok == TOKtypedef) {
-					td = new TypedefDeclaration(loc, ident, t, init);
+					td = new TypedefDeclaration(loc(), ident, t, init);
 					td.first = first;
 					v = td;
 					if (previousTypedef != null) {
@@ -3028,7 +3023,7 @@ public class Parser extends Lexer {
 						error(IProblem.AliasCannotHaveInitializer, assignTokenLine, assignTokenStart,  init.start + init.length - assignTokenStart);
 					}
 					
-					ad = new AliasDeclaration(loc, ident, t);
+					ad = new AliasDeclaration(loc(), ident, t);
 					ad.first = first;
 					v = ad;
 					if (previousAlias != null) {
@@ -3075,7 +3070,7 @@ public class Parser extends Lexer {
 				
 				TypeFunction typeFunction = (TypeFunction) t;
 				
-				FuncDeclaration f = new FuncDeclaration(loc, ident, storage_class, typeFunction);
+				FuncDeclaration f = new FuncDeclaration(loc(), ident, storage_class, typeFunction);
 				parseContracts(f);
 				f.setSourceRange(t.start, prevToken.ptr + prevToken.sourceLen - t.start);
 				
@@ -3094,7 +3089,7 @@ public class Parser extends Lexer {
 					// Wrap a template around the aggregate declaration
 					decldefs = new Dsymbols();
 					decldefs.add(s);
-					tempdecl = new TemplateDeclaration(loc, s.ident, tpl, decldefs);
+					tempdecl = new TemplateDeclaration(loc(), s.ident, tpl, decldefs);
 					tempdecl.setSourceRange(s.start, s.length);
 					tempdecl.wrapper = true;
 					s = tempdecl;
@@ -3114,7 +3109,7 @@ public class Parser extends Lexer {
 					init = parseInitializer();
 				}
 				
-				v = new VarDeclaration(loc, t, ident, init);
+				v = new VarDeclaration(loc(), t, ident, init);
 				v.first = first;
 				first = false;
 				
@@ -3275,7 +3270,7 @@ public class Parser extends Lexer {
 				case TOKreturn:
 					// goto Lexpression;
 					e = parseAssignExp();
-					ie = new ExpInitializer(loc, e);
+					ie = new ExpInitializer(loc(), e);
 					return ie;
 
 				case TOKlcurly:
@@ -3295,7 +3290,7 @@ public class Parser extends Lexer {
 				break;
 			}
 			
-			is = new StructInitializer(loc);
+			is = new StructInitializer(loc());
 			nextToken();
 			comma = 0;
 			while (true) {
@@ -3348,7 +3343,7 @@ public class Parser extends Lexer {
 			return is;
 
 		case TOKlbracket:
-			ia = new ArrayInitializer(loc);
+			ia = new ArrayInitializer(loc());
 			nextToken();
 			comma = 0;
 			while (true) {
@@ -3367,7 +3362,7 @@ public class Parser extends Lexer {
 						nextToken();
 						value = parseInitializer();
 					} else {
-						value = new ExpInitializer(loc, e);
+						value = new ExpInitializer(loc(), e);
 						e = null;
 					}
 					ia.addInit(e, value);
@@ -3416,7 +3411,7 @@ public class Parser extends Lexer {
 			// Lexpression:
 			e = parseAssignExp();
 			e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-			ie = new ExpInitializer(loc, e);
+			ie = new ExpInitializer(loc(), e);
 			return ie;
 		}
 	}
@@ -3453,7 +3448,7 @@ public class Parser extends Lexer {
 				nextToken();
 				Statement body = parseStatement(PSsemi);
 				
-				s = new LabelStatement(loc, ident, body);
+				s = new LabelStatement(loc(), ident, body);
 				s.start = ident.start;
 				s.length = prevToken.ptr + prevToken.sourceLen - ident.start;
 				break;
@@ -3471,7 +3466,7 @@ public class Parser extends Lexer {
 				// goto Lexp;
 				Expression exp = parseExpression();
 				check(TOKsemicolon);
-				s = new ExpStatement(loc, exp);
+				s = new ExpStatement(loc(), exp);
 				break;
 			}
 			// break;
@@ -3516,7 +3511,7 @@ public class Parser extends Lexer {
 		{
 			Expression exp = parseExpression();
 			check(TOKsemicolon);
-			s = new ExpStatement(loc, exp);
+			s = new ExpStatement(loc(), exp);
 			s.setSourceRange(exp.start, prevToken.ptr + prevToken.sourceLen - exp.start);
 			break;
 		}
@@ -3545,7 +3540,7 @@ public class Parser extends Lexer {
 					elsebody = parseStatement(0 /*PSsemi*/);
 				}
 				
-				s = new ConditionalStatement(loc, staticIfCondition, ifbody, elsebody);
+				s = new ConditionalStatement(loc(), staticIfCondition, ifbody, elsebody);
 				break;
 			}
 			// goto Ldeclaration;
@@ -3605,7 +3600,7 @@ public class Parser extends Lexer {
 			d = parseAggregate();
 			if (d != null) {
 				d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				s = new DeclarationStatement(loc, d);
+				s = new DeclarationStatement(loc(), d);
 			}
 			break;
 		}
@@ -3616,7 +3611,7 @@ public class Parser extends Lexer {
 			d = parseEnum();
 			if (d != null) {
 				d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				s = new DeclarationStatement(loc, d);
+				s = new DeclarationStatement(loc(), d);
 			}
 			break;
 		}
@@ -3631,11 +3626,11 @@ public class Parser extends Lexer {
 				Expression e = parseAssignExp();
 				check(TOKrparen);
 				check(TOKsemicolon);
-				s = new CompileStatement(loc, e);
+				s = new CompileStatement(loc(), e);
 				break;
 		    } else {			
 		    	d = parseMixin();
-		    	s = new DeclarationStatement(loc, d);
+		    	s = new DeclarationStatement(loc(), d);
 		    	break;
 		    }
 		}
@@ -3667,7 +3662,7 @@ public class Parser extends Lexer {
 			s.setSourceRange(start, token.ptr + token.sourceLen - start);
 			
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
-				s = new ScopeStatement(loc, s);
+				s = new ScopeStatement(loc(), s);
 				s.setSourceRange(start, token.ptr + token.sourceLen - start);
 			}
 			
@@ -3686,7 +3681,7 @@ public class Parser extends Lexer {
 			
 			body = parseStatement(PSscope);
 			
-			s = new WhileStatement(loc, condition2, body);
+			s = new WhileStatement(loc(), condition2, body);
 			break;
 		}
 
@@ -3696,7 +3691,7 @@ public class Parser extends Lexer {
 			}
 			nextToken();
 			
-			s = new ExpStatement(loc, null);
+			s = new ExpStatement(loc(), null);
 			break;
 
 		case TOKdo: {
@@ -3713,7 +3708,7 @@ public class Parser extends Lexer {
 			check(TOKlparen);
 			condition2 = parseExpression();
 			check(TOKrparen);
-			s = new DoStatement(loc, body, condition2);
+			s = new DoStatement(loc(), body, condition2);
 			break;
 		}
 
@@ -3746,11 +3741,11 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 			}
 			body = parseStatement(PSscope);
-			s = new ForStatement(loc, init, condition2, increment, body);
+			s = new ForStatement(loc(), init, condition2, increment, body);
 			if (init != null) {
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				
-				s = new ScopeStatement(loc, s);
+				s = new ScopeStatement(loc(), s);
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			}
 			break;
@@ -3785,7 +3780,7 @@ public class Parser extends Lexer {
 				storageClass = STCin;
 				if (token.value == TOKinout || token.value == TOKref) {
 					storageClass = STCref;
-					modifiers.add(new Modifier(token));
+					modifiers.add(newModifier());
 					nextToken();
 				}
 				if (token.value == TOKidentifier) {
@@ -3845,7 +3840,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 				body = parseStatement(0);
 				
-				s = new ForeachStatement(loc, op, arguments, aggr, body);
+				s = new ForeachStatement(loc(), op, arguments, aggr, body);
 			} else {
 			    if (token.value == TOKslice && arguments.size() == 1) {
 					Argument a = (Argument) arguments.get(0);
@@ -3853,11 +3848,11 @@ public class Parser extends Lexer {
 					Expression upr = parseExpression();
 					check(TOKrparen);
 					body = parseStatement(0);
-					s = new ForeachRangeStatement(loc, op, a, aggr, upr, body);
+					s = new ForeachRangeStatement(loc(), op, a, aggr, upr, body);
 				} else {
 					check(TOKrparen);
 					body = parseStatement(0);
-					s = new ForeachStatement(loc, op, arguments, aggr, body);
+					s = new ForeachStatement(loc(), op, arguments, aggr, body);
 				}
 			}
 			break;
@@ -3876,7 +3871,7 @@ public class Parser extends Lexer {
 			if (token.value == TOKauto) {
 				int autoTokenStart = token.ptr;
 				List<Modifier> modifiers = new ArrayList<Modifier>(1);
-				modifiers.add(new Modifier(token));
+				modifiers.add(newModifier());
 				
 				nextToken();
 				if (token.value == TOKidentifier) {
@@ -3960,7 +3955,7 @@ public class Parser extends Lexer {
 				elsebody2 = parseStatement(PSscope);
 			} else
 				elsebody2 = null;
-			s = new IfStatement(loc, arg, condition2, ifbody2, elsebody2);
+			s = new IfStatement(loc(), arg, condition2, ifbody2, elsebody2);
 			break;
 		}
 
@@ -4007,7 +4002,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 				Statement st = parseStatement(PScurlyscope);
 				
-				s = new OnScopeStatement(loc, t2, st);
+				s = new OnScopeStatement(loc(), t2, st);
 				break;
 			}
 
@@ -4022,7 +4017,7 @@ public class Parser extends Lexer {
 			nextToken();
 			Statement st = parseStatement(PScurlyscope);
 			
-			s = new OnScopeStatement(loc, t2, st);
+			s = new OnScopeStatement(loc(), t2, st);
 			break;
 		}
 
@@ -4041,7 +4036,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = new ConditionalStatement(loc, condition, ifbody, elsebody);
+			s = new ConditionalStatement(loc(), condition, ifbody, elsebody);
 			break;
 
 		case TOKversion:
@@ -4059,7 +4054,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = new ConditionalStatement(loc, versionCondition, ifbody, elsebody);
+			s = new ConditionalStatement(loc(), versionCondition, ifbody, elsebody);
 			break;
 
 		case TOKiftype:
@@ -4075,7 +4070,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = new ConditionalStatement(loc, iftypeCondition, ifbody, elsebody);
+			s = new ConditionalStatement(loc(), iftypeCondition, ifbody, elsebody);
 			break;
 
 		case TOKpragma: {
@@ -4111,7 +4106,7 @@ public class Parser extends Lexer {
 				body = parseStatement(PSsemi);
 			}
 			
-			s = new PragmaStatement(loc, ident, args, body);
+			s = new PragmaStatement(loc(), ident, args, body);
 			break;
 		}
 
@@ -4125,7 +4120,7 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 			body = parseStatement(PSscope);
 			
-			s = new SwitchStatement(loc, condition2, body);
+			s = new SwitchStatement(loc(), condition2, body);
 			break;
 		}
 
@@ -4147,7 +4142,7 @@ public class Parser extends Lexer {
 				int expLength = token.sourceLen;
 				
 				exp = parseAssignExp();
-				caseStatements.add(newCaseStatement(loc, exp, null, caseEnd, expStart, expLength));			
+				caseStatements.add(newCaseStatement(loc(), exp, null, caseEnd, expStart, expLength));			
 				// cases.add(exp);
 				
 				if (token.value != TOKcomma) {
@@ -4170,7 +4165,7 @@ public class Parser extends Lexer {
 			s = newBlock(statements);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = new ScopeStatement(loc, s);
+			s = new ScopeStatement(loc(), s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
 			// Keep cases in order by building the case statements backwards
@@ -4198,10 +4193,10 @@ public class Parser extends Lexer {
 			s = newBlock(statements);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = new ScopeStatement(loc, s);
+			s = new ScopeStatement(loc(), s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = new DefaultStatement(loc, s);
+			s = new DefaultStatement(loc(), s);
 			break;
 		}
 
@@ -4216,7 +4211,7 @@ public class Parser extends Lexer {
 			}
 			check(TOKsemicolon);
 			
-			s = new ReturnStatement(loc, exp);
+			s = new ReturnStatement(loc(), exp);
 			break;
 		}
 
@@ -4231,7 +4226,7 @@ public class Parser extends Lexer {
 				ident = null;
 			check(TOKsemicolon);
 			
-			s = newBreakStatement(loc, ident);
+			s = newBreakStatement(loc(), ident);
 			break;
 		}
 
@@ -4248,7 +4243,7 @@ public class Parser extends Lexer {
 			
 			check(TOKsemicolon);
 			
-			s = newContinueStatement(loc, ident);
+			s = newContinueStatement(loc(), ident);
 			break;
 		}
 
@@ -4258,7 +4253,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKdefault) {
 				nextToken();
-				s = new GotoDefaultStatement(loc);
+				s = new GotoDefaultStatement(loc());
 			} else if (token.value == TOKcase) {
 				Expression exp = null;
 
@@ -4267,7 +4262,7 @@ public class Parser extends Lexer {
 					exp = parseExpression();
 				}
 				
-				s = new GotoCaseStatement(loc, exp);
+				s = new GotoCaseStatement(loc(), exp);
 			} else {
 				if (token.value != TOKidentifier) {
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
@@ -4277,7 +4272,7 @@ public class Parser extends Lexer {
 					nextToken();
 				}
 				
-				s = newGotoStatement(loc, ident);
+				s = newGotoStatement(loc(), ident);
 			}
 			check(TOKsemicolon);
 			break;
@@ -4296,7 +4291,7 @@ public class Parser extends Lexer {
 				exp = null;
 			body = parseStatement(PSscope);
 			
-			s = new SynchronizedStatement(loc, exp, body);
+			s = new SynchronizedStatement(loc(), exp, body);
 			break;
 		}
 
@@ -4311,7 +4306,7 @@ public class Parser extends Lexer {
 			
 			body = parseStatement(PSscope);
 			
-			s = new WithStatement(loc, exp, body);
+			s = new WithStatement(loc(), exp, body);
 			break;
 		}
 
@@ -4351,7 +4346,7 @@ public class Parser extends Lexer {
 				}
 				handler = parseStatement(0);
 				
-				c = new Catch(loc, t2, id, handler);
+				c = new Catch(loc(), t2, id, handler);
 				c.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 				
 				if (catches == null) {
@@ -4372,13 +4367,13 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "Catch or finally", "TryStatement");
 			} else {
 				if (catches != null) {
-					s = new TryCatchStatement(loc, body, catches);
+					s = new TryCatchStatement(loc(), body, catches);
 				}
 				if (finalbody != null) {
 					if (catches != null) {
 						s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					}
-					s = new TryFinallyStatement(loc, s, finalbody, catches != null);
+					s = new TryFinallyStatement(loc(), s, finalbody, catches != null);
 				}
 			}
 			break;
@@ -4391,14 +4386,14 @@ public class Parser extends Lexer {
 			exp = parseExpression();
 			check(TOKsemicolon);
 			
-			s = new ThrowStatement(loc, exp);
+			s = new ThrowStatement(loc(), exp);
 			break;
 		}
 
 		case TOKvolatile:
 			nextToken();
 			s = parseStatement(PSsemi | PScurlyscope);
-			s = new VolatileStatement(loc, s);
+			s = new VolatileStatement(loc(), s);
 			break;
 
 		case TOKasm: {
@@ -4441,7 +4436,7 @@ public class Parser extends Lexer {
 
 				case TOKsemicolon:
 					// Create AsmStatement from list of tokens we've saved
-					s = new AsmStatement(loc, toklist);
+					s = new AsmStatement(loc(), toklist);
 					if (toklist.isEmpty()) {
 						s.setSourceRange(token.ptr, token.sourceLen);
 					} else {
@@ -4451,7 +4446,7 @@ public class Parser extends Lexer {
 					toklist = new ArrayList<Token>(6);
 					
 					if (label != null) {
-						s = new LabelStatement(loc, label, s);
+						s = new LabelStatement(loc(), label, s);
 						s.start = label.start;
 						s.length = token.ptr + token.sourceLen - label.start;
 						label = null;
@@ -4473,7 +4468,7 @@ public class Parser extends Lexer {
 				break;
 			}
 			
-			s = new AsmBlock(loc, statements);;
+			s = new AsmBlock(loc(), statements);;
 			
 			nextToken();
 			break;
@@ -4508,21 +4503,21 @@ public class Parser extends Lexer {
 			Statements as = new Statements(a.size());
 			for (int i = 0; i < a.size(); i++) {
 				Dsymbol d = (Dsymbol) a.get(i);
-				s[0] = new DeclarationStatement(loc, d);
+				s[0] = new DeclarationStatement(loc(), d);
 				as.add(s[0]);
 			}
 			
 			s[0] = newManyVarsBlock(as);
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
-			s[0] = new DeclarationStatement(loc, d);
+			s[0] = new DeclarationStatement(loc(), d);
 		} else {
 			parsingErrorDeleteToken(token);
 			nextToken();
 			s[0] = null;
 		}
 		if ((flags & PSscope) != 0) {
-			s[0] = new ScopeStatement(loc, s[0]);
+			s[0] = new ScopeStatement(loc(), s[0]);
 		}
 	}
 	
@@ -5404,11 +5399,11 @@ public class Parser extends Lexer {
 		    {	// identifier!(template-argument-list)
 		    	TemplateInstance tempinst;
 		    	
-		    	tempinst = new TemplateInstance(loc, id);		    	
+		    	tempinst = new TemplateInstance(loc(), id);		    	
 		    	nextToken();
 		    	tempinst.tiargs = parseTemplateArgumentList();
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
-				e = new ScopeExp(loc, tempinst);
+				e = new ScopeExp(loc(), tempinst);
 				e.setSourceRange(tempinst.start, tempinst.length);
 		    }
 		    else {
@@ -5420,59 +5415,59 @@ public class Parser extends Lexer {
 		    if (inBrackets == 0) {
 		    	error(IProblem.DollarInvalidOutsideBrackets, token);
 		    }
-		    e = new DollarExp(loc);
+		    e = new DollarExp(loc());
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
 		case TOKdot:
 		    // Signal global scope '.' operator with "" identifier
-			e = new IdentifierExp(loc, Id.empty);
+			e = new IdentifierExp(loc(), Id.empty);
 			e.start = token.ptr;
 			e.length = 0;
 		    break;
 
 		case TOKthis:
-		    e = new ThisExp(loc);
+		    e = new ThisExp(loc());
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
 		case TOKsuper:
-			e = new SuperExp(loc);
+			e = new SuperExp(loc());
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
-		case TOKint32v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tint32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKuns32v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKint64v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKuns64v: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat32v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.tfloat32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat64v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.tfloat64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat80v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.tfloat80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary32v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.timaginary32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary64v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.timaginary64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary80v: e = new RealExp(loc, token.sourceString, token.floatValue, Type.timaginary80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKint32v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tint32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKuns32v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKint64v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKuns64v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat32v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.tfloat32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat64v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.tfloat64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat80v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.tfloat80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary32v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.timaginary32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary64v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.timaginary64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary80v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.timaginary80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 
 		case TOKnull:
-		    e = new NullExp(loc);
+		    e = new NullExp(loc());
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
 		case TOKtrue:
-			e = new IntegerExp(loc, token.sourceString, 1, Type.tbool);
+			e = new IntegerExp(loc(), token.sourceString, 1, Type.tbool);
 		    nextToken();
 		    break;
 		case TOKfalse:
-			e = new IntegerExp(loc, token.sourceString, 0, Type.tbool);
+			e = new IntegerExp(loc(), token.sourceString, 0, Type.tbool);
 		    nextToken();
 		    break;
 
-		case TOKcharv: e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKwcharv:  e = new IntegerExp(loc, token.sourceString, token.intValue, Type.twchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKdcharv:  e = new IntegerExp(loc, token.sourceString, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKcharv: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKwcharv:  e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.twchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKdcharv:  e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 
 		case TOKstring: {
 			int startLine = token.lineNumber;
@@ -5545,13 +5540,13 @@ public class Parser extends Lexer {
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
 			    	// Change from DMD
-					e = newTypeDotIdExp(loc, t, new IdentifierExp(Id.empty));
+					e = newTypeDotIdExp(loc(), t, new IdentifierExp(Id.empty));
 			    	//e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.sourceLen);
 		    		nextToken();
 		    		break;
 			    }
-			    e = newTypeDotIdExp(loc, t, newIdentifierExp());
+			    e = newTypeDotIdExp(loc(), t, newIdentifierExp());
 			    e.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    nextToken();
 			    break;
@@ -5566,7 +5561,7 @@ public class Parser extends Lexer {
 		    exp = parseExpression();
 		    check(TOKrparen);
 		    
-			t = new TypeTypeof(loc, exp);
+			t = new TypeTypeof(loc(), exp);
 			t.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			((TypeTypeof) t).setTypeofSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
@@ -5579,19 +5574,19 @@ public class Parser extends Lexer {
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
 			    	// Change from DMD
-					e = newTypeDotIdExp(loc, t, new IdentifierExp(Id.empty));
+					e = newTypeDotIdExp(loc(), t, new IdentifierExp(Id.empty));
 			    	//e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.sourceLen);
 			    	nextToken();
 			    	break;
 			    }
-			    e = newTypeDotIdExp(loc, t, newIdentifierExp());
+			    e = newTypeDotIdExp(loc(), t, newIdentifierExp());
 			    e.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    nextToken();
 			    break;
 		    }
 		    	
-		    e = new TypeExp(loc, t);
+		    e = new TypeExp(loc(), t);
 		    break;
 		}
 
@@ -5608,7 +5603,7 @@ public class Parser extends Lexer {
 		    	t2 = parseType();				// ( type 
 		    }
 		    check(TOKrparen);
-		    e = new TypeidExp(loc, t2);
+		    e = new TypeidExp(loc(), t2);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
@@ -5629,7 +5624,7 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "__traits(identifier, args...) expected", "traits expression");
 				//goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+				e = new IntegerExp(loc(), Id.ZERO, 0, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.sourceLen);
 				nextToken();
 				break;
@@ -5642,7 +5637,7 @@ public class Parser extends Lexer {
 				check(TOKrparen); // __traits(identifier)
 			}
 
-			e = new TraitsExp(loc, ident, args);
+			e = new TraitsExp(loc(), ident, args);
 			break;
 		}
 
@@ -5696,12 +5691,12 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+				e = new IntegerExp(loc(), Id.ZERO, 0, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.sourceLen);
 				nextToken();
 				break;
 			}
-			e = new IftypeExp(loc, targ, ident, tok, tspec, tok2);
+			e = new IftypeExp(loc(), targ, ident, tok, tspec, tok2);
 			break;
 		}
 
@@ -5718,7 +5713,7 @@ public class Parser extends Lexer {
 			}
 			check(TOKrparen);
 			
-			e = new AssertExp(loc, e, msg);
+			e = new AssertExp(loc(), e, msg);
 			e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			break;
 		}
@@ -5730,7 +5725,7 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    e = parseAssignExp();
 		    check(TOKrparen);
-		    e = new CompileExp(loc, e);
+		    e = new CompileExp(loc(), e);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
@@ -5742,7 +5737,7 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    e = parseAssignExp();
 		    check(TOKrparen);
-		    e = new FileExp(loc, e);
+		    e = new FileExp(loc(), e);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
@@ -5805,9 +5800,9 @@ public class Parser extends Lexer {
 			check(TOKrbracket);
 
 			if (keys != null) {
-				e = new AssocArrayLiteralExp(loc, keys, values);
+				e = new AssocArrayLiteralExp(loc(), keys, values);
 			} else {
-				e = new ArrayLiteralExp(loc, values);
+				e = new ArrayLiteralExp(loc(), values);
 			}
 		    break;
 		}
@@ -5863,14 +5858,14 @@ public class Parser extends Lexer {
 						// identifier!(template-argument-list)
 						TemplateInstance tempinst;
 						
-						tempinst = new TemplateInstance(loc, id);						
+						tempinst = new TemplateInstance(loc(), id);						
 						nextToken();
 						
 						tempinst.tiargs = parseTemplateArgumentList();
 						tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
-						e = new DotTemplateInstanceExp(loc, e, tempinst);
+						e = new DotTemplateInstanceExp(loc(), e, tempinst);
 					} else {
-						e = newDotIdExp(loc, e, id);
+						e = newDotIdExp(loc(), e, id);
 						e.start = start;
 						e.length = id.start + id.length - start;
 					}
@@ -5880,7 +5875,7 @@ public class Parser extends Lexer {
 					continue;
 				} else {
 					// signal a new DotIdExp anyway
-					e = newDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+					e = newDotIdExp(loc(), e, new IdentifierExp(CharOperation.NO_CHAR));
 					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}
@@ -5888,12 +5883,12 @@ public class Parser extends Lexer {
 
 			case TOKplusplus:
 			case TOKminusminus:
-				e = new PostExp(loc, token.value, e);
+				e = new PostExp(loc(), token.value, e);
 				e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				break;
 
 			case TOKlparen:
-				e = new CallExp(loc, e, parseArguments());
+				e = new CallExp(loc(), e, parseArguments());
 				e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				continue;
 
@@ -5907,14 +5902,14 @@ public class Parser extends Lexer {
 				inBrackets++;
 				nextToken();
 				if (token.value == TOKrbracket) { // array[]
-					e = new SliceExp(loc, e, null, null);
+					e = new SliceExp(loc(), e, null, null);
 					nextToken();
 				} else {
 					index = parseAssignExp();
 					if (token.value == TOKslice) { // array[lwr .. upr]
 						nextToken();
 						upr = parseAssignExp();
-						e = new SliceExp(loc, e, index, upr);
+						e = new SliceExp(loc(), e, index, upr);
 					} else { // array[index, i2, i3, i4, ...]
 						Expressions arguments = new Expressions();
 						arguments.add(index);
@@ -5931,7 +5926,7 @@ public class Parser extends Lexer {
 							}
 						}
 						
-						e = new ArrayExp(loc, e, arguments);
+						e = new ArrayExp(loc(), e, arguments);
 					}
 					check(TOKrbracket);
 					inBrackets--;
@@ -5958,13 +5953,13 @@ public class Parser extends Lexer {
 		case TOKand:
 			nextToken();
 			e = parseUnaryExp();
-			e = new AddrExp(loc, e);
+			e = new AddrExp(loc(), e);
 			break;
 
 		case TOKplusplus:
 			nextToken();
 			e = parseUnaryExp();
-			AddAssignExp aae = new AddAssignExp(loc, e, new IntegerExp(loc, 1, Type.tint32));
+			AddAssignExp aae = new AddAssignExp(loc(), e, new IntegerExp(loc(), 1, Type.tint32));
 			aae.isPreIncrement = true;
 			e = aae;
 			break;
@@ -5972,7 +5967,7 @@ public class Parser extends Lexer {
 		case TOKminusminus:
 			nextToken();
 			e = parseUnaryExp();
-			MinAssignExp mae = new MinAssignExp(loc, e, new IntegerExp(loc, 1, Type.tint32));
+			MinAssignExp mae = new MinAssignExp(loc(), e, new IntegerExp(loc(), 1, Type.tint32));
 			mae.isPreDecrement = true;
 			e = mae;
 			break;
@@ -5980,37 +5975,37 @@ public class Parser extends Lexer {
 		case TOKmul:
 			nextToken();
 			e = parseUnaryExp();
-			e = new PtrExp(loc, e);
+			e = new PtrExp(loc(), e);
 			break;
 
 		case TOKmin:
 			nextToken();
 			e = parseUnaryExp();
-			e = new NegExp(loc, e);
+			e = new NegExp(loc(), e);
 			break;
 
 		case TOKadd:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UAddExp(loc, e);
+			e = new UAddExp(loc(), e);
 			break;
 
 		case TOKnot:
 			nextToken();
 			e = parseUnaryExp();
-			e = new NotExp(loc, e);
+			e = new NotExp(loc(), e);
 			break;
 
 		case TOKtilde:
 			nextToken();
 			e = parseUnaryExp();
-			e = new ComExp(loc, e);
+			e = new ComExp(loc(), e);
 			break;
 
 		case TOKdelete:
 			nextToken();
 			e = parseUnaryExp();
-			e = new DeleteExp(loc, e);
+			e = new DeleteExp(loc(), e);
 			break;
 
 		case TOKnew:
@@ -6030,7 +6025,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 	
 				e = parseUnaryExp();
-				e = new CastExp(loc, e, t);
+				e = new CastExp(loc(), e, t);
 			} else {
 			    if ((token.value == TOKconst || token.value == TOKinvariant)
 						&& peek(token).value == TOKrparen) {
@@ -6039,12 +6034,12 @@ public class Parser extends Lexer {
 					nextToken();
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, tok, modifierStart);
+					e = new CastExp(loc(), e, tok, modifierStart);
 				} else {
 					t = parseType(); // ( type )
 					check(TOKrparen);
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, t);
+					e = new CastExp(loc(), e, t);
 				}
 			}
 			break;
@@ -6141,17 +6136,17 @@ public class Parser extends Lexer {
 						if (token.value != TOKidentifier) {
 							parsingErrorInsertTokenAfter(prevToken, "Identifier");
 							// Change from DMD
-							e = newTypeDotIdExp(loc, t, null);
+							e = newTypeDotIdExp(loc(), t, null);
 							e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 							return e;
 						}
-						e = newTypeDotIdExp(loc, t, newIdentifierExp());
+						e = newTypeDotIdExp(loc(), t, newIdentifierExp());
 						e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 						nextToken();
 						e = parsePostExp(e);
 					} else {
 						e = parseUnaryExp();
-						e = new CastExp(loc, e, t);
+						e = new CastExp(loc(), e, t);
 						e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 						error(IProblem.CStyleCastIllegal, firstTokenLine, firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					}
@@ -6204,9 +6199,9 @@ public class Parser extends Lexer {
 		}
 		
 		t = new TypeFunction(arguments, t, varargs, linkage);
-		fd = new FuncLiteralDeclaration(loc, t, save, null);
+		fd = new FuncLiteralDeclaration(loc(), t, save, null);
 		parseContracts(fd);
-		e[0] = new FuncExp(loc, fd);
+		e[0] = new FuncExp(loc(), fd);
 	}
 	
 	private Expression parseMulExp()
@@ -6218,9 +6213,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = new MulExp(loc, e, e2); continue;
-		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = new DivExp(loc, e, e2); continue;
-		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = new ModExp(loc, e, e2); continue;
+		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = new MulExp(loc(), e, e2); continue;
+		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = new DivExp(loc(), e, e2); continue;
+		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = new ModExp(loc(), e, e2); continue;
 
 		    default:
 			break;
@@ -6239,9 +6234,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = new AddExp(loc, e, e2); continue;
-		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = new MinExp(loc, e, e2); continue;
-		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = new CatExp(loc, e, e2); continue;
+		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = new AddExp(loc(), e, e2); continue;
+		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = new MinExp(loc(), e, e2); continue;
+		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = new CatExp(loc(), e, e2); continue;
 
 		    default:
 			break;
@@ -6260,9 +6255,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = new ShlExp(loc, e, e2);  continue;
-		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = new ShrExp(loc, e, e2);  continue;
-		    case TOKushr: nextToken(); e2 = parseAddExp(); e = new UshrExp(loc, e, e2); continue;
+		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = new ShlExp(loc(), e, e2);  continue;
+		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = new ShrExp(loc(), e, e2);  continue;
+		    case TOKushr: nextToken(); e2 = parseAddExp(); e = new UshrExp(loc(), e, e2); continue;
 
 		    default:
 			break;
@@ -6297,11 +6292,11 @@ public class Parser extends Lexer {
 		    	op = token.value;
 		    	nextToken(); 
 		    	e2 = parseShiftExp();
-		    	e = new CmpExp(loc, op, e, e2); continue;
+		    	e = new CmpExp(loc(), op, e, e2); continue;
 		    case TOKin: 
 		    	nextToken(); 
 		    	e2 = parseShiftExp(); 
-		    	e = new InExp(loc, e, e2); 
+		    	e = new InExp(loc(), e, e2); 
 		    	continue;
 
 		    default:
@@ -6327,7 +6322,7 @@ public class Parser extends Lexer {
 		    case TOKnotequal:
 		    	nextToken();
 				e2 = parseRelExp();
-				e = new EqualExp(loc, value, e, e2);
+				e = new EqualExp(loc(), value, e, e2);
 				continue;
 
 		    case TOKidentity:
@@ -6336,7 +6331,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc, value, e, e2);
+			e = new IdentityExp(loc(), value, e, e2);
 			continue;
 
 		    case TOKnotidentity:
@@ -6345,7 +6340,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc, value, e, e2);
+			e = new IdentityExp(loc(), value, e, e2);
 			continue;
 
 		    case TOKis:
@@ -6353,7 +6348,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc, value, e, e2);
+			e = new IdentityExp(loc(), value, e, e2);
 			continue;
 
 		    case TOKnot:
@@ -6366,7 +6361,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc, value, e, e2);
+			e = new IdentityExp(loc(), value, e, e2);
 			continue;
 
 		    // L1:
@@ -6397,14 +6392,14 @@ public class Parser extends Lexer {
 		case TOKnotequal:
 			 nextToken();
 			    e2 = parseShiftExp();
-			    e = new EqualExp(loc, op, e, e2);
+			    e = new EqualExp(loc(), op, e, e2);
 			    break;
 
 		case TOKis:
 		    //op = TOKidentity;
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = new IdentityExp(loc, op, e, e2);
+		    e = new IdentityExp(loc(), op, e, e2);
 		    break;
 
 		case TOKnot:
@@ -6416,7 +6411,7 @@ public class Parser extends Lexer {
 		    op = TOKnotis;
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = new IdentityExp(loc, op, e, e2);
+		    e = new IdentityExp(loc(), op, e, e2);
 		    break;
 		    
 		case TOKlt:
@@ -6433,13 +6428,13 @@ public class Parser extends Lexer {
 	    case TOKue:
 	    	nextToken(); 
 	    	e2 = parseShiftExp(); 
-	    	e = new CmpExp(loc, op, e, e2); 
+	    	e = new CmpExp(loc(), op, e, e2); 
 	    	break;
 
 		case TOKin:
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = new InExp(loc, e, e2);
+		    e = new InExp(loc(), e, e2);
 		    break;
 
 		default:
@@ -6458,7 +6453,7 @@ public class Parser extends Lexer {
 			while (token.value == TOKand) {
 				nextToken();
 				e2 = parseEqualExp();
-				e = new AndExp(loc, e, e2);
+				e = new AndExp(loc(), e, e2);
 			}
 		} else {
 			e = parseCmpExp();
@@ -6466,7 +6461,7 @@ public class Parser extends Lexer {
 			{
 			    nextToken();
 			    e2 = parseCmpExp();
-			    e = new AndExp(loc, e, e2);
+			    e = new AndExp(loc(), e, e2);
 			}
 
 		}
@@ -6481,7 +6476,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKxor) {
 			nextToken();
 			e2 = parseAndExp();
-			e = new XorExp(loc, e, e2);
+			e = new XorExp(loc(), e, e2);
 		}
 		return e;
 	}
@@ -6494,7 +6489,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKor) {
 			nextToken();
 			e2 = parseXorExp();
-			e = new OrExp(loc, e, e2);
+			e = new OrExp(loc(), e, e2);
 		}
 		return e;
 	}
@@ -6507,7 +6502,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKandand) {
 			nextToken();
 			e2 = parseOrExp();
-			e = new AndAndExp(loc, e, e2);
+			e = new AndAndExp(loc(), e, e2);
 		}
 		return e;
 	}
@@ -6520,7 +6515,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKoror) {
 			nextToken();
 			e2 = parseAndAndExp();
-			e = new OrOrExp(loc, e, e2);
+			e = new OrOrExp(loc(), e, e2);
 		}
 		return e;
 	}
@@ -6536,7 +6531,7 @@ public class Parser extends Lexer {
 			e1 = parseExpression();
 			check(TOKcolon);
 			e2 = parseCondExp();
-			e = new CondExp(loc, e, e1, e2);
+			e = new CondExp(loc(), e, e1, e2);
 		}
 		return e;
 	}
@@ -6550,19 +6545,19 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = new AssignExp(loc, e, e2); continue;
-		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = new AddAssignExp(loc, e, e2); continue;
-		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = new MinAssignExp(loc, e, e2); continue;
-		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = new MulAssignExp(loc, e, e2); continue;
-		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = new DivAssignExp(loc, e, e2); continue;
-		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = new ModAssignExp(loc, e, e2); continue;
-		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = new AndAssignExp(loc, e, e2); continue;
-		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = new OrAssignExp(loc, e, e2); continue;
-		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = new XorAssignExp(loc, e, e2); continue;
-		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = new ShlAssignExp(loc, e, e2); continue;
-		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = new ShrAssignExp(loc, e, e2); continue;
-		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = new UshrAssignExp(loc, e, e2); continue;
-		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = new CatAssignExp(loc, e, e2); continue;
+		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = new AssignExp(loc(), e, e2); continue;
+		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = new AddAssignExp(loc(), e, e2); continue;
+		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = new MinAssignExp(loc(), e, e2); continue;
+		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = new MulAssignExp(loc(), e, e2); continue;
+		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = new DivAssignExp(loc(), e, e2); continue;
+		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = new ModAssignExp(loc(), e, e2); continue;
+		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = new AndAssignExp(loc(), e, e2); continue;
+		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = new OrAssignExp(loc(), e, e2); continue;
+		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = new XorAssignExp(loc(), e, e2); continue;
+		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = new ShlAssignExp(loc(), e, e2); continue;
+		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = new ShrAssignExp(loc(), e, e2); continue;
+		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = new UshrAssignExp(loc(), e, e2); continue;
+		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = new CatAssignExp(loc(), e, e2); continue;
 	    default:
 			break;
 		}
@@ -6579,7 +6574,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKcomma) {
 			nextToken();
 			e2 = parseAssignExp();
-			e = new CommaExp(loc, e, e2);
+			e = new CommaExp(loc(), e, e2);
 		}
 		return e;
 	}
@@ -6645,7 +6640,7 @@ public class Parser extends Lexer {
 				baseClasses = parseBaseClasses();
 
 			IdentifierExp id = null;
-			ClassDeclaration cd = new ClassDeclaration(loc, id, baseClasses);
+			ClassDeclaration cd = new ClassDeclaration(loc(), id, baseClasses);
 
 			if (token.value != TOKlcurly) {
 				parsingErrorInsertToComplete(prevToken, "{ members }", "AnnonymousClassDeclaration");
@@ -6661,7 +6656,7 @@ public class Parser extends Lexer {
 				cd.sourceMembers = new Dsymbols(decl);
 			}
 			
-			e = new NewAnonClassExp(loc, thisexp, newargs, cd, arguments);
+			e = new NewAnonClassExp(loc(), thisexp, newargs, cd, arguments);
 
 			return e;
 		}
@@ -6681,7 +6676,7 @@ public class Parser extends Lexer {
 					t = new TypeDArray(t.next);
 				} else {
 					error(IProblem.NeedSizeOfRightmostArray, lineNumber, index);
-					NullExp nullExp = new NullExp(loc);
+					NullExp nullExp = new NullExp(loc());
 					nullExp.setSourceRange(token.ptr, token.sourceLen);
 					return nullExp;
 				}
@@ -6707,19 +6702,19 @@ public class Parser extends Lexer {
 		 * t = new TypeDArray(t); } else if (token.value == TOKlparen) arguments =
 		 * parseArguments(); #endif
 		 */
-		e = new NewExp(loc, thisexp, newargs, t, arguments);
+		e = new NewExp(loc(), thisexp, newargs, t, arguments);
 		return e;
 	}
 	
 	private StringExp newStringExpForCurrentToken() {
-		StringExp string = new StringExp(loc, token.ustring, token.len, (char) token.postfix);
+		StringExp string = new StringExp(loc(), token.ustring, token.len, (char) token.postfix);
 		string.sourceString = token.sourceString;
 		string.setSourceRange(token.ptr, token.sourceLen);
 		return string;
 	}
 	
 	private StringExp newStringExpForPreviousToken() {
-		StringExp string = new StringExp(loc, prevToken.ustring, prevToken.len, (char) prevToken.postfix);
+		StringExp string = new StringExp(loc(), prevToken.ustring, prevToken.len, (char) prevToken.postfix);
 		string.sourceString = prevToken.sourceString;
 		string.setSourceRange(prevToken.ptr, prevToken.sourceLen);
 		return string;
@@ -6732,20 +6727,20 @@ public class Parser extends Lexer {
 	}
 	
 	private CompoundStatement newBlock(Statements statements) {
-		return new CompoundStatement(loc, statements);
+		return new CompoundStatement(loc(), statements);
 	}
 	
 	private CompoundStatement newManyVarsBlock(Statements statements) {
-		CompoundStatement statement = new CompoundStatement(loc, statements);
+		CompoundStatement statement = new CompoundStatement(loc(), statements);
 		statement.manyVars = true;
 		return statement;
 	}
 	
 	private DebugSymbol newDebugAssignmentForCurrentToken() {
 		if (token.value == TOKint32v) {
-			return new DebugSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
+			return new DebugSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new DebugSymbol(loc, new IdentifierExp(loc, token.sourceString), newVersionForCurrentToken());
+			return new DebugSymbol(loc(), new IdentifierExp(loc(), token.sourceString), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
@@ -6755,10 +6750,10 @@ public class Parser extends Lexer {
 		Version version;
 		
 		if (token.value == TOKint32v) {
-			version = new Version(loc, token.sourceString);
+			version = new Version(loc(), token.sourceString);
 			version.setSourceRange(token.ptr, token.sourceLen);
 		} else if (token.value == TOKidentifier) {
-			version = new Version(loc, token.sourceString);
+			version = new Version(loc(), token.sourceString);
 			version.setSourceRange(token.ptr, token.sourceLen);
 		} else {
 			throw new RuntimeException("Can't happen");
@@ -6769,16 +6764,16 @@ public class Parser extends Lexer {
 	
 	private VersionSymbol newVersionAssignmentForCurrentToken() {
 		if (token.value == TOKint32v) {
-			return new VersionSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
+			return new VersionSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return newVersionSymbol(loc, newIdentifierExp(), newVersionForCurrentToken());
+			return newVersionSymbol(loc(), newIdentifierExp(), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
 	}
 
 	private VoidInitializer newVoidInitializerForToken(Token token) {
-		VoidInitializer voidInitializer = new VoidInitializer(loc);
+		VoidInitializer voidInitializer = new VoidInitializer(loc());
 		voidInitializer.setSourceRange(token.ptr, token.sourceLen);
 		return voidInitializer;
 	}
@@ -6977,7 +6972,7 @@ public class Parser extends Lexer {
 	}
 	
 	private IdentifierExp newIdentifierExp() {
-		return new IdentifierExp(loc, token);
+		return new IdentifierExp(loc(), token);
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
@@ -6990,6 +6985,10 @@ public class Parser extends Lexer {
 			lastDocCommentRead = comments.size();	
 		}
 		prevToken.leadingComment = (Comment) comment;		
+	}
+	
+	private Loc loc() {
+		return new Loc(filename, linnum);
 	}
 	
 	/**

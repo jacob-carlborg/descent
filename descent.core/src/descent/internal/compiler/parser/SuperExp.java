@@ -74,7 +74,7 @@ public class SuperExp extends ThisExp {
 
 				if (s2 == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SuperNotInClass, 0, start, length));
+							IProblem.SuperNotInClass, this));
 					// goto Lerr;
 					return semantic_Lerr(sc, context);
 				}
@@ -83,7 +83,7 @@ public class SuperExp extends ThisExp {
 					cd2 = cd2.baseClass;
 					if (cd2 == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ClassHasNoSuper, 0, start, length,
+								IProblem.ClassHasNoSuper, this,
 								new String[] { new String(s2.ident.ident) }));
 						// goto Lerr;
 						return semantic_Lerr(sc, context);
@@ -117,7 +117,7 @@ public class SuperExp extends ThisExp {
 		}
 		if (cd.baseClass == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ClassHasNoSuper, 0, start, length,
+					IProblem.ClassHasNoSuper, this,
 					new String[] { new String(cd.ident.ident) }));
 			type = fd.vthis.type;
 		} else {
@@ -137,8 +137,7 @@ public class SuperExp extends ThisExp {
 	@Override
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 0, start,
-				length));
+				IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, this));
 		type = Type.tint32;
 		return this;
 	}

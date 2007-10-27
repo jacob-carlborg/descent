@@ -61,24 +61,23 @@ public class PragmaDeclaration extends AttribDeclaration {
 					if (e.op == TOKstring) {
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.StringExpectedForPragmaMsg, 0,
-								e.start, e.length));
+								IProblem.StringExpectedForPragmaMsg, e));
 					}
 				}
 			}
 			// goto Lnodecl
 			if (decl != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PragmaIsMissingClosingSemicolon, 0, start, 6));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.PragmaIsMissingClosingSemicolon, this));
 			}
 			return;
 		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem
-								.newSemanticTypeError(
+								.newSemanticTypeErrorLoc(
 										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
-										0, start, 6));
+										this));
 			} else {
 				Expression e = args.get(0);
 
@@ -87,19 +86,18 @@ public class PragmaDeclaration extends AttribDeclaration {
 				args.set(0, e);
 				if (e.op != TOKstring) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.StringExpectedForPragmaLib, 0, e.start,
-							e.length));
+							IProblem.StringExpectedForPragmaLib, e));
 				}
 			}
 			// goto Lnodecl;
 			if (decl != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PragmaIsMissingClosingSemicolon, 0, start, 6));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.PragmaIsMissingClosingSemicolon, this));
 			}
 			return;
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
+					IProblem.UnrecognizedPragma, ident));
 		}
 
 		if (decl != null) {
@@ -133,6 +131,16 @@ public class PragmaDeclaration extends AttribDeclaration {
 		}
 		buf.writestring(")");
 		super.toCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 6; // "pragma".length()
 	}
 
 }

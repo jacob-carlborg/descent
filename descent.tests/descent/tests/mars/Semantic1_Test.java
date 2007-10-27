@@ -452,7 +452,15 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.OverrideOnlyForClassMemberFunctions, 15, 3);
+		assertError(p[0], IProblem.OverrideOnlyForClassMemberFunctions, 1, 8);
+	}
+	
+	public void testOverrideOnlyAppliesToClassMemberFunctions2() {
+		String s = " override public void bla() { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.OverrideOnlyForClassMemberFunctions, 1, 8);
 	}
 	
 	public void testIllegalMainReturnType() {
@@ -1463,6 +1471,96 @@ public class Semantic1_Test extends Parser_Test {
 				"}", 
 				"return 1;", IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies,
 				"foo", IProblem.NoReturnAtEndOfFunction
+				);
+	}
+	
+	public void testCompareNotDefinedForComplexOperands() {
+		assertSemanticProblems(
+				"int foo() {\r\n" + 
+				"	cdouble i = 2.0 + 0i;\r\n" + 
+				"	cdouble j = 3.0 + 0i;\r\n" + 
+				"	if (i > j) \r\n" + 
+				"	{		\r\n" + 
+				"	}\r\n" + 
+				"	return 0;\r\n" + 
+				"}", 
+				"i > j", IProblem.CompareNotDefinedForComplexOperands
+				);
+	}
+	
+	public void testCannotCreateInstanceOfAbstractClass() {
+		assertSemanticProblems(
+				"abstract class Foo {\r\n" + 
+				"}\r\n" + 
+				"void foo() {\r\n" + 
+				"	Foo f = new Foo();\r\n" + 
+				"}", 
+				"Foo", IProblem.CannotCreateInstanceOfAbstractClass, 50 
+				);
+	}
+	
+	public void testCannotCreateInstanceOfInterface() {
+		assertSemanticProblems(
+				"interface Foo {\r\n" + 
+				"}\r\n" + 
+				"void foo() {\r\n" + 
+				"	Foo f = new Foo();\r\n" + 
+				"}", 
+				"Foo", IProblem.CannotCreateInstanceOfInterface, 40 
+				);
+	}
+	
+	public void testThrowStatementsCannotBeInContracts() {
+		assertSemanticProblems(
+				"void foo()\r\n" + 
+				"in {\r\n" + 
+				"	throw new Exception(\"hey\");\r\n" + 
+				"}\r\n" + 
+				"body {\r\n" + 
+				"}", 
+				"throw new Exception(\"hey\");", IProblem.ThrowStatementsCannotBeInContracts 
+				);
+	}
+	
+	public void testStringLiteralsAreImmutable() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	\"hola\"[1] = \'c\';\r\n" + 
+				"}", 
+				"\"hola\"[1]", IProblem.StringLiteralsAreImmutable
+				);
+	}
+	
+	public void testReturnExpressionExpected() {
+		assertSemanticProblems(
+				"int foo() {\r\n" + 
+				"	if (true) {\r\n" + 
+				"		return;\r\n" + 
+				"	}\r\n" + 
+				"	return 1;\r\n" + 
+				"}", 
+				"return;", IProblem.ReturnExpressionExpected
+				);
+	}
+	
+	public void testCanOnlyThrowClassObjects() {
+		assertSemanticProblems(
+				"int foo() {\r\n" + 
+				"	throw 1;\r\n" + 
+				"}", 
+				"1", IProblem.CanOnlyThrowClassObjects
+				);
+	}
+	
+	public void testForeachTargetIsNotAnArrayOf() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	int[] a = [1, 2, 3];\r\n" + 
+				"	foreach(char x; a) {\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"a", IProblem.ForeachTargetIsNotAnArrayOf, 50
 				);
 	}
 	

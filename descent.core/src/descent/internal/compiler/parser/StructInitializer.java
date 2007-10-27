@@ -70,7 +70,7 @@ public class StructInitializer extends Initializer {
 
 				if (id == null) {
 					if (fieldi >= ad.fields.size()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.TooManyInitializers, 0, start, length, new String[] { ad.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.TooManyInitializers, this, new String[] { ad.toChars(context) }));
 						continue;
 					} else {
 						s = ad.fields.get(fieldi);
@@ -80,8 +80,7 @@ public class StructInitializer extends Initializer {
 					s = ad.search(loc, id, 0, context);
 					if (null == s) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.SymbolIsNotAMemberOf, 0, id.start,
-								id.length, new String[] { id.toChars(), t.toChars(context) }));
+								IProblem.SymbolIsNotAMemberOf, id, new String[] { id.toChars(), t.toChars(context) }));
 						continue;
 					}
 
@@ -89,8 +88,7 @@ public class StructInitializer extends Initializer {
 					for (fieldi = 0; true; fieldi++) {
 						if (fieldi >= ad.fields.size()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.SymbolIsNotAPreInstanceInitializableField, 0, s.start,
-									s.length, new String[] { s.toChars(context) }));
+									IProblem.SymbolIsNotAPreInstanceInitializableField, s, new String[] { s.toChars(context) }));
 							break;
 						}
 						if (s == ad.fields.get(fieldi)) {
@@ -107,8 +105,7 @@ public class StructInitializer extends Initializer {
 					vars.set(i, v);
 				} else {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SymbolIsNotAFieldOfSymbol, 0, start,
-							length, new String[] { id != null ? id
+							IProblem.SymbolIsNotAFieldOfSymbol, this, new String[] { id != null ? id
 									.toChars() : s.toChars(context), ad
 									.toChars(context) }));
 					errors = 1;
@@ -126,7 +123,7 @@ public class StructInitializer extends Initializer {
 			ExpInitializer ie = new ExpInitializer(loc, e);
 			return ie.semantic(sc, t, context);
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.AStructIsNotAValidInitializerFor, 0, start, length, new String[] { t.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.AStructIsNotAValidInitializerFor, this, new String[] { t.toChars(context) }));
 			errors = 1;
 		}
 		if (errors != 0) {

@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -48,7 +50,16 @@ public class ProtDeclaration extends AttribDeclaration {
 			sc.explicitProtection = 1;
 
 			for (Dsymbol s : decl) {
+				s.extraModifiers = modifiers;
+				if (s.extraModifiers == null) {
+					s.extraModifiers = new ArrayList<Modifier>();
+				}
+				if (extraModifiers != null) {
+					s.extraModifiers.addAll(extraModifiers);
+				}
+				s.extraModifiers.add(modifier);
 				s.semantic(sc, context);
+				s.extraModifiers = null;
 			}
 
 			sc.protection = protection_save;

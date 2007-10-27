@@ -57,8 +57,7 @@ public class CastExp extends UnaExp {
 			if (v != null) {
 				if (!v.isDataseg(context) && !v.isParameter()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.EscapingReferenceToLocal, 0, start,
-							length, new String[] { v.toChars(context) }));
+							IProblem.EscapingReferenceToLocal, this, new String[] { v.toChars(context) }));
 				}
 			}
 		}

@@ -114,8 +114,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			dedtypes.setDim(size(td.parameters));
 			if (null == td.scope) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForwardReferenceToTemplateDeclaration, 0, start,
-						length, new String[] { td.toChars(context) }));
+						IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { td.toChars(context) }));
 				return null;
 			}
 			m = td.matchWithInstance(this, dedtypes, 0, context);
@@ -170,12 +169,11 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		if (null == td_best) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, 0,
-					start, length, new String[] { toChars(context) }));
+					IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this, new String[] { toChars(context) }));
 			return null;
 		}
 		if (td_ambig != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolMatchesMoreThanOneTemplateDeclaration, 0, start, length, new String[] { toChars(context), td_best.toChars(context), td_ambig
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolMatchesMoreThanOneTemplateDeclaration, this, new String[] { toChars(context), td_best.toChars(context), td_ambig
 							.toChars(context) }));
 		}
 
@@ -201,8 +199,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			s = sc.search(loc, id, scopesym, context);
 			if (null == s) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UndefinedIdentifier, 0, start,
-						length, new String[] { id.toChars() }));
+						IProblem.UndefinedIdentifier, this, new String[] { id.toChars() }));
 				return null;
 			}
 			withsym = scopesym[0].isWithScopeSymbol();
@@ -240,8 +237,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					Dsymbol s2 = s.getType().toDsymbol(sc, context);
 					if (null == s2) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.SymbolNotATemplateItIs, 0, id.start,
-								id.length, new String[] { id.toChars(),
+								IProblem.SymbolNotATemplateItIs, id, new String[] { id.toChars(),
 										s.kind() }));
 						return null;
 					}
@@ -263,8 +259,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				} else {
 					context
 							.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.SymbolNotATemplateItIs, 0,
-									id.start, id.length, new String[] {
+									IProblem.SymbolNotATemplateItIs, id, new String[] {
 											id.toChars(), s.kind() }));
 					return null;
 				}
@@ -315,8 +310,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					Declaration d = sa.isDeclaration();
 					if (d != null && null == d.type.deco) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ForwardReferenceOfSymbol, 0, start,
-								length, new String[] { d.toChars(context) }));
+								IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 					} else {
 						String p2 = sa.mangle(context);
 						buf.data.append(p2.length()).append("u").append(p2);
@@ -332,8 +326,7 @@ public class TemplateInstance extends ScopeDsymbol {
 						Declaration d = sa.isDeclaration();
 						if (d != null && null == d.type.deco) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.ForwardReferenceOfSymbol, 0, start,
-									length, new String[] { d.toChars(context) }));
+									IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 						} else {
 							String p2 = sa.mangle(context);
 							buf.data.append(p2.length()).append("u").append(p2);
@@ -343,8 +336,7 @@ public class TemplateInstance extends ScopeDsymbol {
 						buf.writeByte('V');
 						if (ea.op == TOKtuple) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.TupleIsNotAValidTemplateValueArgument, 0, start,
-									length));
+									IProblem.TupleIsNotAValidTemplateValueArgument, this));
 							continue;
 						}
 						buf.writestring(ea.type.deco);
@@ -357,8 +349,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				Declaration d = sa.isDeclaration();
 				if (d != null && null == d.type.deco) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReferenceOfSymbol, 0, start,
-							length, new String[] { d.toChars(context) }));
+							IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 				} else {
 					String p = sa.mangle(context);
 					buf.data.append(p.length()).append("u").append(p);
@@ -427,15 +418,13 @@ public class TemplateInstance extends ScopeDsymbol {
 						if (null != tempdecl.toParent().isModule()) {
 							if (null != isnested && isnested != d.toParent()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.InconsistentNestingLevels, 0, start,
-										length, new String[] { isnested.toChars(context), d.toParent().toChars(context) }));
+										IProblem.InconsistentNestingLevels, this, new String[] { isnested.toChars(context), d.toParent().toChars(context) }));
 							}
 							isnested = d.toParent();
 							nested = true;
 						} else {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CannotUseLocalAsTemplateParameter, 0, start,
-									length, new String[] { d.toChars(context) }));
+									IProblem.CannotUseLocalAsTemplateParameter, this, new String[] { d.toChars(context) }));
 						}
 					}
 				}
@@ -501,8 +490,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		if (semanticdone != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.RecursiveTemplateExpansion, 0, start,
-					length));
+					IProblem.RecursiveTemplateExpansion, this));
 			//		inst = this;
 			return;
 		}
@@ -515,8 +503,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			if (MATCHnomatch == tempdecl.matchWithInstance(this, tdtypes, 0,
 					context)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.IncompatibleArgumentsForTemplateInstantiation, 0, start,
-						length));
+						IProblem.IncompatibleArgumentsForTemplateInstantiation, this));
 				inst = this;
 				return;
 			}
@@ -615,8 +602,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		Scope scope = tempdecl.scope;
 		if (null == scope) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReferenceToTemplateDeclaration, 0, start,
-					length, new String[] { tempdecl.toChars(context) }));
+					IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { tempdecl.toChars(context) }));
 			return;
 		}
 		argsym = new ScopeDsymbol();
@@ -696,7 +682,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		// Give additional context info if error occurred during instantiation
 		if (context.global.errors != errorsave) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
 			errors = 1;
 			if (context.global.gag > 0) {
 				tempdecl.instances.remove(tempdecl_instance_idx);
@@ -776,7 +762,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public Dsymbol toAlias(SemanticContext context) {
 		if (inst == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotResolveForwardReference, 0, start, length));
+					IProblem.CannotResolveForwardReference, this));
 			return this;
 		}
 

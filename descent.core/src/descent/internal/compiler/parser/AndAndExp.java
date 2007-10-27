@@ -123,7 +123,7 @@ public class AndAndExp extends BinExp {
 			if (result > 0 && e2.type.toBasetype(context).ty == Tvoid
 					&& context.global.errors <= 0) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolHasNoValue, 0, start, length,
+						IProblem.SymbolHasNoValue, this,
 						new String[] { "void" }));
 			}
 			if (e1.isConst()) {

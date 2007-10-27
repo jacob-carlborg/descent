@@ -59,14 +59,14 @@ public class AssertExp extends UnaExp {
 				if(e == EXP_CANT_INTERPRET)
 					return EXP_CANT_INTERPRET; //goto Lcant;
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AssertionFailed, 0, start, length,
+						IProblem.AssertionFailed, this,
 						new String[]
 						{ e.toChars(context), }));
 			}
 			else
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AssertionFailedNoMessage, 0, start, length,
+						IProblem.AssertionFailedNoMessage, this,
 						new String[] { e1.toChars(context) }));
 			}
 			return EXP_CANT_INTERPRET; //goto Lcant;

@@ -106,16 +106,14 @@ public class BaseClass extends ASTDmdNode {
 				// Check that calling conventions match
 				if (fd.linkage != ifd.linkage) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.LinkageDoesNotMatchInterfaceFunction, 0, start,
-							length));
+							IProblem.LinkageDoesNotMatchInterfaceFunction, this));
 				}
 
 				// Check that it is current
 				if (newinstance != 0 && fd.toParent() != cd
 						&& ifd.toParent() == base) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.InterfaceFunctionIsNotImplemented, 0, start,
-							length, new String[] { id
+							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id
 									.toChars(context), ifd.ident.toChars() }));
 				}
 
@@ -126,8 +124,7 @@ public class BaseClass extends ASTDmdNode {
 				// BUG: should mark this class as abstract?
 				if (!cd.isAbstract()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.InterfaceFunctionIsNotImplemented, 0, start,
-							length, new String[] { id.toChars(context), ifd.ident.toChars() }));
+							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id.toChars(context), ifd.ident.toChars() }));
 				}
 				fd = null;
 			}

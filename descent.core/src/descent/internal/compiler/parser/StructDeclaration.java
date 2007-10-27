@@ -96,13 +96,11 @@ public class StructDeclaration extends AggregateDeclaration {
 		assert (!isAnonymous());
 		if ((sc.stc & STC.STCabstract) != 0) {
 			if (isUnionDeclaration() != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UnionsCannotBeAbstract, 0, ident.start,
-						ident.length));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.UnionsCannotBeAbstract, this));
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StructsCannotBeAbstract, 0, ident.start,
-						ident.length));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.StructsCannotBeAbstract, this));
 			}
 		}
 
@@ -288,6 +286,22 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 		buf.writeByte('}');
 		buf.writenl();
+	}
+	
+	@Override
+	public int getErrorStart() {
+		if (ident != null) {
+			return ident.start;
+		}
+		return start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		if (ident != null) {
+			return ident.length;
+		}
+		return 6; // "struct".length()
 	}
 
 }

@@ -201,13 +201,12 @@ public class StructLiteralExp extends Expression {
 			}
 
 			if (null == e.type) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
 			}
 			e = resolveProperties(sc, e, context);
 			if (i >= sd.fields.size()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.MoreInitiailizersThanFields, 0, start,
-						length, new String[] { sd.toChars(context) }));
+						IProblem.MoreInitiailizersThanFields, this, new String[] { sd.toChars(context) }));
 				break;
 			}
 			Dsymbol s = sd.fields.get(i);
@@ -217,8 +216,7 @@ public class StructLiteralExp extends Expression {
 			}
 			if (v.offset < offset) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OverlappingInitiailization, 0, start,
-						length, new String[] { v.toChars(context) }));
+						IProblem.OverlappingInitiailization, this, new String[] { v.toChars(context) }));
 			}
 			offset = v.offset + v.type.size(context);
 
@@ -252,8 +250,7 @@ public class StructLiteralExp extends Expression {
 					e = v.init.toExpression(context);
 					if (null == e) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CannotMakeExpressionOutOfInitializer, 0, start,
-								length, new String[] { v.toChars(context) }));
+								IProblem.CannotMakeExpressionOutOfInitializer, this, new String[] { v.toChars(context) }));
 					}
 				} else {
 					e = v.type.defaultInit(context);

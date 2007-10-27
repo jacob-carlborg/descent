@@ -166,8 +166,7 @@ public class TypeClass extends Type {
 					if (sym.isInterfaceDeclaration() != null) {
 						if (sym.isCOMclass()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.NoClassInfoForComInterfaceObjects, 0, start,
-									length));
+									IProblem.NoClassInfoForComInterfaceObjects, this));
 						}
 						e.type = e.type.pointerTo(context);
 						e = new PtrExp(e.loc, e);
@@ -181,8 +180,7 @@ public class TypeClass extends Type {
 			else if (equals(ident, Id.typeinfo)) {
 				if (!context.global.params.useDeprecated) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DeprecatedProperty, 0, ident.start,
-							ident.length, new String[] { "typeinfo",
+							IProblem.DeprecatedProperty, ident, new String[] { "typeinfo",
 									".typeid(type)" }));
 				}
 				return getTypeInfo(sc, context);
@@ -240,8 +238,7 @@ public class TypeClass extends Type {
 		d = s.isDeclaration();
 		if (null == d) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolDotSymbolIsNotADeclaration, 0, start,
-					length, new String[] { e.toChars(context), ident.toChars() }));
+					IProblem.SymbolDotSymbolIsNotADeclaration, this, new String[] { e.toChars(context), ident.toChars() }));
 			return new IntegerExp(e.loc, 1, Type.tint32);
 		}
 
@@ -267,8 +264,7 @@ public class TypeClass extends Type {
 								context))
 								&& null == d.isFuncDeclaration()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.ThisIsRequiredButIsNotABaseClassOf, 0, start,
-									length, new String[] { e.type.toChars(context), thiscd.toChars(context) }));
+									IProblem.ThisIsRequiredButIsNotABaseClassOf, this, new String[] { e.type.toChars(context), thiscd.toChars(context) }));
 						}
 					}
 				}

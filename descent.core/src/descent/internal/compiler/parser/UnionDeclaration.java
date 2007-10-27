@@ -48,5 +48,21 @@ public class UnionDeclaration extends StructDeclaration {
 		super.syntaxCopy(ud);
 		return ud;
 	}
+	
+	@Override
+	public int getErrorStart() {
+		if (ident != null) {
+			return ident.start;
+		}
+		return start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		if (ident != null) {
+			return ident.length;
+		}
+		return 5; // "union".length()
+	}
 
 }

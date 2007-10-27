@@ -86,7 +86,7 @@ public class DsymbolExp extends Expression {
 					type = v.type;
 					if (v.type == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ForwardReferenceOfSymbol, 0, start, length,
+								IProblem.ForwardReferenceOfSymbol, this,
 								new String[] { v.toString() }));
 						type = Type.terror;
 					}
@@ -94,7 +94,7 @@ public class DsymbolExp extends Expression {
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
 					if (v.init != null) {
 						if (v.inuse != 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, 0, start, length, new String[] { v.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
 							type = Type.tint32;
 							return this;
 						}
@@ -211,7 +211,7 @@ public class DsymbolExp extends Expression {
 		}
 
 		// Lerr:
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, 0, s.start, s.length, new String[] { s.kind(), s.toChars(context) }));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, s, new String[] { s.kind(), s.toChars(context) }));
 		type = Type.terror;
 		return this;
 	}

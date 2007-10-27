@@ -64,11 +64,11 @@ public class DefaultStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		if (sc.sw != null) {
 			if (sc.sw.sdefault != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SwitchAlreadyHasDefault, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SwitchAlreadyHasDefault, this));
 			}
 			sc.sw.sdefault = this;
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DefaultNotInSwitch, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DefaultNotInSwitch, this));
 		}
 		
 		statement = statement.semantic(sc, context);

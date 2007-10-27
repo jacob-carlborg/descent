@@ -120,8 +120,7 @@ public class TypeStruct extends Type {
 
 		if (null == sym.members) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.StructIsForwardReferenced, 0, start,
-					length, new String[] { sym.toChars(context) }));
+					IProblem.StructIsForwardReferenced, this, new String[] { sym.toChars(context) }));
 			return new IntegerExp(e.loc, 0, Type.tint32);
 		}
 
@@ -235,8 +234,7 @@ public class TypeStruct extends Type {
 		if (null != v) {
 			if (v.toParent() != sym) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolIsNotAMember, 0, start,
-						length, new String[] { v.toChars(context) }));
+						IProblem.SymbolIsNotAMember, this, new String[] { v.toChars(context) }));
 			}
 
 			// *(&e + offset)

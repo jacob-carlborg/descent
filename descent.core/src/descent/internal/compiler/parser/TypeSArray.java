@@ -203,8 +203,7 @@ public class TypeSArray extends TypeArray {
 
 				if (d >= td.objects.size()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.TupleIndexExceedsBounds, 0, start,
-							length, new String[] { String.valueOf(d), String.valueOf(td.objects.size()) }));
+							IProblem.TupleIndexExceedsBounds, this, new String[] { String.valueOf(d), String.valueOf(td.objects.size()) }));
 					super.resolve(loc, sc, pe, pt, ps, context); // goto
 					// Ldefault;
 				}
@@ -256,13 +255,12 @@ public class TypeSArray extends TypeArray {
 
 			if (d >= sd.objects.size()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TupleIndexExceedsBounds, 0, start,
-						length, new String[] { String.valueOf(d), String.valueOf(sd.objects.size()) }));
+						IProblem.TupleIndexExceedsBounds, this, new String[] { String.valueOf(d), String.valueOf(sd.objects.size()) }));
 				return Type.terror;
 			}
 			ASTDmdNode o = (ASTDmdNode) sd.objects.get(d);
 			if (o.dyncast() != DYNCAST_TYPE) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, 0, start, length, new String[] { toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, this, new String[] { toChars(context) }));
 				return Type.terror;
 			}
 			t = (Type) o;
@@ -285,7 +283,7 @@ public class TypeSArray extends TypeArray {
 
 			if (d1 != d2) {
 				// goto Loverflow;
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, 0, sourceDim.start, sourceDim.length, new String[] { String.valueOf(d1) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 				dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
 			}
 
@@ -299,18 +297,18 @@ public class TypeSArray extends TypeArray {
 				n2 = n * d2;
 				if ((int) n2 < 0) {
 					//goto Loverflow;
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, 0, sourceDim.start, sourceDim.length, new String[] { String.valueOf(d1) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 					dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
 				}
 				if (n2 >= 0x1000000) // put a 'reasonable' limit on it
 				{
 					//goto Loverflow;
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, 0, sourceDim.start, sourceDim.length, new String[] { String.valueOf(d1) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 					dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
 				}
 				if (n != 0 && ((n2 / n) != d2)) {
 					//Loverflow:
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, 0, sourceDim.start, sourceDim.length, new String[] { String.valueOf(d1) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 					dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
 				}
 			}
@@ -324,8 +322,7 @@ public class TypeSArray extends TypeArray {
 
 			if (d >= tt.arguments.size()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TupleIndexExceedsBounds, 0, start,
-						length, new String[] { String.valueOf(d), String.valueOf(tt.arguments.size()) }));
+						IProblem.TupleIndexExceedsBounds, this, new String[] { String.valueOf(d), String.valueOf(tt.arguments.size()) }));
 				return Type.terror;
 			}
 			Argument arg = (Argument) tt.arguments.get(d);
@@ -333,14 +330,13 @@ public class TypeSArray extends TypeArray {
 		}
 		case Tfunction:
 		case Tnone:
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfType, 0, start, length, new String[] { tbn.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfType, this, new String[] { tbn.toChars(context) }));
 			tbn = next = tint32;
 			break;
 		}
 		if (tbn.isauto()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotHaveArrayOfAuto, 0, start,
-					length, new String[] { tbn.toChars(context) }));
+					IProblem.CannotHaveArrayOfAuto, this, new String[] { tbn.toChars(context) }));
 		}
 
 		return merge(context);
@@ -357,7 +353,7 @@ public class TypeSArray extends TypeArray {
 		{
 			if (sz + 31 < sz) {
 				// goto Loverflow;
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, 0, sourceDim.start, sourceDim.length, new String[] { String.valueOf(sz) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(sz) }));
 				return 1;
 			}
 			sz = ((sz + 31) & ~31) / 8; // size in bytes, rounded up to 32 bit
@@ -369,7 +365,7 @@ public class TypeSArray extends TypeArray {
 			n2 = n * sz;
 			if ((n != 0) && (n2 / n) != sz) {
 				// goto Loverflow;
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, 0, sourceDim.start, sourceDim.length, new String[] { String.valueOf(sz) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(sz) }));
 				return 1;
 			}
 			sz = n2;

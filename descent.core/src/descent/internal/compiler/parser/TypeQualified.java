@@ -49,8 +49,7 @@ public abstract class TypeQualified extends Type {
 						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.NotAMember, 0, id.start,
-									id.length, new String[] { new String(
+									IProblem.NotAMember, id, new String[] { new String(
 											id.ident) }));
 							return;
 						}
@@ -58,8 +57,7 @@ public abstract class TypeQualified extends Type {
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.SymbolIsNotATemplate, 0, start,
-									length, new String[] { id.toChars() }));
+									IProblem.SymbolIsNotATemplate, this, new String[] { id.toChars() }));
 							return;
 						}
 						ti.tempdecl = td;
@@ -144,7 +142,7 @@ public abstract class TypeQualified extends Type {
 		}
 		if (s == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UndefinedIdentifier, 0, start, length,
+					IProblem.UndefinedIdentifier, this,
 					new String[] { this.toString() }));
 		}
 	}
@@ -173,8 +171,7 @@ public abstract class TypeQualified extends Type {
 		}
 		if (t.ty == TY.Tinstance && t != this && t.deco == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReferenceToSymbol, 0, start,
-					length, new String[] { t.toChars(context) }));
+					IProblem.ForwardReferenceToSymbol, this, new String[] { t.toChars(context) }));
 			return;
 		}
 
@@ -185,8 +182,7 @@ public abstract class TypeQualified extends Type {
 				for (scx = sc; true; scx = scx.enclosing) {
 					if (scx == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ForwardReferenceToSymbol, 0, start,
-								length, new String[] { t.toChars(context) }));
+								IProblem.ForwardReferenceToSymbol, this, new String[] { t.toChars(context) }));
 						return;
 					}
 					if (scx.scopesym == scopesym) {
@@ -204,8 +200,7 @@ public abstract class TypeQualified extends Type {
 		}
 		if (s == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UndefinedIdentifier, 0, start,
-					length, new String[] { toChars(context) }));
+					IProblem.UndefinedIdentifier, this, new String[] { toChars(context) }));
 		}
 	}
 
@@ -219,15 +214,13 @@ public abstract class TypeQualified extends Type {
 
 	public void resolveHelper_Lerror(IdentifierExp id, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.IdentifierOfSymbolIsNotDefined, 0, start,
-				length, new String[] { id.toChars(), toChars(context) }));
+				IProblem.IdentifierOfSymbolIsNotDefined, this, new String[] { id.toChars(), toChars(context) }));
 	}
 
 	@Override
 	public int size(Loc loc, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.SizeOfTypeIsNotKnown, 0, start,
-				length, new String[] { toChars(context) }));
+				IProblem.SizeOfTypeIsNotKnown, this, new String[] { toChars(context) }));
 		return 1;
 	}
 
@@ -283,6 +276,11 @@ public abstract class TypeQualified extends Type {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
 	}
 
 }

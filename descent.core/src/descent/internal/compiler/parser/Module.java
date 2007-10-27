@@ -135,8 +135,7 @@ public class Module extends Package {
 				&& context.Module_deferred.size() > 0) {
 			for (Dsymbol sd : context.Module_deferred) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotResolveForwardReference, 0, sd.start,
-						sd.length));
+						IProblem.CannotResolveForwardReference, sd));
 			}
 			return;
 		}
@@ -380,7 +379,7 @@ public class Module extends Package {
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
 			int length = ident.start + ident.length - start;
 			
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, 0, start, length, new String[] { filename.replace(context._WIN32 ? '\\' : '/', '.') }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, ident.getLineNumber(), start, length, new String[] { filename.replace(context._WIN32 ? '\\' : '/', '.') }));
 			
 			return m;
 		}

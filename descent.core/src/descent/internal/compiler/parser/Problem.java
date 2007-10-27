@@ -65,6 +65,30 @@ public class Problem implements IProblem {
 		return newSemanticTypeProblem(id, line, start, length, arguments, true);
 	}
 	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode node, String[] arguments) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.start, node.length, arguments, true);
+	}
+	
+	public static Problem newSemanticTypeErrorLoc(int id, ASTDmdNode node, String[] arguments) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), arguments, true);
+	}
+	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2, String[] arguments) {
+		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.start, n2.start + n2.length - n1.start, arguments, true);
+	}
+	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2) {
+		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.start, n2.start + n2.length - n1.start, null, true);
+	}
+	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode node) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.start, node.length, null, true);
+	}
+	
+	public static Problem newSemanticTypeErrorLoc(int id, ASTDmdNode node) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), null, true);
+	}
+	
 	public static Problem newSemanticTypeError(int id, int line, int start, int length) {
 		return newSemanticTypeError(id, line, start, length, null);
 	}

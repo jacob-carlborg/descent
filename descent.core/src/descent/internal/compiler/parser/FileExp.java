@@ -60,9 +60,7 @@ public class FileExp extends UnaExp {
 	    {
 	    	context.acceptProblem(Problem.newSemanticTypeError(
 	    			IProblem.FileNameMustBeString,
-	    			0,
-	    			e1.start,
-	    			e1.length,
+	    			e1,
 	    			new String[] { e1.toChars(context) }));
 			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
@@ -74,9 +72,7 @@ public class FileExp extends UnaExp {
 	    {
 	    	context.acceptProblem(Problem.newSemanticTypeError(
 	    			IProblem.FileImportsMustBeSpecified,
-	    			0,
-	    			e1.start,
-	    			e1.length,
+	    			e1,
 	    			new String[] { filename }));
 			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
@@ -85,9 +81,7 @@ public class FileExp extends UnaExp {
 	    {
 	    	context.acceptProblem(Problem.newSemanticTypeError(
 	    			IProblem.FileNotFound,
-	    			0,
-	    			e1.start,
-	    			e1.length,
+	    			e1,
 	    			new String[] { file.getAbsolutePath() }));
 			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
@@ -101,9 +95,7 @@ public class FileExp extends UnaExp {
 	    {
 	    	context.acceptProblem(Problem.newSemanticTypeError(
 	    			IProblem.ErrorReadingFile,
-	    			0,
-	    			e1.start,
-	    			e1.length,
+	    			e1,
 	    			new String[] { file.getAbsolutePath() }));
 	    	return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }

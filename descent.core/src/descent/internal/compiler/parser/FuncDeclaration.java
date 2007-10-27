@@ -424,7 +424,7 @@ public class FuncDeclaration extends Declaration {
 			if (thisfd != null) {
 				if (!thisfd.isNested() && null == thisfd.vthis) {
 					// goto Lerr;
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAccessFrameOfFunction, 0, start, length, new String[] { fd.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
 					return 1;
 				}
 			} else {
@@ -432,12 +432,12 @@ public class FuncDeclaration extends Declaration {
 				if (thiscd != null) {
 					if (!thiscd.isNested()) {
 						// goto Lerr;
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAccessFrameOfFunction, 0, start, length, new String[] { fd.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
 						return 1;
 					}
 				} else {
 					// goto Lerr;
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAccessFrameOfFunction, 0, start, length, new String[] { fd.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
 					return 1;
 				}
 			}
@@ -848,13 +848,13 @@ public class FuncDeclaration extends Declaration {
 			if (m.last == MATCHnomatch) {
 				tf = (TypeFunction) type;
 
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, 0, caller.start, caller.length, new String[] { kindForError(context) + Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, caller, new String[] { kindForError(context) + Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
 				return m.anyf; // as long as it's not a FuncAliasDeclaration
 			} else {
 				TypeFunction t1 = (TypeFunction) m.lastf.type;
 				TypeFunction t2 = (TypeFunction) m.nextf.type;
 
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CalledWithArgumentTypesMatchesBoth, 0, caller.start, caller.length, new String[] { buf.toChars(), m.lastf.toPrettyChars(context), Argument
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CalledWithArgumentTypesMatchesBoth, caller, new String[] { buf.toChars(), m.lastf.toPrettyChars(context), Argument
 						.argsTypesToChars(t1.parameters, t1.varargs,
 								context), m.nextf
 						.toPrettyChars(context), Argument
@@ -914,9 +914,8 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		if (type.ty != Tfunction) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolMustBeAFunction, 0, start,
-					length, new String[] { toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.SymbolMustBeAFunction, this, new String[] { toChars(context) }));
 			return;
 		}
 		f = (TypeFunction) (type);
@@ -934,15 +933,13 @@ public class FuncDeclaration extends Declaration {
 		Dsymbol parent = toParent();
 
 		if (isConst() || isAuto() || isScope()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.FunctionsCannotBeConstOrAuto, 0, ident.start,
-					ident.length));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.FunctionsCannotBeConstOrAuto, this));
 		}
 
 		if (isAbstract() && !isVirtual(context)) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NonVirtualFunctionsCannotBeAbstract, 0,
-					ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.NonVirtualFunctionsCannotBeAbstract, this));
 		}
 
 		sd = parent.isStructDeclaration();
@@ -952,7 +949,7 @@ public class FuncDeclaration extends Declaration {
 			//|| isInvariantDeclaration()
 			//|| isUnitTestDeclaration()
 			) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SpecialMemberFunctionsNotAllowedForSymbol, 0, getErrorStart(), getErrorLength(), new String[] { sd.kind() }));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SpecialMemberFunctionsNotAllowedForSymbol, this, new String[] { sd.kind() }));
 			}
 		}
 
@@ -964,10 +961,10 @@ public class FuncDeclaration extends Declaration {
 					|| isInvariantDeclaration() != null
 					|| isUnitTestDeclaration() != null
 					|| isNewDeclaration() != null || isDelete()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SpecialFunctionsNotAllowedInInterface, 0, start, length, new String[] { id.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SpecialFunctionsNotAllowedInInterface, this, new String[] { id.toChars(context) }));
 			}
 			if (fbody != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionBodyIsNotAbstractInInterface, 0, start, length, new String[] { id.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.FunctionBodyIsNotAbstractInInterface, this, new String[] { id.toChars(context) }));
 			}
 		}
 
@@ -1004,15 +1001,13 @@ public class FuncDeclaration extends Declaration {
 						int cov = type.covariant(fdv.type, context);
 
 						if (cov == 2) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.FunctionOfTypeOverridesButIsNotCovariant, 0, start,
-									length, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+									IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
 						}
 						if (cov == 1) {
 							if (fdv.isFinal()) {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.CannotOverrideFinalFunction, 0, start,
-										length, new String[] { fdv.toPrettyChars(context) }));
+								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+										IProblem.CannotOverrideFinalFunction, this, new String[] { fdv.toPrettyChars(context) }));
 							}
 							if (fdv.toParent() == parent) {
 								// If both are mixins, then error.
@@ -1027,21 +1022,18 @@ public class FuncDeclaration extends Declaration {
 								if (!gotoL1) {
 									if (context.BREAKABI) {
 										if (this.parent.isClassDeclaration() == null) {
-											context.acceptProblem(Problem.newSemanticTypeError(
-													IProblem.MultipleOverridesOfSameFunction, 0, start,
-													length));
+											context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+													IProblem.MultipleOverridesOfSameFunction, this));
 										}
 									} else {
 										if (this.parent.isClassDeclaration() == null
 												&& isDtorDeclaration() == null) {
-											context.acceptProblem(Problem.newSemanticTypeError(
-													IProblem.MultipleOverridesOfSameFunction, 0, start,
-													length));
+											context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+													IProblem.MultipleOverridesOfSameFunction, this));
 										}
 									}
-									context.acceptProblem(Problem.newSemanticTypeError(
-											IProblem.MultipleOverridesOfSameFunction, 0, start,
-											length));
+									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+											IProblem.MultipleOverridesOfSameFunction, this));
 								}
 							}
 
@@ -1099,9 +1091,8 @@ public class FuncDeclaration extends Declaration {
 						f2 = f2.overloadExactMatch(type, context);
 						if (f2 != null && f2.isFinal()
 								&& f2.prot() != PROTprivate) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CannotOverrideFinalFunctions, 0,
-									ident.start, ident.length, new String[] {
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+									IProblem.CannotOverrideFinalFunctions, this, new String[] {
 											new String(ident.ident),
 											new String(cd.ident.ident) }));
 						}
@@ -1132,9 +1123,8 @@ public class FuncDeclaration extends Declaration {
 					if (fdv != null && equals(fdv.ident, ident)) {
 						int cov = type.covariant(fdv.type, context);
 						if (cov == 2) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.FunctionOfTypeOverridesButIsNotCovariant, 0, start,
-									length, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+									IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
 						}
 						if (cov == 1) {
 							Type ti = null;
@@ -1155,9 +1145,8 @@ public class FuncDeclaration extends Declaration {
 							}
 							if (ti != null) {
 								if (tintro != null && !tintro.equals(ti)) {
-									context.acceptProblem(Problem.newSemanticTypeError(
-											IProblem.IncompatibleCovariantTypes, 0, start,
-											length, new String[] { tintro.toChars(context), ti.toChars(context) }));
+									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+											IProblem.IncompatibleCovariantTypes, this, new String[] { tintro.toChars(context), ti.toChars(context) }));
 								}
 								tintro = ti;
 							}
@@ -1177,9 +1166,8 @@ public class FuncDeclaration extends Declaration {
 
 			if (!gotoL2) {
 				if (introducing && isOverride()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.FunctionDoesNotOverrideAny, 0,
-							ident.start, ident.length, new String[] {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.FunctionDoesNotOverrideAny, this, new String[] {
 									new String(ident.ident),
 									new String(cd.ident.ident) }));
 				}
@@ -1187,9 +1175,7 @@ public class FuncDeclaration extends Declaration {
 
 			// L2:	;
 		} else if (isOverride() && parent.isTemplateInstance() == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.OverrideOnlyForClassMemberFunctions, 0,
-					ident.start, ident.length));
+			errorOnModifier(IProblem.OverrideOnlyForClassMemberFunctions, TOK.TOKoverride, context);
 		}
 
 		/*
@@ -1211,9 +1197,8 @@ public class FuncDeclaration extends Declaration {
 				// If it's a member template
 				ClassDeclaration cd2 = ti.tempdecl.isClassMember();
 				if (cd2 != null) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotUseTemplateToAddVirtualFunctionToClass, 0, start,
-							length, new String[] { cd2.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.CannotUseTemplateToAddVirtualFunctionToClass, this, new String[] { cd2.toChars(context) }));
 				}
 			}
 		}
@@ -1244,15 +1229,13 @@ public class FuncDeclaration extends Declaration {
 			if (!gotoLmainerr) {
 				if (f.nextOf().ty != Tint32 && f.nextOf().ty != Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.MustReturnIntOrVoidFromMainFunction, 0,
-							type.start, type.length));
+							IProblem.MustReturnIntOrVoidFromMainFunction, type));
 				}
 			}
 			if (f.varargs != 0 || gotoLmainerr) {
 				// Lmainerr: 
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.IllegalMainParameters, 0, ident.start,
-						ident.length));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.IllegalMainParameters, this));
 			}
 		}
 
@@ -1300,9 +1283,8 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	private final void semantic_Lassignerr(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.IdentityAssignmentOperatorOverloadIsIllegal, 0, start,
-				length));
+		context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+				IProblem.IdentityAssignmentOperatorOverloadIsIllegal, this));
 	}
 
 	@Override
@@ -1375,9 +1357,8 @@ public class FuncDeclaration extends Declaration {
 				VarDeclaration v;
 
 				if (isFuncLiteralDeclaration() != null && isNested()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.LiteralsCannotBeClassMembers, 0, start,
-							length));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.LiteralsCannotBeClassMembers, this));
 					return;
 				} else {
 					Assert.isTrue(!isNested()); // can't be both member and
@@ -1490,7 +1471,7 @@ public class FuncDeclaration extends Declaration {
 					}
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, 0, arg.ident.start, arg.ident.length, new String[] { toChars(context), v.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, arg.ident, new String[] { toChars(context), v.toChars(context) }));
 					} else {
 						parameters.add(v);
 					}
@@ -1528,7 +1509,7 @@ public class FuncDeclaration extends Declaration {
 								arg.ident, exps);
 						v.isexp = true;
 						if (sc2.insert(v) == null) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, 0, start, length, new String[] { toChars(context), v.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ParameterIsAlreadyDefined, v, new String[] { toChars(context), v.toChars(context) }));
 						}
 						localsymtab.insert(v);
 						v.parent = this;
@@ -1558,8 +1539,7 @@ public class FuncDeclaration extends Declaration {
 				if (type.nextOf().ty == Tvoid) {
 					if (outId != null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.VoidFunctionsHaveNoResult, 0,
-								outId.start, outId.length));
+								IProblem.VoidFunctionsHaveNoResult, outId));
 					}
 				} else {
 					if (outId == null) {
@@ -1582,9 +1562,8 @@ public class FuncDeclaration extends Declaration {
 					v.semantic(sc2, context);
 					sc2.incontract++;
 					if (sc2.insert(v) == null) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.OutResultIsAlreadyDefined, 0, start,
-								length, new String[] { v.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.OutResultIsAlreadyDefined, this, new String[] { v.toChars(context) }));
 					}
 					v.parent = this;
 					vresult = v;
@@ -1709,9 +1688,8 @@ public class FuncDeclaration extends Declaration {
 							VarDeclaration v = cd.fields.get(i);
 
 							if (!v.ctorinit && v.isCtorinit()) {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.MissingInitializerForConstField, 0, start,
-										length, new String[] { v.toChars(context) }));
+								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+										IProblem.MissingInitializerForConstField, v, new String[] { v.toChars(context) }));
 							}
 						}
 					}
@@ -1734,13 +1712,11 @@ public class FuncDeclaration extends Declaration {
 							// I may be a synthetic node. In that case, mark
 							// the error in the class' name
 							if (this.synthetic) {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.NoMatchForImplicitSuperCallInConstructor, 0, parent.getErrorStart(),
-										parent.getErrorLength()));
+								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+										IProblem.NoMatchForImplicitSuperCallInConstructor, parent));
 							} else {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.NoMatchForImplicitSuperCallInConstructor, 0, getErrorStart(),
-										getErrorLength()));
+								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+										IProblem.NoMatchForImplicitSuperCallInConstructor, this));
 							}
 						}
 
@@ -1754,9 +1730,8 @@ public class FuncDeclaration extends Declaration {
 					fbody = new CompoundStatement(loc, fbody, s);
 					Assert.isTrue(returnLabel == null);
 				} else if (hasReturnExp == 0 && type.nextOf().ty != Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.FunctionMustReturnAResultOfType, 0,
-							ident.start, ident.length, new String[] { type.nextOf()
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.FunctionMustReturnAResultOfType, this, new String[] { type.nextOf()
 									.toString() }));
 				} else if (!inlineAsm) {
 					if (type.nextOf().ty == Tvoid) {
@@ -1771,7 +1746,7 @@ public class FuncDeclaration extends Declaration {
 
 							if (context.global.params.warnings) {
 								context.acceptProblem(Problem.newSemanticTypeWarning(
-										IProblem.NoReturnAtEndOfFunction, 0, getErrorStart(),
+										IProblem.NoReturnAtEndOfFunction, getLineNumber(), getErrorStart(),
 										getErrorLength(), new String[] { toChars(context) }));
 							}
 
@@ -1979,6 +1954,11 @@ public class FuncDeclaration extends Declaration {
 			SemanticContext context) {
 		type.toCBuffer(buf, ident, hgs, context);
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
 	}
 
 }

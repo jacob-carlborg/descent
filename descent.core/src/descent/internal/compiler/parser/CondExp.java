@@ -131,8 +131,7 @@ public class CondExp extends BinExp {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.ConditionalExpressionIsNotAModifiableLvalue, 0, start,
-				length, new String[] { toChars(context) }));
+				IProblem.ConditionalExpressionIsNotAModifiableLvalue, this, new String[] { toChars(context) }));
 		return this;
 	}
 

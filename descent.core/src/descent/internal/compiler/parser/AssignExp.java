@@ -25,7 +25,7 @@ public class AssignExp extends BinExp {
 
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionDoesNotGiveABooleanResult, 0, start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionDoesNotGiveABooleanResult, this));
 		return this;
 	}
 
@@ -84,8 +84,7 @@ public class AssignExp extends BinExp {
 								new IdentifierExp(Loc.ZERO, id));
 
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.OperatorAssignmentOverloadWithOpIndexIllegal, 0, start,
-								length));
+								IProblem.OperatorAssignmentOverloadWithOpIndexIllegal, this));
 
 						e = new CallExp(loc, e, ae.arguments.get(0), e2);
 						e = e.semantic(sc, context);
@@ -186,7 +185,7 @@ public class AssignExp extends BinExp {
 				&& !(t1.next.equals(e2.type.next))) { // memset
 			e2 = e2.implicitCastTo(sc, t1.next, context);
 		} else if (t1.ty == TY.Tsarray) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAssignToStaticArray, 0, start, length, new String[] { e1.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAssignToStaticArray, this, new String[] { e1.toChars(context) }));
 		} else {
 			e2 = e2.implicitCastTo(sc, e1.type, context);
 		}

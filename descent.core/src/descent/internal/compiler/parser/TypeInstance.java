@@ -143,7 +143,7 @@ public class TypeInstance extends TypeQualified {
 		}
 
 		if (null == t[0]) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UsedAsAType, 0, start, length, new String[] { toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UsedAsAType, this, new String[] { toChars(context) }));
 			t[0] = tvoid;
 		}
 		return t[0];

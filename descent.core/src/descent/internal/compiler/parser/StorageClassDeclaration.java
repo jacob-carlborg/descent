@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -89,7 +91,17 @@ public class StorageClassDeclaration extends AttribDeclaration {
 			sc.stc |= stc;
 
 			for (Dsymbol s : decl) {
+				// Send extra modifiers to out children, so that they can report better problems
+				s.extraModifiers = modifiers;
+				if (s.extraModifiers == null) {
+					s.extraModifiers = new ArrayList<Modifier>();
+				}
+				if (extraModifiers != null) {
+					s.extraModifiers.addAll(extraModifiers);
+				}
+				s.extraModifiers.add(modifier);
 				s.semantic(sc, context);
+				s.extraModifiers = null;
 			}
 
 			sc.stc = stc_save;

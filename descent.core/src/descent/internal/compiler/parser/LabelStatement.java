@@ -88,8 +88,7 @@ public class LabelStatement extends Statement {
 		ls = fd.searchLabel(ident);
 		if (ls.statement != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.LabelIsAlreadyDefined, 0, start,
-					length, new String[] { ls.toChars(context) }));
+					IProblem.LabelIsAlreadyDefined, this, new String[] { ls.toChars(context) }));
 		} else {
 			ls.statement = this;
 		}

@@ -673,7 +673,7 @@ public abstract class Type extends ASTDmdNode {
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (equals(ident, Id.size)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.DeprecatedProperty, 0, start, length,
+					IProblem.DeprecatedProperty, this,
 					new String[] { ".size", ".sizeof" }));
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (equals(ident, Id.alignof)) {
@@ -681,7 +681,7 @@ public abstract class Type extends ASTDmdNode {
 		} else if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.DeprecatedProperty, 0, start, length,
+						IProblem.DeprecatedProperty, this,
 						new String[] { "typeinfo", ".typeid(type)" }));
 			}
 			e = getTypeInfo(null, context);
@@ -699,7 +699,7 @@ public abstract class Type extends ASTDmdNode {
 			e = e.semantic(sc, context);
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UndefinedProperty, 0, start, length, new String[] {
+					IProblem.UndefinedProperty, this, new String[] {
 							new String(ident), toChars(context) }));
 			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
 		}
@@ -740,8 +740,7 @@ public abstract class Type extends ASTDmdNode {
 			if (equals(ident, Id.offset)) {
 				if (!context.global.params.useDeprecated) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DotOffsetDeprecated, 0, start,
-							length));
+							IProblem.DotOffsetDeprecated, this));
 				}
 				//goto Loffset;
 				if (0 != (v.storage_class & STCfield)) {
@@ -762,8 +761,7 @@ public abstract class Type extends ASTDmdNode {
 		if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.DeprecatedProperty, 0, ident.start,
-						ident.length, new String[] { ".typeinfo",
+						IProblem.DeprecatedProperty, ident, new String[] { ".typeinfo",
 								"typeid(type)" }));
 			}
 			e = getTypeInfo(sc, context);
@@ -783,8 +781,7 @@ public abstract class Type extends ASTDmdNode {
 
 	public int size(Loc loc, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.NoSizeForType, 0, start,
-				length, new String[] { toChars(context) }));
+				IProblem.NoSizeForType, this, new String[] { toChars(context) }));
 		return 1;
 	}
 

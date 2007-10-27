@@ -142,7 +142,7 @@ public class IdentifierExp extends Expression {
 			return e.semantic(sc, context);
 		}
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.UndefinedIdentifier, 0, start, length,
+				IProblem.UndefinedIdentifier, this,
 				new String[] { new String(ident) }));
 		type = Type.terror;
 		return this;

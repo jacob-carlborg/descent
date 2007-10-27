@@ -110,16 +110,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		for (TemplateDeclaration td = this; null != td; td = td.overnext) {
 			if (null == td.scope) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForwardReferenceToTemplate, 0, start,
-						length, new String[] { td.toChars(context) }));
+						IProblem.ForwardReferenceToTemplate, this, new String[] { td.toChars(context) }));
 				return Lerror(fargs, context);
 			}
 			if (null == td.onemember
 					|| null == td.onemember.toAlias(context)
 							.isFuncDeclaration()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolIsNotAFunctionTemplate, 0, start,
-						length, new String[] { toChars(context) }));
+						IProblem.SymbolIsNotAFunctionTemplate, this, new String[] { toChars(context) }));
 				return Lerror(fargs, context);
 			}
 
@@ -175,14 +173,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		if (null == td_best) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, 0,
-					start, length, new String[] { toChars(context) }));
+					IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this, new String[] { toChars(context) }));
 			return Lerror(fargs, context);
 		}
 		if (null != td_ambig) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolMatchesMoreThanOneTemplateDeclaration, 0, start,
-					length, new String[] { toChars(context), td_best.toChars(context), td_ambig.toChars(context) }));
+					IProblem.SymbolMatchesMoreThanOneTemplateDeclaration, this, new String[] { toChars(context), td_best.toChars(context), td_ambig.toChars(context) }));
 		}
 
 		/*
@@ -461,8 +457,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				if (null != o) {
 					if (null != tp.specialization()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.SpecializationNotAllowedForDeducedParameter, 0, start,
-								length, new String[] { tp.ident.toChars() }));
+								IProblem.SpecializationNotAllowedForDeducedParameter, this, new String[] { tp.ident.toChars() }));
 					}
 				} else {
 					o = tp.defaultArg(paramscope, context);
@@ -572,7 +567,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		argExpTypesToCBuffer(buf, fargs, hgs, context);
 		// TODO semantic the source range is bad
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeduceTemplateFunctionFromArgumentTypes, 0, start, length, new String[] { buf.toChars() }));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeduceTemplateFunctionFromArgumentTypes, this, new String[] { buf.toChars() }));
 		return null;
 	}
 
@@ -691,8 +686,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		if (sc.func != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotDeclareTemplateAtFunctionScope, 0, start,
-					length, new String[] { sc.func.toChars(context) }));
+					IProblem.CannotDeclareTemplateAtFunctionScope, this, new String[] { sc.func.toChars(context) }));
 		}
 
 		if (context.global.params.useArrayBounds && sc.module != null) {

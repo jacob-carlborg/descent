@@ -78,8 +78,7 @@ public class ArrayExp extends UnaExp {
 			// Convert to IndexExp
 			if (arguments.size() != 1) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OnlyOneIndexAllowedToIndex, 0, start,
-						length, new String[] { t1.toChars(context) }));
+						IProblem.OnlyOneIndexAllowedToIndex, this, new String[] { t1.toChars(context) }));
 			}
 			e = new IndexExp(loc, e1, arguments.get(0));
 			e.copySourceRange(this);
@@ -91,7 +90,7 @@ public class ArrayExp extends UnaExp {
 			e = arguments.get(i);
 			e = e.semantic(sc, context);
 			if (null == e.type) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
 			}
 			arguments.set(i, e);
 		}
@@ -102,8 +101,7 @@ public class ArrayExp extends UnaExp {
 		e = op_overload(sc, context);
 		if (null == e) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NoOpIndexOperatorOverloadForType, 0, start,
-					length, new String[] { e1.type.toChars(context) }));
+					IProblem.NoOpIndexOperatorOverloadForType, this, new String[] { e1.type.toChars(context) }));
 			e = e1;
 		}
 
@@ -128,8 +126,7 @@ public class ArrayExp extends UnaExp {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if ((type != null) && (type.toBasetype(context).ty == TY.Tvoid)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VoidsHaveNoValue, 0, start,
-					length));
+					IProblem.VoidsHaveNoValue, this));
 		}
 		return this;
 	}

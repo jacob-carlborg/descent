@@ -201,8 +201,7 @@ public class TraitsExp extends Expression {
 			if(dim != 2)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.WrongNumberOfArguments, 0, start,
-						length, new String[] { String.valueOf(dim) }));
+						IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -211,8 +210,7 @@ public class TraitsExp extends Expression {
 			if(null == e)
 			{ 
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StringExpectedAsSecondArgument, 0, start,
-						length));
+						IProblem.StringExpectedAsSecondArgument, this));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -220,8 +218,7 @@ public class TraitsExp extends Expression {
 			if(e.op != TOK.TOKstring)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StringExpectedAsSecondArgument, 0, start,
-						length));
+						IProblem.StringExpectedAsSecondArgument, this));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -230,8 +227,7 @@ public class TraitsExp extends Expression {
 			if (se.sz != 1)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StringMustBeChars, 0, start,
-						length));
+						IProblem.StringMustBeChars, this));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -251,8 +247,7 @@ public class TraitsExp extends Expression {
 			else
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.InvalidFirstArgument, 0, start,
-						length));
+						IProblem.InvalidFirstArgument, this));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 	
@@ -322,8 +317,7 @@ public class TraitsExp extends Expression {
 			if (dim != 1)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.WrongNumberOfArguments, 0, start,
-						length, new String[] { String.valueOf(dim) }));
+						IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -332,8 +326,7 @@ public class TraitsExp extends Expression {
 			if(null == s)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FirstArgumentIsNotAClass, 0, start,
-						length));
+						IProblem.FirstArgumentIsNotAClass, this));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -341,8 +334,7 @@ public class TraitsExp extends Expression {
 			if (null == cd)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FirstArgumentIsNotAClass, 0, start,
-						length));
+						IProblem.FirstArgumentIsNotAClass, this));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			return new IntegerExp(loc, cd.structsize, Type.tsize_t);
@@ -355,8 +347,7 @@ public class TraitsExp extends Expression {
 			if (dim != 1)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.WrongNumberOfArguments, 0, start,
-						length, new String[] { String.valueOf(dim) }));
+						IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -365,8 +356,7 @@ public class TraitsExp extends Expression {
 			if (null == s)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArgumentHasNoMembers, 0, start,
-						length));
+						IProblem.ArgumentHasNoMembers, this));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -374,8 +364,7 @@ public class TraitsExp extends Expression {
 			if(null == sd)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.KindSymbolHasNoMembers, 0, start,
-						length, new String[] { s.kind(), s.toChars(context) }));
+						IProblem.KindSymbolHasNoMembers, this, new String[] { s.kind(), s.toChars(context) }));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -419,7 +408,7 @@ public class TraitsExp extends Expression {
 	    else
 	    {
 	    	context.acceptProblem(Problem.newSemanticTypeError(
-	    			IProblem.UnrecongnizedTrait, 0, this.ident.start, this.ident.length, new String[] { new String(ident) }));
+	    			IProblem.UnrecongnizedTrait, this.ident, new String[] { new String(ident) }));
 	    	return new IntegerExp(loc, 0, Type.tbool);
 	    }
 	    

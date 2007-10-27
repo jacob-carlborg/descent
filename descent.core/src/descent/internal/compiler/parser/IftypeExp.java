@@ -46,8 +46,7 @@ public class IftypeExp extends Expression {
 		//printf("IftypeExp.semantic()\n");
 		if (null != id && ((sc.flags & Scope.SCOPEstaticif) == 0)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlySliceTupleTypes, 0, start,
-					length));
+					IProblem.CanOnlySliceTupleTypes, this));
 		}
 
 		int errors_save = context.global.errors;

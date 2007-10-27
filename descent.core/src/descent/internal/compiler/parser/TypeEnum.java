@@ -29,8 +29,7 @@ public class TypeEnum extends Type {
 	public int alignsize(SemanticContext context) {
 		if (null == sym.memtype) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumIsForwardReference, 0, start,
-					length, new String[] { sym.toChars(context) }));
+					IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
 			return 4;
 		}
 		return sym.memtype.alignsize(context);
@@ -116,7 +115,7 @@ public class TypeEnum extends Type {
 
 	private Expression getProperty_Lfwd(char[] ident, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.ForwardReferenceOfSymbolDotSymbol, 0, start, length,
+				IProblem.ForwardReferenceOfSymbolDotSymbol, this,
 				new String[] { toChars(context),
 						new String(ident) }));
 		return new IntegerExp(Loc.ZERO, 0, this);
@@ -181,8 +180,7 @@ public class TypeEnum extends Type {
 	public int size(Loc loc, SemanticContext context) {
 		if (null == sym.memtype) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumIsForwardReference, 0, start,
-					length, new String[] { sym.toChars(context) }));
+					IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
 			return 4;
 		}
 		return sym.memtype.size(loc, context);
@@ -191,8 +189,8 @@ public class TypeEnum extends Type {
 	@Override
 	public Type toBasetype(SemanticContext context) {
 		if (sym.memtype == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumIsForwardReference, 0, sym.start, sym.length));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.EnumIsForwardReference, sym));
 			return tint32;
 		}
 		return sym.memtype.toBasetype(context);

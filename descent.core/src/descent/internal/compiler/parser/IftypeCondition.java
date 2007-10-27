@@ -59,8 +59,7 @@ public class IftypeCondition extends Condition {
 		if (inc == 0) {
 			if (null == sc) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.IftypeConditionCannotBeAtGlobalScope, 0, start,
-						length));
+						IProblem.IftypeConditionCannotBeAtGlobalScope, this));
 				inc = 2;
 				return false;
 			}

@@ -77,7 +77,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			result = accessCheckX(smember, f, this, cdscope);
 		}
 		if (!result) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, 0, reference.start, reference.length, new String[] { smember.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, reference, new String[] { smember.toChars(context) }));
 		}
 	}
 
@@ -247,7 +247,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		if (scope != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, 0, start, length, new String[] { toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, this, new String[] { toChars(context) }));
 		}
 		if (members != null) {
 			sc = sc.push(this);
@@ -277,11 +277,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public int size(SemanticContext context) {
 		if (null == members) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UnknownSize, 0, start, length));
+					IProblem.UnknownSize, this));
 		}
 		if (sizeok != 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NoSizeYetForForwardReference, 0, start, length));
+					IProblem.NoSizeYetForForwardReference, this));
 		}
 		return structsize;
 	}
@@ -292,6 +292,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			sinit = new Symbol();
 		}
 		return sinit;
+	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
 	}
 
 }

@@ -117,8 +117,7 @@ public class EqualExp extends BinExp {
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
 			if (!t1.next.equals(t2.next)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArrayComparisonTypeMismatch, 0, start,
-						length, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
+						IProblem.ArrayComparisonTypeMismatch, this, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
 			}
 		}
 

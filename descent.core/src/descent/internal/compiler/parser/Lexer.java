@@ -142,9 +142,9 @@ public class Lexer implements IProblemRequestor {
 
 	// support for the  poor-line-debuggers ....
 	// remember the position of the cr/lf
-	private int[] lineEnds;
-	private int linnum = 1;
-	private int maxLinnum = 1;
+	protected int[] lineEnds;
+	protected int linnum = 1;
+	protected int maxLinnum = 1;
 
 	// task tag support
 	public char[][] foundTaskTags = null;

@@ -201,7 +201,7 @@ public class TupleExp extends Expression {
 
 			e = e.semantic(sc, context);
 			if (e.type == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e.start, e.length, new String[] { e.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
 				e.type = Type.terror;
 			}
 			exps.set(i, e);

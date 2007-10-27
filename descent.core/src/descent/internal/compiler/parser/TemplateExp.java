@@ -27,8 +27,7 @@ public class TemplateExp extends Expression {
     @Override
     public void rvalue(SemanticContext context) {
     	context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.TemplateHasNoValue, 0, start,
-				length, new String[] { toChars(context) }));
+				IProblem.TemplateHasNoValue, this, new String[] { toChars(context) }));
     }
 
 	@Override

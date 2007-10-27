@@ -50,8 +50,7 @@ public class ForeachRangeStatement extends Statement {
 		lwr = resolveProperties(sc, lwr, context);
 		if (null == lwr.type) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.InvalidRangeLowerBound, 0, start,
-					length, new String[] { lwr.toChars(context) }));
+					IProblem.InvalidRangeLowerBound, this, new String[] { lwr.toChars(context) }));
 			return this;
 		}
 
@@ -59,8 +58,7 @@ public class ForeachRangeStatement extends Statement {
 		upr = resolveProperties(sc, upr, context);
 		if (null == upr.type) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.InvalidRangeUpperBound, 0, start,
-					length, new String[] { upr.toChars(context) }));
+					IProblem.InvalidRangeUpperBound, this, new String[] { upr.toChars(context) }));
 			return this;
 		}
 
@@ -79,8 +77,7 @@ public class ForeachRangeStatement extends Statement {
 
 		if (!arg.type.isscalar(context)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolIsNotAnArithmeticType, 0, start,
-					length, new String[] { arg.type.toChars(context) }));
+					IProblem.SymbolIsNotAnArithmeticType, this, new String[] { arg.type.toChars(context) }));
 		}
 
 		sym = new ScopeDsymbol();
@@ -95,8 +92,7 @@ public class ForeachRangeStatement extends Statement {
 
 		if (0 < key.storage_class) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForeachRangeKeyCannotHaveStorageClass, 0, start,
-					length));
+					IProblem.ForeachRangeKeyCannotHaveStorageClass, this));
 		}
 
 		sc.sbreak = this;

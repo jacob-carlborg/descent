@@ -81,12 +81,12 @@ public abstract class BinExp extends Expression {
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
 		if (e1.type == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e1.start, e1.length, new String[] { e1.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e1, new String[] { e1.toChars(context) }));
 			e1.type = Type.terror;
 		}
 		e2 = e2.semantic(sc, context);
 		if (e2.type == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, e2.start, e2.length, new String[] { e2.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e2, new String[] { e2.toChars(context) }));
 			e2.type = Type.terror;
 		}
 		Assert.isNotNull(e1.type);
@@ -151,8 +151,7 @@ public abstract class BinExp extends Expression {
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OperatorNotAllowedOnBoolExpression, 0, start,
-						length, new String[] { toChars(context) }));
+						IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);
@@ -160,8 +159,7 @@ public abstract class BinExp extends Expression {
 
 			if (op == TOKmodass && e2.type.iscomplex()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotPerformModuloComplexArithmetic, 0, start,
-						length));
+						IProblem.CannotPerformModuloComplexArithmetic, this));
 				return new IntegerExp(loc, 0);
 			}
 		}
@@ -170,7 +168,7 @@ public abstract class BinExp extends Expression {
 	}
 
 	public void incompatibleTypes(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypesForOperator, 0, e1.start, e2.start + e2.length - e1.start, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypesForOperator, e1, e2, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
 	}
 
 	public boolean isunsigned() {
@@ -632,8 +630,7 @@ public abstract class BinExp extends Expression {
 				Expression ev = v.value;
 				if (null != fp && null == ev) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
-							v.length, new String[] { v.toChars(context) }));
+							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
 					return e;
 				}
 				if (null != fp)
@@ -670,8 +667,7 @@ public abstract class BinExp extends Expression {
 				return EXP_CANT_INTERPRET;
 			if (null != fp && null == v.value) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
-						v.length, new String[] { v.toChars(context) }));
+						IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
 				return e;
 			}
 			if (v.value.op != TOKstructliteral)
@@ -727,8 +723,7 @@ public abstract class BinExp extends Expression {
 			if (null == v.value) {
 				if (null != fp) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.VariableIsUsedBeforeInitialization, 0, v.start,
-							v.length, new String[] { v.toChars(context) }));
+							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
 					return e;
 				}
 
@@ -964,7 +959,7 @@ public abstract class BinExp extends Expression {
 
 			if (m.count > 1) {
 				// Error, ambiguous
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, 0, start, length, new String[] { m.lastf.type.toChars(context), m.nextf.type
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type
 								.toChars(context), m.lastf.toChars(context) }));
 			} else if (m.last == MATCHnomatch) {
 				m.lastf = m.anyf;
@@ -1039,8 +1034,7 @@ public abstract class BinExp extends Expression {
 				if (m.count > 1) {
 					// Error, ambiguous
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BothOverloadsMuchArgumentList, 0, start,
-							length, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
+							IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
 				} else if (m.last == MATCHnomatch) {
 					m.lastf = m.anyf;
 				}

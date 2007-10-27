@@ -72,8 +72,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 				} else {
 					// goto L1;
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.TemplateIsNotAMemberOf, 0, start,
-							length, new String[] { ti.toChars(context), e1.toChars(context) }));
+							IProblem.TemplateIsNotAMemberOf, this, new String[] { ti.toChars(context), e1.toChars(context) }));
 					return new IntegerExp(loc, 0);
 				}
 			}
@@ -85,8 +84,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			if (t1.ty != Tstruct) {
 				// goto L1;
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TemplateIsNotAMemberOf, 0, start,
-						length, new String[] { ti.toChars(context), e1.toChars(context) }));
+						IProblem.TemplateIsNotAMemberOf, this, new String[] { ti.toChars(context), e1.toChars(context) }));
 				return new IntegerExp(loc, 0);
 			}
 			s = t1.toDsymbol(sc, context);
@@ -94,8 +92,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		} else {
 			// L1:
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.TemplateIsNotAMemberOf, 0, start,
-					length, new String[] { ti.toChars(context), e1.toChars(context) }));
+					IProblem.TemplateIsNotAMemberOf, this, new String[] { ti.toChars(context), e1.toChars(context) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}
@@ -105,8 +102,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.TemplateIdentifierIsNotAMemberOf, 0, start,
-					length, new String[] { new String(id), s.kind(), new String(s.ident.ident) }));
+					IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident.ident) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}
@@ -115,7 +111,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s = s.toAlias(context);
 		td = s.isTemplateDeclaration();
 		if (td == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, 0, ti.name.start, ti.name.length, new String[] { new String(id) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, ti.name, new String[] { new String(id) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

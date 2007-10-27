@@ -95,12 +95,10 @@ public class SemanticContext {
 		if (null == dst.insert(module)) {
 			if (module.md != null) {
 				acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ModuleIsInMultiplePackages, 0, module.md.start,
-						module.md.length, new String[] { module.md.toChars(this) }));
+						IProblem.ModuleIsInMultiplePackages, module.md, new String[] { module.md.toChars(this) }));
 			} else {
 				acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ModuleIsInMultipleDefined, 0, module.md.start,
-						module.md.length));
+						IProblem.ModuleIsInMultipleDefined, module.md));
 			}
 		} else {
 			if (Module_amodules == null) {

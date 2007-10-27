@@ -47,7 +47,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		exp = resolveProperties(sc, exp, context);
 		exp = exp.optimize(WANTvalue | WANTinterpret, context);
 		if (exp.op != TOKstring) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, 0, start, length, new String[] { exp.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
 			return;
 		}
 		StringExp se = (StringExp) exp;
@@ -69,7 +69,7 @@ public class CompileDeclaration extends AttribDeclaration {
 
 		if (p.token.value != TOKeof) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.IncompleteMixinDeclaration, 0, start, length,
+					IProblem.IncompleteMixinDeclaration, this,
 					new String[] { se.toChars(context) }));
 		}
 

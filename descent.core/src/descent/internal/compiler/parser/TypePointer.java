@@ -89,8 +89,7 @@ public class TypePointer extends Type {
 		switch (n.toBasetype(context).ty) {
 		case Ttuple:
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotHavePointerToSymbol, 0, start,
-					length, new String[] { n.toChars(context) }));
+					IProblem.CannotHavePointerToSymbol, this, new String[] { n.toChars(context) }));
 			n = tint32;
 			break;
 		}

@@ -44,10 +44,10 @@ public class VersionSymbol extends Dsymbol {
 		if (ident != null) {
 			VersionCondition.checkPredefined(loc, ident, context);
 			if (m == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
 			} else {
 				if (findCondition(m.versionidsNot, ident)) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDefinedAfterUse, 0, start, length, new String[] { ident.toString() } ));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDefinedAfterUse, this, new String[] { ident.toString() } ));
 				}
 				if (null == m.versionids) {
 					m.versionids = new ArrayList<char[]>();
@@ -56,7 +56,7 @@ public class VersionSymbol extends Dsymbol {
 			}
 		} else {
 			if (m == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
 			} else {
 				m.versionlevel = level;
 			}

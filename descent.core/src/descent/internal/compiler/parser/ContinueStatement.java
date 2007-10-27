@@ -94,18 +94,16 @@ public class ContinueStatement extends Statement {
 
 					if (!s.hasContinue()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.LabelHasNoContinue, 0, start,
-								length, new String[] { ident.toChars() }));
+								IProblem.LabelHasNoContinue, this, new String[] { ident.toChars() }));
 					}
 					if (ls.tf != sc.tf) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CannotContinueOutOfFinallyBlock, 0, start,
-								length));
+								IProblem.CannotContinueOutOfFinallyBlock, this));
 					}
 					return this;
 				}
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, 0, start, length, new String[] { ident.toChars() }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, this, new String[] { ident.toChars() }));
 		} else if (null == sc.scontinue) {
 			if (sc.fes != null) {
 				Statement s;
@@ -114,7 +112,7 @@ public class ContinueStatement extends Statement {
 				s = new ReturnStatement(0, new IntegerExp(0));
 				return s;
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ContinueNotInLoop, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ContinueNotInLoop, this));
 		}
 		return this;
 	}

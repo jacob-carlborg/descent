@@ -38,7 +38,7 @@ public class CompileStatement extends Statement {
 		exp = exp.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret,
 				context);
 		if (exp.op != TOK.TOKstring) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, 0, start, length, new String[] { exp.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
 			return this;
 		}
 		StringExp se = (StringExp) exp;

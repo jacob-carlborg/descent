@@ -70,9 +70,8 @@ public class NewDeclaration extends FuncDeclaration {
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
 			context
-					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.NewAllocatorsOnlyForClassOrStruct, 0,
-							newStart, 3));
+					.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.NewAllocatorsOnlyForClassOrStruct, this));
 		}
 		tret = Type.tvoid.pointerTo(context);
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
@@ -83,15 +82,14 @@ public class NewDeclaration extends FuncDeclaration {
 		// Check that there is at least one argument of type uint
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) < 1) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.AtLeastOneArgumentOfTypeExpected, 0, newStart, 3,
-					new String[] { "unit" }));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.AtLeastOneArgumentOfTypeExpected, this,
+					new String[] { "uint" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tuns32)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FirstArgumentMustBeOfType, 0, a.type.start,
-						a.type.length, new String[] { "uint" }));
+						IProblem.FirstArgumentMustBeOfType, a.type, new String[] { "uint" }));
 			}
 		}
 
@@ -117,6 +115,16 @@ public class NewDeclaration extends FuncDeclaration {
 		buf.writestring("new");
 		Argument.argsToCBuffer(buf, hgs, arguments, varargs, context);
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return newStart;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 3;
 	}
 
 }

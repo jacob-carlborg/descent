@@ -58,8 +58,7 @@ public class DotVarExp extends UnaExp {
 					} else {
 						String p = var.isStatic() ? "static " : "";
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, 0, start,
-								length, new String[] { p, var.toChars(context), p }));
+								IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, new String[] { p, var.toChars(context), p }));
 					}
 				}
 				break;
@@ -90,8 +89,7 @@ public class DotVarExp extends UnaExp {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.SymbolIsNotAMember, 0, start,
-									length, new String[] { e.toChars(context) }));
+									IProblem.SymbolIsNotAMember, this, new String[] { e.toChars(context) }));
 						} else {
 							DsymbolExp ve = (DsymbolExp) e;
 
@@ -157,7 +155,7 @@ public class DotVarExp extends UnaExp {
 								loop = true;
 								continue L1;
 							}
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, 0, start, length, new String[] { var.toChars(context), ad.toChars(context),
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { var.toChars(context), ad.toChars(context),
 									t.toChars(context) }));
 						}
 					}

@@ -75,8 +75,8 @@ public class CtorDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ConstructorsOnlyForClass, 0, getErrorStart(), getErrorLength()));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.ConstructorsOnlyForClass, this));
 			tret = Type.tvoid;
 		} else {
 			tret = cd.type; // .referenceTo();

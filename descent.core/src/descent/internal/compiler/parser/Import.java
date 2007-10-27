@@ -128,8 +128,7 @@ public class Import extends Dsymbol {
 				mod = (Module) s;
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PackageAndModuleHaveTheSameName, 0, start,
-						length));
+						IProblem.PackageAndModuleHaveTheSameName, this));
 			}
 		}
 
@@ -203,8 +202,7 @@ public class Import extends Dsymbol {
 
 				if (null == mod.search(loc, names.get(i), 0, context)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SomethingNotFound, 0, start,
-							length, new String[] { (names.get(i)).toChars() }));
+							IProblem.SomethingNotFound, this, new String[] { (names.get(i)).toChars() }));
 				}
 
 				s.semantic(sc, context);

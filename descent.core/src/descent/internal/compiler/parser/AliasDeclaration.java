@@ -106,16 +106,7 @@ public class AliasDeclaration extends Declaration {
 		this.inSemantic = 1;
 
 		if ((storage_class & STC.STCconst) != 0) {
-			// Signal better the error using the modifiers (HACK)
-			if (modifiers != null) {
-				for (Modifier modifier : modifiers) {
-					if (modifier.tok == TOK.TOKconst) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.AliasCannotBeConst, 0, modifier.start,
-								modifier.length));
-					}
-				}
-			}
+			errorOnModifier(IProblem.AliasCannotBeConst, TOK.TOKconst, context);
 		}
 
 		storage_class |= sc.stc & STC.STCdeprecated;
@@ -163,7 +154,7 @@ public class AliasDeclaration extends Declaration {
 				semantic_L2(sc, context, s[0]); // it's a symbolic alias
 				return;
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, 0, sourceType.start, sourceType.length, new String[] { e[0].toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, new String[] { e[0].toChars(context) }));
 				t[0] = e[0].type;
 			}
 		} else if (t[0] != null) {
@@ -191,12 +182,10 @@ public class AliasDeclaration extends Declaration {
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReferenceOfSymbol, 0, tempType.start,
-					tempType.length, new String[] { tempType.toString() }));
+					IProblem.ForwardReferenceOfSymbol, tempType, new String[] { tempType.toString() }));
 			context
 					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReferenceOfSymbol, 0, v.ident.start,
-							v.ident.length, new String[] { new String(
+							IProblem.ForwardReferenceOfSymbol, v.ident, new String[] { new String(
 									v.ident.ident) }));
 			s = null;
 		} else {
@@ -260,7 +249,7 @@ public class AliasDeclaration extends Declaration {
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, 0, ident.start, ident.length, new String[] { toChars(context) }));
+					IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;

@@ -135,18 +135,17 @@ public class ReturnStatement extends Statement {
 
 		if (sc.incontract != 0 || scx.incontract != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ReturnStatementsCannotBeInContracts, 0, start,
-					length));
+					IProblem.ReturnStatementsCannotBeInContracts, this));
 		}
 		if (sc.tf != null || scx.tf != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies, this));
 		}
 
 		if (fd.isCtorDeclaration() != null) {
 			// Constructors implicitly do:
 			//	return this;
 			if (exp != null && exp.op != TOKthis) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotReturnExpressionFromConstructor, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotReturnExpressionFromConstructor, this));
 			}
 			exp = new ThisExp(loc);
 		}
@@ -187,8 +186,7 @@ public class ReturnStatement extends Statement {
 				if (fd.type.next != null) {
 					if (!exp.type.equals(fd.type.next)) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.MismatchedFunctionReturnTypeInference, 0, sourceExp.start,
-								sourceExp.length, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
+								IProblem.MismatchedFunctionReturnTypeInference, sourceExp, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
 					}
 				} else {
 					fd.type.next = exp.type;
@@ -205,8 +203,7 @@ public class ReturnStatement extends Statement {
 			if (fd.type.next != null) {
 				if (fd.type.next.ty != Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.MismatchedFunctionReturnTypeInference, 0, start,
-							length, new String[] { "void", fd.type.next.toChars(context) }));
+							IProblem.MismatchedFunctionReturnTypeInference, this, new String[] { "void", fd.type.next.toChars(context) }));
 				}
 			} else {
 				fd.type.next = Type.tvoid;
@@ -218,8 +215,7 @@ public class ReturnStatement extends Statement {
 			}
 		} else if (tbret.ty != Tvoid) { // if non-void return
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ReturnExpressionExpected, 0, start,
-					length));
+					IProblem.ReturnExpressionExpected, this));
 		}
 
 		if (sc.fes != null) {
@@ -312,8 +308,7 @@ public class ReturnStatement extends Statement {
 		if ((sc.callSuper & CSXany_ctor) != 0
 				&& (sc.callSuper & (CSXthis_ctor | CSXsuper_ctor)) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ReturnWithoutCallingConstructor, 0, start,
-					length, new String[] { toChars(context) }));
+					IProblem.ReturnWithoutCallingConstructor, this, new String[] { toChars(context) }));
 		}
 
 		sc.callSuper |= CSXreturn;

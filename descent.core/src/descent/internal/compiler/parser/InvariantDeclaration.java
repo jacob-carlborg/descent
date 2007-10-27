@@ -56,13 +56,12 @@ public class InvariantDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		ad = parent.isAggregateDeclaration();
 		if (ad == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.InvariantsOnlyForClassStructUnion, 0,
-					invariantStart, 9));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.InvariantsOnlyForClassStructUnion, this));
 			return;
 		} else if (ad.inv != null && ad.inv != this) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.MoreThanOneInvariant, 0, invariantStart, 9,
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.MoreThanOneInvariant, this,
 					new String[] { new String(ad.ident.ident) }));
 		}
 		ad.inv = this;
@@ -98,6 +97,16 @@ public class InvariantDeclaration extends FuncDeclaration {
 		}
 		buf.writestring("invariant");
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return invariantStart;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 9; // "invariant".length()
 	}
 
 }

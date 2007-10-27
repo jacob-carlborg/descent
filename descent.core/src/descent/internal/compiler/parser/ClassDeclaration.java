@@ -221,8 +221,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (cd.baseClass == null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.BaseClassIsForwardReferenced, 0, start,
-						length, new String[] { toChars(context) }));
+						IProblem.BaseClassIsForwardReferenced, this, new String[] { toChars(context) }));
 			}
 
 			cd = cd.baseClass;
@@ -275,7 +274,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		if (members == null || symtab == null || scope != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReferenceWhenLookingFor, 0, start, length,
+					IProblem.ForwardReferenceWhenLookingFor, this,
 					new String[] { new String(this.ident.ident),
 							new String(ident) }));
 			return null;
@@ -293,8 +292,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				if (b.base != null) {
 					if (b.base.symtab == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.BaseIsForwardReferenced, 0, start,
-								length, new String[] { b.base.ident
+								IProblem.BaseIsForwardReferenced, this, new String[] { b.base.ident
 										.toChars() }));
 					} else {
 						s = b.base.search(loc, ident, flags, context);
@@ -383,8 +381,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BaseTypeMustBeClassOrInterface, 0,
-							b.sourceType.start, b.sourceType.length));
+							IProblem.BaseTypeMustBeClassOrInterface, b.sourceType));
 				}
 				baseclasses.remove(0);
 			} else {
@@ -397,9 +394,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 						if (cdb == this) {
 							BaseClass firstBaseClass = this.baseclasses.get(0);
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CircularDefinition, 0,
-									firstBaseClass.sourceType.start,
-									firstBaseClass.sourceType.length, new String[] { toChars(context) }));
+									IProblem.CircularDefinition, firstBaseClass.sourceType, new String[] { toChars(context) }));
 							baseclasses.remove(0);
 							// goto L7;
 							gotoL7 = true;
@@ -448,8 +443,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BaseTypeMustBeClassOrInterface, 0,
-							b.sourceType.start, b.sourceType.length));
+							IProblem.BaseTypeMustBeClassOrInterface, b.sourceType));
 				}
 				baseclasses.remove(i);
 				continue;
@@ -459,8 +453,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.DuplicatedInterfaceInheritance, 0,
-								b.sourceType.start, b.sourceType.length,
+								IProblem.DuplicatedInterfaceInheritance, b.sourceType,
 								new String[] { b.sourceType.toString(),
 										new String(this.ident.ident) }));
 					}
@@ -492,8 +485,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			if (context.ClassDeclaration_object == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.MissingOrCurruptObjectDotD, 0, start,
-						length));
+						IProblem.MissingOrCurruptObjectDotD, this));
 				fatal();
 			}
 			bt = tbase.semantic(loc, sc, context).toBasetype(context);
@@ -517,8 +509,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (baseClass != null) {
 			if ((baseClass.storage_class & STCfinal) != 0) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotInheritFromFinalClass, 0, start,
-						length, new String[] { baseClass
+						IProblem.CannotInheritFromFinalClass, this, new String[] { baseClass
 								.toString() }));
 			}
 
@@ -559,13 +550,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 				isnested = true;
 				if ((storage_class & STC.STCstatic) != 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.StaticClassCannotInheritFromNestedClass, 0, start,
-							length, new String[] { baseClass.toChars(context) }));
+							IProblem.StaticClassCannotInheritFromNestedClass, this, new String[] { baseClass.toChars(context) }));
 				}
 				if (toParent2() != baseClass.toParent2()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SuperClassIsNestedWithin, 0, start,
-							length, new String[] { baseClass.toChars(context), baseClass.toParent2()
+							IProblem.SuperClassIsNestedWithin, this, new String[] { baseClass.toChars(context), baseClass.toParent2()
 									.toChars(context), toParent2().toChars(
 											context) }));
 				}

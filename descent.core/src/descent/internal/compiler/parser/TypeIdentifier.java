@@ -84,18 +84,16 @@ public class TypeIdentifier extends TypeQualified {
 
 				if (tt.sym.sem == 1) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CircularReferenceOfTypedef, 0, tt.sym.ident.start,
-							tt.sym.ident.length, new String[] { tt.sym.ident.toString() }));
+							IProblem.CircularReferenceOfTypedef, tt.sym.ident, new String[] { tt.sym.ident.toString() }));
 				}
 			}
 		} else {
 			if (s[0] != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UsedAsAType, 0, start, length, new String[] { toChars(context) }));
+						IProblem.UsedAsAType, this, new String[] { toChars(context) }));
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UsedAsAType, 0, this.start,
-						this.length, new String[] { toChars(context) }));
+						IProblem.UsedAsAType, this, new String[] { toChars(context) }));
 			}
 			t[0] = tvoid;
 		}

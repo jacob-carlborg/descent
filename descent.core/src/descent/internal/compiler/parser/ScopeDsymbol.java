@@ -101,13 +101,13 @@ public class ScopeDsymbol extends Dsymbol {
 	
 	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
 		if (loc != null && loc.filename != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
-					0, s2.getErrorStart(), s2.getErrorLength(), new String[] { s1.toPrettyChars(context), s1.locToChars(context), s2.toPrettyChars(context), s2.locToChars(context) }));
+					s2, new String[] { s1.toPrettyChars(context), s1.locToChars(context), s2.toPrettyChars(context), s2.locToChars(context) }));
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.SymbolConflictsWithSymbolAtLocation, 
-					0, s1.getErrorStart(), s1.getErrorLength(), new String[] { s1.toChars(context), s2.kind(),
+					s1, new String[] { s1.toChars(context), s2.kind(),
 						    s2.toPrettyChars(context),
 						    s2.locToChars(context)}));
 		}		
@@ -187,7 +187,7 @@ public class ScopeDsymbol extends Dsymbol {
 				if (d != null && d.protection == PROT.PROTprivate
 						&& d.parent.isTemplateMixin() == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.MemberIsPrivate, 0, start, length, new String[] { new String(d.ident.ident) }));
+							IProblem.MemberIsPrivate, this, new String[] { new String(d.ident.ident) }));
 				}
 			}
 		}

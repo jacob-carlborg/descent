@@ -64,15 +64,8 @@ public class AnonDeclaration extends AttribDeclaration {
 
 		if (ad == null
 				|| (ad.isStructDeclaration() == null && ad.isClassDeclaration() == null)) {
-			if (isunion) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start,
-						"union".length()));
-			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start,
-						"struct".length()));
-			}
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.AnonCanOnlyBePartOfAnAggregate, this));
 			return;
 		}
 
@@ -185,6 +178,25 @@ public class AnonDeclaration extends AttribDeclaration {
 			}
 		}
 		buf.writestring("}\n");
+	}
+
+	@Override
+	public int getErrorStart() {
+		return start;
+	}
+
+	@Override
+	public int getErrorLength() {
+		if (isunion) {
+			return 5; // "union".length()
+		} else {
+			return 6; // "struct".length()
+		}
+	}
+
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
 	}
 
 }

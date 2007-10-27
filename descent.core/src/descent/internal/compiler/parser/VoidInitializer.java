@@ -47,7 +47,7 @@ public class VoidInitializer extends Initializer {
 
 	@Override
 	public Expression toExpression(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, 0, start, length, new String[] { "void initializer" }));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, this, new String[] { "void initializer" }));
 		return new IntegerExp(loc, 0, Type.tint32);
 	}
 

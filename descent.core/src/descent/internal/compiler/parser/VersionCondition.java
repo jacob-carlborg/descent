@@ -29,8 +29,7 @@ public class VersionCondition extends DVCondition {
 				// goto Lerror;
 				context
 						.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.VersionIdentifierReserved, 0,
-								ident.start, ident.length,
+								IProblem.VersionIdentifierReserved, ident,
 								new String[] { new String(ident.ident) }));
 			}
 		}
@@ -39,8 +38,7 @@ public class VersionCondition extends DVCondition {
 				&& ident.ident[1] == '_') {
 			// goto Lerror;
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VersionIdentifierReserved, 0, ident.start,
-					ident.length, new String[] { new String(ident.ident) }));
+					IProblem.VersionIdentifierReserved, ident, new String[] { new String(ident.ident) }));
 		}
 	}
 

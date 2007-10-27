@@ -461,8 +461,7 @@ public class Constfold {
 				n2 = e2.toInteger(context).castToSinteger_t();
 				if (n2.equals(0)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DivisionByZero, 0, e1.start, e2.start
-									+ e2.length - e1.start));
+							IProblem.DivisionByZero, e1, e2));
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
@@ -519,8 +518,7 @@ public class Constfold {
 				n2 = e2.toInteger(context).castToSinteger_t();
 				if (n2.equals(0)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DivisionByZero, 0, e1.start, e2.start
-									+ e2.length - e1.start));
+							IProblem.DivisionByZero, e1, e2));
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
@@ -684,7 +682,7 @@ public class Constfold {
 				integer_t i = e2.toInteger(context);
 
 				if (i.compareTo(es1.len) >= 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringIndexOutOfBounds, 0, e2.start, e2.length, new String[] { i.toString(), String.valueOf(es1.len) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringIndexOutOfBounds, e2, new String[] { i.toString(), String.valueOf(es1.len) }));
 				} else {
 					integer_t value;
 
@@ -699,8 +697,7 @@ public class Constfold {
 
 				if (i >= length) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArrayIndexOutOfBounds2, 0, e1.start,
-							e1.length, new String[] { String.valueOf(i),
+							IProblem.ArrayIndexOutOfBounds2, e1, new String[] { String.valueOf(i),
 						            e1.toChars(context),
 						            String.valueOf(length) }));
 				} else if (e1.op == TOKarrayliteral
@@ -718,8 +715,7 @@ public class Constfold {
 					ArrayLiteralExp ale = (ArrayLiteralExp) e1;
 					if (i.compareTo(ale.elements.size()) >= 0) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ArrayIndexOutOfBounds2, 0, e2.start,
-								e2.length, new String[] { i.toString(), e1.toChars(context), 
+								IProblem.ArrayIndexOutOfBounds2, e2, new String[] { i.toString(), e1.toChars(context), 
 							            Integer.toString(ale.elements.size()) }));
 					} else {
 						e = ale.elements.get(i.intValue());
@@ -1333,7 +1329,7 @@ public class Constfold {
 			int iupr = upr.toInteger(context).intValue();
 
 			if (iupr > es1.len || ilwr > iupr) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, 0, e1.start, e1.length, new String[] { String.valueOf(ilwr), String.valueOf(iupr) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, e1, new String[] { String.valueOf(ilwr), String.valueOf(iupr) }));
 			} else {
 				int len = iupr - ilwr;
 				int sz = es1.sz;
@@ -1356,8 +1352,7 @@ public class Constfold {
 
 			if (iupr > es1.elements.size() || ilwr > iupr) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArraySliceIfOutOfBounds, 0, es1.start,
-						es1.length, new String[] { String.valueOf(ilwr), String.valueOf(iupr) }));
+						IProblem.ArraySliceIfOutOfBounds, es1, new String[] { String.valueOf(ilwr), String.valueOf(iupr) }));
 			} else {
 				Expressions elements = new Expressions();
 				elements.setDim(iupr - ilwr);
@@ -1473,8 +1468,7 @@ public class Constfold {
 			e.type = type;
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotCastSymbolToSymbol, 0, e1.start,
-					e1.length, new String[] { e1.type.toChars(context),
+					IProblem.CannotCastSymbolToSymbol, e1, new String[] { e1.type.toChars(context),
 					        type.toChars(context) }));
 			e = new IntegerExp(loc, 0, type);
 		}

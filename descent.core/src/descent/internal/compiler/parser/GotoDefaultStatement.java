@@ -53,7 +53,7 @@ public class GotoDefaultStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		sw = sc.sw;
 		if (null == sw) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.GotoDefaultNotInSwitch, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.GotoDefaultNotInSwitch, this));
 		}
 		return this;
 	}

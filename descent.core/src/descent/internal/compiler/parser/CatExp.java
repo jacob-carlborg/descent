@@ -133,7 +133,7 @@ public class CatExp extends BinExp {
 			e = this;
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlyConcatenateArrays, 0, start, length,
+					IProblem.CanOnlyConcatenateArrays, this,
 					new String[] { e1.type.toChars(context),
 							e2.type.toChars(context), }));
 			type = Type.tint32;

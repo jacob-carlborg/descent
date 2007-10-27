@@ -78,9 +78,8 @@ public class DeleteDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.DeleteDeallocatorsOnlyForClassOrStruct, 0,
-					deleteStart, 6));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.DeleteDeallocatorsOnlyForClassOrStruct, this));
 		}
 		type = new TypeFunction(arguments, Type.tvoid, 0, LINK.LINKd);
 
@@ -90,15 +89,14 @@ public class DeleteDeclaration extends FuncDeclaration {
 		// Check that there is only one argument of type void*
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) != 1) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.OneArgumentOfTypeExpected, 0, deleteStart, 6,
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.OneArgumentOfTypeExpected, this,
 					new String[] { "void*" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tvoid.pointerTo(context))) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OneArgumentOfTypeExpected, 0, a.type.start,
-						a.type.length, new String[] { "void*" }));
+						IProblem.OneArgumentOfTypeExpected, a.type, new String[] { "void*" }));
 			}
 		}
 
@@ -119,6 +117,16 @@ public class DeleteDeclaration extends FuncDeclaration {
 		buf.writestring("delete");
 		argsToCBuffer(buf, hgs, arguments, 0, context);
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return deleteStart;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return 6;
 	}
 
 }

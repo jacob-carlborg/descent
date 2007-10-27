@@ -97,8 +97,7 @@ public class NewExp extends Expression {
 					sc = sc.pop();
 				} else {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ThisForNestedClassMustBeAClassType, 0, start,
-							length, new String[] { thisexp.type.toChars(context) }));
+							IProblem.ThisForNestedClassMustBeAClassType, this, new String[] { thisexp.type.toChars(context) }));
 					type = newtype.semantic(loc, sc, context);
 				}
 			} else {
@@ -114,8 +113,7 @@ public class NewExp extends Expression {
 
 			if (thisexp != null && tb.ty != Tclass) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, 0, start,
-						length, new String[] { tb
+						IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this, new String[] { tb
 								.toChars(context) }));
 			}
 
@@ -125,9 +123,9 @@ public class NewExp extends Expression {
 				TypeClass tc = (TypeClass) (tb);
 				ClassDeclaration cd = tc.sym.isClassDeclaration();
 				if (cd.isInterfaceDeclaration() != null) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, 0, start, length, new String[] { cd.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, sourceNewtype, new String[] { cd.toChars(context) }));
 				} else if (cd.isAbstract()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfAbstractClass, 0, start, length, new String[] { cd.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfAbstractClass, sourceNewtype, new String[] { cd.toChars(context) }));
 				}
 				checkDeprecated(sc, cd, context);
 				if (cd.isNested()) { 
@@ -144,8 +142,7 @@ public class NewExp extends Expression {
 							for (Dsymbol sp = sc.parent; true; sp = sp.parent) {
 								if (sp == null) {
 									context.acceptProblem(Problem.newSemanticTypeError(
-											IProblem.OuterClassThisNeededToNewNestedClass, 0, start,
-											length, new String[] { cdn.toChars(context), cd.toChars(context) }));
+											IProblem.OuterClassThisNeededToNewNestedClass, this, new String[] { cdn.toChars(context), cd.toChars(context) }));
 									break;
 								}
 								ClassDeclaration cdp = sp.isClassDeclaration();
@@ -170,19 +167,16 @@ public class NewExp extends Expression {
 							if (cdthis != cdn
 									&& !cdn.isBaseOf(cdthis, null, context)) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.ThisForNestedClassMustBeOfType, 0, start,
-										length, new String[] { cdn.toChars(context), thisexp.type.toChars(context) }));
+										IProblem.ThisForNestedClassMustBeOfType, this, new String[] { cdn.toChars(context), thisexp.type.toChars(context) }));
 							}
 						}
 					} else if (thisexp != null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, 0, start,
-								length));
+								IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
 					}
 				} else if (thisexp != null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, 0, start,
-							length));
+							IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
 				}
 
 				FuncDeclaration f = cd.ctor;
@@ -204,8 +198,7 @@ public class NewExp extends Expression {
 				} else {
 					if (arguments != null && arguments.size() > 0) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.NoConstructorForSymbol, 0, start,
-								length, new String[] { cd.toChars(context) }));
+								IProblem.NoConstructorForSymbol, this, new String[] { cd.toChars(context) }));
 					}
 				}
 
@@ -230,8 +223,7 @@ public class NewExp extends Expression {
 				} else {
 					if (newargs != null && newargs.size() > 0) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.NoAllocatorForSymbol, 0, start,
-								length, new String[] { cd.toChars(context) }));
+								IProblem.NoAllocatorForSymbol, this, new String[] { cd.toChars(context) }));
 					}
 				}
 
@@ -243,8 +235,7 @@ public class NewExp extends Expression {
 
 				if (arguments != null && arguments.size() > 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.NoConstructorForSymbol, 0, start,
-							length, new String[] { type.toChars(context) }));
+							IProblem.NoConstructorForSymbol, this, new String[] { type.toChars(context) }));
 				}
 
 				if (f != null) {
@@ -277,8 +268,7 @@ public class NewExp extends Expression {
 				for (int i = 0; i < arguments.size(); i++) {
 					if (tb.ty != Tarray) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.TooManyArgumentsForArray, 0, start,
-								length));
+								IProblem.TooManyArgumentsForArray, this));
 						arguments.setDim(i);
 						break;
 					}
@@ -290,8 +280,7 @@ public class NewExp extends Expression {
 							&& arg.toInteger(context)
 									.compareTo(BigInteger.ZERO) < 0) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.NegativeArrayIndex, 0, start,
-								length, new String[] { arg.toChars(context) }));
+								IProblem.NegativeArrayIndex, this, new String[] { arg.toChars(context) }));
 					}
 					arguments.set(i, arg);
 					tb = tb.next.toBasetype(context);
@@ -299,15 +288,13 @@ public class NewExp extends Expression {
 			} else if (tb.isscalar(context)) {
 				if (arguments != null && arguments.size() > 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.NoConstructorForSymbol, 0, start,
-							length, new String[] { type.toChars(context) }));
+							IProblem.NoConstructorForSymbol, this, new String[] { type.toChars(context) }));
 				}
 
 				type = type.pointerTo(context);
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NewCanOnlyCreateStructsDynamicArraysAndClassObjects, 0, start,
-						length, new String[] { type.toChars(context) }));
+						IProblem.NewCanOnlyCreateStructsDynamicArraysAndClassObjects, this, new String[] { type.toChars(context) }));
 				type = type.pointerTo(context);
 			}
 		}

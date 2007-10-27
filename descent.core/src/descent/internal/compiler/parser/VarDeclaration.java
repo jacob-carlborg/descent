@@ -123,8 +123,7 @@ public class VarDeclaration extends Declaration {
 	public void checkCtorConstInit(SemanticContext context) {
 		if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.MissingInitializerInStaticConstructorForConstVariable, 0, start,
-					length));
+					IProblem.MissingInitializerInStaticConstructorForConstVariable, this));
 		}
 	}
 
@@ -173,7 +172,7 @@ public class VarDeclaration extends Declaration {
 		Dsymbol parent = this.toParent();
 		if (parent == null && (storage_class & (STCstatic | STCconst)) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotResolveForwardReference, 0, start, length));
+					IProblem.CannotResolveForwardReference, this));
 			type = Type.terror;
 			return false;
 		}
@@ -223,8 +222,7 @@ public class VarDeclaration extends Declaration {
 		storage_class |= sc.stc;
 		if ((storage_class & STCextern) != 0 && init != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ExternSymbolsCannotHaveInitializers, 0,
-					init.start, init.length));
+					IProblem.ExternSymbolsCannotHaveInitializers, init));
 		}
 
 		/*
@@ -259,13 +257,12 @@ public class VarDeclaration extends Declaration {
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STClazy) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VoidsHaveNoValue, 0, sourceType == null ? start : sourceType.start,
-							sourceType == null ? length : sourceType.length));
+					IProblem.VoidsHaveNoValue, sourceType == null ? this : sourceType));
 			type = Type.terror;
 			tb = type;
 		}
 		if (tb.ty == TY.Tfunction) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCannotBeDeclaredToBeAFunction, 0, ident.start, ident.length, new String[] { toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCannotBeDeclaredToBeAFunction, ident, new String[] { toChars(context) }));
 			type = Type.terror;
 			tb = type;
 		}
@@ -275,8 +272,7 @@ public class VarDeclaration extends Declaration {
 			if (ts.sym.members == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						// "No definition of struct " + ts.sym.ident,
-						IProblem.NoDefinition, 0, sourceType.start,
-						sourceType.length, new String[] { new String(
+						IProblem.NoDefinition, sourceType, new String[] { new String(
 								ts.sym.ident.ident) }));
 			}
 		}
@@ -328,17 +324,14 @@ public class VarDeclaration extends Declaration {
 		} else if (isSynchronized()) {
 			context
 					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ModifierCannotBeAppliedToVariables, 0,
-							ident.start, ident.length,
+							IProblem.ModifierCannotBeAppliedToVariables, ident,
 							new String[] { "synchronized" }));
 		} else if (isOverride()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, 0,
-					ident.start, ident.length, new String[] { "override" }));
+					IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "override" }));
 		} else if (isAbstract()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, 0,
-					ident.start, ident.length, new String[] { "abstract" }));
+					IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "abstract" }));
 		} else if ((storage_class & STCtemplateparameter) != 0) {
 		} else {
 			AggregateDeclaration aad = sc.anonAgg;
@@ -351,9 +344,8 @@ public class VarDeclaration extends Declaration {
 
 			InterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FieldsNotAllowedInInterfaces, 0, ident.start,
-						ident.length));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.FieldsNotAllowedInInterfaces, this));
 			}
 
 			TemplateInstance ti = parent.isTemplateInstance();
@@ -372,8 +364,7 @@ public class VarDeclaration extends Declaration {
 				AggregateDeclaration ad = ti.tempdecl.isMember();
 				if (ad != null && storage_class != STCundefined) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotUseTemplateToAddFieldToAggregate, 0, start,
-							length, new String[] { ad.toChars(context) }));
+							IProblem.CannotUseTemplateToAddFieldToAggregate, this, new String[] { ad.toChars(context) }));
 				}
 			}
 		}
@@ -382,16 +373,14 @@ public class VarDeclaration extends Declaration {
 			if ((storage_class & (STCfield | STCout | STCref | STCstatic)) != 0
 					|| fd == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto, 0, start,
-						length));
+						IProblem.GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto, this));
 			}
 
 			if ((storage_class & (STCauto | STCscope)) == 0) {
 				if ((storage_class & STCparameter) == 0
 						&& equals(ident, Id.withSym)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ReferenceToScopeClassMustBeScope, 0, start,
-							length, new String[] { toChars(context) }));
+							IProblem.ReferenceToScopeClassMustBeScope, this, new String[] { toChars(context) }));
 				}
 			}
 		}
@@ -462,7 +451,7 @@ public class VarDeclaration extends Declaration {
 							init = init.semantic(sc, type, context);
 							e = init.toExpression(context);
 							if (e == null) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAStaticAndCannotHaveStaticInitializer, 0, start, length, new String[] { toChars(context) }));
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAStaticAndCannotHaveStaticInitializer, this, new String[] { toChars(context) }));
 								return;
 							}
 						}
@@ -620,6 +609,11 @@ public class VarDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
+	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
 	}
 
     // PERHAPS Symbol *toSymbol();

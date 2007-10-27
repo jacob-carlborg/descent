@@ -40,7 +40,7 @@ public class TypeTypeof extends TypeQualified {
 			sc.intypeof--;
 			t = exp.type;
 			if (null == t) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionHasNoType, 0, exp.start, exp.length, new String[] { exp.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionHasNoType, exp, new String[] { exp.toChars(context) }));
 				return tvoid;
 			}
 		}
@@ -57,13 +57,12 @@ public class TypeTypeof extends TypeQualified {
 			if (s != null) {
 				t = s.getType();
 				if (null == t) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, 0, start, length, new String[] { s.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, this, new String[] { s.toChars(context) }));
 					return tvoid;
 				}
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotResolveDotProperty, 0, start,
-						length, new String[] { toChars(context) }));
+						IProblem.CannotResolveDotProperty, this, new String[] { toChars(context) }));
 				return tvoid;
 			}
 		}

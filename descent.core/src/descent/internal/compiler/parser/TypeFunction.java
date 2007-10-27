@@ -210,20 +210,19 @@ public class TypeFunction extends Type {
 		next = next.semantic(loc, sc, context);
 		if (next.toBasetype(context).ty == Tsarray) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.FunctionsCannotReturnStaticArrays, 0, start,
-					length));
+					IProblem.FunctionsCannotReturnStaticArrays, this));
 			next = Type.terror;
 		}
 		if (next.toBasetype(context).ty == Tfunction) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAFunction, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAFunction, this));
 			next = Type.terror;
 		}
 		if (next.toBasetype(context).ty == Ttuple) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnATuple, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnATuple, this));
 			next = Type.terror;
 		}
 		if (next.isauto() && (sc.flags & SCOPEctor) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, 0, start, length, new String[] { next.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, this, new String[] { next.toChars(context) }));
 		}
 
 		if (parameters != null) {
@@ -246,13 +245,12 @@ public class TypeFunction extends Type {
 								.acceptProblem(Problem
 										.newSemanticTypeError(
 												IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray,
-												0, t.start, t.length));
+												t));
 					}
 				}
 				if ((arg.storageClass & STClazy) == 0 && t.ty == Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotHaveParameterOfTypeVoid, 0, arg.sourceType.start,
-							arg.sourceType.length));
+							IProblem.CannotHaveParameterOfTypeVoid, arg.sourceType));
 				}
 
 				if (arg.defaultArg != null) {
@@ -276,14 +274,14 @@ public class TypeFunction extends Type {
 		deco = merge(context).deco;
 
 		if (inuse != 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveType, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveType, this));
 			inuse = 0;
 			return terror;
 		}
 
 		if (varargs != 0 && linkage != LINK.LINKd
 				&& Argument.dim(parameters, context) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter, this));
 		}
 
 		/*

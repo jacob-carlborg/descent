@@ -140,9 +140,7 @@ public class AddrExp extends UnaExp {
 						// PERHAPS test this error
 						context.acceptProblem(Problem.newSemanticTypeError(
 				    			IProblem.ArrayIndexOutOfBounds,
-				    			0,
-				    			start,
-				    			length,
+				    			this,
 				    			new String[] { 
 				    				String.valueOf(index),
 				    				String.valueOf(dim),
@@ -165,8 +163,7 @@ public class AddrExp extends UnaExp {
 			e1 = e1.toLvalue(sc, null, context);
 			if (e1.type == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotTakeAddressOf, 0, e1.start,
-						e1.length, new String[] { e1.toChars(context) }));
+						IProblem.CannotTakeAddressOf, e1, new String[] { e1.toChars(context) }));
 				type = Type.tint32;
 				return this;
 			}
@@ -198,8 +195,7 @@ public class AddrExp extends UnaExp {
 			} else if (e1.op == TOKarray) {
 				if (e1.type.toBasetype(context).ty == Tbit) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotTakeAddressOfBitInArray, 0, start,
-							length));
+							IProblem.CannotTakeAddressOfBitInArray, this));
 				}
 			}
 			

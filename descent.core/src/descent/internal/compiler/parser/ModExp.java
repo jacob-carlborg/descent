@@ -77,8 +77,7 @@ public class ModExp extends BinExp {
 			type = e1.type;
 			if (e2.type.iscomplex()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotPerformModuloComplexArithmetic, 0, start,
-						length));
+						IProblem.CannotPerformModuloComplexArithmetic, this));
 				return new IntegerExp(Loc.ZERO, 0);
 			}
 		}

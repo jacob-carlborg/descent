@@ -85,7 +85,7 @@ public class ThisExp extends Expression {
 
 				if (s == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ThisNotInClassOrStruct, 0, start, length));
+							IProblem.ThisNotInClassOrStruct, this));
 					// goto Lerr;
 					return semantic_Lerr(sc, context);
 				}
@@ -121,8 +121,7 @@ public class ThisExp extends Expression {
 
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 0, start,
-				length));
+				IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, this));
 		type = Type.tint32;
 		return this;
 	}
