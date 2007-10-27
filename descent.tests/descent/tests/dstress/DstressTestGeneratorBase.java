@@ -1,6 +1,8 @@
 package descent.tests.dstress;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class DstressTestGeneratorBase implements IDstressConfiguration {
@@ -49,6 +51,228 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		syntaxErrors.add("virtual_01_C.d");
 		syntaxErrors.add("warning_01_A.d");
 		syntaxErrors.add("warning_01_B.d");
+		syntaxErrors.add("align_02.d");
+		syntaxErrors.add("argument_03.d");
+		syntaxErrors.add("argument_04.d");
+		syntaxErrors.add("argument_05.d");
+		syntaxErrors.add("checked_01_B.d");
+		syntaxErrors.add("const_35_A.d");
+		syntaxErrors.add("const_35_B.d");
+		syntaxErrors.add("const_35_C.d");
+		syntaxErrors.add("const_35_D.d");
+		syntaxErrors.add("cent_01.d");
+		syntaxErrors.add("class_11.d");
+		syntaxErrors.add("class_12.d");
+		syntaxErrors.add("define_01.d");
+		syntaxErrors.add("delegate_14_A.d");
+		syntaxErrors.add("double_26_A.d");
+		syntaxErrors.add("double_26_B.d");
+		syntaxErrors.add("double_26_C.d");
+		syntaxErrors.add("double_26_D.d");
+		syntaxErrors.add("delete_06.d");
+		syntaxErrors.add("elif_01.d");
+		syntaxErrors.add("else_03.d");
+		syntaxErrors.add("endif_01.d");
+		syntaxErrors.add("end_01_A.d");
+		syntaxErrors.add("end_01_B.d");
+		syntaxErrors.add("error_01_A.d");
+		syntaxErrors.add("error_01_B.d");
+		syntaxErrors.add("explicit_01.d");
+		syntaxErrors.add("eol_comment_01.d");
+		syntaxErrors.add("eol_comment_02.d");
+		syntaxErrors.add("eol_comment_03.d");
+		syntaxErrors.add("eol_comment_04.d");
+		syntaxErrors.add("eol_comment_05.d");
+		syntaxErrors.add("eol_comment_06.d");
+		syntaxErrors.add("eol_string_01.d");
+		syntaxErrors.add("eol_string_02.d");
+		syntaxErrors.add("eol_string_03.d");
+		syntaxErrors.add("eol_string_04.d");
+		syntaxErrors.add("eol_string_05.d");
+		syntaxErrors.add("eol_string_06.d");
+		syntaxErrors.add("eol_string_07.d");
+		syntaxErrors.add("eol_string_08.d");
+		syntaxErrors.add("eol_string_09.d");
+		syntaxErrors.add("eol_string_10.d");
+		syntaxErrors.add("eol_string_11.d");
+		syntaxErrors.add("eol_string_12.d");
+		syntaxErrors.add("escape_hex_02.d");
+		syntaxErrors.add("escape_hex_string_03.d");
+		syntaxErrors.add("escape_hex_string_04.d");
+		syntaxErrors.add("escape_octal_02.d");
+		syntaxErrors.add("escape_unicode16_03.d");
+		syntaxErrors.add("escape_unicode16_04.d");
+		syntaxErrors.add("escape_unicode16_05.d");
+		syntaxErrors.add("escape_unicode16_06.d");
+		syntaxErrors.add("escape_unicode32_04.d");
+		syntaxErrors.add("escape_unicode32_05.d");
+		syntaxErrors.add("escape_unicode32_06.d");
+		syntaxErrors.add("escape_unicode32_07.d");
+		syntaxErrors.add("escape_unicode32_08.d");
+		syntaxErrors.add("escape_unicode32_09.d");
+		syntaxErrors.add("escape_unicode32_10.d");
+		syntaxErrors.add("escape_unicode32_11.d");
+		syntaxErrors.add("escape_unicode32_12.d");
+		syntaxErrors.add("fixed_01.d");
+		syntaxErrors.add("flags_01_A.d");
+		syntaxErrors.add("flags_01_B.d");
+		syntaxErrors.add("flags_01_C.d");
+		syntaxErrors.add("flags_01_D.d");
+		syntaxErrors.add("float_literal_dec_06.d");
+		syntaxErrors.add("float_literal_dec_07.d");
+		syntaxErrors.add("float_literal_dec_12.d");
+		syntaxErrors.add("float_literal_dec_13.d");
+		syntaxErrors.add("float_literal_dec_14.d");
+		syntaxErrors.add("float_literal_dec_15.d");
+		syntaxErrors.add("float_literal_dec_16.d");
+		syntaxErrors.add("float_literal_dec_17.d");
+		syntaxErrors.add("foreach_32_A.d");
+		syntaxErrors.add("foreach_32_B.d");
+		syntaxErrors.add("function_04_A.d");
+		syntaxErrors.add("function_04_B.d");
+		syntaxErrors.add("final_08.d");
+		syntaxErrors.add("foreach_17.d");
+		syntaxErrors.add("foreach_18.d");
+		syntaxErrors.add("get_01_C.d");
+		syntaxErrors.add("goto_15_A.d");
+		syntaxErrors.add("goto_15_B.d");
+		syntaxErrors.add("ifloat_06_B.d");
+		syntaxErrors.add("if_09.d");
+		syntaxErrors.add("if_10_A.d");
+		syntaxErrors.add("if_10_B.d");
+		syntaxErrors.add("if_10_C.d");
+		syntaxErrors.add("if_10_D.d");
+		syntaxErrors.add("if_10_E.d");
+		syntaxErrors.add("if_13_A.d");
+		syntaxErrors.add("if_13_B.d");
+		syntaxErrors.add("if_13_C.d");
+		syntaxErrors.add("if_13_D.d");
+		syntaxErrors.add("if_13_E.d");
+		syntaxErrors.add("implicit_01.d");
+		syntaxErrors.add("import_12_A.d");
+		syntaxErrors.add("import_12_B.d");
+		syntaxErrors.add("import_12_C.d");
+		syntaxErrors.add("import_12_D.d");
+		syntaxErrors.add("import_12_E.d");
+		syntaxErrors.add("import_19_A.d");
+		syntaxErrors.add("interface_22_A.d");
+		syntaxErrors.add("interface_22_B.d");
+		syntaxErrors.add("internal_01_A.d");
+		syntaxErrors.add("internal_01_B.d");
+		syntaxErrors.add("is_01_A.d");
+		syntaxErrors.add("is_01_B.d");
+		syntaxErrors.add("is_01_C.d");
+		syntaxErrors.add("is_01_D.d");
+		syntaxErrors.add("is_01_E.d");
+		syntaxErrors.add("is_14_A.d");
+		syntaxErrors.add("is_14_B.d");
+		syntaxErrors.add("is_14_C.d");
+		syntaxErrors.add("is_14_D.d");
+		syntaxErrors.add("is_14_E.d");
+		syntaxErrors.add("is_14_F.d");
+		syntaxErrors.add("import_01.d");
+		syntaxErrors.add("import_04.d");
+		syntaxErrors.add("inline_01.d");
+		syntaxErrors.add("interface_13.d");
+		syntaxErrors.add("interface_14.d");
+		for(int i = 1; i < 43; i++)
+		{
+			syntaxErrors.add("invalid_utf_" +
+					((i < 10) ? ("0" + i) : Integer.toString(i)) + ".d");
+		}
+		syntaxErrors.add("invariant_08.d");
+		syntaxErrors.add("invariant_09.d");
+		for(char c = 'B'; c <= 'Z'; c++)
+		{
+			if(c != 'A')
+			{
+				syntaxErrors.add("label_04_" + c + ".d");
+			}
+			syntaxErrors.add("label_05_" + c + ".d");
+			syntaxErrors.add("label_06_" + c + ".d");
+		}
+		syntaxErrors.add("label_07_A.d");
+		syntaxErrors.add("label_07_B.d");
+		syntaxErrors.add("lock_01_A.d");
+		syntaxErrors.add("lock_01_B.d");
+		syntaxErrors.add("line_token_05.d");
+		syntaxErrors.add("line_token_06.d");
+		syntaxErrors.add("line_token_07.d");
+		syntaxErrors.add("line_token_08.d");
+		syntaxErrors.add("line_token_09.d");
+		syntaxErrors.add("line_token_10.d");
+		syntaxErrors.add("module_05_D.d");
+		syntaxErrors.add("module_03.d");
+		syntaxErrors.add("namespace_01_A.d");
+		syntaxErrors.add("namespace_01_B.d");
+		syntaxErrors.add("namespace_01_C.d");
+		syntaxErrors.add("new_27_A.d");
+		syntaxErrors.add("new_27_B.d");
+		syntaxErrors.add("new_03.d");
+		syntaxErrors.add("new_15.d");
+		syntaxErrors.add("new_16.d");
+		syntaxErrors.add("new_17.d");
+		syntaxErrors.add("new_18.d");
+		syntaxErrors.add("new_19.d");
+		syntaxErrors.add("new_21.d");
+		syntaxErrors.add("obsolete_01_A.d");
+		syntaxErrors.add("obsolete_01_B.d");
+		syntaxErrors.add("obsolete_01_C.d");
+		syntaxErrors.add("obsolete_01_D.d");
+		syntaxErrors.add("opAssign_02_C.d");
+		syntaxErrors.add("params_01_A.d");
+		syntaxErrors.add("params_01_B.d");
+		syntaxErrors.add("params_01_C.d");
+		syntaxErrors.add("pragma_07_A.d");
+		syntaxErrors.add("pragma_lib_06.d");
+		syntaxErrors.add("readonly_01_A.d");
+		syntaxErrors.add("readonly_01_B.d");
+		syntaxErrors.add("readonly_01_C.d");
+		syntaxErrors.add("readonly_01_D.d");
+		syntaxErrors.add("region_01_A.d");
+		syntaxErrors.add("region_01_B.d");
+		syntaxErrors.add("sealed_01_A.d");
+		syntaxErrors.add("sealed_01_B.d");
+		syntaxErrors.add("sealed_01_C.d");
+		syntaxErrors.add("sealed_01_D.d");
+		syntaxErrors.add("set_01_A.d");
+		syntaxErrors.add("set_01_B.d");
+		syntaxErrors.add("set_01_C.d");
+		syntaxErrors.add("stackalloc_01_A.d");
+		syntaxErrors.add("stackalloc_01_B.d");
+		syntaxErrors.add("stackalloc_01_C.d");
+		syntaxErrors.add("stackalloc_01_D.d");
+		syntaxErrors.add("stackalloc_01_E.d");
+		syntaxErrors.add("string_postfix_05_n.d");
+		syntaxErrors.add("struct_05.d");
+		syntaxErrors.add("template_class_18_A.d");
+		syntaxErrors.add("template_class_18_B.d");
+		syntaxErrors.add("template_class_18_C.d");
+		syntaxErrors.add("template_class_18_D.d");
+		syntaxErrors.add("template_class_18_E.d");
+		syntaxErrors.add("template_class_18_F.d");
+		syntaxErrors.add("this_08_A.d");
+		syntaxErrors.add("this_08_B.d");
+		syntaxErrors.add("this_08_C.d");
+		syntaxErrors.add("this_08_D.d");
+		syntaxErrors.add("this_09_A.d");
+		syntaxErrors.add("this_09_B.d");
+		syntaxErrors.add("this_09_C.d");
+		syntaxErrors.add("this_14_B.d");
+		syntaxErrors.add("this_14_C.d");
+		syntaxErrors.add("this_14_D.d");
+		syntaxErrors.add("this_14_E.d");
+		syntaxErrors.add("version_13.d");
+	}
+	
+	// Maps name of file -> number of errors reported by Descent
+	// Used since DMD reports multi-line errors for some stuff (ambigous
+	//    overloads, etc.)
+	protected static Map<String, Integer> multiLineErrors;
+	static
+	{
+		multiLineErrors = new HashMap<String, Integer>();
+		multiLineErrors.put("test_overload_11_d", 1);
 	}
 	
 	protected static Set<String> failures;

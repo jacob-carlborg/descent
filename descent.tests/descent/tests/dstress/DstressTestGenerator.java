@@ -118,7 +118,14 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				sb.append("\t\tnocompile(");
 				sb.append("\"").append(fullFilename).append("\"");
 				sb.append(", ");
-				sb.append(errors.size());
+				if(multiLineErrors.containsKey(name))
+				{
+					sb.append(multiLineErrors.get(name));
+				}
+				else
+				{
+					sb.append(errors.size());
+				}
 				sb.append(");\r\n\r\n");
 				for(String error : errors)
 				{
