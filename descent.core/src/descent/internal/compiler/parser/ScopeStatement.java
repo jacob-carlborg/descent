@@ -6,11 +6,11 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ScopeStatement extends Statement {
 
-	public Statement statement;
+	public Statement statement, sourceStatement;
 
 	public ScopeStatement(Loc loc, Statement s) {
 		super(loc);
-		this.statement = s;
+		this.statement = this.sourceStatement = s;
 	}
 
 	@Override

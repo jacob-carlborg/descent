@@ -218,7 +218,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			/*
 			 * cd.baseClass might not be set if cd is forward referenced.
 			 */
-			if (cd.baseClass != null && cd.baseclasses.size() > 0
+			if (cd.baseClass == null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.BaseClassIsForwardReferenced, 0, start,

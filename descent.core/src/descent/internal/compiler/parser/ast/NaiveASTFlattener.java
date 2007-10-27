@@ -1939,9 +1939,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(ScopeStatement node) {
-		appendStartCompilerNode();
-		this.buffer.append("ScopeStatement");
-		appendEndCompilerNode();
+		if (node.sourceStatement != null) {
+			node.sourceStatement.accept(this);
+		}
 		return false;
 	}
 

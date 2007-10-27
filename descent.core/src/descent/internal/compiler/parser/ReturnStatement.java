@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -230,6 +232,9 @@ public class ReturnStatement extends Statement {
 					|| exp.op == TOKimaginary80 || exp.op == TOKcomplex80
 					|| exp.op == TOKthis || exp.op == TOKsuper
 					|| exp.op == TOKnull || exp.op == TOKstring) {
+				if (sc.fes.cases == null) {
+					sc.fes.cases = new ArrayList();
+				}
 				sc.fes.cases.add(this);
 				s = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
 						.size() + 1));

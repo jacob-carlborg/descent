@@ -3331,7 +3331,8 @@ public class Parser extends Lexer {
 				
 				case TOKeof:
 					parsingErrorInsertTokenAfter(prevToken, "}");
-					break;
+					return null;
+					//break;
 
 				default:
 					value = parseInitializer();
@@ -3641,14 +3642,14 @@ public class Parser extends Lexer {
 
 		case TOKlcurly: {
 			Statements statements;
-
-			nextToken();
-			statements = new Statements();
 			
-			expect(statementExpectations);			
+			expect(statementExpectations);
 			if (apiLevel == D2) {
 				expect(traitsExpectations);
 			}
+
+			nextToken();
+			statements = new Statements();
 			
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
@@ -3660,19 +3661,16 @@ public class Parser extends Lexer {
 				if (subStatement != null) {
 					statements.add(subStatement);
 				}
-				
-				expect(statementExpectations);			
-				if (apiLevel == D2) {
-					expect(traitsExpectations);
-				}	
 			}
 			
 			s = newBlock(statements);
-			/*
+			s.setSourceRange(start, token.ptr + token.sourceLen - start);
+			
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
-				s = new ScopeStatement(s);
+				s = new ScopeStatement(loc, s);
+				s.setSourceRange(start, token.ptr + token.sourceLen - start);
 			}
-			*/
+			
 			nextToken();
 			break;
 		}
@@ -3749,13 +3747,12 @@ public class Parser extends Lexer {
 			}
 			body = parseStatement(PSscope);
 			s = new ForStatement(loc, init, condition2, increment, body);
-			/*
 			if (init != null) {
-				s = new ScopeStatement(s);
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				
+				s = new ScopeStatement(loc, s);
+				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			}
-			*/
 			break;
 		}
 
@@ -4171,18 +4168,12 @@ public class Parser extends Lexer {
 			}
 			
 			s = newBlock(statements);
+			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			/*
-			FIXME this can bring incompatibilities between Descent and DMD: put back!
-			s = new ScopeStatement(s);
-			*/
+			s = new ScopeStatement(loc, s);
+			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
 			// Keep cases in order by building the case statements backwards
-//			for (int i = cases.size(); i != 0; i--) {
-//				exp = (Expression) cases.get(i - 1);
-//				s = new CaseStatement(loc, exp, s);
-//			}
-			
 			for(int i = caseStatements.size(); i != 0; i--) {
 				CaseStatement cs = caseStatements.get(i - 1);
 				cs.setStatement(s);
@@ -4207,11 +4198,8 @@ public class Parser extends Lexer {
 			s = newBlock(statements);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			/*
-			s = new ScopeStatement(s);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
-			*/
+			s = new ScopeStatement(loc, s);
+			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
 			s = new DefaultStatement(loc, s);
 			break;
@@ -4533,11 +4521,9 @@ public class Parser extends Lexer {
 			nextToken();
 			s[0] = null;
 		}
-		/*
 		if ((flags & PSscope) != 0) {
-			s[0] = new ScopeStatement(s[0]);
+			s[0] = new ScopeStatement(loc, s[0]);
 		}
-		*/
 	}
 	
 	private void check(TOK value) {

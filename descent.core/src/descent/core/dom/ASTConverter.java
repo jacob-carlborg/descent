@@ -43,6 +43,7 @@ import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.PragmaDeclaration;
 import descent.internal.compiler.parser.PragmaStatement;
 import descent.internal.compiler.parser.ReturnStatement;
+import descent.internal.compiler.parser.ScopeStatement;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StaticAssert;
 import descent.internal.compiler.parser.StaticAssertStatement;
@@ -351,6 +352,8 @@ public class ASTConverter {
 			return convert((ReturnStatement) symbol);
 		case ASTDmdNode.SCOPE_EXP:
 			return convert((ScopeExp) symbol);
+		case ASTDmdNode.SCOPE_STATEMENT:
+			return convert((ScopeStatement) symbol);
 		case ASTDmdNode.SHL_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.LEFT_SHIFT_ASSIGN);
 		case ASTDmdNode.SHL_EXP:
@@ -727,13 +730,17 @@ public class ASTConverter {
 		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
 		return varToReturn;
 	}
+	
+	public descent.core.dom.Statement convert(ScopeStatement a) {
+		return convert(a.sourceStatement);
+	}
 
 	public descent.core.dom.ScopeStatement convert(OnScopeStatement a) {
 		descent.core.dom.ScopeStatement b = new descent.core.dom.ScopeStatement(ast);
 		switch(a.tok) {
-		case TOKon_scope_exit: b.setEvent(ScopeStatement.Event.EXIT); break;
-		case TOKon_scope_failure: b.setEvent(ScopeStatement.Event.FAILURE); break;
-		case TOKon_scope_success: b.setEvent(ScopeStatement.Event.SUCCESS); break;
+		case TOKon_scope_exit: b.setEvent(descent.core.dom.ScopeStatement.Event.EXIT); break;
+		case TOKon_scope_failure: b.setEvent(descent.core.dom.ScopeStatement.Event.FAILURE); break;
+		case TOKon_scope_success: b.setEvent(descent.core.dom.ScopeStatement.Event.SUCCESS); break;
 		}
 		if (a.statement != null) {
 			descent.core.dom.Statement convertedStatement = convert(a.statement);
@@ -2172,7 +2179,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
-		convertStatements(b.statements(), ((CompoundStatement) a.sourceStatement).statements);
+		convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.sourceStatement).sourceStatement).statements);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2533,8 +2540,11 @@ public class ASTConverter {
 		if (x.sourceExp != null) {
 			b.expressions().add(convert(x.sourceExp));
 		}
-		if (x.sourceStatement != null && ((CompoundStatement) x.sourceStatement).statements.size() > 0) {
-			convertStatements(b.statements(), ((CompoundStatement) x.sourceStatement).statements);
+		
+		
+		
+		if (x.sourceStatement != null && ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).statements.size() > 0) {
+			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).statements);
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

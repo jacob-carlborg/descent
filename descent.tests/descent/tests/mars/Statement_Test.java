@@ -263,6 +263,9 @@ public class Statement_Test extends Parser_Test {
 		
 		assertEquals(ASTNode.FOR_STATEMENT, stm.getNodeType());
 		assertPosition(stm, 1, s.length() - 1);
+		
+		Block block = (Block) stm.getBody();
+		assertPosition(block, s.length() - 3, 3);
 	}
 	
 	public void testForEmpty() {
@@ -896,6 +899,24 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(1, cas.statements().size());
 		BreakStatement b = (BreakStatement) cas.statements().get(0);
 		assertNotNull(b);
+	}
+	
+	public void testScopeStatement1() throws Exception {
+		String s = " void foo() { { } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		Block block = (Block) func.getBody().statements().get(0);
+		assertPosition(block, 14, 3);
+	}
+	
+	public void testScopeStatement2() throws Exception {
+		String s = " void foo() { while(true) { } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		WhileStatement w = (WhileStatement) func.getBody().statements().get(0);
+		assertPosition(w, 14, 15);
+		Block b = (Block) w.getBody();
+		assertPosition(b, 26, 3);
 	}
 
 }

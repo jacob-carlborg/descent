@@ -204,7 +204,7 @@ public class IftypeExp extends Expression {
 			//printf("targ  = %s\n", targ.toChars());
 			//printf("tspec = %s\n", tspec.toChars());
 			if (tok == TOK.TOKcolon) {
-				if (null != targ.implicitConvTo(tspec, context))
+				if (targ.implicitConvTo(tspec, context) != MATCH.MATCHnomatch)
 					return yes(tded, sc, context); // goto Lyes;
 				else
 					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
