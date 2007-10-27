@@ -2273,7 +2273,7 @@
             markerSeverity="1"
             markerType="descent.core.problem"
             name="descent.ui.warning"
-            super="org.eclipse.ui.workbench.texteditor.error"/>
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
       <type
             markerSeverity="0"
             markerType="descent.core.problem"

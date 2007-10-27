@@ -1183,7 +1183,7 @@ OutResultIsAlreadyDefined
 MissingInitializerForConstField
 	formatString=Missing initializer for const field %1$s
 	numArgs=1
-SomethingNotFound
+ImportNotFound
 	formatString=%1$s not found
 	numArgs=1
 SymbolMustBeAnArrayOfPointerType

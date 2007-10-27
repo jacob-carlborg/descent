@@ -87,7 +87,7 @@ public class LabelStatement extends Statement {
 
 		ls = fd.searchLabel(ident);
 		if (ls.statement != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.LabelIsAlreadyDefined, this, new String[] { ls.toChars(context) }));
 		} else {
 			ls.statement = this;
@@ -125,6 +125,16 @@ public class LabelStatement extends Statement {
 	@Override
 	public boolean usesEH() {
 		return statement != null ? statement.usesEH() : false;
+	}
+	
+	@Override
+	public int getErrorStart() {
+		return ident.start;
+	}
+	
+	@Override
+	public int getErrorLength() {
+		return ident.length;
 	}
 
 }

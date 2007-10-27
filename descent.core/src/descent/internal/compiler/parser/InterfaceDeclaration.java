@@ -183,7 +183,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-								IProblem.InterfaceInheritsFromDuplicateInterface, b2.base, new String[] { toChars(context), b2.base.toChars(context) }));
+								IProblem.InterfaceInheritsFromDuplicateInterface, b2, new String[] { toChars(context), b2.base.toChars(context) }));
 					}
 				}
 

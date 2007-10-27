@@ -909,7 +909,7 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OutResultIsAlreadyDefined, arguments[0]);
 		case MissingInitializerForConstField:
 			return String.format(ProblemMessages.MissingInitializerForConstField, arguments[0]);
-		case SomethingNotFound:
+		case ImportNotFound:
 			return String.format(ProblemMessages.SomethingNotFound, arguments[0]);
 		case SymbolMustBeAnArrayOfPointerType:
 			return String.format(ProblemMessages.SymbolMustBeAnArrayOfPointerType, arguments[0], arguments[1]);

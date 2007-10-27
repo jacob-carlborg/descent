@@ -92,7 +92,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			throw new IllegalStateException("assert(0);");
 		}
 		if (null == sc.insert(s)) {
-			context.acceptProblem(Problem.newSyntaxError(IProblem.DeclarationIsAlreadyDefined, 0, s.start, s.length, new String[] { tp.ident.toChars(context) } ));
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DeclarationIsAlreadyDefined, s, new String[] { tp.ident.toChars(context) } ));
 		}
 		s.semantic(sc, context);
 	}

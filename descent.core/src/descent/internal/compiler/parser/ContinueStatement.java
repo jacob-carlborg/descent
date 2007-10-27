@@ -103,7 +103,7 @@ public class ContinueStatement extends Statement {
 					return this;
 				}
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, this, new String[] { ident.toChars() }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, ident, new String[] { ident.toChars() }));
 		} else if (null == sc.scontinue) {
 			if (sc.fes != null) {
 				Statement s;

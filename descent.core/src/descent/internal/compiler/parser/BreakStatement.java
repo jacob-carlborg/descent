@@ -94,7 +94,7 @@ public class BreakStatement extends Statement {
 					return this;
 				}
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, this, new String[] { ident.toChars() }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, ident, new String[] { ident.toChars() }));
 		} else if (sc.sbreak == null) {
 			if (sc.fes != null) {
 				Statement s;

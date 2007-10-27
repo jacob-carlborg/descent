@@ -603,7 +603,7 @@ public interface IProblem {
 	int CannotUseTemplateToAddVirtualFunctionToClass = 393;
 	int OutResultIsAlreadyDefined = 394;
 	int MissingInitializerForConstField = 395;
-	int SomethingNotFound = 396;
+	int ImportNotFound = 396;
 	int SymbolMustBeAnArrayOfPointerType = 397;
 	int RvalueOfInExpressionMustBeAnAssociativeArray = 398;
 	int InterfaceInheritsFromDuplicateInterface = 399;

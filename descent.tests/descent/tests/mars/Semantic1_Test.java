@@ -1474,6 +1474,17 @@ public class Semantic1_Test extends Parser_Test {
 				);
 	}
 	
+	public void testReturnInScopeExit() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	scope(exit) {\r\n" + 
+				"		return 1;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"return 1;", IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies
+				);
+	}
+	
 	public void testCompareNotDefinedForComplexOperands() {
 		assertSemanticProblems(
 				"int foo() {\r\n" + 
@@ -1561,6 +1572,167 @@ public class Semantic1_Test extends Parser_Test {
 				"	}\r\n" + 
 				"}", 
 				"a", IProblem.ForeachTargetIsNotAnArrayOf, 50
+				);
+	}
+	
+	public void testNoAllocatorForSymbol() {
+		assertSemanticProblems(
+				"class Foo {\r\n" + 
+				"}\r\n" + 
+				"void foo() {\r\n" + 
+				"	Foo f = new(1) Foo();\r\n" + 
+				"}", 
+				"new(1) Foo()", IProblem.NoAllocatorForSymbol
+				);
+	}
+	
+	public void testCannotSubtractPointerFromSymbol() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	int x = 2;\r\n" + 
+				"	int* y;\r\n" + 
+				"	x = x - y;\r\n" + 
+				"}", 
+				"x - y", IProblem.CannotSubtractPointerFromSymbol
+				);
+	}
+
+	public void testLabelIsAlreadyDefined() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	x:\r\n" + 
+				"		int y;\r\n" + 
+				"	x:\r\n" + 
+				"		int z;\r\n" + 
+				"}", 
+				"x", IProblem.LabelIsAlreadyDefined, 20
+				);
+	}
+	
+	public void testInterfaceInheritsFromDuplicateInterface() {
+		assertSemanticProblems(
+				"interface A {\r\n" + 
+				"}\r\n" + 
+				"interface B : A,                                 A {\r\n" + 
+				"}", 
+				"A", IProblem.InterfaceInheritsFromDuplicateInterface, 20
+				);
+	}
+	
+	public void testRvalueOfInExpressionMustBeAnAssociativeArray() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	int x, y;\r\n" + 
+				"	if (x in                   y) {		\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"y", IProblem.RvalueOfInExpressionMustBeAnAssociativeArray, 40
+				);
+	}
+	
+	public void testImportCannotBeResolved() {
+		assertSemanticProblems(
+				"import x;", 
+				"x", IProblem.ImportCannotBeResolved
+				);
+	}
+	
+	public void testImportCannotBeResolved2() {
+		assertSemanticProblems(
+				"import a.b.c;", 
+				"a.b.c", IProblem.ImportCannotBeResolved
+				);
+	}
+	
+	public void testMissingInitializerForConstField() {
+		assertSemanticProblems(
+				"class X {\r\n" + 
+				"	const int x;\r\n" + 
+				"	this() {\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"x", IProblem.MissingInitializerForConstField
+				);
+	}
+	
+	public void testDeclarationIsAlreadyDefined() {
+		assertSemanticProblems(
+				"void foo(int x) {\r\n" + 
+				"	int                         x;\r\n" + 
+				"}", 
+				"x", IProblem.DeclarationIsAlreadyDefined, 40
+				);
+	}
+	
+	public void testShadowingDeclarationIsDeprecated() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	int x;\r\n" + 
+				"	{\r\n" + 
+				"		int                         x;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"x", IProblem.ShadowingDeclarationIsDeprecated, 50
+				);
+	}
+	
+	public void testDeleteAAKeyDeprecated() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	int[char] x;\r\n" + 
+				"	delete x[\'a\'];\r\n" + 
+				"}", 
+				"delete x[\'a\']", IProblem.DeleteAAKeyDeprecated
+				);
+	}
+	
+	public void testSymbolIsNotOfIntegralType() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	float f;\r\n" + 
+				"	if (f &                     f) {\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"f", IProblem.SymbolIsNotOfIntegralType, 30,
+				"f", IProblem.SymbolIsNotOfIntegralType, 50
+				);
+	}
+	
+	public void testEnclosingLabelForContinueNotFound() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	while(true) {\r\n" + 
+				"		continue x;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"x", IProblem.EnclosingLabelForContinueNotFound
+				);
+	}
+	
+	public void testEnclosingLabelForBreakNotFound() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	while(true) {\r\n" + 
+				"		break x;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"x", IProblem.EnclosingLabelForBreakNotFound
+				);
+	}
+	
+	public void testCaseNotFound() {
+		assertSemanticProblems(
+				"void foo() {\r\n" + 
+				"	switch(true) {\r\n" + 
+				"	case 1:\r\n" + 
+				"		goto case 2;\r\n" + 
+				"	default:\r\n" + 
+				"		break;\r\n" + 
+				"	}\r\n" + 
+				"}", 
+				"2", IProblem.CaseNotFound
 				);
 	}
 	

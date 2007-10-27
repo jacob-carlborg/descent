@@ -202,7 +202,7 @@ public class Import extends Dsymbol {
 
 				if (null == mod.search(loc, names.get(i), 0, context)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SomethingNotFound, this, new String[] { (names.get(i)).toChars() }));
+							IProblem.ImportNotFound, this, new String[] { (names.get(i)).toChars() }));
 				}
 
 				s.semantic(sc, context);
