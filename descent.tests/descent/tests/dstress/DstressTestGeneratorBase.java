@@ -1471,9 +1471,42 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("wchar_11_G.d");
 		failures.add("wchar_11_H.d");
 		
-		// Although it's not a failure, Descent dies because of
+		// These ones also fail on DMD 1.020, whether because they require
+		// specific command-line arguments (the version and debug ones, allow
+		// deprectated, etc.), or just because they fail.
+		failures.add("debug_12_A.d");
+		failures.add("struct_30_C.d");
+		failures.add("struct_30_D.d");
+		failures.add("version_39_A.d");
+		failures.add("associative_array_23_B.d");
+		failures.add("auto_16_B.d");
+		failures.add("auto_16_D.d");
+		failures.add("command_line_debug_01.d");
+		failures.add("command_line_debug_02.d");
+		failures.add("command_line_debug_03.d");
+		failures.add("command_line_debug_04.d");
+		failures.add("command_line_debug_08.d");
+		failures.add("command_line_version_01.d");
+		failures.add("command_line_version_02.d");
+		failures.add("command_line_version_03.d");
+		failures.add("deprecated_21_A.d");
+		failures.add("deprecated_21_B.d");
+		failures.add("double_30_A.d");
+		failures.add("deprecated_13.d");
+		failures.add("final_13_A.d");
+		failures.add("struct_initialization_11_C.d");
+		failures.add("struct_initialization_13_A.d");
+		failures.add("static_18.d");
+		failures.add("template_65_B.d");
+		failures.add("template_65_C.d");
+		failures.add("typeof_17_B.d");
+		failures.add("typeof_17_C.d");
+		
+		
+		// Although they are not failures, Descent dies because of
 		// a StackOverflowError
 		failures.add("if_05.d");
+		failures.add("large_id_01_C.d");
 	}
 
 }

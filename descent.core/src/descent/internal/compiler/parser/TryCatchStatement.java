@@ -4,6 +4,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
 // DMD 1.020
 public class TryCatchStatement extends Statement {
 
@@ -88,7 +90,7 @@ public class TryCatchStatement extends Statement {
 				String sj = cj.loc.toChars();
 
 				if (c.type.toBasetype(context).implicitConvTo(
-						cj.type.toBasetype(context), context) != null) {
+						cj.type.toBasetype(context), context) != MATCHnomatch) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CatchHidesCatch, cj, new String[] { sj, si }));
 				}
 			}
