@@ -94,6 +94,7 @@ public class CompletionEngine extends Engine
 	private static final char[][] integralTypesProperties = { Id.max, Id.min };
 	private static final char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
 	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
+	private static final char[][] specialTokens = { Id.FILE, Id.LINE, Id.DATE, Id.TIME, Id.TIMESTAMP, Id.VERSION, Id.VENDOR };
 	
 	IJavaProject javaProject;
 	CompletionParser parser;
@@ -233,11 +234,17 @@ public class CompletionEngine extends Engine
 			// Then the keywords
 			if (parser.getKeywordCompletions() != null && 
 					!requestor.isIgnored(CompletionProposal.KEYWORD)) {
+				
+				char[] prefix = findTextBeforeCursor();
+				this.startPosition = this.actualCompletionPosition - prefix.length;
+				this.endPosition = this.actualCompletionPosition;
+				
 				for(ICompletionOnKeyword node : parser.getKeywordCompletions()) {
-					this.startPosition = actualCompletionPosition - node.getToken().length;
-					this.endPosition = actualCompletionPosition;
-					findKeywords(node.getToken(), node.getPossibleKeywords(), node.canCompleteEmptyToken());
+					findKeywords(prefix, node.getPossibleKeywords(), node.canCompleteEmptyToken());
 				}
+				
+				// Also suggest the special tokens
+				findKeywords(prefix, specialTokens, true);
 			}
 			
 			// Then ddoc
