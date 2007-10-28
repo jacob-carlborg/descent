@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import descent.internal.ui.infoviews.Ddoc;
-import descent.internal.ui.infoviews.DdocMacros;
-import descent.internal.ui.infoviews.DdocParser;
-import descent.internal.ui.infoviews.DdocSection;
+import descent.core.ddoc.Ddoc;
+import descent.core.ddoc.DdocMacros;
+import descent.core.ddoc.DdocParser;
+import descent.core.ddoc.DdocSection;
 
 public class DdocParserTests extends TestCase {
 	

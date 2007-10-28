@@ -12,22 +12,18 @@
 package descent.internal.ui.text.java;
 
 
-import org.eclipse.swt.graphics.Image;
-
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.swt.graphics.Image;
 
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.Signature;
-import descent.core.formatter.DefaultCodeFormatterConstants;
-
-import descent.ui.text.java.JavaContentAssistInvocationContext;
-
 import descent.internal.ui.JavaPlugin;
+import descent.ui.text.java.JavaContentAssistInvocationContext;
 
 
 public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
@@ -187,7 +183,7 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	/*
 	 * @see descent.internal.ui.text.java.AbstractJavaCompletionProposal#isInJavadoc()
 	 */
-	protected final boolean isInJavadoc() {
+	protected boolean isInJavadoc() {
 		return fInvocationContext.getCoreContext().isInJavadoc();
 	}
 

@@ -1,4 +1,4 @@
-package descent.internal.ui.infoviews;
+package descent.core.ddoc;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import descent.ui.text.IJavaColorConstants;
-
+/**
+ * Utility class to do ddoc macro replacing.
+ */
 public class DdocMacros {
 	
 	private final static Map<String, String> defaultMacros;
@@ -43,9 +44,11 @@ public class DdocMacros {
 		map.put("WHITE", "<font color=white>$0</font>"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		map.put("D_CODE", "<span class=\"code\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$
-		map.put("D_COMMENT", "<span class=\"" + IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT + "\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		map.put("D_STRING", "<span class=\"" + IJavaColorConstants.JAVA_STRING + "\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		map.put("D_KEYWORD", "<span class=\"" + IJavaColorConstants.JAVA_KEYWORD + "\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		
+		// TODO ddoc macro provider
+		map.put("D_COMMENT", "<span class=\"java_single_line_comment\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		map.put("D_STRING", "<span class=\"java_string\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		map.put("D_KEYWORD", "<span class=\"java_keyword\">$0</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		map.put("D_PSYMBOL", "$(U $0)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("D_PARAM", "$(I $0)"); //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -58,10 +61,10 @@ public class DdocMacros {
 		map.put("DDOC_SUMMARY", "$0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_DESCRIPTION", "$0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_AUTHORS", "$(B Authors:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
-		map.put("DDOC_BUGS", "$(RED BUGSS:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
+		map.put("DDOC_BUGS", "$(RED BUGS:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_COPYRIGHT", "$(B Copyright:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_DATE", "$(B Date:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
-		map.put("DDOC_DEPRECATED", "$(RED BUGSS:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
+		map.put("DDOC_DEPRECATED", "$(RED Deprecated:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_EXAMPLES", "$(B Examples:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_HISTORY", "$(B History:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("DDOC_LICENSE", "$(B License:)$(BR) $0$(BR)$(BR)"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -91,10 +94,21 @@ public class DdocMacros {
 		defaultMacros = Collections.unmodifiableMap(map);
 	}
 	
+	/**
+	 * Returns a map of the default macros. The key is the macro name,
+	 * the value is the replacement. This map in unmodifiable.
+	 */
 	public static Map<String, String> getDefaultMacros() {
 		return defaultMacros;
 	}
 	
+	/**
+	 * Replaces the macros found in the given string with the given macros
+	 * map.
+	 * @param string the string to replace
+	 * @param macros the macros map
+	 * @return the replaced string
+	 */
 	public static String replaceMacros(String string, Map<String, String> macros) {
 		TreeSet<String> usedMacros = new TreeSet<String>();
 		return replaceMacros(string, new int[] { 0 }, macros, usedMacros, false /* not nested */);

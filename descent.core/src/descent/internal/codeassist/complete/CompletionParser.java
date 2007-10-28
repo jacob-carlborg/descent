@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
+
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
@@ -38,6 +40,12 @@ public class CompletionParser extends Parser {
 	private List<ICompletionOnKeyword> keywordCompletions;
 	private boolean includeExpectations = true;
 	
+	// Javadoc completion, and other ddocs found, in order to
+	// provide autocompletion for macros in other places
+	// (like in the module declaration)
+	private CompletionOnJavadocImpl javadocCompletion;
+	private List<char[]> ddocs;
+	
 	// Versions found in the source file: useful for suggesting a
 	// version identifier in a CompletionOnVersionCondition
 	public HashtableOfCharArrayAndObject versions;
@@ -51,23 +59,46 @@ public class CompletionParser extends Parser {
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
-		if (includeExpectations) {
+		if (includeExpectations && javadocCompletion == null) {
 			return keywordCompletions;
 		} else {
 			return Collections.EMPTY_LIST;
 		}
 	}
 	
-//	@Override
-//	public TOK nextToken() {
-//		TOK tok = super.nextToken();
-//		if ((tok == TOK.TOKdocblockcomment || 
-//				tok == TOK.TOKpluscomment &&
-//				token.ptr <= cursorLocation && cursorLocation <= token.sourceLen) {
-//			System.out.println("!");
-//		}
-//		return tok;
-//	}
+	public CompletionOnJavadocImpl getJavadocCompletion() {
+		if (javadocCompletion != null) {
+			javadocCompletion.otherDdocs = ddocs;
+		}
+		return javadocCompletion;
+	}
+	
+	@Override
+	protected void inComment() {
+		if (token.value == TOK.TOKdocblockcomment
+				|| token.value == TOK.TOKdocpluscomment) 
+		{
+			if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen) {
+				this.javadocCompletion = new CompletionOnJavadocImpl(token.ptr, token.sourceString);
+			} else {
+				if (ddocs == null) {
+					ddocs = new ArrayList<char[]>();
+				}
+				ddocs.add(token.sourceString);
+			}
+		}
+	}
+	
+	@Override
+	public TOK nextToken() {
+		TOK tok = super.nextToken();
+		if ((tok == TOK.TOKdocblockcomment || 
+				tok == TOK.TOKpluscomment) &&
+				token.ptr <= cursorLocation && cursorLocation <= token.sourceLen) {
+			System.out.println("!");
+		}
+		return tok;
+	}
 	
 	@Override
 	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module) {

@@ -17,6 +17,7 @@ public class JavaNoTypeCompletionProposalComputer extends JavaCompletionProposal
 		CompletionProposalCollector collector= super.createCollector(context);
 		collector.setIgnored(CompletionProposal.ANNOTATION_ATTRIBUTE_REF, false);
 		collector.setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, false);
+		collector.setIgnored(CompletionProposal.DDOC_MACRO, false);
 		collector.setIgnored(CompletionProposal.FIELD_REF, false);
 		collector.setIgnored(CompletionProposal.KEYWORD, false);
 		collector.setIgnored(CompletionProposal.LABEL_REF, false);

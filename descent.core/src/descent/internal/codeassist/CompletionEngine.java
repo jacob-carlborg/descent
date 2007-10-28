@@ -1,6 +1,7 @@
 package descent.internal.codeassist;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,11 @@ import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
+import descent.core.ddoc.Ddoc;
+import descent.core.ddoc.DdocMacros;
+import descent.core.ddoc.DdocParser;
+import descent.core.ddoc.DdocSection;
+import descent.core.ddoc.DdocSection.Parameter;
 import descent.core.dom.AST;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
@@ -19,6 +25,7 @@ import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnImport;
+import descent.internal.codeassist.complete.CompletionOnJavadocImpl;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionOnTypeDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnVersionCondition;
@@ -31,6 +38,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.CastExp;
+import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.Dsymbol;
@@ -85,6 +93,7 @@ public class CompletionEngine extends Engine
 	private static final char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
 	private static final char[][] integralTypesProperties = { Id.max, Id.min };
 	private static final char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
+	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
 	
 	IJavaProject javaProject;
 	CompletionParser parser;
@@ -177,11 +186,12 @@ public class CompletionEngine extends Engine
 			parser = new CompletionParser(AST.D2, source);
 			parser.filename = this.fileName;
 			parser.cursorLocation = completionPosition;
+			parser.nextToken();
 			
 			this.module = parser.parseModuleObj();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-			this.requestor.acceptContext(buildContext());
+			this.requestor.acceptContext(buildContext(parser));
 			
 			// First the assist node
 			if (assistNode != null) {
@@ -229,6 +239,12 @@ public class CompletionEngine extends Engine
 					findKeywords(node.getToken(), node.getPossibleKeywords(), node.canCompleteEmptyToken());
 				}
 			}
+			
+			// Then ddoc
+			if (parser.getJavadocCompletion() != null) {
+				CompletionOnJavadocImpl node = parser.getJavadocCompletion();
+				completeJavadoc(node);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -236,7 +252,7 @@ public class CompletionEngine extends Engine
 		}
 	}
 
-	private CompletionContext buildContext() {
+	private CompletionContext buildContext(CompletionParser parser) {
 		// TODO Descent completion context
 		CompletionContext context = new CompletionContext();
 		context.setOffset(this.offset);
@@ -779,6 +795,153 @@ public class CompletionEngine extends Engine
 				proposal.setCompletion(proposition);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}
+	}
+	
+	private void completeJavadoc(CompletionOnJavadocImpl node) {
+		// A very naïve solution for now...
+		char[] ddocSource = node.getSource();		
+		DdocParser parser = new DdocParser(ddocSource);
+		Ddoc ddoc = parser.parse();
+		
+		char[] prefix = findTextBeforeCursor();
+		this.startPosition = this.actualCompletionPosition - prefix.length;
+		this.endPosition = this.actualCompletionPosition;
+		
+		if (isInDdocSectionName(node.getStart(), prefix.length + 1)) {
+			suggestDdocSectionNames(ddoc, prefix);
+		}
+		suggestDdocMacroNames(ddoc, node.getOtherDdocs(), prefix);
+	}
+
+	private char[] findTextBeforeCursor() {
+		StringBuilder sb = new StringBuilder();
+		for(int i = actualCompletionPosition - 1; i >= 0 && 
+			isJavadocLetter(this.source[i]); i--) {
+			sb.insert(0, this.source[i]);
+		}
+		
+		char[] ret = new char[sb.length()];
+		sb.getChars(0, sb.length(), ret, 0);
+		return ret;
+	}
+	
+	private boolean isInDdocSectionName(int start, int backwards) {
+		// Check to see if we are in the beginning of the line
+		for(int i = actualCompletionPosition - backwards; i >= 0; i--) {
+			char c = this.source[i];
+			switch(c) {
+			case ' ':
+			case '\t':
+			case '\r':
+				continue;
+			case '\n':
+				return true;
+			case '*':
+				boolean foundAnotherSpace = false;
+				for(int j = i - 1; j >= 0; j--) {
+					char d = this.source[j];
+					switch(d) {
+					case ' ':
+					case '\t':
+					case '\r':
+						foundAnotherSpace = true;
+						continue;
+					case '\n':
+						return true;
+					case '*':
+						if (foundAnotherSpace) {
+							return false;
+						} else {
+							continue;
+						}
+					case '/':
+						return j == start;
+					default:
+						return false;
+					}
+				}
+				break;
+			default:
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isJavadocLetter(char c) {
+		return Chars.isalpha(c) || c == '_' || c == '$';
+	}
+
+	private void suggestDdocSectionNames(Ddoc ddoc, char[] prefix) {
+		HashtableOfCharArrayAndObject excludedNames = new HashtableOfCharArrayAndObject();
+		for (int i = 0; i < ddoc.getSections().length; i++) {
+			DdocSection ddocSection = ddoc.getSections()[i];
+			if (ddocSection.getName() != null) {
+				excludedNames.put(ddocSection.getName().toCharArray(), this);
+			}
+		}
+		
+		// Suggest sections that doesn't already exist
+		for(char[] name : ddocSections) {
+			if (!excludedNames.containsKey(name) && 
+					CharOperation.prefixEquals(prefix, name, false)) {
+				char[] nameColon = new char[name.length + 1];
+				System.arraycopy(name, 0, nameColon, 0, name.length);
+				nameColon[nameColon.length - 1] = ':';
+				
+				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
+				proposal.setName(nameColon);
+				proposal.setCompletion(nameColon);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}		
+	}
+	
+	private void suggestDdocMacroNames(Ddoc ddoc, List<char[]> otherDdocs, char[] prefix) {
+		Map<String, String> macros = new HashMap<String, String>(DdocMacros.getDefaultMacros());
+		mergeMacros(macros, ddoc);
+		
+		if (otherDdocs != null) {
+			for(char[] otherDdoc : otherDdocs) {
+				DdocParser parser = new DdocParser(otherDdoc);
+				Ddoc other = parser.parse();
+				mergeMacros(macros, other);
+			}
+		}
+		
+		for(Map.Entry<String, String> entry : macros.entrySet()) {
+			String macroName = entry.getKey();
+			String macroValue = entry.getValue();
+			
+			char[] name = new char[macroName.length() + 1];
+			System.arraycopy(macroName.toCharArray(), 0, name, 1, macroName.length());
+			name[0] = '$';
+			if (CharOperation.prefixEquals(prefix, name, false)) {
+				// TODO document this somewhere: the "name" is the
+				// macro replacement, while the completion is the
+				// name of the macro
+				CompletionProposal proposal = this.createProposal(CompletionProposal.DDOC_MACRO, this.actualCompletionPosition);
+				proposal.setName(macroValue.toCharArray());
+				proposal.setCompletion(name);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+		}
+	}
+
+	private void mergeMacros(Map<String, String> macros, Ddoc ddoc) {
+		DdocSection macrosSection = ddoc.getMacrosSection();
+		if (macrosSection != null) {
+			if (macrosSection != null) {
+				Parameter[] params = macrosSection.getParameters();
+				for(Parameter param : params)  {
+					if (param.getName() != null) {
+						macros.put(param.getName(), param.getText());
+					}
+				}
 			}
 		}
 	}

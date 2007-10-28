@@ -206,7 +206,7 @@ public class Parser extends Lexer {
 		this.taskTags = taskTags;
 		this.taskPriorities = taskPriorities;
 		this.isTaskCaseSensitive = isTaskCaseSensitive;
-		nextToken();
+		//nextToken();
 	}
 	
 	public Module parseModuleObj() {
@@ -263,6 +263,8 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	protected Dsymbols parseModule() {
+		if (token.value == null) nextToken();
+		
 	    Dsymbols decldefs = new Dsymbols();
 	    
 	    // Special treatment if the file starts with Ddoc
@@ -350,6 +352,8 @@ public class Parser extends Lexer {
 
 	@SuppressWarnings("unchecked")
 	public Dsymbols parseDeclDefs(boolean once) {
+		if (token.value == null) nextToken();
+		
 		Dsymbol s = null;
 		Dsymbols decldefs;
 		Dsymbols a = new Dsymbols();
@@ -3242,6 +3246,8 @@ public class Parser extends Lexer {
 	}
 	
 	public Initializer parseInitializer() {
+		if (token.value == null) nextToken();
+		
 		StructInitializer is;
 		ArrayInitializer ia;
 		ExpInitializer ie;
@@ -3418,6 +3424,8 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked") 
 	public Statement parseStatement(int flags) {
+		if (token.value == null) nextToken();
+		
 		Statement s = null;
 		Token t;
 		Statement ifbody;
@@ -6567,6 +6575,8 @@ public class Parser extends Lexer {
 	}
 	
 	public Expression parseExpression() {
+		if (token.value == null) nextToken();
+		
 		Expression e;
 		Expression e2;
 
@@ -6879,6 +6889,8 @@ public class Parser extends Lexer {
 			  tok == TOKblockcomment || tok == TOKdocblockcomment ||
 			  tok == TOKpluscomment || tok == TOKdocpluscomment) {
 			
+			inComment();
+			
 			Comment comment;
 			switch(tok) {
 			case TOKlinecomment:
@@ -6962,7 +6974,7 @@ public class Parser extends Lexer {
 		
 		return tok;
 	}
-	
+
 	@Override
 	protected void newline(boolean inComment) {
 		super.newline(inComment);
@@ -7047,6 +7059,13 @@ public class Parser extends Lexer {
 	 */
 	protected void expect(char[][] tok) {
 		
+	}
+	
+	/**
+	 * The current token is a comment.
+	 *
+	 */
+	protected void inComment() {
 	}
 
 	

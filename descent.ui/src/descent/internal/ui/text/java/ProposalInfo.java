@@ -28,6 +28,7 @@ public class ProposalInfo {
 
 	private boolean fJavadocResolved= false;
 	private String fJavadoc= null;
+	private boolean fNeedsHtmlRendering = true;
 
 	protected IJavaElement fElement;
 
@@ -57,6 +58,14 @@ public class ProposalInfo {
 		}
 		return fJavadoc;
 	}
+	
+	protected void setNeedsHtmlRendering(boolean needsHtmlRendering) {
+		fNeedsHtmlRendering = needsHtmlRendering;
+	}
+	
+	public boolean needsHtmlRendering() {
+		return fNeedsHtmlRendering;
+	}
 
 	/**
 	 * Gets the text for this proposal info formatted as HTML, or
@@ -65,7 +74,7 @@ public class ProposalInfo {
 	 * @param monitor a progress monitor
 	 * @return the additional info text
 	 */
-	private String computeInfo(IProgressMonitor monitor) {
+	protected String computeInfo(IProgressMonitor monitor) {
 		try {
 			final IJavaElement javaElement= getJavaElement();
 			if (javaElement instanceof IMember) {

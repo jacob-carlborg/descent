@@ -34,12 +34,12 @@ import descent.core.JavaModelException;
 import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
+import descent.core.ddoc.Ddoc;
+import descent.core.ddoc.DdocMacros;
+import descent.core.ddoc.DdocParser;
+import descent.core.ddoc.DdocSection;
+import descent.core.ddoc.DdocSection.Parameter;
 import descent.core.formatter.CodeFormatter;
-import descent.internal.ui.infoviews.Ddoc;
-import descent.internal.ui.infoviews.DdocMacros;
-import descent.internal.ui.infoviews.DdocParser;
-import descent.internal.ui.infoviews.DdocSection;
-import descent.internal.ui.infoviews.DdocSection.Parameter;
 import descent.internal.ui.text.HTMLPrinter;
 import descent.ui.text.IJavaColorConstants;
 

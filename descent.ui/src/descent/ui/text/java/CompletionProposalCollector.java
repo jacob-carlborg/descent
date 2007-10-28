@@ -34,10 +34,11 @@ import descent.core.IJavaProject;
 import descent.core.IType;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
-import descent.internal.corext.util.TypeFilter;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import descent.internal.ui.text.java.AnonymousTypeProposalInfo;
+import descent.internal.ui.text.java.DdocMacroCompletionProposal;
+import descent.internal.ui.text.java.DdocMacroProposalInfo;
 import descent.internal.ui.text.java.FieldProposalInfo;
 import descent.internal.ui.text.java.GetterSetterCompletionProposal;
 import descent.internal.ui.text.java.JavaCompletionProposal;
@@ -409,6 +410,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 				return createJavadocSimpleProposal(proposal);
 			case CompletionProposal.VERSION_REF:
 				return createVersionProposal(proposal);
+			case CompletionProposal.DDOC_MACRO:
+				return createDdocMacroProposal(proposal);
 			/* TODO JDT UI javadoc
 			case CompletionProposal.JAVADOC_INLINE_TAG:
 				return createJavadocInlineTagProposal(proposal);
@@ -763,6 +766,12 @@ public class CompletionProposalCollector extends CompletionRequestor {
 		int relevance= computeRelevance(proposal);
 
 		return new JavaCompletionProposal(completion, start, length, image, label, relevance);
+	}
+	
+	private IJavaCompletionProposal createDdocMacroProposal(CompletionProposal proposal) {
+		LazyJavaCompletionProposal jp = new DdocMacroCompletionProposal(proposal, getInvocationContext());
+		jp.setProposalInfo(new DdocMacroProposalInfo(new String(proposal.getName())));
+		return jp;
 	}
 
 	private IJavaCompletionProposal createTypeProposal(CompletionProposal typeProposal) {

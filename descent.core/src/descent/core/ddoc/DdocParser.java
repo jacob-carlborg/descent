@@ -1,4 +1,4 @@
-package descent.internal.ui.infoviews;
+package descent.core.ddoc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.JavaConventions;
-import descent.internal.ui.infoviews.DdocSection.Parameter;
+import descent.core.ddoc.DdocSection.Parameter;
 
+/**
+ * Parser of ddoc documentation comments.
+ */
 public class DdocParser {
 	
 	private String text;
@@ -28,10 +31,26 @@ public class DdocParser {
 	private Ddoc ddoc;
 	private List<Parameter> parameters;
 	
+	/**
+	 * Creates a parser for the given text.
+	 * @param text the text to parse
+	 */
 	public DdocParser(String text) {
 		this.text = text;
 	}
 	
+	/**
+	 * Creates a parser for the given text.
+	 * @param text the text to parse
+	 */
+	public DdocParser(char[] text) {
+		this.text = new String(text);
+	}
+	
+	/**
+	 * Parses the text and returns the Ddoc information.
+	 * @return the ddoc information
+	 */
 	public Ddoc parse() {
 		try {
 			return internalParse();

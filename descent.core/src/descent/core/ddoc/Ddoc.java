@@ -1,8 +1,11 @@
-package descent.internal.ui.infoviews;
+package descent.core.ddoc;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a single ddoc comment.
+ */
 public class Ddoc {
 	
 	private List<DdocSection> sections;
@@ -13,6 +16,10 @@ public class Ddoc {
 		this.sections = new ArrayList<DdocSection>();
 	}
 	
+	/**
+	 * Adds a new section at the end of this ddoc.
+	 * @param section the section to add
+	 */
 	public void addSection(DdocSection section) {
 		this.sections.add(section);
 		
@@ -23,18 +30,35 @@ public class Ddoc {
 		}
 	}
 	
+	/**
+	 * Returns the sections of this ddoc.
+	 * @return the sections
+	 */
 	public DdocSection[] getSections() {
 		return sections.toArray(new DdocSection[sections.size()]);
 	}
 	
+	/**
+	 * Returns the "Params" section, if any
+	 * @return the "Params" section, if any
+	 */
 	public DdocSection getParamsSection() {
 		return paramsSection;
 	}
 	
+	/**
+	 * Returns the "Macros" section, if any
+	 * @return the "Macros" section, if any
+	 */
 	public DdocSection getMacrosSection() {
 		return macrosSection;
 	}
 	
+	/**
+	 * Determines if this ddoc is made of the word "ditto" only.
+	 * @return <code>true</code> if this ddoc is made of the word "ditto" only,
+	 * <code>false</code> otherwise
+	 */
 	public boolean isDitto() {
 		if (sections.size() == 1) {
 			DdocSection section = sections.get(0);
@@ -44,6 +68,12 @@ public class Ddoc {
 		return false; 
 	}
 
+	/**
+	 * Merges this ddoc with another one. Normal and code sections
+	 * are added at the end, while the params and macros sections
+	 * are merged.
+	 * @param other the other ddoc to merge
+	 */
 	public void merge(Ddoc other) {
 		for(DdocSection otherSection : other.getSections()) {
 			switch(otherSection.getKind()) {
@@ -69,6 +99,9 @@ public class Ddoc {
 		}
 	}
 
+	/**
+	 * Merges the other ddoc's macros with this ddoc.
+	 */
 	public void mergeMacros(Ddoc otherDdoc) {
 		DdocSection otherMacros = otherDdoc.getMacrosSection();
 		if (otherMacros == null) return;
@@ -78,6 +111,16 @@ public class Ddoc {
 		} else {
 			macrosSection.addParameters(otherMacros.getParameters());
 		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for(DdocSection section : sections) {
+			sb.append(section.toString());
+			sb.append("\n\n");
+		}
+		return sb.toString();
 	}
 
 }

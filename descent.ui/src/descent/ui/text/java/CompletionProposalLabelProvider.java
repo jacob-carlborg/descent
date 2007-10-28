@@ -452,6 +452,8 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.KEYWORD:
 			case CompletionProposal.LABEL_REF:
 				return createSimpleLabel(proposal);
+			case CompletionProposal.DDOC_MACRO:
+				return createSimpleLabel(proposal);
 			default:
 				Assert.isTrue(false);
 				return null;
@@ -514,6 +516,8 @@ public class CompletionProposalLabelProvider {
 				break;
 			case CompletionProposal.VERSION_REF:
 				descriptor= JavaPluginImages.DESC_OBJS_VERSION_DECLARATION;
+			case CompletionProposal.DDOC_MACRO:
+				descriptor= JavaPluginImages.DESC_OBJS_DDOC_MACRO;
 				break;
 			default:
 				descriptor= null;

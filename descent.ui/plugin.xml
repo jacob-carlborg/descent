@@ -2998,6 +2998,16 @@
 			<partition type="__java_string"/>
 		</javaCompletionProposalComputer>
 	</extension>
+	<!-- ddoc completions -->
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="JavadocCompletionProposalComputer">
+		<javaCompletionProposalComputer 
+			class="descent.internal.ui.text.javadoc.JavadocCompletionProposalComputer"
+			categoryId="descent.ui.javaNoTypeProposalCategory">
+			<partition type="__java_javadoc"/>
+		</javaCompletionProposalComputer>
+	</extension>
    <!-- template proposals -->
 	<extension
 		point="descent.ui.javaCompletionProposalComputer"

@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: descent.core,
  descent.core.compiler,
+ descent.core.ddoc,
  descent.core.dom,
  descent.core.dom.rewrite,
  descent.core.formatter,

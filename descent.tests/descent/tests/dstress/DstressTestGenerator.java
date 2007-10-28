@@ -178,7 +178,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("\r\n");
 		sb.append("}\r\n");
 		
-		FileWriter fw = new FileWriter("C:/Users/xycos/workspace/descent.tests/descent/tests/dstress/DstressNoCompile_Test.java");
+		FileWriter fw = new FileWriter("descent/tests/dstress/DstressNoCompile_Test.java");
 		fw.write(sb.toString());
 		fw.close();
 	}

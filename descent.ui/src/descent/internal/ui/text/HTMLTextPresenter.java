@@ -13,6 +13,7 @@ package descent.internal.ui.text;
 
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
 
@@ -58,7 +59,7 @@ public class HTMLTextPresenter implements DefaultInformationControl.IInformation
 		this(true);
 	}
 
-	protected HTML2TextReader createReader(String hoverInfo, TextPresentation presentation) {
+	protected Reader createReader(String hoverInfo, TextPresentation presentation) {
 		return new HTML2TextReader(new StringReader(hoverInfo), presentation);
 	}
 

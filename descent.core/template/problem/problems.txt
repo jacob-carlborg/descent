@@ -614,7 +614,7 @@ MemberIsNotAccessible
 	formatString=Member %1$s is not accessible
 	numArgs=1
 SymbolIsNotAccessible
-	formatString=%1$s %2$s.%3$s is not accessible from %$4s
+	formatString=%1$s %2$s.%3$s is not accessible from %4$s
 	numArgs=4
 ThisForSymbolNeedsToBeType
 	formatString=this for %1$s needs to be type %2$s not type %3$s

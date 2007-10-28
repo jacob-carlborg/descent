@@ -637,6 +637,14 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @since 3.2
 	 */
 	public static final int VERSION_REF = 21;
+	
+	/**
+	 * Completion is a ddoc macro.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int DDOC_MACRO = 22;
 
 	/**
 	 * First valid completion kind.
@@ -650,7 +658,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = VERSION_REF;
+	protected static final int LAST_KIND = DDOC_MACRO;
 	
 	/**
 	 * Kind of completion request.
@@ -1781,6 +1789,9 @@ public final class CompletionProposal extends InternalCompletionProposal {
 				break;
 			case CompletionProposal.VERSION_REF:
 				buffer.append("VERSION_REF"); //$NON-NLS-1$
+				break;
+			case CompletionProposal.DDOC_MACRO:
+				buffer.append("DDOC_MACRO"); //$NON-NLS-1$
 				break;
 			default :
 				buffer.append("PROPOSAL"); //$NON-NLS-1$

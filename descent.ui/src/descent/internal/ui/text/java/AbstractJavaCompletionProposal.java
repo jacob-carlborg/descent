@@ -33,6 +33,7 @@ import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.DefaultPositionUpdater;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.DocumentEvent;
@@ -74,6 +75,8 @@ import descent.ui.text.java.IJavaCompletionProposal;
 
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.text.HTMLPrinter;
+import descent.internal.ui.text.HTMLTextPresenter;
+import descent.internal.ui.text.TextPresenter;
 import descent.internal.ui.text.java.hover.AbstractReusableInformationControlCreator;
 import descent.internal.ui.text.java.hover.BrowserInformationControl;
 
@@ -436,13 +439,18 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	 * @see ICompletionProposal#getAdditionalProposalInfo()
 	 */
 	public String getAdditionalProposalInfo() {
-		if (getProposalInfo() != null) {
-			String info= getProposalInfo().getInfo(null);
+		ProposalInfo proposalInfo = getProposalInfo();
+		if (proposalInfo != null) {
+			String info= proposalInfo.getInfo(null);
 			if (info != null && info.length() > 0) {
 				StringBuffer buffer= new StringBuffer();
-				HTMLPrinter.insertPageProlog(buffer, 0, getStyleSheetURL());
+				if (proposalInfo.needsHtmlRendering()) {
+					HTMLPrinter.insertPageProlog(buffer, 0, getStyleSheetURL());
+				}
 				buffer.append(info);
-				HTMLPrinter.addPageEpilog(buffer);
+				if (proposalInfo.needsHtmlRendering()) {
+					HTMLPrinter.addPageEpilog(buffer);
+				}
 				info= buffer.toString();
 			}
 			return info;
@@ -454,20 +462,7 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension5#getAdditionalProposalInfo(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
-		/* TODO JDT code complete return proposal info
-		if (getProposalInfo() != null) {
-			String info= getProposalInfo().getInfo(monitor);
-			if (info != null && info.length() > 0) {
-				StringBuffer buffer= new StringBuffer();
-				HTMLPrinter.insertPageProlog(buffer, 0, getStyleSheetURL());
-				buffer.append(info);
-				HTMLPrinter.addPageEpilog(buffer);
-				info= buffer.toString();
-			}
-			return info;
-		}
-		*/
-		return null;
+		return getAdditionalProposalInfo();
 	}
 	
 	/**
