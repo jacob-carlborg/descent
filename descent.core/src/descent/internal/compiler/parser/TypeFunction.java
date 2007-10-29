@@ -133,7 +133,7 @@ public class TypeFunction extends Type {
 						}
 					} else { // Create new tuple
 						Tuple t = new Tuple();
-						t.objects = new Objects(tuple_dim);
+						t.objects.setDim(tuple_dim);
 						for (int i = 0; i < tuple_dim; i++) {
 							Argument arg = Argument.getNth(this.parameters,
 									nfparams - 1 + i, context);

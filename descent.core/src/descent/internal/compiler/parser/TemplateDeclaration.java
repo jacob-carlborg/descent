@@ -123,12 +123,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 			MATCH m;
 
-			Objects[] dedargs_ = new Objects[] { null }; // Pass a
-															// one-element array
-															// to get reference
-															// semantics
-			m = MATCH.MATCHnomatch; /* td.deduceMatch(targsi, fargs, dedargs_); */
-			Objects dedargs = dedargs_[0];
+			Objects dedargs = new Objects();
+			m = td.deduceMatch(targsi, fargs, dedargs, context);
 
 			if (m == MATCH.MATCHnomatch) {
 				continue;
@@ -306,7 +302,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
                         throw GOTO_L1;
                     }
                     TypeIdentifier tid = (TypeIdentifier) fparam.type;
-                    if (!tp.ident.equals(tid.ident) || tid.idents.size() > 0)
+                    
+                    if (!tp.ident.equals(tid.ident) || (tid.idents != null && tid.idents.size() > 0))
                     {
                         throw GOTO_L1;
                     }

@@ -67,7 +67,6 @@ public class TemplateTupleParameter extends TemplateParameter {
 		} else {
 			ovar = new Tuple();
 			if (i < size(tiargs)) {
-				ovar.objects = new Objects();
 				ovar.objects.setDim(size(tiargs) - i);
 				for (int j = 0; j < size(ovar.objects); j++) {
 					ovar.objects.set(j, tiargs.get(i + j));

@@ -6,7 +6,12 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class Tuple extends ASTDmdNode {
 
 	public Objects objects;
-
+	
+	public Tuple()
+	{
+		objects = new Objects();
+	}
+	
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);

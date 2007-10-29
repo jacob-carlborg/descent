@@ -26,7 +26,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public WithScopeSymbol withsym;
 	public IdentifierExp name;
 	public ScopeDsymbol argsym; // argument symbol table
-	public Objects tdtypes; // Array of Types/Expressions corresponding
+	public Objects tdtypes = new Objects(); // Array of Types/Expressions corresponding
 	public int havetempdecl; // 1 if used second constructor
 	public Dsymbol isnested; // if referencing local symbols, this is the context
 	public boolean nest; // For recursion detection
@@ -132,9 +132,6 @@ public class TemplateInstance extends ScopeDsymbol {
 				td_ambig = null;
 				td_best = td;
 				m_best = m;
-				if (tdtypes == null) {
-					tdtypes = new Objects(dedtypes.size());
-				}
 				tdtypes.setDim(dedtypes.size());
 				tdtypes.memcpy(dedtypes);
 				continue;
