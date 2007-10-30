@@ -1787,11 +1787,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		buf.writestring("NAN");	// no -NAN bugs
 	    else
 	    {
-	    	/* TODO semantic
-			char buffer[32];
-			int n = sprintf(buffer, "%LA", value);
-			assert(n > 0 && n < sizeof(buffer));
-			for (int i = 0; i < n; i++)
+			char[] buffer = value.toString().toCharArray();
+			for (int i = 0; i < buffer.length; i++)
 			{   char c = buffer[i];
 	
 			    switch (c)
@@ -1813,7 +1810,6 @@ public abstract class ASTDmdNode extends ASTNode {
 				    break;
 			    }
 			}
-			*/
 	    }
 	}
 	

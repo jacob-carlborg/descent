@@ -214,61 +214,27 @@ public class IntegerExp extends Expression {
 			}
 			return MATCHconvert;
 
-			/* TODO semantic
-			 case Tfloat32:
-			 {
-			 volatile float f;
-			 if (type.isunsigned())
-			 {
-			 f = (float)value;
-			 if (f != value)
-			 goto Lno;
-			 }
-			 else
-			 {
-			 f = (float)(long long)value;
-			 if (f != (long long)value)
-			 goto Lno;
-			 }
-			 goto Lyes;
-			 }
-
-			 case Tfloat64:
-			 {
-			 volatile double f;
-			 if (type.isunsigned())
-			 {
-			 f = (double)value;
-			 if (f != value)
-			 goto Lno;
-			 }
-			 else
-			 {
-			 f = (double)(long long)value;
-			 if (f != (long long)value)
-			 goto Lno;
-			 }
-			 goto Lyes;
-			 }
-
-			 case Tfloat80:
-			 {
-			 volatile long double f;
-			 if (type.isunsigned())
-			 {
-			 f = (long double)value;
-			 if (f != value)
-			 goto Lno;
-			 }
-			 else
-			 {
-			 f = (long double)(long long)value;
-			 if (f != (long long)value)
-			 goto Lno;
-			 }
-			 goto Lyes;
-			 }
-			 */
+			
+		case Tfloat32:
+			float f;
+			f = value.floatValue();
+			if (!value.isExactly(f))
+				return MATCHnomatch;
+			return MATCHconvert;
+			 
+		 case Tfloat64:
+			 double d;
+			 d = value.floatValue();
+			 if (!value.isExactly(d))
+				 return MATCHnomatch;
+			return MATCHconvert;
+		
+		// TODO this isn't right, make sure th integer can fit in 80 bits.
+		// in practice, since there' no cent types yet, any 64-bit integer
+		// will fit in an 80-bit real
+		 case Tfloat80:
+			 return MATCHconvert;
+			 
 		}
 		return super.implicitConvTo(t, context);
 	}

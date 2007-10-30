@@ -549,6 +549,24 @@ public class integer_t extends Number {
 	
 	private static BigInteger toBigInteger(long value) {
 		return BigInteger.valueOf(value);
-	}	
+	}
+	
+	public boolean isExactly(float f)
+	{
+		if (bigIntegerValue != null) {
+			return bigIntegerValue.longValue() == f;
+		} else {
+			return longValue == f;
+		}
+	}
+	
+	public boolean isExactly(double d)
+	{
+		if (bigIntegerValue != null) {
+			return bigIntegerValue.longValue() == d;
+		} else {
+			return longValue == d;
+		}
+	}
 
 }

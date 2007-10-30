@@ -137,4 +137,11 @@ public class RealExp extends Expression {
 		return this;
 	}
 
+	@Override
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context)
+	{
+		 buf.writeByte('e');
+		 realToMangleBuffer(buf, value);
+	}
+
 }
