@@ -647,8 +647,8 @@ public class TemplateInstance extends ScopeDsymbol {
 		 * or semantic3() yet.
 		 */
 		boolean gotoLaftersemantic = false;
-		for (int j = 0; j < 0/* TODO Module.deferred.size() */; j++) {
-			Dsymbol sd = null;/* TODO (Dsymbol )Module.deferred.get(j); */
+		for (int j = 0; j < size(context.Module_deferred); j++) {
+			Dsymbol sd = (Dsymbol) context.Module_deferred.get(j);
 
 			if (sd.parent == this) {
 				gotoLaftersemantic = true;

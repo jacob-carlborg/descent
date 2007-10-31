@@ -147,8 +147,7 @@ public class TypeTuple extends Type {
 		 OutBuffer buf2 = new OutBuffer();
 		 Argument.argsToDecoBuffer(buf2, arguments, context);
 		 int len = buf2.data.length();
-		 // TODO semantic
-		 // buf.printf("%c%d%.*s", mangleChar[ty], len, len, (char *)buf2.extractData());
+		 buf.printf("" + ty.mangleChar + len + buf2.extractData());
 	}
 
 	public static TypeTuple newArguments(Arguments arguments) {

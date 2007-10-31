@@ -383,7 +383,7 @@ public class TypeSArray extends TypeArray {
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
-		/* TODO buf.writeByte(mangleChar[ty.ordinal(]); */
+		buf.writeByte(ty.mangleChar);
 		if (null != dim)
 			buf.printf(dim.toInteger(context) + "u");
 		if (null != next)
@@ -412,7 +412,7 @@ public class TypeSArray extends TypeArray {
 
 	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		/* TODO buf.writeByte(mangleChar[Tarray.ordinal()]); */
+		buf.writeByte(ty.mangleChar);
 		if (null != next)
 			next.toTypeInfoBuffer(buf, context);
 	}
