@@ -17,7 +17,6 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 
 import descent.core.JavaCore;
-import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.Block;
 import descent.core.dom.CompilationUnit;
@@ -83,26 +82,11 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		if (defaultCodeFormatterOptions != null) {
 			this.preferences.set(defaultCodeFormatterOptions.getMap());
 		}
-		this.apiLevel = getApiLevel(options);
+		this.apiLevel = descent.internal.core.util.Util.getApiLevel(options);
 	}
 
 	public DefaultCodeFormatter(Map options) {
 		this(null, options);
-	}
-	
-	private static int getApiLevel(Map options) {
-		String source = (String) options.get(JavaCore.COMPILER_SOURCE);
-		if (source == null || source.length() == 0) {
-			return AST.D2;
-		} else if (source.equals(JavaCore.VERSION_2_x)) {
-			return AST.D2;
-		} else if (source.equals(JavaCore.VERSION_1_x)) {
-			return AST.D1;
-		} else if (source.equals(JavaCore.VERSION_0_x)) {
-			return AST.D0;
-		} else {
-			return AST.D2;
-		}
 	}
 	
 	public String createIndentationString(final int indentationLevel) {

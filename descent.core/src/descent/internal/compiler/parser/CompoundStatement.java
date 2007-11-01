@@ -98,8 +98,7 @@ public class CompoundStatement extends Statement {
 			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
 				context
 					.acceptProblem(Problem.newSemanticTypeWarning(
-							IProblem.StatementIsNotReachable, 0, s.start,
-							s.length));
+							IProblem.StatementIsNotReachable, s));
 			}
 			falloff = s.fallOffEnd(context);
 		}

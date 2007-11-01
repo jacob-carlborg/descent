@@ -26,7 +26,6 @@ import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.compiler.parser.ast.NaiveASTFlattener;
 
 /**
@@ -112,28 +111,44 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private int startOfDeclaration(ASTDmdNode node) {
 		if (node == null) return 0;
 		if (attribDeclarationStack.isEmpty()) {
-			return node.start;
+			return startOfCommentIfAny(node);
 		} else {
 			Stack<AttribDeclaration> stack = attribDeclarationStack.peek();
 			if (stack.isEmpty()) {
-				return node.start;
+				return startOfCommentIfAny(node);
 			} else {
-				return startOf(stack.get(0));
+				return startOfCommentIfAny(stack.get(0));
+			}
+		}
+	}	
+
+	private int endOfDeclaration(ASTDmdNode node) {
+		if (node == null) return 0;
+		if (attribDeclarationStack.isEmpty()) {
+			return endOfCommentIfAny(node);
+		} else {
+			Stack<AttribDeclaration> stack = attribDeclarationStack.peek();
+			if (stack.isEmpty()) {
+				return endOfCommentIfAny(node);
+			} else {
+				return endOfCommentIfAny(stack.get(stack.size() - 1));
 			}
 		}
 	}
 	
-	private int endOfDeclaration(ASTDmdNode node) {
-		if (node == null) return 0;
-		if (attribDeclarationStack.isEmpty()) {
-			return startOf(node) + node.length - 1;
+	private int startOfCommentIfAny(ASTDmdNode node) {
+		if (node.preComments == null || node.preComments.isEmpty()) {
+			return startOf(node);
 		} else {
-			Stack<AttribDeclaration> stack = attribDeclarationStack.peek();
-			if (stack.isEmpty()) {
-				return startOf(node) + node.length - 1;
-			} else {
-				return endOf(stack.get(stack.size() - 1));
-			}
+			return startOf(node.preComments.get(0));
+		}
+	}
+
+	private int endOfCommentIfAny(ASTDmdNode node) {
+		if (node.postComment == null) {
+			return endOf(node);
+		} else {
+			return endOf(node.postComment);
 		}
 	}
 	
@@ -308,7 +323,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		flattener.reset();
 		flattener.visitModuleDeclarationName(node);
 		
-		requestor.acceptPackage(startOf(node), endOf(node), flattener.getResult().toCharArray());
+		requestor.acceptPackage(startOfDeclaration(node), endOfDeclaration(node), flattener.getResult().toCharArray());
 		pushLevelInAttribDeclarationStack();
 		return false;
 	}
@@ -758,13 +773,17 @@ public class SourceElementParser extends AstVisitorAdapter {
 			int start, end;
 			if (node.first) {
 				start = node.firstStart;
+				int otherStart = startOfDeclaration(node);
+				if (otherStart < start) {
+					start = otherStart;
+				}
 			} else {
-				start = startOf(node);
+				start = startOfDeclaration(node);
 			}
 			if (node.next == null) {
 				end = node.start + node.lastLength - 1;
 			} else {
-				end = endOf(node);
+				end = endOfDeclaration(node);
 			}
 			
 			int flags = node.isstatic ? Flags.AccStatic : 0;
@@ -847,8 +866,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public void endVisit(TemplateDeclaration node) {
-		if (node.postDdoc != null) {
-			requestor.exitType(endOfDeclaration(node.postDdoc));
+		if (node.postComment != null) {
+			requestor.exitType(endOfDeclaration(node.postComment));
 		} else {
 			requestor.exitType(endOfDeclaration(node));
 		}

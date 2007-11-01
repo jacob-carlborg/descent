@@ -1457,7 +1457,8 @@ public class Semantic1_Test extends Parser_Test {
 				"		return 1;\r\n" + 
 				"	}\r\n" + 
 				"}", 
-				"return 1", IProblem.CannotReturnExpressionFromConstructor
+				"return 1;", IProblem.CannotReturnExpressionFromConstructor,
+				"return 1;", IProblem.StatementIsNotReachable
 				);
 	}
 	

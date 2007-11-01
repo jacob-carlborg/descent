@@ -17,7 +17,6 @@ import descent.core.ddoc.DdocMacros;
 import descent.core.ddoc.DdocParser;
 import descent.core.ddoc.DdocSection;
 import descent.core.ddoc.DdocSection.Parameter;
-import descent.core.dom.AST;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
@@ -78,6 +77,7 @@ import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
 import descent.internal.core.SearchableEnvironment;
+import descent.internal.core.util.Util;
 
 /**
  * This class is the entry point for source completions.
@@ -184,7 +184,7 @@ public class CompletionEngine extends Engine
 			}
 			CharOperation.replace(sourceUnitFqn, '/', '.');
 			
-			parser = new CompletionParser(AST.D2, source);
+			parser = new CompletionParser(Util.getApiLevel(this.compilerOptions.getMap()), source);
 			parser.filename = this.fileName;
 			parser.cursorLocation = completionPosition;
 			parser.nextToken();
@@ -243,8 +243,11 @@ public class CompletionEngine extends Engine
 					findKeywords(prefix, node.getPossibleKeywords(), node.canCompleteEmptyToken());
 				}
 				
-				// Also suggest the special tokens
-				findKeywords(prefix, specialTokens, true);
+				// Also suggest the special tokens, if at least
+				// one character was types (otherwise, it's annoying)
+				if (prefix.length > 0) {
+					findKeywords(prefix, specialTokens, true);
+				}
 			}
 			
 			// Then ddoc

@@ -22,6 +22,7 @@ import java.io.UTFDataFormatException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.filesystem.EFS;
@@ -49,6 +50,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.PrimitiveType;
 import descent.core.dom.QualifiedType;
@@ -2008,6 +2010,30 @@ public class Util {
 		int index = filename.lastIndexOf('.');
 		if (index == -1) return filename;		
 		return filename.substring(0, index);
+	}
+	
+	public static int getApiLevel(Map options) {
+		String source = (String) options.get(JavaCore.COMPILER_SOURCE);
+		return getApiLevel(source);
+	}
+	
+	public static int getApiLevel(IJavaProject project) {
+		String source = project.getOption(JavaCore.COMPILER_SOURCE, true);
+		return getApiLevel(source);
+	}
+	
+	private static int getApiLevel(String source) {
+		if (source == null || source.length() == 0) {
+			return AST.D2;
+		} else if (source.equals(JavaCore.VERSION_2_x)) {
+			return AST.D2;
+		} else if (source.equals(JavaCore.VERSION_1_x)) {
+			return AST.D1;
+		} else if (source.equals(JavaCore.VERSION_0_x)) {
+			return AST.D0;
+		} else {
+			return AST.D2;
+		}
 	}
 	
 }

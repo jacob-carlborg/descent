@@ -662,10 +662,10 @@ public abstract class Type extends ASTDmdNode {
 
 	public final Expression getProperty(Loc loc, IdentifierExp ident,
 			SemanticContext context) {
-		return getProperty(loc, ident.ident, ident.start, ident.length, context);
+		return getProperty(loc, ident.ident, ident.getLineNumber(), ident.start, ident.length, context);
 	}
 
-	public Expression getProperty(Loc loc, char[] ident, int start, int length,
+	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
 			SemanticContext context) {
 		Expression e = null;
 
@@ -673,7 +673,7 @@ public abstract class Type extends ASTDmdNode {
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (equals(ident, Id.size)) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.DeprecatedProperty, this,
+					IProblem.DeprecatedProperty, lineNumber, start, length,
 					new String[] { ".size", ".sizeof" }));
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (equals(ident, Id.alignof)) {
@@ -681,7 +681,7 @@ public abstract class Type extends ASTDmdNode {
 		} else if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.DeprecatedProperty, this,
+						IProblem.DeprecatedProperty, lineNumber, start, length,
 						new String[] { "typeinfo", ".typeid(type)" }));
 			}
 			e = getTypeInfo(null, context);
@@ -699,7 +699,7 @@ public abstract class Type extends ASTDmdNode {
 			e = e.semantic(sc, context);
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UndefinedProperty, this, new String[] {
+					IProblem.UndefinedProperty, lineNumber, start, length, new String[] {
 							new String(ident), toChars(context) }));
 			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
 		}

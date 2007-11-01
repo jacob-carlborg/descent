@@ -1065,6 +1065,8 @@ public class ASTView extends ViewPart implements IShowInSource {
 		if (node != null) {
 			int offset= isTripleClick ? fRoot.getExtendedStartPosition(node) : node.getStartPosition();
 			int length= isTripleClick ? fRoot.getExtendedLength(node) : node.getLength();
+			
+			System.out.println(isTripleClick + ": " + offset + ", " + length);
 
 			EditorUtility.selectInEditor(fEditor, offset, length);
 		}

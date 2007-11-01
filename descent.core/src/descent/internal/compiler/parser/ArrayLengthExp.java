@@ -66,6 +66,7 @@ public class ArrayLengthExp extends UnaExp {
 		if (e1.op == TOKstring || e1.op == TOKarrayliteral
 				|| e1.op == TOKassocarrayliteral) {
 			e = ArrayLength.call(type, e1, context);
+			e.copySourceRange(this);
 		}
 		return e;
 	}

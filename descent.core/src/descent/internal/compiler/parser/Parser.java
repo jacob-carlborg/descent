@@ -164,7 +164,7 @@ public class Parser extends Lexer {
 	private int apiLevel;
 	private List<Comment> comments;
 	private List<Pragma> pragmas;
-	private int lastDocCommentRead = 0;
+	private int lastCommentRead = 0;
 	private boolean appendLeadingComments = true;
 	
 	private LINK linkage = LINKd;
@@ -277,7 +277,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKmodule) {
 			int start = token.ptr;
 			
-			List<Comment> moduleDocComments = getLastDocComments();
+			List<Comment> moduleDocComments = getLastComments();
 			
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -320,7 +320,7 @@ public class Parser extends Lexer {
 
 				md = newModuleDeclaration(a, id);
 				md.setSourceRange(start, token.ptr + token.sourceLen - start);
-				md.preDdocs = moduleDocComments;
+				md.preComments = moduleDocComments;
 
 				if (token.value != TOKsemicolon) {
 					setMalformed(md);
@@ -330,7 +330,6 @@ public class Parser extends Lexer {
 				}
 				
 				attachLeadingComments(md);
-				adjustPossitionAccordingToComments(md, md.preDdocs, md.postDdoc);
 			}
 		}
 
@@ -365,7 +364,7 @@ public class Parser extends Lexer {
 		
 		decldefs = new Dsymbols();
 		do {
-			List<Comment> lastComments = getLastDocComments();
+			List<Comment> lastComments = getLastComments();
 			isSingle[0] = false;
 			attachLeadingComments = true;
 			
@@ -385,7 +384,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKimport:
-				s = parseImport(decldefs, false, token.ptr);
+				s = parseImport(decldefs, false, token.ptr, lastComments);
 				break;
 
 			case TOKtemplate:
@@ -520,7 +519,7 @@ public class Parser extends Lexer {
 					attachLeadingComments = prevToken.value == TOKrcurly;
 					break;
 				} else if (token.value == TOKimport) {
-					s = parseImport(decldefs, true, prevToken.ptr);
+					s = parseImport(decldefs, true, prevToken.ptr, lastComments);
 				} else {
 					stc = STCstatic;
 					
@@ -750,11 +749,10 @@ public class Parser extends Lexer {
 			}
 			if (s != null) {
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				s.preDdocs = lastComments;
+				s.preComments = lastComments;
 				if (attachLeadingComments) {
 					attachLeadingComments(s);
 				}
-				adjustPossitionAccordingToComments(s, s.preDdocs, s.postDdoc);
 				decldefs.add(s);
 			}
 		} while (!once);
@@ -856,7 +854,6 @@ public class Parser extends Lexer {
 			    v.addModifiers(modifiers);
 			    
 			    attachLeadingComments(v);
-			    adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 			    
 			    s = v;
 			    if (previous != null) {
@@ -2187,7 +2184,7 @@ public class Parser extends Lexer {
 		return tiargs;
 	}
 	
-	private Import parseImport(Dsymbols decldefs, boolean isstatic, int start) {
+	private Import parseImport(Dsymbols decldefs, boolean isstatic, int start, List<Comment> lastComments) {
 		Import s = null;
 		IdentifierExp id = null;
 		IdentifierExp aliasid = null;
@@ -2249,6 +2246,7 @@ public class Parser extends Lexer {
 
 				Import prev = s;
 				s = newImport(loc(), a, id, aliasid, isstatic);
+				s.preComments = lastComments;
 				s.first = prev == null;
 				decldefs.add(s);
 				if (prev == null) {
@@ -2927,9 +2925,8 @@ public class Parser extends Lexer {
 			if (token.value == TOKsemicolon) {
 				v.setSourceRange(start, token.ptr + token.sourceLen - start);
 				nextToken();
-				v.preDdocs = lastComments;
+				v.preComments = lastComments;
 				attachLeadingComments(v);
-				adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 			} else if (token.value == TOKcomma) {
 				v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				nextToken();
@@ -2954,7 +2951,7 @@ public class Parser extends Lexer {
 			s.storage_class = storage_class;
 			s.addModifiers(modifiers);
 			a.add(s);
-			s.preDdocs = lastComments;
+			s.preComments = lastComments;
 			return a;
 		}
 		
@@ -3054,9 +3051,8 @@ public class Parser extends Lexer {
 				case TOKsemicolon:			
 					v.setSourceRange(nextTypdefOrAliasStart, token.ptr + token.sourceLen - nextTypdefOrAliasStart);
 					nextToken();
-					v.preDdocs = lastComments;
-					attachLeadingComments(v);				
-					adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
+					v.preComments = lastComments;
+					attachLeadingComments(v);
 					break;
 
 				case TOKcomma:
@@ -3099,9 +3095,8 @@ public class Parser extends Lexer {
 					s = tempdecl;
 				}
 				s.modifiers = modifiers;
-				s.preDdocs = lastComments;
+				s.preComments = lastComments;
 				attachLeadingComments(s);
-				adjustPossitionAccordingToComments(s, s.preDdocs, s.postDdoc);
 				a.add(s);
 			} else {
 				VarDeclaration v;
@@ -3130,9 +3125,8 @@ public class Parser extends Lexer {
 				case TOKsemicolon:
 					v.setSourceRange(nextVarStart, token.ptr + token.sourceLen - nextVarStart);
 					nextToken();
-					v.preDdocs = lastComments;
+					v.preComments = lastComments;
 					attachLeadingComments(v);
-					adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 					break;
 
 				case TOKcomma:
@@ -6819,25 +6813,20 @@ public class Parser extends Lexer {
 		return t;
 	}
 	
-	private List<Comment> getLastDocComments() {
+	private List<Comment> getLastComments() {
 		LinkedList<Comment> toReturn = new LinkedList<Comment>();
-		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
+		for(int i = comments.size() - 1; i >= lastCommentRead; i--) {
 			Comment comment = comments.get(i);
-			if (comment.isDDocComment()) {
-				toReturn.addFirst((Comment) comment);
-			} else {
-				break;
-			}
+			toReturn.addFirst((Comment) comment);
 		}
 		
-		lastDocCommentRead = comments.size();
-		
+		lastCommentRead = comments.size();		
 		return toReturn;
 	}
 	
 	private void attachLeadingComments(ASTDmdNode declaration) {
 		if (prevToken.leadingComment != null) {
-			declaration.postDdoc = prevToken.leadingComment;
+			declaration.postComment = prevToken.leadingComment;
 		}
 	}
 	
@@ -6855,25 +6844,6 @@ public class Parser extends Lexer {
 	
 	private String toWord(String s) {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-	}
-	
-	private void adjustPossitionAccordingToComments(ASTDmdNode node, List<Comment> preDDocs, Comment postDDoc) {
-		if ((preDDocs == null || preDDocs.isEmpty()) && postDDoc == null) {
-			return;
-		}
-		
-		int start = node.start;
-		int end = start + node.length;
-		
-		if (preDDocs != null && !preDDocs.isEmpty()) {
-			start = preDDocs.get(0).start;
-		}
-		
-		if (postDDoc != null) {
-			end = postDDoc.start + postDDoc.length;
-		}
-		
-		node.setSourceRange(start, end - start);
 	}
 	
 	@Override
@@ -6989,12 +6959,12 @@ public class Parser extends Lexer {
 	
 	private void attachCommentToCurrentToken(Comment comment) {
 		if ((!appendLeadingComments || 
-					!comment.isDDocComment() || 
+					//!comment.isDDocComment() || 
 					(prevToken.value != TOKsemicolon && 
 						prevToken.value != TOKrcurly))) return;
 		
 		if (prevToken.leadingComment == null) {
-			lastDocCommentRead = comments.size();	
+			lastCommentRead = comments.size();	
 		}
 		prevToken.leadingComment = (Comment) comment;		
 	}

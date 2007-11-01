@@ -79,7 +79,7 @@ public class TypeTuple extends Type {
 	}
 
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int start, int length,
+	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
 			SemanticContext context) {
 		Expression e;
 
@@ -87,7 +87,7 @@ public class TypeTuple extends Type {
 			e = new IntegerExp(loc, arguments.size(), Type.tsize_t);
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NoPropertyForTuple, this, new String[] { new String(ident),
+					IProblem.NoPropertyForTuple, lineNumber, start, length, new String[] { new String(ident),
 							toChars(context) }));
 			e = new IntegerExp(loc, 1, Type.tint32);
 		}

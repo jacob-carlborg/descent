@@ -81,7 +81,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int start, int length,
+	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
 			SemanticContext context) {
 		Expression e;
 
@@ -108,7 +108,7 @@ public class TypeEnum extends Type {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = sym.memtype.getProperty(loc, ident, start, length, context);
+			e = sym.memtype.getProperty(loc, ident, lineNumber, start, length, context);
 		}
 		return e;
 	}

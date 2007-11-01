@@ -8,6 +8,7 @@ import descent.core.dom.DDocComment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.VariableDeclaration;
 
 public class Comment_Test extends Parser_Test {
@@ -190,6 +191,19 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 		assertPosition(c.getPostDDoc(), 26, 11);
+	}
+	
+	public void testLeadingAndPreviousInNextLineCommentInTypedefDeclaration() {
+		String s = " /** hola */ typedef int abcdefg; /** hola */ \n /** hola */";
+		CompilationUnit compilationUnit = getCompilationUnit(s);
+		assertEquals(0, compilationUnit.getProblems().length);
+		TypedefDeclaration c = (TypedefDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(c, 1, 44);
+		
+		List<DDocComment> comments = c.preDDocs();
+		assertEquals(1, comments.size());
+		assertPosition(comments.get(0), 1, 11);
+		assertPosition(c.getPostDDoc(), 34, 11);
 	}
 	
 	public void testLeadingCommentWithLineBreak() {

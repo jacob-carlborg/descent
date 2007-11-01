@@ -15,5 +15,16 @@ public class ExtendedSourceRange_Test extends Parser_Test {
 		assertEquals(1, unit.getExtendedStartPosition(alias));
 		assertEquals(22, unit.getExtendedLength(alias));
 	}
+	
+
+	public void testOnAlias2() {
+		String s = "\r\n// hola\r\nalias int Bla;";
+		AliasDeclaration alias = (AliasDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.ALIAS_DECLARATION, alias.getNodeType());
+		
+		CompilationUnit unit = (CompilationUnit) alias.getRoot();
+		assertEquals(2, unit.getExtendedStartPosition(alias));
+		assertEquals(23, unit.getExtendedLength(alias));
+	}
 
 }

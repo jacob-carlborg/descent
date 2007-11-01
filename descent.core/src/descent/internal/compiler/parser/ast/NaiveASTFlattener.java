@@ -141,7 +141,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(AliasDeclaration node) {
 		if (node.first) {
-			visitPreDDocss(node.preDdocs);
+			visitPreDDocss(node.preComments);
 			printIndent();
 			visitModifiers(node.modifiers);
 			this.buffer.append("alias ");
@@ -153,9 +153,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.buffer.append(node.ident);
 		if (node.next == null) {					
 			this.buffer.append(";");
-			if (node.postDdoc != null) {
+			if (node.postComment != null) {
 				this.buffer.append(" ");
-				node.postDdoc.accept(this);
+				node.postComment.accept(this);
 			}
 		} else {
 			this.buffer.append(", ");
@@ -167,7 +167,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	
 
 	public boolean visit(AlignDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("align");
@@ -182,9 +182,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -211,7 +211,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(AnonDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		if (node.isunion) {
@@ -230,9 +230,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -297,10 +297,10 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(ArrayLengthExp node) {
-		appendStartCompilerNode();
-		this.buffer.append("ArrayLengthExp: ");
+		//appendStartCompilerNode();
 		node.e1.accept(this);
-		appendEndCompilerNode();
+		this.buffer.append(".length");
+		//appendEndCompilerNode();
 		return false;
 	}
 
@@ -617,7 +617,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(ConditionalDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 
@@ -695,15 +695,15 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			printIndent();
 			this.buffer.append("}");
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
 
 	public boolean visit(ConditionalStatement node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 
@@ -789,7 +789,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(CtorDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("this");
@@ -822,9 +822,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -835,15 +835,15 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(DebugSymbol node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("debug = ");
 		this.buffer.append(node.version.value);
 		this.buffer.append(";");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -886,7 +886,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(DeleteDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("delete");
@@ -916,9 +916,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1034,7 +1034,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(DtorDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("~this");
@@ -1062,15 +1062,15 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
 
 	public boolean visit(EnumDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("enum");
@@ -1087,9 +1087,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitList(node.members, ",\n", EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1224,7 +1224,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 	
 	private boolean visit(FuncDeclaration node, TemplateParameters templateParameters) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		
@@ -1264,9 +1264,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			this.buffer.append(" ");
 			node.sourceFbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1428,7 +1428,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			return false;
 		}
 		
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		
@@ -1466,16 +1466,12 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(IndexExp node) {
-		appendStartCompilerNode();
-		this.buffer.append("IndexExp: ");
+		//appendStartCompilerNode();
 		node.e1.accept(this);
-		this.buffer.append(", ");
+		this.buffer.append("[");
 		node.e2.accept(this);
-		if (node.lengthVar != null) {
-			this.buffer.append(", ");
-			this.buffer.append(node.lengthVar.ident);
-		}
-		appendEndCompilerNode();
+		this.buffer.append("]");
+		//appendEndCompilerNode();
 		return false;
 	}
 
@@ -1506,16 +1502,16 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(InvariantDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("invariant() ");
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1537,7 +1533,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(LinkDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("extern");
@@ -1556,9 +1552,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitList(node.decl, LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1636,14 +1632,14 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(ModuleDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		this.buffer.append("module ");
 		visitModuleDeclarationName(node);
 		this.buffer.append(";");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1704,7 +1700,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(NewDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("new");
@@ -1737,9 +1733,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1817,7 +1813,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(PragmaDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("pragma(");
@@ -1831,9 +1827,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			this.indent--;
 			this.buffer.append("}");
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -1991,7 +1987,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(StaticAssert node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("static assert(");
@@ -2001,9 +1997,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			node.msg.accept(this);
 		}
 		this.buffer.append(")");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2016,7 +2012,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(StaticCtorDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("static this");
@@ -2044,15 +2040,15 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
 
 	public boolean visit(StaticDtorDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("static ~this");
@@ -2080,9 +2076,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2093,7 +2089,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(StaticIfDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("static if(");
@@ -2110,9 +2106,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			this.indent--;
 			this.buffer.append("}");
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2197,7 +2193,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 	
 	private boolean visit(AggregateDeclaration node, String name, TemplateParameters templateParameters, BaseClasses baseClasses) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append(name);
@@ -2217,9 +2213,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2305,7 +2301,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			}
 		}
 		
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("template ");
@@ -2316,9 +2312,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitList(node.members, LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2346,7 +2342,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(TemplateMixin node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("mixin ");
@@ -2356,9 +2352,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			node.ident.accept(this);
 		}
 		this.buffer.append(";");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2603,7 +2599,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(TypedefDeclaration node) {
 		if (node.first) {
-			visitPreDDocss(node.preDdocs);
+			visitPreDDocss(node.preComments);
 			printIndent();
 			visitModifiers(node.modifiers);
 			this.buffer.append("typedef ");
@@ -2617,9 +2613,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		}
 		if (node.next == null) {					
 			this.buffer.append(";");
-			if (node.postDdoc != null) {
+			if (node.postComment != null) {
 				this.buffer.append(" ");
-				node.postDdoc.accept(this);
+				node.postComment.accept(this);
 			}
 		} else {
 			this.buffer.append(", ");
@@ -2813,7 +2809,11 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		startModifiedType(node);
 		if (node.sourceNext.ty == TY.Tfunction) {
 			TypeFunction ty = (TypeFunction) node.sourceNext;
-			ty.sourceNext.accept(this);
+			if (ty.sourceNext != null) {
+				ty.sourceNext.accept(this);
+			} else if (ty.next != null) {
+				ty.next.accept(this);
+			}
 			this.buffer.append(" function");
 			if (ty.parameters != null && ty.parameters.size() > 0) {
 				this.buffer.append("(");
@@ -2913,16 +2913,16 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(UnitTestDeclaration node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("unittest ");
 		if (node.fbody != null) {
 			node.fbody.accept(this);
 		}
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}
@@ -2950,7 +2950,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(VarDeclaration node) {
 		if (node.first) {
-			visitPreDDocss(node.preDdocs);
+			visitPreDDocss(node.preComments);
 			printIndent();
 			visitModifiers(node.modifiers);
 			if (node.sourceType != null) {
@@ -2968,9 +2968,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		}
 		if (node.next == null) {					
 			this.buffer.append(";");
-			if (node.postDdoc != null) {
+			if (node.postComment != null) {
 				this.buffer.append(" ");
-				node.postDdoc.accept(this);
+				node.postComment.accept(this);
 			}
 		} else {
 			this.buffer.append(", ");
@@ -2979,10 +2979,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(VarExp node) {
-		appendStartCompilerNode();
-		this.buffer.append("VarExp: ");
+		//appendStartCompilerNode();
 		this.buffer.append(node.var.ident);
-		appendEndCompilerNode();
+		//appendEndCompilerNode();
 		return false;
 	}
 
@@ -2997,15 +2996,15 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(VersionSymbol node) {
-		visitPreDDocss(node.preDdocs);
+		visitPreDDocss(node.preComments);
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("version = ");
 		this.buffer.append(node.version.value);
 		this.buffer.append(";");
-		if (node.postDdoc != null) {
+		if (node.postComment != null) {
 			this.buffer.append(" ");
-			node.postDdoc.accept(this);
+			node.postComment.accept(this);
 		}
 		return false;
 	}

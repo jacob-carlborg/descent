@@ -411,7 +411,6 @@ public class integer_t extends Number {
 	// casts
 	
 	public integer_t castToUns64() {
-		// TODO integer_t implement
 		return this;
 	}
 	

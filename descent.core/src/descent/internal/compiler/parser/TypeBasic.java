@@ -105,7 +105,7 @@ public class TypeBasic extends Type {
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
-			return getProperty(Loc.ZERO, Id.nan, 0, 0, context);
+			return getProperty(Loc.ZERO, Id.nan, 0, 0, 0, context);
 		default:
 			return new IntegerExp(Loc.ZERO, Id.ZERO, 0, this);
 		}
@@ -233,7 +233,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int start, int length,
+	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
 			SemanticContext context) {
 		Expression e;
 		integer_t ivalue;
@@ -533,7 +533,7 @@ public class TypeBasic extends Type {
 			}
 		}
 
-		return super.getProperty(loc, ident, start, length, context);
+		return super.getProperty(loc, ident, lineNumber, start, length, context);
 	}
 
 	@Override

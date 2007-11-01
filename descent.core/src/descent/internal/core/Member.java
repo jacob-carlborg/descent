@@ -311,15 +311,19 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		}
 	}
 	
-	if (declaration.preDdocs != null) {
-		for(Comment ddoc : declaration.preDdocs) {
+	if (declaration.preComments != null) {
+		for(int i = declaration.preComments.size() - 1; i >= 0; i--) {
+			Comment ddoc = declaration.preComments.get(i);
+			if (!ddoc.isDDocComment()) {
+				break;
+			}
 			sourceRanges.add(new SourceRange(start + ddoc.start, ddoc.length));
 		}
 	}
 	
-	if (declaration.postDdoc != null) {
-		sourceRanges.add(new SourceRange(start + declaration.postDdoc.start,
-				declaration.postDdoc.length));
+	if (declaration.postComment != null && declaration.postComment.isDDocComment()) {
+		sourceRanges.add(new SourceRange(start + declaration.postComment.start,
+				declaration.postComment.length));
 	}
 
 	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);

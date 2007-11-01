@@ -136,5 +136,10 @@ public abstract class Statement extends ASTDmdNode {
 	public boolean usesEH() {
 		return false;
 	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
+	}
 
 }

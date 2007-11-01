@@ -1029,6 +1029,36 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, type.getTypeParameters()[0].getSourceRange().getLength());
 		assertEquals(29, type.getTypeParameters()[0].getNameRange().getOffset());
 		assertEquals(1, type.getTypeParameters()[0].getNameRange().getLength());
-	}	
+	}
+	
+	public void testClassWithComments() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /* hola */ class Clazz1 { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(27, type.getSourceRange().getLength());
+		assertEquals(18, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/* hola */ class Clazz1 { }", type.getSource());
+		assertEquals(0, type.getJavadocRanges().length);
+	}
+	
+	public void testClassWithProtectionAndComments() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /* hola */ public class Clazz1 { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(34, type.getSourceRange().getLength());
+		assertEquals(25, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/* hola */ public class Clazz1 { }", type.getSource());
+		assertEquals(0, type.getJavadocRanges().length);	
+	}
 
 }

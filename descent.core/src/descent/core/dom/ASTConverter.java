@@ -113,13 +113,7 @@ public class ASTConverter {
 		if (name != null) {
 			result.setName(name);
 		}
-		if (md.preDdocs != null) {
-			convertDdoc(result.preDDocs(), md.preDdocs);
-		}
-		if (md.postDdoc != null) {
-			result.setPostDDoc(convertDdoc(md.postDdoc));
-		}
-		result.setSourceRange(md.start, md.length);
+		processDdocs(result, md);
 		return result;
 	}
 	
@@ -530,15 +524,8 @@ public class ASTConverter {
 				} else {
 					insertAt = 0;
 				}
-				decl.modifiers().add(insertAt, modifier);
-				if (a.preDdocs != null) {
-					convertDdoc(decl.preDDocs(), a.preDdocs);
-				}
-				if (a.postDdoc != null) {
-					decl.postDDoc = convertDdoc(a.postDdoc);
-				}
-				
-				decl.setSourceRange(a.start, a.length);
+				decl.modifiers().add(insertAt, modifier);				
+				processDdocs(decl, a);				
 				toAdd.add(decl);
 				return;
 			} else {
@@ -569,7 +556,7 @@ public class ASTConverter {
 		b.setSourceRange(a.start, a.length);
 		toAdd.add(b);
 	}
-	
+
 	private void convertNestedStorageClassOrProtDeclaration(Dsymbol dsymbol, AttribDeclaration a, descent.core.dom.Modifier modifier, List<Declaration> toAdd, int i) {
 		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
 		b.setModifier(modifier);
@@ -766,7 +753,6 @@ public class ASTConverter {
 				b.setMessage(convertedMessage);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
 		fillDeclaration(b, a);
 		return b;
 	}
@@ -894,7 +880,6 @@ public class ASTConverter {
 		convertExpressions(b.arguments(), a.args);
 		convertDeclarations(b.declarations(), a.decl);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -921,7 +906,6 @@ public class ASTConverter {
 		if (convertedType != null) {
 			b.setType(convertedType);
 		}
-		b.setSourceRange(a.start, a.length);
 		fillDeclaration(b, a);
 		return b;
 	}
@@ -1104,25 +1088,13 @@ public class ASTConverter {
 			Dsymbol wrappedSymbol = a.members.get(0);
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
-				if (a.preDdocs != null) {
-					convertDdoc(b.preDDocs(), a.preDdocs);
-				}
-				if (a.postDdoc != null) {
-					b.setPostDDoc(convertDdoc(a.postDdoc));
-				}
 				convertTemplateParameters(b.templateParameters(), a.parameters);
-				b.setSourceRange(a.start, a.length);
+				processDdocs(b, a);
 				return b;
 			} else {
 				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
-				if (a.preDdocs != null) {
-					convertDdoc(b.preDDocs(), a.preDdocs);
-				}
-				if (a.postDdoc != null) {
-					b.setPostDDoc(convertDdoc(a.postDdoc));
-				}
 				convertTemplateParameters(b.templateParameters(), a.parameters);
-				b.setSourceRange(a.start, a.length);
+				processDdocs(b, a);
 				return b;
 			}
 		}
@@ -1137,7 +1109,6 @@ public class ASTConverter {
 		convertTemplateParameters(b.templateParameters(), a.parameters);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1385,7 +1356,6 @@ public class ASTConverter {
 		b.setLinkage(a.linkage.getLinkage());
 		convertDeclarations(b.declarations(), a.decl);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1416,7 +1386,6 @@ public class ASTConverter {
 			}
 		}
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1429,7 +1398,6 @@ public class ASTConverter {
 			}
 		}
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1529,7 +1497,6 @@ public class ASTConverter {
 		convertArguments(b.arguments(), ty.parameters);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1702,7 +1669,6 @@ public class ASTConverter {
 			}
 		}
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1711,7 +1677,6 @@ public class ASTConverter {
 		b.setKind(ConstructorDeclaration.Kind.DESTRUCTOR);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1722,7 +1687,6 @@ public class ASTConverter {
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1731,7 +1695,6 @@ public class ASTConverter {
 		b.setKind(ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1740,7 +1703,6 @@ public class ASTConverter {
 		b.setKind(ConstructorDeclaration.Kind.STATIC_DESTRUCTOR);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1750,7 +1712,6 @@ public class ASTConverter {
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1760,7 +1721,6 @@ public class ASTConverter {
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -1802,12 +1762,7 @@ public class ASTConverter {
 	
 	public void fillDeclaration(descent.core.dom.Declaration b, ASTDmdNode a) {
 		convertModifiers(b.modifiers(), a.modifiers);
-		if (a.preDdocs != null) {
-			convertDdoc(b.preDDocs(), a.preDdocs);
-		}
-		if (a.postDdoc != null) {
-			b.setPostDDoc(convertDdoc(a.postDdoc));
-		}
+		processDdocs(b, a);
 	}
 	
 	public descent.core.dom.GotoStatement convert(GotoStatement a) {
@@ -2078,7 +2033,6 @@ public class ASTConverter {
 		convertDeclarations(ret.thenDeclarations(), a.decl);
 		convertDeclarations(ret.elseDeclarations(), a.elsedecl);
 		fillDeclaration(ret, a);
-		ret.setSourceRange(a.start, a.length);
 		return ret;
 	}
 	
@@ -2327,7 +2281,6 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
 		fillDeclaration(b, a);
 		return b;
 	}
@@ -2349,7 +2302,6 @@ public class ASTConverter {
 		b.setAlign(a.salign);
 		convertDeclarations(b.declarations(), a.decl);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -2362,7 +2314,6 @@ public class ASTConverter {
 		}
 		convertDeclarations(b.declarations(), a.decl);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -2618,7 +2569,6 @@ public class ASTConverter {
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -2631,7 +2581,6 @@ public class ASTConverter {
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -2643,7 +2592,6 @@ public class ASTConverter {
 		}
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -2655,7 +2603,6 @@ public class ASTConverter {
 		}
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
-		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -3019,20 +2966,15 @@ public class ASTConverter {
 							}
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
-						if (a.postDdoc != null) {
-							b.setPostDDoc(convertDdoc(a.postDdoc));
-						}
-						first = false;
-					}
-					if (start == -1) {
 						start = a.start;
+						end = processPostDdoc(b, a);						
+						first = false;
+					} else {
+						end = a.start + a.length;
 					}
-					end = a.start + a.length;
 					b.fragments().add(convert(a));
 					if (i == source.size() - 1) {
-						if (a.preDdocs != null) {
-							convertDdoc(b.preDDocs(), a.preDdocs);
-						}
+						start = processPreDdocs(b, a);
 						break;
 					}
 					
@@ -3062,20 +3004,15 @@ public class ASTConverter {
 							}
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
-						if (a.postDdoc != null) {
-							b.setPostDDoc(convertDdoc(a.postDdoc));
-						}
-						first = false;
-					}
-					if (start == -1) {
 						start = a.start;
+						end = processPostDdoc(b, a);						
+						first = false;
+					} else {
+						end = a.start + a.length;
 					}
-					end = a.start + a.length;
 					b.fragments().add(convert(a));
 					if (i == source.size() - 1) {
-						if (a.preDdocs != null) {
-							convertDdoc(b.preDDocs(), a.preDdocs);
-						}
+						start = processPreDdocs(b, a);
 						break;
 					}
 					
@@ -3105,20 +3042,15 @@ public class ASTConverter {
 							}
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
-						if (a.postDdoc != null) {
-							b.setPostDDoc(convertDdoc(a.postDdoc));
-						}
-						first = false;
-					}
-					if (start == -1) {
 						start = a.start;
+						end = processPostDdoc(b, a);						
+						first = false;
+					} else {
+						end = a.start + a.length;
 					}
-					end = a.start + a.length;
 					b.fragments().add(convert(a));
 					if (i == source.size() - 1) {
-						if (a.preDdocs != null) {
-							convertDdoc(b.preDDocs(), a.preDdocs);
-						}
+						start = processPreDdocs(b, a);
 						break;
 					}
 					
@@ -3146,7 +3078,7 @@ public class ASTConverter {
 			}
 		}
 	}
-	
+
 	public void convertExpressions(List<descent.core.dom.Expression> destination, List<Expression> source) {
 		if (source == null || source.isEmpty()) return;
 		for(Expression exp : source) destination.add(convert(exp));
@@ -3357,14 +3289,87 @@ public class ASTConverter {
 		return (descent.core.dom.TemplateParameter) convert((ASTDmdNode) type);
 	}
 	
-	public void convertDdoc(List<descent.core.dom.DDocComment> to,  List<descent.internal.compiler.parser.Comment> from) {
-		for(descent.internal.compiler.parser.Comment a : from) {
-			to.add(convertDdoc(a));
+	private void processDdocs(descent.core.dom.ModuleDeclaration b, ASTDmdNode a) {
+		DDocComment first = null;
+		if (a.preComments != null) {
+			 first = convertDdoc(b.preDDocs(), a.preComments);
 		}
+		if (a.postComment != null) {
+			b.postDDoc = convertDdoc(a.postComment);
+		}		
+		setSourceRange(b, a, first);
+	}
+
+	private void processDdocs(Declaration b, ASTDmdNode a) {
+		DDocComment first = null;
+		if (a.preComments != null) {
+			 first = convertDdoc(b.preDDocs(), a.preComments);
+		}
+		if (a.postComment != null) {
+			b.postDDoc = convertDdoc(a.postComment);
+		}		
+		setSourceRange(b, a, first);
+	}
+	
+	private void setSourceRange(ASTNode b, ASTDmdNode a, DDocComment first) {
+		int start = a.start;
+		int end = a.start + a.length;		
+		if (first != null) {
+			start = first.getStartPosition();
+		}
+		if (a.postComment != null && a.postComment.isDDocComment()) {
+			end = a.postComment.start + a.postComment.length;
+		}
+		b.setSourceRange(start, end - start);
+	}
+	
+	private int processPreDdocs(descent.core.dom.Declaration b, ASTDmdNode a) {
+		DDocComment first = null;
+		if (a.preComments != null) {
+			first = convertDdoc(b.preDDocs(), a.preComments);
+		}
+		int start = a.start;
+		int end = a.start + a.length;
+		if (first != null) {
+			start = first.getStartPosition();
+		}		
+		b.setSourceRange(start, end - start);		
+		return start;
+	}
+	
+	private int processPostDdoc(descent.core.dom.Declaration b, ASTDmdNode a) {
+		if (a.postComment != null) {
+			b.postDDoc = convertDdoc(a.postComment);
+		}
+		int end = a.start + a.length;
+		if (a.postComment != null && a.postComment.isDDocComment()) {
+			end = a.postComment.start + a.postComment.length;
+		}
+		b.setSourceRange(a.start, end - a.start);
+		return end;
+	}
+	
+	public DDocComment convertDdoc(List<descent.core.dom.DDocComment> to,  List<descent.internal.compiler.parser.Comment> from) {
+		// Go backwards and stop on a non-ddoc comment
+		DDocComment last = null;
+		for(int i = from.size() - 1; i >= 0; i --) {
+			DDocComment convertedDdoc = convertDdoc(from.get(i));
+			if (convertedDdoc == null) {
+				break;
+			}
+			to.add(convertedDdoc);
+			last = convertedDdoc;
+		}
+		return last;
 	}
 	
 	public descent.core.dom.DDocComment convertDdoc(descent.internal.compiler.parser.Comment a) {
-		return (DDocComment) moduleComments[a.index];
+		Comment comment = moduleComments[a.index];
+		if (comment.isDDocComment()) {
+			return (DDocComment) comment;
+		} else {
+			return null;
+		}
 	}
 	
 	public descent.core.dom.Comment[] convertComments(descent.internal.compiler.parser.Comment[] from) {

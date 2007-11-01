@@ -586,5 +586,11 @@ class DefaultCommentMapper {
 			// do nothing special, just go down in sub-levels
 			return true;
 		}
+		
+		@Override
+		public boolean visit(DDocComment node) {
+			return false;
+		}
+		
 	}
 }

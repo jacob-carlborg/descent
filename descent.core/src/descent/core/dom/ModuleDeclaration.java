@@ -78,7 +78,7 @@ public class ModuleDeclaration extends ASTNode {
 	/**
 	 * The postDDoc.
 	 */
-	private DDocComment postDDoc;
+	DDocComment postDDoc;
 
 
 	/**

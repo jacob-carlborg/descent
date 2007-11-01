@@ -32,6 +32,7 @@ import descent.core.compiler.ReconcileContext;
 import descent.core.dom.AST;
 import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnitResolver;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
@@ -160,8 +161,8 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				}
 				
 				// TODO JDT verify this
-				Parser parser = new Parser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents(), workingCopy.getFileName());
-				Module module = parser.parseModuleObj();
+				ParseResult parseResult = CompilationUnitResolver.parse(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents(), workingCopy.getFileName(), null, true);
+				Module module = parseResult.module;
 				
 			    //CompilationUnitDeclaration unit = null;
 			    try {
@@ -188,9 +189,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 					// create AST if needed
 					if (this.astLevel != ICompilationUnit.NO_AST && module != null) {
 						//Map options = workingCopy.getJavaProject().getOptions(true);
-						ASTConverter converter = new ASTConverter(null);
-						converter.setAST(AST.newAST(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel));
-						this.ast = converter.convert(module);
+						this.ast = CompilationUnitResolver.convert(AST.newAST(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel), parseResult, null);
 						if (this.ast != null) {
 							this.deltaBuilder.delta = new JavaElementDelta(workingCopy);
 							this.deltaBuilder.delta.changedAST(this.ast);

@@ -47,7 +47,6 @@ import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
 import descent.core.IMember;
-import descent.core.IMethod;
 import descent.core.IParent;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;

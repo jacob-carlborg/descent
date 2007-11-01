@@ -34,6 +34,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		compile.addAll(listRecursive(new File(DSTRESS_PATH, "compile")));
 		compile.addAll(listRecursive(new File(DSTRESS_PATH, "run")));
 		compile.addAll(listRecursive(new File(DSTRESS_PATH, "norun")));
+		
 		for(File file : compile) {
 			
 			String name = file.getName();
@@ -41,11 +42,14 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				continue;
 			}
 			
-			sb.append("\tpublic void test_")
-				.append(file.getName().replace('.', '_'))
-				.append("() throws Exception {\r\n");
-			sb.append("\t\tcompile(\"").append(file.getAbsolutePath().replace("\\", "\\\\")).append("\");\r\n");
-			sb.append("\t}\r\n\r\n");
+			int errorsNumber = errors(file).size();
+			if (errorsNumber == 0) {
+				sb.append("\tpublic void test_")
+					.append(file.getName().replace('.', '_'))
+					.append("() throws Exception {\r\n");
+				sb.append("\t\tcompile(\"").append(file.getAbsolutePath().replace("\\", "\\\\")).append("\");\r\n");
+				sb.append("\t}\r\n\r\n");
+			}
 		}
 		
 		sb.append("\tprivate void compile(String file) throws Exception {\r\n");

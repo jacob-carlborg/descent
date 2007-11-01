@@ -200,9 +200,8 @@ public class SwitchStatement extends Statement {
 			hasNoDefault = 1;
 
 			if (context.global.params.warnings) {
-				context.acceptProblem(Problem.newSemanticTypeWarning(
-						IProblem.SwitchStatementHasNoDefault, 0, getErrorStart(),
-						getErrorLength()));
+				context.acceptProblem(Problem.newSemanticTypeWarningLoc(
+						IProblem.SwitchStatementHasNoDefault, this));
 			}
 
 			// Generate runtime error if the default is hit
