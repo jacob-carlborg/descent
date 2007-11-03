@@ -459,25 +459,25 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(StaticCtorDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers), CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers), CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(StaticDtorDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccStaticDestructor, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccStaticDestructor, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(InvariantDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccInvariant, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccInvariant, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(UnitTestDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccUnitTest, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccUnitTest, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -572,22 +572,22 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccStaticAssert, node.exp.toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccStaticAssert, node.exp.toCharArray());
 		return false;
 	}
 	
 	public boolean visit(DebugSymbol node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccDebugAssignment, node.version.value);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccDebugAssignment, node.version.value);
 		return false;
 	}
 
 	public boolean visit(VersionSymbol node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccVersionAssignment, node.version.value);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccVersionAssignment, node.version.value);
 		return false;
 	}
 	
 	public boolean visit(AlignDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccAlign, node.salign == 0 ? CharOperation.NO_CHAR : String.valueOf(node.salign).toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccAlign, node.salign == 0 ? CharOperation.NO_CHAR : String.valueOf(node.salign).toCharArray());
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -603,7 +603,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		case LINKsystem: id = Id.System;
 		case LINKwindows: id = Id.Windows;
 		}
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccExternDeclaration, id);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccExternDeclaration, id);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -619,7 +619,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 				sb.append(node.args.get(i).toString());
 			}
 		}
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccPragma, sb.toString().toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccPragma, sb.toString().toCharArray());
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -788,9 +788,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			
 			int flags = node.isstatic ? Flags.AccStatic : 0;
 			
-			flattener.reset();
-			node.accept(flattener);			
-			requestor.acceptImport(start, end, flattener.getResult(), false, flags);
+			requestor.acceptImport(start, end, importToString(node), false, flags);
 			
 			node = node.next;
 		}
@@ -798,6 +796,40 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	private String importToString(Import node) {
+		StringBuilder buffer = new StringBuilder();
+		if (node.aliasId != null) {
+			buffer.append(node.aliasId);
+			buffer.append(" = ");
+		}
+		if (node.packages != null) {
+			for(int i = 0; i < node.packages.size(); i++) {
+				if (i > 0) {
+					buffer.append('.');
+				}
+				buffer.append(node.packages.get(i));
+			}
+			buffer.append('.');
+		}
+		if (node.id != null) {
+			buffer.append(node.id);
+		}
+		if (node.names != null) {
+			buffer.append(" : ");
+			for(int i = 0; i < node.names.size(); i++) {
+				if (i > 0) {
+					buffer.append(", ");
+				}
+				if (node.aliases.get(i) != null) {
+					node.aliases.get(i).accept(this);
+					buffer.append(" = ");
+				}
+				buffer.append(node.names.get(i));
+			}
+		}
+		return buffer.toString();
+	}
+
 	public boolean visit(ProtDeclaration node) {
 		if (node.single) {
 			pushAttribDeclaration(node);

@@ -3668,6 +3668,7 @@ public class Parser extends Lexer {
 				s.setSourceRange(start, token.ptr + token.sourceLen - start);
 			}
 			
+			discardLastComments();
 			nextToken();
 			break;
 		}
@@ -6967,6 +6968,10 @@ public class Parser extends Lexer {
 			lastCommentRead = comments.size();	
 		}
 		prevToken.leadingComment = (Comment) comment;		
+	}
+	
+	private void discardLastComments() {
+		this.lastCommentRead = this.comments.size();
 	}
 	
 	private Loc loc() {

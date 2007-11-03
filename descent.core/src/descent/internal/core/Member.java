@@ -317,7 +317,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 			if (!ddoc.isDDocComment()) {
 				break;
 			}
-			sourceRanges.add(new SourceRange(start + ddoc.start, ddoc.length));
+			sourceRanges.add(0, new SourceRange(start + ddoc.start, ddoc.length));
 		}
 	}
 	

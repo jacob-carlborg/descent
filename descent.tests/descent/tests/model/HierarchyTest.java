@@ -6,6 +6,7 @@ import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
+import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IPackageDeclaration;
 import descent.core.IType;
@@ -1059,6 +1060,30 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(6, type.getNameRange().getLength());
 		assertEquals("/* hola */ public class Clazz1 { }", type.getSource());
 		assertEquals(0, type.getJavadocRanges().length);	
+	}
+	
+	public void testBugReportedByBrunoMedeiros() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", 
+				"// Foo\r\n" + 
+				"\r\n" + 
+				"void foo() {\r\n" + 
+				"\t// bla\r\n" + 
+				"}\r\n" + 
+				"\r\n" + 
+				"class Bang {\r\n" + 
+				"}"
+				);
+		
+		IJavaElement[] children = unit.getChildren();
+		assertEquals(2, children.length);
+		
+		IMember main = (IMember) children[0];
+		assertEquals(0, main.getSourceRange().getOffset());
+		assertEquals(34, main.getSourceRange().getLength());
+		
+		IMember bang = (IMember) children[1];
+		assertEquals(38, bang.getSourceRange().getOffset());
+		assertEquals(15, bang.getSourceRange().getLength());
 	}
 
 }

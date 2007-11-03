@@ -932,7 +932,9 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 		boolean collapse= false;
 		boolean collapseCode= true;
 		switch (element.getElementType()) {
-
+			case IJavaElement.PACKAGE_DECLARATION:
+				collapse = ctx.collapseHeaderComments();
+				break;
 			case IJavaElement.IMPORT_CONTAINER:
 				collapse= ctx.collapseImportContainer();
 				break;
@@ -1044,11 +1046,6 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 				List regions= new ArrayList();
 				if (!ctx.hasFirstType() && reference instanceof IType) {
 					ctx.setFirstType((IType) reference);
-					IRegion headerComment= computeHeaderComment(ctx);
-					if (headerComment != null) {
-						regions.add(headerComment);
-						ctx.setHasHeaderComment();
-					}
 				}
 
 				IScanner scanner= ToolFactory.createScanner(true, true, false, false, ASTProvider.SHARED_AST_LEVEL);
@@ -1118,7 +1115,12 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 		try {
 			boolean foundComment= false;
 			int terminal= scanner.getNextToken();
-			while (terminal != ITerminalSymbols.TokenNameEOF && !(terminal == ITerminalSymbols.TokenNameclass || terminal == ITerminalSymbols.TokenNameinterface || terminal == ITerminalSymbols.TokenNameenum || (foundComment && (terminal == ITerminalSymbols.TokenNameimport || terminal == ITerminalSymbols.TokenNamepackage)))) {
+			while (terminal == ITerminalSymbols.TokenNameCOMMENT_LINE 
+					|| terminal == ITerminalSymbols.TokenNameCOMMENT_BLOCK 
+					|| terminal == ITerminalSymbols.TokenNameCOMMENT_LINE
+					|| terminal == ITerminalSymbols.TokenNameCOMMENT_DOC_LINE 
+					|| terminal == ITerminalSymbols.TokenNameCOMMENT_DOC_BLOCK 
+					|| terminal == ITerminalSymbols.TokenNameCOMMENT_DOC_LINE) {
 
 				if (terminal == ITerminalSymbols.TokenNameCOMMENT_LINE 
 						|| terminal == ITerminalSymbols.TokenNameCOMMENT_BLOCK 

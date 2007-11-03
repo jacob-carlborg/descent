@@ -8,6 +8,8 @@ import descent.core.dom.CompilationUnit;
 import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.FunctionDeclaration;
+import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.Module;
 
 
 public class Bugs_Test extends Parser_Test {
@@ -285,6 +287,38 @@ public class Bugs_Test extends Parser_Test {
 	public void testDstress_nocompile_a_alias_37_D() {
 		String s = "alias short foo(byte);";
 		getCompilationUnit(s);
+	}
+	
+	public void testBugFoundByBrunoMedeiros() {
+		String s = 
+			"// Foo\r\n" + 
+			"\r\n" + 
+			"void foo() {\r\n" + 
+			"\t// bla\r\n" + 
+			"}\r\n" + 
+			"\r\n" + 
+			"class Bang {\r\n" + 
+			"}";
+		
+		Module module = getParseResult(s, AST.D1).module;
+		ASTDmdNode node = module.members.get(1);
+		assertEquals(0, node.preComments.size());
+	}
+	
+	public void testBugFoundByBrunoMedeiros2() {
+		String s = 
+			"// Foo\r\n" + 
+			"\r\n" + 
+			"void foo() {\r\n" + 
+			"\t// bla\r\n" + 
+			"}\r\n" + 
+			"// a comment \r\n" + 
+			"class Bang {\r\n" + 
+			"}";
+		
+		Module module = getParseResult(s, AST.D1).module;
+		ASTDmdNode node = module.members.get(1);
+		assertEquals(1, node.preComments.size());
 	}
 
 }
