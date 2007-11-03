@@ -88,17 +88,6 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	public TOK nextToken() {
-		TOK tok = super.nextToken();
-		if ((tok == TOK.TOKdocblockcomment || 
-				tok == TOK.TOKpluscomment) &&
-				token.ptr <= cursorLocation && cursorLocation <= token.sourceLen) {
-			System.out.println("!");
-		}
-		return tok;
-	}
-	
-	@Override
 	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module) {
 		int start = CompletionUtils.getFqnStart(packages, module, cursorLocation);
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
@@ -205,7 +194,6 @@ public class CompletionParser extends Parser {
 				}
 			}
 			
-			//System.out.println("*" + new String(tokValue));			
 			keywordCompletions.add(new CompletionOnKeyword(tokValue, toks));
 		}
 	}

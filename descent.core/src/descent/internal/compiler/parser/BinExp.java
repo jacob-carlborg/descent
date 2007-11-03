@@ -1091,5 +1091,12 @@ public abstract class BinExp extends Expression {
 
 		return null;
 	}
+	
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		e1 = e1.optimize(result, context);
+	    e2 = e2.optimize(result, context);
+	    return this;
+	}
 
 }

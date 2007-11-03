@@ -697,7 +697,7 @@ public class Constfold {
 
 				if (i >= length) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArrayIndexOutOfBounds2, e1, new String[] { String.valueOf(i),
+							IProblem.ArrayIndexOutOfBounds2, e2, new String[] { String.valueOf(i),
 						            e1.toChars(context),
 						            String.valueOf(length) }));
 				} else if (e1.op == TOKarrayliteral
