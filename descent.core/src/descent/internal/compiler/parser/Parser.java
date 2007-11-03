@@ -2615,7 +2615,6 @@ public class Parser extends Lexer {
 							ts = ta;
 						}
 					}
-					t = ts;
 					continue;
 				}
 
@@ -2753,7 +2752,6 @@ public class Parser extends Lexer {
 			} else {
 				ts = ta;
 			}
-			t = ts;
 			continue;
 		    }
 	//#endif
@@ -2800,7 +2798,6 @@ public class Parser extends Lexer {
 			} else {
 				ts = ta;
 			}
-			t = ts;
 			break;
 		    }
 		}

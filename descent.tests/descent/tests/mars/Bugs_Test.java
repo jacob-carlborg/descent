@@ -9,7 +9,10 @@ import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.FunctionDeclaration;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.TypeSArray;
+import descent.internal.compiler.parser.VarDeclaration;
 
 
 public class Bugs_Test extends Parser_Test {
@@ -319,6 +322,28 @@ public class Bugs_Test extends Parser_Test {
 		Module module = getParseResult(s, AST.D1).module;
 		ASTDmdNode node = module.members.get(1);
 		assertEquals(1, node.preComments.size());
+	}
+	
+	public void testTypeSArray1() {
+		String s = "bool[2][4] b;";
+		
+		Module module = getParseResult(s, AST.D1).module;
+		VarDeclaration var = (VarDeclaration) module.members.get(0);
+		TypeSArray ts = (TypeSArray) var.type;
+		assertEquals(4, ((IntegerExp) ts.dim).value.intValue());
+		ts = (TypeSArray) ts.next;
+		assertEquals(2, ((IntegerExp) ts.dim).value.intValue());
+	}
+	
+	public void testTypeSArray2() {
+		String s = "bool b[4][2];";
+		
+		Module module = getParseResult(s, AST.D1).module;
+		VarDeclaration var = (VarDeclaration) module.members.get(0);
+		TypeSArray ts = (TypeSArray) var.type;
+		assertEquals(4, ((IntegerExp) ts.dim).value.intValue());
+		ts = (TypeSArray) ts.next;
+		assertEquals(2, ((IntegerExp) ts.dim).value.intValue());
 	}
 
 }

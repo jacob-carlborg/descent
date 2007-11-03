@@ -572,14 +572,16 @@ public class TypeBasic extends Type {
 			}
 
 			// If converting to integral
-			int sz = size(Loc.ZERO, context);
-			int tosz = tob.size(Loc.ZERO, context);
-
-		    /* Can't convert to smaller size or, if same size, change sign
-		     */
-		    if (sz > tosz) {
-		    	return MATCHnomatch;
-		    }
+			if (false && context.global.params.Dversion > 1 && (tob.ty.flags & TFLAGSintegral) != 0) {
+				int sz = size(Loc.ZERO, context);
+				int tosz = tob.size(Loc.ZERO, context);
+	
+			    /* Can't convert to smaller size or, if same size, change sign
+			     */
+			    if (sz > tosz) {
+			    	return MATCHnomatch;
+			    }
+			}
 		} else if ((ty.flags & TFLAGSfloating) != 0) {
 			// Disallow implicit conversion of floating point to integer
 			if ((tob.ty.flags & TFLAGSintegral) != 0) {
