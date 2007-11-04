@@ -14,18 +14,23 @@ public interface SuffixConstants {
 	public final static String EXTENSION_class = "obj"; //$NON-NLS-1$
 	public final static String EXTENSION_CLASS = "OBJ"; //$NON-NLS-1$
 	public final static String EXTENSION_java = "d"; //$NON-NLS-1$
-	public final static String EXTENSION_di = "di"; //$NON-NLS-1$
 	public final static String EXTENSION_JAVA = "D"; //$NON-NLS-1$
+	public final static String EXTENSION_di = "di"; //$NON-NLS-1$
+	public final static String EXTENSION_DI = "DI"; //$NON-NLS-1$
 	
 	public final static String SUFFIX_STRING_class = "." + EXTENSION_class; //$NON-NLS-1$
 	public final static String SUFFIX_STRING_CLASS = "." + EXTENSION_CLASS; //$NON-NLS-1$
 	public final static String SUFFIX_STRING_java = "." + EXTENSION_java; //$NON-NLS-1$
 	public final static String SUFFIX_STRING_JAVA = "." + EXTENSION_JAVA; //$NON-NLS-1$
+	public final static String SUFFIX_STRING_di = "." + EXTENSION_di; //$NON-NLS-1$
+	public final static String SUFFIX_STRING_DI = "." + EXTENSION_DI; //$NON-NLS-1$
 	
 	public final static char[] SUFFIX_class = SUFFIX_STRING_class.toCharArray();
 	public final static char[] SUFFIX_CLASS = SUFFIX_STRING_CLASS.toCharArray();
 	public final static char[] SUFFIX_java = SUFFIX_STRING_java.toCharArray();
 	public final static char[] SUFFIX_JAVA = SUFFIX_STRING_JAVA.toCharArray();
+	public final static char[] SUFFIX_di = SUFFIX_STRING_di.toCharArray();
+	public final static char[] SUFFIX_DI = SUFFIX_STRING_DI.toCharArray();
 	
 	public final static String EXTENSION_jar = "jar"; //$NON-NLS-1$
 	public final static String EXTENSION_JAR = "JAR"; //$NON-NLS-1$
@@ -42,3 +47,4 @@ public interface SuffixConstants {
 	public final static char[] SUFFIX_zip = SUFFIX_STRING_zip.toCharArray(); 
 	public final static char[] SUFFIX_ZIP = SUFFIX_STRING_ZIP.toCharArray();
 }
+

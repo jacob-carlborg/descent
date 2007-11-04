@@ -215,7 +215,7 @@ public class LibraryContentProvider implements ITreeContentProvider {
 		} else {
 			Object element= selection.getFirstElement();
 			LibraryStandin firstLib;
-			if (element instanceof LibraryLocation) {
+			if (element instanceof LibraryStandin) {
 				firstLib= (LibraryStandin) element;
 			} else {
 				firstLib= ((SubElement) element).getParent();

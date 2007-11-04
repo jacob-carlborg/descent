@@ -662,14 +662,14 @@
             id="descent.ui.preferences.CodeFormatterPreferencePage">
             <keywordReference id="descent.ui.formatter"/>
       </page>
-      <!--
       <page
             name="%buildPathPrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"
             class="descent.internal.ui.preferences.NewJavaProjectPreferencePage"
             id="descent.ui.preferences.BuildPathPreferencePage">
             <keywordReference id="descent.ui.buildpathoptions"/>
-      </page>      
+      </page>
+      <!--
       <page
             name="%classPathVarPrefName"
             category="descent.ui.preferences.BuildPathPreferencePage"
@@ -747,7 +747,6 @@
             id="descent.ui.preferences.JavaTemplatePreferencePage">
             <keywordReference id="descent.ui.templates"/>
       </page>
-      <!--
       <page
             name="%contentAssistPageName"
             category="descent.ui.preferences.JavaEditorPreferencePage"
@@ -755,6 +754,7 @@
             id="descent.ui.preferences.CodeAssistPreferencePage">
             <keywordReference id="descent.ui.contentassist"/>
       </page>
+      <!--
       <page
             name="%contentAssistAdvancedName"
             category="descent.ui.preferences.CodeAssistPreferencePage"

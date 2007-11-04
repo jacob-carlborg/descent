@@ -25,12 +25,17 @@ public class DmdCompilerType extends AbstractVMInstallType {
 		// TODO phobos hardcoded
 		File phobosFile = new File(installLocation, "src/phobos");
 		File phobosSrcFile = new File(installLocation, "src/phobos");
+		File object = new File(phobosSrcFile, "object.d");
 		
-		Path phobosPath = new Path(phobosFile.getAbsolutePath());
-		Path phobosSrcPath = new Path(phobosSrcFile.getAbsolutePath());
-		
-		LibraryLocation phobos = new LibraryLocation(phobosPath, phobosSrcPath, Path.EMPTY);
-		return new LibraryLocation[] { phobos };
+		if (phobosSrcFile.exists() && phobosSrcFile.isDirectory() && object.exists()) {
+			Path phobosPath = new Path(phobosFile.getAbsolutePath());
+			Path phobosSrcPath = new Path(phobosSrcFile.getAbsolutePath());
+			
+			LibraryLocation phobos = new LibraryLocation(phobosPath, phobosSrcPath, Path.EMPTY);
+			return new LibraryLocation[] { phobos };
+		} else {
+			return new LibraryLocation[0];
+		}
 	}
 
 	public String getName() {

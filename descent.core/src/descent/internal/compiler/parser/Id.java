@@ -206,5 +206,8 @@ public interface Id {
 	static final char[] TIME_DUMMY = { '2', '1', ':', '0', '0', ':', '0', '0' };
 	static final char[] TIMESTAMP_DUMMY = { 'F', 'r', 'i', ' ', 'J', 'u', 'n', ' ', '2', '6', ' ', '2', '1', ':', '0', '0', ':', '0', '0', ' ', '1', '9', '8', '1' };
 	static final char[] VENDOR_DUMMY = { 'D', 'e', 's', 'c', 'e', 'n', 't' };
+	
+	static final char[] isSame = { 'i', 's', 'S', 'a', 'm', 'e' };
+	static final char[] compiles = { 'c', 'o', 'm', 'p', 'i', 'l', 'e', 's' };
 
 }

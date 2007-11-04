@@ -391,16 +391,20 @@ public class Util implements SuffixConstants {
 	 * implementation is not creating extra strings.
 	 */
 	public final static boolean isJavaFileName(String name) {
+		return hasSuffix(name, SUFFIX_JAVA) || hasSuffix(name, SUFFIX_DI);
+	}
+	
+	private final static boolean hasSuffix(String name, char[] suffix) {
 		int nameLength = name == null ? 0 : name.length();
-		int suffixLength = SUFFIX_JAVA.length;
+		int suffixLength = suffix.length;
 		if (nameLength < suffixLength) return false;
 
 		for (int i = 0; i < suffixLength; i++) {
 			char c = name.charAt(nameLength - i - 1);
 			int suffixIndex = suffixLength - i - 1;
-			if (c != SUFFIX_java[suffixIndex] && c != SUFFIX_JAVA[suffixIndex]) return false;
+			if (c != suffix[suffixIndex] && c != suffix[suffixIndex]) return false;
 		}
-		return true;		
+		return true;	
 	}
 
 	/**

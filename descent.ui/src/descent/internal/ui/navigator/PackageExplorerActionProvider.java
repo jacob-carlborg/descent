@@ -21,6 +21,7 @@ import org.eclipse.ui.navigator.IExtensionStateModel;
 
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.navigator.IExtensionStateConstants.Values;
+import descent.internal.ui.wizards.buildpaths.newsourcepage.GenerateBuildPathActionGroup;
 import descent.ui.actions.GenerateActionGroup;
 import descent.ui.actions.OpenViewActionGroup;
 
@@ -41,7 +42,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 
 	//private JavaSearchActionGroup fSearchGroup;
 
-	//private GenerateBuildPathActionGroup fBuildPathGroup;
+	private GenerateBuildPathActionGroup fBuildPathGroup;
 
 	private GenerateActionGroup fGenerateGroup;
 
@@ -55,7 +56,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 		}
 		if (fInViewPart) {
 			fOpenViewGroup.fillActionBars(actionBars); 
-			//fBuildPathGroup.fillActionBars(actionBars);
+			fBuildPathGroup.fillActionBars(actionBars);
 			fGenerateGroup.fillActionBars(actionBars); 
 			//fSearchGroup.fillActionBars(actionBars);
 		}
@@ -66,7 +67,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 
 		if (fInViewPart) {
 			fOpenViewGroup.fillContextMenu(menu); 
-			//fBuildPathGroup.fillContextMenu(menu);
+			fBuildPathGroup.fillContextMenu(menu);
 			fGenerateGroup.fillContextMenu(menu); 
 			//fSearchGroup.fillContextMenu(menu);
 		}
@@ -93,7 +94,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 				}; 
 				fGenerateGroup = new GenerateActionGroup(viewPart);
 				//fSearchGroup = new JavaSearchActionGroup(viewPart);
-				//fBuildPathGroup = new GenerateBuildPathActionGroup(viewPart);
+				fBuildPathGroup = new GenerateBuildPathActionGroup(viewPart);
 				
 				fInViewPart = true;
 			}
@@ -108,7 +109,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 			fOpenViewGroup.setContext(context); 
 			fGenerateGroup.setContext(context);
 			//fSearchGroup.setContext(context);
-			//fBuildPathGroup.setContext(context);
+			fBuildPathGroup.setContext(context);
 		}
 	}
 

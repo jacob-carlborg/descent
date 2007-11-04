@@ -25,7 +25,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 
 import descent.core.IClasspathEntry;
@@ -336,23 +336,21 @@ public class VMLibraryBlock implements SelectionListener, ISelectionChangedListe
 		if (lastUsedPath == null) {
 			lastUsedPath= ""; //$NON-NLS-1$
 		}
-		FileDialog dialog= new FileDialog(fLibraryViewer.getControl().getShell(), SWT.MULTI);
+		
+		DirectoryDialog dialog = new DirectoryDialog(fLibraryViewer.getControl().getShell(), SWT.SINGLE);
+		//FileDialog dialog= new FileDialog(fLibraryViewer.getControl().getShell(), SWT.MULTI);
 		dialog.setText(JREMessages.VMLibraryBlock_10);
-		dialog.setFilterExtensions(new String[] {"*.jar;*.zip"}); //$NON-NLS-1$
-		dialog.setFilterPath(lastUsedPath);
+		//dialog.setFilterExtensions(new String[] {"*.jar;*.zip"}); //$NON-NLS-1$
+		//dialog.setFilterPath(lastUsedPath);
 		String res= dialog.open();
 		if (res == null) {
 			return;
 		}
-		String[] fileNames= dialog.getFileNames();
-		int nChosen= fileNames.length;
-			
-		IPath filterPath= new Path(dialog.getFilterPath());
-		LibraryLocation[] libs= new LibraryLocation[nChosen];
-		for (int i= 0; i < nChosen; i++) {
-			libs[i]= new LibraryLocation(filterPath.append(fileNames[i]).makeAbsolute(), Path.EMPTY, Path.EMPTY);
-		}
-		dialogSettings.put(LAST_PATH_SETTING, filterPath.toOSString());
+		IPath path = new Path(res);
+		
+		LibraryLocation[] libs = new LibraryLocation[] {
+			new LibraryLocation(path, Path.EMPTY, Path.EMPTY)
+		};
 		
 		fLibraryContentProvider.add(libs, selection);
 	}

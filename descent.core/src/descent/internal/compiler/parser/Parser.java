@@ -128,7 +128,8 @@ public class Parser extends Lexer {
 		Id.isAbstractClass, Id.isFinalClass, Id.isAbstractFunction, 
 		Id.isVirtualFunction, Id.isFinalFunction, 
 		Id.hasMember, Id.getMember, Id.getVirtualFunctions,
-		Id.classInstanceSize, Id.allMembers, Id.derivedMembers
+		Id.classInstanceSize, Id.allMembers, Id.derivedMembers,
+		Id.isSame, Id.compiles
 	};
 	private final static char[][] scopeArgsExpectations = { 
 		Id.exit, Id.failure, Id.success

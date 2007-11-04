@@ -35,12 +35,17 @@ public class GdcCompilerType extends AbstractVMInstallType {
 		
 		File phobosFile = new File(installLocation, "include/d/" + gdcVersion);
 		File phobosSrcFile = new File(installLocation, "include/d/" + gdcVersion);
+		File object = new File(phobosSrcFile, "object.d");
 		
-		Path phobosPath = new Path(phobosFile.getAbsolutePath());
-		Path phobosSrcPath = new Path(phobosSrcFile.getAbsolutePath());
-		
-		LibraryLocation phobos = new LibraryLocation(phobosPath, phobosSrcPath, Path.EMPTY);
-		return new LibraryLocation[] { phobos };
+		if (phobosSrcFile.exists() && phobosSrcFile.isDirectory() && object.exists()) {
+			Path phobosPath = new Path(phobosFile.getAbsolutePath());
+			Path phobosSrcPath = new Path(phobosSrcFile.getAbsolutePath());
+			
+			LibraryLocation phobos = new LibraryLocation(phobosPath, phobosSrcPath, Path.EMPTY);
+			return new LibraryLocation[] { phobos };
+		} else {
+			return new LibraryLocation[0];
+		}
 	}
 
 	public String getName() {
