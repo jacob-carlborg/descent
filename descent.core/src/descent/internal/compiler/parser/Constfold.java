@@ -26,9 +26,6 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
-import static descent.internal.compiler.parser.complex_t.cimagl;
-import static descent.internal.compiler.parser.complex_t.creall;
-
 /**
  * A class to hold constant-folding functions used by the interpreter. The
  * functions that use these are in UnaExp and BinExp. In DMD, they are in the
@@ -222,7 +219,7 @@ public class Constfold {
 					v = new complex_t(r1, i2);
 					break;
 				case 0 + 2:
-					v = new complex_t(r1.add(creall(c2)), cimagl(c2));
+					v = new complex_t(r1.add(complex_t.creall(c2)), complex_t.cimagl(c2));
 					break;
 				case 3 + 0:
 					v = new complex_t(r2, i1);
@@ -231,13 +228,13 @@ public class Constfold {
 					v = new complex_t(real_t.ZERO, i1.add(i2));
 					break;
 				case 3 + 2:
-					v = new complex_t(creall(c2), i1.add(cimagl(c2)));
+					v = new complex_t(complex_t.creall(c2), i1.add(complex_t.cimagl(c2)));
 					break;
 				case 6 + 0:
-					v = new complex_t(creall(c1).add(r2), cimagl(c2));
+					v = new complex_t(complex_t.creall(c1).add(r2), complex_t.cimagl(c2));
 					break;
 				case 6 + 1:
-					v = new complex_t(creall(c1), cimagl(c1).add(i2));
+					v = new complex_t(complex_t.creall(c1), complex_t.cimagl(c1).add(i2));
 					break;
 				case 6 + 2:
 					v = c1.add(c2);
@@ -322,7 +319,7 @@ public class Constfold {
 					v = new complex_t(r1, i2.negate());
 					break;
 				case 0 + 2:
-					v = new complex_t(r1.subtract(creall(c2)), cimagl(c2)
+					v = new complex_t(r1.subtract(complex_t.creall(c2)), complex_t.cimagl(c2)
 							.negate());
 					break;
 				case 3 + 0:
@@ -332,14 +329,14 @@ public class Constfold {
 					v = new complex_t(real_t.ZERO, i1.subtract(i2));
 					break;
 				case 3 + 2:
-					v = new complex_t(creall(c2).negate(), i1
-							.subtract(cimagl(c2)));
+					v = new complex_t(complex_t.creall(c2).negate(), i1
+							.subtract(complex_t.cimagl(c2)));
 					break;
 				case 6 + 0:
-					v = new complex_t(creall(c1).subtract(r2), cimagl(c1));
+					v = new complex_t(complex_t.creall(c1).subtract(r2), complex_t.cimagl(c1));
 					break;
 				case 6 + 1:
-					v = new complex_t(creall(c1), cimagl(c1).subtract(i2));
+					v = new complex_t(complex_t.creall(c1), complex_t.cimagl(c1).subtract(i2));
 					break;
 				case 6 + 2:
 					v = c1.subtract(c2);
