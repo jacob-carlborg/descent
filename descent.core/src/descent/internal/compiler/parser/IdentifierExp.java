@@ -219,7 +219,11 @@ public class IdentifierExp extends Expression {
 
 	@Override
 	public String toString() {
-		return new String(ident);
+		if (ident == null) {
+			return "null";
+		} else {
+			return new String(ident);
+		}
 	}
 
 }

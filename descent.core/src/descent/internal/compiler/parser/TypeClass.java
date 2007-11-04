@@ -331,7 +331,7 @@ public class TypeClass extends Type {
 
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (this == to) {
+		if (same(this, to)) {
 			return MATCHexact;
 		}
 
