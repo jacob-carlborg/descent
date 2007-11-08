@@ -5,7 +5,6 @@ import melnorme.lang.ui.EditorUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.ast.ASTNeoNode;
@@ -37,8 +36,8 @@ public class DeeDocTextHover extends AbstractTextHover {
 		}
 	}
 	
-	public DeeDocTextHover(ISourceViewer sourceViewer, ITextEditor textEditor) {
-		super(sourceViewer);
+	public DeeDocTextHover(ITextEditor textEditor) {
+		super();
 		Assert.isNotNull(textEditor);
 		this.fEditor = textEditor;
 	}

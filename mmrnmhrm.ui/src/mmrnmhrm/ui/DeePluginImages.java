@@ -58,7 +58,7 @@ public class DeePluginImages {
 	
 	private static String createImage_Obj(String imageName) {
 		String imgPath = ICONS_PATH + "obj16/" + imageName;
-		ImageDescriptor imgDesc = DeeUI.getImageDescriptor(imgPath);
+		ImageDescriptor imgDesc = DeePlugin.imageDescriptorFromPlugin(DeePlugin.PLUGIN_ID, imgPath);
 		if(imgDesc == null) {
 			DeePlugin.log(new FileNotFoundException(imgPath));
 		}
@@ -86,7 +86,7 @@ public class DeePluginImages {
 	
 	public static ImageDescriptor createActionImageDescriptor(String file,
 			boolean useMissingImageDescriptor) {
-		return DeePluginImages.createImageDescriptor(ACTIONS_PATH, file, true);
+		return DeePluginImages.createImageDescriptor(ACTIONS_PATH, file, useMissingImageDescriptor);
 	}
 
 	public static void setupActionImages(IAction action, String file) {

@@ -132,7 +132,7 @@ public class DeeSourceViewerConfiguration extends
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer,
 			String contentType, int stateMask) {
-		return new DeeDocTextHover(sourceViewer, getEditor());
+		return new DeeDocTextHover(getEditor());
 	}
 	
 	@Override @SuppressWarnings("unchecked")
@@ -200,7 +200,7 @@ public class DeeSourceViewerConfiguration extends
 			presenter.setInformationProvider(provider, contentTypes[i]);
 	}
 
-	private IInformationControlCreator getHierarchyPresenterControlCreator(ISourceViewer sourceViewer) {
+	private IInformationControlCreator getHierarchyPresenterControlCreator() {
 		return new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell parent) {
 				int shellStyle = SWT.RESIZE;
@@ -228,7 +228,7 @@ public class DeeSourceViewerConfiguration extends
 			return null;
 
 		InformationPresenter presenter = new InformationPresenter(
-				getHierarchyPresenterControlCreator(sourceViewer));
+				getHierarchyPresenterControlCreator());
 		presenter.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
 		presenter.setAnchor(AbstractInformationControlManager.ANCHOR_GLOBAL);
 		IInformationProvider provider = new org.eclipse.dltk.internal.ui.text. 

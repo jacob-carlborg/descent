@@ -39,7 +39,7 @@ public class DeeSourceColoringConfigurationBlock extends
 				{ "Keywords",
 					IDeeColorConstants.DEE_KEYWORD, sCoreCategory },
 				{ "Basic Types",
-					IDeeColorConstants.DEE_STRING, sCoreCategory },
+					IDeeColorConstants.DEE_BASICTYPES, sCoreCategory },
 				{ "Literals",
 					IDeeColorConstants.DEE_LITERALS, sCoreCategory },
                 { "Strings",

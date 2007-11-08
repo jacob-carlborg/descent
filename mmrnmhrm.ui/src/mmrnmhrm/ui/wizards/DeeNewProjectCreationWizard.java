@@ -13,7 +13,7 @@ import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.wizards.NewElementWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
-public class DeeProjectCreationWizard extends NewElementWizard {
+public class DeeNewProjectCreationWizard extends NewElementWizard {
 
 	protected ProjectWizardFirstPage_ fFirstPage;
     protected ProjectWizardSecondPage_ fSecondPage;
@@ -21,15 +21,20 @@ public class DeeProjectCreationWizard extends NewElementWizard {
     
 	private IConfigurationElement fConfigElement;
     
-	public DeeProjectCreationWizard() {
+	public DeeNewProjectCreationWizard() {
 		//setDefaultPageImageDescriptor(RubyImages.DESC_WIZBAN_PROJECT_CREATION);
 		setDialogSettings(DLTKUIPlugin.getDefault().getDialogSettings());
 		setWindowTitle(DeeNewWizardMessages.LangNewProject_wizardTitle);
 	}
 	
-	public void setInitializationData(IConfigurationElement cfig, String propertyName, Object data) {
+	
+	/*
+	 * Stores the configuration element for the wizard. The config element will
+	 * be used in <code>performFinish</code> to set the result perspective.
+	 */
+	/*public void setInitializationData(IConfigurationElement cfig, String propertyName, Object data) {
 		fConfigElement = cfig;
-	}
+	}*/
 
 	@Override
 	public void addPages() {

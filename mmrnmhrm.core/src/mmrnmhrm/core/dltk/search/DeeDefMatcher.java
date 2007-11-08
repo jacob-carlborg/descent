@@ -25,6 +25,7 @@ public class DeeDefMatcher extends PatternLocator {
 		this.defunit = defunit;
 	}
 	
+	@Override
 	@SuppressWarnings("restriction")
 	public int match(ASTNode node, MatchingNodeSet nodeSet) {
 		if(node instanceof Reference) {

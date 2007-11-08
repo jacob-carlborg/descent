@@ -2,7 +2,6 @@ package mmrnmhrm.ui.actions;
 
 import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -39,24 +38,23 @@ public class OperationsManager {
 				DeeCore.run(action, null);
 			}
 		};
-		return get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
+		return get().doOperation(opName, op);
 	}
 	
 	public static boolean executeSimple(ISimpleRunnable op, String opName) {
-		return get().doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
+		return get().doOperation(opName, op);
 	}
 
 
 	public void instanceDoOperation(String opName, ISimpleRunnable op) {
-		doOperation(opName, DeePlugin.getActiveWorkbenchShell(), op);
+		doOperation(opName, op);
 	}
 	
-	public boolean doOperation(String opName, Shell shell, ISimpleRunnable op) {
-		return doOperation(opName, shell, op, true);
+	public boolean doOperation(String opName, ISimpleRunnable op) {
+		return doOperation(opName, op, true);
 	}
 	
-	public boolean doOperation(String opName, Shell shell, ISimpleRunnable op,
-			boolean handleRuntimeExceptions) {
+	public boolean doOperation(String opName, ISimpleRunnable op, boolean handleRuntimeExceptions) {
 		this.opName = opName;
 		aboutToDoOperation();
 		
@@ -117,10 +115,8 @@ public class OperationsManager {
 		if(get().unitTestMode)
 			return;
 		
-		MessageDialog.openError(shell, title, message);	}
-
-
-
+		MessageDialog.openError(shell, title, message);
+	}
 
 
 

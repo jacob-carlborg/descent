@@ -10,7 +10,7 @@
  *******************************************************************************/
 package melnorme.util.ui.swt;
 
-import melnorme.miscutil.Assert;
+import static melnorme.miscutil.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -121,7 +121,7 @@ public class SWTLayoutUtil {
 			gd = new GridData();
 			control.setLayoutData(gd);
 		} else {
-			Assert.isTrue(ld instanceof GridData);
+			assertTrue(ld instanceof GridData);
 			gd = (GridData) ld;
 		}
 		return gd;

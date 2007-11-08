@@ -2,6 +2,7 @@ package mmrnmhrm.ui;
 
 import melnorme.lang.ui.InitializeAfterLoadJob;
 import melnorme.lang.ui.LangPlugin;
+import melnorme.util.ui.swt.SWTUtilExt;
 import mmrnmhrm.core.build.DeeProjectBuilder;
 import mmrnmhrm.ui.launch.DeeBuilderUIListener;
 import mmrnmhrm.ui.text.DeeTextTools;
@@ -58,6 +59,8 @@ public class DeePlugin extends LangPlugin {
 		Logg.main.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
 		Logg.main.println("Location: " + Platform.getLocation());
 		Logg.main.println("Instance Location: " + Platform.getInstanceLocation().getURL());
+		
+		SWTUtilExt.enableColorHelpers = Platform.inDebugMode();
 
 		//defaultDeeCodeScanner = new DeeCodeScanner();
 	}
@@ -65,6 +68,7 @@ public class DeePlugin extends LangPlugin {
 	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
 		DeeProjectBuilder.setBuilderListener(new DeeBuilderUIListener());
 		// nothing to do
+		monitor.done();
 	}
 
 	public ScriptTextTools getTextTools() {

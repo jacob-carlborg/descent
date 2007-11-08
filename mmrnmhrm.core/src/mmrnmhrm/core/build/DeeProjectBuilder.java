@@ -33,6 +33,7 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 	
 	private IFolder outputFolder;
 	
+	@Override
 	protected void startupOnInitialize() {
 		assertTrue(getModelProject() != null);
 	}
@@ -48,13 +49,24 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 	}
 	
 
+	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException {
 		IPath outputPath = getProjectOptions().compilerOptions.outputDir;
 		outputFolder = getProject().getFolder(outputPath);
 		if(outputFolder.exists()) {
-			outputFolder.delete(true, null);
-			outputFolder.create(true, true, monitor);
+			for(IResource res : outputFolder.members()) {
+				res.delete(true, monitor);
+			}
 		}
+	}
+	
+	private IFolder prepOutputFolder(DeeProjectOptions options) throws CoreException {
+		IPath outputPath = options.compilerOptions.outputDir;
+		IFolder outputFolder = getProject().getFolder(outputPath);
+
+		if(!outputFolder.exists())
+			outputFolder.create(IResource.DERIVED, true, null);
+		return outputFolder;
 	}
 
 	@Override
@@ -65,35 +77,26 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 		Logg.builder.println("Doing build ", kind, " for project:", project);
 
 		IScriptProject deeProj = getModelProject();
-		DeeBuilder compiler = new DeeBuilder();
+		DeeBuilder deeBuilder = new DeeBuilder();
 
 		monitor.beginTask("Building D project", 5);
 		
 		outputFolder = prepOutputFolder(getProjectOptions());
 		monitor.worked(1);
 		
-		compiler.collectBuildUnits(deeProj, monitor);
+		deeBuilder.collectBuildUnits(deeProj, monitor);
 		monitor.worked(1);
 		
-		compiler.compileModules(deeProj, monitor);
+		deeBuilder.compileModules(deeProj);
 		monitor.worked(1);
+
+		deeBuilder.runBuilder(deeProj, monitor);
+		monitor.worked(1);
+		
 		
 		outputFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
 		return null; // No deps
 	}
 
-
-
-	private IFolder prepOutputFolder(DeeProjectOptions options) throws CoreException {
-		IPath outputPath = options.compilerOptions.outputDir;
-		outputFolder = getProject().getFolder(outputPath);
-		if(outputFolder.exists()) {
-			outputFolder.delete(true, null);
-		}
-
-		if(!outputFolder.exists())
-			outputFolder.create(IResource.DERIVED, true, null);
-		return outputFolder;
-	}
 	
 }

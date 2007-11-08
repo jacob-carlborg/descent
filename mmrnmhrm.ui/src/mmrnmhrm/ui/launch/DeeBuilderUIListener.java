@@ -31,7 +31,7 @@ public class DeeBuilderUIListener implements IDeeBuilderListener {
 		Logg.main.println("Cleared console");
 		Thread.yield();
 		try {
-			Thread.sleep(200);
+			Thread.sleep(300);
 		} catch (InterruptedException e) {
 		}
 	}

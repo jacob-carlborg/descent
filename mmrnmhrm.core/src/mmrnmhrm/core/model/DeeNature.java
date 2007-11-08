@@ -16,12 +16,14 @@ public class DeeNature extends ScriptNature  {
 
 
 	/** Configure the project with a Dee nature. */
+	@Override
 	public void configure() throws CoreException {
 		super.configure();
 		addToBuildSpec(getProject(), DeeCore.BUILDER_ID);
 	}
 	
 	/** Remove the Dee nature from the project. */
+	@Override
 	public void deconfigure() throws CoreException {
 		super.configure();
 		removeFromBuildSpec(getProject(), DeeCore.BUILDER_ID);

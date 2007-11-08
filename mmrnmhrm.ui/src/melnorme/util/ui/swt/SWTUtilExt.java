@@ -24,7 +24,7 @@ public class SWTUtilExt {
 		
 	/** Controls the enablement of composite color helpers. 
 	 * (random backgroung color)*/
-	public static final boolean enableColorHelpers = true;
+	public static boolean enableColorHelpers = false;
 	
 	private static Random rnd = new Random(0);
 

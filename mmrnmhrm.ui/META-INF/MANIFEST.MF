@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: mmrnmhrm.ui;singleton:=true
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.2.2.qualifier
 Bundle-Activator: mmrnmhrm.ui.DeePlugin
 Bundle-Localization: plugin
 Require-Bundle: mmrnmhrm.core,
@@ -22,7 +22,6 @@ Require-Bundle: mmrnmhrm.core,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator,
  org.eclipse.search,
- org.junit4;visibility:=reexport,
  org.eclipse.core.filesystem,
  org.eclipse.ui.console,
  org.eclipse.debug.ui,

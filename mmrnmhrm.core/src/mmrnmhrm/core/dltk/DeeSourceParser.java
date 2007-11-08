@@ -58,7 +58,7 @@ public class DeeSourceParser implements ISourceParser {
 	}
 
 	protected static DeeModuleDeclaration parseModule(char[] source,
-			int langVersion, IProblemReporter reporter, char[] fileName) {
+			int langVersion, IProblemReporter reporter, @SuppressWarnings("unused")	char[] fileName) {
 		Parser parser = new Parser(langVersion, source);
 		parser.setProblemReporter(DescentProblemAdapter.create(reporter));
 		Module dmdModule = null;

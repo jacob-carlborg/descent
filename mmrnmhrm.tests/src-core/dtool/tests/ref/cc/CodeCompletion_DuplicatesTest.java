@@ -1,7 +1,10 @@
 package dtool.tests.ref.cc;
 
 import mmrnmhrm.tests.SampleMainProject;
+import mmrnmhrm.ui.DeePlugin;
 
+import org.eclipse.ui.IWorkbenchPage;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +19,13 @@ public class CodeCompletion_DuplicatesTest extends CodeCompletion__Common {
 	public static void commonSetUp() throws Exception {
 		setupWithFile(SampleMainProject.deeProj, TEST_SRCFILE);
 	}
+	
+	@AfterClass
+	public static void commonTearDown() throws Exception {
+		IWorkbenchPage page = DeePlugin.getActivePage();
+		page.closeAllEditors(false);
+	}
+	
 
 	
 	/* ------------- Tests -------------  */

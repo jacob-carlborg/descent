@@ -133,6 +133,7 @@ public class StringDialogField extends DialogField {
 		return fTextControl;
 	}
 	
+	@SuppressWarnings("unused")
 	private void doModifyText(ModifyEvent e) {
 		if (isOkToUse(fTextControl)) {
 			fText= fTextControl.getText();

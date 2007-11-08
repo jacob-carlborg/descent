@@ -5,7 +5,7 @@ import org.eclipse.core.resources.IProject;
 public class DeePluginPreferences {
 
 	// XXX: TODO add project scope
-	public static String getPreference(String key, IProject project) {
+	public static String getPreference(String key, @SuppressWarnings("unused") IProject project) {
 		return DeePlugin.getPrefStore().getString(key);
 	}
 

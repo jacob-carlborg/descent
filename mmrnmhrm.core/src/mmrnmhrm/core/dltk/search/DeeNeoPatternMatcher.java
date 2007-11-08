@@ -66,6 +66,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 	}
 
 
+	@Override
 	@SuppressWarnings("restriction")
 	public int match(ASTNode node, MatchingNodeSet nodeSet) {
 		if(matchDefinitions && node instanceof DefinitionAlias)
@@ -132,6 +133,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 		return IMPOSSIBLE_MATCH;
 	}
 
+	@Override
 	public String toString() {
 		return "Locator for " + this.typeDecPattern.toString(); //$NON-NLS-1$
 	}

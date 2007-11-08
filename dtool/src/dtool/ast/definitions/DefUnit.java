@@ -97,8 +97,7 @@ public abstract class DefUnit extends ASTNeoNode {
 	
 	/** Returns signature-oriented String representation. */
 	public String toStringForHoverSignature() {
-		String str = getArcheType().toString() 
-			+ "  " + getModuleScope().toStringAsElement() + "." + getName();
+		String str = getModuleScope().toStringAsElement() + "." + getName();
 		//if(getMembersScope() != this)str += " : " + getMembersScope();
 		return str;
 	}

@@ -97,6 +97,7 @@
             id="mmrnmhrm.core.launching.interpreterInstallType1">
       </interpreterInstallType>
    </extension>
+   <!--
    <extension
          point="org.eclipse.dltk.core.builder">
       <builder
@@ -104,6 +105,7 @@
             nature="mmrnmhrm.core.deenature">
       </builder>
    </extension>
+   -->
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType

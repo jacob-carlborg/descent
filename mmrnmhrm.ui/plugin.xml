@@ -46,7 +46,7 @@
             name="Dee (Mmrnmhrm)"/>
       <wizard
             category="mmrnmhrm.category"
-            class="mmrnmhrm.ui.wizards.DeeProjectCreationWizard"
+            class="mmrnmhrm.ui.wizards.DeeNewProjectCreationWizard"
             icon="icons/obj16/dee_project.gif"
             id="mmrnmhrm.ui.wizards.deeProjectWizard"
             name="Dee Project"

@@ -3,16 +3,11 @@
  */
 package mmrnmhrm.ui.launch;
 
-import java.util.List;
-
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.miscutil.StringUtil;
-import mmrnmhrm.core.build.DeeBuilder;
 import mmrnmhrm.core.launch.DeeLaunchConfigurationDelegate;
 import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.debug.ui.launchConfigurations.ScriptArgumentsTab;
@@ -35,14 +30,11 @@ final class DeeScriptArgumentsTab extends ScriptArgumentsTab {
 				throw ExceptionAdapter.unchecked(e);
 			}
 			if(deeProj != null) {
-				List<String> cmdLine = DeeBuilder.getDemoCmdLine(deeProj,
-						DeeModel.getDeeProjectInfo(deeProj),
-						new NullProgressMonitor());
-				
-				fInterpreterArgumentsText.setText(
-						StringUtil.collToString(cmdLine, " "));
+				//String buildCmds = DeeBuilder.getDemoBuildCommands(deeProj,
+				//		DeeModel.getDeeProjectInfo(deeProj),new NullProgressMonitor());
+				String buildCmds = DeeModel.getDeeProjectInfo(deeProj).getBuildCommands();
+				fInterpreterArgumentsText.setText(buildCmds.replace("\n", " "));
 			}
-
 		}
 	}
 

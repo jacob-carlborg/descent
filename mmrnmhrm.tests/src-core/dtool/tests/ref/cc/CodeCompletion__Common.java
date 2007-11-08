@@ -81,11 +81,8 @@ public class CodeCompletion__Common {
 		checkProposals(repOffset, repLen, prefixLen, results, expectedProposals);
 	}
 
-	protected static void checkProposal(DefUnit defUnit,
-			final int repOffset, final String repStr, final int repLen) {
-		//defUnit.apply(new TestCompletion_Document(repStr, repLen, repOffset));
-	}
 	
+	@SuppressWarnings("unused")
 	protected static void checkProposals(int repOffset, int repLen, int prefixLen,
 			ArrayList<DefUnit> results, String... expectedProposals) {
 		int expectedLength = expectedProposals.length;
@@ -113,7 +110,7 @@ public class CodeCompletion__Common {
 				
 			}
 			
-			checkProposal(results.get(i), repOffset, repStr, repLen);
+			//checkProposal(results.get(i), repOffset, repStr, repLen);
 			// Mark that expected as obtained
 			proposalsMatched[j] = true;
 		}

@@ -7,9 +7,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.build.DeeCompilerOptions;
+import mmrnmhrm.core.build.DeeBuildOptions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -32,11 +34,12 @@ public class DeeProjectOptions {
 	private static final String CFG_FILE_SECTION = "compileoptions";
 
 	public final IScriptProject dltkProj;
-	public DeeCompilerOptions compilerOptions;
+	public DeeBuildOptions compilerOptions;
 	
 	protected DeeProjectOptions(IScriptProject dltkProj) {
 		this.dltkProj = dltkProj;
-		this.compilerOptions = new DeeCompilerOptions(dltkProj.getElementName());
+		this.compilerOptions = new DeeBuildOptions(dltkProj.getElementName());
+		this.compilerOptions.buildToolCmdLine = "build -rf"+getBuildFile();
 	}
 	
 	public IProject getProject() {
@@ -61,8 +64,9 @@ public class DeeProjectOptions {
     	section.put("buildtype", compilerOptions.buildType.toString());
     	section.put("out", getOutputFolder().getProjectRelativePath().toString());
     	section.put("outname", compilerOptions.artifactName);
-    	section.put("buildtool", compilerOptions.buildTool);
-    	section.put("extraOptions", compilerOptions.extraOptions);
+    	section.put("buildtool", compilerOptions.buildToolCmdLine);
+    	section.put("extraOptions", compilerOptions.buildCommands);
+
 		
 		writeConfigFile(ini);
 	}
@@ -103,11 +107,12 @@ public class DeeProjectOptions {
 
 		String buildtool = section.get("buildtool");
 		if(buildtool != null)
-			compilerOptions.buildTool = buildtool;
+			compilerOptions.buildToolCmdLine = buildtool;
 
 		String extraOptions = section.get("extraOptions");
-		if(extraOptions != null)
-			compilerOptions.extraOptions = extraOptions;
+		if(extraOptions != null) {
+			compilerOptions.buildCommands = extraOptions.replace("\r\n", "\n");
+		}
 	}
 
 
@@ -163,7 +168,36 @@ public class DeeProjectOptions {
 		return output.toString();
 	}
 
-	public String getExtraOptions() {
-		return compilerOptions.extraOptions;
+	public String getBuildCommands() {
+		return compilerOptions.buildCommands;
 	}
+	
+	public String getBuildFile() {
+		return "build.rf";
+	}
+
+	public String[] getBuilderFullCommandLine() {
+		List<String> cmdLine = new ArrayList<String>();
+		String buildToolCmd = compilerOptions.buildToolCmdLine;
+		int lastpos = 0;
+		int i = 0;
+		while (i < buildToolCmd.length()) {
+			char ch = buildToolCmd.charAt(i);
+			if(ch == ' ') {
+				String str = buildToolCmd.substring(lastpos, i);
+				cmdLine.add(str);
+				while(ch == ' ' && i < buildToolCmd.length()) 
+					ch = buildToolCmd.charAt(++i);
+				lastpos = i;
+				continue;
+			}
+			++i;
+		}
+		if(lastpos < i)
+			cmdLine.add(buildToolCmd.substring(lastpos, i));
+			
+		return cmdLine.toArray(new String[0]);
+	}
+
+
 }

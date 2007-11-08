@@ -6,6 +6,7 @@ import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 import descent.internal.compiler.parser.ast.IASTNode;
 
+@SuppressWarnings("unused")
 public abstract class CoreConverter extends ASTCommonConverter {
 
 	

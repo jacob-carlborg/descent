@@ -1,14 +1,18 @@
 package mmrnmhrm.core.build;
 
+import static melnorme.miscutil.Assert.assertFail;
+
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.launch.DeeDmdInstallType;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeProjectOptions;
@@ -22,48 +26,67 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.core.IBuildpathEntry;
-import org.eclipse.dltk.core.IProjectFragment;
 import org.eclipse.dltk.core.IScriptProject;
 
 import dtool.Logg;
 
 public class DeeBuilder {
-
-	private List<String> buildModules;
-	private List<String> buildElements;
-	private IPath compilerPath;
-
-	public DeeBuilder() {
-		buildElements = new ArrayList<String>();
-		buildModules = new ArrayList<String>();
-		compilerPath = null;
-	}
-
-	public static List<String> getDemoCmdLine(IScriptProject deeProj,
+	
+	public static String getDemoBuildCommands(IScriptProject deeProj,
 			DeeProjectOptions overlayOptions, IProgressMonitor monitor) {
 		DeeBuilder builder = new DeeBuilder();
 		try {
-			builder.collectBuildUnits(deeProj, true, monitor);
+			//builder.dontCollectModules = true;
+			builder.collectBuildUnits(deeProj, monitor);
 		} catch (CoreException e) {
 			DeeCore.log(e);
-			return Collections.singletonList(
-					"Cannot determine preview: " + e) ;
+			return "Cannot determine preview: " + e ;
 		}
-		builder.buildModules = Collections.singletonList("<<files.d>>");
+		//builder.buildModules = Collections.singletonList("<<files.d>>");
 		//DeeProjectOptions options = DeeModel.getDeeProjectInfo(deeProj);
-		return builder.createCommandLine(deeProj, overlayOptions);
+		
+		//buildCommands = buildCommands.replace("$DEEBUILDER.SRCMODULES", "#DEEBUILDER.SRCMODULES#");
+		String buildCommands = builder.postProcessBuildCommands(overlayOptions);
+		//buildCommands.replace("#DEEBUILDER.SRCMODULES#", "$DEEBUILDER.SRCMODULES");
+		return buildCommands;
 	}
 	
-	public void collectBuildUnits(IScriptProject deeProj,
-			IProgressMonitor monitor) throws CoreException  {
-		collectBuildUnits(deeProj, false, monitor);
+	public static String getDefaultRebuildBuildFileData() {
+		return 
+		"-oq$DEEBUILDER.OUTPUTPATH\n"
+		+"-of$DEEBUILDER.OUTPUTEXE\n"
+		//+"$DEEBUILDER.EXTRAOPTS\n"
+		+"$DEEBUILDER.SRCLIBS.-I\n"
+		+"$DEEBUILDER.SRCFOLDERS.-I\n"
+		+"$DEEBUILDER.SRCMODULES\n";
+	}
+
+	
+	private boolean dontCollectModules;
+	
+	private List<String> libraryEntries;
+	private List<String> folderEntries;
+	private List<String> buildModules;
+	private IPath compilerPath;
+	private IPath standardLibPath;
+
+	public DeeBuilder() {
+		dontCollectModules = false;
+
+		buildModules = new ArrayList<String>();
+		libraryEntries = new ArrayList<String>();
+		folderEntries = new ArrayList<String>();
 	}
 	
-	private void collectBuildUnits(IScriptProject deeProj, boolean entriesOnly,
-			IProgressMonitor monitor) throws CoreException  {
+
+	private DeeProjectOptions getProjectOptions(IScriptProject deeProj) {
+		return DeeModel.getDeeProjectInfo(deeProj);
+	}
+
+
+	public void collectBuildUnits(IScriptProject deeProj, IProgressMonitor monitor) throws CoreException  {
 		
-		IProject project = deeProj.getProject();
-		
+	
 		IBuildpathEntry[] buildpathEntries = deeProj.getResolvedBuildpath(true);
 
 		for (int i = 0; i < buildpathEntries.length; i++) {
@@ -72,139 +95,194 @@ public class DeeBuilder {
 
 			
 			if(entry.getEntryKind() == IBuildpathEntry.BPE_SOURCE) {
-				//fixme, what if external
-				IPath entrypath;
-				IContainer entryResource = null;
-				if(!entry.isExternal()) {
-					IPath localpath = entry.getPath().removeFirstSegments(1);
-					entryResource = (IContainer) project.findMember(localpath);
-					entrypath = entryResource.getLocation();
-				} else {
-					entrypath = entry.getPath();
-				}
-				buildElements.add("-I"+entrypath.toOSString());
-				if(entriesOnly)	
-					continue;
-
-				if(entryResource != null)
-					proccessContainer(entrypath, entryResource, monitor);
+				processSourceEntry(deeProj, entry, monitor);
 			} else if(entry.getEntryKind() == IBuildpathEntry.BPE_LIBRARY) {
-				if(!entry.isExternal()) {
-					IPath entryFullPath = entry.getPath();
-					IProjectFragment projFrag = deeProj.findProjectFragment(entryFullPath);
-					if(projFrag != null)
-						Logg.main.println(StringUtil.collToString(projFrag.getChildren(), ","));
-					else
-						Logg.main.println("No proj fragment for: " + entryFullPath);
-				} else if (entry.getPath().lastSegment().matches("phobos")) {
-					buildElements.add("-I"+entry.getPath().toOSString());
-					// FIXME: BUILDER: Support other kinds of install locations
-					IPath path = entry.getPath().removeLastSegments(2);
-					compilerPath = path.append("bin");
-				}
+				processLibraryEntry(entry);
 			}
 		}
 	}
 
-	protected void proccessContainer(IPath entrypath, IContainer container,
+	private void processLibraryEntry(IBuildpathEntry entry) throws CoreException {
+		
+		if(entry.getPath().matchingFirstSegments(IBuildpathEntry.BUILTIN_EXTERNAL_ENTRY) == 1) {
+			// XXX: This entry has the compiler path, but has a bug in which the path device is lost
+			//compilerPath = standardLibPath.removeLastSegments(2).append("bin");
+		} else if (DeeDmdInstallType.isStandardLibraryEntry(entry)) {
+			// FIXME: BUILDER: Support other kinds of install locations
+			standardLibPath = entry.getPath();
+			compilerPath = standardLibPath.removeLastSegments(2).append("bin");
+
+		} else if(!entry.isExternal()) {
+			IPath projectBasedPath = entry.getPath().removeFirstSegments(1);
+			libraryEntries.add(projectBasedPath.toOSString());
+		}
+	}
+
+	private void processSourceEntry(IScriptProject deeProj, IBuildpathEntry entry, IProgressMonitor monitor)
+			throws CoreException {
+		IProject project = deeProj.getProject();
+
+		if(entry.isExternal()) {
+			throw DeeCore.createCoreException("Unsupported external source entry" + entry, null);
+		}
+		
+		IPath projectBasedPath = entry.getPath().removeFirstSegments(1);
+		IContainer entryContainer = (IContainer) project.findMember(projectBasedPath);
+
+		
+		String containerPathStr = entryContainer.isLinked(IResource.CHECK_ANCESTORS) ?
+				entryContainer.getLocation().toOSString()
+				: projectBasedPath.toOSString();
+		
+		folderEntries.add(containerPathStr);
+		if(dontCollectModules)	
+			return;
+
+		if(entryContainer != null)
+			proccessSourceFolder(entryContainer, monitor);
+		
+	}
+
+	protected void proccessSourceFolder(IContainer container,
 			IProgressMonitor monitor) throws CoreException {
 		
 		IResource[] members = container.members(false);
 		for (int i = 0; i < members.length; i++) {
 			IResource resource = members[i];
-			processResource(entrypath, resource);
 			if(resource.getType() == IResource.FOLDER) {
-				proccessContainer(entrypath, (IFolder) resource, monitor);
-			} 
-		}
-
-	}
-
-	
-	protected void processResource(IPath entrypath, IResource resource) {
-		if(resource.getType() == IResource.FILE) {
-			String modUnitName = resource.getName();
-			IPath path = resource.getProjectRelativePath();
-			String extName = path.getFileExtension();
-			String modName = path.removeFileExtension().lastSegment();
-			if(DeeNameRules.isValidCompilationUnitName(modUnitName)) {
-				buildModules.add(resource.getLocation().toOSString());
-				//addCompileBuildUnit(resource);
+				proccessSourceFolder((IFolder) resource, monitor);
+			} else if(resource.getType() == IResource.FILE) {
+				processResource((IFile) resource);
 			} else {
+				assertFail();
 			}
 		}
 	}
 
-	protected void compileModules(IScriptProject deeProj,
-			IProgressMonitor monitor) throws CoreException {
+	
+	protected void processResource(IFile file) {
+		String modUnitName = file.getName();
+		IPath projectRelativePath = file.getProjectRelativePath();
+		if(DeeNameRules.isValidCompilationUnitName(modUnitName)) {
+			String resourcePathStr = file.isLinked(IResource.CHECK_ANCESTORS) ?
+					file.getLocation().toOSString()
+					: projectRelativePath.toOSString();
+			
+			buildModules.add(resourcePathStr);
+			//addCompileBuildUnit(resource);
+		} else {
+		}
+		//String extName = projectRelativePath.getFileExtension();
+		//String modName = projectRelativePath.removeFileExtension().lastSegment();
+	}
+
+	protected void compileModules(IScriptProject deeProj) throws CoreException {
 		
-		DeeProjectOptions options = DeeModel.getDeeProjectInfo(deeProj);
-		IFolder outputFolder = options.getOutputFolder();
+		DeeProjectOptions options = getProjectOptions(deeProj);
+		//IFolder outputFolder = options.getOutputFolder();
 		
-		List<String> cmdlineParams = createCommandLine(deeProj, options);
+		String buildCommands = postProcessBuildCommands(options);
+
+		Logg.main.println("--------  Build Commands:  --------\n" + buildCommands);
+		DeeProjectBuilder.buildListener.clear(); // This will wait some ms due to race
+		DeeProjectBuilder.buildListener.println("--------  Build Commands:  --------\n" + buildCommands);
+
 		
-		IFile file = outputFolder.getFile(options.getArtifactNameNoExt()+".brf");
+		IFile file = deeProj.getProject().getFile(options.getBuildFile());
 		
-		byte[] buf = StringUtil.collToString(cmdlineParams, "\n").getBytes();
+		byte[] buf = buildCommands.getBytes();
 		InputStream is = new ByteArrayInputStream(buf);
 		if(file.exists() == false) {
 			file.create(is, false, null);
 		} else {
 			file.setContents(is, IResource.NONE, null);
 		}
-
-		Logg.main.println(">>> " + cmdlineParams);
-		DeeProjectBuilder.buildListener.clear();
-		DeeProjectBuilder.buildListener.println(">>> " + cmdlineParams);
-
-		String exe = options.compilerOptions.buildTool;
-		String rspfile = "@" + file.getProjectRelativePath().toOSString();
-		
-		IPath workDir = deeProj.getProject().getLocation();
-		runBuildProcess(monitor, workDir , exe, rspfile);
-
 	}
 
-	protected List<String> createCommandLine(IScriptProject deeProj,
-			DeeProjectOptions options) {
+	private String postProcessBuildCommands(DeeProjectOptions options) {
+		StringBuilder strb = new StringBuilder(options.getBuildCommands());
 		
-		List<String> cmdline = new ArrayList<String>();
-		
-		cmdline.addAll(buildElements);
-		
-		if(compilerPath != null)
-			cmdline.add("-DCPATH"+compilerPath.toOSString());
-		
-
 		IPath outputPath = options.getOutputFolder().getProjectRelativePath();
-		cmdline.add("-od"+outputPath);
-
-		cmdline.add("-Rn");
-		String appname;
-		appname = outputPath.append(options.getArtifactName()).toOSString();
-		cmdline.add("-T"+appname);
-		if(options.getExtraOptions().length() != 0) {
-			String[] extrasOpts = options.getExtraOptions().split("\r\n|\n");
-			for (int i = 0; i < extrasOpts.length; i++) {
-				cmdline.add(extrasOpts[i]);
-			}
+		String outputDir = outputPath.toOSString();
+		while(StringUtil.replace(strb, "$DEEBUILDER.OUTPUTPATH", outputDir));
+		
+		String outputExe = outputPath.append(options.getArtifactName()).toOSString();
+		while(StringUtil.replace(strb, "$DEEBUILDER.OUTPUTEXE", outputExe));
+		
+		
+/*		{
+		String optionsStr = "";
+		String[] extrasOpts = options.getBuildCommands().split("\r\n|\n");
+		for (String opt : extrasOpts) {
+			optionsStr += opt + "\n";
+		}
+		while(StringUtil.replace(strb, "$DEEBUILDER.EXTRAOPTS", optionsStr));
+		}
+*/
+		{
+		String srcLibs = "";
+		for (String srcLib : libraryEntries) {
+			srcLibs += "-I" + srcLib + "\n";
+		}
+		while(StringUtil.replace(strb, "$DEEBUILDER.SRCLIBS.-I", srcLibs));
 		}
 		
-		cmdline.addAll(buildModules);
+		{
+		String srcFolders = "";
+		for (String srcfolder : folderEntries) {
+			srcFolders += "-I" + srcfolder + "\n";
+		}
+		while(StringUtil.replace(strb, "$DEEBUILDER.SRCFOLDERS.-I", srcFolders));
+		}
 
-		return cmdline;
+
+		{
+		String srcModules = "";
+		for (String srcModule : buildModules) {
+			srcModules += srcModule + "\n";
+		}
+		while(StringUtil.replace(strb, "$DEEBUILDER.SRCMODULES", srcModules));
+		}
+		
+		return strb.toString();
 	}
 
-
-	private void runBuildProcess(IProgressMonitor monitor,
-			IPath workDir, String... cmdLine)
+	
+	public void runBuilder(IScriptProject deeProj, IProgressMonitor monitor)
 			throws CoreException {
+
+		DeeProjectOptions options = getProjectOptions(deeProj);
+		IPath workDir = deeProj.getProject().getLocation();
+
+		//String buildToolExePath = splitSpaces(options.compilerOptions.buildToolCmdLine);
+		//String[] cmdLine = { buildToolExePath, options.getBuilderCommandLine() };
+		
+		String[] cmdLine = options.getBuilderFullCommandLine();
+
+		
 		final ProcessBuilder builder = new ProcessBuilder(cmdLine);
-		builder.directory(workDir.toFile());
+
+		Map<String, String> env = builder.environment();
+		String pathName = "PATH";
+		String pathStr = env.get(pathName);
+		if(pathStr == null) {
+			pathName = "Path";
+			pathStr = env.get(pathName);
+		}
+		if(pathStr == null) {
+			pathName = "path";
+			pathStr = env.get(pathName);
+		}
+		pathStr = compilerPath.toOSString() + File.pathSeparator + pathStr;
+		env.put(pathName, pathStr);
+
 		if(cmdLine.toString().length() > 30000)
 			throw DeeCore.createCoreException(
 					"D Build: Error cannot build: cmd-line too big", null);
 
+		
+		builder.directory(workDir.toFile());
+		
 		try {
 			Process proc = builder.start();
 			ProcessUtil.waitForProcess(monitor, proc);

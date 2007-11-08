@@ -1,18 +1,15 @@
 package mmrnmhrm.ui.preferences;
 
 import static melnorme.miscutil.Assert.assertNotNull;
-
-import java.util.List;
-
-import melnorme.miscutil.StringUtil;
+import static melnorme.miscutil.Assert.assertTrue;
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.ProjectContainerSelectionDialog;
 import melnorme.util.ui.fields.SelectionComboDialogField;
 import melnorme.util.ui.fields.StringDialogField;
-import melnorme.util.ui.swt.SWTLayoutUtil;
 import melnorme.util.ui.swt.RowComposite;
+import melnorme.util.ui.swt.SWTLayoutUtil;
+import mmrnmhrm.core.build.DeeBuildOptions;
 import mmrnmhrm.core.build.DeeBuilder;
-import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProjectOptions;
 import mmrnmhrm.ui.actions.OperationsManager;
@@ -41,7 +38,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	DeeProjectOptions fOverlayOptions;
 
 	
-	protected SelectionComboDialogField<DeeCompilerOptions.EBuildTypes> fBuildType;
+	protected SelectionComboDialogField<DeeBuildOptions.EBuildTypes> fBuildType;
 	protected StringDialogField fArtifactName;
 	protected StringButtonDialogField fOutputDir;
 	protected StringButtonDialogField fCompilerTool;
@@ -56,9 +53,9 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	
 	public DeeProjectOptionsBlock() {
 
-		fBuildType = new SelectionComboDialogField<DeeCompilerOptions.EBuildTypes>();
+		fBuildType = new SelectionComboDialogField<DeeBuildOptions.EBuildTypes>();
 		fBuildType.setLabelText("Build Type:");
-		fBuildType.setObjectItems(DeeCompilerOptions.EBuildTypes.values());
+		fBuildType.setObjectItems(DeeBuildOptions.EBuildTypes.values());
 		fBuildType.setDialogFieldListener(this);
 		
 		fArtifactName = new StringDialogField(SWT.BORDER | SWT.SINGLE);
@@ -112,11 +109,13 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		fCompilerTool.setButtonLabel("Browse");
 		fCompilerTool.setDialogFieldListener(this);
 		
-		fExtraOptions = new StringDialogField(SWT.BORDER | SWT.MULTI);
-		fExtraOptions.setLabelText("Extra Compiler Options (newline separated):");
+		fExtraOptions = new StringDialogField(SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
+				);
+		fExtraOptions.setLabelText("Build Commands (newline separated):");
 		fExtraOptions.setDialogFieldListener(this);
 
-		fOptionsPreview = new StringDialogField(SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+		fOptionsPreview = new StringDialogField(SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL 
+				| SWT.READ_ONLY);
 		fOptionsPreview.setLabelText("Compiler Options Preview:");
 		
 	}
@@ -125,6 +124,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		assertNotNull(projectInfo);
 		fDeeProjOptions = projectInfo;
 		fOverlayOptions = fDeeProjOptions.clone();
+		assertTrue(fOverlayOptions.getBuildCommands().indexOf('\r') == -1);
 		updateView();
 	}
 	
@@ -152,11 +152,11 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		Composite comp;
 
 
-		comp = FieldUtil.createCompose(rowComposite, false, fBuildType);
+/*		comp = FieldUtil.createCompose(rowComposite, false, fBuildType);
 		//LayoutUtil.setHorizontalSpan(fBuildType.getLabelControl(null), 1);
 		SWTLayoutUtil.setWidthHint(fBuildType.getLabelControl(null), 100);
 		SWTLayoutUtil.setWidthHint(fBuildType.getComboControl(null), 80);
-		
+	*/	
 		comp = FieldUtil.createCompose(rowComposite, false, fArtifactName);
 		SWTLayoutUtil.setWidthHint(fArtifactName.getLabelControl(null), 100);
 		SWTLayoutUtil.setWidthHint(fArtifactName.getTextControl(null), 120);
@@ -175,10 +175,12 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		comp = FieldUtil.createCompose(rowComposite, true, fExtraOptions);
 		SWTLayoutUtil.enableDiagonalExpand(comp);
 		SWTLayoutUtil.enableDiagonalExpand(fExtraOptions.getTextControl(null));
+		SWTLayoutUtil.setHeightHint(fExtraOptions.getTextControl(null), 200);
 
 		comp = FieldUtil.createCompose(rowComposite, true, fOptionsPreview);
 		SWTLayoutUtil.enableDiagonalExpand(comp);
 		SWTLayoutUtil.enableDiagonalExpand(fOptionsPreview.getTextControl(null));
+		SWTLayoutUtil.setHeightHint(fOptionsPreview.getTextControl(null), 200);
 
 		return content;
 	}
@@ -188,32 +190,33 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	}
 	
 	private void updateView() {
-		DeeCompilerOptions options = fOverlayOptions.compilerOptions;
+		DeeBuildOptions options = fOverlayOptions.compilerOptions;
 		fBuildType.setTextWithoutUpdate(options.buildType.toString());
 		fArtifactName.setTextWithoutUpdate(options.artifactName);
 		fOutputDir.setTextWithoutUpdate(options.outputDir.toString());
-		fCompilerTool.setTextWithoutUpdate(options.buildTool);
-		fExtraOptions.setTextWithoutUpdate(options.extraOptions);
+		fCompilerTool.setTextWithoutUpdate(options.buildToolCmdLine);
+		fExtraOptions.setTextWithoutUpdate(options.buildCommands);
 
-		updateBuildPreview(options);
+		updateBuildPreview();
 	}
 	
 	//@Override
 	public void dialogFieldChanged(DialogField field) {
-		DeeCompilerOptions options = fOverlayOptions.compilerOptions;
+		DeeBuildOptions options = fOverlayOptions.compilerOptions;
 		options.buildType = fBuildType.getSelectedObject();
 		options.artifactName = fArtifactName.getText();
 		options.outputDir = new Path(fOutputDir.getText());
-		options.buildTool = fCompilerTool.getText();
-		options.extraOptions = fExtraOptions.getText();
+		options.buildToolCmdLine = fCompilerTool.getText().replace("\r", "");
+		options.buildCommands = fExtraOptions.getText().replace("\r", "");
 		
-		updateBuildPreview(options);
+		updateBuildPreview();
 	}
 
-	private void updateBuildPreview(DeeCompilerOptions options) {
-		List<String> cmdLine = DeeBuilder.getDemoCmdLine(fDeeProjOptions.dltkProj,
+	private void updateBuildPreview() {
+		String cmds = DeeBuilder.getDemoBuildCommands(fDeeProjOptions.dltkProj,
 				fOverlayOptions, new NullProgressMonitor());
-		fOptionsPreview.setText(StringUtil.collToString(cmdLine, "  "));
+		assertTrue(cmds.indexOf('\r') == -1);
+		fOptionsPreview.setText(cmds);
 	}
 
 	public boolean performOk() {

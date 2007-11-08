@@ -109,7 +109,7 @@ public class ExceptionHandler {
 	}
 
 	//---- Helper methods -----------------------------------------------------------------------
-	
+	@SuppressWarnings("unused")
 	private void displayMessageDialog(Throwable t, String exceptionMessage,
 			Shell shell, String title, String message) {
 		StringWriter msg= new StringWriter();

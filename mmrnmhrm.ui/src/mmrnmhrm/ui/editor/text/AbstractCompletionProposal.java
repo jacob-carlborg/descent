@@ -233,9 +233,9 @@ public abstract class AbstractCompletionProposal implements
 	/** Returns the style information for displaying HTML (Javadoc) content. */
 	protected String getCSSStyles() {
 		if (fgCSSStyles == null) {
-			fgCSSStyles= HoverUtil.loadStyleSheet("/JavadocHoverStyleSheet.css");
+			fgCSSStyles= HoverUtil.getDDocPreparedCSS("/JavadocHoverStyleSheet.css");
 		}
-		return HoverUtil.setupCSS(fgCSSStyles);
+		return fgCSSStyles;
 	}
 	
 	@SuppressWarnings("restriction")

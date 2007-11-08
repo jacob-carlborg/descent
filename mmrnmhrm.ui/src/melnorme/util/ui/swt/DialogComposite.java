@@ -14,19 +14,8 @@ public class DialogComposite extends Composite {
 	
 	/** Creates a composite with no margins and SWT default spacing. */
 	public DialogComposite(Composite parent) {
-		this(parent, false, false);
-	}
-
-	/** Creates a composite with optional margins and default spacing. */
-	public DialogComposite(Composite parent, boolean margins) {
-		this(parent, margins, false);
-	}
-
-	/** Creates a composite with optional margins, initialized to either
-	 * SWT defaults or dialog units defaults. */
-	public DialogComposite(Composite parent, boolean margins, boolean useDLUdefaults) {
 		super(parent, SWT.NONE);
-
+		
 		SWTUtilExt.setRandomColor(this);
 		
 		if(parent.getLayout() instanceof GridLayout) {

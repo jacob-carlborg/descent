@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 
-public class DeeCompilerOptions {
+public class DeeBuildOptions {
 
 	public static enum EBuildTypes {
 		EXECUTABLE,
@@ -16,15 +16,15 @@ public class DeeCompilerOptions {
 	public String artifactName;
 	/** Project relative path */
 	public IPath outputDir;
-	public String buildTool;
-	public String extraOptions;
+	public String buildToolCmdLine;
+	public String buildCommands;
 	
-	public DeeCompilerOptions(String projname) {
+	public DeeBuildOptions(String projname) {
 		buildType = EBuildTypes.EXECUTABLE;
 		artifactName = projname + getOSExtension();
 		outputDir = new Path(defaultOutputFolder());
-		buildTool = "bud";
-		extraOptions = "";
+		buildToolCmdLine = "build -rfbuild.rf";
+		buildCommands = DeeBuilder.getDefaultRebuildBuildFileData();
 	}
 
 	private static String getOSExtension() {
@@ -38,13 +38,14 @@ public class DeeCompilerOptions {
 	}
 	
 	@Override
-	public DeeCompilerOptions clone() {
-		DeeCompilerOptions options = new DeeCompilerOptions(artifactName);
+	public DeeBuildOptions clone() {
+		DeeBuildOptions options = new DeeBuildOptions(artifactName);
 		options.buildType = buildType;
 		options.artifactName = artifactName;
 		options.outputDir = outputDir;
-		options.buildTool = buildTool;
-		options.extraOptions = extraOptions;
+		options.buildToolCmdLine = buildToolCmdLine;
+		options.buildCommands = buildCommands;
+
 		return options;
 	}
 }

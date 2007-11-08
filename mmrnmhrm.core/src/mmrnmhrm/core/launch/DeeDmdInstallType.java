@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.dltk.core.IBuildpathEntry;
 import org.eclipse.dltk.internal.launching.AbstractInterpreterInstallType;
 import org.eclipse.dltk.launching.IInterpreterInstall;
 import org.eclipse.dltk.launching.LibraryLocation;
@@ -27,6 +28,14 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 
 	private static String[] interpreterNames = { "dmd" };
+	
+	public static boolean isStandardLibraryEntry(IBuildpathEntry entry) {
+		int numSegs = entry.getPath().segmentCount();
+		return entry.isExternal() 
+			&& entry.getPath().isAbsolute()
+			&& entry.getPath().lastSegment().matches("phobos")
+			&& entry.getPath().segment(numSegs-2).matches("src");
+	}
 	
 	public static class DeeLaunchingPlugin extends DeeCore {
 	}
@@ -66,8 +75,9 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 		return super.getDefaultLibraryLocations(installLocation);
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
-	protected org.eclipse.jface.operation.IRunnableWithProgress createLookupRunnable(
+	protected IRunnableWithProgress createLookupRunnable(
 			final File installLocation, final List locations) {
 		//return super.createLookupRunnable(installLocation, locations);
 		final List<LibraryLocation> locs = locations;
@@ -80,7 +90,7 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 				try {
 					path = new Path(installLocation.getCanonicalPath());
 					path = path.removeLastSegments(2);
-					path = path.append("src").append("phobos");
+					path = path.append(new Path("src/phobos"));
 					LibraryLocation loc = new LibraryLocation(path);
 					locs.add(loc);
 				} catch (IOException e) {
@@ -138,5 +148,6 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 			br.close(); br.close();
 		}
 	}
+
 
 }

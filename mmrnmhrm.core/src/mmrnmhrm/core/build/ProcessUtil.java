@@ -26,6 +26,7 @@ public class ProcessUtil {
 		 * Reads text from the input stream and redirects it to standard output
 		 * using a separate thread.
 		 */
+		@Override
 		public void run() {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;

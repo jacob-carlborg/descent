@@ -56,7 +56,8 @@ public class DescentASTConverter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends IASTNode> List<T> convertManyL(List<? extends ASTNode> children, List<T> dummy) {
+	public static <T extends IASTNode> List<T> convertManyL(List<? extends ASTNode> children, 
+			@SuppressWarnings("unused")	List<T> dummy) {
 		StatementConverter conv = new StatementConverter();
 		if(children == null)
 			return null;
@@ -70,7 +71,8 @@ public class DescentASTConverter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends IASTNode> List<T> convertManyL(ASTNode[] children, List<T> dummy) {
+	public static <T extends IASTNode> List<T> convertManyL(ASTNode[] children, 
+			@SuppressWarnings("unused") List<T> dummy) {
 		StatementConverter conv = new StatementConverter();
 		List<T> rets = new ArrayList<T>(children.length);
 		for (int i = 0; i < children.length; ++i) {

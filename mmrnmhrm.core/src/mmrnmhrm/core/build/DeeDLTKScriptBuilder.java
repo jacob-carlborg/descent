@@ -12,6 +12,7 @@ import org.eclipse.dltk.core.builder.IScriptBuilder;
 
 import dtool.Logg;
 
+@Deprecated
 public class DeeDLTKScriptBuilder implements IScriptBuilder {
 
 	//@Override

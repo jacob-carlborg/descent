@@ -25,7 +25,7 @@ import static melnorme.miscutil.Assert.assertTrue;
 
 public class DeeProjectWizardTest extends BaseUITest {
 
-	private DeeProjectCreationWizard wizard;
+	private DeeNewProjectCreationWizard wizard;
 	private TestAccessor_WizardDialog wizDialog;
 	
 	final static String NEWPROJNAME = "WizardCreationProject";
@@ -34,7 +34,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	public void setUp() throws Exception {
 		tearDown();
         //WorkbenchPlugin.getDefault().getNewWizardRegistry().findWizard(id);
-		wizard = new DeeProjectCreationWizard();
+		wizard = new DeeNewProjectCreationWizard();
 		IWorkbenchWindow window = DeePlugin.getActiveWorkbenchWindow();
 		wizard.init(window.getWorkbench(), null);
 		

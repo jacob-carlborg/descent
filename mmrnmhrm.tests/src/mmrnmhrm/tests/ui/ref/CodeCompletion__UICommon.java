@@ -98,15 +98,16 @@ public class CodeCompletion__UICommon extends UITestWithEditor {
 	
 	protected static void checkProposals(int repOffset, int repLen, int prefixLen,
 			ICompletionProposal[] proposals, String... expectedProposals) {
-		boolean[] proposalsMatched = new boolean[expectedProposals.length];
+		int expectedLength = expectedProposals.length;
+		boolean[] proposalsMatched = new boolean[expectedLength];
 
-		assertTrue(proposals.length == expectedProposals.length, 
-				"Size mismatch, expected: "+expectedProposals.length
+		assertTrue(proposals.length == expectedLength, 
+				"Size mismatch, expected: " + expectedLength
 				+" got: "+ proposals.length);
 		
 		for (int i = 0; i < proposals.length; i++) {
 			DeeCompletionProposal proposal = (DeeCompletionProposal) proposals[i];
-			String defName = proposal.defUnit.getName();
+			String defName = proposal.defUnit.toStringAsElement();
 
 			String repStr;
 			// Find this proposal in the expecteds
@@ -117,7 +118,8 @@ public class CodeCompletion__UICommon extends UITestWithEditor {
 				if(defName.substring(prefixLen).equals(repStr))
 					break;
 
-				if(j == expectedProposals.length-1)
+				// if end of cicle
+				if(j == expectedLength-1)
 					assertFail("Got Unmatched proposal:"+defName);
 				
 			}

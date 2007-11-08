@@ -35,12 +35,14 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 
 	private ASTVisitor visitor = new ASTVisitor() {
 
+		@Override
 		public boolean visitGeneral(ASTNode node) throws Exception {
 			processNode(node);
 			return true;
 			// return super.visitGeneral(node);
 		}
 
+		@Override
 		public boolean visit(ASTNode node) throws Exception {
 			processNode(node);
 			return true;
