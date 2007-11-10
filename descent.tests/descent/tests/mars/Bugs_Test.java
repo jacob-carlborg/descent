@@ -324,6 +324,16 @@ public class Bugs_Test extends Parser_Test {
 		assertEquals(1, node.preComments.size());
 	}
 	
+	public void testTicket25() {
+		String s;
+		
+		s = "char[] s = \"°a\";";
+		assertEquals(0, getCompilationUnit(s).problems.size());
+		
+		s = "char[] s = \"a°\";";
+		assertEquals(0, getCompilationUnit(s).problems.size());
+	}
+	
 	public void testTypeSArray1() {
 		String s = "bool[2][4] b;";
 		

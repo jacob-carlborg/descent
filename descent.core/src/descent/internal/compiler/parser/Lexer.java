@@ -5078,7 +5078,7 @@ public class Lexer implements IProblemRequestor {
 			// decode one codepoint, starting at the index p 
 			int result = Character.codePointAt(input, p);
 			// increase p with the count of chars for the decoded codepoint. 
-			p = Character.offsetByCodePoints(input, 0, input.length, p, 1);
+			p = Character.offsetByCodePoints(input, 0, input.length, p, 1) - 1;
 			return result;
 		} catch (Exception e) {
 			// a problem while decoding the codepoint occured => invalid input 

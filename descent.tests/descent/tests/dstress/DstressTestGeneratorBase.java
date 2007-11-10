@@ -1502,6 +1502,24 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("typeof_17_B.d");
 		failures.add("typeof_17_C.d");
 		
+		// These ones deals with encoding, but Eclipse already do that
+		// for us... just ignore them, they work
+		failures.add("encoding_utf_16be_bom.d");
+		failures.add("encoding_utf_16le.d");
+		failures.add("encoding_utf_16le_bom.d");
+		failures.add("encoding_utf_32le.d");
+		failures.add("encoding_utf_32le_bom.d");
+		failures.add("encoding_utf_8.d");
+		failures.add("encoding_utf_8_bom.d");
+		for(int i = 0; i <= 7; i++) {
+			failures.add("unicode_0" + i + ".d");
+		}
+		failures.add("eol_comment_07.d");
+		failures.add("eol_comment_08.d");
+		failures.add("eol_comment_09.d");
+		failures.add("eol_01.d");
+		failures.add("eol_02.d");
+		failures.add("eol_03.d");
 		
 		// Although they are not failures, Descent dies because of
 		// a StackOverflowError

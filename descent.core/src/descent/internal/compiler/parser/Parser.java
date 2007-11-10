@@ -6909,7 +6909,8 @@ public class Parser extends Lexer {
 				// Let's see if it's correct
 				// TODO improve performance
 				StringTokenizer st = new StringTokenizer(new String(token.sourceString).substring(1));
-				if (st.countTokens() != 3) {
+				int count = st.countTokens();
+				if (count <= 1 || count >= 4) {
 					error(IProblem.InvalidPragmaSyntax, token);
 					setMalformed(pragma);
 				} else {
@@ -6920,14 +6921,18 @@ public class Parser extends Lexer {
 					} else {
 						value = st.nextToken();
 						try {
-							int num = Integer.parseInt(value);
-							if (num <= 0) throw new NumberFormatException();
+							if (!"__LINE__".equals(value)) {
+								int num = Integer.parseInt(value);
+								if (num < 0) throw new NumberFormatException();
+							}
 							
-							value = st.nextToken();
-							if (!"__FILE__".equals(value)) {
-								if (value.length() < 2 || value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
-									error(IProblem.InvalidPragmaSyntax, token);
-									setMalformed(pragma);
+							if (st.hasMoreTokens()) {
+								value = st.nextToken();
+								if (!"__FILE__".equals(value)) {
+									if (value.length() < 2 || value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
+										error(IProblem.InvalidPragmaSyntax, token);
+										setMalformed(pragma);
+									}
 								}
 							}
 						} catch (NumberFormatException e) {
