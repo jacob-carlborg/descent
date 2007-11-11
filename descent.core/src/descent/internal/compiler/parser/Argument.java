@@ -149,7 +149,9 @@ public class Argument extends ASTDmdNode {
 
 			if (t.ty == TY.Ttuple) {
 				TypeTuple tu = (TypeTuple) t;
-				arg = getNth(tu.arguments, nth - n, pn, context);
+				int[] _pn = { n };
+				arg = getNth(tu.arguments, nth - n, _pn, context);
+				n = _pn[0];
 				if (arg != null) {
 					return arg;
 				}

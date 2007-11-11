@@ -5747,7 +5747,7 @@ public class Parser extends Lexer {
 		case TOKlparen:
 		    if (peekPastParen(token).value == TOKlcurly) { // (arguments) {
 															// statements... }
-				save = TOKreserved;
+				save = TOKdelegate;
 				// goto case_delegate;
 				{
 				Expression[] pe = { e };
@@ -5810,7 +5810,7 @@ public class Parser extends Lexer {
 		
 		case TOKlcurly:
 		    // { statements... }
-			save = TOKreserved;
+			save = TOKdelegate;
 			// goto case_delegate;
 			{
 			Expression[] pe = { e };

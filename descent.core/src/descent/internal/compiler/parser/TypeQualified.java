@@ -9,7 +9,7 @@ import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 public abstract class TypeQualified extends Type {
 
 	public Loc loc;
-	public Identifiers idents;
+	public Identifiers idents = new Identifiers();
 
 	public TypeQualified(Loc loc, TY ty) {
 		super(ty, null);
@@ -17,9 +17,6 @@ public abstract class TypeQualified extends Type {
 	}
 
 	public void addIdent(IdentifierExp ident) {
-		if (idents == null) {
-			idents = new Identifiers();
-		}
 		idents.add(ident);
 	}
 
