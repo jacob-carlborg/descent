@@ -119,9 +119,8 @@ public class Module extends Package {
 		for (int i = 0; i < size(members); i++) {
 			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
-		}
-
-		runDeferredSemantic(context);
+			runDeferredSemantic(context);
+		}		
 
 		sc = sc.pop();
 		sc.pop();
