@@ -733,7 +733,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		cd.storage_class |= storage_class;
 
 		cd.baseclasses = new BaseClasses(this.baseclasses.size());
-		for (int i = 0; i < cd.baseclasses.size(); i++) {
+		for (int i = 0; i < this.baseclasses.size(); i++) {
 			BaseClass b = this.baseclasses.get(i);
 			BaseClass b2 = new BaseClass(b.type.syntaxCopy(), b.protection);
 			cd.baseclasses.add(b2);
