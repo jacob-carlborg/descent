@@ -306,7 +306,7 @@ public class VarDeclaration extends Declaration {
 				}
 
 				Expression e = new DsymbolExp(loc, v);
-				exps.add(e);
+				exps.set(i, e);
 			}
 			TupleDeclaration v2 = new TupleDeclaration(loc, ident, exps);
 			v2.isexp = true;

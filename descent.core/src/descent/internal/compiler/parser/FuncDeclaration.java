@@ -1502,7 +1502,7 @@ public class FuncDeclaration extends Declaration {
 									null, context).isVarDeclaration();
 							Assert.isNotNull(v);
 							Expression e = new VarExp(loc, v);
-							exps.add(e);
+							exps.set(j, e);
 						}
 						Assert.isNotNull(arg.ident);
 						TupleDeclaration v = new TupleDeclaration(loc,
