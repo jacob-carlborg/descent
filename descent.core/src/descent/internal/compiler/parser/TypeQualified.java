@@ -222,7 +222,8 @@ public abstract class TypeQualified extends Type {
 	}
 
 	public void syntaxCopyHelper(TypeQualified t) {
-		if (idents != null) {
+		if (idents != null && t.idents != null) {
+			idents.setDim(t.idents.size());
 			for (int i = 0; i < idents.size(); i++) {
 				IdentifierExp id = t.idents.get(i);
 				if (id.dyncast() == DYNCAST_DSYMBOL) {
