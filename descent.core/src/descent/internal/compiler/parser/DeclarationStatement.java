@@ -54,9 +54,9 @@ public class DeclarationStatement extends ExpStatement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		DeclarationStatement ds = new DeclarationStatement(loc, exp
-				.syntaxCopy());
+				.syntaxCopy(context));
 		return ds;
 	}
 

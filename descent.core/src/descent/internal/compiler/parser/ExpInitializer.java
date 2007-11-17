@@ -85,8 +85,8 @@ public class ExpInitializer extends Initializer {
 	}
 
 	@Override
-	public Initializer syntaxCopy() {
-		return new ExpInitializer(loc, exp.syntaxCopy());
+	public Initializer syntaxCopy(SemanticContext context) {
+		return new ExpInitializer(loc, exp.syntaxCopy(context));
 	}
 
 	@Override

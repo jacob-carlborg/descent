@@ -172,7 +172,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 
-		if (!same(t, this)) {
+		if (!same(t, this, context)) {
 			if (t.reliesOnTident() != null) {
 				Scope scx;
 
@@ -221,7 +221,7 @@ public abstract class TypeQualified extends Type {
 		return 1;
 	}
 
-	public void syntaxCopyHelper(TypeQualified t) {
+	public void syntaxCopyHelper(TypeQualified t, SemanticContext context) {
 		if (idents != null && t.idents != null) {
 			idents.setDim(t.idents.size());
 			for (int i = 0; i < idents.size(); i++) {
@@ -229,7 +229,7 @@ public abstract class TypeQualified extends Type {
 				if (id.dyncast() == DYNCAST_DSYMBOL) {
 					TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 	
-					ti = (TemplateInstance) ti.syntaxCopy(null);
+					ti = (TemplateInstance) ti.syntaxCopy(null, context);
 					id = new TemplateInstanceWrapper(Loc.ZERO, ti);
 				}
 				idents.set(i, id);

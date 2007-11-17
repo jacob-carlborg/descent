@@ -30,7 +30,7 @@ public class CondExp extends BinExp {
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Expression e = this;
 
-		if (!same(type, t)) {
+		if (!same(type, t, context)) {
 			if (true || e1.op == TOKstring || e2.op == TOKstring) {
 				e = new CondExp(loc, econd, e1.castTo(sc, t, context), e2
 						.castTo(sc, t, context));
@@ -192,7 +192,7 @@ public class CondExp extends BinExp {
 			type = Type.tvoid;
 		}
 
-		else if (same(t1, t2)) {
+		else if (same(t1, t2, context)) {
 			type = t1;
 		}
 
@@ -220,9 +220,9 @@ public class CondExp extends BinExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new CondExp(loc, econd.syntaxCopy(), e1.syntaxCopy(), e2
-				.syntaxCopy());
+	public Expression syntaxCopy(SemanticContext context) {
+		return new CondExp(loc, econd.syntaxCopy(context), e1.syntaxCopy(context), e2
+				.syntaxCopy(context));
 	}
 
 	@Override

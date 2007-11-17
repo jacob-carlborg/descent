@@ -62,11 +62,11 @@ public class LinkDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		LinkDeclaration ld;
 
 		Assert.isNotNull(s);
-		ld = new LinkDeclaration(linkage, Dsymbol.arraySyntaxCopy(decl));
+		ld = new LinkDeclaration(linkage, Dsymbol.arraySyntaxCopy(decl, context));
 		return ld;
 	}
 

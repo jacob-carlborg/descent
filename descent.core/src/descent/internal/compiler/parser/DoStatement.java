@@ -143,9 +143,9 @@ public class DoStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		DoStatement s = new DoStatement(loc, body != null ? body.syntaxCopy()
-				: null, condition.syntaxCopy());
+	public Statement syntaxCopy(SemanticContext context) {
+		DoStatement s = new DoStatement(loc, body != null ? body.syntaxCopy(context)
+				: null, condition.syntaxCopy(context));
 		return s;
 	}
 

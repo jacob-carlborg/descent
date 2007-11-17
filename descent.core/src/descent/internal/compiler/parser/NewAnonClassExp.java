@@ -54,10 +54,10 @@ public class NewAnonClassExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new NewAnonClassExp(loc, thisexp != null ? thisexp.syntaxCopy()
-				: null, arraySyntaxCopy(newargs), (ClassDeclaration) cd
-				.syntaxCopy(null), arraySyntaxCopy(arguments));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new NewAnonClassExp(loc, thisexp != null ? thisexp.syntaxCopy(context)
+				: null, arraySyntaxCopy(newargs, context), (ClassDeclaration) cd
+				.syntaxCopy(null, context), arraySyntaxCopy(arguments, context));
 	}
 
 	@Override

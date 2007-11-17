@@ -342,10 +342,10 @@ public class ReturnStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = null;
 		if (exp != null) {
-			e = exp.syntaxCopy();
+			e = exp.syntaxCopy(context);
 		}
 		ReturnStatement s = new ReturnStatement(loc, e);
 		return s;

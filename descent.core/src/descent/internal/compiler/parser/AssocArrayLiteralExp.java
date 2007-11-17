@@ -313,10 +313,10 @@ public class AssocArrayLiteralExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy()
+	public Expression syntaxCopy(SemanticContext context)
 	{
 		 return new AssocArrayLiteralExp(loc, 
-				 arraySyntaxCopy(keys), arraySyntaxCopy(values));
+				 arraySyntaxCopy(keys, context), arraySyntaxCopy(values, context));
 	}
 
 	@Override

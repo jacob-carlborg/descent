@@ -195,14 +195,14 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ScopeDsymbol sd;
 		if (s != null) {
 			sd = (ScopeDsymbol) s;
 		} else {
 			sd = new ScopeDsymbol(ident);
 		}
-		sd.members = arraySyntaxCopy(members);
+		sd.members = arraySyntaxCopy(members, context);
 		return sd;
 	}
 

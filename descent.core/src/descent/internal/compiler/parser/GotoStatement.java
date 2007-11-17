@@ -85,7 +85,7 @@ public class GotoStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		GotoStatement s = new GotoStatement(loc, ident);
 		return s;
 	}

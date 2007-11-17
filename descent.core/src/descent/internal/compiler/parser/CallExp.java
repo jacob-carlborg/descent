@@ -156,7 +156,7 @@ public class CallExp extends UnaExp {
 					e = arguments.get(1);
 					e = e.interpret(istate, context);
 					if (e != EXP_CANT_INTERPRET) {
-						e = expType(type, e);
+						e = expType(type, e, context);
 					}
 				} else {
 					Expression eresult = fd.interpret(istate, arguments,
@@ -653,8 +653,8 @@ public class CallExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new CallExp(loc, e1.syntaxCopy(), arraySyntaxCopy(arguments));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new CallExp(loc, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
 	}
 
 	@Override

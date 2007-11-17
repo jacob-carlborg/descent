@@ -134,7 +134,7 @@ public class ArrayInitializer extends Initializer {
 	}
 
 	@Override
-	public Initializer syntaxCopy() {
+	public Initializer syntaxCopy(SemanticContext context) {
 		ArrayInitializer ai = new ArrayInitializer(loc);
 
 		if (!(index.size() == value.size())) {
@@ -146,12 +146,12 @@ public class ArrayInitializer extends Initializer {
 		for (int i = 0; i < ai.value.size(); i++) {
 			Expression e = index.get(i);
 			if (e != null) {
-				e = e.syntaxCopy();
+				e = e.syntaxCopy(context);
 			}
 			ai.index.set(i, e);
 
 			Initializer init = value.get(i);
-			init = init.syntaxCopy();
+			init = init.syntaxCopy(context);
 			ai.value.set(i, init);
 		}
 		return ai;

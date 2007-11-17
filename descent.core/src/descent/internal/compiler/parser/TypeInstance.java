@@ -150,11 +150,11 @@ public class TypeInstance extends TypeQualified {
 	}
 
 	@Override
-	public Type syntaxCopy() {
+	public Type syntaxCopy(SemanticContext context) {
 		TypeInstance t;
 
-		t = new TypeInstance(loc, (TemplateInstance) tempinst.syntaxCopy(null));
-		t.syntaxCopyHelper(this);
+		t = new TypeInstance(loc, (TemplateInstance) tempinst.syntaxCopy(null, context));
+		t.syntaxCopyHelper(this, context);
 		return t;
 	}
 

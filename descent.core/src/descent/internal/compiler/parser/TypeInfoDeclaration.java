@@ -29,7 +29,7 @@ public class TypeInfoDeclaration extends VarDeclaration {
 	}
 	
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		throw new IllegalStateException("assert(0);"); // should never be produced by syntax
 	}
 

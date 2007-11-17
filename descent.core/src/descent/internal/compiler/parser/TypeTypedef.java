@@ -176,7 +176,7 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public Type syntaxCopy() {
+	public Type syntaxCopy(SemanticContext context) {
 		return this;
 	}
 

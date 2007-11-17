@@ -115,7 +115,7 @@ public abstract class Statement extends ASTDmdNode {
 		return s;
 	}
 
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 

@@ -229,9 +229,9 @@ public class SwitchStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		SwitchStatement s = new SwitchStatement(loc, condition.syntaxCopy(),
-				body.syntaxCopy());
+	public Statement syntaxCopy(SemanticContext context) {
+		SwitchStatement s = new SwitchStatement(loc, condition.syntaxCopy(context),
+				body.syntaxCopy(context));
 		return s;
 	}
 

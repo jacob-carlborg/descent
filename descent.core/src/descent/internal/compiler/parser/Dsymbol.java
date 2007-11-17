@@ -8,24 +8,24 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class Dsymbol extends ASTDmdNode {
 
-	public static Arguments arraySyntaxCopy(Arguments a) {
+	public static Arguments arraySyntaxCopy(Arguments a, SemanticContext context) {
 		Arguments b = new Arguments();
 		b.setDim(a.size());
 		for(int i = 0; i < a.size(); i++) {
 			Argument s = a.get(i);
-			b.set(i, s.syntaxCopy());
+			b.set(i, s.syntaxCopy(context));
 		}
 		return b;
 	}
 
-	public static Dsymbols arraySyntaxCopy(Dsymbols a) {
+	public static Dsymbols arraySyntaxCopy(Dsymbols a, SemanticContext context) {
 		Dsymbols b = null;
 		if (a != null) {
 			b = new Dsymbols();
 			b.setDim(a.size());
 			for(int i = 0; i < a.size(); i++) {
 				Dsymbol s = a.get(i);
-				b.set(i, s.syntaxCopy(null));
+				b.set(i, s.syntaxCopy(null, context));
 			}
 		}
 		return b;
@@ -415,7 +415,7 @@ public class Dsymbol extends ASTDmdNode {
 			}
 			buf.writestring(p);
 		}
-		buf.data.append(id.length()).append("u").append(id);
+		buf.data.append(id.length())/*.append("u")*/.append(id);
 		id = buf.toChars();
 		buf.data = null;
 		return id;
@@ -515,7 +515,7 @@ public class Dsymbol extends ASTDmdNode {
 		return 0;
 	}
 
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		throw new IllegalStateException("Must be implemented by subclasses");
 	}
 

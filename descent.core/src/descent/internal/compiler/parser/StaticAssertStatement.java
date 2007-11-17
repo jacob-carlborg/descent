@@ -34,9 +34,9 @@ public class StaticAssertStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		StaticAssertStatement s = new StaticAssertStatement((StaticAssert) sa
-				.syntaxCopy(null));
+				.syntaxCopy(null, context));
 		return s;
 	}
 

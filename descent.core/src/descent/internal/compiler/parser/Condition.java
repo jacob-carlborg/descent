@@ -27,7 +27,7 @@ public abstract class Condition extends ASTRangeLessNode {
 	public abstract boolean include(Scope sc, ScopeDsymbol s,
 			SemanticContext context);
 
-	public abstract Condition syntaxCopy();
+	public abstract Condition syntaxCopy(SemanticContext context);
 
 	public abstract void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context);

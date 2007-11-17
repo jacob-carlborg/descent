@@ -222,8 +222,8 @@ public class DeclarationExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new DeclarationExp(loc, declaration.syntaxCopy(null));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new DeclarationExp(loc, declaration.syntaxCopy(null, context));
 	}
 
 	@Override

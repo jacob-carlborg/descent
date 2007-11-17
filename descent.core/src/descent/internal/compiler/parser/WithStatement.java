@@ -114,9 +114,9 @@ public class WithStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		WithStatement s = new WithStatement(loc, exp.syntaxCopy(),
-				body != null ? body.syntaxCopy() : null);
+	public Statement syntaxCopy(SemanticContext context) {
+		WithStatement s = new WithStatement(loc, exp.syntaxCopy(context),
+				body != null ? body.syntaxCopy(context) : null);
 		return s;
 	}
 

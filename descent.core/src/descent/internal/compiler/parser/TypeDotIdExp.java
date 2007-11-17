@@ -47,8 +47,8 @@ public class TypeDotIdExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		TypeDotIdExp te = new TypeDotIdExp(loc, type.syntaxCopy(), ident);
+	public Expression syntaxCopy(SemanticContext context) {
+		TypeDotIdExp te = new TypeDotIdExp(loc, type.syntaxCopy(context), ident);
 		return te;
 	}
 

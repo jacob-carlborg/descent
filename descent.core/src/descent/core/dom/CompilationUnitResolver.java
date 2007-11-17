@@ -42,6 +42,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	public static class ParseResult {
 		public Module module;
 		public PublicScanner scanner;
+		public SemanticContext context;
 		public ParseResult(Module module, PublicScanner scanner) {
 			this.module = module;
 			this.scanner = scanner;
@@ -149,32 +150,24 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
-		resolve(result.module);
+		result.context = resolve(result.module);
 		return result;
 	}
 	
-	public static void resolve(final Module module, ICompilationUnit unit) {
+	public static SemanticContext resolve(final Module module, ICompilationUnit unit) {
 		// Add the package fragment root as an import path
 		IPackageFragmentRoot root = (IPackageFragmentRoot) unit.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
 		Global global = new Global();
 		global.path.add(root.getResource().getLocation().toOSString());
 		
-		resolve(module, global);
+		return resolve(module, global);
 	}
 	
-	public static void resolve(final Module module) {
-		resolve(module, new Global());
+	public static SemanticContext resolve(final Module module) {
+		return resolve(module, new Global());
 	}
 	
-	public static void resolve(final Module module, Global global) {
-		if (!RESOLVE) return;
-		
-		// First adhere to DMD: if there are syntaxis errors, don't do
-		// semantic analysis.
-		if (module.problems != null && module.problems.size() > 0) {
-			return;
-		}
-		
+	public static SemanticContext resolve(final Module module, Global global) {
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);
@@ -187,13 +180,24 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				return true;
 			}
 		};
-				
+		
 		SemanticContext context = new SemanticContext(problemRequestor, module, global);
+		
+		if (!RESOLVE) return context;
+		
+		// First adhere to DMD: if there are syntaxis errors, don't do
+		// semantic analysis.
+		if (module.problems != null && module.problems.size() > 0) {
+			return context;
+		}
+		
 		module.semantic(context);
 		
 		if (SYSOUT) {
 			System.out.println(module);
 		}
+		
+		return context;
 	}
 	
 	public static CompilationUnit convert(AST ast, ParseResult parseResult, IProgressMonitor monitor) {

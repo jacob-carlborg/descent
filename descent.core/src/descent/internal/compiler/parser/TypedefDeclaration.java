@@ -101,7 +101,7 @@ public class TypedefDeclaration extends Declaration {
 
 				ExpInitializer ie = init.isExpInitializer();
 				if (ie != null) {
-					if (same(ie.exp.type, basetype)) {
+					if (same(ie.exp.type, basetype, context)) {
 						ie.exp.type = type;
 					}
 				}
@@ -110,12 +110,12 @@ public class TypedefDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		Type basetype = this.basetype.syntaxCopy();
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		Type basetype = this.basetype.syntaxCopy(context);
 
 		Initializer init = null;
 		if (this.init != null) {
-			init = this.init.syntaxCopy();
+			init = this.init.syntaxCopy(context);
 		}
 
 		Assert.isTrue(s == null);
@@ -126,20 +126,20 @@ public class TypedefDeclaration extends Declaration {
 		{
 			if (type != null) // Make copy for both old and new instances
 			{
-				htype = type.syntaxCopy();
-				st.htype = type.syntaxCopy();
+				htype = type.syntaxCopy(context);
+				st.htype = type.syntaxCopy(context);
 			}
 		} else {
 			// Make copy of original for new instance
-			st.htype = htype.syntaxCopy();
+			st.htype = htype.syntaxCopy(context);
 		}
 		if (hbasetype == null) {
 			if (basetype != null) {
-				hbasetype = basetype.syntaxCopy();
-				st.hbasetype = basetype.syntaxCopy();
+				hbasetype = basetype.syntaxCopy(context);
+				st.hbasetype = basetype.syntaxCopy(context);
 			}
 		} else {
-			st.hbasetype = hbasetype.syntaxCopy();
+			st.hbasetype = hbasetype.syntaxCopy(context);
 		}
 		return st;
 	}
@@ -155,6 +155,10 @@ public class TypedefDeclaration extends Declaration {
 		}
 		buf.writeByte(';');
 		buf.writenl();
+	}
+
+	public String getSignature() {
+		return type.getSignature();
 	}
 
 }

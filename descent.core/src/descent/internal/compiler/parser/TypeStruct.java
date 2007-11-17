@@ -332,7 +332,7 @@ public class TypeStruct extends Type {
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		toDecoBuffer(buf, context);
 	}
-
+	
 	//PERHAPS dt_t **toDt(dt_t **pdt);
 	//PERHAPS type *toCtype();
 }

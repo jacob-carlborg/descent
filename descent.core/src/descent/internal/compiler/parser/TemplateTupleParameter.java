@@ -100,7 +100,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public TemplateParameter syntaxCopy() {
+	public TemplateParameter syntaxCopy(SemanticContext context) {
 		TemplateTupleParameter tp = new TemplateTupleParameter(loc, ident);
 		return tp;
 	}

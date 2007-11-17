@@ -37,7 +37,7 @@ public class NullExp extends Expression {
 		e = this;
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (!same(tb, type)) {
+		if (!same(tb, type, context)) {
 			// NULL implicitly converts to any pointer type or dynamic array
 			if (type.ty == Tpointer
 					&& type.next.ty == Tvoid

@@ -154,9 +154,9 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public Type syntaxCopy() {
-		Type t = next.syntaxCopy();
-		if (same(t, next)) {
+	public Type syntaxCopy(SemanticContext context) {
+		Type t = next.syntaxCopy(context);
+		if (same(t, next, context)) {
 			t = this;
 		} else {
 			t = new TypeDArray(t);

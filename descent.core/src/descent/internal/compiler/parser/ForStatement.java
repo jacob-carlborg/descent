@@ -197,20 +197,20 @@ public class ForStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Statement i = null;
 		if (init != null) {
-			i = init.syntaxCopy();
+			i = init.syntaxCopy(context);
 		}
 		Expression c = null;
 		if (condition != null) {
-			c = condition.syntaxCopy();
+			c = condition.syntaxCopy(context);
 		}
 		Expression inc = null;
 		if (increment != null) {
-			inc = increment.syntaxCopy();
+			inc = increment.syntaxCopy(context);
 		}
-		ForStatement s = new ForStatement(loc, i, c, inc, body.syntaxCopy());
+		ForStatement s = new ForStatement(loc, i, c, inc, body.syntaxCopy(context));
 		return s;
 	}
 

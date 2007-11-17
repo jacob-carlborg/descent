@@ -105,9 +105,9 @@ public class AssertExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		AssertExp ae = new AssertExp(loc, e1.syntaxCopy(), msg != null ? msg
-				.syntaxCopy() : null);
+	public Expression syntaxCopy(SemanticContext context) {
+		AssertExp ae = new AssertExp(loc, e1.syntaxCopy(context), msg != null ? msg
+				.syntaxCopy(context) : null);
 		return ae;
 	}
 	

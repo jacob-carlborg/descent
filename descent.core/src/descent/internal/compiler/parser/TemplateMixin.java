@@ -225,7 +225,7 @@ public class TemplateMixin extends TemplateInstance {
 		}
 
 		// Copy the syntax trees from the TemplateDeclaration
-		members = Dsymbol.arraySyntaxCopy(tempdecl.members);
+		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
 		if (null == members) {
 			return;
 		}
@@ -342,7 +342,7 @@ public class TemplateMixin extends TemplateInstance {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateMixin tm;
 
 		Identifiers ids = new Identifiers();
@@ -352,15 +352,15 @@ public class TemplateMixin extends TemplateInstance {
 			if (id.dyncast() == DYNCAST.DYNCAST_DSYMBOL) {
 				TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 
-				ti = (TemplateInstance) ti.syntaxCopy(null);
+				ti = (TemplateInstance) ti.syntaxCopy(null, context);
 				id = new TemplateInstanceWrapper(Loc.ZERO, ti);
 			}
 			ids.set(i, id);
 		}
 
-		tm = new TemplateMixin(loc, ident, (tqual != null ? tqual.syntaxCopy()
+		tm = new TemplateMixin(loc, ident, (tqual != null ? tqual.syntaxCopy(context)
 				: null), ids, tiargs);
-		super.syntaxCopy(tm);
+		super.syntaxCopy(tm, context);
 		return tm;
 	}
 

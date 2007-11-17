@@ -73,15 +73,15 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		FuncLiteralDeclaration f;
 
 		if (s != null) {
 			f = (FuncLiteralDeclaration) s;
 		} else {
-			f = new FuncLiteralDeclaration(loc, type.syntaxCopy(), tok, fes);
+			f = new FuncLiteralDeclaration(loc, type.syntaxCopy(context), tok, fes);
 		}
-		super.syntaxCopy(f);
+		super.syntaxCopy(f, context);
 		return f;
 	}
 

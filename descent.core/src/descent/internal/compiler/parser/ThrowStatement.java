@@ -60,8 +60,8 @@ public class ThrowStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		ThrowStatement s = new ThrowStatement(loc, exp.syntaxCopy());
+	public Statement syntaxCopy(SemanticContext context) {
+		ThrowStatement s = new ThrowStatement(loc, exp.syntaxCopy(context));
 		return s;
 	}
 

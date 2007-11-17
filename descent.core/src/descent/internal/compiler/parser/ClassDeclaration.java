@@ -721,7 +721,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ClassDeclaration cd;
 
 		if (s != null) {
@@ -735,11 +735,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 		cd.baseclasses = new BaseClasses(this.baseclasses.size());
 		for (int i = 0; i < this.baseclasses.size(); i++) {
 			BaseClass b = this.baseclasses.get(i);
-			BaseClass b2 = new BaseClass(b.type.syntaxCopy(), b.protection);
+			BaseClass b2 = new BaseClass(b.type.syntaxCopy(context), b.protection);
 			cd.baseclasses.add(b2);
 		}
 
-		super.syntaxCopy(cd);
+		super.syntaxCopy(cd, context);
 		return cd;
 	}
 
@@ -806,6 +806,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 		String id = Dsymbol_mangle(context);
 		parent = parentsave;
 		return id;
+	}
+
+	public String getSignature() {
+		return type.getSignature();
 	}
 
 }

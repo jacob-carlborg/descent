@@ -172,8 +172,8 @@ public class ArrayLiteralExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new ArrayLiteralExp(loc, arraySyntaxCopy(elements));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new ArrayLiteralExp(loc, arraySyntaxCopy(elements, context));
 	}
 
 	@Override

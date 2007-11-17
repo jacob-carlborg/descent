@@ -17,6 +17,14 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public class TypeBasic extends Type {
 	
+	public final static int TFLAGSintegral = 1;
+	public final static int TFLAGSfloating = 2;
+	public final static int TFLAGSunsigned = 4;
+	public final static int TFLAGSreal = 8;
+	public final static int TFLAGSimaginary = 0x10;
+	public final static int TFLAGScomplex = 0x20;
+	private final static BigInteger N_0xFF = new BigInteger("FF", 16);
+	private final static BigInteger N_0xFFFF = new BigInteger("FFFF", 16);	
 	public final static integer_t FLT_DIG = new integer_t(6);
 	public final static integer_t DBL_DIG = new integer_t(15);
 	public final static integer_t LDBL_DIG = DBL_DIG;
@@ -540,7 +548,7 @@ public class TypeBasic extends Type {
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		// See explanation of tbasic member
 		if (to instanceof TypeBasic
-				&& same(this, ((TypeBasic) to))) {
+				&& same(this, ((TypeBasic) to), context)) {
 			return MATCHexact;
 		}
 
@@ -741,7 +749,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public Type syntaxCopy() {
+	public Type syntaxCopy(SemanticContext context) {
 		// No semantic analysis done on basic types, no need to copy
 		return this;
 	}
@@ -778,14 +786,5 @@ public class TypeBasic extends Type {
 			return new ComplexExp(loc, cvalue, this);
 		}
 	}
-
-	public final static int TFLAGSintegral = 1;
-	public final static int TFLAGSfloating = 2;
-	public final static int TFLAGSunsigned = 4;
-	public final static int TFLAGSreal = 8;
-	public final static int TFLAGSimaginary = 0x10;
-	public final static int TFLAGScomplex = 0x20;
-	private final static BigInteger N_0xFF = new BigInteger("FF", 16);
-	private final static BigInteger N_0xFFFF = new BigInteger("FFFF", 16);
 
 }

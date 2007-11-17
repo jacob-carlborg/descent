@@ -1930,19 +1930,19 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		FuncDeclaration f;
 
 		if (s != null) {
 			f = (FuncDeclaration) s;
 		} else {
 			f = new FuncDeclaration(loc, ident, storage_class, type
-					.syntaxCopy());
+					.syntaxCopy(context));
 		}
 		f.outId = outId;
-		f.frequire = frequire != null ? frequire.syntaxCopy() : null;
-		f.fensure = fensure != null ? fensure.syntaxCopy() : null;
-		f.fbody = fbody != null ? fbody.syntaxCopy() : null;
+		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;
+		f.fensure = fensure != null ? fensure.syntaxCopy(context) : null;
+		f.fbody = fbody != null ? fbody.syntaxCopy(context) : null;
 		if (fthrows != null) {
 			throw new IllegalStateException("assert(!fthrows);"); // deprecated
 		}
@@ -1959,6 +1959,16 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public int getLineNumber() {
 		return loc.linnum;
+	}
+
+	public String getSignature() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("O");
+		sb.append(parent.mangle((SemanticContext) null));
+		sb.append(ident.length);
+		sb.append(ident);
+		sb.append(type.getSignature());
+		return sb.toString();
 	}
 
 }

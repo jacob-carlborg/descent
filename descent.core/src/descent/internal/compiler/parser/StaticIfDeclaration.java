@@ -59,12 +59,12 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StaticIfDeclaration dd;
 
 		Assert.isTrue(s == null);
-		dd = new StaticIfDeclaration(condition.syntaxCopy(), Dsymbol
-				.arraySyntaxCopy(decl), Dsymbol.arraySyntaxCopy(elsedecl));
+		dd = new StaticIfDeclaration(condition.syntaxCopy(context), Dsymbol
+				.arraySyntaxCopy(decl, context), Dsymbol.arraySyntaxCopy(elsedecl, context));
 		return dd;
 	}
 

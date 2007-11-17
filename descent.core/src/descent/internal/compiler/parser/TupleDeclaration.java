@@ -101,7 +101,7 @@ public class TupleDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Assert.isTrue(false);
 		return null;
 	}

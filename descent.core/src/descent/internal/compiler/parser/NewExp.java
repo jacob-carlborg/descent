@@ -302,10 +302,10 @@ public class NewExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new NewExp(loc, thisexp != null ? thisexp.syntaxCopy() : null,
-				arraySyntaxCopy(newargs), newtype.syntaxCopy(),
-				arraySyntaxCopy(arguments));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new NewExp(loc, thisexp != null ? thisexp.syntaxCopy(context) : null,
+				arraySyntaxCopy(newargs, context), newtype.syntaxCopy(context),
+				arraySyntaxCopy(arguments, context));
 	}
 
 	@Override

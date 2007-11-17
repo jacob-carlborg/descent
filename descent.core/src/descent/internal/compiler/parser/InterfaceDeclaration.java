@@ -259,7 +259,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		InterfaceDeclaration id;
 
 		if (s != null) {
@@ -268,7 +268,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			id = new InterfaceDeclaration(loc, ident, null);
 		}
 
-		super.syntaxCopy(id);
+		super.syntaxCopy(id, context);
 		return id;
 	}
 

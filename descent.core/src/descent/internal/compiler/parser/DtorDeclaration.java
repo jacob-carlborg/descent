@@ -90,13 +90,13 @@ public class DtorDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
 
 		DtorDeclaration dd = new DtorDeclaration(loc);
-		return super.syntaxCopy(dd);
+		return super.syntaxCopy(dd, context);
 	}
 
 	@Override

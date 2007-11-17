@@ -103,10 +103,10 @@ public class ScopeStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Statement s;
 
-		s = statement != null ? statement.syntaxCopy() : null;
+		s = statement != null ? statement.syntaxCopy(context) : null;
 		s = new ScopeStatement(loc, s);
 		return s;
 	}

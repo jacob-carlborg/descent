@@ -79,7 +79,7 @@ public class DebugSymbol extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s)");
 		}

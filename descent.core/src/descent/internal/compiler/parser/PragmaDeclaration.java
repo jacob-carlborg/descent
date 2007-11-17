@@ -109,12 +109,12 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);
 		pd = new PragmaDeclaration(loc, ident,
-				Expression.arraySyntaxCopy(args), arraySyntaxCopy(decl));
+				Expression.arraySyntaxCopy(args, context), arraySyntaxCopy(decl, context));
 		return pd;
 	}
 

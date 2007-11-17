@@ -292,9 +292,9 @@ public class TypeFunction extends Type {
 	}
 
 	@Override
-	public Type syntaxCopy() {
-		Type treturn = next != null ? next.syntaxCopy() : null;
-		Arguments params = Dsymbol.arraySyntaxCopy(parameters);
+	public Type syntaxCopy(SemanticContext context) {
+		Type treturn = next != null ? next.syntaxCopy(context) : null;
+		Arguments params = Dsymbol.arraySyntaxCopy(parameters, context);
 		Type t = new TypeFunction(params, treturn, varargs, linkage);
 		return t;
 	}

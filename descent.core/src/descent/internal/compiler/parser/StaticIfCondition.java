@@ -56,8 +56,8 @@ public class StaticIfCondition extends Condition {
 	}
 
 	@Override
-	public Condition syntaxCopy() {
-		return new StaticIfCondition(loc, exp.syntaxCopy());
+	public Condition syntaxCopy(SemanticContext context) {
+		return new StaticIfCondition(loc, exp.syntaxCopy(context));
 	}
 
 	@Override

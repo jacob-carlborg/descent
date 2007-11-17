@@ -118,7 +118,7 @@ public class ContinueStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		ContinueStatement s = new ContinueStatement(loc, ident);
 		return s;
 	}

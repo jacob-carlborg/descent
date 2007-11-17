@@ -101,11 +101,11 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public Type syntaxCopy() {
+	public Type syntaxCopy(SemanticContext context) {
 		TypeIdentifier t;
 
 		t = new TypeIdentifier(loc, ident);
-		t.syntaxCopyHelper(this);
+		t.syntaxCopyHelper(this, context);
 		return t;
 	}
 

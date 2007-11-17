@@ -97,14 +97,14 @@ public class NewDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		NewDeclaration f;
 
 		f = new NewDeclaration(loc, null, varargs);
 
-		super.syntaxCopy(f);
+		super.syntaxCopy(f, context);
 
-		f.arguments = Argument.arraySyntaxCopy(arguments);
+		f.arguments = Argument.arraySyntaxCopy(arguments, context);
 
 		return f;
 	}

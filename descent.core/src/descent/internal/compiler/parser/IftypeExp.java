@@ -232,9 +232,9 @@ public class IftypeExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new IftypeExp(loc, targ.syntaxCopy(), id, tok,
-				null != tspec ? tspec.syntaxCopy() : null, tok2);
+	public Expression syntaxCopy(SemanticContext context) {
+		return new IftypeExp(loc, targ.syntaxCopy(context), id, tok,
+				null != tspec ? tspec.syntaxCopy(context) : null, tok2);
 	}
 
 	@Override

@@ -143,9 +143,9 @@ public class WhileStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		WhileStatement s = new WhileStatement(loc, condition.syntaxCopy(),
-				body != null ? body.syntaxCopy() : null);
+	public Statement syntaxCopy(SemanticContext context) {
+		WhileStatement s = new WhileStatement(loc, condition.syntaxCopy(context),
+				body != null ? body.syntaxCopy(context) : null);
 		return s;
 	}
 

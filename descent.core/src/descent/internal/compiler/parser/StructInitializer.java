@@ -141,7 +141,7 @@ public class StructInitializer extends Initializer {
 	}
 
 	@Override
-	public Initializer syntaxCopy() {
+	public Initializer syntaxCopy(SemanticContext context) {
 		StructInitializer ai = new StructInitializer(loc);
 
 		if (field.size() != value.size()) {
@@ -154,7 +154,7 @@ public class StructInitializer extends Initializer {
 			ai.field.set(i, field.get(i));
 
 			Initializer init = value.get(i);
-			init = init.syntaxCopy();
+			init = init.syntaxCopy(context);
 			ai.value.set(i, init);
 		}
 		return ai;

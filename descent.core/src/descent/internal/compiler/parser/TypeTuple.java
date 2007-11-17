@@ -124,8 +124,8 @@ public class TypeTuple extends Type {
 	}
 
 	@Override
-	public Type syntaxCopy() {
-		Arguments args = Argument.arraySyntaxCopy(arguments);
+	public Type syntaxCopy(SemanticContext context) {
+		Arguments args = Argument.arraySyntaxCopy(arguments, context);
 		Type t = TypeTuple.newArguments(args);
 		return t;
 	}

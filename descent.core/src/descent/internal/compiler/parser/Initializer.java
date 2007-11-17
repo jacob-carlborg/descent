@@ -11,7 +11,7 @@ public abstract class Initializer extends ASTDmdNode {
 		this.loc = loc;
 	}
 
-	public Initializers arraySyntaxCopy(Initializers ai) {
+	public Initializers arraySyntaxCopy(Initializers ai, SemanticContext context) {
 		Initializers a = null;
 
 		if (ai != null) {
@@ -19,7 +19,7 @@ public abstract class Initializer extends ASTDmdNode {
 			a.setDim(ai.size());
 			for (int i = 0; i < a.size(); i++) {
 				Initializer e = ai.get(i);
-				e = e.syntaxCopy();
+				e = e.syntaxCopy(context);
 				a.set(i, e);
 			}
 		}
@@ -48,7 +48,7 @@ public abstract class Initializer extends ASTDmdNode {
 		return this;
 	}
 
-	public Initializer syntaxCopy() {
+	public Initializer syntaxCopy(SemanticContext context) {
 		return this;
 	}
 

@@ -59,7 +59,7 @@ public class IdentityExp extends BinExp {
 		super.semanticp(sc, context);
 		type = Type.tboolean;
 		typeCombine(sc, context);
-		if (!same(e1.type, e2.type) && e1.type.isfloating() && e2.type.isfloating()) {
+		if (!same(e1.type, e2.type, context) && e1.type.isfloating() && e2.type.isfloating()) {
 			// Cast both to complex
 			e1 = e1.castTo(sc, Type.tcomplex80, context);
 			e2 = e2.castTo(sc, Type.tcomplex80, context);

@@ -73,7 +73,7 @@ public class AddAssignExp extends BinExp {
 				// Rewrite e1+=e2 to e1=e1+e2
 				e = new AddExp(loc, e1, e2);
 				e = new CastExp(loc, e, e1.type);
-				e = new AssignExp(loc, e1.syntaxCopy(), e);
+				e = new AssignExp(loc, e1.syntaxCopy(context), e);
 				e = e.semantic(sc, context);
 			} else {
 				type = e1.type;

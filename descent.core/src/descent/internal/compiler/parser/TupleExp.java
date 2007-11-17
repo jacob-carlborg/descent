@@ -26,7 +26,7 @@ public class TupleExp extends Expression {
 			ASTDmdNode o = tup.objects.get(i);
 			if (o.dyncast() == DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;
-				e = e.syntaxCopy();
+				e = e.syntaxCopy(context);
 				exps.add(e);
 			} else if (o.dyncast() == DYNCAST_DSYMBOL) {
 				Dsymbol s = (Dsymbol) o;
@@ -216,8 +216,8 @@ public class TupleExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new TupleExp(loc, arraySyntaxCopy(exps));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new TupleExp(loc, arraySyntaxCopy(exps, context));
 	}
 
 	@Override

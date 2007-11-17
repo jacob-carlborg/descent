@@ -111,21 +111,21 @@ public class CtorDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		CtorDeclaration f;
 
 		f = new CtorDeclaration(loc, null, varargs);
 
 		f.outId = outId;
-		f.frequire = frequire != null ? frequire.syntaxCopy() : null;
-		f.fensure = fensure != null ? fensure.syntaxCopy() : null;
-		f.fbody = fbody != null ? fbody.syntaxCopy() : null;
+		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;
+		f.fensure = fensure != null ? fensure.syntaxCopy(context) : null;
+		f.fbody = fbody != null ? fbody.syntaxCopy(context) : null;
 
 		if (fthrows != null) {
 			throw new IllegalStateException("assert(!fhtorws);");
 		}
 
-		f.arguments = arraySyntaxCopy(arguments);
+		f.arguments = arraySyntaxCopy(arguments, context);
 		return f;
 	}
 

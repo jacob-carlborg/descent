@@ -72,13 +72,13 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
 
 		StaticDtorDeclaration sdd = new StaticDtorDeclaration(loc);
-		return super.syntaxCopy(sdd);
+		return super.syntaxCopy(sdd, context);
 	}
 
 	@Override

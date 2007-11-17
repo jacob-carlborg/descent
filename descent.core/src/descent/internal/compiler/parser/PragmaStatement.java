@@ -123,12 +123,12 @@ public class PragmaStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Statement b = null;
 		if (body != null)
-			b = body.syntaxCopy();
+			b = body.syntaxCopy(context);
 		PragmaStatement s = new PragmaStatement(loc, ident, Expression
-				.arraySyntaxCopy(args), b);
+				.arraySyntaxCopy(args, context), b);
 		return s;
 	}
 	

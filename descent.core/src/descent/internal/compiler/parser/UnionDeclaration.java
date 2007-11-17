@@ -37,7 +37,7 @@ public class UnionDeclaration extends StructDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		UnionDeclaration ud;
 
 		if (s != null) {
@@ -45,7 +45,7 @@ public class UnionDeclaration extends StructDeclaration {
 		} else {
 			ud = new UnionDeclaration(loc, ident);
 		}
-		super.syntaxCopy(ud);
+		super.syntaxCopy(ud, context);
 		return ud;
 	}
 	

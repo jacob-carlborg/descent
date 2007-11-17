@@ -109,7 +109,7 @@ public class BreakStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		BreakStatement s = new BreakStatement(loc, ident);
 		return s;
 	}

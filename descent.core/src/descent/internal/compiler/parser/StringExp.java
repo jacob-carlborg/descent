@@ -243,7 +243,7 @@ public class StringExp extends Expression {
 			unique = 1; // this is the only instance
 		}
 		se.type = type.toBasetype(context);
-		if (same(tb, se.type)) {
+		if (same(tb, se.type, context)) {
 			se.type = t;
 			se.committed = true;
 			return se;

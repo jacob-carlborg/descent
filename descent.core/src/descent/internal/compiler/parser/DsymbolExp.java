@@ -176,7 +176,7 @@ public class DsymbolExp extends Expression {
 						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.start, o.length, new String[] { o.toChars(context) }));
 					} else {
 						Expression e2 = (Expression) o;
-						e2 = e2.syntaxCopy();
+						e2 = e2.syntaxCopy(context);
 						exps.add(e2);
 					}
 				}

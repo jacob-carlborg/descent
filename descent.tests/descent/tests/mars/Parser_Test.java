@@ -136,14 +136,14 @@ public abstract class Parser_Test extends TestCase {
 		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), "unknown.d".toCharArray(), null, true);
 	}
 	
-	protected Module getModuleSemantic(String source, int apiLevel) {
+	protected ParseResult getModuleSemantic(String source, int apiLevel) {
 		ParseResult result = getParseResult(source, apiLevel);
 		
 		Global global = new Global();
 		global.params.warnings = true;
 		
-		CompilationUnitResolver.resolve(result.module, global);
-		return result.module;
+		result.context = CompilationUnitResolver.resolve(result.module, global);
+		return result;
 	}
 	
 	protected Module getModuleSemanticNoProblems(String source, int apiLevel) {
@@ -160,7 +160,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected IProblem[] getModuleProblems(String source, int apiLevel) {
-		Module module = getModuleSemantic(source, apiLevel);
+		Module module = getModuleSemantic(source, apiLevel).module;
 		return module.problems.toArray(new IProblem[module.problems.size()]);
 	}
 	

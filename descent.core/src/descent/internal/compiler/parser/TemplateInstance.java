@@ -60,7 +60,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		visitor.endVisit(this);
 	}
 
-	public Objects arraySyntaxCopy(Objects objs) {
+	public Objects arraySyntaxCopy(Objects objs, SemanticContext context) {
 		Objects a = null;
 		if (objs != null) {
 			a = new Objects();
@@ -68,13 +68,13 @@ public class TemplateInstance extends ScopeDsymbol {
 			for (int i = 0; i < objs.size(); i++) {
 				Type ta = isType(objs.get(i));
 				if (ta != null) {
-					a.set(i, ta.syntaxCopy());
+					a.set(i, ta.syntaxCopy(context));
 				} else {
 					Expression ea = isExpression(objs.get(i));
 					if (ea == null) {
 						throw new IllegalStateException("assert(ea);");
 					}
-					a.set(i, ea.syntaxCopy());
+					a.set(i, ea.syntaxCopy(context));
 				}
 			}
 		}
@@ -593,7 +593,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 
 		// Copy the syntax trees from the TemplateDeclaration
-		members = Dsymbol.arraySyntaxCopy(tempdecl.members);
+		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
 
 		// Create our own scope for the template parameters
 		Scope scope = tempdecl.scope;
@@ -739,7 +739,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateInstance ti;
 		// int i;
 
@@ -749,9 +749,9 @@ public class TemplateInstance extends ScopeDsymbol {
 			ti = new TemplateInstance(loc, name);
 		}
 
-		ti.tiargs = arraySyntaxCopy(tiargs);
+		ti.tiargs = arraySyntaxCopy(tiargs, context);
 
-		super.syntaxCopy(ti);
+		super.syntaxCopy(ti, context);
 		return ti;
 	}
 

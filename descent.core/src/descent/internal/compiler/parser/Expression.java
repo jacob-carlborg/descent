@@ -32,7 +32,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		}
 	}
 	
-	public static Expressions arraySyntaxCopy(Expressions exps) {
+	public static Expressions arraySyntaxCopy(Expressions exps, SemanticContext context) {
 		Expressions a = null;
 
 		if (exps != null) {
@@ -40,7 +40,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			a.setDim(exps.size());
 			for(int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
-				e = e.syntaxCopy();
+				e = e.syntaxCopy(context);
 				a.set(i, e);
 			}
 		}
@@ -115,7 +115,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = this;
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (!same(tb, type)) {
+		if (!same(tb, type, context)) {
 			if (tb.ty == Tbit && isBit()) {
 				;
 			}
@@ -398,7 +398,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return this;
 	}
 
-	public Expression syntaxCopy() {
+	public Expression syntaxCopy(SemanticContext context) {
 		return copy();
 	}
 

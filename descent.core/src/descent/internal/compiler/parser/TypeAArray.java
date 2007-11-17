@@ -200,10 +200,10 @@ public class TypeAArray extends TypeArray {
 	}
 
 	@Override
-	public Type syntaxCopy() {
-		Type t = next.syntaxCopy();
-		Type ti = index.syntaxCopy();
-		if (same(t, next) && same(ti, index)) {
+	public Type syntaxCopy(SemanticContext context) {
+		Type t = next.syntaxCopy(context);
+		Type ti = index.syntaxCopy(context);
+		if (same(t, next, context) && same(ti, index, context)) {
 			t = this;
 		} else {
 			t = new TypeAArray(t, ti);

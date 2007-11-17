@@ -55,7 +55,7 @@ public abstract class TemplateParameter extends ASTDmdNode {
 
 	public abstract ASTDmdNode specialization();
 
-	public abstract TemplateParameter syntaxCopy();
+	public abstract TemplateParameter syntaxCopy(SemanticContext context);
 
 	public abstract void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context);
 

@@ -36,8 +36,8 @@ public class TypeidExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new TypeidExp(loc, typeidType.syntaxCopy());
+	public Expression syntaxCopy(SemanticContext context) {
+		return new TypeidExp(loc, typeidType.syntaxCopy(context));
 	}
 
 	@Override

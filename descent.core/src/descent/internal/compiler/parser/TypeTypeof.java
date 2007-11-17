@@ -84,9 +84,9 @@ public class TypeTypeof extends TypeQualified {
 	}
 
 	@Override
-	public Type syntaxCopy() {
-		TypeTypeof t = new TypeTypeof(loc, exp.syntaxCopy());
-		t.syntaxCopyHelper(this);
+	public Type syntaxCopy(SemanticContext context) {
+		TypeTypeof t = new TypeTypeof(loc, exp.syntaxCopy(context));
+		t.syntaxCopyHelper(this, context);
 		return t;
 	}
 
@@ -109,7 +109,7 @@ public class TypeTypeof extends TypeQualified {
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		Type t = semantic(Loc.ZERO, sc, context);
-		if (same(t, this)) {
+		if (same(t, this, context)) {
 			return null;
 		}
 		return t.toDsymbol(sc, context);

@@ -149,9 +149,13 @@ public class SemanticContext {
 		return fd;
 	}
 
-	public Module loadModule(String fullyQualifiedName) {
-		return null;
-		// TODO module loading
+	private Map<Type, TypeInfoDeclaration> typeInfoDeclarations = new HashMap<Type, TypeInfoDeclaration>();
+	public TypeInfoDeclaration getTypeInfo(Type t) {
+		return typeInfoDeclarations.get(t);
+	}
+
+	public void setTypeInfo(Type t, TypeInfoDeclaration vtinfo) {
+		typeInfoDeclarations.put(t, vtinfo);
 	}
 
 }

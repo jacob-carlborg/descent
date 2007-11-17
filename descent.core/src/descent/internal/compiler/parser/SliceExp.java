@@ -265,18 +265,18 @@ public class SliceExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
+	public Expression syntaxCopy(SemanticContext context) {
 		Expression lwr = null;
 		if (this.lwr != null) {
-			lwr = this.lwr.syntaxCopy();
+			lwr = this.lwr.syntaxCopy(context);
 		}
 
 		Expression upr = null;
 		if (this.upr != null) {
-			upr = this.upr.syntaxCopy();
+			upr = this.upr.syntaxCopy(context);
 		}
 
-		return new SliceExp(loc, e1.syntaxCopy(), lwr, upr);
+		return new SliceExp(loc, e1.syntaxCopy(context), lwr, upr);
 	}
 
 	@Override

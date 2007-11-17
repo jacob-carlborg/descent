@@ -249,7 +249,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StructDeclaration sd;
 
 		if (s != null) {
@@ -257,7 +257,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		} else {
 			sd = new StructDeclaration(loc, ident);
 		}
-		super.syntaxCopy(sd);
+		super.syntaxCopy(sd, context);
 		return sd;
 	}
 	
@@ -302,6 +302,10 @@ public class StructDeclaration extends AggregateDeclaration {
 			return ident.length;
 		}
 		return 6; // "struct".length()
+	}
+
+	public String getSignature() {
+		return type.getSignature();
 	}
 
 }

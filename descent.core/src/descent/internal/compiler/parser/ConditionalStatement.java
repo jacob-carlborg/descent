@@ -63,13 +63,13 @@ public class ConditionalStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Statement e = null;
 		if (elsebody != null) {
-			e = elsebody.syntaxCopy();
+			e = elsebody.syntaxCopy(context);
 		}
 		ConditionalStatement s = new ConditionalStatement(loc, condition
-				.syntaxCopy(), ifbody.syntaxCopy(), e);
+				.syntaxCopy(context), ifbody.syntaxCopy(context), e);
 		return s;
 	}
 

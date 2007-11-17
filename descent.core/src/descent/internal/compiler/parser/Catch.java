@@ -69,9 +69,9 @@ public class Catch extends ASTDmdNode {
 		sc.pop();
 	}
 
-	public Catch syntaxCopy() {
-		Catch c = new Catch(loc, (type != null ? type.syntaxCopy() : null),
-				ident, (handler != null ? handler.syntaxCopy() : null));
+	public Catch syntaxCopy(SemanticContext context) {
+		Catch c = new Catch(loc, (type != null ? type.syntaxCopy(context) : null),
+				ident, (handler != null ? handler.syntaxCopy(context) : null));
 		return c;
 	}
 

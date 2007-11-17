@@ -205,8 +205,8 @@ public class CastExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new CastExp(loc, e1.syntaxCopy(), to.syntaxCopy());
+	public Expression syntaxCopy(SemanticContext context) {
+		return new CastExp(loc, e1.syntaxCopy(context), to.syntaxCopy(context));
 	}
 
 	@Override

@@ -48,10 +48,10 @@ public class EnumMember extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Expression e = null;
 		if (value != null) {
-			e = value.syntaxCopy();
+			e = value.syntaxCopy(context);
 		}
 
 		EnumMember em;

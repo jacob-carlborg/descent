@@ -101,12 +101,12 @@ public abstract class UnaExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
+	public Expression syntaxCopy(SemanticContext context) {
 		UnaExp e;
 
 		e = (UnaExp) copy();
 		e.type = null;
-		e.e1 = e.e1.syntaxCopy();
+		e.e1 = e.e1.syntaxCopy(context);
 		return e;
 	}
 

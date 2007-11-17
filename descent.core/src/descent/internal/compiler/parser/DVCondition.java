@@ -17,7 +17,7 @@ public abstract class DVCondition extends Condition {
 	}
 	
 	@Override
-	public Condition syntaxCopy() {
+	public Condition syntaxCopy(SemanticContext context) {
 		return this; // don't need to copy
 	}
 

@@ -146,9 +146,9 @@ public class DotTemplateInstanceExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
+	public Expression syntaxCopy(SemanticContext context) {
 		DotTemplateInstanceExp de = new DotTemplateInstanceExp(loc, e1
-				.syntaxCopy(), (TemplateInstance) ti.syntaxCopy(null));
+				.syntaxCopy(context), (TemplateInstance) ti.syntaxCopy(null, context));
 		return de;
 	}
 

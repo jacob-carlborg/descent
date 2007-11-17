@@ -78,14 +78,14 @@ public class InvariantDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		InvariantDeclaration id;
 
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
 		id = new InvariantDeclaration(loc);
-		super.syntaxCopy(id);
+		super.syntaxCopy(id, context);
 		return id;
 	}
 

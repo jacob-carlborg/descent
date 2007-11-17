@@ -29,7 +29,7 @@ public class ClassInfoDeclaration extends VarDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 

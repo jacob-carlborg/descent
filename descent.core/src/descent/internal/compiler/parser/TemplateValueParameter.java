@@ -59,7 +59,7 @@ public class TemplateValueParameter extends TemplateParameter {
 
 		e = defaultValue;
 		if (e != null) {
-			e = e.syntaxCopy();
+			e = e.syntaxCopy(context);
 			e = e.semantic(sc, context);
 		}
 		return e;
@@ -140,7 +140,7 @@ public class TemplateValueParameter extends TemplateParameter {
 			e = e.implicitCastTo(sc, valType, context);
 			e = e.optimize(WANTvalue | WANTinterpret, context);
 
-			ei = ei.syntaxCopy();
+			ei = ei.syntaxCopy(context);
 			ei = ei.semantic(sc, context);
 			ei = ei.optimize(WANTvalue | WANTinterpret, context);
 			if (!ei.equals(e)) {
@@ -229,15 +229,15 @@ public class TemplateValueParameter extends TemplateParameter {
 	}
 
 	@Override
-	public TemplateParameter syntaxCopy() {
+	public TemplateParameter syntaxCopy(SemanticContext context) {
 		TemplateValueParameter tp = new TemplateValueParameter(loc, ident,
 				valType, specValue, defaultValue);
-		tp.valType = valType.syntaxCopy();
+		tp.valType = valType.syntaxCopy(context);
 		if (specValue != null) {
-			tp.specValue = specValue.syntaxCopy();
+			tp.specValue = specValue.syntaxCopy(context);
 		}
 		if (defaultValue != null) {
-			tp.defaultValue = defaultValue.syntaxCopy();
+			tp.defaultValue = defaultValue.syntaxCopy(context);
 		}
 		return tp;
 	}

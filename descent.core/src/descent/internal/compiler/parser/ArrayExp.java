@@ -109,8 +109,8 @@ public class ArrayExp extends UnaExp {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new ArrayExp(loc, e1.syntaxCopy(), arraySyntaxCopy(arguments));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new ArrayExp(loc, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
 	}
 
 	@Override

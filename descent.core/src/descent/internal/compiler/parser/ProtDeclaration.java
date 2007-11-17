@@ -71,14 +71,14 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ProtDeclaration pd;
 
 		if (s != null) {
 			throw new IllegalStateException("assert(s);");
 		}
 		pd = new ProtDeclaration(protection,
-				Dsymbol.arraySyntaxCopy(decl), modifier, single, colon);
+				Dsymbol.arraySyntaxCopy(decl, context), modifier, single, colon);
 		return pd;
 	}
 

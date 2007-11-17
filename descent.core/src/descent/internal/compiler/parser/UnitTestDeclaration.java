@@ -78,12 +78,12 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
 		UnitTestDeclaration utd = new UnitTestDeclaration(loc);
-		return super.syntaxCopy(utd);
+		return super.syntaxCopy(utd, context);
 	}
 
 	@Override

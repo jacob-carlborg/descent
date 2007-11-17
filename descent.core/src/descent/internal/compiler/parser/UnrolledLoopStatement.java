@@ -168,13 +168,13 @@ public class UnrolledLoopStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Statements a = new Statements();
 		a.setDim(statements.size());
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
 			if (s != null) {
-				s = s.syntaxCopy();
+				s = s.syntaxCopy(context);
 			}
 			a.set(i, s);
 		}

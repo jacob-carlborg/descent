@@ -26,7 +26,7 @@ public class AsmStatement extends Statement {
 	}
 	
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		return new AsmStatement(loc, toklist);
 	}
 

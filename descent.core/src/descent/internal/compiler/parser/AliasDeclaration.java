@@ -213,33 +213,33 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Assert.isTrue(s == null);
 		AliasDeclaration sa;
 		if (type != null) {
-			sa = new AliasDeclaration(loc, ident, type.syntaxCopy());
+			sa = new AliasDeclaration(loc, ident, type.syntaxCopy(context));
 		} else {
-			sa = new AliasDeclaration(loc, ident, aliassym.syntaxCopy(null));
+			sa = new AliasDeclaration(loc, ident, aliassym.syntaxCopy(null, context));
 		}
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original
 		{
 			if (type != null) // Make copy for both old and new instances
 			{
-				htype = type.syntaxCopy();
-				sa.htype = type.syntaxCopy();
+				htype = type.syntaxCopy(context);
+				sa.htype = type.syntaxCopy(context);
 			}
 		} else {
 			// Make copy of original for new instance
-			sa.htype = htype.syntaxCopy();
+			sa.htype = htype.syntaxCopy(context);
 		}
 		if (haliassym == null) {
 			if (aliassym != null) {
-				haliassym = aliassym.syntaxCopy(s);
-				sa.haliassym = aliassym.syntaxCopy(s);
+				haliassym = aliassym.syntaxCopy(s, context);
+				sa.haliassym = aliassym.syntaxCopy(s, context);
 			}
 		} else {
-			sa.haliassym = haliassym.syntaxCopy(s);
+			sa.haliassym = haliassym.syntaxCopy(s, context);
 		}
 		return sa;
 	}
@@ -273,6 +273,15 @@ public class AliasDeclaration extends Declaration {
 	// Specific for Descent
 	public ASTDmdNode getBinding() {
 		return aliassym;
+	}
+
+	public String getSignature() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("M");
+		sb.append(parent.mangle((SemanticContext) null));
+		sb.append(ident.length);
+		sb.append(ident);
+		return sb.toString();
 	}
 
 }

@@ -46,11 +46,11 @@ public class AlignDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		AlignDeclaration ad;
 
 		Assert.isTrue(s == null);
-		ad = new AlignDeclaration(salign, Dsymbol.arraySyntaxCopy(decl));
+		ad = new AlignDeclaration(salign, Dsymbol.arraySyntaxCopy(decl, context));
 		return ad;
 	}
 

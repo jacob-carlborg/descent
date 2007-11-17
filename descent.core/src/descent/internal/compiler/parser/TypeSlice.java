@@ -148,9 +148,9 @@ public class TypeSlice extends Type {
 	}
 
 	@Override
-	public Type syntaxCopy()
+	public Type syntaxCopy(SemanticContext context)
 	{
-		return new TypeSlice(next.syntaxCopy(), lwr.syntaxCopy(), upr.syntaxCopy());
+		return new TypeSlice(next.syntaxCopy(context), lwr.syntaxCopy(context), upr.syntaxCopy(context));
 	}
 
 	@Override

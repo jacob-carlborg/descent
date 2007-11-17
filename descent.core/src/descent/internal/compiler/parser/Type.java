@@ -45,7 +45,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
 // DMD 1.020
-public abstract class Type extends ASTDmdNode {
+public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public final static int PTRSIZE = 4;
 
@@ -498,7 +498,9 @@ public abstract class Type extends ASTDmdNode {
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
-	public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
+	
+	// This field is kept in SemanticContext
+	// public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
 
 	/*
 	 * In DMD TypeBasic's are only constructed one, so == works.
@@ -827,7 +829,7 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (same(this, to)) {
+		if (same(this, to, context)) {
 			return MATCH.MATCHexact;
 		}		
 		return MATCH.MATCHnomatch;
@@ -928,7 +930,7 @@ public abstract class Type extends ASTDmdNode {
 		return false;
 	}
 
-	public Type syntaxCopy() {
+	public Type syntaxCopy(SemanticContext context) {
 		Assert.isTrue(false); // assert(0);
 		return this;
 	}
@@ -1090,10 +1092,12 @@ public abstract class Type extends ASTDmdNode {
 		Type t;
 
 		t = merge(context); // do this since not all Type's are merge'd
-		if (null == t.vtinfo) {
-			t.vtinfo = t.getTypeInfoDeclaration(context);
+		
+		TypeInfoDeclaration vtinfo = context.getTypeInfo(t);
+		if (vtinfo == null) {
+			vtinfo = t.getTypeInfoDeclaration(context);
 
-			if (t.vtinfo == null) {
+			if (vtinfo == null) {
 				throw new IllegalStateException("assert(t.vtinfo);");
 			}
 
@@ -1104,16 +1108,18 @@ public abstract class Type extends ASTDmdNode {
 				if (sc != null) // if in semantic() pass
 				{ // Find module that will go all the way to an object file
 					Module m = sc.module.importedFrom;
-					m.members.add(t.vtinfo);
+					m.members.add(vtinfo);
 				} else // if in obj generation pass
 				{
 					Assert.isTrue(false);
 				}
 			}
+			
+			context.setTypeInfo(t, vtinfo);
 		}
-		e = new VarExp(Loc.ZERO, t.vtinfo);
+		e = new VarExp(Loc.ZERO, vtinfo);
 		e = e.addressOf(sc, context);
-		e.type = t.vtinfo.type; // do this so we don't get redundant dereference
+		e.type = vtinfo.type; // do this so we don't get redundant dereference
 		return e;
 	}
 
@@ -1164,6 +1170,18 @@ public abstract class Type extends ASTDmdNode {
 		e = e.addressOf(sc, context);
 		e.type = tid.type; // do this so we don't get redundant dereference
 		return e;
+	}
+	
+	public Type copy() {
+		try {
+			return (Type) clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public String getSignature() {
+		return deco;
 	}
 
 }

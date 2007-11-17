@@ -1488,7 +1488,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(IntegerExp node) {
-		if (node.str != null) {
+		if (node.str != null && node.str.length > 0) {
 			this.buffer.append(node.str);
 		} else {
 			this.buffer.append(node.value);
@@ -2983,9 +2983,18 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(VarExp node) {
-		//appendStartCompilerNode();
-		this.buffer.append(node.var.ident);
-		//appendEndCompilerNode();
+		if (node.var.ident != null && node.var.ident.ident != null && node.var.ident.ident.length != 0) {
+			//appendStartCompilerNode();
+			this.buffer.append(node.var.ident);
+			//appendEndCompilerNode();
+		} else {
+			appendStartCompilerNode();
+			this.buffer.append("VarExp: ");
+			node.type.accept(this);
+			this.buffer.append(" ");
+			node.var.accept(this);
+			appendEndCompilerNode();
+		}
 		return false;
 	}
 

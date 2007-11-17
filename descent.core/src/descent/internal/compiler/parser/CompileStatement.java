@@ -67,8 +67,8 @@ public class CompileStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		Expression e = exp.syntaxCopy();
+	public Statement syntaxCopy(SemanticContext context) {
+		Expression e = exp.syntaxCopy(context);
 		CompileStatement es = new CompileStatement(loc, e);
 		return es;
 	}

@@ -257,15 +257,18 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 			number = number.add(1);
 		}
-
+		
 		sce.pop();
+		
+		// This is for Descent to compute the signature
+		type.merge(context);
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Type t = null;
 		if (memtype != null) {
-			t = memtype.syntaxCopy();
+			t = memtype.syntaxCopy(context);
 		}
 
 		EnumDeclaration ed;
@@ -275,7 +278,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		} else {
 			ed = new EnumDeclaration(loc, ident, t);
 		}
-		super.syntaxCopy(ed);
+		super.syntaxCopy(ed, context);
 		return ed;
 	}
 
@@ -335,6 +338,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 		} else {
 			return 4; // "enum".length()
 		}
+	}
+
+	public String getSignature() {
+		return type.getSignature();
 	}
 
 }

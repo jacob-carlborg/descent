@@ -220,7 +220,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		assert (null == s);
 
 		Import si;

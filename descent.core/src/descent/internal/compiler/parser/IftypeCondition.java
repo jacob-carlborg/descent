@@ -137,9 +137,9 @@ public class IftypeCondition extends Condition {
 	}
 
 	@Override
-	public Condition syntaxCopy() {
-		return new IftypeCondition(loc, targ.syntaxCopy(), id, tok,
-				tspec != null ? tspec.syntaxCopy() : null);
+	public Condition syntaxCopy(SemanticContext context) {
+		return new IftypeCondition(loc, targ.syntaxCopy(context), id, tok,
+				tspec != null ? tspec.syntaxCopy(context) : null);
 	}
 
 	@Override

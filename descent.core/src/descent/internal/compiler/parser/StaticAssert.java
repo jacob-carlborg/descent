@@ -92,14 +92,14 @@ public class StaticAssert extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StaticAssert sa;
 
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		sa = new StaticAssert(loc, exp.syntaxCopy(), msg != null ? msg
-				.syntaxCopy() : null);
+		sa = new StaticAssert(loc, exp.syntaxCopy(context), msg != null ? msg
+				.syntaxCopy(context) : null);
 		return sa;
 	}
 

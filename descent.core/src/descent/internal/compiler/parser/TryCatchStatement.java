@@ -99,17 +99,17 @@ public class TryCatchStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Array<Catch> a = new Array<Catch>();
 		a.setDim(catches.size());
 		for (int i = 0; i < a.size(); i++) {
 			Catch c;
 
 			c = catches.get(i);
-			c = c.syntaxCopy();
+			c = c.syntaxCopy(context);
 			a.set(i, c);
 		}
-		TryCatchStatement s = new TryCatchStatement(loc, body.syntaxCopy(), a);
+		TryCatchStatement s = new TryCatchStatement(loc, body.syntaxCopy(context), a);
 		return s;
 	}
 

@@ -239,13 +239,13 @@ public abstract class BinExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
+	public Expression syntaxCopy(SemanticContext context) {
 		BinExp e;
 
 		e = (BinExp) copy();
 		e.type = null;
-		e.e1 = e.e1.syntaxCopy();
-		e.e2 = e.e2.syntaxCopy();
+		e.e1 = e.e1.syntaxCopy(context);
+		e.e2 = e.e2.syntaxCopy(context);
 		return e;
 	}
 
@@ -288,14 +288,14 @@ public abstract class BinExp extends Expression {
 
 			if (t1b.ty == ty1) // if no promotions
 			{
-				if (same(t1, t2)) {
+				if (same(t1, t2, context)) {
 					if (type == null) {
 						type = t1;
 					}
 					return this;
 				}
 
-				if (same(t1b, t2b)) {
+				if (same(t1b, t2b, context)) {
 					if (type == null) {
 						type = t1b;
 					}
@@ -315,7 +315,7 @@ public abstract class BinExp extends Expression {
 		}
 
 		t = t1;
-		if (same(t1, t2)) {
+		if (same(t1, t2, context)) {
 			if ((t1.ty == Tstruct || t1.ty == Tclass)
 					&& (op == TOKmin || op == TOKadd)) {
 				return typeCombine_Lincompatible_End(t, context);
@@ -387,7 +387,7 @@ public abstract class BinExp extends Expression {
 			Type t1n = t1.next;
 			Type t2n = t2.next;
 
-			assert (!same(t1n, t2n));
+			assert (!same(t1n, t2n, context));
 			if (t1n.ty == Tvoid) {
 				t = t2;
 			} else if (t2n.ty == Tvoid) {

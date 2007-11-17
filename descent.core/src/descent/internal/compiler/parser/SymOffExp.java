@@ -46,7 +46,7 @@ public class SymOffExp extends Expression {
 
 		tb = t.toBasetype(context);
 		type = type.toBasetype(context);
-		if (!same(tb, type)) {
+		if (!same(tb, type, context)) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			FuncDeclaration f;

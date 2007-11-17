@@ -244,19 +244,19 @@ public class IfStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		Statement i = null;
 		if (ifbody != null) {
-			i = ifbody.syntaxCopy();
+			i = ifbody.syntaxCopy(context);
 		}
 
 		Statement e = null;
 		if (elsebody != null) {
-			e = elsebody.syntaxCopy();
+			e = elsebody.syntaxCopy(context);
 		}
 
-		Argument a = arg != null ? arg.syntaxCopy() : null;
-		IfStatement s = new IfStatement(loc, a, condition.syntaxCopy(), i, e);
+		Argument a = arg != null ? arg.syntaxCopy(context) : null;
+		IfStatement s = new IfStatement(loc, a, condition.syntaxCopy(context), i, e);
 		return s;
 	}
 

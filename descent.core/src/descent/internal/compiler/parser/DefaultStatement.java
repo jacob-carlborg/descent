@@ -76,8 +76,8 @@ public class DefaultStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		DefaultStatement s = new DefaultStatement(loc, statement.syntaxCopy());
+	public Statement syntaxCopy(SemanticContext context) {
+		DefaultStatement s = new DefaultStatement(loc, statement.syntaxCopy(context));
 		return s;
 	}
 

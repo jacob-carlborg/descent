@@ -72,8 +72,8 @@ public class ScopeExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		ScopeExp se = new ScopeExp(loc, (ScopeDsymbol) sds.syntaxCopy(null));
+	public Expression syntaxCopy(SemanticContext context) {
+		ScopeExp se = new ScopeExp(loc, (ScopeDsymbol) sds.syntaxCopy(null, context));
 		return se;
 	}
 

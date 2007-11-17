@@ -47,7 +47,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 
 		t = defaultType;
 		if (t != null) {
-			t = t.syntaxCopy();
+			t = t.syntaxCopy(context);
 			t = t.semantic(loc, sc, context);
 		}
 		return t;
@@ -176,14 +176,14 @@ public class TemplateTypeParameter extends TemplateParameter {
 	}
 
 	@Override
-	public TemplateParameter syntaxCopy() {
+	public TemplateParameter syntaxCopy(SemanticContext context) {
 		TemplateTypeParameter tp = new TemplateTypeParameter(loc, ident,
 				specType, defaultType);
 		if (tp.specType != null) {
-			tp.specType = specType.syntaxCopy();
+			tp.specType = specType.syntaxCopy(context);
 		}
 		if (defaultType != null) {
-			tp.defaultType = defaultType.syntaxCopy();
+			tp.defaultType = defaultType.syntaxCopy(context);
 		}
 		return tp;
 	}

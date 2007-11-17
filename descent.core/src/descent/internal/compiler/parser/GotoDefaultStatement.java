@@ -59,7 +59,7 @@ public class GotoDefaultStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
+	public Statement syntaxCopy(SemanticContext context) {
 		GotoDefaultStatement s = new GotoDefaultStatement(loc);
 		return s;
 	}

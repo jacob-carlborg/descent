@@ -159,11 +159,11 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		AnonDeclaration ad;
 
 		Assert.isTrue(s == null);
-		ad = new AnonDeclaration(loc, isunion, Dsymbol.arraySyntaxCopy(decl));
+		ad = new AnonDeclaration(loc, isunion, Dsymbol.arraySyntaxCopy(decl, context));
 		return ad;
 	}
 

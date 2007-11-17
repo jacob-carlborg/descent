@@ -73,8 +73,8 @@ public class GotoCaseStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		Expression e = exp != null ? exp.syntaxCopy() : null;
+	public Statement syntaxCopy(SemanticContext context) {
+		Expression e = exp != null ? exp.syntaxCopy(context) : null;
 		GotoCaseStatement s = new GotoCaseStatement(loc, e);
 		return s;
 	}

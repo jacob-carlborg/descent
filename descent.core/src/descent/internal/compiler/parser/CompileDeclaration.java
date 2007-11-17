@@ -78,8 +78,8 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		CompileDeclaration sc = new CompileDeclaration(loc, exp.syntaxCopy());
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		CompileDeclaration sc = new CompileDeclaration(loc, exp.syntaxCopy(context));
 		return sc;
 	}
 

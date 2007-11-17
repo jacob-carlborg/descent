@@ -266,8 +266,8 @@ public class StructLiteralExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new StructLiteralExp(loc, sd, arraySyntaxCopy(elements));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new StructLiteralExp(loc, sd, arraySyntaxCopy(elements, context));
 	}
 
 	@Override

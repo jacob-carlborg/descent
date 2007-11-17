@@ -111,14 +111,14 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StorageClassDeclaration scd;
 
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
 		scd = new StorageClassDeclaration(stc, Dsymbol
-				.arraySyntaxCopy(decl), modifier, single, colon);
+				.arraySyntaxCopy(decl, context), modifier, single, colon);
 		return scd;
 	}
 

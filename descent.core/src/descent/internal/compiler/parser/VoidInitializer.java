@@ -35,7 +35,7 @@ public class VoidInitializer extends Initializer {
 	}
 
 	@Override
-	public Initializer syntaxCopy() {
+	public Initializer syntaxCopy(SemanticContext context) {
 		return new VoidInitializer(loc);
 	}
 

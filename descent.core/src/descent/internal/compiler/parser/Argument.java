@@ -103,7 +103,7 @@ public class Argument extends ASTDmdNode {
 		return buf.toChars();
 	}
 
-	public static Arguments arraySyntaxCopy(Arguments args) {
+	public static Arguments arraySyntaxCopy(Arguments args, SemanticContext context) {
 		Arguments a = null;
 
 		if (args != null) {
@@ -111,7 +111,7 @@ public class Argument extends ASTDmdNode {
 			a.setDim(args.size());
 			for (int i = 0; i < a.size(); i++) {
 				Argument arg = args.get(i);
-				arg = arg.syntaxCopy();
+				arg = arg.syntaxCopy(context);
 				a.set(i, arg);
 			}
 		}
@@ -225,10 +225,10 @@ public class Argument extends ASTDmdNode {
 		return null;
 	}
 
-	public Argument syntaxCopy() {
+	public Argument syntaxCopy(SemanticContext context) {
 		Argument a = new Argument(storageClass, type != null ? type
-				.syntaxCopy() : null, ident, defaultArg != null ? defaultArg
-				.syntaxCopy() : null);
+				.syntaxCopy(context) : null, ident, defaultArg != null ? defaultArg
+				.syntaxCopy(context) : null);
 		return a;
 	}
 

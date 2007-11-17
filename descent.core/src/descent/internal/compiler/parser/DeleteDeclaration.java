@@ -104,10 +104,10 @@ public class DeleteDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		DeleteDeclaration f = new DeleteDeclaration(loc, null);
-		super.syntaxCopy(f);
-		f.arguments = arraySyntaxCopy(arguments);
+		super.syntaxCopy(f, context);
+		f.arguments = arraySyntaxCopy(arguments, context);
 		return f;
 	}
 

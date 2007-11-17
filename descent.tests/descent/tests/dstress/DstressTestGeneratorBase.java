@@ -1521,6 +1521,10 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("eol_02.d");
 		failures.add("eol_03.d");
 		
+		for(int i = 1; i <= 43; i++) {
+			failures.add("invalid_utf_" + (i < 10 ? "0" + i : i) + ".d");
+		}
+		
 		// Although they are not failures, Descent dies because of
 		// a StackOverflowError
 		failures.add("if_05.d");

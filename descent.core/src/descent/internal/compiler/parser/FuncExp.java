@@ -71,8 +71,8 @@ public class FuncExp extends Expression {
 	}
 
 	@Override
-	public Expression syntaxCopy() {
-		return new FuncExp(loc, (FuncLiteralDeclaration) fd.syntaxCopy(null));
+	public Expression syntaxCopy(SemanticContext context) {
+		return new FuncExp(loc, (FuncLiteralDeclaration) fd.syntaxCopy(null, context));
 	}
 
 	@Override

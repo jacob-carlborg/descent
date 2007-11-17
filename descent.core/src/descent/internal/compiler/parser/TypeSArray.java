@@ -374,9 +374,9 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public Type syntaxCopy() {
-		Type t = next.syntaxCopy();
-		Expression e = dim.syntaxCopy();
+	public Type syntaxCopy(SemanticContext context) {
+		Type t = next.syntaxCopy(context);
+		Expression e = dim.syntaxCopy(context);
 		t = new TypeSArray(t, e);
 		return t;
 	}
@@ -385,7 +385,8 @@ public class TypeSArray extends TypeArray {
 	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		if (null != dim)
-			buf.printf(dim.toInteger(context) + "u");
+			buf.data.append(dim.toInteger(context));
+			//buf.printf(dim.toInteger(context) + "u");
 		if (null != next)
 			next.toDecoBuffer(buf, context);
 	}

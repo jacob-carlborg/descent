@@ -53,12 +53,12 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ConditionalDeclaration dd;
 
 		Assert.isTrue(s == null);
-		dd = new ConditionalDeclaration(condition.syntaxCopy(), Dsymbol
-				.arraySyntaxCopy(decl), Dsymbol.arraySyntaxCopy(elsedecl));
+		dd = new ConditionalDeclaration(condition.syntaxCopy(context), Dsymbol
+				.arraySyntaxCopy(decl, context), Dsymbol.arraySyntaxCopy(elsedecl, context));
 		return dd;
 	}
 

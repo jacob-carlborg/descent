@@ -1546,8 +1546,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public static Expression expType(Type type, Expression e) {
-		if (!same(type, e.type)) {
+	public static Expression expType(Type type, Expression e, SemanticContext context) {
+		if (!same(type, e.type, context)) {
 			e = e.copy();
 			e.type = type;
 		}
@@ -1849,14 +1849,15 @@ public abstract class ASTDmdNode extends ASTNode {
 		return CharOperation.equals(e1.ident, e2);
 	}
 	
-	public static final boolean same(Type t1, Type t2) {
+	public static final boolean same(Type t1, Type t2, SemanticContext context) {
 		if (t1 == null && t2 == null) {
 			return true;
 		} 
 		if ((t1 == null) != (t2 == null)) {
 			return false;
 		}
-		return t1.same(t2);
+		
+		return t1.same(t2);	
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {

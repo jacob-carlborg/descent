@@ -332,7 +332,7 @@ public class ForeachStatement extends Statement {
 				DeclarationExp de = new DeclarationExp(loc, var);
 				st.add(new ExpStatement(loc, de));
 
-				st.add(body.syntaxCopy());
+				st.add(body.syntaxCopy(context));
 				s = new CompoundStatement(loc, st);
 				s = new ScopeStatement(loc, s);
 				statements.add(s);
@@ -494,7 +494,7 @@ public class ForeachStatement extends Statement {
 		tret = func.type.next;
 
 		// Need a variable to hold value from any return statements in body.
-		if (sc.func.vresult == null && tret != null && !same(tret, Type.tvoid)) {
+		if (sc.func.vresult == null && tret != null && !same(tret, Type.tvoid, context)) {
 			VarDeclaration v;
 
 			v = new VarDeclaration(loc, tret, Id.result, null);
@@ -667,7 +667,7 @@ public class ForeachStatement extends Statement {
 			sourceAggr.start = oldSourceAggrStart;
 			sourceAggr.length = oldSourceAggrLength;
 			
-			if (!same(e.type, Type.tint32)) {
+			if (!same(e.type, Type.tint32, context)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.OpApplyFunctionMustReturnAnInt, sourceAggr, new String[] { tab.toChars(context) }));
 			}
@@ -699,11 +699,11 @@ public class ForeachStatement extends Statement {
 	}
 
 	@Override
-	public Statement syntaxCopy() {
-		Arguments args = Argument.arraySyntaxCopy(arguments);
-		Expression exp = aggr.syntaxCopy();
+	public Statement syntaxCopy(SemanticContext context) {
+		Arguments args = Argument.arraySyntaxCopy(arguments, context);
+		Expression exp = aggr.syntaxCopy(context);
 		ForeachStatement s = new ForeachStatement(loc, op, args, exp,
-				body != null ? body.syntaxCopy() : null);
+				body != null ? body.syntaxCopy(context) : null);
 		return s;
 	}
 

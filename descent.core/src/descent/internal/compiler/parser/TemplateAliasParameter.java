@@ -170,14 +170,14 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 
 	@Override
-	public TemplateParameter syntaxCopy() {
+	public TemplateParameter syntaxCopy(SemanticContext context) {
 		TemplateAliasParameter tp = new TemplateAliasParameter(loc, ident,
 				specAliasT, defaultAlias);
 		if (tp.specAliasT != null) {
-			tp.specAliasT = specAliasT.syntaxCopy();
+			tp.specAliasT = specAliasT.syntaxCopy(context);
 		}
 		if (defaultAlias != null) {
-			tp.defaultAlias = defaultAlias.syntaxCopy();
+			tp.defaultAlias = defaultAlias.syntaxCopy(context);
 		}
 		return tp;
 	}

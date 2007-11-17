@@ -50,11 +50,9 @@ public class VarDeclaration extends Declaration {
 	public int nestedref;
 	public boolean ctorinit;
 	public Expression value; // when interpreting, this is the value
+							// (NULL if value not determinable)
 	public Object csym;
 	public Object isym;
-	
-
-	// (NULL if value not determinable)
 
 	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
@@ -512,7 +510,7 @@ public class VarDeclaration extends Declaration {
 				if (ei != null && 0 == context.global.errors && 0 == inferred) {
 					int errors = context.global.errors;
 					context.global.gag++;
-					Expression e = ei.exp.syntaxCopy();
+					Expression e = ei.exp.syntaxCopy(context);
 					inuse++;
 					e = e.semantic(sc, context);
 					inuse--;
@@ -543,19 +541,19 @@ public class VarDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		VarDeclaration sv;
 		if (s != null) {
 			sv = (VarDeclaration) s;
 		} else {
 			Initializer init = null;
 			if (this.init != null) {
-				init = this.init.syntaxCopy();
+				init = this.init.syntaxCopy(context);
 				// init.isExpInitializer().exp.print();
 				// init.isExpInitializer().exp.dump(0);
 			}
 
-			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy()
+			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy(context)
 					: null, ident, init);
 			sv.storage_class = storage_class;
 		}
@@ -564,20 +562,20 @@ public class VarDeclaration extends Declaration {
 		{
 			if (type != null) // Make copy for both old and new instances
 			{
-				htype = type.syntaxCopy();
-				sv.htype = type.syntaxCopy();
+				htype = type.syntaxCopy(context);
+				sv.htype = type.syntaxCopy(context);
 			}
 		} else {
 			// Make copy of original for new instance
-			sv.htype = htype.syntaxCopy();
+			sv.htype = htype.syntaxCopy(context);
 		}
 		if (hinit == null) {
 			if (init != null) {
-				hinit = init.syntaxCopy();
-				sv.hinit = init.syntaxCopy();
+				hinit = init.syntaxCopy(context);
+				sv.hinit = init.syntaxCopy(context);
 			}
 		} else {
-			sv.hinit = hinit.syntaxCopy();
+			sv.hinit = hinit.syntaxCopy(context);
 		}
 		return sv;
 	}
@@ -614,6 +612,15 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public int getLineNumber() {
 		return loc.linnum;
+	}
+
+	public String getSignature() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Q");
+		sb.append(parent.mangle((SemanticContext) null));
+		sb.append(ident.length);
+		sb.append(ident);
+		return sb.toString();
 	}
 
     // PERHAPS Symbol *toSymbol();
