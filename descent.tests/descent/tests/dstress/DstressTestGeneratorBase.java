@@ -1529,6 +1529,11 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		// a StackOverflowError
 		failures.add("if_05.d");
 		failures.add("large_id_01_C.d");
+		
+		// I don't think this one _should_ pass, and the fact it passes
+		// in DMD is weird. Check the test, it basically is testing that
+		// long.min == a large positive number.
+		failures.add("long_01.d");
 	}
 
 }

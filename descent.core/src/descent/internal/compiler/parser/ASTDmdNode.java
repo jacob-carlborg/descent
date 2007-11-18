@@ -1700,7 +1700,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				return false;
 			}
 			for (int i = 0; i < size(v1.objects); i++) {
-				if (match((ASTDmdNode) v1.objects.get(i),
+				if (!match((ASTDmdNode) v1.objects.get(i),
 						(ASTDmdNode) v2.objects.get(i), tempdecl, sc, context)) {
 					// goto L1;
 					return false;

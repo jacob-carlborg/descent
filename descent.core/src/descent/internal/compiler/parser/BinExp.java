@@ -740,7 +740,6 @@ public abstract class BinExp extends Expression {
 					int dim = ((TypeSArray) t).dim.toInteger(context)
 							.intValue();
 					Expressions elements = new Expressions();
-					elements.setDim(dim);
 					for (int i = 0; i < dim; i++)
 						elements.add(ev);
 					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
