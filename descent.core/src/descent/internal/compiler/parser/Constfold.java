@@ -1355,7 +1355,7 @@ public class Constfold {
 				elements.setDim(iupr - ilwr);
 
 				for (int i = ilwr; i < iupr; i++) {
-					elements.add(es1.elements.get(i));
+					elements.set(i - ilwr, es1.elements.get(i));
 				}
 				e = new ArrayLiteralExp(e1.loc, elements);
 				e.type = type;

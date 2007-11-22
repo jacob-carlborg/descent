@@ -94,7 +94,7 @@ public class DotVarExp extends UnaExp {
 							DsymbolExp ve = (DsymbolExp) e;
 
 							e = new DotVarExp(loc, e1, ve.s.isDeclaration());
-							exps.add(e);
+							exps.set(i, e);
 						}
 					}
 				}

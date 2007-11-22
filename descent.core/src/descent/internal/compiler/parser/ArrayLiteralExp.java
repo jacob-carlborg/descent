@@ -220,7 +220,6 @@ public class ArrayLiteralExp extends Expression {
 				if (ex != e) {
 					if (null == expsx) {
 						expsx = new Expressions();
-						expsx.setDim(elements.size());
 						expsx.addAll(elements);
 					}
 					expsx.set(i, ex);

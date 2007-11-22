@@ -89,7 +89,7 @@ public class TypeSlice extends Type {
 				objects.setDim(i2 - i1);
 				for(int i = 0; i < objects.size(); i++)
 				{
-					objects.add(td.objects.get(i1 + i));
+					objects.set(i, td.objects.get(i1 + i));
 				}
 				
 				TupleDeclaration tds = new TupleDeclaration(loc, td.ident,

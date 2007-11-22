@@ -15,15 +15,17 @@ public class integer_t extends Number {
 
 	private static final long serialVersionUID = 1L;
 
-	private long longValue;
-	private BigInteger bigIntegerValue;
+	private final long longValue;
+	private final BigInteger bigIntegerValue;
 
 	public integer_t(BigInteger bigIntegerValue) {
 		this.bigIntegerValue = bigIntegerValue;
+		this.longValue = 0;
 	}
 
 	public integer_t(long intValue) {
 		this.longValue = intValue;
+		this.bigIntegerValue = null;
 	}
 	
 	// add

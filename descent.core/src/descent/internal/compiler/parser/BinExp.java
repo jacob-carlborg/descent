@@ -701,9 +701,9 @@ public abstract class BinExp extends Expression {
 			expsx.setDim(se.elements.size());
 			for (int j = 0; j < se.elements.size(); j++) {
 				if (j == fieldi)
-					expsx.add(e2);
+					expsx.set(j, e2);
 				else
-					expsx.add(j, se.elements.get(j));
+					expsx.set(j, se.elements.get(j));
 			}
 			v.value = new StructLiteralExp(se.loc, se.sd, expsx);
 			v.value.type = se.type;

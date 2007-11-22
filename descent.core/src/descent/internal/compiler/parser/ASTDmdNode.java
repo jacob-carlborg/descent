@@ -1525,7 +1525,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 				if (e != null) {
 					e = e.doInline(ids);
-					newa.add(e);
+					newa.set(i, e);
 				}
 			}
 		}
