@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="descent.ui.java"
+            class="descent.internal.unittest.ui.TestRunnerViewPart"
+            fastViewWidthRatio="0.40"
+            icon="icons/full/eview16/junit.gif"
+            id="descent.unittest.ResultView"
+            name="Unit Test">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="descent.ui.JavaPerspective">
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="descent.ui.preferences.JavaBasePreferencePage"
+            class="descent.internal.unittest.ui.JUnitPreferencePage"
+            id="descent.unittest.preferences"
+            name="Unit Tests">
+      </page>
+   </extension>
+
+
+</plugin>

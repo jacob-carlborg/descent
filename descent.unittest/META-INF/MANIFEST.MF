@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Unittest Plug-in
+Bundle-SymbolicName: descent.unittest;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: descent.internal.unittest.ui.DescentUnittestPlugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ descent.core,
+ descent.ui,
+ org.eclipse.core.resources,
+ org.eclipse.core.variables,
+ org.eclipse.jface.text,
+ org.eclipse.compare
+Eclipse-LazyStart: true
