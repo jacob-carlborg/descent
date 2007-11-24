@@ -263,7 +263,7 @@ public class JavaMergeViewer extends TextMergeViewer {
 				
 				switch (otherJavaElement.getTypeCode()) {
 				
-				case JavaNode.PACKAGE:
+				case JavaNode.MODULE:
 					return 0;
 
 				case JavaNode.IMPORT_CONTAINER:
@@ -274,7 +274,7 @@ public class JavaMergeViewer extends TextMergeViewer {
 						for (int i= 0; i < children.length; i++) {
 							JavaNode child= (JavaNode) children[i];
 							switch (child.getTypeCode()) {
-							case JavaNode.PACKAGE:
+							case JavaNode.MODULE:
 								packageDecl= child;
 								break;
 							case JavaNode.CLASS:
@@ -302,7 +302,7 @@ public class JavaMergeViewer extends TextMergeViewer {
 							switch (child.getTypeCode()) {
 							case JavaNode.CLASS:
 							case JavaNode.IMPORT_CONTAINER:
-							case JavaNode.PACKAGE:
+							case JavaNode.MODULE:
 							case JavaNode.FIELD:
 								p= child.getRange();
 								return p.getOffset() + p.getLength();

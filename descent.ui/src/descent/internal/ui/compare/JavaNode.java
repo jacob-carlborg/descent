@@ -6,6 +6,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.IDocument;
 
 import descent.core.IJavaElement;
+import descent.core.dom.AggregateDeclaration;
 import descent.internal.ui.JavaPlugin;
 
 import org.eclipse.compare.ITypedElement;
@@ -18,20 +19,26 @@ import org.eclipse.compare.structuremergeviewer.DocumentRangeNode;
 class JavaNode extends DocumentRangeNode implements ITypedElement {
 	
 	public static final int CU= 0;
-	public static final int PACKAGE= 1;
+	public static final int MODULE= 1;
 	public static final int IMPORT_CONTAINER= 2;
 	public static final int IMPORT= 3;
 	public static final int INTERFACE= 4;
 	public static final int CLASS= 5;
 	public static final int ENUM= 6;
-	public static final int ANNOTATION= 7;
+	public static final int TEMPLATE = 7;
 	public static final int FIELD= 8;
-	public static final int INIT= 9;
+	public static final int STATIC_CONSTRUCTOR= 9;
 	public static final int CONSTRUCTOR= 10;
 	public static final int METHOD= 11;
 	public static final int STRUCT = 12;
 	public static final int UNION = 13;
-	public static final int TEMPLATE = 13;
+	public static final int ALILAS = 14;
+	public static final int TYPEDEF = 15;
+	public static final int DELETE = 16;
+	public static final int NEW = 17;
+	public static final int STATIC_DESTRUCTOR = 18;
+	public static final int DESTRUCTOR = 19;
+	public static final int ALIGN = 20;
 
 	private int fInitializerCount= 1;
 	private boolean fIsEditable;
@@ -100,13 +107,11 @@ class JavaNode extends DocumentRangeNode implements ITypedElement {
 	public String getName() {
 		
 		switch (getTypeCode()) {
-		case INIT:
-			return CompareMessages.JavaNode_initializer; 
 		case IMPORT_CONTAINER:
 			return CompareMessages.JavaNode_importDeclarations; 
 		case CU:
 			return CompareMessages.JavaNode_compilationUnit; 
-		case PACKAGE:
+		case MODULE:
 			return CompareMessages.JavaNode_packageDeclaration; 
 		}
 		return getId().substring(1);	// we strip away the type character
@@ -116,7 +121,7 @@ class JavaNode extends DocumentRangeNode implements ITypedElement {
 	 * @see ITypedElement#getType()
 	 */
 	public String getType() {
-		return "java2"; //$NON-NLS-1$
+		return "d"; //$NON-NLS-1$
 	}
 	
 	/* (non Javadoc)
@@ -139,7 +144,7 @@ class JavaNode extends DocumentRangeNode implements ITypedElement {
 		case CU:
 			id= JavaCompareUtilities.getImageDescriptor(IJavaElement.COMPILATION_UNIT);
 			break;
-		case PACKAGE:
+		case MODULE:
 			id= JavaCompareUtilities.getImageDescriptor(IJavaElement.PACKAGE_DECLARATION);
 			break;
 		case IMPORT:
@@ -149,26 +154,43 @@ class JavaNode extends DocumentRangeNode implements ITypedElement {
 			id= JavaCompareUtilities.getImageDescriptor(IJavaElement.IMPORT_CONTAINER);
 			break;
 		case CLASS:
-			id= JavaCompareUtilities.getTypeImageDescriptor(true);
+			id= JavaCompareUtilities.getTypeImageDescriptor(AggregateDeclaration.Kind.CLASS);
 			break;
 		case INTERFACE:
-			id= JavaCompareUtilities.getTypeImageDescriptor(false);
+			id= JavaCompareUtilities.getTypeImageDescriptor(AggregateDeclaration.Kind.INTERFACE);
 			break;
-		case INIT:
-			id= JavaCompareUtilities.getImageDescriptor(IJavaElement.INITIALIZER);
+		case STRUCT:
+			id= JavaCompareUtilities.getTypeImageDescriptor(AggregateDeclaration.Kind.STRUCT);
 			break;
-		case CONSTRUCTOR:
+		case UNION:
+			id= JavaCompareUtilities.getTypeImageDescriptor(AggregateDeclaration.Kind.UNION);
+			break;
+		case TEMPLATE:
+			id= JavaCompareUtilities.getTemplateImageDescriptor();
+			break;
+		case ALIGN:
+			id= JavaCompareUtilities.getAlignImageDescriptor();
+			break;
 		case METHOD:
+		case CONSTRUCTOR:
+		case DESTRUCTOR:
+		case STATIC_CONSTRUCTOR:
+		case STATIC_DESTRUCTOR:
+		case NEW:
+		case DELETE:
 			id= JavaCompareUtilities.getImageDescriptor(IJavaElement.METHOD);
 			break;
 		case FIELD:
 			id= JavaCompareUtilities.getImageDescriptor(IJavaElement.FIELD);
-			break;					
+			break;
+		case ALILAS:
+			id= JavaCompareUtilities.getAliasImageDescriptor();
+			break;
+		case TYPEDEF:
+			id= JavaCompareUtilities.getTypedefImageDescriptor();
+			break;	
 		case ENUM:
 			id= JavaCompareUtilities.getEnumImageDescriptor();
-			break;
-		case ANNOTATION:
-			id= JavaCompareUtilities.getAnnotationImageDescriptor();
 			break;
 		}
 		return JavaPlugin.getImageDescriptorRegistry().get(id);

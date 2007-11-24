@@ -5,16 +5,23 @@ import java.util.Stack;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
+import descent.core.dom.AbstractFunctionDeclaration;
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.AlignDeclaration;
 import descent.core.dom.Argument;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
-import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.Type;
+import descent.core.dom.TypedefDeclaration;
+import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 
@@ -38,7 +45,7 @@ class JavaParseTreeBuilder extends ASTVisitor {
     }
 
     public boolean visit(ModuleDeclaration node) {
-        new JavaNode(getCurrentContainer(), JavaNode.PACKAGE, null, node.getStartPosition(), node.getLength());
+        new JavaNode(getCurrentContainer(), JavaNode.MODULE, null, node.getStartPosition(), node.getLength());
         return false;
     }
 
@@ -54,18 +61,19 @@ class JavaParseTreeBuilder extends ASTVisitor {
     }
 
     public boolean visit(AggregateDeclaration node) {
+    	String name = node.getName() == null ? "(anonymous)" : node.getName().toString();
     	switch(node.getKind()) {
     	case CLASS:
-    		push(JavaNode.CLASS, node.getName().toString(), node.getStartPosition(), node.getLength());
+    		push(JavaNode.CLASS, name, node.getStartPosition(), node.getLength());
     		break;
     	case INTERFACE:
-    		push(JavaNode.INTERFACE, node.getName().toString(), node.getStartPosition(), node.getLength());
+    		push(JavaNode.INTERFACE, name, node.getStartPosition(), node.getLength());
     		break;
     	case STRUCT:
-    		push(JavaNode.STRUCT, node.getName().toString(), node.getStartPosition(), node.getLength());
+    		push(JavaNode.STRUCT, name, node.getStartPosition(), node.getLength());
     		break;
     	case UNION:
-    		push(JavaNode.UNION, node.getName().toString(), node.getStartPosition(), node.getLength());
+    		push(JavaNode.UNION, name, node.getStartPosition(), node.getLength());
     		break;
     	}
         return true;
@@ -74,9 +82,21 @@ class JavaParseTreeBuilder extends ASTVisitor {
     public void endVisit(AggregateDeclaration node) {
         pop();
     }
+    
+    @Override
+    public boolean visit(TemplateDeclaration node) {
+    	push(JavaNode.TEMPLATE, node.getName().toString(), node.getStartPosition(), node.getLength());
+    	return true;
+    }
+    
+    @Override
+    public void endVisit(AliasDeclaration node) {
+    	pop();
+    }
 
     public boolean visit(EnumDeclaration node) {
-        push(JavaNode.ENUM, node.getName().toString(), node.getStartPosition(), node.getLength());
+    	String name = node.getName() == null ? "(anonymous)" : node.getName().toString();
+        push(JavaNode.ENUM, name, node.getStartPosition(), node.getLength());
         return true;
     }
 
@@ -86,21 +106,35 @@ class JavaParseTreeBuilder extends ASTVisitor {
 
     public boolean visit(FunctionDeclaration node) {
         String signature= getSignature(node);
-        push(node.isConstructor() ? JavaNode.CONSTRUCTOR : JavaNode.METHOD, signature, node.getStartPosition(), node.getLength());
+        push(JavaNode.METHOD, signature, node.getStartPosition(), node.getLength());
         return false;
     }
 
     public void endVisit(FunctionDeclaration node) {
         pop();
     }
-
-    public boolean visit(Initializer node) {
-        push(JavaNode.INIT, getCurrentContainer().getInitializerCount(), node.getStartPosition(), node.getLength());
+    
+    @Override
+    public boolean visit(ConstructorDeclaration node) {
+    	String signature= getSignature(node);
+    	
+    	int type = 0;
+    	switch(node.getKind()) {
+    	case CONSTRUCTOR: type = JavaNode.CONSTRUCTOR; break;
+    	case DELETE: type = JavaNode.DELETE; break;
+    	case DESTRUCTOR: type = JavaNode.DESTRUCTOR; break;
+    	case NEW: type = JavaNode.NEW; break;
+    	case STATIC_CONSTRUCTOR: type = JavaNode.STATIC_CONSTRUCTOR; break;
+    	case STATIC_DESTRUCTOR: type = JavaNode.STATIC_DESTRUCTOR; break;
+    	}
+    	
+        push(type, signature, node.getStartPosition(), node.getLength());
         return false;
     }
-
-    public void endVisit(Initializer node) {
-        pop();
+    
+    @Override
+    public void endVisit(ConstructorDeclaration node) {
+    	 pop();
     }
 
     public boolean visit(Import node) {
@@ -130,6 +164,32 @@ class JavaParseTreeBuilder extends ASTVisitor {
     public void endVisit(VariableDeclarationFragment node) {
         pop();
     }
+    
+    @Override
+    public boolean visit(AliasDeclarationFragment node) {
+    	String name= getFieldName(node);
+        ASTNode parent= node.getParent();
+        push(JavaNode.ALILAS, name, parent.getStartPosition(), parent.getLength());
+        return false;
+    }
+    
+    @Override
+    public void endVisit(AliasDeclarationFragment node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(TypedefDeclarationFragment node) {
+    	String name= getFieldName(node);
+        ASTNode parent= node.getParent();
+        push(JavaNode.TYPEDEF, name, parent.getStartPosition(), parent.getLength());
+        return false;
+    }
+    
+    @Override
+    public void endVisit(TypedefDeclarationFragment node) {
+    	pop();
+    }
 
     public boolean visit(EnumMember node) {
         push(JavaNode.FIELD, node.getName().toString(), node.getStartPosition(), node.getLength());
@@ -138,6 +198,17 @@ class JavaParseTreeBuilder extends ASTVisitor {
 
     public void endVisit(EnumMember node) {
         pop();
+    }
+    
+    @Override
+    public boolean visit(AlignDeclaration node) {
+    	push(JavaNode.ALIGN, String.valueOf(node.getAlign()), node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(AlignDeclaration node) {
+    	pop();
     }
     
     // private stuff
@@ -188,10 +259,48 @@ class JavaParseTreeBuilder extends ASTVisitor {
         }
         return buffer.toString();
     }
-
-    private String getSignature(FunctionDeclaration node) {
+    
+    private String getFieldName(AliasDeclarationFragment node) {
         StringBuffer buffer= new StringBuffer();
         buffer.append(node.getName().toString());
+        ASTNode parent= node.getParent();
+        if (parent instanceof AliasDeclaration) {
+        	AliasDeclaration fd= (AliasDeclaration) parent;
+            buffer.append(" : "); //$NON-NLS-1$
+            buffer.append(getType(fd.getType()));
+        }
+        return buffer.toString();
+    }
+    
+    private String getFieldName(TypedefDeclarationFragment node) {
+        StringBuffer buffer= new StringBuffer();
+        buffer.append(node.getName().toString());
+        ASTNode parent= node.getParent();
+        if (parent instanceof TypedefDeclaration) {
+        	TypedefDeclaration fd= (TypedefDeclaration) parent;
+            buffer.append(" : "); //$NON-NLS-1$
+            buffer.append(getType(fd.getType()));
+        }
+        return buffer.toString();
+    }
+
+    private String getSignature(AbstractFunctionDeclaration node) {
+        StringBuffer buffer= new StringBuffer();
+        
+        if (node.isFunction()) {
+        	buffer.append(((FunctionDeclaration) node).getName().toString());
+        } else {
+        	ConstructorDeclaration c = (ConstructorDeclaration) node;
+        	switch(c.getKind()) {
+        	case CONSTRUCTOR: buffer.append("this"); break; //$NON-NLS-1$
+        	case DELETE: buffer.append("delete"); break; //$NON-NLS-1$
+        	case DESTRUCTOR: buffer.append("~this"); break; //$NON-NLS-1$
+        	case NEW: buffer.append("new"); break; //$NON-NLS-1$
+        	case STATIC_CONSTRUCTOR: buffer.append("static this"); break; //$NON-NLS-1$
+        	case STATIC_DESTRUCTOR: buffer.append("static ~this"); break; //$NON-NLS-1$
+        	default: throw new IllegalStateException();
+        	}
+        }
         buffer.append('(');
         boolean first= true;
         Iterator iterator= node.arguments().iterator();

@@ -26,6 +26,8 @@ import org.eclipse.swt.graphics.Image;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IType;
+import descent.core.JavaModelException;
+import descent.core.dom.AggregateDeclaration;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
 import descent.ui.JavaElementLabels;
@@ -94,10 +96,26 @@ class JavaCompareUtilities {
 		return ImageDescriptor.getMissingImageDescriptor();
 	}
 	
-	static ImageDescriptor getTypeImageDescriptor(boolean isClass) {
-		if (isClass)
-			return JavaPluginImages.DESC_OBJS_CLASS;
-		return JavaPluginImages.DESC_OBJS_INTERFACE;
+	static ImageDescriptor getAliasImageDescriptor() {
+		return getImageDescriptor("obj16/alias_public_obj.gif"); //$NON-NLS-1$
+	}
+	
+	static ImageDescriptor getTypedefImageDescriptor() {
+		return getImageDescriptor("obj16/typedef_public_obj.gif"); //$NON-NLS-1$
+	}
+	
+	static ImageDescriptor getTypeImageDescriptor(AggregateDeclaration.Kind kind) {
+		switch(kind) {
+		case CLASS: return JavaPluginImages.DESC_OBJS_CLASS;
+		case INTERFACE: return JavaPluginImages.DESC_OBJS_INTERFACE;
+		case STRUCT: return JavaPluginImages.DESC_OBJS_STRUCT;
+		case UNION: return JavaPluginImages.DESC_OBJS_UNION;
+		default: return ImageDescriptor.getMissingImageDescriptor();
+		}
+	}
+	
+	static ImageDescriptor getTemplateImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_TEMPLATE;
 	}
 
 	static ImageDescriptor getEnumImageDescriptor() {
@@ -107,14 +125,30 @@ class JavaCompareUtilities {
 	static ImageDescriptor getAnnotationImageDescriptor() {
 		return JavaPluginImages.DESC_OBJS_ANNOTATION;
 	}
+	
+	static ImageDescriptor getAlignImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_ALIGN;
+	}
 
 	static ImageDescriptor getImageDescriptor(IMember element) {
 		int t= element.getElementType();
 		if (t == IJavaElement.TYPE) {
 			IType type= (IType) element;
 			try {
-				return getTypeImageDescriptor(type.isClass());
-			} catch (CoreException e) {
+				if (type.isClass()) {
+					return getTypeImageDescriptor(AggregateDeclaration.Kind.CLASS);
+				} else if (type.isInterface()) {
+					return getTypeImageDescriptor(AggregateDeclaration.Kind.INTERFACE);
+				} else if (type.isStruct()) {
+					return getTypeImageDescriptor(AggregateDeclaration.Kind.STRUCT);
+				} else if (type.isUnion()) {
+					return getTypeImageDescriptor(AggregateDeclaration.Kind.UNION);
+				} else if (type.isEnum()) {
+					return getEnumImageDescriptor();
+				} else {
+					return JavaPluginImages.DESC_OBJS_GHOST;
+				}
+			} catch (JavaModelException e) {
 				JavaPlugin.log(e);
 				return JavaPluginImages.DESC_OBJS_GHOST;
 			}
@@ -183,25 +217,34 @@ class JavaCompareUtilities {
 			break;
 		case JavaNode.CLASS:
 		case JavaNode.INTERFACE:
+		case JavaNode.STRUCT:
+		case JavaNode.UNION:
 		case JavaNode.ENUM:
-		case JavaNode.ANNOTATION:
+		case JavaNode.TEMPLATE:
 			sb.append(TYPE);
 			sb.append(name);
 			break;
 		case JavaNode.FIELD:
+		case JavaNode.ALILAS:
+		case JavaNode.TYPEDEF:
 			sb.append(FIELD);
 			sb.append(name);
 			break;
-		case JavaNode.CONSTRUCTOR:
 		case JavaNode.METHOD:
+		case JavaNode.CONSTRUCTOR:
+		case JavaNode.DESTRUCTOR:
+		case JavaNode.NEW:
+		case JavaNode.DELETE:
 			sb.append(METHOD);
 			sb.append(name);
 			break;
-		case JavaNode.INIT:
+		case JavaNode.STATIC_CONSTRUCTOR:
+		case JavaNode.STATIC_DESTRUCTOR:
+		case JavaNode.ALIGN:
 			sb.append(INITIALIZER);
 			sb.append(name);
 			break;
-		case JavaNode.PACKAGE:
+		case JavaNode.MODULE:
 			sb.append(PACKAGEDECLARATION);
 			break;
 		case JavaNode.IMPORT:

@@ -20,7 +20,7 @@ import org.eclipse.compare.*;
 import org.eclipse.compare.IResourceProvider;
 import org.eclipse.compare.structuremergeviewer.*;
 
-
+// TODO JDT UI compare implement well with D's AST
 public class JavaStructureCreator implements IStructureCreator {
 	
 	private Map fDefaultCompilerOptions;

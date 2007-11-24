@@ -100,7 +100,7 @@ class JavaTextBufferNode implements ITypedElement, IEncodedStreamContentAccessor
 			JavaNode jn= (JavaNode) element;
 			switch (jn.getTypeCode()) {
 				
-			case JavaNode.PACKAGE:
+			case JavaNode.MODULE:
 			    return ASTNode.MODULE_DECLARATION;
 
 			case JavaNode.CLASS:
@@ -119,7 +119,7 @@ class JavaTextBufferNode implements ITypedElement, IEncodedStreamContentAccessor
 			case JavaNode.FIELD:
 				return ASTNode.VARIABLE_DECLARATION;
 				
-			case JavaNode.INIT:
+			case JavaNode.STATIC_CONSTRUCTOR:
 				return ASTNode.FUNCTION_DECLARATION;
 
 			case JavaNode.IMPORT:
