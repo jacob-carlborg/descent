@@ -69,6 +69,12 @@ public class PublicScanner implements IScanner {
 		return lexer.token.getRawTokenSource();
 	}
 	
+
+	public char[] getCurrentTokenSource() {
+		// TODO replace unicode sequences
+		return lexer.token.getRawTokenSource();
+	}
+	
 	public String getRawTokenSourceAsString() {
 		return lexer.token.getRawTokenSourceAsString();
 	}

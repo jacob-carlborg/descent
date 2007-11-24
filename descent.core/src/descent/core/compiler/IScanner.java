@@ -40,6 +40,16 @@ public interface IScanner {
 	char[] getRawTokenSource();	
 	
 	/**
+	 * Answers the current identifier source, after unicode escape sequences have
+	 * been translated into unicode characters.
+	 * For example, if original source was <code>\\u0061bc</code> then it will answer <code>abc</code>.
+	 * 
+	 * @return the current identifier source, before unicode escape sequences have
+	 * been translated into unicode characters
+	 */
+	char[] getCurrentTokenSource();	
+	
+	/**
 	 * Answers the current identifier source, before unicode escape sequences have
 	 * been translated into unicode characters.
 	 * For example, if original source was <code>\\u0061bc</code> then it will answer <code>\\u0061bc</code>.
