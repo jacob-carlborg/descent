@@ -11,10 +11,12 @@
 package descent.internal.ui;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.mapping.ResourceMapping;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.search.ui.ISearchPageScoreComputer;
 import org.eclipse.ui.IContainmentAdapter;
 import org.eclipse.ui.IContributorResourceAdapter;
 import org.eclipse.ui.IPersistableElement;
@@ -29,6 +31,8 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IPackageFragmentRoot;
 import descent.internal.corext.util.JavaElementResourceMapping;
+import descent.internal.ui.search.JavaSearchPageScoreComputer;
+import descent.internal.ui.search.SearchUtil;
 
 /**
  * Implements basic UI support for Java elements.
@@ -59,26 +63,21 @@ public class JavaElementAdapterFactory implements IAdapterFactory, IContributorR
 	private static JavaElementContainmentAdapter fgJavaElementContainmentAdapter;
 	
 	public Class[] getAdapterList() {
-		/* TODO JDT UI search
 		updateLazyLoadedAdapters();
-		*/
 		return PROPERTIES;
 	}
 	
 	public Object getAdapter(Object element, Class key) {
-		/* TODO JDT UI search
 		updateLazyLoadedAdapters();
-		*/
+		
 		IJavaElement java= getJavaElement(element);
 		
 		if (IPropertySource.class.equals(key)) {
 			return getProperties(java);
 		} if (IResource.class.equals(key)) {
 			return getResource(java);
-		/* TODO JDT UI search
 		} if (fSearchPageScoreComputer != null && ISearchPageScoreComputer.class.equals(key)) {
 			return fSearchPageScoreComputer;
-		*/
 		} if (IWorkbenchAdapter.class.equals(key)) {
 			return getJavaWorkbenchAdapter();
 		} if (IResourceLocator.class.equals(key)) {
@@ -163,7 +162,6 @@ public class JavaElementAdapterFactory implements IAdapterFactory, IContributorR
 		return new ResourcePropertySource(resource);
 	}
 
-	/* TODO JDT UI search
 	private void updateLazyLoadedAdapters() {
 		if (fSearchPageScoreComputer == null && SearchUtil.isSearchPlugInActivated())
 			createSearchPageScoreComputer();
@@ -185,7 +183,6 @@ public class JavaElementAdapterFactory implements IAdapterFactory, IContributorR
 			IContainmentAdapter.class
 		};
 	}
-	*/
 
 	private static IResourceLocator getResourceLocator() {
 		if (fgResourceLocator == null)
