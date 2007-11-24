@@ -1,12 +1,25 @@
 package descent.internal.core.search.matching;
 
+import descent.core.compiler.CharOperation;
+import descent.core.dom.AggregateDeclaration;
 import descent.core.search.SearchMatch;
 import descent.core.search.SearchPattern;
+import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.CtorDeclaration;
+import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TypedefDeclaration;
+import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.core.search.indexing.IIndexConstants;
 
-// TODO JDT stub
-public class PatternLocator {
+// TODO JDT search stub
+public class PatternLocator implements IIndexConstants {
 	
-//	 store pattern info
+	// store pattern info
 	protected int matchMode;
 	protected boolean isCaseSensitive;
 	protected boolean isCamelCase;
@@ -47,11 +60,77 @@ public class PatternLocator {
 	public static final int RAW_MASK = SearchPattern.R_EQUIVALENT_MATCH | SearchPattern.R_ERASURE_MATCH;
 	public static final int RULE_MASK = RAW_MASK; // no other values for the while...
 	
+	public static PatternLocator patternLocator(SearchPattern pattern) {
+		switch (((InternalSearchPattern)pattern).kind) {
+			case IIndexConstants.PKG_REF_PATTERN :
+				return new PackageReferenceLocator((PackageReferencePattern) pattern);
+			case IIndexConstants.PKG_DECL_PATTERN :
+				return new PackageDeclarationLocator((PackageDeclarationPattern) pattern);
+			case IIndexConstants.TYPE_REF_PATTERN :
+				return new TypeReferenceLocator((TypeReferencePattern) pattern);
+			case IIndexConstants.TYPE_DECL_PATTERN :
+				return new TypeDeclarationLocator((TypeDeclarationPattern) pattern);
+			case IIndexConstants.SUPER_REF_PATTERN :
+				return new SuperTypeReferenceLocator((SuperTypeReferencePattern) pattern);
+			case IIndexConstants.CONSTRUCTOR_PATTERN :
+				return new ConstructorLocator((ConstructorPattern) pattern);
+			case IIndexConstants.FIELD_PATTERN :
+				return new FieldLocator((FieldPattern) pattern);
+			case IIndexConstants.METHOD_PATTERN :
+				return new MethodLocator((MethodPattern) pattern);
+			case IIndexConstants.OR_PATTERN :
+				return new OrLocator((OrPattern) pattern);
+			case IIndexConstants.LOCAL_VAR_PATTERN :
+				return new LocalVariableLocator((LocalVariablePattern) pattern);
+			case IIndexConstants.TYPE_PARAM_PATTERN:
+				return new TypeParameterLocator((TypeParameterPattern) pattern);
+		}
+		return null;
+	}
+	// TODO missing methods
+	public static char[] qualifiedPattern(char[] simpleNamePattern, char[] qualificationPattern) {
+		// NOTE: if case insensitive search then simpleNamePattern & qualificationPattern are assumed to be lowercase
+		if (simpleNamePattern == null) {
+			if (qualificationPattern == null) return null;
+			return CharOperation.concat(qualificationPattern, ONE_STAR, '.');
+		} else {
+			return qualificationPattern == null
+				? CharOperation.concat(ONE_STAR, simpleNamePattern)
+				: CharOperation.concat(qualificationPattern, simpleNamePattern, '.');
+		}
+	}
+	
+	public PatternLocator(SearchPattern pattern) {
+		int matchRule = pattern.getMatchRule();
+		this.isCaseSensitive = (matchRule & SearchPattern.R_CASE_SENSITIVE) != 0;
+		this.isCamelCase = (matchRule & SearchPattern.R_CAMELCASE_MATCH) != 0;
+		this.isErasureMatch = (matchRule & SearchPattern.R_ERASURE_MATCH) != 0;
+		this.isEquivalentMatch = (matchRule & SearchPattern.R_EQUIVALENT_MATCH) != 0;
+		this.matchMode = matchRule & JavaSearchPattern.MATCH_MODE_MASK;
+		this.mustResolve = ((InternalSearchPattern)pattern).mustResolve;
+	}
+	
 	/*
 	 * Clear caches
 	 */
 	protected void clear() {
 		// nothing to clear by default
+	}
+	/* (non-Javadoc)
+	 * Modify PatternLocator.qualifiedPattern behavior:
+	 * do not add star before simple name pattern when qualification pattern is null.
+	 * This avoid to match p.X when pattern is only X...
+	 */
+	protected char[] getQualifiedPattern(char[] simpleNamePattern, char[] qualificationPattern) {
+		// NOTE: if case insensitive search then simpleNamePattern & qualificationPattern are assumed to be lowercase
+		if (simpleNamePattern == null) {
+			if (qualificationPattern == null) return null;
+			return CharOperation.concat(qualificationPattern, ONE_STAR, '.');
+		} else if (qualificationPattern == null) {
+			return simpleNamePattern;
+		} else {
+			return CharOperation.concat(qualificationPattern, simpleNamePattern, '.');
+		}
 	}
 	
 	/**
@@ -60,5 +139,149 @@ public class PatternLocator {
 	public void initializePolymorphicSearch(MatchLocator locator) {
 		// default is to do nothing
 	}
-
+	
+	/**
+	 * Check if the given ast node syntactically matches this pattern.
+	 * If it does, add it to the match set.
+	 * Returns the match level.
+	 */
+	public int match(ASTDmdNode node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(CtorDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(Expression node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(VarDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(AliasDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(TypedefDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(FuncDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(CallExp node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(AggregateDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(EnumDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	public int match(TemplateDeclaration node, MatchingNodeSet nodeSet) { // needed for some generic nodes
+		// each subtype should override if needed
+		return IMPOSSIBLE_MATCH;
+	}
+	/**
+	 * Returns the type(s) of container for this pattern.
+	 * It is a bit combination of types, denoting compilation unit, class declarations, field declarations or method declarations.
+	 */
+	protected int matchContainer() {
+		// override if the pattern can be more specific
+		return ALL_CONTAINER;
+	}
+	/**
+	 * Returns whether the given name matches the given pattern.
+	 */
+	protected boolean matchesName(char[] pattern, char[] name) {
+		if (pattern == null) return true; // null is as if it was "*"
+		if (name == null) return false; // cannot match null name
+		return matchNameValue(pattern, name) != IMPOSSIBLE_MATCH;
+	}
+	/**
+	 * Return how the given name matches the given pattern.
+	 * @see "https://bugs.eclipse.org/bugs/show_bug.cgi?id=79866"
+	 * 
+	 * @param pattern
+	 * @param name
+	 * @return Possible values are:
+	 * <ul>
+	 * 	<li>{@link #POSSIBLE_FULL_MATCH}: Given name is equals to pattern</li>
+	 * 	<li>{@link #POSSIBLE_PREFIX_MATCH}: Given name prefix equals to pattern</li>
+	 * 	<li>{@link #POSSIBLE_CAMELCASE_MATCH}: Given name matches pattern as Camel Case</li>
+	 * 	<li>{@link #POSSIBLE_PATTERN_MATCH}: Given name matches pattern as Pattern (ie. using '*' and '?' characters)</li>
+	 * </ul>
+	 */
+	protected int matchNameValue(char[] pattern, char[] name) {
+		if (pattern == null) return ACCURATE_MATCH; // null is as if it was "*"
+		if (name == null) return IMPOSSIBLE_MATCH; // cannot match null name
+		if (name.length == 0) { // empty name
+			if (pattern.length == 0) { // can only matches empty pattern
+				return ACCURATE_MATCH;
+			}
+			return IMPOSSIBLE_MATCH;
+		} else if (pattern.length == 0) {
+			return IMPOSSIBLE_MATCH; // need to have both name and pattern length==0 to be accurate
+		}
+		boolean matchFirstChar = !this.isCaseSensitive || pattern[0] == name[0];
+		boolean sameLength = pattern.length == name.length;
+		boolean canBePrefix = name.length >= pattern.length;
+		if (this.isCamelCase && matchFirstChar && CharOperation.camelCaseMatch(pattern, name)) {
+			return POSSIBLE_CAMELCASE_MATCH;
+		}
+		switch (this.matchMode) {
+			case SearchPattern.R_EXACT_MATCH:
+				if (!this.isCamelCase) {
+					if (sameLength && matchFirstChar && CharOperation.equals(pattern, name, this.isCaseSensitive)) {
+						return POSSIBLE_FULL_MATCH;
+					}
+					break;
+				}
+				// fall through next case to match as prefix if camel case failed
+			case SearchPattern.R_PREFIX_MATCH:
+				if (canBePrefix && matchFirstChar && CharOperation.prefixEquals(pattern, name, this.isCaseSensitive)) {
+					return POSSIBLE_PREFIX_MATCH;
+				}
+				break;
+			case SearchPattern.R_PATTERN_MATCH:
+				if (!this.isCaseSensitive) {
+					pattern = CharOperation.toLowerCase(pattern);
+				}
+				if (CharOperation.match(pattern, name, this.isCaseSensitive)) {
+					return POSSIBLE_MATCH;
+				}
+				break;
+			case SearchPattern.R_REGEXP_MATCH :
+				// TODO (frederic) implement regular expression match
+				break;
+		}
+		return IMPOSSIBLE_MATCH;
+	}
+	// TODO missing methods
+	protected int referenceType() {
+		return 0; // defaults to unknown (a generic JavaSearchMatch will be created)
+	}
+	/**
+	 * Finds out whether the given ast node matches this search pattern.
+	 * Returns IMPOSSIBLE_MATCH if it doesn't.
+	 * Returns INACCURATE_MATCH if it potentially matches this search pattern (ie. 
+	 * it has already been resolved but resolving failed.)
+	 * Returns ACCURATE_MATCH if it matches exactly this search pattern (ie. 
+	 * it doesn't need to be resolved or it has already been resolved.)
+	 */
+	public int resolveLevel(ASTDmdNode possibleMatchingNode) {
+		// only called with nodes which were possible matches to the call to matchLevel
+		// need to do instance of checks to find out exact type of ASTNode
+		return IMPOSSIBLE_MATCH;
+	}
+	public String toString(){
+		return "SearchPattern"; //$NON-NLS-1$
+	}
 }
