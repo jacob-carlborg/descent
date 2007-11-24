@@ -61,7 +61,7 @@ public class JUnitCopyAction extends SelectionListenerAction {
 		if (trace != null) {
 			source= convertLineTerminators(trace);
 		} else if (fTestElement != null) {
-			source= null;/* TODO fTestElement.getTestName(); */
+			source= fTestElement.getTestName();
 		}
 		if (source == null || source.length() == 0)
 			return;

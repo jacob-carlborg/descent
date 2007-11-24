@@ -66,7 +66,7 @@ public class FailureTrace implements IMenuListener {
 		OpenStrategy handler = new OpenStrategy(fTable);
 		handler.addOpenListener(new IOpenEventListener() {
 			public void handleOpen(SelectionEvent e) {
-				if (fTable.getSelectionIndex() == 0 /* TODO && fFailure.isComparisonFailure() */) {
+				if (fTable.getSelectionIndex() == 0 && fFailure.isComparisonFailure()) {
 					(new CompareResultsAction(FailureTrace.this)).run();
 				}
 				if (fTable.getSelection().length != 0) {
@@ -98,7 +98,7 @@ public class FailureTrace implements IMenuListener {
 			manager.add(new JUnitCopyAction(FailureTrace.this, fClipboard));
 		}
 		// fix for bug 68058
-		if (fFailure != null /* TODO && fFailure.isComparisonFailure() */) 
+		if (fFailure != null && fFailure.isComparisonFailure()) 
 			manager.add(new CompareResultsAction(FailureTrace.this));
 	}
 
@@ -157,7 +157,7 @@ public class FailureTrace implements IMenuListener {
 	    String trace= ""; //$NON-NLS-1$
 	    updateEnablement(test);
 	    if (test != null) 
-	        trace= null;/* TODO test.getTrace(); */
+	        trace= test.getTrace();
 		if (fInputTrace == trace)
 			return;
 		fInputTrace= trace;
@@ -165,7 +165,7 @@ public class FailureTrace implements IMenuListener {
 	}
 
 	public void updateEnablement(TestElement test) {
-		fCompareAction.setEnabled(test != null /* && TODO test.isComparisonFailure() */);
+		fCompareAction.setEnabled(test != null && test.isComparisonFailure());
 	}
 
 	private void updateTable(String trace) {

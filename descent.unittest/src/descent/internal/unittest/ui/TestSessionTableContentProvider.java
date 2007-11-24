@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-//import descent.internal.unittest.model.TestCaseElement;
+import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
-//import descent.internal.unittest.model.TestRoot;
-//import descent.internal.unittest.model.TestSuiteElement;
+import descent.internal.unittest.model.TestRoot;
+import descent.internal.unittest.model.TestSuiteElement;
 
 
 public class TestSessionTableContentProvider implements IStructuredContentProvider {
@@ -30,11 +30,11 @@ public class TestSessionTableContentProvider implements IStructuredContentProvid
 
 	public Object[] getElements(Object inputElement) {
 		ArrayList all= new ArrayList();
-		// TODO addAll(all, (TestRoot) inputElement);
+		addAll(all, (TestRoot) inputElement);
 		return all.toArray();
 	}
 
-	/* TODO private void addAll(ArrayList all, TestSuiteElement suite) {
+	private void addAll(ArrayList all, TestSuiteElement suite) {
 		TestElement[] children= suite.getChildren();
 		for (int i= 0; i < children.length; i++) {
 			TestElement element= children[i];
@@ -46,7 +46,7 @@ public class TestSessionTableContentProvider implements IStructuredContentProvid
 				all.add(element);
 			}
 		}
-	} */
+	}
 
 	public void dispose() {
 	}

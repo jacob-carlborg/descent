@@ -80,8 +80,7 @@ public abstract class OpenEditorAction extends Action {
 	}
 
 	protected IJavaProject getLaunchedProject() {
-		/* TODO return fTestRunner.getLaunchedProject(); */
-		return null;
+		return fTestRunner.getLaunchedProject();
 	}
 	
 	protected String getClassName() {

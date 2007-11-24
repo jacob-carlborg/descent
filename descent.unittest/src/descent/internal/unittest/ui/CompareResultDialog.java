@@ -148,9 +148,9 @@ public class CompareResultDialog extends TrayDialog {
 		super(parentShell);
 		fgThis= this;
 		setShellStyle(getShellStyle() | SWT.RESIZE | SWT.MAX);
-        fTestName= ""; // TODO element.getTestName();
-        fExpected= ""; // TODO element.getExpected();
-        fActual= ""; // TODO element.getActual();
+        fTestName= element.getTestName();
+        fExpected= element.getExpected();
+        fActual= element.getActual();
         computePrefixSuffix();
 	}
 	

@@ -41,7 +41,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-//import descent.unittest.ITestRunListener;
+import descent.unittest.ITestRunListener;
 //import descent.internal.unittest.model.JUnitModel;
 
 import org.osgi.framework.Bundle;
@@ -53,7 +53,6 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * The plug-in runtime class for the JUnit plug-in.
  */
 public class DescentUnittestPlugin extends AbstractUIPlugin {
-	//TODO: move to descent.internal.unittest
 	
 	/**
 	 * The single instance of this plug-in runtime class.
@@ -84,7 +83,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 
 	private static final IPath ICONS_PATH= new Path("$nl$/icons/full"); //$NON-NLS-1$
 	
-	//private final JUnitModel fJUnitModel= new JUnitModel();
+	// TODO private final JUnitModel fJUnitModel= new JUnitModel();
 	
 
 	/**
@@ -241,7 +240,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 	/**
 	 * Initializes TestRun Listener extensions
 	 */
-	/* private void loadTestRunListeners() {
+	private void loadTestRunListeners() {
 		fTestRunListeners= new ArrayList();
 		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(ID_EXTENSION_POINT_TESTRUN_LISTENERS);
 		if (extensionPoint == null) {
@@ -261,7 +260,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 		if (!status.isOK()) {
 			DescentUnittestPlugin.log(status);
 		}
-	} */
+	}
 
 	/**
 	 * Loads the registered JUnit launch configurations
@@ -283,12 +282,12 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 	/**
 	 * @return an array of all TestRun listeners
 	 */
-	/* public ITestRunListener[] getTestRunListeners() {
+	public ITestRunListener[] getTestRunListeners() {
 		if (fTestRunListeners == null) {
 			loadTestRunListeners();
 		}
 		return (ITestRunListener[]) fTestRunListeners.toArray(new ITestRunListener[fTestRunListeners.size()]);
-	} */
+	}
 
 	/**
 	 * @return a list of all JUnit launch configuration types
@@ -326,7 +325,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 	 * Adds a TestRun listener to the collection of listeners
 	 * @param newListener the listener to add
 	 */
-	/* public void addTestRunListener(ITestRunListener newListener) {
+	public void addTestRunListener(ITestRunListener newListener) {
 		if (fTestRunListeners == null) 
 			loadTestRunListeners();
 		
@@ -336,7 +335,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 				return;
 		}
 		fTestRunListeners.add(newListener);
-	} */
+	}
 
 	/**
 	 * Removes a TestRun listener to the collection of listeners

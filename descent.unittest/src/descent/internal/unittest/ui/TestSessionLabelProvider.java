@@ -16,11 +16,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.viewers.LabelProvider;
 
 import descent.internal.unittest.Messages;
-//import descent.internal.unittest.model.TestCaseElement;
+import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
-//import descent.internal.unittest.model.TestRoot;
-//import descent.internal.unittest.model.TestSuiteElement;
-//import descent.internal.unittest.model.TestElement.Status;
+import descent.internal.unittest.model.TestRoot;
+import descent.internal.unittest.model.TestSuiteElement;
+import descent.internal.unittest.model.TestElement.Status;
 
 public class TestSessionLabelProvider extends LabelProvider {
 	
@@ -33,7 +33,7 @@ public class TestSessionLabelProvider extends LabelProvider {
 	}
 
 	public String getText(Object element) {
-		/* TODO if (element instanceof TestCaseElement) {
+		if (element instanceof TestCaseElement) {
 			TestCaseElement testCaseElement= (TestCaseElement) element;
 			String testMethodName= testCaseElement.getTestMethodName();
 			if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL) {
@@ -49,24 +49,23 @@ public class TestSessionLabelProvider extends LabelProvider {
 			return getElementLabel(testName, testElement);
 		} else {
 			throw new IllegalArgumentException(String.valueOf(element));
-		} */
-		return "TODO TestSessionLabelProvider.getText";
+		}
 	}
 
 	private String getElementLabel(String name, TestElement testElement) {
-		/* TODO if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL && testElement.getParent() instanceof TestRoot) {
+		if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL && testElement.getParent() instanceof TestRoot) {
 			String testKindDisplayName= fTestRunnerPart.getTestKindDisplayName();
 				if (testKindDisplayName == null)
 					return name;
 				else
 					return Messages.format(JUnitMessages.TestSessionLabelProvider_testName_JUnitVersion, new Object[] { name, testKindDisplayName });
-		} else */
+		} else
 			return name;
 		
 	}
 
 	public Image getImage(Object element) {
-		/* TODO if (element instanceof TestCaseElement) {
+		if (element instanceof TestCaseElement) {
 			TestCaseElement testCaseElement= ((TestCaseElement) element);
 			if (testCaseElement.isIgnored())
 				return fTestRunnerPart.fTestIgnoredIcon;
@@ -102,8 +101,6 @@ public class TestSessionLabelProvider extends LabelProvider {
 		
 		} else {
 			throw new IllegalArgumentException(String.valueOf(element));
-		} */
-		
-		return fTestRunnerPart.fTestIcon;
+		}
 	}
 }

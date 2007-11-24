@@ -59,7 +59,7 @@ public class CopyFailureListAction extends Action {
 	}
 	
 	public String getAllFailureTraces() {
-		/* TODO StringBuffer buf= new StringBuffer();
+		StringBuffer buf= new StringBuffer();
 		TestElement[] failures= fRunner.getAllFailures();
 		
 		String lineDelim= System.getProperty("line.separator", "\n");  //$NON-NLS-1$//$NON-NLS-2$
@@ -81,8 +81,7 @@ public class CopyFailureListAction extends Action {
 				}
 			}
 		}
-		return buf.toString(); */
-		return "TODO CopyFailureListAction.getAllFailureTraces";
+		return buf.toString();
 	}
 
 

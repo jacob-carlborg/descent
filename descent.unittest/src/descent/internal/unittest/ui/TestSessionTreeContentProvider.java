@@ -15,8 +15,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import descent.internal.unittest.model.TestElement;
-//import descent.internal.unittest.model.TestRoot;
-//import descent.internal.unittest.model.TestSuiteElement;
+import descent.internal.unittest.model.TestRoot;
+import descent.internal.unittest.model.TestSuiteElement;
 
 
 public class TestSessionTreeContentProvider implements ITreeContentProvider {
@@ -27,26 +27,24 @@ public class TestSessionTreeContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		/* TODO if (parentElement instanceof TestSuiteElement)
+		if (parentElement instanceof TestSuiteElement)
 			return ((TestSuiteElement) parentElement).getChildren();
-		else */
+		else
 			return NO_CHILDREN;
 	}
 
 	public Object[] getElements(Object inputElement) {
-		//TODO return ((TestRoot) inputElement).getChildren();
-		return NO_CHILDREN;
+		return ((TestRoot) inputElement).getChildren();
 	}
 
 	public Object getParent(Object element) {
-		// TODO return ((TestElement) element).getParent();
-		return null;
+		return ((TestElement) element).getParent();
 	}
 
 	public boolean hasChildren(Object element) {
-		/* TODO if (element instanceof TestSuiteElement)
+		if (element instanceof TestSuiteElement)
 			return ((TestSuiteElement) element).getChildren().length != 0;
-		else */
+		else
 			return false;
 	}
 

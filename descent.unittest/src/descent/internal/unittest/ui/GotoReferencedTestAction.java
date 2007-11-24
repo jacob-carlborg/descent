@@ -61,7 +61,7 @@ public class GotoReferencedTestAction implements IWorkbenchWindowActionDelegate 
 	}
 			
 	private void run(ITextSelection ITextSelection) {
-		/* try {
+		/* TODO try {
 			JavaEditor editor= getActiveEditor();
 			if (editor == null)
 				return;
