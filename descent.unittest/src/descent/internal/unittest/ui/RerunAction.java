@@ -12,7 +12,7 @@ package descent.internal.unittest.ui;
 
 import org.eclipse.ui.PlatformUI;
 
-//import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.action.Action;
 
 /**
@@ -30,9 +30,9 @@ public class RerunAction extends Action {
 	 */
 	public RerunAction(TestRunnerViewPart runner, String testId, String className, String testName, String launchMode) {
 		super(); 
-		/* TODO if (launchMode.equals(ILaunchManager.RUN_MODE))
+		if (launchMode.equals(ILaunchManager.RUN_MODE))
 			setText(JUnitMessages.RerunAction_label_run); 
-		else if (launchMode.equals(ILaunchManager.DEBUG_MODE)) */
+		else if (launchMode.equals(ILaunchManager.DEBUG_MODE))
 			setText(JUnitMessages.RerunAction_label_debug); 
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IJUnitHelpContextIds.RERUN_ACTION);
 		fTestRunner= runner;

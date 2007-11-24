@@ -34,5 +34,6 @@ Export-Package: descent.internal.ui,
  descent.internal.ui.infoviews;x-friends:="descent.tests",
  descent.internal.ui.javaeditor,
  descent.internal.ui.util,
+ descent.internal.ui.viewsupport,
  descent.ui,
  descent.ui.text

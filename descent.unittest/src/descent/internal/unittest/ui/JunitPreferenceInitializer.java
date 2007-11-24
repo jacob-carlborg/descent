@@ -24,15 +24,7 @@ public class JunitPreferenceInitializer extends AbstractPreferenceInitializer {
 	/** {@inheritDoc} */
 	public void initializeDefaultPreferences() {
 		Preferences prefs= DescentUnittestPlugin.getDefault().getPluginPreferences();
-		prefs.setDefault(JUnitPreferencesConstants.DO_FILTER_STACK, true);
 		prefs.setDefault(JUnitPreferencesConstants.SHOW_ON_ERROR_ONLY, false);
-		prefs.setDefault(JUnitPreferencesConstants.ENABLE_ASSERTIONS, false);
-
-		List defaults= JUnitPreferencesConstants.createDefaultStackFiltersList();
-		String[] filters= (String[]) defaults.toArray(new String[defaults.size()]);
-		String active= JUnitPreferencesConstants.serializeList(filters);
-		prefs.setDefault(JUnitPreferencesConstants.PREF_ACTIVE_FILTERS_LIST, active);
-		prefs.setDefault(JUnitPreferencesConstants.PREF_INACTIVE_FILTERS_LIST, ""); //$NON-NLS-1$
 		prefs.setDefault(JUnitPreferencesConstants.MAX_TEST_RUNS, 10);
 	}
 }

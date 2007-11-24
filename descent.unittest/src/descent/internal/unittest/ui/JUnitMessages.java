@@ -35,9 +35,6 @@ public final class JUnitMessages extends NLS {
 	public static String CounterPanel_label_runs;
 	public static String CounterPanel_runcount;
 	public static String CounterPanel_runcount_ignored;
-	public static String EnableStackFilterAction_action_description;
-	public static String EnableStackFilterAction_action_label;
-	public static String EnableStackFilterAction_action_tooltip;
 	public static String ExpandAllAction_text;
 	public static String ExpandAllAction_tooltip;
 	public static String GotoReferencedTestAction_dialog_error;
@@ -116,23 +113,8 @@ public final class JUnitMessages extends NLS {
 	public static String JUnitMainTab_tab_label;
 	public static String JUnitMainTab_testdialog_message;
 	public static String JUnitMainTab_testdialog_title;
-	public static String JUnitPreferencePage_addfilterbutton_label;
-	public static String JUnitPreferencePage_addfilterbutton_tooltip;
-	public static String JUnitPreferencePage_addpackagebutton_label;
-	public static String JUnitPreferencePage_addpackagebutton_tooltip;
-	public static String JUnitPreferencePage_addpackagedialog_message;
-	public static String JUnitPreferencePage_addpackagedialog_title;
-	public static String JUnitPreferencePage_addtypebutton_label;
-	public static String JUnitPreferencePage_addtypebutton_tooltip;
-	public static String JUnitPreferencePage_addtypedialog_error_message;
-	public static String JUnitPreferencePage_addtypedialog_message;
-	public static String JUnitPreferencePage_addtypedialog_title;
+
 	public static String JUnitPreferencePage_description;
-	public static String JUnitPreferencePage_disableallbutton_label;
-	public static String JUnitPreferencePage_disableallbutton_tooltip;
-	public static String JUnitPreferencePage_enableallbutton_label;
-	public static String JUnitPreferencePage_enableallbutton_tooltip;
-	public static String JUnitPreferencePage_filter_label;
 	
 	public static String JUnitPreferencePage_invalidstepfilterreturnescape;
 	public static String JUnitPreferencePage_removefilterbutton_label;

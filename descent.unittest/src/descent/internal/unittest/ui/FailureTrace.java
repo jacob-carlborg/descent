@@ -53,7 +53,6 @@ public class FailureTrace implements IMenuListener {
 		
 		// fill the failure trace viewer toolbar
 		ToolBarManager failureToolBarmanager= new ToolBarManager(toolBar);
-		failureToolBarmanager.add(new EnableStackFilterAction(this));			
 		fCompareAction = new CompareResultsAction(this);
 		fCompareAction.setEnabled(false);
         failureToolBarmanager.add(fCompareAction);			
@@ -176,15 +175,9 @@ public class FailureTrace implements IMenuListener {
 		trace= trace.trim();
 		fTable.setRedraw(false);
 		fTable.removeAll();
-		new TextualTrace(trace, getFilterPatterns()).display(
+		new TextualTrace(trace).display(
 				fFailureTableDisplay, MAX_LABEL_LENGTH);
 		fTable.setRedraw(true);
-	}
-
-	private String[] getFilterPatterns() {
-		if (JUnitPreferencePage.getFilterStack())
-			return JUnitPreferencePage.getFilterPatterns();
-		return new String[0];
 	}
 
 	/**

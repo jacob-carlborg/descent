@@ -180,8 +180,8 @@ public abstract class TestElement {
 	}
 	
 	public void setStatus(Status status) {
-		//TODO: notify about change?
-		//TODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
+		//JTODO: notify about change?
+		//JTODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
 		fStatus= status;
 		TestSuiteElement parent= getParent();
 		if (parent != null)
@@ -189,8 +189,8 @@ public abstract class TestElement {
 	}
 	
 	public void setStatus(Status status, String trace, String expected, String actual) {
-		//TODO: notify about change?
-		//TODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
+		//JTODO: notify about change?
+		//JTODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
 		fTrace= trace;
 		fExpected= expected;
 		fActual= actual;
@@ -217,7 +217,7 @@ public abstract class TestElement {
 		return fExpected != null && fActual != null;
 	}
 	
-	// TODO: Format of testName is highly underspecified. See RemoteTestRunner#getTestName(Test).
+	// JTODO: Format of testName is highly underspecified. See RemoteTestRunner#getTestName(Test).
 	
 	public String getClassName() {
 		return extractClassName(getTestName());

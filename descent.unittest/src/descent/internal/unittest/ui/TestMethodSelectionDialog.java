@@ -178,9 +178,9 @@ public class TestMethodSelectionDialog extends ElementListSelectionDialog {
 		int matchRule= SearchPattern.R_EXACT_MATCH | SearchPattern.R_CASE_SENSITIVE | SearchPattern.R_ERASURE_MATCH;
 		SearchPattern pattern= SearchPattern.createPattern(element, IJavaSearchConstants.REFERENCES, matchRule);
 		SearchParticipant[] participants= new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()};
-		/* TODO IJavaSearchScope scope= SearchEngine.createHierarchyScope(testType); */
+		/* WAITING_ON_CORE IJavaSearchScope scope= SearchEngine.createHierarchyScope(testType); */
 		TestReferenceCollector requestor= new TestReferenceCollector();
-		new SearchEngine().search(pattern, participants, null /* TODO scope */, requestor, pm);
+		new SearchEngine().search(pattern, participants, null /* WAITING_ON_CORE scope */, requestor, pm);
 		return requestor;
 	}
 }

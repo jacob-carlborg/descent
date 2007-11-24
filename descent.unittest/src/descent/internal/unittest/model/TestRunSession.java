@@ -20,10 +20,10 @@ import org.eclipse.core.runtime.ListenerList;
 
 import org.eclipse.jface.util.Assert;
 
-//import org.eclipse.debug.core.ILaunch;
-//import org.eclipse.debug.core.ILaunchConfiguration;
-//import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-//import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 
 import descent.core.IType;
 
@@ -43,7 +43,7 @@ import descent.internal.unittest.ui.DescentUnittestPlugin;;
 public class TestRunSession {
 
 	// TODO private final IType fLaunchedType;
-	// TODO private final ILaunch fLaunch;
+	private final ILaunch fLaunch;
 	private final String fLaunchConfigName;
 
 	// TODO private final RemoteTestRunnerClient fTestRunnerClient;
@@ -95,6 +95,7 @@ public class TestRunSession {
 	
 
 	public TestRunSession(/* TODO IType launchedType, int port, ILaunch launch */) {
+		fLaunch=null;
 		/* TODO Assert.isNotNull(launchedType);
 		Assert.isNotNull(launch);
 		
@@ -125,9 +126,9 @@ public class TestRunSession {
 		return null;
 	}
 	
-	/* TODO public ILaunch getLaunch() {
+	public ILaunch getLaunch() {
 		return fLaunch;
-	} */
+	}
 	
 	public String getTestRunName() {
 		return fLaunchConfigName;
@@ -465,7 +466,7 @@ public class TestRunSession {
 		public void testReran(String testId, String className, String testName, int statusCode, String trace, String expectedResult, String actualResult) {
 			TestElement testElement= getTestElement(testId);
 			if (! (testElement instanceof TestCaseElement)) {
-				logUnexpectedTest(testId, testElement); //TODO: rerun suites?
+				logUnexpectedTest(testId, testElement); //JTODO: rerun suites?
 				return;
 			}
 			TestCaseElement testCaseElement= (TestCaseElement) testElement;
@@ -479,7 +480,7 @@ public class TestRunSession {
 			
 			Object[] listeners= fSessionListeners.getListeners();
 			for (int i= 0; i < listeners.length; ++i) {
-				//TODO: post old & new status?
+				//JTODO: post old & new status?
 				((ITestSessionListener) listeners[i]).testReran(testCaseElement, status, trace, expectedResult, actualResult);
 			}
 		}

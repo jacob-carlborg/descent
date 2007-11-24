@@ -51,13 +51,13 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.PageBook;
 
-//import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunchManager;
 
 import descent.core.IJavaProject;
 import descent.core.IType;
 import descent.core.JavaModelException;
 
-//import descent.internal.ui.viewsupport.SelectionProviderMediator;
+import descent.internal.ui.viewsupport.SelectionProviderMediator;
 
 import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
@@ -130,7 +130,7 @@ public class TestViewer {
 	private TableViewer fTableViewer;
 	private TestSessionTableContentProvider fTableContentProvider;
 	private TestSessionLabelProvider fTableLabelProvider;
-	// TODO private SelectionProviderMediator fSelectionProvider;
+	private SelectionProviderMediator fSelectionProvider;
 	
 	private final Image fHierarchyIcon;
 	
@@ -186,8 +186,8 @@ public class TestViewer {
 		fTableLabelProvider= new TestSessionLabelProvider(fTestRunnerPart, TestRunnerViewPart.LAYOUT_FLAT);
 		fTableViewer.setLabelProvider(fTableLabelProvider);
 		
-		// TODO fSelectionProvider= new SelectionProviderMediator(new StructuredViewer[] { fTreeViewer, fTableViewer }, fTreeViewer);
-		// TODO fSelectionProvider.addSelectionChangedListener(new TestSelectionListener());
+		fSelectionProvider= new SelectionProviderMediator(new StructuredViewer[] { fTreeViewer, fTableViewer }, fTreeViewer);
+		fSelectionProvider.addSelectionChangedListener(new TestSelectionListener());
 		TestOpenListener testOpenListener= new TestOpenListener();
 		fTreeViewer.getTree().addSelectionListener(testOpenListener);
 		fTableViewer.getTable().addSelectionListener(testOpenListener);
@@ -211,7 +211,7 @@ public class TestViewer {
 
 	
 	void handleMenuAboutToShow(IMenuManager manager) {
-		/* TODO IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
+		IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
 		if (! selection.isEmpty()) {
 			TestElement testElement= (TestElement) selection.getFirstElement();
 			
@@ -242,7 +242,7 @@ public class TestViewer {
 				manager.add(new ExpandAllAction());
 			}
 
-		}*/
+		}
 		if (fTestRunSession != null && fTestRunSession.getFailureCount() > 0) {
 			if (fLayoutMode != TestRunnerViewPart.LAYOUT_HIERARCHICAL)
 				manager.add(new Separator());
@@ -274,7 +274,7 @@ public class TestViewer {
 	}
 
 	void handleDefaultSelected() {
-		/* TODO IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
+		IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
 		if (selection.size() != 1)
 			return;
 
@@ -291,16 +291,16 @@ public class TestViewer {
 		}
 
 		if (action.isEnabled())
-			action.run(); */
+			action.run();
 	}
 	
 	private void handleSelected() {
-		/* TODO IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
+		IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
 		TestElement testElement= null;
 		if (selection.size() == 1) {
 			testElement= (TestElement) selection.getFirstElement();
 		}
-		fTestRunnerPart.handleTestSelected(testElement); */
+		fTestRunnerPart.handleTestSelected(testElement);
 	}
 	
 	void disposeIcons() {
@@ -322,7 +322,7 @@ public class TestViewer {
 			IStructuredSelection selection= null;
 			boolean switchLayout= layoutMode != fLayoutMode;
 			if (switchLayout) {
-				// TODO selection= (IStructuredSelection) fSelectionProvider.getSelection();
+				selection= (IStructuredSelection) fSelectionProvider.getSelection();
 				if (layoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL) {
 					if (fTreeNeedsRefresh) {
 						clearUpdateAndExpansion();
@@ -357,8 +357,8 @@ public class TestViewer {
 			processChangesInUI();
 			
 			if (selection != null) {
-				/* TODO StructuredSelection flatSelection= new StructuredSelection(selection.toList());
-				fSelectionProvider.setSelection(flatSelection, true); */
+				 StructuredSelection flatSelection= new StructuredSelection(selection.toList());
+				fSelectionProvider.setSelection(flatSelection, true);
 			}
 			
 		} finally {

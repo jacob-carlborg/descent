@@ -28,9 +28,9 @@ public class TextualTrace {
 
 	private final String fTrace;
 
-	public TextualTrace(String trace, String[] filterPatterns) {
+	public TextualTrace(String trace) {
 		super();
-		fTrace = filterStack(trace, filterPatterns);
+		fTrace = trace;
 	}
 
 	public void display(ITraceDisplay display, int maxLabelLength) {
@@ -75,55 +75,6 @@ public class TextualTrace {
 				offset = nextOffset;
 			}
 		}
-	}
-
-	private boolean filterLine(String[] patterns, String line) {
-		String pattern;
-		int len;
-		for (int i = (patterns.length - 1); i >= 0; --i) {
-			pattern = patterns[i];
-			len = pattern.length() - 1;
-			if (pattern.charAt(len) == '*') {
-				// strip trailing * from a package filter
-				pattern = pattern.substring(0, len);
-			} else if (Character.isUpperCase(pattern.charAt(0))) {
-				// class in the default package
-				pattern = FailureTrace.FRAME_PREFIX + pattern + '.';
-			} else {
-				// class names start w/ an uppercase letter after the .
-				final int lastDotIndex = pattern.lastIndexOf('.');
-				if ((lastDotIndex != -1)
-					&& (lastDotIndex != len)
-					&& Character.isUpperCase(pattern.charAt(lastDotIndex + 1)))
-					pattern += '.'; // append . to a class filter
-			}
-
-			if (line.indexOf(pattern) > 0)
-				return true;
-		}
-		return false;
-	}
-
-	private String filterStack(String stackTrace, String[] filterPatterns) {
-		if (filterPatterns.length == 0 || stackTrace == null)
-			return stackTrace;
-
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
-		StringReader stringReader = new StringReader(stackTrace);
-		BufferedReader bufferedReader = new BufferedReader(stringReader);
-
-		String line;
-		String[] patterns = filterPatterns;
-		try {
-			while ((line = bufferedReader.readLine()) != null) {
-				if (!filterLine(patterns, line))
-					printWriter.println(line);
-			}
-		} catch (IOException e) {
-			return stackTrace; // return the stack unfiltered
-		}
-		return stringWriter.toString();
 	}
 
 	private boolean isAStackFrame(String itemLabel) {

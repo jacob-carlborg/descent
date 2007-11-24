@@ -9,7 +9,7 @@
             fastViewWidthRatio="0.40"
             icon="icons/full/eview16/junit.gif"
             id="descent.unittest.ResultView"
-            name="Unit Test">
+            name="Unit tests">
       </view>
    </extension>
    <extension
@@ -17,15 +17,6 @@
       <perspectiveExtension
             targetID="descent.ui.JavaPerspective">
       </perspectiveExtension>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="descent.ui.preferences.JavaBasePreferencePage"
-            class="descent.internal.unittest.ui.JUnitPreferencePage"
-            id="descent.unittest.preferences"
-            name="Unit Tests">
-      </page>
    </extension>
 
 
