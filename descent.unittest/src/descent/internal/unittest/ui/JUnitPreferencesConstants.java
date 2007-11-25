@@ -14,6 +14,8 @@ package descent.internal.unittest.ui;
 import java.util.Arrays;
 import java.util.List;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Defines constants which are used to refer to values in the plugin's preference store.
  */

@@ -12,7 +12,7 @@
  *     David Saff (saff@mit.edu) - bug 102632: [JUnit] Support for JUnit 4.
  *******************************************************************************/
 
-package descent.internal.unittest.ui;
+package descent.internal.unittest;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,13 +41,15 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import descent.unittest.ITestRunListener;
 //import descent.internal.unittest.model.JUnitModel;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
+
+import descent.internal.unittest.model.JUnitModel;
+import descent.unittest.ITestRunListener;
 
 /**
  * The plug-in runtime class for the JUnit plug-in.
@@ -83,7 +85,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 
 	private static final IPath ICONS_PATH= new Path("$nl$/icons/full"); //$NON-NLS-1$
 	
-	// TODO private final JUnitModel fJUnitModel= new JUnitModel();
+	private final JUnitModel fJUnitModel= new JUnitModel();
 	
 
 	/**
@@ -217,7 +219,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		fBundleContext= context;
-		//TODO fJUnitModel.start();
+		fJUnitModel.start();
 	}
 
 	/**
@@ -226,16 +228,16 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		fIsStopped= true;
 		try {
-			//TODO fJUnitModel.stop();
+			fJUnitModel.stop();
 		} finally {
 			super.stop(context);
 		}
 		fBundleContext= null;
 	}
 	
-	/* public static JUnitModel getModel() {
+	public static JUnitModel getModel() {
 		return getDefault().fJUnitModel;
-	} */
+	}
 
 	/**
 	 * Initializes TestRun Listener extensions
@@ -341,10 +343,10 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 	 * Removes a TestRun listener to the collection of listeners
 	 * @param newListener the listener to remove
 	 */
-	/* public void removeTestRunListener(ITestRunListener newListener) {
+	public void removeTestRunListener(ITestRunListener newListener) {
 		if (fTestRunListeners != null) 
 			fTestRunListeners.remove(newListener);
-	} */
+	}
 
 	public static boolean isStopped() {
 		return fIsStopped;

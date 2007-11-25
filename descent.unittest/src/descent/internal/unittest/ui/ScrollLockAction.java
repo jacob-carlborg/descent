@@ -14,6 +14,8 @@ package descent.internal.unittest.ui;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.PlatformUI;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Toggles console auto-scroll
  */

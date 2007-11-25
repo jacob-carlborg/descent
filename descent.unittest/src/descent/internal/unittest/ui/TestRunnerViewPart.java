@@ -97,10 +97,9 @@ import descent.core.JavaCore;
 
 import descent.internal.ui.viewsupport.ViewHistory;
 
+import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
-//import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
-//import descent.internal.unittest.launcher.TestKind;
-//import descent.internal.unittest.launcher.TestKindRegistry;
+import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
 import descent.internal.unittest.model.ITestRunSessionListener;
 import descent.internal.unittest.model.ITestSessionListener;
 import descent.internal.unittest.model.TestCaseElement;
@@ -299,7 +298,7 @@ public class TestRunnerViewPart extends ViewPart {
 		}
 
 		public List getHistoryEntries() {
-			return new ArrayList(); // TODO return DescentUnittestPlugin.getModel().getTestRunSessions();
+			return DescentUnittestPlugin.getModel().getTestRunSessions();
 		}
 
 		public Object getCurrentEntry() {
@@ -313,11 +312,11 @@ public class TestRunnerViewPart extends ViewPart {
 		public void setHistoryEntries(List remainingEntries, Object activeEntry) {
 			setActiveEntry(activeEntry);
 			
-			/* TODO List testRunSessions= DescentUnittestPlugin.getModel().getTestRunSessions();
+			List testRunSessions= DescentUnittestPlugin.getModel().getTestRunSessions();
 			testRunSessions.removeAll(remainingEntries);
 			for (Iterator iter= testRunSessions.iterator(); iter.hasNext();) {
 				DescentUnittestPlugin.getModel().removeTestRunSession((TestRunSession) iter.next());
-			} */
+			}
 		}
 
 		public ImageDescriptor getImageDescriptor(Object element) {
@@ -374,7 +373,7 @@ public class TestRunnerViewPart extends ViewPart {
 		}
 		public void sessionRemoved(TestRunSession testRunSession) {
 			if (testRunSession.equals(fTestRunSession)) {
-				List testRunSessions= new ArrayList();// TODO DescentUnittestPlugin.getModel().getTestRunSessions();
+				List testRunSessions= DescentUnittestPlugin.getModel().getTestRunSessions();
 				if (! testRunSessions.isEmpty()) {
 					setActiveTestRunSession((TestRunSession) testRunSessions.get(0));
 				} else {
@@ -529,14 +528,14 @@ public class TestRunnerViewPart extends ViewPart {
 			setText(JUnitMessages.TestRunnerViewPart_clear_history_label);
 			
 			boolean enabled= false;
-			/* TODO List testRunSessions= DescentUnittestPlugin.getModel().getTestRunSessions();
+			List testRunSessions= DescentUnittestPlugin.getModel().getTestRunSessions();
 			for (Iterator iter= testRunSessions.iterator(); iter.hasNext();) {
 				TestRunSession testRunSession= (TestRunSession) iter.next();
 				if (! testRunSession.isRunning()) {
 					enabled= true;
 					break;
 				}
-			} */
+			}
 			setEnabled(enabled);
 		}
 		
@@ -862,7 +861,7 @@ public class TestRunnerViewPart extends ViewPart {
 	}
 
 	private ILaunchConfiguration prepareLaunchConfigForRelaunch(ILaunchConfiguration configuration) {
-		/* TODO try {
+		try {
 			String attribute= configuration.getAttribute(JUnitBaseLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
 			if (attribute.length() != 0) {
 				String configName= Messages.format(JUnitMessages.TestRunnerViewPart_configName, configuration.getName()); 
@@ -872,12 +871,12 @@ public class TestRunnerViewPart extends ViewPart {
 			}
 		} catch (CoreException e) {
 			// fall through
-		} */
+		}
 		return configuration;
 	}
 
 	public void rerunTestFailedFirst() {
-		/* TODO if (lastLaunchIsKeptAlive()) {
+		if (lastLaunchIsKeptAlive()) {
 			// prompt for terminating the existing run
 			if (MessageDialog.openQuestion(getSite().getShell(), JUnitMessages.TestRunnerViewPart_terminate_title, JUnitMessages.TestRunnerViewPart_terminate_message)) {  
 				if (fTestRunSession != null)
@@ -910,7 +909,7 @@ public class TestRunnerViewPart extends ViewPart {
 					JUnitMessages.TestRunnerViewPart_cannotrerun_title,  
 					JUnitMessages.TestRunnerViewPart_cannotrerurn_message
 				); 
-		} */
+		}
 	}	
 
 	private String createFailureNamesFile() throws CoreException {
@@ -1098,34 +1097,15 @@ action enablement
 		/* WTF boolean state= isJUnit3() && hasErrorsOrFailures();
 	    fRerunLastFailedFirstAction.setEnabled(state); */
 	}
-
-    /**
-     * @return the display name of the current test run sessions kind, or <code>null</code>
-     */
-    public String getTestKindDisplayName() {
-		String testKindDisplayStr= null;
-		/* TODO ILaunchConfiguration config= fTestRunSession.getLaunch().getLaunchConfiguration();
-		if (config != null) {
-			TestKind kind= TestKindRegistry.getDefault().getKind(config);
-			if (!kind.isNull())
-				testKindDisplayStr= kind.getDisplayName();
-		} */
-		return testKindDisplayStr;
-	}
     
 	private void setTitleToolTip() {
-		String testKindDisplayStr= getTestKindDisplayName();
-		
-		if (testKindDisplayStr != null)
-			setTitleToolTip(MessageFormat.format(JUnitMessages.TestRunnerViewPart_titleToolTip, new String[] {fTestRunSession.getTestRunName(), testKindDisplayStr}));
-		else
-			setTitleToolTip(fTestRunSession.getTestRunName());
+		setTitleToolTip(fTestRunSession.getTestRunName());
 	}
 	
 	public synchronized void dispose(){
 		fIsDisposed= true;
 		if (fTestRunSessionListener != null)
-			; // TODO DescentUnittestPlugin.getModel().removeTestRunSessionListener(fTestRunSessionListener);
+			DescentUnittestPlugin.getModel().removeTestRunSessionListener(fTestRunSessionListener);
 		
 		setActiveTestRunSession(null);
 		
@@ -1330,7 +1310,7 @@ action enablement
 		fMemento= null;
 		
 		fTestRunSessionListener= new TestRunSessionListener();
-		// TODO DescentUnittestPlugin.getModel().addTestRunSessionListener(fTestRunSessionListener);
+		DescentUnittestPlugin.getModel().addTestRunSessionListener(fTestRunSessionListener);
 	}
 
 	private void addResizeListener(Composite parent) {
@@ -1481,7 +1461,7 @@ action enablement
 	}
 
 	public IJavaProject getLaunchedProject() {
-		return fTestRunSession.getLaunchedType().getJavaProject();
+		return fTestRunSession.getAssociatedProject();
 	}
 	
 	public ILaunch getLastLaunch() {

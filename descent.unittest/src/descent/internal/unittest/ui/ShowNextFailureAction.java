@@ -12,6 +12,8 @@ package descent.internal.unittest.ui;
 
 import org.eclipse.jface.action.Action;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 class ShowNextFailureAction extends Action {
 	
 	private TestRunnerViewPart fPart;

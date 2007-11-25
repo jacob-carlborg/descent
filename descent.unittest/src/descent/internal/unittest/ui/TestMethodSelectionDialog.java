@@ -46,6 +46,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 import descent.ui.JavaElementLabelProvider;
 
+import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
 
 /**

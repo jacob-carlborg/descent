@@ -18,6 +18,42 @@
             targetID="descent.ui.JavaPerspective">
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationComparators">
+      <launchConfigurationComparator
+            attribute="descent.unittest.CONTAINER"
+            class="descent.internal.unittest.launcher.ContainerComparator"
+            id="descent.unittest.containerComparator">
+      </launchConfigurationComparator>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="descent.internal.unittest.launcher.JUnitTabGroup"
+            helpContextId="descent.unittest.junit_tab_group"
+            id="descent.unittest.launchConfigurationTabGroup"
+            type="descent.unittest.launchconfig">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="descent.unittest.launchconfig"
+            icon="icons/full/obj16/julaunch.gif"
+            id="descent.unittest.launchimage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="descent.internal.unittest.launcher.JUnitLaunchConfiguration"
+            id="descent.unittest.launchconfig"
+            modes="run, debug"
+            name="D Unit Test"
+            sourceLocatorId="descent.debug.core.descentSourceLookupDirector"
+            sourcePathComputerId="descent.debug.core.descentSourcePathComputer">
+      </launchConfigurationType>
+   </extension>
 
 
 </plugin>

@@ -24,6 +24,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Preference page for D Unittest settings. I assume there _will_ be some
  * preferences at some point, so I'll keep the support around, but having

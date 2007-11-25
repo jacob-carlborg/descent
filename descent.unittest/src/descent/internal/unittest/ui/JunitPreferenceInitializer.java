@@ -15,6 +15,8 @@ import java.util.List;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Default preference value initialization for the
  * <code>descent.unittest</code> plug-in.

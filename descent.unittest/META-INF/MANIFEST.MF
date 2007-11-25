@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Unittest Plug-in
 Bundle-SymbolicName: descent.unittest;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: descent.internal.unittest.ui.DescentUnittestPlugin
+Bundle-Activator: descent.internal.unittest.DescentUnittestPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.editors,
@@ -15,5 +15,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.compare,
  org.eclipse.debug.core,
- org.eclipse.debug.ui
+ org.eclipse.debug.ui,
+ descent.launching,
+ descent.debug.core,
+ descent.debug.ui
 Eclipse-LazyStart: true
+Export-Package: descent.unittest

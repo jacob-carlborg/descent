@@ -115,17 +115,6 @@ public final class JUnitMessages extends NLS {
 	public static String JUnitMainTab_testdialog_title;
 
 	public static String JUnitPreferencePage_description;
-	
-	public static String JUnitPreferencePage_invalidstepfilterreturnescape;
-	public static String JUnitPreferencePage_removefilterbutton_label;
-	public static String JUnitPreferencePage_removefilterbutton_tooltip;
-
-	public static String JUnitPreferencePage_enableassertionscheckbox_label;
-	public static String JUnitPreferencePage_enableassertionscheckbox_tooltip;
-
-	public static String JUnitQuickFixProcessor_add_assert_description;
-
-	public static String JUnitQuickFixProcessor_add_assert_info;
 
 	public static String LaunchConfigChange_configDeleted;
 	public static String LaunchConfigRenameChange_name;

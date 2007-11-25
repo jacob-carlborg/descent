@@ -13,6 +13,8 @@ package descent.internal.unittest.ui;
 
 import org.eclipse.jface.action.Action;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Action to enable/disable stack trace filtering.
  */

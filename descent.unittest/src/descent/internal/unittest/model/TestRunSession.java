@@ -25,28 +25,26 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 
-import descent.core.IType;
+import descent.core.IJavaProject;
 
 //import descent.launching.IJavaLaunchConfigurationConstants;
 
 import descent.unittest.ITestRunListener;
 
+import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
 //import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
 import descent.internal.unittest.model.TestElement.Status;
 import descent.internal.unittest.ui.JUnitMessages;
-import descent.internal.unittest.ui.DescentUnittestPlugin;;
 
 /**
  * 
  */
 public class TestRunSession {
 
-	// TODO private final IType fLaunchedType;
+	private final IJavaProject fProject;
 	private final ILaunch fLaunch;
 	private final String fLaunchConfigName;
-
-	// TODO private final RemoteTestRunnerClient fTestRunnerClient;
 
 	private final ListenerList/*<ITestSessionListener>*/ fSessionListeners;
 	
@@ -94,19 +92,17 @@ public class TestRunSession {
 	volatile boolean fIsStopped;
 	
 
-	public TestRunSession(/* TODO IType launchedType, int port, ILaunch launch */) {
-		fLaunch=null;
-		/* TODO Assert.isNotNull(launchedType);
+	public TestRunSession(IJavaProject testedProject, int port, ILaunch launch) {
+		Assert.isNotNull(testedProject);
 		Assert.isNotNull(launch);
 		
-		fLaunchedType= launchedType;
+		fProject= testedProject;
 		fLaunch= launch;
 		ILaunchConfiguration launchConfiguration= launch.getLaunchConfiguration();
 		if (launchConfiguration != null)
 		 	fLaunchConfigName= launchConfiguration.getName();
 		else
-		 	fLaunchConfigName= launchedType.getElementName(); */
-		fLaunchConfigName= "TODO_fLaunchConfigName";
+		 	fLaunchConfigName= testedProject.getElementName();
 		
 		fTestRoot= new TestRoot();
 		fIdToTest= new HashMap();
@@ -121,9 +117,8 @@ public class TestRunSession {
 		return fTestRoot;
 	}
 
-	public IType getLaunchedType() {
-		//TODO return fLaunchedType;
-		return null;
+	public IJavaProject getAssociatedProject() {
+		return fProject;
 	}
 	
 	public ILaunch getLaunch() {

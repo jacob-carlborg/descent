@@ -57,6 +57,7 @@ import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 
+import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.model.TestElement;
 
 public class CompareResultDialog extends TrayDialog {

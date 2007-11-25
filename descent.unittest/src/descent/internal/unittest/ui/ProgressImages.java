@@ -12,6 +12,8 @@ package descent.internal.unittest.ui;
 
 import org.eclipse.swt.graphics.Image;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Manages a set of images that can show progress in the image itself.
  */

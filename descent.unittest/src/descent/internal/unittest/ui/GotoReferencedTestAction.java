@@ -23,9 +23,11 @@ import descent.core.JavaModelException;
 //import descent.internal.ui.actions.SelectionConverter;
 import descent.internal.ui.javaeditor.JavaEditor;
 
+import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
 
 import descent.ui.JavaUI;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;

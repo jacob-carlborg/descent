@@ -10,6 +10,8 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
+import descent.internal.unittest.DescentUnittestPlugin;
+
 /**
  * Help context ids for the JUnit UI.
  */

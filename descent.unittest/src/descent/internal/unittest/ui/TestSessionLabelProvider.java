@@ -53,15 +53,7 @@ public class TestSessionLabelProvider extends LabelProvider {
 	}
 
 	private String getElementLabel(String name, TestElement testElement) {
-		if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL && testElement.getParent() instanceof TestRoot) {
-			String testKindDisplayName= fTestRunnerPart.getTestKindDisplayName();
-				if (testKindDisplayName == null)
-					return name;
-				else
-					return Messages.format(JUnitMessages.TestSessionLabelProvider_testName_JUnitVersion, new Object[] { name, testKindDisplayName });
-		} else
-			return name;
-		
+		return name;
 	}
 
 	public Image getImage(Object element) {
