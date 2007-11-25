@@ -39,6 +39,21 @@ class JavaNode extends DocumentRangeNode implements ITypedElement {
 	public static final int STATIC_DESTRUCTOR = 18;
 	public static final int DESTRUCTOR = 19;
 	public static final int ALIGN = 20;
+	public static final int MIXIN = 21;
+	public static final int DEBUG_ASSIGNMENT = 22;
+	public static final int VERSION_ASSIGNMENT = 23;
+	public static final int DEBUG_DECLARATION = 24;
+	public static final int VERSION_DECLARATION = 25;
+	public static final int IFTYPE_DECLARATION = 26;
+	public static final int STATIC_IF_DECLARATION = 27;
+	public static final int STATIC_ASSERT = 28;
+	public static final int TEMPLATE_MIXIN = 29;
+	public static final int UNITTEST = 30;
+	public static final int INVARIANT = 31;
+	public static final int PRAGMA = 32;
+	public static final int THEN = 33;
+	public static final int ELSE = 34;
+	public static final int EXTERN = 35;
 
 	private int fInitializerCount= 1;
 	private boolean fIsEditable;
@@ -191,6 +206,49 @@ class JavaNode extends DocumentRangeNode implements ITypedElement {
 			break;	
 		case ENUM:
 			id= JavaCompareUtilities.getEnumImageDescriptor();
+			break;
+		case MIXIN:
+			id= JavaCompareUtilities.getMixinImageDescriptor();
+			break;
+		case DEBUG_ASSIGNMENT:
+			id= JavaCompareUtilities.getDebugAssignmentImageDescriptor();
+			break;
+		case VERSION_ASSIGNMENT:
+			id= JavaCompareUtilities.getVersionAssignmentImageDescriptor();
+			break;
+		case DEBUG_DECLARATION:
+			id= JavaCompareUtilities.getDebugDeclarationImageDescriptor();
+			break;
+		case VERSION_DECLARATION:
+			id= JavaCompareUtilities.getVersionDeclarationImageDescriptor();
+			break;
+		case IFTYPE_DECLARATION:
+			id= JavaCompareUtilities.getIftypeDeclarationImageDescriptor();
+			break;
+		case STATIC_IF_DECLARATION:
+			id= JavaCompareUtilities.getStaticIfDeclarationImageDescriptor();
+			break;
+		case TEMPLATE_MIXIN:
+			id= JavaCompareUtilities.getTemplateMixinImageDescriptor();
+			break;
+		case UNITTEST:
+			id= JavaCompareUtilities.getUnitTestImageDescriptor();
+			break;
+		case INVARIANT:
+			id= JavaCompareUtilities.getInvariantImageDescriptor();
+			break;
+		case PRAGMA:
+			id= JavaCompareUtilities.getPragmaImageDescriptor();
+			break;
+		case STATIC_ASSERT:
+			id= JavaCompareUtilities.getStaticAssertImageDescriptor();
+			break;
+		case THEN:
+		case ELSE:
+			id= JavaCompareUtilities.getThenElseImageDescriptor();
+			break;
+		case EXTERN:
+			id= JavaCompareUtilities.getExternImageDescriptor();
 			break;
 		}
 		return JavaPlugin.getImageDescriptorRegistry().get(id);

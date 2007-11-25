@@ -49,7 +49,7 @@ public class JavaCompareAction implements IActionDelegate {
 		}
 		
 		public String getType() {
-			return "JAVA"; //$NON-NLS-1$
+			return "D"; //$NON-NLS-1$
 		}
 		
 		public Image getImage() {

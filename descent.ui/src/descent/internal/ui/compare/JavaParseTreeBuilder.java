@@ -1,6 +1,7 @@
 package descent.internal.ui.compare;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 import descent.core.dom.ASTNode;
@@ -12,20 +13,34 @@ import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.AlignDeclaration;
 import descent.core.dom.Argument;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConditionalDeclaration;
 import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.DebugAssignment;
+import descent.core.dom.DebugDeclaration;
+import descent.core.dom.Declaration;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
+import descent.core.dom.ExternDeclaration;
 import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IftypeDeclaration;
 import descent.core.dom.Import;
+import descent.core.dom.InvariantDeclaration;
+import descent.core.dom.MixinDeclaration;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.PragmaDeclaration;
+import descent.core.dom.StaticAssert;
+import descent.core.dom.StaticIfDeclaration;
 import descent.core.dom.TemplateDeclaration;
+import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Type;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
+import descent.core.dom.UnitTestDeclaration;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
+import descent.core.dom.VersionAssignment;
+import descent.core.dom.VersionDeclaration;
 
-// TODO JDT UI compare implement well with D's AST
 class JavaParseTreeBuilder extends ASTVisitor {
 
     private char[] fBuffer;
@@ -90,7 +105,7 @@ class JavaParseTreeBuilder extends ASTVisitor {
     }
     
     @Override
-    public void endVisit(AliasDeclaration node) {
+    public void endVisit(TemplateDeclaration node) {
     	pop();
     }
 
@@ -211,6 +226,174 @@ class JavaParseTreeBuilder extends ASTVisitor {
     	pop();
     }
     
+    @Override
+    public boolean visit(MixinDeclaration node) {
+    	push(JavaNode.MIXIN, node.getExpression().toString(), node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(MixinDeclaration node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(DebugAssignment node) {
+    	push(JavaNode.DEBUG_ASSIGNMENT, "debug = " + node.getVersion().toString(), node.getStartPosition(), node.getLength()); //$NON-NLS-1$
+        return true;
+    }
+    
+    @Override
+    public void endVisit(DebugAssignment node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(VersionAssignment node) {
+    	push(JavaNode.VERSION_ASSIGNMENT, "version = " + node.getVersion().toString(), node.getStartPosition(), node.getLength()); //$NON-NLS-1$
+        return true;
+    }
+    
+    @Override
+    public void endVisit(VersionAssignment node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(TemplateMixinDeclaration node) {
+    	StringBuilder sb = new StringBuilder();
+    	if (node.getName() != null) {
+    		sb.append(node.getName());
+    		sb.append(": "); //$NON-NLS-1$
+    	}
+    	sb.append(node.getType());    	
+    	
+    	push(JavaNode.TEMPLATE_MIXIN, sb.toString(), node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(TemplateMixinDeclaration node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(InvariantDeclaration node) {
+    	push(JavaNode.INVARIANT, "invariant", node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(InvariantDeclaration node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(UnitTestDeclaration node) {
+    	push(JavaNode.UNITTEST, "unit test", node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(UnitTestDeclaration node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(PragmaDeclaration node) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(node.getName());
+    	if (node.arguments().size() > 0) {
+    		sb.append(": "); //$NON-NLS-1$
+    		for(int i = 0; i < node.arguments().size(); i++) {
+        		if (i != 0) {
+        			sb.append(", "); //$NON-NLS-1$
+        		}
+        		sb.append(node.arguments().get(i));
+        	}
+    	}
+    	
+    	push(JavaNode.PRAGMA, sb.toString(), node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(PragmaDeclaration node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(StaticAssert node) {
+    	push(JavaNode.STATIC_ASSERT, node.getExpression().toString(), node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(StaticAssert node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(ExternDeclaration node) {
+    	push(JavaNode.EXTERN, node.getLinkage().toString(), node.getStartPosition(), node.getLength());
+        return true;
+    }
+    
+    @Override
+    public void endVisit(ExternDeclaration node) {
+    	pop();
+    }
+    
+    @Override
+    public boolean visit(DebugDeclaration node) {
+    	String name = node.getVersion() == null ? "" : node.getVersion().toString(); //$NON-NLS-1$
+    	push(JavaNode.DEBUG_DECLARATION, name, node.getStartPosition(), node.getLength());
+    	visitThenElse(node);
+        return false;
+    }
+    
+	@Override
+    public void endVisit(DebugDeclaration node) {
+    	pop();
+    }
+	
+	@Override
+    public boolean visit(VersionDeclaration node) {
+    	String name = node.getVersion() == null ? "" : node.getVersion().toString(); //$NON-NLS-1$
+    	push(JavaNode.VERSION_DECLARATION, name, node.getStartPosition(), node.getLength());
+    	visitThenElse(node);
+        return false;
+    }
+    
+	@Override
+    public void endVisit(VersionDeclaration node) {
+    	pop();
+    }
+	
+	@Override
+    public boolean visit(StaticIfDeclaration node) {
+    	push(JavaNode.STATIC_IF_DECLARATION, node.getExpression().toString(), node.getStartPosition(), node.getLength());
+    	visitThenElse(node);
+        return false;
+    }
+    
+	@Override
+    public void endVisit(StaticIfDeclaration node) {
+    	pop();
+    }
+	
+	@Override
+    public boolean visit(IftypeDeclaration node) {
+    	push(JavaNode.IFTYPE_DECLARATION, "", node.getStartPosition(), node.getLength());
+    	visitThenElse(node);
+        return false;
+    }
+    
+	@Override
+    public void endVisit(IftypeDeclaration node) {
+    	pop();
+    }
+    
     // private stuff
 
     /**
@@ -247,6 +430,41 @@ class JavaParseTreeBuilder extends ASTVisitor {
     private JavaNode getCurrentContainer() {
         return (JavaNode) fStack.peek();
     }
+    
+    private void visitThenElse(ConditionalDeclaration node) {
+    	if (node.thenDeclarations().size() > 0) {
+    		if (node.elseDeclarations().size() > 0) {
+    			push(JavaNode.THEN, "then", startOfNodes(node.thenDeclarations()), lengthOfNodes(node.thenDeclarations()));
+    		}
+    		
+    		for(Declaration decl : node.thenDeclarations()) {
+    			decl.accept(this);
+    		}
+    		
+    		if (node.elseDeclarations().size() > 0) {
+    			pop();
+    		}
+    	}
+    	
+    	if (node.elseDeclarations().size() > 0) {
+    		push(JavaNode.ELSE, "else", startOfNodes(node.elseDeclarations()), lengthOfNodes(node.elseDeclarations()));
+    		for(Declaration decl : node.elseDeclarations()) {
+    			decl.accept(this);
+    		}
+    		pop();
+    	}
+    }
+    
+    private int lengthOfNodes(List<Declaration> nodes) {
+		Declaration first = nodes.get(0);
+		return first.getStartPosition();
+	}
+
+	private int startOfNodes(List<Declaration> nodes) {
+		Declaration first = nodes.get(0);
+		Declaration last = nodes.get(nodes.size() - 1);		
+		return last.getStartPosition() + last.getLength() - first.getStartPosition();
+	}
 
     private String getFieldName(VariableDeclarationFragment node) {
         StringBuffer buffer= new StringBuffer();

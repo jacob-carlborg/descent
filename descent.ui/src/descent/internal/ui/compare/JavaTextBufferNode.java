@@ -48,7 +48,7 @@ class JavaTextBufferNode implements ITypedElement, IEncodedStreamContentAccessor
 	}
 	
 	public String getType() {
-		return "java";	//$NON-NLS-1$
+		return "d";	//$NON-NLS-1$
 	}
 	
 	public Image getImage() {

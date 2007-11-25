@@ -16,7 +16,6 @@ import java.util.List;
  *    DebugAssignment
  *    EnumDeclaration
  *    ExternDeclaration
- *    FileImportDeclaration
  *    ImportDeclaration
  *    InvariantDeclaration
  *    MixinDeclaration

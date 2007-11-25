@@ -33,7 +33,6 @@ import descent.internal.ui.JavaPluginImages;
 import descent.ui.JavaElementLabels;
 import descent.ui.text.JavaTextTools;
 
-
 class JavaCompareUtilities {
 	
 	private static final char PACKAGEDECLARATION= '%';
@@ -44,6 +43,7 @@ class JavaCompareUtilities {
 	private static final char INITIALIZER= '|';
 	private static final char COMPILATIONUNIT= '{';
 	private static final char TYPE= '[';
+	private static final char CONDITIONAL= '&';
 			
 	static String getString(ResourceBundle bundle, String key, String dfltValue) {
 		
@@ -78,9 +78,10 @@ class JavaCompareUtilities {
 	}
 
 	static ImageDescriptor getImageDescriptor(int type) {
-		switch (type) {			
+		switch (type) {
 		case IJavaElement.INITIALIZER:
 		case IJavaElement.METHOD:
+		case IJavaElement.CONDITIONAL:
 			return getImageDescriptor("obj16/compare_method.gif"); //$NON-NLS-1$			
 		case IJavaElement.FIELD:
 			return getImageDescriptor("obj16/compare_field.gif"); //$NON-NLS-1$
@@ -128,6 +129,62 @@ class JavaCompareUtilities {
 	
 	static ImageDescriptor getAlignImageDescriptor() {
 		return JavaPluginImages.DESC_OBJS_ALIGN;
+	}
+	
+	static ImageDescriptor getMixinImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_MIXIN;
+	}
+	
+	static ImageDescriptor getDebugAssignmentImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_DEBUG_ASSIGNMENT;
+	}
+	
+	static ImageDescriptor getVersionAssignmentImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_VERSION_ASSIGNMENT;
+	}
+	
+	static ImageDescriptor getDebugDeclarationImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_DEBUG_DECLARATION;
+	}
+	
+	static ImageDescriptor getVersionDeclarationImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_VERSION_DECLARATION;
+	}
+	
+	static ImageDescriptor getIftypeDeclarationImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_IFTYPE;
+	}
+	
+	static ImageDescriptor getStaticIfDeclarationImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_STATIC_IF;
+	}
+	
+	static ImageDescriptor getTemplateMixinImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_MIXIN;
+	}
+	
+	static ImageDescriptor getUnitTestImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_UNITTEST;
+	}
+	
+	static ImageDescriptor getInvariantImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_INVARIANT;
+	}
+	
+	static ImageDescriptor getPragmaImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_PRAGMA;
+	}
+	
+	static ImageDescriptor getStaticAssertImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_STATIC_ASSERT;
+	}
+	
+	static ImageDescriptor getThenElseImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_THEN_ELSE;
+	}
+	
+	static ImageDescriptor getExternImageDescriptor() {
+		return JavaPluginImages.DESC_OBJS_EXTERN;
 	}
 
 	static ImageDescriptor getImageDescriptor(IMember element) {
@@ -199,6 +256,10 @@ class JavaCompareUtilities {
 			sb.append(IMPORTDECLARATION);
 			sb.append(je.getElementName());			
 			break;
+		case IJavaElement.CONDITIONAL:
+			sb.append(CONDITIONAL);
+			sb.append(je.getElementName());			
+			break;
 		default:
 			return null;
 		}
@@ -227,6 +288,7 @@ class JavaCompareUtilities {
 		case JavaNode.FIELD:
 		case JavaNode.ALILAS:
 		case JavaNode.TYPEDEF:
+		case JavaNode.TEMPLATE_MIXIN:
 			sb.append(FIELD);
 			sb.append(name);
 			break;
@@ -241,6 +303,16 @@ class JavaCompareUtilities {
 		case JavaNode.STATIC_CONSTRUCTOR:
 		case JavaNode.STATIC_DESTRUCTOR:
 		case JavaNode.ALIGN:
+		case JavaNode.MIXIN:
+		case JavaNode.DEBUG_ASSIGNMENT:
+		case JavaNode.VERSION_ASSIGNMENT:
+		case JavaNode.UNITTEST:
+		case JavaNode.INVARIANT:
+		case JavaNode.PRAGMA:
+		case JavaNode.STATIC_ASSERT:
+		case JavaNode.THEN:
+		case JavaNode.ELSE:
+		case JavaNode.EXTERN:
 			sb.append(INITIALIZER);
 			sb.append(name);
 			break;
@@ -253,6 +325,12 @@ class JavaCompareUtilities {
 			break;
 		case JavaNode.IMPORT_CONTAINER:
 			sb.append(IMPORT_CONTAINER);
+			break;
+		case JavaNode.DEBUG_DECLARATION:
+		case JavaNode.VERSION_DECLARATION:
+		case JavaNode.IFTYPE_DECLARATION:
+		case JavaNode.STATIC_IF_DECLARATION:
+			sb.append(CONDITIONAL);
 			break;
 		default:
 			Assert.isTrue(false);
