@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.eclipse.ui.dialogs.TwoPaneElementSelector;
 
+import descent.core.ICompilationUnit;
 import descent.core.IType;
 
 import descent.ui.JavaElementLabelProvider;
@@ -25,7 +26,7 @@ import descent.ui.JavaElementLabelProvider;
  */
 public class TestSelectionDialog extends TwoPaneElementSelector {
 
-	private final IType[] fTypes;
+	private final ICompilationUnit[] modules;
 	
 	private static class PackageRenderer extends JavaElementLabelProvider {
 		public PackageRenderer() {
@@ -41,10 +42,10 @@ public class TestSelectionDialog extends TwoPaneElementSelector {
 		}
 	}
 	
-	public TestSelectionDialog(Shell shell, IType[] types) {
+	public TestSelectionDialog(Shell shell, ICompilationUnit[] $modules) {
 		super(shell, new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_BASICS | JavaElementLabelProvider.SHOW_OVERLAY_ICONS), 
 				new PackageRenderer());
-		fTypes= types;
+		modules = $modules;
 	}
 
 	/**
@@ -59,7 +60,7 @@ public class TestSelectionDialog extends TwoPaneElementSelector {
 	 * @see Window#open()
 	 */
 	public int open() {
-		setElements(fTypes);
+		setElements(modules);
 		return super.open();
 	}
 	

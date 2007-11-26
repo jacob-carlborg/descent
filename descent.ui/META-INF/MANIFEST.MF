@@ -36,5 +36,6 @@ Export-Package: descent.internal.ui,
  descent.internal.ui.javaeditor,
  descent.internal.ui.util,
  descent.internal.ui.viewsupport,
+ descent.internal.ui.wizards,
  descent.ui,
  descent.ui.text

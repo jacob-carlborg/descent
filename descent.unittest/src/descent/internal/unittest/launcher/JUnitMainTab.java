@@ -84,8 +84,11 @@ import descent.ui.StandardJavaElementContentProvider;
 //import descent.internal.ui.wizards.TypedElementSelectionValidator;
 //import descent.internal.ui.wizards.TypedViewerFilter;
 
+import descent.internal.ui.wizards.TypedElementSelectionValidator;
+import descent.internal.ui.wizards.TypedViewerFilter;
 import descent.internal.unittest.Messages;
 import descent.internal.unittest.ui.JUnitMessages;
+import descent.internal.unittest.util.TestSearchEngine;
 import descent.internal.unittest.DescentUnittestPlugin;
 //import descent.internal.unittest.util.TestSearchEngine;
 
@@ -352,7 +355,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 		
 		IJavaProject javaProject = getJavaProject();
 		
-		IType[] types= new IType[0];
+		ICompilationUnit[] modules;// = new IType[0];
 		boolean[] radioSetting= new boolean[2];
 		try {
 			// fix for 66922 Wrong radio behaviour when switching
@@ -360,19 +363,20 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 			radioSetting[0]= fTestRadioButton.getSelection();
 			radioSetting[1]= fTestContainerRadioButton.getSelection();
 			
-			types= new IType[0]; // TODO TestSearchEngine.findTests(getLaunchConfigurationDialog(), new Object[] {javaProject}); 
-		/* TODO } catch (InterruptedException e) {
+			modules = TestSearchEngine.findTests(getLaunchConfigurationDialog(),
+					new Object[] {javaProject}); 
+		} catch (InterruptedException e) {
 			setErrorMessage(e.getMessage());
 			return;
 		} catch (InvocationTargetException e) {
 			DescentUnittestPlugin.log(e.getTargetException());
-			return; */
+			return;
 		} finally {
 			fTestRadioButton.setSelection(radioSetting[0]);
 			fTestContainerRadioButton.setSelection(radioSetting[1]);
 		}
 
-		SelectionDialog dialog = new TestSelectionDialog(shell, types);
+		SelectionDialog dialog = new TestSelectionDialog(shell, modules);
 		dialog.setTitle(JUnitMessages.JUnitMainTab_testdialog_title); 
 		dialog.setMessage(JUnitMessages.JUnitMainTab_testdialog_message); 
 		if (dialog.open() == Window.CANCEL) {
@@ -491,7 +495,6 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 				setErrorMessage(JUnitMessages.JUnitMainTab_error_noContainer);
 				return;
 			}
-			validateJavaProject(fContainerElement.getJavaProject());
 			return;
 		}
 
@@ -525,15 +528,6 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 			}
 		} catch (Exception e) {
 		}
-		IJavaProject javaProject= JavaCore.create(project);
-		validateJavaProject(javaProject);
-	}
-
-	private void validateJavaProject(IJavaProject javaProject) {
-		/* TODO if (! TestSearchEngine.hasTestCaseType(javaProject)) {
-			setErrorMessage(JUnitMessages.JUnitMainTab_error_testcasenotonpath); 
-			return;				
-		} */
 	}
 
 	private void setEnableContainerTestGroup(boolean enabled) {
@@ -632,7 +626,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 	}
 	
 	private IJavaElement chooseContainer(IJavaElement initElement) {
-		/* TODO Class[] acceptedClasses= new Class[] { IPackageFragmentRoot.class, IJavaProject.class, IPackageFragment.class };
+		Class[] acceptedClasses= new Class[] { IPackageFragmentRoot.class, IJavaProject.class, IPackageFragment.class };
 		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, false) {
 			public boolean isSelectedValid(Object element) {
 				return true;
@@ -663,7 +657,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 		if (dialog.open() == Window.OK) {
 			Object element= dialog.getFirstResult();
 			return (IJavaElement)element;
-		} */
+		}
 		return null;
 	}
 	
