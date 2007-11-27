@@ -17,30 +17,52 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import descent.core.IType;
+import descent.core.ICompilationUnit;
 import descent.core.JavaModelException;
 
 /**
- * Interface to be implemented by for extension point
- * descent.unittest.internal_testKinds.
+ * Defines an interface for finding interfaces.
+ * 
+ * @author Robert Fraser
  */
-public interface ITestFinder {
-	ITestFinder NULL= new ITestFinder() {
-		public void findTestsInContainer(Object[] elements, Set result, IProgressMonitor pm) {
+public interface ITestFinder
+{
+	/**
+	 * Finds modules that have unit tests within the given container and adds
+	 * the results to th result set.
+	 * 
+	 * @param elements The elements to search
+	 * @param result   A set to add results to.
+	 * @param pm       A progress monitor monitoring the search for eelements.
+	 */
+	public abstract void findTestsInContainer(Object[] elements, 
+			Set<ICompilationUnit> result, IProgressMonitor pm);
+	
+	/**
+	 * Returns true if and only if the given compilation unit has at least one
+	 * unit test declaration (either at the module level or within an aggregate).
+	 * 
+	 * @param module the module to check for unit tests
+	 * @return       true if the module has a unit test
+	 */
+	public abstract boolean hasTests(ICompilationUnit module) 
+			throws JavaModelException;
+	
+	/**
+	 * An ItestFinder that won't find anything.
+	 */
+	ITestFinder NULL= new ITestFinder()
+	{
+		public void findTestsInContainer(Object[] elements, 
+				Set<ICompilationUnit> result, IProgressMonitor pm)
+		{
 			// do nothing
 		}
 
-		public boolean isTest(IType type) throws JavaModelException {
+		public boolean hasTests(ICompilationUnit module) 
+				throws JavaModelException
+		{
 			return false;
 		}
 	};
-
-	/**
-	 * @param elements elements to search for tests
-	 * @param result a Set to add ITypes
-	 * @param pm
-	 */
-	public abstract void findTestsInContainer(Object[] elements, Set/*<IType>*/ result, IProgressMonitor pm);
-
-	public abstract boolean isTest(IType type) throws JavaModelException;
 }

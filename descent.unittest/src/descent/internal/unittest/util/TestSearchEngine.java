@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IFileEditorInput;
@@ -32,6 +33,7 @@ import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
 import descent.core.search.SearchMatch;
 import descent.core.search.SearchRequestor;
+import descent.internal.unittest.launcher.DUnittestFinder;
 
 /**
  * Class for finding D modules that contain unittests and unittests within those
@@ -64,7 +66,6 @@ public class TestSearchEngine {
 
 		public void acceptSearchMatch(SearchMatch match) throws CoreException
 		{
-			
 			/* TODO Object enclosingElement= match.getElement();
 			if (!(enclosingElement instanceof IMethod))
 				return;
@@ -138,7 +139,7 @@ public class TestSearchEngine {
 	 * @return         An array of modules containing unit tests
 	 */
 	public static ICompilationUnit[] findTests(IRunnableContext context,
-			Object[] elements) throws InvocationTargetException,
+			final Object[] elements) throws InvocationTargetException,
 			InterruptedException
 	{
 		final Set<ICompilationUnit> result= new HashSet<ICompilationUnit>();
@@ -148,7 +149,7 @@ public class TestSearchEngine {
 			{
 				public void run(IProgressMonitor pm) throws InterruptedException
 				{
-					// TODO testKind.createFinder().findTestsInContainer(elements, result, pm);
+					DUnittestFinder.getInstance().findTestsInContainer(elements, result, pm);
 				}
 			};
 			context.run(true, true, runnable);
@@ -175,7 +176,8 @@ public class TestSearchEngine {
 				public void run(IProgressMonitor pm) throws InterruptedException
 				{
 					pm.beginTask("", 1);
-					// TODO kind.createFinder().findTestsInContainer(elements, result, new SubProgressMonitor(pm, 1));
+					DUnittestFinder.getInstance().findTestsInContainer(elements, result,
+							new SubProgressMonitor(pm, 1));
 					pm.done();
 				}
 			};

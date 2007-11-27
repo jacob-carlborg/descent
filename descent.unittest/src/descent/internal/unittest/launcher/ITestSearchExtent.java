@@ -16,10 +16,19 @@
  */
 package descent.internal.unittest.launcher;
 
-import descent.core.IType;
+import descent.core.ICompilationUnit;
 import descent.core.JavaModelException;
 
-
-public interface ITestSearchExtent {
-	IType[] find(ITestFinder finder) throws JavaModelException;
+/**
+ * Defines an extent in which to search for modules with tests.
+ * 
+ * @author  Robert Fraser
+ */
+public interface ITestSearchExtent
+{
+	/**
+	 * Uses the given finder to find modules with unittest declarations within
+	 * the serch extent.
+	 */
+	ICompilationUnit[] find(ITestFinder finder) throws JavaModelException;
 }

@@ -21,25 +21,26 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
-import descent.core.IType;
 import descent.core.JavaCore;
 
 
-class ContainerTestSearchExtent implements ITestSearchExtent {
-	private final IProgressMonitor fPm;
+class ContainerTestSearchExtent implements ITestSearchExtent
+{
+	private final IProgressMonitor pm;
+	private final String handle;
 
-	private final String fHandle;
-
-	ContainerTestSearchExtent(IProgressMonitor pm, String handle) {
-		fPm = pm;
-		fHandle = handle;
+	ContainerTestSearchExtent(IProgressMonitor $pm, String $handle) {
+		pm = $pm;
+		handle = $handle;
 	}
 
-	public IType[] find(ITestFinder finder) {
-		IJavaElement container = JavaCore.create(fHandle);
-		Set result = new HashSet();
-		finder.findTestsInContainer(new Object[] { container }, result, fPm);
-		return (IType[]) result.toArray(new IType[result.size()]);
+	public ICompilationUnit[] find(ITestFinder finder)
+	{
+		IJavaElement container = JavaCore.create(handle);
+		Set<ICompilationUnit> result = new HashSet<ICompilationUnit>();
+		finder.findTestsInContainer(new Object[] { container }, result, pm);
+		return result.toArray(new ICompilationUnit[result.size()]);
 	}
 }

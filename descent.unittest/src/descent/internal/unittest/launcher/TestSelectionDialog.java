@@ -24,6 +24,7 @@ import descent.ui.JavaElementLabelProvider;
 /**
  * A dialog to select a test class or a test suite from a list of types.
  */
+// TODO this should be a module flow diagram thing, not just a list of modules
 public class TestSelectionDialog extends TwoPaneElementSelector {
 
 	private final ICompilationUnit[] modules;
@@ -34,11 +35,11 @@ public class TestSelectionDialog extends TwoPaneElementSelector {
 		}
 
 		public Image getImage(Object element) {
-			return super.getImage(((IType)element).getPackageFragment());
+			return super.getImage(((ICompilationUnit)element).getParent());
 		}
 		
 		public String getText(Object element) {
-			return super.getText(((IType)element).getPackageFragment());
+			return super.getText(((ICompilationUnit)element).getParent());
 		}
 	}
 	

@@ -16,20 +16,22 @@
  */
 package descent.internal.unittest.launcher;
 
-import descent.core.IType;
+import descent.core.ICompilationUnit;
 import descent.core.JavaModelException;
 
 
-public class SingleTypeTestSearchExtent implements ITestSearchExtent {
-	private IType fType;
+public class SingleModuleTestSearchExtent implements ITestSearchExtent
+{
+	private ICompilationUnit module;
 
-	public SingleTypeTestSearchExtent(IType type) {
-		fType = type;
+	public SingleModuleTestSearchExtent(ICompilationUnit $module) {
+		module = $module;
 	}
 
-	public IType[] find(ITestFinder finder) throws JavaModelException {
-		if (finder.isTest(fType))
-			return new IType[] { fType };
-		return new IType[0];
+	public ICompilationUnit[] find(ITestFinder finder) throws JavaModelException
+	{
+		if (finder.hasTests(module))
+			return new ICompilationUnit[] { module };
+		return new ICompilationUnit[0];
 	}
 }
