@@ -1,0 +1,1 @@
+dmd -D -o- ..\src\org\dsource\descent\unittests\flute.d ..\src\candy.ddoc ..\src\modules.ddoc
