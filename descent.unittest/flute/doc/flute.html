@@ -44,7 +44,23 @@ Flute is an interactive tool for executing D unit tests. It is based on Thomas
 <br><br>
 <b>Usage:</b><br>
 Flute must be statically linked against an application, just like UnittestWalker.
- TODO - more here.
+ To do so, place it at the end of the build command, i.e. "<b>dmd -unittest
+ <i>&lt;your source code&gt;</i> flectioned.d 
+<span class="currsymbol">flute</span>
+<script>explorer.outline.addDecl('flute');</script>
+
+.d</b>" or "<b>gdmd -fall-sources
+  -unittest <i>&lt;your source code&gt;</i> flectioned.d 
+<span class="currsymbol">flute</span>
+<script>explorer.outline.addDecl('flute');</script>
+
+.d</b>". To run, simply start
+  the generated executable. Note that your actual application cannot be started
+  if you use 
+<span class="currsymbol">flute</span>
+<script>explorer.outline.addDecl('flute');</script>
+
+.
 
 <br><br>
 <b>Definitions:</b><br>
@@ -65,8 +81,12 @@ The interface is well-defined. That is, while it is designed to be human-
 <br><br>
 
  When the program is executed, one or more lines containing version information
- (so far in an unspecified format) will be displayed, followed by a prompt. At
- this prompt, any of the following commands can be run: <ul>    <li><b>r [test signature]</b> -
+ will be displayed, followed by a prompt. For this version, the line will be
+ "<b>
+<span class="currsymbol">flute</span>
+<script>explorer.outline.addDecl('flute');</script>
+
+ 0.1</b>". At the prompt, any of the following commands can be run: <ul>    <li><b>r <i>test signature</i></b> -
         (A lowercase r, followed by a space, followed by the
         signature of a test). Will run the specified test and print the
         results to stdout. See "test signature specification" for the
@@ -77,8 +97,7 @@ The interface is well-defined. That is, while it is designed to be human-
      <li><b>l</b> -
         (A lowercase l alone on a line). Will list the signatures of all the
         tests in the application, followed by a prompt for a new command. The tests
-        will be listed one signature per line. The order is undefined, and since
-        they're stored in a hash, they will probably be quite out of order. Also,
+        will be listed one signature per line, in alphabetical order. Also,
         this list will generally be really long (since there are standard library
         and Flectioned tests in there), and none will be fun to type, so there's
         another reason to use an invoker.</li>
@@ -95,8 +114,7 @@ The interface is well-defined. That is, while it is designed to be human-
         error will not be reported in any of the three categories, nor will they be
         included in the total. There will be a blank line between each test.</li>
      <li><b>x</b> -
-        (An x alone on a line). Will exit the program.</li>
- </ul>
+        (An x alone on a line). Will exit the program.</li></ul>
 
 <br><br>
 <b>Test Signature Specification:</b><br>
@@ -122,8 +140,7 @@ A test signature is a way to uniquely identify a unittest in an application.
 </pre>
  there will be three tests: <ul>   <li>Test 1 is <b>foo.bar.0</b></li>
     <li>Test 2 is <b>foo.bar.Baz.0</b></li>
-    <li>Test 3 is <b>foo.bar.1</b></li>
- </ul>
+    <li>Test 3 is <b>foo.bar.1</b></li></ul>
 
 <br><br>
 <b>Test Result Specification:</b><br>
@@ -140,10 +157,9 @@ After a test is run, there are four possible results: <ul>   <li>The test could 
     <li>An internal error could occur with the test runner (for example, the test is
        not found). In this case, a human-readable message that does not begin with
        "<b>PASSED</b>", "<b>FAILED</b>" or "<b>ERROR</b>" will be printed on a single line.
-       If the test is not found, the message will be "Test [test signature] not found",
-       where "[test signature]" will be replaced with the signature of the test.
-       Other error messages may appear and are unspecified.</li>
- </ul>
+       If the test is not found, the message will be "<b>Test <i>test signature</i> not
+       found</b>", where "test signature" will be replaced with the signature of the test.
+       Other error messages may appear and are unspecified.</li></ul>
 
 <br><br>
 <b>Stack Trace Specification:</b><br>
@@ -154,10 +170,19 @@ The test runner has support for Flectioned's TracedException, but will work
  message.
 <br><br>
 
+ If the exception is an assertion failure (AssertError in Phobos, AssertException
+ in Tango), the line will instead be "<b>Assertion failed in <i>&lt;filename&gt;</i>
+ at line <i>&lt;line&gt;</i></b>" followed by ": " and a message if there is one. The
+ rationale behind rewriting this exception is to smooth over differences between
+ Tango and Phobos, which report their assert errors differently.
+<br><br>
+
  If the exception is a subclass of TracedException, this will be followed by the
  actual stack trace of the exception. Each line of the stack trace will begin with
  three spaces, which will allow stack traces to be easily visually parsed
- from the surrounding information and dealt with in automated tools.
+ from the surrounding information and dealt with in automated tools. The stack
+ trace differs from the standard Flectioned stack trace for a TracedException to
+ ease processing.
 <br><br>
 
  Each line of the stack trace represents a stack frame that was executing when the
@@ -165,18 +190,9 @@ The test runner has support for Flectioned's TracedException, but will work
  "unwinding" of the stack). TODO - finish this.
 
 <br><br>
-<b>Named Tests:</b><br>
-Right now, there's no way to name tests. This is a planned feature, however the
- only ways I can think of doing it seem mighty hackish (a macro mixing in some
- ASM at the top of the test and playing with the function pointer from there is
- the best option I can think of). If anyone has any ideas, please e-mail me.
-
-<br><br>
 <b>Limitations:</b><br>
-<ul>   <li>No test naming</li>
-    <li>Only works with D 1.x</li>
-    <li>Requires Flectioned (not likely to change)</li>
- </ul>
+<ul>   <li>Only works with D 1.x</li>
+    <li>Requires Flectioned (not likely to change)</li></ul>
 
 <br><br>
 <font color=red>BUGS:</font><br>
@@ -195,8 +211,7 @@ If a class is inside a function, unittests in that class won't work. Keep this i
  <font color=blue>unittest</font> { <font color=green>/+ Test 3 +/</font> }
 </pre>
  there will be two tests: <ul>   <li>Test 1 is <b>foo.bar.0</b></li>
-    <li>Test 3 is <b>foo.bar.1</b></li>
- </ul>
+    <li>Test 3 is <b>foo.bar.1</b></li></ul>
  The middle test is inaccesible via 
 <span class="currsymbol">flute</span>
 <script>explorer.outline.addDecl('flute');</script>
@@ -219,33 +234,12 @@ Copyright (c) 2007 Robert Fraser (fraserofthenight@gmail.com)
 
 <br><br>
 
- All rights reserved.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
 <br><br>
-
- Redistribution and use in source and binary forms, with or without
- modification, is permitted provided that the following conditions are met:
-<br><br>
-
- 1. Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer.
-<br><br>
-
- 2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-<br><br>
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
+<b>http:</b><br>
+//www.eclipse.org/legal/epl-v10.html
  
 <br><br>
 
@@ -485,20 +479,69 @@ The result of running the test
 </dd>
 
 <script>explorer.outline.writeEnabled = true;</script>
-<dt><span class="decl">void 
-<span class="currsymbol">printStackTrace</span>
-<script>explorer.outline.addDecl('printStackTrace');</script>
+<dt><span class="decl">bool 
+<span class="currsymbol">isFailure</span>
+<script>explorer.outline.addDecl('isFailure');</script>
 
 (Exception <span class="funcparam">e</span>);
 </span></dt>
 <script>explorer.outline.writeEnabled = false;</script>
 
 
-<dd>Prints the stack trace for the exception in the specified format.
+<dd>Checks whether the given exception is an assertion failure.
 <br><br>
 <b>Params:</b><br>
 <table><tr>
 <td nowrap valign="top" style="padding-right: 8px">Exception <span class="funcparam">e</span></td>
+
+               
+<td>The exception to check</td></tr>
+</table><br>
+<b>Returns:</b><br>
+<b>true</b> if and only if the given exception is an assertion failure
+ 
+<br><br>
+
+</dd>
+
+<script>explorer.outline.writeEnabled = true;</script>
+<dt><span class="decl">void 
+<span class="currsymbol">printException</span>
+<script>explorer.outline.addDecl('printException');</script>
+
+(Exception <span class="funcparam">e</span>);
+</span></dt>
+<script>explorer.outline.writeEnabled = false;</script>
+
+
+<dd>Prints the exception information in the specified format and calls
+ printStackTrace for traced exceptions.
+<br><br>
+<b>Params:</b><br>
+<table><tr>
+<td nowrap valign="top" style="padding-right: 8px">Exception <span class="funcparam">e</span></td>
+
+               
+<td>The exception to print information for</td></tr>
+</table><br>
+
+</dd>
+
+<script>explorer.outline.writeEnabled = true;</script>
+<dt><span class="decl">void 
+<span class="currsymbol">printStackTrace</span>
+<script>explorer.outline.addDecl('printStackTrace');</script>
+
+(TracedException <span class="funcparam">e</span>);
+</span></dt>
+<script>explorer.outline.writeEnabled = false;</script>
+
+
+<dd>Prints the stack trace for a traced exception in the specified format.
+<br><br>
+<b>Params:</b><br>
+<table><tr>
+<td nowrap valign="top" style="padding-right: 8px">TracedException <span class="funcparam">e</span></td>
 
                
 <td>The exception to print the stack trace for</td></tr>
@@ -576,7 +619,7 @@ Any exception that was thrown, or <b>null</b> if none were.
 		<tr><td id="docfooter">
 			Page was generated with
 			<img src="candydoc/img/candydoc.gif" style="vertical-align:middle; position:relative; top:-1px">
-			on Wed Nov 28 12:53:04 2007
+			on Thu Nov 29 18:40:15 2007
 
 		</td></tr>
 	</table>

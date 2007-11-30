@@ -20,7 +20,11 @@
  * 
  * Usage:
  * Flute must be statically linked against an application, just like UnittestWalker.
- * TODO - more here.
+ * To do so, place it at the end of the build command, i.e. "$(B dmd -unittest 
+ * $(I &lt;your source code&gt;) flectioned.d flute.d)" or "$(B gdmd -fall-sources
+ *  -unittest $(I &lt;your source code&gt;) flectioned.d flute.d)". To run, simply start
+ *  the generated executable. Note that your actual application cannot be started
+ *  if you use flute.
  * 
  * Definitions: $(UL
  *    $(LI A "line" is any number of ASCII characters (that may contain CR, LF or a
@@ -38,9 +42,9 @@
  * testing tools. The interface may change between versions.
  * 
  * When the program is executed, one or more lines containing version information
- * (so far in an unspecified format) will be displayed, followed by a prompt. At
- * this prompt, any of the following commands can be run: $(UL
- *     $(LI $(B r [test signature]) -
+ * will be displayed, followed by a prompt. For this version, the line will be
+ * "$(B flute 0.1)". At the prompt, any of the following commands can be run: $(UL
+ *     $(LI $(B r $(I test signature)) -
  *        (A lowercase r, followed by a space, followed by the
  *        signature of a test). Will run the specified test and print the
  *        results to stdout. See "test signature specification" for the
@@ -51,8 +55,7 @@
  *     $(LI $(B l) -
  *        (A lowercase l alone on a line). Will list the signatures of all the
  *        tests in the application, followed by a prompt for a new command. The tests
- *        will be listed one signature per line. The order is undefined, and since
- *        they're stored in a hash, they will probably be quite out of order. Also,
+ *        will be listed one signature per line, in alphabetical order. Also,
  *        this list will generally be really long (since there are standard library
  *        and Flectioned tests in there), and none will be fun to type, so there's
  *        another reason to use an invoker.)
@@ -69,8 +72,7 @@
  *        error will not be reported in any of the three categories, nor will they be
  *        included in the total. There will be a blank line between each test.)
  *     $(LI $(B x) -
- *        (An x alone on a line). Will exit the program.)
- * )
+ *        (An x alone on a line). Will exit the program.))
  * 
  * Test_Signature_Specification:
  * A test signature is a way to uniquely identify a unittest in an application.
@@ -96,8 +98,7 @@
  * there will be three tests: $(UL
  *    $(LI Test 1 is $(B foo.bar.0))
  *    $(LI Test 2 is $(B foo.bar.Baz.0))
- *    $(LI Test 3 is $(B foo.bar.1))
- * )
+ *    $(LI Test 3 is $(B foo.bar.1)))
  * 
  * Test_Result_Specification:
  * After a test is run, there are four possible results: $(UL 
@@ -114,10 +115,9 @@
  *    $(LI An internal error could occur with the test runner (for example, the test is
  *       not found). In this case, a human-readable message that does not begin with
  *       "$(B PASSED)", "$(B FAILED)" or "$(B ERROR)" will be printed on a single line.
- *       If the test is not found, the message will be "Test [test signature] not found",
- *       where "[test signature]" will be replaced with the signature of the test.
- *       Other error messages may appear and are unspecified.)
- * )
+ *       If the test is not found, the message will be "$(B Test $(I test signature) not
+ *       found)", where "test signature" will be replaced with the signature of the test.
+ *       Other error messages may appear and are unspecified.))
  * 
  * Stack_Trace_Specification:
  * The test runner has support for Flectioned's TracedException, but will work
@@ -126,27 +126,27 @@
  * exception has a message, this will be followed by ": " and then the exception
  * message.
  * 
+ * If the exception is an assertion failure (AssertError in Phobos, AssertException
+ * in Tango), the line will instead be "$(B Assertion failed in $(I &lt;filename&gt;)
+ * at line $(I &lt;line&gt;))" followed by ": " and a message if there is one. The
+ * rationale behind rewriting this exception is to smooth over differences between
+ * Tango and Phobos, which report their assert errors differently.
+ * 
  * If the exception is a subclass of TracedException, this will be followed by the
  * actual stack trace of the exception. Each line of the stack trace will begin with
  * three spaces, which will allow stack traces to be easily visually parsed
- * from the surrounding information and dealt with in automated tools.
+ * from the surrounding information and dealt with in automated tools. The stack
+ * trace differs from the standard Flectioned stack trace for a TracedException to
+ * ease processing.
  * 
  * Each line of the stack trace represents a stack frame that was executing when the
  * exception was thrown. The stack frames will be reported in reverse order (the
  * "unwinding" of the stack). TODO - finish this.
  * 
- * Named_Tests:
- * Right now, there's no way to name tests. This is a planned feature, however the
- * only ways I can think of doing it seem mighty hackish (a macro mixing in some
- * ASM at the top of the test and playing with the function pointer from there is
- * the best option I can think of). If anyone has any ideas, please e-mail me.
- * 
  * Limitations:
  * $(UL
- *    $(LI No test naming)
  *    $(LI Only works with D 1.x)
- *    $(LI Requires Flectioned (not likely to change))
- * )
+ *    $(LI Requires Flectioned (not likely to change)))
  * 
  * Bugs:
  * If a class is inside a function, unittests in that class won't work. Keep this in
@@ -166,8 +166,7 @@
  * ---
  * there will be two tests: $(UL
  *    $(LI Test 1 is $(B foo.bar.0))
- *    $(LI Test 3 is $(B foo.bar.1))
- * )
+ *    $(LI Test 3 is $(B foo.bar.1)))
  * The middle test is inaccesible via flute. This applies to unittests in anonymous
  * classes, too. I hope to fix this in a future version.
  * 
@@ -183,29 +182,10 @@
  * License:
  * Copyright (c) $(COPYRIGHT)
  * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, is permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 module org.dsource.descent.unittests.flute;
 
@@ -215,6 +195,8 @@ import cn.kuehne.flectioned;
 
 static if(cn.kuehne.flectioned.inTango)
 {
+	version = inTango;
+	
 	import tango.stdc.stdio: printf, fflush, stdout;
 	import tango.stdc.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
 	
@@ -224,10 +206,13 @@ static if(cn.kuehne.flectioned.inTango)
 }
 else static if(cn.kuehne.flectioned.inPhobos)
 {
+	version = inPhobos;
+	
 	import std.stdio: printf, fflush, stdout;
 	import std.c.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
 	import std.stdio : readln;
 	import std.string : atoi, format, trim = strip;
+	import std.asserterror : AssertError;
 	
 	char[] itoa(int i) { return format("%d", i); }
 }
@@ -315,7 +300,7 @@ void fluteMain()
  */
 void printVersionInfo()
 {
-	printf("Flute version 0.1\n");
+	printf("flute 0.1\n");
 }
 
 /**
@@ -367,9 +352,8 @@ bool commandLoop()
 	case 'L':
 		if(line.length > 1)
 			goto default;
-		foreach(sig; tests.keys)
+		foreach(sig; tests.keys.dup.sort)
 		{
-			if(find(sig, "cn.kue") < 0)
 			printf("%.*s\n", sig);
 		}
 		return true;
@@ -408,13 +392,7 @@ bool commandLoop()
  * Returns: The result of running the test
  */
 TestResult runTest(char[] sig)
-{
-	bool isFailure(Exception e)
-	{
-		// TODO
-		return true;
-	}
-	
+{	
 	Function* test = sig in tests;
 	if(!test)
 	{
@@ -440,17 +418,92 @@ TestResult runTest(char[] sig)
 		result = TestResult.ERROR;
 	}
 	
-	printStackTrace(e);
+	printException(e);
 	return result;
 }
 
 /**
- * Prints the stack trace for the exception in the specified format.
+ * Checks whether the given exception is an assertion failure.
+ * 
+ * Params:
+ *     e = The exception to check
+ * Returns: true if and only if the given exception is an assertion failure
+ */
+bool isFailure(Exception e)
+{
+	version(inTango)
+		return null !is (cast(AssertException) e);
+	else
+		return null !is (cast(AssertError) e);
+}
+
+/**
+ * Prints the exception information in the specified format and calls
+ * printStackTrace for traced exceptions.
+ * 
+ * Params:
+ *     e = The exception to print information for
+ */
+void printException(Exception e)
+{
+	TracedException te;
+	
+	// If it's a failure, print a standardized (Tango vs. Phobos) message
+	if(isFailure(e))
+	{
+		version(inTango)
+		{
+			// TODO
+		}
+		else
+		{
+			// Extract the assertion message from the complete error message
+			char[] extractMessage(char[] orig)
+			{
+				int i = find(orig, ") ");
+				if(i > 0 && orig.length > i + 2)
+					return orig[i + 2 .. $];
+				else
+					return null;
+			}
+			
+			AssertError ae = cast(AssertError) e;
+			assert(ae !is null);
+			printf("Assertion failed in %.*s at line %d", ae.filename, ae.linnum);
+			char[] msg = extractMessage(ae.msg);
+			if(msg)
+				printf(": %.*s", msg);
+			printf("\n");
+		}
+	}
+	
+	// If it's a traced exception, extract the message and stack trace in the
+	// specified format
+	//else if(null !is (te = cast(TracedException) e))
+	//{
+	//  TODO
+	//	printStackTrace(te);
+	//}
+	
+	// Otherwise, simply print the exception
+	else
+	{
+		// PERHAPS this could be cleaned up for standardizing stuff across phobos
+		// and tango, i.e. filename/line, etc.
+		version(inTango)
+			printf("%.*s: %.*s\n", e.classinfo.name, e.toUtf8());
+		else
+			printf("%.*s: %.*s\n", e.classinfo.name, e.toString());
+	}
+}
+
+/**
+ * Prints the stack trace for a traced exception in the specified format.
  * 
  * Params:
  *     e = The exception to print the stack trace for
  */
-void printStackTrace(Exception e)
+void printStackTrace(TracedException e)
 {
 	// TODO
 }
@@ -528,7 +581,7 @@ void init()
 void runAllTests()
 {
 	uint passed, failed, error;
-	foreach(sig; tests.keys)
+	foreach(sig; tests.keys.dup.sort)
 	{
 		printf("%.*s\n", sig);
 		TestResult result = runTest(sig);
