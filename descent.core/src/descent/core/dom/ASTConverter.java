@@ -2133,7 +2133,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
-		convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.sourceStatement).sourceStatement).statements);
+		if(!(a.sourceStatement instanceof SwitchErrorStatement))
+			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.sourceStatement).sourceStatement).statements);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}

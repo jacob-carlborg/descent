@@ -1,4 +1,7 @@
-#Wed Nov 28 06:11:47 PST 2007
+#Sat Dec 01 12:15:10 PST 2007
+descent.core.compiler.taskCaseSensitive=enabled
+descent.core.compiler.taskPriorities=NORMAL,HIGH,LOW,HIGH,LOW,NORMAL
+descent.core.compiler.taskTags=TODO,FIXME,PERHAPS,WTF,NEXTVERSION,TANGO
 descent.core.formatter.alignment_for_array_literals=16
 descent.core.formatter.alignment_for_base_class_lists=16
 descent.core.formatter.alignment_for_function_declaration_parameters=16

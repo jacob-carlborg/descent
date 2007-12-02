@@ -7,6 +7,7 @@ public class SwitchErrorStatement extends Statement {
 
 	public SwitchErrorStatement(Loc loc) {
 		super(loc);
+		synthetic = true;
 	}
 
 	@Override

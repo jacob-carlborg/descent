@@ -223,7 +223,7 @@ public class ArrayInitializer extends Initializer {
 		Expression e;
 
 		elements = new Expressions();
-		for (int i = 0; i < value.size(); i++) {
+		for (int i = 0; i < size(value); i++) {
 			if (index.get(i) != null) {
 				// goto Lno;
 				return toExpression_Lno(context);
