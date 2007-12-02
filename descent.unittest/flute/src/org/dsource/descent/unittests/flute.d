@@ -30,7 +30,7 @@
  *    $(LI A "line" is any number of ASCII characters (that may contain CR, LF or a
  *        CRLF pair, although they will only do so if the host program uses
  *        them, for example in the text for an assert() statement) followed by a
- *        system-specific line terminator.)
+ *        system-specific line terminator.))
  * 
  * Interface:
  * The interface is well-defined. That is, while it is designed to be human-
@@ -50,12 +50,12 @@
  *        look like. See "Test Naming" for the specification of how test names
  *        are handled.)
  *     $(LI $(B l) -
- *        (Prints a list of all the tests in the project. One test specification
- *        will appear per line. Named tests will appear first, followed by unnamed
- *        tests. Named tests will appear as their fully qualified test name.
- *        Unnamed tests will simply appear with their signature on a line. The
- *        order in which tests are printed is the alphabetical order of their
- *        signatures, and lexical order for unittests within the same scope.)
+ *        (An l alone on a line). Prints a list of all the tests in the project.
+ *        One test specification will appear per line. Named tests will appear
+ *        as their fully qualified test name. Unnamed tests will appear with
+ *        their signature. The order in which tests are printed is the 
+ *        alphabetical order of their signatures, and lexical order for unittests
+ *        within the same scope (that is, names hav nothing to do with the order).)
  *     $(LI $(B a) -
  *        (An a alone on a line). Will execute all the tests in the
  *        application. For each test, it will write a line containing "Running: "
@@ -68,8 +68,6 @@
  *        by the total number of executed tests. Any tests that caused an internal
  *        error will not be reported in any of the three categories, nor will they be
  *        included in the total. There will be a blank line between each test.)
- *     $(LI $(B p) -
- *        (A p alone on a line). Exist flute interface and runs the application.)
  *     $(LI $(B x) -
  *        (An x alone on a line). Will exit the program.))
  * 
@@ -126,6 +124,14 @@
  *    $(LI bacon.eggs.Sausage.spam)
  *    $(LI :spam))
  * 
+ * Wildcards:
+ * When specifying a test to run, you may use a "*" wildcard to indicate all the
+ * tests in a prticular package (including its subpackages), module, or aggregate.
+ * For example, in the foo.bar example above, "$(B foo.*)" and "$(B foo.bar.*)"
+ * would refer to all three tests, and "$(B foo.bar.Baz.*)" would refer to only the
+ * test within the class. When running a set of tests specified by a wildcard, the
+ * result will be the same as that defined under "run all tests".
+ * 
  * Test_Result_Specification:
  * After a test is run, there are four possible results: $(UL 
  *    $(LI The test could succeed, in which case a line containing "$(B PASSED)" will be
@@ -172,7 +178,7 @@
  * Limitations:
  * $(UL
  *    $(LI No Unicode/internationalization support (planned))
- *    $(LI Untested in low memory situations
+ *    $(LI Untested in low memory situations)
  *    $(LI Only tested with D 1.x (future versions will support D2))
  *    $(LI No test suites/categorization (will possibly be in a future version, but
  *         the Descent front-end should support this when it gets released.))
@@ -194,9 +200,6 @@
  * 
  * unittest { /+ Test 3 +/ }
  * ---
- * there will be two tests: $(UL
- *    $(LI Test 1 is $(B foo.bar.0))
- *    $(LI Test 3 is $(B foo.bar.1)))
  * The middle test is inaccessible via flute. This applies to unittests in anonymous
  * classes, too. I hope to fix this in a future version.
  * 
@@ -214,8 +217,8 @@
  * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * which accompanies this distribution, and is available at 
+ * $(LINK http://www.eclipse.org/legal/epl-v10.html)
  */
 module org.dsource.descent.unittests.flute;
 
@@ -240,13 +243,13 @@ module org.dsource.descent.unittests.flute;
  *   effort should be made so that Flute works correctly with:
  *     - Tests that segfault
  *     - Tests that are unnamed
- *     - Low-memory situations (NEXTVERSION)
+ *     - Low-memory situations (PERHAPS)
  *     - Tests that go into infinite loops/hang
  *     - Unicode/non-ASCII characters in both the test signatures and test names
  *       (and input, obviously). (NEXTVERSION)
  *     - Exception messages which contain more than one line
  *  - Documentation and specification is always more important than implementation.
- *  - Remove any unittests before release, so they don't clutter user code
+ *  - Remove any internal unittests before release, so they don't clutter user code
  */
 
 import cn.kuehne.flectioned;
@@ -272,7 +275,7 @@ else static if(cn.kuehne.flectioned.inPhobos)
 	import std.string : atoi, format, trim = strip;
 	import std.asserterror : AssertError;
 	
-	// This shouldb be a standard lib function, so it goes up here
+	// This should be a standard lib function, so it goes up here
 	char[] itoa(int i) { return format("%d", i); }
 }
 else
@@ -307,7 +310,7 @@ private const char[] UNITTEST_MARKER = ".__unittest";
 /// A string containing version information, printed at the start of the application
 private const char[] VERSION_STRING = "flute 0.1";
 
-/**
+/*s
  * The result of running a test
  */
 private enum ResultType
@@ -401,7 +404,7 @@ private class TestResult
 					printf("%.*s: %.*s\n", e.classinfo.name, e.toUtf8());
 				else
 					printf("%.*s: %.*s\n", e.classinfo.name, e.toString());
-				
+				goto LprintStackTrace;
 		}
 		
 		LprintStackTrace:
@@ -411,7 +414,7 @@ private class TestResult
 
 /**
  * Represents a single test entity. Exactly one TestSpecification should be created
- * in the init(0 function for every test in the application, which can be accessed
+ * in the init() function for every test in the application, which can be accessed
  * in different ways (i.e. via simple name, fully qualified name, or signature).
  */
 private class TestSpecification
@@ -495,6 +498,11 @@ private class TestSpecification
 		return prefix ~ "." ~ name;
 	}
 	
+	/**
+	 * Checks whether this test is named.
+	 * 
+	 * Returns: true if and only if this test is named
+	 */
 	private char[] getSimpleName()
 	{
 		return name;
@@ -508,7 +516,8 @@ private class TestSpecification
 private class TestRegistry
 {
 	/**
-	 * Wrapper struct for returning if a simple name is ambigous
+	 * Wrapper struct for returning if a simple name is ambigous. Here because
+	 * char[][][char[]] just doesn't look right.
 	 */
 	private struct Ambiguity
 	{
@@ -525,9 +534,10 @@ private class TestRegistry
 		 */
 		enum TestFound
 		{
-			NOT_FOUND, /// The test is not in the registry
-			AMBIGUOUS, /// The given simple name is ambigous
-			FOUND,     /// The test exists in the registry
+			NOT_FOUND,      /// The test is not in the registry
+			AMBIGUOUS,      /// The given simple name is ambigous
+			FOUND,          /// The test exists in the registry
+			MULTIPLE_TESTS, /// It was a wildcard that found more than one test
 		}
 		
 		TestFound found; /// Was the test found?
@@ -536,6 +546,7 @@ private class TestRegistry
 		{
 			Ambiguity ambig;        /// If the result is ambigous, the ambiguity struct
 			TestSpecification test; /// The test if one was found
+			char[][] testNames;     /// If multiple tests were found, the test names
 		}
 	}
 	
@@ -549,7 +560,7 @@ private class TestRegistry
 	 * 
 	 * Params:
 	 *     test = The test to add to the registry
-	 * Returns: 
+	 * Returns: true if and only if the test was successfully added
 	 */
 	private bool add(TestSpecification test)
 	{
@@ -591,13 +602,13 @@ private class TestRegistry
 	 *     spec = The test specification; can be any of: a test signature, a test
 	 *            fully-qualified name, or a colon-preceded test simple name. Will
 	 *            validate this parameter, so if given bad input, the function will
-	 *            simply return null.
+	 *            simply return null. Wildcards will be correctly handled, too.
 	 * Returns: the test given by the specified FQN, signature or simple name or null
 	 *          if the test isn't in the registry or the simple name is ambigous
 	 */
-	public TestSpecification get(char[] spec)
+	private TestSpecification get(char[] spec)
 	{
-		SearchResult result = find(spec);
+		SearchResult result = search(spec);
 		return result.found == SearchResult.TestFound.FOUND ? result.test : null;
 	}
 	
@@ -608,10 +619,10 @@ private class TestRegistry
 	 *     spec = The test specification; can be any of: a test signature, a test
 	 *            fully-qualified name, or a colon-preceded test simple name. Will
 	 *            validate this parameter, so if given bad input, the function will
-	 *            simply return null.
+	 *            simply return null. Wildcards will be correctly handled, too.
 	 * Returns: The result of finding the test
 	 */
-	private SearchResult find(char[] spec)
+	private SearchResult search(char[] spec)
 	{
 		if(!spec || spec.length < 3)
 			goto Lnotfound;
@@ -652,10 +663,34 @@ private class TestRegistry
 			if(!prefix || prefix.length < 1 || !postfix || postfix.length < 1)
 				goto Lnotfound;
 			
-			if(postfix[0] >= '0' && postfix[0] <= '9')
+			if(postfix[0] == '*')
+			{
+				if(postfix.length > 1)
+					goto Lnotfound;
+				
+				SearchResult result = SearchResult(SearchResult.TestFound.MULTIPLE_TESTS);
+				result.testNames = [];
+				foreach(testName; getTestNames())
+				{
+					if(find(testName, prefix) == 0)
+						result.testNames ~= testName;
+				}
+				
+				if(result.testNames.length == 0)
+					goto Lnotfound;
+				
+				return result;
+			}
+			
+			else if(isdigit(postfix[0]))
+			{
 				testPtr = spec in tests_sig;
+			}
+			
 			else
+			{
 				testPtr = spec in tests_fqn;
+			}
 		}
 		
 		if(!testPtr)
@@ -676,12 +711,13 @@ private class TestRegistry
 	 * Params:
 	 *     spec = A test specified to run, may be a signature, fully-qualified name
 	 *            or simple name preceded by a colon. Will validate input & work
-	 *            correctly for invalid input.
-	 * Returns: The result of running the test or null if the test failed
+	 *            correctly for invalid input. Wildcards will be correctly handled, too.
+	 * Returns: The result of running the test or null if the test failed or if
+	 *          multiple tests were specified in spec by a wildcard
 	 */
 	private TestResult runTest(char[] spec)
 	{
-		SearchResult found = find(spec);
+		SearchResult found = search(spec);
 		switch(found.found)
 		{
 			case SearchResult.TestFound.NOT_FOUND:
@@ -691,6 +727,9 @@ private class TestRegistry
 				printf("Simple name %.*s is ambigous, could refer to either %.*s or "
 				       "%.*s\n", spec[1 .. $], found.ambig.fqns[0],
 				       found.ambig.fqns[1]);
+				return null;
+			case SearchResult.TestFound.MULTIPLE_TESTS:
+				runTests(found.testNames);
 				return null;
 			case SearchResult.TestFound.FOUND:
 				TestResult result = found.test.run();
@@ -724,24 +763,27 @@ private class TestRegistry
 	/**
 	 * Runs all the tests in the registry
 	 */
-	private void runAllTests()
+	private void runTests(char[][] testNames)
 	{
 		uint passed, failed, error;
-		foreach(spec; getTestNames())
+		foreach(spec; testNames)
 		{
 			printf("%.*s\n", spec);
 			TestResult result = runTest(spec);
-			switch(result.type)
+			if(result)
 			{
-				case ResultType.PASSED:
-					passed++;
-					break;
-				case ResultType.FAILED:
-					failed++;
-					break;
-				case ResultType.ERROR:
-					error++;
-					break;
+				switch(result.type)
+				{
+					case ResultType.PASSED:
+						passed++;
+						break;
+					case ResultType.FAILED:
+						failed++;
+						break;
+					case ResultType.ERROR:
+						error++;
+						break;
+				}
 			}
 			printf("\n");
 		}
@@ -764,8 +806,8 @@ private void fluteMain()
 {
 	init();
 	printf("%.*s\n", VERSION_STRING);
-	while(commandLoop()) { }
-	fluteExit();
+	if(!commandLoop())
+		fluteExit();
 }
 
 /**
@@ -787,13 +829,15 @@ private void fluteExit()
 }
 
 /**
- * Runs the main flute command loop. Prints the prompt, reads user entry of a
- * command, and invokes the specified command.
+ * Runs the main flute command loop. Repeatdly reads the user entry of a command
+ * and invokes the specified command.
  *
- * Returns: false if the user entered the exit command, true otherwise.
+ * Returns: true if the user requested the application be run, false if the user
+ *          requested the application exit.
  */
 private bool commandLoop()
 {
+	LnextCommand:
 	char[] line = trim(readln());
 	if(line.length < 1)
 		return true;
@@ -808,7 +852,7 @@ private bool commandLoop()
 			goto default;
 		char[] sig = line[2 .. $];
 		registry.runTest(sig);
-		return true;
+		goto LnextCommand;
 	
 	// l -- list all tests
 	case 'l':
@@ -817,15 +861,15 @@ private bool commandLoop()
 			goto default;
 		foreach(spec; registry.getTestNames())
 			printf("%.*s\n", spec);
-		return true;
+		goto LnextCommand;
 	
 	// a -- Run all tests
 	case 'a':
 	case 'A':
 		if(line.length > 1)
 			goto default;
-		registry.runAllTests();
-		return true;
+		registry.runTests(registry.getTestNames());
+		goto LnextCommand;
 	
 	// x -- Exit the program
 	case 'x':
@@ -837,7 +881,7 @@ private bool commandLoop()
 	// It's an unknown command -- say so & try again
 	default:
 		printf("Unrecognized command %.*s\n", line);
-		return true;
+		goto LnextCommand;
 	}
 }
 

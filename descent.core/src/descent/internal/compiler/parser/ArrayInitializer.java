@@ -101,7 +101,7 @@ public class ArrayInitializer extends Initializer {
 		}
 
 		length = 0;
-		for (i = 0; i < index.size(); i++) {
+		for (i = 0; i < size(index); i++) {
 			Expression idx;
 			Initializer val;
 
