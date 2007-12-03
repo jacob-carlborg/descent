@@ -1,2 +1,3 @@
 MODULES = 
 	$(MODULE org.source.descent.unittests.flute)
+  $(MODULE org.source.descent.unittests.naming)
