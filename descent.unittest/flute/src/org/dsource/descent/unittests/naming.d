@@ -21,8 +21,8 @@
  * ---
  * Right now, test names must form valid D idntifiers. This makes everything a bit
  * more sane from an implementation perspective, but this restriction may be lifted
- * in a future version. If a test name does not form a valid D identifier, the test
- * name will not be inserted into the test.
+ * in a future version. If a test name does not form a valid D identifier, you may
+ * get cryptic error messages, but the compiler should catch the problem.
  * 
  * Behavior if a test is given multiple names is undefined by this module, but should
  * be considered as an error condition by tools accessing the names, such as flute
@@ -42,7 +42,7 @@
  * 2007 Robert Fraser (fraserofthenight@gmail.com)
  * 
  * Version:
- * Almost 0.1
+ * 0.1
  * 
  * License:
  * Copyright (c) $(COPYRIGHT)
@@ -70,17 +70,8 @@ module org.dsource.descent.unittests.naming;
  */
 public char[] test_name(char[] name)
 {
-	// TODO Ensure the name forms a valid D identifier including universial alpha
-	foreach(c; name)
-	{
-		//if(!(c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-		//		(c >= '0' && c <= '9')))
-		if(false)
-		{
-			return "pragma(msg, \"Unittest identifier " ~ name ~ " in __FILE__ "
-					"at line __LINE__ does not form a valid D identifier.\");";
-		}
-	}
+	// Don't worry about validating it's a valid D identifier; the compuiler will
+	// do that for us... possibly with cryptic error messages
 	
 	return "byte __testName_" ~ name ~ ";"
 	       "static assert(is(typeof(__setTestName!(__testName_" ~ name ~ ").a)));";
@@ -89,4 +80,4 @@ public char[] test_name(char[] name)
 public class __setTestName(alias name)
 {
    static typedef typeof(this) a;
-} 
+}

@@ -16,7 +16,8 @@
  * time.) To be truly used effectively, flute needs to be paired with a code analysis
  * or other tool to identify/name unittests which is then executed by the fluted
  * application. If all you want is to run all the unittests in the project,
- * UnittestWalker is a better bet.
+ * UnittestWalker is a better bet. If using the command line version directly, I
+ * would suggest redirecting stdin from a file to create testing suites.
  * 
  * Usage:
  * Flute must be statically linked against an application, just like UnittestWalker.
@@ -262,10 +263,23 @@ static if(cn.kuehne.flectioned.inTango)
 	
 	import tango.stdc.stdio: printf, fflush, stdout;
 	import tango.stdc.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
+	import tango.io.Console : Cin;
+	import tango.core.Exception : AssertException;
+	import tango.text.Util : trim;
+	import tango.core.Array : tangoFind = find;
+	import tango.stdc.ctype : isdigit;
 	
-	// TANGO
+	static import tango.text.convert.Integer;
+	static if(is(typeof(tango.text.convert.Integer.toString)))
+		alias tango.text.convert.Integer.toString itoa;
+	else
+		alias tango.text.convert.Integer.toUtf8 itoa;
 	
-	alias Cin.readln readln;
+	char[] readln() { char[] line; Cin.readln(line); return line; }
+	int find(char[] haystack, char[] needle) { 
+		uint res = tangoFind(haystack, needle); 
+		return res == haystack.length ? -1 : res;
+	}
 }
 else static if(cn.kuehne.flectioned.inPhobos)
 {
@@ -274,7 +288,8 @@ else static if(cn.kuehne.flectioned.inPhobos)
 	import std.stdio: printf, fflush, stdout;
 	import std.c.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
 	import std.stdio : readln;
-	import std.string : atoi, format, trim = strip;
+	import std.string : atoi, format, find, trim = strip;
+	import std.ctype : isdigit;
 	import std.asserterror : AssertError;
 	
 	// This should be a standard lib function, so it goes up here
@@ -377,7 +392,12 @@ private class TestResult
 				printf("FAILED\n");
 				version(inTango)
 				{
-					// TANGO
+					AssertException ae = cast(AssertException) e;
+					assert(ae !is null);
+					printf("Assertion failed in %.*s at line %d", ae.file, ae.line);
+					if(ae.msg && ae.msg.length >= 0)
+						printf(": %.*s", ae.msg);
+					printf("\n");
 				}
 				else
 				{
@@ -405,10 +425,10 @@ private class TestResult
 			// and tango, i.e. filename/line, etc.
 			case ResultType.ERROR:
 				printf("ERROR\n");
-				version(inTango)
-					printf("%.*s: %.*s\n", e.classinfo.name, e.toUtf8());
-				else
+				static if(is(typeof((new Object).toString)))
 					printf("%.*s: %.*s\n", e.classinfo.name, e.toString());
+				else
+					printf("%.*s: %.*s\n", e.classinfo.name, e.toUtf8());
 				goto LprintStackTrace;
 		}
 		
@@ -909,7 +929,7 @@ private bool commandLoop()
  * Initializes the tests hash by generating signatures for every unittest function.
  */
 private void init()
-{
+{	
 	// Extracts the prefix from a Flectioned unittest symbol
 	char[] getPrefix(char[] symbol, char[] marker)
 	{
