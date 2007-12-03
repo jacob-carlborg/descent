@@ -39,8 +39,10 @@
  * 
  * When the program is executed, one or more lines containing version information
  * will be displayed. For this version, the version line will be "$(B flute 0.1)".
- * The program will then enter a loop where it will await input from stdin,
- * process the given command, and await futher input. The commands are: $(UL
+ * Warnings may be displayed after this for tests with multiple names unless
+ * version(Flute_NoWarnings) has been specified. The program will then enter a
+ * loop where it will await input from stdin, process the given command, and 
+ * await futher input. The commands are: $(UL
  *     $(LI $(B r $(I test signature)) -
  *        (An r, followed by a space, followed by the signature or name
  *        of a test). Will run the specified test and print the
@@ -100,7 +102,7 @@
  * Test_Names:
  * Instead of using signatures, names can be used to refer to tests as well. Since
  * signatures are often long and difficult to type, this is often the preferred
- * method. To add a signature to a test, import org.dsource.descent.unittests.naming
+ * method. To add a name to a test, import org.dsource.descent.unittests.naming
  * and insert use "mixin(test_name($(I test name)));" somewhere in your test body.
  * For example:
  * ---
@@ -307,6 +309,9 @@ else
 /// A Flectioned marker indicating a unittest
 private const char[] UNITTEST_MARKER = ".__unittest";
 
+/// A marker indicating a named test
+private const char[] NAMED_TEST_MARKER = ".__setTestName!(__testName_";
+
 /// A string containing version information, printed at the start of the application
 private const char[] VERSION_STRING = "flute 0.1";
 
@@ -436,11 +441,24 @@ private class TestSpecification
 	 *     name =    The simple name of the test if the test is named, or null if
 	 *               the test is not.
 	 */
-	private this(Function func, char[] prefix, uint ordinal, char[] name = null)
+	private this(Function func, char[] prefix, uint ordinal)
 	{
 		this.func = func;
 		this.prefix = prefix;
 		this.ordinal = ordinal;
+		this.name = null;
+	}
+	
+	/**
+	 * Sets the name of the test. Should only be called once per test, and BEFORE
+	 * the test is added to a registry.
+	 * 
+	 * Params:
+	 *     name = The name of the test
+	 */
+	private void setName(char[] name)
+	{
+		assert(this.name is null);
 		this.name = name;
 	}
 	
@@ -563,13 +581,13 @@ private class TestRegistry
 	 * Returns: true if and only if the test was successfully added
 	 */
 	private bool add(TestSpecification test)
-	{
+	{	
 		if(test.getSignature in tests_sig)
 			return false;
 		
 		tests_sig[test.getSignature()] = test;
 		if(test.isNamed())
-		{
+		{	
 			tests_fqn[test.getFullyQualifiedName()] = test;
 			
 			char[] simpleName = test.getSimpleName();
@@ -596,15 +614,17 @@ private class TestRegistry
 	
 	/**
 	 * Finds the test given by spec and returns it or null if the test is not in
-	 * the registry.
+	 * the registry. If the spec contains a wildcard, null will be returned; for
+	 * correct handling of wildcards, use the search function directly.
 	 *  
 	 * Params:
 	 *     spec = The test specification; can be any of: a test signature, a test
 	 *            fully-qualified name, or a colon-preceded test simple name. Will
 	 *            validate this parameter, so if given bad input, the function will
-	 *            simply return null. Wildcards will be correctly handled, too.
+	 *            simply return null.
 	 * Returns: the test given by the specified FQN, signature or simple name or null
-	 *          if the test isn't in the registry or the simple name is ambigous
+	 *          if the test isn't in the registry or the simple name is ambigous or
+	 *          if multiple tests were found via a wildcard
 	 */
 	private TestSpecification get(char[] spec)
 	{
@@ -623,8 +643,8 @@ private class TestRegistry
 	 * Returns: The result of finding the test
 	 */
 	private SearchResult search(char[] spec)
-	{
-		if(!spec || spec.length < 3)
+	{	
+		if(!spec || spec.length < 2)
 			goto Lnotfound;
 		
 		TestSpecification* testPtr;
@@ -766,7 +786,7 @@ private class TestRegistry
 	private void runTests(char[][] testNames)
 	{
 		uint passed, failed, error;
-		foreach(spec; testNames)
+		foreach(spec; testNames.sort)
 		{
 			printf("%.*s\n", spec);
 			TestResult result = runTest(spec);
@@ -804,8 +824,8 @@ private TestRegistry registry;
  */
 private void fluteMain()
 {
-	init();
 	printf("%.*s\n", VERSION_STRING);
+	init();
 	if(!commandLoop())
 		fluteExit();
 }
@@ -840,7 +860,7 @@ private bool commandLoop()
 	LnextCommand:
 	char[] line = trim(readln());
 	if(line.length < 1)
-		return true;
+		goto LnextCommand;
 	
 	switch(line[0])
 	{
@@ -891,19 +911,21 @@ private bool commandLoop()
 private void init()
 {
 	// Extracts the prefix from a Flectioned unittest symbol
-	char[] getPrefix(char[] symbol)
+	char[] getPrefix(char[] symbol, char[] marker)
 	{
-		int i = find(symbol, UNITTEST_MARKER);
+		int i = find(symbol, marker);
 		return symbol[0 .. i];
 	}
 	
 	uint[char[]] count; // Counts the current symbol number for a given prefix
+	TestSpecification[char[]] foundTests; // Associates flectioned names with tests
 	
 	registry = new TestRegistry();
 	
+	// Get all the tests
 	// TODO this relies on the fact that symbols are returned in the lexical order
 	// they were in the source code, make 100% sure this is so.
-	foreach(addr; addresses.keys.dup.sort)
+	foreach(addr; addresses.keys)
 	{
 		// find a unittest
 		Function f = cast(Function) addresses[addr];
@@ -927,12 +949,50 @@ private void init()
 			continue;
 		
 		// If it's a flectioned test, don't add it to the registry
-		char[] prefix = getPrefix(f.overload);
+		char[] prefix = getPrefix(f.overload, UNITTEST_MARKER);
 		if(find(prefix, "cn.kuehne.flectioned") >= 0)
 			continue;
 		
 		// Generate the test & add it to the registry
 		TestSpecification test = new TestSpecification(f, prefix, count[prefix]++);
-		registry.add(test);
+		foundTests[f.overload] = test;
 	}
+	
+	// Associate names with tests
+	foreach(addr; addresses.keys)
+	{
+		Class c= cast(Class) addresses[addr];
+		
+		if(c is null)
+			continue;
+		
+		int i = find(c.name, NAMED_TEST_MARKER);
+		if(i == -1)
+			continue;
+		
+		char[] funcName = c.name[0 .. i];
+		TestSpecification* test = funcName in foundTests;
+		if(!test)
+			continue;
+		
+		if(test.isNamed())
+		{
+			version(Flute_NoWarnings) {}
+			else
+				printf("Warning: Test %.*s given multiple names, only %.*s used\n", 
+					test.getSignature(), test.getSimpleName());
+			continue;
+		}
+		
+		i += NAMED_TEST_MARKER.length;
+		int j = i;
+		for(; j < c.name.length && c.name[j] != ')'; j++) { }
+		if(j == c.name.length)
+			continue;
+		
+		test.setName(c.name[i .. j]);
+	}
+	
+	foreach(test; foundTests.values)
+		registry.add(test);
 }

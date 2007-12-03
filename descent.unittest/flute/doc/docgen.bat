@@ -1,1 +1,1 @@
-dmd -D -o- ..\src\org\dsource\descent\unittests\flute.d ..\src\candy.ddoc ..\src\modules.ddoc
+dmd -D -o- ..\src\org\dsource\descent\unittests\flute.d ..\src\org\dsource\descent\unittests\naming.d ..\src\candy.ddoc ..\src\modules.ddoc

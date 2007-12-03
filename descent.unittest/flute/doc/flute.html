@@ -82,8 +82,10 @@ The interface is well-defined. That is, while it is designed to be human-
 <script>explorer.outline.addDecl('flute');</script>
 
  0.1</b>".
- The program will then enter a loop where it will await input from stdin,
- process the given command, and await futher input. The commands are: <ul>    <li><b>r <i>test signature</i></b> -
+ Warnings may be displayed after this for tests with multiple names unless
+ version(Flute_NoWarnings) has been specified. The program will then enter a
+ loop where it will await input from stdin, process the given command, and
+ await futher input. The commands are: <ul>    <li><b>r <i>test signature</i></b> -
         (An r, followed by a space, followed by the signature or name
         of a test). Will run the specified test and print the
         results to stdout. See "test signature specification" for the
@@ -143,7 +145,7 @@ A test signature is a way to uniquely identify a unittest in an application.
 <b>Test Names:</b><br>
 Instead of using signatures, names can be used to refer to tests as well. Since
  signatures are often long and difficult to type, this is often the preferred
- method. To add a signature to a test, import org.dsource.descent.unittests.naming
+ method. To add a name to a test, import org.dsource.descent.unittests.naming
  and insert use "mixin(test_name(<i>test name</i>));" somewhere in your test body.
  For example:
 <pre class="d_code"> <font color=blue>module</font> bacon.eggs;
@@ -285,7 +287,7 @@ Copyright (c) 2007 Robert Fraser (fraserofthenight@gmail.com)
 		<tr><td id="docfooter">
 			Page was generated with
 			<img src="candydoc/img/candydoc.gif" style="vertical-align:middle; position:relative; top:-1px">
-			on Sun Dec  2 10:49:51 2007
+			on Mon Dec  3 09:36:44 2007
 
 		</td></tr>
 	</table>
