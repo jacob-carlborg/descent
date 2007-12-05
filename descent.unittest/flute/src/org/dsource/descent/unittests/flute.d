@@ -275,7 +275,7 @@ static if(cn.kuehne.flectioned.inTango)
 	else
 		alias tango.text.convert.Integer.toUtf8 itoa;
 	
-	char[] readln() { char[] line; Cin.readln(line); return line; }
+	char[] readln() { return Cin.copyln(); }
 	int find(char[] haystack, char[] needle) { 
 		uint res = tangoFind(haystack, needle); 
 		return res == haystack.length ? -1 : res;
@@ -330,7 +330,7 @@ private const char[] NAMED_TEST_MARKER = ".__setTestName!(__testName_";
 /// A string containing version information, printed at the start of the application
 private const char[] VERSION_STRING = "flute 0.1";
 
-/*s
+/*
  * The result of running a test
  */
 private enum ResultType
@@ -395,7 +395,7 @@ private class TestResult
 					AssertException ae = cast(AssertException) e;
 					assert(ae !is null);
 					printf("Assertion failed in %.*s at line %d", ae.file, ae.line);
-					if(ae.msg && ae.msg.length >= 0)
+					if(ae.msg && ae.msg.length > 0)
 						printf(": %.*s", ae.msg);
 					printf("\n");
 				}
@@ -458,8 +458,6 @@ private class TestSpecification
 	 *     prefix =  The fully-qualified prefix of the test name
 	 *     ordinal = The lexical position of the test within its scope, as defined
 	 *               in the test signature specification.
-	 *     name =    The simple name of the test if the test is named, or null if
-	 *               the test is not.
 	 */
 	private this(Function func, char[] prefix, uint ordinal)
 	{
@@ -845,6 +843,7 @@ private TestRegistry registry;
 private void fluteMain()
 {
 	printf("%.*s\n", VERSION_STRING);
+	fflush(stdout);
 	init();
 	if(!commandLoop())
 		fluteExit();
@@ -878,6 +877,8 @@ private void fluteExit()
 private bool commandLoop()
 {
 	LnextCommand:
+	printf("(flute)\n");
+	fflush(stdout);
 	char[] line = trim(readln());
 	if(line.length < 1)
 		goto LnextCommand;
