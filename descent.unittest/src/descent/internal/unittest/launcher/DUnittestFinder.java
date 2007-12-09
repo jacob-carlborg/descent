@@ -5,10 +5,13 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.ICompilationUnit;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
+import descent.core.IParent;
+import descent.core.IType;
 import descent.core.JavaModelException;
 
 import descent.internal.unittest.util.TestSearchEngine;
@@ -87,14 +90,23 @@ public class DUnittestFinder implements ITestFinder
 	@Override
 	public boolean hasTests(ICompilationUnit module) throws JavaModelException
 	{
-		try
+		return testSearch(module);
+	}
+	
+	public boolean testSearch(IParent element) throws JavaModelException
+	{
+		for(IJavaElement child : element.getChildren())
 		{
-			// TODO
-			return true;
+			if(child instanceof IType)
+			{
+				if(testSearch((IType) child))
+					return true;
+			}
+			
+			if(child instanceof IInitializer)
+				if(((IInitializer) child).isUnitTest())
+					return true;
 		}
-		catch(Exception e)
-		{
-			return false;
-		}
+		return false;
 	}
 }

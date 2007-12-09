@@ -34,6 +34,8 @@
  *        system-specific line terminator.))
  * 
  * Interface:
+ * TODO document prompts
+ * 
  * The interface is well-defined. That is, while it is designed to be human-
  * readable, it is fully specified and can hopefully be processed by automated
  * testing tools. The interface may change between versions.
@@ -255,19 +257,74 @@ module org.dsource.descent.unittests.flute;
  *  - Remove any internal unittests before release, so they don't clutter user code
  */
 
+
+// Functions this program uses in a tango/phobos independent manner
+
+/**
+ * Initializes input/output. Should be called before any IO operations are
+ * performed.
+ */
+//private void initIO();
+
+/**
+ * Closes input/output. Should be called before program termination and after
+ * initIO().
+ */
+//private void closeIO();
+
+/**
+ * Flushes the output stream. Should be called before waiting for user input and
+ * before possibly lengthy operations to alert users.
+ */
+//private void flush();
+
+/**
+ * Prints the given string to the output (either a socket or stdout).
+ * 
+ * Params:
+ *     str = The string to print
+ */
+//private void write(char[] str);
+
+/**
+ * Reads a line (terminated by a system-specific line specifier for stdout, or a
+ * CRLF for socket input), and returns the line.
+ * 
+ * Returns: The next line from the input stream
+ */
+//private char[] readln();
+
 import cn.kuehne.flectioned;
+
+const ushort PORT = 30587;
 
 static if(cn.kuehne.flectioned.inTango)
 {
 	version = inTango;
 	
-	import tango.stdc.stdio: printf, fflush, stdout;
 	import tango.stdc.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
-	import tango.io.Console : Cin;
 	import tango.core.Exception : AssertException;
 	import tango.text.Util : trim;
 	import tango.core.Array : tangoFind = find;
 	import tango.stdc.ctype : isdigit;
+	
+	version(FluteCommandLine)
+	{
+		import tango.io.Stdout : Cin, Cout;
+	}
+	else
+	{
+		import tango.net.ServerSocket;
+		import tango.net.InternetAddress;
+		import tango.net.SocketConduit;
+		
+		import tango.io.model.IConduit;
+		import tango.io.model.IBuffer;
+		import tango.io.protocol.model.IWriter;
+		
+		import tango.io.Buffer;
+		import tango.io.protocol.Writer;
+	}
 	
 	static import tango.text.convert.Integer;
 	static if(is(typeof(tango.text.convert.Integer.toString)))
@@ -275,8 +332,89 @@ static if(cn.kuehne.flectioned.inTango)
 	else
 		alias tango.text.convert.Integer.toUtf8 itoa;
 	
-	char[] readln() { return Cin.copyln(); }
-	int find(char[] haystack, char[] needle) { 
+	version(FluteCommandLine) {} else
+	{
+		private ServerSocket serv;
+		private IConduit socket;
+		private IBuffer buf;
+		private IWriter writer;
+	}
+	
+	private void initIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			serv = new ServerSocket(new InternetAddress(PORT));
+			socket = serv.accept();
+			buf = new Buffer(socket);
+			writer = new Writer(buf);
+		}
+	}
+	
+	private void closeIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			socket.detach();
+			serv.socket.detach();
+		}
+	}
+	
+	private void flush()
+	{
+		version(FluteCommandLine)
+			Cout.flush();
+		else
+			writer.flush();
+	}
+	
+	private void write(char[] str)
+	{
+		version(FluteCommandLine)
+			Cout(str);
+		else
+			writer.put(str);
+	}
+	
+	private char[] readln()
+	{
+		version(FluteCommandLine)
+		{
+			return Cin.copyln();
+		}
+		else
+		{
+			char[] content;
+			
+			uint line (void[] input)
+			{
+				char[] text = cast(char[]) input;
+				foreach (i, c; text)
+				{
+					if (c == '\n')
+					{
+						uint j = i;
+						if (j && (text[j - 1] == '\r'))
+							--j;
+						content = text [0 .. j];
+						return i + 1;
+					}
+				}
+				return IConduit.Eof;
+			}
+
+			bool read = buf.next(&line) || (content = cast(char[]) 
+					buf.slice(buf.readable), false);
+			return read ? content.dup : null;
+		}
+	}
+	
+	private int find(char[] haystack, char[] needle)
+	{ 
 		uint res = tangoFind(haystack, needle); 
 		return res == haystack.length ? -1 : res;
 	}
@@ -285,15 +423,61 @@ else static if(cn.kuehne.flectioned.inPhobos)
 {
 	version = inPhobos;
 	
-	import std.stdio: printf, fflush, stdout;
+	import std.stdio: writef, fflush, stdout;
 	import std.c.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
-	import std.stdio : readln;
+	import std.stdio : cinReadln = readln;
 	import std.string : atoi, format, find, trim = strip;
 	import std.ctype : isdigit;
 	import std.asserterror : AssertError;
 	
-	// This should be a standard lib function, so it goes up here
-	char[] itoa(int i) { return format("%d", i); }
+	private void initIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			// TODO
+		}
+	}
+	
+	private void closeIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			// TANGO
+		}
+	}
+	
+	private void flush()
+	{
+		version(FluteCommandLine)
+			fflush(stdout);
+		else
+			{ } // TODO
+	}
+	
+	private void write(char[] str)
+	{
+		version(FluteCommandLine)
+			writef(str);
+		else
+			{ } // TODO
+	}
+	
+	private char[] readln()
+	{
+		version(FluteCommandLine)
+			return cinReadln();
+		else
+			{ return ""; } // TODO
+	}
+	
+	private char[] itoa(int i)
+	{
+		return format("%d", i);
+	}
 }
 else
 {
@@ -385,19 +569,20 @@ private class TestResult
 		switch(type)
 		{
 			case ResultType.PASSED:
-				printf("PASSED\n");
+				write("PASSED\r\n");
 				return;
 			
 			case ResultType.FAILED:
-				printf("FAILED\n");
+				write("FAILED\r\n");
 				version(inTango)
 				{
 					AssertException ae = cast(AssertException) e;
 					assert(ae !is null);
-					printf("Assertion failed in %.*s at line %d", ae.file, ae.line);
+					write("Assertion failed in " ~ ae.file ~ " at line " ~
+						itoa(ae.line));
 					if(ae.msg && ae.msg.length > 0)
-						printf(": %.*s", ae.msg);
-					printf("\n");
+						write(": " ~ ae.msg);
+					write("\r\n");
 				}
 				else
 				{
@@ -413,22 +598,23 @@ private class TestResult
 					
 					AssertError ae = cast(AssertError) e;
 					assert(ae !is null);
-					printf("Assertion failed in %.*s at line %d", ae.filename, ae.linnum);
+					write("Assertion failed in " ~ ae.filename ~ " at line " ~
+						itoa(ae.linnum));
 					char[] msg = extractMessage(ae.msg);
 					if(msg)
-						printf(": %.*s", msg);
-					printf("\n");
+						write(": " ~ msg);
+					write("\r\n");
 				}
 				goto LprintStackTrace;
 			
 			// PERHAPS this could be cleaned up for standardizing stuff across phobos
 			// and tango, i.e. filename/line, etc.
 			case ResultType.ERROR:
-				printf("ERROR\n");
+				write("ERROR\r\n");
 				static if(is(typeof((new Object).toString)))
-					printf("%.*s: %.*s\n", e.classinfo.name, e.toString());
+					write(e.classinfo.name ~ ": " ~ e.toString() ~ "\r\n");
 				else
-					printf("%.*s: %.*s\n", e.classinfo.name, e.toUtf8());
+					write(e.classinfo.name ~ ": " ~ e.toUtf8() ~ "\r\n");
 				goto LprintStackTrace;
 		}
 		
@@ -759,12 +945,12 @@ private class TestRegistry
 		switch(found.found)
 		{
 			case SearchResult.TestFound.NOT_FOUND:
-				printf("Test %.*s not found\n", spec);
+				write("Test " ~ spec ~ "not found\r\n");
 				return null;
 			case SearchResult.TestFound.AMBIGUOUS:
-				printf("Simple name %.*s is ambigous, could refer to either %.*s or "
-				       "%.*s\n", spec[1 .. $], found.ambig.fqns[0],
-				       found.ambig.fqns[1]);
+				write("Simple name " ~ spec[1 .. $] ~ " is ambigous, could refer"
+				      " to either " ~ found.ambig.fqns[0] ~ " or " ~
+				      found.ambig.fqns[1]);
 				return null;
 			case SearchResult.TestFound.MULTIPLE_TESTS:
 				runTests(found.testNames);
@@ -806,7 +992,7 @@ private class TestRegistry
 		uint passed, failed, error;
 		foreach(spec; testNames.sort)
 		{
-			printf("%.*s\n", spec);
+			write(spec ~ "\r\n");
 			TestResult result = runTest(spec);
 			if(result)
 			{
@@ -823,13 +1009,14 @@ private class TestRegistry
 						break;
 				}
 			}
-			printf("\n");
+			write("\r\n");
+			flush();
 		}
 		
 		uint total = passed + failed + error;
-		printf("   PASSED: %d/%d\n", passed, total);
-		printf("   FAILED: %d/%d\n", failed, total);
-		printf("   ERROR: %d/%d\n", error, total);
+		write("   PASSED: " ~ itoa(passed) ~ "/" ~ itoa(total) ~ "\r\n");
+		write("   FAILED: " ~ itoa(failed) ~ "/" ~ itoa(total) ~ "\r\n");
+		write("   ERROR: "  ~ itoa(error)  ~ "/" ~ itoa(total) ~ "\r\n");
 	}
 }
 
@@ -842,9 +1029,9 @@ private TestRegistry registry;
  */
 private void fluteMain()
 {
-	printf("%.*s\n", VERSION_STRING);
-	fflush(stdout);
-	init();
+	initIO();
+	write(VERSION_STRING ~ "\r\n");
+	initRegistry();
 	if(!commandLoop())
 		fluteExit();
 }
@@ -855,7 +1042,8 @@ private void fluteMain()
  */
 private void fluteExit()
 {
-	fflush(stdout);
+	flush();
+	closeIO();
 	_moduleDtor();
 	gc_term();
 
@@ -877,8 +1065,8 @@ private void fluteExit()
 private bool commandLoop()
 {
 	LnextCommand:
-	printf("(flute)\n");
-	fflush(stdout);
+	write("(flute)\r\n");
+	flush();
 	char[] line = trim(readln());
 	if(line.length < 1)
 		goto LnextCommand;
@@ -901,7 +1089,7 @@ private bool commandLoop()
 		if(line.length > 1)
 			goto default;
 		foreach(spec; registry.getTestNames())
-			printf("%.*s\n", spec);
+			write(spec ~ "\r\n");
 		goto LnextCommand;
 	
 	// a -- Run all tests
@@ -921,7 +1109,7 @@ private bool commandLoop()
 	
 	// It's an unknown command -- say so & try again
 	default:
-		printf("Unrecognized command %.*s\n", line);
+		write("Unrecognized command " ~ line ~ "\r\n");
 		goto LnextCommand;
 	}
 }
@@ -929,7 +1117,7 @@ private bool commandLoop()
 /**
  * Initializes the tests hash by generating signatures for every unittest function.
  */
-private void init()
+private void initRegistry()
 {	
 	// Extracts the prefix from a Flectioned unittest symbol
 	char[] getPrefix(char[] symbol, char[] marker)
@@ -1000,8 +1188,9 @@ private void init()
 		{
 			version(Flute_NoWarnings) {}
 			else
-				printf("Warning: Test %.*s given multiple names, only %.*s used\n", 
-					test.getSignature(), test.getSimpleName());
+				write("Warning: Test " ~ test.getSignature() ~ 
+					" given multiple names, only " ~ test.getSimpleName()~
+					" used\r\n");
 			continue;
 		}
 		

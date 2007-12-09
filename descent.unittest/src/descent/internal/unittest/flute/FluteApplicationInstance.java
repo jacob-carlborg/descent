@@ -75,7 +75,7 @@ public class FluteApplicationInstance
 			fProxy.write("r " + signature + "\n"); //$NON-NLS-1$
 			waitStateReturn();
 			
-			return ((RunningOneTest) fState).result;	
+			return ((RunningOneTest) fState).getResult();	
 		}
 		finally
 		{
@@ -191,8 +191,6 @@ public class FluteApplicationInstance
 	
 	void setState(IState state)
 	{
-		System.out.println("Setting state to " + state.getClass().
-				getSimpleName());
 		fState = state;
 	}
 	
@@ -214,8 +212,22 @@ public class FluteApplicationInstance
 		FluteApplicationInstance instance = new FluteApplicationInstance(
 				eclipseProc);
 		
+		FluteTestResult res;
+		
 		instance.init();
-		instance.runTest("sample.module1.0");
+		
+		res = instance.runTest("sample.module1.0");
+		System.out.println("sample.module1.0 " + res.getResultType());
+		
+		res = instance.runTest("sample.module1.1");
+		System.out.println("sample.module1.1 " + res.getResultType());
+		
+		res = instance.runTest("sample.module1.2");
+		System.out.println("sample.module1.2 " + res.getResultType());
+		
+		res = instance.runTest("sample.module1.Bar.0");
+		System.out.println("sample.module1.Bar.0 " + res.getResultType());
+		
 		instance.terminate();
 		
 		Thread.sleep(1000); // Let it finish up whatever it's doing

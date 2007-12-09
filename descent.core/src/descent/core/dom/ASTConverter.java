@@ -2702,7 +2702,8 @@ public class ASTConverter {
 			return b;
 		} else {
 			descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
-			b.internalSetEscapedValue(new String(a.sourceString));
+			b.internalSetEscapedValue(a.sourceString == null ?
+					"" : new String(a.sourceString));
 			b.setSourceRange(a.start, a.length);
 			return convertParenthesizedExpression(a, b);
 		}

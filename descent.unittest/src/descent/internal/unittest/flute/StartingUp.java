@@ -5,7 +5,6 @@ import java.io.IOException;
 public class StartingUp implements IState
 {
 	private FluteApplicationInstance cli;
-	
 	boolean hasCorrectVersion = false;
 	
 	StartingUp(FluteApplicationInstance cli)
@@ -16,9 +15,9 @@ public class StartingUp implements IState
 	@Override
 	public void interpret(String text) throws IOException
 	{
-		System.out.println("StartingUpState.interpret(" + text + ");");
 		if(text.equals(FluteApplicationInstance.FLUTE_VERSION))
 			hasCorrectVersion = true;
+		
 		if(text.equals(FluteApplicationInstance.AWAITING_INPUT))
 		{
 			cli.notifyStateReturn();
