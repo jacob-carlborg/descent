@@ -11,7 +11,6 @@ public class Waiting implements IState
 		this.cli = cli;
 	}
 
-	@Override
 	public void interpret(String text) throws IOException
 	{
 		// Ignore

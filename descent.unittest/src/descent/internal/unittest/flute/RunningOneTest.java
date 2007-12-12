@@ -22,7 +22,6 @@ class RunningOneTest implements IState
 		this.cli = cli;
 	}
 
-	@Override
 	public void interpret(String text) throws IOException
 	{
 		// Check for a PASSED/FAILED/ERROR if the PASSED/FAILED/ERROR

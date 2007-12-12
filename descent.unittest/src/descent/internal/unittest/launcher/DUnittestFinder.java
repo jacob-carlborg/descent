@@ -27,7 +27,6 @@ public class DUnittestFinder implements ITestFinder
 		return singleton;
 	}
 	
-	@Override
 	public void findTestsInContainer(Object[] elements,
 			Set<ICompilationUnit> result, IProgressMonitor pm)
 	{
@@ -87,7 +86,6 @@ public class DUnittestFinder implements ITestFinder
 			result.add(module);
 	}
 	
-	@Override
 	public boolean hasTests(ICompilationUnit module) throws JavaModelException
 	{
 		return testSearch(module);

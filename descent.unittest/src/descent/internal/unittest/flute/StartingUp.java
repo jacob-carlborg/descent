@@ -12,7 +12,6 @@ public class StartingUp implements IState
 		this.cli = cli;
 	}
 	
-	@Override
 	public void interpret(String text) throws IOException
 	{
 		if(text.equals(FluteApplicationInstance.FLUTE_VERSION))

@@ -96,7 +96,6 @@ public class FluteApplicationInstance
 	{	
 		private final StringBuilder fStreamBuffer = new StringBuilder();
 		
-		@Override
 		public void streamAppended(String text, IStreamMonitor monitor)
 		{
 			try {
