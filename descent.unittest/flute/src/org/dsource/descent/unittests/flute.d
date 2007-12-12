@@ -1,4 +1,6 @@
 /**
+ * TODO Document prompts & network
+ * 
  * Summary:
  * Flute is an interactive tool for executing D unit tests. It is based on Thomas
  * Kuehne's $(LINK2 http://flectioned.kuehne.cn/#unittest,UnittestWalker). Like
@@ -34,8 +36,6 @@
  *        system-specific line terminator.))
  * 
  * Interface:
- * TODO document prompts
- * 
  * The interface is well-defined. That is, while it is designed to be human-
  * readable, it is fully specified and can hopefully be processed by automated
  * testing tools. The interface may change between versions.
@@ -296,6 +296,9 @@ module org.dsource.descent.unittests.flute;
 
 import cn.kuehne.flectioned;
 
+/**
+ * Port to listen on (this should be configurable somehow)...
+ */
 const ushort PORT = 30587;
 
 static if(cn.kuehne.flectioned.inTango)
@@ -346,7 +349,7 @@ static if(cn.kuehne.flectioned.inTango)
 			{ } // Nothing to do
 		else
 		{
-			serv = new ServerSocket(new InternetAddress(PORT));
+			serv = new ServerSocket(new InternetAddress("127.0.0.1", PORT));
 			socket = serv.accept();
 			buf = new Buffer(socket);
 			writer = new Writer(buf);
@@ -423,12 +426,29 @@ else static if(cn.kuehne.flectioned.inPhobos)
 {
 	version = inPhobos;
 	
-	import std.stdio: writef, fflush, stdout;
 	import std.c.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
-	import std.stdio : cinReadln = readln;
 	import std.string : atoi, format, find, trim = strip;
 	import std.ctype : isdigit;
 	import std.asserterror : AssertError;
+	
+	version(FluteCommandLine)
+	{
+		import std.stdio: writef, fflush, stdout;
+		import std.stdio : cinReadln = readln;
+	}
+	else
+	{
+		import std.socket : Socket, TcpSocket, AddressFamily, InternetAddress,
+			SocketShutdown;
+		import std.socketstream : SocketStream;
+		import std.stream : Stream;
+	}
+	
+	version(FluteCommandLine) { } else
+	{
+		Socket serv;
+		Stream stream;
+	}
 	
 	private void initIO()
 	{
@@ -436,7 +456,12 @@ else static if(cn.kuehne.flectioned.inPhobos)
 			{ } // Nothing to do
 		else
 		{
-			// TODO
+			serv = new TcpSocket(AddressFamily.INET);
+			serv.bind(new InternetAddress("127.0.0.1", PORT));
+			serv.listen(0);
+			Socket conn = serv.accept();
+			stream = new SocketStream(conn);
+			// PERHAPS figure out why we can't use a buffered stream here
 		}
 	}
 	
@@ -446,7 +471,9 @@ else static if(cn.kuehne.flectioned.inPhobos)
 			{ } // Nothing to do
 		else
 		{
-			// TANGO
+			stream.close();
+			serv.shutdown(SocketShutdown.BOTH);
+			serv.close();
 		}
 	}
 	
@@ -455,7 +482,7 @@ else static if(cn.kuehne.flectioned.inPhobos)
 		version(FluteCommandLine)
 			fflush(stdout);
 		else
-			{ } // TODO
+			stream.flush();
 	}
 	
 	private void write(char[] str)
@@ -463,7 +490,7 @@ else static if(cn.kuehne.flectioned.inPhobos)
 		version(FluteCommandLine)
 			writef(str);
 		else
-			{ } // TODO
+			stream.write(str);
 	}
 	
 	private char[] readln()
@@ -471,7 +498,7 @@ else static if(cn.kuehne.flectioned.inPhobos)
 		version(FluteCommandLine)
 			return cinReadln();
 		else
-			{ return ""; } // TODO
+			return stream.readLine();
 	}
 	
 	private char[] itoa(int i)
