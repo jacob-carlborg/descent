@@ -114,7 +114,7 @@ public class Import extends Dsymbol implements IImport {
 	}
 
 	public void load(Scope sc, SemanticContext context) {
-		DsymbolTable dst;
+		IDsymbolTable dst;
 		IDsymbol s;
 
 		// See if existing module

@@ -8,7 +8,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class TypedefDeclaration extends Declaration {
+public class TypedefDeclaration extends Declaration implements ITypedefDeclaration {
 
 	public boolean first = true; // is this the first declaration in a multi
 	public TypedefDeclaration next;

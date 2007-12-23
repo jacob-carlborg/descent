@@ -4,9 +4,9 @@ public interface IScopeDsymbol extends IDsymbol {
 	
 	void importScope(IScopeDsymbol s, PROT protection);
 	
-	DsymbolTable symtab();
+	IDsymbolTable symtab();
 	
-	void symtab(DsymbolTable symtab);
+	void symtab(IDsymbolTable symtab);
 	
 	Dsymbols members();
 	

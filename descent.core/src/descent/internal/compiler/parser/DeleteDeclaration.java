@@ -8,7 +8,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class DeleteDeclaration extends FuncDeclaration {
+public class DeleteDeclaration extends FuncDeclaration implements IDeleteDeclaration {
 
 	public Arguments arguments;
 	public int deleteStart; // where the "delete" keyword starts

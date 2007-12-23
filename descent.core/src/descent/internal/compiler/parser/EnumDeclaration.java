@@ -343,5 +343,21 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 	public String getSignature() {
 		return type.getSignature();
 	}
+	
+	public Type memtype() {
+		return memtype;
+	}
+
+	public integer_t defaultval() {
+		return defaultval;
+	}
+
+	public integer_t maxval() {
+		return maxval;
+	}
+
+	public integer_t minval() {
+		return minval;
+	}
 
 }

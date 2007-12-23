@@ -2652,7 +2652,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TypeEnum node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeEnum: ");
-		this.buffer.append(node.sym.ident);
+		this.buffer.append(node.sym.ident());
 		appendEndCompilerNode();
 		return false;
 	}

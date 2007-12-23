@@ -1243,6 +1243,10 @@ public class Util {
 		return len1 - len2;
 	}
 	
+	public static void log(Throwable e) {
+		log(e, "");
+	}
+	
 	/*
 	 * Add a log entry
 	 */

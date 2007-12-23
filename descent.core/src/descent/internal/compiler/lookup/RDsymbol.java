@@ -1,9 +1,21 @@
-package descent.internal.core.resolved;
+package descent.internal.compiler.lookup;
 
+import descent.core.Flags;
+import descent.core.ICompilationUnit;
+import descent.core.IField;
+import descent.core.IInitializer;
+import descent.core.IJavaElement;
+import descent.core.IMember;
+import descent.core.IMethod;
+import descent.core.IPackageFragment;
+import descent.core.IParent;
+import descent.core.IType;
+import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ClassDeclarations;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncAliasDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.HdrGenState;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IAliasDeclaration;
@@ -36,42 +48,70 @@ import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
+	
+	protected final IJavaElement element;
+	
+	private IDsymbol parent;
+	private IdentifierExp ident;
+	private HashtableOfCharArrayAndObject childrenCache;
+
+	public RDsymbol(IJavaElement element) {
+		this.element = element;
+	}
 
 	public void addLocalClass(ClassDeclarations aclasses, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public int addMember(Scope sc, IScopeDsymbol sd, int memnum, SemanticContext context) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public void checkCtorConstInit(SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void checkDeprecated(Scope sc, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void defineRef(IDsymbol s) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public IModule getModule() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Type getType() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean hasPointers(SemanticContext context) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public IdentifierExp ident() {
-		return null;
+		if (ident == null) {
+			ident = new IdentifierExp(element.getElementName().toCharArray());
+		}
+		return ident;
 	}
 
 	public void inlineScan(SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public IAggregateDeclaration isAggregateDeclaration() {
@@ -87,6 +127,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IClassDeclaration isClassMember() {
+		if (parent != null) {
+			return parent.isClassDeclaration();
+		}
+		
 		return null;
 	}
 
@@ -99,7 +143,13 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public boolean isDeprecated() {
-		return false;
+		try {
+			return (element instanceof IMember) && 
+				(((IMember) element).getFlags() & Flags.AccDeprecated) != 0;
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
 	}
 
 	public IEnumDeclaration isEnumDeclaration() {
@@ -111,6 +161,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public FuncAliasDeclaration isFuncAliasDeclaration() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -119,6 +170,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public FuncLiteralDeclaration isFuncLiteralDeclaration() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -127,6 +179,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public boolean isImportedSymbol() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -135,6 +188,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IAggregateDeclaration isMember() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -163,6 +217,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public ISymbolDeclaration isSymbolDeclaration() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -171,18 +226,22 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public TemplateInstance isTemplateInstance() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public TemplateMixin isTemplateMixin() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public IAggregateDeclaration isThis() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public TupleDeclaration isTupleDeclaration() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -195,90 +254,226 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public boolean isforwardRef() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public String kind() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Loc loc() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String locToChars(SemanticContext context) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String mangle(SemanticContext context) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean needThis() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public IDsymbol parent() {
-		return null;
+		return parent;
 	}
 
 	public void parent(IDsymbol parent) {
+		this.parent = parent;
 	}
 
 	public IDsymbol pastMixin() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public PROT prot() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public IDsymbol search(Loc loc, IdentifierExp ident, int flags, SemanticContext context) {
-		return null;
+		return search(loc, ident.ident, flags, context);
 	}
 
 	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		if (!(element instanceof IParent)) {
+			return null;
+		}
+		
+		if (childrenCache == null) {
+			childrenCache = new HashtableOfCharArrayAndObject();
+		} else {
+			Object result = childrenCache.get(ident);
+			if (result != null) {
+				return (IDsymbol) result;
+			}
+		}
+		
+		String sident = new String(ident);		
+		IParent parent = (IParent) element;
+		try {
+			IJavaElement[] children = parent.getChildren();
+			for(IJavaElement child : children) {
+				String elementName = child.getElementName();
+				if (elementName.equals(sident)) {
+					IDsymbol result = toDsymbol(child);
+					childrenCache.put(ident, result);
+					return result;
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e, "Exception retrieveing children");
+		}
 		return null;
 	}
 
 	public IDsymbol searchX(Loc loc, Scope sc, IdentifierExp id, SemanticContext context) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void semantic(Scope scope, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void semantic2(Scope scope, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void semantic3(Scope scope, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public IDsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public IDsymbol toAlias(SemanticContext context) {
-		return null;
+		return this;
 	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public IDsymbol toParent() {
-		return null;
+		return parent != null ? parent.pastMixin() : null;
 	}
 
 	public IDsymbol toParent2() {
-		return null;
+		IDsymbol s = parent;
+		while (s != null && s.isTemplateInstance() != null) {
+			s = s.parent();
+		}
+		return s;
 	}
 
 	public String toPrettyChars(SemanticContext context) {
-		return null;
+		// TODO semantic
+		return toChars(context);
+	}
+
+	protected IDsymbol toDsymbol(IJavaElement element) throws JavaModelException {
+		IDsymbol symbol = null;
+		
+		switch(element.getElementType()) {
+		case IJavaElement.JAVA_MODEL:
+		case IJavaElement.JAVA_PROJECT:
+		case IJavaElement.PACKAGE_FRAGMENT_ROOT:
+		default:
+			throw new IllegalStateException("Should not happen");
+		case IJavaElement.PACKAGE_FRAGMENT:
+			symbol = new RPackage((IPackageFragment) element);
+			break;
+		case IJavaElement.COMPILATION_UNIT:
+		case IJavaElement.CLASS_FILE:
+			symbol = new RModule((ICompilationUnit) element);
+			break;
+		case IJavaElement.TYPE:
+			IType type = (IType) element;
+			if (type.isClass()) {
+				symbol = new RClassDeclaration(type);
+			} else if (type.isInterface()) {
+				symbol = new RInterfaceDeclaration(type);
+			} else if (type.isStruct()) {
+				symbol = new RStructDeclaration(type);
+			} else if (type.isUnion()) {
+				symbol = new RUnionDeclaration(type);
+			} else if (type.isEnum()) {
+				symbol = new REnumDeclaration(type);
+			} else {
+				throw new IllegalStateException("Should not happen");
+			}
+			break;
+		case IJavaElement.FIELD:
+			IField field = (IField) element;
+			if (field.isVariable()) {
+				symbol = new RVarDeclaration(field);
+			} else if (field.isEnumConstant()) {
+				symbol = new REnumMember(field);
+			} else if (field.isAlias()) {
+				symbol = new RAliasDeclaration(field);
+			} else if (field.isTypedef()) {
+				symbol = new RTypedefDeclaration(field);
+			} else if (field.isTemplateMixin()) {
+				// TODO should never hit this, since it will already be expanded
+				// But check...
+				throw new IllegalStateException("Should not happen");
+			} else {
+				throw new IllegalStateException("Should not happen");
+			}
+			break;
+		case IJavaElement.METHOD:
+			IMethod method = (IMethod) element;
+			if (method.isMethod()) {
+				symbol = new RFuncDeclaration(method);
+			} else if (method.isConstructor()) {
+				symbol = new RCtorDeclaration(method);
+			} else if (method.isDestructor()) {
+				symbol = new RDtorDeclaration(method);
+			} else if (method.isNew()) {
+				symbol = new RNewDeclaration(method);
+			} else if (method.isDelete()) {
+				symbol = new RDeleteDeclaration(method);
+			} else {
+				throw new IllegalStateException("Should not happen");
+			}
+			break;
+		case IJavaElement.INITIALIZER:
+			IInitializer init = (IInitializer) element;
+			return null;
+		}
+		
+		if (symbol != null) {
+			symbol.parent(this);
+		}
+		
+		return symbol;
+	}
+	
+	@Override
+	public String toString() {
+		return element.toString();
 	}
 
 }

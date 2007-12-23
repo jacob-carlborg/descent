@@ -5,9 +5,9 @@ import descent.core.compiler.IProblem;
 // DMD 1.020
 public class Package extends ScopeDsymbol implements IPackage {
 
-	public static DsymbolTable resolve(Identifiers packages, IDsymbol[] pparent,
+	public static IDsymbolTable resolve(Identifiers packages, IDsymbol[] pparent,
 			IPackage[] ppkg, SemanticContext context) {
-		DsymbolTable dst = context.Module_modules;
+		IDsymbolTable dst = context.Module_modules;
 		IDsymbol parent = null;
 
 		if (ppkg != null) {

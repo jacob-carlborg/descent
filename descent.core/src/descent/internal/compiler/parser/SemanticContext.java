@@ -49,7 +49,7 @@ public class SemanticContext {
 	public Type Type_tvoidptr;
 	
 	public Module Module_rootModule;
-	public DsymbolTable Module_modules;
+	public IDsymbolTable Module_modules;
 	public Array Module_amodules;
 	public Dsymbols Module_deferred;
 	public int Module_dprogress;
@@ -63,7 +63,7 @@ public class SemanticContext {
 	
 	public StringTable stringTable;
 
-	public DsymbolTable st;
+	public IDsymbolTable st;
 	public int muteProblems = 0;
 
 	public SemanticContext(
@@ -92,7 +92,7 @@ public class SemanticContext {
 	 * This code is invoked by DMD after parsing a module.
 	 */
 	public void afterParse(Module module) {
-		DsymbolTable dst;
+		IDsymbolTable dst;
 
 		if (module.md != null) {
 			module.ident = module.md.id;

@@ -70,13 +70,13 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	public Declaration overnext; // next in overload list
 	public Scope scope; // !=NULL means context to use
 	public int semanticRun; // !=0 if semantic3() had been run
-	public DsymbolTable localsymtab; // used to prevent symbols in different
+	public IDsymbolTable localsymtab; // used to prevent symbols in different
 	// scopes from having the same name
 	public ForeachStatement fes; // if foreach body, this is the foreach
 	public VarDeclaration vthis; // 'this' parameter (member and nested)
 	public VarDeclaration v_arguments; // '_arguments' parameter
 	public Dsymbols parameters; // Array of VarDeclaration's for parameters
-	public DsymbolTable labtab; // statement label symbol table
+	public IDsymbolTable labtab; // statement label symbol table
 	public VarDeclaration vresult; // variable corresponding to outId
 	public LabelDsymbol returnLabel; // where the return goes
 	public boolean inferRetType;

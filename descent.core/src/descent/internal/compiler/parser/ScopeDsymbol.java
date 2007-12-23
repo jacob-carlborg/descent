@@ -12,7 +12,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 
 	public Dsymbols members, sourceMembers;
-	public DsymbolTable symtab;
+	public IDsymbolTable symtab;
 	public List<IScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import
 	
@@ -205,11 +205,11 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 		return sd;
 	}
 	
-	public DsymbolTable symtab() {
+	public IDsymbolTable symtab() {
 		return symtab;
 	}
 	
-	public void symtab(DsymbolTable symtab) {
+	public void symtab(IDsymbolTable symtab) {
 		this.symtab = symtab;
 	}
 	

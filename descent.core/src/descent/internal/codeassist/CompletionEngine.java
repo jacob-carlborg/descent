@@ -41,7 +41,6 @@ import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.EnumDeclaration;
-import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
@@ -49,6 +48,8 @@ import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.IEnumDeclaration;
+import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -175,7 +176,7 @@ public class CompletionEngine extends Engine
 			this.source = sourceUnit.getContents();	
 			this.fileName = sourceUnit.getFileName();
 			this.actualCompletionPosition = completionPosition; // - 1;
-			this.offset = pos;			
+			this.offset = pos;
 			
 			// Get the sourceUnit's fqn
 			sourceUnitFqn = fileName;
@@ -533,12 +534,12 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		EnumDeclaration enumDeclaration = typeEnum.sym;
+		IEnumDeclaration enumDeclaration = typeEnum.sym;
 		if (enumDeclaration == null) {
 			return;
 		}
 		
-		if (enumDeclaration.members == null) {
+		if (enumDeclaration.members() == null) {
 			return;
 		}
 		
@@ -677,7 +678,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeEnum(TypeEnum type, char[] name) {
-		EnumDeclaration enumDeclaration = type.sym;
+		IEnumDeclaration enumDeclaration = type.sym;
 		if (enumDeclaration == null) {
 			return;
 		}
@@ -792,19 +793,18 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void completeEnumMembers(char[] name, EnumDeclaration enumDeclaration, HashtableOfCharArrayAndObject excludedNames, boolean useQualifiedName) {
+	private void completeEnumMembers(char[] name, IEnumDeclaration enumDeclaration, HashtableOfCharArrayAndObject excludedNames, boolean useQualifiedName) {
 		for(IDsymbol symbol : enumDeclaration.members()) {
-			if (!(symbol instanceof EnumMember)) {
+			IEnumMember member = symbol.isEnumMember();
+			if (member == null) {
 				continue;
 			}
 			
-			EnumMember member = (EnumMember) symbol;
-			
 			char[] proposition;
 			if (useQualifiedName) {
-				proposition = CharOperation.concat(enumDeclaration.ident.ident, member.ident.ident, '.');
+				proposition = CharOperation.concat(enumDeclaration.ident().ident, member.ident().ident, '.');
 			} else {
-				proposition = member.ident.ident;
+				proposition = member.ident().ident;
 			}
 			if (!excludedNames.containsKey(proposition) &&
 					CharOperation.prefixEquals(name, proposition, false)) {

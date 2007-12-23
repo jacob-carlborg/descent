@@ -118,7 +118,7 @@ public class IftypeExp extends Expression {
 			case TOKenum:
 				if (targ.ty != TY.Tenum)
 					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
-				tded = ((TypeEnum) targ).sym.memtype;
+				tded = ((TypeEnum) targ).sym.memtype();
 				break;
 
 			case TOKdelegate:

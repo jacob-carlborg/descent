@@ -20,8 +20,8 @@ import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.env.ISourceType;
 import descent.internal.compiler.env.NameEnvironmentAdapter;
 import descent.internal.compiler.env.NameEnvironmentAnswer;
+import descent.internal.compiler.lookup.RModule;
 import descent.internal.compiler.parser.IModule;
-import descent.internal.core.resolved.RModule;
 import descent.internal.core.search.BasicSearchEngine;
 import descent.internal.core.search.IRestrictedAccessTypeRequestor;
 
