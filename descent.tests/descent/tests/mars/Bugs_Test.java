@@ -304,7 +304,7 @@ public class Bugs_Test extends Parser_Test {
 			"}";
 		
 		Module module = getParseResult(s, AST.D1).module;
-		ASTDmdNode node = module.members.get(1);
+		ASTDmdNode node = (ASTDmdNode) module.members.get(1); // SEMANTIC
 		assertEquals(0, node.preComments.size());
 	}
 	
@@ -320,7 +320,7 @@ public class Bugs_Test extends Parser_Test {
 			"}";
 		
 		Module module = getParseResult(s, AST.D1).module;
-		ASTDmdNode node = module.members.get(1);
+		ASTDmdNode node = (ASTDmdNode) module.members.get(1); // SEMANTIC
 		assertEquals(1, node.preComments.size());
 	}
 	

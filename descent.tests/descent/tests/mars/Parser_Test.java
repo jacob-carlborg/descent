@@ -142,13 +142,13 @@ public abstract class Parser_Test extends TestCase {
 		Global global = new Global();
 		global.params.warnings = true;
 		
-		result.context = CompilationUnitResolver.resolve(result.module, global);
+		//result.context = CompilationUnitResolver.resolve(result.module, global);
 		return result;
 	}
 	
 	protected Module getModuleSemanticNoProblems(String source, int apiLevel) {
 		ParseResult result = getParseResult(source, apiLevel);
-		CompilationUnitResolver.resolve(result.module);
+		//CompilationUnitResolver.resolve(result.module);
 		if (!result.module.problems.isEmpty()) {
 			fail(result.module.problems.toString());
 		}

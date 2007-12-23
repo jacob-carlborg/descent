@@ -4,19 +4,19 @@ import melnorme.miscutil.tree.ITreeVisitor;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 
-public interface IASTVisitor extends ITreeVisitor<ASTNode>{
+public interface IASTVisitor extends ITreeVisitor<INode> {
 
-	void preVisit(ASTNode node);
-	void postVisit(ASTNode node);
+	void preVisit(INode node);
+	void postVisit(INode node);
 	
 	//boolean visit(IASTNode node);
 	//void endVisit(IASTNode node);
 
 	/** Visits the node element. 
 	 * @return true if children element should be visited */
-	boolean visit(ASTNode node);
+	boolean visit(INode node);
 	/** Does a post-visit to the node element. */ 
-	void endVisit(ASTNode node);
+	void endVisit(INode node);
 
 	boolean visit(ASTDmdNode node);
 	

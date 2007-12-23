@@ -6,9 +6,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ScopeExp extends Expression {
 
-	public ScopeDsymbol sds;
+	public IScopeDsymbol sds;
 
-	public ScopeExp(Loc loc, ScopeDsymbol pkg) {
+	public ScopeExp(Loc loc, IScopeDsymbol pkg) {
 		super(loc, TOK.TOKimport);
 		this.sds = pkg;
 	}
@@ -30,14 +30,14 @@ public class ScopeExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		TemplateInstance ti;
-		ScopeDsymbol sds2;
+		IScopeDsymbol sds2;
 
 		boolean loop = true;
 		Lagain: while (loop) {
 			loop = false;
 			ti = sds.isTemplateInstance();
 			if (ti != null && context.global.errors == 0) {
-				Dsymbol s;
+				IDsymbol s;
 				if (0 == ti.semanticdone) {
 					ti.semantic(sc, context);
 				}

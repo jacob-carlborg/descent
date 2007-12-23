@@ -40,9 +40,9 @@ public class DotTemplateInstanceExp extends UnaExp {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		Dsymbol s;
-		Dsymbol s2;
-		TemplateDeclaration td;
+		IDsymbol s;
+		IDsymbol s2;
+		ITemplateDeclaration td;
 		Expression e;
 		char[] id;
 		Type t1;
@@ -63,7 +63,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			eright = e1;
 		}
 		if (eright.op == TOKimport) {
-			s = ((ScopeExp) eright).sds;
+			s = (Dsymbol) ((ScopeExp) eright).sds; // SEMANTIC
 		} else if (e1.op == TOKtype) {
 			s = t1.isClassHandle();
 			if (s == null) {
@@ -102,7 +102,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident.ident) }));
+					IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident().ident) }));
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}
@@ -123,7 +123,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		ti.tempdecl = td;
 
 		if (eleft != null) {
-			Declaration v;
+			IDeclaration v;
 
 			ti.semantic(sc, context);
 			s = ti.inst.toAlias(context);

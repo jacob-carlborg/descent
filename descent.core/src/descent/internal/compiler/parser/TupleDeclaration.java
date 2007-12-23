@@ -47,7 +47,7 @@ public class TupleDeclaration extends Declaration {
 			 * It's only a type tuple if all the Object's are types
 			 */
 			for (int i = 0; i < size(objects); i++) {
-				ASTDmdNode o = objects.get(i);
+				INode o = objects.get(i);
 
 				if (o.dyncast() != DYNCAST.DYNCAST_TYPE) {
 					return null;
@@ -85,12 +85,12 @@ public class TupleDeclaration extends Declaration {
 	@Override
 	public boolean needThis() {
 		for (int i = 0; i < size(objects); i++) {
-			ASTDmdNode o = objects.get(i);
+			INode o = objects.get(i);
 			if (o.dyncast() == DYNCAST.DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;
 				if (e.op == TOK.TOKdsymbol) {
 					DsymbolExp ve = (DsymbolExp) e;
-					Declaration d = ve.s.isDeclaration();
+					IDeclaration d = ve.s.isDeclaration();
 					if (d != null && d.needThis()) {
 						return true;
 					}

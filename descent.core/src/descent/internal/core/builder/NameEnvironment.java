@@ -29,6 +29,7 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.env.INameEnvironment;
+import descent.internal.compiler.env.NameEnvironmentAdapter;
 import descent.internal.compiler.env.NameEnvironmentAnswer;
 import descent.internal.compiler.problem.AbortCompilation;
 import descent.internal.compiler.util.SimpleLookupTable;
@@ -38,7 +39,7 @@ import descent.internal.core.ClasspathEntry;
 import descent.internal.core.JavaModel;
 import descent.internal.core.JavaProject;
 
-public class NameEnvironment implements INameEnvironment, SuffixConstants {
+public class NameEnvironment extends NameEnvironmentAdapter implements INameEnvironment, SuffixConstants {
 
 boolean isIncrementalBuild;
 ClasspathMultiDirectory[] sourceLocations;

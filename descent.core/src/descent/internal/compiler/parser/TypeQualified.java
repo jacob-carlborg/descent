@@ -20,10 +20,10 @@ public abstract class TypeQualified extends Type {
 		idents.add(ident);
 	}
 
-	public void resolveHelper(Loc loc, Scope sc, Dsymbol s,
-			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
-		VarDeclaration v;
-		EnumMember em;
+	public void resolveHelper(Loc loc, Scope sc, IDsymbol s,
+			IDsymbol scopesym, Expression[] pe, Type[] pt, IDsymbol[] ps, SemanticContext context) {
+		IVarDeclaration v;
+		IEnumMember em;
 		// TupleDeclaration td;
 		Type t = null;
 		Expression e = null;
@@ -36,11 +36,11 @@ public abstract class TypeQualified extends Type {
 
 			if (idents != null) {
 				for (IdentifierExp id : idents) {
-					Dsymbol sm;
+					IDsymbol sm;
 
 					if (id.dyncast() != DYNCAST.DYNCAST_IDENTIFIER) {
 						// It's a template instance
-						TemplateDeclaration td;
+						ITemplateDeclaration td;
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 						id = ti.name;
 						sm = s.search(loc, id, 0, context);
@@ -71,7 +71,7 @@ public abstract class TypeQualified extends Type {
 								&& equals(id, Id.length)) {
 							if (v.isConst()
 									&& v.getExpInitializer(context) != null) {
-								e = v.getExpInitializer(context).exp;
+								e = v.getExpInitializer(context).exp();
 							} else {
 								e = new VarExp(loc, v);
 							}
@@ -86,7 +86,7 @@ public abstract class TypeQualified extends Type {
 						}
 						t = s.getType();
 						if (t == null && s.isDeclaration() != null) {
-							t = s.isDeclaration().type;
+							t = s.isDeclaration().type();
 						}
 						if (t != null) {
 							sm = t.toDsymbol(sc, context);
@@ -118,9 +118,9 @@ public abstract class TypeQualified extends Type {
 			if (v != null) {
 				// It's not a type, it's an expression
 				if (v.isConst() && v.getExpInitializer(context) != null) {
-					ExpInitializer ei = v.getExpInitializer(context);
+					IExpInitializer ei = v.getExpInitializer(context);
 					Assert.isNotNull(ei);
-					pe[0] = ei.exp.copy(); // make copy so we can change loc
+					pe[0] = ei.exp().copy(); // make copy so we can change loc
 				} else {
 					pe[0] = new VarExp(loc, v);
 				}
@@ -129,7 +129,7 @@ public abstract class TypeQualified extends Type {
 			em = s.isEnumMember();
 			if (em != null) {
 				// It's not a type, it's an expression
-				pe[0] = em.value.copy();
+				pe[0] = em.value().copy();
 				return;
 			}
 
@@ -144,17 +144,17 @@ public abstract class TypeQualified extends Type {
 		}
 	}
 
-	public void resolveHelper_L1_plus_end(Scope sc, Dsymbol s,
-			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps,
+	public void resolveHelper_L1_plus_end(Scope sc, IDsymbol s,
+			IDsymbol scopesym, Expression[] pe, Type[] pt, IDsymbol[] ps,
 			Expression e, Type t, SemanticContext context) {
 		t = s.getType();
 		if (t == null) {
 			// If the symbol is an import, try looking inside the import
-			Import si;
+			IImport si;
 
 			si = s.isImport();
 			if (si != null) {
-				s = si.search(loc, s.ident, 0, context);
+				s = si.search(loc, s.ident(), 0, context);
 				if (s != null && s != si) {
 					// goto L1
 					resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e,

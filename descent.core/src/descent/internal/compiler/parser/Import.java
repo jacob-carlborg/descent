@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
 // DMD 1.020
-public class Import extends Dsymbol {
+public class Import extends Dsymbol implements IImport {
 
 	public boolean first = true; // Is this the first import in a multi?
 	public Import next;
@@ -17,8 +17,8 @@ public class Import extends Dsymbol {
 
 	public Identifiers names;
 	public Identifiers aliases;
-	public Module mod;
-	public Package pkg;
+	public IModule mod;
+	public IPackage pkg;
 	public boolean isstatic;
 
 	public int firstStart;
@@ -65,7 +65,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		int result = 0;
 
@@ -115,17 +115,17 @@ public class Import extends Dsymbol {
 
 	public void load(Scope sc, SemanticContext context) {
 		DsymbolTable dst;
-		Dsymbol s;
+		IDsymbol s;
 
 		// See if existing module
-		Package[] ppkg = { pkg };
+		IPackage[] ppkg = { pkg };
 		dst = Package.resolve(packages, null, ppkg, context);
 		pkg = ppkg[0];
 
 		s = dst.lookup(id);
 		if (null != s) {
 			if (null != s.isModule()) {
-				mod = (Module) s;
+				mod = (IModule) s;
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.PackageAndModuleHaveTheSameName, this));
@@ -135,12 +135,19 @@ public class Import extends Dsymbol {
 		if (null == mod) {
 			// Load module
 			mod = Module.load(loc, packages, id, context);
+			
+			// Changed from DMD, since now a module that doesn't load
+			// yields a null value
+			if (mod == null) {
+				return;
+			}
+			
 			dst.insert(id, mod); // id may be different from mod->ident,
 			// if so then insert alias
 
-			if (null == mod.importedFrom) {
-				mod.importedFrom = null != sc ? sc.module.importedFrom
-						: context.Module_rootModule;
+			if (null == mod.importedFrom()) {
+				mod.importedFrom(null != sc ? sc.module.importedFrom
+						: context.Module_rootModule);
 			}
 		}
 
@@ -160,7 +167,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public IDsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
 		if (null == pkg) {
 			load(null, context);
@@ -192,7 +199,7 @@ public class Import extends Dsymbol {
 			}
 			sc.module.aimports.add(mod);
 
-			if (mod.needmoduleinfo) {
+			if (mod.needmoduleinfo()) {
 				sc.module.needmoduleinfo = true;
 			}
 
@@ -214,7 +221,7 @@ public class Import extends Dsymbol {
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		mod.semantic2(sc, context);
-		if (mod.needmoduleinfo) {
+		if (mod.needmoduleinfo()) {
 			sc.module.needmoduleinfo = true;
 		}
 	}
@@ -233,15 +240,8 @@ public class Import extends Dsymbol {
 		return si;
 	}
 
-	public Dsymbol toAlias() {
-		if (null != aliasId) {
-			return mod;
-		}
-		return this;
-	}
-
 	@Override
-	public Dsymbol toAlias(SemanticContext context) {
+	public IDsymbol toAlias(SemanticContext context) {
 		if (aliasId != null) {
 			return mod;
 		}
@@ -274,6 +274,14 @@ public class Import extends Dsymbol {
 	
 	public char[] getFQN() {
 		return getFQN(packages, id);
+	}
+	
+	public IModule mod() {
+		return mod;
+	}
+	
+	public IPackage pkg() {
+		return pkg;
 	}
 
 }

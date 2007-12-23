@@ -53,7 +53,7 @@ public class CastExp extends UnaExp {
 		if (tb.ty == Tarray && e1.op == TOKvar
 				&& e1.type.toBasetype(context).ty == Tsarray) {
 			VarExp ve = (VarExp) e1;
-			VarDeclaration v = ve.var.isVarDeclaration();
+			IVarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null) {
 				if (!v.isDataseg(context) && !v.isParameter()) {
 					context.acceptProblem(Problem.newSemanticTypeError(

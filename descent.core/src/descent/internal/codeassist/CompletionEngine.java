@@ -40,7 +40,6 @@ import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
-import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ErrorExp;
@@ -49,6 +48,8 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
@@ -74,8 +75,10 @@ import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
+import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
+import descent.internal.core.JavaProject;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 
@@ -269,7 +272,7 @@ public class CompletionEngine extends Engine
 		return context;
 	}
 
-	private void doSemantic(Module module) {
+	private void doSemantic(Module module) throws JavaModelException {
 		Global global = new Global();
 		
 		IPackageFragmentRoot[] roots;
@@ -285,7 +288,12 @@ public class CompletionEngine extends Engine
 		} catch (JavaModelException e) {
 		}
 		
-		SemanticContext context = new SemanticContext(null, module, global);
+		SemanticContext context = new SemanticContext(
+				null, 
+				module, 
+				this.javaProject,
+				new CancelableNameEnvironment((JavaProject) this.javaProject, null, null),
+				global);
 		module.semantic(context);
 	}
 
@@ -479,7 +487,7 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void completeCaseStatement(CompletionOnCaseStatement node) {
+	private void completeCaseStatement(CompletionOnCaseStatement node) throws JavaModelException {
 		doSemantic(module);
 		
 		// Check to see if the condition is an enum, and suggest
@@ -563,7 +571,7 @@ public class CompletionEngine extends Engine
 		completeEnumMembers(name, enumDeclaration, excludedNames, true /* use fqn */);
 	}
 	
-	private void completeTypeDotIdExp(CompletionOnTypeDotIdExp node) {
+	private void completeTypeDotIdExp(CompletionOnTypeDotIdExp node) throws JavaModelException {
 		Type type = node.type;
 		if (type == null) {
 			return;
@@ -584,7 +592,7 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void completeDotIdExp(CompletionOnDotIdExp node) {
+	private void completeDotIdExp(CompletionOnDotIdExp node) throws JavaModelException {
 		if (node.e1 == null) {
 			return;
 		}
@@ -640,7 +648,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Suggest fields
-		suggestFields(decl.fields, name);
+		suggestFields(decl.fields(), name);
 		
 		// Then virtual functions
 		suggestFunctions(decl.vtbl, name);
@@ -681,16 +689,16 @@ public class CompletionEngine extends Engine
 		suggestProperties(name, allTypesProperties);
 	}
 	
-	private void suggestFields(List<VarDeclaration> list, char[] name) {
+	private void suggestFields(List<IVarDeclaration> list, char[] name) {
 		if (list == null) {
 			return;
 		}
 		
-		for(VarDeclaration var : list) {
-			if (CharOperation.prefixEquals(name, var.ident.ident, false)) {
+		for(IVarDeclaration var : list) {
+			if (CharOperation.prefixEquals(name, var.ident().ident, false)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
-				proposal.setName(var.ident.ident);
-				proposal.setCompletion(var.ident.ident);
+				proposal.setName(var.ident().ident);
+				proposal.setCompletion(var.ident().ident);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
@@ -785,7 +793,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeEnumMembers(char[] name, EnumDeclaration enumDeclaration, HashtableOfCharArrayAndObject excludedNames, boolean useQualifiedName) {
-		for(Dsymbol symbol : enumDeclaration.members) {
+		for(IDsymbol symbol : enumDeclaration.members()) {
 			if (!(symbol instanceof EnumMember)) {
 				continue;
 			}

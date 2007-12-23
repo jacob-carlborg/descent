@@ -63,7 +63,7 @@ public class ThisExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		FuncDeclaration fd;
+		IFuncDeclaration fd;
 		@SuppressWarnings("unused")
 		FuncDeclaration fdthis;
 		@SuppressWarnings("unused")
@@ -79,9 +79,9 @@ public class ThisExp extends Expression {
 		 */
 		if (sc.intypeof != 0) {
 			// Find enclosing struct or class
-			for (Dsymbol s = sc.parent; true; s = s.parent) {
-				ClassDeclaration cd;
-				StructDeclaration sd;
+			for (IDsymbol s = sc.parent; true; s = s.parent()) {
+				IClassDeclaration cd;
+				IStructDeclaration sd;
 
 				if (s == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -91,12 +91,12 @@ public class ThisExp extends Expression {
 				}
 				cd = s.isClassDeclaration();
 				if (cd != null) {
-					type = cd.type;
+					type = cd.type();
 					return this;
 				}
 				sd = s.isStructDeclaration();
 				if (sd != null) {
-					type = sd.type.pointerTo(context);
+					type = sd.type().pointerTo(context);
 					return this;
 				}
 			}
@@ -110,8 +110,8 @@ public class ThisExp extends Expression {
 			return semantic_Lerr(sc, context);
 		}
 
-		Assert.isNotNull(fd.vthis);
-		var = fd.vthis;
+		Assert.isNotNull(fd.vthis());
+		var = fd.vthis();
 		Assert.isNotNull(var.parent);
 		type = var.type;
 		var.isVarDeclaration().checkNestedReference(sc, loc, context);

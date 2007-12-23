@@ -9,11 +9,11 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ScopeDsymbol extends Dsymbol {
+public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 
 	public Dsymbols members, sourceMembers;
 	public DsymbolTable symtab;
-	public List<ScopeDsymbol> imports; // imported ScopeDsymbol's
+	public List<IScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import
 	
 	public ScopeDsymbol() {
@@ -42,12 +42,12 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 
 	@Override
-	public void defineRef(Dsymbol s) {
-		ScopeDsymbol ss;
+	public void defineRef(IDsymbol s) {
+		IScopeDsymbol ss;
 
 		ss = s.isScopeDsymbol();
-		members = ss.members;
-		ss.members = null;
+		members = ss.members();
+		ss.members(null);
 	}
 
 	@Override
@@ -55,13 +55,13 @@ public class ScopeDsymbol extends Dsymbol {
 		return SCOPE_DSYMBOL;
 	}
 
-	public void importScope(ScopeDsymbol s, PROT protection) {
+	public void importScope(IScopeDsymbol s, PROT protection) {
 		if (s != this) {
 			if (imports == null) {
-				imports = new ArrayList<ScopeDsymbol>();
+				imports = new ArrayList<IScopeDsymbol>();
 			} else {
 				for (int i = 0; i < imports.size(); i++) {
-					ScopeDsymbol ss;
+					IScopeDsymbol ss;
 
 					ss = imports.get(i);
 					if (ss == s) {
@@ -99,7 +99,7 @@ public class ScopeDsymbol extends Dsymbol {
 		return "ScopeDsymbol";
 	}
 	
-	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
+	public static void multiplyDefined(Loc loc, IDsymbol s1, IDsymbol s2, SemanticContext context) {
 		if (loc != null && loc.filename != null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
@@ -113,8 +113,8 @@ public class ScopeDsymbol extends Dsymbol {
 		}		
 	}
 
-	public Dsymbol nameCollision(Dsymbol s, SemanticContext context) {
-		Dsymbol sprev;
+	public IDsymbol nameCollision(Dsymbol s, SemanticContext context) {
+		IDsymbol sprev;
 
 		// Look to see if we are defining a forward referenced symbol
 
@@ -137,8 +137,8 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		Dsymbol s;
+	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		IDsymbol s;
 		int i;
 
 		// Look in symbols declared in this module
@@ -148,9 +148,9 @@ public class ScopeDsymbol extends Dsymbol {
 			// Look in imported modules
 
 			i = -1;
-			for (ScopeDsymbol ss : imports) {
+			for (IScopeDsymbol ss : imports) {
 				i++;
-				Dsymbol s2;
+				IDsymbol s2;
 
 				// If private import, don't search it
 				if ((flags & 1) != 0 && prots.get(i) == PROT.PROTprivate) {
@@ -170,12 +170,11 @@ public class ScopeDsymbol extends Dsymbol {
 						 * Two imports of the same module should be regarded as
 						 * the same.
 						 */
-						Import i1 = s.isImport();
-						Import i2 = s2.isImport();
-						if (!(i1 != null && i2 != null && (i1.mod == i2.mod || (i1.parent
+						IImport i1 = s.isImport();
+						IImport i2 = s2.isImport();
+						if (!(i1 != null && i2 != null && (i1.mod() == i2.mod() || (i1.parent()
 								.isImport() == null
-								&& i2.parent.isImport() == null && i1.ident
-								.equals(i2.ident))))) {
+								&& i2.parent().isImport() == null && equals(i1.ident(), i2.ident()))))) {
 							multiplyDefined(loc, s, s2, context);
 							break;
 						}
@@ -183,11 +182,11 @@ public class ScopeDsymbol extends Dsymbol {
 				}
 			}
 			if (s != null) {
-				Declaration d = s.isDeclaration();
-				if (d != null && d.protection == PROT.PROTprivate
-						&& d.parent.isTemplateMixin() == null) {
+				IDeclaration d = s.isDeclaration();
+				if (d != null && d.protection() == PROT.PROTprivate
+						&& d.parent().isTemplateMixin() == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.MemberIsPrivate, this, new String[] { new String(d.ident.ident) }));
+							IProblem.MemberIsPrivate, this, new String[] { new String(d.ident().ident) }));
 				}
 			}
 		}
@@ -204,6 +203,22 @@ public class ScopeDsymbol extends Dsymbol {
 		}
 		sd.members = arraySyntaxCopy(members, context);
 		return sd;
+	}
+	
+	public DsymbolTable symtab() {
+		return symtab;
+	}
+	
+	public void symtab(DsymbolTable symtab) {
+		this.symtab = symtab;
+	}
+	
+	public Dsymbols members() {
+		return members;
+	}
+	
+	public void members(Dsymbols members) {
+		this.members = members;
 	}
 
 }

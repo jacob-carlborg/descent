@@ -81,7 +81,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 			TemplateParameters parameters, Objects dedtypes,
 			Declaration[] psparam, SemanticContext context) {
 		Type t;
-		ASTDmdNode oarg;
+		INode oarg;
 		MATCH m = MATCHexact;
 		Type ta;
 

@@ -23,7 +23,7 @@ public class TupleExp extends Expression {
 		type = null;
 
 		for (int i = 0; i < tup.objects.size(); i++) {
-			ASTDmdNode o = tup.objects.get(i);
+			INode o = tup.objects.get(i);
 			if (o.dyncast() == DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;
 				e = e.syntaxCopy(context);
@@ -37,7 +37,7 @@ public class TupleExp extends Expression {
 				Expression e = new TypeExp(loc, t);
 				exps.add(e);
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.start, o.length, new String[] { o.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
 			}
 		}
 	}

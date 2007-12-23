@@ -12,7 +12,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 
 	public Type specAliasT;
 	public Type defaultAlias;
-	public Dsymbol specAlias;
+	public IDsymbol specAlias;
 
 	public TemplateAliasParameter(Loc loc, IdentifierExp ident,
 			Type specAliasT, Type defaultAlias) {
@@ -43,8 +43,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Scope sc, SemanticContext context) {
-		Dsymbol s = null;
+	public INode defaultArg(Scope sc, SemanticContext context) {
+		IDsymbol s = null;
 
 		if (defaultAlias != null) {
 			s = defaultAlias.toDsymbol(sc, context);
@@ -57,8 +57,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode dummyArg(SemanticContext context) {
-		Dsymbol s;
+	public INode dummyArg(SemanticContext context) {
+		IDsymbol s;
 
 		s = specAlias;
 		if (null == s) {
@@ -84,8 +84,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public MATCH matchArg(Scope sc, Objects tiargs, int i,
 			TemplateParameters parameters, Objects dedtypes,
 			Declaration[] psparam, SemanticContext context) {
-		Dsymbol sa;
-		ASTDmdNode oarg;
+		IDsymbol sa;
+		INode oarg;
 
 		if (i < size(tiargs)) {
 			oarg = tiargs.get(i);

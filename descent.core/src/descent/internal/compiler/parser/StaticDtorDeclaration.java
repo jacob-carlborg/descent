@@ -62,12 +62,12 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 		super.semantic(sc, context);
 
 		// We're going to need ModuleInfo
-		Module m = getModule();
+		IModule m = getModule();
 		if (m == null) {
 			m = sc.module;
 		}
 		if (m != null) {
-			m.needmoduleinfo = true;
+			m.needmoduleinfo(true);
 		}
 	}
 

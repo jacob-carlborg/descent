@@ -19,7 +19,7 @@ import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
-public class TemplateDeclaration extends ScopeDsymbol {
+public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclaration {
 
 	public static TemplateTupleParameter isVariadic(
 			TemplateParameters parameters) {
@@ -40,7 +40,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	// TemplateDeclaration
 	public TemplateDeclaration overroot; // first in overnext list
 
-	List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
+	public List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
 
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
@@ -61,11 +61,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		visitor.endVisit(this);
 	}
 
-	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o,
+	public void declareParameter(Scope sc, TemplateParameter tp, INode o,
 			SemanticContext context) {
 		Type targ = isType(o);
 		Expression ea = isExpression(o);
-		Dsymbol sa = isDsymbol(o);
+		IDsymbol sa = isDsymbol(o);
 		Tuple va = isTuple(o);
 
 		Dsymbol s;
@@ -99,15 +99,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		s.semantic(sc, context);
 	}
 
-	public FuncDeclaration deduce(Scope sc, Loc loc, Objects targsi,
-			Expressions fargs, SemanticContext context) {
+	public IFuncDeclaration deduce(Scope sc, Loc loc, Objects targsi, Expressions fargs, SemanticContext context) {
 
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
 		TemplateDeclaration td_best = null;
 		Objects tdargs = new Objects();
 		TemplateInstance ti;
-		FuncDeclaration fd;
+		IFuncDeclaration fd;
 
 		for (TemplateDeclaration td = this; null != td; td = td.overnext) {
 			if (null == td.scope) {
@@ -213,7 +212,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		int nfargs;
 		int nargsi;
 		MATCH match = MATCHexact;
-		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
+		IFuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
 		TypeFunction fdtype;
 		TemplateTupleParameter tp;
 		Objects dedtypes = new Objects(); // for T:T*, the dedargs is the T*,
@@ -262,8 +261,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			}
 		}
 
-		assert (fd.type.ty == Tfunction);
-		fdtype = (TypeFunction) fd.type;
+		assert (fd.type().ty == Tfunction);
+		fdtype = (TypeFunction) fd.type();
 
 		nfparams = Argument.dim(fdtype.parameters, context); // number of
 		// function
@@ -433,7 +432,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		for (int i = nargsi; i < dedargs.size(); i++) {
 			TemplateParameter tp = (TemplateParameter) parameters.get(i);
 			ASTDmdNode oarg = (ASTDmdNode) dedargs.get(i);
-			ASTDmdNode o = (ASTDmdNode) dedtypes.get(i);
+			INode o = (INode) dedtypes.get(i);
 			// printf("1dedargs[%d] = %p, dedtypes[%d] = %p\n", i, oarg, i, o);
 			if (null == oarg) {
 				if (null != o) {
@@ -493,8 +492,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				: "template";
 	}
 
-	public int leastAsSpecialized(TemplateDeclaration td2,
-			SemanticContext context) {
+	public int leastAsSpecialized(ITemplateDeclaration td2, SemanticContext context) {
 		/*
 		 * This works by taking the template parameters to this template
 		 * declaration and feeding them to td2 as if it were a template
@@ -518,7 +516,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		for (int i = 0; i < size(ti.tiargs); i++) {
 			TemplateParameter tp = parameters.get(i);
 
-			ASTDmdNode p = tp.dummyArg(context);
+			INode p = tp.dummyArg(context);
 			if (p != null) {
 				ti.tiargs.set(i, p);
 			} else {
@@ -527,7 +525,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		// Temporary Array to hold deduced types
-		dedtypes.setDim(size(td2.parameters));
+		dedtypes.setDim(size(td2.parameters()));
 
 		// Attempt a type deduction
 		if (td2.matchWithInstance(ti, dedtypes, 1, context) != MATCHnomatch) {
@@ -767,7 +765,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			buf.writebyte('{');
 			buf.writenl();
 			for (int i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
+				IDsymbol s = members.get(i);
 				s.toCBuffer(buf, hgs, context);
 			}
 			buf.writebyte('}');
@@ -802,6 +800,30 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		sb.append(ident.length);
 		sb.append(ident);
 		return sb.toString();
+	}
+	
+	public ITemplateDeclaration overroot() {
+		return overroot;
+	}
+	
+	public IDsymbol onemember() {
+		return onemember;
+	}
+	
+	public ITemplateDeclaration overnext() {
+		return overnext;
+	}
+	
+	public TemplateParameters parameters() {
+		return parameters;
+	}
+	
+	public Scope scope() {
+		return scope;
+	}
+	
+	public List<TemplateInstance> instances() {
+		return instances;
 	}
 
 }

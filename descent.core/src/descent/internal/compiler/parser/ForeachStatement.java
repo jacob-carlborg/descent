@@ -480,7 +480,7 @@ public class ForeachStatement extends Statement {
 
 	private void semantic_Lapply(Scope sc, SemanticContext context, int dim,
 			Statement[] s, Type tab, TypeAArray taa, Type tn, Type tnv, int i) {
-		FuncDeclaration fdapply;
+		IFuncDeclaration fdapply;
 		Arguments args;
 		Expression ec;
 		Expression e;

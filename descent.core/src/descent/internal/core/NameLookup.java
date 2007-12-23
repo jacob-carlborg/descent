@@ -359,22 +359,20 @@ public class NameLookup implements SuffixConstants {
 	}
 	
 	private ICompilationUnit findCompilationUnit(String[] pkgName, String cuName, PackageFragmentRoot root) {
-		if (!root.isArchive()) {
-			IPackageFragment pkg = root.getPackageFragment(pkgName);
-			try {
-				ICompilationUnit[] cus = pkg.getCompilationUnits();
-				for (int j = 0, length = cus.length; j < length; j++) {
-					ICompilationUnit cu = cus[j];
-					if (Util.equalsIgnoreJavaLikeExtension(cu.getElementName(), cuName))
-						return cu;
-				}
-			} catch (JavaModelException e) {
-				// pkg does not exist
-				// -> try next package
+		IPackageFragment pkg = root.getPackageFragment(pkgName);
+		try {
+			ICompilationUnit[] cus = root.isArchive() ? pkg.getClassFiles() : pkg.getCompilationUnits();
+			for (int j = 0, length = cus.length; j < length; j++) {
+				ICompilationUnit cu = cus[j];
+				if (Util.equalsIgnoreJavaLikeExtension(cu.getElementName(), cuName))
+					return cu;
 			}
+		} catch (JavaModelException e) {
+			// pkg does not exist
+			// -> try next package
 		}
 		return null;
-}
+	}
 	
 	/**
 	 * Returns the package fragment whose path matches the given

@@ -68,7 +68,7 @@ public class PtrExp extends UnaExp {
 		else if(e1.op == TOKsymoff)
 		{
 			SymOffExp soe = (SymOffExp) e1;
-			VarDeclaration v = soe.var.isVarDeclaration();
+			IVarDeclaration v = soe.var.isVarDeclaration();
 			if(null != v)
 			{
 				Expression ev = getVarExp(loc, istate, v, context);

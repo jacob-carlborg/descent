@@ -7,6 +7,7 @@ Bundle-Activator: descent.internal.unittest.DescentUnittestPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.ide,
  descent.core,
  descent.ui,

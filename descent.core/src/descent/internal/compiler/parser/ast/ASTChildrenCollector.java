@@ -3,6 +3,8 @@ package descent.internal.compiler.parser.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.internal.compiler.parser.INode;
+
 
 
 /**
@@ -11,20 +13,20 @@ import java.util.List;
 public class ASTChildrenCollector extends ASTHomoVisitor {
 	
 	private boolean visitingParent = true;
-	private List<ASTNode> childrenLst;
+	private List<INode> childrenLst;
 	
-	public static List<ASTNode> getChildrenList(ASTNode elem){
+	public static List<INode> getChildrenList(ASTNode elem){
 		ASTChildrenCollector collector = new ASTChildrenCollector();
-		collector.childrenLst = new ArrayList<ASTNode>();
+		collector.childrenLst = new ArrayList<INode>();
 		collector.traverse(elem);
 		return collector.childrenLst;
 	}
 	
-	public static ASTNode[] getChildrenArray(ASTNode elem){
+	public static INode[] getChildrenArray(ASTNode elem){
 		return getChildrenList(elem).toArray(ASTNode.NO_ELEMENTS);
 	}	
 	
-	public boolean enterNode(ASTNode elem) {
+	public boolean enterNode(INode elem) {
 		if(visitingParent == true) {
 			visitingParent = false;
 			return true; // visit children
@@ -35,7 +37,7 @@ public class ASTChildrenCollector extends ASTHomoVisitor {
 		return false;
 	}
 
-	protected void leaveNode(ASTNode elem) {
+	protected void leaveNode(INode elem) {
 		// Do nothing
 	}
 }

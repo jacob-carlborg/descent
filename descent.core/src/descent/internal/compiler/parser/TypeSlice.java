@@ -35,7 +35,7 @@ public class TypeSlice extends Type {
 
 	@Override
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
-			Dsymbol[] ps, SemanticContext context)
+			IDsymbol[] ps, SemanticContext context)
 	{
 		next.resolve(loc, sc, pe, pt, ps, context);
 		if(null != pe[0])
@@ -47,7 +47,7 @@ public class TypeSlice extends Type {
 		}
 		else if(null != ps[0])
 		{
-			Dsymbol s = ps[0];
+			IDsymbol s = ps[0];
 			TupleDeclaration td = s.isTupleDeclaration();
 			if(null != td)
 			{

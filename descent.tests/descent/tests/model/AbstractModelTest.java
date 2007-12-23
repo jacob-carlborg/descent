@@ -18,11 +18,13 @@ import descent.core.JavaCore;
 
 public abstract class AbstractModelTest extends TestCase {
 	
-	private IProject project;
+	protected IProject project;
+	protected IJavaProject javaProject;
 	
 	@Override
 	protected void setUp() throws Exception {
 		project = createProject("D");
+		javaProject = JavaCore.create(project);
 	}
 	
 	@Override
@@ -56,9 +58,6 @@ public abstract class AbstractModelTest extends TestCase {
 	}
 	
 	protected ICompilationUnit createCompilationUnit(String packageName, String filename, String contents) throws Exception {
-		IJavaProject javaProject = JavaCore.create(project);
-		assertNotNull(javaProject);
-		
 		//assertFalse(javaProject.isOpen());
 		
 		javaProject.open(null);

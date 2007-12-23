@@ -22,7 +22,6 @@ import descent.core.IJavaElement;
 import descent.core.IJavaModelStatus;
 import descent.core.IJavaModelStatusConstants;
 import descent.core.IJavaProject;
-import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -30,12 +29,9 @@ import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
 import descent.core.compiler.ReconcileContext;
 import descent.core.dom.AST;
-import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
-import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
-import descent.internal.compiler.parser.Parser;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
 
@@ -168,7 +164,9 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 			    try {
 			    	
 			    	// find problems
-			    	CompilationUnitResolver.resolve(module, workingCopy);
+			    	CompilationUnitResolver.resolve(module, 
+			    			workingCopy.getJavaProject(),
+			    			this.workingCopyOwner);
 			    	
 			    	/* TODO JDT problems
 					char[] contents = workingCopy.getContents();

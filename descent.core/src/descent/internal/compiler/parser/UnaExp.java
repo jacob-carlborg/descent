@@ -54,7 +54,7 @@ public abstract class UnaExp extends Expression {
 
 	public Expression op_overload(Scope sc, SemanticContext context) {
 		AggregateDeclaration ad = null;
-		Dsymbol fd;
+		IDsymbol fd;
 		Type t1 = e1.type.toBasetype(context);
 
 		if (t1.ty == Tclass) {
@@ -71,13 +71,13 @@ public abstract class UnaExp extends Expression {
 				Expression e;
 				ArrayExp ae = (ArrayExp) this;
 
-				e = new DotIdExp(loc, e1, fd.ident);
+				e = new DotIdExp(loc, e1, fd.ident());
 				e = new CallExp(loc, e, ae.arguments);
 				e = e.semantic(sc, context);
 				return e;
 			} else {
 				// Rewrite +e1 as e1.add()
-				return build_overload(loc, sc, e1, null, fd.ident, context);
+				return build_overload(loc, sc, e1, null, fd.ident(), context);
 			}
 		}
 		return null;

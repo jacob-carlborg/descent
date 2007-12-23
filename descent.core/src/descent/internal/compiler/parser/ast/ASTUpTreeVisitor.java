@@ -12,11 +12,11 @@ import descent.internal.compiler.parser.Package;
 public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 
 	
-	public void preVisit(ASTNode elem) {
+	public void preVisit(INode elem) {
 		// Default implementation: do nothing
 	}
 
-	public void postVisit(ASTNode elem) {
+	public void postVisit(INode elem) {
 		// Default implementation: do nothing
 	}
 	
@@ -35,12 +35,12 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 
 	
 
-	public boolean visit(ASTNode node) {
+	public boolean visit(INode node) {
 		//return true;
 		return visit((IASTNode) node);
 	}
 	
-	public void endVisit(ASTNode node) {
+	public void endVisit(INode node) {
 		// Default implementation: do nothing
 		//Assert.isTrue(ASTNode.class.getSuperclass().equals(ASTRangeLessNode.class));
 		//endVisit((ASTRangeLessNode) node);
@@ -49,7 +49,7 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	
 	public boolean visit(ASTDmdNode elem) {
 		Assert.isTrue(ASTDmdNode.class.getSuperclass().equals(ASTNode.class));
-		return visit((ASTNode) elem);
+		return visit((INode) elem);
 	}
 	
 	public boolean visit(ASTRangeLessNode elem) {
@@ -983,7 +983,7 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 
 	public void endVisit(ASTDmdNode elem) {
 		Assert.isTrue(ASTDmdNode.class.getSuperclass().equals(ASTNode.class));
-		endVisit((ASTNode) elem);
+		endVisit((INode) elem);
 	}
 	
 	public void endVisit(ASTRangeLessNode elem) {

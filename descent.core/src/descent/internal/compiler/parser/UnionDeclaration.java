@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class UnionDeclaration extends StructDeclaration {
+public class UnionDeclaration extends StructDeclaration implements IUnionDeclaration {
 
 	public UnionDeclaration(Loc loc, IdentifierExp id) {
 		super(loc, id);

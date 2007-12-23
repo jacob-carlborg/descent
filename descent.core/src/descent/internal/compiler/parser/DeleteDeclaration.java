@@ -72,10 +72,10 @@ public class DeleteDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		ClassDeclaration cd;
+		IClassDeclaration cd;
 
 		parent = sc.parent;
-		Dsymbol parent = toParent();
+		IDsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(

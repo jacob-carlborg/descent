@@ -31,7 +31,7 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TY.Taarray;
 
 // DMD 1.020
-public class VarDeclaration extends Declaration {
+public class VarDeclaration extends Declaration implements IVarDeclaration {
 
 	public boolean first = true; // is this the first declaration in a multi
 	public VarDeclaration next;
@@ -127,14 +127,14 @@ public class VarDeclaration extends Declaration {
 
 	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
 		if (!isDataseg(context) && parent != sc.parent && parent != null) {
-			FuncDeclaration fdv = toParent().isFuncDeclaration();
+			IFuncDeclaration fdv = toParent().isFuncDeclaration();
 			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
 
 			if (fdv != null && fdthis != null) {
 				if (loc != null && loc.filename != null)
 					fdthis.getLevel(loc, fdv, context);
 				nestedref = 1;
-				fdv.nestedFrameRef = true;
+				fdv.nestedFrameRef(true);
 			}
 		}
 	}
@@ -167,7 +167,7 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public boolean isDataseg(SemanticContext context) {
-		Dsymbol parent = this.toParent();
+		IDsymbol parent = this.toParent();
 		if (parent == null && (storage_class & (STCstatic | STCconst)) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CannotResolveForwardReference, this));
@@ -249,8 +249,8 @@ public class VarDeclaration extends Declaration {
 		this.parent = sc.parent;
 		protection = sc.protection;
 
-		Dsymbol parent = toParent();
-		FuncDeclaration fd = parent.isFuncDeclaration();
+		IDsymbol parent = toParent();
+		IFuncDeclaration fd = parent.isFuncDeclaration();
 
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STClazy) == 0) {
@@ -298,8 +298,8 @@ public class VarDeclaration extends Declaration {
 				v.semantic(sc, context);
 
 				if (sc.scopesym != null) {
-					if (sc.scopesym.members != null) {
-						sc.scopesym.members.add(v);
+					if (sc.scopesym.members() != null) {
+						sc.scopesym.members().add(v);
 					}
 				}
 
@@ -332,7 +332,7 @@ public class VarDeclaration extends Declaration {
 					IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "abstract" }));
 		} else if ((storage_class & STCtemplateparameter) != 0) {
 		} else {
-			AggregateDeclaration aad = sc.anonAgg;
+			IAggregateDeclaration aad = sc.anonAgg;
 			if (aad == null) {
 				aad = parent.isAggregateDeclaration();
 			}
@@ -340,7 +340,7 @@ public class VarDeclaration extends Declaration {
 				aad.addField(sc, this, context);
 			}
 
-			InterfaceDeclaration id = parent.isInterfaceDeclaration();
+			IInterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.FieldsNotAllowedInInterfaces, this));
@@ -350,8 +350,7 @@ public class VarDeclaration extends Declaration {
 			if (ti != null) {
 				// Take care of nested templates
 				while (true) {
-					TemplateInstance ti2 = ti.tempdecl.parent
-							.isTemplateInstance();
+					TemplateInstance ti2 = ti.tempdecl.parent().isTemplateInstance();
 					if (ti2 == null) {
 						break;
 					}
@@ -359,7 +358,7 @@ public class VarDeclaration extends Declaration {
 				}
 
 				// If it's a member template
-				AggregateDeclaration ad = ti.tempdecl.isMember();
+				IAggregateDeclaration ad = ti.tempdecl.isMember();
 				if (ad != null && storage_class != STCundefined) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotUseTemplateToAddFieldToAggregate, this, new String[] { ad.toChars(context) }));
@@ -581,9 +580,9 @@ public class VarDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol toAlias(SemanticContext context) {
+	public IDsymbol toAlias(SemanticContext context) {
 		Assert.isTrue(this != aliassym);
-		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		IDsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
 	}
 
@@ -621,6 +620,46 @@ public class VarDeclaration extends Declaration {
 		sb.append(ident.length);
 		sb.append(ident);
 		return sb.toString();
+	}
+	
+	public int inuse() {
+		return inuse;
+	}
+	
+	public IInitializer init() {
+		return init;
+	}
+	
+	public boolean ctorinit() {
+		return ctorinit;
+	}
+	
+	public void ctorinit(boolean c) {
+		this.ctorinit = c;
+	}
+	
+	public boolean noauto() {
+		return noauto;
+	}
+	
+	public Expression value() {
+		return value;
+	}
+	
+	public void value(Expression value) {
+		this.value = value;
+	}
+	
+	public int offset() {
+		return offset;
+	}
+	
+	public void offset(int offset) {
+		this.offset = offset;
+	}
+	
+	public int canassign() {
+		return canassign;
 	}
 
     // PERHAPS Symbol *toSymbol();

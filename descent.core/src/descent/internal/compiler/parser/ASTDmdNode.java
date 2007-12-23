@@ -48,7 +48,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 
 // class Object in DMD compiler
 // DMD 1.020
-public abstract class ASTDmdNode extends ASTNode {
+public abstract class ASTDmdNode extends ASTNode implements INode {
 
 	public final static int COST_MAX = 250;
 
@@ -256,9 +256,9 @@ public abstract class ASTDmdNode extends ASTNode {
 	public static class Match {
 		int count; // number of matches found
 		MATCH last; // match level of lastf
-		FuncDeclaration lastf; // last matching function we found
-		FuncDeclaration nextf; // current matching function
-		FuncDeclaration anyf; // pick a func, any func, to use for error recovery
+		IFuncDeclaration lastf; // last matching function we found
+		IFuncDeclaration nextf; // current matching function
+		IFuncDeclaration anyf; // pick a func, any func, to use for error recovery
 	};
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
@@ -291,18 +291,18 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * Helper function for ClassDeclaration::accessCheck() Returns: 0 no access
 	 * 1 access
 	 */
-	public static boolean accessCheckX(Dsymbol smember, Dsymbol sfunc,
-			AggregateDeclaration dthis, AggregateDeclaration cdscope) {
+	public static boolean accessCheckX(IDsymbol smember, IDsymbol sfunc,
+			IAggregateDeclaration dthis, IAggregateDeclaration cdscope) {
 		Assert.isNotNull(dthis);
 
 		if (dthis.hasPrivateAccess(sfunc) || dthis.isFriendOf(cdscope)) {
 			if (smember.toParent() == dthis) {
 				return true;
 			} else {
-				ClassDeclaration cdthis = dthis.isClassDeclaration();
+				IClassDeclaration cdthis = dthis.isClassDeclaration();
 				if (cdthis != null) {
-					for (int i = 0; i < cdthis.baseclasses.size(); i++) {
-						BaseClass b = cdthis.baseclasses.get(i);
+					for (int i = 0; i < cdthis.baseclasses().size(); i++) {
+						BaseClass b = cdthis.baseclasses().get(i);
 						PROT access;
 
 						access = b.base.getAccess(smember);
@@ -316,10 +316,10 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		} else {
 			if (smember.toParent() != dthis) {
-				ClassDeclaration cdthis = dthis.isClassDeclaration();
+				IClassDeclaration cdthis = dthis.isClassDeclaration();
 				if (cdthis != null) {
-					for (int i = 0; i < cdthis.baseclasses.size(); i++) {
-						BaseClass b = cdthis.baseclasses.get(i);
+					for (int i = 0; i < cdthis.baseclasses().size(); i++) {
+						BaseClass b = cdthis.baseclasses().get(i);
 
 						if (accessCheckX(smember, sfunc, b.base, cdscope)) {
 							return true;
@@ -351,7 +351,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 
 		AggregateDeclaration ad;
-		FuncDeclaration fd;
+		IFuncDeclaration fd;
 
 		Argument arg = arguments.get(0);
 		Type taggr = aggr.type;
@@ -396,7 +396,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			 * Look for an int opApply(int delegate(ref Type [, ...]) dg);
 			 * overload
 			 */
-			Dsymbol s = search_function(ad,
+			IDsymbol s = search_function(ad,
 					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
 					context);
 			if (s != null) {
@@ -415,7 +415,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			 * Look for an int opApply(int delegate(inout Type [, ...]) dg);
 			 * overload
 			 */
-			Dsymbol s = search_function(ad,
+			IDsymbol s = search_function(ad,
 					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
 					context);
 			if (s != null) {
@@ -447,24 +447,24 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public static void inferApplyArgTypesX(FuncDeclaration fstart,
+	public static void inferApplyArgTypesX(IFuncDeclaration fstart,
 			Arguments arguments, SemanticContext context) {
-		Declaration d;
-		Declaration next;
+		IDeclaration d;
+		IDeclaration next;
 
 		for (d = fstart; d != null; d = next) {
-			FuncDeclaration f;
+			IFuncDeclaration f;
 			FuncAliasDeclaration fa;
-			AliasDeclaration a;
+			IAliasDeclaration a;
 
 			fa = d.isFuncAliasDeclaration();
 			if (fa != null) {
 				inferApplyArgTypesX(fa.funcalias, arguments, context);
 				next = fa.overnext;
 			} else if ((f = d.isFuncDeclaration()) != null) {
-				next = f.overnext;
+				next = f.overnext();
 
-				TypeFunction tf = (TypeFunction) f.type;
+				TypeFunction tf = (TypeFunction) f.type();
 				if (inferApplyArgTypesY(tf, arguments, context)) {
 					continue;
 				}
@@ -472,7 +472,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					return;
 				}
 			} else if ((a = d.isAliasDeclaration()) != null) {
-				Dsymbol s = a.toAlias(context);
+				IDsymbol s = a.toAlias(context);
 				next = s.isDeclaration();
 				if (next == a) {
 					break;
@@ -550,7 +550,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			else if (e.op == TOKvar) {
 				VarExp ve = (VarExp) e;
 
-				if ((ve.var.storage_class & STClazy) != 0) {
+				if ((ve.var.storage_class() & STClazy) != 0) {
 					e = new CallExp(e.loc, e);
 					e = e.semantic(sc, context);
 				}
@@ -565,19 +565,19 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e;
 	}
 
-	public static Dsymbol search_function(AggregateDeclaration ad,
+	public static IDsymbol search_function(IAggregateDeclaration ad,
 			char[] funcid, SemanticContext context) {
-		Dsymbol s;
-		FuncDeclaration fd;
-		TemplateDeclaration td;
+		IDsymbol s;
+		IFuncDeclaration fd;
+		ITemplateDeclaration td;
 
 		s = ad.search(Loc.ZERO, funcid, 0, context);
 		if (s != null) {
-			Dsymbol s2;
+			IDsymbol s2;
 
 			s2 = s.toAlias(context);
 			fd = s2.isFuncDeclaration();
-			if (fd != null && fd.type.ty == Tfunction) {
+			if (fd != null && fd.type().ty == Tfunction) {
 				return fd;
 			}
 
@@ -605,7 +605,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	 */
 	public boolean synthetic;
 
-	public void accessCheck(Scope sc, Expression e, Declaration d,
+	public void accessCheck(Scope sc, Expression e, IDeclaration d,
 			SemanticContext context) {
 		if (e == null) {
 			if (d.prot() == PROTprivate && d.getModule() != sc.module
@@ -615,11 +615,11 @@ public abstract class ASTDmdNode extends ASTNode {
 						sc.module.toChars(context) }));
 			}
 		} else if (e.type.ty == Tclass) { // Do access check
-			ClassDeclaration cd;
+			IClassDeclaration cd;
 
 			cd = (((TypeClass) e.type).sym);
 			if (e.op == TOKsuper) {
-				ClassDeclaration cd2;
+				IClassDeclaration cd2;
 
 				cd2 = sc.func.toParent().isClassDeclaration();
 				if (cd2 != null) {
@@ -940,9 +940,9 @@ public abstract class ASTDmdNode extends ASTNode {
 	/***************************************************************************
 	 * Determine if scope sc has package level access to s.
 	 */
-	public boolean hasPackageAccess(Scope sc, Dsymbol s) {
+	public boolean hasPackageAccess(Scope sc, IDsymbol s) {
 
-		for (; s != null; s = s.parent) {
+		for (; s != null; s = s.parent()) {
 			if (s.isPackage() != null && s.isModule() == null) {
 				break;
 			}
@@ -959,8 +959,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * Determine if 'this' is available. If it is, return the FuncDeclaration
 	 * that has it.
 	 */
-	public FuncDeclaration hasThis(Scope sc) {
-		FuncDeclaration fd;
+	public IFuncDeclaration hasThis(Scope sc) {
+		IFuncDeclaration fd;
 		FuncDeclaration fdthis;
 
 		fdthis = sc.parent.isFuncDeclaration();
@@ -976,7 +976,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				break;
 			}
 
-			Dsymbol parent = fd.parent;
+			IDsymbol parent = fd.parent();
 			while (parent != null) {
 				TemplateInstance ti = parent.isTemplateInstance();
 				if (ti != null) {
@@ -986,7 +986,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 			}
 
-			fd = fd.parent.isFuncDeclaration();
+			fd = fd.parent().isFuncDeclaration();
 		}
 
 		if (fd.isThis() == null) {
@@ -994,7 +994,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			return null; // don't have 'this' available
 		}
 
-		Assert.isNotNull(fd.vthis);
+		Assert.isNotNull(fd.vthis());
 		return fd;
 	}
 
@@ -1045,9 +1045,9 @@ public abstract class ASTDmdNode extends ASTNode {
 			SemanticContext context) {
 		if (e1.op == TOKvar) {
 			VarExp ve = (VarExp) e1;
-			VarDeclaration v = ve.var.isVarDeclaration();
-			if (v != null && v.isConst() && v.init != null) {
-				Expression ei = v.init.toExpression(context);
+			IVarDeclaration v = ve.var.isVarDeclaration();
+			if (v != null && v.isConst() && v.init() != null) {
+				Expression ei = v.init().toExpression(context);
 				if (ei != null && ei.type != null) {
 					e1 = ei;
 				}
@@ -1097,9 +1097,9 @@ public abstract class ASTDmdNode extends ASTNode {
 		buf.writeByte(')');
 	}
 
-	public static void scanVar(Dsymbol s, InlineScanState iss,
+	public static void scanVar(IDsymbol s, InlineScanState iss,
 			SemanticContext context) {
-		VarDeclaration vd = s.isVarDeclaration();
+		IVarDeclaration vd = s.isVarDeclaration();
 		if (vd != null) {
 			TupleDeclaration td = vd.toAlias(context).isTupleDeclaration();
 			if (td != null) {
@@ -1113,11 +1113,11 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 			} else {
 				// Scan initializer (vd.init)
-				if (vd.init != null) {
-					ExpInitializer ie = vd.init.isExpInitializer();
+				if (vd.init() != null) {
+					IExpInitializer ie = vd.init().isExpInitializer();
 
 					if (ie != null) {
-						ie.exp = ie.exp.inlineScan(iss, context);
+						ie.exp(ie.exp().inlineScan(iss, context));
 					}
 				}
 			}
@@ -1137,22 +1137,22 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public static String mangle(Declaration sthis) {
+	public static String mangle(IDeclaration sthis) {
 		OutBuffer buf = new OutBuffer();
 		String id;
-		Dsymbol s;
+		IDsymbol s;
 
 		s = sthis;
 		do {
-			if (s.ident != null) {
-				FuncDeclaration fd = s.isFuncDeclaration();
+			if (s.ident() != null) {
+				IFuncDeclaration fd = s.isFuncDeclaration();
 				if (s != sthis && fd != null) {
 					id = mangle(fd);
 					buf.prependstring(id);
 					// goto L1;
 					break;
 				} else {
-					id = s.ident.toChars();
+					id = s.ident().toChars();
 					int len = id.length();
 					buf.prependstring(id);
 					buf.prependstring(len);
@@ -1160,18 +1160,18 @@ public abstract class ASTDmdNode extends ASTNode {
 			} else {
 				buf.prependstring("0");
 			}
-			s = s.parent;
+			s = s.parent();
 		} while (s != null);
 
 		// L1:
-		FuncDeclaration fd = sthis.isFuncDeclaration();
+		IFuncDeclaration fd = sthis.isFuncDeclaration();
 		if (fd != null && (fd.needThis() || fd.isNested())) {
 			buf.writeByte(Type.needThisPrefix());
 		}
-		if (sthis.type.deco != null) {
-			buf.writestring(sthis.type.deco);
+		if (sthis.type().deco != null) {
+			buf.writestring(sthis.type().deco);
 		} else {
-			if (!fd.inferRetType) {
+			if (!fd.inferRetType()) {
 				throw new IllegalStateException("assert (fd.inferRetType);");
 			}
 		}
@@ -1181,8 +1181,8 @@ public abstract class ASTDmdNode extends ASTNode {
 		return id;
 	}
 
-	public static Dsymbol getDsymbol(ASTDmdNode oarg, SemanticContext context) {
-		Dsymbol sa;
+	public static IDsymbol getDsymbol(INode oarg, SemanticContext context) {
+		IDsymbol sa;
 		Expression ea = isExpression(oarg);
 		if (ea != null) { // Try to convert Expression to symbol
 			if (ea.op == TOKvar) {
@@ -1214,15 +1214,15 @@ public abstract class ASTDmdNode extends ASTNode {
 		return t;
 	}
 
-	public static Dsymbol isDsymbol(ASTDmdNode o) {
+	public static IDsymbol isDsymbol(INode o) {
 		//return dynamic_cast<Dsymbol >(o);
 		if (null == o || o.dyncast() != DYNCAST_DSYMBOL) {
 			return null;
 		}
-		return (Dsymbol) o;
+		return (IDsymbol) o;
 	}
 
-	public static Expression isExpression(ASTDmdNode o) {
+	public static Expression isExpression(INode o) {
 		//return dynamic_cast<Expression >(o);
 		if (null == o || o.dyncast() != DYNCAST_EXPRESSION) {
 			return null;
@@ -1230,7 +1230,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return (Expression) o;
 	}
 
-	public static Tuple isTuple(ASTDmdNode o) {
+	public static Tuple isTuple(INode o) {
 		//return dynamic_cast<Tuple >(o);
 		if (null == o || o.dyncast() != DYNCAST_TUPLE) {
 			return null;
@@ -1238,7 +1238,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return (Tuple) o;
 	}
 
-	public static Type isType(ASTDmdNode o) {
+	public static Type isType(INode o) {
 		//return dynamic_cast<Type >(o);
 		if (null == o || o.dyncast() != DYNCAST_TYPE) {
 			return null;
@@ -1288,7 +1288,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return false;
 	}
 
-	public static void overloadResolveX(Match m, FuncDeclaration fstart,
+	public static void overloadResolveX(Match m, IFuncDeclaration fstart,
 			Expressions arguments, SemanticContext context) {
 		Param2 p = new Param2();
 		p.m = m;
@@ -1297,12 +1297,12 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static interface OverloadApply_fp {
-		int call(Object param, FuncDeclaration f, SemanticContext context);
+		int call(Object param, IFuncDeclaration f, SemanticContext context);
 	}
 
 	public final static OverloadApply_fp fp2 = new OverloadApply_fp() {
 
-		public int call(Object param, FuncDeclaration f, SemanticContext context) {
+		public int call(Object param, IFuncDeclaration f, SemanticContext context) {
 			Param2 p = (Param2) param;
 			Match m = p.m;
 			Expressions arguments = p.arguments;
@@ -1313,7 +1313,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				TypeFunction tf;
 
 				m.anyf = f;
-				tf = (TypeFunction) f.type;
+				tf = (TypeFunction) f.type();
 				match = tf.callMatch(arguments, context);
 				if (match != MATCHnomatch) {
 					if (match.ordinal() > m.last.ordinal()) {
@@ -1362,11 +1362,11 @@ public abstract class ASTDmdNode extends ASTNode {
 	 *	1	done
 	 */
 
-	public static int overloadApply(FuncDeclaration fstart,
+	public static int overloadApply(IFuncDeclaration fstart,
 			OverloadApply_fp fp, Object param, SemanticContext context) {
-		FuncDeclaration f;
-		Declaration d;
-		Declaration next;
+		IFuncDeclaration f;
+		IDeclaration d;
+		IDeclaration next;
 
 		for (d = fstart; d != null; d = next) {
 			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
@@ -1377,10 +1377,10 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 				next = fa.overnext;
 			} else {
-				AliasDeclaration a = d.isAliasDeclaration();
+				IAliasDeclaration a = d.isAliasDeclaration();
 
 				if (a != null) {
-					Dsymbol s = a.toAlias(context);
+					IDsymbol s = a.toAlias(context);
 					next = s.isDeclaration();
 					if (next == a) {
 						break;
@@ -1399,7 +1399,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						return 1;
 					}
 
-					next = f.overnext;
+					next = f.overnext();
 				}
 			}
 		}
@@ -1555,23 +1555,23 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static final Expression getVarExp(Loc loc, InterState istate,
-                                             Declaration d,
+                                             IDeclaration d,
                                              SemanticContext context)
     {
         Expression e = EXP_CANT_INTERPRET;
-        VarDeclaration v = d.isVarDeclaration();
-        SymbolDeclaration s = d.isSymbolDeclaration();
+        IVarDeclaration v = d.isVarDeclaration();
+        ISymbolDeclaration s = d.isSymbolDeclaration();
         if (null != v)
         {
-            if (v.isConst() && null != v.init)
+            if (v.isConst() && null != v.init())
             {
-                e = v.init.toExpression(context);
+                e = v.init().toExpression(context);
                 if (null == e.type)
-                    e.type = v.type;
+                    e.type = v.type();
             }
             else
             {
-                e = v.value;
+                e = v.value();
                 if (null == e) {
                 	context.acceptProblem(Problem.newSemanticTypeError(
         					IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
@@ -1584,10 +1584,10 @@ public abstract class ASTDmdNode extends ASTNode {
         }
         else if (null != s)
         {
-            if (s.dsym.toInitializer() == s.sym)
+            if (s.dsym().toInitializer() == s.sym())
             {
                 Expressions exps = new Expressions();
-                e = new StructLiteralExp(Loc.ZERO, s.dsym, exps);
+                e = new StructLiteralExp(Loc.ZERO, s.dsym(), exps);
                 e = e.semantic(null, context);
             }
         }
@@ -1595,17 +1595,17 @@ public abstract class ASTDmdNode extends ASTNode {
     }
 
 	public static void ObjectToCBuffer(OutBuffer buf, HdrGenState hgs,
-			ASTDmdNode oarg, SemanticContext context) {
+			INode oarg, SemanticContext context) {
 		Type t = isType(oarg);
 		Expression e = isExpression(oarg);
-		Dsymbol s = isDsymbol(oarg);
+		IDsymbol s = isDsymbol(oarg);
 		Tuple v = isTuple(oarg);
 		if (null != t)
 			t.toCBuffer(buf, null, hgs, context);
 		else if (null != e)
 			e.toCBuffer(buf, hgs, context);
 		else if (null != s) {
-			String p = null != s.ident ? s.ident.toChars() : s.toChars(context);
+			String p = null != s.ident() ? s.ident().toChars() : s.toChars(context);
 			buf.writestring(p);
 		} else if (null != v) {
 			Objects args = v.objects;
@@ -1622,10 +1622,10 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	public static void templateResolve(Match m, TemplateDeclaration td,
+	public static void templateResolve(Match m, ITemplateDeclaration td,
 			Scope sc, Loc loc, Objects targsi, Expressions arguments,
 			SemanticContext context) {
-		FuncDeclaration fd;
+		IFuncDeclaration fd;
 
 		assert (td != null);
 		fd = td.deduce(sc, loc, targsi, arguments, context);
@@ -1642,14 +1642,14 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 	
-	public static boolean match(ASTDmdNode o1, ASTDmdNode o2,
-			TemplateDeclaration tempdecl, Scope sc, SemanticContext context) {
+	public static boolean match(INode o1, INode o2,
+			ITemplateDeclaration tempdecl, Scope sc, SemanticContext context) {
 		Type t1 = isType(o1);
 		Type t2 = isType(o2);
 		Expression e1 = isExpression(o1);
 		Expression e2 = isExpression(o2);
-		Dsymbol s1 = isDsymbol(o1);
-		Dsymbol s2 = isDsymbol(o2);
+		IDsymbol s1 = isDsymbol(o1);
+		IDsymbol s2 = isDsymbol(o2);
 		Tuple v1 = isTuple(o1);
 		Tuple v2 = isTuple(o2);
 
@@ -1662,9 +1662,9 @@ public abstract class ASTDmdNode extends ASTNode {
 			/* if t1 is an instance of ti, then give error
 			 * about recursive expansions.
 			 */
-			Dsymbol s = t1.toDsymbol(sc, context);
-			if (s != null && s.parent != null) {
-				TemplateInstance ti1 = s.parent.isTemplateInstance();
+			IDsymbol s = t1.toDsymbol(sc, context);
+			if (s != null && s.parent() != null) {
+				TemplateInstance ti1 = s.parent().isTemplateInstance();
 				if (ti1 != null && ti1.tempdecl == tempdecl) {
 					for (Scope sc1 = sc; sc1 != null; sc1 = sc1.enclosing) {
 						if (sc1.scopesym == ti1) {
@@ -1686,7 +1686,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				return false;
 			}
 		} else if (s1 != null) {
-			if (null == s2 || !s1.equals(s2) || s1.parent != s2.parent) {
+			if (null == s2 || !s1.equals(s2) || s1.parent() != s2.parent()) {
 				// goto L1;
 				return false;
 			}
@@ -1889,5 +1889,24 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 	
+	public int getStart() {
+		return start;
+	}
+	
+	public List<Modifier> modifiers() {
+		return modifiers;
+	}
+	
+	public void modifiers(List<Modifier> modifiers) {
+		this.modifiers = modifiers;
+	}
+	
+	public List<Modifier> extraModifiers() {
+		return extraModifiers;
+	}
+	
+	public void extraModifiers(List<Modifier> extraModifiers) {
+		this.extraModifiers = extraModifiers;
+	}
 	
 }

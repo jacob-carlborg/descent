@@ -34,9 +34,9 @@ public class DebugSymbol extends Dsymbol {
 	}
 
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
 			SemanticContext context) {
-		Module m;
+		IModule m;
 
 		// Do not add the member to the symbol table,
 		// just make sure subsequent debug declarations work.
@@ -45,19 +45,19 @@ public class DebugSymbol extends Dsymbol {
 			if (null == m) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
 			} else {
-				if (findCondition(m.debugidsNot, ident)) {
+				if (findCondition(m.debugidsNot(), ident)) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, this, new String[] { ident.toString() } ));
 				}
-				if (null == m.debugids) {
-					m.debugids = new ArrayList<char[]>();
+				if (null == m.debugids()) {
+					m.debugids(new ArrayList<char[]>());
 				}
-				m.debugids.add(ident.ident);
+				m.debugids().add(ident.ident);
 			}
 		} else {
 			if (null == m) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
 			} else {
-				m.debuglevel = level;
+				m.debuglevel(level);
 			}
 		}
 		return 0;

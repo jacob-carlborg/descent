@@ -192,7 +192,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	try {
 		if (computeProblems) {
 			
-			CompilationUnitResolver.resolve(module, this);
+			CompilationUnitResolver.resolve(module, this.getJavaProject(), this.owner);
 			
 			if (problems == null) {
 				// report problems to the problem requestor

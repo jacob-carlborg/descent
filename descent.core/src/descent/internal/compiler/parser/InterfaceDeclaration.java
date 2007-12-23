@@ -12,7 +12,7 @@ import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Ttuple;
 
 // DMD 1.020
-public class InterfaceDeclaration extends ClassDeclaration {
+public class InterfaceDeclaration extends ClassDeclaration implements IInterfaceDeclaration {
 
 	public InterfaceDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {
@@ -63,13 +63,13 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	}
 
 	@Override
-	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
+	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
 			SemanticContext context) {
 		int j;
 
 		Assert.isTrue(baseClass == null);
-		for (j = 0; j < cd.interfaces.size(); j++) {
-			BaseClass b = cd.interfaces.get(j);
+		for (j = 0; j < cd.interfaces().size(); j++) {
+			BaseClass b = cd.interfaces().get(j);
 
 			if (this == b.base) {
 				if (poffset != null) {
@@ -89,7 +89,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			}
 		}
 
-		if (cd.baseClass != null && isBaseOf(cd.baseClass, poffset, context)) {
+		if (cd.baseClass() != null && isBaseOf(cd.baseClass(), poffset, context)) {
 			return true;
 		}
 
@@ -239,7 +239,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			// Lcontinue: ;
 		}
 
-		for (Dsymbol s : members) {
+		for (IDsymbol s : members) {
 			s.addMember(sc, this, 1, context);
 		}
 
@@ -252,7 +252,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		structalign = sc.structalign;
 		sc.offset = 8;
 
-		for (Dsymbol s : members) {
+		for (IDsymbol s : members) {
 			s.semantic(sc, context);
 		}
 		sc.pop();

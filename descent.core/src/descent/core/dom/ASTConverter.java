@@ -117,7 +117,7 @@ public class ASTConverter {
 		return result;
 	}
 	
-	public descent.core.dom.ASTNode convert(descent.internal.compiler.parser.ASTDmdNode symbol) {
+	public descent.core.dom.ASTNode convert(INode symbol) {
 		if (symbol == null) {
 			return null;
 		}
@@ -468,7 +468,7 @@ public class ASTConverter {
 			b.setName(name);
 		}
 		if (a.args != null) {
-			for(ASTDmdNode node : a.args) {
+			for(INode node : a.args) {
 				ASTNode arg = convert(node);
 				if (arg != null) {
 					b.arguments().add(arg);
@@ -512,7 +512,7 @@ public class ASTConverter {
 		descent.core.dom.Modifier modifier = convert(a.modifier);
 		
 		if (a.single && a.decl != null && a.decl.size() >= 1) {
-			Declaration decl = convertDeclaration(a.decl.get(0));
+			Declaration decl = convertDeclaration((Dsymbol) a.decl.get(0)); // SEMANTIC
 			
 			if (a.decl.size() == 1) {
 				int insertAt;
@@ -539,7 +539,7 @@ public class ASTConverter {
 		
 		if (a.colon && a.decl != null && a.decl.size() > 0) {
 			for(int i = 0; i < a.decl.size(); i++) {
-				Dsymbol dsymbol = a.decl.get(i);
+				Dsymbol dsymbol = (Dsymbol) a.decl.get(i); // SEMANTIC
 				if (
 					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
 						|| 
@@ -584,7 +584,7 @@ public class ASTConverter {
 		
 		if (a.single && a.decl != null && a.decl.size() > 0) {
 			if (a.decl.size() == 1) {
-				Declaration decl = convertDeclaration(a.decl.get(0));
+				Declaration decl = convertDeclaration((Dsymbol) a.decl.get(0)); // SEMANTIC
 				decl.modifiers().add(0, modifier);
 				decl.setSourceRange(a.start, a.length);
 				toAdd.add(decl);
@@ -600,7 +600,7 @@ public class ASTConverter {
 		
 		if (a.colon && a.decl != null && a.decl.size() > 0) {
 			for(int i = 0; i < a.decl.size(); i++) {
-				Dsymbol dsymbol = a.decl.get(i);
+				Dsymbol dsymbol = (Dsymbol) a.decl.get(i); // SEMANTIC
 				if (
 					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
 						|| 
@@ -619,7 +619,7 @@ public class ASTConverter {
 	}
 	
 	private Declaration tryConvertMany(Dsymbols decl, descent.core.dom.Modifier modifier, List<Modifier> modifiers) {
-		Dsymbol dsymbol = decl.get(0);
+		Dsymbol dsymbol = (Dsymbol) decl.get(0); // SEMANTIC
 		descent.core.dom.Declaration declaration = null;
 		if (dsymbol instanceof VarDeclaration) {
 			declaration = convertManyVarDeclarations(decl);
@@ -943,7 +943,7 @@ public class ASTConverter {
 	public descent.core.dom.Expression convert(ScopeExp a) {
 		descent.core.dom.TypeExpression b = new descent.core.dom.TypeExpression(ast);
 		if (a.sds != null) {
-			descent.core.dom.Type converted = (descent.core.dom.Type) convert(a.sds);
+			descent.core.dom.Type converted = (descent.core.dom.Type) convert((ScopeDsymbol) a.sds); // SEMANTIC
 			if (converted != null) {
 				b.setType(converted);
 			}
@@ -959,7 +959,7 @@ public class ASTConverter {
 			tt.setName((SimpleName) convert(tempinst.name));
 		}
 		if (tempinst.tiargs != null) {
-			for(ASTDmdNode node : tempinst.tiargs) {
+			for(INode node : tempinst.tiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					tt.arguments().add(convertedNode);
@@ -975,7 +975,7 @@ public class ASTConverter {
 		if (a.name != null) {
 			b.setName((SimpleName) convert(a.name));
 		}
-		for(ASTDmdNode node : a.tiargs) {
+		for(INode node : a.tiargs) {
 			ASTNode convertedNode = convert(node);
 			if (convertedNode != null) {
 				b.arguments().add(convertedNode);
@@ -1085,7 +1085,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Declaration convert(TemplateDeclaration a) {
 		if (a.wrapper) {
-			Dsymbol wrappedSymbol = a.members.get(0);
+			Dsymbol wrappedSymbol = (Dsymbol) a.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
@@ -1661,7 +1661,8 @@ public class ASTConverter {
 			b.setBaseType(convert(a.sourceMemtype));
 		}
 		if (a.members != null) {
-			for(Dsymbol symbol : a.members) {
+			for(IDsymbol isymbol : a.members) {
+				Dsymbol symbol = (Dsymbol) isymbol; // SEMANTIC
 				descent.core.dom.EnumMember convertedMember = convert((EnumMember) symbol);
 				if (convertedMember != null) {
 					b.enumMembers().add(convertedMember);
@@ -2751,7 +2752,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.tempinst.tiargs != null) {
-			for(ASTDmdNode node : a.tempinst.tiargs) {
+			for(INode node : a.tempinst.tiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					b.arguments().add(convertedNode);
@@ -2940,10 +2941,10 @@ public class ASTConverter {
 		}
 	}
 	
-	public void convertDeclarations(List<Declaration> destination, List<Dsymbol> source) {
+	public void convertDeclarations(List<Declaration> destination, List<IDsymbol> source) {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
-			Dsymbol symbol = source.get(i);
+			Dsymbol symbol = (Dsymbol) source.get(i); // SEMANTIC
 			switch(symbol.getNodeType()) {
 			case ASTDmdNode.IMPORT:
 				Import import1 = (Import) symbol;
@@ -2985,7 +2986,7 @@ public class ASTConverter {
 					}
 					
 					i++;
-					symbol = source.get(i);
+					symbol = (Dsymbol) source.get(i); // SEMANTIC
 				}
 				b.setSourceRange(start, end - start);
 				destination.add(b);
@@ -3023,7 +3024,7 @@ public class ASTConverter {
 					}
 					
 					i++;
-					symbol = source.get(i);
+					symbol = (Dsymbol) source.get(i); // SEMANTIC
 				}
 				b.setSourceRange(start, end - start);
 				destination.add(b);
@@ -3061,7 +3062,7 @@ public class ASTConverter {
 					}
 					
 					i++;
-					symbol = source.get(i);
+					symbol = (Dsymbol) source.get(i); // SEMANTIC
 				}
 				b.setSourceRange(start, end - start);
 				destination.add(b);
@@ -3205,7 +3206,7 @@ public class ASTConverter {
 				} else {
 					TemplateType type = new TemplateType(ast);
 					type.setName((SimpleName) convert(id));
-					for(ASTDmdNode node : tiargs) {
+					for(INode node : tiargs) {
 						type.arguments().add(convert(node));
 					}
 					second = type;

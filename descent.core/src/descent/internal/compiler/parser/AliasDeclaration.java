@@ -10,18 +10,18 @@ import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 
 // DMD 1.020
-public class AliasDeclaration extends Declaration {
+public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 
 	public boolean first = true; // is this the first declaration in a multi
 	public AliasDeclaration next;
 
 	public Type htype;
-	public Dsymbol haliassym;
-	public Dsymbol aliassym;
+	public IDsymbol haliassym;
+	public IDsymbol aliassym;
 	public Dsymbol overnext; // next in overload list
 	public int inSemantic;
 
-	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
+	public AliasDeclaration(Loc loc, IdentifierExp id, IDsymbol s) {
 		super(id);
 
 		Assert.isTrue(s != this);
@@ -120,7 +120,7 @@ public class AliasDeclaration extends Declaration {
 		// type. If it is a symbol, then aliassym is set and type is NULL -
 		// toAlias() will return aliasssym.
 
-		Dsymbol[] s = { null };
+		IDsymbol[] s = { null };
 		Type[] t = { null };
 		Expression[] e = { null };
 
@@ -176,20 +176,20 @@ public class AliasDeclaration extends Declaration {
 		return;
 	}
 
-	public void semantic_L2(Scope sc, SemanticContext context, Dsymbol s) {
+	public void semantic_L2(Scope sc, SemanticContext context, IDsymbol s) {
 		Type tempType = type;
 		type = null;
-		VarDeclaration v = s.isVarDeclaration();
-		if (v != null && v.linkage == LINK.LINKdefault) {
+		IVarDeclaration v = s.isVarDeclaration();
+		if (v != null && v.linkage() == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ForwardReferenceOfSymbol, tempType, new String[] { tempType.toString() }));
 			context
 					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReferenceOfSymbol, v.ident, new String[] { new String(
-									v.ident.ident) }));
+							IProblem.ForwardReferenceOfSymbol, v.ident(), new String[] { new String(
+									v.ident().ident) }));
 			s = null;
 		} else {
-			FuncDeclaration f = s.toAlias(context).isFuncDeclaration();
+			IFuncDeclaration f = s.toAlias(context).isFuncDeclaration();
 			if (f != null) {
 				if (overnext != null) {
 					FuncAliasDeclaration fa = new FuncAliasDeclaration(loc, f);
@@ -198,7 +198,7 @@ public class AliasDeclaration extends Declaration {
 					}
 					overnext = null;
 					s = fa;
-					s.parent = sc.parent;
+					s.parent(sc.parent);
 				}
 			}
 			if (overnext != null) {
@@ -245,13 +245,13 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	@Override
-	public Dsymbol toAlias(SemanticContext context) {
+	public IDsymbol toAlias(SemanticContext context) {
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
 		}
-		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		IDsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
 	}
 
@@ -271,9 +271,6 @@ public class AliasDeclaration extends Declaration {
 	}
 	
 	// Specific for Descent
-	public ASTDmdNode getBinding() {
-		return aliassym;
-	}
 
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();

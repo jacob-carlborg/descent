@@ -43,7 +43,7 @@ public class TemplateMixin extends TemplateInstance {
 	@Override
 	public boolean hasPointers(SemanticContext context) {
 		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
+			IDsymbol s = members.get(i);
 			if (s.hasPointers(context)) {
 				return true;
 			}
@@ -92,7 +92,7 @@ public class TemplateMixin extends TemplateInstance {
 
 		// Follow qualifications to find the TemplateDeclaration
 		if (null == tempdecl) {
-			Dsymbol s;
+			IDsymbol s;
 			int i;
 			IdentifierExp id;
 
@@ -142,8 +142,8 @@ public class TemplateMixin extends TemplateInstance {
 		if (tempdecl == null) {
 			throw new IllegalStateException("assert(tempdecl);");
 		}
-		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext) {
-			if (null == td.scope) {
+		for (ITemplateDeclaration td = tempdecl; td != null; td = td.overnext()) {
+			if (null == td.scope()) {
 				/* Cannot handle forward references if mixin is a struct member,
 				 * because addField must happen during struct's semantic, not
 				 * during the mixin semantic.
@@ -151,9 +151,9 @@ public class TemplateMixin extends TemplateInstance {
 				 * semantic.
 				 */
 				semanticdone = 0;
-				AggregateDeclaration ad = toParent().isAggregateDeclaration();
+				IAggregateDeclaration ad = toParent().isAggregateDeclaration();
 				if (ad != null) {
-					ad.sizeok = 2;
+					ad.sizeok(2);
 				} else {
 					// Forward reference
 					scope = scx != null ? scx : new Scope(sc, context);
@@ -182,18 +182,18 @@ public class TemplateMixin extends TemplateInstance {
 
 		/* Detect recursive mixin instantiations.
 		 */
-		Lcontinue: for (Dsymbol s = parent; s != null; s = s.parent) {
+		Lcontinue: for (IDsymbol s = parent; s != null; s = s.parent()) {
 			TemplateMixin tm = s.isTemplateMixin();
 			if (null == tm || tempdecl != tm.tempdecl) {
 				continue;
 			}
 
 			for (int i = 0; i < tiargs.size(); i++) {
-				ASTDmdNode o = tiargs.get(i);
+				INode o = tiargs.get(i);
 				Type ta = isType(o);
 				Expression ea = isExpression(o);
-				Dsymbol sa = isDsymbol(o);
-				ASTDmdNode tmo = tm.tiargs.get(i);
+				IDsymbol sa = isDsymbol(o);
+				INode tmo = tm.tiargs.get(i);
 				if (ta != null) {
 					Type tmta = isType(tmo);
 					if (null == tmta) {
@@ -211,7 +211,7 @@ public class TemplateMixin extends TemplateInstance {
 						continue Lcontinue;
 					}
 				} else if (sa != null) {
-					Dsymbol tmsa = isDsymbol(tmo);
+					IDsymbol tmsa = isDsymbol(tmo);
 					if (sa != tmsa) {
 						// goto Lcontinue;
 						continue Lcontinue;
@@ -220,12 +220,13 @@ public class TemplateMixin extends TemplateInstance {
 					throw new IllegalStateException("assert(0);");
 				}
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveMixinInstantiation, this));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.RecursiveMixinInstantiation, this));
 			return;
 		}
 
 		// Copy the syntax trees from the TemplateDeclaration
-		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
+		members = Dsymbol.arraySyntaxCopy(tempdecl.members(), context);
 		if (null == members) {
 			return;
 		}
@@ -233,7 +234,7 @@ public class TemplateMixin extends TemplateInstance {
 		symtab = new DsymbolTable();
 
 		for (Scope sce = sc; true; sce = sce.enclosing) {
-			ScopeDsymbol sds = sce.scopesym;
+			IScopeDsymbol sds = sce.scopesym;
 			if (sds != null) {
 				sds.importScope(this, PROTpublic);
 				break;
@@ -253,7 +254,7 @@ public class TemplateMixin extends TemplateInstance {
 
 		// Add members to enclosing scope, as well as this scope
 		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s;
+			IDsymbol s;
 
 			s = members.get(i);
 			s.addMember(scope, this, i, context);
@@ -267,7 +268,7 @@ public class TemplateMixin extends TemplateInstance {
 		sc2 = scope.push(this);
 		sc2.offset = sc.offset;
 		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
+			IDsymbol s = members.get(i);
 			s.semantic(sc2, context);
 		}
 		sc.offset = sc2.offset;
@@ -308,7 +309,7 @@ public class TemplateMixin extends TemplateInstance {
 			sc = sc.push(argsym);
 			sc = sc.push(this);
 			for (i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
+				IDsymbol s = members.get(i);
 				s.semantic2(sc, context);
 			}
 			sc = sc.pop();
@@ -328,7 +329,7 @@ public class TemplateMixin extends TemplateInstance {
 			sc = sc.push(argsym);
 			sc = sc.push(this);
 			for (i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
+				IDsymbol s = members.get(i);
 				s.semantic3(sc, context);
 			}
 			sc = sc.pop();
@@ -383,16 +384,16 @@ public class TemplateMixin extends TemplateInstance {
 				if (i != 0) {
 					buf.writebyte(',');
 				}
-				ASTDmdNode oarg = tiargs.get(i);
+				INode oarg = tiargs.get(i);
 				Type t = isType(oarg);
 				Expression e = isExpression(oarg);
-				Dsymbol s = isDsymbol(oarg);
+				IDsymbol s = isDsymbol(oarg);
 				if (t != null) {
 					t.toCBuffer(buf, null, hgs, context);
 				} else if (e != null) {
 					e.toCBuffer(buf, hgs, context);
 				} else if (s != null) {
-					String p = s.ident != null ? s.ident.toChars() : s
+					String p = s.ident() != null ? s.ident().toChars() : s
 							.toChars(context);
 					buf.writestring(p);
 				} else if (null == oarg) {

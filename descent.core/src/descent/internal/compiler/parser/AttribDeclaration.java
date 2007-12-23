@@ -16,20 +16,20 @@ public abstract class AttribDeclaration extends Dsymbol {
 		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				s.addLocalClass(aclasses, context);
 			}
 		}
 	}
 
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		int m = 0;
 		Dsymbols d = include(sc, sd, context);
 
 		if (d != null) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				m |= s.addMember(sc, sd, m | memnum, context);
 			}
 		}
@@ -41,7 +41,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				s.checkCtorConstInit(context);
 			}
 		}
@@ -52,7 +52,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		Dsymbols d = include(null, null, context);
 
 		if (d != null) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				if (s.hasPointers(context)) {
 					return true;
 				}
@@ -61,8 +61,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		return false;
 	}
 
-	public Dsymbols include(Scope sc, ScopeDsymbol sd,
-			SemanticContext context) {
+	public Dsymbols include(Scope sc, IScopeDsymbol sd, SemanticContext context) {
 		return decl;
 	}
 
@@ -104,7 +103,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		Dsymbols d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				s.semantic(sc, context);
 			}
 		}
@@ -115,7 +114,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		Dsymbols d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				s.semantic2(sc, context);
 			}
 		}
@@ -126,7 +125,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 		Dsymbols d = include(sc, null, context);
 
 		if (d != null && d.size() > 0) {
-			for (Dsymbol s : d) {
+			for (IDsymbol s : d) {
 				s.semantic3(sc, context);
 			}
 		}
@@ -139,7 +138,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 			buf.writenl();
 			buf.writeByte('{');
 			buf.writenl();
-			for (Dsymbol s : decl) {
+			for (IDsymbol s : decl) {
 				buf.writestring("    ");
 				s.toCBuffer(buf, hgs, context);
 			}

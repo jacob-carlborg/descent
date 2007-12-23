@@ -123,7 +123,7 @@ public class DeclarationExp extends Expression {
 		Expression e = EXP_CANT_INTERPRET;
 		VarDeclaration v = declaration.isVarDeclaration();
 		if (v != null) {
-			Dsymbol s = v.toAlias(context);
+			IDsymbol s = v.toAlias(context);
 			if (s == v && !v.isStatic() && v.init != null) {
 				ExpInitializer ie = v.init.isExpInitializer();
 				if (ie != null) {
@@ -158,7 +158,7 @@ public class DeclarationExp extends Expression {
 		 * where the extern(linkage) winds up being an AttribDeclaration
 		 * wrapper.
 		 */
-		Dsymbol s = declaration;
+		IDsymbol s = declaration;
 
 		AttribDeclaration ad = declaration.isAttribDeclaration();
 		if (ad != null) {
@@ -171,12 +171,12 @@ public class DeclarationExp extends Expression {
 			//	int a = a;
 			// will be illegal.
 			declaration.semantic(sc, context);
-			s.parent = sc.parent;
+			s.parent(sc.parent);
 		}
 
 		// Insert into both local scope and function scope.
 		// Must be unique in both.
-		if (s.ident != null) {
+		if (s.ident() != null) {
 			if (sc.insert(s) == null) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DeclarationIsAlreadyDefined, s, new String[] { s.toChars(context) } ));
 			} else if (sc.func != null) {
@@ -189,11 +189,11 @@ public class DeclarationExp extends Expression {
 
 					for (Scope scx = sc.enclosing; scx != null
 							&& scx.func == sc.func; scx = scx.enclosing) {
-						Dsymbol s2;
+						IDsymbol s2;
 
 						if (scx.scopesym != null
-								&& scx.scopesym.symtab != null
-								&& (s2 = scx.scopesym.symtab.lookup(s.ident)) != null
+								&& scx.scopesym.symtab() != null
+								&& (s2 = scx.scopesym.symtab().lookup(s.ident())) != null
 								&& s != s2) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ShadowingDeclarationIsDeprecated, s, new String[] { s.toPrettyChars(context) }));
 						}
@@ -203,7 +203,7 @@ public class DeclarationExp extends Expression {
 		}
 		if (s.isVarDeclaration() == null) {
 			declaration.semantic(sc, context);
-			s.parent = sc.parent;
+			s.parent(sc.parent);
 		}
 		if (context.global.errors == 0) {
 			declaration.semantic2(sc, context);

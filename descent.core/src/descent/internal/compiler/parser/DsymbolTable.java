@@ -6,23 +6,27 @@ public class DsymbolTable {
 	
 	private HashtableOfCharArrayAndObject map = new HashtableOfCharArrayAndObject();
 	
-	public Dsymbol insert(Dsymbol dsymbol) {
-		return insert(dsymbol.ident, dsymbol);
+	public IDsymbol insert(IDsymbol dsymbol) {
+		return insert(dsymbol.ident(), dsymbol);
 	}
 	
-	public Dsymbol insert(IdentifierExp ident, Dsymbol dsymbol) {
-		if (map.containsKey(ident.ident)) {
+	public IDsymbol insert(IdentifierExp ident, IDsymbol dsymbol) {
+		return insert(ident.ident, dsymbol);
+	}
+	
+	public IDsymbol insert(char[] ident, IDsymbol dsymbol) {
+		if (map.containsKey(ident)) {
 			return null;
 		}
-		map.put(ident.ident, dsymbol);
+		map.put(ident, dsymbol);
 		return dsymbol;
 	}
 
-	public Dsymbol lookup(IdentifierExp ident) {
+	public IDsymbol lookup(IdentifierExp ident) {
 		return (Dsymbol) map.get(ident.ident);
 	}
 	
-	public Dsymbol lookup(char[] ident) {
+	public IDsymbol lookup(char[] ident) {
 		return (Dsymbol) map.get(ident);
 	}
 	

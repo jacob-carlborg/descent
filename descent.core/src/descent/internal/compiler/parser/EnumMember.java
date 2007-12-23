@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class EnumMember extends Dsymbol {
+public class EnumMember extends Dsymbol implements IEnumMember {
 
 	public Expression value;
 
@@ -72,6 +72,14 @@ public class EnumMember extends Dsymbol {
 			buf.writestring(" = ");
 			value.toCBuffer(buf, hgs, context);
 		}
+	}
+	
+	public Expression value() {
+		return value;
+	}
+	
+	public void value(Expression value) {
+		this.value = value;
 	}
 
 }

@@ -15,7 +15,7 @@ public class StructInitializer extends Initializer {
 	public Identifiers field, sourceField;
 	public Initializers value, sourceValue;
 
-	public Array<VarDeclaration> vars; // parallel array of VarDeclaration *'s
+	public Array<IVarDeclaration> vars; // parallel array of VarDeclaration *'s
 	public AggregateDeclaration ad; // which aggregate this is for
 
 	public StructInitializer(Loc loc) {
@@ -65,8 +65,8 @@ public class StructInitializer extends Initializer {
 			for (i = 0; i < field.size(); i++) {
 				IdentifierExp id = field.get(i);
 				Initializer val = value.get(i);
-				Dsymbol s;
-				VarDeclaration v;
+				IDsymbol s;
+				IVarDeclaration v;
 
 				if (id == null) {
 					if (fieldi >= ad.fields.size()) {
@@ -97,10 +97,10 @@ public class StructInitializer extends Initializer {
 					}
 				}
 				if (s != null && (v = s.isVarDeclaration()) != null) {
-					val = val.semantic(sc, v.type, context);
+					val = val.semantic(sc, v.type(), context);
 					value.set(i, val);
 					if (vars == null) {
-						vars = new Array<VarDeclaration>();
+						vars = new Array<IVarDeclaration>();
 					}
 					vars.set(i, v);
 				} else {

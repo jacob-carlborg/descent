@@ -24,8 +24,7 @@ public abstract class Condition extends ASTRangeLessNode {
 		return getConditionType();
 	}
 
-	public abstract boolean include(Scope sc, ScopeDsymbol s,
-			SemanticContext context);
+	public abstract boolean include(Scope sc, IScopeDsymbol s, SemanticContext context);
 
 	public abstract Condition syntaxCopy(SemanticContext context);
 

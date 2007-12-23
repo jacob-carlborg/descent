@@ -617,26 +617,26 @@ public abstract class BinExp extends Expression {
 		 */
 		if (e1.op == TOKvar) {
 			VarExp ve = (VarExp) e1;
-			VarDeclaration v = ve.var.isVarDeclaration();
+			IVarDeclaration v = ve.var.isVarDeclaration();
 			if (null != v && !v.isDataseg(context)) {
 				/* Chase down rebinding of out and ref
 				 */
-				if (null != v.value && v.value.op == TOKvar) {
-					ve = (VarExp) v.value;
+				if (null != v.value() && v.value().op == TOKvar) {
+					ve = (VarExp) v.value();
 					v = ve.var.isVarDeclaration();
 					assert (null != v);
 				}
 
-				Expression ev = v.value;
+				Expression ev = v.value();
 				if (null != fp && null == ev) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
 					return e;
 				}
 				if (null != fp)
-					e2 = fp.call(v.type, ev, e2, context);
+					e2 = fp.call(v.type(), ev, e2, context);
 				else
-					e2 = Constfold.Cast(v.type, v.type, e2, context);
+					e2 = Constfold.Cast(v.type(), v.type(), e2, context);
 				if (e2 != EXP_CANT_INTERPRET) {
 					if (!v.isParameter()) {
 						for (int i = 0; true; i++) {
@@ -651,7 +651,7 @@ public abstract class BinExp extends Expression {
 								break;
 						}
 					}
-					v.value = e2;
+					v.value(e2);
 					e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
 				}
 			}
@@ -661,18 +661,18 @@ public abstract class BinExp extends Expression {
 		 */
 		else if (e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff) {
 			SymOffExp soe = (SymOffExp) ((PtrExp) e1).e1;
-			VarDeclaration v = soe.var.isVarDeclaration();
+			IVarDeclaration v = soe.var.isVarDeclaration();
 
 			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
-			if (null != fp && null == v.value) {
+			if (null != fp && null == v.value()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
 				return e;
 			}
-			if (v.value.op != TOKstructliteral)
+			if (v.value().op != TOKstructliteral)
 				return EXP_CANT_INTERPRET;
-			StructLiteralExp se = (StructLiteralExp) v.value;
+			StructLiteralExp se = (StructLiteralExp) v.value();
 			int fieldi = se.getFieldIndex(type, soe.offset.intValue(), context);
 			if (fieldi == -1)
 				return EXP_CANT_INTERPRET;
@@ -705,8 +705,8 @@ public abstract class BinExp extends Expression {
 				else
 					expsx.set(j, se.elements.get(j));
 			}
-			v.value = new StructLiteralExp(se.loc, se.sd, expsx);
-			v.value.type = se.type;
+			v.value(new StructLiteralExp(se.loc, se.sd, expsx));
+			v.value().type = se.type;
 
 			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
 		}
@@ -716,18 +716,18 @@ public abstract class BinExp extends Expression {
 		else if (e1.op == TOKindex && ((IndexExp) e1).e1.op == TOKvar) {
 			IndexExp ie = (IndexExp) e1;
 			VarExp ve = (VarExp) ie.e1;
-			VarDeclaration v = ve.var.isVarDeclaration();
+			IVarDeclaration v = ve.var.isVarDeclaration();
 
 			if (null == v || v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
-			if (null == v.value) {
+			if (null == v.value()) {
 				if (null != fp) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
 					return e;
 				}
 
-				Type t = v.type.toBasetype(context);
+				Type t = v.type().toBasetype(context);
 				if (t.ty == Tsarray) {
 					/* This array was void initialized. Create a
 					 * default initializer for it.
@@ -736,15 +736,15 @@ public abstract class BinExp extends Expression {
 					 * But we're too lazy at the moment to do it, as that
 					 * involves redoing Index() and whoever calls it.
 					 */
-					Expression ev = v.type.defaultInit(context);
+					Expression ev = v.type().defaultInit(context);
 					int dim = ((TypeSArray) t).dim.toInteger(context)
 							.intValue();
 					Expressions elements = new Expressions();
 					for (int i = 0; i < dim; i++)
 						elements.add(ev);
 					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
-					ae.type = v.type;
-					v.value = ae;
+					ae.type = v.type();
+					v.value(ae);
 				} else
 					return EXP_CANT_INTERPRET;
 			}
@@ -752,12 +752,12 @@ public abstract class BinExp extends Expression {
 			ArrayLiteralExp ae = null;
 			AssocArrayLiteralExp aae = null;
 			StringExp se = null;
-			if (v.value.op == TOKarrayliteral)
-				ae = (ArrayLiteralExp) v.value;
-			else if (v.value.op == TOKassocarrayliteral)
-				aae = (AssocArrayLiteralExp) v.value;
-			else if (v.value.op == TOKstring)
-				se = (StringExp) v.value;
+			if (v.value().op == TOKarrayliteral)
+				ae = (ArrayLiteralExp) v.value();
+			else if (v.value().op == TOKassocarrayliteral)
+				aae = (AssocArrayLiteralExp) v.value();
+			else if (v.value().op == TOKstring)
+				se = (StringExp) v.value();
 			else
 				return EXP_CANT_INTERPRET;
 
@@ -767,7 +767,7 @@ public abstract class BinExp extends Expression {
 			Expression ev = null;
 			if (null != fp || null != ae || null != se) // not for aae, because key might not be there
 			{
-				ev = Index.call(type, v.value, index, context);
+				ev = Index.call(type, v.value(), index, context);
 				if (ev == EXP_CANT_INTERPRET)
 					return EXP_CANT_INTERPRET;
 			}
@@ -802,8 +802,8 @@ public abstract class BinExp extends Expression {
 					else
 						expsx.add(ae.elements.get(j));
 				}
-				v.value = new ArrayLiteralExp(ae.loc, expsx);
-				v.value.type = ae.type;
+				v.value(new ArrayLiteralExp(ae.loc, expsx));
+				v.value().type = ae.type;
 			} else if (null != aae) {
 				/* Create new associative array literal reflecting updated key/value
 				 */
@@ -829,8 +829,8 @@ public abstract class BinExp extends Expression {
 					keysx = new Expressions(keysx);
 					keysx.add(index);
 				}
-				v.value = new AssocArrayLiteralExp(aae.loc, keysx, valuesx);
-				v.value.type = aae.type;
+				v.value(new AssocArrayLiteralExp(aae.loc, keysx, valuesx));
+				v.value().type = aae.type;
 			} else if (null != se) {
 				/* Create new string literal reflecting updated elem
 				 */
@@ -868,7 +868,7 @@ public abstract class BinExp extends Expression {
 				se2.committed = se.committed;
 				se2.postfix = se.postfix;
 				se2.type = se.type;
-				v.value = se2;
+				v.value(se2);
 			} else {
 				assert (false);
 			}
@@ -905,10 +905,10 @@ public abstract class BinExp extends Expression {
 		else
 			ad2 = null;
 
-		Dsymbol s = null;
-		Dsymbol s_r = null;
-		FuncDeclaration fd = null;
-		TemplateDeclaration td = null;
+		IDsymbol s = null;
+		IDsymbol s_r = null;
+		IFuncDeclaration fd = null;
+		ITemplateDeclaration td = null;
 		if (ad1 != null && id != null) {
 			s = search_function(ad1, id, context);
 		}
@@ -923,7 +923,7 @@ public abstract class BinExp extends Expression {
 			 * and see which is better.
 			 */
 			Expression e;
-			FuncDeclaration lastf;
+			IFuncDeclaration lastf;
 
 			args1.setDim(1);
 			args1.set(0, e1);
@@ -958,7 +958,7 @@ public abstract class BinExp extends Expression {
 
 			if (m.count > 1) {
 				// Error, ambiguous
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type().toChars(context), m.nextf.type()
 								.toChars(context), m.lastf.toChars(context) }));
 			} else if (m.last == MATCHnomatch) {
 				m.lastf = m.anyf;
@@ -997,7 +997,7 @@ public abstract class BinExp extends Expression {
 				 * and see which is better.
 				 */
 				Expression e;
-				FuncDeclaration lastf;
+				IFuncDeclaration lastf;
 
 				if (0 == argsset) {
 					args1.setDim(1);
@@ -1033,7 +1033,7 @@ public abstract class BinExp extends Expression {
 				if (m.count > 1) {
 					// Error, ambiguous
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
+							IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type().toChars(context), m.nextf.type().toChars(context), m.lastf.toChars(context) }));
 				} else if (m.last == MATCHnomatch) {
 					m.lastf = m.anyf;
 				}

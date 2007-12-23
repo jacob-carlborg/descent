@@ -36,7 +36,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbols include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
+	public Dsymbols include(Scope sc, IScopeDsymbol sd, SemanticContext context) {
 		Assert.isNotNull(condition);
 		return condition.include(sc, sd, context) ? decl : elsedecl;
 	}
@@ -71,7 +71,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 			buf.writeByte('{');
 			buf.writenl();
 			if (decl != null) {
-				for (Dsymbol s : decl) {
+				for (IDsymbol s : decl) {
 					buf.writestring("    ");
 					s.toCBuffer(buf, hgs, context);
 				}
@@ -83,7 +83,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 				buf.writenl();
 				buf.writeByte('{');
 				buf.writenl();
-				for (Dsymbol s : elsedecl) {
+				for (IDsymbol s : elsedecl) {
 					buf.writestring("    ");
 					s.toCBuffer(buf, hgs, context);
 				}

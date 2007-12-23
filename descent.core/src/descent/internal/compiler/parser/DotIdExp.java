@@ -46,26 +46,26 @@ public class DotIdExp extends UnaExp {
 		 * if we have no this pointer.
 		 */
 		if ((e1.op == TOKthis || e1.op == TOKsuper) && hasThis(sc) == null) {
-			ClassDeclaration cd;
-			StructDeclaration sd;
-			AggregateDeclaration ad;
+			IClassDeclaration cd;
+			IStructDeclaration sd;
+			IAggregateDeclaration ad;
 
 			ad = sc.getStructClassScope();
 			if (ad != null) {
 				cd = ad.isClassDeclaration();
 				if (cd != null) {
 					if (e1.op == TOKthis) {
-						e = new TypeDotIdExp(loc, cd.type, ident);
+						e = new TypeDotIdExp(loc, cd.type(), ident);
 						return e.semantic(sc, context);
-					} else if (cd.baseClass != null && e1.op == TOKsuper) {
-						e = new TypeDotIdExp(loc, cd.baseClass.type, ident);
+					} else if (cd.baseClass() != null && e1.op == TOKsuper) {
+						e = new TypeDotIdExp(loc, cd.baseClass().type(), ident);
 						return e.semantic(sc, context);
 					}
 				} else {
 					sd = ad.isStructDeclaration();
 					if (sd != null) {
 						if (e1.op == TOKthis) {
-							e = new TypeDotIdExp(loc, sd.type, ident);
+							e = new TypeDotIdExp(loc, sd.type(), ident);
 							return e.semantic(sc, context);
 						}
 					}
@@ -97,7 +97,7 @@ public class DotIdExp extends UnaExp {
 
 		if (eright.op == TOKimport) // also used for template alias's
 		{
-			Dsymbol s;
+			IDsymbol s;
 			ScopeExp ie = (ScopeExp) eright;
 
 			s = ie.sds.search(loc, ident, 0, context);
@@ -105,27 +105,27 @@ public class DotIdExp extends UnaExp {
 				s = s.toAlias(context);
 				checkDeprecated(sc, s, context);
 
-				EnumMember em = s.isEnumMember();
+				IEnumMember em = s.isEnumMember();
 				if (em != null) {
-					e = em.value;
+					e = em.value();
 					e = e.semantic(sc, context);
 					return e;
 				}
 
-				VarDeclaration v = s.isVarDeclaration();
+				IVarDeclaration v = s.isVarDeclaration();
 				if (v != null) {
-					if (v.inuse != 0) {
+					if (v.inuse() != 0) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
 						type = Type.tint32;
 						return this;
 					}
-					type = v.type;
+					type = v.type();
 					if (v.isConst()) {
-						if (v.init != null) {
-							ExpInitializer ei = v.init.isExpInitializer();
+						if (v.init() != null) {
+							IExpInitializer ei = v.init().isExpInitializer();
 							if (ei != null) {
-								if (same(ei.exp.type, type, context)) {
-									e = ei.exp.copy(); // make copy so we can change loc
+								if (same(ei.exp().type, type, context)) {
+									e = ei.exp().copy(); // make copy so we can change loc
 									e.loc = loc;
 									return e;
 								}
@@ -146,13 +146,13 @@ public class DotIdExp extends UnaExp {
 						e = new VarExp(loc, v);
 						if (eleft != null) {
 							e = new CommaExp(loc, eleft, e);
-							e.type = v.type;
+							e.type = v.type();
 						}
 					}
 					return e.deref();
 				}
 
-				FuncDeclaration f = s.isFuncDeclaration();
+				IFuncDeclaration f = s.isFuncDeclaration();
 				if (f != null) {
 					if (f.needThis()) {
 						if (eleft == null) {
@@ -164,7 +164,7 @@ public class DotIdExp extends UnaExp {
 						e = new VarExp(loc, f);
 						if (eleft != null) {
 							e = new CommaExp(loc, eleft, e);
-							e.type = f.type;
+							e.type = f.type();
 						}
 					}
 					return e;
@@ -175,7 +175,7 @@ public class DotIdExp extends UnaExp {
 					return new TypeExp(loc, t);
 				}
 
-				ScopeDsymbol sds = s.isScopeDsymbol();
+				IScopeDsymbol sds = s.isScopeDsymbol();
 				if (sds != null) {
 					e = new ScopeExp(loc, sds);
 					e = e.semantic(sc, context);
@@ -185,11 +185,11 @@ public class DotIdExp extends UnaExp {
 					return e;
 				}
 
-				Import imp = s.isImport();
+				IImport imp = s.isImport();
 				if (imp != null) {
 					ScopeExp ie2;
 
-					ie2 = new ScopeExp(loc, imp.pkg);
+					ie2 = new ScopeExp(loc, imp.pkg());
 					return ie2.semantic(sc, context);
 				}
 

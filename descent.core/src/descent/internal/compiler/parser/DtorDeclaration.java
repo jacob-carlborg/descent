@@ -64,19 +64,19 @@ public class DtorDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		ClassDeclaration cd;
+		IClassDeclaration cd;
 
 		parent = sc.parent;
-		Dsymbol parent = toParent();
+		IDsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.DestructorsOnlyForClass, this));
 		} else {
-			if (cd.dtors == null) {
-				cd.dtors = new FuncDeclarations();
+			if (cd.dtors() == null) {
+				cd.dtors(new FuncDeclarations());
 			}
-			cd.dtors.add(this);
+			cd.dtors().add(this);
 		}
 		type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 

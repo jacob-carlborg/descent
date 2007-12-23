@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.STC.*;
 
 // DMD 1.020
-public class SymbolDeclaration extends Declaration {
+public class SymbolDeclaration extends Declaration implements ISymbolDeclaration {
 	
 	public Symbol sym;
 	public StructDeclaration dsym;
@@ -19,6 +19,14 @@ public class SymbolDeclaration extends Declaration {
     public SymbolDeclaration isSymbolDeclaration()
     {
         return this;
+    }
+    
+    public IStructDeclaration dsym() {
+    	return dsym;
+    }
+    
+    public Symbol sym() {
+    	return sym;
     }
 	
 }

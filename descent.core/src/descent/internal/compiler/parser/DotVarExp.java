@@ -16,9 +16,9 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 // DMD 1.020
 public class DotVarExp extends UnaExp {
 
-	public Declaration var;
+	public IDeclaration var;
 
-	public DotVarExp(Loc loc, Expression e, Declaration var) {
+	public DotVarExp(Loc loc, Expression e, IDeclaration var) {
 		super(loc, TOK.TOKdotvar, e);
 		this.var = var;
 	}
@@ -38,19 +38,19 @@ public class DotVarExp extends UnaExp {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
-			Dsymbol s = sc.func;
+			IDsymbol s = sc.func;
 			while (true) {
-				FuncDeclaration fd = null;
+				IFuncDeclaration fd = null;
 				if (s != null) {
 					fd = s.isFuncDeclaration();
 				}
 				if (fd != null
-						&& ((fd.isCtorDeclaration() != null && (var.storage_class & STCfield) != 0) || (fd
-								.isStaticCtorDeclaration() != null && (var.storage_class & STCfield) == 0))
+						&& ((fd.isCtorDeclaration() != null && (var.storage_class() & STCfield) != 0) || (fd
+								.isStaticCtorDeclaration() != null && (var.storage_class() & STCfield) == 0))
 						&& fd.toParent() == var.toParent() && e1.op == TOKthis) {
-					VarDeclaration v = var.isVarDeclaration();
+					IVarDeclaration v = var.isVarDeclaration();
 					Assert.isNotNull(v);
-					v.ctorinit = true;
+					v.ctorinit(true);
 				} else {
 					if (s != null) {
 						s = s.toParent2();
@@ -82,9 +82,9 @@ public class DotVarExp extends UnaExp {
 				Expressions exps = new Expressions();
 				exps.setDim(tup.objects.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
-					ASTDmdNode o = tup.objects.get(i);
+					INode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.start, o.length, new String[] { o.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
@@ -104,7 +104,7 @@ public class DotVarExp extends UnaExp {
 			}
 
 			e1 = e1.semantic(sc, context);
-			type = var.type;
+			type = var.type();
 			if (type == null && context.global.errors > 0) { // var is goofed up, just return 0
 				return new IntegerExp(loc, 0);
 			}
@@ -112,7 +112,7 @@ public class DotVarExp extends UnaExp {
 
 			if (var.isFuncDeclaration() == null) // for functions, do checks after overload resolution
 			{
-				AggregateDeclaration ad = var.toParent()
+				IAggregateDeclaration ad = var.toParent()
 						.isAggregateDeclaration();
 
 				boolean loop = true;
@@ -124,7 +124,7 @@ public class DotVarExp extends UnaExp {
 					if (ad != null
 							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
 							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
-						ClassDeclaration cd = ad.isClassDeclaration();
+						IClassDeclaration cd = ad.isClassDeclaration();
 						ClassDeclaration tcd = t.isClassHandle();
 
 						if (cd == null
@@ -138,17 +138,17 @@ public class DotVarExp extends UnaExp {
 
 								// Skip over nested functions, and get the enclosing
 								// class type.
-								Dsymbol s = tcd.toParent();
+								IDsymbol s = tcd.toParent();
 								while (s != null
 										&& s.isFuncDeclaration() != null) {
-									FuncDeclaration f = s.isFuncDeclaration();
-									if (f.vthis != null) {
-										e1 = new VarExp(loc, f.vthis);
+									IFuncDeclaration f = s.isFuncDeclaration();
+									if (f.vthis() != null) {
+										e1 = new VarExp(loc, f.vthis());
 									}
 									s = s.toParent();
 								}
 								if (s != null && s.isClassDeclaration() != null) {
-									e1.type = s.isClassDeclaration().type;
+									e1.type = s.isClassDeclaration().type();
 								}
 
 								// goto L1;

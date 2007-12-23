@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.core.compiler.IProblem;
 
 // DMD 1.020
-public abstract class Initializer extends ASTDmdNode {
+public abstract class Initializer extends ASTDmdNode implements IInitializer {
 	
 	public Loc loc;
 

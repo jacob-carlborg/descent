@@ -18,7 +18,10 @@ import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.env.ISourceType;
+import descent.internal.compiler.env.NameEnvironmentAdapter;
 import descent.internal.compiler.env.NameEnvironmentAnswer;
+import descent.internal.compiler.parser.IModule;
+import descent.internal.core.resolved.RModule;
 import descent.internal.core.search.BasicSearchEngine;
 import descent.internal.core.search.IRestrictedAccessTypeRequestor;
 
@@ -27,6 +30,7 @@ import descent.internal.core.search.IRestrictedAccessTypeRequestor;
  *	uses the Java model as a search tool.  
  */
 public class SearchableEnvironment
+	extends NameEnvironmentAdapter
 	implements INameEnvironment, IJavaSearchConstants {
 	
 	public NameLookup nameLookup;
@@ -340,6 +344,15 @@ public class SearchableEnvironment
 			pkgName[length] = new String(subPackageName);
 		}
 		return this.nameLookup.isPackage(pkgName);
+	}
+	
+	@Override
+	public IModule findModule(char[][] compoundName) {
+		descent.core.ICompilationUnit unit = this.nameLookup.findCompilationUnit(CharOperation.toString(compoundName));
+		if (unit == null) {
+			return null;
+		}
+		return new RModule(unit);
 	}
 
 	/**

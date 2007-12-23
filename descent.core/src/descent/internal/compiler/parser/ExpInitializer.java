@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ExpInitializer extends Initializer {
+public class ExpInitializer extends Initializer implements IExpInitializer {
 
 	public Expression exp;
 	public Expression sourceExp;
@@ -98,6 +98,14 @@ public class ExpInitializer extends Initializer {
 	@Override
 	public Expression toExpression(SemanticContext context) {
 		return exp;
+	}
+	
+	public Expression exp() {
+		return exp;
+	}
+	
+	public void exp(Expression exp) {
+		this.exp = exp;
 	}
 
 }

@@ -9,9 +9,9 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 // DMD 1.020
 public class DsymbolExp extends Expression {
 
-	public Dsymbol s;
+	public IDsymbol s;
 
-	public DsymbolExp(Loc loc, Dsymbol s) {
+	public DsymbolExp(Loc loc, IDsymbol s) {
 		super(loc, TOK.TOKdsymbol);
 		this.s = s;
 	}
@@ -30,16 +30,16 @@ public class DsymbolExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		// Lagain:
-		EnumMember em;
+		IEnumMember em;
 		Expression e;
-		VarDeclaration v;
-		FuncDeclaration f;
+		IVarDeclaration v;
+		IFuncDeclaration f;
 		FuncLiteralDeclaration fld;
 		// Declaration d;
-		ClassDeclaration cd;
-		ClassDeclaration thiscd = null;
-		Import imp;
-		Package pkg;
+		IClassDeclaration cd;
+		IClassDeclaration thiscd = null;
+		IImport imp;
+		IPackage pkg;
 		Type t;
 
 		boolean loop = true;
@@ -76,15 +76,15 @@ public class DsymbolExp extends Expression {
 
 			em = s.isEnumMember();
 			if (em != null) {
-				e = em.value;
+				e = em.value();
 				e = e.semantic(sc, context);
 				return e;
 			}
 			v = s.isVarDeclaration();
 			if (v != null) {
 				if (type == null) {
-					type = v.type;
-					if (v.type == null) {
+					type = v.type();
+					if (v.type() == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, this,
 								new String[] { v.toString() }));
@@ -92,15 +92,15 @@ public class DsymbolExp extends Expression {
 					}
 				}
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
-					if (v.init != null) {
-						if (v.inuse != 0) {
+					if (v.init() != null) {
+						if (v.inuse() != 0) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
 							type = Type.tint32;
 							return this;
 						}
-						ExpInitializer ei = v.init.isExpInitializer();
+						IExpInitializer ei = v.init().isExpInitializer();
 						if (ei != null) {
-							e = ei.exp.copy(); // make copy so we can change loc
+							e = ei.exp().copy(); // make copy so we can change loc
 							if (e.op == TOKstring || e.type == null) {
 								e = e.semantic(sc, context);
 							}
@@ -143,7 +143,7 @@ public class DsymbolExp extends Expression {
 			if (imp != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(loc, imp.pkg);
+				ie = new ScopeExp(loc, imp.pkg());
 				return ie.semantic(sc, context);
 			}
 			pkg = s.isPackage();
@@ -153,7 +153,7 @@ public class DsymbolExp extends Expression {
 				ie = new ScopeExp(loc, pkg);
 				return ie.semantic(sc, context);
 			}
-			Module mod = s.isModule();
+			IModule mod = s.isModule();
 			if (mod != null) {
 				ScopeExp ie;
 
@@ -171,9 +171,9 @@ public class DsymbolExp extends Expression {
 				Expressions exps = new Expressions(tup.objects
 						.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
-					ASTDmdNode o = tup.objects.get(i);
+					INode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.start, o.length, new String[] { o.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
 					} else {
 						Expression e2 = (Expression) o;
 						e2 = e2.syntaxCopy(context);
@@ -201,7 +201,7 @@ public class DsymbolExp extends Expression {
 				return e;
 			}
 
-			TemplateDeclaration td = s.isTemplateDeclaration();
+			ITemplateDeclaration td = s.isTemplateDeclaration();
 			if (td != null) {
 				e = new TemplateExp(loc, td);
 				e = e.semantic(sc, context);

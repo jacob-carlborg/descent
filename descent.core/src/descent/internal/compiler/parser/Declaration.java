@@ -7,7 +7,7 @@ import static descent.internal.compiler.parser.STC.STCref;
 import descent.core.compiler.IProblem;
 
 // DMD 1.020
-public abstract class Declaration extends Dsymbol {
+public abstract class Declaration extends Dsymbol implements IDeclaration {
 
 	public Type type;
 	public Type sourceType;
@@ -156,6 +156,34 @@ public abstract class Declaration extends Dsymbol {
 		p = buf.toChars();
 		buf.data = null;
 		return p;
+	}
+	
+	public Type type() {
+		return type;
+	}
+	
+	public int storage_class() {
+		return storage_class;
+	}
+	
+	public void storage_class(int storage_class) {
+		this.storage_class = storage_class;
+	}
+	
+	public LINK linkage() {
+		return linkage;
+	}
+	
+	public void linkage(LINK linkage) {
+		this.linkage = linkage;
+	}
+	
+	public PROT protection() {
+		return protection;
+	}
+	
+	public void protection(PROT protection) {
+		this.protection = protection;
 	}
 
 }

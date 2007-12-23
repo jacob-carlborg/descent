@@ -6,9 +6,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class TemplateExp extends Expression {
 	
-	public TemplateDeclaration td;
+	public ITemplateDeclaration td;
 
-    public TemplateExp(Loc loc, TemplateDeclaration td) {
+    public TemplateExp(Loc loc, ITemplateDeclaration td) {
     	super(loc, TOK.TOKtemplate);
 		this.td = td;    	
     }

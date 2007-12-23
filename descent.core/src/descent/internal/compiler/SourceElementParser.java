@@ -343,7 +343,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	public boolean visit(TemplateDeclaration node) {
 		// TODO Java -> D
 		if (node.wrapper) {
-			Dsymbol wrappedSymbol = node.members.get(0);
+			Dsymbol wrappedSymbol = (Dsymbol) node.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				visit((FuncDeclaration) wrappedSymbol, node);
 				return false;
@@ -741,23 +741,25 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		if (thenDeclarations != null && !thenDeclarations.isEmpty()) {
 			if (elseDeclarations != null && !elseDeclarations.isEmpty()) {
-				requestor.enterConditionalThen(startOf(thenDeclarations.get(0)));
+				requestor.enterConditionalThen(startOf((Dsymbol) thenDeclarations.get(0))); // SEMANTIC
 			}
-			for(Dsymbol declaration : thenDeclarations) {
+			for(IDsymbol ideclaration : thenDeclarations) {
+				Dsymbol declaration = (Dsymbol) ideclaration; // SEMANTIC
 				declaration.accept(this);
 			}
 			if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
-				requestor.exitConditionalThen(endOf(thenDeclarations.get(thenDeclarations.size() - 1)));
+				requestor.exitConditionalThen(endOf((Dsymbol) thenDeclarations.get(thenDeclarations.size() - 1))); // SEMANTIC
 			}
 		}
 		
 		
 		if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
-			requestor.enterConditionalElse(startOf(elseDeclarations.get(0)));
-			for(Dsymbol declaration : elseDeclarations) {
+			requestor.enterConditionalElse(startOf((Dsymbol) elseDeclarations.get(0))); // SEMANTIC
+			for(IDsymbol ideclaration : elseDeclarations) {
+				Dsymbol declaration = (Dsymbol) ideclaration; // SEMANTIC
 				declaration.accept(this);
 			}
-			requestor.exitConditionalElse(endOf(elseDeclarations.get(elseDeclarations.size() - 1)));
+			requestor.exitConditionalElse(endOf((Dsymbol) elseDeclarations.get(elseDeclarations.size() - 1))); // SEMANTIC
 		}
 		
 		pushLevelInAttribDeclarationStack();

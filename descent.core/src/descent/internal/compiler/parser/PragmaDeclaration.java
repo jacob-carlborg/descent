@@ -101,7 +101,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		}
 
 		if (decl != null) {
-			for (Dsymbol s : decl) {
+			for (IDsymbol s : decl) {
 				s.semantic(sc, context);
 			}
 		}

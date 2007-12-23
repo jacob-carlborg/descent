@@ -63,8 +63,8 @@ public class TypeIdentifier extends TypeQualified {
 
 	@Override
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
-			Dsymbol[] ps, SemanticContext context) {
-		Dsymbol s;
+			IDsymbol[] ps, SemanticContext context) {
+		IDsymbol s;
 		Dsymbol[] scopesym = { null };
 
 		s = sc.search(loc, ident, scopesym, context);
@@ -142,13 +142,13 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
 		if (null == sc) {
 			return null;
 		}
 
 		Dsymbol[] scopesym = { null };
-		Dsymbol s = sc.search(loc, ident, scopesym, context);
+		IDsymbol s = sc.search(loc, ident, scopesym, context);
 		if (s != null) {
 			if (idents != null) {
 				for (int i = 0; i < idents.size(); i++) {

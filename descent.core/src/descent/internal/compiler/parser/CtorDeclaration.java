@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class CtorDeclaration extends FuncDeclaration {
+public class CtorDeclaration extends FuncDeclaration implements ICtorDeclaration {
 
 	public Arguments arguments;
 	public int varargs;
@@ -65,21 +65,21 @@ public class CtorDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		ClassDeclaration cd;
+		IClassDeclaration cd;
 		Type tret;
 
 		sc = sc.push();
 		sc.stc &= ~STC.STCstatic; // not a static constructor
 
 		parent = sc.parent;
-		Dsymbol parent = toParent();
+		IDsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.ConstructorsOnlyForClass, this));
 			tret = Type.tvoid;
 		} else {
-			tret = cd.type; // .referenceTo();
+			tret = cd.type(); // .referenceTo();
 		}
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
 
@@ -105,7 +105,7 @@ public class CtorDeclaration extends FuncDeclaration {
 
 		// See if it's the default constructor
 		if (cd != null && varargs == 0 && Argument.dim(arguments, context) == 0) {
-			cd.defaultCtor = this;
+			cd.defaultCtor(this);
 		}
 
 	}

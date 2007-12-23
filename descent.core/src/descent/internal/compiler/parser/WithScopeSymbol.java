@@ -22,7 +22,7 @@ public class WithScopeSymbol extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public IDsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
 		return withstate.exp.type.toDsymbol(null, context).search(loc, ident,
 				0, context);

@@ -28,7 +28,7 @@ public class StaticAssert extends Dsymbol {
 	}
 
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		return 0; // we didn't add anything
 	}

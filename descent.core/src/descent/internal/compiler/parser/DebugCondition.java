@@ -32,7 +32,7 @@ public class DebugCondition extends DVCondition {
 	}
 
 	@Override
-	public boolean include(Scope sc, ScopeDsymbol s, SemanticContext context) {
+	public boolean include(Scope sc, IScopeDsymbol s, SemanticContext context) {
 		if (inc == 0) {
 			inc = 2;
 			if (ident != null) {

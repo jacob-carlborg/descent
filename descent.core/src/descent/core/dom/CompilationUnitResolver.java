@@ -14,8 +14,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import descent.core.ICompilationUnit;
-import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
@@ -32,6 +30,8 @@ import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.core.CancelableNameEnvironment;
+import descent.internal.core.JavaProject;
 import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
@@ -141,7 +141,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return new ParseResult(module, scanner);
 	}
 	
-	public static ParseResult resolve(int apiLevel,
+	public static ParseResult resolve(
+			int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			IJavaProject javaProject,
 			Map options,
@@ -150,24 +151,37 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
-		result.context = resolve(result.module);
+		result.context = resolve(result.module, javaProject, owner);
 		return result;
 	}
 	
-	public static SemanticContext resolve(final Module module, ICompilationUnit unit) {
-		// Add the package fragment root as an import path
-		IPackageFragmentRoot root = (IPackageFragmentRoot) unit.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+	public static SemanticContext resolve(
+			final Module module, 
+			final IJavaProject project,
+			final WorkingCopyOwner owner) 
+		throws JavaModelException {
+		// Add the package fragment roots as an import path
 		Global global = new Global();
-		global.path.add(root.getResource().getLocation().toOSString());
+		try {
+			for(IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
+				if (root.getResource() == null) {
+					global.path.add(root.getPath().toOSString());
+				} else {
+					global.path.add(root.getResource().getLocation().toOSString());
+				}
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
 		
-		return resolve(module, global);
+		return resolve(module, project, global, owner);
 	}
 	
-	public static SemanticContext resolve(final Module module) {
-		return resolve(module, new Global());
-	}
-	
-	public static SemanticContext resolve(final Module module, Global global) {
+	public static SemanticContext resolve(
+			final Module module, 
+			final IJavaProject project,
+			final Global global,
+			final WorkingCopyOwner owner) throws JavaModelException {
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);
@@ -181,7 +195,12 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			}
 		};
 		
-		SemanticContext context = new SemanticContext(problemRequestor, module, global);
+		SemanticContext context = new SemanticContext(
+				problemRequestor, 
+				module, 
+				project,
+				new CancelableNameEnvironment((JavaProject) project, owner, null),
+				global);
 		
 		if (!RESOLVE) return context;
 		

@@ -97,7 +97,7 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 			try {
 				Parser parser = new Parser(spec.getApiLevel(), source);
 				Module module = parser.parseModuleObj();
-				CompilationUnitResolver.resolve(module);
+				//CompilationUnitResolver.resolve(module);
 				
 				spec.validate(source, module);
 				passed++;
@@ -141,7 +141,7 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				
 				Global global = new Global();
 				global.params.warnings = false;
-				CompilationUnitResolver.resolve(module, global);
+				//CompilationUnitResolver.resolve(module, global);
 				
 				if (module.problems.size() == 0) {
 					passed++;
@@ -197,7 +197,7 @@ public class Dstress_Test extends Parser_Test implements IDstressConfiguration {
 				
 				Global global = new Global();
 				global.params.warnings = false;
-				CompilationUnitResolver.resolve(module, global);
+				//CompilationUnitResolver.resolve(module, global);
 				
 				if (module.problems.size() == 0) {
 					passed++;

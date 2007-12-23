@@ -6,7 +6,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class Dsymbol extends ASTDmdNode {
+public class Dsymbol extends ASTDmdNode implements IDsymbol {
 
 	public static Arguments arraySyntaxCopy(Arguments a, SemanticContext context) {
 		Arguments b = new Arguments();
@@ -24,7 +24,7 @@ public class Dsymbol extends ASTDmdNode {
 			b = new Dsymbols();
 			b.setDim(a.size());
 			for(int i = 0; i < a.size(); i++) {
-				Dsymbol s = a.get(i);
+				IDsymbol s = a.get(i);
 				b.set(i, s.syntaxCopy(null, context));
 			}
 		}
@@ -37,7 +37,7 @@ public class Dsymbol extends ASTDmdNode {
 
 		if (members != null) {
 			for (int i = 0; i < members.size(); i++) {
-				Dsymbol sx = members.get(i);
+				IDsymbol sx = members.get(i);
 
 				boolean x = sx.oneMember(ps, context);
 				if (!x) {
@@ -59,7 +59,7 @@ public class Dsymbol extends ASTDmdNode {
 
 	public IdentifierExp ident;
 	public IdentifierExp c_ident;
-	public Dsymbol parent;
+	public IDsymbol parent;
 	public Loc loc;
 
 	public Dsymbol() {
@@ -75,21 +75,20 @@ public class Dsymbol extends ASTDmdNode {
 	protected void accept0(IASTVisitor visitor) {
 	}
 
-	public void addLocalClass(ClassDeclarations aclasses,
-			SemanticContext context) {
+	public void addLocalClass(ClassDeclarations aclasses, SemanticContext context) {
 
 	}
 
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		parent = sd;
 		if (!isAnonymous()) // no name, so can't add it to symbol table
 		{
-			if (sd.symtab.insert(this) == null) // if name is already defined
+			if (sd.symtab().insert(this) == null) // if name is already defined
 			{
 				Dsymbol s2;
 
-				s2 = sd.symtab.lookup(ident);
+				s2 = (Dsymbol) sd.symtab().lookup(ident); // SEMANTIC
 				if (!s2.overloadInsert(this, context)) {
 					ScopeDsymbol.multiplyDefined(Loc.ZERO, this, s2, context);
 				}
@@ -117,7 +116,7 @@ public class Dsymbol extends ASTDmdNode {
 	public void checkDeprecated(Scope sc, SemanticContext context) {
 		if (!context.global.params.useDeprecated && isDeprecated()) {
 			// Don't complain if we're inside a deprecated symbol's scope
-			for (Dsymbol sp = sc.parent; sp != null; sp = sp.parent) {
+			for (IDsymbol sp = sc.parent; sp != null; sp = sp.parent()) {
 				if (sp.isDeprecated()) {
 					return;
 				}
@@ -133,7 +132,7 @@ public class Dsymbol extends ASTDmdNode {
 		}
 	}
 
-	public void defineRef(Dsymbol s) {
+	public void defineRef(IDsymbol s) {
 		throw new IllegalStateException("Must be implemented by subclasses");
 	}
 
@@ -159,9 +158,9 @@ public class Dsymbol extends ASTDmdNode {
 		return ident.equals(s.ident);
 	}
 
-	public Module getModule() {
-		Module m;
-		Dsymbol s;
+	public IModule getModule() {
+		IModule m;
+		IDsymbol s;
 
 		s = this;
 		while (s != null) {
@@ -169,7 +168,7 @@ public class Dsymbol extends ASTDmdNode {
 			if (m != null) {
 				return m;
 			}
-			s = s.parent;
+			s = s.parent();
 		}
 		return null;
 	}
@@ -220,10 +219,10 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	// are we a member of a class?
-	public ClassDeclaration isClassMember() {
-		Dsymbol parent = toParent();
+	public IClassDeclaration isClassMember() {
+		IDsymbol parent = toParent();
 		if (parent != null && parent.isClassDeclaration() != null) {
-			return (ClassDeclaration) parent;
+			return (IClassDeclaration) parent;
 		}
 		return null;
 	}
@@ -248,7 +247,7 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 
-	public EnumDeclaration isEnumDeclaration() {
+	public IEnumDeclaration isEnumDeclaration() {
 		return null;
 	}
 
@@ -299,8 +298,8 @@ public class Dsymbol extends ASTDmdNode {
 	/**
 	 * Is this symbol a member of an AggregateDeclaration?
 	 */
-	public AggregateDeclaration isMember() {
-		Dsymbol parent = toParent();
+	public IAggregateDeclaration isMember() {
+		IDsymbol parent = toParent();
 		return parent != null ? parent.isAggregateDeclaration() : null;
 	}
 
@@ -308,7 +307,7 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 
-	public NewDeclaration isNewDeclaration() {
+	public INewDeclaration isNewDeclaration() {
 		return null;
 	}
 
@@ -348,7 +347,7 @@ public class Dsymbol extends ASTDmdNode {
 	/**
 	 * Is a 'this' required to access the member?
 	 */
-	public AggregateDeclaration isThis() {
+	public IAggregateDeclaration isThis() {
 		return null;
 	}
 
@@ -434,10 +433,10 @@ public class Dsymbol extends ASTDmdNode {
 		return false;
 	}
 
-	public Dsymbol pastMixin() {
-		Dsymbol s = this;
+	public IDsymbol pastMixin() {
+		IDsymbol s = this;
 		while (s != null && s.isTemplateMixin() != null) {
-			s = s.parent;
+			s = s.parent();
 		}
 		return s;
 	}
@@ -446,20 +445,20 @@ public class Dsymbol extends ASTDmdNode {
 		return PROT.PROTpublic;
 	}
 
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public IDsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
 		return null;
 	}
 
-	public final Dsymbol search(Loc loc, IdentifierExp ident, int flags,
+	public final IDsymbol search(Loc loc, IdentifierExp ident, int flags,
 			SemanticContext context) {
 		return search(loc, ident.ident, flags, context);
 	}
 
-	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
+	public IDsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
 			SemanticContext context) {
-		Dsymbol s = toAlias(context);
-		Dsymbol sm;
+		IDsymbol s = toAlias(context);
+		IDsymbol sm;
 
 		switch (id.dyncast()) {
 		case DYNCAST_IDENTIFIER:
@@ -477,7 +476,7 @@ public class Dsymbol extends ASTDmdNode {
 				return null;
 			}
 			sm = sm.toAlias(context);
-			TemplateDeclaration td = sm.isTemplateDeclaration();
+			ITemplateDeclaration td = sm.isTemplateDeclaration();
 			if (null == td) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolIsNotATemplate, this, new String[] { id.toChars(), sm.kind() }));
@@ -519,7 +518,7 @@ public class Dsymbol extends ASTDmdNode {
 		throw new IllegalStateException("Must be implemented by subclasses");
 	}
 
-	public Dsymbol toAlias(SemanticContext context) {
+	public IDsymbol toAlias(SemanticContext context) {
 		return this;
 	}
 	
@@ -527,8 +526,7 @@ public class Dsymbol extends ASTDmdNode {
 		throw new IllegalStateException("assert(0); // implement");
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
-			SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring(toChars(context));
 	}
 
@@ -537,14 +535,14 @@ public class Dsymbol extends ASTDmdNode {
 		return (ident != null && ident.ident != null) ? ident.toChars() : "__anonymous";
 	}
 
-	public Dsymbol toParent() {
+	public IDsymbol toParent() {
 		return parent != null ? parent.pastMixin() : null;
 	}
 
-	public Dsymbol toParent2() {
-		Dsymbol s = parent;
+	public IDsymbol toParent2() {
+		IDsymbol s = parent;
 		while (s != null && s.isTemplateInstance() != null) {
-			s = s.parent;
+			s = s.parent();
 		}
 		return s;
 	}
@@ -556,8 +554,8 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public String locToChars(SemanticContext context) {
-	    Module m = getModule();
-
+//	    IModule m = getModule();
+//
 //	    if (m != null && m.srcfile != null) {
 //	    	loc.filename = m.srcfile.toString().toCharArray();
 //	    }
@@ -578,6 +576,22 @@ public class Dsymbol extends ASTDmdNode {
 			return ident.getErrorLength();
 		}
 		return super.getErrorLength();
+	}
+	
+	public IdentifierExp ident() {
+		return ident;
+	}
+	
+	public IDsymbol parent() {
+		return parent;
+	}
+	
+	public void parent(IDsymbol parent) {
+		this.parent = parent;
+	}
+	
+	public Loc loc() {
+		return loc;
 	}
 
 }

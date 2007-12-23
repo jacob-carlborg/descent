@@ -46,7 +46,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
-public class FuncDeclaration extends Declaration {
+public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 
 	private final static char[] missing_return_expression = { 'm', 'i', 's',
 			's', 'i', 'n', 'g', ' ', 'r', 'e', 't', 'u', 'r', 'n', ' ', 'e',
@@ -93,7 +93,7 @@ public class FuncDeclaration extends Declaration {
 
 	// Support for NRVO (named return value optimization)
 	public int nrvo_can; // !=0 means we can do it
-	public VarDeclaration nrvo_var; // variable to replace with shidden
+	public IVarDeclaration nrvo_var; // variable to replace with shidden
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
 			Type type) {
@@ -126,15 +126,15 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean addPostInvariant(SemanticContext context) {
-		AggregateDeclaration ad = isThis();
+		IAggregateDeclaration ad = isThis();
 		return (ad != null
-				&& ad.inv != null
+				&& ad.inv() != null
 				&& context.global.params.useInvariants
 				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
 	}
 
 	public boolean addPreInvariant(SemanticContext context) {
-		AggregateDeclaration ad = isThis();
+		IAggregateDeclaration ad = isThis();
 		return (ad != null
 				&& context.global.params.useInvariants
 				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
@@ -408,10 +408,10 @@ public class FuncDeclaration extends Declaration {
 		return Expression.combine(e, eb);
 	}
 
-	public int getLevel(Loc loc, FuncDeclaration fd, SemanticContext context) {
+	public int getLevel(Loc loc, IFuncDeclaration fd, SemanticContext context) {
 		int level;
-		Dsymbol s;
-		Dsymbol fdparent;
+		IDsymbol s;
+		IDsymbol fdparent;
 
 		fdparent = fd.toParent2();
 		if (fdparent == this) {
@@ -420,15 +420,15 @@ public class FuncDeclaration extends Declaration {
 		s = this;
 		level = 0;
 		while (fd != s && fdparent != s.toParent2()) {
-			FuncDeclaration thisfd = s.isFuncDeclaration();
+			IFuncDeclaration thisfd = s.isFuncDeclaration();
 			if (thisfd != null) {
-				if (!thisfd.isNested() && null == thisfd.vthis) {
+				if (!thisfd.isNested() && null == thisfd.vthis()) {
 					// goto Lerr;
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
 					return 1;
 				}
 			} else {
-				ClassDeclaration thiscd = s.isClassDeclaration();
+				IClassDeclaration thiscd = s.isClassDeclaration();
 				if (thiscd != null) {
 					if (!thiscd.isNested()) {
 						// goto Lerr;
@@ -549,17 +549,17 @@ public class FuncDeclaration extends Declaration {
 						return null; // can't bind to non-interpreted vars
 					}
 
-					VarDeclaration v2;
+					IVarDeclaration v2;
 					while (true) {
 						VarExp ve = (VarExp) earg;
 						v2 = ve.var.isVarDeclaration();
 						if (null == v2) {
 							return null;
 						}
-						if (null == v2.value || v2.value.op != TOKvar) {
+						if (null == v2.value() || v2.value().op != TOKvar) {
 							break;
 						}
-						earg = v2.value;
+						earg = v2.value();
 					}
 
 					v.value = new VarExp(earg.loc, v2);
@@ -684,16 +684,16 @@ public class FuncDeclaration extends Declaration {
 				&& linkage != LINK.LINKc && isMember() == null && !isNested();
 	}
 
-	public AggregateDeclaration isMember2() {
-		AggregateDeclaration ad;
+	public IAggregateDeclaration isMember2() {
+		IAggregateDeclaration ad;
 
 		ad = null;
-		for (Dsymbol s = this; s != null; s = s.parent) {
+		for (IDsymbol s = this; s != null; s = s.parent()) {
 			ad = s.isMember();
 			if (ad != null) {
 				break;
 			}
-			if (s.parent == null || s.parent.isTemplateInstance() == null) {
+			if (s.parent() == null || s.parent().isTemplateInstance() == null) {
 				break;
 			}
 		}
@@ -706,8 +706,8 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	@Override
-	public AggregateDeclaration isThis() {
-		AggregateDeclaration ad;
+	public IAggregateDeclaration isThis() {
+		IAggregateDeclaration ad;
 
 		ad = null;
 		if ((storage_class & STCstatic) == 0) {
@@ -750,26 +750,26 @@ public class FuncDeclaration extends Declaration {
 		return i;
 	}
 
-	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
-		FuncDeclaration f;
-		Declaration d;
-		Declaration next;
+	public IFuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
+		IFuncDeclaration f;
+		IDeclaration d;
+		IDeclaration next;
 
 		for (d = this; d != null; d = next) {
 			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
 
 			if (fa != null) {
-				FuncDeclaration f2 = fa.funcalias
+				IFuncDeclaration f2 = fa.funcalias
 						.overloadExactMatch(t, context);
 				if (f2 != null) {
 					return f2;
 				}
 				next = fa.overnext;
 			} else {
-				AliasDeclaration a = d.isAliasDeclaration();
+				IAliasDeclaration a = d.isAliasDeclaration();
 
 				if (a != null) {
-					Dsymbol s = a.toAlias(context);
+					IDsymbol s = a.toAlias(context);
 					next = s.isDeclaration();
 					if (next == a) {
 						break;
@@ -779,10 +779,10 @@ public class FuncDeclaration extends Declaration {
 					if (f == null) {
 						break; // BUG: should print error message?
 					}
-					if (t.equals(d.type)) {
+					if (t.equals(d.type())) {
 						return f;
 					}
-					next = f.overnext;
+					next = f.overnext();
 				}
 			}
 		}
@@ -826,7 +826,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	// Modified to add the caller's start and length, to signal a better error
-	public FuncDeclaration overloadResolve(Expressions arguments,
+	public IFuncDeclaration overloadResolve(Expressions arguments,
 			SemanticContext context, ASTDmdNode caller) {
 		TypeFunction tf;
 		Match m = new Match();
@@ -851,8 +851,8 @@ public class FuncDeclaration extends Declaration {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, caller, new String[] { kindForError(context) + Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
 				return m.anyf; // as long as it's not a FuncAliasDeclaration
 			} else {
-				TypeFunction t1 = (TypeFunction) m.lastf.type;
-				TypeFunction t2 = (TypeFunction) m.nextf.type;
+				TypeFunction t1 = (TypeFunction) m.lastf.type();
+				TypeFunction t2 = (TypeFunction) m.nextf.type();
 
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CalledWithArgumentTypesMatchesBoth, caller, new String[] { buf.toChars(), m.lastf.toPrettyChars(context), Argument
 						.argsTypesToChars(t1.parameters, t1.varargs,
@@ -865,14 +865,14 @@ public class FuncDeclaration extends Declaration {
 		}
 	}
 
-	public boolean overrides(FuncDeclaration fd, SemanticContext context) {
+	public boolean overrides(IFuncDeclaration fd, SemanticContext context) {
 		boolean result = false;
 
-		if (fd.ident.equals(ident)) {
-			int cov = type.covariant(fd.type, context);
+		if (equals(fd.ident(), ident)) {
+			int cov = type.covariant(fd.type(), context);
 			if (cov != 0) {
-				ClassDeclaration cd1 = toParent().isClassDeclaration();
-				ClassDeclaration cd2 = fd.toParent().isClassDeclaration();
+				IClassDeclaration cd1 = toParent().isClassDeclaration();
+				IClassDeclaration cd2 = fd.toParent().isClassDeclaration();
 
 				if (cd1 != null && cd2 != null
 						&& cd2.isBaseOf(cd1, null, context)) {
@@ -884,7 +884,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public LabelDsymbol searchLabel(IdentifierExp ident) {
-		Dsymbol s;
+		IDsymbol s;
 
 		if (null == labtab) {
 			labtab = new DsymbolTable(); // guess we need one
@@ -905,9 +905,9 @@ public class FuncDeclaration extends Declaration {
 		boolean gotoLmainerr = false;
 
 		TypeFunction f;
-		StructDeclaration sd;
-		ClassDeclaration cd;
-		InterfaceDeclaration id;
+		IStructDeclaration sd;
+		IClassDeclaration cd;
+		IInterfaceDeclaration id;
 
 		if (type.nextOf() != null) {
 			type = type.semantic(loc, sc, context);
@@ -930,7 +930,7 @@ public class FuncDeclaration extends Declaration {
 		protection = sc.protection;
 		storage_class |= sc.stc;
 
-		Dsymbol parent = toParent();
+		IDsymbol parent = toParent();
 
 		if (isConst() || isAuto() || isScope()) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
@@ -980,7 +980,7 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			if ((storage_class & STCabstract) != 0) {
-				cd.isabstract = true;
+				cd.isabstract(true);
 			}
 
 			// if static function, do not put in vtbl[]
@@ -989,9 +989,9 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			// Find index of existing function in vtbl[] to override
-			if (cd.baseClass != null) {
-				for (vi = 0; vi < cd.baseClass.vtbl.size() && !gotoL1; vi++) {
-					FuncDeclaration fdv = ((Dsymbol) cd.vtbl.get(vi))
+			if (cd.baseClass() != null) {
+				for (vi = 0; vi < cd.baseClass().vtbl().size() && !gotoL1; vi++) {
+					FuncDeclaration fdv = ((Dsymbol) cd.vtbl().get(vi))
 							.isFuncDeclaration();
 
 					// BUG: should give error if argument types match,
@@ -1038,7 +1038,7 @@ public class FuncDeclaration extends Declaration {
 							}
 
 							if (!gotoL1) {
-								cd.vtbl.set(vi, this);
+								cd.vtbl().set(vi, this);
 								vtblIndex = vi;
 
 								/*
@@ -1071,7 +1071,7 @@ public class FuncDeclaration extends Declaration {
 
 						if (!gotoL1) {
 							if (cov == 3) {
-								cd.sizeok = 2; // can't finish due to forward
+								cd.sizeok(2); // can't finish due to forward
 								// reference
 								return;
 							}
@@ -1084,27 +1084,27 @@ public class FuncDeclaration extends Declaration {
 			if (!gotoL1) {
 
 				// Verify this doesn't override previous final function
-				if (cd.baseClass != null) {
-					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
+				if (cd.baseClass() != null) {
+					IDsymbol s = cd.baseClass().search(loc, ident, 0, context);
 					if (s != null) {
-						FuncDeclaration f2 = s.isFuncDeclaration();
+						IFuncDeclaration f2 = s.isFuncDeclaration();
 						f2 = f2.overloadExactMatch(type, context);
 						if (f2 != null && f2.isFinal()
 								&& f2.prot() != PROTprivate) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 									IProblem.CannotOverrideFinalFunctions, this, new String[] {
 											new String(ident.ident),
-											new String(cd.ident.ident) }));
+											new String(cd.ident().ident) }));
 						}
 					}
 				}
 				if (isFinal()) {
-					cd.vtblFinal.add(this);
+					cd.vtblFinal().add(this);
 				} else {
 					// Append to end of vtbl[]
 					introducing = true;
-					vi = cd.vtbl.size();
-					cd.vtbl.add(this);
+					vi = cd.vtbl().size();
+					cd.vtbl().add(this);
 					vtblIndex = vi;
 				}
 			}
@@ -1115,8 +1115,8 @@ public class FuncDeclaration extends Declaration {
 			 * Go through all the interface bases. If this function is covariant
 			 * with any members of those interface functions, set the tintro.
 			 */
-			for (int i = 0; i < cd.interfaces.size() && !gotoL2; i++) {
-				BaseClass b = cd.interfaces.get(i);
+			for (int i = 0; i < cd.interfaces().size() && !gotoL2; i++) {
+				BaseClass b = cd.interfaces().get(i);
 				for (vi = 0; vi < b.base.vtbl.size() && !gotoL2; vi++) {
 					Dsymbol s = (Dsymbol) b.base.vtbl.get(vi);
 					FuncDeclaration fdv = s.isFuncDeclaration();
@@ -1155,7 +1155,7 @@ public class FuncDeclaration extends Declaration {
 						}
 						if (!gotoL2) {
 							if (cov == 3) {
-								cd.sizeok = 2; // can't finish due to forward
+								cd.sizeok(2); // can't finish due to forward
 								// reference
 								return;
 							}
@@ -1169,7 +1169,7 @@ public class FuncDeclaration extends Declaration {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.FunctionDoesNotOverrideAny, this, new String[] {
 									new String(ident.ident),
-									new String(cd.ident.ident) }));
+									new String(cd.ident().ident) }));
 				}
 			}
 
@@ -1186,8 +1186,7 @@ public class FuncDeclaration extends Declaration {
 			if (ti != null) {
 				// Take care of nested templates
 				while (true) {
-					TemplateInstance ti2 = ti.tempdecl.parent
-							.isTemplateInstance();
+					TemplateInstance ti2 = ti.tempdecl.parent().isTemplateInstance();
 					if (ti2 == null) {
 						break;
 					}
@@ -1195,7 +1194,7 @@ public class FuncDeclaration extends Declaration {
 				}
 
 				// If it's a member template
-				ClassDeclaration cd2 = ti.tempdecl.isClassMember();
+				IClassDeclaration cd2 = ti.tempdecl.isClassMember();
 				if (cd2 != null) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.CannotUseTemplateToAddVirtualFunctionToClass, this, new String[] { cd2.toChars(context) }));
@@ -1255,7 +1254,7 @@ public class FuncDeclaration extends Declaration {
 			} else {
 				Argument arg0 = Argument.getNth(f.parameters, 0, context);
 				Type t0 = arg0.type.toBasetype(context);
-				Type tb = sd != null ? sd.type : cd.type;
+				Type tb = sd != null ? sd.type() : cd.type();
 				if (arg0.type.implicitConvTo(tb, context) != MATCH.MATCHnomatch
 						|| (sd != null && t0.ty == Tpointer && t0.nextOf()
 								.implicitConvTo(tb, context) != MATCH.MATCHnomatch)) {
@@ -1295,7 +1294,7 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
 		TypeFunction f;
-		AggregateDeclaration ad;
+		IAggregateDeclaration ad;
 		VarDeclaration argptr = null;
 		VarDeclaration _arguments = null;
 
@@ -1363,8 +1362,8 @@ public class FuncDeclaration extends Declaration {
 				} else {
 					Assert.isTrue(!isNested()); // can't be both member and
 					// nested
-					Assert.isNotNull(ad.handle);
-					v = new ThisDeclaration(loc, ad.handle);
+					Assert.isNotNull(ad.handle());
+					v = new ThisDeclaration(loc, ad.handle());
 					v.storage_class |= STCparameter | STCin;
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
@@ -1498,7 +1497,7 @@ public class FuncDeclaration extends Declaration {
 							Argument narg = Argument.getNth(t.arguments, j,
 									context);
 							Assert.isNotNull(narg.ident);
-							VarDeclaration v = sc2.search(loc, narg.ident,
+							IVarDeclaration v = sc2.search(loc, narg.ident,
 									null, context).isVarDeclaration();
 							Assert.isNotNull(v);
 							Expression e = new VarExp(loc, v);
@@ -1593,15 +1592,15 @@ public class FuncDeclaration extends Declaration {
 					Expression e = null;
 					if (isCtorDeclaration() != null) {
 						// Call invariant directly only if it exists
-						InvariantDeclaration inv = ad.inv;
-						ClassDeclaration cd = ad.isClassDeclaration();
+						IInvariantDeclaration inv = ad.inv();
+						IClassDeclaration cd = ad.isClassDeclaration();
 
 						while (inv == null && cd != null) {
-							cd = cd.baseClass;
+							cd = cd.baseClass();
 							if (cd == null) {
 								break;
 							}
-							inv = cd.inv;
+							inv = cd.inv();
 						}
 						if (inv != null) {
 							e = new DsymbolExp(loc, inv);
@@ -1636,12 +1635,12 @@ public class FuncDeclaration extends Declaration {
 			sc2.incontract--;
 
 			if (fbody != null) {
-				ClassDeclaration cd = isClassMember();
+				IClassDeclaration cd = isClassMember();
 
 				if (isCtorDeclaration() != null && cd != null) {
-					for (int i = 0; i < cd.fields.size(); i++) {
-						VarDeclaration v = cd.fields.get(i);
-						v.ctorinit = false;
+					for (int i = 0; i < cd.fields().size(); i++) {
+						IVarDeclaration v = cd.fields().get(i);
+						v.ctorinit(false);
 					}
 				}
 
@@ -1671,10 +1670,10 @@ public class FuncDeclaration extends Declaration {
 				 * initialized.
 				 */
 
-					ScopeDsymbol ad2 = toParent().isScopeDsymbol();
+					IScopeDsymbol ad2 = toParent().isScopeDsymbol();
 					Assert.isTrue(ad2 != null);
-					for (int i = 0; i < ad2.members.size(); i++) {
-						Dsymbol s = ad2.members.get(i);
+					for (int i = 0; i < ad2.members().size(); i++) {
+						IDsymbol s = ad2.members().get(i);
 
 						s.checkCtorConstInit(context);
 					}
@@ -1684,10 +1683,10 @@ public class FuncDeclaration extends Declaration {
 
 					// Verify that all the ctorinit fields got initialized
 					if ((sc2.callSuper & Scope.CSXthis_ctor) == 0) {
-						for (int i = 0; i < cd.fields.size(); i++) {
-							VarDeclaration v = cd.fields.get(i);
+						for (int i = 0; i < cd.fields().size(); i++) {
+							IVarDeclaration v = cd.fields().get(i);
 
-							if (!v.ctorinit && v.isCtorinit()) {
+							if (!v.ctorinit() && v.isCtorinit()) {
 								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 										IProblem.MissingInitializerForConstField, v, new String[] { v.toChars(context) }));
 							}
@@ -1695,8 +1694,8 @@ public class FuncDeclaration extends Declaration {
 					}
 
 					if ((sc2.callSuper & Scope.CSXany_ctor) == 0
-							&& cd.baseClass != null
-							&& cd.baseClass.ctor != null) {
+							&& cd.baseClass() != null
+							&& cd.baseClass().ctor() != null) {
 						sc2.callSuper = 0;
 
 						// Insert implicit super() at start of fbody
@@ -1856,15 +1855,15 @@ public class FuncDeclaration extends Declaration {
 					Expression e = null;
 					if (isDtorDeclaration() != null) {
 						// Call invariant directly only if it exists
-						InvariantDeclaration inv = ad.inv;
-						ClassDeclaration cd = ad.isClassDeclaration();
+						IInvariantDeclaration inv = ad.inv();
+						IClassDeclaration cd = ad.isClassDeclaration();
 
 						while (inv == null && cd != null) {
-							cd = cd.baseClass;
+							cd = cd.baseClass();
 							if (cd == null) {
 								break;
 							}
-							inv = cd.inv;
+							inv = cd.inv();
 						}
 						if (inv != null) {
 							e = new DsymbolExp(loc, inv);
@@ -1969,6 +1968,26 @@ public class FuncDeclaration extends Declaration {
 		sb.append(ident);
 		sb.append(type.getSignature());
 		return sb.toString();
+	}
+	
+	public IDeclaration overnext() {
+		return overnext;
+	}
+	
+	public VarDeclaration vthis() {
+		return vthis;
+	}
+	
+	public Type tintro() {
+		return tintro;
+	}
+	
+	public boolean inferRetType() {
+		return inferRetType;
+	}
+	
+	public void nestedFrameRef(boolean nestedFrameRef) {
+		this.nestedFrameRef = nestedFrameRef;
 	}
 
 }

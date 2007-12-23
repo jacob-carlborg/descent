@@ -16,12 +16,12 @@ public abstract class TemplateParameter extends ASTDmdNode {
 
 	public abstract void declareParameter(Scope sc, SemanticContext context);
 
-	public abstract ASTDmdNode defaultArg(Scope sc, SemanticContext context);
+	public abstract INode defaultArg(Scope sc, SemanticContext context);
 
 	/**
 	 * Create dummy argument based on parameter.
 	 */
-	public abstract ASTDmdNode dummyArg(SemanticContext context);
+	public abstract INode dummyArg(SemanticContext context);
 
 	public TemplateAliasParameter isTemplateAliasParameter() {
 		return null;

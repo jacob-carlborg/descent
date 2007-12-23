@@ -113,10 +113,10 @@ public class TypeStruct extends Type {
 		// int offset;
 
 		Expression b;
-		VarDeclaration v;
-		Dsymbol s;
+		IVarDeclaration v;
+		IDsymbol s;
 		DotVarExp de;
-		Declaration d;
+		IDeclaration d;
 
 		if (null == sym.members) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -128,7 +128,7 @@ public class TypeStruct extends Type {
 			/* Create a TupleExp
 			 */
 			Expressions exps = new Expressions(sym.fields.size());
-			for (VarDeclaration v_ : sym.fields) {
+			for (IVarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
 			}
@@ -162,10 +162,10 @@ public class TypeStruct extends Type {
 
 		v = s.isVarDeclaration();
 		if (null != v && v.isConst()) {
-			ExpInitializer ei = v.getExpInitializer(context);
+			IExpInitializer ei = v.getExpInitializer(context);
 
 			if (null != ei) {
-				e = ei.exp.copy(); // need to copy it if it's a StringExp
+				e = ei.exp().copy(); // need to copy it if it's a StringExp
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -176,10 +176,10 @@ public class TypeStruct extends Type {
 			return new TypeExp(e.loc, s.getType());
 		}
 
-		EnumMember em = s.isEnumMember();
+		IEnumMember em = s.isEnumMember();
 		if (null != em) {
-			assert (null != em.value);
-			return em.value.copy();
+			assert (null != em.value());
+			return em.value().copy();
 		}
 
 		TemplateMixin tm = s.isTemplateMixin();
@@ -191,7 +191,7 @@ public class TypeStruct extends Type {
 			return de_;
 		}
 
-		TemplateDeclaration td = s.isTemplateDeclaration();
+		ITemplateDeclaration td = s.isTemplateDeclaration();
 		if (null != td) {
 			e = new DotTemplateExp(e.loc, e, td);
 			e.semantic(sc, context);
@@ -227,7 +227,7 @@ public class TypeStruct extends Type {
 			accessCheck(sc, e, d, context);
 			ve = new VarExp(e.loc, d);
 			e = new CommaExp(e.loc, e, ve);
-			e.type = d.type;
+			e.type = d.type();
 			return e;
 		}
 
@@ -241,11 +241,11 @@ public class TypeStruct extends Type {
 			accessCheck(sc, e, d, context);
 			b = new AddrExp(e.loc, e);
 			b.type = e.type.pointerTo(context);
-			b = new AddExp(e.loc, b, new IntegerExp(e.loc, v.offset,
+			b = new AddExp(e.loc, b, new IntegerExp(e.loc, v.offset(),
 					Type.tint32));
-			b.type = v.type.pointerTo(context);
+			b.type = v.type().pointerTo(context);
 			e = new PtrExp(e.loc, b);
-			e.type = v.type;
+			e.type = v.type();
 			return e;
 		}
 
@@ -270,7 +270,7 @@ public class TypeStruct extends Type {
 		sym.size(context); // give error for forward references
 		if (null != s.members) {
 			for (int i = 0; i < s.members.size(); i++) {
-				Dsymbol sm = s.members.get(i);
+				IDsymbol sm = s.members.get(i);
 				if (sm.hasPointers(context))
 					return true;
 			}

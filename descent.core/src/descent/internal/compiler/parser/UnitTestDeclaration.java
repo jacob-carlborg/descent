@@ -68,12 +68,12 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		// We're going to need ModuleInfo even if the unit tests are not
 		// compiled in, because other modules may import this module and refer
 		// to this ModuleInfo.
-		Module m = getModule();
+		IModule m = getModule();
 		if (m == null) {
 			m = sc.module;
 		}
 		if (m != null) {
-			m.needmoduleinfo = true;
+			m.needmoduleinfo(true);
 		}
 	}
 

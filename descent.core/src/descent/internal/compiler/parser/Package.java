@@ -3,12 +3,12 @@ package descent.internal.compiler.parser;
 import descent.core.compiler.IProblem;
 
 // DMD 1.020
-public class Package extends ScopeDsymbol {
+public class Package extends ScopeDsymbol implements IPackage {
 
-	public static DsymbolTable resolve(Identifiers packages, Dsymbol[] pparent,
-			Package[] ppkg, SemanticContext context) {
+	public static DsymbolTable resolve(Identifiers packages, IDsymbol[] pparent,
+			IPackage[] ppkg, SemanticContext context) {
 		DsymbolTable dst = context.Module_modules;
-		Dsymbol parent = null;
+		IDsymbol parent = null;
 
 		if (ppkg != null) {
 			ppkg[0] = null;
@@ -19,13 +19,13 @@ public class Package extends ScopeDsymbol {
 
 			for (i = 0; i < packages.size(); i++) {
 				IdentifierExp pid = packages.get(i);
-				Dsymbol p;
+				IDsymbol p;
 
 				p = dst.lookup(pid);
 				if (null == p) {
 					p = new Package(pid);
 					dst.insert(p);
-					p.parent = parent;
+					p.parent(parent);
 					((ScopeDsymbol) p).symtab = new DsymbolTable();
 				} else {
 					if (null == p.isPackage()) {

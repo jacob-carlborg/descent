@@ -16,12 +16,12 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class VarExp extends Expression {
 
-	public Declaration var;
+	public IDeclaration var;
 
-	public VarExp(Loc loc, Declaration var) {
+	public VarExp(Loc loc, IDeclaration var) {
 		super(loc, TOK.TOKvar);
 		this.var = var;
-		this.type = var.type;
+		this.type = var.type();
 	}
 
 	@Override
@@ -32,15 +32,15 @@ public class VarExp extends Expression {
 
 	@Override
 	public void checkEscape(SemanticContext context) {
-		VarDeclaration v = var.isVarDeclaration();
+		IVarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
-			Type tb = v.type.toBasetype(context);
+			Type tb = v.type().toBasetype(context);
 			// if reference type
 			if (tb.ty == Tarray || tb.ty == Tsarray || tb.ty == Tclass) {
-				if ((v.isAuto() || v.isScope()) && !v.noauto) {
+				if ((v.isAuto() || v.isScope()) && !v.noauto()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.EscapingReferenceToAutoLocal, this, new String[] { v.toChars(context) }));
-				} else if ((v.storage_class & STCvariadic) != 0) {
+				} else if ((v.storage_class() & STCvariadic) != 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.EscapingReferenceToVariadicParameter, this, new String[] { v.toChars(context) }));
 				}
@@ -89,9 +89,9 @@ public class VarExp extends Expression {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotChangeReferenceToStaticArray, this, new String[] { var.toChars(context) }));
 		}
 
-		VarDeclaration v = var.isVarDeclaration();
+		IVarDeclaration v = var.isVarDeclaration();
 		if (v != null
-				&& v.canassign == 0
+				&& v.canassign() == 0
 				&& (var.isConst() || (context.global.params.Dversion > 1 && var
 						.isFinal()))) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -99,19 +99,19 @@ public class VarExp extends Expression {
 		}
 
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
-			Dsymbol s = sc.func;
+			IDsymbol s = sc.func;
 			while (true) {
-				FuncDeclaration fd = null;
+				IFuncDeclaration fd = null;
 				if (s != null) {
 					fd = s.isFuncDeclaration();
 				}
 				if (fd != null
-						&& ((fd.isCtorDeclaration() != null && (var.storage_class & STCfield) != 0) || (fd
-								.isStaticCtorDeclaration() != null && (var.storage_class & STCfield) == 0))
+						&& ((fd.isCtorDeclaration() != null && (var.storage_class() & STCfield) != 0) || (fd
+								.isStaticCtorDeclaration() != null && (var.storage_class() & STCfield) == 0))
 						&& fd.toParent() == var.toParent()) {
-					VarDeclaration v2 = var.isVarDeclaration();
+					IVarDeclaration v2 = var.isVarDeclaration();
 					Assert.isNotNull(v2);
-					v2.ctorinit = true;
+					v2.ctorinit(true);
 				} else {
 					if (s != null) {
 						s = s.toParent2();
@@ -146,7 +146,7 @@ public class VarExp extends Expression {
 	public void scanForNestedRef(Scope sc, SemanticContext context)
 	{
 		//printf("VarExp.scanForNestedRef(%s)\n", toChars());
-		VarDeclaration v = var.isVarDeclaration();
+		IVarDeclaration v = var.isVarDeclaration();
 		if(null != v)
 			v.checkNestedReference(sc, Loc.ZERO, context);
 	}
@@ -154,16 +154,16 @@ public class VarExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
-			type = var.type;
+			type = var.type();
 		}
 
-		VarDeclaration v = var.isVarDeclaration();
+		IVarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (v.isConst() && type.toBasetype(context).ty != TY.Tsarray
-					&& v.init != null) {
-				ExpInitializer ei = v.init.isExpInitializer();
+					&& v.init() != null) {
+				IExpInitializer ei = v.init().isExpInitializer();
 				if (ei != null) {
-					return ei.exp.implicitCastTo(sc, type, context);
+					return ei.exp().implicitCastTo(sc, type, context);
 				}
 			}
 			v.checkNestedReference(sc, loc, context);
@@ -184,7 +184,7 @@ public class VarExp extends Expression {
 
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
-		if ((var.storage_class & STClazy) != 0) {
+		if ((var.storage_class() & STClazy) != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.LazyVariablesCannotBeLvalues, this));
 		}
 		return this;

@@ -22,8 +22,8 @@ public class NewExp extends Expression {
 	public Type newtype, sourceNewtype;
 	public Expressions arguments, sourceArguments;
 	
-	public CtorDeclaration member; // constructor function
-	public NewDeclaration allocator; // allocator function
+	public ICtorDeclaration member; // constructor function
+	public INewDeclaration allocator; // allocator function
 	public boolean onstack; // allocate on stack
 
 	public NewExp(Loc loc, Expression thisexp, Expressions newargs,
@@ -132,20 +132,20 @@ public class NewExp extends Expression {
 				/* We need a 'this' pointer for the nested class.
 				 * Ensure we have the right one.
 				 */
-					Dsymbol s = cd.toParent2();
-					ClassDeclaration cdn = s.isClassDeclaration();
+					IDsymbol s = cd.toParent2();
+					IClassDeclaration cdn = s.isClassDeclaration();
 
 					if (cdn != null) {
 						if (cdthis == null) {
 							// Supply an implicit 'this' and try again
 							thisexp = new ThisExp(loc);
-							for (Dsymbol sp = sc.parent; true; sp = sp.parent) {
+							for (IDsymbol sp = sc.parent; true; sp = sp.parent()) {
 								if (sp == null) {
 									context.acceptProblem(Problem.newSemanticTypeError(
 											IProblem.OuterClassThisNeededToNewNestedClass, this, new String[] { cdn.toChars(context), cd.toChars(context) }));
 									break;
 								}
-								ClassDeclaration cdp = sp.isClassDeclaration();
+								IClassDeclaration cdp = sp.isClassDeclaration();
 								if (cdp == null) {
 									continue;
 								}
@@ -179,7 +179,7 @@ public class NewExp extends Expression {
 							IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
 				}
 
-				FuncDeclaration f = cd.ctor;
+				IFuncDeclaration f = cd.ctor;
 				if (f != null) {
 					f = f.overloadResolve(arguments, context, this);
 					checkDeprecated(sc, f, context);
@@ -188,7 +188,7 @@ public class NewExp extends Expression {
 
 					cd.accessCheck(sc, member, context, f); // TODO check if "f" is the reference
 
-					tf = (TypeFunction) f.type;
+					tf = (TypeFunction) f.type();
 					type = tf.next;
 
 					if (arguments == null) {
@@ -218,7 +218,7 @@ public class NewExp extends Expression {
 					allocator = f.isNewDeclaration();
 					Assert.isNotNull(allocator);
 
-					tf = (TypeFunction) f.type;
+					tf = (TypeFunction) f.type();
 					functionArguments(loc, sc, tf, newargs, context);
 				} else {
 					if (newargs != null && newargs.size() > 0) {
@@ -230,7 +230,7 @@ public class NewExp extends Expression {
 			} else if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
 				StructDeclaration sd = ts.sym;
-				FuncDeclaration f = sd.aggNew;
+				IFuncDeclaration f = sd.aggNew;
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {
@@ -252,7 +252,7 @@ public class NewExp extends Expression {
 					allocator = f.isNewDeclaration();
 					Assert.isNotNull(allocator);
 
-					tf = (TypeFunction) f.type;
+					tf = (TypeFunction) f.type();
 					functionArguments(loc, sc, tf, newargs, context);
 
 					e = new VarExp(loc, f);

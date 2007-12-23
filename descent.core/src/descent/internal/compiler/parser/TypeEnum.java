@@ -61,8 +61,8 @@ public class TypeEnum extends Type {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		EnumMember m;
-		Dsymbol s;
+		IEnumMember m;
+		IDsymbol s;
 		Expression em;
 
 		s = sym.symtab.lookup(ident);
@@ -70,7 +70,7 @@ public class TypeEnum extends Type {
 			return getProperty(e.loc, ident, context);
 		}
 		m = s.isEnumMember();
-		em = m.value.copy();
+		em = m.value().copy();
 		em.loc = e.loc;
 		return em;
 	}

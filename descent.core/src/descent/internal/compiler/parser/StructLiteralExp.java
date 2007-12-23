@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 // DMD 1.020
 public class StructLiteralExp extends Expression {
 
-	public StructDeclaration sd; // which aggregate this is for
+	public IStructDeclaration sd; // which aggregate this is for
 	public Expressions elements; // parallels sd->fields[] with
 	// NULL entries for fields to skip
 
@@ -16,7 +16,7 @@ public class StructLiteralExp extends Expression {
 	public int soffset; // offset from start of s
 	public int fillHoles; // fill alignment 'holes' with zero
 
-	public StructLiteralExp(Loc loc, StructDeclaration sd, Expressions elements) {
+	public StructLiteralExp(Loc loc, IStructDeclaration sd, Expressions elements) {
 		super(loc, TOK.TOKstructliteral);
 		this.sd = sd;
 		this.elements = elements;
@@ -73,15 +73,15 @@ public class StructLiteralExp extends Expression {
 	public int getFieldIndex(Type type, int offset, SemanticContext context) {
 		/* Find which field offset is by looking at the field offsets
 		 */
-		for (int i = 0; i < sd.fields.size(); i++) {
-			Dsymbol s = sd.fields.get(i);
-			VarDeclaration v = s.isVarDeclaration();
+		for (int i = 0; i < sd.fields().size(); i++) {
+			IDsymbol s = sd.fields().get(i);
+			IVarDeclaration v = s.isVarDeclaration();
 			if (v == null) {
 				throw new IllegalStateException("assert(v);");
 			}
 
-			if (offset == v.offset
-					&& type.size(context) == v.type.size(context)) {
+			if (offset == v.offset()
+					&& type.size(context) == v.type().size(context)) {
 				Expression e = elements.get(i);
 				if (e != null) {
 					return i;
@@ -115,7 +115,7 @@ public class StructLiteralExp extends Expression {
 
 		/* We don't know how to deal with overlapping fields
 		 */
-		if (sd.hasUnions != 0) {
+		if (sd.hasUnions() != 0) {
 			return EXP_CANT_INTERPRET;
 		}
 
@@ -204,23 +204,23 @@ public class StructLiteralExp extends Expression {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
 			}
 			e = resolveProperties(sc, e, context);
-			if (i >= sd.fields.size()) {
+			if (i >= sd.fields().size()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.MoreInitiailizersThanFields, this, new String[] { sd.toChars(context) }));
 				break;
 			}
-			Dsymbol s = sd.fields.get(i);
-			VarDeclaration v = s.isVarDeclaration();
+			IDsymbol s = sd.fields().get(i);
+			IVarDeclaration v = s.isVarDeclaration();
 			if (v == null) {
 				throw new IllegalStateException("assert(v);");
 			}
-			if (v.offset < offset) {
+			if (v.offset() < offset) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.OverlappingInitiailization, this, new String[] { v.toChars(context) }));
 			}
-			offset = v.offset + v.type.size(context);
+			offset = v.offset() + v.type().size(context);
 
-			Type telem = v.type;
+			Type telem = v.type();
 			while (null == e.implicitConvTo(telem, context)
 					&& telem.toBasetype(context).ty == Tsarray) { /* Static array initialization, as in:
 			 *	T[3][5] = e;
@@ -235,33 +235,33 @@ public class StructLiteralExp extends Expression {
 
 		/* Fill out remainder of elements[] with default initializers for fields[]
 		 */
-		for (int i = elements.size(); i < sd.fields.size(); i++) {
-			Dsymbol s = sd.fields.get(i);
-			VarDeclaration v = s.isVarDeclaration();
+		for (int i = elements.size(); i < sd.fields().size(); i++) {
+			IDsymbol s = sd.fields().get(i);
+			IVarDeclaration v = s.isVarDeclaration();
 			if (v == null) {
 				throw new IllegalStateException("assert(v);");
 			}
 
-			if (v.offset < offset) {
+			if (v.offset() < offset) {
 				e = null;
-				sd.hasUnions = 1;
+				sd.hasUnions(1);
 			} else {
-				if (v.init != null) {
-					e = v.init.toExpression(context);
+				if (v.init() != null) {
+					e = v.init().toExpression(context);
 					if (null == e) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.CannotMakeExpressionOutOfInitializer, this, new String[] { v.toChars(context) }));
 					}
 				} else {
-					e = v.type.defaultInit(context);
+					e = v.type().defaultInit(context);
 					e.loc = loc;
 				}
-				offset = v.offset + v.type.size(context);
+				offset = v.offset() + v.type().size(context);
 			}
 			elements.add(e);
 		}
 
-		type = sd.type;
+		type = sd.type();
 		return this;
 	}
 

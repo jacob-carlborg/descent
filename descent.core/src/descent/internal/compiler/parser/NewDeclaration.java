@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class NewDeclaration extends FuncDeclaration {
+public class NewDeclaration extends FuncDeclaration implements INewDeclaration {
 
 	public Arguments arguments;
 	public int varargs;
@@ -62,11 +62,11 @@ public class NewDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		ClassDeclaration cd;
+		IClassDeclaration cd;
 		Type tret;
 
 		parent = sc.parent;
-		Dsymbol parent = toParent();
+		IDsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
 			context

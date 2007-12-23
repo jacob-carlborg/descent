@@ -98,10 +98,10 @@ public class TypeClass extends Type {
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		VarDeclaration v;
-		Dsymbol s;
+		IVarDeclaration v;
+		IDsymbol s;
 		DotVarExp de;
-		Declaration d;
+		IDeclaration d;
 
 		boolean gotoL1 = false;
 		if (e.op == TOKdotexp) {
@@ -125,7 +125,7 @@ public class TypeClass extends Type {
 			/* Create a TupleExp
 			 */
 			Expressions exps = new Expressions(sym.fields.size());
-			for (VarDeclaration v_ : sym.fields) {
+			for (IVarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
 			}
@@ -200,10 +200,10 @@ public class TypeClass extends Type {
 		s = s.toAlias(context);
 		v = s.isVarDeclaration();
 		if (null != v && v.isConst()) {
-			ExpInitializer ei = v.getExpInitializer(context);
+			IExpInitializer ei = v.getExpInitializer(context);
 
 			if (null != ei) {
-				e = ei.exp.copy(); // need to copy it if it's a StringExp
+				e = ei.exp().copy(); // need to copy it if it's a StringExp
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -213,10 +213,10 @@ public class TypeClass extends Type {
 			return new TypeExp(e.loc, s.getType());
 		}
 
-		EnumMember em = s.isEnumMember();
+		IEnumMember em = s.isEnumMember();
 		if (null != em) {
-			assert (null != em.value);
-			return em.value.copy();
+			assert (null != em.value());
+			return em.value().copy();
 		}
 
 		TemplateMixin tm = s.isTemplateMixin();
@@ -228,7 +228,7 @@ public class TypeClass extends Type {
 			return de_;
 		}
 
-		TemplateDeclaration td = s.isTemplateDeclaration();
+		ITemplateDeclaration td = s.isTemplateDeclaration();
 		if (null != td) {
 			e = new DotTemplateExp(e.loc, e, td);
 			e.semantic(sc, context);
@@ -248,7 +248,7 @@ public class TypeClass extends Type {
 			if (d.needThis()
 					&& (null != hasThis(sc) || null == d.isFuncDeclaration())) {
 				if (null != sc.func) {
-					ClassDeclaration thiscd;
+					IClassDeclaration thiscd;
 					thiscd = sc.func.toParent().isClassDeclaration();
 
 					if (null != thiscd) {
@@ -290,17 +290,17 @@ public class TypeClass extends Type {
 			accessCheck(sc, e, d, context);
 			ve = new VarExp(e.loc, d);
 			e = new CommaExp(e.loc, e, ve);
-			e.type = d.type;
+			e.type = d.type();
 			return e;
 		}
 
-		if (null != d.parent && null != d.toParent().isModule()) {
+		if (null != d.parent() && null != d.toParent().isModule()) {
 			// (e, d)
 			VarExp ve;
 
 			ve = new VarExp(e.loc, d);
 			e = new CommaExp(e.loc, e, ve);
-			e.type = d.type;
+			e.type = d.type();
 			return e;
 		}
 

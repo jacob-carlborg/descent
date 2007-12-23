@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -62,6 +63,11 @@ public class IdentifierExp extends Expression {
 
 	@Override
 	public boolean equals(Object o) {
+		if (o instanceof char[]) {
+			char[] c = (char[]) o;
+			return CharOperation.equals(ident, c);
+		}
+		
 		if (!(o instanceof IdentifierExp)) {
 			return false;
 		}
@@ -77,7 +83,7 @@ public class IdentifierExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		Dsymbol s;
+		IDsymbol s;
 		Dsymbol[] scopesym = { null };
 
 		s = sc.search(loc, this, scopesym, context);
@@ -102,7 +108,7 @@ public class IdentifierExp extends Expression {
 					e = new TypeDotIdExp(loc, t, this);
 				}
 			} else {
-				if (s.parent == null
+				if (s.parent() == null
 						&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
 					// to
 					// run
@@ -113,21 +119,21 @@ public class IdentifierExp extends Expression {
 					s.semantic(sc, context);
 				}
 				// Look to see if f is really a function template
-				FuncDeclaration f = s.isFuncDeclaration();
-				if (f != null && f.parent != null) {
-					TemplateInstance ti = f.parent.isTemplateInstance();
+				IFuncDeclaration f = s.isFuncDeclaration();
+				if (f != null && f.parent() != null) {
+					TemplateInstance ti = f.parent().isTemplateInstance();
 
 					if (ti != null
 							&& ti.isTemplateMixin() == null
-							&& (equals(ti.name, f.ident) || 
-									equals(ti.toAlias(context).ident, f.ident))
+							&& (equals(ti.name, f.ident()) || 
+									equals(ti.toAlias(context).ident(), f.ident()))
 							&& ti.tempdecl != null
-							&& ti.tempdecl.onemember != null) {
-						TemplateDeclaration tempdecl = ti.tempdecl;
-						if (tempdecl.overroot != null) { // if not start of
+							&& ti.tempdecl.onemember() != null) {
+						ITemplateDeclaration tempdecl = ti.tempdecl;
+						if (tempdecl.overroot() != null) { // if not start of
 							// overloaded list of
 							// TemplateDeclaration's
-							tempdecl = tempdecl.overroot; // then get the
+							tempdecl = tempdecl.overroot(); // then get the
 							// start
 						}
 						e = new TemplateExp(loc, tempdecl);

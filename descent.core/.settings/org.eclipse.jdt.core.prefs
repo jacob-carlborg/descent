@@ -1,4 +1,4 @@
-#Fri Sep 07 21:26:57 WGST 2007
+#Sat Dec 22 20:39:26 WGT 2007
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.problem.annotationSuperInterface=warning
 org.eclipse.jdt.core.compiler.problem.autoboxing=ignore
@@ -51,5 +51,5 @@ org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=disa
 org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=warning
 org.eclipse.jdt.core.compiler.problem.varargsArgumentNeedCast=warning
 org.eclipse.jdt.core.compiler.taskCaseSensitive=enabled
-org.eclipse.jdt.core.compiler.taskPriorities=NORMAL,HIGH,NORMAL,LOW,NORMAL,LOW,NORMAL
-org.eclipse.jdt.core.compiler.taskTags=TODO,FIXME,XXX,PERHAPS,NEXTOF,RETHINK,WTF
+org.eclipse.jdt.core.compiler.taskPriorities=NORMAL,HIGH,NORMAL,LOW,NORMAL,LOW,NORMAL,NORMAL
+org.eclipse.jdt.core.compiler.taskTags=TODO,FIXME,XXX,PERHAPS,NEXTOF,RETHINK,WTF,SEMANTIC

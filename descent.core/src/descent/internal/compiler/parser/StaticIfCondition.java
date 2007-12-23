@@ -29,7 +29,7 @@ public class StaticIfCondition extends Condition {
 	}
 
 	@Override
-	public boolean include(Scope sc, ScopeDsymbol s, SemanticContext context) {
+	public boolean include(Scope sc, IScopeDsymbol s, SemanticContext context) {
 		if (inc == 0) {
 			if (null == sc) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticIfConditionalCannotBeAtGlobalScope, this));

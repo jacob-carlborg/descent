@@ -7,7 +7,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class EnumDeclaration extends ScopeDsymbol {
+public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 
 	private final static int N_2 = 2;
 	private final static int N_128 = 128;
@@ -125,8 +125,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		boolean first = true;
-		for (Dsymbol sym : members) {
-			EnumMember em = sym.isEnumMember();
+		for (IDsymbol sym : members) {
+			IEnumMember em = sym.isEnumMember();
 			Expression e;
 
 			if (em == null) {
@@ -137,7 +137,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 				continue;
 			}
 
-			e = em.value;
+			e = em.value();
 			if (e != null) {
 				e = e.semantic(sce, context);
 				e = e.optimize(ASTDmdNode.WANTvalue, context);
@@ -214,16 +214,16 @@ public class EnumDeclaration extends ScopeDsymbol {
 						throw new IllegalStateException();
 					}
 				}
-				e = new IntegerExp(em.loc, number, t);
+				e = new IntegerExp(em.loc(), number, t);
 			}
-			em.value = e;
+			em.value(e);
 
 			// Add to symbol table only after evaluating 'value'
 			if (isAnonymous()) {
 				for (Scope scx = sce.enclosing; scx != null; scx = scx.enclosing) {
 					if (scx.scopesym != null) {
-						if (scx.scopesym.symtab == null) {
-							scx.scopesym.symtab = new DsymbolTable();
+						if (scx.scopesym.symtab() == null) {
+							scx.scopesym.symtab(new DsymbolTable());
 						}
 						em.addMember(sce, scx.scopesym, 1, context);
 						break;
@@ -305,7 +305,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		buf.writeByte('{');
 		buf.writenl();
 		for (i = 0; i < members.size(); i++) {
-			EnumMember em = (members.get(i)).isEnumMember();
+			IEnumMember em = (members.get(i)).isEnumMember();
 			if (em == null) {
 				continue;
 			}
@@ -317,7 +317,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		buf.writenl();
 	}
 	
-	private final void enumValueOverflow(EnumMember em, SemanticContext context) {
+	private final void enumValueOverflow(IEnumMember em, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 				IProblem.EnumValueOverflow, em));
 	}

@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 public class CompileDeclaration extends AttribDeclaration {
 
 	public Expression exp, sourceExp;
-	public ScopeDsymbol sd;
+	public IScopeDsymbol sd;
 
 	public CompileDeclaration(Loc loc, Expression exp) {
 		super(null);
@@ -30,7 +30,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		this.sd = sd;
 		return memnum;

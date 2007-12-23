@@ -14,6 +14,7 @@ import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.env.INameEnvironment;
+import descent.internal.compiler.env.NameEnvironmentAdapter;
 import descent.internal.compiler.env.NameEnvironmentAnswer;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.ClasspathEntry;
@@ -27,7 +28,7 @@ import descent.internal.core.util.Util;
 /*
  * A name environment based on the classpath of a Java project.
  */
-public class JavaSearchNameEnvironment implements INameEnvironment, SuffixConstants {
+public class JavaSearchNameEnvironment extends NameEnvironmentAdapter implements INameEnvironment, SuffixConstants {
 	
 	ClasspathLocation[] locations;
 	

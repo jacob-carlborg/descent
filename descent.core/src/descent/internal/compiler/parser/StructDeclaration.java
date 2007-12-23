@@ -13,7 +13,7 @@ import static descent.internal.compiler.parser.PROT.PROTnone;
 import static descent.internal.compiler.parser.STC.STCin;
 
 // DMD 1.020
-public class StructDeclaration extends AggregateDeclaration {
+public class StructDeclaration extends AggregateDeclaration implements IStructDeclaration {
 
 	public boolean zeroInit; // !=0 if initialize with 0 fill
 
@@ -34,7 +34,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public PROT getAccess(Dsymbol smember) {
+	public PROT getAccess(IDsymbol smember) {
 		PROT access_ret = PROTnone;
 
 		if (smember.toParent() == this) {
@@ -105,7 +105,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 
 		if (sizeok == 0) { // if not already done the addMember step
-			for (Dsymbol s : members) {
+			for (IDsymbol s : members) {
 				s.addMember(sc, this, 1, context);
 			}
 		}
@@ -122,7 +122,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		int members_dim = members.size();
 		for (int i = 0; i < members_dim; i++) {
-			Dsymbol s = members.get(i);
+			IDsymbol s = members.get(i);
 			s.semantic(sc2, context);
 			if (isUnionDeclaration() != null) {
 				sc2.offset = 0;
@@ -159,15 +159,15 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		char[] id = Id.eq;
 		for (int j = 0; j < 2; j++) {
-			Dsymbol s = ASTDmdNode.search_function(this, id, context);
-			FuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
+			IDsymbol s = ASTDmdNode.search_function(this, id, context);
+			IFuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
 			if (fdx != null) {
-				FuncDeclaration fd = fdx.overloadExactMatch(tfeqptr, context);
+				IFuncDeclaration fd = fdx.overloadExactMatch(tfeqptr, context);
 				if (fd == null) {
 					fd = fdx.overloadExactMatch(tfeq, context);
 					if (fd != null) { // Create the thunk, fdptr
 						FuncDeclaration fdptr = new FuncDeclaration(loc, 
-								fdx.ident, STC.STCundefined, tfeqptr);
+								fdx.ident(), STC.STCundefined, tfeqptr);
 						Expression e = new IdentifierExp(loc, Id.p);
 						e = new PtrExp(loc, e);
 						Expressions args = new Expressions();
@@ -175,9 +175,9 @@ public class StructDeclaration extends AggregateDeclaration {
 						e = new IdentifierExp(loc, id);
 						e = new CallExp(loc, e, args);
 						fdptr.fbody = new ReturnStatement(loc, e);
-						ScopeDsymbol s2 = fdx.parent.isScopeDsymbol();
+						IScopeDsymbol s2 = fdx.parent().isScopeDsymbol();
 						Assert.isNotNull(s2);
-						s2.members.add(fdptr);
+						s2.members().add(fdptr);
 						fdptr.addMember(sc, s2, 1, context);
 						fdptr.semantic(sc2, context);
 					}
@@ -191,7 +191,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		if (sizeok == 2) { // semantic() failed because of forward references.
 			// Unwind what we did, and defer it for later
-			fields = new ArrayList<VarDeclaration>(0);
+			fields = new ArrayList<IVarDeclaration>(0);
 			structsize = 0;
 			alignsize = 0;
 			structalign = 0;
@@ -220,15 +220,15 @@ public class StructDeclaration extends AggregateDeclaration {
 		// Determine if struct is all zeros or not
 		zeroInit = true;
 		for (int j = 0; j < fields.size(); j++) {
-			Dsymbol s = fields.get(j);
-			VarDeclaration vd = s.isVarDeclaration();
+			IDsymbol s = fields.get(j);
+			IVarDeclaration vd = s.isVarDeclaration();
 			if (vd != null && !vd.isDataseg(context)) {
-				if (vd.init != null) {
+				if (vd.init() != null) {
 					// Should examine init to see if it is really all 0's
 					zeroInit = true;
 					break;
 				} else {
-					if (!vd.type.isZeroInit(context)) {
+					if (!vd.type().isZeroInit(context)) {
 						zeroInit = false;
 						break;
 					}
@@ -279,7 +279,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		buf.writeByte('{');
 		buf.writenl();
 		for (i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
+			IDsymbol s = members.get(i);
 
 			buf.writestring("    ");
 			s.toCBuffer(buf, hgs, context);

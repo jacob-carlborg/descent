@@ -21,7 +21,7 @@ import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.TY.Tclass;
 
 // DMD 1.020
-public class ClassDeclaration extends AggregateDeclaration {
+public class ClassDeclaration extends AggregateDeclaration implements IClassDeclaration {
 
 	public final static int OFFSET_RUNTIME = 0x76543210;
 	
@@ -117,7 +117,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public PROT getAccess(Dsymbol smember) {
+	public PROT getAccess(IDsymbol smember) {
 		PROT access_ret = PROTnone;
 
 		if (smember.toParent() == this) {
@@ -205,26 +205,26 @@ public class ClassDeclaration extends AggregateDeclaration {
 		return false;
 	}
 
-	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
+	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
 			SemanticContext context) {
 		if (poffset != null) {
 			poffset[0] = 0;
 		}
 		while (cd != null) {
-			if (this == cd.baseClass) {
+			if (this == cd.baseClass()) {
 				return true;
 			}
 
 			/*
 			 * cd.baseClass might not be set if cd is forward referenced.
 			 */
-			if (cd.baseClass == null && cd.baseclasses.size() > 0
+			if (cd.baseClass() == null && cd.baseclasses().size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.BaseClassIsForwardReferenced, this, new String[] { toChars(context) }));
 			}
 
-			cd = cd.baseClass;
+			cd = cd.baseClass();
 		}
 		return false;
 	}
@@ -262,9 +262,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public IDsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
-		Dsymbol s;
+		IDsymbol s;
 
 		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
 		// ident.toChars());
@@ -537,7 +537,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (sizeok == 0) {
 			interfaceSemantic(sc, context);
 
-			for (Dsymbol s : members) {
+			for (IDsymbol s : members) {
 				s.addMember(sc, this, 1, context);
 			}
 
@@ -559,20 +559,20 @@ public class ClassDeclaration extends AggregateDeclaration {
 											context) }));
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
-				Dsymbol s = toParent2();
+				IDsymbol s = toParent2();
 				if (s != null) {
-					ClassDeclaration cd = s.isClassDeclaration();
-					FuncDeclaration fd = s.isFuncDeclaration();
+					IClassDeclaration cd = s.isClassDeclaration();
+					IFuncDeclaration fd = s.isFuncDeclaration();
 
 					if (cd != null || fd != null) {
 						isnested = true;
 						Type t = null;
 						if (cd != null) {
-							t = cd.type;
+							t = cd.type();
 						} else if (fd != null) {
-							AggregateDeclaration ad = fd.isMember2();
+							IAggregateDeclaration ad = fd.isMember2();
 							if (ad != null) {
-								t = ad.handle;
+								t = ad.handle();
 							} else {
 								t = new TypePointer(Type.tvoid);
 								t = t.semantic(loc, sc, context);
@@ -625,7 +625,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		int members_dim = members.size();
 		sizeok = 0;
 		for (i = 0; i < members_dim; i++) {
-			Dsymbol s = members.get(i);
+			IDsymbol s = members.get(i);
 			s.semantic(sc, context);
 		}
 
@@ -765,7 +765,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		buf.writeByte('{');
 		buf.writenl();
 		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
+			IDsymbol s = members.get(i);
 
 			buf.writestring("    ");
 			s.toCBuffer(buf, hgs, context);
@@ -780,14 +780,14 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 	@Override
 	public String mangle(SemanticContext context) {
-		Dsymbol parentsave = parent;
+		IDsymbol parentsave = parent;
 
 		/* These are reserved to the compiler, so keep simple
 		 * names for them.
 		 */
 		if (equals(ident, Id.Exception)) {
-			if (parent.ident != null
-					&& equals(parent.ident, Id.object)) {
+			if (parent.ident() != null
+					&& equals(parent.ident(), Id.object)) {
 				parent = null;
 			}
 		} else if (equals(ident, Id.TypeInfo)
@@ -810,6 +810,46 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 	public String getSignature() {
 		return type.getSignature();
+	}
+	
+	public IClassDeclaration baseClass() {
+		return baseClass;
+	}
+	
+	public BaseClasses interfaces() {
+		return interfaces;
+	}
+	
+	public BaseClasses baseclasses() {
+		return baseclasses;
+	}
+	
+	public void isabstract(boolean isabstract) {
+		this.isabstract = isabstract;
+	}
+	
+	public List vtbl() {
+		return vtbl;
+	}
+	
+	public List vtblFinal() {
+		return vtblFinal;
+	}
+	
+	public ICtorDeclaration ctor() {
+		return ctor;
+	}
+	
+	public void defaultCtor(CtorDeclaration defaultCtor) {
+		this.defaultCtor = defaultCtor;
+	}
+	
+	public FuncDeclarations dtors() {
+		return dtors;
+	}
+	
+	public void dtors(FuncDeclarations dtors) {
+		this.dtors = dtors;
 	}
 
 }

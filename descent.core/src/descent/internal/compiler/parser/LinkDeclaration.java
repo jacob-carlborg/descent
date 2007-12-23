@@ -37,7 +37,7 @@ public class LinkDeclaration extends AttribDeclaration {
 			LINK linkage_save = sc.linkage;
 
 			sc.linkage = linkage;
-			for (Dsymbol s : decl) {
+			for (IDsymbol s : decl) {
 				s.semantic(sc, context);
 			}
 			sc.linkage = linkage_save;
@@ -52,7 +52,7 @@ public class LinkDeclaration extends AttribDeclaration {
 			LINK linkage_save = sc.linkage;
 
 			sc.linkage = linkage;
-			for (Dsymbol s : decl) {
+			for (IDsymbol s : decl) {
 				s.semantic3(sc, context);
 			}
 			sc.linkage = linkage_save;

@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class InvariantDeclaration extends FuncDeclaration {
+public class InvariantDeclaration extends FuncDeclaration implements IInvariantDeclaration {
 
 	public int invariantStart;
 
@@ -50,21 +50,21 @@ public class InvariantDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		AggregateDeclaration ad;
+		IAggregateDeclaration ad;
 
 		parent = sc.parent;
-		Dsymbol parent = toParent();
+		IDsymbol parent = toParent();
 		ad = parent.isAggregateDeclaration();
 		if (ad == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.InvariantsOnlyForClassStructUnion, this));
 			return;
-		} else if (ad.inv != null && ad.inv != this) {
+		} else if (ad.inv() != null && ad.inv() != this) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.MoreThanOneInvariant, this,
-					new String[] { new String(ad.ident.ident) }));
+					new String[] { new String(ad.ident().ident) }));
 		}
-		ad.inv = this;
+		ad.inv(this);
 		type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 
 		sc = sc.push();

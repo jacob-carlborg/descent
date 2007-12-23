@@ -36,7 +36,7 @@ public class AlignDeclaration extends AttribDeclaration {
 			int salign_save = sc.structalign;
 
 			sc.structalign = salign;
-			for (Dsymbol s : decl) {
+			for (IDsymbol s : decl) {
 				s.semantic(sc, context);
 			}
 			sc.structalign = salign_save;

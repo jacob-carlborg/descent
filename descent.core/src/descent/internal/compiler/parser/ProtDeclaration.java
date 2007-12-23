@@ -49,17 +49,17 @@ public class ProtDeclaration extends AttribDeclaration {
 			sc.protection = protection;
 			sc.explicitProtection = 1;
 
-			for (Dsymbol s : decl) {
-				s.extraModifiers = modifiers;
-				if (s.extraModifiers == null) {
-					s.extraModifiers = new ArrayList<Modifier>();
+			for (IDsymbol s : decl) {
+				s.extraModifiers(modifiers);
+				if (s.extraModifiers() == null) {
+					s.extraModifiers(new ArrayList<Modifier>());
 				}
 				if (extraModifiers != null) {
-					s.extraModifiers.addAll(extraModifiers);
+					s.extraModifiers().addAll(extraModifiers);
 				}
-				s.extraModifiers.add(modifier);
+				s.extraModifiers().add(modifier);
 				s.semantic(sc, context);
-				s.extraModifiers = null;
+				s.extraModifiers(null);
 			}
 
 			sc.protection = protection_save;

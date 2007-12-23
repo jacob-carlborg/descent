@@ -117,14 +117,14 @@ public class CallExp extends UnaExp {
 
 		if (e1.op == TOKvar) {
 			VarExp ve = (VarExp) e1;
-			FuncDeclaration fd = ve.var.isFuncDeclaration();
+			IFuncDeclaration fd = ve.var.isFuncDeclaration();
 
 			if (fd != null && fd != iss.fd && fd.canInline(false, context)) {
 				e = fd.doInline(iss, null, arguments, context);
 			}
 		} else if (e1.op == TOKdotvar) {
 			DotVarExp dve = (DotVarExp) e1;
-			FuncDeclaration fd = dve.var.isFuncDeclaration();
+			IFuncDeclaration fd = dve.var.isFuncDeclaration();
 
 			if (fd != null && fd != iss.fd && fd.canInline(true, context)) {
 				if (dve.e1.op == TOKcall
@@ -148,10 +148,10 @@ public class CallExp extends UnaExp {
 		Expression e = EXP_CANT_INTERPRET;
 
 		if (e1.op == TOKvar) {
-			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
+			IFuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) { // Inline .dup
-				if (fd.ident != null
-						&& equals(fd.ident, Id.adDup)
+				if (fd.ident() != null
+						&& equals(fd.ident(), Id.adDup)
 						&& arguments != null && arguments.size() == 2) {
 					e = arguments.get(1);
 					e = e.interpret(istate, context);
@@ -163,7 +163,7 @@ public class CallExp extends UnaExp {
 							context);
 					if (eresult != null) {
 						e = eresult;
-					} else if (fd.type.toBasetype(context).nextOf().ty == Tvoid) {
+					} else if (fd.type().toBasetype(context).nextOf().ty == Tvoid) {
 						e = EXP_VOID_INTERPRET;
 					} else {
 						if (istate.stackOverflow) {
@@ -184,7 +184,7 @@ public class CallExp extends UnaExp {
 
 		e1 = e1.optimize(result, context);
 		if (e1.op == TOKvar && (result & WANTinterpret) != 0) {
-			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
+			IFuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) {
 				Expression eresult = fd.interpret(null, arguments, context);
 				if (eresult != null) {
@@ -207,7 +207,7 @@ public class CallExp extends UnaExp {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		TypeFunction tf;
-		FuncDeclaration f = null;
+		IFuncDeclaration f = null;
 		//int i;
 		Type t1 = null;
 		int istemp;
@@ -286,8 +286,8 @@ public class CallExp extends UnaExp {
 				if (e1.op == TOKvar) {
 					VarExp ve = (VarExp) e1;
 
-					if ((ve.var.storage_class & STClazy) != 0) {
-						tf = new TypeFunction(null, ve.var.type, 0, LINKd);
+					if ((ve.var.storage_class() & STClazy) != 0) {
+						tf = new TypeFunction(null, ve.var.type(), 0, LINKd);
 						TypeDelegate t = new TypeDelegate(tf);
 						ve.type = t.semantic(loc, sc, context);
 					}
@@ -371,7 +371,7 @@ public class CallExp extends UnaExp {
 			if (e1.op == TOKdotvar && t1.ty == Tfunction || e1.op == TOKdottd) {
 				DotVarExp dve = null;
 				DotTemplateExp dte = null;
-				AggregateDeclaration ad;
+				IAggregateDeclaration ad;
 				UnaExp ue = (UnaExp) (e1);
 
 				if (e1.op == TOKdotvar) { // Do overload resolution
@@ -384,7 +384,7 @@ public class CallExp extends UnaExp {
 					ad = f.toParent().isAggregateDeclaration();
 				} else {
 					dte = (DotTemplateExp) (e1);
-					TemplateDeclaration td = dte.td;
+					ITemplateDeclaration td = dte.td;
 					Assert.isNotNull(td);
 					if (arguments == null) {
 						// Should fix deduce() so it works on null argument
@@ -411,7 +411,7 @@ public class CallExp extends UnaExp {
 							&& ad != null
 							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
 							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
-						ClassDeclaration cd = ad.isClassDeclaration();
+						IClassDeclaration cd = ad.isClassDeclaration();
 						ClassDeclaration tcd = t.isClassHandle();
 
 						if (cd == null
@@ -437,14 +437,14 @@ public class CallExp extends UnaExp {
 				if (!f.needThis()) {
 					VarExp ve = new VarExp(loc, f);
 					e1 = new CommaExp(loc, ue.e1, ve);
-					e1.type = f.type;
+					e1.type = f.type();
 				} else {
 					if (e1.op == TOKdotvar) {
 						dve.var = f;
 					} else {
 						e1 = new DotVarExp(loc, dte.e1, f);
 					}
-					e1.type = f.type;
+					e1.type = f.type();
 
 					// See if we need to adjust the 'this' pointer
 					ad = f.isThis();
@@ -452,27 +452,27 @@ public class CallExp extends UnaExp {
 					if (ad != null && cd != null
 							&& ad.isClassDeclaration() != null && ad != cd
 							&& ue.e1.op != TOKsuper) {
-						ue.e1 = ue.e1.castTo(sc, ad.type, context); //new CastExp(loc, ue.e1, ad.type);
+						ue.e1 = ue.e1.castTo(sc, ad.type(), context); //new CastExp(loc, ue.e1, ad.type);
 						ue.e1 = ue.e1.semantic(sc, context);
 					}
 				}
 				t1 = e1.type;
 			} else if (e1.op == TOKsuper) {
 				// Base class constructor call
-				ClassDeclaration cd = null;
+				IClassDeclaration cd = null;
 
 				if (sc.func != null) {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
-				if (cd == null || cd.baseClass == null
+				if (cd == null || cd.baseClass() == null
 						|| sc.func.isCtorDeclaration() == null) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SuperClassConstructorCallMustBeInAConstructor, this));
 					type = Type.terror;
 					return this;
 				} else {
-					f = cd.baseClass.ctor;
+					f = cd.baseClass().ctor();
 					if (f == null) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, new String[] { cd.baseClass.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, new String[] { cd.baseClass().toChars(context) }));
 						type = Type.terror;
 						return this;
 					} else {
@@ -493,7 +493,7 @@ public class CallExp extends UnaExp {
 				}
 			} else if (e1.op == TOKthis) {
 				// same class constructor call
-				ClassDeclaration cd = null;
+				IClassDeclaration cd = null;
 
 				if (sc.func != null) {
 					cd = sc.func.toParent().isClassDeclaration();
@@ -511,7 +511,7 @@ public class CallExp extends UnaExp {
 					}
 					sc.callSuper |= CSXany_ctor | CSXthis_ctor;
 
-					f = cd.ctor;
+					f = cd.ctor();
 					f = f.overloadResolve(arguments, context, this);
 					checkDeprecated(sc, f, context);
 					e1 = new DotVarExp(e1.loc, e1, f);
@@ -577,19 +577,18 @@ public class CallExp extends UnaExp {
 				Assert.isNotNull(f);
 
 				// Look to see if f is really a function template
-				if (false && istemp == 0 && f.parent != null) {
-					TemplateInstance ti = f.parent.isTemplateInstance();
+				if (false && istemp == 0 && f.parent() != null) {
+					TemplateInstance ti = f.parent().isTemplateInstance();
 
 					if (ti != null
-							&& (ti.name.equals(f.ident) || ti.toAlias(context).ident
-									.equals(f.ident)) && ti.tempdecl != null) {
+							&& (equals(ti.name, f.ident()) || equals(ti.toAlias(context).ident(), f.ident())) && ti.tempdecl != null) {
 						/* This is so that one can refer to the enclosing
 						 * template, even if it has the same name as a member
 						 * of the template, if it has a !(arguments)
 						 */
-						TemplateDeclaration tempdecl = ti.tempdecl;
-						if (tempdecl.overroot != null) {
-							tempdecl = tempdecl.overroot; // then get the start
+						ITemplateDeclaration tempdecl = ti.tempdecl;
+						if (tempdecl.overroot() != null) {
+							tempdecl = tempdecl.overroot(); // then get the start
 						}
 						e1 = new TemplateExp(loc, tempdecl);
 						istemp = 1;
@@ -615,8 +614,8 @@ public class CallExp extends UnaExp {
 				accessCheck(sc, null, f, context);
 
 				ve.var = f;
-				ve.type = f.type;
-				t1 = f.type;
+				ve.type = f.type();
+				t1 = f.type();
 			}
 		}
 
@@ -628,7 +627,7 @@ public class CallExp extends UnaExp {
 	}
 
 	private Expression semantic_Lcheckargs(Scope sc, TypeFunction tf,
-			FuncDeclaration f, SemanticContext context) {
+			IFuncDeclaration f, SemanticContext context) {
 		Assert.isTrue(tf.ty == Tfunction);
 		type = tf.next;
 
@@ -639,12 +638,12 @@ public class CallExp extends UnaExp {
 
 		Assert.isNotNull(type);
 
-		if (f != null && f.tintro != null) {
+		if (f != null && f.tintro() != null) {
 			Type t = type;
 			int[] offset = { 0 };
 
-			if (f.tintro.next.isBaseOf(t, offset, context) && offset[0] != 0) {
-				type = f.tintro.next;
+			if (f.tintro().next.isBaseOf(t, offset, context) && offset[0] != 0) {
+				type = f.tintro().next;
 				return castTo(sc, t, context);
 			}
 		}

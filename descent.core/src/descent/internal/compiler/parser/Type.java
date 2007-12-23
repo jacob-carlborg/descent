@@ -595,7 +595,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
-			Dsymbol[] ps, SemanticContext context) {
+			IDsymbol[] ps, SemanticContext context) {
 		Type t;
 
 		t = semantic(loc, sc, context);
@@ -612,7 +612,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return this;
 	}
 
-	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return null;
 	}
 
@@ -718,7 +718,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public void checkDeprecated(Loc loc, Scope sc, SemanticContext context) {
 		Type t;
-		Dsymbol s;
+		IDsymbol s;
 
 		for (t = this; t != null; t = t.next) {
 			s = t.toDsymbol(sc, context);
@@ -729,7 +729,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		VarDeclaration v = null;
+		IVarDeclaration v = null;
 
 		if (e.op == TOKdotvar) {
 			DotVarExp dv = (DotVarExp) e;
@@ -745,14 +745,14 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 							IProblem.DotOffsetDeprecated, this));
 				}
 				//goto Loffset;
-				if (0 != (v.storage_class & STCfield)) {
-					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
+				if (0 != (v.storage_class() & STCfield)) {
+					e = new IntegerExp(e.loc, v.offset(), Type.tsize_t);
 					return e;
 				}
 			} else if (equals(ident, Id.offsetof)) {
 				//Loffset:
-				if (0 != (v.storage_class & STCfield)) {
-					e = new IntegerExp(e.loc, v.offset, Type.tsize_t);
+				if (0 != (v.storage_class() & STCfield)) {
+					e = new IntegerExp(e.loc, v.offset(), Type.tsize_t);
 					return e;
 				}
 			} else if (equals(ident, Id.init)) {
@@ -1107,8 +1107,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			if (!t.builtinTypeInfo()) { // Generate COMDAT
 				if (sc != null) // if in semantic() pass
 				{ // Find module that will go all the way to an object file
-					Module m = sc.module.importedFrom;
-					m.members.add(vtinfo);
+					IModule m = sc.module.importedFrom();
+					m.members().add(vtinfo);
 				} else // if in obj generation pass
 				{
 					Assert.isTrue(false);

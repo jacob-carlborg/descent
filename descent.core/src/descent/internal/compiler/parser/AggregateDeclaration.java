@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
 // DMD 1.020
-public abstract class AggregateDeclaration extends ScopeDsymbol {
+public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggregateDeclaration {
 
 	public Type type;
 	public PROT protection;
@@ -29,11 +29,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public Type handle; // 'this' type
 
 	// Special member functions
-	public InvariantDeclaration inv; // invariant
+	public IInvariantDeclaration inv; // invariant
 	public NewDeclaration aggNew; // allocator
 	public DeleteDeclaration aggDelete; // deallocator
 
-	public List<VarDeclaration> fields;
+	public List<IVarDeclaration> fields;
 	
 	// Back end
     Symbol stag;		// tag symbol for debug data
@@ -42,19 +42,19 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(id);
 		this.loc = loc;
-		fields = new ArrayList<VarDeclaration>(0);
+		fields = new ArrayList<IVarDeclaration>(0);
 	}
 
 	// The "reference" is not in DMD. It holds the source range of the node
 	// that needs the access check, so that we can point errors in the correct place
-	public void accessCheck(Scope sc, Dsymbol smember, SemanticContext context, ASTDmdNode reference) {
+	public void accessCheck(Scope sc, IDsymbol smember, SemanticContext context, INode reference) {
 		boolean result;
 
 		FuncDeclaration f = sc.func;
-		AggregateDeclaration cdscope = sc.getStructClassScope();
+		IAggregateDeclaration cdscope = sc.getStructClassScope();
 		PROT access;
 
-		Dsymbol smemberparent = smember.toParent();
+		IDsymbol smemberparent = smember.toParent();
 		if (smemberparent == null
 				|| smemberparent.isAggregateDeclaration() == null) {
 			return; // then it is accessible
@@ -81,13 +81,13 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 	}
 
-	public void addField(Scope sc, VarDeclaration v, SemanticContext context) {
+	public void addField(Scope sc, IVarDeclaration v, SemanticContext context) {
 		int memsize; // size of member
 		int memalignsize; // size of member for alignment purposes
 		int xalign; // alignment boundaries
 
 		// Check for forward referenced types which will fail the size() call
-		Type t = v.type.toBasetype(context);
+		Type t = v.type().toBasetype(context);
 		if (t.ty == TY.Tstruct /* && isStructDeclaration() */) {
 			TypeStruct ts = (TypeStruct) t;
 
@@ -101,15 +101,15 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			return;
 		}
 
-		memsize = v.type.size(loc, context);
-		memalignsize = v.type.alignsize(context);
-		xalign = v.type.memalign(sc.structalign, context);
+		memsize = v.type().size(loc, context);
+		memalignsize = v.type().alignsize(context);
+		xalign = v.type().memalign(sc.structalign, context);
 
 		int[] sc_offset_pointer = { sc.offset };
 		alignmember(xalign, memalignsize, sc_offset_pointer);
 		sc.offset = sc_offset_pointer[0];
 
-		v.offset = sc.offset;
+		v.offset(sc.offset);
 		sc.offset += memsize;
 		if (sc.offset > structsize) {
 			structsize = sc.offset;
@@ -121,9 +121,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			alignsize = memalignsize;
 		}
 
-		v.storage_class |= STC.STCfield;
+		v.storage_class(STC.STCfield);
 		if (fields == null) {
-			fields = new ArrayList<VarDeclaration>();
+			fields = new ArrayList<IVarDeclaration>();
 		}
 		fields.add(v);
 	}
@@ -154,7 +154,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 	}
 
-	public PROT getAccess(Dsymbol smember) {
+	public PROT getAccess(IDsymbol smember) {
 		return PROT.PROTpublic;
 	}
 
@@ -167,10 +167,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	 * Determine if smember has access to private members of this declaration.
 	 */
 
-	public boolean hasPrivateAccess(Dsymbol smember) {
+	public boolean hasPrivateAccess(IDsymbol smember) {
 		if (smember != null) {
-			AggregateDeclaration cd = null;
-			Dsymbol smemberparent = smember.toParent();
+			IAggregateDeclaration cd = null;
+			IDsymbol smemberparent = smember.toParent();
 			if (smemberparent != null) {
 				cd = smemberparent.isAggregateDeclaration();
 			}
@@ -181,7 +181,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 			// If both are members of the same module, grant access
 			while (true) {
-				Dsymbol sp = smember.toParent();
+				IDsymbol sp = smember.toParent();
 				if (sp.isFuncDeclaration() != null
 						&& smember.isFuncDeclaration() != null) {
 					smember = sp;
@@ -205,7 +205,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 		if (members != null) {
 			for (i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
+				IDsymbol s = members.get(i);
 				s.inlineScan(context);
 			}
 		}
@@ -225,7 +225,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	 * Determine if this is the same or friend of cd.
 	 */
 
-	public boolean isFriendOf(AggregateDeclaration cd) {
+	public boolean isFriendOf(IAggregateDeclaration cd) {
 		if (this == cd) {
 			return true;
 		}
@@ -252,7 +252,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		if (members != null) {
 			sc = sc.push(this);
 			for (int i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
+				IDsymbol s = members.get(i);
 				s.semantic2(sc, context);
 			}
 			sc.pop();
@@ -266,7 +266,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		if (members != null) {
 			sc = sc.push(this);
 			for (i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
+				IDsymbol s = members.get(i);
 				s.semantic3(sc, context);
 			}
 			sc.pop();
@@ -298,5 +298,53 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public int getLineNumber() {
 		return loc.linnum;
 	}
+	
+	public IInvariantDeclaration inv() {
+		return inv;
+	}
+	
+	public void inv(IInvariantDeclaration inv) {
+		this.inv = inv;
+	}
+	
+	public void sizeok(int sizeok) {
+		this.sizeok = sizeok;
+	}
+	
+	public Type type() {
+		return type;
+	}
 
+	public Type handle() {
+		return handle;
+	}
+	
+	public List<IVarDeclaration> fields() {
+		return fields;
+	}
+	
+	public int structsize() {
+		return structsize;
+	}
+	
+	public void structsize(int structsize) {
+		this.structsize = structsize;
+	}
+	
+	public int alignsize() {
+		return alignsize;
+	}
+	
+	public void alignsize(int alignsize) {
+		this.alignsize = alignsize;
+	}
+	
+	public int hasUnions() {
+		return hasUnions;
+	}
+	
+	public void hasUnions(int hasUnions) {
+		this.hasUnions = hasUnions;
+	}
+	
 }
