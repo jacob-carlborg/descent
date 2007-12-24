@@ -20,9 +20,9 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 
 	public Type type; // the TypeEnum
 	public Type memtype, sourceMemtype; // type of the members
-	integer_t maxval;
-	integer_t minval;
-	integer_t defaultval; // default initializer
+	public integer_t maxval;
+	public integer_t minval;
+	public integer_t defaultval; // default initializer
 
 	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
 		super(id);

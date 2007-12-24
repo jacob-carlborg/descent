@@ -10,10 +10,8 @@ import descent.internal.compiler.parser.FuncDeclarations;
 import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
-import descent.internal.compiler.parser.INewDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.PROT;
-import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
@@ -21,7 +19,7 @@ import descent.internal.compiler.parser.TypeClass;
 public class RClassDeclaration extends RAggregateDeclaration implements
 		IClassDeclaration {
 	
-	private Type type;
+	private TypeClass type;
 
 	public RClassDeclaration(IType element) {
 		super(element);
@@ -97,10 +95,13 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	public Type type() {
 		if (type == null) {
 			type = new TypeClass(this);
+			if (type != null) {
+				type.deco = "C" + getTypeDeco();
+			}
 		}
 		return type;
 	}
-	
+
 	@Override
 	public Type getType() {
 		return type();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import descent.core.IType;
 import descent.internal.compiler.parser.IAggregateDeclaration;
+import descent.internal.compiler.parser.IDeleteDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IInvariantDeclaration;
 import descent.internal.compiler.parser.INewDeclaration;
@@ -138,6 +139,16 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	public INewDeclaration aggNew() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public IDeleteDeclaration aggDelete() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public int structalign() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

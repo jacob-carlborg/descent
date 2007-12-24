@@ -48,6 +48,10 @@ public interface IAggregateDeclaration extends IScopeDsymbol {
 	
 	INewDeclaration aggNew();
 	
+	IDeleteDeclaration aggDelete();
+	
 	int size(SemanticContext context);
+	
+	int structalign();
 
 }

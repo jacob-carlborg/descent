@@ -309,7 +309,17 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		info.secondary = !foundType;
-		info.superclass = CharOperation.NO_CHAR;
+		
+		if (node instanceof IClassDeclaration) {
+			IClassDeclaration c = (IClassDeclaration) node;
+			IClassDeclaration b = c.baseClass();
+			if (b != null) { // May be null if c is actually Object
+				Type t = b.type();
+				info.superclass = t.getSignature().toCharArray();
+			}
+		} else {
+			info.superclass = CharOperation.NO_CHAR;
+		}
 		if (baseClasses != null) {
 			info.superinterfaces = getTokens(baseClasses);
 		}
@@ -656,10 +666,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		info.secondary = !foundType;
-		info.superclass = CharOperation.NO_CHAR;
+		info.superclass = node.memtype.getSignature().toCharArray();
 		if (node.memtype != null) {
 			info.superinterfaces = new char[][] { node.memtype.toCharArray() };
 		}
+		
+		info.enumValues = new integer_t[] { node.defaultval, node.minval, node.maxval };
 		
 		foundType = true;
 		

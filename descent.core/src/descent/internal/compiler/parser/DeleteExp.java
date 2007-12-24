@@ -67,8 +67,8 @@ public class DeleteExp extends UnaExp {
 			tb = tb.next.toBasetype(context);
 			if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
-				StructDeclaration sd = ts.sym;
-				FuncDeclaration f = sd.aggDelete;
+				IStructDeclaration sd = ts.sym;
+				IFuncDeclaration f = sd.aggDelete();
 
 				if (f != null) {
 					Expression e;

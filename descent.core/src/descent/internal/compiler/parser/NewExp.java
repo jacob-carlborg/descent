@@ -229,8 +229,8 @@ public class NewExp extends Expression {
 
 			} else if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
-				StructDeclaration sd = ts.sym;
-				IFuncDeclaration f = sd.aggNew;
+				IStructDeclaration sd = ts.sym;
+				IFuncDeclaration f = sd.aggNew();
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {

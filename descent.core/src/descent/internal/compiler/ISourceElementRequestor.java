@@ -11,6 +11,7 @@
 package descent.internal.compiler;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.integer_t;
 
 /*
  * Part of the source element parser responsible for building the output. It
@@ -50,6 +51,7 @@ public interface ISourceElementRequestor {
 		public long[] annotationPositions;
 		public char[][] categories;
 		public boolean secondary;
+		public integer_t[] enumValues; // default, min, max
 	}
 	
 	public static class TypeParameterInfo {

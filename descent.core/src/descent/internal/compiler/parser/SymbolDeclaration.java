@@ -6,9 +6,9 @@ import static descent.internal.compiler.parser.STC.*;
 public class SymbolDeclaration extends Declaration implements ISymbolDeclaration {
 	
 	public Symbol sym;
-	public StructDeclaration dsym;
+	public IStructDeclaration dsym;
 	
-	public SymbolDeclaration(Loc loc, Symbol s, StructDeclaration dsym) {
+	public SymbolDeclaration(Loc loc, Symbol s, IStructDeclaration dsym) {
 		super(new IdentifierExp(s.Sident));
 		this.loc = loc;
 		sym = s;

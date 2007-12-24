@@ -51,6 +51,7 @@ import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IEnumMember;
+import descent.internal.compiler.parser.IStructDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -663,16 +664,16 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeStruct(TypeStruct type, char[] name) {
-		StructDeclaration decl = type.sym;
+		IStructDeclaration decl = type.sym;
 		if (decl == null) {
 			return;
 		}
 		
 		// Suggest fields
-		suggestFields(decl.fields, name);
+		suggestFields(decl.fields(), name);
 		
 		// And functions
-		suggestFunctions(decl.members, name);
+		suggestFunctions(decl.members(), name);
 		
 		// And also all type's properties
 		suggestProperties(name, allTypesProperties);

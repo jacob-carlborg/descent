@@ -462,7 +462,9 @@ public String getSuperclassTypeSignature() throws JavaModelException {
 	if (superclassName == null) {
 		return null;
 	}
-	return new String(Signature.createTypeSignature(superclassName, false));
+	return new String(superclassName);
+	// TODO changed to allow our own signature: check
+	// return new String(Signature.createTypeSignature(superclassName, false));
 }
 
 /**

@@ -66,5 +66,33 @@ public enum TY {
     	this.name = name;
     	this.flags = flags;
     }
+    
+    public static TY getBasicType(char c) {
+    	switch(c) {
+    	case 'v': return Tvoid;
+    	case 'g': return Tint8;
+    	case 'h': return Tuns8;
+    	case 's': return Tint16;
+    	case 't': return Tuns16;
+    	case 'i': return Tint32;
+    	case 'k': return Tuns32;
+    	case 'l': return Tint64;
+    	case 'm': return Tuns64;
+    	case 'f': return Tfloat32;
+    	case 'd': return Tfloat64;
+    	case 'e': return Tfloat80;
+    	case 'o': return Timaginary32;
+    	case 'p': return Timaginary64;
+    	case 'j': return Timaginary80;
+    	case 'q': return Tcomplex32;
+    	case 'r': return Tcomplex64;
+    	case 'c': return Tcomplex80;
+    	case 'b': return Tbool;
+    	case 'a': return Tchar;
+    	case 'u': return Twchar;
+    	case 'w': return Tdchar;
+    	default: return null;
+    	}
+    }
 
 }

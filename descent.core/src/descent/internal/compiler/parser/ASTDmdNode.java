@@ -628,7 +628,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 			}
 			cd.accessCheck(sc, d, context, e);
 		} else if (e.type.ty == Tstruct) { // Do access check
-			StructDeclaration cd;
+			IStructDeclaration cd;
 
 			cd = (((TypeStruct) e.type).sym);
 			cd.accessCheck(sc, d, context, e);

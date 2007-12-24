@@ -1,16 +1,20 @@
 package descent.internal.compiler.lookup;
 
+import java.util.Stack;
+
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
+import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.ClassDeclarations;
 import descent.internal.compiler.parser.FuncAliasDeclaration;
@@ -39,6 +43,7 @@ import descent.internal.compiler.parser.ITemplateDeclaration;
 import descent.internal.compiler.parser.ITypedefDeclaration;
 import descent.internal.compiler.parser.IUnionDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
+import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.OutBuffer;
@@ -49,6 +54,10 @@ import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeBasic;
+import descent.internal.compiler.parser.TypeClass;
+import descent.internal.compiler.parser.TypeEnum;
+import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
@@ -499,6 +508,139 @@ public class RDsymbol extends RNode implements IDsymbol {
 		}
 		
 		return symbol;
+	}
+	
+	protected Type getType(String signature) {
+		// TODO optimize using IJavaProject#find and NameLookup
+		try {
+			if (signature.length() == 0) {
+				// Signal error
+				return Type.tint32;
+			} else if (signature.length() == 1) {
+				// It's a basic type
+				char c = signature.charAt(0);
+				return TypeBasic.fromSignature(c);
+			} else {
+				char first = signature.charAt(0);
+				
+				Object current = element.getJavaProject();
+				switch(first) {
+				case 'E': // enum
+				case 'C': // class
+				case 'S': // struct
+					// It's an enum
+					for(int i = 1; i < signature.length(); i++) {
+						char c = signature.charAt(i);
+						int n = 0;
+						while(Character.isDigit(c)) {
+							n = 10 * n + (c - '0');
+							i++;
+							c = signature.charAt(i);
+						}
+						String name = signature.substring(i, i + n);
+						current = findChild(current, name);
+						if (current == null) {
+							// TODO signal error
+							break;
+						}
+						i += n - 1;
+					}
+					break;
+				}
+				
+				if (current != null && current instanceof IDsymbol) {
+					IDsymbol symbol = (IDsymbol) current;
+					switch(first) {
+					case 'E':
+						IEnumDeclaration e = symbol.isEnumDeclaration();
+						if (e != null) {
+							return new TypeEnum(e);
+						}
+						break;
+					case 'C':
+						IClassDeclaration c = symbol.isClassDeclaration();
+						if (c != null) {
+							return new TypeClass(c);
+						}
+						break;
+					case 'S':
+						IStructDeclaration s = symbol.isStructDeclaration();
+						if (s != null) {
+							return new TypeStruct(s);
+						}
+						break;
+					}
+					
+				}
+				
+				return Type.tint32;
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return Type.tint32;
+		}
+	}
+	
+	private Object findChild(Object current, String name) throws JavaModelException {
+		if (current instanceof IJavaProject) {
+			return findChild((IJavaProject) current, name);
+		} else if (current instanceof IPackageFragment) {
+			return findChild((IPackageFragment) current, name);
+		} else if (current instanceof IDsymbol) {
+			return ((IDsymbol) current).search(null, name.toCharArray(), 0, null);
+		} else {
+			return null;
+		}
+	}
+	
+	private Object findChild(IJavaProject project, String name) throws JavaModelException {
+		IPackageFragment[] fragments = project.getPackageFragments();
+		for(IPackageFragment fragment : fragments) {
+			Object child = findChild(fragment, name);
+			if (child != null) {
+				return child;
+			}
+		}
+		return null;
+	}
+	
+	private Object findChild(IPackageFragment fragment, String name) throws JavaModelException {
+		if (fragment.isDefaultPackage()) {
+			ICompilationUnit unit = fragment.getCompilationUnit(name + ".d");
+			if (unit != null) {
+				return new RModule(unit);
+			}
+		} else if (fragment.getElementName().equals(name)) {
+			return fragment;
+		}
+		return null;
+	}
+	
+	protected String getTypeDeco() {
+		// Hack to take care of inconsistency of mangleof
+		if (parent.isModule() != null && CharOperation.equals(parent.ident().ident, Id.object)) {
+			String elemName = element.getElementName();
+			if (elemName.equals("Object")) {
+				return "6Object";
+			}	
+		}
+		
+		Stack<IDsymbol> stack = new Stack<IDsymbol>();
+		
+		IDsymbol current = this;
+		while(current != null) {
+			stack.push(current);
+			current = current.parent();
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		while(!stack.isEmpty()) {
+			IDsymbol s = stack.pop();
+			char[] ident = s.ident().ident;
+			sb.append(ident.length);
+			sb.append(ident);
+		}
+		return sb.toString();
 	}
 	
 	@Override

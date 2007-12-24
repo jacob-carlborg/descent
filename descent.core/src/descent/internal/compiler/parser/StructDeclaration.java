@@ -309,5 +309,9 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 	public String getSignature() {
 		return type.getSignature();
 	}
+	
+	public boolean zeroInit() {
+		return zeroInit;
+	}
 
 }

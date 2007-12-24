@@ -453,6 +453,9 @@ public void enterType(TypeInfo typeInfo) {
 		info.setNameSourceStart(typeInfo.nameSourceStart);
 		info.setNameSourceEnd(typeInfo.nameSourceEnd);
 	}
+	// Added to allow storing default, min and max values of enums
+	info.setEnumValues(typeInfo.enumValues);
+	
 	JavaModelManager manager = JavaModelManager.getJavaModelManager();
 	char[] superclass = typeInfo.superclass;
 	info.setSuperclassName(superclass == null ? null : manager.intern(superclass));

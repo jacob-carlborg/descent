@@ -91,7 +91,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 		if (t.ty == TY.Tstruct /* && isStructDeclaration() */) {
 			TypeStruct ts = (TypeStruct) t;
 
-			if (ts.sym.sizeok != 1) {
+			if (ts.sym.sizeok() != 1) {
 				sizeok = 2; // cannot finish; flag as forward referenced
 				return;
 			}
@@ -359,8 +359,16 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 		return aggNew;
 	}
 	
+	public IDeleteDeclaration aggDelete() {
+		return aggDelete;
+	}
+	
 	public Scope scope() {
 		return scope;
+	}
+	
+	public int structalign() {
+		return structalign;
 	}
 	
 }

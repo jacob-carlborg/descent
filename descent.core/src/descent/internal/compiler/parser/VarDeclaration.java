@@ -267,11 +267,11 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		if (tb.ty == TY.Tstruct) {
 			TypeStruct ts = (TypeStruct) tb;
 
-			if (ts.sym.members == null) {
+			if (ts.sym.members() == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						// "No definition of struct " + ts.sym.ident,
 						IProblem.NoDefinition, sourceType, new String[] { new String(
-								ts.sym.ident.ident) }));
+								ts.sym.ident().ident) }));
 			}
 		}
 
@@ -386,7 +386,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				&& fd != null
 				&& (storage_class & (STCfield | STCin | STCforeach)) == 0) {
 			// Provide a default initializer
-			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
+			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit()) {
 				Expression e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 				Expression e1;
 				e1 = new VarExp(loc, this);

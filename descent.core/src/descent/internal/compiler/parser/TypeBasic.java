@@ -786,5 +786,13 @@ public class TypeBasic extends Type {
 			return new ComplexExp(loc, cvalue, this);
 		}
 	}
+	
+	public static TypeBasic fromSignature(char c) {
+		TY ty = TY.getBasicType(c);
+		if (ty == null) {
+			return null;
+		}
+		return (TypeBasic) TypeBasic.basic[ty.ordinal()];
+	}
 
 }

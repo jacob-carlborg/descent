@@ -20,6 +20,7 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.ISourceField;
 import descent.internal.compiler.env.ISourceMethod;
 import descent.internal.compiler.env.ISourceType;
+import descent.internal.compiler.parser.integer_t;
 
 /** 
  * Element info for an IType element that originated from source. 
@@ -61,6 +62,11 @@ public class SourceTypeElementInfo extends MemberElementInfo implements ISourceT
 	 * A map from an IJavaElement (this type or a child of this type) to a String[] (the categories of this element)
 	 */
 	protected HashMap categories;
+	
+	/*
+	 * The default, min and max values of this enum.
+	 */
+	protected integer_t[] enumValues;
 	
 protected void addCategories(IJavaElement element, char[][] elementCategories) {
 	if (elementCategories == null) return;
@@ -275,6 +281,9 @@ public char[][] getTypeParameterNames() {
 	}
 	return typeParameterNames;
 }
+public integer_t[] getEnumValues() {
+	return enumValues;
+}
 /**
  * @see ISourceType
  */
@@ -299,6 +308,13 @@ protected void setSuperclassName(char[] superclassName) {
 protected void setSuperInterfaceNames(char[][] superInterfaceNames) {
 	this.superInterfaceNames = superInterfaceNames;
 }
+/**
+ * Sets the default, min and max values of this enum.
+ */
+protected void setEnumValues(integer_t[] enumValues) {
+	this.enumValues = enumValues;
+}
+
 public String toString() {
 	return "Info for " + this.handle.toString(); //$NON-NLS-1$
 }
