@@ -56,6 +56,12 @@ public class CompileDeclaration extends AttribDeclaration {
 		// p.nextToken();
 		p.loc = loc;
 		decl = p.parseModule();
+		for(IDsymbol s : decl) {
+			s.synthetic(true);
+			s.setStart(getStart() + 1);
+			s.setLength(getLength());
+			s.setLineNumber(getLineNumber());
+		}
 
 		// TODO semantic do this better
 		if (p.problems != null) {
@@ -78,7 +84,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		CompileDeclaration sc = new CompileDeclaration(loc, exp.syntaxCopy(context));
 		return sc;
 	}

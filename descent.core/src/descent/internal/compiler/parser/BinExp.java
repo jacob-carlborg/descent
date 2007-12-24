@@ -393,8 +393,8 @@ public abstract class BinExp extends Expression {
 			} else if (t2n.ty == Tvoid) {
 				;
 			} else if (t1n.ty == Tclass && t2n.ty == Tclass) {
-				ClassDeclaration cd1 = t1n.isClassHandle();
-				ClassDeclaration cd2 = t2n.isClassHandle();
+				IClassDeclaration cd1 = t1n.isClassHandle();
+				IClassDeclaration cd2 = t2n.isClassHandle();
 				int offset[] = { 0 };
 
 				if (cd1.isBaseOf(cd2, offset, context)) {
@@ -889,7 +889,7 @@ public abstract class BinExp extends Expression {
 		Expressions args2 = new Expressions(1);
 		int argsset = 0;
 
-		AggregateDeclaration ad1;
+		IAggregateDeclaration ad1;
 		if (t1.ty == Tclass)
 			ad1 = ((TypeClass) t1).sym;
 		else if (t1.ty == Tstruct)
@@ -897,7 +897,7 @@ public abstract class BinExp extends Expression {
 		else
 			ad1 = null;
 
-		AggregateDeclaration ad2;
+		IAggregateDeclaration ad2;
 		if (t2.ty == Tclass)
 			ad2 = ((TypeClass) t2).sym;
 		else if (t2.ty == Tstruct)

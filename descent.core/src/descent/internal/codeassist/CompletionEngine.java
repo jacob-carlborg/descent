@@ -47,6 +47,7 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IEnumMember;
@@ -643,7 +644,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeClass(TypeClass type, char[] name) {
-		ClassDeclaration decl = type.sym;
+		IClassDeclaration decl = type.sym;
 		if (decl == null) {
 			return;
 		}
@@ -652,10 +653,10 @@ public class CompletionEngine extends Engine
 		suggestFields(decl.fields(), name);
 		
 		// Then virtual functions
-		suggestFunctions(decl.vtbl, name);
+		suggestFunctions(decl.vtbl(), name);
 		
 		// Then functions
-		suggestFunctions(decl.vtblFinal, name);
+		suggestFunctions(decl.vtblFinal(), name);
 		
 		// And also all type's properties
 		suggestProperties(name, allTypesProperties);

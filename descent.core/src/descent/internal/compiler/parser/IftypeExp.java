@@ -105,10 +105,10 @@ public class IftypeExp extends Expression {
 				if (targ.ty != TY.Tclass)
 					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
 				else {
-					ClassDeclaration cd = ((TypeClass) targ).sym;
-					Arguments args = new Arguments(cd.baseclasses.size());
-					for (int i = 0; i < cd.baseclasses.size(); i++) {
-						BaseClass b = (BaseClass) cd.baseclasses.get(i);
+					IClassDeclaration cd = ((TypeClass) targ).sym;
+					Arguments args = new Arguments(cd.baseclasses().size());
+					for (int i = 0; i < cd.baseclasses().size(); i++) {
+						BaseClass b = (BaseClass) cd.baseclasses().get(i);
 						args.add(new Argument(STC.STCin, b.type, null, null));
 					}
 					tded = TypeTuple.newArguments(args);

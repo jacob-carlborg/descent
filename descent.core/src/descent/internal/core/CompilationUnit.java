@@ -163,21 +163,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	requestor.source = contents;
 	//requestor.parser = parser;
 	
-	Module module = parser.parseCompilationUnit(
-			new descent.internal.compiler.env.ICompilationUnit() {
-		public char[] getContents() {
-			return contents;
-		}
-		public char[] getMainTypeName() {
-			return CompilationUnit.this.getMainTypeName();
-		}
-		public char[][] getPackageName() {
-			return CompilationUnit.this.getPackageName();
-		}
-		public char[] getFileName() {
-			return CompilationUnit.this.getFileName();
-		}
-	}, resolveBindings);
+	Module module = parser.parseCompilationUnit(this, resolveBindings);
 	
 	// update timestamp (might be IResource.NULL_STAMP if original does not exist)
 	if (underlyingResource == null) {

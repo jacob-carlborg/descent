@@ -350,7 +350,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 			}
 		}
 
-		AggregateDeclaration ad;
+		IAggregateDeclaration ad;
 		IFuncDeclaration fd;
 
 		Argument arg = arguments.get(0);
@@ -1821,6 +1821,10 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 		return -1;
 	}
 	
+	public void setLineNumber(int lineNumber) {
+		// empty
+	}
+	
 	public static final boolean equals(IdentifierExp e1, IdentifierExp e2) {
 		if (e1 == null && e2 == null) {
 			return true;
@@ -1891,6 +1895,10 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 	
 	public int getStart() {
 		return start;
+	}
+	
+	public void setStart(int start) {
+		this.start = start;
 	}
 	
 	public List<Modifier> modifiers() {

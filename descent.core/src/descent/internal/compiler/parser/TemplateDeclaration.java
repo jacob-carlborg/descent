@@ -57,6 +57,8 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, parameters);
 			TreeVisitor.acceptChildren(visitor, members);
+			
+			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}
@@ -724,7 +726,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		TemplateDeclaration td;
 		TemplateParameters p;
 		Dsymbols d;

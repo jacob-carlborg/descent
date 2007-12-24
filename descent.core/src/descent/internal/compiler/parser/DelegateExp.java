@@ -129,13 +129,13 @@ public class DelegateExp extends UnaExp {
 						&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
 						&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
 					IClassDeclaration cd = ad.isClassDeclaration();
-					ClassDeclaration tcd = t.isClassHandle();
+					IClassDeclaration tcd = t.isClassHandle();
 
 					if (cd == null || tcd == null
 							|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
 						if (tcd != null && tcd.isNested()) { // Try again with outer scope
 
-							e1 = new DotVarExp(loc, e1, tcd.vthis);
+							e1 = new DotVarExp(loc, e1, tcd.vthis());
 							e1 = e1.semantic(sc, context);
 							// goto L10;
 							loop = true;

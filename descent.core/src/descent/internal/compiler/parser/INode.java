@@ -10,13 +10,19 @@ public interface INode extends IElement, IVisitable<IASTVisitor> {
 	
 	int getStart();
 	
+	void setStart(int start);
+	
 	int getLength();
+	
+	void setLength(int length);
 	
 	int getErrorStart();
 	
 	int getErrorLength();
 	
 	int getLineNumber();
+	
+	void setLineNumber(int lineNumber);
 	
 	DYNCAST dyncast();
 	

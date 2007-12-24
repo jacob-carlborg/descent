@@ -130,8 +130,8 @@ public class CastExp extends UnaExp {
 		if ((result & WANTflags) != 0 && type.ty == Tclass
 				&& e1.type.ty == Tclass) {
 			// See if we can remove an unnecessary cast
-			ClassDeclaration cdfrom;
-			ClassDeclaration cdto;
+			IClassDeclaration cdfrom;
+			IClassDeclaration cdto;
 			int[] offset = { 0 };
 
 			cdfrom = e1.type.isClassHandle();

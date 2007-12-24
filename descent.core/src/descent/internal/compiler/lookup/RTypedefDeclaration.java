@@ -8,5 +8,9 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	public RTypedefDeclaration(IField element) {
 		super(element);
 	}
+	
+	public ITypedefDeclaration isTypedefDeclaration() {
+		return this;
+	}
 
 }

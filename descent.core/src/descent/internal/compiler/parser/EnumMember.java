@@ -48,7 +48,7 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		Expression e = null;
 		if (value != null) {
 			e = value.syntaxCopy(context);

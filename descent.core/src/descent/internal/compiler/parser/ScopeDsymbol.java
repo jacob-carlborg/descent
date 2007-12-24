@@ -36,6 +36,19 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	protected void acceptSynthetic(IASTVisitor visitor) {
+		if (symtab != null) {
+			for(char[] key : symtab.keys()) {
+				if (key == null) continue;
+				
+				IDsymbol s = symtab.lookup(key);
+				if (s.synthetic()) {
+					s.accept(visitor);
+				}
+			}
+		}
+	}
 
 	public void addMember(Dsymbol symbol) {
 		members.add(symbol);
@@ -194,7 +207,7 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		ScopeDsymbol sd;
 		if (s != null) {
 			sd = (ScopeDsymbol) s;

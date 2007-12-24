@@ -159,7 +159,7 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		AnonDeclaration ad;
 
 		Assert.isTrue(s == null);

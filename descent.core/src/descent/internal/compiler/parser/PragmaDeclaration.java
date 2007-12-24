@@ -42,7 +42,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		ps[0] = null;
 		return true;
 	}
@@ -109,7 +109,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);

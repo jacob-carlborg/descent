@@ -37,5 +37,7 @@ public interface IModule extends IPackage {
 	List<char[]> versionidsNot();
 	
 	void versionidsNot(List<char[]> versionidsNot);
+	
+	IModuleDeclaration md();
 
 }

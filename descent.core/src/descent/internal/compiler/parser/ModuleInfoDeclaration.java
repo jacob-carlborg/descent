@@ -24,7 +24,7 @@ public class ModuleInfoDeclaration extends VarDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 

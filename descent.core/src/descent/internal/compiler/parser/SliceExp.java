@@ -137,7 +137,7 @@ public class SliceExp extends UnaExp {
 	public Expression semantic(Scope sc, SemanticContext context) {
 
 		Expression e;
-		AggregateDeclaration ad;
+		IAggregateDeclaration ad;
 		ScopeDsymbol sym;
 
 		if (null != type)

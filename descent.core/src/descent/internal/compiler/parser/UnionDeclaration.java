@@ -17,6 +17,8 @@ public class UnionDeclaration extends StructDeclaration implements IUnionDeclara
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, members);
+			
+			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}
@@ -37,7 +39,7 @@ public class UnionDeclaration extends StructDeclaration implements IUnionDeclara
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		UnionDeclaration ud;
 
 		if (s != null) {

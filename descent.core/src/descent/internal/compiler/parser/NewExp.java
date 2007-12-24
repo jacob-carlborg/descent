@@ -79,7 +79,7 @@ public class NewExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Type tb;
-		ClassDeclaration cdthis = null;
+		IClassDeclaration cdthis = null;
 
 		if (type != null) {
 			return this;
@@ -121,7 +121,7 @@ public class NewExp extends Expression {
 				TypeFunction tf;
 
 				TypeClass tc = (TypeClass) (tb);
-				ClassDeclaration cd = tc.sym.isClassDeclaration();
+				IClassDeclaration cd = tc.sym.isClassDeclaration();
 				if (cd.isInterfaceDeclaration() != null) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, sourceNewtype, new String[] { cd.toChars(context) }));
 				} else if (cd.isAbstract()) {
@@ -179,7 +179,7 @@ public class NewExp extends Expression {
 							IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
 				}
 
-				IFuncDeclaration f = cd.ctor;
+				IFuncDeclaration f = cd.ctor();
 				if (f != null) {
 					f = f.overloadResolve(arguments, context, this);
 					checkDeprecated(sc, f, context);
@@ -202,10 +202,10 @@ public class NewExp extends Expression {
 					}
 				}
 
-				if (cd.aggNew != null) {
+				if (cd.aggNew() != null) {
 					Expression e;
 
-					f = cd.aggNew;
+					f = cd.aggNew();
 
 					// Prepend the uint size argument to newargs[]
 					e = new IntegerExp(loc, cd.size(context), Type.tuns32);

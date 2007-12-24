@@ -125,7 +125,7 @@ public class DotVarExp extends UnaExp {
 							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
 							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
 						IClassDeclaration cd = ad.isClassDeclaration();
-						ClassDeclaration tcd = t.isClassHandle();
+						IClassDeclaration tcd = t.isClassHandle();
 
 						if (cd == null
 								|| tcd == null
@@ -133,7 +133,7 @@ public class DotVarExp extends UnaExp {
 										context))) {
 							if (tcd != null && tcd.isNested()) { // Try again with outer scope
 
-								e1 = new DotVarExp(loc, e1, tcd.vthis);
+								e1 = new DotVarExp(loc, e1, tcd.vthis());
 								e1 = e1.semantic(sc, context);
 
 								// Skip over nested functions, and get the enclosing

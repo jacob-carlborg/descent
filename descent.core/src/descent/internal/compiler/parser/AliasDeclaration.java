@@ -213,7 +213,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		Assert.isTrue(s == null);
 		AliasDeclaration sa;
 		if (type != null) {

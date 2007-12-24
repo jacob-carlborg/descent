@@ -8,6 +8,8 @@ public interface IAggregateDeclaration extends IScopeDsymbol {
 	
 	void inv(IInvariantDeclaration inv);
 	
+	int sizeok();
+	
 	void sizeok(int sizeok);
 	
 	Type type();
@@ -39,5 +41,13 @@ public interface IAggregateDeclaration extends IScopeDsymbol {
 	void addField(Scope sc, IVarDeclaration v, SemanticContext context);
 	
 	Symbol toInitializer();
+	
+	Scope scope();
+	
+	int storage_class();
+	
+	INewDeclaration aggNew();
+	
+	int size(SemanticContext context);
 
 }

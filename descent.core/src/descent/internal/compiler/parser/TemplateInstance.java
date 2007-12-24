@@ -463,7 +463,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		ps[0] = null;
 		return true;
 	}
@@ -739,7 +739,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		TemplateInstance ti;
 		// int i;
 

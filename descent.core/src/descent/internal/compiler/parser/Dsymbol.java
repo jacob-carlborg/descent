@@ -31,9 +31,9 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		return b;
 	}
 
-	public static boolean oneMembers(Dsymbols members, Dsymbol[] ps,
+	public static boolean oneMembers(Dsymbols members, IDsymbol[] ps,
 			SemanticContext context) {
-		Dsymbol s = null;
+		IDsymbol s = null;
 
 		if (members != null) {
 			for (int i = 0; i < members.size(); i++) {
@@ -76,7 +76,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public void addLocalClass(ClassDeclarations aclasses, SemanticContext context) {
-
+		// empty
 	}
 
 	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
@@ -110,7 +110,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public void checkCtorConstInit(SemanticContext context) {
-
+		// empty
 	}
 
 	public void checkDeprecated(Scope sc, SemanticContext context) {
@@ -187,7 +187,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public void inlineScan(SemanticContext context) {
-
+		// empty
 	}
 
 	public AggregateDeclaration isAggregateDeclaration() {
@@ -424,7 +424,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		return false;
 	}
 
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		ps[0] = this;
 		return true;
 	}
@@ -514,7 +514,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		return 0;
 	}
 
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		throw new IllegalStateException("Must be implemented by subclasses");
 	}
 
@@ -582,6 +582,10 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		return ident;
 	}
 	
+	public void ident(IdentifierExp ident) {
+		this.ident = ident;
+	}
+	
 	public IDsymbol parent() {
 		return parent;
 	}
@@ -592,6 +596,23 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	
 	public Loc loc() {
 		return loc;
+	}
+	
+	public boolean synthetic() {
+		return synthetic;
+	}
+	
+	public void synthetic(boolean synthetic) {
+		this.synthetic = synthetic;
+	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
+	}
+	
+	public void setLineNumber(int lineNumber) {
+		this.loc.linnum = lineNumber;
 	}
 
 }

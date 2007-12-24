@@ -6,9 +6,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class DeclarationExp extends Expression {
 
-	public Dsymbol declaration, sourceDeclaration;
+	public IDsymbol declaration, sourceDeclaration;
 
-	public DeclarationExp(Loc loc, Dsymbol declaration) {
+	public DeclarationExp(Loc loc, IDsymbol declaration) {
 		super(loc, TOK.TOKdeclaration);
 		this.declaration = declaration;
 		this.sourceDeclaration = declaration;
@@ -28,7 +28,7 @@ public class DeclarationExp extends Expression {
 	@Override
 	public Expression doInline(InlineDoState ids) {
 		DeclarationExp de = (DeclarationExp) copy();
-		VarDeclaration vd;
+		IVarDeclaration vd;
 
 		//printf("DeclarationExp::doInline(%s)\n", toChars());
 		vd = declaration.isVarDeclaration();
@@ -36,28 +36,28 @@ public class DeclarationExp extends Expression {
 			if (vd.isStatic() || vd.isConst()) {
 				;
 			} else {
-				ExpInitializer ie;
+				IExpInitializer ie;
 				ExpInitializer ieto;
-				VarDeclaration vto;
+				IVarDeclaration vto;
 
-				vto = new VarDeclaration(vd.loc, vd.type, vd.ident, vd.init);
+				vto = new VarDeclaration(vd.loc(), vd.type(), vd.ident(), vd.init());
 				vto = vd;
-				vto.parent = ids.parent;
+				vto.parent(ids.parent);
 				//		    vto.csym = null;
 				//		    vto.isym = null;
 
 				ids.from.add(vd);
 				ids.to.add(vto);
 
-				if (vd.init.isVoidInitializer() != null) {
-					vto.init = new VoidInitializer(vd.init.loc);
+				if (vd.init().isVoidInitializer() != null) {
+					vto.init(new VoidInitializer(vd.init().loc()));
 				} else {
-					ie = vd.init.isExpInitializer();
+					ie = vd.init().isExpInitializer();
 					if (ie == null) {
 						throw new IllegalStateException("assert(ie);");
 					}
-					ieto = new ExpInitializer(ie.loc, ie.exp.doInline(ids));
-					vto.init = ieto;
+					ieto = new ExpInitializer(ie.loc(), ie.exp().doInline(ids));
+					vto.init(ieto);
 				}
 				de.declaration = vto;
 			}
@@ -76,7 +76,7 @@ public class DeclarationExp extends Expression {
 	@Override
 	public int inlineCost(InlineCostState ics, SemanticContext context) {
 		int cost = 0;
-		VarDeclaration vd;
+		IVarDeclaration vd;
 
 		vd = declaration.isVarDeclaration();
 		if (vd != null) {
@@ -90,11 +90,11 @@ public class DeclarationExp extends Expression {
 			cost += 1;
 
 			// Scan initializer (vd.init)
-			if (vd.init != null) {
-				ExpInitializer ie = vd.init.isExpInitializer();
+			if (vd.init() != null) {
+				IExpInitializer ie = vd.init().isExpInitializer();
 
 				if (ie != null) {
-					cost += ie.exp.inlineCost(ics, context);
+					cost += ie.exp().inlineCost(ics, context);
 				}
 			}
 		}
@@ -121,22 +121,22 @@ public class DeclarationExp extends Expression {
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
-		VarDeclaration v = declaration.isVarDeclaration();
+		IVarDeclaration v = declaration.isVarDeclaration();
 		if (v != null) {
 			IDsymbol s = v.toAlias(context);
-			if (s == v && !v.isStatic() && v.init != null) {
-				ExpInitializer ie = v.init.isExpInitializer();
+			if (s == v && !v.isStatic() && v.init() != null) {
+				IExpInitializer ie = v.init().isExpInitializer();
 				if (ie != null) {
-					e = ie.exp.interpret(istate, context);
-				} else if (v.init.isVoidInitializer() != null) {
+					e = ie.exp().interpret(istate, context);
+				} else if (v.init().isVoidInitializer() != null) {
 					e = null;
 				}
-			} else if (s == v && v.isConst() && v.init != null) {
-				e = v.init.toExpression(context);
+			} else if (s == v && v.isConst() && v.init() != null) {
+				e = v.init().toExpression(context);
 				if (null == e) {
 					e = EXP_CANT_INTERPRET;
 				} else if (null == e.type) {
-					e.type = v.type;
+					e.type = v.type();
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public class DeclarationExp extends Expression {
 
 	@Override
 	public void scanForNestedRef(Scope sc, SemanticContext context) {
-		declaration.parent = sc.parent;
+		declaration.parent(sc.parent);
 	}
 
 	@Override

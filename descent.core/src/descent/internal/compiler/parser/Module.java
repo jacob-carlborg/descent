@@ -62,6 +62,8 @@ public class Module extends Package implements IModule {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, md);
 			TreeVisitor.acceptChildren(visitor, members);
+			
+			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}
@@ -365,6 +367,10 @@ public class Module extends Package implements IModule {
 	
 	public void versionlevel(long versionlevel) {
 		this.versionlevel = versionlevel;
+	}
+	
+	public IModuleDeclaration md() {
+		return md;
 	}
 
 	// PERHAPS void inlineScan();

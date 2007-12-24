@@ -29,6 +29,8 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, members);
+			
+			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}
@@ -249,7 +251,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		StructDeclaration sd;
 
 		if (s != null) {

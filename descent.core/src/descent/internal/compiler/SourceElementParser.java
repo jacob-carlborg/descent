@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Stack;
 
 import descent.core.Flags;
+import descent.core.ICompilationUnit;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
@@ -27,6 +29,7 @@ import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.NaiveASTFlattener;
+import descent.internal.core.util.Util;
 
 /**
  * A source element parser extracts structural and reference information
@@ -91,6 +94,17 @@ public class SourceElementParser extends AstVisitorAdapter {
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
 		module = CompilationUnitResolver.parse(getASTlevel(), (descent.internal.compiler.env.ICompilationUnit) unit, options.getMap(), true).module;
 		
+		// If the target is an ICompilationUnit, we need to solve all the
+		// compile-time stuff to know the *real* structure of the module
+		if (unit instanceof ICompilationUnit) {
+			ICompilationUnit cunit = (ICompilationUnit) unit;
+			try {
+				CompilationUnitResolver.resolve(module, cunit.getJavaProject(), cunit.getOwner());
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+	
 		requestor.enterCompilationUnit();
 		module.accept(this);
 		requestor.exitCompilationUnit(endOf(module));
@@ -847,7 +861,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(DeclarationStatement node) {
-		Dsymbol dsymbol = ((DeclarationExp) node.sourceExp).declaration;
+		Dsymbol dsymbol = (Dsymbol) ((DeclarationExp) node.sourceExp).declaration; // SEMANTIC
 		switch(dsymbol.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 		case ASTDmdNode.INTERFACE_DECLARATION:
@@ -961,7 +975,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			last = last.next;
 		}
 		
-		int initializerStart = node.sourceInit == null ? - 1 : startOf(node.sourceInit);
+		int initializerStart = node.sourceInit == null ? - 1 : startOf((ASTDmdNode) node.sourceInit); // SEMANTIC
 		int declarationSourceEnd = endOf(last);
 		int declarationEnd = endOfDeclaration(node.ident);
 		

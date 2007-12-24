@@ -520,7 +520,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(ClassInfoDeclaration node) {
 		appendStartCompilerNode();
 		this.buffer.append("ClassInfo: ");
-		this.buffer.append(node.cd.ident);
+		this.buffer.append(node.cd.ident());
 		appendEndCompilerNode();
 		return false;
 	}
@@ -856,7 +856,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(DeclarationExp node) {
 		appendStartCompilerNode();
 		this.buffer.append("DeclarationExp: ");
-		this.buffer.append(node.declaration.ident);
+		this.buffer.append(node.declaration.ident());
 		appendEndCompilerNode();
 		return false;
 	}
@@ -2155,7 +2155,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			visitList(node.allStringExps, " ");
 		} else {
 			if (node.string != null) {
+				this.buffer.append('"');
 				this.buffer.append(node.string);
+				this.buffer.append('"');
 			} else {
 				this.buffer.append('"');
 				this.buffer.append(node.string);
@@ -2588,7 +2590,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TypeClass node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeClass: ");
-		this.buffer.append(node.sym.ident);
+		this.buffer.append(node.sym.ident());
 		appendEndCompilerNode();
 		return false;
 	}

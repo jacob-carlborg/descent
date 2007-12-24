@@ -148,7 +148,7 @@ public class TraitsExp extends Expression {
 				public boolean check(Type t)
 				{
 					return t.toBasetype(context).ty == TY.Tclass && 
-							((((TypeClass) t.toBasetype(context)).sym.storage_class
+							((((TypeClass) t.toBasetype(context)).sym.storage_class()
 							& STC.STCfinal) != 0);
 				}
 	    	});

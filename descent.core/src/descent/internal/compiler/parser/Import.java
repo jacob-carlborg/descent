@@ -227,7 +227,7 @@ public class Import extends Dsymbol implements IImport {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		assert (null == s);
 
 		Import si;

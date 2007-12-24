@@ -42,6 +42,8 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, memtype);
 			TreeVisitor.acceptChildren(visitor, members);
+			
+			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}
@@ -67,7 +69,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		if (isAnonymous()) {
 			return super.oneMembers(members, ps, context);
 		}
@@ -265,7 +267,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		Type t = null;
 		if (memtype != null) {
 			t = memtype.syntaxCopy(context);

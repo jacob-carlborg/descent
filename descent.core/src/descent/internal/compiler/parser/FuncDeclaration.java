@@ -1117,29 +1117,29 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 			 */
 			for (int i = 0; i < cd.interfaces().size() && !gotoL2; i++) {
 				BaseClass b = cd.interfaces().get(i);
-				for (vi = 0; vi < b.base.vtbl.size() && !gotoL2; vi++) {
-					Dsymbol s = (Dsymbol) b.base.vtbl.get(vi);
-					FuncDeclaration fdv = s.isFuncDeclaration();
-					if (fdv != null && equals(fdv.ident, ident)) {
-						int cov = type.covariant(fdv.type, context);
+				for (vi = 0; vi < b.base.vtbl().size() && !gotoL2; vi++) {
+					IDsymbol s = (Dsymbol) b.base.vtbl().get(vi);
+					IFuncDeclaration fdv = s.isFuncDeclaration();
+					if (fdv != null && equals(fdv.ident(), ident)) {
+						int cov = type.covariant(fdv.type(), context);
 						if (cov == 2) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-									IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
+									IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type().toChars(context) }));
 						}
 						if (cov == 1) {
 							Type ti = null;
 
-							if (fdv.tintro != null) {
-								ti = fdv.tintro;
-							} else if (!type.equals(fdv.type)) {
+							if (fdv.tintro() != null) {
+								ti = fdv.tintro();
+							} else if (!type.equals(fdv.type())) {
 								/*
 								 * Only need to have a tintro if the vptr
 								 * offsets differ
 								 */
 								int[] offset = { 0 };
-								if (fdv.type.nextOf().isBaseOf(type.nextOf(),
+								if (fdv.type().nextOf().isBaseOf(type.nextOf(),
 										offset, context)) {
-									ti = fdv.type;
+									ti = fdv.type();
 
 								}
 							}
@@ -1392,21 +1392,21 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 				if (f.linkage == LINK.LINKd) { // Declare _arguments[]
 					if (context.BREAKABI) {
 						v_arguments = new VarDeclaration(loc,
-								context.Type_typeinfotypelist.type,
+								context.Type_typeinfotypelist.type(),
 								Id._arguments_typeinfo, null);
 						v_arguments.storage_class = STCparameter | STCin;
 						v_arguments.semantic(sc2, context);
 						sc2.insert(v_arguments);
 						v_arguments.parent = this;
 
-						t = context.Type_typeinfo.type.arrayOf(context);
+						t = context.Type_typeinfo.type().arrayOf(context);
 						_arguments = new VarDeclaration(loc, t, Id._arguments,
 								null);
 						_arguments.semantic(sc2, context);
 						sc2.insert(_arguments);
 						_arguments.parent = this;
 					} else {
-						t = context.Type_typeinfo.type.arrayOf(context);
+						t = context.Type_typeinfo.type().arrayOf(context);
 						v_arguments = new VarDeclaration(loc, t, Id._arguments,
 								null);
 						v_arguments.storage_class = STCparameter | STCin;
@@ -1789,9 +1789,9 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 						v = (VarDeclaration) parameters.get(i);
 						if ((v.storage_class & (STCout | STCin)) == STCout) {
 							Assert.isNotNull(v.init);
-							ExpInitializer ie = v.init.isExpInitializer();
+							IExpInitializer ie = v.init.isExpInitializer();
 							Assert.isNotNull(ie);
-							ExpStatement es = new ExpStatement(loc, ie.exp);
+							ExpStatement es = new ExpStatement(loc, ie.exp());
 							a.add(es);
 						}
 					}
@@ -1929,7 +1929,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		FuncDeclaration f;
 
 		if (s != null) {

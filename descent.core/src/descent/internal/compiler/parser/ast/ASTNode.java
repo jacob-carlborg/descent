@@ -192,5 +192,9 @@ public abstract class ASTNode
 			str += " ["+ start +"+"+ length +"]";
 		return str;
 	}
+	
+	public void setLength(int length) {
+		this.length = length;
+	}
 
 }

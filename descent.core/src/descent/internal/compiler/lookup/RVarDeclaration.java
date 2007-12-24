@@ -19,6 +19,11 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public Expression callAutoDtor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
 		// TODO Auto-generated method stub
@@ -43,6 +48,11 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	public IInitializer init() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public void init(IInitializer init) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public int inuse() {

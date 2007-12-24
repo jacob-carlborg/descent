@@ -6,6 +6,7 @@ import descent.core.IType;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IInvariantDeclaration;
+import descent.internal.compiler.parser.INewDeclaration;
 import descent.internal.compiler.parser.INode;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Scope;
@@ -112,6 +113,31 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	@Override
 	public IAggregateDeclaration isAggregateDeclaration() {
 		return this;
+	}
+	
+	public int storage_class() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public int sizeok() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public int size(SemanticContext context) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public Scope scope() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public INewDeclaration aggNew() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

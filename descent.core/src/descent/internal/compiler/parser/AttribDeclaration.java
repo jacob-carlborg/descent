@@ -92,7 +92,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		Dsymbols d = include(null, null, context);
 
 		return Dsymbol.oneMembers(d, ps, context);

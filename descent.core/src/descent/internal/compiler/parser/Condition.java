@@ -18,6 +18,15 @@ public abstract class Condition extends ASTRangeLessNode {
 	}
 
 	public abstract int getConditionType();
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
+	}
+	
+	public void setLineNumber(int lineNumber) {
+		this.loc.linnum = lineNumber;
+	}
 
 	@Override
 	public int getNodeType() {

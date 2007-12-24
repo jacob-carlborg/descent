@@ -7,7 +7,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ArrayInitializer extends Initializer {
+public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	
 	private final static integer_t amax = new integer_t(new BigInteger("80000000", 16));
 

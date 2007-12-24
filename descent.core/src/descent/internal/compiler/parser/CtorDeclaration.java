@@ -111,7 +111,7 @@ public class CtorDeclaration extends FuncDeclaration implements ICtorDeclaration
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		CtorDeclaration f;
 
 		f = new CtorDeclaration(loc, null, varargs);

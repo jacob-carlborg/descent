@@ -33,6 +33,8 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, sourceBaseclasses);
 			TreeVisitor.acceptChildren(visitor, members);
+			
+			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}
@@ -193,7 +195,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 					baseclasses.remove(i);
 					continue;
 				}
-				if (b.base.symtab == null || b.base.scope != null) {
+				if (b.base.symtab() == null || b.base.scope() != null) {
 					// Forward reference of base, try again later
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
@@ -226,14 +228,14 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 
 			// Copy vtbl[] from base class
 			if (b.base.vtblOffset() != 0) {
-				int d = b.base.vtbl.size();
+				int d = b.base.vtbl().size();
 				if (d > 1) {
 					for (int j = 1; j < d; j++) {
-						vtbl.add(b.base.vtbl.get(j));
+						vtbl.add(b.base.vtbl().get(j));
 					}
 				}
 			} else {
-				vtbl.add(b.base.vtbl);
+				vtbl.add(b.base.vtbl());
 			}
 
 			// Lcontinue: ;
@@ -259,7 +261,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		InterfaceDeclaration id;
 
 		if (s != null) {

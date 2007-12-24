@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ModuleDeclaration extends ASTDmdNode {
+public class ModuleDeclaration extends ASTDmdNode implements IModuleDeclaration {
 
 	public IdentifierExp id;
 	public Identifiers packages;
@@ -45,6 +45,14 @@ public class ModuleDeclaration extends ASTDmdNode {
 	
 	public char[] getFQN() {
 		return getFQN(packages, id);
+	}
+	
+	public IdentifierExp id() {
+		return id;
+	}
+	
+	public Identifiers packages() {
+		return packages;
 	}
 
 }

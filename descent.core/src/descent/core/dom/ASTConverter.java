@@ -1282,7 +1282,7 @@ public class ASTConverter {
 		if (a.sourceInit == null) {
 			b.setSourceRange(a.ident.start, a.ident.length);
 		} else {
-			descent.core.dom.Initializer init = convert(a.sourceInit);
+			descent.core.dom.Initializer init = (descent.core.dom.Initializer) convert(a.sourceInit); // SEMANTIC
 			if (init != null) {
 				b.setInitializer(init);
 				b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
@@ -1581,7 +1581,7 @@ public class ASTConverter {
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
-				Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).sourceDeclaration;
+				Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
 				if (declaration instanceof VarDeclaration) {
 					varDeclarations.add((VarDeclaration) declaration);
 				}
@@ -1598,7 +1598,7 @@ public class ASTConverter {
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
-				Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).sourceDeclaration;
+				Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
 				if (declaration instanceof AliasDeclaration) {
 					varDeclarations.add((AliasDeclaration) declaration);
 				}
@@ -1615,7 +1615,7 @@ public class ASTConverter {
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
-				Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).sourceDeclaration;
+				Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
 				if (declaration instanceof TypedefDeclaration) {
 					varDeclarations.add((TypedefDeclaration) declaration);
 				}
@@ -2169,7 +2169,7 @@ public class ASTConverter {
 	public descent.core.dom.DeclarationStatement convert(DeclarationStatement a) {
 		descent.core.dom.DeclarationStatement b = new descent.core.dom.DeclarationStatement(ast);
 		
-		Declaration declaration = convertDeclaration(((DeclarationExp) a.sourceExp).sourceDeclaration);
+		Declaration declaration = convertDeclaration((Dsymbol) ((DeclarationExp) a.sourceExp).sourceDeclaration); // SEMANTIC
 		if (declaration != null) {
 			b.setDeclaration(declaration);
 		}
@@ -2244,7 +2244,7 @@ public class ASTConverter {
 			}
 			
 			DeclarationStatement declStm = (DeclarationStatement) firstStatement;
-			Dsymbol declaration = ((DeclarationExp) declStm.sourceExp).sourceDeclaration;
+			Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
 			if (declaration instanceof VarDeclaration) {
 				return convertBlockVars(a);
 			} else if (declaration instanceof AliasDeclaration) {

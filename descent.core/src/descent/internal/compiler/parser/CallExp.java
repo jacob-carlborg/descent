@@ -333,7 +333,7 @@ public class CallExp extends UnaExp {
 
 			// Check for call operator overload
 			if (t1 != null) {
-				AggregateDeclaration ad;
+				IAggregateDeclaration ad;
 
 				if (t1.ty == Tstruct) {
 					ad = ((TypeStruct) t1).sym;
@@ -412,7 +412,7 @@ public class CallExp extends UnaExp {
 							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
 							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
 						IClassDeclaration cd = ad.isClassDeclaration();
-						ClassDeclaration tcd = t.isClassHandle();
+						IClassDeclaration tcd = t.isClassHandle();
 
 						if (cd == null
 								|| tcd == null
@@ -420,7 +420,7 @@ public class CallExp extends UnaExp {
 										context))) {
 							if (tcd != null && tcd.isNested()) { // Try again with outer scope
 
-								ue.e1 = new DotVarExp(loc, ue.e1, tcd.vthis);
+								ue.e1 = new DotVarExp(loc, ue.e1, tcd.vthis());
 								ue.e1 = ue.e1.semantic(sc, context);
 								// goto L10;
 								loopL10 = true;
@@ -448,7 +448,7 @@ public class CallExp extends UnaExp {
 
 					// See if we need to adjust the 'this' pointer
 					ad = f.isThis();
-					ClassDeclaration cd = ue.e1.type.isClassHandle();
+					IClassDeclaration cd = ue.e1.type.isClassHandle();
 					if (ad != null && cd != null
 							&& ad.isClassDeclaration() != null && ad != cd
 							&& ue.e1.op != TOKsuper) {

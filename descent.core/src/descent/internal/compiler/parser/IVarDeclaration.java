@@ -30,4 +30,8 @@ public interface IVarDeclaration extends IDeclaration {
 
 	void checkNestedReference(Scope sc, Loc loc, SemanticContext context);
 
+	void init(IInitializer init);
+	
+	Expression callAutoDtor();
+
 }

@@ -42,7 +42,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		if (condition.inc != 0) {
 			Dsymbols d = condition.include(null, null, context) ? decl
 					: elsedecl;
@@ -53,7 +53,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		ConditionalDeclaration dd;
 
 		Assert.isTrue(s == null);

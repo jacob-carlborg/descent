@@ -5,15 +5,15 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ClassInfoDeclaration extends VarDeclaration {
 
-	public ClassDeclaration cd;
+	public IClassDeclaration cd;
 
-	public ClassInfoDeclaration(ClassDeclaration cd, SemanticContext context) {
+	public ClassInfoDeclaration(IClassDeclaration cd, SemanticContext context) {
 		this(Loc.ZERO, cd, context);
 	}
 
-	public ClassInfoDeclaration(Loc loc, ClassDeclaration cd,
+	public ClassInfoDeclaration(Loc loc, IClassDeclaration cd,
 			SemanticContext context) {
-		super(loc, context.ClassDeclaration_classinfo.type, cd.ident, null);
+		super(loc, context.ClassDeclaration_classinfo.type(), cd.ident(), null);
 		this.cd = cd;
 	}
 	
@@ -29,7 +29,7 @@ public class ClassInfoDeclaration extends VarDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 

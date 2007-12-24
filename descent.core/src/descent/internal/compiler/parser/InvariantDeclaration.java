@@ -78,7 +78,7 @@ public class InvariantDeclaration extends FuncDeclaration implements IInvariantD
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		InvariantDeclaration id;
 
 		if (s != null) {

@@ -280,5 +280,9 @@ public abstract class TypeQualified extends Type {
 	public int getLineNumber() {
 		return loc.linnum;
 	}
+	
+	public void setLineNumber(int lineNumber) {
+		this.loc.linnum = lineNumber;
+	}
 
 }

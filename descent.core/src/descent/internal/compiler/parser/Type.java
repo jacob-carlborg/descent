@@ -551,7 +551,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return false;
 	}
 
-	public ClassDeclaration isClassHandle() {
+	public IClassDeclaration isClassHandle() {
 		return null;
 	}
 
@@ -897,9 +897,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 
 		// If t1n is forward referenced:
-		ClassDeclaration cd = ((TypeClass) t1n).sym;
-		if (cd.baseClass == null && cd.baseclasses != null
-				&& cd.baseclasses.size() > 0
+		IClassDeclaration cd = ((TypeClass) t1n).sym;
+		if (cd.baseClass() == null && cd.baseclasses() != null
+				&& cd.baseclasses().size() > 0
 				&& cd.isInterfaceDeclaration() == null) {
 			return OTHER;
 		}

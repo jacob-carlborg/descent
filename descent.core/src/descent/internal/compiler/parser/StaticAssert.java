@@ -49,7 +49,7 @@ public class StaticAssert extends Dsymbol {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		ps[0] = null;
 		return true;
 	}
@@ -92,7 +92,7 @@ public class StaticAssert extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		StaticAssert sa;
 
 		if (s != null) {

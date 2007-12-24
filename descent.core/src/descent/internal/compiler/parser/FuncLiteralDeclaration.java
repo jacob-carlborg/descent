@@ -73,7 +73,7 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		FuncLiteralDeclaration f;
 
 		if (s != null) {

@@ -110,7 +110,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		Type basetype = this.basetype.syntaxCopy(context);
 
 		Initializer init = null;

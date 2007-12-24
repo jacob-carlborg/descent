@@ -55,7 +55,7 @@ public class DeleteExp extends UnaExp {
 		switch (tb.ty) {
 		case Tclass: {
 			TypeClass tc = (TypeClass) tb;
-			ClassDeclaration cd = tc.sym;
+			IClassDeclaration cd = tc.sym;
 
 			if (cd.isInterfaceDeclaration() != null && cd.isCOMclass()) {
 				context.acceptProblem(Problem.newSemanticTypeError(

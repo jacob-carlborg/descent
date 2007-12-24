@@ -4,6 +4,7 @@ import java.util.List;
 
 import descent.core.ICompilationUnit;
 import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.IModuleDeclaration;
 
 public class RModule extends RPackage implements IModule {
 
@@ -49,6 +50,11 @@ public class RModule extends RPackage implements IModule {
 
 	public void importedFrom(IModule module) {
 		this.importedFrom = module;
+	}
+	
+	public IModuleDeclaration md() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public boolean needmoduleinfo() {

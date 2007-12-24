@@ -40,7 +40,7 @@ public class DeclarationStatement extends ExpStatement {
 		if (exp != null) {
 			if (exp.op == TOKdeclaration) {
 				DeclarationExp de = (DeclarationExp) (exp);
-				VarDeclaration v = de.declaration.isVarDeclaration();
+				IVarDeclaration v = de.declaration.isVarDeclaration();
 				if (v != null) {
 					Expression e;
 

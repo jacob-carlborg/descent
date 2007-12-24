@@ -95,5 +95,20 @@ public class RNode implements INode {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void setStart(int start) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void setLength(int length) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void setLineNumber(int lineNumber) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

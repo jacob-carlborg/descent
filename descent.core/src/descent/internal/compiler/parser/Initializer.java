@@ -64,5 +64,18 @@ public abstract class Initializer extends ASTDmdNode implements IInitializer {
 	}
 
 	public abstract Expression toExpression(SemanticContext context);
+	
+	public Loc loc() {
+		return loc;
+	}
+	
+	@Override
+	public int getLineNumber() {
+		return loc.linnum;
+	}
+	
+	public void setLineNumber(int lineNumber) {
+		this.loc.linnum = lineNumber;
+	}
 
 }

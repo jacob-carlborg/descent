@@ -4,6 +4,8 @@ public interface IDsymbol extends INode {
 
 	IdentifierExp ident();
 	
+	void ident(IdentifierExp ident);
+	
 	PROT prot();
 
 	IEnumMember isEnumMember();
@@ -102,9 +104,9 @@ public interface IDsymbol extends INode {
 	
 	void checkCtorConstInit(SemanticContext context);
 	
-	IDsymbol syntaxCopy(Dsymbol s, SemanticContext context);
+	IDsymbol syntaxCopy(IDsymbol s, SemanticContext context);
 	
-	boolean oneMember(Dsymbol[] ps, SemanticContext context);
+	boolean oneMember(IDsymbol[] ps, SemanticContext context);
 	
 	int addMember(Scope sc, IScopeDsymbol sd, int memnum, SemanticContext context);
 	
@@ -121,6 +123,14 @@ public interface IDsymbol extends INode {
 	boolean isImportedSymbol();
 	
 	ISymbolDeclaration isSymbolDeclaration();
+	
+	ITypedefDeclaration isTypedefDeclaration();
+	
+	AttribDeclaration isAttribDeclaration();
+	
+	boolean synthetic();
+	
+	void synthetic(boolean synthetic);
 	
 	void semantic(Scope scope, SemanticContext context);
 	

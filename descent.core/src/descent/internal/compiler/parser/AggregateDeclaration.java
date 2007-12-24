@@ -307,6 +307,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 		this.inv = inv;
 	}
 	
+	public int sizeok() {
+		return sizeok;
+	}
+	
 	public void sizeok(int sizeok) {
 		this.sizeok = sizeok;
 	}
@@ -345,6 +349,18 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	
 	public void hasUnions(int hasUnions) {
 		this.hasUnions = hasUnions;
+	}
+	
+	public int storage_class() {
+		return storage_class;
+	}
+	
+	public INewDeclaration aggNew() {
+		return aggNew;
+	}
+	
+	public Scope scope() {
+		return scope;
 	}
 	
 }

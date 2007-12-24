@@ -4,7 +4,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class VoidInitializer extends Initializer {
+public class VoidInitializer extends Initializer implements IVoidInitializer {
 
 	public Type type;
 

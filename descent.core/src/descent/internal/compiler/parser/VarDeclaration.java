@@ -37,10 +37,10 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	public VarDeclaration next;
 
 	// declaration?
-	public Initializer init, sourceInit;
+	public IInitializer init, sourceInit;
 	public Dsymbol aliassym; // if redone as alias to another symbol
 	public Type htype;
-	public Initializer hinit;;
+	public IInitializer hinit;;
 	public int inuse;
 	public int offset;
 	public boolean noauto; // no auto semantics
@@ -54,11 +54,11 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	public Object csym;
 	public Object isym;
 
-	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
+	public VarDeclaration(Loc loc, Type type, char[] ident, IInitializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
 	}
 
-	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
+	public VarDeclaration(Loc loc, Type type, IdentifierExp id, IInitializer init) {
 		super(id);
 
 		Assert.isTrue(type != null || init != null);
@@ -96,12 +96,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		Expression e = null;
 
 		if ((storage_class & (STCauto | STCscope)) != 0 && !noauto) {
-			for (ClassDeclaration cd = type.isClassHandle(); cd != null; cd = cd.baseClass) {
+			for (IClassDeclaration cd = type.isClassHandle(); cd != null; cd = cd.baseClass()) {
 				/*
 				 * We can do better if there's a way with onstack classes to
 				 * determine if there's no way the monitor could be set.
 				 */
-				if (true || onstack != 0 || cd.dtors.size() > 0) // if any
+				if (true || onstack != 0 || cd.dtors().size() > 0) // if any
 				// destructors
 				{
 					// delete this;
@@ -139,8 +139,8 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		}
 	}
 
-	public ExpInitializer getExpInitializer(SemanticContext context) {
-		ExpInitializer ei;
+	public IExpInitializer getExpInitializer(SemanticContext context) {
+		IExpInitializer ei;
 
 		if (init != null) {
 			ei = init.isExpInitializer();
@@ -398,10 +398,10 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				TypeTypedef td = (TypeTypedef) type;
 				if (td.sym.init != null) {
 					init = td.sym.init;
-					ExpInitializer ie = init.isExpInitializer();
+					IExpInitializer ie = init.isExpInitializer();
 					if (ie != null) {
 						// Make copy so we can modify it
-						init = new ExpInitializer(ie.loc, ie.exp);
+						init = new ExpInitializer(ie.loc(), ie.exp());
 					}
 				} else {
 					init = getExpInitializer(context);
@@ -412,16 +412,16 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		}
 
 		if (init != null) {
-			ArrayInitializer ai = init.isArrayInitializer();
+			IArrayInitializer ai = init.isArrayInitializer();
 			if (ai != null && type.toBasetype(context).ty == Taarray) {
 				init = ai.toAssocArrayInitializer(context);
 			}
 
-			ExpInitializer ei = init.isExpInitializer();
+			IExpInitializer ei = init.isExpInitializer();
 
 			// See if we can allocate on the stack
-			if (ei != null && isScope() && ei.exp.op == TOK.TOKnew) {
-				NewExp ne = (NewExp) ei.exp;
+			if (ei != null && isScope() && ei.exp().op == TOK.TOKnew) {
+				NewExp ne = (NewExp) ei.exp();
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
@@ -452,7 +452,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 								return;
 							}
 						}
-						ei = new ExpInitializer(init.loc, e);
+						ei = new ExpInitializer(init.loc(), e);
 						init = ei;
 					}
 
@@ -481,17 +481,17 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 						}
 						e1 = new SliceExp(loc, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
-						ei.exp = ei.exp.semantic(sc, context);
-						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch) {
-							ei.exp = new CastExp(loc, ei.exp, type);
+						ei.exp(ei.exp().semantic(sc, context));
+						if (ei.exp().implicitConvTo(type, context) == MATCH.MATCHnomatch) {
+							ei.exp(new CastExp(loc, ei.exp(), type));
 						}
 					}
-					ei.exp = new AssignExp(loc, e1, ei.exp);
-					ei.exp.op = TOKconstruct;
+					ei.exp(new AssignExp(loc, e1, ei.exp()));
+					ei.exp().op = TOKconstruct;
 					canassign++;
-					ei.exp = ei.exp.semantic(sc, context);
+					ei.exp(ei.exp().semantic(sc, context));
 					canassign--;
-					ei.exp.optimize(ASTDmdNode.WANTvalue, context);
+					ei.exp().optimize(ASTDmdNode.WANTvalue, context);
 				} else {
 					init = init.semantic(sc, type, context);
 					if (fd != null && isConst() && !isStatic()) { // Make it
@@ -509,7 +509,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				if (ei != null && 0 == context.global.errors && 0 == inferred) {
 					int errors = context.global.errors;
 					context.global.gag++;
-					Expression e = ei.exp.syntaxCopy(context);
+					Expression e = ei.exp().syntaxCopy(context);
 					inuse++;
 					e = e.semantic(sc, context);
 					inuse--;
@@ -522,7 +522,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 					} else {
 						e = e.optimize(WANTvalue | WANTinterpret, context);
 						if (e.op == TOKint64 || e.op == TOKstring) {
-							ei.exp = e; // no errors, keep result
+							ei.exp(e); // no errors, keep result
 						}
 					}
 				}
@@ -540,12 +540,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		VarDeclaration sv;
 		if (s != null) {
 			sv = (VarDeclaration) s;
 		} else {
-			Initializer init = null;
+			IInitializer init = null;
 			if (this.init != null) {
 				init = this.init.syntaxCopy(context);
 				// init.isExpInitializer().exp.print();
@@ -612,6 +612,10 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	public int getLineNumber() {
 		return loc.linnum;
 	}
+	
+	public void setLineNumber(int lineNumber) {
+		this.loc.linnum = lineNumber;
+	}
 
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
@@ -628,6 +632,10 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	
 	public IInitializer init() {
 		return init;
+	}
+	
+	public void init(IInitializer init) {
+		this.init = init;
 	}
 	
 	public boolean ctorinit() {

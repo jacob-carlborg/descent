@@ -67,7 +67,7 @@ public class TemplateMixin extends TemplateInstance {
 	}
 
 	@Override
-	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
 		return super.oneMember(ps, context);
 	}
 
@@ -343,7 +343,7 @@ public class TemplateMixin extends TemplateInstance {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		TemplateMixin tm;
 
 		Identifiers ids = new Identifiers();

@@ -13,7 +13,7 @@ public class BaseClass extends ASTDmdNode {
 	public Type type;
 	public Type sourceType;
 	public PROT protection;
-	public ClassDeclaration base;
+	public IClassDeclaration base;
 	public int offset; // 'this' pointer offset
 	public FuncDeclarations vtbl; // for interfaces: Array of
 	// FuncDeclaration's
@@ -61,11 +61,11 @@ public class BaseClass extends ASTDmdNode {
 
 	public void copyBaseInterfaces(BaseClasses vtblInterfaces) {
 		baseInterfaces = new BaseClasses();
-		baseInterfaces.memcpy(base.interfaces);
+		baseInterfaces.memcpy(base.interfaces());
 
-		for (int i = 0; i < size(base.interfaces); i++) {
+		for (int i = 0; i < size(base.interfaces()); i++) {
 			BaseClass b = baseInterfaces.get(i);
-			BaseClass b2 = base.interfaces.get(i);
+			BaseClass b2 = base.interfaces().get(i);
 
 			if (size(b2.vtbl) != 0) {
 				throw new IllegalStateException("assert(b2.vtbl.size() == 0)"); // should not be filled yet
@@ -81,17 +81,17 @@ public class BaseClass extends ASTDmdNode {
 
 	public int fillVtbl(ClassDeclaration cd, Array vtbl, int newinstance,
 			SemanticContext context) {
-		ClassDeclaration id = base;
+		IClassDeclaration id = base;
 		int j;
 		int result = 0;
 		
 		if (vtbl != null) {
-			vtbl.setDim(base.vtbl.size());
+			vtbl.setDim(base.vtbl().size());
 		}
 
 		// first entry is ClassInfo reference
-		for (j = base.vtblOffset(); j < base.vtbl.size(); j++) {
-			FuncDeclaration ifd = ((Dsymbol) base.vtbl.get(j))
+		for (j = base.vtblOffset(); j < base.vtbl().size(); j++) {
+			FuncDeclaration ifd = ((Dsymbol) base.vtbl().get(j))
 					.isFuncDeclaration();
 			FuncDeclaration fd;
 			TypeFunction tf;

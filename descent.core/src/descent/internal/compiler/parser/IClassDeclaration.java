@@ -27,5 +27,21 @@ public interface IClassDeclaration extends IAggregateDeclaration {
 	FuncDeclarations dtors();
 	
 	void dtors(FuncDeclarations dtors);
+	
+	boolean isAbstract();
+	
+	PROT getAccess(IDsymbol smember);
+	
+	boolean isCOMclass();
+	
+	boolean isauto();
+	
+	IVarDeclaration vthis();
+	
+	ClassInfoDeclaration vclassinfo();
+	
+	void vclassinfo(ClassInfoDeclaration vclassinfo);
+	
+	int vtblOffset();
 
 }

@@ -21,9 +21,9 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public class TypeClass extends Type {
 
-	public ClassDeclaration sym;
+	public IClassDeclaration sym;
 
-	public TypeClass(ClassDeclaration sym) {
+	public TypeClass(IClassDeclaration sym) {
 		super(TY.Tclass, null);
 		this.sym = sym;
 	}
@@ -47,7 +47,7 @@ public class TypeClass extends Type {
 		 * it against a template instance, convert the class type
 		 * to a template instance, too, and try again.
 		 */
-		TemplateInstance ti = sym.parent.isTemplateInstance();
+		TemplateInstance ti = sym.parent().isTemplateInstance();
 
 		if (tparam != null && tparam.ty == Tinstance) {
 			if (ti != null && ti.toAlias(context) == sym) {
@@ -61,8 +61,8 @@ public class TypeClass extends Type {
 			TypeInstance tpi = (TypeInstance) tparam;
 			if (tpi.idents.size() != 0) {
 				IdentifierExp id = tpi.idents.get(tpi.idents.size() - 1);
-				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id)) {
-					Type tparent = sym.parent.getType();
+				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident().equals(id)) {
+					Type tparent = sym.parent().getType();
 					if (tparent != null) {
 						/* Slice off the .foo in S!(T).foo
 						 */
@@ -124,8 +124,8 @@ public class TypeClass extends Type {
 		if (equals(ident, Id.tupleof) && !gotoL1) {
 			/* Create a TupleExp
 			 */
-			Expressions exps = new Expressions(sym.fields.size());
-			for (IVarDeclaration v_ : sym.fields) {
+			Expressions exps = new Expressions(sym.fields().size());
+			for (IVarDeclaration v_ : sym.fields()) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
 			}
@@ -137,9 +137,9 @@ public class TypeClass extends Type {
 		//L1:
 		if (null == s) {
 			// See if it's a base class
-			ClassDeclaration cbase;
-			for (cbase = sym.baseClass; null != cbase; cbase = cbase.baseClass) {
-				if (equals(ident, cbase.ident)) {
+			IClassDeclaration cbase;
+			for (cbase = sym.baseClass(); null != cbase; cbase = cbase.baseClass()) {
+				if (equals(ident, cbase.ident())) {
 					e = new DotTypeExp(Loc.ZERO, e, cbase);
 					return e;
 				}
@@ -152,12 +152,12 @@ public class TypeClass extends Type {
 					throw new IllegalStateException(
 							"assert(ClassDeclaration.classinfo);");
 				}
-				t = context.ClassDeclaration_classinfo.type;
+				t = context.ClassDeclaration_classinfo.type();
 				if (e.op == TOKtype || e.op == TOKdottype) {
-					if (sym.vclassinfo == null) {
-						sym.vclassinfo = new ClassInfoDeclaration(sym, context);
+					if (sym.vclassinfo() == null) {
+						sym.vclassinfo(new ClassInfoDeclaration(sym, context));
 					}
-					e = new VarExp(e.loc, sym.vclassinfo);
+					e = new VarExp(e.loc, sym.vclassinfo());
 					e = e.addressOf(sc, context);
 					e.type = t; // do this so we don't get redundant dereference
 				} else {
@@ -187,8 +187,8 @@ public class TypeClass extends Type {
 			}
 
 			else if (equals(ident, Id.outer)
-					&& null != sym.vthis) {
-				s = sym.vthis;
+					&& null != sym.vthis()) {
+				s = sym.vthis();
 			}
 
 			else {
@@ -252,7 +252,7 @@ public class TypeClass extends Type {
 					thiscd = sc.func.toParent().isClassDeclaration();
 
 					if (null != thiscd) {
-						ClassDeclaration cd = e.type.isClassHandle();
+						IClassDeclaration cd = e.type.isClassHandle();
 
 						if (cd == thiscd) {
 							e = new ThisExp(e.loc);
@@ -335,7 +335,7 @@ public class TypeClass extends Type {
 			return MATCHexact;
 		}
 
-		ClassDeclaration cdto = to.isClassHandle();
+		IClassDeclaration cdto = to.isClassHandle();
 		if (cdto != null && cdto.isBaseOf(sym, null, context)) {
 			return MATCHconvert;
 		}
@@ -352,13 +352,13 @@ public class TypeClass extends Type {
 
 	@Override
 	public boolean isauto() {
-		return sym.isauto;
+		return sym.isauto();
 	}
 
 	@Override
 	public boolean isBaseOf(Type type, int[] poffset, SemanticContext context) {
 		if (type.ty == Tclass) {
-			ClassDeclaration cd = ((TypeClass) type).sym;
+			IClassDeclaration cd = ((TypeClass) type).sym;
 			if (sym.isBaseOf(cd, poffset, context)) {
 				return true;
 			}
@@ -367,7 +367,7 @@ public class TypeClass extends Type {
 	}
 
 	@Override
-	public ClassDeclaration isClassHandle() {
+	public IClassDeclaration isClassHandle() {
 		return sym;
 	}
 
@@ -378,8 +378,8 @@ public class TypeClass extends Type {
 
 	@Override
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
-		if (sym.scope != null) {
-			sym.semantic(sym.scope, context);
+		if (sym.scope() != null) {
+			sym.semantic(sym.scope(), context);
 		}
 		return merge(context);
 	}
@@ -417,7 +417,7 @@ public class TypeClass extends Type {
 	}
 
 	@Override
-	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
 

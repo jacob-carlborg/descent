@@ -97,7 +97,7 @@ public class NewDeclaration extends FuncDeclaration implements INewDeclaration {
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
 		NewDeclaration f;
 
 		f = new NewDeclaration(loc, null, varargs);
