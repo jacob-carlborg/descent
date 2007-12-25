@@ -3,6 +3,7 @@ package descent.internal.compiler.lookup;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.IEnumDeclaration;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.integer_t;
@@ -16,8 +17,8 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 	private integer_t[] values;
 	private Type memtype;
 
-	public REnumDeclaration(IType element) {
-		super(element);
+	public REnumDeclaration(IType element, SemanticContext context) {
+		super(element, context);
 	}
 	
 	@Override

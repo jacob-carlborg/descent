@@ -17,8 +17,8 @@ import descent.internal.compiler.parser.Type;
 
 public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDeclaration {
 
-	public RAggregateDeclaration(IType element) {
-		super(element);
+	public RAggregateDeclaration(IType element, SemanticContext context) {
+		super(element, context);
 	}
 
 	public void accessCheck(Scope sc, IDsymbol smember, SemanticContext context, INode reference) {
@@ -122,8 +122,7 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 	
 	public int sizeok() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 	
 	public int size(SemanticContext context) {

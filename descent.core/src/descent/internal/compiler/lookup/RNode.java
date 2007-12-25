@@ -10,6 +10,12 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class RNode implements INode {
+	
+	protected SemanticContext context;
+	
+	public RNode(SemanticContext context) {
+		this.context = context;
+	}
 
 	public DYNCAST dyncast() {
 		// TODO Auto-generated method stub

@@ -1,7 +1,6 @@
 package descent.tests.dstress2;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Path;
 
 import descent.core.IClasspathEntry;
@@ -29,26 +28,40 @@ public class Dstress2_Test extends AbstractModelTest {
 		javaProject.setRawClasspath(newEntries, null);
 	}
 	
-	public void testNoProblem() throws Exception {
-		ICompilationUnit unit = createCompilationUnit(
-				"test.d", 
-				"import std.stdio;\n" +
-				"\n" +
-				"void main() {\n" +
-				"    writefln(\"Hola!\");\n" +
-				"}");
-		
-		assertEquals(0, unit.getResource().findMarkers(IMarker.PROBLEM, true, 0).length);
-	}
+//	public void testNoProblem() throws Exception {
+//		ICompilationUnit unit = createCompilationUnit(
+//				"test.d", 
+//				"import std.stdio;\n" +
+//				"\n" +
+//				"void main() {\n" +
+//				"    writefln(\"Hola!\");\n" +
+//				"}");
+//		
+//		assertEquals(0, unit.getResource().findMarkers(IMarker.PROBLEM, true, 0).length);
+//	}
 	
 	public void testProblem() throws Exception {
-		ICompilationUnit unit = createCompilationUnit(
-				"test.d", 
-				"void main() {\n" +
-				"    writefln(\"Hola!\");\n" +
-				"}");
+		ICompilationUnit one = createCompilationUnit(
+				"one.d", 
+				"");
 		
-		assertEquals(2, unit.getResource().findMarkers(IMarker.PROBLEM, true, 0).length);
+		ICompilationUnit two = createCompilationUnit(
+				"two.d", 
+				"import one; Bar b;");
+		
+		assertEquals(1, two.getResource().findMarkers(IMarker.PROBLEM, true, 0).length);
+	}
+	
+	public void testNoProblem() throws Exception {
+		ICompilationUnit one = createCompilationUnit(
+				"one.d", 
+				"class Bar { }");
+		
+		ICompilationUnit two = createCompilationUnit(
+				"two.d", 
+				"import one; Bar b;");
+		
+		assertEquals(0, two.getResource().findMarkers(IMarker.PROBLEM, true, 0).length);
 	}
 
 }

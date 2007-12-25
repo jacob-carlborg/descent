@@ -2,11 +2,12 @@ package descent.internal.compiler.lookup;
 
 import descent.core.IJavaElement;
 import descent.internal.compiler.parser.IPackage;
+import descent.internal.compiler.parser.SemanticContext;
 
 public class RPackage extends RScopeDsymbol implements IPackage {
 
-	public RPackage(IJavaElement element) {
-		super(element);
+	public RPackage(IJavaElement element, SemanticContext context) {
+		super(element, context);
 	}
 	
 	@Override

@@ -1,17 +1,18 @@
 package descent.internal.compiler.parser;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.INameEnvironment;
+import descent.internal.compiler.lookup.RModule;
 
 public class SemanticContext {
 
@@ -65,6 +66,9 @@ public class SemanticContext {
 
 	public IDsymbolTable st;
 	public int muteProblems = 0;
+	
+	// A cache to retrieve faster a type from it's signature
+	public Map<String, Type> signatureToTypeCache;
 
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 
@@ -79,6 +83,7 @@ public class SemanticContext {
 		this.environment = environment;
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
+		this.signatureToTypeCache = new HashMap<String, Type>();
 
 		Module_init();
 		afterParse(module);
@@ -173,15 +178,16 @@ public class SemanticContext {
 		}
 		compoundName[compoundName.length - 1] = ident.ident;
 		
-		IModule m = environment.findModule(compoundName);
-		if (m == null) {
+		ICompilationUnit unit = environment.findCompilationUnit(compoundName);
+		if (unit == null) {
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
 			int length = ident.start + ident.length - start;
 			
 			acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, ident.getLineNumber(), start, length, new String[] { CharOperation.toString(compoundName) }));
-			return m;
+			return null;
 		}
 		
+		IModule m = new RModule(unit, this);
 		afterParse(m);
 		
 		// If we're in object.d, assign the well known class declarations

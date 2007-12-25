@@ -1,13 +1,12 @@
 package descent.internal.compiler.env;
 
-import descent.internal.compiler.parser.IModule;
 
 public class NameEnvironmentAdapter implements INameEnvironment {
 
 	public void cleanup() {
 	}
 
-	public IModule findModule(char[][] compoundName) {
+	public descent.core.ICompilationUnit findCompilationUnit(char[][] compoundName) {
 		return null;
 	}
 

@@ -4,11 +4,12 @@ import descent.core.IJavaElement;
 import descent.internal.compiler.parser.IImport;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IPackage;
+import descent.internal.compiler.parser.SemanticContext;
 
 public class RImport extends RDsymbol implements IImport {
 
-	public RImport(IJavaElement element) {
-		super(element);
+	public RImport(IJavaElement element, SemanticContext context) {
+		super(element, context);
 	}
 
 	public IModule mod() {

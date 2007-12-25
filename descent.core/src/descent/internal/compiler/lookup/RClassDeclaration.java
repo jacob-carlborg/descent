@@ -3,8 +3,10 @@ package descent.internal.compiler.lookup;
 import java.util.List;
 
 import descent.core.IType;
+import descent.core.JavaModelException;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassInfoDeclaration;
+import descent.internal.compiler.parser.Comparisons;
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.FuncDeclarations;
 import descent.internal.compiler.parser.IClassDeclaration;
@@ -15,19 +17,38 @@ import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
+import descent.internal.core.util.Util;
 
 public class RClassDeclaration extends RAggregateDeclaration implements
 		IClassDeclaration {
 	
 	private TypeClass type;
+	private IClassDeclaration baseClass;
+	private ICtorDeclaration ctor;
 
-	public RClassDeclaration(IType element) {
-		super(element);
+	public RClassDeclaration(IType element, SemanticContext context) {
+		super(element, context);
 	}
 
 	public IClassDeclaration baseClass() {
-		// TODO Auto-generated method stub
-		return null;
+		if (baseClass == null) {
+			IType t = (IType) element;
+			String sig;
+			try {
+				sig = t.getSuperclassTypeSignature();
+				if (sig == null) { // May be the case of Object
+					return null;
+				}
+				Type supertype = getType(sig);
+				if (supertype instanceof TypeClass) {
+					TypeClass tc = (TypeClass) supertype;
+					baseClass = tc.sym;
+				}
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+		return baseClass;
 	}
 
 	public BaseClasses baseclasses() {
@@ -36,8 +57,15 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 
 	public ICtorDeclaration ctor() {
-		// TODO Auto-generated method stub
-		return null;
+		if (ctor == null) {
+			for(IDsymbol s : members()) {
+				ctor = s.isCtorDeclaration();
+				if (ctor != null) {
+					break;
+				}
+			}
+		}
+		return ctor;
 	}
 
 	public void defaultCtor(CtorDeclaration defaultCtor) {
@@ -62,7 +90,16 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 
 	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
 			SemanticContext context) {
-		// TODO Auto-generated method stub
+		if (poffset != null) {
+			poffset[0] = 0;
+		}
+		while (cd != null) {
+			IClassDeclaration base = cd.baseClass();
+			if (Comparisons.equals(this, base)) {
+				return true;
+			}
+			cd = base;
+		}
 		return false;
 	}
 

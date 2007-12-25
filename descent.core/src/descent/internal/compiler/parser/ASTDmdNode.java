@@ -254,11 +254,11 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {
-		int count; // number of matches found
-		MATCH last; // match level of lastf
-		IFuncDeclaration lastf; // last matching function we found
-		IFuncDeclaration nextf; // current matching function
-		IFuncDeclaration anyf; // pick a func, any func, to use for error recovery
+		public int count; // number of matches found
+		public MATCH last; // match level of lastf
+		public IFuncDeclaration lastf; // last matching function we found
+		public IFuncDeclaration nextf; // current matching function
+		public IFuncDeclaration anyf; // pick a func, any func, to use for error recovery
 	};
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {

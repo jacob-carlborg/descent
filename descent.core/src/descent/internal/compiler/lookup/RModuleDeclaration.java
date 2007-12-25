@@ -5,6 +5,7 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
+import descent.internal.compiler.parser.SemanticContext;
 
 public class RModuleDeclaration extends RNode implements IModuleDeclaration {
 	
@@ -12,7 +13,8 @@ public class RModuleDeclaration extends RNode implements IModuleDeclaration {
 	private IdentifierExp id;
 	private Identifiers packages;
 	
-	public RModuleDeclaration(IPackageDeclaration element) {
+	public RModuleDeclaration(IPackageDeclaration element, SemanticContext context) {
+		super(context);
 		this.element = element;
 	}
 

@@ -8,6 +8,7 @@ import descent.core.JavaModelException;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.util.Util;
 
 public class RModule extends RPackage implements IModule {
@@ -16,8 +17,8 @@ public class RModule extends RPackage implements IModule {
 	private IModuleDeclaration md;
 	private boolean mdCalculated;
 
-	public RModule(ICompilationUnit unit) {
-		super(unit);
+	public RModule(ICompilationUnit unit, SemanticContext context) {
+		super(unit, context);
 	}
 
 	public List<char[]> debugids() {
@@ -75,7 +76,7 @@ public class RModule extends RPackage implements IModule {
 			try {
 				pkgs = unit.getPackageDeclarations();
 				if (pkgs.length > 0) {
-					md = new RModuleDeclaration(pkgs[0]);	
+					md = new RModuleDeclaration(pkgs[0], context);
 				}
 			} catch (JavaModelException e) {
 				Util.log(e);

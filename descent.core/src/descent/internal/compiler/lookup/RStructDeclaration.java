@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import descent.core.IType;
 import descent.internal.compiler.parser.IStructDeclaration;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeStruct;
 
@@ -9,8 +10,8 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	
 	private TypeStruct type;
 
-	public RStructDeclaration(IType element) {
-		super(element);
+	public RStructDeclaration(IType element, SemanticContext context) {
+		super(element, context);
 	}
 	
 	@Override

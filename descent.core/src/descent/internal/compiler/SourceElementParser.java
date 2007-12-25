@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.compiler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -199,7 +200,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	private char[][] getTokens(BaseClasses baseClasses) {
-		if (baseClasses.size() == 0) return CharOperation.NO_CHAR_CHAR;
+		if (baseClasses == null || baseClasses.size() == 0) return CharOperation.NO_CHAR_CHAR;
 		
 		char[][] tokens = new char[baseClasses.size()][];
 		for(int i = 0; i < baseClasses.size(); i++) {
@@ -247,19 +248,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		char[][] types = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
 			Argument argument = arguments.get(i);
-			
-			StringBuilder sb = new StringBuilder();
-			for(Modifier modifier : argument.modifiers) {
-				sb.append(modifier.toCharArray());
-				sb.append(" ");
-			}
-			
-			Type type = argument.type;
-			if (type != null) {
-				sb.append(type.toString());
-			}
-			
-			types[i] = sb.toString().toCharArray();
+			types[i] = argument.getSignature().toCharArray();
 		}
 		return types;
 	}
@@ -313,14 +302,19 @@ public class SourceElementParser extends AstVisitorAdapter {
 		if (node instanceof IClassDeclaration) {
 			IClassDeclaration c = (IClassDeclaration) node;
 			IClassDeclaration b = c.baseClass();
-			if (b != null) { // May be null if c is actually Object
-				Type t = b.type();
-				info.superclass = t.getSignature().toCharArray();
+			info.superclass = getTypeSignature(b);
+			
+			List<char[]> superinterfaces = new ArrayList<char[]>();
+			BaseClasses interfaces = c.interfaces();
+			if (interfaces != null) {
+				for(BaseClass baseClass : interfaces) {
+					superinterfaces.add(getTypeSignature(baseClass.base));
+				}
 			}
+			
+			info.superinterfaces = (char[][]) superinterfaces.toArray(new char[superinterfaces.size()][]);
 		} else {
 			info.superclass = CharOperation.NO_CHAR;
-		}
-		if (baseClasses != null) {
 			info.superinterfaces = getTokens(baseClasses);
 		}
 		if (templateDeclaration != null) {
@@ -329,6 +323,15 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		foundType = true;		
 		requestor.enterType(info);
+	}
+	
+	private char[] getTypeSignature(IClassDeclaration b) {
+		if (b != null) { // May be null if c is actually Object
+			Type t = b.type();
+			return t.getSignature().toCharArray();
+		} else {
+			return CharOperation.NO_CHAR;
+		}
 	}
 	
 	public boolean visit(ClassDeclaration node) {
@@ -424,7 +427,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		info.parameterNames = getParameterNames(ty.parameters);
 		info.parameterTypes = getParameterTypes(ty.parameters);
-		info.returnType = ty.next.toCharArray();
+		info.returnType = ty.next.getSignature().toCharArray();
 		if (templateDeclaration != null) {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}

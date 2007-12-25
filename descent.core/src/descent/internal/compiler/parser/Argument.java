@@ -252,4 +252,25 @@ public class Argument extends ASTDmdNode {
 		type.toDecoBuffer(buf, context);
 	}
 
+	public String getSignature() {
+		// TODO insert also modifiers in the signature, like in, out, etc.
+		if (type != null) {
+			return type.getSignature();
+		}
+		
+		return String.valueOf(TY.Tint32.mangleChar);
+		
+//		StringBuilder sb = new StringBuilder();
+//		for(Modifier modifier : modifiers) {
+//			sb.append(modifier.toCharArray());
+//			sb.append(" ");
+//		}
+//		
+//		if (type != null) {
+//			sb.append(type.toString());
+//		}
+//		
+//		return sb.toString();
+	}
+
 }

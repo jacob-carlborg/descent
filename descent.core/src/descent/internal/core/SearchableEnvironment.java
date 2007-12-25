@@ -347,12 +347,8 @@ public class SearchableEnvironment
 	}
 	
 	@Override
-	public IModule findModule(char[][] compoundName) {
-		descent.core.ICompilationUnit unit = this.nameLookup.findCompilationUnit(CharOperation.toString(compoundName));
-		if (unit == null) {
-			return null;
-		}
-		return new RModule(unit);
+	public descent.core.ICompilationUnit findCompilationUnit(char[][] compoundName) {
+		return this.nameLookup.findCompilationUnit(CharOperation.toString(compoundName));
 	}
 
 	/**

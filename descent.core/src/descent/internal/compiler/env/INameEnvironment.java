@@ -10,7 +10,6 @@
  *******************************************************************************/
 package descent.internal.compiler.env;
 
-import descent.internal.compiler.parser.IModule;
 
 /**
  * The name environment provides a callback API that the compiler
@@ -59,7 +58,7 @@ NameEnvironmentAnswer findType(char[] typeName, char[][] packageName);
 
 boolean isPackage(char[][] parentPackageName, char[] packageName);
 
-IModule findModule(char[][] compoundName);
+descent.core.ICompilationUnit findCompilationUnit(char[][] compoundName);
 
 /**
  * This method cleans the environment uo. It is responsible for releasing the memory

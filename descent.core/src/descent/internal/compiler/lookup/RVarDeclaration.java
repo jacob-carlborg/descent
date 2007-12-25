@@ -11,8 +11,8 @@ import descent.internal.compiler.parser.SemanticContext;
 
 public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 
-	public RVarDeclaration(IField element) {
-		super(element);
+	public RVarDeclaration(IField element, SemanticContext context) {
+		super(element, context);
 	}
 
 	public int canassign() {

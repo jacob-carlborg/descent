@@ -211,7 +211,8 @@ private void addToChildren(JavaElementInfo parentInfo, JavaElement handle) {
 	JavaModelManager manager = JavaModelManager.getJavaModelManager();
 	String[] typeSigs = new String[n];
 	for (int i = 0; i < n; ++i) {
-		typeSigs[i] = manager.intern(Signature.createTypeSignature(typeNames[i], false));
+		//typeSigs[i] = manager.intern(Signature.createTypeSignature(typeNames[i], false));
+		typeSigs[i] = manager.intern(new String(typeNames[i]));
 	}
 	return typeSigs;
 }

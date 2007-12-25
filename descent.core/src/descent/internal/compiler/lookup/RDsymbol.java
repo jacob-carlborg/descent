@@ -45,6 +45,7 @@ import descent.internal.compiler.parser.IUnionDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.OutBuffer;
 import descent.internal.compiler.parser.PROT;
@@ -56,7 +57,10 @@ import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
+import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeEnum;
+import descent.internal.compiler.parser.TypePointer;
+import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.core.util.Util;
 
@@ -66,9 +70,14 @@ public class RDsymbol extends RNode implements IDsymbol {
 	
 	protected IDsymbol parent;
 	protected IdentifierExp ident;
+	
+	// This hashtable is here to:
+	// - speed up searches
+	// - avoid creating duplicated classes
 	protected HashtableOfCharArrayAndObject childrenCache;
 
-	public RDsymbol(IJavaElement element) {
+	public RDsymbol(IJavaElement element, SemanticContext context) {
+		super(context);
 		this.element = element;
 	}
 
@@ -442,24 +451,24 @@ public class RDsymbol extends RNode implements IDsymbol {
 		default:
 			return null;
 		case IJavaElement.PACKAGE_FRAGMENT:
-			symbol = new RPackage((IPackageFragment) element);
+			symbol = new RPackage((IPackageFragment) element, context);
 			break;
 		case IJavaElement.COMPILATION_UNIT:
 		case IJavaElement.CLASS_FILE:
-			symbol = new RModule((ICompilationUnit) element);
+			symbol = new RModule((ICompilationUnit) element, context);
 			break;
 		case IJavaElement.TYPE:
 			IType type = (IType) element;
 			if (type.isClass()) {
-				symbol = new RClassDeclaration(type);
+				symbol = new RClassDeclaration(type, context);
 			} else if (type.isInterface()) {
-				symbol = new RInterfaceDeclaration(type);
+				symbol = new RInterfaceDeclaration(type, context);
 			} else if (type.isStruct()) {
-				symbol = new RStructDeclaration(type);
+				symbol = new RStructDeclaration(type, context);
 			} else if (type.isUnion()) {
-				symbol = new RUnionDeclaration(type);
+				symbol = new RUnionDeclaration(type, context);
 			} else if (type.isEnum()) {
-				symbol = new REnumDeclaration(type);
+				symbol = new REnumDeclaration(type, context);
 			} else {
 				throw new IllegalStateException("Should not happen");
 			}
@@ -467,13 +476,13 @@ public class RDsymbol extends RNode implements IDsymbol {
 		case IJavaElement.FIELD:
 			IField field = (IField) element;
 			if (field.isVariable()) {
-				symbol = new RVarDeclaration(field);
+				symbol = new RVarDeclaration(field, context);
 			} else if (field.isEnumConstant()) {
-				symbol = new REnumMember(field);
+				symbol = new REnumMember(field, context);
 			} else if (field.isAlias()) {
-				symbol = new RAliasDeclaration(field);
+				symbol = new RAliasDeclaration(field, context);
 			} else if (field.isTypedef()) {
-				symbol = new RTypedefDeclaration(field);
+				symbol = new RTypedefDeclaration(field, context);
 			} else if (field.isTemplateMixin()) {
 				// TODO should never hit this, since it will already be expanded
 				// But check...
@@ -485,15 +494,15 @@ public class RDsymbol extends RNode implements IDsymbol {
 		case IJavaElement.METHOD:
 			IMethod method = (IMethod) element;
 			if (method.isMethod()) {
-				symbol = new RFuncDeclaration(method);
+				symbol = new RFuncDeclaration(method, context);
 			} else if (method.isConstructor()) {
-				symbol = new RCtorDeclaration(method);
+				symbol = new RCtorDeclaration(method, context);
 			} else if (method.isDestructor()) {
-				symbol = new RDtorDeclaration(method);
+				symbol = new RDtorDeclaration(method, context);
 			} else if (method.isNew()) {
-				symbol = new RNewDeclaration(method);
+				symbol = new RNewDeclaration(method, context);
 			} else if (method.isDelete()) {
-				symbol = new RDeleteDeclaration(method);
+				symbol = new RDeleteDeclaration(method, context);
 			} else {
 				throw new IllegalStateException("Should not happen");
 			}
@@ -511,24 +520,33 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 	
 	protected Type getType(String signature) {
+		Type type = context.signatureToTypeCache.get(signature);
+		if (type != null) {
+			return type;
+		}
+		
 		// TODO optimize using IJavaProject#find and NameLookup
+		// TODO make an "extract number" function in order to avoid duplication
 		try {
 			if (signature.length() == 0) {
 				// Signal error
-				return Type.tint32;
+				type = Type.tint32;
 			} else if (signature.length() == 1) {
 				// It's a basic type
 				char c = signature.charAt(0);
-				return TypeBasic.fromSignature(c);
+				type = TypeBasic.fromSignature(c);
 			} else {
 				char first = signature.charAt(0);
 				
 				Object current = element.getJavaProject();
+				
+				// TODO use TY#member, but they are not constants, so we
+				// cant switch. Prefer poor performance over maintainability?
+				// Check.
 				switch(first) {
 				case 'E': // enum
 				case 'C': // class
 				case 'S': // struct
-					// It's an enum
 					for(int i = 1; i < signature.length(); i++) {
 						char c = signature.charAt(i);
 						int n = 0;
@@ -546,6 +564,30 @@ public class RDsymbol extends RNode implements IDsymbol {
 						i += n - 1;
 					}
 					break;
+				case 'P': { // pointer
+					type = new TypePointer(getType(signature.substring(1)));
+					type.deco = signature;
+				}
+				case 'A': { // dynamic array
+					type = new TypeDArray(getType(signature.substring(1)));
+					type.deco = signature;
+				}
+				case 'G': { // static array
+					int n = 0;
+					int i;
+					for(i = 1; i < signature.length(); i++) {
+						char c = signature.charAt(i);
+						while(Character.isDigit(c)) {
+							n = 10 * n + (c - '0');
+							i++;
+							c = signature.charAt(i);
+						}
+						break;
+					}
+					
+					type = new TypeSArray(getType(signature.substring(i)), new IntegerExp(n));
+					type.deco = signature;
+				}
 				}
 				
 				if (current != null && current instanceof IDsymbol) {
@@ -573,12 +615,16 @@ public class RDsymbol extends RNode implements IDsymbol {
 					
 				}
 				
-				return Type.tint32;
+				type = Type.tint32;
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);
-			return Type.tint32;
+			type = Type.tint32;
 		}
+		
+		context.signatureToTypeCache.put(signature, type);
+		
+		return type;
 	}
 	
 	private Object findChild(Object current, String name) throws JavaModelException {
@@ -608,7 +654,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 		if (fragment.isDefaultPackage()) {
 			ICompilationUnit unit = fragment.getCompilationUnit(name + ".d");
 			if (unit != null) {
-				return new RModule(unit);
+				return new RModule(unit, context);
 			}
 		} else if (fragment.getElementName().equals(name)) {
 			return fragment;

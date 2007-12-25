@@ -198,7 +198,8 @@ public String[] getRawParameterNames() throws JavaModelException {
  */
 public String getReturnType() throws JavaModelException {
 	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
-	return Signature.createTypeSignature(info.getReturnTypeName(), false);
+	return new String(info.getReturnTypeName());
+	// return Signature.createTypeSignature(info.getReturnTypeName(), false);
 }
 /**
  * @see IMethod

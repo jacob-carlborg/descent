@@ -9,8 +9,8 @@ import descent.internal.compiler.parser.Type;
 
 public class RDeclaration extends RDsymbol implements IDeclaration {
 
-	public RDeclaration(IJavaElement element) {
-		super(element);
+	public RDeclaration(IJavaElement element, SemanticContext context) {
+		super(element, context);
 	}
 	
 	public boolean isAuto() {

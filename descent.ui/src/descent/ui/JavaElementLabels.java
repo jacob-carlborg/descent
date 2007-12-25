@@ -859,6 +859,8 @@ public class JavaElementLabels {
 	}
 	
 	private static void getTypeSignatureLabel(String typeSig, long flags, StringBuffer buf) {
+		buf.append(typeSig);
+		/* TODO implement correctly
 		int sigKind= Signature.getTypeSignatureKind(typeSig);
 		switch (sigKind) {
 			case Signature.BASE_TYPE_SIGNATURE:
@@ -900,6 +902,7 @@ public class JavaElementLabels {
 			default:
 				// unknown
 		}
+		*/
 	}
 	
 	private static void getTypeArgumentSignaturesLabel(String[] typeArgsSig, long flags, StringBuffer buf) {

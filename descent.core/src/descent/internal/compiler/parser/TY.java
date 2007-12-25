@@ -55,7 +55,7 @@ public enum TY {
     
     public int flags;
     public String name;
-    public char mangleChar;
+    public final char mangleChar;
     
     TY(char mangleChar) {
     	this.mangleChar = mangleChar;

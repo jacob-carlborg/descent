@@ -43,7 +43,7 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 				if (key == null) continue;
 				
 				IDsymbol s = symtab.lookup(key);
-				if (s.synthetic()) {
+				if (s.synthetic() && (members == null || !members.contains(s))) {
 					s.accept(visitor);
 				}
 			}

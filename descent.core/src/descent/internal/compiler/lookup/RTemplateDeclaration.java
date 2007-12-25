@@ -20,8 +20,8 @@ import descent.internal.compiler.parser.TemplateTupleParameter;
 
 public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDeclaration {
 
-	public RTemplateDeclaration(IType element) {
-		super(element);
+	public RTemplateDeclaration(IType element, SemanticContext context) {
+		super(element, context);
 	}
 
 	public void declareParameter(Scope sc, TemplateParameter tp, INode o, SemanticContext context) {
