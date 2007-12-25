@@ -4,14 +4,16 @@ import java.util.List;
 
 import descent.core.IType;
 import descent.core.JavaModelException;
+import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassInfoDeclaration;
-import descent.internal.compiler.parser.Comparisons;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.FuncDeclarations;
 import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.IInterfaceDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
@@ -25,6 +27,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	private TypeClass type;
 	private IClassDeclaration baseClass;
 	private ICtorDeclaration ctor;
+	private BaseClasses interfaces;
 
 	public RClassDeclaration(IType element, SemanticContext context) {
 		super(element, context);
@@ -39,7 +42,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 				if (sig == null) { // May be the case of Object
 					return null;
 				}
-				Type supertype = getType(sig);
+				Type supertype = getTypeFromSignature(sig);
 				if (supertype instanceof TypeClass) {
 					TypeClass tc = (TypeClass) supertype;
 					baseClass = tc.sym;
@@ -84,8 +87,36 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 
 	public BaseClasses interfaces() {
-		// TODO Auto-generated method stub
-		return null;
+		if (interfaces == null) {
+			interfaces = new BaseClasses();
+			
+			IType type = (IType) element;
+			try {
+				String[] supersignatures = type.getSuperInterfaceTypeSignatures();
+				for(String sig : supersignatures) {
+					Type t = getTypeFromSignature(sig);
+					if (t instanceof TypeClass) {
+						TypeClass tc = (TypeClass) t;
+						
+						// TODO protection
+						BaseClass baseClass = new BaseClass(tc, PROT.PROTpublic);
+						baseClass.base = tc.sym;
+						
+						// TODO this may kill performance if the hierarchy is too deep,
+						// see if we need to hide baseInterfaces with a method
+						IInterfaceDeclaration inter = tc.sym.isInterfaceDeclaration();
+						if (inter != null) {
+							baseClass.baseInterfaces = inter.interfaces();
+						}
+						
+						interfaces.add(baseClass);
+					}
+				}
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+		return interfaces;
 	}
 
 	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
@@ -95,7 +126,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 		}
 		while (cd != null) {
 			IClassDeclaration base = cd.baseClass();
-			if (Comparisons.equals(this, base)) {
+			if (SemanticMixin.equals(this, base)) {
 				return true;
 			}
 			cd = base;

@@ -463,7 +463,6 @@ public String getSuperclassTypeSignature() throws JavaModelException {
 		return null;
 	}
 	return new String(superclassName);
-	// TODO changed to allow our own signature: check
 	// return new String(Signature.createTypeSignature(superclassName, false));
 }
 
@@ -488,7 +487,8 @@ public String[] getSuperInterfaceTypeSignatures() throws JavaModelException {
 	}
 	String[] strings= new String[names.length];
 	for (int i= 0; i < names.length; i++) {
-		strings[i]= new String(Signature.createTypeSignature(names[i], false));
+		strings[i]= new String(names[i]);
+		//strings[i]= new String(Signature.createTypeSignature(names[i], false));
 	}
 	return strings;
 }

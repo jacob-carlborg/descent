@@ -114,22 +114,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public void checkDeprecated(Scope sc, SemanticContext context) {
-		if (!context.global.params.useDeprecated && isDeprecated()) {
-			// Don't complain if we're inside a deprecated symbol's scope
-			for (IDsymbol sp = sc.parent; sp != null; sp = sp.parent()) {
-				if (sp.isDeprecated()) {
-					return;
-				}
-			}
-
-			for (; sc != null; sc = sc.enclosing) {
-				if (sc.scopesym != null && sc.scopesym.isDeprecated()) {
-					return;
-				}
-			}
-
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, this, new String[] { toChars(context) }));
-		}
+		SemanticMixin.checkDeprecated(this, sc, context);
 	}
 
 	public void defineRef(IDsymbol s) {
@@ -159,18 +144,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public IModule getModule() {
-		IModule m;
-		IDsymbol s;
-
-		s = this;
-		while (s != null) {
-			m = s.isModule();
-			if (m != null) {
-				return m;
-			}
-			s = s.parent();
-		}
-		return null;
+		return SemanticMixin.getModule(this);
 	}
 
 	@Override
@@ -532,7 +506,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 
 	@Override
 	public String toChars(SemanticContext context) {
-		return (ident != null && ident.ident != null) ? ident.toChars() : "__anonymous";
+		return SemanticMixin.toChars(this, context);
 	}
 
 	public IDsymbol toParent() {

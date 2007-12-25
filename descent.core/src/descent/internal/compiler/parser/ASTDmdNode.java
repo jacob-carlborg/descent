@@ -940,7 +940,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 	/***************************************************************************
 	 * Determine if scope sc has package level access to s.
 	 */
-	public boolean hasPackageAccess(Scope sc, IDsymbol s) {
+	public static boolean hasPackageAccess(Scope sc, IDsymbol s) {
 
 		for (; s != null; s = s.parent()) {
 			if (s.isPackage() != null && s.isModule() == null) {

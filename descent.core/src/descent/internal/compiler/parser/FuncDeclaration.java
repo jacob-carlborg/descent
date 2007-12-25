@@ -13,9 +13,6 @@ import static descent.internal.compiler.parser.ILS.ILSuninitialized;
 import static descent.internal.compiler.parser.ILS.ILSyes;
 import static descent.internal.compiler.parser.LINK.LINKc;
 import static descent.internal.compiler.parser.LINK.LINKd;
-
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.PROT.PROTexport;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
@@ -707,13 +704,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 
 	@Override
 	public IAggregateDeclaration isThis() {
-		IAggregateDeclaration ad;
-
-		ad = null;
-		if ((storage_class & STCstatic) == 0) {
-			ad = isMember2();
-		}
-		return ad;
+		return SemanticMixin.isThis(this);
 	}
 
 	public boolean isVirtual(SemanticContext context) {
@@ -828,41 +819,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	// Modified to add the caller's start and length, to signal a better error
 	public IFuncDeclaration overloadResolve(Expressions arguments,
 			SemanticContext context, ASTDmdNode caller) {
-		TypeFunction tf;
-		Match m = new Match();
-		m.last = MATCHnomatch;
-		overloadResolveX(m, this, arguments, context);
-
-		if (m.count == 1) // exactly one match
-		{
-			return m.lastf;
-		} else {
-			OutBuffer buf = new OutBuffer();
-
-			if (arguments != null) {
-				HdrGenState hgs = new HdrGenState();
-
-				argExpTypesToCBuffer(buf, arguments, hgs, context);
-			}
-
-			if (m.last == MATCHnomatch) {
-				tf = (TypeFunction) type;
-
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, caller, new String[] { kindForError(context) + Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
-				return m.anyf; // as long as it's not a FuncAliasDeclaration
-			} else {
-				TypeFunction t1 = (TypeFunction) m.lastf.type();
-				TypeFunction t2 = (TypeFunction) m.nextf.type();
-
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CalledWithArgumentTypesMatchesBoth, caller, new String[] { buf.toChars(), m.lastf.toPrettyChars(context), Argument
-						.argsTypesToChars(t1.parameters, t1.varargs,
-								context), m.nextf
-						.toPrettyChars(context), Argument
-						.argsTypesToChars(t2.parameters, t2.varargs,
-								context) }));
-				return m.lastf;
-			}
-		}
+		return SemanticMixin.overloadResolve(this, arguments, context, caller);
 	}
 
 	public boolean overrides(IFuncDeclaration fd, SemanticContext context) {

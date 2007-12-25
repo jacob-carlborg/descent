@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
-import static descent.internal.compiler.parser.PROT.PROTpackage;
-import static descent.internal.compiler.parser.PROT.PROTpublic;
 
 // DMD 1.020
 public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggregateDeclaration {
@@ -48,37 +46,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	// The "reference" is not in DMD. It holds the source range of the node
 	// that needs the access check, so that we can point errors in the correct place
 	public void accessCheck(Scope sc, IDsymbol smember, SemanticContext context, INode reference) {
-		boolean result;
-
-		FuncDeclaration f = sc.func;
-		IAggregateDeclaration cdscope = sc.getStructClassScope();
-		PROT access;
-
-		IDsymbol smemberparent = smember.toParent();
-		if (smemberparent == null
-				|| smemberparent.isAggregateDeclaration() == null) {
-			return; // then it is accessible
-		}
-
-		// BUG: should enable this check
-		// assert(smember.parent.isBaseOf(this, NULL));
-
-		if (smemberparent == this) {
-			PROT access2 = smember.prot();
-
-			result = access2.level >= PROTpublic.level || hasPrivateAccess(f)
-					|| isFriendOf(cdscope)
-					|| (access2 == PROTpackage && hasPackageAccess(sc, this));
-		} else if ((access = this.getAccess(smember)).level >= PROTpublic.level) {
-			result = true;
-		} else if (access == PROTpackage && hasPackageAccess(sc, this)) {
-			result = true;
-		} else {
-			result = accessCheckX(smember, f, this, cdscope);
-		}
-		if (!result) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, reference, new String[] { smember.toChars(context) }));
-		}
+		SemanticMixin.accessCheck(this, sc, smember, context, reference);
 	}
 
 	public void addField(Scope sc, IVarDeclaration v, SemanticContext context) {

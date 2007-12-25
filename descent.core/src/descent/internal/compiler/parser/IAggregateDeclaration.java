@@ -53,5 +53,7 @@ public interface IAggregateDeclaration extends IScopeDsymbol {
 	int size(SemanticContext context);
 	
 	int structalign();
+	
+	PROT getAccess(IDsymbol smember);
 
 }

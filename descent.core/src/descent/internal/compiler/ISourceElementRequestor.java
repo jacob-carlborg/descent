@@ -88,6 +88,7 @@ public interface ISourceElementRequestor {
 		public int nameSourceEnd;
 		public long[] annotationPositions;
 		public char[][] categories;
+		public char[] value;
 	}
 	
 	void acceptConstructorReference(char[] typeName, int argCount, int sourcePosition);

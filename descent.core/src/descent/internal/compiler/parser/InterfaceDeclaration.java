@@ -45,23 +45,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 	}
 
 	public boolean isBaseOf(BaseClass bc, int[] poffset) {
-		for (int j = 0; j < bc.baseInterfaces.size(); j++) {
-			BaseClass b = bc.baseInterfaces.get(j);
-
-			if (this == b.base) {
-				if (poffset != null) {
-					poffset[0] = b.offset;
-				}
-				return true;
-			}
-			if (isBaseOf(b, poffset)) {
-				return true;
-			}
-		}
-		if (poffset != null) {
-			poffset[0] = 0;
-		}
-		return false;
+		return SemanticMixin.isBaseOf(this, bc, poffset);
 	}
 
 	@Override
@@ -73,7 +57,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 		for (j = 0; j < cd.interfaces().size(); j++) {
 			BaseClass b = cd.interfaces().get(j);
 
-			if (this == b.base) {
+			if (SemanticMixin.equals(this, b.base)) {
 				if (poffset != null) {
 					poffset[0] = b.offset;
 					if (j != 0 && cd.isInterfaceDeclaration() != null) {

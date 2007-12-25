@@ -51,7 +51,7 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 			IType t = (IType) element;
 			try {
 				String signature = t.getSuperclassTypeSignature();
-				memtype = getType(signature);
+				memtype = getTypeFromSignature(signature);
 			} catch (JavaModelException e) {
 				Util.log(e);
 				memtype = Type.tint32;

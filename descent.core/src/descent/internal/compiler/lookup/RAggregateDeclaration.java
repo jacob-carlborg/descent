@@ -10,7 +10,9 @@ import descent.internal.compiler.parser.IInvariantDeclaration;
 import descent.internal.compiler.parser.INewDeclaration;
 import descent.internal.compiler.parser.INode;
 import descent.internal.compiler.parser.IVarDeclaration;
+import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Symbol;
 import descent.internal.compiler.parser.Type;
@@ -22,8 +24,7 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public void accessCheck(Scope sc, IDsymbol smember, SemanticContext context, INode reference) {
-		// TODO Auto-generated method stub
-		
+		SemanticMixin.accessCheck(this, sc, smember, context, reference);
 	}
 
 	public void addField(Scope sc, IVarDeclaration v, SemanticContext context) {
@@ -49,6 +50,11 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	public List<IVarDeclaration> fields() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public PROT getAccess(IDsymbol smember) {
+		// TODO Auto-generated method stub
+		return PROT.PROTpublic;
 	}
 
 	public Type handle() {

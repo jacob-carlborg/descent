@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -109,11 +110,24 @@ public class Module extends Package implements IModule {
 		}
 
 		symtab = new DsymbolTable();
-
+		
+		boolean imObject = CharOperation.equals(ident.ident, Id.object);
+		
 		// Add all symbols into module's symbol table
-		for (int i = 0; i < size(members); i++) {
-			IDsymbol s = members.get(i);
-			s.addMember(null, sc.scopesym, 1, context);
+		// But, if this i'm module object, assign to SemanticContext's variables
+		// (this only happens the first time object is parsed
+		if (imObject) {
+			for (int i = 0; i < size(members); i++) {
+				IDsymbol s = members.get(i);
+				context.checkObjectMember(s);
+				s.addMember(null, sc.scopesym, 1, context);
+			}
+		} else {
+			// Add all symbols into module's symbol table
+			for (int i = 0; i < size(members); i++) {
+				IDsymbol s = members.get(i);
+				s.addMember(null, sc.scopesym, 1, context);
+			}
 		}
 
 		// Pass 1 semantic routines: do public side of the definition

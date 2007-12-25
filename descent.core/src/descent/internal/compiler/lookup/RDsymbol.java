@@ -51,6 +51,7 @@ import descent.internal.compiler.parser.OutBuffer;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TupleDeclaration;
@@ -66,8 +67,6 @@ import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
 	
-	protected final IJavaElement element;
-	
 	protected IDsymbol parent;
 	protected IdentifierExp ident;
 	
@@ -77,8 +76,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	protected HashtableOfCharArrayAndObject childrenCache;
 
 	public RDsymbol(IJavaElement element, SemanticContext context) {
-		super(context);
-		this.element = element;
+		super(element, context);
 	}
 
 	public void addLocalClass(ClassDeclarations aclasses, SemanticContext context) {
@@ -95,28 +93,21 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public void checkDeprecated(Scope sc, SemanticContext context) {
-		// TODO Auto-generated method stub
-		
+		SemanticMixin.checkDeprecated(this, sc, context);
 	}
 
 	public void defineRef(IDsymbol s) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String kindForError(SemanticContext context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public IModule getModule() {
-		IModule m;
-		IDsymbol s;
-
-		s = this;
-		while (s != null) {
-			m = s.isModule();
-			if (m != null) {
-				return m;
-			}
-			s = s.parent();
-		}
-		return null;
+		return SemanticMixin.getModule(this);
 	}
 
 	public Type getType() {
@@ -292,7 +283,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public boolean isforwardRef() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -343,8 +333,26 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public PROT prot() {
-		// TODO Auto-generated method stub
-		return null;
+		if (element instanceof IMember) {
+			IMember m = (IMember) element;
+			try {
+				int flags = m.getFlags();
+				if ((flags & Flags.AccPublic) != 0) {
+					return PROT.PROTpublic;
+				} else if ((flags & Flags.AccPrivate) != 0) {
+					return PROT.PROTprivate;
+				} else if ((flags & Flags.AccPackage) != 0) {
+					return PROT.PROTpackage;
+				} else if ((flags & Flags.AccProtected) != 0) {
+					return PROT.PROTprotected;
+				} else if ((flags & Flags.AccExport) != 0) {
+					return PROT.PROTexport;
+				}
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+		return PROT.PROTpublic;
 	}
 
 	public IDsymbol search(Loc loc, IdentifierExp ident, int flags, SemanticContext context) {
@@ -422,6 +430,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		return SemanticMixin.toChars(this, context);
 	}
 
 	public IDsymbol toParent() {
@@ -519,7 +532,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 		return symbol;
 	}
 	
-	protected Type getType(String signature) {
+	protected Type getTypeFromSignature(String signature) {
 		Type type = context.signatureToTypeCache.get(signature);
 		if (type != null) {
 			return type;
@@ -540,13 +553,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 				
 				Object current = element.getJavaProject();
 				
-				// TODO use TY#member, but they are not constants, so we
-				// cant switch. Prefer poor performance over maintainability?
-				// Check.
 				switch(first) {
 				case 'E': // enum
 				case 'C': // class
 				case 'S': // struct
+				case 'T': // typedef
 					for(int i = 1; i < signature.length(); i++) {
 						char c = signature.charAt(i);
 						int n = 0;
@@ -565,11 +576,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 					}
 					break;
 				case 'P': { // pointer
-					type = new TypePointer(getType(signature.substring(1)));
+					type = new TypePointer(getTypeFromSignature(signature.substring(1)));
 					type.deco = signature;
 				}
 				case 'A': { // dynamic array
-					type = new TypeDArray(getType(signature.substring(1)));
+					type = new TypeDArray(getTypeFromSignature(signature.substring(1)));
 					type.deco = signature;
 				}
 				case 'G': { // static array
@@ -585,7 +596,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 						break;
 					}
 					
-					type = new TypeSArray(getType(signature.substring(i)), new IntegerExp(n));
+					type = new TypeSArray(getTypeFromSignature(signature.substring(i)), new IntegerExp(n));
 					type.deco = signature;
 				}
 				}

@@ -6,16 +6,15 @@ import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 
 public class RModuleDeclaration extends RNode implements IModuleDeclaration {
 	
-	private IPackageDeclaration element;
 	private IdentifierExp id;
 	private Identifiers packages;
 	
 	public RModuleDeclaration(IPackageDeclaration element, SemanticContext context) {
-		super(context);
-		this.element = element;
+		super(element, context);
 	}
 
 	public IdentifierExp id() {
@@ -26,6 +25,11 @@ public class RModuleDeclaration extends RNode implements IModuleDeclaration {
 	public Identifiers packages() {
 		calculateIdAndPackages();
 		return packages;
+	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		return SemanticMixin.toChars(this, context);
 	}
 	
 	private void calculateIdAndPackages() {

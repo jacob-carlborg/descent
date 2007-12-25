@@ -132,6 +132,8 @@ public interface IDsymbol extends INode {
 	
 	void synthetic(boolean synthetic);
 	
+	String kindForError(SemanticContext context);
+	
 	void semantic(Scope scope, SemanticContext context);
 	
 	void semantic2(Scope scope, SemanticContext context);

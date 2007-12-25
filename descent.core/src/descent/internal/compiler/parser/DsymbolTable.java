@@ -35,14 +35,14 @@ public class DsymbolTable implements IDsymbolTable {
 	 * @see descent.internal.compiler.parser.IDsymbolTable#lookup(descent.internal.compiler.parser.IdentifierExp)
 	 */
 	public IDsymbol lookup(IdentifierExp ident) {
-		return (Dsymbol) map.get(ident.ident);
+		return (IDsymbol) map.get(ident.ident);
 	}
 	
 	/* (non-Javadoc)
 	 * @see descent.internal.compiler.parser.IDsymbolTable#lookup(char[])
 	 */
 	public IDsymbol lookup(char[] ident) {
-		return (Dsymbol) map.get(ident);
+		return (IDsymbol) map.get(ident);
 	}
 	
 	/* (non-Javadoc)

@@ -393,7 +393,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 				} else {
 					boolean gotoL7 = false;
 					for (IClassDeclaration cdb = tc.sym; cdb != null; cdb = cdb.baseClass()) {
-						if (Comparisons.equals(cdb, this)) {
+						if (SemanticMixin.equals(cdb, this)) {
 							BaseClass firstBaseClass = this.baseclasses.get(0);
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CircularDefinition, firstBaseClass.sourceType, new String[] { toChars(context) }));

@@ -4,8 +4,10 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
@@ -30,7 +32,7 @@ public abstract class AbstractModelTest extends TestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		project.close(null);
-		project.delete(true, null);
+		project.delete(IResource.ALWAYS_DELETE_PROJECT_CONTENT, null);
 	}
 	
 	protected IProject createProject(String name) throws CoreException {
@@ -99,6 +101,10 @@ public abstract class AbstractModelTest extends TestCase {
 	
 	protected ICompilationUnit createCompilationUnit(String filename, String contents) throws Exception {
 		return createCompilationUnit(null, filename, contents);
+	}
+	
+	protected void build() throws CoreException {
+		javaProject.getProject().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, null);
 	}
 
 }

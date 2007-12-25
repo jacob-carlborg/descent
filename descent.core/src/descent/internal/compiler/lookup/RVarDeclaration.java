@@ -1,6 +1,7 @@
 package descent.internal.compiler.lookup;
 
 import descent.core.IField;
+import descent.core.JavaModelException;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IExpInitializer;
 import descent.internal.compiler.parser.IInitializer;
@@ -8,8 +9,12 @@ import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.Type;
+import descent.internal.core.util.Util;
 
 public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
+	
+	private Type type;
 
 	public RVarDeclaration(IField element, SemanticContext context) {
 		super(element, context);
@@ -73,6 +78,20 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	public void offset(int offset) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public Type type() {
+		if (type == null) {
+			IField f = (IField) element;
+			try {
+				type = getTypeFromSignature(f.getTypeSignature());
+			} catch (JavaModelException e) {
+				Util.log(e);
+				type = Type.tint32;
+			}
+		}
+		return type;
 	}
 
 	public Expression value() {

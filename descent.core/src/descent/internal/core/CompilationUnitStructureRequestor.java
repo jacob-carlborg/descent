@@ -254,6 +254,7 @@ public void enterField(FieldInfo fieldInfo) {
 	info.setNameSourceEnd(fieldInfo.nameSourceEnd);
 	info.setSourceRangeStart(fieldInfo.declarationStart);
 	info.setFlags(fieldInfo.modifiers);
+	info.setValue(fieldInfo.value);
 	char[] typeName = JavaModelManager.getJavaModelManager().intern(fieldInfo.type);
 	info.setTypeName(typeName);
 	

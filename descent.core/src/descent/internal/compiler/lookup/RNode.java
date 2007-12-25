@@ -3,6 +3,7 @@ package descent.internal.compiler.lookup;
 import java.util.List;
 
 import melnorme.miscutil.tree.IElement;
+import descent.core.IJavaElement;
 import descent.internal.compiler.parser.DYNCAST;
 import descent.internal.compiler.parser.INode;
 import descent.internal.compiler.parser.Modifier;
@@ -11,9 +12,11 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class RNode implements INode {
 	
+	protected IJavaElement element;
 	protected SemanticContext context;
 	
-	public RNode(SemanticContext context) {
+	public RNode(IJavaElement element, SemanticContext context) {
+		this.element = element;
 		this.context = context;
 	}
 
@@ -73,8 +76,8 @@ public class RNode implements INode {
 	}
 
 	public String toChars(SemanticContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalStateException(
+			"This is an abstract method in DMD an should be implemented");
 	}
 
 	public IElement[] getChildren() {

@@ -193,45 +193,49 @@ public class SemanticContext {
 		// If we're in object.d, assign the well known class declarations
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
 			for (IDsymbol symbol : m.members()) {
-				if (symbol.ident() == null || symbol.ident().ident == null) {
-					continue;
-				}
-
-				if (ASTDmdNode.equals(symbol.ident(), Id.Object)) {
-					ClassDeclaration_object = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.ClassInfo)) {
-					ClassDeclaration_classinfo = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo)) {
-					Type_typeinfo = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Class)) {
-					Type_typeinfoclass = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Interface)) {
-					Type_typeinfointerface = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Struct)) {
-					Type_typeinfostruct = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Typedef)) {
-					Type_typeinfotypedef = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Pointer)) {
-					Type_typeinfopointer = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Array)) {
-					Type_typeinfoarray = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_StaticArray)) {
-					Type_typeinfostaticarray = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_AssociativeArray)) {
-					Type_typeinfoassociativearray = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Enum)) {
-					Type_typeinfoenum = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Function)) {
-					Type_typeinfofunction = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Delegate)) {
-					Type_typeinfodelegate = (IClassDeclaration) symbol;
-				} else if (ASTDmdNode.equals(symbol.ident(), Id.TypeInfo_Tuple)) {
-					Type_typeinfotypelist = (IClassDeclaration) symbol;
-				}
+				checkObjectMember(symbol);
 			}
 		}
 		
 		return m;
+	}
+	
+	public void checkObjectMember(IDsymbol s) {
+		if (s.ident() == null || s.ident().ident == null) {
+			return;
+		}
+		
+		if (ASTDmdNode.equals(s.ident(), Id.Object)) {
+			ClassDeclaration_object = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.ClassInfo)) {
+			ClassDeclaration_classinfo = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo)) {
+			Type_typeinfo = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Class)) {
+			Type_typeinfoclass = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Interface)) {
+			Type_typeinfointerface = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Struct)) {
+			Type_typeinfostruct = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Typedef)) {
+			Type_typeinfotypedef = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Pointer)) {
+			Type_typeinfopointer = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Array)) {
+			Type_typeinfoarray = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_StaticArray)) {
+			Type_typeinfostaticarray = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_AssociativeArray)) {
+			Type_typeinfoassociativearray = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Enum)) {
+			Type_typeinfoenum = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Function)) {
+			Type_typeinfofunction = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Delegate)) {
+			Type_typeinfodelegate = (IClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Tuple)) {
+			Type_typeinfotypelist = (IClassDeclaration) s;
+		}
 	}
 
 	private Map<Type, TypeInfoDeclaration> typeInfoDeclarations = new HashMap<Type, TypeInfoDeclaration>();
