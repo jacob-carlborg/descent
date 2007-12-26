@@ -120,52 +120,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 
 	@Override
 	public PROT getAccess(IDsymbol smember) {
-		PROT access_ret = PROTnone;
-
-		if (smember.toParent() == this) {
-			access_ret = smember.prot();
-		} else {
-			PROT access;
-			int i;
-
-			if (smember.isDeclaration().isStatic()) {
-				access_ret = smember.prot();
-			}
-
-			for (i = 0; i < baseclasses.size(); i++) {
-				BaseClass b = baseclasses.get(i);
-
-				access = b.base.getAccess(smember);
-				switch (access) {
-				case PROTnone:
-					break;
-
-				case PROTprivate:
-					access = PROTnone; // private members of base class not
-					// accessible
-					break;
-
-				case PROTpackage:
-				case PROTprotected:
-				case PROTpublic:
-				case PROTexport:
-					// If access is to be tightened
-					if (b.protection.level < access.level) {
-						access = b.protection;
-					}
-
-					// Pick path with loosest access
-					if (access.level > access_ret.level) {
-						access_ret = access;
-					}
-					break;
-
-				default:
-					Assert.isTrue(false);
-				}
-			}
-		}
-		return access_ret;
+		return SemanticMixin.getAccess(this, smember);
 	}
 
 	@Override

@@ -399,8 +399,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
-		ps[0] = this;
-		return true;
+		return SemanticMixin.oneMember(this, ps, context);
 	}
 
 	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
@@ -408,11 +407,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public IDsymbol pastMixin() {
-		IDsymbol s = this;
-		while (s != null && s.isTemplateMixin() != null) {
-			s = s.parent();
-		}
-		return s;
+		return SemanticMixin.pastMixin(this);
 	}
 
 	public PROT prot() {
@@ -431,43 +426,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 
 	public IDsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
 			SemanticContext context) {
-		IDsymbol s = toAlias(context);
-		IDsymbol sm;
-
-		switch (id.dyncast()) {
-		case DYNCAST_IDENTIFIER:
-			sm = s.search(loc, id, 0, context);
-			break;
-
-		case DYNCAST_DSYMBOL: { // It's a template instance
-			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
-			TemplateInstance ti = st.isTemplateInstance();
-			id = ti.name;
-			sm = s.search(loc, id, 0, context);
-			if (null == sm) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { id.toChars(), s.kind(), s.toChars(context) }));
-				return null;
-			}
-			sm = sm.toAlias(context);
-			ITemplateDeclaration td = sm.isTemplateDeclaration();
-			if (null == td) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolIsNotATemplate, this, new String[] { id.toChars(), sm.kind() }));
-				return null;
-			}
-			ti.tempdecl = td;
-			if (0 == ti.semanticdone) {
-				ti.semantic(sc, context);
-			}
-			sm = ti.toAlias(context);
-			break;
-		}
-
-		default:
-			throw new IllegalStateException("assert(0);");
-		}
-		return sm;
+		return SemanticMixin.searchX(this, loc, sc, id, context);
 	}
 
 	public void semantic(Scope sc, SemanticContext context) {
@@ -501,7 +460,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		buf.writestring(toChars(context));
+		SemanticMixin.toCBuffer(this, buf, hgs, context);
 	}
 
 	@Override
@@ -510,15 +469,11 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public IDsymbol toParent() {
-		return parent != null ? parent.pastMixin() : null;
+		return SemanticMixin.toParent(this);
 	}
 
 	public IDsymbol toParent2() {
-		IDsymbol s = parent;
-		while (s != null && s.isTemplateInstance() != null) {
-			s = s.parent();
-		}
-		return s;
+		return SemanticMixin.toParent2(this);
 	}
 
 	@Override

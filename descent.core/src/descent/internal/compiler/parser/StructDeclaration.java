@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PROT.PROTnone;
 
 import static descent.internal.compiler.parser.STC.STCin;
 
@@ -37,14 +36,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 
 	@Override
 	public PROT getAccess(IDsymbol smember) {
-		PROT access_ret = PROTnone;
-
-		if (smember.toParent() == this) {
-			access_ret = smember.prot();
-		} else if (smember.isDeclaration().isStatic()) {
-			access_ret = smember.prot();
-		}
-		return access_ret;
+		return SemanticMixin.getAccess(this, smember);
 	}
 
 	@Override

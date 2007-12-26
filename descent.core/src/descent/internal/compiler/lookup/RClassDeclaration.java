@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.Flags;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.BaseClass;
@@ -201,13 +202,17 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 	
 	public boolean isAbstract() {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			return (((IType) element).getFlags() & Flags.AccAbstract) != 0;
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
 	}
 	
+	@Override
 	public PROT getAccess(IDsymbol smember) {
-		// TODO Auto-generated method stub
-		return null;
+		return SemanticMixin.getAccess(this, smember);
 	}
 	
 	public int vtblOffset() {

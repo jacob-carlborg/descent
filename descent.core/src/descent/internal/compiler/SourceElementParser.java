@@ -53,7 +53,6 @@ import descent.internal.core.util.Util;
 public class SourceElementParser extends AstVisitorAdapter {
 	
 	private final static long[] NO_LONG = new long[0];
-	private final static char[] DUMMY_TYPE = new char[] { 'i', 'n', 't' };
 	
 	public ISourceElementRequestor requestor;
 	private Module module;
@@ -481,7 +480,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.parameterNames = getParameterNames(arguments);
 			info.parameterTypes = getParameterTypes(arguments);
 		}
-		info.returnType = "void".toCharArray();
+		info.returnType = ((TypeFunction) node.type).next.getSignature().toCharArray();
 		info.typeParameters = new TypeParameterInfo[0];
 		
 		requestor.enterConstructor(info);
@@ -584,8 +583,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.sourceType != null) {
-			info.type = node.sourceType.toCharArray();
+		if (node.type != null) {
+			info.type = node.type.getSignature().toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}

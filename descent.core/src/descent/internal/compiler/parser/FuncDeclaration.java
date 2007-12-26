@@ -742,42 +742,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	}
 
 	public IFuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
-		IFuncDeclaration f;
-		IDeclaration d;
-		IDeclaration next;
-
-		for (d = this; d != null; d = next) {
-			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
-
-			if (fa != null) {
-				IFuncDeclaration f2 = fa.funcalias
-						.overloadExactMatch(t, context);
-				if (f2 != null) {
-					return f2;
-				}
-				next = fa.overnext;
-			} else {
-				IAliasDeclaration a = d.isAliasDeclaration();
-
-				if (a != null) {
-					IDsymbol s = a.toAlias(context);
-					next = s.isDeclaration();
-					if (next == a) {
-						break;
-					}
-				} else {
-					f = d.isFuncDeclaration();
-					if (f == null) {
-						break; // BUG: should print error message?
-					}
-					if (t.equals(d.type())) {
-						return f;
-					}
-					next = f.overnext();
-				}
-			}
-		}
-		return null;
+		return SemanticMixin.overloadExactMatch(this, t, context);
 	}
 
 	@Override
@@ -823,21 +788,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	}
 
 	public boolean overrides(IFuncDeclaration fd, SemanticContext context) {
-		boolean result = false;
-
-		if (equals(fd.ident(), ident)) {
-			int cov = type.covariant(fd.type(), context);
-			if (cov != 0) {
-				IClassDeclaration cd1 = toParent().isClassDeclaration();
-				IClassDeclaration cd2 = fd.toParent().isClassDeclaration();
-
-				if (cd1 != null && cd2 != null
-						&& cd2.isBaseOf(cd1, null, context)) {
-					result = true;
-				}
-			}
-		}
-		return result;
+		return SemanticMixin.overrides(this, fd, context);
 	}
 
 	public LabelDsymbol searchLabel(IdentifierExp ident) {

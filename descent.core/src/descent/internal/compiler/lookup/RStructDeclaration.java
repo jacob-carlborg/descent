@@ -1,8 +1,11 @@
 package descent.internal.compiler.lookup;
 
 import descent.core.IType;
+import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IStructDeclaration;
+import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeStruct;
 
@@ -12,6 +15,11 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 
 	public RStructDeclaration(IType element, SemanticContext context) {
 		super(element, context);
+	}
+	
+	@Override
+	public PROT getAccess(IDsymbol smember) {
+		return SemanticMixin.getAccess(this, smember);
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package descent.internal.compiler.lookup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IType;
@@ -18,6 +19,9 @@ import descent.internal.compiler.parser.Symbol;
 import descent.internal.compiler.parser.Type;
 
 public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDeclaration {
+	
+	private Symbol sinit;
+	private List<IVarDeclaration> fields;
 
 	public RAggregateDeclaration(IType element, SemanticContext context) {
 		super(element, context);
@@ -28,13 +32,11 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public void addField(Scope sc, IVarDeclaration v, SemanticContext context) {
-		// TODO Auto-generated method stub
-		
+		throw new IllegalStateException("Should not be called");
 	}
 
 	public void alignmember(int salign, int size, int[] poffset) {
-		// TODO Auto-generated method stub
-		
+		SemanticMixin.alignmember(this, salign, size, poffset);
 	}
 
 	public int alignsize() {
@@ -48,12 +50,19 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public List<IVarDeclaration> fields() {
-		// TODO Auto-generated method stub
-		return null;
+		if (fields == null) {
+			fields = new ArrayList<IVarDeclaration>();
+			for(IDsymbol s : members()) {
+				IVarDeclaration v = s.isVarDeclaration();
+				if (v != null) {
+					fields.add(v);
+				}
+			}
+		}
+		return fields;
 	}
 	
 	public PROT getAccess(IDsymbol smember) {
-		// TODO Auto-generated method stub
 		return PROT.PROTpublic;
 	}
 
@@ -63,8 +72,7 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public boolean hasPrivateAccess(IDsymbol smember) {
-		// TODO Auto-generated method stub
-		return false;
+		return SemanticMixin.hasPrivateAccess(this, smember);
 	}
 
 	public int hasUnions() {
@@ -88,8 +96,7 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public boolean isFriendOf(IAggregateDeclaration cd) {
-		// TODO Auto-generated method stub
-		return false;
+		return SemanticMixin.isFriendOf(this, cd);
 	}
 
 	public void sizeok(int sizeok) {
@@ -108,12 +115,14 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public Symbol toInitializer() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO semantic back-end
+		if (null == sinit) {
+			sinit = new Symbol();
+		}
+		return sinit;
 	}
 
 	public Type type() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

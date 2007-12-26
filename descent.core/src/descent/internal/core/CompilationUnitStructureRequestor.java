@@ -394,13 +394,13 @@ public void enterMethod(MethodInfo methodInfo) {
 	resolveDuplicates(handle);
 	
 	SourceMethodElementInfo info;
-	if (Flags.isConstructor(methodInfo.modifiers))
-		info = new SourceConstructorInfo();
+//	if (Flags.isConstructor(methodInfo.modifiers))
+//		info = new SourceConstructorInfo();
 	/*
 	else if (methodInfo.isAnnotation)
 		info = new SourceAnnotationMethodInfo();
 	*/
-	else
+//	else
 		info = new SourceMethodInfo();
 	info.setSourceRangeStart(methodInfo.declarationStart);
 	int flags = methodInfo.modifiers;

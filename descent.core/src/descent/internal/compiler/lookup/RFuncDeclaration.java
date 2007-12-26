@@ -19,8 +19,8 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InlineScanState;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.LINK;
-import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -93,8 +93,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	}
 
 	public IFuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
-		// TODO Auto-generated method stub
-		return this;
+		return SemanticMixin.overloadExactMatch(this, t, context);
 	}
 
 	public IFuncDeclaration overloadResolve(Expressions arguments, SemanticContext context, ASTDmdNode caller) {
@@ -119,8 +118,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	}
 
 	public boolean overrides(IFuncDeclaration fd, SemanticContext context) {
-		// TODO Auto-generated method stub
-		return false;
+		return SemanticMixin.overrides(this, fd, context);
 	}
 
 	public Type tintro() {

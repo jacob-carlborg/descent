@@ -2,10 +2,13 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
+import org.eclipse.core.runtime.Assert;
+
 import static descent.internal.compiler.parser.STC.STCstatic;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ASTDmdNode.Match;
+import static descent.internal.compiler.parser.PROT.PROTnone;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
@@ -212,6 +215,268 @@ public class SemanticMixin {
 	
 	public static String toChars(IDsymbol aThis, SemanticContext context) {
 		return (aThis.ident() != null && aThis.ident().ident != null) ? aThis.ident().toChars() : "__anonymous";
+	}
+	
+	public static IDsymbol pastMixin(IDsymbol aThis) {
+		IDsymbol s = aThis;
+		while (s != null && s.isTemplateMixin() != null) {
+			s = s.parent();
+		}
+		return s;
+	}
+	
+	public static IDsymbol searchX(IDsymbol aThis, Loc loc, Scope sc, IdentifierExp id, SemanticContext context) {
+		IDsymbol s = aThis.toAlias(context);
+		IDsymbol sm;
+
+		switch (id.dyncast()) {
+		case DYNCAST_IDENTIFIER:
+			sm = s.search(loc, id, 0, context);
+			break;
+
+		case DYNCAST_DSYMBOL: { // It's a template instance
+			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
+			TemplateInstance ti = st.isTemplateInstance();
+			id = ti.name;
+			sm = s.search(loc, id, 0, context);
+			if (null == sm) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TemplateIdentifierIsNotAMemberOf, aThis, new String[] { id.toChars(), s.kind(), s.toChars(context) }));
+				return null;
+			}
+			sm = sm.toAlias(context);
+			ITemplateDeclaration td = sm.isTemplateDeclaration();
+			if (null == td) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolIsNotATemplate, aThis, new String[] { id.toChars(), sm.kind() }));
+				return null;
+			}
+			ti.tempdecl = td;
+			if (0 == ti.semanticdone) {
+				ti.semantic(sc, context);
+			}
+			sm = ti.toAlias(context);
+			break;
+		}
+
+		default:
+			throw new IllegalStateException("assert(0);");
+		}
+		return sm;
+	}
+	
+	public static void toCBuffer(IDsymbol aThis, OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring(aThis.toChars(context));
+	}
+	
+	public static IDsymbol toParent(IDsymbol aThis) {
+		return aThis.parent() != null ? aThis.parent().pastMixin() : null;
+	}
+	
+	public static IDsymbol toParent2(IDsymbol aThis) {
+		IDsymbol s = aThis.parent();
+		while (s != null && s.isTemplateInstance() != null) {
+			s = s.parent();
+		}
+		return s;
+	}
+	
+	public static boolean oneMember(IDsymbol aThis, IDsymbol[] ps, SemanticContext context) {
+		ps[0] = aThis;
+		return true;
+	}
+	
+	public static PROT getAccess(IClassDeclaration aThis, IDsymbol smember) {
+		PROT access_ret = PROTnone;
+
+		IDsymbol p = smember.toParent();
+		if (p != null && p.isAggregateDeclaration() != null && equals(p.isAggregateDeclaration(), aThis)) {
+			access_ret = smember.prot();
+		} else {
+			PROT access;
+			int i;
+
+			if (smember.isDeclaration().isStatic()) {
+				access_ret = smember.prot();
+			}
+
+			for (i = 0; i < aThis.baseclasses().size(); i++) {
+				BaseClass b = aThis.baseclasses().get(i);
+
+				access = b.base.getAccess(smember);
+				switch (access) {
+				case PROTnone:
+					break;
+
+				case PROTprivate:
+					access = PROTnone; // private members of base class not
+					// accessible
+					break;
+
+				case PROTpackage:
+				case PROTprotected:
+				case PROTpublic:
+				case PROTexport:
+					// If access is to be tightened
+					if (b.protection.level < access.level) {
+						access = b.protection;
+					}
+
+					// Pick path with loosest access
+					if (access.level > access_ret.level) {
+						access_ret = access;
+					}
+					break;
+
+				default:
+					Assert.isTrue(false);
+				}
+			}
+		}
+		return access_ret;
+	}
+	
+	public static PROT getAccess(IStructDeclaration aThis, IDsymbol smember) {
+		PROT access_ret = PROTnone;
+
+		IDsymbol p = smember.toParent();
+		if (p != null && p.isAggregateDeclaration() != null && equals(p.isAggregateDeclaration(), aThis)) {
+			access_ret = smember.prot();
+		} else if (smember.isDeclaration().isStatic()) {
+			access_ret = smember.prot();
+		}
+		return access_ret;
+	}
+	
+	public static IFuncDeclaration overloadExactMatch(IFuncDeclaration aThis, Type t, SemanticContext context) {
+		IFuncDeclaration f;
+		IDeclaration d;
+		IDeclaration next;
+
+		for (d = aThis; d != null; d = next) {
+			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
+
+			if (fa != null) {
+				IFuncDeclaration f2 = fa.funcalias
+						.overloadExactMatch(t, context);
+				if (f2 != null) {
+					return f2;
+				}
+				next = fa.overnext;
+			} else {
+				IAliasDeclaration a = d.isAliasDeclaration();
+
+				if (a != null) {
+					IDsymbol s = a.toAlias(context);
+					next = s.isDeclaration();
+					if (next == a) {
+						break;
+					}
+				} else {
+					f = d.isFuncDeclaration();
+					if (f == null) {
+						break; // BUG: should print error message?
+					}
+					if (t.equals(d.type())) {
+						return f;
+					}
+					next = f.overnext();
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static boolean overrides(IFuncDeclaration aThis, IFuncDeclaration fd, SemanticContext context) {
+		boolean result = false;
+
+		if (ASTDmdNode.equals(fd.ident(), aThis.ident())) {
+			int cov = aThis.type().covariant(fd.type(), context);
+			if (cov != 0) {
+				IClassDeclaration cd1 = aThis.toParent().isClassDeclaration();
+				IClassDeclaration cd2 = fd.toParent().isClassDeclaration();
+
+				if (cd1 != null && cd2 != null
+						&& cd2.isBaseOf(cd1, null, context)) {
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+	
+	public static void alignmember(IAggregateDeclaration aThis, int salign, int size, int[] poffset) {
+		if (salign > 1) {
+			//int sa;
+
+			switch (size) {
+			case 1:
+				break;
+			case 2:
+				//case_2:
+				poffset[0] = (poffset[0] + 1) & ~1; // align to word
+				break;
+			case 3:
+			case 4:
+				if (salign == 2) {
+					// goto case_2;
+					poffset[0] = (poffset[0] + 1) & ~1; // align to word
+				}
+				poffset[0] = (poffset[0] + 3) & ~3; // align to dword
+				break;
+			default:
+				poffset[0] = (poffset[0] + salign - 1) & ~(salign - 1);
+				break;
+			}
+		}
+	}
+	
+	public static boolean hasPrivateAccess(IAggregateDeclaration aThis, IDsymbol smember) {
+		if (smember != null) {
+			IAggregateDeclaration cd = null;
+			IDsymbol smemberparent = smember.toParent();
+			if (smemberparent != null) {
+				cd = smemberparent.isAggregateDeclaration();
+			}
+
+			if (equals(aThis, cd)) { // smember is a member of this class
+				return true; // so we get private access
+			}
+
+			// If both are members of the same module, grant access
+			while (true) {
+				IDsymbol sp = smember.toParent();
+				if (sp.isFuncDeclaration() != null
+						&& smember.isFuncDeclaration() != null) {
+					smember = sp;
+				} else {
+					break;
+				}
+			}
+			// TODO check reference comparison
+			if (cd == null && aThis.toParent() == smember.toParent()) {
+				return true;
+			}
+			if (cd == null && aThis.getModule() == smember.getModule()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isFriendOf(IAggregateDeclaration aThis, IAggregateDeclaration cd) {
+		if (equals(aThis, cd)) {
+			return true;
+		}
+
+		// Friends if both are in the same module
+		// if (toParent() == cd->toParent())
+		// TODO check reference comparison
+		if (cd != null && aThis.getModule() == cd.getModule()) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

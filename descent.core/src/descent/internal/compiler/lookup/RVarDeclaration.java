@@ -83,13 +83,7 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	@Override
 	public Type type() {
 		if (type == null) {
-			IField f = (IField) element;
-			try {
-				type = getTypeFromSignature(f.getTypeSignature());
-			} catch (JavaModelException e) {
-				Util.log(e);
-				type = Type.tint32;
-			}
+			type = getTypeFromField();
 		}
 		return type;
 	}

@@ -312,8 +312,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
-		ps[0] = this;
-		return true;
+		return SemanticMixin.oneMember(this, ps, context);
 	}
 
 	public IDsymbol parent() {
@@ -325,11 +324,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IDsymbol pastMixin() {
-		IDsymbol s = this;
-		while (s != null && s.isTemplateMixin() != null) {
-			s = s.parent();
-		}
-		return s;
+		return SemanticMixin.pastMixin(this);
 	}
 
 	public PROT prot() {
@@ -392,8 +387,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IDsymbol searchX(Loc loc, Scope sc, IdentifierExp id, SemanticContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		return SemanticMixin.searchX(this, loc, sc, id, context);
 	}
 
 	public void semantic(Scope scope, SemanticContext context) {
@@ -428,8 +422,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
-		// TODO Auto-generated method stub
-		
+		SemanticMixin.toCBuffer(this, buf, hgs, context);
 	}
 	
 	@Override
@@ -438,15 +431,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IDsymbol toParent() {
-		return parent != null ? parent.pastMixin() : null;
+		return SemanticMixin.toParent(this);
 	}
 
 	public IDsymbol toParent2() {
-		IDsymbol s = parent;
-		while (s != null && s.isTemplateInstance() != null) {
-			s = s.parent();
-		}
-		return s;
+		return SemanticMixin.toParent2(this);
 	}
 
 	public String toPrettyChars(SemanticContext context) {
@@ -574,14 +563,43 @@ public class RDsymbol extends RNode implements IDsymbol {
 						}
 						i += n - 1;
 					}
+					
+					if (current != null && current instanceof IDsymbol) {
+						IDsymbol symbol = (IDsymbol) current;
+						switch(first) {
+						case 'E':
+							IEnumDeclaration e = symbol.isEnumDeclaration();
+							if (e != null) {
+								type = new TypeEnum(e);
+								type.deco = signature;
+							}
+							break;
+						case 'C':
+							IClassDeclaration c = symbol.isClassDeclaration();
+							if (c != null) {
+								type = new TypeClass(c);
+								type.deco = signature;
+							}
+							break;
+						case 'S':
+							IStructDeclaration s = symbol.isStructDeclaration();
+							if (s != null) {
+								type = new TypeStruct(s);
+								type.deco = signature;
+							}
+							break;
+						}						
+					}
 					break;
 				case 'P': { // pointer
 					type = new TypePointer(getTypeFromSignature(signature.substring(1)));
 					type.deco = signature;
+					break;
 				}
 				case 'A': { // dynamic array
 					type = new TypeDArray(getTypeFromSignature(signature.substring(1)));
 					type.deco = signature;
+					break;
 				}
 				case 'G': { // static array
 					int n = 0;
@@ -598,38 +616,16 @@ public class RDsymbol extends RNode implements IDsymbol {
 					
 					type = new TypeSArray(getTypeFromSignature(signature.substring(i)), new IntegerExp(n));
 					type.deco = signature;
+					break;
 				}
 				}
-				
-				if (current != null && current instanceof IDsymbol) {
-					IDsymbol symbol = (IDsymbol) current;
-					switch(first) {
-					case 'E':
-						IEnumDeclaration e = symbol.isEnumDeclaration();
-						if (e != null) {
-							return new TypeEnum(e);
-						}
-						break;
-					case 'C':
-						IClassDeclaration c = symbol.isClassDeclaration();
-						if (c != null) {
-							return new TypeClass(c);
-						}
-						break;
-					case 'S':
-						IStructDeclaration s = symbol.isStructDeclaration();
-						if (s != null) {
-							return new TypeStruct(s);
-						}
-						break;
-					}
-					
-				}
-				
-				type = Type.tint32;
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);
+			type = Type.tint32;
+		}
+		
+		if (type == null) {
 			type = Type.tint32;
 		}
 		

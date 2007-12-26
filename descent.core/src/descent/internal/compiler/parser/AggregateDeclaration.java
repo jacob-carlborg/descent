@@ -97,29 +97,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	}
 
 	public void alignmember(int salign, int size, int[] poffset) {
-		if (salign > 1) {
-			//int sa;
-
-			switch (size) {
-			case 1:
-				break;
-			case 2:
-				//case_2:
-				poffset[0] = (poffset[0] + 1) & ~1; // align to word
-				break;
-			case 3:
-			case 4:
-				if (salign == 2) {
-					// goto case_2;
-					poffset[0] = (poffset[0] + 1) & ~1; // align to word
-				}
-				poffset[0] = (poffset[0] + 3) & ~3; // align to dword
-				break;
-			default:
-				poffset[0] = (poffset[0] + salign - 1) & ~(salign - 1);
-				break;
-			}
-		}
+		SemanticMixin.alignmember(this, salign, size, poffset);
 	}
 
 	public PROT getAccess(IDsymbol smember) {
@@ -136,35 +114,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	 */
 
 	public boolean hasPrivateAccess(IDsymbol smember) {
-		if (smember != null) {
-			IAggregateDeclaration cd = null;
-			IDsymbol smemberparent = smember.toParent();
-			if (smemberparent != null) {
-				cd = smemberparent.isAggregateDeclaration();
-			}
-
-			if (this == cd) { // smember is a member of this class
-				return true; // so we get private access
-			}
-
-			// If both are members of the same module, grant access
-			while (true) {
-				IDsymbol sp = smember.toParent();
-				if (sp.isFuncDeclaration() != null
-						&& smember.isFuncDeclaration() != null) {
-					smember = sp;
-				} else {
-					break;
-				}
-			}
-			if (cd == null && toParent() == smember.toParent()) {
-				return true;
-			}
-			if (cd == null && getModule() == smember.getModule()) {
-				return true;
-			}
-		}
-		return false;
+		return SemanticMixin.hasPrivateAccess(this, smember);
 	}
 
 	@Override
@@ -194,17 +144,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	 */
 
 	public boolean isFriendOf(IAggregateDeclaration cd) {
-		if (this == cd) {
-			return true;
-		}
-
-		// Friends if both are in the same module
-		// if (toParent() == cd->toParent())
-		if (cd != null && getModule() == cd.getModule()) {
-			return true;
-		}
-
-		return false;
+		return SemanticMixin.isFriendOf(this, cd);
 	}
 
 	@Override

@@ -1,11 +1,14 @@
 package descent.internal.compiler.lookup;
 
+import descent.core.IField;
 import descent.core.IJavaElement;
+import descent.core.JavaModelException;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
+import descent.internal.core.util.Util;
 
 public class RDeclaration extends RDsymbol implements IDeclaration {
 
@@ -101,6 +104,16 @@ public class RDeclaration extends RDsymbol implements IDeclaration {
 	@Override
 	public IDeclaration isDeclaration() {
 		return this;
+	}
+	
+	protected Type getTypeFromField() {
+		IField f = (IField) element;
+		try {
+			return getTypeFromSignature(f.getTypeSignature());
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return Type.tint32;
+		}
 	}
 
 }
