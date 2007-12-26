@@ -65,7 +65,7 @@ public class IftypeExp extends Expression {
 			case TOKtypedef:
 				if (targ.ty != TY.Ttypedef)
 					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
-				tded = ((TypeTypedef) targ).sym.basetype;
+				tded = ((TypeTypedef) targ).sym.basetype();
 				break;
 
 			case TOKstruct:

@@ -141,15 +141,33 @@ public class Lookup_Test extends AbstractModelTest {
 		assertErrors();
 	}
 	
-	public void testFuncFound() throws Exception {
+	public void testFuncMatchEmpty() throws Exception {
 		one("void bar() { }");
 		two("void foo() { bar(); }");
 		assertNoErrors();
 	}
 	
-	public void testFuncFound2() throws Exception {
+	public void testFuncMatchBasic() throws Exception {
 		one("void bar(int x) { }");
 		two("void foo() { bar(1); }");
+		assertNoErrors();
+	}
+	
+	public void testFuncMatchDynamicArray() throws Exception {
+		one("void bar(int[] x) { }");
+		two("void foo() { int[] x; bar(x); }");
+		assertNoErrors();
+	}
+	
+	public void testFuncMatchPointer() throws Exception {
+		one("void bar(int* x) { }");
+		two("void foo() { int* x; bar(x); }");
+		assertNoErrors();
+	}
+	
+	public void testFuncMatchFunction() throws Exception {
+		one("void bar(int function(int) x) { }");
+		two("void foo() { int function(int) x; bar(x); }");
 		assertNoErrors();
 	}
 	

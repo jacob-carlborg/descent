@@ -64,7 +64,7 @@ public class NullExp extends Expression {
 		// NULL implicitly converts to any pointer type or dynamic array
 		if (type.ty == Tpointer && type.next.ty == Tvoid) {
 			if (t.ty == Ttypedef) {
-				t = ((TypeTypedef) t).sym.basetype;
+				t = ((TypeTypedef) t).sym.basetype();
 			}
 			if (t.ty == Tpointer || t.ty == Tarray || t.ty == Taarray
 					|| t.ty == Tclass || t.ty == Tdelegate) {

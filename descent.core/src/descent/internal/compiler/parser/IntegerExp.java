@@ -303,7 +303,7 @@ public class IntegerExp extends Expression {
 					buf.writestring("cast(");
 					buf.writestring(tt.sym.toChars(context));
 					buf.writestring(")");
-					t = tt.sym.basetype;
+					t = tt.sym.basetype();
 					// goto L1;
 					loop = true;
 					continue;
@@ -475,7 +475,7 @@ public class IntegerExp extends Expression {
 
 			case Ttypedef: {
 				TypeTypedef tt = (TypeTypedef) t;
-				t = tt.sym.basetype;
+				t = tt.sym.basetype();
 				continue;
 			}
 

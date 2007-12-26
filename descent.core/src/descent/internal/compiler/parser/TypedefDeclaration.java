@@ -160,5 +160,29 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	public String getSignature() {
 		return type.getSignature();
 	}
+	
+	public Type basetype() {
+		return basetype;
+	}
+	
+	public IInitializer init() {
+		return init;
+	}
+	
+	public boolean inuse() {
+		return inuse;
+	}
+	
+	public void inuse(boolean inuse) {
+		this.inuse = inuse;
+	}
+	
+	public void basetype(Type basetype) {
+		this.basetype = basetype;
+	}
+	
+	public int sem() {
+		return sem;
+	}
 
 }

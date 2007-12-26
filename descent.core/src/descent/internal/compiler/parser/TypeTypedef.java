@@ -12,9 +12,9 @@ import static descent.internal.compiler.parser.TY.Ttypedef;
 // DMD 1.020
 public class TypeTypedef extends Type {
 
-	public TypedefDeclaration sym;
+	public ITypedefDeclaration sym;
 
-	public TypeTypedef(TypedefDeclaration sym) {
+	public TypeTypedef(ITypedefDeclaration sym) {
 		super(TY.Ttypedef, null);
 		this.sym = sym;
 	}
@@ -27,12 +27,12 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public int alignsize(SemanticContext context) {
-		return sym.basetype.alignsize(context);
+		return sym.basetype().alignsize(context);
 	}
 
 	@Override
 	public boolean checkBoolean(SemanticContext context) {
-		return sym.basetype.checkBoolean(context);
+		return sym.basetype().checkBoolean(context);
 	}
 
 	@Override
@@ -55,10 +55,10 @@ public class TypeTypedef extends Type {
 		Expression e;
 		Type bt;
 
-		if (sym.init != null) {
-			return sym.init.toExpression(context);
+		if (sym.init() != null) {
+			return sym.init().toExpression(context);
 		}
-		bt = sym.basetype;
+		bt = sym.basetype();
 		e = bt.defaultInit(context);
 		e.type = this;
 		while (bt.ty == TY.Tsarray) {
@@ -74,7 +74,7 @@ public class TypeTypedef extends Type {
 		if (equals(ident, Id.init)) {
 			return super.dotExp(sc, e, ident, context);
 		}
-		return sym.basetype.dotExp(sc, e, ident, context);
+		return sym.basetype().dotExp(sc, e, ident, context);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class TypeTypedef extends Type {
 		//printf("TypeTypedef::implicitConvTo()\n");
 		if (this.equals(to)) {
 			m = MATCHexact; // exact match
-		} else if (sym.basetype.implicitConvTo(to, context) != MATCHnomatch) {
+		} else if (sym.basetype().implicitConvTo(to, context) != MATCHnomatch) {
 			m = MATCHconvert; // match with conversions
 		} else {
 			m = MATCHnomatch; // no match
@@ -104,63 +104,63 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public boolean isbit() {
-		return sym.basetype.isbit();
+		return sym.basetype().isbit();
 	}
 
 	@Override
 	public boolean iscomplex() {
-		return sym.basetype.iscomplex();
+		return sym.basetype().iscomplex();
 	}
 
 	@Override
 	public boolean isfloating() {
-		return sym.basetype.isfloating();
+		return sym.basetype().isfloating();
 	}
 
 	@Override
 	public boolean isimaginary() {
-		return sym.basetype.isimaginary();
+		return sym.basetype().isimaginary();
 	}
 
 	@Override
 	public boolean isintegral() {
-		return sym.basetype.isintegral();
+		return sym.basetype().isintegral();
 	}
 
 	@Override
 	public boolean isreal() {
-		return sym.basetype.isreal();
+		return sym.basetype().isreal();
 	}
 
 	@Override
 	public boolean isscalar(SemanticContext context) {
-		return sym.basetype.isscalar(context);
+		return sym.basetype().isscalar(context);
 	}
 
 	@Override
 	public boolean isunsigned() {
-		return sym.basetype.isunsigned();
+		return sym.basetype().isunsigned();
 	}
 
 	@Override
 	public boolean isZeroInit(SemanticContext context) {
-		if (sym.init != null) {
-			if (sym.init.isVoidInitializer() != null) {
+		if (sym.init() != null) {
+			if (sym.init().isVoidInitializer() != null) {
 				return true; // initialize voids to 0
 			}
-			Expression e = sym.init.toExpression(context);
+			Expression e = sym.init().toExpression(context);
 			if (e != null && e.isBool(false)) {
 				return true;
 			}
 			return false; // assume not
 		}
-		if (sym.inuse) {
+		if (sym.inuse()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
-			sym.basetype = Type.terror;
+			sym.basetype(Type.terror);
 		}
-		sym.inuse = true;
-		boolean result = sym.basetype.isZeroInit(context);
-		sym.inuse = false;
+		sym.inuse(true);
+		boolean result = sym.basetype().isZeroInit(context);
+		sym.inuse(false);
 		return result;
 	}
 
@@ -172,7 +172,7 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public int size(Loc loc, SemanticContext context) {
-		return sym.basetype.size(loc, context);
+		return sym.basetype().size(loc, context);
 	}
 
 	@Override
@@ -182,14 +182,14 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public Type toBasetype(SemanticContext context) {
-		if (sym.inuse) {
+		if (sym.inuse()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
-			sym.basetype = Type.terror;
+			sym.basetype(Type.terror);
 			return Type.terror;
 		}
-		sym.inuse = true;
-		Type t = sym.basetype.toBasetype(context);
-		sym.inuse = false;
+		sym.inuse(true);
+		Type t = sym.basetype().toBasetype(context);
+		sym.inuse(false);
 		return t;
 	}
 
@@ -216,13 +216,13 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
 
 	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		sym.basetype.toTypeInfoBuffer(buf, context);
+		sym.basetype().toTypeInfoBuffer(buf, context);
 	}
 
 }

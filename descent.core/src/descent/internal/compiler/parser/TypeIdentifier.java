@@ -82,9 +82,9 @@ public class TypeIdentifier extends TypeQualified {
 			if (t[0].ty == TY.Ttypedef) {
 				TypeTypedef tt = (TypeTypedef) t[0];
 
-				if (tt.sym.sem == 1) {
+				if (tt.sym.sem() == 1) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CircularReferenceOfTypedef, tt.sym.ident, new String[] { tt.sym.ident.toString() }));
+							IProblem.CircularReferenceOfTypedef, tt.sym.ident(), new String[] { tt.sym.ident().toString() }));
 				}
 			}
 		} else {

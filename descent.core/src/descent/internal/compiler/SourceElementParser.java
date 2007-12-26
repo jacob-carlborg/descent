@@ -613,8 +613,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.sourceType != null) {
-			info.type = node.sourceType.toCharArray();
+		if (node.type != null) {
+			info.type = ((TypeTypedef) node.type).sym.basetype().getSignature().toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}

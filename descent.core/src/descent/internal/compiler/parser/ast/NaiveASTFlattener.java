@@ -2885,7 +2885,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TypeTypedef node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeTypedef: ");
-		this.buffer.append(node.sym.ident);
+		this.buffer.append(node.sym.ident());
 		appendEndCompilerNode();
 		return false;
 	}

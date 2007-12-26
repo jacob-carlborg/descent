@@ -396,8 +396,8 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
-				if (td.sym.init != null) {
-					init = td.sym.init;
+				if (td.sym.init() != null) {
+					init = td.sym.init();
 					IExpInitializer ie = init.isExpInitializer();
 					if (ie != null) {
 						// Make copy so we can modify it

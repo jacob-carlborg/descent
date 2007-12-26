@@ -15,6 +15,8 @@ import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.ClassDeclarations;
 import descent.internal.compiler.parser.FuncAliasDeclaration;
@@ -46,6 +48,7 @@ import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.IntegerExp;
+import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.OutBuffer;
 import descent.internal.compiler.parser.PROT;
@@ -56,13 +59,18 @@ import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeDArray;
+import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeEnum;
+import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.TypeTuple;
+import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
@@ -531,12 +539,8 @@ public class RDsymbol extends RNode implements IDsymbol {
 		// TODO make an "extract number" function in order to avoid duplication
 		try {
 			if (signature.length() == 0) {
-				// Signal error
+				// TODO signal error
 				type = Type.tint32;
-			} else if (signature.length() == 1) {
-				// It's a basic type
-				char c = signature.charAt(0);
-				type = TypeBasic.fromSignature(c);
 			} else {
 				char first = signature.charAt(0);
 				
@@ -591,6 +595,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 						}						
 					}
 					break;
+				case 'D': { // delegate
+					type = new TypeDelegate(getTypeFromSignature(signature.substring(1)));
+					type.deco = signature;
+					break;
+				}
 				case 'P': { // pointer
 					type = new TypePointer(getTypeFromSignature(signature.substring(1)));
 					type.deco = signature;
@@ -618,6 +627,53 @@ public class RDsymbol extends RNode implements IDsymbol {
 					type.deco = signature;
 					break;
 				}
+				case 'H': {// associative array
+					Type k = getTypeFromSignature(signature.substring(1));
+					Type v = getTypeFromSignature(signature.substring(1 + k.deco.length()));
+					type = new TypeAArray(k, v);
+					type.deco = signature;
+					break;
+				}
+				case 'F': // Type function
+				case 'U':
+				case 'W':
+				case 'V':
+				case 'R':
+					LINK link;
+					switch(first) {
+					case 'F': link = LINK.LINKd; break;
+					case 'U': link = LINK.LINKc; break;
+					case 'W': link = LINK.LINKwindows; break;
+					case 'V': link = LINK.LINKpascal; break;
+					case 'R': link = LINK.LINKcpp; break;
+					default: throw new IllegalStateException("Should not happen");
+					}
+					
+					Arguments args = new Arguments();
+					
+					int i = 1;
+					Type targ = getTypeFromSignature(signature.substring(i));
+					while(targ != null) {
+						// TODO default arg
+						args.add(new Argument(0, targ, new IdentifierExp(Id.empty), null));
+						i += targ.deco.length();
+						
+						targ = getTypeFromSignature(signature.substring(i));
+					}
+					
+					i++;
+					Type tret = getTypeFromSignature(signature.substring(i));
+					
+					// TODO varargs
+					type = new TypeFunction(args, tret, 0, link);
+					break;
+				case 'X': // Argument break
+				case 'Y':
+				case 'Z':
+					return null;
+				default: // Try with type basic
+					char c = signature.charAt(0);
+					type = TypeBasic.fromSignature(c);
 				}
 			}
 		} catch (JavaModelException e) {
