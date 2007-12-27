@@ -543,5 +543,10 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	public void setLineNumber(int lineNumber) {
 		this.loc.linnum = lineNumber;
 	}
+	
+	// For Descent, used to get the type of a symbol
+	public Type type() {
+		return null;
+	}
 
 }

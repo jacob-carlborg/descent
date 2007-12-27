@@ -33,6 +33,7 @@ import descent.internal.codeassist.complete.ICompletionOnKeyword;
 import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
+import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.CaseStatement;
@@ -295,7 +296,7 @@ public class CompletionEngine extends Engine
 				null, 
 				module, 
 				this.javaProject,
-				new CancelableNameEnvironment((JavaProject) this.javaProject, null, null),
+				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) this.javaProject, null, null)),
 				global);
 		module.semantic(context);
 	}

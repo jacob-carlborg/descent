@@ -6,13 +6,11 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.env.INameEnvironment;
-import descent.internal.compiler.lookup.RModule;
+import descent.internal.compiler.env.IModuleFinder;
 
 public class SemanticContext {
 
@@ -26,7 +24,7 @@ public class SemanticContext {
 	private IProblemRequestor problemRequestor;
 	public Global global;
 	public IJavaProject project;
-	public INameEnvironment environment;
+	public IModuleFinder moduleFinder;
 
 	// TODO file imports should be selectable in a dialog or something
 	public Map<String, File> fileImports = new HashMap<String, File>();
@@ -74,13 +72,13 @@ public class SemanticContext {
 			IProblemRequestor problemRequestor, 
 			Module module,
 			IJavaProject project,
-			INameEnvironment environment,
+			IModuleFinder moduleFinder,
 			Global global) {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
 		this.project = project;
-		this.environment = environment;
+		this.moduleFinder = moduleFinder;
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.signatureToTypeCache = new HashMap<String, Type>();
@@ -178,8 +176,8 @@ public class SemanticContext {
 		}
 		compoundName[compoundName.length - 1] = ident.ident;
 		
-		ICompilationUnit unit = environment.findCompilationUnit(compoundName);
-		if (unit == null) {
+		IModule m = moduleFinder.findModule(compoundName, this);
+		if (m == null){
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
 			int length = ident.start + ident.length - start;
 			
@@ -187,7 +185,6 @@ public class SemanticContext {
 			return null;
 		}
 		
-		IModule m = new RModule(unit, this);
 		afterParse(m);
 		
 		// If we're in object.d, assign the well known class declarations

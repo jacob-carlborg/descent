@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PROT.PROTnone;
 
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
@@ -223,8 +222,6 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			SemanticContext context) {
 		IDsymbol s;
 
-		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
-		// ident.toChars());
 		if (scope != null) {
 			semantic(scope, context);
 		}

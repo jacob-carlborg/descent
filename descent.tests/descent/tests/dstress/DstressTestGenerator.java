@@ -21,8 +21,10 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"import java.io.File;\r\n" + 
 				"import java.io.FileReader;\r\n" + 
 				"\r\n" + 
+				"import descent.core.IProblemRequestor;\r\n" + 
+				"import descent.core.compiler.IProblem;\r\n" +
+				"import descent.internal.compiler.parser.SemanticContext;\r\n" +
 				"import descent.core.dom.AST;\r\n" + 
-				"import descent.core.dom.CompilationUnitResolver;\r\n" + 
 				"import descent.internal.compiler.parser.Global;\r\n" +
 				"import descent.internal.compiler.parser.Module;\r\n" + 
 				"import descent.internal.compiler.parser.Parser;\r\n" + 
@@ -53,17 +55,34 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		}
 		
 		sb.append("\tprivate void compile(String file) throws Exception {\r\n");
-		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
-		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n");
-		sb.append("\t\tparser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n");
-		sb.append("\t\tModule module = parser.parseModuleObj();\r\n");
-		sb.append("\t\tGlobal global = new Global();\r\n"); 
-		sb.append("\t\tglobal.params.warnings = false;\r\n");
-		sb.append("\t\tglobal.path.add(DSTRESS_WHERE_PATH);\r\n");
-		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
-		sb.append("\t\tif (!module.problems.isEmpty()) {\r\n");
-		sb.append("\t\t\tfail(module.problems.toString());\r\n");
-		sb.append("\t\t}\r\n");
+		sb.append("char[] source = getContents(new File(file));\r\n" + 
+				"		Parser parser = new Parser(AST.D1, source);\r\n" + 
+				"		parser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n" + 
+				"		final Module module = parser.parseModuleObj();\r\n" + 
+				"		Global global = new Global();\r\n" + 
+				"		global.params.warnings = false;\r\n" + 
+				"		\r\n" + 
+				"		SemanticContext context = new SemanticContext(new IProblemRequestor() {\r\n" + 
+				"			public void acceptProblem(IProblem problem) {\r\n" + 
+				"				module.problems.add(problem);\r\n" + 
+				"			}\r\n" + 
+				"			public void beginReporting() {\r\n" + 
+				"			}\r\n" + 
+				"			public void endReporting() {\r\n" + 
+				"			}\r\n" + 
+				"			public boolean isActive() {\r\n" + 
+				"				return false;\r\n" + 
+				"			}\r\n" + 
+				"			\r\n" + 
+				"		}, module, null, new DmdModuleFinder(global), global);\r\n" + 
+				"		\r\n" + 
+				"		if (!(module.problems != null && module.problems.size() > 0)) {\r\n" + 
+				"			module.semantic(context);\r\n" + 
+				"		}\r\n" + 
+				"		\r\n" + 
+				"		if (!module.problems.isEmpty()) {\r\n" + 
+				"			fail(module.problems.toString());\r\n" + 
+				"		}");
 		sb.append("\t}\r\n\r\n");
 		
 		sb.append(
@@ -89,9 +108,11 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"\r\n" + 
 				"import java.io.File;\r\n" + 
 				"import java.io.FileReader;\r\n" + 
-				"\r\n" + 
+				"\r\n" +
+				"import descent.core.IProblemRequestor;\r\n" + 
+				"import descent.core.compiler.IProblem;\r\n" +
+				"import descent.internal.compiler.parser.SemanticContext;\r\n" +
 				"import descent.core.dom.AST;\r\n" + 
-				"import descent.core.dom.CompilationUnitResolver;\r\n" + 
 				"import descent.internal.compiler.parser.Global;\r\n" +
 				"import descent.internal.compiler.parser.Module;\r\n" + 
 				"import descent.internal.compiler.parser.Parser;\r\n" + 
@@ -145,29 +166,65 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		}
 		
 		sb.append("\tprivate void nocompile(String file, int expectedErrors) throws Exception {\r\n");
-		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
-		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
-		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
-		sb.append("\t\tGlobal global = new Global();\r\n"); 
-		sb.append("\t\tglobal.params.warnings = false;\r\n");
-		sb.append("\t\tglobal.path.add(DSTRESS_WHERE_PATH);\r\n");
-		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
-		sb.append("\t\tif (module.problems.size() != expectedErrors) {\r\n");
-		sb.append("\t\t\tfail(\"Expected \" + expectedErrors + \" errors but were \" + module.problems.size() + \": \" + module.problems.toString());\r\n");
-		sb.append("\t\t}\r\n");
+		sb.append("char[] source = getContents(new File(file));\r\n" + 
+				"		Parser parser = new Parser(AST.D1, source);\r\n" + 
+				"		parser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n" + 
+				"		final Module module = parser.parseModuleObj();\r\n" + 
+				"		Global global = new Global();\r\n" + 
+				"		global.params.warnings = false;\r\n" + 
+				"		\r\n" + 
+				"		SemanticContext context = new SemanticContext(new IProblemRequestor() {\r\n" + 
+				"			public void acceptProblem(IProblem problem) {\r\n" + 
+				"				module.problems.add(problem);\r\n" + 
+				"			}\r\n" + 
+				"			public void beginReporting() {\r\n" + 
+				"			}\r\n" + 
+				"			public void endReporting() {\r\n" + 
+				"			}\r\n" + 
+				"			public boolean isActive() {\r\n" + 
+				"				return false;\r\n" + 
+				"			}\r\n" + 
+				"			\r\n" + 
+				"		}, module, null, new DmdModuleFinder(global), global);\r\n" + 
+				"		\r\n" + 
+				"		if (!(module.problems != null && module.problems.size() > 0)) {\r\n" + 
+				"			module.semantic(context);\r\n" + 
+				"		}\r\n" + 
+				"		\r\n" + 
+				"		if (module.problems.size() != expectedErrors) {\r\n" + 
+				"			fail(\"Expected \" + expectedErrors + \" errors but were \" + module.problems.size() + \": \" + module.problems.toString());\r\n" + 
+				"		}\r\n");
 		sb.append("\t}\r\n\r\n");
 		
 		sb.append("\tprivate void nocompileSyntaxError(String file) throws Exception {\r\n");
-		sb.append("\t\tchar[] source = getContents(new File(file));\r\n");
-		sb.append("\t\tParser parser = new Parser(AST.D1, source);\r\n"); 
-		sb.append("\t\tModule module = parser.parseModuleObj();\r\n"); 
-		sb.append("\t\tGlobal global = new Global();\r\n"); 
-		sb.append("\t\tglobal.params.warnings = false;\r\n");
-		sb.append("\t\tglobal.path.add(DSTRESS_WHERE_PATH);\r\n");
-		sb.append("\t\tCompilationUnitResolver.resolve(module, global);\r\n");
-		sb.append("\t\tif (module.problems.isEmpty()) {\r\n");
-		sb.append("\t\t\tfail(\"Expected at least one error\");\r\n");
-		sb.append("\t\t}\r\n");
+		sb.append("char[] source = getContents(new File(file));\r\n" + 
+				"		Parser parser = new Parser(AST.D1, source);\r\n" + 
+				"		parser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n" + 
+				"		final Module module = parser.parseModuleObj();\r\n" + 
+				"		Global global = new Global();\r\n" + 
+				"		global.params.warnings = false;\r\n" + 
+				"		\r\n" + 
+				"		SemanticContext context = new SemanticContext(new IProblemRequestor() {\r\n" + 
+				"			public void acceptProblem(IProblem problem) {\r\n" + 
+				"				module.problems.add(problem);\r\n" + 
+				"			}\r\n" + 
+				"			public void beginReporting() {\r\n" + 
+				"			}\r\n" + 
+				"			public void endReporting() {\r\n" + 
+				"			}\r\n" + 
+				"			public boolean isActive() {\r\n" + 
+				"				return false;\r\n" + 
+				"			}\r\n" + 
+				"			\r\n" + 
+				"		}, module, null, new DmdModuleFinder(global), global);\r\n" + 
+				"		\r\n" + 
+				"		if (!(module.problems != null && module.problems.size() > 0)) {\r\n" + 
+				"			module.semantic(context);\r\n" + 
+				"		}\r\n" + 
+				"		\r\n" + 
+				"		if (module.problems.isEmpty()) {\r\n" + 
+				"			fail(\"Expected at least one error\");\r\n" + 
+				"		}\r\n");
 		sb.append("\t}\r\n\r\n");
 		
 		sb.append(

@@ -109,8 +109,7 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	}
 
 	public void members(Dsymbols members) {
-		// TODO Auto-generated method stub
-
+		throw new IllegalStateException("Should not be called");
 	}
 
 	public IDsymbolTable symtab() {

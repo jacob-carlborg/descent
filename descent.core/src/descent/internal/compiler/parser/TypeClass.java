@@ -420,5 +420,6 @@ public class TypeClass extends Type {
 	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
+	
 
 }

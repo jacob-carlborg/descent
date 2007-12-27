@@ -390,24 +390,24 @@ protected void toStringName(StringBuffer buffer) {
 protected void toStringName(StringBuffer buffer, int flags) {
 	buffer.append(getElementName());
 	buffer.append('(');
-	/* TODO JDT debug -> varargs
 	String[] parameters = getParameterTypes();
 	int length;
 	if (parameters != null && (length = parameters.length) > 0) {
-		boolean isVarargs = Flags.isVarargs(flags);
+		//boolean isVarargs = Flags.isVarargs(flags);
 		for (int i = 0; i < length; i++) {
 			try {
-				if (i < length - 1) {
-					buffer.append(Signature.toString(parameters[i]));
-					buffer.append(", "); //$NON-NLS-1$
-				} else if (isVarargs) {
-					// remove array from signature
-					String parameter = parameters[i].substring(1);
-					buffer.append(Signature.toString(parameter));
-					buffer.append(" ..."); //$NON-NLS-1$
-				} else {
-					buffer.append(Signature.toString(parameters[i]));
-				}
+				buffer.append(parameters[i]);
+//				if (i < length - 1) {
+//					buffer.append(Signature.toString(parameters[i]));
+//					buffer.append(", "); //$NON-NLS-1$
+//				} else if (isVarargs) {
+//					// remove array from signature
+//					String parameter = parameters[i].substring(1);
+//					buffer.append(Signature.toString(parameter));
+//					buffer.append(" ..."); //$NON-NLS-1$
+//				} else {
+//					buffer.append(Signature.toString(parameters[i]));
+//				}
 			} catch (IllegalArgumentException e) {
 				// parameter signature is malformed
 				buffer.append("*** invalid signature: "); //$NON-NLS-1$
@@ -415,7 +415,6 @@ protected void toStringName(StringBuffer buffer, int flags) {
 			}
 		}
 	}
-	*/
 	buffer.append(')');
 	if (this.occurrenceCount > 1) {
 		buffer.append("#"); //$NON-NLS-1$

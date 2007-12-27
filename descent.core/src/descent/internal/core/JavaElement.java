@@ -545,6 +545,8 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 			if (!hadTemporaryCache) {
 				manager.putInfos(this, newElements);
 			}
+		} catch (Throwable e) {
+			
 		} finally {
 			if (!hadTemporaryCache) {
 				manager.resetTemporaryCache();

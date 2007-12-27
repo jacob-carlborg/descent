@@ -26,6 +26,7 @@ import descent.internal.compiler.IErrorHandlingPolicy;
 import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
@@ -199,7 +200,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				problemRequestor, 
 				module, 
 				project,
-				new CancelableNameEnvironment((JavaProject) project, owner, null),
+				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null)),
 				global);
 		
 		if (!RESOLVE) return context;

@@ -134,6 +134,9 @@ public interface IDsymbol extends INode {
 	
 	String kindForError(SemanticContext context);
 	
+	// For Descent, used to get the type of a symbol
+	Type type();
+	
 	void semantic(Scope scope, SemanticContext context);
 	
 	void semantic2(Scope scope, SemanticContext context);

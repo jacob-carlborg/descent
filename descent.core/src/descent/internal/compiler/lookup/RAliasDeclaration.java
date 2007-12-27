@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import descent.core.IField;
 import descent.internal.compiler.parser.IAliasDeclaration;
+import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 
@@ -24,6 +25,14 @@ public class RAliasDeclaration extends RDeclaration implements IAliasDeclaration
 			type = getTypeFromField();
 		}
 		return type;
+	}
+	
+	@Override
+	public IDsymbol toAlias(SemanticContext context) {
+		Type type = type();
+		IDsymbol aliassym = type.toDsymbol(null, context);
+		IDsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		return s;
 	}
 	
 	@Override

@@ -1716,7 +1716,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 	 * Returns the size of a list which may ne <code>null</code>.
 	 * In such case, 0 is returned.
 	 */
-	protected static int size(List list) {
+	public static int size(List list) {
 		return list == null ? 0 : list.size();
 	}
 	

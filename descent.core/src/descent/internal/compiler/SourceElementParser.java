@@ -555,9 +555,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		if (node.type != null) {
 			info.type = node.type.getSignature().toCharArray();
+		} else if (node.aliassym != null) {
+			info.type = node.aliassym.type().getSignature().toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}
+		info.value = ExpressionEncoder.encode(node.value).toCharArray();
 		
 		requestor.enterField(info);
 		
@@ -585,6 +588,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		if (node.type != null) {
 			info.type = node.type.getSignature().toCharArray();
+		} else if (node.aliassym != null) {
+			info.type = node.aliassym.type().getSignature().toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}

@@ -69,8 +69,6 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
-import descent.internal.compiler.parser.TypeTuple;
-import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
@@ -449,6 +447,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 	public String toPrettyChars(SemanticContext context) {
 		// TODO semantic
 		return toChars(context);
+	}
+	
+	public Type type() {
+		return null;
 	}
 
 	protected IDsymbol toDsymbol(IJavaElement element) throws JavaModelException {

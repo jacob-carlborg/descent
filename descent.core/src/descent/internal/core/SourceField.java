@@ -199,7 +199,8 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		toStringName(buffer);
 	} else {
 		try {
-			buffer.append(Signature.toString(this.getTypeSignature()));
+			//buffer.append(Signature.toString(this.getTypeSignature()));
+			buffer.append(this.getTypeSignature());
 			buffer.append(" "); //$NON-NLS-1$
 			toStringName(buffer);
 		} catch (JavaModelException e) {

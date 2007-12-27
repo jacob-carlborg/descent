@@ -11,7 +11,6 @@ import java.util.Set;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
-import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
