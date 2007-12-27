@@ -82,6 +82,10 @@ public class SemanticContext {
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.signatureToTypeCache = new HashMap<String, Type>();
+		
+		// for debugging purposes
+//		global.path.add("c:\\ary\\programacion\\d\\dstress");
+//		this.moduleFinder = new DmdModuleFinder(global);
 
 		Module_init();
 		afterParse(module);

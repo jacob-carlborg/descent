@@ -4,6 +4,8 @@ public interface IDeclaration extends IDsymbol {
 	
 	Type type();
 	
+	void type(Type type);
+	
 	boolean isFinal();
 	
 	boolean isCtorinit();
@@ -11,6 +13,8 @@ public interface IDeclaration extends IDsymbol {
 	int storage_class();
 	
 	void storage_class(int storage_class);
+	
+	boolean isAbstract();
 	
 	boolean isAuto();
 	

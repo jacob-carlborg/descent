@@ -22,7 +22,7 @@ public interface IDsymbol extends INode {
 	
 	FuncLiteralDeclaration isFuncLiteralDeclaration();
 	
-	void checkDeprecated(Scope sc, SemanticContext context);
+	void checkDeprecated(Scope sc, SemanticContext context, INode reference);
 	
 	IDeclaration isDeclaration();
 	
@@ -133,6 +133,10 @@ public interface IDsymbol extends INode {
 	void synthetic(boolean synthetic);
 	
 	String kindForError(SemanticContext context);
+	
+	IArrayScopeSymbol isArrayScopeSymbol();
+	
+	WithScopeSymbol isWithScopeSymbol();
 	
 	// For Descent, used to get the type of a symbol
 	Type type();

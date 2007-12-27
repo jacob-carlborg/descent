@@ -6,7 +6,6 @@ import descent.core.IParent;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
-import descent.internal.compiler.parser.IArrayScopeSymbol;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IDsymbolTable;
 import descent.internal.compiler.parser.IScopeDsymbol;
@@ -56,12 +55,7 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	public void importScope(IScopeDsymbol s, PROT protection) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public IArrayScopeSymbol isArrayScopeSymbol() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	}	
 
 	public Dsymbols members() {
 		if (members == null) {

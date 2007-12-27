@@ -1,5 +1,6 @@
 package descent.internal.compiler.lookup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.Flags;
@@ -8,16 +9,17 @@ import descent.core.JavaModelException;
 import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassInfoDeclaration;
-import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.FuncDeclarations;
 import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IInterfaceDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.core.util.Util;
@@ -29,6 +31,10 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	private IClassDeclaration baseClass;
 	private ICtorDeclaration ctor;
 	private BaseClasses interfaces;
+	
+	private boolean vtblReady;
+	private List vtbl;
+	private List vtblFinal;
 
 	public RClassDeclaration(IType element, SemanticContext context) {
 		super(element, context);
@@ -56,8 +62,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 
 	public BaseClasses baseclasses() {
-		// TODO Auto-generated method stub
-		return null;
+		return new BaseClasses(0);
 	}
 
 	public ICtorDeclaration ctor() {
@@ -146,18 +151,53 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 
 	public List vtbl() {
-		// TODO Auto-generated method stub
-		return null;
+		buildVtbls();
+		return vtbl;
 	}
 
 	public List vtblFinal() {
-		// TODO Auto-generated method stub
-		return null;
+		buildVtbls();
+		return vtblFinal;
+	}
+	
+	private void buildVtbls() {
+		if (vtblReady) {
+			return;
+		}
+		
+		vtbl = new ArrayList();
+		vtblFinal = new ArrayList();
+		
+		for(IDsymbol s : members()) {
+			IFuncDeclaration f = s.isFuncDeclaration();
+			if (f == null || !f.isVirtual(context)) {
+				continue;
+			}
+			
+			if (f.isFinal()) {
+				vtblFinal.add(f);
+			} else {
+				vtbl.add(f);
+			}
+		}
+		
+		IClassDeclaration baseClass = baseClass();
+		if (baseClass != null) {
+			vtbl.add(baseClass.vtbl());
+			vtblFinal.add(baseClass.vtblFinal());
+		}
+		
+		vtblReady = true;
 	}
 	
 	@Override
 	public IClassDeclaration isClassDeclaration() {
 		return this;
+	}
+	
+	@Override
+	public Type handle() {
+		return type();
 	}
 	
 	@Override

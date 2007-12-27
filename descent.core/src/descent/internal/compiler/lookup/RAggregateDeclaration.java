@@ -67,7 +67,6 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public Type handle() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

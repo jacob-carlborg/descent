@@ -28,8 +28,8 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	public BaseClasses baseclasses;
 	
 	public IClassDeclaration baseClass; // null only if this is Object
-	public CtorDeclaration ctor;
-	public CtorDeclaration defaultCtor; // default constructor
+	public ICtorDeclaration ctor;
+	public ICtorDeclaration defaultCtor; // default constructor
 	public FuncDeclarations dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
@@ -95,15 +95,15 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		aclasses.add(this);
 	}
 
-	public FuncDeclaration findFunc(IdentifierExp id, TypeFunction tf,
+	public IFuncDeclaration findFunc(IdentifierExp id, TypeFunction tf,
 			SemanticContext context) {
 		IClassDeclaration cd = this;
 		List vtbl = cd.vtbl();
 		while (true) {
 			for (int i = 0; i < vtbl.size(); i++) {
-				FuncDeclaration fd = (FuncDeclaration) vtbl.get(i);
+				IFuncDeclaration fd = (IFuncDeclaration) vtbl.get(i);
 
-				if (equals(ident, fd.ident) && fd.type.covariant(tf, context) == 1) {
+				if (equals(ident, fd.ident()) && fd.type().covariant(tf, context) == 1) {
 					return fd;
 				}
 			}
@@ -471,7 +471,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 
 			// Copy vtbl[] from base class
 			if (baseClass.vtbl() != null) {
-				vtbl = new FuncDeclarations(baseClass.vtbl().size());
+				vtbl = new ArrayList(baseClass.vtbl().size());
 				vtbl.addAll(baseClass.vtbl());
 			}
 
@@ -481,7 +481,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			vthis = baseClass.vthis();
 		} else {
 			// No base class, so this is the root of the class hierarchy
-			vtbl = new FuncDeclarations(1);
+			vtbl = new ArrayList(1);
 			vtbl.add(this); // leave room for classinfo as first member
 		}
 
@@ -610,7 +610,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		 * Look for special member functions. They must be in this class, not in
 		 * a base class.
 		 */
-		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
+		ctor = (ICtorDeclaration) search(loc, Id.ctor, 0, context);
 		if (ctor != null && ctor.toParent() != this) {
 			ctor = null;
 		}
@@ -632,9 +632,11 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		// this() { }
 		if (ctor == null && baseClass != null && baseClass.ctor() != null) {
 			// toChars());
-			ctor = new CtorDeclaration(loc, null, 0);
+			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
 			ctor.synthetic = true;
 			ctor.fbody = new CompoundStatement(loc, new Statements());
+			this.ctor = ctor;
+			
 			members.add(ctor);
 			ctor.addMember(sc, this, 1, context);
 			sc = scsave;

@@ -12,6 +12,4 @@ public interface IScopeDsymbol extends IDsymbol {
 	
 	void members(Dsymbols members);
 
-	IArrayScopeSymbol isArrayScopeSymbol();
-
 }

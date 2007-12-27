@@ -723,7 +723,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		for (t = this; t != null; t = t.next) {
 			s = t.toDsymbol(sc, context);
 			if (s != null)
-				s.checkDeprecated(sc, context);
+				s.checkDeprecated(sc, context, this); // TODO check "this" for reference
 		}
 	}
 

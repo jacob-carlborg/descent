@@ -33,5 +33,7 @@ public interface IFuncDeclaration extends IDeclaration {
 	boolean inferRetType();
 	
 	void nestedFrameRef(boolean nestedFrameRef);
+	
+	boolean isVirtual(SemanticContext context);
 
 }

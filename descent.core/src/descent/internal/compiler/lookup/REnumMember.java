@@ -3,7 +3,7 @@ package descent.internal.compiler.lookup;
 import descent.core.IField;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.Expression;
-import descent.internal.compiler.parser.ExpressionEncoder;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.SourceField;
@@ -25,9 +25,9 @@ public class REnumMember extends RDsymbol implements IEnumMember {
 			SourceField f = (SourceField) element;
 			try {
 				SourceFieldElementInfo info = (SourceFieldElementInfo) f.getElementInfo();
-				char[] encodedValue = info.getValue();
+				char[] encodedValue = info.getInitializationSource();
 				if (encodedValue != null) {
-					value = ExpressionEncoder.decode(new String(encodedValue));
+					value = ASTNodeEncoder.decodeExpression(encodedValue);
 					// The expression's type must be my enum's type 
 					value.type = parent.getType();
 				}

@@ -1,10 +1,8 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.STC.STCin;
-import static descent.internal.compiler.parser.STC.STCout;
-import static descent.internal.compiler.parser.STC.STCref;
-
 import descent.core.compiler.IProblem;
+
+import static descent.internal.compiler.parser.STC.STCin;
 
 // DMD 1.020
 public abstract class Declaration extends Dsymbol implements IDeclaration {
@@ -69,31 +67,31 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	}
 
 	public boolean isCtorinit() {
-		return (storage_class & STC.STCctorinit) != 0;
+		return SemanticMixin.isCtorinit(this);
 	}
 
 	public boolean isFinal() {
-		return (storage_class & STC.STCfinal) != 0;
+		return SemanticMixin.isFinal(this);
 	}
 
 	public boolean isAbstract() {
-		return (storage_class & STC.STCabstract) != 0;
+		return SemanticMixin.isAbstract(this);
 	}
 
 	public boolean isConst() {
-		return (storage_class & STC.STCconst) != 0;
+		return SemanticMixin.isConst(this);
 	}
 
 	public boolean isAuto() {
-		return (storage_class & STC.STCauto) != 0;
+		return SemanticMixin.isAuto(this);
 	}
 
 	public boolean isScope() {
-		return (storage_class & (STC.STCscope | STC.STCauto)) != 0;
+		return SemanticMixin.isScope(this);
 	}
 
 	public boolean isStatic() {
-		return (storage_class & STC.STCstatic) != 0;
+		return SemanticMixin.isStatic(this);
 	}
 
 	public boolean isSynchronized() {
@@ -101,7 +99,7 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	}
 
 	public boolean isParameter() {
-		return (storage_class & STC.STCparameter) != 0;
+		return SemanticMixin.isParameter(this);
 	}
 
 	@Override
@@ -118,11 +116,11 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	}
 
 	public boolean isOut() {
-		return (storage_class & STCout) != 0;
+		return SemanticMixin.isOut(this);
 	}
 
 	public boolean isRef() {
-		return (storage_class & STCref) != 0;
+		return SemanticMixin.isRef(this);
 	}
 
 	@Override
@@ -160,6 +158,10 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	
 	public Type type() {
 		return type;
+	}
+	
+	public void type(Type type) {
+		this.type = type;
 	}
 	
 	public int storage_class() {

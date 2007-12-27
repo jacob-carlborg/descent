@@ -1,4 +1,4 @@
-package descent.tests.dstress;
+package descent.internal.compiler.lookup;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,7 +15,7 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
 
 /*
- * Finds modules the DMD way.
+ * Finds modules the DMD way. Only to use for testing and debugging.
  */
 public class DmdModuleFinder implements IModuleFinder {
 	

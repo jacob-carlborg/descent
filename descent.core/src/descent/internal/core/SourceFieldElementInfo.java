@@ -24,14 +24,9 @@ public class SourceFieldElementInfo extends MemberElementInfo /* implements ISou
 	protected char[] typeName;
 	
 	/**
-	 * The field's initializer string (if the field is a constant).
+	 * The field's initializer string (if the field is a constant, or an enum member).
 	 */
 	protected char[] initializationSource;
-	
-	/**
-	 * If this field has an initialization value, it's here.
-	 */
-	protected char[] value;
 
 /*
  * Returns the initialization source for this field.
@@ -62,10 +57,7 @@ protected String getTypeSignature() {
 protected void setTypeName(char[] typeName) {
 	this.typeName = typeName;
 }
-public void setValue(char[] value) {
-	this.value = value;
-}
-public char[] getValue() {
-	return value;
+public void setInitializationSource(char[] initializationSource) {
+	this.initializationSource = initializationSource;
 }
 }

@@ -140,19 +140,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	public IExpInitializer getExpInitializer(SemanticContext context) {
-		IExpInitializer ei;
-
-		if (init != null) {
-			ei = init.isExpInitializer();
-		} else {
-			Expression e = type.defaultInit(context);
-			if (e != null) {
-				ei = new ExpInitializer(loc, e);
-			} else {
-				ei = null;
-			}
-		}
-		return ei;
+		return SemanticMixin.getExpInitializer(this, context);
 	}
 
 	@Override
@@ -167,15 +155,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 
 	@Override
 	public boolean isDataseg(SemanticContext context) {
-		IDsymbol parent = this.toParent();
-		if (parent == null && (storage_class & (STCstatic | STCconst)) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotResolveForwardReference, this));
-			type = Type.terror;
-			return false;
-		}
-		return ((storage_class & (STCstatic | STCconst)) != 0
-				|| parent.isModule() != null || parent.isTemplateInstance() != null);
+		return SemanticMixin.isDataseg(this, context);
 	}
 
 	@Override

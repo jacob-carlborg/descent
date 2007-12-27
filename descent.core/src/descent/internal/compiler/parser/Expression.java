@@ -145,7 +145,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public void checkDeprecated(Scope sc, IDsymbol s, SemanticContext context) {
-		s.checkDeprecated(sc, context);
+		s.checkDeprecated(sc, context, this);
 	}
 
 	public void checkEscape(SemanticContext context) {

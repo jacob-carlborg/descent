@@ -106,6 +106,7 @@ public class DsymbolExp extends Expression {
 							}
 							e = e.implicitCastTo(sc, type, context);
 							e.loc = loc;
+							e.copySourceRange(this);
 							return e;
 						}
 					} else {

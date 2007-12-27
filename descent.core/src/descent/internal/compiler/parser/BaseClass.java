@@ -91,20 +91,20 @@ public class BaseClass extends ASTDmdNode {
 
 		// first entry is ClassInfo reference
 		for (j = base.vtblOffset(); j < base.vtbl().size(); j++) {
-			FuncDeclaration ifd = ((Dsymbol) base.vtbl().get(j))
+			IFuncDeclaration ifd = ((IDsymbol) base.vtbl().get(j))
 					.isFuncDeclaration();
-			FuncDeclaration fd;
+			IFuncDeclaration fd;
 			TypeFunction tf;
 
 			if (ifd == null) {
 				throw new IllegalStateException("assert(ifd);");
 			}
 			// Find corresponding function in this class
-			tf = (ifd.type.ty == Tfunction) ? (TypeFunction) (ifd.type) : null;
-			fd = cd.findFunc(ifd.ident, tf, context);
+			tf = (ifd.type().ty == Tfunction) ? (TypeFunction) (ifd.type()) : null;
+			fd = cd.findFunc(ifd.ident(), tf, context);
 			if (fd != null && !fd.isAbstract()) {
 				// Check that calling conventions match
-				if (fd.linkage != ifd.linkage) {
+				if (fd.linkage() != ifd.linkage()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.LinkageDoesNotMatchInterfaceFunction, this));
 				}
@@ -114,7 +114,7 @@ public class BaseClass extends ASTDmdNode {
 						&& ifd.toParent() == base) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id
-									.toChars(context), ifd.ident.toChars() }));
+									.toChars(context), ifd.ident().toChars() }));
 				}
 
 				if (fd.toParent() == cd) {
@@ -124,7 +124,7 @@ public class BaseClass extends ASTDmdNode {
 				// BUG: should mark this class as abstract?
 				if (!cd.isAbstract()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id.toChars(context), ifd.ident.toChars() }));
+							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id.toChars(context), ifd.ident().toChars() }));
 				}
 				fd = null;
 			}

@@ -212,23 +212,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 		context.Module_dprogress++;
 
 		// Determine if struct is all zeros or not
-		zeroInit = true;
-		for (int j = 0; j < fields.size(); j++) {
-			IDsymbol s = fields.get(j);
-			IVarDeclaration vd = s.isVarDeclaration();
-			if (vd != null && !vd.isDataseg(context)) {
-				if (vd.init() != null) {
-					// Should examine init to see if it is really all 0's
-					zeroInit = true;
-					break;
-				} else {
-					if (!vd.type().isZeroInit(context)) {
-						zeroInit = false;
-						break;
-					}
-				}
-			}
-		}
+		zeroInit = SemanticMixin.isZeroInit(this, context);
 
 		/* Look for special member functions.
 		 */

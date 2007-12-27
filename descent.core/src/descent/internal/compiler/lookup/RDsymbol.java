@@ -25,6 +25,7 @@ import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.HdrGenState;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IAliasDeclaration;
+import descent.internal.compiler.parser.IArrayScopeSymbol;
 import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
@@ -36,6 +37,7 @@ import descent.internal.compiler.parser.IImport;
 import descent.internal.compiler.parser.IInterfaceDeclaration;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.INewDeclaration;
+import descent.internal.compiler.parser.INode;
 import descent.internal.compiler.parser.IPackage;
 import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.IStaticCtorDeclaration;
@@ -69,6 +71,7 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
@@ -98,8 +101,8 @@ public class RDsymbol extends RNode implements IDsymbol {
 		// empty
 	}
 
-	public void checkDeprecated(Scope sc, SemanticContext context) {
-		SemanticMixin.checkDeprecated(this, sc, context);
+	public void checkDeprecated(Scope sc, SemanticContext context, INode reference) {
+		SemanticMixin.checkDeprecated(this, sc, context, reference);
 	}
 
 	public void defineRef(IDsymbol s) {
@@ -145,6 +148,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IAliasDeclaration isAliasDeclaration() {
+		return null;
+	}
+	
+	public IArrayScopeSymbol isArrayScopeSymbol() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -285,6 +293,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IVarDeclaration isVarDeclaration() {
+		return null;
+	}
+	
+	public WithScopeSymbol isWithScopeSymbol() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

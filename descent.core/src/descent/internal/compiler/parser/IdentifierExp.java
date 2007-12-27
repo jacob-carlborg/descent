@@ -84,7 +84,7 @@ public class IdentifierExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		IDsymbol s;
-		Dsymbol[] scopesym = { null };
+		IDsymbol[] scopesym = { null };
 
 		s = sc.search(loc, this, scopesym, context);
 		if (s != null) {

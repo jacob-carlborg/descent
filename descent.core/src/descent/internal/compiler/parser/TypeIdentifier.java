@@ -65,7 +65,7 @@ public class TypeIdentifier extends TypeQualified {
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
 			IDsymbol[] ps, SemanticContext context) {
 		IDsymbol s;
-		Dsymbol[] scopesym = { null };
+		IDsymbol[] scopesym = { null };
 
 		s = sc.search(loc, ident, scopesym, context);
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
@@ -147,7 +147,7 @@ public class TypeIdentifier extends TypeQualified {
 			return null;
 		}
 
-		Dsymbol[] scopesym = { null };
+		IDsymbol[] scopesym = { null };
 		IDsymbol s = sc.search(loc, ident, scopesym, context);
 		if (s != null) {
 			if (idents != null) {

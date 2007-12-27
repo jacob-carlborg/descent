@@ -4,6 +4,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import org.eclipse.core.runtime.Assert;
 
+import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCstatic;
 
 import descent.core.compiler.IProblem;
@@ -64,7 +65,7 @@ public class SemanticMixin {
 		}
 	}
 	
-	public static void checkDeprecated(IDsymbol aThis, Scope sc, SemanticContext context) {
+	public static void checkDeprecated(IDsymbol aThis, Scope sc, SemanticContext context, INode reference) {
 		if (!context.global.params.useDeprecated && aThis.isDeprecated()) {
 			// Don't complain if we're inside a deprecated symbol's scope
 			for (IDsymbol sp = sc.parent; sp != null; sp = sp.parent()) {
@@ -79,7 +80,7 @@ public class SemanticMixin {
 				}
 			}
 
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, aThis, new String[] { aThis.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, reference, new String[] { aThis.toChars(context) }));
 		}
 	}
 	
@@ -477,6 +478,101 @@ public class SemanticMixin {
 		}
 
 		return false;
+	}
+	
+	public static IExpInitializer getExpInitializer(IVarDeclaration aThis, SemanticContext context) {
+		IExpInitializer ei;
+
+		if (aThis.init() != null) {
+			ei = aThis.init().isExpInitializer();
+		} else {
+			Expression e = aThis.type().defaultInit(context);
+			if (e != null) {
+				ei = new ExpInitializer(aThis.loc(), e);
+			} else {
+				ei = null;
+			}
+		}
+		return ei;
+	}
+	
+	public static boolean isVirtual(IFuncDeclaration aThis, SemanticContext context) {
+		return aThis.isMember() != null
+				&& !(aThis.isStatic() || aThis.protection() == PROT.PROTprivate || aThis.protection() == PROT.PROTpackage)
+				&& aThis.toParent().isClassDeclaration() != null;
+	}
+	
+	public static boolean isAuto(IDeclaration aThis) {
+		return (aThis.storage_class() & STC.STCauto) != 0;
+	}
+	
+	public static boolean isConst(IDeclaration aThis) {
+		return (aThis.storage_class() & STC.STCconst) != 0;
+	}
+	
+	public static boolean isAbstract(IDeclaration aThis) {
+		return (aThis.storage_class() & STC.STCabstract) != 0;
+	}
+	
+	public static boolean isFinal(IDeclaration aThis) {
+		return (aThis.storage_class() & STC.STCfinal) != 0;
+	}
+	
+	public static boolean isCtorinit(IDeclaration aThis) {
+		return (aThis.storage_class() & STC.STCctorinit) != 0;
+	}
+	
+	public static boolean isScope(IDeclaration aThis) {
+		return (aThis.storage_class() & (STC.STCscope | STC.STCauto)) != 0;
+	}
+	
+	public static boolean isStatic(IDeclaration aThis) {
+		return (aThis.storage_class() & (STC.STCstatic)) != 0;
+	}
+	
+	public static boolean isParameter(IDeclaration aThis) {
+		return (aThis.storage_class() & (STC.STCparameter)) != 0;
+	}
+	
+	public static boolean isOut(IDeclaration aThis) {
+		return (aThis.storage_class() & (STC.STCout)) != 0;
+	}
+	
+	public static boolean isRef(IDeclaration aThis) {
+		return (aThis.storage_class() & (STC.STCref)) != 0;
+	}
+	
+	public static boolean isDataseg(IVarDeclaration aThis, SemanticContext context) {
+		IDsymbol parent = aThis.toParent();
+		if (parent == null && (aThis.storage_class() & (STCstatic | STCconst)) == 0) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotResolveForwardReference, aThis));
+			aThis.type(Type.terror);
+			return false;
+		}
+		return ((aThis.storage_class() & (STCstatic | STCconst)) != 0
+				|| parent.isModule() != null || parent.isTemplateInstance() != null);
+	}
+	
+	public static boolean isZeroInit(IStructDeclaration sd, SemanticContext context) {
+		boolean zeroInit = true;
+		for (int j = 0; j < sd.fields().size(); j++) {
+			IDsymbol s = sd.fields().get(j);
+			IVarDeclaration vd = s.isVarDeclaration();
+			if (vd != null && !vd.isDataseg(context)) {
+				if (vd.init() != null) {
+					// Should examine init to see if it is really all 0's
+					zeroInit = true;
+					break;
+				} else {
+					if (!vd.type().isZeroInit(context)) {
+						zeroInit = false;
+						break;
+					}
+				}
+			}
+		}
+		return zeroInit;
 	}
 
 }

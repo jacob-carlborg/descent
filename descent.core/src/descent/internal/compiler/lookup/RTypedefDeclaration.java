@@ -24,8 +24,7 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	}
 
 	public void basetype(Type basetype) {
-		// TODO Auto-generated method stub
-		
+		throw new IllegalStateException("Should not be called");
 	}
 
 	public IInitializer init() {

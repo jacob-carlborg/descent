@@ -12,6 +12,8 @@ import descent.internal.compiler.parser.TypeStruct;
 public class RStructDeclaration extends RAggregateDeclaration implements IStructDeclaration {
 	
 	private TypeStruct type;
+	private boolean zeroInitCalculated;
+	private boolean zeroInit;
 
 	public RStructDeclaration(IType element, SemanticContext context) {
 		super(element, context);
@@ -20,6 +22,11 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	@Override
 	public PROT getAccess(IDsymbol smember) {
 		return SemanticMixin.getAccess(this, smember);
+	}
+	
+	@Override
+	public Type handle() {
+		return type().pointerTo(context);
 	}
 	
 	@Override
@@ -44,8 +51,11 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	}
 	
 	public boolean zeroInit() {
-		// TODO Auto-generated method stub
-		return false;
+		if (!zeroInitCalculated) {
+			zeroInit = SemanticMixin.isZeroInit(this, context);
+			zeroInitCalculated = true;
+		}
+		return zeroInit;
 	}
 
 }

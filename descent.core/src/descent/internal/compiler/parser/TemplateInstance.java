@@ -188,7 +188,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			 * figure out which TemplateDeclaration foo refers to.
 			 */
 			IDsymbol s;
-			Dsymbol[] scopesym = new Dsymbol[] { null };
+			IDsymbol[] scopesym = new Dsymbol[] { null };
 			IdentifierExp id;
 			//int i;
 

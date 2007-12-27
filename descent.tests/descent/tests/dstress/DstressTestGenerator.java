@@ -21,6 +21,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"import java.io.File;\r\n" + 
 				"import java.io.FileReader;\r\n" + 
 				"\r\n" + 
+				"import descent.internal.compiler.lookup.DmdModuleFinder;\r\n" +
 				"import descent.core.IProblemRequestor;\r\n" + 
 				"import descent.core.compiler.IProblem;\r\n" +
 				"import descent.internal.compiler.parser.SemanticContext;\r\n" +
@@ -109,6 +110,7 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"import java.io.File;\r\n" + 
 				"import java.io.FileReader;\r\n" + 
 				"\r\n" +
+				"import descent.internal.compiler.lookup.DmdModuleFinder;\r\n" +
 				"import descent.core.IProblemRequestor;\r\n" + 
 				"import descent.core.compiler.IProblem;\r\n" +
 				"import descent.internal.compiler.parser.SemanticContext;\r\n" +

@@ -113,8 +113,9 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		// empty
 	}
 
-	public void checkDeprecated(Scope sc, SemanticContext context) {
-		SemanticMixin.checkDeprecated(this, sc, context);
+	// Added "reference" parameter in order to signal better errors
+	public void checkDeprecated(Scope sc, SemanticContext context, INode reference) {
+		SemanticMixin.checkDeprecated(this, sc, context, reference);
 	}
 
 	public void defineRef(IDsymbol s) {

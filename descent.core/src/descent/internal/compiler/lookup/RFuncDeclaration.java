@@ -60,6 +60,10 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public boolean isVirtual(SemanticContext context) {
+		return SemanticMixin.isVirtual(this, context);
+	}
 
 	public IAggregateDeclaration isMember2() {
 		IAggregateDeclaration ad;

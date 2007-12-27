@@ -354,9 +354,18 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private char[] getTypeSignature(IClassDeclaration b) {
 		if (b != null) { // May be null if c is actually Object
 			Type t = b.type();
-			return t.getSignature().toCharArray();
+			return getSignature(t);
 		} else {
 			return CharOperation.NO_CHAR;
+		}
+	}
+	
+	private char[] getSignature(Type t) {
+		String s = t.getSignature();
+		if (s == null) {
+			return null;
+		} else {
+			return s.toCharArray();
 		}
 	}
 	
@@ -453,7 +462,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		info.parameterNames = getParameterNames(ty.parameters);
 		info.parameterTypes = getParameterTypes(ty.parameters);
-		info.returnType = ty.next.getSignature().toCharArray();
+		info.returnType = getSignature(ty.next);
 		if (templateDeclaration != null) {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
@@ -467,7 +476,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
-	private boolean visit(FuncDeclaration node, int flags, Arguments arguments) {
+	private boolean visit(FuncDeclaration node, int flags, Arguments arguments, char[] name) {
 		MethodInfo info = new MethodInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
@@ -475,12 +484,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
 		info.modifiers = getFlags(node.modifiers);
 		info.modifiers |= flags;
-		info.name = CharOperation.NO_CHAR;
+		info.name = name;
 		if (arguments != null) {
 			info.parameterNames = getParameterNames(arguments);
 			info.parameterTypes = getParameterTypes(arguments);
 		}
-		info.returnType = ((TypeFunction) node.type).next.getSignature().toCharArray();
+		info.returnType = getSignature(((TypeFunction) node.type).next);
 		info.typeParameters = new TypeParameterInfo[0];
 		
 		requestor.enterConstructor(info);
@@ -488,25 +497,25 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(CtorDeclaration node) {
-		visit(node, Flags.AccConstructor, node.arguments);
+		visit(node, Flags.AccConstructor, node.arguments, Id.ctor);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(DtorDeclaration node) {
-		visit(node, Flags.AccDestructor, null);
+		visit(node, Flags.AccDestructor, null, Id.dtor);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(NewDeclaration node) {
-		visit(node, Flags.AccNew, node.arguments);
+		visit(node, Flags.AccNew, node.arguments, Id.classNew);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(DeleteDeclaration node) {
-		visit(node, Flags.AccDelete, node.arguments);
+		visit(node, Flags.AccDelete, node.arguments, Id.classDelete);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -554,13 +563,15 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		if (node.type != null) {
-			info.type = node.type.getSignature().toCharArray();
+			info.type = getSignature(node.type);
 		} else if (node.aliassym != null) {
-			info.type = node.aliassym.type().getSignature().toCharArray();
+			info.type = getSignature(node.aliassym.type());
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}
-		info.value = ExpressionEncoder.encode(node.value).toCharArray();
+		if (node.isConst()) {
+			info.initializationSource = ASTNodeEncoder.encodeInitializer(node.init);
+		}
 		
 		requestor.enterField(info);
 		
@@ -587,9 +598,9 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		if (node.type != null) {
-			info.type = node.type.getSignature().toCharArray();
+			info.type = getSignature(node.type);
 		} else if (node.aliassym != null) {
-			info.type = node.aliassym.type().getSignature().toCharArray();
+			info.type = getSignature(node.aliassym.type());
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}
@@ -619,7 +630,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		if (node.type != null) {
-			info.type = ((TypeTypedef) node.type).sym.basetype().getSignature().toCharArray();
+			info.type = getSignature(((TypeTypedef) node.type).sym.basetype());
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}
@@ -700,7 +711,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		info.secondary = !foundType;
-		info.superclass = node.memtype.getSignature().toCharArray();
+		info.superclass = getSignature(node.memtype);
 		if (node.memtype != null) {
 			info.superinterfaces = new char[][] { node.memtype.toCharArray() };
 		}
@@ -729,8 +740,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		
-		info.value = ExpressionEncoder.encode(node.value).toCharArray();
-		info.type = node.value.type.getSignature().toCharArray();
+		info.initializationSource = ASTNodeEncoder.encodeExpression(node.value);
+		info.type = getSignature(node.value.type);
 		
 		requestor.enterField(info);
 		

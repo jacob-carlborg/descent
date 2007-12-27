@@ -708,9 +708,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	}
 
 	public boolean isVirtual(SemanticContext context) {
-		return isMember() != null
-				&& !(isStatic() || protection == PROT.PROTprivate || protection == PROT.PROTpackage)
-				&& toParent().isClassDeclaration() != null;
+		return SemanticMixin.isVirtual(this, context);
 	}
 
 	public boolean isWinMain() {
@@ -899,18 +897,18 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 			// Find index of existing function in vtbl[] to override
 			if (cd.baseClass() != null) {
 				for (vi = 0; vi < cd.baseClass().vtbl().size() && !gotoL1; vi++) {
-					FuncDeclaration fdv = ((Dsymbol) cd.vtbl().get(vi))
+					IFuncDeclaration fdv = ((IDsymbol) cd.vtbl().get(vi))
 							.isFuncDeclaration();
 
 					// BUG: should give error if argument types match,
 					// but return type does not?
 
-					if (fdv != null && equals(fdv.ident, ident)) {
-						int cov = type.covariant(fdv.type, context);
+					if (fdv != null && equals(fdv.ident(), ident)) {
+						int cov = type.covariant(fdv.type(), context);
 
 						if (cov == 2) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-									IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
+									IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type().toChars(context) }));
 						}
 						if (cov == 1) {
 							if (fdv.isFinal()) {
@@ -922,7 +920,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 								// If either is not, the one that is not
 								// overrides
 								// the other.
-								if (fdv.parent.isClassDeclaration() != null) {
+								if (fdv.parent().isClassDeclaration() != null) {
 									// goto L1;
 									gotoL1 = true;
 								}
@@ -958,17 +956,17 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 								 * isBaseOf() offset if the value is != null.
 								 */
 
-								if (fdv.tintro != null) {
-									tintro = fdv.tintro;
-								} else if (!type.equals(fdv.type)) {
+								if (fdv.tintro() != null) {
+									tintro = fdv.tintro();
+								} else if (!type.equals(fdv.type())) {
 									/*
 									 * Only need to have a tintro if the vptr
 									 * offsets differ
 									 */
 									int[] offset = { 0 };
-									if (fdv.type.nextOf().isBaseOf(
+									if (fdv.type().nextOf().isBaseOf(
 											type.nextOf(), offset, context)) {
-										tintro = fdv.type;
+										tintro = fdv.type();
 									}
 								}
 							}

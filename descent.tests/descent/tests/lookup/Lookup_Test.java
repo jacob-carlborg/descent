@@ -231,6 +231,12 @@ public class Lookup_Test extends AbstractModelTest {
 		assertNoErrors();
 	}
 	
+	public void testConstVar() throws Exception {
+		one("const int i = 1;");
+		two("static assert(i == 1);");
+		assertNoErrors();
+	}
+	
 	protected ICompilationUnit one;
 	protected ICompilationUnit two;
 	

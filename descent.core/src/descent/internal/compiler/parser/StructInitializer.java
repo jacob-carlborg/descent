@@ -62,7 +62,7 @@ public class StructInitializer extends Initializer {
 
 			ts = (TypeStruct) t;
 			ad = ts.sym;
-			for (i = 0; i < field.size(); i++) {
+			for (i = 0; i < size(field); i++) {
 				IdentifierExp id = field.get(i);
 				Initializer val = value.get(i);
 				IDsymbol s;
