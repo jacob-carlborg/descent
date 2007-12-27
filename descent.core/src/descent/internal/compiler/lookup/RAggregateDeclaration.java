@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IType;
+import descent.core.JavaModelException;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IDeleteDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
@@ -13,15 +14,21 @@ import descent.internal.compiler.parser.INode;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.Scope;
-import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Symbol;
 import descent.internal.compiler.parser.Type;
+import descent.internal.core.SourceType;
+import descent.internal.core.SourceTypeElementInfo;
+import descent.internal.core.util.Util;
 
 public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDeclaration {
 	
 	private Symbol sinit;
 	private List<IVarDeclaration> fields;
+	private int storage_class = -1;
+	private int alignof = -1;
+	private int sizeof = -1;
 
 	public RAggregateDeclaration(IType element, SemanticContext context) {
 		super(element, context);
@@ -40,13 +47,22 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public int alignsize() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (alignof < 0) {
+			// TODO expose property via interface
+			SourceType type = (SourceType) element;
+			try {
+				SourceTypeElementInfo info = (SourceTypeElementInfo) type.getElementInfo();
+				alignof = info.getAlignof();
+			} catch (JavaModelException e) {
+				Util.log(e);
+				alignof = 0;
+			}
+		}
+		return alignof;
 	}
 
 	public void alignsize(int alignsize) {
-		// TODO Auto-generated method stub
-		
+		throw new IllegalStateException("Should not be called");
 	}
 
 	public List<IVarDeclaration> fields() {
@@ -99,18 +115,26 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 
 	public void sizeok(int sizeok) {
-		// TODO Auto-generated method stub
-		
+		throw new IllegalStateException("Should not be called");
 	}
 
 	public int structsize() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (sizeof < 0) {
+			// TODO expose property via interface
+			SourceType type = (SourceType) element;
+			try {
+				SourceTypeElementInfo info = (SourceTypeElementInfo) type.getElementInfo();
+				sizeof = info.getSizeof();
+			} catch (JavaModelException e) {
+				Util.log(e);
+				sizeof = 0;
+			}
+		}
+		return sizeof;
 	}
 
 	public void structsize(int structsize) {
-		// TODO Auto-generated method stub
-		
+		throw new IllegalStateException("Should not be called");
 	}
 
 	public Symbol toInitializer() {
@@ -131,22 +155,22 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 	
 	public int storage_class() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (storage_class < 0) {
+			storage_class = getStorageClass();
+		}
+		return storage_class;
 	}
 	
 	public int sizeok() {
-		return 1;
+		return 1; // contains valid data
 	}
 	
 	public int size(SemanticContext context) {
-		// TODO Auto-generated method stub
-		return 0;
+		return structsize();
 	}
 	
 	public Scope scope() {
-		// TODO Auto-generated method stub
-		return null;
+		return null; // semantic already done
 	}
 	
 	public INewDeclaration aggNew() {
@@ -160,8 +184,7 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	}
 	
 	public int structalign() {
-		// TODO Auto-generated method stub
-		return 0;
+		return alignsize();
 	}
 
 }

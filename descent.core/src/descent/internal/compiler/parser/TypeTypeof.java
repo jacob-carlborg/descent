@@ -114,5 +114,13 @@ public class TypeTypeof extends TypeQualified {
 		}
 		return t.toDsymbol(sc, context);
 	}
+	
+	@Override
+	public String getSignature() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('*');
+		sb.append(ASTNodeEncoder.encodeExpression(exp));
+		return sb.toString();
+	}
 
 }

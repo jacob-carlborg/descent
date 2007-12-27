@@ -2,7 +2,10 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.IJavaElement;
 import descent.core.IMethod;
+import descent.core.IPackageFragment;
+import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
@@ -10,15 +13,19 @@ import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
+import descent.internal.compiler.parser.IImport;
 import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InlineScanState;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
@@ -31,6 +38,7 @@ import static descent.internal.compiler.parser.STC.STCstatic;
 public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	
 	private TypeFunction type;
+	private FuncDeclaration func; // The underlying function, only for interpreting
 
 	public RFuncDeclaration(IMethod element, SemanticContext context) {
 		super(element, context);
@@ -57,8 +65,76 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	}
 
 	public Expression interpret(InterState istate, Expressions arguments, SemanticContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		if (func == null) {
+			ISourceReference r = (ISourceReference) element;
+			try {
+				// We build the function from the source in order to interpret it
+				// But we have to also include in the source:
+				// - the original imports
+				// - an import to this function's module, in order to not resolve
+				//   again what is already resolved.
+				
+				int importCount = 1;
+				
+				// Build import statement to my module
+				RModule rmodule = (RModule) getModule();
+				IJavaElement parent = rmodule.element;
+				
+				StringBuilder sbImportMe = new StringBuilder();
+			loop:
+				while(parent != null) {
+					switch(parent.getElementType()) {
+					case IJavaElement.COMPILATION_UNIT:
+						sbImportMe.insert(0, parent.getElementName().substring(0, parent.getElementName().lastIndexOf('.')));
+						break;
+					case IJavaElement.PACKAGE_FRAGMENT:
+						if (((IPackageFragment) parent).isDefaultPackage()) {
+							break loop;
+						} else {
+							if (sbImportMe.length() > 0) {
+								sbImportMe.insert(0, '.');
+							}
+						}
+						sbImportMe.insert(0, parent.getElementName());
+						break;
+					default:
+						break loop;
+					}
+					
+					parent = parent.getParent();
+				}
+				
+				StringBuilder fullSource = new StringBuilder();
+				fullSource.append("import ");
+				fullSource.append(sbImportMe);
+				fullSource.append(";");
+				
+				// Now append this module's imports
+				// TODO this is slow since it's using NaiveASTFlatter
+				// because imp is actualy an Import instance
+				for(IDsymbol s : rmodule.members()) {
+					IImport imp = s.isImport();
+					if (imp != null) {
+						fullSource.append(imp);
+						importCount++;
+					}
+				}
+				
+				fullSource.append(r.getSource());
+				
+				Parser parser = new Parser(Parser.D2, fullSource.toString());
+				parser.nextToken();
+				Module m = parser.parseModuleObj();
+				m.ident(getModule().ident());
+				
+				func = (FuncDeclaration) m.members.get(importCount);
+				
+				m.semantic(context);
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+		return func.interpret(istate, arguments, context);
 	}
 	
 	public boolean isVirtual(SemanticContext context) {

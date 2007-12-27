@@ -52,6 +52,8 @@ public interface ISourceElementRequestor {
 		public char[][] categories;
 		public boolean secondary;
 		public integer_t[] enumValues; // default, min, max
+		public int sizeof;
+		public int alignof;
 	}
 	
 	public static class TypeParameterInfo {

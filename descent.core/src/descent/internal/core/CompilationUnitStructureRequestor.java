@@ -457,6 +457,9 @@ public void enterType(TypeInfo typeInfo) {
 	}
 	// Added to allow storing default, min and max values of enums
 	info.setEnumValues(typeInfo.enumValues);
+	// Added to allow storing of sizeof and alignof
+	info.setAlignof(typeInfo.alignof);
+	info.setSizeof(typeInfo.sizeof);
 	
 	JavaModelManager manager = JavaModelManager.getJavaModelManager();
 	char[] superclass = typeInfo.superclass;

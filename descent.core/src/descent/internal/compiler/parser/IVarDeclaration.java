@@ -33,5 +33,9 @@ public interface IVarDeclaration extends IDeclaration {
 	void init(IInitializer init);
 	
 	Expression callAutoDtor();
+	
+	int nestedref();
+	
+	void nestedref(int nestedref);
 
 }

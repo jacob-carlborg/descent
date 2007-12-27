@@ -68,6 +68,16 @@ public class SourceTypeElementInfo extends MemberElementInfo implements ISourceT
 	 */
 	protected integer_t[] enumValues;
 	
+	/*
+	 * The sizeof property.
+	 */
+	protected int sizeof;
+	
+	/*
+	 * The alignof property.
+	 */
+	protected int alignof;
+	
 protected void addCategories(IJavaElement element, char[][] elementCategories) {
 	if (elementCategories == null) return;
 	if (this.categories == null)
@@ -314,7 +324,18 @@ protected void setSuperInterfaceNames(char[][] superInterfaceNames) {
 protected void setEnumValues(integer_t[] enumValues) {
 	this.enumValues = enumValues;
 }
-
+public void setSizeof(int sizeof) {
+	this.sizeof = sizeof;
+}
+public int getSizeof() {
+	return sizeof;
+}
+public void setAlignof(int alignof) {
+	this.alignof = alignof;
+}
+public int getAlignof() {
+	return alignof;
+}
 public String toString() {
 	return "Info for " + this.handle.toString(); //$NON-NLS-1$
 }

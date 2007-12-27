@@ -85,32 +85,7 @@ public class RDeclaration extends RDsymbol implements IDeclaration {
 
 	public int storage_class() {
 		if (storage_class < 0) {
-			int flags = getFlags();
-			storage_class = 0;
-			
-			if ((flags & Flags.AccAbstract) != 0) storage_class |= STC.STCabstract;
-			if ((flags & Flags.AccAuto) != 0) storage_class |= STC.STCauto;
-			// TODO STC.STCcomdat
-			if ((flags & Flags.AccConst) != 0) storage_class |= STC.STCconst;
-			// TODO STC.STCctorinit
-			if ((flags & Flags.AccDeprecated) != 0) storage_class |= STC.STCdeprecated;
-			if ((flags & Flags.AccExtern) != 0) storage_class |= STC.STCextern;
-			// TODO STC.STCfield
-			if ((flags & Flags.AccFinal) != 0) storage_class |= STC.STCfinal;
-			// TODO STC.STCforeach
-			if ((flags & Flags.AccIn) != 0) storage_class |= STC.STCin;
-			if ((flags & Flags.AccInvariant) != 0) storage_class |= STC.STCinvariant;
-			if ((flags & Flags.AccLazy) != 0) storage_class |= STC.STClazy;
-			if ((flags & Flags.AccOut) != 0) storage_class |= STC.STCout;
-			if ((flags & Flags.AccOverride) != 0) storage_class |= STC.STCoverride;
-			// TODO STC.STCparameter
-			if ((flags & Flags.AccRef) != 0) storage_class |= STC.STCref;
-			if ((flags & Flags.AccScope) != 0) storage_class |= STC.STCscope;
-			if ((flags & Flags.AccStatic) != 0) storage_class |= STC.STCstatic;
-			if ((flags & Flags.AccSynchronized) != 0) storage_class |= STC.STCsynchronized;
-			// TODO STC.STCtemplateparameter
-			// TODO STC.STCundefined
-			// TODO STC.STCvariadic
+			storage_class = getStorageClass();
 		}
 		return storage_class;
 	}
@@ -144,18 +119,6 @@ public class RDeclaration extends RDsymbol implements IDeclaration {
 			Util.log(e);
 			return Type.tint32;
 		}
-	}
-	
-	protected int getFlags() {
-		try {
-			if (element.getElementType() == IJavaElement.FIELD) {
-				IField f = (IField) element;
-				return f.getFlags();
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return 0;
 	}
 
 }

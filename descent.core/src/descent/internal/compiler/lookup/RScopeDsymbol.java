@@ -1,6 +1,7 @@
 package descent.internal.compiler.lookup;
 
 import descent.core.ICompilationUnit;
+import descent.core.IImportContainer;
 import descent.core.IJavaElement;
 import descent.core.IParent;
 import descent.core.JavaModelException;
@@ -66,40 +67,49 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 			
 			if (element instanceof IParent) {
 				IParent parent = (IParent) element;
-				try {
-					for(IJavaElement child : parent.getChildren()) {
-						String elemName = child.getElementName();
-						if (child instanceof ICompilationUnit) {
-							elemName = elemName.substring(0, elemName.indexOf('.'));
-						}
-						char[] elemNameC = elemName.toCharArray();
-						
-						if (childrenCache == null) {
-							childrenCache = new HashtableOfCharArrayAndObject();
-						}
-						
-						IDsymbol converted = null;
-						
-						if (!ov.containsKey(elemNameC)) {
-							converted = (IDsymbol) childrenCache.get(elemNameC);
-						}
-						
-						if (converted == null) {
-							converted = toDsymbol(child);
-						}
-						
-						if (converted != null) {
-							members.add(converted);
-							childrenCache.put(elemNameC, converted);
-							ov.put(elemNameC, converted);
-						}
-					}
-				} catch (JavaModelException e) {
-					Util.log(e);
-				}
+				listMembers(members, ov, parent);
 			}
 		}
 		return members;
+	}
+	
+	private void listMembers(Dsymbols members, HashtableOfCharArrayAndObject ov, IParent parent) {
+		try {
+			for(IJavaElement child : parent.getChildren()) {
+				if (child.getElementType() == IJavaElement.IMPORT_CONTAINER) {
+					listMembers(members, ov, ((IImportContainer) child)); 
+					continue;
+				}
+				
+				String elemName = child.getElementName();
+				if (child instanceof ICompilationUnit) {
+					elemName = elemName.substring(0, elemName.indexOf('.'));
+				}
+				char[] elemNameC = elemName.toCharArray();
+				
+				if (childrenCache == null) {
+					childrenCache = new HashtableOfCharArrayAndObject();
+				}
+				
+				IDsymbol converted = null;
+				
+				if (!ov.containsKey(elemNameC)) {
+					converted = (IDsymbol) childrenCache.get(elemNameC);
+				}
+				
+				if (converted == null) {
+					converted = toDsymbol(child);
+				}
+				
+				if (converted != null) {
+					members.add(converted);
+					childrenCache.put(elemNameC, converted);
+					ov.put(elemNameC, converted);
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
 	}
 
 	public void members(Dsymbols members) {

@@ -126,17 +126,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
-		if (!isDataseg(context) && parent != sc.parent && parent != null) {
-			IFuncDeclaration fdv = toParent().isFuncDeclaration();
-			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
-
-			if (fdv != null && fdthis != null) {
-				if (loc != null && loc.filename != null)
-					fdthis.getLevel(loc, fdv, context);
-				nestedref = 1;
-				fdv.nestedFrameRef(true);
-			}
-		}
+		SemanticMixin.checkNestedReference(this, sc, loc, context);
 	}
 
 	public IExpInitializer getExpInitializer(SemanticContext context) {
@@ -648,6 +638,14 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	
 	public int canassign() {
 		return canassign;
+	}
+	
+	public int nestedref() {
+		return nestedref;
+	}
+	
+	public void nestedref(int nestedref) {
+		this.nestedref = nestedref;
 	}
 
     // PERHAPS Symbol *toSymbol();

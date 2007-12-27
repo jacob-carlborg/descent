@@ -347,6 +347,9 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
+		info.alignof = node.alignsize;
+		info.sizeof = node.structsize;
+		
 		foundType = true;		
 		requestor.enterType(info);
 	}
@@ -894,7 +897,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 					buffer.append(", ");
 				}
 				if (node.aliases.get(i) != null) {
-					node.aliases.get(i).accept(this);
+					buffer.append(node.aliases.get(i));
 					buffer.append(" = ");
 				}
 				buffer.append(node.names.get(i));

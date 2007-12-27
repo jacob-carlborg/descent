@@ -21,6 +21,7 @@ import descent.internal.core.util.Util;
 public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	
 	private Type type;
+	private int nestedref;
 	private Initializer init;
 	private boolean initComputed;
 
@@ -37,7 +38,7 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	}
 
 	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
-		throw new IllegalStateException("Should not be called");
+		SemanticMixin.checkNestedReference(this, sc, loc, context);
 	}
 
 	public boolean ctorinit() {
@@ -125,6 +126,14 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	public void value(Expression value) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public int nestedref() {
+		return nestedref;
+	}
+	
+	public void nestedref(int nestedref) {
+		this.nestedref = nestedref;
 	}
 	
 	@Override

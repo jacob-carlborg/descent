@@ -237,8 +237,70 @@ public class Lookup_Test extends AbstractModelTest {
 		assertNoErrors();
 	}
 	
+	public void testSizeof1() throws Exception {
+		one("struct s { }");
+		two("static assert(s.sizeof == 1);");
+		assertNoErrors();
+	}
+	
+	public void testSizeof2() throws Exception {
+		one("struct s { int x; }");
+		two("static assert(s.sizeof == 4);");
+		assertNoErrors();
+	}
+	
+	public void testAlignof1() throws Exception {
+		one("struct s { }");
+		two("static assert(s.alignof == 1);");
+		assertNoErrors();
+	}
+	
+	public void testAlignof2() throws Exception {
+		one("struct s { int x; }");
+		two("static assert(s.alignof == 4);");
+		assertNoErrors();
+	}
+	
+	public void testAlignof3() throws Exception {
+		one("align(2) { struct s { int x; } }");
+		two("static assert(s.alignof == 2);");
+		assertNoErrors();
+	}
+	
+	public void testDstress_alias_42_B() throws Exception {
+		one("struct S { int i; }" + 
+			"" + 
+			"template Alias(alias A){" + 
+			"	alias A Alias;" + 
+			"}" + 
+			"" + 
+			"Alias!(S) x;");
+		two("static assert(is(typeof(x) == S));");
+		assertNoErrors();
+	}
+	
+	public void testCTFE() throws Exception {
+		one("int fact(int x) { if (x == 0) return 1; else return x * fact(x - 1); }");
+		two("static assert(fact(4) == 24);");
+		assertNoErrors();
+	}
+	
+	public void testCTFE2() throws Exception {
+		one("alias int myInt; myInt fact(myInt x) { if (x == 0) return 1; else return x * fact(x - 1); }");
+		two("static assert(fact(4) == 24);");
+		assertNoErrors();
+	}
+	
+	public void testCTFE3() throws Exception {
+		three("alias int myInt;");
+		one("import three; myInt fact(myInt x) { if (x == 0) return 1; else return x * fact(x - 1); }");
+		two("static assert(fact(4) == 24);");
+		assertNoErrors();
+	}
+	
 	protected ICompilationUnit one;
 	protected ICompilationUnit two;
+	protected ICompilationUnit three;
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -261,6 +323,12 @@ public class Lookup_Test extends AbstractModelTest {
 	protected ICompilationUnit one(String contents) throws Exception {
 		return one = createCompilationUnit(
 				"one.d", 
+				contents);
+	}
+	
+	protected ICompilationUnit three(String contents) throws Exception {
+		return three = createCompilationUnit(
+				"three.d", 
 				contents);
 	}
 	

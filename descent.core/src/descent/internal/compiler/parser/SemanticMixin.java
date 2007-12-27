@@ -574,5 +574,19 @@ public class SemanticMixin {
 		}
 		return zeroInit;
 	}
+	
+	public static void checkNestedReference(IVarDeclaration aThis, Scope sc, Loc loc, SemanticContext context) {
+		if (!aThis.isDataseg(context) && aThis.parent() != sc.parent && aThis.parent() != null) {
+			IFuncDeclaration fdv = aThis.toParent().isFuncDeclaration();
+			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
+
+			if (fdv != null && fdthis != null) {
+				if (loc != null && loc.filename != null)
+					fdthis.getLevel(loc, fdv, context);
+				aThis.nestedref(1);
+				fdv.nestedFrameRef(true);
+			}
+		}
+	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Stack;
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
+import descent.core.IImportDeclaration;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
@@ -49,11 +50,15 @@ import descent.internal.compiler.parser.IUnionDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Loc;
+import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.OutBuffer;
 import descent.internal.compiler.parser.PROT;
+import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
@@ -389,9 +394,25 @@ public class RDsymbol extends RNode implements IDsymbol {
 		
 		String sident = new String(ident);		
 		IParent parent = (IParent) element;
+		return searchInChildren(parent, ident, sident);
+	}
+	
+	private IDsymbol searchInChildren(IParent parent, char[] ident, String sident) {
 		try {
 			IJavaElement[] children = parent.getChildren();
 			for(IJavaElement child : children) {
+				if (child.getElementType() == IJavaElement.INITIALIZER) {
+					IInitializer init = (IInitializer) child;
+					// TODO consider other possibilities, like debug, version,
+					// and static ifs
+					if (init.isAlign()) {
+						IDsymbol result = searchInChildren(init, ident, sident);
+						if (result != null) {
+							return result;
+						}
+					}
+				}
+				
 				String elementName = child.getElementName();
 				if (elementName.equals(sident)) {
 					IDsymbol result = toDsymbol(child);
@@ -535,6 +556,19 @@ public class RDsymbol extends RNode implements IDsymbol {
 		case IJavaElement.INITIALIZER:
 			IInitializer init = (IInitializer) element;
 			return null;
+		case IJavaElement.IMPORT_DECLARATION:
+			IImportDeclaration imp = (IImportDeclaration) element;
+			
+			// TODO improve performance of this
+			StringBuilder sb = new StringBuilder();
+			sb.append("import ");
+			sb.append(imp.getElementName());
+			sb.append(";");
+			
+			Parser parser = new Parser(Parser.D2, sb.toString());
+			parser.nextToken();
+			Module mod = parser.parseModuleObj();
+			return mod.members.get(0);
 		}
 		
 		if (symbol != null) {
@@ -765,6 +799,49 @@ public class RDsymbol extends RNode implements IDsymbol {
 			sb.append(ident);
 		}
 		return sb.toString();
+	}
+	
+	protected int getFlags() {
+		try {
+			if (element.getElementType() == IJavaElement.FIELD) {
+				IField f = (IField) element;
+				return f.getFlags();
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		return 0;
+	}
+	
+	protected int getStorageClass() {
+		int flags = getFlags();
+		int storage_class = 0;
+		
+		if ((flags & Flags.AccAbstract) != 0) storage_class |= STC.STCabstract;
+		if ((flags & Flags.AccAuto) != 0) storage_class |= STC.STCauto;
+		// TODO STC.STCcomdat
+		if ((flags & Flags.AccConst) != 0) storage_class |= STC.STCconst;
+		// TODO STC.STCctorinit
+		if ((flags & Flags.AccDeprecated) != 0) storage_class |= STC.STCdeprecated;
+		if ((flags & Flags.AccExtern) != 0) storage_class |= STC.STCextern;
+		// TODO STC.STCfield
+		if ((flags & Flags.AccFinal) != 0) storage_class |= STC.STCfinal;
+		// TODO STC.STCforeach
+		if ((flags & Flags.AccIn) != 0) storage_class |= STC.STCin;
+		if ((flags & Flags.AccInvariant) != 0) storage_class |= STC.STCinvariant;
+		if ((flags & Flags.AccLazy) != 0) storage_class |= STC.STClazy;
+		if ((flags & Flags.AccOut) != 0) storage_class |= STC.STCout;
+		if ((flags & Flags.AccOverride) != 0) storage_class |= STC.STCoverride;
+		// TODO STC.STCparameter
+		if ((flags & Flags.AccRef) != 0) storage_class |= STC.STCref;
+		if ((flags & Flags.AccScope) != 0) storage_class |= STC.STCscope;
+		if ((flags & Flags.AccStatic) != 0) storage_class |= STC.STCstatic;
+		if ((flags & Flags.AccSynchronized) != 0) storage_class |= STC.STCsynchronized;
+		// TODO STC.STCtemplateparameter
+		// TODO STC.STCundefined
+		// TODO STC.STCvariadic
+		
+		return storage_class;
 	}
 	
 	@Override
