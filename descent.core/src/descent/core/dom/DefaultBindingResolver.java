@@ -5,13 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import descent.core.ICompilationUnit;
 import descent.core.IField;
-import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
-import descent.core.IPackageFragment;
-import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -23,6 +19,7 @@ import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 
 public class DefaultBindingResolver extends BindingResolver {
@@ -239,7 +236,7 @@ public class DefaultBindingResolver extends BindingResolver {
 							c = signature.charAt(i);
 						}
 						String name = signature.substring(i, i + n);
-						current = findChild(current, name);
+						current = JavaElementFinder.findChild(current, name);
 						if (current == null) {
 							// TODO signal error
 							break;
@@ -342,73 +339,6 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		return binding;
-	}
-	
-	private IJavaElement findChild(IJavaElement current, String name) throws JavaModelException {
-		switch(current.getElementType()) {
-		case IJavaElement.JAVA_PROJECT:
-			return findChild((IJavaProject) current, name);
-		case IJavaElement.PACKAGE_FRAGMENT:
-			return findChild((IPackageFragment) current, name);
-		}
-		
-		if (!(current instanceof IParent)) {
-			return null;
-		}
-		
-		return searchInChildren((IParent) current, name);
-	}
-	
-	private IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
-		for(IJavaElement child : parent.getChildren()) {
-			if (child.getElementType() == IJavaElement.INITIALIZER) {
-				IInitializer init = (IInitializer) child;
-				// TODO consider other possibilities, like debug, version,
-				// and static ifs
-				if (init.isAlign()) {
-					IJavaElement result = searchInChildren(init, name);
-					if (result != null) {
-						return result;
-					}
-				}
-			}
-			
-			String elementName = child.getElementName();
-			
-			if ((child instanceof ICompilationUnit && ((ICompilationUnit) child).getModuleName().equals(name))
-					|| elementName.equals(name)) {
-				return child;
-			}
-		}
-		return null;
-	}
-	
-	private IJavaElement findChild(IJavaProject project, String name) throws JavaModelException {
-		IPackageFragment[] fragments = project.getPackageFragments();
-		for(IPackageFragment fragment : fragments) {
-			IJavaElement child = findChild(fragment, name);
-			if (child != null) {
-				return child;
-			}
-		}
-		return null;
-	}
-	
-	private IJavaElement findChild(IPackageFragment fragment, String name) throws JavaModelException {
-		if (fragment.isDefaultPackage()) {
-			ICompilationUnit unit = fragment.getCompilationUnit(name + ".d");
-			if (unit != null && unit.exists()) {
-				return unit;
-			}
-			unit = fragment.getClassFile(name + ".d");
-			if (unit != null && unit.exists()) {
-				return unit;
-			}
-		} else if (fragment.getElementName().equals(name)) {
-			return fragment;
-		}
-		
-		return searchInChildren(fragment, name);
 	}
 
 }

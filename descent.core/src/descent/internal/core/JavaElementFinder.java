@@ -21,6 +21,11 @@ public class JavaElementFinder {
 	}
 	
 	public IJavaElement find(String signature) {
+		// TODO and other types too
+		if (signature.equals("C6Object")) {
+			signature = "C6object6Object";
+		}
+		
 		// TODO optimize using IJavaProject#find and NameLookup
 		// TODO make an "extract number" function in order to avoid duplication
 		try {
@@ -65,7 +70,7 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	private static IJavaElement findChild(IJavaElement current, String name) throws JavaModelException {
+	public static IJavaElement findChild(IJavaElement current, String name) throws JavaModelException {
 		switch(current.getElementType()) {
 		case IJavaElement.JAVA_PROJECT:
 			return findChild((IJavaProject) current, name);
@@ -80,7 +85,7 @@ public class JavaElementFinder {
 		return searchInChildren((IParent) current, name);
 	}
 	
-	private static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
+	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
 			if (child.getElementType() == IJavaElement.INITIALIZER) {
 				IInitializer init = (IInitializer) child;
@@ -104,7 +109,7 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	private static IJavaElement findChild(IJavaProject project, String name) throws JavaModelException {
+	public static IJavaElement findChild(IJavaProject project, String name) throws JavaModelException {
 		IPackageFragment[] fragments = project.getPackageFragments();
 		for(IPackageFragment fragment : fragments) {
 			IJavaElement child = findChild(fragment, name);
@@ -115,13 +120,14 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	private static IJavaElement findChild(IPackageFragment fragment, String name) throws JavaModelException {
+	public static IJavaElement findChild(IPackageFragment fragment, String name) throws JavaModelException {
 		if (fragment.isDefaultPackage()) {
-			ICompilationUnit unit = fragment.getCompilationUnit(name + ".d");
+			ICompilationUnit unit;
+			unit = fragment.getClassFile(name + ".d");
 			if (unit != null && unit.exists()) {
 				return unit;
 			}
-			unit = fragment.getClassFile(name + ".d");
+			unit = fragment.getCompilationUnit(name + ".d");
 			if (unit != null && unit.exists()) {
 				return unit;
 			}
