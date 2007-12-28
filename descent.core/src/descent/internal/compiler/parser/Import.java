@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
 // DMD 1.020
-public class Import extends Dsymbol implements IImport {
+public class Import extends Dsymbol {
 
 	public boolean first = true; // Is this the first import in a multi?
 	public Import next;
@@ -276,12 +276,39 @@ public class Import extends Dsymbol implements IImport {
 		return getFQN(packages, id);
 	}
 	
-	public IModule mod() {
-		return mod;
-	}
-	
-	public IPackage pkg() {
-		return pkg;
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
+		if (aliasId != null) {
+			buffer.append(aliasId);
+			buffer.append(" = ");
+		}
+		if (packages != null) {
+			for(int i = 0; i < packages.size(); i++) {
+				if (i > 0) {
+					buffer.append('.');
+				}
+				buffer.append(packages.get(i));
+			}
+			buffer.append('.');
+		}
+		if (id != null) {
+			buffer.append(id);
+		}
+		if (names != null) {
+			buffer.append(" : ");
+			for(int i = 0; i < names.size(); i++) {
+				if (i > 0) {
+					buffer.append(", ");
+				}
+				if (aliases.get(i) != null) {
+					buffer.append(aliases.get(i));
+					buffer.append(" = ");
+				}
+				buffer.append(names.get(i));
+			}
+		}
+		return buffer.toString();
 	}
 
 }

@@ -11,6 +11,8 @@
 
 package descent.core.dom;
 
+import descent.internal.compiler.parser.ASTDmdNode;
+
 /**
  * A binding resolver is an internal mechanism for figuring out the binding
  * for a major declaration, type, or name reference. This also handles
@@ -268,7 +270,7 @@ class BindingResolver {
 	 * @return the binding for the given class declaration, or <code>null</code>
 	 *    if no binding is available
 	 */
-	ITypeBinding resolveType(AggregateDeclaration type) {
+	ITypeBinding resolveAggregate(AggregateDeclaration type) {
 		return null;
 	}
 
@@ -291,7 +293,7 @@ class BindingResolver {
 	 *    if no binding is available
 	 * @since 3.0
 	 */
-	ITypeBinding resolveType(EnumDeclaration type) {
+	ITypeBinding resolveEnum(EnumDeclaration type) {
 		return null;
 	}
 
@@ -319,7 +321,7 @@ class BindingResolver {
 	/**
 	 * Resolves the given variable declaration and returns the binding for it.
 	 * <p>
-	 * The implementation of <code>VariableDeclaration.resolveBinding</code>
+	 * The implementation of <code>VariableDeclarationFragment.resolveBinding</code>
 	 * forwards to this method. How the variable declaration resolves is often
 	 * a function of the context in which the variable declaration node is 
 	 * embedded as well as the variable declaration subtree itself. VariableDeclaration 
@@ -337,6 +339,30 @@ class BindingResolver {
 	 *    <code>null</code> if no binding is available
 	 */
 	IVariableBinding resolveVariable(VariableDeclarationFragment variable) {
+		return null;
+	}
+	
+	/**
+	 * Resolves the given variable declaration and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>VariableDeclaration.resolveBinding</code>
+	 * forwards to this method. How the variable declaration resolves is often
+	 * a function of the context in which the variable declaration node is 
+	 * embedded as well as the variable declaration subtree itself. VariableDeclaration 
+	 * declarations used as local variable, formal parameter and exception 
+	 * variables resolve to local variable bindings; variable declarations
+	 * used to declare fields resolve to field bindings.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param variable the variable declaration of interest
+	 * @return the binding for the given variable declaration, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	ITypeBinding resolveVariable(VariableDeclaration variable) {
 		return null;
 	}
 	
@@ -360,5 +386,20 @@ class BindingResolver {
 	ITypeBinding resolveWellKnownType(String name) {
 		return null;
 	}
+	
+	/**
+	 * Allows the user to store information about the given old/new pair of
+	 * AST nodes.
+	 * <p>
+	 * The default implementation of this method does nothing.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param newNode the new AST node
+	 * @param oldASTNode the old AST node
+	 */
+	void store(ASTNode newNode, ASTDmdNode oldASTNode) {
+		// default implementation: do nothing
+	} 
 	
 }

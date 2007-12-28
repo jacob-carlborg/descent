@@ -6,7 +6,10 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.IJavaProject;
+import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 import descent.core.dom.Modifier.ModifierKeyword;
@@ -71,15 +74,26 @@ public class ASTConverter {
 	
 	protected AST ast;
 	protected IProgressMonitor monitor;
+	protected boolean resolveBindings;
 	
 	private Comment[] moduleComments;
 	
-	public ASTConverter(IProgressMonitor monitor) {
+	public ASTConverter(boolean resolveBindings, IProgressMonitor monitor) {
+		this.resolveBindings = resolveBindings;
 		this.monitor = monitor;
 	}
 	
 	public void setAST(AST ast) {
 		this.ast = ast;
+		ast.setBindingResolver(new BindingResolver());
+	}
+	
+	/*
+	 * Must be called after setAST in order for binding resolution to work.
+	 */
+	public void init(IJavaProject project, WorkingCopyOwner owner) {
+		BindingTables tables = new BindingTables();
+		ast.setBindingResolver(new DefaultBindingResolver(project, owner, tables));
 	}
 	
 	public CompilationUnit convert(Module module) {
@@ -1288,6 +1302,11 @@ public class ASTConverter {
 				b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
 			}
 		}
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1670,6 +1689,11 @@ public class ASTConverter {
 			}
 		}
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -2571,6 +2595,11 @@ public class ASTConverter {
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -2583,6 +2612,11 @@ public class ASTConverter {
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -2594,6 +2628,11 @@ public class ASTConverter {
 		}
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -2605,6 +2644,11 @@ public class ASTConverter {
 		}
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -2716,9 +2760,14 @@ public class ASTConverter {
 			b = new descent.core.dom.SimpleType(ast);
 			b.setName((SimpleName) convert(a.ident));
 			b.setSourceRange(a.ident.start, a.ident.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a.resolvedType);
+			}
 		} else {
 			b = null;
 		}
+		
 		if (a.idents == null || a.idents.isEmpty()) {
 			return convertModifiedType(a, b);
 		} else {
@@ -3414,6 +3463,10 @@ public class ASTConverter {
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
+	}
+	
+	protected void recordNodes(ASTNode node, ASTDmdNode oldASTNode) {
+		this.ast.getBindingResolver().store(node, oldASTNode);
 	}
 
 }

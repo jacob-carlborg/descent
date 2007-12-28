@@ -255,8 +255,10 @@ public void enterField(FieldInfo fieldInfo) {
 	info.setSourceRangeStart(fieldInfo.declarationStart);
 	info.setFlags(fieldInfo.modifiers);
 	info.setInitializationSource(fieldInfo.initializationSource);
-	char[] typeName = JavaModelManager.getJavaModelManager().intern(fieldInfo.type);
-	info.setTypeName(typeName);
+	if (fieldInfo.type != null) {
+		char[] typeName = JavaModelManager.getJavaModelManager().intern(fieldInfo.type);
+		info.setTypeName(typeName);
+	}
 	
 	this.unitInfo.addAnnotationPositions(handle, fieldInfo.annotationPositions);
 

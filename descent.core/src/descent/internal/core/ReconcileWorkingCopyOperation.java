@@ -187,7 +187,8 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 					// create AST if needed
 					if (this.astLevel != ICompilationUnit.NO_AST && module != null) {
 						//Map options = workingCopy.getJavaProject().getOptions(true);
-						this.ast = CompilationUnitResolver.convert(AST.newAST(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel), parseResult, null);
+						// TODO check if need to resolve bindings
+						this.ast = CompilationUnitResolver.convert(AST.newAST(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel), parseResult, workingCopy.getJavaProject(), workingCopyOwner, null);
 						if (this.ast != null) {
 							this.deltaBuilder.delta = new JavaElementDelta(workingCopy);
 							this.deltaBuilder.delta.changedAST(this.ast);

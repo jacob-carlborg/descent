@@ -12,6 +12,12 @@ import static descent.internal.compiler.parser.TY.Tident;
 public class TypeIdentifier extends TypeQualified {
 
 	public IdentifierExp ident;
+	
+	/*
+	 * Once the semantic pass is done, the resolved type is kept in
+	 * this variable. This is useful for linking source with resolution. 
+	 */
+	public Type resolvedType;
 
 	public TypeIdentifier(Loc loc, char[] ident) {
 		this(loc, new IdentifierExp(loc, ident));
@@ -97,6 +103,9 @@ public class TypeIdentifier extends TypeQualified {
 			}
 			t[0] = tvoid;
 		}
+		
+		resolvedType = t[0];
+		
 		return t[0];
 	}
 

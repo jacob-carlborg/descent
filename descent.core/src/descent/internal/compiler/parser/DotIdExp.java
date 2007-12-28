@@ -185,11 +185,11 @@ public class DotIdExp extends UnaExp {
 					return e;
 				}
 
-				IImport imp = s.isImport();
+				Import imp = s.isImport();
 				if (imp != null) {
 					ScopeExp ie2;
 
-					ie2 = new ScopeExp(loc, imp.pkg());
+					ie2 = new ScopeExp(loc, imp.pkg);
 					return ie2.semantic(sc, context);
 				}
 

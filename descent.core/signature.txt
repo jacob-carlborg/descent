@@ -1,0 +1,15 @@
+This document explains the signature of types in Descent.
+
+Most types have the same signature as in DMD. However, if types are not resolved,
+like in the case of A.B, where A.B is not resolved, or typeof(A), where A may
+be an alias template parameter, the signature is the following:
+
+  ?fqn --> unresolved
+  *exp --> typeof
+
+Also, to make reference to an alias, typdef or variable in the source
+field, that is a top level declaration or a field of a class, interface,
+etc, the signature is the same for types, but the initial character
+is Q, i.e.:
+
+  Q4test1foo --> variable foo in module test.

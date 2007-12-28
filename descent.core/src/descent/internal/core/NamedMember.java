@@ -179,11 +179,13 @@ public abstract class NamedMember extends Member {
 	}
 	
 	public String getFullyQualifiedName(char enclosingTypeSeparator, boolean showParameters) throws JavaModelException {
+		String moduleName = parent.getElementName().substring(0, this.parent.getElementName().lastIndexOf('.'));
+		
 		String packageName = getPackageFragment().getElementName();
 		if (packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME)) {
-			return getTypeQualifiedName(enclosingTypeSeparator, showParameters);
+			return moduleName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 		}
-		return packageName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
+		return moduleName + '.' + packageName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 	}
 
 	public String getTypeQualifiedName(char enclosingTypeSeparator, boolean showParameters) throws JavaModelException {

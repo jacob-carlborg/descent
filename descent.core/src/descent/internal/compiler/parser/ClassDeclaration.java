@@ -151,7 +151,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			return true;
 		}
 		for (int i = 1; i < vtbl.size(); i++) {
-			FuncDeclaration fd = ((Dsymbol) vtbl.get(i)).isFuncDeclaration();
+			IFuncDeclaration fd = ((IDsymbol) vtbl.get(i)).isFuncDeclaration();
 
 			if (fd == null || fd.isAbstract()) {
 				isabstract |= true;

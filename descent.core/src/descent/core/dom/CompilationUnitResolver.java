@@ -21,6 +21,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.IProblem;
+import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.internal.compiler.ICompilerRequestor;
 import descent.internal.compiler.IErrorHandlingPolicy;
 import descent.internal.compiler.IProblemFactory;
@@ -220,12 +221,18 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return context;
 	}
 	
-	public static CompilationUnit convert(AST ast, ParseResult parseResult, IProgressMonitor monitor) {
+	public static CompilationUnit convert(AST ast, ParseResult parseResult, IJavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
-		ASTConverter converter = new ASTConverter(monitor);
+		ASTConverter converter = new ASTConverter(project != null, monitor);
 		converter.setAST(ast);
+		if (project != null) {
+			BindingTables tables = new BindingTables();
+			converter.ast.setBindingResolver(new DefaultBindingResolver(project, owner, tables));
+		} else {
+			converter.ast.setBindingResolver(new BindingResolver());
+		}
 		CompilationUnit result = converter.convert(parseResult.module);
 		result.setLineEndTable(parseResult.module.lineEnds);
 		result.problems = parseResult.module.problems;
@@ -241,7 +248,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
-		ASTConverter converter = new ASTConverter(null);
+		ASTConverter converter = new ASTConverter(false, null);
 		converter.setAST(ast);
 		Initializer init = converter.convert(initializer);
 		
@@ -255,7 +262,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
-		ASTConverter converter = new ASTConverter(null);
+		ASTConverter converter = new ASTConverter(false, null);
 		converter.setAST(ast);
 		Expression exp = converter.convert(expression);
 		
@@ -269,7 +276,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
-		ASTConverter converter = new ASTConverter(null);
+		ASTConverter converter = new ASTConverter(false, null);
 		converter.setAST(ast);
 		Statement stm = converter.convert(statement);
 		

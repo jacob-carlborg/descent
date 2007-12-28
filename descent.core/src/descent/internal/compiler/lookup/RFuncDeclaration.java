@@ -18,9 +18,9 @@ import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
-import descent.internal.compiler.parser.IImport;
 import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InlineScanState;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.LINK;
@@ -110,12 +110,12 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				fullSource.append(";");
 				
 				// Now append this module's imports
-				// TODO this is slow since it's using NaiveASTFlatter
-				// because imp is actualy an Import instance
 				for(IDsymbol s : rmodule.members()) {
-					IImport imp = s.isImport();
+					Import imp = s.isImport();
 					if (imp != null) {
-						fullSource.append(imp);
+						fullSource.append("import ");
+						fullSource.append(imp.toString());
+						fullSource.append(";");
 						importCount++;
 					}
 				}
@@ -218,7 +218,16 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 			try {
 				IMethod method = (IMethod) element;
 				String retTypeSig = method.getReturnType();
-				Type retType = getTypeFromSignature(retTypeSig);
+				
+				Type retType;
+				
+				if (isCtorDeclaration() != null) {
+					// For a constructor, the return type is the
+					// type of its class
+					retType = parent().type();
+				} else {
+					retType = getTypeFromSignature(retTypeSig);
+				}
 				
 				Arguments args = new Arguments();
 				

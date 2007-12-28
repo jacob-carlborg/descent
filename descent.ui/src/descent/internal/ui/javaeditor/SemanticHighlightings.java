@@ -151,6 +151,20 @@ public class SemanticHighlightings {
 	public static final String INTERFACE="interface"; //$NON-NLS-1$
 	
 	/**
+	 * A named preference part that controls the highlighting of structs.
+	 *
+	 * @since 3.2
+	 */
+	public static final String STRUCT="struct"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of structs.
+	 *
+	 * @since 3.2
+	 */
+	public static final String UNION="union"; //$NON-NLS-1$
+	
+	/**
 	 * A named preference part that controls the highlighting of annotations.
 	 *
 	 * @since 3.2
@@ -1300,6 +1314,150 @@ public class SemanticHighlightings {
 			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isClass();
 		}
 	}
+	
+	/**
+	 * Semantic highlighting for structs.
+	 * @since 3.2
+	 */
+	private static final class StructHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return STRUCT;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 80, 50);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_structs;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+
+			// 1: match types
+			SimpleName name= token.getNode();
+			ASTNode node= name.getParent();
+			int nodeType= node.getNodeType();
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION)
+				return false;
+			while (nodeType == ASTNode.QUALIFIED_NAME) {
+				node= node.getParent();
+				nodeType= node.getNodeType();
+				if (nodeType == ASTNode.IMPORT_DECLARATION)
+					return false;
+			}
+
+			// 2: match classes
+			IBinding binding= token.getBinding();
+			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isStruct();
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for unions.
+	 * @since 3.2
+	 */
+	private static final class UnionHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return UNION;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 80, 50);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_unions;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+
+			// 1: match types
+			SimpleName name= token.getNode();
+			ASTNode node= name.getParent();
+			int nodeType= node.getNodeType();
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION)
+				return false;
+			while (nodeType == ASTNode.QUALIFIED_NAME) {
+				node= node.getParent();
+				nodeType= node.getNodeType();
+				if (nodeType == ASTNode.IMPORT_DECLARATION)
+					return false;
+			}
+
+			// 2: match classes
+			IBinding binding= token.getBinding();
+			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isUnion();
+		}
+	}
 
 	/**
 	 * Semantic highlighting for enums.
@@ -1664,7 +1822,6 @@ public class SemanticHighlightings {
 	public static SemanticHighlighting[] getSemanticHighlightings() {
 		if (fgSemanticHighlightings == null)
 			fgSemanticHighlightings= new SemanticHighlighting[] {
-				/* TODO JDT UI semantic highlighting
 				new DeprecatedMemberHighlighting(),
 				new AutoboxHighlighting(),
 				new StaticFinalFieldHighlighting(),
@@ -1682,10 +1839,11 @@ public class SemanticHighlightings {
 				new MethodHighlighting(), // before types to get ctors
 				new TypeArgumentHighlighting(), // before other types
 				new ClassHighlighting(),
+				new StructHighlighting(),
+				new UnionHighlighting(),
 				new EnumHighlighting(),
 				new AnnotationHighlighting(), // before interfaces
 				new InterfaceHighlighting(),
-				*/
 			};
 		return fgSemanticHighlightings;
 	}

@@ -183,9 +183,9 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 						 * Two imports of the same module should be regarded as
 						 * the same.
 						 */
-						IImport i1 = s.isImport();
-						IImport i2 = s2.isImport();
-						if (!(i1 != null && i2 != null && (i1.mod() == i2.mod() || (i1.parent()
+						Import i1 = s.isImport();
+						Import i2 = s2.isImport();
+						if (!(i1 != null && i2 != null && (i1.mod == i2.mod || (i1.parent()
 								.isImport() == null
 								&& i2.parent().isImport() == null && equals(i1.ident(), i2.ident()))))) {
 							multiplyDefined(loc, s, s2, context);

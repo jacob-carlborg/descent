@@ -212,8 +212,10 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 			// int astLevel = ((ASTHolderCUInfo) info).astLevel;
 			// descent.core.dom.CompilationUnit cu = AST.convertCompilationUnit(astLevel, unit, contents, options, computeProblems, this, pm);
 			// ((ASTHolderCUInfo) info).ast = cu;
-			ASTConverter converter = new ASTConverter(pm);
+			// TODO check if need to resolve bindings here
+			ASTConverter converter = new ASTConverter(true, pm);
 			converter.setAST(AST.newAST(AST.D2));
+			converter.init(getJavaProject(), getOwner());
 			((ASTHolderCUInfo) info).ast = converter.convert(module);
 		}
 	} finally {

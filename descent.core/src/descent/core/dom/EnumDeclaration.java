@@ -335,10 +335,7 @@ public class EnumDeclaration extends Declaration {
 	 *    resolved
 	 */	
 	public final ITypeBinding resolveBinding() {
-		/* TODO binding
-		return this.ast.getBindingResolver().resolveType(this);
-		*/
-		return null;
+		return this.ast.getBindingResolver().resolveEnum(this);
 	}
 
 }

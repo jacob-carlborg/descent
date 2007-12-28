@@ -640,6 +640,24 @@ public interface ITypeBinding extends IBinding {
 	 * @since 3.1
 	 */
 	public boolean isEnum();
+	
+	/**
+	 * Returns whether this type binding represents a struct type.
+	 *
+	 * @return <code>true</code> if this object represents a struct type,
+	 *    and <code>false</code> otherwise
+	 * @since 3.1
+	 */
+	public boolean isStruct();
+	
+	/**
+	 * Returns whether this type binding represents a union type.
+	 *
+	 * @return <code>true</code> if this object represents a union type,
+	 *    and <code>false</code> otherwise
+	 * @since 3.1
+	 */
+	public boolean isUnion();
 
 	/**
 	 * Returns whether this type binding originated in source code.

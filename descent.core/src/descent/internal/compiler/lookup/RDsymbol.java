@@ -34,7 +34,6 @@ import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.IFuncDeclaration;
-import descent.internal.compiler.parser.IImport;
 import descent.internal.compiler.parser.IInterfaceDeclaration;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.INewDeclaration;
@@ -218,7 +217,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 		return null;
 	}
 
-	public IImport isImport() {
+	public Import isImport() {
 		return null;
 	}
 
@@ -579,6 +578,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 	
 	protected Type getTypeFromSignature(String signature) {
+		if (signature != null && signature.equals("C6Object")) {
+			signature = "C6object6Object";
+		}
+		
 		Type type = context.signatureToTypeCache.get(signature);
 		if (type != null) {
 			return type;
@@ -587,20 +590,21 @@ public class RDsymbol extends RNode implements IDsymbol {
 		// TODO optimize using IJavaProject#find and NameLookup
 		// TODO make an "extract number" function in order to avoid duplication
 		try {
-			if (signature.length() == 0) {
+			if (signature == null || signature.length() == 0) {
 				// TODO signal error
 				type = Type.tint32;
 			} else {
 				char first = signature.charAt(0);
 				
-				Object current = element.getJavaProject();
-				
 				switch(first) {
-				case 'E': // enum
-				case 'C': // class
-				case 'S': // struct
-				case 'T': // typedef
-					for(int i = 1; i < signature.length(); i++) {
+				case 'E':   // enum
+				case 'C':   // class
+				case 'S':   // struct
+				case 'T': { // typedef
+					Object current = element.getJavaProject();
+					
+					int i;
+					for(i = 1; i < signature.length(); i++) {
 						char c = signature.charAt(i);
 						int n = 0;
 						while(Character.isDigit(c)) {
@@ -624,39 +628,40 @@ public class RDsymbol extends RNode implements IDsymbol {
 							IEnumDeclaration e = symbol.isEnumDeclaration();
 							if (e != null) {
 								type = new TypeEnum(e);
-								type.deco = signature;
+								type.deco = signature.substring(0, i);
 							}
 							break;
 						case 'C':
 							IClassDeclaration c = symbol.isClassDeclaration();
 							if (c != null) {
 								type = new TypeClass(c);
-								type.deco = signature;
+								type.deco = signature.substring(0, i);
 							}
 							break;
 						case 'S':
 							IStructDeclaration s = symbol.isStructDeclaration();
 							if (s != null) {
 								type = new TypeStruct(s);
-								type.deco = signature;
+								type.deco = signature.substring(0, i);
 							}
 							break;
 						}						
 					}
 					break;
+				}
 				case 'D': { // delegate
 					type = new TypeDelegate(getTypeFromSignature(signature.substring(1)));
-					type.deco = signature;
+					type.deco = signature.substring(0, type.next.deco.length() + 1);
 					break;
 				}
 				case 'P': { // pointer
 					type = new TypePointer(getTypeFromSignature(signature.substring(1)));
-					type.deco = signature;
+					type.deco = signature.substring(0, type.next.deco.length() + 1);
 					break;
 				}
 				case 'A': { // dynamic array
 					type = new TypeDArray(getTypeFromSignature(signature.substring(1)));
-					type.deco = signature;
+					type.deco = signature.substring(0, type.next.deco.length() + 1);
 					break;
 				}
 				case 'G': { // static array
@@ -673,14 +678,14 @@ public class RDsymbol extends RNode implements IDsymbol {
 					}
 					
 					type = new TypeSArray(getTypeFromSignature(signature.substring(i)), new IntegerExp(n));
-					type.deco = signature;
+					type.deco = signature.substring(0, i + type.next.deco.length());
 					break;
 				}
 				case 'H': {// associative array
 					Type k = getTypeFromSignature(signature.substring(1));
 					Type v = getTypeFromSignature(signature.substring(1 + k.deco.length()));
 					type = new TypeAArray(k, v);
-					type.deco = signature;
+					type.deco = signature.substring(0, k.deco.length() + v.deco.length() + 1);
 					break;
 				}
 				case 'F': // Type function
@@ -715,6 +720,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 					
 					// TODO varargs
 					type = new TypeFunction(args, tret, 0, link);
+					type.deco = signature.substring(0, i + tret.deco.length());
 					break;
 				case 'X': // Argument break
 				case 'Y':

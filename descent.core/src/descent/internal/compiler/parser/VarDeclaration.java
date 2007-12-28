@@ -588,6 +588,9 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	public String getSignature() {
+		if (parent == null) {
+			return null;
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("Q");
 		sb.append(parent.mangle((SemanticContext) null));

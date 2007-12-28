@@ -38,7 +38,7 @@ public class DsymbolExp extends Expression {
 		// Declaration d;
 		IClassDeclaration cd;
 		IClassDeclaration thiscd = null;
-		IImport imp;
+		Import imp;
 		IPackage pkg;
 		Type t;
 
@@ -144,7 +144,7 @@ public class DsymbolExp extends Expression {
 			if (imp != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(loc, imp.pkg());
+				ie = new ScopeExp(loc, imp.pkg);
 				return ie.semantic(sc, context);
 			}
 			pkg = s.isPackage();

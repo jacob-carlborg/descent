@@ -2,11 +2,8 @@ package descent.tests.lookup;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 
-import descent.core.IClasspathEntry;
 import descent.core.ICompilationUnit;
-import descent.core.JavaCore;
 import descent.tests.model.AbstractModelTest;
 
 /*
@@ -301,24 +298,6 @@ public class Lookup_Test extends AbstractModelTest {
 	protected ICompilationUnit one;
 	protected ICompilationUnit two;
 	protected ICompilationUnit three;
-	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		javaProject.open(null);
-		
-		IClasspathEntry[] oldEntries = javaProject.getRawClasspath();		
-		IClasspathEntry entry = JavaCore.newLibraryEntry(
-				new Path("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos"), 
-				null, null);
-		
-		IClasspathEntry[] newEntries = new IClasspathEntry[oldEntries.length + 1];
-		System.arraycopy(oldEntries, 0, newEntries, 0, oldEntries.length);
-		newEntries[oldEntries.length] = entry;
-		
-		javaProject.setRawClasspath(newEntries, null);
-	}
 	
 	protected ICompilationUnit one(String contents) throws Exception {
 		return one = createCompilationUnit(

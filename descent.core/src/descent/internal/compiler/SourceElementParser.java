@@ -364,6 +364,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	private char[] getSignature(Type t) {
+		if (t == null) {
+			return null;
+		}
+		
 		String s = t.getSignature();
 		if (s == null) {
 			return null;
@@ -864,46 +868,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 			
 			int flags = node.isstatic ? Flags.AccStatic : 0;
 			
-			requestor.acceptImport(start, end, importToString(node), false, flags);
+			requestor.acceptImport(start, end, node.toString(), false, flags);
 			
 			node = node.next;
 		}
 		pushLevelInAttribDeclarationStack();
 		return false;
-	}
-	
-	private String importToString(Import node) {
-		StringBuilder buffer = new StringBuilder();
-		if (node.aliasId != null) {
-			buffer.append(node.aliasId);
-			buffer.append(" = ");
-		}
-		if (node.packages != null) {
-			for(int i = 0; i < node.packages.size(); i++) {
-				if (i > 0) {
-					buffer.append('.');
-				}
-				buffer.append(node.packages.get(i));
-			}
-			buffer.append('.');
-		}
-		if (node.id != null) {
-			buffer.append(node.id);
-		}
-		if (node.names != null) {
-			buffer.append(" : ");
-			for(int i = 0; i < node.names.size(); i++) {
-				if (i > 0) {
-					buffer.append(", ");
-				}
-				if (node.aliases.get(i) != null) {
-					buffer.append(node.aliases.get(i));
-					buffer.append(" = ");
-				}
-				buffer.append(node.names.get(i));
-			}
-		}
-		return buffer.toString();
 	}
 
 	public boolean visit(ProtDeclaration node) {

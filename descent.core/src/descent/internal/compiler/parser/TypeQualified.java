@@ -150,7 +150,7 @@ public abstract class TypeQualified extends Type {
 		t = s.getType();
 		if (t == null) {
 			// If the symbol is an import, try looking inside the import
-			IImport si;
+			Import si;
 
 			si = s.isImport();
 			if (si != null) {

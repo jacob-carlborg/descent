@@ -78,7 +78,7 @@ public interface IDsymbol extends INode {
 	
 	Type getType();
 	
-	IImport isImport();
+	Import isImport();
 	
 	boolean isforwardRef();
 	

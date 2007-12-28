@@ -588,5 +588,39 @@ public class SemanticMixin {
 			}
 		}
 	}
+	
+	public static String toString(Import node) {
+		StringBuilder buffer = new StringBuilder();
+		if (node.aliasId != null) {
+			buffer.append(node.aliasId);
+			buffer.append(" = ");
+		}
+		if (node.packages != null) {
+			for(int i = 0; i < node.packages.size(); i++) {
+				if (i > 0) {
+					buffer.append('.');
+				}
+				buffer.append(node.packages.get(i));
+			}
+			buffer.append('.');
+		}
+		if (node.id != null) {
+			buffer.append(node.id);
+		}
+		if (node.names != null) {
+			buffer.append(" : ");
+			for(int i = 0; i < node.names.size(); i++) {
+				if (i > 0) {
+					buffer.append(", ");
+				}
+				if (node.aliases.get(i) != null) {
+					buffer.append(node.aliases.get(i));
+					buffer.append(" = ");
+				}
+				buffer.append(node.names.get(i));
+			}
+		}
+		return buffer.toString();
+	}
 
 }

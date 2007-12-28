@@ -896,19 +896,15 @@ public class ASTParser {
 			}
 			
 			AST ast = AST.newAST(this.apiLevel);
-			
-			// Mark all nodes created by the parser as originals
-			int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
-			ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-			ast.setBindingResolver(new BindingResolver());
-			
-			try {
-				CompilationUnit unit = CompilationUnitResolver.convert(ast, result, monitor);
-				unit.setJavaElement(element);
-				return unit;
-			} finally {
-				ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+			CompilationUnit unit;
+			if (needToResolveBindings) {
+				unit = CompilationUnitResolver.convert(ast, result, compilationUnitSource.getJavaProject(), compilationUnitSource.getOwner(), monitor);	
+			} else {
+				unit = CompilationUnitResolver.convert(ast, result, null, null, monitor);
 			}
+			
+			unit.setJavaElement(element);
+			return unit;
 		}		
 		throw new IllegalStateException();
 	}

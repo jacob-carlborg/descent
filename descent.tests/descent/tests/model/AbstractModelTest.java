@@ -10,7 +10,9 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 
+import descent.core.IClasspathEntry;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
@@ -27,6 +29,19 @@ public abstract class AbstractModelTest extends TestCase {
 	protected void setUp() throws Exception {
 		project = createProject("D");
 		javaProject = JavaCore.create(project);
+		
+		javaProject.open(null);
+		
+		IClasspathEntry[] oldEntries = javaProject.getRawClasspath();		
+		IClasspathEntry entry = JavaCore.newLibraryEntry(
+				new Path("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos"), 
+				null, null);
+		
+		IClasspathEntry[] newEntries = new IClasspathEntry[oldEntries.length + 1];
+		System.arraycopy(oldEntries, 0, newEntries, 0, oldEntries.length);
+		newEntries[oldEntries.length] = entry;
+		
+		javaProject.setRawClasspath(newEntries, null);
 	}
 	
 	@Override

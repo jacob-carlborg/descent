@@ -274,7 +274,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("M");
+		sb.append("Q");
 		sb.append(parent.mangle((SemanticContext) null));
 		sb.append(ident.length);
 		sb.append(ident);
