@@ -110,5 +110,10 @@ public class ProtDeclaration extends AttribDeclaration {
 		buf.writestring(p);
 		super.toCBuffer(buf, hgs, context);
 	}
+	
+	@Override
+	public String getSignature() {
+		return parent.getSignature();
+	}
 
 }

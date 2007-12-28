@@ -32,10 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @see IPackageFragmentRoot#attachSource(org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath, IProgressMonitor)
  */
  
-public interface IClassFile extends ICompilationUnit
-/* TODO JDT code completion
-, ICodeAssist 
-*/ 
+public interface IClassFile extends ICompilationUnit, ICodeAssist
 {
 	
 /**

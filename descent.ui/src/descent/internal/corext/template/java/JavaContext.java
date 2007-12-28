@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.core.JavaModelException;
 import descent.core.NamingConventions;
 import descent.core.Signature;
 import descent.core.dom.rewrite.ImportRewrite;
@@ -258,13 +259,11 @@ public class JavaContext extends CompilationUnitContext {
 			fCompletion= new CompilationUnitCompletion(compilationUnit);
 			
 			if (compilationUnit != null) {
-				/* TODO JDT UI code completion
 				try {
 					compilationUnit.codeComplete(getStart(), fCompletion);
 				} catch (JavaModelException e) {
 					// ignore
 				}
-				*/
 			}
 		}
 		

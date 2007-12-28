@@ -7,9 +7,11 @@ be an alias template parameter, the signature is the following:
   ?fqn --> unresolved
   *exp --> typeof
 
-Also, to make reference to an alias, typdef or variable in the source
-field, that is a top level declaration or a field of a class, interface,
-etc, the signature is the same for types, but the initial character
+Also, to make reference to an enum member, alias, typdef, variable 
+or enum member in the source code, that is a top level declaration, 
+the signature is the same for types, but the initial character
 is Q, i.e.:
 
-  Q4test1foo --> variable foo in module test.
+  Q4test1foo     --> variable, foo in module test.
+  Q4test3Foo3foo --> foo enum member, ailas, typedef, variable or enum memeber
+                     in module test, declaration Foo

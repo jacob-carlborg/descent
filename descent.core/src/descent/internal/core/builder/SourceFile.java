@@ -100,6 +100,10 @@ public char[][] getPackageName() {
 	int lastIndex = CharOperation.lastIndexOf('/', typeName);
 	return CharOperation.splitOn('/', typeName, 0, lastIndex);
 }
+public String getFullyQualifiedName() {
+	// TODO Descent Auto-generated method stub
+	return null;
+}
 public int hashCode() {
 	return this.initialTypeName.hashCode();
 }

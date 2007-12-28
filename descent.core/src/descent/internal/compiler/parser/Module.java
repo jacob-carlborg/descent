@@ -40,7 +40,11 @@ public class Module extends Package implements IModule {
 
 	public File srcfile; // absolute path
 	public char[] arg;
-	public String moduleName; // foo.bar
+	
+	// Very important: this field must be set to the module name
+	// if signatures are to be requested
+	public String moduleName; // foo.bar 
+	private String signature;
 
 	public Module(String filename, IdentifierExp ident) {
 		super(ident);
@@ -385,6 +389,20 @@ public class Module extends Package implements IModule {
 	
 	public IModuleDeclaration md() {
 		return md;
+	}
+	
+	@Override
+	public String getSignature() {
+		if (signature == null) {
+			StringBuilder sig = new StringBuilder();
+			String[] pieces = moduleName.split("\\.");
+			for(String piece : pieces) {
+				sig.append(piece.length());
+				sig.append(piece);
+			}
+			signature = sig.toString();
+		}
+		return signature;
 	}
 
 	// PERHAPS void inlineScan();

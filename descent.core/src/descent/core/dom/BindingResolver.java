@@ -296,6 +296,25 @@ class BindingResolver {
 	ITypeBinding resolveEnum(EnumDeclaration type) {
 		return null;
 	}
+	
+	/**
+	 * Resolves the given enum member declaration and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>EnumMember.resolveBinding</code>
+	 * forwards to this method.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param member the enum member declaration of interest
+	 * @return the binding for the given enum memeber declaration, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	IVariableBinding resolveEnumMember(EnumMember member) {
+		return null;
+	}
 
 	/**
 	 * Resolves the given type and returns the type binding for it.
@@ -338,7 +357,7 @@ class BindingResolver {
 	 * @return the binding for the given variable declaration, or 
 	 *    <code>null</code> if no binding is available
 	 */
-	IVariableBinding resolveVariable(VariableDeclarationFragment variable) {
+	IVariableBinding resolveVariableFragment(VariableDeclarationFragment variable) {
 		return null;
 	}
 	

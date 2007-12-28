@@ -24,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 
 import descent.core.IClassFile;
+import descent.core.ICodeAssist;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.ISourceRange;
@@ -187,7 +188,6 @@ public class SelectionConverter {
 	}
 
 	public static IJavaElement[] codeResolve(IJavaElement input, ITextSelection selection) throws JavaModelException {
-		/* TODO JDT UI code completion
 			if (input instanceof ICodeAssist) {
 				if (input instanceof ICompilationUnit) {
 					JavaModelUtil.reconcile((ICompilationUnit) input);
@@ -196,7 +196,6 @@ public class SelectionConverter {
 				if (elements != null && elements.length > 0)
 					return elements;
 			}
-		*/
 			return EMPTY_RESULT;
 	}
 	

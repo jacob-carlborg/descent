@@ -549,5 +549,9 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	public Type type() {
 		return null;
 	}
+	
+	public String getSignature() {
+		return null;
+	}
 
 }

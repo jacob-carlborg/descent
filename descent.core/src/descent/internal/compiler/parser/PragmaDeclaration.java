@@ -142,5 +142,10 @@ public class PragmaDeclaration extends AttribDeclaration {
 	public int getErrorLength() {
 		return 6; // "pragma".length()
 	}
+	
+	@Override
+	public String getSignature() {
+		return parent.getSignature();
+	}
 
 }

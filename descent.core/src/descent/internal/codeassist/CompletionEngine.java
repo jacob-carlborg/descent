@@ -263,7 +263,7 @@ public class CompletionEngine extends Engine
 				completeJavadoc(node);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.log(e);
 		} finally {
 			this.requestor.endReporting();
 		}

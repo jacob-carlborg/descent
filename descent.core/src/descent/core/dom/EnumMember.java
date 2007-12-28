@@ -324,4 +324,19 @@ public class EnumMember extends ASTNode {
 	;
 	}
 	
+	/**
+	 * Resolves and returns the binding for the enum member declared
+	 * in this enum member declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public IVariableBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveEnumMember(this);
+	}
+	
 }

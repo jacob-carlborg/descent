@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.util.List;
 
 import junit.framework.TestCase;
+import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
@@ -17,8 +18,10 @@ import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
+import descent.internal.compiler.lookup.DmdModuleFinder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.SemanticContext;
 
 public abstract class Parser_Test extends TestCase {
 	
@@ -137,12 +140,29 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected ParseResult getModuleSemantic(String source, int apiLevel) {
-		ParseResult result = getParseResult(source, apiLevel);
+		final ParseResult result = getParseResult(source, apiLevel);
 		
 		Global global = new Global();
 		global.params.warnings = true;
 		
-		//result.context = CompilationUnitResolver.resolve(result.module, global);
+		SemanticContext context = new SemanticContext(new IProblemRequestor() {
+			public void acceptProblem(IProblem problem) {
+				result.module.problems.add(problem);
+			}
+			public void beginReporting() {
+			}
+			public void endReporting() {
+			}
+			public boolean isActive() {
+				return false;
+			}
+			
+		}, result.module, null, new DmdModuleFinder(global), global);
+		
+		if (!(result.module.problems != null && result.module.problems.size() > 0)) {
+			result.module.semantic(context);
+		}
+		
 		return result;
 	}
 	

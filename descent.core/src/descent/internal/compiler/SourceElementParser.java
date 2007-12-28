@@ -99,6 +99,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		if (unit instanceof ICompilationUnit) {
 			ICompilationUnit cunit = (ICompilationUnit) unit;
 			try {
+				module.moduleName = cunit.getFullyQualifiedName();
 				CompilationUnitResolver.resolve(module, cunit.getJavaProject(), cunit.getOwner());
 			} catch (JavaModelException e) {
 				Util.log(e);

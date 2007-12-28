@@ -82,6 +82,10 @@ public char[][] getPackageName() {
 	if (length <= 1) return CharOperation.NO_CHAR_CHAR;
 	return CharOperation.subarray(this.compoundName, 0, length - 1);
 }
+public String getFullyQualifiedName() {
+	// TODO Descent check this
+	return new String(getQualifiedName());
+}
 /*
  * Returns the fully qualified name of the main type of the compilation unit
  * or the main type of the .java file that defined the class file.

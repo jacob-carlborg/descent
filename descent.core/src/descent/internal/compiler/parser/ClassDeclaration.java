@@ -753,7 +753,8 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 				|| equals(ident, Id.TypeInfo_Class)
 				|| equals(ident, Id.TypeInfo_Typedef)
 				|| equals(ident, Id.TypeInfo_Tuple)
-				|| this == context.ClassDeclaration_object || this == context.ClassDeclaration_classinfo
+				|| this == context.ClassDeclaration_object 
+				|| this == context.ClassDeclaration_classinfo
 				|| this == context.Module_moduleinfo
 				|| ident.toChars().startsWith("TypeInfo_")) {
 			parent = null;

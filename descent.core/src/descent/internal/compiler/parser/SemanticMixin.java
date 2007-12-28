@@ -622,5 +622,30 @@ public class SemanticMixin {
 		}
 		return buffer.toString();
 	}
+	
+	/**
+	 * Only for var, typedef, alias and enum member.
+	 */
+	public static String getSignature(IDsymbol aThis) {
+		if (aThis.parent() == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("Q");
+		
+		// If my parent is a class, then the signature will start
+		// with the letter C, so remove it. Same for other types
+		String parentSignature = aThis.parent().getSignature();
+		if (parentSignature.length() > 0 && 
+				!Character.isDigit(parentSignature.charAt(0))) {
+			sb.append(parentSignature.substring(1));
+		} else {
+			sb.append(parentSignature);
+		}
+		
+		sb.append(aThis.ident().length);
+		sb.append(aThis.ident());
+		return sb.toString();
+	}
 
 }

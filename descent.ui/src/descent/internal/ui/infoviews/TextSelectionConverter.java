@@ -4,6 +4,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ui.IEditorInput;
 
 import descent.core.IClassFile;
+import descent.core.ICodeAssist;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.JavaModelException;
@@ -66,7 +67,6 @@ class TextSelectionConverter {
 	}
 
 	private static IJavaElement[] codeResolve(IJavaElement input, ITextSelection selection) throws JavaModelException {
-			/* TODO JDT UI code assist
 			if (input instanceof ICodeAssist) {
 				if (input instanceof ICompilationUnit) {
 					ICompilationUnit cunit= (ICompilationUnit)input;
@@ -77,7 +77,6 @@ class TextSelectionConverter {
 				if (elements != null && elements.length > 0)
 					return elements;
 			}
-			*/
 			return EMPTY_RESULT;
 	}
 

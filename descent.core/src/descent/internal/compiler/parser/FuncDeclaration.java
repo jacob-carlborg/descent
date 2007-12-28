@@ -110,7 +110,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
 			// Template args?
 			TreeVisitor.acceptChildren(visitor, parameters);

@@ -138,5 +138,10 @@ public class StorageClassDeclaration extends AttribDeclaration {
 
 		super.toCBuffer(buf, hgs, context);
 	}
+	
+	@Override
+	public String getSignature() {
+		return parent.getSignature();
+	}
 
 }

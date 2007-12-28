@@ -233,5 +233,10 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 	public void members(Dsymbols members) {
 		this.members = members;
 	}
+	
+	@Override
+	public String getSignature() {
+		return type().deco;
+	}
 
 }

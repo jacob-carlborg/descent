@@ -116,5 +116,11 @@ public class StaticAssert extends Dsymbol {
 		buf.writestring(");");
 		buf.writenl();
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

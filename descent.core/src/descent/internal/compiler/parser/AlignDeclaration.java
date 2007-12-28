@@ -60,5 +60,10 @@ public class AlignDeclaration extends AttribDeclaration {
 		buf.data.append("align (" + salign + ")");
 		super.toCBuffer(buf, hgs, context);
 	}
+	
+	@Override
+	public String getSignature() {
+		return parent.getSignature();
+	}
 
 }

@@ -273,12 +273,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	// Specific for Descent
 
 	public String getSignature() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Q");
-		sb.append(parent.mangle((SemanticContext) null));
-		sb.append(ident.length);
-		sb.append(ident);
-		return sb.toString();
+		return SemanticMixin.getSignature(this);
 	}
 
 }

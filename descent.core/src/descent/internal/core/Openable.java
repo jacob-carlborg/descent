@@ -33,6 +33,7 @@ import descent.core.IOpenable;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.internal.codeassist.CompletionEngine;
+import descent.internal.codeassist.SelectionEngine;
 import descent.internal.core.util.Util;
 
 
@@ -143,7 +144,11 @@ protected void codeComplete(descent.internal.compiler.env.ICompilationUnit cu, d
 	}
 }
 protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUnit cu, int offset, int length, WorkingCopyOwner owner) throws JavaModelException {
-	return NO_ELEMENTS;
+	// TODO Descent improve performance?
+	JavaProject project = (JavaProject)getJavaProject();
+	
+	SelectionEngine engine = new SelectionEngine(project.getOptions(true), project, owner);
+	return engine.select(cu, offset, length);
 	/* TODO JDT code select
 	PerformanceStats performanceStats = SelectionEngine.PERF
 		? PerformanceStats.getStats(JavaModelManager.SELECTION_PERF, this)

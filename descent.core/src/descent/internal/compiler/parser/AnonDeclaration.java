@@ -198,5 +198,11 @@ public class AnonDeclaration extends AttribDeclaration {
 	public int getLineNumber() {
 		return loc.linnum;
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

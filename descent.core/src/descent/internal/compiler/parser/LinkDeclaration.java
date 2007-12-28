@@ -105,5 +105,10 @@ public class LinkDeclaration extends AttribDeclaration {
 	public String toChars(SemanticContext context) {
 		return "extern ()";
 	}
+	
+	@Override
+	public String getSignature() {
+		return parent.getSignature();
+	}
 
 }

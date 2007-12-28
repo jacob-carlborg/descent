@@ -54,9 +54,7 @@ public class RModule extends RPackage implements IModule {
 	@Override
 	public IdentifierExp ident() {
 		if (ident == null) {
-			// Remove extension
-			String name = element.getElementName();
-			ident = new IdentifierExp(name.substring(0, name.lastIndexOf('.')).toCharArray());
+			ident = new IdentifierExp(((ICompilationUnit) element).getModuleName().toCharArray());
 		}
 		return ident;
 	}

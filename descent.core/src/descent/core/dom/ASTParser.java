@@ -825,7 +825,7 @@ public class ASTParser {
 				// use a BasicCompilation that caches the source instead of using the compilationUnitSource directly 
 				// (if it is a working copy, the source can change between the parse and the AST convertion)
 				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=75632)
-				sourceUnit = new BasicCompilationUnit(sourceUnit.getContents(), sourceUnit.getPackageName(), new String(sourceUnit.getFileName()), this.project);
+				sourceUnit = new BasicCompilationUnit(sourceUnit.getContents(), sourceUnit.getPackageName(), sourceUnit.getFullyQualifiedName(), new String(sourceUnit.getFileName()), this.project);
 				element = this.compilationUnitSource;
 			/* TODO JDT binary
 			} else if (this.classFileSource != null) {
@@ -857,7 +857,7 @@ public class ASTParser {
 			*/
 			} else if (this.rawSource != null) {
 				needToResolveBindings = this.resolveBindings && this.unitName != null && this.project != null && this.compilerOptions != null;
-				sourceUnit = new BasicCompilationUnit(this.rawSource, null, this.unitName == null ? "" : this.unitName, this.project); //$NON-NLS-1$
+				sourceUnit = new BasicCompilationUnit(this.rawSource, null, this.unitName == null ? "" : this.unitName, "", this.project); //$NON-NLS-1$
 			} else {
 				throw new IllegalStateException();
 			}

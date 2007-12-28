@@ -122,6 +122,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 	public IModule getModule() {
 		return SemanticMixin.getModule(this);
 	}
+	
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public Type getType() {
 		return null;

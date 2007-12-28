@@ -19,7 +19,9 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import descent.core.ICodeAssist;
 import descent.core.IJavaElement;
+import descent.core.JavaModelException;
 import descent.internal.ui.text.JavaWordFinder;
 
 
@@ -59,21 +61,19 @@ public class JavaElementHyperlinkDetector implements IHyperlinkDetector {
 		if (input == null)
 			return null;
 
-		// try {
+		 try {
 			IDocument document= fTextEditor.getDocumentProvider().getDocument(fTextEditor.getEditorInput());
 			IRegion wordRegion= JavaWordFinder.findWord(document, offset);
 			if (wordRegion == null)
 				return null;
 			
-			/* TODO JDT UI code completion
 			IJavaElement[] elements= null;
 			elements= ((ICodeAssist) input).codeSelect(wordRegion.getOffset(), wordRegion.getLength());
 			if (elements != null && elements.length > 0)
 				return new IHyperlink[] {new JavaElementHyperlink(wordRegion, openAction)};
-			*/
-		// } catch (JavaModelException e) {
-		// 	return null;
-		// }
+		 } catch (JavaModelException e) {
+		 	return null;
+		 }
 
 		return null;
 	}

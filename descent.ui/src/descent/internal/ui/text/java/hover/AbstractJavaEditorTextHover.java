@@ -33,6 +33,7 @@ import org.osgi.framework.Bundle;
 
 import descent.core.ICodeAssist;
 import descent.core.IJavaElement;
+import descent.core.JavaModelException;
 import descent.internal.corext.util.Messages;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.WorkingCopyManager;
@@ -108,7 +109,6 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 		if (hoverRegion.getLength() == 0)
 			return null;
 		
-		/* TODO JDT UI code completion
 		ICodeAssist resolve= getCodeAssist();
 		if (resolve != null) {
 			try {
@@ -126,7 +126,6 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 				return null;
 			}
 		}
-		*/
 		
 		return null;
 	}

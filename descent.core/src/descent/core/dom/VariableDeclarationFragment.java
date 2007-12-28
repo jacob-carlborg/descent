@@ -247,7 +247,7 @@ public class VariableDeclarationFragment extends ASTNode {
 	 *    resolved
 	 */	
 	public IVariableBinding resolveBinding() {
-		return this.ast.getBindingResolver().resolveVariable(this);
+		return this.ast.getBindingResolver().resolveVariableFragment(this);
 	}
 
 }

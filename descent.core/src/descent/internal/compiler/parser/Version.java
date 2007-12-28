@@ -24,5 +24,11 @@ public class Version extends Dsymbol {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

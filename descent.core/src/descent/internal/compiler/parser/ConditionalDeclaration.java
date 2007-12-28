@@ -94,5 +94,10 @@ public class ConditionalDeclaration extends AttribDeclaration {
 		}
 		buf.writenl();
 	}
+	
+	@Override
+	public String getSignature() {
+		return parent.getSignature();
+	}
 
 }

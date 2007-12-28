@@ -182,9 +182,7 @@ public class CUPositionCompletionProcessor implements IContentAssistProcessor, I
 			cu.getBuffer().setContents(cuString);
 			int cuPrefixLength= fCompletionContextRequestor.getBeforeString().length();
 			fCompletionRequestor.setOffsetReduction(cuPrefixLength);
-			/* TODO JDT UI code completion
 			cu.codeComplete(cuPrefixLength + documentOffset, fCompletionRequestor);
-			*/
 			
 			JavaCompletionProposal[] proposals= fCompletionRequestor.getResults();
 			if (proposals.length == 0) {

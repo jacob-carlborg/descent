@@ -67,7 +67,7 @@ public class VariableBinding implements IVariableBinding {
 
 	public boolean isField() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public boolean isParameter() {
@@ -93,13 +93,15 @@ public class VariableBinding implements IVariableBinding {
 	}
 
 	public int getModifiers() {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return field.getFlags();
+		} catch (JavaModelException e) {
+			return 0;
+		}
 	}
 
 	public boolean isDeprecated() {
-		// TODO Auto-generated method stub
-		return false;
+		return (getModifiers() & Modifier.DEPRECATED) != 0;
 	}
 
 	public boolean isEqualTo(IBinding binding) {

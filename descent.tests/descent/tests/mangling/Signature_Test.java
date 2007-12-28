@@ -3,7 +3,9 @@ package descent.tests.mangling;
 import descent.core.dom.AST;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -60,6 +62,7 @@ public class Signature_Test extends Parser_Test {
 	public void testClass() {
 		String s = "module main; class Foo { }";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
 		assertEquals("C4main3Foo", c.getSignature());
@@ -68,6 +71,7 @@ public class Signature_Test extends Parser_Test {
 	public void testStruct() {
 		String s = "module main; struct Foo { }";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		StructDeclaration c = (StructDeclaration) m.members.get(1);
 		assertEquals("S4main3Foo", c.getSignature());
@@ -76,30 +80,85 @@ public class Signature_Test extends Parser_Test {
 	public void testEnum() {
 		String s = "module main; enum Foo { x }";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		EnumDeclaration c = (EnumDeclaration) m.members.get(1);
 		assertEquals("E4main3Foo", c.getSignature());
 	}
 	
+	public void testEnumMember() {
+		String s = "module main; enum Foo { x }";
+		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
+		
+		EnumDeclaration c = (EnumDeclaration) m.members.get(1);
+		EnumMember em = (EnumMember) c.members.get(0);
+		assertEquals("Q4main3Foo1x", em.getSignature());
+	}
+	
 	public void testTypedef() {
 		String s = "module main; typedef int Foo;";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		TypedefDeclaration c = (TypedefDeclaration) m.members.get(1);
-		assertEquals("T4main3Foo", c.getSignature());
+		assertEquals("Q4main3Foo", c.getSignature());
 	}
 	
 	public void testVar() {
 		String s = "module main; int Foo;";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		VarDeclaration c = (VarDeclaration) m.members.get(1);
 		assertEquals("Q4main3Foo", c.getSignature());
 	}
 	
+	public void testVarInClass() {
+		String s = "module main; class Foo { int x; }";
+		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
+		
+		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
+		VarDeclaration v = (VarDeclaration) c.members.get(0);
+		assertEquals("Q4main3Foo1x", v.getSignature());
+	}
+	
+	public void testTypedefInClass() {
+		String s = "module main; class Foo { typedef int x; }";
+		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
+		
+		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
+		TypedefDeclaration v = (TypedefDeclaration) c.members.get(0);
+		assertEquals("Q4main3Foo1x", v.getSignature());
+	}
+	
+	public void testAliasInClass() {
+		String s = "module main; class Foo { alias int x; }";
+		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
+		
+		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
+		AliasDeclaration v = (AliasDeclaration) c.members.get(0);
+		assertEquals("Q4main3Foo1x", v.getSignature());
+	}
+	
+	public void testVarInClassInDebug() {
+		String s = "module main; debug { } else { class Foo { int x; } }";
+		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
+		
+		ConditionalDeclaration cd = (ConditionalDeclaration) m.members.get(1);
+		ClassDeclaration c = (ClassDeclaration) cd.elsedecl.get(0);
+		VarDeclaration v = (VarDeclaration) c.members.get(0);
+		assertEquals("Q4main3Foo1x", v.getSignature());
+	}
+	
 	public void testFunction() {
 		String s = "module main; void Foo() { }";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		FuncDeclaration c = (FuncDeclaration) m.members.get(1);
 		assertEquals("O4main3FooFZv", c.getSignature());
@@ -109,6 +168,7 @@ public class Signature_Test extends Parser_Test {
 	public void testTemplate() {
 		String s = "module main; template Foo() { }";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		TemplateDeclaration c = (TemplateDeclaration) m.members.get(1);
 		assertEquals("N4main3Foo", c.getSignature());
@@ -117,14 +177,17 @@ public class Signature_Test extends Parser_Test {
 	public void testAlias() {
 		String s = "module main; alias int Foo;";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
 		
 		AliasDeclaration c = (AliasDeclaration) m.members.get(1);
-		assertEquals("M4main3Foo", c.getSignature());
+		assertEquals("Q4main3Foo", c.getSignature());
 	}
 	
 	private void assertVarType(String expected, String source) {
 		String s = source + " x;";
 		Module m = getModuleSemantic(s, AST.D1).module;
+		m.moduleName = "main";
+		
 		VarDeclaration v = (VarDeclaration) m.members.get(1);
 		assertEquals(expected, v.type.getSignature());
 	}

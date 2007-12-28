@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IMethod;
 import descent.core.IPackageFragment;
@@ -78,35 +79,11 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				
 				// Build import statement to my module
 				RModule rmodule = (RModule) getModule();
-				IJavaElement parent = rmodule.element;
-				
-				StringBuilder sbImportMe = new StringBuilder();
-			loop:
-				while(parent != null) {
-					switch(parent.getElementType()) {
-					case IJavaElement.COMPILATION_UNIT:
-						sbImportMe.insert(0, parent.getElementName().substring(0, parent.getElementName().lastIndexOf('.')));
-						break;
-					case IJavaElement.PACKAGE_FRAGMENT:
-						if (((IPackageFragment) parent).isDefaultPackage()) {
-							break loop;
-						} else {
-							if (sbImportMe.length() > 0) {
-								sbImportMe.insert(0, '.');
-							}
-						}
-						sbImportMe.insert(0, parent.getElementName());
-						break;
-					default:
-						break loop;
-					}
-					
-					parent = parent.getParent();
-				}
+				ICompilationUnit unit = (ICompilationUnit) rmodule.element;				
 				
 				StringBuilder fullSource = new StringBuilder();
 				fullSource.append("import ");
-				fullSource.append(sbImportMe);
+				fullSource.append(unit.getFullyQualifiedName());
 				fullSource.append(";");
 				
 				// Now append this module's imports

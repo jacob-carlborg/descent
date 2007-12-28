@@ -159,6 +159,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				// TODO JDT verify this
 				ParseResult parseResult = CompilationUnitResolver.parse(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents(), workingCopy.getFileName(), null, true);
 				Module module = parseResult.module;
+				module.moduleName = workingCopy.getFullyQualifiedName();
 				
 			    //CompilationUnitDeclaration unit = null;
 			    try {

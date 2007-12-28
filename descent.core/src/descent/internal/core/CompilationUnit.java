@@ -1126,6 +1126,36 @@ public void save(IProgressMonitor pm, boolean force) throws JavaModelException {
 		super.save(pm, force);
 	}
 }
+public String getModuleName() {
+	return this.name.substring(0, this.name.lastIndexOf('.'));
+}
+public String getFullyQualifiedName() {
+	StringBuilder sb = new StringBuilder();
+	sb.insert(0, getModuleName());
+	
+	JavaElement p = parent;
+	loop:
+		while(p != null) {
+			switch(p.getElementType()) {
+			case IJavaElement.PACKAGE_FRAGMENT:
+				if (((IPackageFragment) p).isDefaultPackage()) {
+					break loop;
+				} else {
+					if (sb.length() > 0) {
+						sb.insert(0, '.');
+					}
+				}
+				sb.insert(0, p.getElementName());
+				break;
+			default:
+				break loop;
+			}
+			
+			p = p.parent;
+		}
+	
+	return sb.toString();
+}
 /**
  * Debugging purposes
  */

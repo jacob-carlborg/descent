@@ -158,12 +158,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	}
 
 	public String getSignature() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Q");
-		sb.append(parent.mangle((SemanticContext) null));
-		sb.append(ident.length);
-		sb.append(ident);
-		return sb.toString();
+		return SemanticMixin.getSignature(this);
 	}
 	
 	public Type basetype() {

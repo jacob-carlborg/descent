@@ -20,6 +20,7 @@ import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.internal.compiler.ICompilerRequestor;
@@ -153,6 +154,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
+		result.module.moduleName = sourceUnit.getFullyQualifiedName();
 		result.context = resolve(result.module, javaProject, owner);
 		return result;
 	}

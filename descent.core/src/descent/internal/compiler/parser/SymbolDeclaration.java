@@ -28,5 +28,11 @@ public class SymbolDeclaration extends Declaration implements ISymbolDeclaration
     public Symbol sym() {
     	return sym;
     }
+    
+    @Override
+    public String getSignature() {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
 	
 }

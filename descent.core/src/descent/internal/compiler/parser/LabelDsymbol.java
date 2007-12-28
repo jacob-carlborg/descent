@@ -30,5 +30,11 @@ public class LabelDsymbol extends Dsymbol {
 	public LabelDsymbol isLabel() {
 		return this;
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -277,6 +277,12 @@ public class Import extends Dsymbol {
 	}
 	
 	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 		if (aliasId != null) {

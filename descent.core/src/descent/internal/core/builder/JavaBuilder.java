@@ -126,6 +126,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 					filename
 					);
 			Module module = parser.parseModuleObj();
+			module.moduleName = unit.getFullyQualifiedName();
 			
 			CompilationUnitResolver.resolve(
 					module, 

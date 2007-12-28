@@ -39,20 +39,22 @@ public class BasicCompilationUnit implements ICompilationUnit {
 	protected char[][] packageName;
 	protected char[] mainTypeName;
 	protected String encoding;
+	protected String fqn;
 
-public BasicCompilationUnit(char[] contents, char[][] packageName, String fileName) {
+public BasicCompilationUnit(char[] contents, char[][] packageName, String fqn, String fileName) {
 	this.contents = contents;
+	this.fqn = fqn;
 	this.fileName = fileName.toCharArray();
 	this.packageName = packageName;
 }
 
-public BasicCompilationUnit(char[] contents, char[][] packageName, String fileName, String encoding) {
-	this(contents, packageName, fileName);
+public BasicCompilationUnit(char[] contents, char[][] packageName, String fqn, String fileName, String encoding) {
+	this(contents, packageName, fqn, fileName);
 	this.encoding = encoding;
 }
 
-public BasicCompilationUnit(char[] contents, char[][] packageName, String fileName, IJavaElement javaElement) {
-	this(contents, packageName, fileName);
+public BasicCompilationUnit(char[] contents, char[][] packageName, String fqn, String fileName, IJavaElement javaElement) {
+	this(contents, packageName, fqn, fileName);
 	initEncoding(javaElement);
 }
 
@@ -135,6 +137,9 @@ public char[] getMainTypeName() {
 }
 public char[][] getPackageName() {
 	return this.packageName;
+}
+public String getFullyQualifiedName() {
+	return fqn;
 }
 public String toString(){
 	return "CompilationUnit: "+new String(this.fileName); //$NON-NLS-1$

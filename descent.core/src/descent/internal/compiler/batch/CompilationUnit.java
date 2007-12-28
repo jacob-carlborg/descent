@@ -63,6 +63,9 @@ public char[] getMainTypeName() {
 public char[][] getPackageName() {
 	return null;
 }
+public String getFullyQualifiedName() {
+	return null;
+}
 public String toString() {
 	return "CompilationUnit[" + new String(this.fileName) + "]";  //$NON-NLS-2$ //$NON-NLS-1$
 }

@@ -105,5 +105,11 @@ public class TupleDeclaration extends Declaration {
 		Assert.isTrue(false);
 		return null;
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

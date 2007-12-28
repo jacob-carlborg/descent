@@ -97,5 +97,11 @@ public class CompileDeclaration extends AttribDeclaration {
 		buf.writestring(");");
 		buf.writenl();
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -40,6 +40,25 @@ public interface ICompilationUnit extends IJavaElement, ISourceReference, IParen
 public static final int NO_AST = 0;
 
 /**
+ * Returns the name of this module, without the file extension.
+ * This is a handle-only method.
+ * 
+ * @return the the name of this module, without the file extension
+ */
+String getModuleName();
+
+/**
+ * Returns the fully qualified name of this compilation unit, 
+ * including qualification for any containing packages.
+ * This is the name of the package, followed by <code>'.'</code>,
+ * followed by the compilation unit name.
+ * This is a handle-only method.
+ * 
+ * @return the fully qualified name of this compilation unit
+ */
+String getFullyQualifiedName();
+
+/**
  * Changes this compilation unit handle into a working copy. A new {@link IBuffer} is
  * created using this compilation unit handle's owner. Uses the primary owner is none was
  * specified when this compilation unit handle was created.

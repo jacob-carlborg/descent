@@ -33,4 +33,9 @@ char[] getMainTypeName();
  * For example, {java, lang}.
  */
 char[][] getPackageName();
+/**
+ * Answer the fully qualified name of this compilation unit according to the directory structure.
+ * For example, {java, lang, Object}.
+ */
+String getFullyQualifiedName();
 }

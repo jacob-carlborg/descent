@@ -18,6 +18,7 @@ import descent.core.WorkingCopyOwner;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
@@ -120,7 +121,7 @@ public class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	@Override
-	IVariableBinding resolveVariable(VariableDeclarationFragment variable) {
+	IVariableBinding resolveVariableFragment(VariableDeclarationFragment variable) {
 		ASTDmdNode old = newAstToOldAst.get(variable);
 		if (!(old instanceof VarDeclaration)) {
 			return null;
@@ -141,7 +142,11 @@ public class DefaultBindingResolver extends BindingResolver {
 			case ASTNode.ENUM_DECLARATION:
 				return resolveEnum((descent.core.dom.EnumDeclaration) parent);
 			case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
-				return resolveVariable((VariableDeclarationFragment) parent);
+				return resolveVariableFragment((VariableDeclarationFragment) parent);
+			case ASTNode.ENUM_MEMBER:
+				return resolveEnumMember((descent.core.dom.EnumMember) parent);
+			case ASTNode.SIMPLE_TYPE:
+				return resolveType((descent.core.dom.Type) parent);
 			default:
 				if (parent instanceof descent.core.dom.Type) {
 					return resolveType((descent.core.dom.Type) parent);
@@ -153,6 +158,17 @@ public class DefaultBindingResolver extends BindingResolver {
 	
 	@Override
 	ITypeBinding resolveType(descent.core.dom.Type type) {
+		// If the type is the last SimpleType of a QualifiedType...
+		if (type.getNodeType() == ASTNode.SIMPLE_TYPE) {
+			if (type.getParent() != null && type.getParent().getNodeType() == ASTNode.QUALIFIED_TYPE) {
+				QualifiedType qType = (QualifiedType) type.getParent();
+				if (qType.getType() == type) {
+					return resolveType((descent.core.dom.Type) type.getParent());
+				}
+			}
+			
+		}
+		
 		ASTDmdNode old = newAstToOldAst.get(type);
 		if (!(old instanceof descent.internal.compiler.parser.Type)) {
 			return null;
@@ -167,6 +183,18 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		return (ITypeBinding) resolveBinding(signature);
+	}
+	
+	@Override
+	IVariableBinding resolveEnumMember(descent.core.dom.EnumMember member) {
+		ASTDmdNode old = newAstToOldAst.get(member);
+		if (!(old instanceof descent.internal.compiler.parser.EnumMember)) {
+			return null;
+		}
+		
+		descent.internal.compiler.parser.EnumMember em = (EnumMember) old;
+		String key = em.getSignature();
+		return (IVariableBinding) resolveBinding(key);
 	}
 	
 	/*
@@ -347,7 +375,7 @@ public class DefaultBindingResolver extends BindingResolver {
 			
 			String elementName = child.getElementName();
 			
-			if ((child instanceof ICompilationUnit && elementName.substring(0, elementName.lastIndexOf('.')).equals(name))
+			if ((child instanceof ICompilationUnit && ((ICompilationUnit) child).getModuleName().equals(name))
 					|| elementName.equals(name)) {
 				return child;
 			}

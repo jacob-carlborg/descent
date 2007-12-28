@@ -101,5 +101,11 @@ public class VersionSymbol extends Dsymbol {
 		buf.writestring(";");
 		buf.writenl();
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

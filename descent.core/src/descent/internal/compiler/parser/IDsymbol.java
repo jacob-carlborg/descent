@@ -141,6 +141,8 @@ public interface IDsymbol extends INode {
 	// For Descent, used to get the type of a symbol
 	Type type();
 	
+	String getSignature();
+	
 	void semantic(Scope scope, SemanticContext context);
 	
 	void semantic2(Scope scope, SemanticContext context);

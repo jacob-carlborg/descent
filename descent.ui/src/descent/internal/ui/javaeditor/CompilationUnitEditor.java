@@ -44,6 +44,7 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.IWidgetTokenKeeper;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.FormattingContextProperties;
 import org.eclipse.jface.text.formatter.IFormattingContext;
@@ -103,6 +104,7 @@ import descent.internal.ui.actions.AddBlockCommentAction;
 import descent.internal.ui.actions.CompositeActionGroup;
 import descent.internal.ui.actions.IndentAction;
 import descent.internal.ui.actions.RemoveBlockCommentAction;
+import descent.internal.ui.text.ContentAssistPreference;
 import descent.internal.ui.text.JavaHeuristicScanner;
 import descent.internal.ui.text.SmartBackspaceManager;
 import descent.internal.ui.text.Symbols;
@@ -1649,11 +1651,9 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 					}
 				}
 
-				/* TODO JDT UI code completion
 				IContentAssistant c= asv.getContentAssistant();
 				if (c instanceof ContentAssistant)
 					ContentAssistPreference.changeConfiguration((ContentAssistant) c, getPreferenceStore(), event);
-				*/
 
 				if (CODE_FORMATTER_TAB_SIZE.equals(p)) {
 					asv.updateIndentationPrefixes();
