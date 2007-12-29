@@ -110,7 +110,7 @@ public class GetterSetterCompletionProposal extends JavaTypeCompletionProposal i
 
 		CodeGenerationSettings settings= JavaPreferencesSettings.getCodeGenerationSettings(fField.getJavaProject());
 		boolean addComments= settings.createComments;
-		int flags= Flags.AccPublic | (fField.getFlags() & Flags.AccStatic);
+		long flags= Flags.AccPublic | (fField.getFlags() & Flags.AccStatic);
 
 		String stub;
 		if (fIsGetter) {

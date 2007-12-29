@@ -45,7 +45,7 @@ public class PackageBinding implements IPackageBinding {
 		return PACKAGE;
 	}
 
-	public int getModifiers() {
+	public long getModifiers() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

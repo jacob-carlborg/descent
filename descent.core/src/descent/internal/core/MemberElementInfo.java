@@ -19,7 +19,7 @@ package descent.internal.core;
 	 *
 	 * @see descent.internal.compiler.classfmt.ClassFileConstants
 	 */
-	protected int flags;
+	protected long flags;
 
 	/**
 	 * The start position of this member's name in the its
@@ -38,7 +38,7 @@ package descent.internal.core;
 	 * @see descent.internal.compiler.env.IGenericMethod#getModifiers()
 	 * @see descent.internal.compiler.env.IGenericField#getModifiers()
 	 */
-	public int getModifiers() {
+	public long getModifiers() {
 		return this.flags;
 	}
 	/**
@@ -57,7 +57,7 @@ package descent.internal.core;
 	public int getNameSourceStart() {
 		return this.nameStart;
 	}
-	protected void setFlags(int flags) {
+	protected void setFlags(long flags) {
 		this.flags = flags;
 	}
 	/**

@@ -2,10 +2,9 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.Flags;
 import descent.core.ICompilationUnit;
-import descent.core.IJavaElement;
 import descent.core.IMethod;
-import descent.core.IPackageFragment;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
@@ -99,7 +98,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				
 				fullSource.append(r.getSource());
 				
-				Parser parser = new Parser(Parser.D2, fullSource.toString());
+				Parser parser = new Parser(Util.getApiLevel(element), fullSource.toString());
 				parser.nextToken();
 				Module m = parser.parseModuleObj();
 				m.ident(getModule().ident());
@@ -221,8 +220,8 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 							));
 				}
 				
-				// TODO link and varargs
-				type = new TypeFunction(args, retType, 0, LINK.LINKd);
+				// TODO link
+				type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

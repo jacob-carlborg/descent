@@ -147,7 +147,7 @@ public final class Flags {
 	 * Varargs property flag.
 	 * @since 2.0
 	 */
-	public static final int AccVarargs = 0x80000000;
+	public static final long AccVarargs = 0x80000000L;
 	
 	// Extensions for types
 	
@@ -328,7 +328,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>private</code> modifier is included
 	 */
-	public static boolean isPrivate(int flags) {
+	public static boolean isPrivate(long flags) {
 		return (flags & AccPrivate) != 0;
 	}
 	
@@ -338,7 +338,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>package</code> modifier is included
 	 */
-	public static boolean isPackage(int flags) {
+	public static boolean isPackage(long flags) {
 		return (flags & AccPackage) != 0;
 	}
 	
@@ -348,7 +348,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>protected</code> modifier is included
 	 */
-	public static boolean isProtected(int flags) {
+	public static boolean isProtected(long flags) {
 		return (flags & AccProtected) != 0;
 	}
 	
@@ -358,7 +358,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>public</code> modifier is included
 	 */
-	public static boolean isPublic(int flags) {
+	public static boolean isPublic(long flags) {
 		return (flags & AccPublic) != 0;
 	}
 	
@@ -368,7 +368,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>export</code> modifier is included
 	 */
-	public static boolean isExport(int flags) {
+	public static boolean isExport(long flags) {
 		return (flags & AccExport) != 0;
 	}
 	
@@ -378,7 +378,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>static</code> modifier is included
 	 */
-	public static boolean isStatic(int flags) {
+	public static boolean isStatic(long flags) {
 		return (flags & AccStatic) != 0;
 	}
 	
@@ -388,7 +388,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>final</code> modifier is included
 	 */
-	public static boolean isFinal(int flags) {
+	public static boolean isFinal(long flags) {
 		return (flags & AccFinal) != 0;
 	}
 	
@@ -398,7 +398,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>abstract</code> modifier is included
 	 */
-	public static boolean isAbstract(int flags) {
+	public static boolean isAbstract(long flags) {
 		return (flags & AccAbstract) != 0;
 	}
 	
@@ -408,7 +408,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>override</code> modifier is included
 	 */
-	public static boolean isOverride(int flags) {
+	public static boolean isOverride(long flags) {
 		return (flags & AccOverride) != 0;
 	}
 	
@@ -418,7 +418,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>auto</code> modifier is included
 	 */
-	public static boolean isAuto(int flags) {
+	public static boolean isAuto(long flags) {
 		return (flags & AccAuto) != 0;
 	}
 	
@@ -428,7 +428,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>synchronized</code> modifier is included
 	 */
-	public static boolean isSynchronized(int flags) {
+	public static boolean isSynchronized(long flags) {
 		return (flags & AccSynchronized) != 0;
 	}
 	
@@ -438,7 +438,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>deprecated</code> modifier is included
 	 */
-	public static boolean isDeprecated(int flags) {
+	public static boolean isDeprecated(long flags) {
 		return (flags & AccDeprecated) != 0;
 	}
 	
@@ -448,7 +448,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>extern</code> modifier is included
 	 */
-	public static boolean isExtern(int flags) {
+	public static boolean isExtern(long flags) {
 		return (flags & AccExtern) != 0;
 	}
 	
@@ -458,7 +458,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>const</code> modifier is included
 	 */
-	public static boolean isConst(int flags) {
+	public static boolean isConst(long flags) {
 		return (flags & AccConst) != 0;
 	}
 	
@@ -468,7 +468,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>scope</code> modifier is included
 	 */
-	public static boolean isScope(int flags) {
+	public static boolean isScope(long flags) {
 		return (flags & AccScope) != 0;
 	}
 	
@@ -478,7 +478,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>enum</code> modifier is included
 	 */
-	public static boolean isEnum(int flags) {
+	public static boolean isEnum(long flags) {
 		return (flags & AccEnum) != 0;
 	}
 	
@@ -488,7 +488,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>interface</code> modifier is included
 	 */
-	public static boolean isInterface(int flags) {
+	public static boolean isInterface(long flags) {
 		return (flags & AccInterface) != 0;
 	}
 	
@@ -498,7 +498,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>struct</code> modifier is included
 	 */
-	public static boolean isStruct(int flags) {
+	public static boolean isStruct(long flags) {
 		return (flags & AccStruct) != 0;
 	}
 	
@@ -508,7 +508,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>union</code> modifier is included
 	 */
-	public static boolean isUnion(int flags) {
+	public static boolean isUnion(long flags) {
 		return (flags & AccUnion) != 0;
 	}
 	
@@ -518,7 +518,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>template</code> modifier is included
 	 */
-	public static boolean isTemplate(int flags) {
+	public static boolean isTemplate(long flags) {
 		return (flags & AccTemplate) != 0;
 	}
 	
@@ -528,7 +528,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>alias</code> modifier is included
 	 */
-	public static boolean isAlias(int flags) {
+	public static boolean isAlias(long flags) {
 		return (flags & AccAlias) != 0;
 	}
 	
@@ -538,7 +538,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>typedef</code> modifier is included
 	 */
-	public static boolean isTypedef(int flags) {
+	public static boolean isTypedef(long flags) {
 		return (flags & AccTypedef) != 0;
 	}
 	
@@ -548,7 +548,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>template mixin</code> modifier is included
 	 */
-	public static boolean isTemplateMixin(int flags) {
+	public static boolean isTemplateMixin(long flags) {
 		return (flags & AccTemplateMixin) != 0;
 	}
 	
@@ -558,7 +558,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>mixin</code> modifier is included
 	 */
-	public static boolean isMixin(int flags) {
+	public static boolean isMixin(long flags) {
 		return (flags & AccMixin) != 0;
 	}
 	
@@ -568,7 +568,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>static destructor</code> modifier is included
 	 */
-	public static boolean isStaticDestructor(int flags) {
+	public static boolean isStaticDestructor(long flags) {
 		return (flags & AccStaticDestructor) != 0;
 	}
 	
@@ -578,7 +578,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>constructor</code> modifier is included
 	 */
-	public static boolean isConstructor(int flags) {
+	public static boolean isConstructor(long flags) {
 		return (flags & AccConstructor) != 0;
 	}
 	
@@ -588,7 +588,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>destructor</code> modifier is included
 	 */
-	public static boolean isDestructor(int flags) {
+	public static boolean isDestructor(long flags) {
 		return (flags & AccDestructor) != 0;
 	}
 	
@@ -598,7 +598,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>new</code> modifier is included
 	 */
-	public static boolean isNew(int flags) {
+	public static boolean isNew(long flags) {
 		return (flags & AccNew) != 0;
 	}
 	
@@ -608,7 +608,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>delete</code> modifier is included
 	 */
-	public static boolean isDelete(int flags) {
+	public static boolean isDelete(long flags) {
 		return (flags & AccDelete) != 0;
 	}
 	
@@ -618,7 +618,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>invariant</code> modifier is included
 	 */
-	public static boolean isInvariant(int flags) {
+	public static boolean isInvariant(long flags) {
 		return (flags & AccInvariant) != 0;
 	}
 	
@@ -628,7 +628,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>unittest</code> modifier is included
 	 */
-	public static boolean isUnitTest(int flags) {
+	public static boolean isUnitTest(long flags) {
 		return (flags & AccUnitTest) != 0;
 	}
 	
@@ -638,7 +638,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>static assert</code> modifier is included
 	 */
-	public static boolean isStaticAssert(int flags) {
+	public static boolean isStaticAssert(long flags) {
 		return (flags & AccStaticAssert) != 0;
 	}
 	
@@ -648,7 +648,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>version assignment</code> modifier is included
 	 */
-	public static boolean isVersionAssignment(int flags) {
+	public static boolean isVersionAssignment(long flags) {
 		return (flags & AccVersionAssignment) != 0;
 	}
 	
@@ -658,7 +658,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>debug assignment</code> modifier is included
 	 */
-	public static boolean isDebugAssignment(int flags) {
+	public static boolean isDebugAssignment(long flags) {
 		return (flags & AccDebugAssignment) != 0;
 	}
 	
@@ -668,7 +668,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>align</code> modifier is included
 	 */
-	public static boolean isAlign(int flags) {
+	public static boolean isAlign(long flags) {
 		return (flags & AccAlign) != 0;
 	}
 	
@@ -678,7 +678,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>extern declaration</code> modifier is included
 	 */
-	public static boolean isExternDeclaration(int flags) {
+	public static boolean isExternDeclaration(long flags) {
 		return (flags & AccExternDeclaration) != 0;
 	}
 	
@@ -688,7 +688,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>pragma</code> modifier is included
 	 */
-	public static boolean isPragma(int flags) {
+	public static boolean isPragma(long flags) {
 		return (flags & AccPragma) != 0;
 	}
 	
@@ -698,7 +698,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>then</code> modifier is included
 	 */
-	public static boolean isThen(int flags) {
+	public static boolean isThen(long flags) {
 		return (flags & AccThen) != 0;
 	}
 	
@@ -708,19 +708,19 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>else</code> modifier is included
 	 */
-	public static boolean isElse(int flags) {
+	public static boolean isElse(long flags) {
 		return (flags & AccElse) != 0;
 	}
 	
-	public static boolean isIftypeDeclaration(int flags) {
+	public static boolean isIftypeDeclaration(long flags) {
 		return (flags & AccIftypeDeclaration) != 0;
 	}
 	
-	public static boolean isStaticIfDeclaration(int flags) {
+	public static boolean isStaticIfDeclaration(long flags) {
 		return (flags & AccStaticIfDeclaration) != 0;
 	}
 	
-	public static boolean isVersionDeclaration(int flags) {
+	public static boolean isVersionDeclaration(long flags) {
 		return (flags & AccVersionDeclaration) != 0;
 	}
 	
@@ -729,7 +729,7 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
 	 */
-	public static String toString(int flags) {
+	public static String toString(long flags) {
 		StringBuffer sb = new StringBuffer();
 
 		if (isPrivate(flags))

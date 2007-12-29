@@ -1154,7 +1154,7 @@ public class CompletionEngine extends Engine
 		
 	}
 
-	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, int modifiers, AccessRestriction accessRestriction) {
+	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
 	}
 
 }

@@ -359,7 +359,7 @@ public final class NamingConventions {
 	 * @see JavaCore#setOptions(java.util.Hashtable)
 	 * @see JavaCore#getDefaultOptions()
 	 */
-	public static char[] removePrefixAndSuffixForFieldName(IJavaProject javaProject, char[] fieldName, int modifiers) {
+	public static char[] removePrefixAndSuffixForFieldName(IJavaProject javaProject, char[] fieldName, long modifiers) {
 		boolean isStatic = Flags.isStatic(modifiers);
 		AssistOptions assistOptions = new AssistOptions(javaProject.getOptions(true));
 		return	removePrefixAndSuffix(
@@ -395,7 +395,7 @@ public final class NamingConventions {
 	 * @see JavaCore#setOptions(java.util.Hashtable)
 	 * @see JavaCore#getDefaultOptions()
 	 */
-	public static String removePrefixAndSuffixForFieldName(IJavaProject javaProject, String fieldName, int modifiers) {
+	public static String removePrefixAndSuffixForFieldName(IJavaProject javaProject, String fieldName, long modifiers) {
 		return String.valueOf(removePrefixAndSuffixForFieldName(javaProject, fieldName.toCharArray(), modifiers));
 	}
 	/**
@@ -736,7 +736,7 @@ public final class NamingConventions {
 	 * @see JavaCore#setOptions(java.util.Hashtable)
 	 * @see JavaCore#getDefaultOptions()
 	 */
-	public static char[] suggestGetterName(IJavaProject project, char[] fieldName, int modifiers, boolean isBoolean, char[][] excludedNames) {
+	public static char[] suggestGetterName(IJavaProject project, char[] fieldName, long modifiers, boolean isBoolean, char[][] excludedNames) {
 		if (isBoolean) {
 			char[] name = removePrefixAndSuffixForFieldName(project, fieldName, modifiers);
 			int prefixLen =  GETTER_BOOL_NAME.length;
@@ -788,7 +788,7 @@ public final class NamingConventions {
 	 * @see JavaCore#setOptions(java.util.Hashtable)
 	 * @see JavaCore#getDefaultOptions()
 	 */
-	public static String suggestGetterName(IJavaProject project, String fieldName, int modifiers, boolean isBoolean, String[] excludedNames) {
+	public static String suggestGetterName(IJavaProject project, String fieldName, long modifiers, boolean isBoolean, String[] excludedNames) {
 		return String.valueOf(
 			suggestGetterName(
 				project,
@@ -828,7 +828,7 @@ public final class NamingConventions {
 	 * @see JavaCore#setOptions(java.util.Hashtable)
 	 * @see JavaCore#getDefaultOptions()
 	 */
-	public static char[] suggestSetterName(IJavaProject project, char[] fieldName, int modifiers, boolean isBoolean, char[][] excludedNames) {
+	public static char[] suggestSetterName(IJavaProject project, char[] fieldName, long modifiers, boolean isBoolean, char[][] excludedNames) {
 
 		if (isBoolean) {
 			char[] name = removePrefixAndSuffixForFieldName(project, fieldName, modifiers);
@@ -884,7 +884,7 @@ public final class NamingConventions {
 	 * @see JavaCore#setOptions(java.util.Hashtable)
 	 * @see JavaCore#getDefaultOptions()
 	 */
-	public static String suggestSetterName(IJavaProject project, String fieldName, int modifiers, boolean isBoolean, String[] excludedNames) {
+	public static String suggestSetterName(IJavaProject project, String fieldName, long modifiers, boolean isBoolean, String[] excludedNames) {
 		return String.valueOf(
 			suggestSetterName(
 				project,
@@ -894,7 +894,7 @@ public final class NamingConventions {
 				convertStringToChars(excludedNames)));
 	}
 	
-	private static char[] suggestAccessorName(IJavaProject project, char[] fieldName, int modifiers) {
+	private static char[] suggestAccessorName(IJavaProject project, char[] fieldName, long modifiers) {
 		char[] name = removePrefixAndSuffixForFieldName(project, fieldName, modifiers);
 		if (name.length > 0 && ScannerHelper.isLowerCase(name[0])) {
 			name[0] = ScannerHelper.toUpperCase(name[0]);

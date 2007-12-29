@@ -27,6 +27,7 @@ import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.core.util.Util;
 
 /**
  * Uses the lexer to grab the task tags in a source file, and creates
@@ -116,7 +117,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			char[] filename = unit.getPath().removeFirstSegments(root.getPath().segmentCount()).toString().toCharArray();
 			
 			Parser parser = new Parser(
-					getApiLevel(javaProject), 
+					Util.getApiLevel(javaProject), 
 					source.toCharArray(), 
 					0, 
 					source.length(),
@@ -198,21 +199,6 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
 			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd() + 1); // for markers it's + 1
 			marker.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber());
-		}
-	}
-	
-	private static int getApiLevel(IJavaProject project) {
-		String source = project.getOption(JavaCore.COMPILER_SOURCE, true);
-		if (source == null || source.length() == 0) {
-			return AST.D2;
-		} else if (source.equals(JavaCore.VERSION_2_x)) {
-			return AST.D2;
-		} else if (source.equals(JavaCore.VERSION_1_x)) {
-			return AST.D1;
-		} else if (source.equals(JavaCore.VERSION_0_x)) {
-			return AST.D0;
-		} else {
-			return AST.D2;
 		}
 	}
 	

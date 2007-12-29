@@ -110,7 +110,7 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 	this.newElements = newElements;
 } 
 
-public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, int modifiers) {
+public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, long modifiers) {
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
 		ICompilationUnit parentCU= (ICompilationUnit)parentHandle;
@@ -274,7 +274,7 @@ public void enterField(FieldInfo fieldInfo) {
  */
 public void enterInitializer(
 	int declarationSourceStart,
-	int modifiers,
+	long modifiers,
 	char[] displayString) {
 		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
@@ -304,7 +304,7 @@ public void enterInitializer(
 		this.handleStack.push(handle);
 }
 
-public void enterConditional(int declarationSourceStart, int modifiers, char[] displayString) {
+public void enterConditional(int declarationSourceStart, long modifiers, char[] displayString) {
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	Conditional handle = null;
@@ -405,7 +405,7 @@ public void enterMethod(MethodInfo methodInfo) {
 //	else
 		info = new SourceMethodInfo();
 	info.setSourceRangeStart(methodInfo.declarationStart);
-	int flags = methodInfo.modifiers;
+	long flags = methodInfo.modifiers;
 	info.setNameSourceStart(methodInfo.nameSourceStart);
 	info.setNameSourceEnd(methodInfo.nameSourceEnd);
 	info.setFlags(flags);

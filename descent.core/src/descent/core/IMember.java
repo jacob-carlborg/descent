@@ -74,7 +74,7 @@ IType getDeclaringType();
  * @return the modifier flags for this member
  * @see Flags
  */
-int getFlags() throws JavaModelException;
+long getFlags() throws JavaModelException;
 /**
  * Returns the source range of this member's simple name,
  * or <code>null</code> if this member does not have a name

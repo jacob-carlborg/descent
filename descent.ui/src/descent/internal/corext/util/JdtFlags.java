@@ -272,7 +272,7 @@ public class JdtFlags {
 	}
 	
 	
-	public static String getVisibilityString(int visibilityCode){
+	public static String getVisibilityString(long visibilityCode){
 		if (Modifier.isPublic(visibilityCode))
 			return VISIBILITY_STRING_PUBLIC;
 		if (Modifier.isProtected(visibilityCode))

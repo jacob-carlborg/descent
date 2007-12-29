@@ -22,6 +22,7 @@ import descent.core.IJavaModelMarker;
 import descent.core.JavaModelException;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.JavaProject;
 import descent.internal.core.ReconcileWorkingCopyOperation;
@@ -87,9 +88,9 @@ public ReconcileContext(ReconcileWorkingCopyOperation operation, CompilationUnit
  * </ul>
  */
 public descent.core.dom.CompilationUnit getAST3() throws JavaModelException {
-	if (this.operation.astLevel != AST.D2 || !this.operation.resolveBindings) {
+	if (this.operation.astLevel != Parser.DEFAULT_LEVEL || !this.operation.resolveBindings) {
 		// create AST (optionally resolving bindings)
-		ASTParser parser = ASTParser.newParser(AST.D2);
+		ASTParser parser = ASTParser.newParser(Parser.DEFAULT_LEVEL);
 		parser.setCompilerOptions(workingCopy.getJavaProject().getOptions(true));
 		if (JavaProject.hasJavaNature(workingCopy.getJavaProject().getProject()))
 			parser.setResolveBindings(true);

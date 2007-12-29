@@ -62,12 +62,12 @@ public class CreateImportOperation extends CreateElementInCUOperation {
 	/*
 	 * The flags of the import to be created (either Flags#AccDefault or Flags#AccStatic)
 	 */
-	protected int flags;
+	protected long flags;
 
 /**
  * When executed, this operation will add an import to the given compilation unit.
  */
-public CreateImportOperation(String importName, ICompilationUnit parentElement, int flags) {
+public CreateImportOperation(String importName, ICompilationUnit parentElement, long flags) {
 	super(parentElement);
 	this.importName = importName;
 	this.flags = flags;

@@ -104,7 +104,7 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 	return ((IType)primaryParent).getInitializer(this.occurrenceCount);
 }
 public boolean isStaticConstructor() throws JavaModelException {
-	int flags = getFlags();
+	long flags = getFlags();
 	return !Flags.isStaticDestructor(flags)
 		&& !Flags.isInvariant(flags)
 		&& !Flags.isUnitTest(flags)

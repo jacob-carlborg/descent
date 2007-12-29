@@ -17,6 +17,7 @@ import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IInterfaceDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
@@ -31,6 +32,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	private IClassDeclaration baseClass;
 	private ICtorDeclaration ctor;
 	private BaseClasses interfaces;
+	private BaseClasses baseclasses;
 	
 	private boolean vtblReady;
 	private List vtbl;
@@ -62,7 +64,18 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 
 	public BaseClasses baseclasses() {
-		return new BaseClasses(0);
+		if (baseclasses == null) {
+			baseclasses = new BaseClasses();
+			IClassDeclaration baseClass = baseClass();
+			if (baseClass != null) {
+				BaseClass bc = getBaseClass(baseClass.type());
+				if (bc != null) {
+					baseclasses.add(bc);
+				}
+			}
+			baseclasses.addAll(interfaces());
+		}
+		return baseclasses;
 	}
 
 	public ICtorDeclaration ctor() {
@@ -101,21 +114,9 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 				String[] supersignatures = type.getSuperInterfaceTypeSignatures();
 				for(String sig : supersignatures) {
 					Type t = getTypeFromSignature(sig);
-					if (t instanceof TypeClass) {
-						TypeClass tc = (TypeClass) t;
-						
-						// TODO protection
-						BaseClass baseClass = new BaseClass(tc, PROT.PROTpublic);
-						baseClass.base = tc.sym;
-						
-						// TODO this may kill performance if the hierarchy is too deep,
-						// see if we need to hide baseInterfaces with a method
-						IInterfaceDeclaration inter = tc.sym.isInterfaceDeclaration();
-						if (inter != null) {
-							baseClass.baseInterfaces = inter.interfaces();
-						}
-						
-						interfaces.add(baseClass);
+					BaseClass bc = getBaseClass(t);
+					if (bc != null) {
+						interfaces.add(bc);
 					}
 				}
 			} catch (JavaModelException e) {
@@ -123,6 +124,27 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 			}
 		}
 		return interfaces;
+	}
+	
+	private BaseClass getBaseClass(Type t) {
+		if (t instanceof TypeClass) {
+			TypeClass tc = (TypeClass) t;
+			
+			// TODO protection
+			BaseClass baseClass = new BaseClass(tc, PROT.PROTpublic);
+			baseClass.base = tc.sym;
+			
+			// TODO this may kill performance if the hierarchy is too deep,
+			// see if we need to hide baseInterfaces with a method
+			IInterfaceDeclaration inter = tc.sym.isInterfaceDeclaration();
+			if (inter != null) {
+				baseClass.baseInterfaces = inter.interfaces();
+			}
+
+			return baseClass;
+		} else {
+			return null;
+		}
 	}
 
 	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
@@ -148,6 +170,20 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	public void isabstract(boolean isabstract) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		IDsymbol result = super.search(loc, ident, flags, context);
+		if (result == null) {
+			for(BaseClass bc : baseclasses()) {
+				result = bc.base.search(loc, ident, flags, context);
+				if (result != null) {
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	public List vtbl() {
@@ -183,8 +219,8 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 		
 		IClassDeclaration baseClass = baseClass();
 		if (baseClass != null) {
-			vtbl.add(baseClass.vtbl());
-			vtblFinal.add(baseClass.vtblFinal());
+			vtbl.addAll(baseClass.vtbl());
+			vtblFinal.addAll(baseClass.vtblFinal());
 		}
 		
 		vtblReady = true;

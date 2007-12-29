@@ -23,7 +23,7 @@ public abstract class JavaElementBasedBinding implements IBinding {
 		return element.getElementName();
 	}
 	
-	public int getModifiers() {
+	public long getModifiers() {
 		if (element instanceof IMember) {
 			try {
 				return ((IMember) element).getFlags();

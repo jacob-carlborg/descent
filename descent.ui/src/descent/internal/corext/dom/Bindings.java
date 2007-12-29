@@ -458,7 +458,7 @@ public class Bindings {
 	 * @return the method binding representing the method
 	 */
 	public static IMethodBinding findOverriddenMethod(IMethodBinding overriding, boolean testVisibility) {
-		int modifiers= overriding.getModifiers();
+		long modifiers= overriding.getModifiers();
 		if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers) || overriding.isConstructor()) {
 			return null;
 		}
@@ -484,7 +484,7 @@ public class Bindings {
 	
 	
 	public static boolean isVisibleInHierarchy(IMethodBinding member, IPackageBinding pack) {
-		int otherflags= member.getModifiers();
+		long otherflags= member.getModifiers();
 		ITypeBinding declaringType= member.getDeclaringClass();
 		if (Modifier.isPublic(otherflags) || Modifier.isProtected(otherflags) || (declaringType != null && declaringType.isInterface())) {
 			return true;

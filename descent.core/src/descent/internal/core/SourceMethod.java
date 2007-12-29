@@ -231,7 +231,7 @@ public int hashCode() {
 	return hash;
 }
 public boolean isMethod() throws JavaModelException {
-	int flags = getFlags();
+	long flags = getFlags();
 	return !Flags.isConstructor(flags) 
 		&& !Flags.isDestructor(flags)
 		&& !Flags.isNew(flags)
@@ -371,7 +371,7 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		toStringName(buffer);
 	} else {
 		SourceMethodElementInfo methodInfo = (SourceMethodElementInfo) info;
-		int flags = methodInfo.getModifiers();
+		long flags = methodInfo.getModifiers();
 		if (Flags.isStatic(flags)) {
 			buffer.append("static "); //$NON-NLS-1$
 		}
@@ -387,7 +387,7 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 protected void toStringName(StringBuffer buffer) {
 	toStringName(buffer, 0);
 }
-protected void toStringName(StringBuffer buffer, int flags) {
+protected void toStringName(StringBuffer buffer, long flags) {
 	buffer.append(getElementName());
 	buffer.append('(');
 	String[] parameters = getParameterTypes();

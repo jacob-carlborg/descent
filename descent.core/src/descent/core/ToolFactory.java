@@ -16,6 +16,7 @@ import descent.core.compiler.IScanner;
 import descent.core.dom.AST;
 import descent.core.dom.PublicScanner;
 import descent.core.formatter.CodeFormatter;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.formatter.DefaultCodeFormatter;
 
 /**
@@ -86,7 +87,7 @@ public class ToolFactory {
 	 * @see descent.core.compiler.IScanner
 	 */
 	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, AST.D2);
+		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, Parser.DEFAULT_LEVEL);
 	}
 	
 	/**

@@ -23,7 +23,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 	public AbstractIndexer(SearchDocument document) {
 		this.document = document;
 	}
-	public void addAnnotationTypeDeclaration(int modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, boolean secondary) {
+	public void addAnnotationTypeDeclaration(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, boolean secondary) {
 		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, secondary);
 		addIndexEntry(TYPE_DECL, indexKey);
 		
@@ -33,7 +33,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 				modifiers, packageName, name, enclosingTypeNames, null, ANNOTATION_TYPE_SUFFIX, CharOperation.concatWith(TypeConstants.JAVA_LANG_ANNOTATION_ANNOTATION, '.'), ANNOTATION_TYPE_SUFFIX));
 	}	
 	public void addClassDeclaration(
-			int modifiers, 
+			long modifiers, 
 			char[] packageName,
 			char[] name, 
 			char[][] enclosingTypeNames, 
@@ -89,7 +89,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 		if (innermostTypeName != simpleTypeName)
 			addIndexEntry(CONSTRUCTOR_REF, ConstructorPattern.createIndexKey(innermostTypeName, argCount));
 	}
-	public void addEnumDeclaration(int modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[][] superinterfaces, boolean secondary) {
+	public void addEnumDeclaration(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[][] superinterfaces, boolean secondary) {
 		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, secondary);
 		addIndexEntry(TYPE_DECL, indexKey);
 
@@ -118,7 +118,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 	protected void addIndexEntry(char[] category, char[] key) {
 		this.document.addIndexEntry(category, key);
 	}
-	public void addInterfaceDeclaration(int modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[][] superinterfaces, char[][] typeParameterSignatures, boolean secondary) {
+	public void addInterfaceDeclaration(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[][] superinterfaces, char[][] typeParameterSignatures, boolean secondary) {
 		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, secondary);
 		addIndexEntry(TYPE_DECL, indexKey);
 

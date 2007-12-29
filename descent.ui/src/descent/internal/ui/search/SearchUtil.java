@@ -210,7 +210,7 @@ public class SearchUtil {
 	private static boolean isBinaryPrimitveConstantOrString(IJavaElement element) {
 		if (element != null && element.getElementType() == IJavaElement.FIELD) {
 			IField field= (IField)element;
-			int flags;
+			long flags;
 			try {
 				flags= field.getFlags();
 			} catch (JavaModelException ex) {

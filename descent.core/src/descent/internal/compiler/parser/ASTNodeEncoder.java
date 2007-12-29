@@ -11,7 +11,7 @@ public class ASTNodeEncoder {
 	private static Parser parser;
 	private static Parser initParser(char[] source) {
 		if (parser == null) {
-			parser = new Parser(Parser.D2, source);
+			parser = new Parser(Parser.DEFAULT_LEVEL, source);
 		} else {
 			parser.reset(source, 0, source.length, false, false, false, false);
 			parser.nextToken();

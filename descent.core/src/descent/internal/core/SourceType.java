@@ -572,7 +572,7 @@ public boolean isAnonymous() {
  */
 public boolean isClass() throws JavaModelException {
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	int flags = info.getModifiers();
+	long flags = info.getModifiers();
 	return !Flags.isEnum(flags) 
 		&& !Flags.isInterface(flags) 
 		&& !Flags.isStruct(flags) 
@@ -586,7 +586,7 @@ public boolean isClass() throws JavaModelException {
  */
 public boolean isEnum() throws JavaModelException {
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	int flags = info.getModifiers();
+	long flags = info.getModifiers();
 	return Flags.isEnum(flags);
 }
 
@@ -595,7 +595,7 @@ public boolean isEnum() throws JavaModelException {
  */
 public boolean isInterface() throws JavaModelException {
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	int flags = info.getModifiers();
+	long flags = info.getModifiers();
 	return Flags.isInterface(flags);
 }
 
@@ -604,7 +604,7 @@ public boolean isInterface() throws JavaModelException {
  */
 public boolean isStruct() throws JavaModelException {
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	int flags = info.getModifiers();
+	long flags = info.getModifiers();
 	return Flags.isStruct(flags);
 }
 
@@ -613,7 +613,7 @@ public boolean isStruct() throws JavaModelException {
  */
 public boolean isUnion() throws JavaModelException {
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	int flags = info.getModifiers();
+	long flags = info.getModifiers();
 	return Flags.isUnion(flags);
 }
 
@@ -622,7 +622,7 @@ public boolean isUnion() throws JavaModelException {
  */
 public boolean isTemplate() throws JavaModelException {
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	int flags = info.getModifiers();
+	long flags = info.getModifiers();
 	return Flags.isTemplate(flags);
 }
 

@@ -30,7 +30,7 @@ class Conditional extends Member implements IConditional {
 	}
 
 	public boolean isDebugDeclaration() throws JavaModelException {
-		int flags = getFlags();
+		long flags = getFlags();
 		return !Flags.isIftypeDeclaration(flags)
 			&& !Flags.isStaticIfDeclaration(flags)
 			&& !Flags.isVersionDeclaration(flags);

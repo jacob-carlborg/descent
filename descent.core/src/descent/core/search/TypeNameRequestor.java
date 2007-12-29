@@ -49,7 +49,7 @@ public abstract class TypeNameRequestor {
 	 *			 or the workspace relative <code>IPath</code> to the archive (if it is an internal archive), 
 	 * 		 the second path is the path to the resource inside the archive.
 	 */
-	public void acceptType(int modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
+	public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 		// do nothing
 	}
 }

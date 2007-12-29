@@ -326,7 +326,7 @@ public final class JavaModelUtil {
 			return false;
 		}
 		
-		int otherflags= member.getFlags();
+		long otherflags= member.getFlags();
 		IType declaringType= member.getDeclaringType();
 		if (Flags.isPublic(otherflags) || (declaringType != null && isInterfaceOrAnnotation(declaringType))) {
 			return true;
@@ -350,7 +350,7 @@ public final class JavaModelUtil {
 			return false;
 		}
 		
-		int otherflags= member.getFlags();
+		long otherflags= member.getFlags();
 		
 		IType declaringType= member.getDeclaringType();
 		if (Flags.isPublic(otherflags) || Flags.isProtected(otherflags) || (declaringType != null && isInterfaceOrAnnotation(declaringType))) {

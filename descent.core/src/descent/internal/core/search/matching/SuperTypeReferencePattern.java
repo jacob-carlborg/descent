@@ -42,7 +42,7 @@ public static final int ONLY_SUPER_CLASSES = 2; // used for hierarchy with a cla
 protected static char[][] CATEGORIES = { SUPER_REF };
 
 public static char[] createIndexKey(
-	int modifiers,
+		long modifiers,
 	char[] packageName,
 	char[] typeName,
 	char[][] enclosingTypeNames,

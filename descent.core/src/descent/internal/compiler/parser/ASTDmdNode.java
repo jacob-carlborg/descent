@@ -928,9 +928,9 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 		// If D linkage and variadic, add _arguments[] as first argument
 		if (tf.linkage == LINKd && tf.varargs == 1) {
 			Expression e;
-			e = createTypeInfoArray(sc, arguments.subList(nparams, arguments
-					.size()
-					- nparams), arguments.size() - nparams);
+			e = createTypeInfoArray(sc, 
+					arguments.subList(nparams, nparams + arguments.size() - nparams), 
+					arguments.size() - nparams);
 			arguments.add(0, e);
 		}
 	}

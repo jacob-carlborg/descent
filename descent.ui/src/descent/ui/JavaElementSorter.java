@@ -117,7 +117,7 @@ public class JavaElementSorter extends ViewerSorter {
 							if (method.isConstructor()) {
 								return getMemberCategory(MembersOrderPreferenceCache.CONSTRUCTORS_INDEX);
 							}
-							int flags= method.getFlags();
+							long flags= method.getFlags();
 							if (Flags.isStatic(flags))
 								return getMemberCategory(MembersOrderPreferenceCache.STATIC_METHODS_INDEX);
 							else
@@ -125,7 +125,7 @@ public class JavaElementSorter extends ViewerSorter {
 						}
 					case IJavaElement.FIELD :
 						{
-							int flags= ((IField) je).getFlags();
+							long flags= ((IField) je).getFlags();
 							if (Flags.isEnum(flags)) {
 								return getMemberCategory(MembersOrderPreferenceCache.ENUM_CONSTANTS_INDEX);
 							}
@@ -136,7 +136,7 @@ public class JavaElementSorter extends ViewerSorter {
 						}
 					case IJavaElement.INITIALIZER :
 						{
-							int flags= ((IInitializer) je).getFlags();
+							long flags= ((IInitializer) je).getFlags();
 							if (Flags.isStatic(flags))
 								return getMemberCategory(MembersOrderPreferenceCache.STATIC_INIT_INDEX);
 							else

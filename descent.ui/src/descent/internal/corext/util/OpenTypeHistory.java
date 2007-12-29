@@ -342,7 +342,7 @@ public class OpenTypeHistory extends History {
 		typeElement.setAttribute(NODE_PACKAGE, type.getPackageName());
 		typeElement.setAttribute(NODE_ENCLOSING_NAMES, type.getEnclosingName());
 		typeElement.setAttribute(NODE_PATH, type.getPath());
-		typeElement.setAttribute(NODE_MODIFIERS, Integer.toString(type.getModifiers()));
+		typeElement.setAttribute(NODE_MODIFIERS, Long.toString(type.getModifiers()));
 		Long timestamp= (Long) fTimestampMapping.get(type);
 		if (timestamp == null) {
 			typeElement.setAttribute(NODE_TIMESTAMP, Long.toString(IResource.NULL_STAMP));			

@@ -86,7 +86,7 @@ public class TypeFunctionBinding implements ITypeBinding {
 		return null;
 	}
 
-	public int getModifiers() {
+	public long getModifiers() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

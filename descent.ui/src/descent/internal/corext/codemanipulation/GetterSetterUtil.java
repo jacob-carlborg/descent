@@ -47,11 +47,11 @@ public class GetterSetterUtil {
 		return getGetterName(field.getJavaProject(), field.getElementName(), field.getFlags(), useIsForBoolGetters && JavaModelUtil.isBoolean(field), excludedNames);
 	}	
 	
-	public static String getGetterName(IJavaProject project, String fieldName, int flags, boolean isBoolean, String[] excludedNames){
+	public static String getGetterName(IJavaProject project, String fieldName, long flags, boolean isBoolean, String[] excludedNames){
 		return NamingConventions.suggestGetterName(project, fieldName, flags, isBoolean, excludedNames);	
 	}
 
-	public static String getSetterName(IJavaProject project, String fieldName, int flags, boolean isBoolean, String[] excludedNames){
+	public static String getSetterName(IJavaProject project, String fieldName, long flags, boolean isBoolean, String[] excludedNames){
 		return NamingConventions.suggestSetterName(project, fieldName, flags, isBoolean, excludedNames);	
 	}
 
@@ -87,7 +87,7 @@ public class GetterSetterUtil {
 	 * @return Returns the generated stub.
 	 * @throws CoreException
 	 */
-	public static String getSetterStub(IField field, String setterName, boolean addComments, int flags) throws CoreException {
+	public static String getSetterStub(IField field, String setterName, boolean addComments, long flags) throws CoreException {
 		
 		String fieldName= field.getElementName();
 		IType parentType= field.getDeclaringType();
@@ -157,7 +157,7 @@ public class GetterSetterUtil {
 	 * @return Returns the generated stub.
 	 * @throws CoreException
 	 */
-	public static String getGetterStub(IField field, String getterName, boolean addComments, int flags) throws CoreException {
+	public static String getGetterStub(IField field, String getterName, boolean addComments, long flags) throws CoreException {
 		String fieldName= field.getElementName();
 		IType parentType= field.getDeclaringType();
 		

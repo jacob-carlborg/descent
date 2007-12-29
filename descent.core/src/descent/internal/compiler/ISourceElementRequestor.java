@@ -41,7 +41,7 @@ public interface ISourceElementRequestor {
 	
 	public static class TypeInfo {
 		public int declarationStart;
-		public int modifiers;
+		public long modifiers;
 		public char[] name;
 		public int nameSourceStart;
 		public int nameSourceEnd;
@@ -68,7 +68,7 @@ public interface ISourceElementRequestor {
 	
 	public static class MethodInfo {
 		public int declarationStart;
-		public int modifiers;
+		public long modifiers;
 		public char[] returnType;
 		public char[] name;
 		public int nameSourceStart;
@@ -83,7 +83,7 @@ public interface ISourceElementRequestor {
 	
 	public static class FieldInfo {
 		public int declarationStart;
-		public int modifiers;
+		public long modifiers;
 		public char[] type;
 		public char[] name;
 		public int nameSourceStart; 
@@ -113,7 +113,7 @@ public interface ISourceElementRequestor {
 	 */
 	//void acceptImport(int declarationStart, int declarationEnd, char[][] tokens, boolean onDemand, int modifiers);
 	
-	void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, int modifiers);
+	void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, long modifiers);
 
 	/*
 	 * Table of line separator position. This table is passed once at the end of
@@ -140,7 +140,7 @@ public interface ISourceElementRequestor {
 
 	void enterCompilationUnit();
 	
-	void enterConditional(int declarationStart, int modifiers, char[] displayString);
+	void enterConditional(int declarationStart, long modifiers, char[] displayString);
 	
 	void enterConditionalThen(int declarationStart);
 	
@@ -150,7 +150,7 @@ public interface ISourceElementRequestor {
 
 	void enterField(FieldInfo fieldInfo);
 	
-	void enterInitializer(int declarationStart, int modifiers, char[] displayString);
+	void enterInitializer(int declarationStart, long modifiers, char[] displayString);
 	
 	void enterMethod(MethodInfo methodInfo);
 	

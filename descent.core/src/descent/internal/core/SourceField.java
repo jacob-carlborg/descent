@@ -138,13 +138,17 @@ public String getTypeSignature() throws JavaModelException {
  */
 public String getRawType() throws JavaModelException {
 	SourceFieldElementInfo info = (SourceFieldElementInfo) getElementInfo();
+	// TODO Descent remove this check when debug and version are used
+	if (info.typeName == null) {
+		return "i";
+	}
 	return new String(info.typeName);
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isEnumConstant()
  */
 public boolean isVariable() throws JavaModelException {
-	int flags = getFlags();
+	long flags = getFlags();
 	return !Flags.isEnum(flags) 
 		&& !Flags.isAlias(flags) 
 		&& !Flags.isTypedef(flags)

@@ -2021,6 +2021,10 @@ public class Util {
 		return getApiLevel(source);
 	}
 	
+	public static int getApiLevel(IJavaElement element) {
+		return getApiLevel(element.getJavaProject());
+	}
+	
 	public static int getApiLevel(IJavaProject project) {
 		String source = project.getOption(JavaCore.COMPILER_SOURCE, true);
 		return getApiLevel(source);

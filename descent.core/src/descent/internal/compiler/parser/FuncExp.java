@@ -6,18 +6,18 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class FuncExp extends Expression {
 
-	public FuncLiteralDeclaration fd;
+	public FuncLiteralDeclaration fd, sourceFd;
 
 	public FuncExp(Loc loc, FuncLiteralDeclaration fd) {
 		super(loc, TOK.TOKfunction);
-		this.fd = fd;
+		this.fd = this.sourceFd = fd;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, fd);
+			TreeVisitor.acceptChildren(visitor, sourceFd);
 		}
 		visitor.endVisit(this);
 	}

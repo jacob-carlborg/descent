@@ -40,7 +40,9 @@ public class ConditionalStatement extends Statement {
 		}
 
 		Statements a = new Statements();
-		a.add(s);
+		if (s != null) {
+			a.add(s);
+		}
 		return a;
 	}
 

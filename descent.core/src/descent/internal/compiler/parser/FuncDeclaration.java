@@ -1869,7 +1869,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("O");
-		sb.append(parent.mangle((SemanticContext) null));
+		sb.append(parent.getSignature());
 		sb.append(ident.length);
 		sb.append(ident);
 		sb.append(type.getSignature());

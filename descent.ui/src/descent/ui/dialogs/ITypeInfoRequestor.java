@@ -21,7 +21,7 @@ public interface ITypeInfoRequestor {
 	 * 
 	 * @return the type's modifiers
 	 */
-	public int getModifiers();
+	public long getModifiers();
 	
 	/**
 	 * Returns the type name.

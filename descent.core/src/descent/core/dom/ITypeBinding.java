@@ -293,7 +293,7 @@ public interface ITypeBinding extends IBinding {
 	 * type
 	 * @see #getDeclaredModifiers()
 	 */
-	public int getModifiers();
+	public long getModifiers();
 	
 	/**
 	 * Returns the unqualified name of the type represented by this binding

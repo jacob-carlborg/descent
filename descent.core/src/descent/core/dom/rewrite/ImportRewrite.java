@@ -39,6 +39,7 @@ import descent.core.dom.PrimitiveType;
 import descent.core.dom.Type;
 import descent.internal.core.dom.rewrite.ImportRewriteAnalyzer;
 import descent.internal.core.util.Messages;
+import descent.internal.core.util.Util;
 
 
 /**
@@ -990,7 +991,7 @@ public final class ImportRewrite {
 			
 			CompilationUnit usedAstRoot= this.astRoot;
 			if (usedAstRoot == null) {
-				ASTParser parser= ASTParser.newParser(AST.D2);
+				ASTParser parser= ASTParser.newParser(Util.getApiLevel(compilationUnit));
 				parser.setSource(this.compilationUnit);
 				//parser.setFocalPosition(0); // reduced AST
 				parser.setResolveBindings(false);

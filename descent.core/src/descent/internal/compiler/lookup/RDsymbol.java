@@ -15,7 +15,6 @@ import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
-import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.AttribDeclaration;
@@ -364,7 +363,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 		if (element instanceof IMember) {
 			IMember m = (IMember) element;
 			try {
-				int flags = m.getFlags();
+				long flags = m.getFlags();
 				if ((flags & Flags.AccPublic) != 0) {
 					return PROT.PROTpublic;
 				} else if ((flags & Flags.AccPrivate) != 0) {
@@ -410,15 +409,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 		try {
 			IJavaElement[] children = parent.getChildren();
 			for(IJavaElement child : children) {
-				if (child.getElementType() == IJavaElement.INITIALIZER) {
-					IInitializer init = (IInitializer) child;
-					// TODO consider other possibilities, like debug, version,
-					// and static ifs
-					if (init.isAlign()) {
-						IDsymbol result = searchInChildren(init, ident, sident);
-						if (result != null) {
-							return result;
-						}
+				if (JavaElementFinder.mustSearchInChildren(child)) {
+					IDsymbol result = searchInChildren((IParent) child, ident, sident);
+					if (result != null) {
+						return result;
 					}
 				}
 				
@@ -574,7 +568,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 			sb.append(imp.getElementName());
 			sb.append(";");
 			
-			Parser parser = new Parser(Parser.D2, sb.toString());
+			Parser parser = new Parser(Util.getApiLevel(element), sb.toString());
 			parser.nextToken();
 			Module mod = parser.parseModuleObj();
 			return mod.members.get(0);
@@ -636,21 +630,21 @@ public class RDsymbol extends RNode implements IDsymbol {
 							IEnumDeclaration e = symbol.isEnumDeclaration();
 							if (e != null) {
 								type = new TypeEnum(e);
-								type.deco = signature.substring(0, i);
+								type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
 							}
 							break;
 						case 'C':
 							IClassDeclaration c = symbol.isClassDeclaration();
 							if (c != null) {
 								type = new TypeClass(c);
-								type.deco = signature.substring(0, i);
+								type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
 							}
 							break;
 						case 'S':
 							IStructDeclaration s = symbol.isStructDeclaration();
 							if (s != null) {
 								type = new TypeStruct(s);
-								type.deco = signature.substring(0, i);
+								type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
 							}
 							break;
 						}						
@@ -778,25 +772,32 @@ public class RDsymbol extends RNode implements IDsymbol {
 	
 	private Object findChild(IPackageFragment fragment, String name) throws JavaModelException {
 		if (fragment.isDefaultPackage()) {
-			ICompilationUnit unit = fragment.getCompilationUnit(name + ".d");
-			if (unit != null) {
+			ICompilationUnit unit;
+			
+			// First class files, because if a class file is open, then there
+			// will be a working copy *which does not have an underlying resource
+			// with the CompilationUnit semantics*, and something fails.
+			unit = fragment.getClassFile(name + ".d");
+			if (unit != null && unit.exists()) {
+				return new RModule(unit, context);
+			}
+			unit = fragment.getCompilationUnit(name + ".d");
+			if (unit != null && unit.exists()) {
 				return new RModule(unit, context);
 			}
 		} else if (fragment.getElementName().equals(name)) {
 			return fragment;
 		}
-		return null;
+		
+		IJavaElement element = JavaElementFinder.searchInChildren(fragment, name);
+		if (element instanceof ICompilationUnit) {
+			return new RModule((ICompilationUnit) element, context);
+		} else {
+			return element;
+		}
 	}
 	
 	protected String getTypeDeco() {
-		// Hack to take care of inconsistency of mangleof
-		if (parent.isModule() != null && CharOperation.equals(parent.ident().ident, Id.object)) {
-			String elemName = element.getElementName();
-			if (elemName.equals("Object")) {
-				return "6Object";
-			}	
-		}
-		
 		Stack<IDsymbol> stack = new Stack<IDsymbol>();
 		
 		IDsymbol current = this;
@@ -812,13 +813,14 @@ public class RDsymbol extends RNode implements IDsymbol {
 			sb.append(ident.length);
 			sb.append(ident);
 		}
-		return sb.toString();
+		String signature = sb.toString();
+		return JavaElementFinder.uncorrect(signature);
 	}
 	
-	protected int getFlags() {
+	protected long getFlags() {
 		try {
-			if (element.getElementType() == IJavaElement.FIELD) {
-				IField f = (IField) element;
+			if (element instanceof IMember) {
+				IMember f = (IMember) element;
 				return f.getFlags();
 			}
 		} catch (JavaModelException e) {
@@ -828,7 +830,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 	
 	protected int getStorageClass() {
-		int flags = getFlags();
+		long flags = getFlags();
 		int storage_class = 0;
 		
 		if ((flags & Flags.AccAbstract) != 0) storage_class |= STC.STCabstract;

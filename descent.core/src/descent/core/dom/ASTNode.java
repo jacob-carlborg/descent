@@ -1708,6 +1708,7 @@ public abstract class ASTNode {
 		 */
 		public void add(int index, Object element) {
 		    if (element == null) {
+		    	System.out.println(this);
 		        throw new IllegalArgumentException();
 		    }
 			if ((ASTNode.this.typeAndFlags & PROTECT) != 0) {
@@ -3011,6 +3012,7 @@ public abstract class ASTNode {
 			throw new IllegalArgumentException(this.toString());
 		}
 		if (startPosition < 0 && length != 0) {
+			System.out.println(this.toString());
 			throw new IllegalArgumentException(this.toString());
 		}
 		// source positions are not considered a structural property

@@ -28,6 +28,8 @@ import descent.internal.compiler.parser.Type.Modification;
  */
 public class NaiveASTFlattener extends AstVisitorAdapter {
 	
+	private final static boolean USE_RESOLVED = false;
+	
 	private final String EMPTY= ""; //$NON-NLS-1$
 	private final String LINE_END= "\n"; //$NON-NLS-1$
 	
@@ -100,6 +102,36 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		}
 		this.buffer.append(post);
 	}
+	
+	void visitPre(UnaExp node, String pre) {
+		this.buffer.append(pre);
+		if (USE_RESOLVED)
+			node.e1.accept(this);
+		else
+			node.sourceE1.accept(this);
+	}
+	
+	void visitPost(UnaExp node, String post) {
+		if (USE_RESOLVED)
+			node.e1.accept(this);
+		else
+			node.sourceE1.accept(this);
+		this.buffer.append(post);
+	}
+	
+	void visit(BinExp node, String separator) {
+		if (USE_RESOLVED)
+			node.e1.accept(this);
+		else
+			node.sourceE1.accept(this);
+		this.buffer.append(" ");
+		this.buffer.append(separator);
+		this.buffer.append(" ");
+		if (USE_RESOLVED)
+			node.e2.accept(this);
+		else
+			node.e2.accept(this);
+	}
 
 	public boolean visit(ASTNode node) {
 		return false;
@@ -112,25 +144,23 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(AddAssignExp node) {
 		if (node.isPreIncrement) {
 			this.buffer.append("++");
-			node.e1.accept(this);
+			if (USE_RESOLVED)
+				node.e1.accept(this);
+			else 
+				node.sourceE1.accept(this);
 		} else {
-			node.e1.accept(this);
-			this.buffer.append(" += ");
-			node.e2.accept(this);
+			visit(node, "+=");
 		}
 		return false;
 	}
 
 	public boolean visit(AddExp node) {
-		node.e1.accept(this);
-		this.buffer.append(" + ");
-		node.e2.accept(this);
+		visit(node, "+");
 		return false;
 	}
 
 	public boolean visit(AddrExp node) {
-		this.buffer.append("&");
-		node.e1.accept(this);
+		visitPre(node, "&");
 		return false;
 	}
 
@@ -145,8 +175,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			printIndent();
 			visitModifiers(node.modifiers);
 			this.buffer.append("alias ");
-			if (node.type != null) {
-				node.type.accept(this);
+			Type type = USE_RESOLVED ? node.type : node.sourceType;
+			if (type != null) {
+				type.accept(this);
 				this.buffer.append(" ");
 			}
 		}
@@ -163,8 +194,6 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		
 		return false;
 	}
-
-	
 
 	public boolean visit(AlignDeclaration node) {
 		visitPreDDocss(node.preComments);
@@ -190,23 +219,17 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(AndAndExp node) {
-		node.e1.accept(this);
-		this.buffer.append(" && ");
-		node.e2.accept(this);
+		visit(node, "&&");
 		return false;
 	}
 
 	public boolean visit(AndAssignExp node) {
-		node.e1.accept(this);
-		this.buffer.append(" &= ");
-		node.e2.accept(this);
+		visit(node, "&=");
 		return false;
 	}
 
 	public boolean visit(AndExp node) {
-		node.e1.accept(this);
-		this.buffer.append(" & ");
-		node.e2.accept(this);
+		visit(node, "&");
 		return false;
 	}
 
@@ -248,11 +271,12 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitList(node.modifiers, " ");
 		
 		boolean mustAppendSpace = node.modifiers != null && node.modifiers.size() > 0;
-		if (node.type != null) {
+		Type type = USE_RESOLVED ? node.type : node.sourceType;
+		if (type != null) {
 			if (mustAppendSpace) {
 				this.buffer.append(" ");
 			}
-			node.type.accept(this);
+			type.accept(this);
 			mustAppendSpace = true;
 		}
 		if (node.ident != null) {
@@ -261,9 +285,10 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			}
 			this.buffer.append(node.ident);
 		}
-		if (node.defaultArg != null) {
+		Expression defaultArg = USE_RESOLVED ? node.defaultArg : node.sourceDefaultArg; 
+		if (defaultArg != null) {
 			this.buffer.append(" = ");
-			node.defaultArg.accept(this);
+			defaultArg.accept(this);
 		}
 		return false;
 	}
@@ -278,13 +303,15 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(ArrayInitializer node) {
 		this.buffer.append("[");
-		if (node.index != null) {
-			for(int i = 0; i < node.index.size(); i++) {
+		Expressions eindex = USE_RESOLVED ? node.index : node.sourceIndex;
+		Initializers evalue = USE_RESOLVED ? node.value : node.sourceValue;
+		if (eindex != null) {
+			for(int i = 0; i < eindex.size(); i++) {
 				if (i != 0) {
 					this.buffer.append(", ");
 				}
-				Expression index = node.index.get(i);
-				Initializer value = node.value.get(i);
+				Expression index = eindex.get(i);
+				Initializer value = evalue.get(i);
 				if (index != null) {
 					index.accept(this);
 					this.buffer.append(": ");
@@ -297,16 +324,18 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(ArrayLengthExp node) {
-		//appendStartCompilerNode();
-		node.e1.accept(this);
-		this.buffer.append(".length");
-		//appendEndCompilerNode();
+		appendStartCompilerNode();
+		visitPost(node, ".length");
+		appendEndCompilerNode();
 		return false;
 	}
 
 	public boolean visit(ArrayLiteralExp node) {
 		this.buffer.append("[");
-		visitList(node.elements, ", ");
+		if (USE_RESOLVED)
+			visitList(node.elements, ", ");
+		else
+			visitList(node.sourceElements, ", ");
 		this.buffer.append("]");
 		return false;
 	}
@@ -452,8 +481,12 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.buffer.append(":\n");
 		
 		indent++;
-		if (x.statement != null && ((CompoundStatement) x.statement).statements.size() > 0) {
-			visitList(((CompoundStatement) x.statement).statements, "\n");
+		if (x.statement != null) {
+			if (x.statement instanceof CompoundStatement) {
+				visitList(((CompoundStatement) x.statement).statements, "\n");
+			} else {
+				x.statement.accept(this);
+			}
 		}
 		indent--;
 		return false;
@@ -874,7 +907,11 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		printIndent();
 		this.buffer.append("default:\n");
 		indent++;
-		visitList(((CompoundStatement) node.statement).statements, "\n");
+		if (node.statement instanceof CompoundStatement) {
+			visitList(((CompoundStatement) node.statement).statements, "\n");
+		} else {
+			node.statement.accept(this);
+		}
 		indent--;
 		return false;
 	}

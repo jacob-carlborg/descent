@@ -751,7 +751,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * <code>Flags.AccDefault</code> if none.
 	 * Defaults to <code>Flags.AccDefault</code>.
 	 */
-	private int flags = Flags.AccDefault;
+	private long flags = Flags.AccDefault;
 	
 	/**
 	 * Parameter names (for method completions), or
@@ -1556,7 +1556,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * <code>Flags.AccDefault</code> if none
 	 * @see Flags
 	 */
-	public int getFlags() {
+	public long getFlags() {
 		return this.flags;
 	}
 	
@@ -1573,7 +1573,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @param flags the modifier flags, or
 	 * <code>Flags.AccDefault</code> if none
 	 */
-	public void setFlags(int flags) {
+	public void setFlags(long flags) {
 		this.flags = flags;
 	}
 	

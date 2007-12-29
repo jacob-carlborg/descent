@@ -81,7 +81,7 @@ public class MemberFilter extends ViewerFilter {
 				if (member.getElementName().startsWith("<")) { // filter out <clinit> //$NON-NLS-1$
 					return false;
 				}
-				int flags= member.getFlags();
+				long flags= member.getFlags();
 				if (hasFilter(FILTER_STATIC) && (Flags.isStatic(flags) || isFieldInInterfaceOrAnnotation(member)) && memberType != IJavaElement.TYPE) {
 					return false;
 				}

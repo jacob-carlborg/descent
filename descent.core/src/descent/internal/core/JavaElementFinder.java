@@ -1,18 +1,52 @@
 package descent.internal.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import descent.core.ICompilationUnit;
+import descent.core.IConditional;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.JavaModelException;
+import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.Global;
 import descent.internal.core.util.Util;
 
 /**
  * Utility class to find a java element in a java project given its signature.
  */
 public class JavaElementFinder {
+	
+	private final static Map<String, String> corrections = new HashMap<String, String>();
+	private final static Map<String, String> uncorrections = new HashMap<String, String>();
+	
+	static {
+		corrections.put("C6Object", "C6object6Object");
+		corrections.put("C9ClassInfo", "C6object9ClassInfo");
+		corrections.put("C8TypeInfo", "C6object8TypeInfo");
+		corrections.put("C16TypeInfo_Typedef", "C6object16TypeInfo_Typedef");
+		corrections.put("C13TypeInfo_Enum", "C6object13TypeInfo_Enum");
+		corrections.put("C16TypeInfo_Pointer", "C6object16TypeInfo_Pointer");
+		corrections.put("C14TypeInfo_Array", "C6object14TypeInfo_Array");
+		corrections.put("C20TypeInfo_StaticArray", "C6object20TypeInfo_StaticArray");
+		corrections.put("C25TypeInfo_AssociativeArray", "C6object25TypeInfo_AssociativeArray");
+		corrections.put("C17TypeInfo_Function", "C6object17TypeInfo_Function");
+		corrections.put("C17TypeInfo_Delegate", "C6object17TypeInfo_Delegate");
+		corrections.put("C14TypeInfo_Class", "C6object14TypeInfo_Class");
+		corrections.put("C18TypeInfo_Interface", "C6object13TypeInfo_Enum");
+		corrections.put("C15TypeInfo_Struct", "C6object15TypeInfo_Struct");
+		corrections.put("C14TypeInfo_Tuple", "C6object14TypeInfo_Tuple");
+		corrections.put("C14TypeInfo_Const", "C6object14TypeInfo_Const");
+		corrections.put("C18TypeInfo_Invariant", "C6object18TypeInfo_Const");
+		corrections.put("C9Exception", "C6object9Exception");
+		
+		for(Map.Entry<String, String> kv : corrections.entrySet()) {
+			uncorrections.put(kv.getValue(), kv.getKey());
+		}
+	}
 	
 	private final IJavaProject javaProject;
 
@@ -30,44 +64,27 @@ public class JavaElementFinder {
 	 */
 	public static String correct(String signature) {
 		if (signature != null) {
-			if (signature.equals("C6Object")) {
-				signature = "C6object6Object";
-			} else if (signature.equals("C9ClassInfo")) {
-				signature = "C6object9ClassInfo";
-			} else if (signature.equals("C8TypeInfo")) {
-				signature = "C6object8TypeInfo";
-			} else if (signature.equals("C16TypeInfo_Typedef")) {
-				signature = "C6object16TypeInfo_Typedef";
-			} else if (signature.equals("C13TypeInfo_Enum")) {
-				signature = "C6object13TypeInfo_Enum";
-			} else if (signature.equals("C16TypeInfo_Pointer")) {
-				signature = "C6object16TypeInfo_Pointer";
-			} else if (signature.equals("C14TypeInfo_Array")) {
-				signature = "C6object14TypeInfo_Array";
-			} else if (signature.equals("C20TypeInfo_StaticArray")) {
-				signature = "C6object20TypeInfo_StaticArray";
-			} else if (signature.equals("C25TypeInfo_AssociativeArray")) {
-				signature = "C6object25TypeInfo_AssociativeArray";
-			} else if (signature.equals("C17TypeInfo_Function")) {
-				signature = "C6object17TypeInfo_Function";
-			} else if (signature.equals("C17TypeInfo_Delegate")) {
-				signature = "C6object17TypeInfo_Delegate";
-			} else if (signature.equals("C14TypeInfo_Class")) {
-				signature = "C6object14TypeInfo_Class";
-			} else if (signature.equals("C18TypeInfo_Interface")) {
-				signature = "C6object18TypeInfo_Interface";
-			} else if (signature.equals("C15TypeInfo_Struct")) {
-				signature = "C6object15TypeInfo_Struct";
-			} else if (signature.equals("C15TypeInfo_Struct")) {
-				signature = "C6object15TypeInfo_Struct";
-			} else if (signature.equals("C14TypeInfo_Tuple")) {
-				signature = "C6object14TypeInfo_Tuple";
-			} else if (signature.equals("C14TypeInfo_Const")) {
-				signature = "C6object14TypeInfo_Const";
-			} else if (signature.equals("C18TypeInfo_Invariant")) {
-				signature = "C6object18TypeInfo_Const";
-			} else if (signature.equals("C9Exception")) {
-				signature = "C6object9Exception";
+			String correction = corrections.get(signature);
+			if (correction != null) {
+				return correction;
+			}
+		}
+		return signature;
+	}
+	
+	/**
+	 * Uncorrects some signatures. For example, it transforms C6object6Object
+	 * into C6Object.
+	 * @param signature the signature to correct
+	 * @return the corrected signature
+	 * 
+	 * TODO: move this method somewhere else
+	 */
+	public static String uncorrect(String signature) {
+		if (signature != null) {
+			String correction = uncorrections.get(signature);
+			if (correction != null) {
+				return correction;
 			}
 		}
 		return signature;
@@ -141,15 +158,10 @@ public class JavaElementFinder {
 	
 	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
-			if (child.getElementType() == IJavaElement.INITIALIZER) {
-				IInitializer init = (IInitializer) child;
-				// TODO consider other possibilities, like debug, version,
-				// and static ifs
-				if (init.isAlign()) {
-					IJavaElement result = searchInChildren(init, name);
-					if (result != null) {
-						return result;
-					}
+			if (mustSearchInChildren(child)) {
+				IJavaElement result = searchInChildren((IParent) child, name);
+				if (result != null) {
+					return result;
 				}
 			}
 			
@@ -194,6 +206,47 @@ public class JavaElementFinder {
 		}
 		
 		return searchInChildren(fragment, name);
+	}
+	
+	private static Global global = new Global();
+	
+	/*
+	 * Determines if an element is to be searched in it's children. For example,
+	 * if element is an align declaration, this method returns true. If it's
+	 * a version condition, the current version identifiers are checked to see
+	 * if any of them is the one in the version condition, etc.
+	 */
+	public static boolean mustSearchInChildren(IJavaElement element) {
+		if (!(element instanceof IParent)) {
+			return false;
+		}
+		
+		try {
+			if (element.getElementType() == IJavaElement.INITIALIZER) {
+				IInitializer init = (IInitializer) element;
+				// TODO consider others
+				if (init.isAlign()) {
+					return true;
+				}
+			}
+			
+			// For now, hack and use the predefined versions
+			if (element instanceof IConditional) {
+				IConditional conditional = (IConditional) element;
+				if (conditional.isVersionDeclaration()) {
+					char[] version = conditional.getElementName().toCharArray();
+					for(char[] v : global.params.versionids) {
+						if (CharOperation.equals(v, version)) {
+							return true;
+						}
+					}
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		
+		return false;
 	}
 
 }

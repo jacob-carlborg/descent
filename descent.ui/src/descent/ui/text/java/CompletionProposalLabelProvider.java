@@ -467,7 +467,7 @@ public class CompletionProposalLabelProvider {
 	 * @return the created image descriptor, or <code>null</code> if no image is available
 	 */
 	public ImageDescriptor createImageDescriptor(CompletionProposal proposal) {
-		final int flags= proposal.getFlags();
+		final long flags= proposal.getFlags();
 
 		ImageDescriptor descriptor;
 		switch (proposal.getKind()) {
@@ -530,18 +530,18 @@ public class CompletionProposalLabelProvider {
 	}
 
 	ImageDescriptor createMethodImageDescriptor(CompletionProposal proposal) {
-		final int flags= proposal.getFlags();
+		final long flags= proposal.getFlags();
 		return decorateImageDescriptor(JavaElementImageProvider.getMethodImageDescriptor(false, flags), proposal);
 	}
 
 	ImageDescriptor createTypeImageDescriptor(CompletionProposal proposal) {
-		final int flags= proposal.getFlags();
+		final long flags= proposal.getFlags();
 		boolean isInterfaceOrAnnotation= Flags.isInterface(flags);
 		return decorateImageDescriptor(JavaElementImageProvider.getTypeImageDescriptor(true /* in order to get all visibility decorations */, isInterfaceOrAnnotation, flags, false), proposal);
 	}
 
 	ImageDescriptor createFieldImageDescriptor(CompletionProposal proposal) {
-		final int flags= proposal.getFlags();
+		final long flags= proposal.getFlags();
 		return decorateImageDescriptor(JavaElementImageProvider.getFieldImageDescriptor(false, flags), proposal);
 	}
 
@@ -568,7 +568,7 @@ public class CompletionProposalLabelProvider {
 	 */
 	private ImageDescriptor decorateImageDescriptor(ImageDescriptor descriptor, CompletionProposal proposal) {
 		int adornments= 0;
-		int flags= proposal.getFlags();
+		long flags= proposal.getFlags();
 		int kind= proposal.getKind();
 
 		if (Flags.isDeprecated(flags))

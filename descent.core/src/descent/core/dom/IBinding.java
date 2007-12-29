@@ -146,7 +146,7 @@ public interface IBinding {
 	 * @return the bit-wise or of <code>Modifier</code> constants
 	 * @see Modifier
 	 */ 
-	public int getModifiers();
+	public long getModifiers();
 
 	/**
 	 * Return whether this binding is for something that is deprecated.

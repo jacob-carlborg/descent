@@ -18,7 +18,7 @@ public abstract class TypeInfo {
 		public void setInfo(TypeInfo info) {
 			fInfo= info;
 		}
-		public int getModifiers() {
+		public long getModifiers() {
 			return fInfo.getModifiers();
 		}
 		public String getTypeName() {
@@ -36,7 +36,7 @@ public abstract class TypeInfo {
 	final String fPackage;
 	final char[][] fEnclosingNames;
 	
-	int fModifiers;
+	long fModifiers;
 	
 	public static final int UNRESOLVABLE_TYPE_INFO= 1;
 	public static final int JAR_FILE_ENTRY_TYPE_INFO= 2;
@@ -101,7 +101,7 @@ public abstract class TypeInfo {
 	 * 
 	 * @return the type's modifiers
 	 */
-	public int getModifiers() {
+	public long getModifiers() {
 		return fModifiers;
 	}
 	
@@ -110,7 +110,7 @@ public abstract class TypeInfo {
 	 * 
 	 * @param modifiers the new modifiers
 	 */
-	public void setModifiers(int modifiers) {
+	public void setModifiers(long modifiers) {
 		fModifiers= modifiers;
 	}
 	

@@ -54,7 +54,7 @@ public void acceptConstructorReference(char[] typeName, int argCount, int source
 public void acceptFieldReference(char[] fieldName, int sourcePosition) {
 	this.indexer.addFieldReference(fieldName);
 }
-public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, int modifiers) {
+public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, long modifiers) {
 //	 imports have already been reported while creating the ImportRef node (see SourceElementParser#comsume*ImportDeclarationName() methods)
 }
 /**
@@ -207,7 +207,7 @@ public void enterField(FieldInfo fieldInfo) {
 /**
  * @see ISourceElementRequestor#enterInitializer(int, int)
  */
-public void enterInitializer(int declarationSourceStart, int modifiers, char[] displayString) {
+public void enterInitializer(int declarationSourceStart, long modifiers, char[] displayString) {
 	this.methodDepth++;
 }
 private void enterInterface(TypeInfo typeInfo) {
@@ -247,7 +247,7 @@ public void enterMethod(MethodInfo methodInfo) {
  */
 public void enterType(TypeInfo typeInfo) {
 	// TODO (jerome) might want to merge the 4 methods
-	switch(typeInfo.modifiers & (Flags.AccInterface | Flags.AccStruct | Flags.AccUnion | Flags.AccTemplate | Flags.AccEnum)) {
+	switch((int)(typeInfo.modifiers & (Flags.AccInterface | Flags.AccStruct | Flags.AccUnion | Flags.AccTemplate | Flags.AccEnum))) {
 	case Flags.AccEnum:
 		enterEnum(typeInfo);
 		break;
@@ -358,7 +358,7 @@ public void pushTypeName(char[] typeName) {
 }
 
 // TODO JDT check if this must be implemented
-public void enterConditional(int declarationStart, int modifiers, char[] displayString) {
+public void enterConditional(int declarationStart, long modifiers, char[] displayString) {
 	
 }
 

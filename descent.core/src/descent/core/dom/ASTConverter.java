@@ -1435,14 +1435,14 @@ public class ASTConverter {
 				b.setExpression(convertedCondition);
 			}
 		}
-		if (a.ifbody != null) {
-			descent.core.dom.Statement convertedIfBody = convert(a.ifbody);
+		if (a.sourceIfbody != null) {
+			descent.core.dom.Statement convertedIfBody = convert(a.sourceIfbody);
 			if (convertedIfBody != null) {
 				b.setThenBody(convertedIfBody);
 			}
 		}
-		if (a.elsebody != null) {
-			b.setElseBody(convert(a.elsebody));
+		if (a.sourceElsebody != null) {
+			b.setElseBody(convert(a.sourceElsebody));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

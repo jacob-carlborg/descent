@@ -10,10 +10,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class IfStatement extends Statement {
 
 	public Argument arg;
-	public Expression condition;
-	public Expression sourceCondition;
-	public Statement ifbody;
-	public Statement elsebody;
+	public Expression condition, sourceCondition;
+	public Statement ifbody, sourceIfbody;
+	public Statement elsebody, sourceElsebody;
 
 	public VarDeclaration match; // for MatchExpression results
 
@@ -21,10 +20,9 @@ public class IfStatement extends Statement {
 			Statement ifbody, Statement elsebody) {
 		super(loc);
 		this.arg = arg;
-		this.condition = condition;
-		this.sourceCondition = condition;
-		this.ifbody = ifbody;
-		this.elsebody = elsebody;
+		this.condition = this.sourceCondition = condition;
+		this.ifbody = this.sourceIfbody = ifbody;
+		this.elsebody = this.sourceElsebody = elsebody;
 	}
 
 	@Override
@@ -32,9 +30,9 @@ public class IfStatement extends Statement {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, arg);
-			TreeVisitor.acceptChildren(visitor, condition);
-			TreeVisitor.acceptChildren(visitor, ifbody);
-			TreeVisitor.acceptChildren(visitor, elsebody);
+			TreeVisitor.acceptChildren(visitor, sourceCondition);
+			TreeVisitor.acceptChildren(visitor, sourceIfbody);
+			TreeVisitor.acceptChildren(visitor, sourceElsebody);
 		}
 		visitor.endVisit(this);
 	}

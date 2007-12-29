@@ -300,18 +300,18 @@ public class ParameterGuesser {
 			fVars.add(new Variable(new String(typePackageName), new String(typeName), new String(name), varType, fVars.size(), triggers, descriptor));
 		}
 
-		private void acceptField(char[] declaringTypeName, char[] name, char[] typePackageName, char[] typeName, int modifiers) {
+		private void acceptField(char[] declaringTypeName, char[] name, char[] typePackageName, char[] typeName, long modifiers) {
 			if (!isInherited(new String(declaringTypeName)))
 				addVariable(Variable.FIELD, typePackageName, typeName, name, NO_TRIGGERS, getFieldDescriptor(modifiers));
 			else
 				addVariable(Variable.INHERITED_FIELD, typePackageName, typeName, name, NO_TRIGGERS, getFieldDescriptor(modifiers));
 		}
 
-		private void acceptLocalVariable(char[] name, char[] typePackageName, char[] typeName, int modifiers) {
+		private void acceptLocalVariable(char[] name, char[] typePackageName, char[] typeName, long modifiers) {
 			addVariable(Variable.LOCAL, typePackageName, typeName, name, NO_TRIGGERS, decorate(JavaPluginImages.DESC_OBJS_LOCAL_VARIABLE, modifiers));
 		}
 
-		private void acceptMethod(char[] declaringTypeName, char[] returnTypePackageName, char[] returnTypeName, char[] completionName, int modifiers) {
+		private void acceptMethod(char[] declaringTypeName, char[] returnTypePackageName, char[] returnTypeName, char[] completionName, long modifiers) {
 			if (!filter(returnTypeName, completionName))
 				addVariable(isInherited(new String(declaringTypeName)) ? Variable.INHERITED_METHOD : Variable.METHOD, returnTypePackageName, returnTypeName, completionName, NO_TRIGGERS, getMemberDescriptor(modifiers));
 		}
@@ -320,17 +320,17 @@ public class ParameterGuesser {
 			return Arrays.equals(VOID, returnTypeName) || Arrays.equals(HASHCODE, completionName) || Arrays.equals(TOSTRING, completionName);
 		}
 
-		protected ImageDescriptor getMemberDescriptor(int modifiers) {
+		protected ImageDescriptor getMemberDescriptor(long modifiers) {
 			ImageDescriptor desc= JavaElementImageProvider.getMethodImageDescriptor(false, modifiers);
 			return decorate(desc, modifiers);
 		}
 
-		protected ImageDescriptor getFieldDescriptor(int modifiers) {
+		protected ImageDescriptor getFieldDescriptor(long modifiers) {
 			ImageDescriptor desc= JavaElementImageProvider.getFieldImageDescriptor(false, modifiers);
 			return decorate(desc, modifiers);
 		}
 
-		private ImageDescriptor decorate(ImageDescriptor descriptor, int modifiers) {
+		private ImageDescriptor decorate(ImageDescriptor descriptor, long modifiers) {
 			int flags= 0;
 
 			if (Flags.isDeprecated(modifiers))

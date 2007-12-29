@@ -108,7 +108,7 @@ public class TypeInfoLabelProvider extends LabelProvider {
 		} else if (isSet(SHOW_PACKAGE_ONLY)) {
 			return PKG_ICON;
 		} else {
-			int modifiers= ((TypeInfo)element).getModifiers();
+			long modifiers= ((TypeInfo)element).getModifiers();
 			/*
 			if (Flags.isAnnotation(modifiers)) {
 				return ANNOTATION_ICON;

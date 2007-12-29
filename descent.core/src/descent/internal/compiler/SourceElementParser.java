@@ -461,6 +461,9 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
 		info.modifiers = getFlags(node.modifiers);
+		if (ty.varargs != 0) {
+			info.modifiers |= Flags.AccVarargs;
+		}
 		if (node.ident != null) {
 			info.name = node.ident.ident;
 			info.nameSourceStart = startOf(node.ident);
@@ -497,7 +500,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.parameterNames = getParameterNames(arguments);
 			info.parameterTypes = getParameterTypes(arguments);
 		}
-		info.returnType = getSignature(((TypeFunction) node.type).next);
+		
+		if (node.type != null) {
+			TypeFunction ty = (TypeFunction) node.type;
+			if (ty.varargs != 0) {
+				info.modifiers |= Flags.AccVarargs;
+			}
+			info.returnType = getSignature(ty.next);
+		}
 		info.typeParameters = new TypeParameterInfo[0];
 		
 		requestor.enterConstructor(info);

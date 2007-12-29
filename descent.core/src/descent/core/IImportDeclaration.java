@@ -39,7 +39,7 @@ String getElementName();
  * @see Flags
  * @since 3.0
  */
-int getFlags() throws JavaModelException;
+long getFlags() throws JavaModelException;
 
 /**
  * Returns whether the import is on-demand. An import is on-demand if it ends

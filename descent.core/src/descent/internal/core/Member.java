@@ -170,7 +170,7 @@ public IType getDeclaringType() {
 /**
  * @see IMember
  */
-public int getFlags() throws JavaModelException {
+public long getFlags() throws JavaModelException {
 	MemberElementInfo info = (MemberElementInfo) getElementInfo();
 	return info.getModifiers();
 }
@@ -356,7 +356,7 @@ public boolean isBinary() {
 protected boolean isMainMethod(IMethod method) throws JavaModelException {
 	/* TODO JDT Java -> D */
 	if ("main".equals(method.getElementName()) && Signature.SIG_VOID.equals(method.getReturnType())) { //$NON-NLS-1$
-		int flags= method.getFlags();
+		long flags= method.getFlags();
 		if (Flags.isStatic(flags) && Flags.isPublic(flags)) {
 			String[] paramTypes= method.getParameterTypes();
 			if (paramTypes.length == 1) {

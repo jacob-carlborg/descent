@@ -268,7 +268,7 @@ public class SearchableEnvironment
 				}
 			};
 			IRestrictedAccessTypeRequestor typeRequestor = new IRestrictedAccessTypeRequestor() {
-				public void acceptType(int modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+				public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))
 						return;
 					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)

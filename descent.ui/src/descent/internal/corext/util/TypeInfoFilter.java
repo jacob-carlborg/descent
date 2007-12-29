@@ -217,7 +217,7 @@ public class TypeInfoFilter {
 	private boolean matchesModifiers(TypeInfo type) {
 		if (fElementKind == IJavaSearchConstants.TYPE)
 			return true;
-		int modifiers= type.getModifiers() & TYPE_MODIFIERS;
+		long modifiers= type.getModifiers() & TYPE_MODIFIERS;
 		switch (fElementKind) {
 			case IJavaSearchConstants.CLASS:
 				return modifiers == 0;

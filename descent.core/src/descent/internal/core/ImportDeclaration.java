@@ -53,7 +53,7 @@ public int getElementType() {
 /**
  * @see descent.core.IImportDeclaration#getFlags()
  */
-public int getFlags() throws JavaModelException {
+public long getFlags() throws JavaModelException {
 	ImportDeclarationElementInfo info = (ImportDeclarationElementInfo)getElementInfo();
 	return info.getModifiers();
 }

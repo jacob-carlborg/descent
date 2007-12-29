@@ -417,7 +417,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>PRIVATE</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isPrivate(int flags) {
+	public static boolean isPrivate(long flags) {
 		return (flags & PRIVATE) != 0;
 	}
 	/**
@@ -436,7 +436,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>PACKAGE</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isPackage(int flags) {
+	public static boolean isPackage(long flags) {
 		return (flags & PACKAGE) != 0;
 	}
 	/**
@@ -455,7 +455,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>PROTECTED</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isProtected(int flags) {
+	public static boolean isProtected(long flags) {
 		return (flags & PROTECTED) != 0;
 	}
 	/**
@@ -474,7 +474,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>PUBLIC</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isPublic(int flags) {
+	public static boolean isPublic(long flags) {
 		return (flags & PUBLIC) != 0;
 	}
 	/**
@@ -493,7 +493,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>EXPORT</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isExport(int flags) {
+	public static boolean isExport(long flags) {
 		return (flags & EXPORT) != 0;
 	}
 	/**
@@ -512,7 +512,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>STATIC</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isStatic(int flags) {
+	public static boolean isStatic(long flags) {
 		return (flags & STATIC) != 0;
 	}
 	/**
@@ -531,7 +531,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>FINAL</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isFinal(int flags) {
+	public static boolean isFinal(long flags) {
 		return (flags & FINAL) != 0;
 	}
 	/**
@@ -550,7 +550,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>ABSTRACT</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isAbstract(int flags) {
+	public static boolean isAbstract(long flags) {
 		return (flags & ABSTRACT) != 0;
 	}
 	/**
@@ -569,7 +569,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>OVERRIDE</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isOverride(int flags) {
+	public static boolean isOverride(long flags) {
 		return (flags & OVERRIDE) != 0;
 	}
 	/**
@@ -588,7 +588,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>AUTO</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isAuto(int flags) {
+	public static boolean isAuto(long flags) {
 		return (flags & AUTO) != 0;
 	}
 	/**
@@ -607,7 +607,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>SYNCHRONIZED</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isSynchronized(int flags) {
+	public static boolean isSynchronized(long flags) {
 		return (flags & SYNCHRONIZED) != 0;
 	}
 	/**
@@ -626,7 +626,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>DEPRECATED</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isDeprecated(int flags) {
+	public static boolean isDeprecated(long flags) {
 		return (flags & DEPRECATED) != 0;
 	}
 	/**
@@ -645,7 +645,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>EXTERN</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isExtern(int flags) {
+	public static boolean isExtern(long flags) {
 		return (flags & EXTERN) != 0;
 	}
 	/**
@@ -664,7 +664,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>CONST</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isConst(int flags) {
+	public static boolean isConst(long flags) {
 		return (flags & CONST) != 0;
 	}
 	/**
@@ -683,7 +683,7 @@ public class Modifier extends ASTNode {
 	 * @return <code>true</code> if the <code>SCOPE</code> bit is
 	 *   set, and <code>false</code> otherwise
 	 */
-	public static boolean isScope(int flags) {
+	public static boolean isScope(long flags) {
 		return (flags & SCOPE) != 0;
 	}
 
