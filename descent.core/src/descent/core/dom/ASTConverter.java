@@ -1362,6 +1362,10 @@ public class ASTConverter {
 			
 			c.imports().add(b);
 			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			last = a;
 			a = a.next;
 		}

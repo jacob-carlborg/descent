@@ -1,19 +1,17 @@
 package descent.core.dom;
 
 import descent.core.IField;
-import descent.core.IJavaElement;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
 
-public class VariableBinding implements IVariableBinding {
+public class VariableBinding extends JavaElementBasedBinding implements IVariableBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final IField field;
 	private final String signature;
 
-	public VariableBinding(DefaultBindingResolver bindingResolver, IField field, String signature) {
+	public VariableBinding(DefaultBindingResolver bindingResolver, IField element, String signature) {
+		super(element);
 		this.bindingResolver = bindingResolver;
-		this.field = field;
 		this.signature = signature;
 	}
 
@@ -32,13 +30,9 @@ public class VariableBinding implements IVariableBinding {
 		return null;
 	}
 
-	public String getName() {
-		return field.getElementName();
-	}
-
 	public ITypeBinding getType() {
 		try {
-			String signature = field.getTypeSignature();
+			String signature = ((IField) element).getTypeSignature();
 			return (ITypeBinding) bindingResolver.resolveBinding(signature);
 		} catch (JavaModelException e) {
 			Util.log(e);
@@ -58,7 +52,7 @@ public class VariableBinding implements IVariableBinding {
 
 	public boolean isEnumConstant() {
 		try {
-			return field.isEnumConstant();
+			return ((IField) element).isEnumConstant();
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
@@ -80,28 +74,12 @@ public class VariableBinding implements IVariableBinding {
 		return null;
 	}
 
-	public IJavaElement getJavaElement() {
-		return field;
-	}
-
 	public String getKey() {
 		return signature;
 	}
 
 	public int getKind() {
 		return VARIABLE;
-	}
-
-	public int getModifiers() {
-		try {
-			return field.getFlags();
-		} catch (JavaModelException e) {
-			return 0;
-		}
-	}
-
-	public boolean isDeprecated() {
-		return (getModifiers() & Modifier.DEPRECATED) != 0;
 	}
 
 	public boolean isEqualTo(IBinding binding) {

@@ -167,7 +167,7 @@ class BindingResolver {
 	 *         (for single-type imports), or <code>null</code> if no binding is
 	 *         available
 	 */
-	IBinding resolveImport(Import imp) {
+	IPackageBinding resolveImport(Import imp) {
 		return null;
 	}
 	

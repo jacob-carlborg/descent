@@ -41,16 +41,11 @@ public class GeneralAttribute extends ASTAttribute {
 			fLabel= name + " (0)";
 			fChildren= EMPTY;
 		} else {
-			/*
 			fChildren= createChildren(children);
-			fLabel= name + " (" + String.valueOf(fChildren.length) + ')';
-			*/
-			fChildren = EMPTY;
 			fLabel= name + " (" + String.valueOf(fChildren.length) + ')';
 		}
 	}
 	
-	/*
 	private Object[] createChildren(Object[] children) {
 		ASTAttribute[] res= new ASTAttribute[children.length];
 		for (int i= 0; i < res.length; i++) {
@@ -60,7 +55,6 @@ public class GeneralAttribute extends ASTAttribute {
 		}
 		return res;
 	}
-	*/
 
 	public Object getParent() {
 		return fParent;

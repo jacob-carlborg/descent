@@ -32,6 +32,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -48,16 +49,23 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ViewForm;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
@@ -69,6 +77,7 @@ import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.ui.texteditor.IWorkbenchActionDefinitionIds;
 
 import descent.astview.ASTViewImages;
 import descent.astview.ASTViewPlugin;
@@ -77,8 +86,11 @@ import descent.astview.NodeFinder;
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
+import descent.core.IJavaProject;
 import descent.core.IOpenable;
+import descent.core.IPackageFragment;
 import descent.core.IProblemRequestor;
+import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.IProblem;
@@ -86,8 +98,10 @@ import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.IBinding;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
+import descent.ui.JavaUI;
 
 public class ASTView extends ViewPart implements IShowInSource {
 	
@@ -348,6 +362,7 @@ public class ASTView extends ViewPart implements IShowInSource {
 		
 	private final static String SETTINGS_LINK_WITH_EDITOR= "link_with_editor"; //$NON-NLS-1$
 	private final static String SETTINGS_INPUT_KIND= "input_kind"; //$NON-NLS-1$
+	private final static String SETTINGS_NO_BINDINGS= "create_bindings"; //$NON-NLS-1$
 	private final static String SETTINGS_NO_STATEMENTS_RECOVERY= "no_statements_recovery"; //$NON-NLS-1$
 	private final static String SETTINGS_SHOW_NON_RELEVANT="show_non_relevant";//$NON-NLS-1$
 	private final static String SETTINGS_JLS= "jls"; //$NON-NLS-1$
@@ -356,17 +371,23 @@ public class ASTView extends ViewPart implements IShowInSource {
 	private SashForm fSash;
 	private TreeViewer fViewer;
 	private ASTViewLabelProvider fASTLabelProvider;
+	private TreeViewer fTray;
 	
 	private DrillDownAdapter fDrillDownAdapter;
 	private Action fFocusAction;
 	private Action fRefreshAction;
+	private Action fCreateBindingsAction;
 	private Action fStatementsRecoveryAction;
+	private Action fFilterNonRelevantAction;
+	private Action fResolveBindingKeyAction;
+	private Action fCreateBindingFromElementAction;
 	private Action fCollapseAction;
 	private Action fExpandAction;
 	private Action fClearAction;
 	private TreeCopyAction fCopyAction;
 	private Action fDoubleClickAction;
 	private Action fLinkWithEditor;
+	private Action fAddToTrayAction;
 	private Action fDeleteAction;
 	
 	private ASTLevelToggle[] fASTVersionToggleActions;
@@ -379,14 +400,17 @@ public class ASTView extends ViewPart implements IShowInSource {
 	private IOpenable fOpenable;
 	private CompilationUnit fRoot;
 	private IDocument fCurrentDocument;
+	private ArrayList fTrayRoots;
 	
 	private boolean fDoLinkWithEditor;
+	private boolean fCreateBindings;
 	private NonRelevantFilter fNonRelevantFilter;
 	private boolean fStatementsRecovery;
 	
 	private Object fPreviousDouble;
 	
 	private ListenerMix fSuperListener;
+	private ISelectionChangedListener fTrayUpdater;
 
 	private IDialogSettings fDialogSettings;
 
@@ -400,6 +424,7 @@ public class ASTView extends ViewPart implements IShowInSource {
 		} catch (NumberFormatException e) {
 			fCurrentInputKind= ASTInputKindAction.USE_PARSER;
 		}
+		fCreateBindings= !fDialogSettings.getBoolean(SETTINGS_NO_BINDINGS); // inverse so that default is to create bindings
 		fStatementsRecovery= !fDialogSettings.getBoolean(SETTINGS_NO_STATEMENTS_RECOVERY); // inverse so that default is use recovery
 		fCurrentASTLevel= D1;
 		try {
@@ -476,7 +501,13 @@ public class ASTView extends ViewPart implements IShowInSource {
 	}
 	
 	private int getInitialASTLevel(IJavaElement openable) {
-		return D1;
+		IJavaProject project= (IJavaProject) openable.getAncestor(IJavaElement.JAVA_PROJECT);
+		String option= project.getOption(JavaCore.COMPILER_SOURCE, true);
+		if (JavaCore.VERSION_2_x.equals(option)) {
+			return D2;
+		} else {
+			return D1;
+		}
 	}
 
 	private CompilationUnit internalSetInput(IOpenable input, int offset, int length, int astLevel) throws CoreException {
@@ -552,7 +583,7 @@ public class ASTView extends ViewPart implements IShowInSource {
 			
 		} else {
 			ASTParser parser= ASTParser.newParser(astLevel);
-			//parser.setResolveBindings(fCreateBindings);
+			parser.setResolveBindings(fCreateBindings);
 			if (input instanceof ICompilationUnit) {
 				parser.setSource((ICompilationUnit) input);
 			} else {
@@ -584,8 +615,12 @@ public class ASTView extends ViewPart implements IShowInSource {
 		fViewer.setInput(root);
 		fViewer.getTree().setEnabled(root != null);
 		fSash.setMaximizedControl(fViewer.getTree());
+		fTrayRoots= new ArrayList();
+		if (fTray != null)
+			fTray.setInput(fTrayRoots);
 		setASTUptoDate(root != null);
 		fClearAction.setEnabled(root != null);
+		fResolveBindingKeyAction.setEnabled(root != null);
 		fPreviousDouble= null; // avoid leaking AST
 	}
 
@@ -603,6 +638,11 @@ public class ASTView extends ViewPart implements IShowInSource {
 			FileBuffers.getTextFileBufferManager().removeFileBufferListener(fSuperListener);
 			fSuperListener.dispose(); // removes reference to view
 			fSuperListener= null;
+		}
+		if (fTrayUpdater != null) {
+			fViewer.removePostSelectionChangedListener(fTrayUpdater);
+			fTray.removePostSelectionChangedListener(fTrayUpdater);
+			fTrayUpdater= null;
 		}
 		super.dispose();
 	}
@@ -626,15 +666,70 @@ public class ASTView extends ViewPart implements IShowInSource {
 		fViewer.addDoubleClickListener(fSuperListener);
 		fViewer.addFilter(new ViewerFilter() {
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				if (!fCreateBindings && element instanceof Binding)
+					return false;
 				return true;
 			}
 		});
 		fViewer.addFilter(fNonRelevantFilter);
 		
+		ViewForm trayForm= new ViewForm(fSash, SWT.NONE);
+		Label label= new Label(trayForm, SWT.NONE);
+		label.setText(" Comparison Tray (* = selection in the upper tree):"); //$NON-NLS-1$
+		trayForm.setTopLeft(label);
 		
+		fTray= new TreeViewer(trayForm, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		trayForm.setContent(fTray.getTree());
+		
+		fTrayRoots= new ArrayList();
+		fTray.setContentProvider(new TrayContentProvider());
+		final TrayLabelProvider trayLabelProvider= new TrayLabelProvider();
+		fTray.setLabelProvider(trayLabelProvider);
+		fTray.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
+		fTrayUpdater= new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection viewerSelection= (IStructuredSelection) fViewer.getSelection();
+				if (viewerSelection.size() == 1) {
+					if (DynamicAttributeProperty.unwrapAttribute(viewerSelection.getFirstElement()) != null) {
+						trayLabelProvider.setViewerElement(viewerSelection.getFirstElement());
+						return;
+					}
+				}
+				trayLabelProvider.setViewerElement(null);
+			}
+		};
+		fTray.addPostSelectionChangedListener(fTrayUpdater);
+		fViewer.addPostSelectionChangedListener(fTrayUpdater);
+		fTray.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				performTrayDoubleClick();
+			}
+		});
+		fTray.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection= (IStructuredSelection) event.getSelection();
+				boolean deleteEnabled= false;
+				if (selection.size() == 1 && selection.getFirstElement() instanceof Binding)
+					deleteEnabled= fTray.getTree().isFocusControl();
+				fDeleteAction.setEnabled(deleteEnabled);
+			}
+		});
+		fTray.getTree().addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				IStructuredSelection selection= (IStructuredSelection) fTray.getSelection();
+				boolean deleteEnabled= false;
+				if (selection.size() == 1 && selection.getFirstElement() instanceof Binding)
+					deleteEnabled= true;
+				fDeleteAction.setEnabled(deleteEnabled);
+			}
+			public void focusLost(FocusEvent e) {
+				fDeleteAction.setEnabled(false);
+			}
+		});
 		
 		makeActions();
 		hookContextMenu();
+		hookTrayContextMenu();
 		contributeToActionBars();
 		getSite().setSelectionProvider(new ASTViewSelectionProvider());
 		
@@ -653,7 +748,6 @@ public class ASTView extends ViewPart implements IShowInSource {
 		}
 	}
 
-
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		menuMgr.setRemoveAllWhenShown(true);
@@ -665,6 +759,22 @@ public class ASTView extends ViewPart implements IShowInSource {
 		Menu menu = menuMgr.createContextMenu(fViewer.getControl());
 		fViewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(menuMgr, fViewer);
+	}
+	
+	private void hookTrayContextMenu() {
+		MenuManager menuMgr = new MenuManager("#TrayPopupMenu"); //$NON-NLS-1$
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				manager.add(fCopyAction);
+				manager.add(fDeleteAction);
+				manager.add(new Separator());
+				manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(fTray.getControl());
+		fTray.getControl().setMenu(menu);
+		getSite().registerContextMenu("#TrayPopupMenu", menuMgr, fTray); //$NON-NLS-1$
 	}
 
 	private void contributeToActionBars() {
@@ -681,7 +791,12 @@ public class ASTView extends ViewPart implements IShowInSource {
 			manager.add(fASTVersionToggleActions[i]);	
 		}
 		manager.add(new Separator());
+		manager.add(fCreateBindingsAction);
 		manager.add(fStatementsRecoveryAction);
+		manager.add(fFilterNonRelevantAction);
+		manager.add(new Separator());
+		manager.add(fResolveBindingKeyAction);
+		manager.add(fCreateBindingFromElementAction);
 		manager.add(new Separator());
 		manager.add(fLinkWithEditor);
 		
@@ -700,6 +815,8 @@ public class ASTView extends ViewPart implements IShowInSource {
 		manager.add(fExpandAction);
 		manager.add(new Separator());
 		manager.add(fCopyAction);
+		if (fAddToTrayAction.isEnabled())
+			manager.add(fAddToTrayAction);
 		manager.add(new Separator());
 
 		fDrillDownAdapter.addNavigationActions(manager);
@@ -748,6 +865,15 @@ public class ASTView extends ViewPart implements IShowInSource {
 				new ASTInputKindAction("Use ASTParser.&createAST", ASTInputKindAction.USE_PARSER), //$NON-NLS-1$
 		};
 		
+		fCreateBindingsAction = new Action("&Create Bindings", IAction.AS_CHECK_BOX) { //$NON-NLS-1$
+			public void run() {
+				performCreateBindings();
+			}
+		};
+		fCreateBindingsAction.setChecked(fCreateBindings);
+		fCreateBindingsAction.setToolTipText("Create Bindings"); //$NON-NLS-1$
+		fCreateBindingsAction.setEnabled(true);
+		
 		fStatementsRecoveryAction = new Action("&Statements Recovery", IAction.AS_CHECK_BOX) { //$NON-NLS-1$
 			public void run() {
 				performStatementsRecovery();
@@ -755,6 +881,31 @@ public class ASTView extends ViewPart implements IShowInSource {
 		};
 		fStatementsRecoveryAction.setChecked(fStatementsRecovery);
 		fStatementsRecoveryAction.setEnabled(true);
+		
+		fFilterNonRelevantAction = new Action("&Hide Non-Relevant Attributes", IAction.AS_CHECK_BOX) { //$NON-NLS-1$
+			public void run() {
+				performFilterNonRelevant();
+			}
+		};
+		fFilterNonRelevantAction.setChecked(! fNonRelevantFilter.isShowNonRelevant());
+		fFilterNonRelevantAction.setToolTipText("Hide non-relevant binding attributes"); //$NON-NLS-1$
+		fFilterNonRelevantAction.setEnabled(true);
+
+		fResolveBindingKeyAction= new Action("&Resolve Binding Key...", IAction.AS_PUSH_BUTTON) { //$NON-NLS-1$
+			public void run() {
+				performResolveBindingKey();
+			}
+		};
+		fResolveBindingKeyAction.setToolTipText("Resolve Binding Key..."); //$NON-NLS-1$
+		fResolveBindingKeyAction.setEnabled(false);
+		
+		fCreateBindingFromElementAction= new Action("&Create Binding from Element Handle...", IAction.AS_PUSH_BUTTON) { //$NON-NLS-1$
+			public void run() {
+				performCreateBindingFromElement();
+			}
+		};
+		fCreateBindingFromElementAction.setToolTipText("Create Binding from Element Handle..."); //$NON-NLS-1$
+		fCreateBindingFromElementAction.setEnabled(true);
 		
 		fFocusAction = new Action() {
 			public void run() {
@@ -809,6 +960,28 @@ public class ASTView extends ViewPart implements IShowInSource {
 				new ASTLevelToggle("AST Level &1.0", D1), //$NON-NLS-1$
 				new ASTLevelToggle("AST Level &2.0", D2) //$NON-NLS-1$
 		};
+		
+		fAddToTrayAction= new Action() {
+			public void run() {
+				performAddToTray();
+			}
+		};
+		fAddToTrayAction.setText("&Add to Comparison Tray"); //$NON-NLS-1$
+		fAddToTrayAction.setToolTipText("Add Selected Node to Comparison Tray"); //$NON-NLS-1$
+		fAddToTrayAction.setEnabled(false);
+		ASTViewImages.setImageDescriptors(fAddToTrayAction, ASTViewImages.ADD_TO_TRAY);
+		
+		fDeleteAction= new Action() {
+			public void run() {
+				performDelete();
+			}
+		};
+		fDeleteAction.setText("&Delete"); //$NON-NLS-1$
+		fDeleteAction.setToolTipText("Delete Binding from Tray"); //$NON-NLS-1$
+		fDeleteAction.setEnabled(false);
+		fDeleteAction.setImageDescriptor(ASTViewPlugin.getDefault().getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+		fDeleteAction.setId(ActionFactory.DELETE.getId());
+		fDeleteAction.setActionDefinitionId(IWorkbenchActionDefinitionIds.DELETE);
 	}
 	
 
@@ -893,6 +1066,16 @@ public class ASTView extends ViewPart implements IShowInSource {
 		fExpandAction.setEnabled(!selection.isEmpty());
 		fCollapseAction.setEnabled(!selection.isEmpty());
 		fCopyAction.setEnabled(!selection.isEmpty());
+		
+		boolean addEnabled= false;
+		IStructuredSelection structuredSelection= (IStructuredSelection) selection;
+		if (structuredSelection.size() == 1 && fViewer.getTree().isFocusControl()) {
+			Object first= structuredSelection.getFirstElement();
+			Object unwrapped= DynamicAttributeProperty.unwrapAttribute(first);
+			addEnabled= unwrapped != null;
+		}
+		fAddToTrayAction.setEnabled(addEnabled);
+
 	}
 
 	protected void handleEditorPostSelectionChanged(IWorkbenchPart part, ISelection selection) {
@@ -1019,10 +1202,89 @@ public class ASTView extends ViewPart implements IShowInSource {
 		ErrorDialog.openError(getSite().getShell(), "AST View", null, status); //$NON-NLS-1$
 	}
 	
+	protected void performCreateBindings() {
+		fCreateBindings= fCreateBindingsAction.isChecked();
+		fDialogSettings.put(SETTINGS_NO_BINDINGS, !fCreateBindings);
+		performRefresh();
+	}
+	
 	protected void performStatementsRecovery() {
 		fStatementsRecovery= fStatementsRecoveryAction.isChecked();
 		fDialogSettings.put(SETTINGS_NO_STATEMENTS_RECOVERY, !fStatementsRecovery);
 		performRefresh();
+	}
+	
+	protected void performFilterNonRelevant() {
+		boolean showNonRelevant= !fFilterNonRelevantAction.isChecked();
+		fNonRelevantFilter.setShowNonRelevant(showNonRelevant);
+		fDialogSettings.put(SETTINGS_SHOW_NON_RELEVANT, showNonRelevant);
+		fViewer.refresh();
+	}
+	
+	protected void performResolveBindingKey() {
+		InputDialog dialog= new InputDialog(getSite().getShell(), "Resolve Binding Key", "Key: (optionally surrounded by <KEY: '> and <'>)", "", null);
+		if (dialog.open() != Window.OK)
+			return;
+
+		String key= dialog.getValue();
+		if (key.startsWith("KEY: '") && key.endsWith("'"))
+			key= key.substring(6, key.length() - 1);
+		ASTParser parser= ASTParser.newParser(fCurrentASTLevel);
+		parser.setResolveBindings(true);
+		if (fOpenable instanceof IJavaElement) {
+			// TODO ASTView
+//			parser.setProject(((IJavaElement) fOpenable).getJavaProject());
+//			class MyASTRequestor extends ASTRequestor {
+//				String fBindingKey;
+//				IBinding fBinding;
+//				public void acceptBinding(String bindingKey, IBinding binding) {
+//					fBindingKey= bindingKey;
+//					fBinding= binding;
+//				}
+//			}
+//			MyASTRequestor requestor= new MyASTRequestor();
+//			ASTAttribute item;
+//			Object viewerInput= fViewer.getInput();
+//			try {
+//				parser.createASTs(new ICompilationUnit[0], new String[] { key }, requestor, null);
+//				if (requestor.fBindingKey != null) {
+//					item= new Binding(viewerInput, requestor.fBindingKey, requestor.fBinding, true);
+//				} else {
+//					item= new Error(viewerInput, "Key not resolved: " + key, null);
+//				}
+//			} catch (RuntimeException e) {
+//				item= new Error(viewerInput, "Error resolving key: " + key, e);
+//			}
+//			fViewer.add(viewerInput, item);
+//			fViewer.setSelection(new StructuredSelection(item), true);
+		}
+	}
+	
+	protected void performCreateBindingFromElement() {
+		InputDialog dialog= new InputDialog(getSite().getShell(), "Create Binding from Java Element", "IJavaElement#getHandleIdentifier():", "", null);
+		if (dialog.open() != Window.OK)
+			return;
+		
+		String handleIdentifier= dialog.getValue();
+		IJavaElement handle= JavaCore.create(handleIdentifier);
+		
+		Object viewerInput= fViewer.getInput();
+		ASTAttribute item;
+		if (handle == null) {
+			item= new Error(viewerInput, "handleIdentifier not resolved: " + handleIdentifier, null);
+		} else if (! handle.exists()) {
+			item= new Error(viewerInput, "element does not exist: " + handleIdentifier, null);
+		} else if (handle.getJavaProject() == null) {
+			item= new Error(viewerInput, "getJavaProject() is null: " + handleIdentifier, null);
+		} else {
+			IJavaProject project= handle.getJavaProject();
+			ASTParser parser= ASTParser.newParser(fCurrentASTLevel);
+			parser.setProject(project);
+			IBinding[] bindings= parser.createBindings(new IJavaElement[] { handle }, null);
+			item= new Binding(viewerInput, handleIdentifier, bindings[0], true);
+		}
+		fViewer.add(viewerInput, item);
+		fViewer.setSelection(new StructuredSelection(item), true);
 	}
 	
 	protected void performDoubleClick() {
@@ -1055,9 +1317,39 @@ public class ASTView extends ViewPart implements IShowInSource {
 				node= (ASTNode) val;
 			}
 			
+		} else if (obj instanceof Binding) {
+			IBinding binding= ((Binding) obj).getBinding();
+			ASTNode declaring= fRoot.findDeclaringNode(binding);
+			if (declaring != null) {
+				fViewer.reveal(declaring);
+				fViewer.setSelection(new StructuredSelection(declaring));
+			} else {
+				fViewer.getTree().getDisplay().beep();
+			}
+			return;
+			
 		} else if (obj instanceof ProblemNode) {
 			ProblemNode problemNode= (ProblemNode) obj;
 			EditorUtility.selectInEditor(fEditor, problemNode.getOffset(), problemNode.getLength());
+			return;
+			
+		} else if (obj instanceof JavaElement) {
+			IJavaElement javaElement= ((JavaElement) obj).getJavaElement();
+			if (javaElement instanceof IPackageFragment) {
+				// TODO ASTView
+//				ShowInPackageViewAction showInPackageViewAction= new ShowInPackageViewAction(getViewSite());
+//				showInPackageViewAction.run(javaElement);
+			} else {
+				try {
+					IEditorPart editorPart= JavaUI.openInEditor(javaElement);
+					if (editorPart != null)
+						JavaUI.revealInEditor(editorPart, javaElement);
+				} catch (PartInitException e) {
+					showAndLogError("Could not open editor.", e); //$NON-NLS-1$
+				} catch (JavaModelException e) {
+					showAndLogError("Could not open editor.", e); //$NON-NLS-1$
+				}
+			}
 			return;
 			
 		}
@@ -1066,6 +1358,69 @@ public class ASTView extends ViewPart implements IShowInSource {
 			int offset= isTripleClick ? fRoot.getExtendedStartPosition(node) : node.getStartPosition();
 			int length= isTripleClick ? fRoot.getExtendedLength(node) : node.getLength();
 			EditorUtility.selectInEditor(fEditor, offset, length);
+		}
+	}
+	
+	protected void performAddToTray() {
+		IStructuredSelection selection= (IStructuredSelection) fViewer.getSelection();
+		Object firstElement= selection.getFirstElement();
+		if (! fTrayRoots.contains(firstElement)) {
+			fTrayRoots.add(firstElement);
+			fTray.setInput(fTrayRoots);
+		}
+		if (fSash.getMaximizedControl() != null) {
+			int trayHeight= fTray.getTree().getItemHeight() * (2 + TrayContentProvider.DEFAULT_CHILDREN_COUNT);
+			int sashHeight= fSash.getClientArea().height;
+			fSash.setWeights(new int[] { sashHeight - trayHeight, trayHeight });
+			fSash.setMaximizedControl(null);
+		}
+		setTraySelection(selection);
+	}
+	
+	private void setTraySelection(IStructuredSelection selection) {
+		fTray.setSelection(selection, true);
+		TreeItem[] itemSelection= fTray.getTree().getSelection();
+		if (itemSelection.length > 0)
+			fTray.getTree().setTopItem(itemSelection[0]);
+	}
+
+	protected void performTrayDoubleClick() {
+		IStructuredSelection selection= (IStructuredSelection) fTray.getSelection();
+		if (selection.size() != 1)
+			return;
+		Object obj = selection.getFirstElement();
+		if (obj instanceof ExceptionAttribute) {
+			RuntimeException exception= ((ExceptionAttribute) obj).getException();
+			if (exception != null) {
+				String label= ((ExceptionAttribute) obj).getLabel();
+				showAndLogError("An error occurred while calculating an AST View Label:\n" + label, exception); //$NON-NLS-1$
+				return;
+			}
+		}
+		if (obj instanceof Binding) {
+			Binding binding= (Binding) obj;
+			fViewer.setSelection(new StructuredSelection(binding), true);
+		}
+	}
+		
+	protected void performDelete() {
+		IStructuredSelection selection= (IStructuredSelection) fTray.getSelection();
+		if (selection.size() != 1)
+			return;
+		Object obj = selection.getFirstElement();
+		if (obj instanceof Binding) {
+			int index= fTrayRoots.indexOf(obj);
+			if (index != -1) {
+				fTrayRoots.remove(index);
+				fTray.setInput(fTrayRoots);
+				int newSize= fTrayRoots.size();
+				if (newSize == 0)
+					return;
+				else if (index == newSize)
+					setTraySelection(new StructuredSelection(fTrayRoots.get(newSize - 1)));
+				else
+					setTraySelection(new StructuredSelection(fTrayRoots.get(index)));
+			}
 		}
 	}
 	

@@ -1,19 +1,17 @@
 package descent.core.dom;
 
-import descent.core.IJavaElement;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
 
-public class TypeBinding implements ITypeBinding {
+public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final IType type;
 	private final String key;
 	
-	public TypeBinding(DefaultBindingResolver resolver, IType type, String key) {
+	public TypeBinding(DefaultBindingResolver resolver, IType element, String key) {
+		super(element);
 		this.bindingResolver = resolver;
-		this.type = type;
 		this.key = key;
 	}
 
@@ -80,22 +78,13 @@ public class TypeBinding implements ITypeBinding {
 		return null;
 	}
 
-	public int getModifiers() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public String getName() {
-		return type.getElementName();
-	}
-
 	public IPackageBinding getPackage() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getQualifiedName() {
-		return type.getFullyQualifiedName();
+		return ((IType) element).getFullyQualifiedName();
 	}
 
 	public ITypeBinding getSuperclass() {
@@ -160,7 +149,7 @@ public class TypeBinding implements ITypeBinding {
 
 	public boolean isClass() {
 		try {
-			return type.isClass();
+			return ((IType) element).isClass();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -169,7 +158,7 @@ public class TypeBinding implements ITypeBinding {
 
 	public boolean isEnum() {
 		try {
-			return type.isEnum();
+			return ((IType) element).isEnum();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -178,7 +167,7 @@ public class TypeBinding implements ITypeBinding {
 	
 	public boolean isStruct() {
 		try {
-			return type.isStruct();
+			return ((IType) element).isStruct();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -187,7 +176,7 @@ public class TypeBinding implements ITypeBinding {
 	
 	public boolean isUnion() {
 		try {
-			return type.isUnion();
+			return ((IType) element).isUnion();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -205,7 +194,7 @@ public class TypeBinding implements ITypeBinding {
 
 	public boolean isInterface() {
 		try {
-			return type.isInterface();
+			return ((IType) element).isInterface();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -275,21 +264,12 @@ public class TypeBinding implements ITypeBinding {
 		return null;
 	}
 
-	public IJavaElement getJavaElement() {
-		return type;
-	}
-
 	public String getKey() {
 		return key;
 	}
 
 	public int getKind() {
 		return TYPE;
-	}
-
-	public boolean isDeprecated() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public boolean isEqualTo(IBinding binding) {

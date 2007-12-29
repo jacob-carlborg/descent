@@ -105,7 +105,7 @@ public class SemanticHighlightings {
 	/**
 	 * A named preference part that controls the highlighting of deprecated members.
 	 */
-	public static final String DEPRECATED_MEMBER="deprecatedMember"; //$NON-NLS-1$
+	public static final String DEPRECATED="deprecatedMember"; //$NON-NLS-1$
 
 	/**
 	 * A named preference part that controls the highlighting of type parameters.
@@ -1064,15 +1064,15 @@ public class SemanticHighlightings {
 	}
 
 	/**
-	 * Semantic highlighting for deprecated members.
+	 * Semantic highlighting for deprecated symbols.
 	 */
-	private static final class DeprecatedMemberHighlighting extends SemanticHighlighting {
+	private static final class DeprecatedHighlighting extends SemanticHighlighting {
 
 		/*
 		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
 		 */
 		public String getPreferenceKey() {
-			return DEPRECATED_MEMBER;
+			return DEPRECATED;
 		}
 
 		/*
@@ -1122,57 +1122,8 @@ public class SemanticHighlightings {
 		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
 		 */
 		public boolean consumes(SemanticToken token) {
-			IBinding binding= getMethodBinding(token);
+			IBinding binding= token.getBinding();
 			return binding != null ? binding.isDeprecated() : false;
-		}
-
-		/**
-		 * Extracts the method binding from the token's simple name. The method
-		 * binding is either the token's binding (if the parent of token is a
-		 * method call or declaration) or the constructor binding of a class
-		 * instance creation if the node is the type name of a class instance
-		 * creation.
-		 *
-		 * @param token the token to extract the method binding from
-		 * @return the corresponding method binding, or <code>null</code>
-		 */
-		private IBinding getMethodBinding(SemanticToken token) {
-			IBinding binding= null;
-			// work around: https://bugs.eclipse.org/bugs/show_bug.cgi?id=62605
-			ASTNode node= token.getNode();
-			ASTNode parent= node.getParent();
-			while (isTypePath(node, parent)) {
-				node= parent;
-				parent= parent.getParent();
-			}
-
-			/* TODO JDT UI Java -> D
-			if (parent != null && node.getLocationInParent() == ClassInstanceCreation.TYPE_PROPERTY)
-				binding= ((ClassInstanceCreation) parent).resolveConstructorBinding();
-			else
-			*/
-				binding= token.getBinding();
-			return binding;
-		}
-
-		/**
-		 * Returns <code>true</code> if the given child/parent nodes are valid
-		 * sub nodes of a <code>Type</code> ASTNode.
-		 * @param child the child node
-		 * @param parent the parent node
-		 * @return <code>true</code> if the nodes may be the sub nodes of a type node, false otherwise
-		 */
-		private boolean isTypePath(ASTNode child, ASTNode parent) {
-			if (parent instanceof Type) {
-				/* TODO JDT UI Java -> D
-				StructuralPropertyDescriptor location= child.getLocationInParent();
-				return location == ParameterizedType.TYPE_PROPERTY || location == SimpleType.NAME_PROPERTY;
-				*/
-			} else if (parent instanceof QualifiedName) {
-				StructuralPropertyDescriptor location= child.getLocationInParent();
-				return location == QualifiedName.NAME_PROPERTY;
-			}
-			return false;
 		}
 	}
 
@@ -1822,7 +1773,7 @@ public class SemanticHighlightings {
 	public static SemanticHighlighting[] getSemanticHighlightings() {
 		if (fgSemanticHighlightings == null)
 			fgSemanticHighlightings= new SemanticHighlighting[] {
-				new DeprecatedMemberHighlighting(),
+				new DeprecatedHighlighting(),
 				new AutoboxHighlighting(),
 				new StaticFinalFieldHighlighting(),
 				new StaticFieldHighlighting(),

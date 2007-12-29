@@ -284,6 +284,111 @@ public class CompilationUnit extends ASTNode {
 	}
 	
 	/**
+	 * Finds the corresponding AST node in the given compilation unit from 
+	 * which the given binding originated. Returns <code>null</code> if the
+	 * binding does not correspond to any node in this compilation unit.
+	 * This method always returns <code>null</code> if bindings were not requested
+	 * when this AST was built.
+	 * <p>
+	 * The following table indicates the expected node type for the various
+	 * different kinds of bindings:
+	 * <ul>
+	 * <li>package - a <code>PackageDeclaration</code></li>
+	 * <li>class or interface - a <code>TypeDeclaration</code> or a
+	 *    <code>AnonymousClassDeclaration</code> (for anonymous classes)</li>
+	 * <li>primitive type - none</li>
+	 * <li>array type - none</li>
+	 * <li>field - a <code>VariableDeclarationFragment</code> in a 
+	 *    <code>FieldDeclaration</code> </li>
+	 * <li>local variable - a <code>SingleVariableDeclaration</code>, or
+	 *    a <code>VariableDeclarationFragment</code> in a 
+	 *    <code>VariableDeclarationStatement</code> or 
+	 *    <code>VariableDeclarationExpression</code></li>
+	 * <li>method - a <code>MethodDeclaration</code> </li>
+	 * <li>constructor - a <code>MethodDeclaration</code> </li>
+     * <li>annotation type - an <code>AnnotationTypeDeclaration</code></li>
+     * <li>annotation type member - an <code>AnnotationTypeMemberDeclaration</code></li>
+     * <li>enum type - an <code>EnumDeclaration</code></li>
+     * <li>enum constant - an <code>EnumConstantDeclaration</code></li>
+     * <li>type variable - a <code>TypeParameter</code></li>
+     * <li>capture binding - none</li>
+     * <li>annotation binding - an <code>Annotation</code></li>
+     * <li>member value pair binding - an <code>MemberValuePair</code>, 
+     *      or <code>null</code> if it represents a default value or a single member value</li>
+	 * </ul>
+     * For parameterized or raw type bindings, the declaring node is
+     * that of the corresponding generic type. And for parameterized or raw
+     * method bindings, the declaring node is that of the corresponding
+     * generic method.
+	 * </p>
+	 * <p>
+	 * Each call to {@link ASTParser#createAST(org.eclipse.core.runtime.IProgressMonitor)} with a request for bindings
+	 * gives rise to separate universe of binding objects. This method always returns
+	 * <code>null</code> when the binding object comes from a different AST.
+	 * Use <code>findDeclaringNode(binding.getKey())</code> when the binding comes
+	 * from a different AST.
+	 * </p>
+	 * 
+	 * @param binding the binding
+	 * @return the corresponding node where the given binding is declared,
+	 * or <code>null</code> if the binding does not correspond to a node in this
+	 * compilation unit or if bindings were not requested when this AST was built
+	 * @see #findDeclaringNode(String)
+	 */
+	public ASTNode findDeclaringNode(IBinding binding) {
+		return this.ast.getBindingResolver().findDeclaringNode(binding);
+	}
+	
+	/**
+	 * Finds the corresponding AST node in the given compilation unit from 
+	 * which the binding with the given key originated. Returns
+	 * <code>null</code> if the corresponding node cannot be determined.
+	 * This method always returns <code>null</code> if bindings were not requested
+	 * when this AST was built.
+	 * <p>
+	 * The following table indicates the expected node type for the various
+	 * different kinds of binding keys:
+	 * <ul>
+	 * <li></li>
+	 * <li>package - a <code>PackageDeclaration</code></li>
+	 * <li>class or interface - a <code>TypeDeclaration</code> or a
+	 *    <code>AnonymousClassDeclaration</code> (for anonymous classes)</li>
+	 * <li>primitive type - none</li>
+	 * <li>array type - none</li>
+	 * <li>field - a <code>VariableDeclarationFragment</code> in a 
+	 *    <code>FieldDeclaration</code> </li>
+	 * <li>local variable - a <code>SingleVariableDeclaration</code>, or
+	 *    a <code>VariableDeclarationFragment</code> in a 
+	 *    <code>VariableDeclarationStatement</code> or 
+	 *    <code>VariableDeclarationExpression</code></li>
+	 * <li>method - a <code>MethodDeclaration</code> </li>
+	 * <li>constructor - a <code>MethodDeclaration</code> </li>
+     * <li>annotation type - an <code>AnnotationTypeDeclaration</code></li>
+     * <li>annotation type member - an <code>AnnotationTypeMemberDeclaration</code></li>
+     * <li>enum type - an <code>EnumDeclaration</code></li>
+     * <li>enum constant - an <code>EnumConstantDeclaration</code></li>
+	 * <li>type variable - a <code>TypeParameter</code></li>
+     * <li>capture binding - none</li>
+	 * </ul>
+     * For parameterized or raw type bindings, the declaring node is
+     * that of the corresponding generic type. And for parameterized or raw
+     * method bindings, the declaring node is that of the corresponding
+     * generic method.
+	 * </p>
+	 * 
+	 * @param key the binding key, or <code>null</code>
+	 * @return the corresponding node where a binding with the given
+	 * key is declared, or <code>null</code> if the key is <code>null</code>
+	 * or if the key does not correspond to a node in this compilation unit
+	 * or if bindings were not requested when this AST was built
+	 * @see IBinding#getKey()
+	 * @since 2.1
+	 */
+	public ASTNode findDeclaringNode(String key) {
+		return this.ast.getBindingResolver().findDeclaringNode(key);
+	}
+	
+	/**
 	 * Given a line number and column number, returns the corresponding 
 	 * position in the original source string.
 	 * Returns -2 if no line number information is available for this

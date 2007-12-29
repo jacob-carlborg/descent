@@ -118,5 +118,45 @@ public class CodeSelect_Test extends AbstractModelTest {
 		}
 		assertEquals(var, elements[0]);
 	}
+	
+	public void testSelectReferenceToExternalAlias() throws Exception {
+		ICompilationUnit other = createCompilationUnit("other.d", "alias int myInt;");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other; myInt i;");
+		
+		IJavaElement[] elements = test.codeSelect(15, 0);
+		assertEquals(1, elements.length);
+		
+		IJavaElement var = null;
+		for(IJavaElement child : other.getChildren()) {
+			if (child.getElementType() == IJavaElement.FIELD) {
+				var = child;
+				break;
+			}
+		}
+		assertEquals(var, elements[0]);
+	}
+	
+	public void testSelectReferenceToModule() throws Exception {
+		ICompilationUnit other = createCompilationUnit("other.d", "");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other;");
+		
+		IJavaElement[] elements = test.codeSelect(8, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(other, elements[0]);
+	}
+	
+	public void testSelectReferenceToModule2() throws Exception {
+		ICompilationUnit other = createCompilationUnit("pack", "other.d", "");
+		ICompilationUnit test = createCompilationUnit("test.d", "import pack.other;");
+		
+		IJavaElement[] elements = test.codeSelect(13, 0); // other
+		assertEquals(1, elements.length);
+		
+		assertEquals(other, elements[0]);
+		
+		elements = test.codeSelect(8, 0); // pack
+		assertEquals(0, elements.length);
+	}
 
 }

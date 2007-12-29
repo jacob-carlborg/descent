@@ -283,12 +283,9 @@ public class Import extends ASTNode {
 	 * 
 	 * @return the binding, or <code>null</code> if the binding cannot be 
 	 *    resolved
-	 */	
-	public final IBinding resolveBinding() {
-		/* TODO binding
+	 */
+	public final IPackageBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveImport(this);
-		*/
-		return null;
 	}
 
 }

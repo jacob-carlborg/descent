@@ -16,6 +16,7 @@ public class RModule extends RPackage implements IModule {
 	private IModule importedFrom;
 	private IModuleDeclaration md;
 	private boolean mdCalculated;
+	private String signature;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
@@ -132,6 +133,20 @@ public class RModule extends RPackage implements IModule {
 	@Override
 	public IModule isModule() {
 		return this;
+	}
+	
+	@Override
+	public String getSignature() {
+		if (signature == null) {
+			StringBuilder sig = new StringBuilder();
+			String[] pieces = ((ICompilationUnit) element).getFullyQualifiedName().split("\\.");
+			for(String piece : pieces) {
+				sig.append(piece.length());
+				sig.append(piece);
+			}
+			signature = sig.toString();
+		}
+		return signature;
 	}
 
 }

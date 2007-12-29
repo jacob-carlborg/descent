@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
@@ -15,6 +16,8 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
+import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
@@ -78,6 +81,20 @@ public class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	@Override
+	ASTNode findDeclaringNode(IBinding binding) {
+		return bindingsToAstNodes.get(binding);
+	}
+	
+	@Override
+	ASTNode findDeclaringNode(String bindingKey) {
+		IBinding binding = bindingTables.bindingKeysToBindings.get(bindingKey);
+		if (binding != null) {
+			return findDeclaringNode(binding);
+		}
+		return null;
+	}
+	
+	@Override
 	ITypeBinding resolveAggregate(descent.core.dom.AggregateDeclaration type) {
 		ASTDmdNode old = newAstToOldAst.get(type);
 		if (!(old instanceof AggregateDeclaration)) {
@@ -86,7 +103,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) old;
 		String key = agg.type().getSignature();
-		return (ITypeBinding) resolveBinding(key);
+		return (ITypeBinding) resolveBinding(type, key);
 	}
 	
 	@Override
@@ -98,7 +115,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		EnumDeclaration e = (EnumDeclaration) old;
 		String key = e.type.getSignature();
-		return (ITypeBinding) resolveBinding(key);
+		return (ITypeBinding) resolveBinding(type, key);
 	}
 	
 	@Override
@@ -114,7 +131,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		VarDeclaration v = (VarDeclaration) old;
 		String key = v.type.getSignature();
-		return (ITypeBinding) resolveBinding(key);
+		return (ITypeBinding) resolveBinding(variable, key);
 	}
 	
 	@Override
@@ -126,7 +143,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		VarDeclaration v = (VarDeclaration) old;
 		String key = v.getSignature();
-		return (IVariableBinding) resolveBinding(key);
+		return (IVariableBinding) resolveBinding(variable, key);
 	}
 	
 	@Override
@@ -144,6 +161,14 @@ public class DefaultBindingResolver extends BindingResolver {
 				return resolveEnumMember((descent.core.dom.EnumMember) parent);
 			case ASTNode.SIMPLE_TYPE:
 				return resolveType((descent.core.dom.Type) parent);
+			case ASTNode.IMPORT:
+				return resolveImport((descent.core.dom.Import) parent);
+			case ASTNode.QUALIFIED_NAME:
+				QualifiedName qName = (QualifiedName) parent;
+				if (qName.getName() == name) {
+					return resolveName(qName);
+				}
+				break;
 			default:
 				if (parent instanceof descent.core.dom.Type) {
 					return resolveType((descent.core.dom.Type) parent);
@@ -185,15 +210,13 @@ public class DefaultBindingResolver extends BindingResolver {
 			if (elem.getElementType() == IJavaElement.TYPE) {
 				binding = new TypeBinding(this, (IType) elem, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
+				bindingsToAstNodes.put(binding, type);
 				return (ITypeBinding) binding;
 			}
 		}
 		
 		// Else, try with the signature
-		
-		// TODO and other types too
-		signature = JavaElementFinder.correct(signature);
-		return (ITypeBinding) resolveBinding(signature);
+		return (ITypeBinding) resolveBinding(type, signature);
 	}
 	
 	@Override
@@ -205,7 +228,39 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		descent.internal.compiler.parser.EnumMember em = (EnumMember) old;
 		String key = em.getSignature();
-		return (IVariableBinding) resolveBinding(key);
+		return (IVariableBinding) resolveBinding(member, key);
+	}
+	
+	@Override
+	IPackageBinding resolveImport(descent.core.dom.Import imp) {
+		ASTDmdNode old = newAstToOldAst.get(imp);
+		if (!(old instanceof descent.internal.compiler.parser.Import)) {
+			return null;
+		}
+		
+		descent.internal.compiler.parser.Import i = (Import) old;
+		IModule mod = i.mod;
+		if (mod == null) {
+			return null;
+		}
+		
+		String signature = mod.getSignature();
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return (IPackageBinding) binding;
+		}
+		
+		if (mod.getJavaElement() != null) {
+			IJavaElement elem = mod.getJavaElement();
+			if (elem instanceof ICompilationUnit) {
+				binding = new PackageBinding(this, (ICompilationUnit) elem, signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
+				bindingsToAstNodes.put(binding, imp);
+				return (IPackageBinding) binding;
+			}
+		}
+		
+		return null;
 	}
 	
 	/*
@@ -216,9 +271,17 @@ public class DefaultBindingResolver extends BindingResolver {
 		this.newAstToOldAst.put(node, oldASTNode);
 	}
 	
+	IBinding resolveBinding(ASTNode node, String signature) {
+		IBinding binding = resolveBinding(signature);
+		bindingsToAstNodes.put(binding, node);
+		return binding;
+	}
+	
 	// TODO see how not tu "duplilcate" this code, it's also
 	// in RDsymbol#getTypeFromSignature, although a little different
 	IBinding resolveBinding(String signature) {
+		signature = JavaElementFinder.correct(signature);
+		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 		if (binding != null) {
 			return binding;
@@ -226,6 +289,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		// TODO optimize using IJavaProject#find and NameLookup
 		// TODO make an "extract number" function in order to avoid duplication
+		// TODO signature sometimes is wrong, check RDsymbol implementation of this
 		try {
 			if (signature == null || signature.length() == 0) {
 				// TODO signal error
@@ -336,8 +400,7 @@ public class DefaultBindingResolver extends BindingResolver {
 				case 'Z':
 					return null;
 				default: // Try with type basic
-					char c = signature.charAt(0);
-					TypeBasic typeBasic = TypeBasic.fromSignature(c);
+					TypeBasic typeBasic = TypeBasic.fromSignature(first);
 					if (typeBasic != null) {
 						binding = new TypeBasicBinding(this, typeBasic);
 					}
