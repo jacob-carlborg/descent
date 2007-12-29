@@ -1332,7 +1332,7 @@ public class SemanticHighlightings {
 		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
 		 */
 		public RGB getDefaultTextColor() {
-			return new RGB(0, 80, 50);
+			return new RGB(50, 0, 80);
 		}
 
 		/*
@@ -1404,7 +1404,7 @@ public class SemanticHighlightings {
 		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
 		 */
 		public RGB getDefaultTextColor() {
-			return new RGB(0, 80, 50);
+			return new RGB(50, 80, 0);
 		}
 
 		/*

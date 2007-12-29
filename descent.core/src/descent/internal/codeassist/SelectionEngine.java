@@ -11,8 +11,11 @@ import descent.core.WorkingCopyOwner;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
@@ -20,6 +23,8 @@ import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.UnionDeclaration;
+import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
@@ -71,45 +76,90 @@ public class SelectionEngine extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(ClassDeclaration node) {
-		return visitType(node.ident, node.type);
+		return visitType(node, node.ident, node.type);
 	}
 	
 	@Override
 	public boolean visit(StructDeclaration node) {
-		return visitType(node.ident, node.type);
+		return visitType(node, node.ident, node.type);
 	}
 	
 	@Override
 	public boolean visit(InterfaceDeclaration node) {
-		return visitType(node.ident, node.type);
+		return visitType(node, node.ident, node.type);
 	}
 	
 	@Override
 	public boolean visit(UnionDeclaration node) {
-		return visitType(node.ident, node.type);
+		return visitType(node, node.ident, node.type);
 	}
 	
 	@Override
 	public boolean visit(EnumDeclaration node) {
-		return visitType(node.ident, node.type);
+		return visitType(node, node.ident, node.type);
 	}
 	
 	@Override
 	public boolean visit(TypeIdentifier node) {
-		if (identIsInRange(node.ident)) {
-			addType(node.resolvedType);
+		if (isInRange(node.ident)) {
+			if (node.resolvedSymbol != null) {
+				if (node.resolvedSymbol.getJavaElement() != null) {
+					selectedElements.add(node.resolvedSymbol.getJavaElement());
+				} else {
+					addSignature(node.resolvedSymbol.getSignature());
+				}
+			} else {
+				addType(node.resolvedType);
+			}
 		}
-		return super.visit(node);
+		return false;
 	}
 	
-	private boolean visitType(IdentifierExp ident, Type type) {
-		if (identIsInRange(ident)) {
-			addType(type);
+	@Override
+	public boolean visit(VarDeclaration node) {
+		if (isInRange(node.ident)) {
+			addSignature(node.getSignature());
+			return false;
 		}
 		return true;
 	}
 	
-	private boolean identIsInRange(IdentifierExp ident) {
+	@Override
+	public boolean visit(IdentifierExp node) {
+		if (!isInRange(node)) {
+			return false;
+		}
+		
+		Expression resolved = node.resolvedExpression;
+		if (resolved == null) {
+			return false;
+		}
+		
+		switch(resolved.getNodeType()) {
+		case ASTDmdNode.VAR_EXP:
+			VarExp varExp = (VarExp) resolved;
+			IDeclaration var = varExp.var;
+			if (var.getJavaElement() != null) {
+				selectedElements.add(var.getJavaElement());
+			} else {
+				addSignature(var.getSignature());
+			}
+			break;
+		}
+		
+		return false;
+	}
+	
+	private boolean visitType(ASTDmdNode node, IdentifierExp ident, Type type) {
+		if (isInRange(ident)) {
+			addType(type);
+		}
+		return isInRange(node);
+	}
+	
+	// Other utility methods
+	
+	private boolean isInRange(IdentifierExp ident) {
 		if (ident == null) {
 			return false;
 		}
@@ -120,8 +170,19 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return ident.start <= offset && offset + length <= ident.start + ident.length;
 	}
 	
+	private boolean isInRange(ASTDmdNode node) {
+		return node.start <= offset && offset + length <= node.start + node.length;
+	}
+	
 	private void addType(Type type) {
 		IJavaElement result = finder.find(type.getSignature());
+		if (result != null) {
+			selectedElements.add(result);
+		}
+	}
+	
+	private void addSignature(String signature) {
+		IJavaElement result = finder.find(signature);
 		if (result != null) {
 			selectedElements.add(result);
 		}

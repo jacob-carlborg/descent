@@ -20,11 +20,65 @@ public class JavaElementFinder {
 		this.javaProject = project;
 	}
 	
+	/**
+	 * Corrects some signatures. For example, it transforms C6Object
+	 * into C6object6Object.
+	 * @param signature the signature to correct
+	 * @return the corrected signature
+	 * 
+	 * TODO: move this method somewhere else
+	 */
+	public static String correct(String signature) {
+		if (signature != null) {
+			if (signature.equals("C6Object")) {
+				signature = "C6object6Object";
+			} else if (signature.equals("C9ClassInfo")) {
+				signature = "C6object9ClassInfo";
+			} else if (signature.equals("C8TypeInfo")) {
+				signature = "C6object8TypeInfo";
+			} else if (signature.equals("C16TypeInfo_Typedef")) {
+				signature = "C6object16TypeInfo_Typedef";
+			} else if (signature.equals("C13TypeInfo_Enum")) {
+				signature = "C6object13TypeInfo_Enum";
+			} else if (signature.equals("C16TypeInfo_Pointer")) {
+				signature = "C6object16TypeInfo_Pointer";
+			} else if (signature.equals("C14TypeInfo_Array")) {
+				signature = "C6object14TypeInfo_Array";
+			} else if (signature.equals("C20TypeInfo_StaticArray")) {
+				signature = "C6object20TypeInfo_StaticArray";
+			} else if (signature.equals("C25TypeInfo_AssociativeArray")) {
+				signature = "C6object25TypeInfo_AssociativeArray";
+			} else if (signature.equals("C17TypeInfo_Function")) {
+				signature = "C6object17TypeInfo_Function";
+			} else if (signature.equals("C17TypeInfo_Delegate")) {
+				signature = "C6object17TypeInfo_Delegate";
+			} else if (signature.equals("C14TypeInfo_Class")) {
+				signature = "C6object14TypeInfo_Class";
+			} else if (signature.equals("C18TypeInfo_Interface")) {
+				signature = "C6object18TypeInfo_Interface";
+			} else if (signature.equals("C15TypeInfo_Struct")) {
+				signature = "C6object15TypeInfo_Struct";
+			} else if (signature.equals("C15TypeInfo_Struct")) {
+				signature = "C6object15TypeInfo_Struct";
+			} else if (signature.equals("C14TypeInfo_Tuple")) {
+				signature = "C6object14TypeInfo_Tuple";
+			} else if (signature.equals("C14TypeInfo_Const")) {
+				signature = "C6object14TypeInfo_Const";
+			} else if (signature.equals("C18TypeInfo_Invariant")) {
+				signature = "C6object18TypeInfo_Const";
+			} else if (signature.equals("C9Exception")) {
+				signature = "C6object9Exception";
+			}
+		}
+		return signature;
+	}
+	
+	/**
+	 * Finds the java element denoted by the given signature.
+	 */
 	public IJavaElement find(String signature) {
 		// TODO and other types too
-		if (signature.equals("C6Object")) {
-			signature = "C6object6Object";
-		}
+		signature = correct(signature);
 		
 		// TODO optimize using IJavaProject#find and NameLookup
 		// TODO make an "extract number" function in order to avoid duplication
@@ -123,6 +177,10 @@ public class JavaElementFinder {
 	public static IJavaElement findChild(IPackageFragment fragment, String name) throws JavaModelException {
 		if (fragment.isDefaultPackage()) {
 			ICompilationUnit unit;
+			
+			// First class files, because if a class file is open, then there
+			// will be a working copy *which does not have an underlying resource
+			// with the CompilationUnit semantics*, and something fails.
 			unit = fragment.getClassFile(name + ".d");
 			if (unit != null && unit.exists()) {
 				return unit;

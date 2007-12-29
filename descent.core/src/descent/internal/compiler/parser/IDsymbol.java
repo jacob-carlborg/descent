@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.IJavaElement;
+
 public interface IDsymbol extends INode {
 
 	IdentifierExp ident();
@@ -136,17 +138,23 @@ public interface IDsymbol extends INode {
 	
 	IArrayScopeSymbol isArrayScopeSymbol();
 	
-	WithScopeSymbol isWithScopeSymbol();
-	
-	// For Descent, used to get the type of a symbol
-	Type type();
-	
-	String getSignature();
+	WithScopeSymbol isWithScopeSymbol();	
 	
 	void semantic(Scope scope, SemanticContext context);
 	
 	void semantic2(Scope scope, SemanticContext context);
 	
 	void semantic3(Scope scope, SemanticContext context);
+	
+	// These are not from DMD
+	
+	// Used to get the type of a symbol
+	Type type();
+	
+	// The "extended" signature of this symbol
+	String getSignature();
+	
+	// The java element associated with this symbol, if any
+	IJavaElement getJavaElement();
 
 }

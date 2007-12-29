@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
@@ -1182,6 +1183,14 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	
 	public String getSignature() {
 		return deco;
+	}
+	
+	/**
+	 * Returns the java element associated with this type, if any,
+	 * or null. This method returns null, subclasses should implement.
+	 */
+	public IJavaElement getJavaElement() {
+		return null;
 	}
 
 }

@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -551,6 +552,10 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 	
 	public String getSignature() {
+		return null;
+	}
+	
+	public IJavaElement getJavaElement() {
 		return null;
 	}
 

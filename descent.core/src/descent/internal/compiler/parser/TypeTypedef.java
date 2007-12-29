@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -223,6 +224,11 @@ public class TypeTypedef extends Type {
 	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		sym.basetype().toTypeInfoBuffer(buf, context);
+	}
+	
+	@Override
+	public IJavaElement getJavaElement() {
+		return sym.getJavaElement();
 	}
 
 }

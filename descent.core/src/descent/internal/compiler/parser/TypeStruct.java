@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
@@ -331,6 +332,11 @@ public class TypeStruct extends Type {
 	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		toDecoBuffer(buf, context);
+	}
+	
+	@Override
+	public IJavaElement getJavaElement() {
+		return sym.getJavaElement();
 	}
 	
 	//PERHAPS dt_t **toDt(dt_t **pdt);

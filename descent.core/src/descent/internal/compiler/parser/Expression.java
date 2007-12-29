@@ -10,7 +10,6 @@ import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
-import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 
 import static descent.internal.compiler.parser.TY.Tbit;
@@ -81,10 +80,17 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		}
 		return e1;
 	}
+	
 	public Loc loc;
 	public TOK op;
 	public Type type, sourceType;
 	public List<Parenthesis> parenthesis;
+	
+	/*
+	 * Once the semantic pass is done, the resolved expression is kept in
+	 * this variable. This is useful for linking source with resolution. 
+	 */
+	public Expression resolvedExpression;
 
 	public Expression(Loc loc, TOK op) {
 		this.loc = loc;

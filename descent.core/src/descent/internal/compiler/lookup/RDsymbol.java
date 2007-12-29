@@ -76,6 +76,7 @@ import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.WithScopeSymbol;
+import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
@@ -117,6 +118,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 	public String kindForError(SemanticContext context) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public IJavaElement getJavaElement() {
+		return element;
 	}
 
 	public IModule getModule() {
@@ -583,9 +588,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 	}
 	
 	protected Type getTypeFromSignature(String signature) {
-		if (signature != null && signature.equals("C6Object")) {
-			signature = "C6object6Object";
-		}
+		signature = JavaElementFinder.correct(signature);
 		
 		Type type = context.signatureToTypeCache.get(signature);
 		if (type != null) {

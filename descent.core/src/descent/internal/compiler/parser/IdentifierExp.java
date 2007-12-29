@@ -145,7 +145,7 @@ public class IdentifierExp extends Expression {
 				e.start = start;
 				e.length = length;
 			}
-			return e.semantic(sc, context);
+			return resolvedExpression = e.semantic(sc, context);
 		}
 		context.acceptProblem(Problem.newSemanticTypeError(
 				IProblem.UndefinedIdentifier, this,

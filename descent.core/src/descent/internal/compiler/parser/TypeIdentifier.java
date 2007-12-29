@@ -18,6 +18,14 @@ public class TypeIdentifier extends TypeQualified {
 	 * this variable. This is useful for linking source with resolution. 
 	 */
 	public Type resolvedType;
+	
+	/*
+	 * An identifier may refer to an alias, like string, and the
+	 * resolved type will be pointing to char[]. We would really like
+	 * to know it was pointing to the alias, so we keep a reference
+	 * to it here, if any.
+	 */
+	public IDsymbol resolvedSymbol;
 
 	public TypeIdentifier(Loc loc, char[] ident) {
 		this(loc, new IdentifierExp(loc, ident));
@@ -74,6 +82,8 @@ public class TypeIdentifier extends TypeQualified {
 		IDsymbol[] scopesym = { null };
 
 		s = sc.search(loc, ident, scopesym, context);
+		resolvedSymbol = s;
+		
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
 	}
 

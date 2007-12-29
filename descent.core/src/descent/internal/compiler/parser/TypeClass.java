@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
@@ -421,5 +422,9 @@ public class TypeClass extends Type {
 		return sym;
 	}
 	
+	@Override
+	public IJavaElement getJavaElement() {
+		return sym.getJavaElement();
+	}
 
 }

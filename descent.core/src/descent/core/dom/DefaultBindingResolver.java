@@ -174,11 +174,25 @@ public class DefaultBindingResolver extends BindingResolver {
 		Type t = (Type) old;
 		String signature = t.getSignature();
 		
-		// TODO and other types too
-		if (signature.equals("C6Object")) {
-			signature = "C6object6Object";
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return (ITypeBinding) binding;
 		}
 		
+		// First try with the associated java element
+		if (t.getJavaElement() != null) {
+			IJavaElement elem = t.getJavaElement();
+			if (elem.getElementType() == IJavaElement.TYPE) {
+				binding = new TypeBinding(this, (IType) elem, signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
+				return (ITypeBinding) binding;
+			}
+		}
+		
+		// Else, try with the signature
+		
+		// TODO and other types too
+		signature = JavaElementFinder.correct(signature);
 		return (ITypeBinding) resolveBinding(signature);
 	}
 	

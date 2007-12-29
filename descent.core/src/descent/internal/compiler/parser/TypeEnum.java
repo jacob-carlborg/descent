@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -226,6 +227,11 @@ public class TypeEnum extends Type {
 	@Override
 	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
 		toBasetype(context).toTypeInfoBuffer(buf, context);
+	}
+	
+	@Override
+	public IJavaElement getJavaElement() {
+		return sym.getJavaElement();
 	}
 
 }
