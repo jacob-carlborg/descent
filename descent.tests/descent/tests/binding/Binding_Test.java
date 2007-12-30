@@ -42,7 +42,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals(ITypeBinding.TYPE, binding.getKind());
 		assertEquals(signatureStart + "4test3Foo", binding.getKey());
 		assertEquals("Foo", binding.getName());
-		assertEquals(0, binding.getDimensions());
+		assertEquals(0, binding.getDimension());
 		assertEquals("test.Foo", binding.getQualifiedName());
 		assertEquals(true, binding.isFromSource());
 		
@@ -81,7 +81,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals(ITypeBinding.TYPE, binding.getKind());
 		assertEquals("E4test3Foo", binding.getKey());
 		assertEquals("Foo", binding.getName());
-		assertEquals(0, binding.getDimensions());
+		assertEquals(0, binding.getDimension());
 		assertEquals("test.Foo", binding.getQualifiedName());
 		assertEquals(true, binding.isFromSource());
 		
@@ -105,7 +105,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
 		assertEquals("C4test3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
-		assertEquals(0, typeBinding.getDimensions());
+		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
 		assertEquals(true, typeBinding.isFromSource());
 		
@@ -136,7 +136,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
 		assertEquals("C4test3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
-		assertEquals(0, typeBinding.getDimensions());
+		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
 		assertEquals(true, typeBinding.isFromSource());
 		
@@ -166,7 +166,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
 		assertEquals("E4test3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
-		assertEquals(0, typeBinding.getDimensions());
+		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
 		assertEquals(true, typeBinding.isFromSource());
 		

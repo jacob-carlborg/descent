@@ -24,13 +24,16 @@ public class TypeFunction extends Type {
 
 	public int inuse;
 	public LINK linkage; // calling convention
-	public Arguments parameters;
+	public Arguments parameters, sourceParameters;
 	public int varargs;
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
 		super(Tfunction, treturn);
 		this.parameters = parameters;
+		if (this.parameters != null) {
+			this.sourceParameters = new Arguments(parameters);
+		}
 		this.varargs = varargs;
 		this.linkage = linkage;
 	}
@@ -40,7 +43,7 @@ public class TypeFunction extends Type {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, sourceNext);
-			TreeVisitor.acceptChildren(visitor, parameters);
+			TreeVisitor.acceptChildren(visitor, sourceParameters);
 		}
 		visitor.endVisit(this);
 	}

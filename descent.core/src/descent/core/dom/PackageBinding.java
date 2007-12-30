@@ -28,11 +28,6 @@ public class PackageBinding implements IPackageBinding {
 		return false;
 	}
 
-	public IAnnotationBinding[] getAnnotations() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public IJavaElement getJavaElement() {
 		return element;
 	}

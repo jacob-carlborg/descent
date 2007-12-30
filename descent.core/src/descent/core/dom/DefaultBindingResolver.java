@@ -289,7 +289,6 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		// TODO optimize using IJavaProject#find and NameLookup
 		// TODO make an "extract number" function in order to avoid duplication
-		// TODO signature sometimes is wrong, check RDsymbol implementation of this
 		try {
 			if (signature == null || signature.length() == 0) {
 				// TODO signal error
@@ -302,10 +301,11 @@ public class DefaultBindingResolver extends BindingResolver {
 				case 'C': // class
 				case 'S': // struct
 				case 'T': // typedef
-				case 'Q': // var, alias, typedef
+				case 'Q': { // var, alias, typedef
 					IJavaElement current = javaProject;
 					
-					for(int i = 1; i < signature.length(); i++) {
+					int i;
+					for(i = 1; i < signature.length(); i++) {
 						char c = signature.charAt(i);
 						int n = 0;
 						while(Character.isDigit(c)) {
@@ -324,22 +324,35 @@ public class DefaultBindingResolver extends BindingResolver {
 					
 					if (current != null) {
 						if (current instanceof IType) {
-							binding = new TypeBinding(this, (IType) current, signature);
+							binding = new TypeBinding(this, (IType) current, JavaElementFinder.uncorrect(signature.substring(0, i)));
+							
 						} else if (current instanceof IField) {
-							binding = new VariableBinding(this, (IField) current, signature);
+							binding = new VariableBinding(this, (IField) current, JavaElementFinder.uncorrect(signature.substring(0, i)));
 						}
 					}
 					break;
+				}
 				case 'D': { // delegate
-					binding = new TypeDelegateBinding(this, (ITypeBinding) resolveBinding(signature.substring(1)), signature);
+					TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) resolveBinding(signature.substring(1));
+					next.isFunction = true;
+					next.signature = signature.substring(0, next.getKey().length() + 1);
+					binding = next;
 					break;
 				}
 				case 'P': { // pointer
-					binding = new TypePointerBinding(this, (ITypeBinding) resolveBinding(signature.substring(1)), signature);
+					ITypeBinding next = (ITypeBinding) resolveBinding(signature.substring(1));
+					if (next.isFunction()) {
+						TypeFunctionOrDelegateBinding fp = (TypeFunctionOrDelegateBinding) next;
+						fp.signature = signature.substring(0, next.getKey().length() + 1);
+						binding = fp;
+					} else {
+						binding = new TypePointerBinding(this, next, signature.substring(0, next.getKey().length() + 1));
+					}
 					break;
 				}
 				case 'A': { // dynamic array
-					binding = new TypeDArrayBinding(this, (ITypeBinding) resolveBinding(signature.substring(1)), signature);
+					ITypeBinding next = (ITypeBinding) resolveBinding(signature.substring(1));
+					binding = new TypeDArrayBinding(this, next, signature.substring(0, next.getKey().length() + 1));
 					break;
 				}
 				case 'G': { // static array
@@ -354,14 +367,14 @@ public class DefaultBindingResolver extends BindingResolver {
 						}
 						break;
 					}
-					
-					binding = new TypeSArrayBinding(this, (ITypeBinding) resolveBinding(signature.substring(i)), n, signature);
+					ITypeBinding next = (ITypeBinding) resolveBinding(signature.substring(i));
+					binding = new TypeSArrayBinding(this, next, n, signature.substring(0, i + next.getKey().length()));
 					break;
 				}
 				case 'H': {// associative array
 					ITypeBinding k = (ITypeBinding) resolveBinding(signature.substring(1));
 					ITypeBinding v = (ITypeBinding) resolveBinding(signature.substring(1 + k.getKey().length()));
-					binding = new TypeAArrayBinding(this, k, v, signature);
+					binding = new TypeAArrayBinding(this, k, v, signature.substring(0, k.getKey().length() + v.getKey().length() + 1));
 					break;
 				}
 				case 'F': // Type function
@@ -386,6 +399,8 @@ public class DefaultBindingResolver extends BindingResolver {
 					while(targ != null) {
 						// TODO default arg
 						args.add(targ);
+						i += targ.getKey().length();
+						
 						targ = (ITypeBinding) resolveBinding(signature.substring(i));
 					}
 					
@@ -393,7 +408,7 @@ public class DefaultBindingResolver extends BindingResolver {
 					ITypeBinding tret = (ITypeBinding) resolveBinding(signature.substring(i));
 					
 					// TODO varargs
-					binding = new TypeFunctionBinding(this, args.toArray(new ITypeBinding[args.size()]), tret, false, link, signature);
+					binding = new TypeFunctionOrDelegateBinding(this, args.toArray(new ITypeBinding[args.size()]), tret, false, link, signature.substring(0, i + tret.getKey().length()), true);
 					break;
 				case 'X': // Argument break
 				case 'Y':

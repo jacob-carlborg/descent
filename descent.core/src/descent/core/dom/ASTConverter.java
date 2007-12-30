@@ -1099,7 +1099,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Declaration convert(TemplateDeclaration a) {
 		if (a.wrapper) {
-			Dsymbol wrappedSymbol = (Dsymbol) a.members.get(0); // SEMANTIC
+			Dsymbol wrappedSymbol = (Dsymbol) a.sourceMembers.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
@@ -1121,7 +1121,7 @@ public class ASTConverter {
 			}
 		}
 		convertTemplateParameters(b.templateParameters(), a.parameters);
-		convertDeclarations(b.declarations(), a.members);
+		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
 		return b;
 	}
@@ -1517,7 +1517,7 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		convertArguments(b.arguments(), ty.parameters);
+		convertArguments(b.arguments(), ty.sourceParameters);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
 		return b;
@@ -1688,8 +1688,8 @@ public class ASTConverter {
 		if (a.sourceMemtype != null) {
 			b.setBaseType(convert(a.sourceMemtype));
 		}
-		if (a.members != null) {
-			for(IDsymbol isymbol : a.members) {
+		if (a.sourceMembers != null) {
+			for(IDsymbol isymbol : a.sourceMembers) {
 				Dsymbol symbol = (Dsymbol) isymbol; // SEMANTIC
 				descent.core.dom.EnumMember convertedMember = convert((EnumMember) symbol);
 				if (convertedMember != null) {
@@ -2384,7 +2384,7 @@ public class ASTConverter {
 				b.setArray(convertedExp);
 			}
 		}
-		convertExpressions(b.indexes(), a.arguments);
+		convertExpressions(b.indexes(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
 		return convertParenthesizedExpression(a, b);
 	}
@@ -2602,7 +2602,7 @@ public class ASTConverter {
 			b.setName((SimpleName) convert(a.ident));
 		}
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
-		convertDeclarations(b.declarations(), a.members);
+		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
 		
 		if (resolveBindings) {
@@ -2619,7 +2619,7 @@ public class ASTConverter {
 			b.setName((SimpleName) convert(a.ident));
 		}
 		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
-		convertDeclarations(b.declarations(), a.members);
+		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
 		
 		if (resolveBindings) {
@@ -2635,7 +2635,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName((SimpleName) convert(a.ident));
 		}
-		convertDeclarations(b.declarations(), a.members);
+		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
 		
 		if (resolveBindings) {
@@ -2651,7 +2651,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName((SimpleName) convert(a.ident));
 		}
-		convertDeclarations(b.declarations(), a.members);
+		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
 		
 		if (resolveBindings) {

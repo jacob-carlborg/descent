@@ -3205,6 +3205,10 @@ public class JavaProject
 				}
 			}
 	}
+	
+	public int getApiLevel() {
+		return Util.getApiLevel(this);
+	}
 
 	/*
 	 * Update eclipse preferences from old preferences.

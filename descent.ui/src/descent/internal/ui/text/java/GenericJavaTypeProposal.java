@@ -283,14 +283,15 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 				
 				// for type arguments that are mapped through to the expected type's
 				// parameters, take the arguments of the expected type
-				ITypeBinding[] typeArguments= expectedTypeBinding.getTypeArguments();
-				for (int paramIdx= 0; paramIdx < parameters.length; paramIdx++) {
-					if (indices[paramIdx] != -1) {
-						// type argument is mapped through
-						ITypeBinding binding= typeArguments[indices[paramIdx]];
-						arguments[paramIdx]= computeTypeProposal(binding, parameters[paramIdx]);
-					}
-				}
+				// TODO JDT Bindings
+//				ITypeBinding[] typeArguments= expectedTypeBinding.getTypeArguments();
+//				for (int paramIdx= 0; paramIdx < parameters.length; paramIdx++) {
+//					if (indices[paramIdx] != -1) {
+//						// type argument is mapped through
+//						ITypeBinding binding= typeArguments[indices[paramIdx]];
+//						arguments[paramIdx]= computeTypeProposal(binding, parameters[paramIdx]);
+//					}
+//				}
 			}
 			
 			// for type arguments that are not mapped through to the expected type,
@@ -361,19 +362,20 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 	 */
 	private TypeArgumentProposal computeTypeProposal(ITypeBinding binding, ITypeParameter parameter) throws JavaModelException {
 		final String name= binding.getName();
-		if (binding.isWildcardType()) {
-
-			if (binding.isUpperbound()) {
-				// replace the wildcard ? with the type parameter name to get "E extends Bound" instead of "? extends Bound"
-				String contextName= name.replaceFirst("\\?", parameter.getElementName()); //$NON-NLS-1$
-				// upper bound - the upper bound is the bound itself
-				return new TypeArgumentProposal(binding.getBound().getName(), true, contextName);
-			}
-			
-			// no or upper bound - use the type parameter of the inserted type, as it may be more
-			// restrictive (eg. List<?> list= new SerializableList<Serializable>()) 
-			return computeTypeProposal(parameter);
-		}
+		// TODO JDT Bindings
+//		if (binding.isWildcardType()) {
+//
+//			if (binding.isUpperbound()) {
+//				// replace the wildcard ? with the type parameter name to get "E extends Bound" instead of "? extends Bound"
+//				String contextName= name.replaceFirst("\\?", parameter.getElementName()); //$NON-NLS-1$
+//				// upper bound - the upper bound is the bound itself
+//				return new TypeArgumentProposal(binding.getBound().getName(), true, contextName);
+//			}
+//			
+//			// no or upper bound - use the type parameter of the inserted type, as it may be more
+//			// restrictive (eg. List<?> list= new SerializableList<Serializable>()) 
+//			return computeTypeProposal(parameter);
+//		}
 
 		// not a wildcard but a type or type variable - this is unambigously the right thing to insert
 		return new TypeArgumentProposal(name, false, name);

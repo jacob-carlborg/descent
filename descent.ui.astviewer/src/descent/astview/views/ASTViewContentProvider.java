@@ -225,12 +225,6 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 				case IBinding.PACKAGE:
 					label= "> package binding"; //$NON-NLS-1$
 					break;
-				case IBinding.ANNOTATION:
-					label= "> annotation binding"; //$NON-NLS-1$
-					break;
-				case IBinding.MEMBER_VALUE_PAIR:
-					label= "> member value pair binding"; //$NON-NLS-1$
-					break;
 				default:
 					label= "> unknown binding"; //$NON-NLS-1$
 			}

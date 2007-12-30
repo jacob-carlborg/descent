@@ -11,7 +11,6 @@ import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.compiler.lookup.DmdModuleFinder;
 
 public class SemanticContext {
 

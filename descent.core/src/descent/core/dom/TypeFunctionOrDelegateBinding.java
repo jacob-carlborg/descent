@@ -1,16 +1,24 @@
 package descent.core.dom;
 
-public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBinding {
+import descent.internal.compiler.parser.LINK;
+
+public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final ITypeBinding key;
-	private final ITypeBinding value;
+	private final ITypeBinding[] args;
+	private final ITypeBinding retType;
+	private final boolean varargs;
+	private final LINK linkage;
+	public boolean isFunction;
 
-	public TypeAArrayBinding(DefaultBindingResolver bindingResolver, ITypeBinding key, ITypeBinding value, String signature) {
+	public TypeFunctionOrDelegateBinding(DefaultBindingResolver bindingResolver, ITypeBinding[] args, ITypeBinding retType, boolean varargs, LINK linkage, String signature, boolean isFunction) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
-		this.key = key;
-		this.value = value;
+		this.args = args;
+		this.retType = retType;
+		this.varargs = varargs;
+		this.linkage = linkage;
+		this.isFunction = isFunction;
 	}
 	
 	public ITypeBinding getComponentType() {
@@ -22,23 +30,39 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 	
 	public ITypeBinding getKeyType() {
-		return key;
+		return null;
 	}
 	
 	public String getName() {
-		return value.getName() + "[" + key.getName() + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append(retType.getName());
+		sb.append(" ");
+		if (isFunction) {
+			sb.append("function");
+		} else {
+			sb.append("delegate");
+		}
+		sb.append("(");
+		for(int i = 0; i < args.length; i++) {
+			if (i != 0) {
+				sb.append(", ");
+			}
+			sb.append(args[i].getName());
+		}
+		sb.append(")");
+		return sb.toString();
 	}
-
+	
 	public ITypeBinding[] getParametersTypes() {
-		return NO_TYPES;
+		return args;
 	}
 	
 	public ITypeBinding getReturnType() {
-		return null;
+		return retType;
 	}
-
+	
 	public ITypeBinding getValueType() {
-		return value;
+		return null;
 	}
 	
 	public boolean isAssignmentCompatible(ITypeBinding variableType) {
@@ -47,7 +71,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 	
 	public boolean isAssociativeArray() {
-		return true;
+		return false;
 	}
 	
 	public boolean isCastCompatible(ITypeBinding type) {
@@ -56,9 +80,9 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 
 	public boolean isDelegate() {
-		return false;
+		return !isFunction;
 	}
-	
+
 	public boolean isDynamicArray() {
 		return false;
 	}
@@ -67,11 +91,11 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	public boolean isFunction() {
-		return false;
+		return isFunction;
 	}
-	
+
 	public boolean isNullType() {
 		return false;
 	}
@@ -79,7 +103,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	public boolean isPointer() {
 		return false;
 	}
-	
+
 	public boolean isPrimitive() {
 		return false;
 	}

@@ -113,7 +113,6 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
 			// Template args?
-			TreeVisitor.acceptChildren(visitor, parameters);
 			TreeVisitor.acceptChildren(visitor, sourceFrequire);
 			TreeVisitor.acceptChildren(visitor, sourceFbody);
 			TreeVisitor.acceptChildren(visitor, outId);

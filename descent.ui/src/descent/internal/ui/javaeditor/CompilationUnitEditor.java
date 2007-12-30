@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -86,6 +87,7 @@ import org.eclipse.ui.texteditor.ResourceAction;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
+import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
@@ -1561,7 +1563,23 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 		ISourceViewer sourceViewer= getSourceViewer();
 		if (sourceViewer instanceof ITextViewerExtension)
 			((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
-
+		
+		initializeHighlightingIfClassFile();
+	}
+	
+	private void initializeHighlightingIfClassFile() {
+		// Hack to get semantic hilighting in "class" files
+		IJavaElement element = getInputJavaElement();
+		if (element instanceof IClassFile) {
+			IClassFile cf = (IClassFile) element;
+			try {
+				IProgressMonitor monitor = new NullProgressMonitor();
+				CompilationUnit unit = cf.reconcile(element.getJavaProject().getApiLevel(), true, null, monitor);
+				reconciled(unit, true, monitor);
+			} catch (JavaModelException e) {
+				JavaPlugin.log(e);
+			}
+		}
 	}
 
 	private static char getEscapeCharacter(char character) {

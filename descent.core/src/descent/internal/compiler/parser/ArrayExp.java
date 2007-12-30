@@ -7,18 +7,22 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ArrayExp extends UnaExp {
 
-	public Expressions arguments;
+	public Expressions arguments, sourceArguments;
 
 	public ArrayExp(Loc loc, Expression e, Expressions arguments) {
 		super(loc, TOK.TOKarray, e);
 		this.arguments = arguments;
+		if (arguments != null) {
+			this.sourceArguments = new Expressions(arguments);
+		}
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, sourceE1);
+			TreeVisitor.acceptChildren(visitor, sourceArguments);
 		}
 		visitor.endVisit(this);
 	}

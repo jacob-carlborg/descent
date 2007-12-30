@@ -1737,7 +1737,7 @@ public class Parser extends Lexer {
 			a.members = decl;
 			a.sourceMembers = new Dsymbols(decl);
 			
-			nextToken();			
+			nextToken();
 		} else {
 			if (id == null) {
 				// A single "class" makes no declaration

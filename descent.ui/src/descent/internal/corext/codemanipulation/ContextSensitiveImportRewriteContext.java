@@ -163,8 +163,10 @@ public class ContextSensitiveImportRewriteContext extends ImportRewriteContext {
 	}
 	
 	private boolean isConflictingType(ITypeBinding binding, String qualifier, String name) {
-		binding= binding.getTypeDeclaration();
-		return !isSameType(binding, qualifier, name) && isConflicting(binding, name);
+		return false;
+		// TODO JDT Bindings
+//		binding= binding.getTypeDeclaration();
+//		return !isSameType(binding, qualifier, name) && isConflicting(binding, name);
 	}
 	
 	private IBinding[] getDeclarationsInScope() {

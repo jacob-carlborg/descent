@@ -46,46 +46,18 @@ package descent.core.dom;
  * @since 2.0
  */
 public interface ITypeBinding extends IBinding {
-	
-	/**
-	 * Returns the binary name of this type binding.
-	 * The binary name of a class is defined in the Java Language 
-	 * Specification 2nd edition, section 13.1.
-	 * <p>
-	 * Note that in some cases, the binary name may be unavailable.
-	 * This may happen, for example, for a local type declared in 
-	 * unreachable code.
-	 * </p>
-	 *
-	 * @return the binary name of this type, or <code>null</code> 
-	 * if the binary name is unknown
-	 * @since 3.0
-	 */
-	public String getBinaryName();
-	
-	/**
-	 * Returns the bound of this wildcard type if it has one.
-	 * Returns <code>null</code> if this is not a wildcard type.
-	 * 
-	 * @return the bound of this wildcard type, or <code>null</code> if none
-	 * @see #isWildcardType()
-	 * @see #isUpperbound()
-	 * @since 3.1
-	 */
-	public ITypeBinding getBound();
 
 	/**
-	 * Returns the binding representing the component type of this array type,
-	 * or <code>null</code> if this is not an array type binding. The component
-	 * type of an array might be an array type.
-	 * <p>This is subject to change before 3.2 release.</p>
+	 * Returns the binding representing the component type of this 
+	 * static or dynamic array type, or pointer type,
+	 * or <code>null</code> if this is not a static or dynamic array, 
+	 * or pointer type binding. The component type of an array might be an array type.
 	 *
 	 * @return the component type binding, or <code>null</code> if this is
-	 *   not an array type
-	 * @since 3.2
+	 *   not a static or dynamic array type, or pointer type
 	 */	
 	public ITypeBinding getComponentType();
-
+	
 	/**
 	 * Returns a list of bindings representing all the fields declared
 	 * as members of this class, interface, or enum type. These include public, 
@@ -147,6 +119,30 @@ public interface ITypeBinding extends IBinding {
 	 *   or the empty list if this type does not have member types
 	 */
 	public ITypeBinding[] getDeclaredTypes();
+
+	/**
+	 * Returns the method binding representing the method that declares this binding
+	 * of a local type or type variable.
+	 * <p>
+	 * The declaring method of a local class or interface (including anonymous
+	 * classes) is the innermost method containing the expression or statement in
+	 * which this type is declared. Returns <code>null</code> if the type
+	 * is declared in an initializer.
+	 * </p>
+	 * <p>
+	 * The declaring method of a type variable is the method in which the type
+	 * variable is declared if it is declared on a method. It
+	 * returns <code>null</code> otherwise.
+	 * </p>
+	 * <p>Array types, primitive types, the null type, top-level types,
+	 * wildcard types, and capture bindings have no declaring method.
+	 * </p>
+	 * 
+	 * @return the binding of the method that declares this type, or
+	 * <code>null</code> if none
+	 * @since 3.1
+	 */
+	public IMethodBinding getDeclaringMethod();
 	
 	/**
 	 * Returns the type binding representing the class, interface, or enum
@@ -173,78 +169,16 @@ public interface ITypeBinding extends IBinding {
 	 * @return the binding of the type that declares this type, or
 	 * <code>null</code> if none
 	 */
-	public ITypeBinding getDeclaringClass();
+	public ITypeBinding getDeclaringType();
 	
 	/**
-	 * Returns the method binding representing the method that declares this binding
-	 * of a local type or type variable.
-	 * <p>
-	 * The declaring method of a local class or interface (including anonymous
-	 * classes) is the innermost method containing the expression or statement in
-	 * which this type is declared. Returns <code>null</code> if the type
-	 * is declared in an initializer.
-	 * </p>
-	 * <p>
-	 * The declaring method of a type variable is the method in which the type
-	 * variable is declared if it is declared on a method. It
-	 * returns <code>null</code> otherwise.
-	 * </p>
-	 * <p>Array types, primitive types, the null type, top-level types,
-	 * wildcard types, and capture bindings have no declaring method.
-	 * </p>
-	 * 
-	 * @return the binding of the method that declares this type, or
-	 * <code>null</code> if none
-	 * @since 3.1
-	 */
-	public IMethodBinding getDeclaringMethod();
-
-	/**
-	 * Returns the dimensionality of this array type, or <code>0</code> if this
-	 * is not an array type binding.
+	 * Returns the dimensionality of this static array type, 
+	 * or <code>0</code> if this is not a static array type binding.
 	 *
-	 * @return the number of dimension of this array type binding, or 
-	 *   <code>0</code> if this is not an array type
+	 * @return the number of dimension of this static array type binding, or 
+	 *   <code>0</code> if this is not a static array type
 	 */
-	public int getDimensions();
-
-	/**
-	 * Returns the binding representing the element type of this array type,
-	 * or <code>null</code> if this is not an array type binding. The element
-	 * type of an array is never itself an array type.
-	 *
-	 * @return the element type binding, or <code>null</code> if this is
-	 *   not an array type
-	 */
-	public ITypeBinding getElementType();
-	
-	/**
-	 * Returns the erasure of this type binding.
-	 * <ul>
-	 * <li>For parameterized types ({@link #isParameterizedType()})
-	 * - returns the binding for the corresponding generic type.</li>
-	 * <li>For raw types ({@link #isRawType()})
-	 * - returns the binding for the corresponding generic type.</li>
-	 * <li>For wildcard types ({@link #isWildcardType()})
-	 * - returns the binding for the upper bound if it has one and
-	 * java.lang.Object in other cases.</li>
-	 * <li>For type variables ({@link #isTypeVariable()})
-	 * - returns the binding for the erasure of the leftmost bound
-	 * if it has bounds and java.lang.Object if it does not.</li>
-	 * <li>For captures ({@link #isCapture()})
-	 * - returns the binding for the erasure of the leftmost bound
-	 * if it has bounds and java.lang.Object if it does not.</li>
-	 * <li>For array types ({@link #isArray()}) - returns an array type of
-	 * the same dimension ({@link #getDimensions()}) as this type
-	 * binding for which the element type is the erasure of the element type
-	 * ({@link #getElementType()}) of this type binding.</li>
-	 * <li>For all other type bindings - returns the identical binding.</li>
-	 * </ul>
-	 *
-	 * @return the erasure type binding
-	 * @since 3.1
-	 */
-	public ITypeBinding getErasure();
+	public int getDimension();
 	
 	/**
 	 * Returns a list of type bindings representing the direct superinterfaces
@@ -279,6 +213,17 @@ public interface ITypeBinding extends IBinding {
 	public ITypeBinding[] getInterfaces();
 	
 	/**
+	 * Returns the binding representing the key type of this 
+	 * associative array type,
+	 * or <code>null</code> if this is not an associative array 
+	 * type binding. The key type of an array might be an array type.
+	 *
+	 * @return the key type binding, or <code>null</code> if this is
+	 *   not an associative array type
+	 */	
+	public ITypeBinding getKeyType();
+	
+	/**
 	 * Returns the compiled modifiers for this class, interface, enum,
 	 * or annotation type binding.
 	 * The result may not correspond to the modifiers as declared in the
@@ -294,7 +239,7 @@ public interface ITypeBinding extends IBinding {
 	 * @see #getDeclaredModifiers()
 	 */
 	public long getModifiers();
-	
+
 	/**
 	 * Returns the unqualified name of the type represented by this binding
 	 * if it has one.
@@ -351,6 +296,17 @@ public interface ITypeBinding extends IBinding {
 	 * a type variable, a wildcard type, or a capture binding.
 	 */
 	public IPackageBinding getPackage();
+	
+	/**
+	 * Returns the bindings representing the parameters types of this 
+	 * function or delegate type,
+	 * or an empty list if this is not a functionor delegate 
+	 * type binding.
+	 *
+	 * @return the parameters types bindings, or an empty list if this is
+	 *   not a function or delegate type binding
+	 */	
+	public ITypeBinding[] getParametersTypes();
 	
 	/**
 	 * Returns the fully qualified name of the type represented by this 
@@ -415,6 +371,17 @@ public interface ITypeBinding extends IBinding {
 	public String getQualifiedName();
 	
 	/**
+	 * Returns the binding representing the return type of this 
+	 * function or delegate type,
+	 * or <code>null</code> if this is not a functionor delegate 
+	 * type binding.
+	 *
+	 * @return the return type binding, or <code>null</code> if this is
+	 *   not a function or delegate type binding
+	 */	
+	public ITypeBinding getReturnType();
+	
+	/**
 	 * Returns the type binding for the superclass of the type represented
 	 * by this class binding.
 	 * <p>
@@ -444,105 +411,15 @@ public interface ITypeBinding extends IBinding {
 	public ITypeBinding getSuperclass();
 	
 	/**
-	 * Returns the type arguments of this generic type instance, or the
-	 * empty list for other type bindings.
-	 * <p>
-	 * Note that type arguments only occur on a type binding that represents
-	 * an instance of a generic type corresponding to a parameterized type
-	 * reference (e.g., <code>Collection&lt;String&gt;</code>).
-	 * Do not confuse these with type parameters which only occur on the
-	 * type binding corresponding directly to the declaration of the 
-	 * generic class or interface (e.g., <code>Collection&lt;T&gt;</code>).
-	 * </p> 
+	 * Returns the binding representing the value type of this 
+	 * associative array type,
+	 * or <code>null</code> if this is not an associative array 
+	 * type binding. The value type of an array might be an array type.
 	 *
-	 * @return the list of type bindings for the type arguments used to
-	 * instantiate the corresponding generic type, or otherwise the empty list
-	 * @see #getTypeDeclaration()
-	 * @see #isGenericType()
-	 * @see #isParameterizedType()
-	 * @see #isRawType()
-	 * @since 3.1
-	 */
-	public ITypeBinding[] getTypeArguments();
-	
-	/**
-	 * Returns the declared type bounds of this type variable or capture. If the
-	 * variable or the capture had no explicit bound, then it returns an empty list.
-     * <p>
-     * Note that per construction, it can only contain one class or array type, 
-     * at most, and then it is located in first position.
-     * </p>
-     * <p>
-     * Also note that array type bound may only occur in the case of a capture
-     * binding, e.g. <code>capture-of ? extends Object[]</code>
-     * </p>
-	 *
-	 * @return the list of type bindings for this type variable or capture,
-     * or otherwise the empty list
-	 * @see #isCapture()
-	 * @see #isTypeVariable()
-	 * @since 3.1
-	 */
-	public ITypeBinding[] getTypeBounds();
-	
-	/**
-	 * Returns the binding for the type declaration corresponding to this type
-	 * binding.
-	 * <p>For parameterized types ({@link #isParameterizedType()})
-	 * and most raw types ({@link #isRawType()}), this method returns the binding
-	 * for the corresponding generic type.</p>
-	 * <p>For raw member types ({@link #isRawType()}, {@link #isMember()})
-	 * of a raw declaring class, the type declaration is a generic or a non-generic
-	 * type.</p>
-	 * <p>A different non-generic binding will be returned when one of the declaring
-	 * types/methods was parameterized.</p>
-	 * <p>For other type bindings, this returns the same binding.</p>
-	 *
-	 * @return the type binding
-	 * @since 3.1
-	 */
-	public ITypeBinding getTypeDeclaration();
-	
-	/**
-	 * Returns the type parameters of this class or interface type binding.
-	 * <p>
-	 * Note that type parameters only occur on the binding of the
-	 * declaring generic class or interface; e.g., <code>Collection&lt;T&gt;</code>.
-	 * Type bindings corresponding to a raw or parameterized reference to a generic
-	 * type do not carry type parameters (they instead have non-empty type arguments
-	 * and non-trivial erasure).
-	 * </p> 
-	 *
-	 * @return the list of binding for the type variables for the type
-	 * parameters of this type, or otherwise the empty list
-	 * @see #isTypeVariable()
-	 * @since 3.1
-	 */
-	// TODO (jeem) - clarify whether binding for a generic type instance carries a copy of the generic type's type parameters as well as type arguments
-	public ITypeBinding[] getTypeParameters();
-	
-	/**
-	 * Returns the corresponding wildcard binding of this capture binding.
-     * Returns <code>null</code> if this type bindings does not represent
-     * a capture binding.
-	 * 
-	 * @return the corresponding wildcard binding for a capture
-	 * binding, <code>null</code> otherwise
-	 * @since 3.1
-	 */
-	public ITypeBinding getWildcard();
-	
-	/**
-	 * Returns whether this type binding represents an annotation type.
-	 * <p>
-	 * Note that an annotation type is always an interface.
-	 * </p>
-	 *
-	 * @return <code>true</code> if this object represents an annotation type,
-	 *    and <code>false</code> otherwise
-	 * @since 3.1
-	 */
-	public boolean isAnnotation();
+	 * @return the value type binding, or <code>null</code> if this is
+	 *   not an associative array type
+	 */	
+	public ITypeBinding getValueType();
 	
 	/**
 	 * Returns whether this type binding represents an anonymous class.
@@ -558,16 +435,6 @@ public interface ITypeBinding extends IBinding {
 	public boolean isAnonymous();
 	
 	/**
-	 * Returns whether this type binding represents an array type.
-	 *
-	 * @return <code>true</code> if this type binding is for an array type,
-	 *   and <code>false</code> otherwise
-	 * @see #getElementType()
-	 * @see #getDimensions()
-	 */
-	public boolean isArray();
-	
-	/**
 	 * Returns whether an expression of this type can be assigned to a variable
 	 * of the given type, as specified in section 5.2 of <em>The Java Language 
 	 * Specification, Third Edition</em> (JLS3).
@@ -580,34 +447,15 @@ public interface ITypeBinding extends IBinding {
 	public boolean isAssignmentCompatible(ITypeBinding variableType);
 	
 	/**
-	 * Returns whether this type binding represents a capture binding.
-	 * <p>
-	 * Capture bindings result from capture conversion as specified 
-	 * in section 5.1.10 of <em>The Java Language Specification, 
-	 * Third Edition</em> (JLS3). 
-	 * </p>
-	 * <p>
-	 * A capture binding may have upper bounds and a lower bound.
-	 * Upper bounds may be accessed using {@link #getTypeBounds()},
-	 * the lower bound must be accessed indirectly through the associated
-	 * wildcard {@link #getWildcard()} when it is a lower bound wildcard.
-	 * </p>
-	 * <p>
-	 * Note that capture bindings are distinct from type variables
-     * (even though they are often depicted as synthetic type
-     * variables); as such, {@link #isTypeVariable()} answers
-     * <code>false</code> for capture bindings, and 
-     * {@link #isCapture()} answers <code>false</code> for type variables.
-	 * </p>
-     *
-	 * @return <code>true</code> if this type binding is a capture,
+	 * Returns whether this type binding represents an associative array type.
+	 *
+	 * @return <code>true</code> if this type binding is for an associative array type,
 	 *   and <code>false</code> otherwise
-	 * @see #getTypeBounds()
-	 * @see #getWildcard()
-	 * @since 3.1
+	 * @see #getKeyType()
+	 * @see #getValueType()
 	 */
-	public boolean isCapture();
-			
+	public boolean isAssociativeArray();
+	
 	/**
 	 * Returns whether this type is cast compatible with the given type,
 	 * as specified in section 5.5 of <em>The Java Language 
@@ -631,6 +479,24 @@ public interface ITypeBinding extends IBinding {
 	 *    and <code>false</code> otherwise
 	 */
 	public boolean isClass();
+			
+	/**
+	 * Returns whether this type binding represents a delegate type.
+	 *
+	 * @return <code>true</code> if this object represents a delegate type,
+	 *    and <code>false</code> otherwise
+	 * @since 3.1
+	 */
+	public boolean isDelegate();
+	
+	/**
+	 * Returns whether this type binding represents a dynamic array type.
+	 *
+	 * @return <code>true</code> if this type binding is for a dynamic array type,
+	 *   and <code>false</code> otherwise
+	 * @see #getComponentType()
+	 */
+	public boolean isDynamicArray();
 
 	/**
 	 * Returns whether this type binding represents an enum type.
@@ -641,24 +507,6 @@ public interface ITypeBinding extends IBinding {
 	 */
 	public boolean isEnum();
 	
-	/**
-	 * Returns whether this type binding represents a struct type.
-	 *
-	 * @return <code>true</code> if this object represents a struct type,
-	 *    and <code>false</code> otherwise
-	 * @since 3.1
-	 */
-	public boolean isStruct();
-	
-	/**
-	 * Returns whether this type binding represents a union type.
-	 *
-	 * @return <code>true</code> if this object represents a union type,
-	 *    and <code>false</code> otherwise
-	 * @since 3.1
-	 */
-	public boolean isUnion();
-
 	/**
 	 * Returns whether this type binding originated in source code.
 	 * Returns <code>false</code> for all primitive types, the null type,
@@ -673,29 +521,14 @@ public interface ITypeBinding extends IBinding {
 	public boolean isFromSource();
 	
 	/**
-	 * Returns whether this type binding represents a declaration of
-	 * a generic class or interface.
-	 * <p>
-	 * Note that type parameters only occur on the binding of the
-	 * declaring generic class or interface; e.g., <code>Collection&lt;T&gt;</code>.
-	 * Type bindings corresponding to a raw or parameterized reference to a generic
-	 * type do not carry type parameters (they instead have non-empty type arguments
-	 * and non-trivial erasure).
-	 * This method is fully equivalent to <code>getTypeParameters().length &gt; 0)</code>.
-	 * </p>
-	 * <p>
-	 * Note that {@link #isGenericType()},
-	 * {@link #isParameterizedType()},
-	 * and {@link #isRawType()} are mutually exclusive.
-	 * </p>
+	 * Returns whether this type binding represents a function type.
 	 *
-	 * @return <code>true</code> if this type binding represents a 
-	 * declaration of a generic class or interface, and <code>false</code> otherwise
-	 * @see #getTypeParameters()
+	 * @return <code>true</code> if this object represents a function type,
+	 *    and <code>false</code> otherwise
 	 * @since 3.1
 	 */
-	public boolean isGenericType();
-		
+	public boolean isFunction();
+	
 	/**
 	 * Returns whether this type binding represents an interface type.
 	 * <p>
@@ -723,7 +556,7 @@ public interface ITypeBinding extends IBinding {
 	 * enum type, and <code>false</code> otherwise
 	 */
 	public boolean isLocal();
-	
+
 	/**
 	 * Returns whether this type binding represents a member class or
 	 * interface.
@@ -737,7 +570,7 @@ public interface ITypeBinding extends IBinding {
 	 *   interface, enum, or annotation type, and <code>false</code> otherwise
 	 */
 	public boolean isMember();
-	
+		
 	/**
 	 * Returns whether this type binding represents a nested class, interface,
 	 * enum, or annotation type.
@@ -752,7 +585,7 @@ public interface ITypeBinding extends IBinding {
 	 *   interface, enum, or annotation type, and <code>false</code> otherwise
 	 */
 	public boolean isNested();
-
+	
 	/**
 	 * Returns whether this type binding represents the null type.
 	 * <p>
@@ -763,7 +596,7 @@ public interface ITypeBinding extends IBinding {
 	 *   and <code>false</code> otherwise
 	 */
 	public boolean isNullType();
-
+	
 	/**
 	 * Returns whether this type binding represents an instance of
 	 * a generic type corresponding to a parameterized type reference.
@@ -802,35 +635,35 @@ public interface ITypeBinding extends IBinding {
 	 *   and <code>false</code> otherwise
 	 */
 	public boolean isPrimitive();
+
+	/**
+	 * Returns whether this type binding represents a static array type.
+	 *
+	 * @return <code>true</code> if this type binding is for a static array type,
+	 *   and <code>false</code> otherwise
+	 * @see #getComponentType()
+	 * @see #getDimension()
+	 */
+	public boolean isStaticArray();
 	
 	/**
-	 * Returns whether this type binding represents an instance of
-	 * a generic type corresponding to a raw type reference.
-	 * <p>
-	 * For example, an AST type like 
-	 * <code>Collection</code> typically resolves to a
-	 * type binding whose type argument is the type binding for
-	 * the class <code>java.lang.Object</code> (the
-	 * default bound for the single type parameter of 
-	 * <code>java.util.Collection</code>) and whose erasure is the
-	 * type binding for the generic type
-	 * <code>java.util.Collection</code>.
-	 * </p>
-	 * <p>
-	 * Note that {@link #isGenericType()},
-	 * {@link #isParameterizedType()},
-	 * and {@link #isRawType()} are mutually exclusive.
-	 * </p>
+	 * Returns whether this type binding represents a pointer type.
 	 *
-	 * @return <code>true</code> if this type binding represents a 
-	 * an instance of a generic type corresponding to a raw
-	 * type reference, and <code>false</code> otherwise
-	 * @see #getTypeDeclaration()
-	 * @see #getTypeArguments()
+	 * @return <code>true</code> if this type binding is for a pointer type,
+	 *   and <code>false</code> otherwise
+	 * @see #getComponentType()
+	 */
+	public boolean isPointer();
+
+	/**
+	 * Returns whether this type binding represents a struct type.
+	 *
+	 * @return <code>true</code> if this object represents a struct type,
+	 *    and <code>false</code> otherwise
 	 * @since 3.1
 	 */
-	public boolean isRawType();
-
+	public boolean isStruct();
+	
 	/**
 	 * Returns whether this type is subtype compatible with the given type,
 	 * as specified in section 4.10 of <em>The Java Language 
@@ -842,69 +675,13 @@ public interface ITypeBinding extends IBinding {
 	 * @since 3.1
 	 */
 	public boolean isSubTypeCompatible(ITypeBinding type);
-	
+
 	/**
-	 * Returns whether this type binding represents a top-level class,
-	 * interface, enum, or annotation type.
-	 * <p>
-	 * A top-level type is any type whose declaration does not occur within the
-	 * body of another type declaration. The set of top level types is disjoint
-	 * from the set of nested types.
-	 * </p>
+	 * Returns whether this type binding represents a union type.
 	 *
-	 * @return <code>true</code> if this type binding is for a top-level class,
-	 *   interface, enum, or annotation type, and <code>false</code> otherwise
-	 */
-	public boolean isTopLevel();
-	
-	/**
-	 * Returns whether this type binding represents a type variable.
-	 * Type variables bindings carry the type variable's bounds.
-     * <p>
-     * Note that type variables are distinct from capture bindings
-     * (even though capture bindings are often depicted as synthetic
-     * type variables); as such, {@link #isTypeVariable()} answers
-     * <code>false</code> for capture bindings, and 
-     * {@link #isCapture()} answers <code>false</code> for type variables.
-     * </p>
-	 *
-	 * @return <code>true</code> if this type binding is for a type variable,
-	 *   and <code>false</code> otherwise
-	 * @see #getName()
-	 * @see #getTypeBounds()
-	 * @since 3.1
-	 */
-	public boolean isTypeVariable();
-	
-	/**
-	 * Returns whether this wildcard type is an upper bound
-	 * ("extends") as opposed to a lower bound ("super").
-	 * Note that this property is only relevant for wildcards
-	 * that have a bound.
-	 *
-	 * @return <code>true</code> if this wildcard type has a bound that is
-	 * an upper bound, and <code>false</code> in all other cases
-	 * @see #isWildcardType()
-	 * @see #getBound()
-	 * @since 3.1
-	 */
-	public boolean isUpperbound();
-	
-	/**
-	 * Returns whether this type binding represents a wildcard type. A wildcard
-	 * type occus only as an argument to a parameterized type reference.
-	 * <p>
-	 * For example, a AST type like 
-	 * <code>Collection&lt;? extends Object&gt;</code> typically resolves to a
-	 * parameterized type binding whose type argument is a wildcard type
-	 * with upper type bound <code>java.util.Object</code>.
-	 * </p>
-	 *
-	 * @return <code>true</code> if this object represents a wildcard type,
+	 * @return <code>true</code> if this object represents a union type,
 	 *    and <code>false</code> otherwise
 	 * @since 3.1
-	 * @see #getBound()
-	 * @see #isUpperbound()
 	 */
-	public boolean isWildcardType();
+	public boolean isUnion();
 }

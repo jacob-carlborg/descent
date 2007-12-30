@@ -23,6 +23,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IPath;
 
+import descent.core.dom.AST;
+import descent.core.dom.ASTNode;
+
 /**
  * A Java project represents a view of a project resource in terms of Java 
  * elements such as package fragments, types, methods and fields.
@@ -1038,4 +1041,14 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 */
 	void setRawClasspath(IClasspathEntry[] entries, IPath outputLocation, IProgressMonitor monitor)
 		throws JavaModelException;
+	
+	/**
+	 * Returns the api level configured for this project.
+	 * @return the api level configured for this project
+	 * @see AST#D0
+	 * @see AST#D1
+	 * @see AST#D2
+	 */
+	int getApiLevel();
+	
 }

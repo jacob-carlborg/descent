@@ -92,21 +92,6 @@ class BindingResolver {
 	}
 
 	/**
-	 * Finds the corresponding AST node from which the given annotation instance originated.
-	 * 
-	 * The default implementation of this method returns <code>null</code>.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param instance the dom annotation
-	 * @return the corresponding node where the bindings is declared, 
-	 *    or <code>null</code> if none
-	 */
-	ASTNode findDeclaringNode(IAnnotationBinding instance) {
-		return null;
-	}
-
-	/**
 	 * Resolves and returns the binding for the constructor being invoked.
 	 * <p>
 	 * The implementation of

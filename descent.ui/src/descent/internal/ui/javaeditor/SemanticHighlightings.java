@@ -692,11 +692,6 @@ public class SemanticHighlightings {
 			if (!isAbstractMethod)
 				return false;
 
-			// filter out annotation value references
-			ITypeBinding declaringType= ((IMethodBinding)binding).getDeclaringClass();
-			if (declaringType.isAnnotation())
-				return false;
-
 			return true;
 		}
 	}
@@ -1126,73 +1121,6 @@ public class SemanticHighlightings {
 			return binding != null ? binding.isDeprecated() : false;
 		}
 	}
-
-	/**
-	 * Semantic highlighting for type variables.
-	 * @since 3.1
-	 */
-	private static final class TypeVariableHighlighting extends SemanticHighlighting {
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
-		 */
-		public String getPreferenceKey() {
-			return TYPE_VARIABLE;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
-		 */
-		public RGB getDefaultTextColor() {
-			return new RGB(100, 70, 50);
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
-		 */
-		public boolean isBoldByDefault() {
-			return true;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
-		 */
-		public boolean isItalicByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
-		 */
-		public boolean isEnabledByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
-		 */
-		public String getDisplayName() {
-			return JavaEditorMessages.SemanticHighlighting_typeVariables;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
-		 */
-		public boolean consumes(SemanticToken token) {
-
-			// 1: match types in type parameter lists
-			SimpleName name= token.getNode();
-			ASTNode node= name.getParent();
-			/* TODO JDT UI Java -> D
-			if (node.getNodeType() != ASTNode.SIMPLE_TYPE && node.getNodeType() != ASTNode.TYPE_PARAMETER)
-				return false;
-			*/
-
-			// 2: match generic type variable references
-			IBinding binding= token.getBinding();
-			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isTypeVariable();
-		}
-	}
 	
 	/**
 	 * Semantic highlighting for classes.
@@ -1555,156 +1483,6 @@ public class SemanticHighlightings {
 	}
 	
 	/**
-	 * Semantic highlighting for annotation types.
-	 * @since 3.2
-	 */
-	private static final class AnnotationHighlighting extends SemanticHighlighting {
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
-		 */
-		public String getPreferenceKey() {
-			return ANNOTATION;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
-		 */
-		public RGB getDefaultTextColor() {
-			return new RGB(100, 100, 100);
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
-		 */
-		public boolean isBoldByDefault() {
-			return false;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
-		 */
-		public boolean isItalicByDefault() {
-			return false;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
-		 */
-		public boolean isEnabledByDefault() {
-			return true; // as it replaces the syntax based highlighting which is always enabled
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
-		 */
-		public String getDisplayName() {
-			return JavaEditorMessages.SemanticHighlighting_annotations;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
-		 */
-		public boolean consumes(SemanticToken token) {
-			
-			// 1: match types
-			SimpleName name= token.getNode();
-			ASTNode node= name.getParent();
-			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME
-					/*
-					&& nodeType != ASTNode.ANNOTATION_TYPE_DECLARATION 
-					&& nodeType != ASTNode.MARKER_ANNOTATION 
-					&& nodeType != ASTNode.NORMAL_ANNOTATION 
-					&& nodeType != ASTNode.SINGLE_MEMBER_ANNOTATION
-					*/
-					)
-				return false;
-			while (nodeType == ASTNode.QUALIFIED_NAME) {
-				node= node.getParent();
-				nodeType= node.getNodeType();
-				if (nodeType == ASTNode.IMPORT_DECLARATION)
-					return false;
-			}
-
-			// 2: match annotations
-			IBinding binding= token.getBinding();
-			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isAnnotation();
-		}
-	}
-	
-	/**
-	 * Semantic highlighting for annotation types.
-	 * @since 3.2
-	 */
-	private static final class TypeArgumentHighlighting extends SemanticHighlighting {
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
-		 */
-		public String getPreferenceKey() {
-			return TYPE_ARGUMENT;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
-		 */
-		public RGB getDefaultTextColor() {
-			return new RGB(13, 100, 0);
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
-		 */
-		public boolean isBoldByDefault() {
-			return false;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
-		 */
-		public boolean isItalicByDefault() {
-			return false;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
-		 */
-		public boolean isEnabledByDefault() {
-			return false;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
-		 */
-		public String getDisplayName() {
-			return JavaEditorMessages.SemanticHighlighting_typeArguments;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
-		 */
-		public boolean consumes(SemanticToken token) {
-			
-			// 1: match types
-			SimpleName name= token.getNode();
-			ASTNode node= name.getParent();
-			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.QUALIFIED_TYPE)
-				return false;
-			
-			// 2: match type arguments
-			/* TODO JDT UI Java -> D
-			StructuralPropertyDescriptor locationInParent= node.getLocationInParent();
-			if (locationInParent == ParameterizedType.TYPE_ARGUMENTS_PROPERTY)
-				return true;
-			*/
-			
-			return false;
-		}
-	}
-	
-	/**
 	 * A named preference that controls the given semantic highlighting's color.
 	 *
 	 * @param semanticHighlighting the semantic highlighting
@@ -1786,14 +1564,11 @@ public class SemanticHighlightings {
 				new ParameterVariableHighlighting(),
 				new LocalVariableDeclarationHighlighting(),
 				new LocalVariableHighlighting(),
-				new TypeVariableHighlighting(), // before type arguments!
 				new MethodHighlighting(), // before types to get ctors
-				new TypeArgumentHighlighting(), // before other types
 				new ClassHighlighting(),
 				new StructHighlighting(),
 				new UnionHighlighting(),
 				new EnumHighlighting(),
-				new AnnotationHighlighting(), // before interfaces
 				new InterfaceHighlighting(),
 			};
 		return fgSemanticHighlightings;

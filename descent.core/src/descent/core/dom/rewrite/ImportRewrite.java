@@ -503,86 +503,90 @@ public final class ImportRewrite {
 	 * when an import could be added or was already known. It is fully qualified, if an import conflict prevented the import.
 	 */
 	public String addImport(ITypeBinding binding, ImportRewriteContext context) {
-		if (binding.isPrimitive() || binding.isTypeVariable()) {
-			return binding.getName();
-		}
-		
-		ITypeBinding normalizedBinding= normalizeTypeBinding(binding);
-		if (normalizedBinding == null) {
-			return "invalid"; //$NON-NLS-1$
-		}
-		if (normalizedBinding.isWildcardType()) {
-			StringBuffer res= new StringBuffer("?"); //$NON-NLS-1$
-			ITypeBinding bound= normalizedBinding.getBound();
-			if (bound != null && !bound.isWildcardType() && !bound.isCapture()) { // bug 95942
-				if (normalizedBinding.isUpperbound()) {
-					res.append(" extends "); //$NON-NLS-1$
-				} else {
-					res.append(" super "); //$NON-NLS-1$
-				}
-				res.append(addImport(bound, context));
-			}
-			return res.toString();
-		}
-		
-		if (normalizedBinding.isArray()) {
-			StringBuffer res= new StringBuffer(addImport(normalizedBinding.getElementType(), context));
-			for (int i= normalizedBinding.getDimensions(); i > 0; i--) {
-				res.append("[]"); //$NON-NLS-1$
-			}
-			return res.toString();
-		}
-	
-		String qualifiedName= getRawQualifiedName(normalizedBinding);
-		if (qualifiedName.length() > 0) {
-			String str= internalAddImport(qualifiedName, context);
-			
-			ITypeBinding[] typeArguments= normalizedBinding.getTypeArguments();
-			if (typeArguments.length > 0) {
-				StringBuffer res= new StringBuffer(str);
-				res.append('<');
-				for (int i= 0; i < typeArguments.length; i++) {
-					if (i > 0) {
-						res.append(','); 
-					}
-					ITypeBinding curr= typeArguments[i];
-					if (containsNestedCapture(curr, false)) { // see bug 103044
-						res.append('?');
-					} else {
-						res.append(addImport(curr, context));
-					}
-				}
-				res.append('>');
-				return res.toString();
-			}
-			return str;
-		}
-		return getRawName(normalizedBinding);
+		// TODO JDT import rewrite
+		return "";
+//		if (binding.isPrimitive() || binding.isTypeVariable()) {
+//			return binding.getName();
+//		}
+//		
+//		ITypeBinding normalizedBinding= normalizeTypeBinding(binding);
+//		if (normalizedBinding == null) {
+//			return "invalid"; //$NON-NLS-1$
+//		}
+//		if (normalizedBinding.isWildcardType()) {
+//			StringBuffer res= new StringBuffer("?"); //$NON-NLS-1$
+//			ITypeBinding bound= normalizedBinding.getBound();
+//			if (bound != null && !bound.isWildcardType() && !bound.isCapture()) { // bug 95942
+//				if (normalizedBinding.isUpperbound()) {
+//					res.append(" extends "); //$NON-NLS-1$
+//				} else {
+//					res.append(" super "); //$NON-NLS-1$
+//				}
+//				res.append(addImport(bound, context));
+//			}
+//			return res.toString();
+//		}
+//		
+//		if (normalizedBinding.isArray()) {
+//			StringBuffer res= new StringBuffer(addImport(normalizedBinding.getElementType(), context));
+//			for (int i= normalizedBinding.getDimension(); i > 0; i--) {
+//				res.append("[]"); //$NON-NLS-1$
+//			}
+//			return res.toString();
+//		}
+//	
+//		String qualifiedName= getRawQualifiedName(normalizedBinding);
+//		if (qualifiedName.length() > 0) {
+//			String str= internalAddImport(qualifiedName, context);
+//			
+//			ITypeBinding[] typeArguments= normalizedBinding.getTypeArguments();
+//			if (typeArguments.length > 0) {
+//				StringBuffer res= new StringBuffer(str);
+//				res.append('<');
+//				for (int i= 0; i < typeArguments.length; i++) {
+//					if (i > 0) {
+//						res.append(','); 
+//					}
+//					ITypeBinding curr= typeArguments[i];
+//					if (containsNestedCapture(curr, false)) { // see bug 103044
+//						res.append('?');
+//					} else {
+//						res.append(addImport(curr, context));
+//					}
+//				}
+//				res.append('>');
+//				return res.toString();
+//			}
+//			return str;
+//		}
+//		return getRawName(normalizedBinding);
 	}
 	
 	private boolean containsNestedCapture(ITypeBinding binding, boolean isNested) {
-		if (binding == null || binding.isPrimitive() || binding.isTypeVariable()) {
-			return false;
-		}
-		if (binding.isCapture()) {
-			if (isNested) {
-				return true;
-			}
-			return containsNestedCapture(binding.getWildcard(), true); 
-		}
-		if (binding.isWildcardType()) {
-			return containsNestedCapture(binding.getBound(), true);
-		}
-		if (binding.isArray()) {
-			return containsNestedCapture(binding.getElementType(), true);
-		}
-		ITypeBinding[] typeArguments= binding.getTypeArguments();
-		for (int i= 0; i < typeArguments.length; i++) {
-			if (containsNestedCapture(typeArguments[i], true)) {
-				return true;
-			}
-		}
 		return false;
+		// TODO JDT import rewrite
+//		if (binding == null || binding.isPrimitive() || binding.isTypeVariable()) {
+//			return false;
+//		}
+//		if (binding.isCapture()) {
+//			if (isNested) {
+//				return true;
+//			}
+//			return containsNestedCapture(binding.getWildcard(), true); 
+//		}
+//		if (binding.isWildcardType()) {
+//			return containsNestedCapture(binding.getBound(), true);
+//		}
+//		if (binding.isArray()) {
+//			return containsNestedCapture(binding.getElementType(), true);
+//		}
+//		ITypeBinding[] typeArguments= binding.getTypeArguments();
+//		for (int i= 0; i < typeArguments.length; i++) {
+//			if (containsNestedCapture(typeArguments[i], true)) {
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 	
 	private boolean containsNestedCapture(String signature) {
@@ -598,9 +602,10 @@ public final class ImportRewrite {
 				}
 				return binding.getSuperclass();
 			}
-			if (binding.isCapture()) {
-				return binding.getWildcard();
-			}
+			// TODO JDT import rewrite
+//			if (binding.isCapture()) {
+//				return binding.getWildcard();
+//			}
 			return binding;
 		}
 		return null;
@@ -658,10 +663,12 @@ public final class ImportRewrite {
 			return ast.newSimpleType(ast.newSimpleName("invalid")); //$NON-NLS-1$
 		}
 		
-		if (normalizedBinding.isTypeVariable()) {
-			// no import
-			return ast.newSimpleType(ast.newSimpleName(binding.getName()));
-		}
+		// TODO JDT import rewrite
+//		if (normalizedBinding.isTypeVariable()) {
+//			// no import
+//			return ast.newSimpleType(ast.newSimpleName(binding.getName()));
+//		}
+		
 		/*
 		if (normalizedBinding.isWildcardType()) {
 			WildcardType wcType= ast.newWildcardType();
@@ -955,11 +962,15 @@ public final class ImportRewrite {
 	}	
 	
 	private static String getRawName(ITypeBinding normalizedBinding) {
-		return normalizedBinding.getTypeDeclaration().getName();
+		return "";
+		// TODO JDT import rewrite
+//		return normalizedBinding.getTypeDeclaration().getName();
 	}
 
 	private static String getRawQualifiedName(ITypeBinding normalizedBinding) {
-		return normalizedBinding.getTypeDeclaration().getQualifiedName();
+		return "";
+		// TODO JDT import rewrite
+		// return normalizedBinding.getTypeDeclaration().getQualifiedName();
 	}
 	
 

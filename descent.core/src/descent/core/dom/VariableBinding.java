@@ -69,11 +69,6 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		return false;
 	}
 
-	public IAnnotationBinding[] getAnnotations() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public String getKey() {
 		return signature;
 	}

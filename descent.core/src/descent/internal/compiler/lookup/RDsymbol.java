@@ -518,6 +518,8 @@ public class RDsymbol extends RNode implements IDsymbol {
 				symbol = new RUnionDeclaration(type, context);
 			} else if (type.isEnum()) {
 				symbol = new REnumDeclaration(type, context);
+			} else if (type.isTemplate()) {
+				symbol = new RTemplateDeclaration(type, context);
 			} else {
 				throw new IllegalStateException("Should not happen");
 			}

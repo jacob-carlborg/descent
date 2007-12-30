@@ -38,7 +38,12 @@ public class real_t {
 	}
 
 	public integer_t to_integer_t() {
-		return new integer_t(value.toBigInteger());
+		// TODO consider nan?
+		if (value != null) { 
+			return new integer_t(value.toBigInteger());
+		} else {
+			return new integer_t((int) nanOrInfinite);
+		}
 	}
 
 	@Override

@@ -195,11 +195,12 @@ public class Bindings {
 	
 	private static void createName(ITypeBinding type, boolean includePackage, List list) {
 		ITypeBinding baseType= type;
-		if (type.isArray()) {
-			baseType= type.getElementType();
-		}
+		// TODO JDT Bindings
+//		if (type.isArray()) {
+//			baseType= type.getElementType();
+//		}
 		if (!baseType.isPrimitive() && !baseType.isNullType()) {
-			ITypeBinding declaringType= baseType.getDeclaringClass();
+			ITypeBinding declaringType= baseType.getDeclaringType();
 			if (declaringType != null) {
 				createName(declaringType, includePackage, list);
 			} else if (includePackage && !baseType.getPackage().isUnnamed()) {
@@ -230,10 +231,10 @@ public class Bindings {
 	}
 	
 	public static ITypeBinding getTopLevelType(ITypeBinding type) {
-		ITypeBinding parent= type.getDeclaringClass();
+		ITypeBinding parent= type.getDeclaringType();
 		while (parent != null) {
 			type= parent;
-			parent= type.getDeclaringClass();
+			parent= type.getDeclaringType();
 		}
 		return type;
 	}
@@ -247,8 +248,9 @@ public class Bindings {
 	 * 	otherwise <code>false</code> is returned
 	 */
 	public static boolean isRuntimeException(ITypeBinding thrownException) {
-		if (thrownException == null || thrownException.isPrimitive() || thrownException.isArray())
-			return false;
+		// TODO JDT Bindings
+//		if (thrownException == null || thrownException.isPrimitive() || thrownException.isArray())
+//			return false;
 		return findTypeInHierarchy(thrownException, "java.lang.RuntimeException") != null; //$NON-NLS-1$
 	}
 	
@@ -579,10 +581,11 @@ public class Bindings {
 		ITypeBinding[] methodParameters= method.getParameterTypes();
 		if (methodParameters.length != parameters.length)
 			return false;
-		for (int i= 0; i < parameters.length; i++) {
-			if (!equals(methodParameters[i].getErasure(), parameters[i].getErasure()))
-				return false;
-		}
+		// TODO JDT Bindings
+//		for (int i= 0; i < parameters.length; i++) {
+//			if (!equals(methodParameters[i].getErasure(), parameters[i].getErasure()))
+//				return false;
+//		}
 		//Can't use this fix, since some clients assume that this method tests erasure equivalence:
 //		if (method.getTypeParameters().length == 0) {
 //			//a method without type parameters cannot be overridden by one that declares type parameters -> can be exact here
@@ -643,12 +646,13 @@ public class Bindings {
 				return true;
 			for (int i= 0; i < m1Params.length; i++) {
 				ITypeBinding m1Param= m1Params[i];
-				if (containsTypeVariables(m1Param))
-					m1Param= m1Param.getErasure(); // try to achieve effect of "rename type variables"
-				else if (m1Param.isRawType())
-					m1Param= m1Param.getTypeDeclaration();
-				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
-					return false;
+				// TODO JDT Bindings
+//				if (containsTypeVariables(m1Param))
+//					m1Param= m1Param.getErasure(); // try to achieve effect of "rename type variables"
+//				else if (m1Param.isRawType())
+//					m1Param= m1Param.getTypeDeclaration();
+//				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
+//					return false;
 			}
 			return true;
 			
@@ -658,28 +662,30 @@ public class Bindings {
 				return true;
 			for (int i= 0; i < m1Params.length; i++) {
 				ITypeBinding m1Param= m1Params[i];
-				if (m1Param.isRawType())
-					m1Param= m1Param.getTypeDeclaration();
-				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
-					return false;
+				// TODO JDT Bindings
+//				if (m1Param.isRawType())
+//					m1Param= m1Param.getTypeDeclaration();
+//				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
+//					return false;
 			}
 			return true;
 		}
 	}
 
 	private static boolean containsTypeVariables(ITypeBinding type) {
-		if (type.isTypeVariable())
-			return true;
-		if (type.isArray())
-			return containsTypeVariables(type.getElementType());
-		if (type.isCapture())
-			return containsTypeVariables(type.getWildcard());
-		if (type.isParameterizedType())
-			return containsTypeVariables(type.getTypeArguments());
-		if (type.isTypeVariable())
-			return containsTypeVariables(type.getTypeBounds());
-		if (type.isWildcardType() && type.getBound() != null)
-			return containsTypeVariables(type.getBound());
+		// TODO JDT Bindings
+//		if (type.isTypeVariable())
+//			return true;
+//		if (type.isArray())
+//			return containsTypeVariables(type.getElementType());
+//		if (type.isCapture())
+//			return containsTypeVariables(type.getWildcard());
+//		if (type.isParameterizedType())
+//			return containsTypeVariables(type.getTypeArguments());
+//		if (type.isTypeVariable())
+//			return containsTypeVariables(type.getTypeBounds());
+//		if (type.isWildcardType() && type.getBound() != null)
+//			return containsTypeVariables(type.getBound());
 		return false;
 	}
 
@@ -691,24 +697,27 @@ public class Bindings {
 	}
 
 	private static Set getTypeBoundsForSubsignature(ITypeBinding typeParameter) {
-		ITypeBinding[] typeBounds= typeParameter.getTypeBounds();
-		int count= typeBounds.length;
-		if (count == 0)
-			return Collections.EMPTY_SET;
+		// TODO JDT Bindings
+		return Collections.EMPTY_SET;
 		
-		Set result= new HashSet(typeBounds.length);
-		for (int i= 0; i < typeBounds.length; i++) {
-			ITypeBinding bound= typeBounds[i];
-			if ("java.lang.Object".equals(typeBounds[0].getQualifiedName())) //$NON-NLS-1$
-				continue;
-			else if (containsTypeVariables(bound))
-				result.add(bound.getErasure()); // try to achieve effect of "rename type variables"
-			else if (bound.isRawType())
-				result.add(bound.getTypeDeclaration());
-			else
-				result.add(bound);
-		}
-		return result;
+//		ITypeBinding[] typeBounds= typeParameter.getTypeBounds();
+//		int count= typeBounds.length;
+//		if (count == 0)
+//			return Collections.EMPTY_SET;
+//		
+//		Set result= new HashSet(typeBounds.length);
+//		for (int i= 0; i < typeBounds.length; i++) {
+//			ITypeBinding bound= typeBounds[i];
+//			if ("java.lang.Object".equals(typeBounds[0].getQualifiedName())) //$NON-NLS-1$
+//				continue;
+//			else if (containsTypeVariables(bound))
+//				result.add(bound.getErasure()); // try to achieve effect of "rename type variables"
+//			else if (bound.isRawType())
+//				result.add(bound.getTypeDeclaration());
+//			else
+//				result.add(bound);
+//		}
+//		return result;
 	}
 
 	/**
@@ -726,20 +735,21 @@ public class Bindings {
 		ITypeBinding[] methodParameters= method.getParameterTypes();
 		if (methodParameters.length != parameters.length)
 			return false;
-		String first, second;
-		int index;
-		for (int i= 0; i < parameters.length; i++) {
-			first= parameters[i];
-			index= first.indexOf('<');
-			if (index > 0)
-				first= first.substring(0, index);
-			second= methodParameters[i].getErasure().getQualifiedName();
-			index= second.indexOf('<');
-			if (index > 0)
-				second= second.substring(0, index);
-			if (!first.equals(second))
-				return false;
-		}
+		// TODO JDT Bindings
+//		String first, second;
+//		int index;
+//		for (int i= 0; i < parameters.length; i++) {
+//			first= parameters[i];
+//			index= first.indexOf('<');
+//			if (index > 0)
+//				first= first.substring(0, index);
+//			second= methodParameters[i].getErasure().getQualifiedName();
+//			index= second.indexOf('<');
+//			if (index > 0)
+//				second= second.substring(0, index);
+//			if (!first.equals(second))
+//				return false;
+//		}
 		return true;
 	}
 
@@ -751,9 +761,10 @@ public class Bindings {
 	 * @return the type binding
 	 */
 	public static ITypeBinding findTypeInHierarchy(ITypeBinding hierarchyType, String fullyQualifiedTypeName) {
-		if (hierarchyType.isArray() || hierarchyType.isPrimitive()) {
-			return null;
-		}
+		// TODO JDT Bindings
+//		if (hierarchyType.isArray() || hierarchyType.isPrimitive()) {
+//			return null;
+//		}
 		if (fullyQualifiedTypeName.equals(hierarchyType.getQualifiedName())) {
 			return hierarchyType;
 		}
@@ -807,9 +818,10 @@ public class Bindings {
 	 * 		a super type of <code>type</code> or is equal to it
 	 */
 	public static boolean isSuperType(ITypeBinding possibleSuperType, ITypeBinding type) {
-		if (type.isArray() || type.isPrimitive()) {
-			return false;
-		}
+		// TODO JDT Bindings
+//		if (type.isArray() || type.isPrimitive()) {
+//			return false;
+//		}
 		if (Bindings.equals(type, possibleSuperType)) {
 			return true;
 		}
@@ -888,41 +900,43 @@ public class Bindings {
 	}
 
 	private static boolean sameParameter(ITypeBinding type, String candidate, IType scope) throws JavaModelException {
-		if (type.getDimensions() != Signature.getArrayCount(candidate))
+		if (type.getDimension() != Signature.getArrayCount(candidate))
 			return false;
 			
 		// Normalizes types
-		if (type.isArray())
-			type= type.getElementType();
+		// TODO JDT Bindings
+//		if (type.isArray())
+//			type= type.getElementType();
 		candidate= Signature.getElementType(candidate);
 		
 		if ((Signature.getTypeSignatureKind(candidate) == Signature.BASE_TYPE_SIGNATURE) != type.isPrimitive()) {
 			return false;
 		}
 			
-		if (type.isPrimitive() || type.isTypeVariable()) {
-			return type.getName().equals(Signature.toString(candidate));
-		} else {
-			// normalize (quick hack until binding.getJavaElement works)
-			candidate= Signature.getTypeErasure(candidate);
-			type= type.getErasure();
-			
-			if (candidate.charAt(Signature.getArrayCount(candidate)) == Signature.C_RESOLVED) {
-				return Signature.toString(candidate).equals(Bindings.getFullyQualifiedName(type));
-			} else {
-				String[][] qualifiedCandidates= scope.resolveType(Signature.toString(candidate));
-				if (qualifiedCandidates == null || qualifiedCandidates.length == 0)
-					return false;
-				String packageName= type.getPackage().isUnnamed() ? "" : type.getPackage().getName(); //$NON-NLS-1$
-				String typeName= getTypeQualifiedName(type);
-				for (int i= 0; i < qualifiedCandidates.length; i++) {
-					String[] qualifiedCandidate= qualifiedCandidates[i];
-					if (	qualifiedCandidate[0].equals(packageName) &&
-							qualifiedCandidate[1].equals(typeName))
-						return true;
-				}
-			}
-		}
+		// TODO JDT Bindings
+//		if (type.isPrimitive() || type.isTypeVariable()) {
+//			return type.getName().equals(Signature.toString(candidate));
+//		} else {
+//			// normalize (quick hack until binding.getJavaElement works)
+//			candidate= Signature.getTypeErasure(candidate);
+//			type= type.getErasure();
+//			
+//			if (candidate.charAt(Signature.getArrayCount(candidate)) == Signature.C_RESOLVED) {
+//				return Signature.toString(candidate).equals(Bindings.getFullyQualifiedName(type));
+//			} else {
+//				String[][] qualifiedCandidates= scope.resolveType(Signature.toString(candidate));
+//				if (qualifiedCandidates == null || qualifiedCandidates.length == 0)
+//					return false;
+//				String packageName= type.getPackage().isUnnamed() ? "" : type.getPackage().getName(); //$NON-NLS-1$
+//				String typeName= getTypeQualifiedName(type);
+//				for (int i= 0; i < qualifiedCandidates.length; i++) {
+//					String[] qualifiedCandidate= qualifiedCandidates[i];
+//					if (	qualifiedCandidate[0].equals(packageName) &&
+//							qualifiedCandidate[1].equals(typeName))
+//						return true;
+//				}
+//			}
+//		}
 		return false;
 	}
 
@@ -942,9 +956,10 @@ public class Bindings {
 				}
 				return binding.getSuperclass();
 			}
-			if (binding.isCapture()) {
-				return binding.getWildcard();
-			}
+			// TODO JDT Bindings
+//			if (binding.isCapture()) {
+//				return binding.getWildcard();
+//			}
 			return binding;
 		}
 		return null;
@@ -967,13 +982,15 @@ public class Bindings {
 		if (binding.isPrimitive())
 			return binding;
 		binding= normalizeTypeBinding(binding);
-		if (binding == null || !binding.isWildcardType())
-			return binding;
-		if (binding.isUpperbound()) {
-			return binding.getBound();
-		} else {
-			return ast.resolveWellKnownType("Object"); //$NON-NLS-1$
-		}
+		return null;
+		// TODO JDT Bindings
+//		if (binding == null || !binding.isWildcardType())
+//			return binding;
+//		if (binding.isUpperbound()) {
+//			return binding.getBound();
+//		} else {
+//			return ast.resolveWellKnownType("Object"); //$NON-NLS-1$
+//		}
 	}
 
 	/**
@@ -998,12 +1015,13 @@ public class Bindings {
 	
 	public static String getRawName(ITypeBinding binding) {
 		String name= binding.getName();
-		if (binding.isParameterizedType() || binding.isGenericType()) {
-			int idx= name.indexOf('<');
-			if (idx != -1) {
-				return name.substring(0, idx);
-			}
-		}
+		// TODO JDT Bindings
+//		if (binding.isParameterizedType() || binding.isGenericType()) {
+//			int idx= name.indexOf('<');
+//			if (idx != -1) {
+//				return name.substring(0, idx);
+//			}
+//		}
 		return name;
 	}
 	
@@ -1015,22 +1033,24 @@ public class Bindings {
 			return EMPTY; 
 		}
 		
-		if (binding.isPrimitive() || binding.isNullType() || binding.isTypeVariable()) {
-			return binding.getName();
-		}
+		// TODO JDT Bindings
+//		if (binding.isPrimitive() || binding.isNullType() || binding.isTypeVariable()) {
+//			return binding.getName();
+//		}
 		
-		if (binding.isArray()) {
-			String elementTypeQualifiedName = getRawQualifiedName(binding.getElementType());
-			if (elementTypeQualifiedName.length() != 0) {
-				StringBuffer stringBuffer= new StringBuffer(elementTypeQualifiedName);
-				stringBuffer.append('[').append(']');
-				return stringBuffer.toString();
-			} else {
-				return EMPTY;
-			}
-		}
+		// TODO JDT Bindings
+//		if (binding.isArray()) {
+//			String elementTypeQualifiedName = getRawQualifiedName(binding.getElementType());
+//			if (elementTypeQualifiedName.length() != 0) {
+//				StringBuffer stringBuffer= new StringBuffer(elementTypeQualifiedName);
+//				stringBuffer.append('[').append(']');
+//				return stringBuffer.toString();
+//			} else {
+//				return EMPTY;
+//			}
+//		}
 		if (binding.isMember()) {
-			String outerName= getRawQualifiedName(binding.getDeclaringClass());
+			String outerName= getRawQualifiedName(binding.getDeclaringType());
 			if (outerName.length() > 0) {
 				StringBuffer buffer= new StringBuffer();
 				buffer.append(outerName);
@@ -1041,14 +1061,15 @@ public class Bindings {
 				return EMPTY;
 			}
 
-		} else if (binding.isTopLevel()) {
-			IPackageBinding packageBinding= binding.getPackage();
-			StringBuffer buffer= new StringBuffer();
-			if (packageBinding != null && packageBinding.getName().length() > 0) {
-				buffer.append(packageBinding.getName()).append('.');
-			}
-			buffer.append(getRawName(binding));
-			return buffer.toString();
+			// TODO JDT Bindings
+//		} else if (binding.isTopLevel()) {
+//			IPackageBinding packageBinding= binding.getPackage();
+//			StringBuffer buffer= new StringBuffer();
+//			if (packageBinding != null && packageBinding.getName().length() > 0) {
+//				buffer.append(packageBinding.getName()).append('.');
+//			}
+//			buffer.append(getRawName(binding));
+//			return buffer.toString();
 		}
 		return EMPTY;
 	}
@@ -1060,8 +1081,9 @@ public class Bindings {
 	 */
 	public static boolean isDeclarationBinding(IBinding binding) {
 		switch (binding.getKind()) {
-			case IBinding.TYPE:
-				return ((ITypeBinding) binding).getTypeDeclaration() == binding;
+		// TODO JDT Bindings
+//			case IBinding.TYPE:
+//				return ((ITypeBinding) binding).getTypeDeclaration() == binding;
 			case IBinding.VARIABLE:
 				return ((IVariableBinding) binding).getVariableDeclaration() == binding;
 			case IBinding.METHOD:
@@ -1073,8 +1095,9 @@ public class Bindings {
 	
 	public static IBinding getDeclaration(IBinding binding) {
 		switch (binding.getKind()) {
-			case IBinding.TYPE:
-				return ((ITypeBinding) binding).getTypeDeclaration();
+		// TODO JDT Bindings
+//			case IBinding.TYPE:
+//				return ((ITypeBinding) binding).getTypeDeclaration();
 			case IBinding.VARIABLE:
 				return ((IVariableBinding) binding).getVariableDeclaration();
 			case IBinding.METHOD:
@@ -1131,18 +1154,20 @@ public class Bindings {
 		if (overriddenReturn == null || overridableReturn == null)
 			return false;
 		
-		if (!overriddenReturn.getErasure().isSubTypeCompatible(overridableReturn.getErasure()))
-			return false;
+		// TODO JDT Bindings
+//		if (!overriddenReturn.getErasure().isSubTypeCompatible(overridableReturn.getErasure()))
+//			return false;
 		
 		ITypeBinding[] overriddenTypes= overridden.getParameterTypes();
 		ITypeBinding[] overridableTypes= overridable.getParameterTypes();
 		Assert.isTrue(overriddenTypes.length == overridableTypes.length);
-		for (int index= 0; index < overriddenTypes.length; index++) {
-			final ITypeBinding overridableErasure= overridableTypes[index].getErasure();
-			final ITypeBinding overriddenErasure= overriddenTypes[index].getErasure();
-			if (!overridableErasure.isSubTypeCompatible(overriddenErasure) || !overridableErasure.getKey().equals(overriddenErasure.getKey()))
-				return false;
-		}
+		// TODO JDT Bindings
+//		for (int index= 0; index < overriddenTypes.length; index++) {
+//			final ITypeBinding overridableErasure= overridableTypes[index].getErasure();
+//			final ITypeBinding overriddenErasure= overriddenTypes[index].getErasure();
+//			if (!overridableErasure.isSubTypeCompatible(overriddenErasure) || !overridableErasure.getKey().equals(overriddenErasure.getKey()))
+//				return false;
+//		}
 		ITypeBinding[] overriddenExceptions= overridden.getExceptionTypes();
 		ITypeBinding[] overridableExceptions= overridable.getExceptionTypes();
 		boolean checked= false;

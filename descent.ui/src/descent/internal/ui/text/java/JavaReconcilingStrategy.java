@@ -30,9 +30,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.core.ICompilationUnit;
-import descent.core.JavaCore;
 import descent.core.JavaModelException;
-import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
 import descent.internal.corext.dom.ASTNodes;
@@ -90,8 +88,7 @@ public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcili
 								boolean isASTNeeded= initialReconcile || JavaPlugin.getDefault().getASTProvider().isActive(unit);
 								// reconcile
 								if (fIsJavaReconcilingListener && isASTNeeded) {
-									String option = unit.getJavaProject().getOption(JavaCore.COMPILER_SOURCE, true);
-									int apiLevel = getApiLevel(option);
+									int apiLevel = unit.getJavaProject().getApiLevel();
 									ast[0]= unit.reconcile(apiLevel, true, ASTProvider.SHARED_AST_STATEMENT_RECOVERY, null, fProgressMonitor);
 									if (ast[0] != null) {
 										// mark as unmodifiable
@@ -112,19 +109,6 @@ public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcili
 							
 						} catch (JavaModelException ex) {
 							handleException(ex);
-						}
-					}
-					private int getApiLevel(String source) {
-						if (source == null || source.length() == 0) {
-							return AST.D2;
-						} else if (source.equals(JavaCore.VERSION_2_x)) {
-							return AST.D2;
-						} else if (source.equals(JavaCore.VERSION_1_x)) {
-							return AST.D1;
-						} else if (source.equals(JavaCore.VERSION_0_x)) {
-							return AST.D0;
-						} else {
-							return AST.D2;
 						}
 					}
 					public void handleException(Throwable ex) {

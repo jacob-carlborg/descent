@@ -204,9 +204,9 @@ public class JdtFlags {
 		} else if (binding instanceof IMethodBinding) {
 			declaringType= ((IMethodBinding) binding).getDeclaringClass();
 		} else if (binding instanceof ITypeBinding) {
-			declaringType= ((ITypeBinding) binding).getDeclaringClass();
+			declaringType= ((ITypeBinding) binding).getDeclaringType();
 		}
-		return declaringType != null && (declaringType.isInterface() || declaringType.isAnnotation());
+		return declaringType != null && (declaringType.isInterface());
 	}
 	
 	private static boolean isInterfaceOrAnnotationMember(Declaration bodyDeclaration) {

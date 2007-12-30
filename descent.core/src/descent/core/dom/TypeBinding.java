@@ -14,68 +14,60 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		this.bindingResolver = resolver;
 		this.key = key;
 	}
-
-	public String getBinaryName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ITypeBinding getBound() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	public ITypeBinding getComponentType() {
 		return null;
 	}
-
+	
 	public IVariableBinding[] getDeclaredFields() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	public IMethodBinding[] getDeclaredMethods() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	public int getDeclaredModifiers() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	
 	public ITypeBinding[] getDeclaredTypes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public ITypeBinding getDeclaringClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	public IMethodBinding getDeclaringMethod() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public int getDimensions() {
+	
+	public ITypeBinding getDeclaringType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public int getDimension() {
 		return 0;
 	}
-
-	public ITypeBinding getElementType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ITypeBinding getErasure() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	public ITypeBinding[] getInterfaces() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public String getKey() {
+		return key;
+	}
+
+	public ITypeBinding getKeyType() {
+		return null;
+	}
+
+	public int getKind() {
+		return TYPE;
 	}
 
 	public IPackageBinding getPackage() {
@@ -83,8 +75,16 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		return null;
 	}
 
+	public ITypeBinding[] getParametersTypes() {
+		return PrimitiveTypeBinding.NO_TYPES;
+	}
+
 	public String getQualifiedName() {
 		return ((IType) element).getFullyQualifiedName();
+	}
+
+	public ITypeBinding getReturnType() {
+		return null;
 	}
 
 	public ITypeBinding getSuperclass() {
@@ -92,42 +92,11 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		return null;
 	}
 
-	public ITypeBinding[] getTypeArguments() {
-		// TODO Auto-generated method stub
+	public ITypeBinding getValueType() {
 		return null;
-	}
-
-	public ITypeBinding[] getTypeBounds() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ITypeBinding getTypeDeclaration() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ITypeBinding[] getTypeParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ITypeBinding getWildcard() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public boolean isAnnotation() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public boolean isAnonymous() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isArray() {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -137,8 +106,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		return false;
 	}
 
-	public boolean isCapture() {
-		// TODO Auto-generated method stub
+	public boolean isAssociativeArray() {
 		return false;
 	}
 
@@ -156,6 +124,14 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		}
 	}
 
+	public boolean isDelegate() {
+		return false;
+	}
+
+	public boolean isDynamicArray() {
+		return false;
+	}
+
 	public boolean isEnum() {
 		try {
 			return ((IType) element).isEnum();
@@ -164,27 +140,18 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 			return false;
 		}
 	}
-	
-	public boolean isStruct() {
-		try {
-			return ((IType) element).isStruct();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
-	}
-	
-	public boolean isUnion() {
-		try {
-			return ((IType) element).isUnion();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
-	}
 
+	public boolean isEqualTo(IBinding binding) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 	public boolean isFromSource() {
 		return true;
+	}
+	
+	public boolean isFunction() {
+		return false;
 	}
 
 	public boolean isGenericType() {
@@ -225,16 +192,33 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		return false;
 	}
 
+	public boolean isPointer() {
+		return false;
+	}
+
 	public boolean isPrimitive() {
 		return false;
 	}
 
-	public boolean isRawType() {
+	public boolean isStaticArray() {
+		return false;
+	}
+
+	public boolean isStruct() {
+		try {
+			return ((IType) element).isStruct();
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
+	}
+
+	public boolean isSubTypeCompatible(ITypeBinding type) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public boolean isSubTypeCompatible(ITypeBinding type) {
+	public boolean isSynthetic() {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -244,42 +228,13 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		return false;
 	}
 
-	public boolean isTypeVariable() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isUpperbound() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isWildcardType() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public IAnnotationBinding[] getAnnotations() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public int getKind() {
-		return TYPE;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isSynthetic() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isUnion() {
+		try {
+			return ((IType) element).isUnion();
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
 	}
 
 }
