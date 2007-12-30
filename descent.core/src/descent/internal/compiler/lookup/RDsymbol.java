@@ -799,7 +799,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 		}
 	}
 	
-	protected String getTypeDeco() {
+	protected String getTypeDeco(String prefix) {
 		Stack<IDsymbol> stack = new Stack<IDsymbol>();
 		
 		IDsymbol current = this;
@@ -809,6 +809,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 		}
 		
 		StringBuilder sb = new StringBuilder();
+		sb.append(prefix);
 		while(!stack.isEmpty()) {
 			IDsymbol s = stack.pop();
 			char[] ident = s.ident().ident;

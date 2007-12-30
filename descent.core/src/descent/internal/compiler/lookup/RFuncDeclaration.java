@@ -238,5 +238,11 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	public IFuncDeclaration isFuncDeclaration() {
 		return this;
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return super.getSignature();
+	}
 
 }

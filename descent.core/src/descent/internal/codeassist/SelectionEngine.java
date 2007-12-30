@@ -13,8 +13,10 @@ import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -23,12 +25,15 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
+import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
+import descent.internal.core.LocalVariable;
 import descent.internal.core.util.Util;
 
 /*
@@ -108,10 +113,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 				if (node.resolvedSymbol.getJavaElement() != null) {
 					selectedElements.add(node.resolvedSymbol.getJavaElement());
 				} else {
-					addSignature(node.resolvedSymbol.getSignature());
+					add(node.resolvedSymbol.getSignature());
 				}
 			} else {
-				addType(node.resolvedType);
+				add(node.resolvedType);
 			}
 		}
 		return false;
@@ -120,7 +125,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(VarDeclaration node) {
 		if (isInRange(node.ident)) {
-			addSignature(node.getSignature());
+			add(node);
 			return false;
 		}
 		return true;
@@ -139,13 +144,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 		
 		switch(resolved.getNodeType()) {
 		case ASTDmdNode.VAR_EXP:
-			VarExp varExp = (VarExp) resolved;
-			IDeclaration var = varExp.var;
-			if (var.getJavaElement() != null) {
-				selectedElements.add(var.getJavaElement());
-			} else {
-				addSignature(var.getSignature());
-			}
+			add((VarExp) resolved);
+			break;
+		case ASTDmdNode.DOT_VAR_EXP:
+			add((DotVarExp) resolved);
+			break;
+		case ASTDmdNode.TYPE_EXP:
+			add(((TypeExp) resolved).type);
 			break;
 		}
 		
@@ -160,7 +165,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 				if (mod.getJavaElement() != null) {
 					selectedElements.add(mod.getJavaElement());
 				} else {
-					addSignature(mod.getSignature());
+					add(mod.getSignature());
 				}
 			}
 			return false;
@@ -168,14 +173,50 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return true;
 	}
 	
+	private void add(VarExp varExp) {
+		IDeclaration var = varExp.var;
+		if (var instanceof VarDeclaration) {
+			add((VarDeclaration) var);
+		} else if (var.getJavaElement() != null) {
+			selectedElements.add(var.getJavaElement());
+		} else {
+			add(var.getSignature());
+		}
+	}
+	
+	private void add(DotVarExp dotVarExp) {
+		IDeclaration decl = dotVarExp.var;
+		if (decl.getJavaElement() != null) {
+			selectedElements.add(decl.getJavaElement());
+		} else {
+			add(decl.getSignature());
+		}
+	}
+	
 	private boolean visitType(ASTDmdNode node, IdentifierExp ident, Type type) {
 		if (isInRange(ident)) {
-			addType(type);
+			add(type);
 		}
 		return isInRange(node);
 	}
 	
 	// Other utility methods
+	
+	private boolean isLocal(VarDeclaration node) {
+		return node.parent instanceof FuncDeclaration;
+	}
+	
+	private void add(VarDeclaration var) {
+		if (isLocal(var)) {
+			addLocalVar(var);
+		} else {
+			add(var.getSignature());
+		}
+	}
+	
+	private FuncDeclaration getParent(VarDeclaration var) {
+		return (FuncDeclaration) var.parent;
+	}
 	
 	private boolean isInRange(IdentifierExp ident) {
 		if (ident == null) {
@@ -192,14 +233,37 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return node.start <= offset && offset + length <= node.start + node.length;
 	}
 	
-	private void addType(Type type) {
+	private void addLocalVar(VarDeclaration var) {
+		FuncDeclaration parent = getParent(var);
+		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+		
+		selectedElements.add(
+			new LocalVariable(
+				func, 
+				var.ident.toString(),
+				var.start,
+				var.start + var.length - 1,
+				var.ident.start,
+				var.ident.start + var.ident.length - 1,
+				var.type.getSignature()));
+	}
+	
+	private void add(Type type) {
+		if (type == null) {
+			return;
+		}
+		
+		if (type.getJavaElement() != null) {
+			selectedElements.add(type.getJavaElement());
+		}
+		
 		IJavaElement result = finder.find(type.getSignature());
 		if (result != null) {
 			selectedElements.add(result);
 		}
 	}
 	
-	private void addSignature(String signature) {
+	private void add(String signature) {
 		IJavaElement result = finder.find(signature);
 		if (result != null) {
 			selectedElements.add(result);

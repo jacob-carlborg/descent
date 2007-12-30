@@ -25,7 +25,8 @@ public class DotIdExp extends UnaExp {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, sourceE1);
+			TreeVisitor.acceptChildren(visitor, ident);
 		}
 		visitor.endVisit(this);
 	}
@@ -37,6 +38,13 @@ public class DotIdExp extends UnaExp {
 	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
+		Expression e = semantic0(sc, context);
+		resolvedExpression = e;
+		ident.resolvedExpression = resolvedExpression;
+		return e;
+	}
+	
+	public Expression semantic0(Scope sc, SemanticContext context) {
 		Expression e;
 		Expression eleft;
 		Expression eright;

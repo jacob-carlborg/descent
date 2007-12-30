@@ -759,7 +759,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		info.initializationSource = ASTNodeEncoder.encodeExpression(node.value);
-		info.type = getSignature(node.value.type);
+		if (node.value != null) {
+			info.type = getSignature(node.value.type);
+		} else {
+			// anynoymous enums don't have type
+			info.type = CharOperation.NO_CHAR;
+		}
 		
 		requestor.enterField(info);
 		

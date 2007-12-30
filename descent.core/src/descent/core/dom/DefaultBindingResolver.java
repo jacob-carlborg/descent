@@ -313,13 +313,17 @@ public class DefaultBindingResolver extends BindingResolver {
 							i++;
 							c = signature.charAt(i);
 						}
-						String name = signature.substring(i, i + n);
-						current = JavaElementFinder.findChild(current, name);
-						if (current == null) {
-							// TODO signal error
-							break;
+						try {
+							String name = signature.substring(i, i + n);
+							current = JavaElementFinder.findChild(current, name);
+							if (current == null) {
+								// TODO signal error
+								break;
+							}
+							i += n - 1;
+						} catch (StringIndexOutOfBoundsException t) {
+							t.printStackTrace();
 						}
-						i += n - 1;
 					}
 					
 					if (current != null) {

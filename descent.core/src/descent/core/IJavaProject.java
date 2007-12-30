@@ -20,11 +20,10 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.dom.AST;
-import descent.core.dom.ASTNode;
 
 /**
  * A Java project represents a view of a project resource in terms of Java 

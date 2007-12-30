@@ -23,6 +23,7 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
+import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 
 public class RClassDeclaration extends RAggregateDeclaration implements
@@ -237,12 +238,15 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 	
 	@Override
+	public String mangle(SemanticContext context) {
+		return SemanticMixin.mangle(this, context);
+	}
+	
+	@Override
 	public Type type() {
 		if (type == null) {
 			type = new TypeClass(this);
-			if (type != null) {
-				type.deco = "C" + getTypeDeco();
-			}
+			type.deco = getTypeDeco("C");
 		}
 		return type;
 	}

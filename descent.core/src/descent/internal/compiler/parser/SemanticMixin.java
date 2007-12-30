@@ -647,5 +647,57 @@ public class SemanticMixin {
 		sb.append(aThis.ident());
 		return sb.toString();
 	}
+	
+	public static String mangle(IClassDeclaration aThis, SemanticContext context) {
+		IDsymbol parentsave = aThis.parent();
+
+		/* These are reserved to the compiler, so keep simple
+		 * names for them.
+		 */
+		if (ASTDmdNode.equals(aThis.ident(), Id.Exception)) {
+			if (aThis.parent().ident() != null
+					&& ASTDmdNode.equals(aThis.parent().ident(), Id.object)) {
+				aThis.parent(null);
+			}
+		} else if (ASTDmdNode.equals(aThis.ident(), Id.TypeInfo)
+				||
+				//		CharOperation.equals(ident.ident, Id.Exception) ||
+				ASTDmdNode.equals(aThis.ident(), Id.TypeInfo_Struct)
+				|| ASTDmdNode.equals(aThis.ident(), Id.TypeInfo_Class)
+				|| ASTDmdNode.equals(aThis.ident(), Id.TypeInfo_Typedef)
+				|| ASTDmdNode.equals(aThis.ident(), Id.TypeInfo_Tuple)
+				|| aThis == context.ClassDeclaration_object 
+				|| aThis == context.ClassDeclaration_classinfo
+				|| aThis == context.Module_moduleinfo
+				|| aThis.ident().toChars().startsWith("TypeInfo_")) {
+			aThis.parent(null);
+		}
+
+		String id = Dsymbol_mangle(aThis, context);
+		aThis.parent(parentsave);
+		return id;
+	}
+	
+	public static String Dsymbol_mangle(IDsymbol aThis, SemanticContext context) {
+		OutBuffer buf = new OutBuffer();
+		String id;
+
+		id = aThis.ident() != null ? aThis.ident().toChars() : aThis.toChars(context);
+		if (aThis.parent() != null) {
+			try {
+				String p = aThis.parent().mangle(context);
+				if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
+					p += 2;
+				}
+				buf.writestring(p);
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
+		}
+		buf.data.append(id.length())/*.append("u")*/.append(id);
+		id = buf.toChars();
+		buf.data = null;
+		return id;
+	}
 
 }

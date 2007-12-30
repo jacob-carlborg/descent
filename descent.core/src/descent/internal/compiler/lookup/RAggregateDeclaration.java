@@ -186,5 +186,10 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	public int structalign() {
 		return alignsize();
 	}
+	
+	@Override
+	public String getSignature() {
+		return type().getSignature();
+	}
 
 }

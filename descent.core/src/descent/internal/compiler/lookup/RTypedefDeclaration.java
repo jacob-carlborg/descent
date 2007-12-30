@@ -51,7 +51,8 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	public Type type() {
 		if (type == null) {
 			type = new TypeTypedef(this);
-			type.deco = getTypeDeco();
+			// TODO Descent is this ok?
+			type.deco = getTypeDeco("");
 		}
 		return type;
 	}

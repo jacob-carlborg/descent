@@ -30,7 +30,7 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 	public Type getType() {
 		if (type == null) {
 			type = new TypeEnum(this);
-			type.deco = 'E' + getTypeDeco();
+			type.deco = getTypeDeco("E");
 		}
 		return type;
 	}

@@ -1,6 +1,8 @@
 package descent.internal.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import descent.core.ICompilationUnit;
@@ -8,6 +10,7 @@ import descent.core.IConditional;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.JavaModelException;
@@ -40,7 +43,7 @@ public class JavaElementFinder {
 		corrections.put("C15TypeInfo_Struct", "C6object15TypeInfo_Struct");
 		corrections.put("C14TypeInfo_Tuple", "C6object14TypeInfo_Tuple");
 		corrections.put("C14TypeInfo_Const", "C6object14TypeInfo_Const");
-		corrections.put("C18TypeInfo_Invariant", "C6object18TypeInfo_Const");
+		corrections.put("C18TypeInfo_Invariant", "C6object18TypeInfo_Invariant");
 		corrections.put("C9Exception", "C6object9Exception");
 		
 		for(Map.Entry<String, String> kv : corrections.entrySet()) {
@@ -112,23 +115,38 @@ public class JavaElementFinder {
 				case 'S': // struct
 				case 'T': // typedef
 				case 'Q': // var, alias, typedef
+				case 'O': // function
 					IJavaElement current = javaProject;
+					String name = null;
 					
-					for(int i = 1; i < signature.length(); i++) {
+					int i;
+					for(i = 1; i < signature.length(); i++) {
 						char c = signature.charAt(i);
+						if (!Character.isDigit(c)) {
+							break;
+						}
 						int n = 0;
 						while(Character.isDigit(c)) {
 							n = 10 * n + (c - '0');
 							i++;
 							c = signature.charAt(i);
 						}
-						String name = signature.substring(i, i + n);
+						name = signature.substring(i, i + n);
 						current = findChild(current, name);
 						if (current == null) {
 							// TODO signal error
 							break;
 						}
 						i += n - 1;
+					}
+					
+					// If it's a function, search it using the parameters
+					if (first == 'O' && current != null && 
+							current.getParent() != null && 
+							current instanceof IParent &&
+							name != null) {
+						String[] paramsAndRetType = getParametersAndReturnType(signature.substring(i + 1));
+						current = findFunction((IParent) current.getParent(), name, paramsAndRetType);
 					}
 					
 					return current;
@@ -139,8 +157,112 @@ public class JavaElementFinder {
 		}
 		
 		return null;
+	}	
+
+	private String[] getParametersAndReturnType(String signature) {
+		List<String> types = new ArrayList<String>();
+		for(int i = 0; i < signature.length(); i++) {
+			char c = signature.charAt(i);
+			if (c == 'X' || c == 'Y' || c == 'Z') {
+				continue;
+			}
+			int start = i;
+			int end = getEnd(signature, i);
+			types.add(signature.substring(start, end));
+			i = end - 1;
+		}
+		return (String[]) types.toArray(new String[types.size()]);
 	}
 	
+	private int getEnd(String signature, int i) {
+		char c = signature.charAt(i);
+		switch(c) {
+		case 'E': // enum
+		case 'C': // class
+		case 'S': // struct
+			i++;
+			c = signature.charAt(i);
+			if (Character.isDigit(c)) {				
+				while(Character.isDigit(c)) {
+					int n = 0;
+					while(Character.isDigit(c)) {
+						n = 10 * n + (c - '0');
+						i++;
+						c = signature.charAt(i);
+					}
+					i += n - 1;
+				}
+			}
+			return i + 1;
+		case 'D': // delegate
+		case 'P': // pointer
+		case 'A': // dynamic array
+			return getEnd(signature, i + 1);
+		case 'G': // static array
+			for(i = 1; i < signature.length(); i++) {
+				c = signature.charAt(i);
+				while(Character.isDigit(c)) {
+					i++;
+					c = signature.charAt(i);
+				}
+				break;
+			}
+			return getEnd(signature, i);
+		case 'H': // associative array
+			i = getEnd(signature, i + 1);
+			i = getEnd(signature, i);
+			return i;
+		case 'F': // Type function
+		case 'U':
+		case 'W':
+		case 'V':
+		case 'R':
+			i = getEnd(signature, i + 1);
+			
+			while(i < signature.length() && 
+					signature.charAt(i) != 'X' &&
+					signature.charAt(i) != 'Y' &&
+					signature.charAt(i) != 'Z') {
+				i = getEnd(signature, i + 1);
+			}
+
+			i = getEnd(signature, i + 1);
+			return i + 1;
+		default:
+			// Primitive type, or X, Y, Z
+			return i + 1;
+		}
+	}
+	
+	private IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) throws JavaModelException {
+		for(IJavaElement child : parent.getChildren()) {
+			if (mustSearchInChildren(child)) {
+				IJavaElement result = findFunction(parent, name, paramsAndRetTypes);
+				if (result != null) {
+					return result;
+				}
+			}
+			
+			if (child.getElementType() == IJavaElement.METHOD &&
+					child.getElementName().equals(name)) {
+				IMethod method = (IMethod) child;
+				String retType = method.getReturnType();
+				String[] paramTypes = method.getParameterTypes();
+				if (paramTypes.length == paramsAndRetTypes.length - 1) {
+					if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
+						for(int i = 0; i < paramTypes.length; i++) {
+							if (!paramTypes[i].equals(paramsAndRetTypes[i])) {
+								continue;
+							}
+						}
+						return method;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public static IJavaElement findChild(IJavaElement current, String name) throws JavaModelException {
 		switch(current.getElementType()) {
 		case IJavaElement.JAVA_PROJECT:

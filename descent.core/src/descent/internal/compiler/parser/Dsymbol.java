@@ -379,21 +379,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 	
 	protected String Dsymbol_mangle(SemanticContext context) {
-		OutBuffer buf = new OutBuffer();
-		String id;
-
-		id = ident != null ? ident.toChars() : toChars(context);
-		if (parent != null) {
-			String p = parent.mangle(context);
-			if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
-				p += 2;
-			}
-			buf.writestring(p);
-		}
-		buf.data.append(id.length())/*.append("u")*/.append(id);
-		id = buf.toChars();
-		buf.data = null;
-		return id;
+		return SemanticMixin.Dsymbol_mangle(this, context);
 	}
 
 	public boolean needThis() {

@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.core.util.Util;
 
 public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
@@ -57,6 +58,11 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 		// TODO Auto-generated method stub
 
 	}	
+	
+	@Override
+	public String mangle(SemanticContext context) {
+		return SemanticMixin.Dsymbol_mangle(this, context);
+	}
 
 	public Dsymbols members() {
 		if (members == null) {
@@ -130,6 +136,11 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	@Override
 	public IScopeDsymbol isScopeDsymbol() {
 		return this;
+	}
+	
+	@Override
+	public String getSignature() {
+		return type().getSignature();
 	}
 
 }

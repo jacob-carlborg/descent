@@ -736,33 +736,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 
 	@Override
 	public String mangle(SemanticContext context) {
-		IDsymbol parentsave = parent;
-
-		/* These are reserved to the compiler, so keep simple
-		 * names for them.
-		 */
-		if (equals(ident, Id.Exception)) {
-			if (parent.ident() != null
-					&& equals(parent.ident(), Id.object)) {
-				parent = null;
-			}
-		} else if (equals(ident, Id.TypeInfo)
-				||
-				//		CharOperation.equals(ident.ident, Id.Exception) ||
-				equals(ident, Id.TypeInfo_Struct)
-				|| equals(ident, Id.TypeInfo_Class)
-				|| equals(ident, Id.TypeInfo_Typedef)
-				|| equals(ident, Id.TypeInfo_Tuple)
-				|| this == context.ClassDeclaration_object 
-				|| this == context.ClassDeclaration_classinfo
-				|| this == context.Module_moduleinfo
-				|| ident.toChars().startsWith("TypeInfo_")) {
-			parent = null;
-		}
-
-		String id = Dsymbol_mangle(context);
-		parent = parentsave;
-		return id;
+		return SemanticMixin.mangle(this, context);
 	}
 
 	public String getSignature() {

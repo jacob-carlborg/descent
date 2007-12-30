@@ -38,9 +38,7 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	public Type type() {
 		if (type == null) {
 			type = new TypeStruct(this);
-			if (type != null) {
-				type.deco = "S" + getTypeDeco();
-			}
+			type.deco = getTypeDeco("S");
 		}
 		return type;
 	}
