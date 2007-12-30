@@ -1,13 +1,14 @@
 package descent.tests.binding;
 
 import descent.core.ICompilationUnit;
-import descent.core.IType;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IMethodBinding;
 import descent.core.dom.IPackageBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
@@ -46,8 +47,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals("test.Foo", binding.getQualifiedName());
 		assertEquals(true, binding.isFromSource());
 		
-		IType element = (IType) binding.getJavaElement();
-		assertNotNull(element);
+		assertEquals(lastCompilationUnit.getAllTypes()[0], binding.getJavaElement());
 		
 		// The binding for the name of the class should be the same
 		assertSame(binding, agg.getName().resolveBinding());
@@ -85,8 +85,7 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals("test.Foo", binding.getQualifiedName());
 		assertEquals(true, binding.isFromSource());
 		
-		IType element = (IType) binding.getJavaElement();
-		assertNotNull(element);
+		assertEquals(lastCompilationUnit.getAllTypes()[0], binding.getJavaElement());
 		
 		// The binding for the name of the class should be the same
 		assertSame(binding, agg.getName().resolveBinding());
@@ -109,13 +108,14 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
 		assertEquals(true, typeBinding.isFromSource());
 		
-		IType element = (IType) typeBinding.getJavaElement();
-		assertNotNull(element);
+		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 		
 		IVariableBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
 		assertEquals("Q4test1f", varBinding.getKey());
+		
+		assertEquals(getVariable(lastCompilationUnit, 0), varBinding.getJavaElement());
 		
 		assertSame(typeBinding, var.getType().resolveBinding());
 		assertSame(varBinding, fragment.getName().resolveBinding());
@@ -140,13 +140,14 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
 		assertEquals(true, typeBinding.isFromSource());
 		
-		IType element = (IType) typeBinding.getJavaElement();
-		assertNotNull(element);
+		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 		
 		IVariableBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
 		assertEquals("Q4test3Foo1f", varBinding.getKey());
+		
+		assertEquals(lastCompilationUnit.getAllTypes()[0].getChildren()[0], varBinding.getJavaElement());
 		
 		assertSame(typeBinding, var.getType().resolveBinding());
 		assertSame(varBinding, fragment.getName().resolveBinding());
@@ -170,20 +171,21 @@ public class Binding_Test extends AbstractModelTest {
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
 		assertEquals(true, typeBinding.isFromSource());
 		
-		IType element = (IType) typeBinding.getJavaElement();
-		assertNotNull(element);
+		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 		
 		IVariableBinding varBinding = member.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("one", varBinding.getName());
 		assertTrue(varBinding.isEnumConstant());
 		
+		assertEquals(lastCompilationUnit.getAllTypes()[0].getChildren()[0], varBinding.getJavaElement());
+		
 		assertSame(typeBinding, varBinding.getType());
 		assertSame(varBinding, member.getName().resolveBinding());
 	}
 	
 	public void testTypeBindingInFqnVar() throws Exception {
-		createCU("imported.d", "class Foo { }");
+		ICompilationUnit imported = createCompilationUnit("imported.d", "class Foo { }");
 		
 		CompilationUnit unit = createCU("test.d", "import imported; imported.Foo f;");
 		VariableDeclaration var = (VariableDeclaration) unit.declarations().get(1);
@@ -191,6 +193,8 @@ public class Binding_Test extends AbstractModelTest {
 		
 		ITypeBinding typeBinding = qType.resolveBinding();
 		assertNotNull(typeBinding);
+		
+		assertEquals(imported.getAllTypes()[0], typeBinding.getJavaElement());
 		
 		SimpleType type = (SimpleType) qType.getType();
 		assertSame(typeBinding, type.resolveBinding());
@@ -206,6 +210,8 @@ public class Binding_Test extends AbstractModelTest {
 		Import imp = importDeclaration.imports().get(0);
 		IPackageBinding binding = imp.resolveBinding();
 		assertNotNull(binding);
+		
+		assertEquals(imported, binding.getJavaElement());
 		
 		assertEquals("8imported", binding.getKey());
 		assertEquals(imported, binding.getJavaElement());
@@ -225,6 +231,8 @@ public class Binding_Test extends AbstractModelTest {
 		IPackageBinding binding = imp.resolveBinding();
 		assertNotNull(binding);
 		
+		assertEquals(imported, binding.getJavaElement());
+		
 		assertEquals("4pack8imported", binding.getKey());
 		assertEquals(imported, binding.getJavaElement());
 		assertEquals("pack.imported", binding.getName());
@@ -241,11 +249,30 @@ public class Binding_Test extends AbstractModelTest {
 		assertSame(binding, qName.getName().resolveBinding());
 	}
 	
+	public void testFunctionBinding() throws Exception {
+		CompilationUnit unit = createCU("test.d", "int foo(char x) { }");
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		IMethodBinding binding = func.resolveBinding();
+		
+		assertEquals("foo", binding.getName());
+		assertEquals(getFunction(lastCompilationUnit, 0), binding.getJavaElement());
+		
+		ITypeBinding retType = binding.getReturnType();
+		assertEquals("i", retType.getKey());
+		
+		ITypeBinding[] params = binding.getParameterTypes();
+		assertEquals(1, params.length);
+		assertEquals("a", params[0].getKey());
+		
+		assertSame(binding, func.getName().resolveBinding());
+	}
+	
+	private ICompilationUnit lastCompilationUnit;
 	protected CompilationUnit createCU(String filename, String source) throws Exception {
-		ICompilationUnit unitElem = createCompilationUnit(filename, source);
+		lastCompilationUnit = createCompilationUnit(filename, source);
 		
 		ASTParser parser = ASTParser.newParser(AST.D2);
-		parser.setSource(unitElem);
+		parser.setSource(lastCompilationUnit);
 		parser.setResolveBindings(true);
 		return (CompilationUnit) parser.createAST(null);
 	}

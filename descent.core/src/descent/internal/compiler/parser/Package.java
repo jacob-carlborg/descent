@@ -68,4 +68,9 @@ public class Package extends ScopeDsymbol implements IPackage {
 		return "package";
 	}
 	
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		// empty
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import descent.core.Flags;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
@@ -12,12 +13,14 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
+import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
@@ -27,6 +30,7 @@ import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeIdentifier;
+import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
@@ -132,8 +136,52 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	@Override
+	public boolean visit(AliasDeclaration node) {
+		if (isInRange(node.ident)) {
+			add(node);
+			return false;
+		} else if (isInRange(node.sourceType)) {
+			IDsymbol sym = node.aliassym;
+			if (sym.getJavaElement() != null) {
+				selectedElements.add(sym.getJavaElement());
+			} else {
+				add(sym.getSignature());
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypedefDeclaration node) {
+		if (isInRange(node.ident)) {
+			add(node);
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean visit(FuncDeclaration node) {
+		if (isInRange(node.ident)) {
+			add(node.getSignature());
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
 	public boolean visit(IdentifierExp node) {
 		if (!isInRange(node)) {
+			return false;
+		}
+		
+		if (node.resolvedSymbol != null) {
+			IDsymbol sym = node.resolvedSymbol;
+			if (sym.getJavaElement() != null) {
+				selectedElements.add(sym.getJavaElement());
+			} else {
+				add(sym.getSignature());
+			}
 			return false;
 		}
 		
@@ -175,7 +223,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 	
 	private void add(VarExp varExp) {
 		IDeclaration var = varExp.var;
-		if (var instanceof VarDeclaration) {
+		if (var instanceof FuncDeclaration) {
+			add(((FuncDeclaration) var).getSignature());
+		} else if (var instanceof VarDeclaration) {
 			add((VarDeclaration) var);
 		} else if (var.getJavaElement() != null) {
 			selectedElements.add(var.getJavaElement());
@@ -202,7 +252,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	
 	// Other utility methods
 	
-	private boolean isLocal(VarDeclaration node) {
+	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
 		return node.parent instanceof FuncDeclaration;
 	}
 	
@@ -214,8 +264,20 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 	}
 	
-	private FuncDeclaration getParent(VarDeclaration var) {
-		return (FuncDeclaration) var.parent;
+	private void add(AliasDeclaration alias) {
+		if (isLocal(alias)) {
+			addLocalAlias(alias);
+		} else {
+			add(alias.getSignature());
+		}
+	}
+	
+	private void add(TypedefDeclaration typedef) {
+		if (isLocal(typedef)) {
+			addLocalTypedef(typedef);
+		} else {
+			add(typedef.getSignature());
+		}
 	}
 	
 	private boolean isInRange(IdentifierExp ident) {
@@ -234,7 +296,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void addLocalVar(VarDeclaration var) {
-		FuncDeclaration parent = getParent(var);
+		FuncDeclaration parent = (FuncDeclaration) var.parent;
 		JavaElement func = (JavaElement) finder.find(parent.getSignature());
 		
 		selectedElements.add(
@@ -245,7 +307,40 @@ public class SelectionEngine extends AstVisitorAdapter {
 				var.start + var.length - 1,
 				var.ident.start,
 				var.ident.start + var.ident.length - 1,
-				var.type.getSignature()));
+				var.type.getSignature(),
+				Flags.AccDefault));
+	}
+	
+	private void addLocalAlias(AliasDeclaration var) {
+		FuncDeclaration parent = (FuncDeclaration) var.parent;
+		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+		
+		selectedElements.add(
+			new LocalVariable(
+				func, 
+				var.ident.toString(),
+				var.start,
+				var.start + var.length - 1,
+				var.ident.start,
+				var.ident.start + var.ident.length - 1,
+				var.type.getSignature(),
+				Flags.AccAlias));
+	}
+	
+	private void addLocalTypedef(TypedefDeclaration var) {
+		FuncDeclaration parent = (FuncDeclaration) var.parent;
+		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+		
+		selectedElements.add(
+			new LocalVariable(
+				func, 
+				var.ident.toString(),
+				var.start,
+				var.start + var.length - 1,
+				var.ident.start,
+				var.ident.start + var.ident.length - 1,
+				var.type.getSignature(),
+				Flags.AccTypedef));
 	}
 	
 	private void add(Type type) {
@@ -255,6 +350,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		
 		if (type.getJavaElement() != null) {
 			selectedElements.add(type.getJavaElement());
+			return;
 		}
 		
 		IJavaElement result = finder.find(type.getSignature());

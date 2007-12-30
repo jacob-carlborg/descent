@@ -1520,6 +1520,11 @@ public class ASTConverter {
 		convertArguments(b.arguments(), ty.sourceParameters);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1688,8 +1693,8 @@ public class ASTConverter {
 		if (a.sourceMemtype != null) {
 			b.setBaseType(convert(a.sourceMemtype));
 		}
-		if (a.sourceMembers != null) {
-			for(IDsymbol isymbol : a.sourceMembers) {
+		if (a.members != null) {
+			for(IDsymbol isymbol : a.members) {
 				Dsymbol symbol = (Dsymbol) isymbol; // SEMANTIC
 				descent.core.dom.EnumMember convertedMember = convert((EnumMember) symbol);
 				if (convertedMember != null) {

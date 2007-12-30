@@ -29,6 +29,7 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 	public int declarationSourceStart, declarationSourceEnd;
 	public int nameStart, nameEnd;
 	String typeSignature;
+	long modifiers;
 	
 	public LocalVariable(
 			JavaElement parent, 
@@ -37,7 +38,8 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 			int declarationSourceEnd,
 			int nameStart, 
 			int nameEnd,
-			String typeSignature) {
+			String typeSignature,
+			long modifiers) {
 		
 		super(parent);
 		this.name = name;
@@ -46,6 +48,7 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 		this.nameStart = nameStart;
 		this.nameEnd = nameEnd;
 		this.typeSignature = typeSignature;
+		this.modifiers = modifiers;
 	}
 
 	protected void closing(Object info) {
@@ -179,6 +182,18 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 	public boolean isStructureKnown() throws JavaModelException {
         return true;
     }
+	
+	public boolean isAlias() {
+		return (modifiers & Flags.AccAlias) != 0;
+	}
+	
+	public boolean isTypedef() {
+		return (modifiers & Flags.AccTypedef) != 0;
+	}
+	
+	public boolean isVariable() {
+		return !isAlias() && !isTypedef();
+	}
 	
 	protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean showResolvedInfo) {
 		buffer.append(this.tabString(tab));

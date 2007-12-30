@@ -15,15 +15,15 @@ public abstract class JavaElementBasedBinding implements IBinding {
 		this.element = element;		
 	}
 	
-	public IJavaElement getJavaElement() {
+	public final IJavaElement getJavaElement() {
 		return element;
 	}
 	
-	public String getName() {
+	public final String getName() {
 		return element.getElementName();
 	}
 	
-	public long getModifiers() {
+	public final long getModifiers() {
 		if (element instanceof IMember) {
 			try {
 				return ((IMember) element).getFlags();
@@ -34,7 +34,7 @@ public abstract class JavaElementBasedBinding implements IBinding {
 		return 0;
 	}
 	
-	public boolean isDeprecated() {
+	public final boolean isDeprecated() {
 		return (getModifiers() & Modifier.DEPRECATED) != 0;
 	}
 

@@ -418,7 +418,7 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 
 	public void semantic(Scope sc, SemanticContext context) {
-		// throw new IllegalStateException("No semantic routine for " + this);
+		throw new IllegalStateException("No semantic routine for " + this);
 	}
 
 	public void semantic2(Scope sc, SemanticContext context) {

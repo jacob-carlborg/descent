@@ -409,8 +409,9 @@ public class RDsymbol extends RNode implements IDsymbol {
 		try {
 			IJavaElement[] children = parent.getChildren();
 			for(IJavaElement child : children) {
-				if (JavaElementFinder.mustSearchInChildren(child)) {
-					IDsymbol result = searchInChildren((IParent) child, ident, sident);
+				IParent searchInChildren = JavaElementFinder.mustSearchInChildren(child);
+				if (searchInChildren != null) {
+					IDsymbol result = searchInChildren(searchInChildren, ident, sident);
 					if (result != null) {
 						return result;
 					}

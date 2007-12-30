@@ -121,5 +121,28 @@ public abstract class AbstractModelTest extends TestCase {
 	protected void build() throws CoreException {
 		javaProject.getProject().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, null);
 	}
+	
+	protected IJavaElement getVariable(ICompilationUnit unit, int num) throws Exception {
+		return getElement(unit, num, IJavaElement.FIELD);
+	}
+	
+	protected IJavaElement getFunction(ICompilationUnit unit, int num) throws Exception {
+		return getElement(unit, num, IJavaElement.METHOD);
+	}
+	
+	protected IJavaElement getElement(ICompilationUnit unit, int num, int type) throws Exception {
+		int count = 0;
+		
+		for(IJavaElement child : unit.getChildren()) {
+			if (child.getElementType() == type) {
+				if (count == num) {
+					return child;
+				} else {
+					count++;
+				}
+			}
+		}
+		return null;
+	}
 
 }

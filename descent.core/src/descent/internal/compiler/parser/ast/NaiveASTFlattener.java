@@ -3050,7 +3050,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(VarExp node) {
-		if (node.var.ident() != null) {
+		if (node.var.ident() != null && node.var.ident().ident != null) {
 			appendStartCompilerNode();
 			this.buffer.append(node.var.ident().ident);
 			appendEndCompilerNode();

@@ -52,4 +52,22 @@ public interface ILocalVariable extends IJavaElement, ISourceReference {
 	 * @see Signature
 	 */
 	String getTypeSignature();
+	
+	/**
+	 * Determines if this local field is a variable.
+	 * @return if this local field is a variable
+	 */
+	boolean isVariable();
+	
+	/**
+	 * Determines if this local field is an alias.
+	 * @return if this local field is an alias
+	 */
+	boolean isAlias();
+	
+	/**
+	 * Determines if this local field is a typedef.
+	 * @return if this local field is a typedef
+	 */
+	boolean isTypedef();
 }

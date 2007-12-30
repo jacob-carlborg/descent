@@ -1866,40 +1866,42 @@ public static char[] getSimpleName(char[] name) {
  * @exception NullPointerException if name is null
  */
 public static String getSimpleName(String name) {
-	int lastDot = -1, lastGenericStart = -1, lastGenericEnd = -1;
-	int depth = 0;
-	int length = name.length();
-	lastDotLookup: for (int i = length -1; i >= 0; i--) {
-		switch (name.charAt(i)) {
-			case '.':
-				if (depth == 0) {
-					lastDot = i;
-					break lastDotLookup;
-				}
-				break;
-			case '<':
-				depth--;
-				if (depth == 0) lastGenericStart = i;
-				break;
-			case '>':
-				if (depth == 0) lastGenericEnd = i;
-				depth++;
-				break;
-		}
-	}
-	if (lastGenericStart < 0) {
-		if (lastDot < 0) {
-			return name;
-		}
-		return name.substring(lastDot + 1, length);
-	}
-	StringBuffer buffer = new StringBuffer(10);
-	char[] nameChars = name.toCharArray();
-	int nameStart = lastDot < 0 ? 0 : lastDot+1;
-	buffer.append(nameChars, nameStart, lastGenericStart - nameStart);
-	appendArgumentSimpleNames(nameChars, lastGenericStart, lastGenericEnd, buffer);
-	buffer.append(nameChars, lastGenericEnd+1, length-lastGenericEnd-1); // copy trailing portion, may contain dimensions	
-	return buffer.toString();
+	return name;
+	// TODO JDT signature
+//	int lastDot = -1, lastGenericStart = -1, lastGenericEnd = -1;
+//	int depth = 0;
+//	int length = name.length();
+//	lastDotLookup: for (int i = length -1; i >= 0; i--) {
+//		switch (name.charAt(i)) {
+//			case '.':
+//				if (depth == 0) {
+//					lastDot = i;
+//					break lastDotLookup;
+//				}
+//				break;
+//			case '<':
+//				depth--;
+//				if (depth == 0) lastGenericStart = i;
+//				break;
+//			case '>':
+//				if (depth == 0) lastGenericEnd = i;
+//				depth++;
+//				break;
+//		}
+//	}
+//	if (lastGenericStart < 0) {
+//		if (lastDot < 0) {
+//			return name;
+//		}
+//		return name.substring(lastDot + 1, length);
+//	}
+//	StringBuffer buffer = new StringBuffer(10);
+//	char[] nameChars = name.toCharArray();
+//	int nameStart = lastDot < 0 ? 0 : lastDot+1;
+//	buffer.append(nameChars, nameStart, lastGenericStart - nameStart);
+//	appendArgumentSimpleNames(nameChars, lastGenericStart, lastGenericEnd, buffer);
+//	buffer.append(nameChars, lastGenericEnd+1, length-lastGenericEnd-1); // copy trailing portion, may contain dimensions	
+//	return buffer.toString();
 }
 
 private static void appendSimpleName(char[] name, int start, int end, StringBuffer buffer) {

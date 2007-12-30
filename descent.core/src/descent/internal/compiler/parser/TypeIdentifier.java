@@ -14,18 +14,18 @@ public class TypeIdentifier extends TypeQualified {
 	public IdentifierExp ident;
 	
 	/*
-	 * Once the semantic pass is done, the resolved type is kept in
-	 * this variable. This is useful for linking source with resolution. 
-	 */
-	public Type resolvedType;
-	
-	/*
 	 * An identifier may refer to an alias, like string, and the
 	 * resolved type will be pointing to char[]. We would really like
 	 * to know it was pointing to the alias, so we keep a reference
 	 * to it here, if any.
 	 */
 	public IDsymbol resolvedSymbol;
+	
+	/*
+	 * Once the semantic pass is done, the resolved type is kept in
+	 * this variable. This is useful for linking source with resolution. 
+	 */
+	public Type resolvedType;
 
 	public TypeIdentifier(Loc loc, char[] ident) {
 		this(loc, new IdentifierExp(loc, ident));

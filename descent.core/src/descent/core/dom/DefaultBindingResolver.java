@@ -9,6 +9,8 @@ import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
+import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -16,6 +18,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
@@ -169,6 +172,11 @@ public class DefaultBindingResolver extends BindingResolver {
 					return resolveName(qName);
 				}
 				break;
+			case ASTNode.FUNCTION_DECLARATION:
+				if (name.getLocationInParent() == FunctionDeclaration.NAME_PROPERTY) {
+					return resolveMethod((FunctionDeclaration) parent);
+				}
+				break;
 			default:
 				if (parent instanceof descent.core.dom.Type) {
 					return resolveType((descent.core.dom.Type) parent);
@@ -263,6 +271,17 @@ public class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 	
+	@Override
+	IMethodBinding resolveMethod(FunctionDeclaration method) {
+		ASTDmdNode old = newAstToOldAst.get(method);
+		if (!(old instanceof FuncDeclaration)) {
+			return null;
+		}
+		
+		FuncDeclaration func = (FuncDeclaration) old;
+		return (IMethodBinding) resolveBinding(method, func.getSignature()); 
+	}
+	
 	/*
 	 * Method declared on BindingResolver.
 	 */
@@ -301,12 +320,17 @@ public class DefaultBindingResolver extends BindingResolver {
 				case 'C': // class
 				case 'S': // struct
 				case 'T': // typedef
-				case 'Q': { // var, alias, typedef
+				case 'Q': // var, alias, typedef
+				case 'O': { // function 
 					IJavaElement current = javaProject;
+					String name = null;
 					
 					int i;
 					for(i = 1; i < signature.length(); i++) {
 						char c = signature.charAt(i);
+						if (!Character.isDigit(c)) {
+							break;
+						}
 						int n = 0;
 						while(Character.isDigit(c)) {
 							n = 10 * n + (c - '0');
@@ -314,7 +338,7 @@ public class DefaultBindingResolver extends BindingResolver {
 							c = signature.charAt(i);
 						}
 						try {
-							String name = signature.substring(i, i + n);
+							name = signature.substring(i, i + n);
 							current = JavaElementFinder.findChild(current, name);
 							if (current == null) {
 								// TODO signal error
@@ -326,7 +350,18 @@ public class DefaultBindingResolver extends BindingResolver {
 						}
 					}
 					
-					if (current != null) {
+					// If it's a function, search it using the parameters
+					if (first == 'O' && current != null && 
+							current.getParent() != null && 
+							current instanceof IParent &&
+							name != null) {
+						String[] paramsAndRetType = JavaElementFinder.getParametersAndReturnType(signature.substring(i + 1));
+						current = JavaElementFinder.findFunction((IParent) current.getParent(), name, paramsAndRetType);
+						if (current != null && current instanceof IMethod) {
+							// TODO the signature passed here is wrong!
+							binding = new MethodBinding(this, (IMethod) current, signature);
+						}
+					} else if (current != null) {
 						if (current instanceof IType) {
 							binding = new TypeBinding(this, (IType) current, JavaElementFinder.uncorrect(signature.substring(0, i)));
 							

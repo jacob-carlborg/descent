@@ -225,7 +225,8 @@ public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento,
 			memento.nextToken(); // JEM_COUNT
 			if (!memento.hasMoreTokens()) return this;
 			String typeSignature = memento.nextToken();
-			return new LocalVariable(this, varName, declarationStart, declarationEnd, nameStart, nameEnd, typeSignature);
+			// TODO Descent alias, typedef or var?
+			return new LocalVariable(this, varName, declarationStart, declarationEnd, nameStart, nameEnd, typeSignature, 0);
 		case JEM_TYPE_PARAMETER:
 			if (!memento.hasMoreTokens()) return this;
 			String typeParameterName = memento.nextToken();

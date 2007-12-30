@@ -159,7 +159,12 @@ public class JavaElementFinder {
 		return null;
 	}	
 
-	private String[] getParametersAndReturnType(String signature) {
+	/**
+	 * Returns the parameters and return types of a function signature.
+	 * The function signature must not start with the starting F (it must
+	 * start with the immediately next character).
+	 */
+	public static String[] getParametersAndReturnType(String signature) {
 		List<String> types = new ArrayList<String>();
 		for(int i = 0; i < signature.length(); i++) {
 			char c = signature.charAt(i);
@@ -174,7 +179,7 @@ public class JavaElementFinder {
 		return (String[]) types.toArray(new String[types.size()]);
 	}
 	
-	private int getEnd(String signature, int i) {
+	private static int getEnd(String signature, int i) {
 		char c = signature.charAt(i);
 		switch(c) {
 		case 'E': // enum
@@ -234,10 +239,16 @@ public class JavaElementFinder {
 		}
 	}
 	
-	private IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) throws JavaModelException {
+	/**
+	 * Finds a function in the given parent with the given name and parameter
+	 * and types signatures.
+	 * @see #getParametersAndReturnType(String)
+	 */
+	public static IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
-			if (mustSearchInChildren(child)) {
-				IJavaElement result = findFunction(parent, name, paramsAndRetTypes);
+			IParent searchInChildren = mustSearchInChildren(child);
+			if (searchInChildren != null) {
+				IJavaElement result = findFunction(searchInChildren, name, paramsAndRetTypes);
 				if (result != null) {
 					return result;
 				}
@@ -280,8 +291,9 @@ public class JavaElementFinder {
 	
 	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
-			if (mustSearchInChildren(child)) {
-				IJavaElement result = searchInChildren((IParent) child, name);
+			IParent searchInChildren = mustSearchInChildren(child);
+			if (searchInChildren != null) {
+				IJavaElement result = searchInChildren(searchInChildren, name);
 				if (result != null) {
 					return result;
 				}
@@ -337,18 +349,20 @@ public class JavaElementFinder {
 	 * if element is an align declaration, this method returns true. If it's
 	 * a version condition, the current version identifiers are checked to see
 	 * if any of them is the one in the version condition, etc.
+	 * 
+	 * If it must be searched, the element to search is returned.
 	 */
-	public static boolean mustSearchInChildren(IJavaElement element) {
+	public static IParent mustSearchInChildren(IJavaElement element) {
 		if (!(element instanceof IParent)) {
-			return false;
+			return null;
 		}
 		
 		try {
 			if (element.getElementType() == IJavaElement.INITIALIZER) {
 				IInitializer init = (IInitializer) element;
 				// TODO consider others
-				if (init.isAlign()) {
-					return true;
+				if (init.isAlign() || init.isExtern()) {
+					return init;
 				}
 			}
 			
@@ -356,11 +370,25 @@ public class JavaElementFinder {
 			if (element instanceof IConditional) {
 				IConditional conditional = (IConditional) element;
 				if (conditional.isVersionDeclaration()) {
+					IJavaElement[] children = conditional.getChildren();
+					
 					char[] version = conditional.getElementName().toCharArray();
 					for(char[] v : global.params.versionids) {
 						if (CharOperation.equals(v, version)) {
-							return true;
+							if (children.length == 2 && 
+								children[0].getElementType() == IJavaElement.INITIALIZER &&
+								((IInitializer) children[0]).isThen()) {
+								return (IParent) children[0];
+							} else {
+								return conditional;
+							}
 						}
+					}
+					
+					if (children.length == 2 && 
+							children[1].getElementType() == IJavaElement.INITIALIZER &&
+							((IInitializer) children[1]).isElse()) {
+						return (IParent) children[1];
 					}
 				}
 			}
@@ -368,7 +396,7 @@ public class JavaElementFinder {
 			Util.log(e);
 		}
 		
-		return false;
+		return null;
 	}
 
 }

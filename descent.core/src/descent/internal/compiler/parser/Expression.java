@@ -91,6 +91,11 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	 * this variable. This is useful for linking source with resolution. 
 	 */
 	public Expression resolvedExpression;
+	
+	/*
+	 * Same as resolved expression, but holds an IDsymbol.
+	 */
+	public IDsymbol resolvedSymbol;
 
 	public Expression(Loc loc, TOK op) {
 		this.loc = loc;

@@ -197,6 +197,8 @@ public class TypeClass extends Type {
 				return super.dotExp(sc, e, ident, context);
 			}
 		}
+		
+		ident.resolvedSymbol = s;
 
 		s = s.toAlias(context);
 		v = s.isVarDeclaration();
