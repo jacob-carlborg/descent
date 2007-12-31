@@ -349,7 +349,8 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			Highlighting hl= null;
 			for (int j= 0; j < fHardcodedRanges[i].length; j++ ) {
 				hl= getHighlighting(fHardcodedRanges[i][j].getKey());
-				if (hl.isEnabled()) {
+				// TODO Descent remove this null check and see what's the problem
+				if (hl != null && hl.isEnabled()) {
 					range= fHardcodedRanges[i][j];
 					break;
 				}

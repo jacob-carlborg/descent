@@ -198,6 +198,7 @@ public class TypeClass extends Type {
 			}
 		}
 		
+		// Descent: for binding resolution
 		ident.resolvedSymbol = s;
 
 		s = s.toAlias(context);

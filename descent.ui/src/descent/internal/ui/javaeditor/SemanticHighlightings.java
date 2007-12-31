@@ -1048,13 +1048,7 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			if (binding != null && binding.getKind() == IBinding.VARIABLE && !((IVariableBinding) binding).isField()) {
-				/* TODO JDT UI binding
-				ASTNode decl= token.getRoot().findDeclaringNode(binding);
-				return decl != null && decl.getLocationInParent() == FunctionDeclaration.PARAMETERS_PROPERTY;
-				*/
-			}
-			return false;
+			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding) binding).isParameter();
 		}
 	}
 

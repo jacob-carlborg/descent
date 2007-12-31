@@ -82,6 +82,8 @@ public class TypeIdentifier extends TypeQualified {
 		IDsymbol[] scopesym = { null };
 
 		s = sc.search(loc, ident, scopesym, context);
+		
+		// Descent: for binding resolution
 		resolvedSymbol = s;
 		
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
@@ -114,6 +116,7 @@ public class TypeIdentifier extends TypeQualified {
 			t[0] = tvoid;
 		}
 		
+		// Descent: for binding resolution
 		resolvedType = t[0];
 		
 		return t[0];

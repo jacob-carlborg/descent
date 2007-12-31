@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.Stack;
+
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -53,6 +55,11 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 							// (NULL if value not determinable)
 	public Object csym;
 	public Object isym;
+	
+	/*
+	 * Keep the scope, so we can do local variables signatures.
+	 */
+	private Scope scope;
 
 	public VarDeclaration(Loc loc, Type type, char[] ident, IInitializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
@@ -187,6 +194,8 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		scope = sc;
+		
 		storage_class |= sc.stc;
 		if ((storage_class & STCextern) != 0 && init != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -588,7 +597,31 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+		if (parent instanceof FuncDeclaration) {
+			// If I'm a local variable
+			StringBuilder sb = new StringBuilder();
+			sb.append(parent.getSignature());
+			
+			Stack<Integer> nums = new Stack<Integer>();
+			
+			Scope sc = scope.enclosing;
+			while(sc.func == parent) {
+				nums.push(sc.numberForLocalVariables);
+				sc = sc.enclosing;
+			}
+			
+			while(!nums.isEmpty()) {
+				sb.append("#");
+				sb.append(nums.pop());
+			}
+			
+			sb.append("#");
+			sb.append(ident);
+			return sb.toString();
+		} else {
+			// Im a field or global variable
+			return SemanticMixin.getSignature(this);
+		}
 	}
 	
 	public int inuse() {

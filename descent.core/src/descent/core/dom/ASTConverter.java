@@ -2378,6 +2378,11 @@ public class ASTConverter {
 			b.setDefaultValue(convert(a.sourceDefaultArg));
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -3250,6 +3255,11 @@ public class ASTConverter {
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
 		b.internalSetIdentifier(new String(a.ident));
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	

@@ -1,6 +1,8 @@
 package descent.core.dom;
 
 import descent.core.IField;
+import descent.core.IJavaElement;
+import descent.core.ILocalVariable;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
 
@@ -8,10 +10,12 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	
 	private final DefaultBindingResolver bindingResolver;
 	private final String signature;
+	private final boolean isParameter;
 
-	public VariableBinding(DefaultBindingResolver bindingResolver, IField element, String signature) {
+	public VariableBinding(DefaultBindingResolver bindingResolver, IJavaElement element, boolean isParameter, String signature) {
 		super(element);
 		this.bindingResolver = bindingResolver;
+		this.isParameter = isParameter;
 		this.signature = signature;
 	}
 
@@ -31,8 +35,15 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 
 	public ITypeBinding getType() {
+		String signature;
 		try {
-			String signature = ((IField) element).getTypeSignature();
+			if (element instanceof IField) {
+				signature = ((IField) element).getTypeSignature();
+			} else if (element instanceof ILocalVariable) {
+				signature = ((ILocalVariable) element).getTypeSignature();
+			} else {
+				throw new IllegalStateException("element must be IField or ILocalVariable");
+			}
 			return (ITypeBinding) bindingResolver.resolveBinding(signature);
 		} catch (JavaModelException e) {
 			Util.log(e);
@@ -52,7 +63,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 
 	public boolean isEnumConstant() {
 		try {
-			return ((IField) element).isEnumConstant();
+			return element instanceof IField && ((IField) element).isEnumConstant();
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
@@ -60,13 +71,11 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 
 	public boolean isField() {
-		// TODO Auto-generated method stub
-		return true;
+		return element instanceof IField;
 	}
 
 	public boolean isParameter() {
-		// TODO Auto-generated method stub
-		return false;
+		return isParameter;
 	}
 
 	public String getKey() {

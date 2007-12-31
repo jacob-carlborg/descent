@@ -13,6 +13,7 @@ import descent.core.IJavaProject;
 import descent.core.IMethod;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
+import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Global;
@@ -195,10 +196,14 @@ public class JavaElementFinder {
 						i++;
 						c = signature.charAt(i);
 					}
-					i += n - 1;
+					i += n;
+					if (i >= signature.length()) {
+						break;
+					}
+					c = signature.charAt(i);
 				}
 			}
-			return i + 1;
+			return i;
 		case 'D': // delegate
 		case 'P': // pointer
 		case 'A': // dynamic array
@@ -367,7 +372,7 @@ public class JavaElementFinder {
 			}
 			
 			// For now, hack and use the predefined versions
-			if (element instanceof IConditional) {
+			else if (element instanceof IConditional) {
 				IConditional conditional = (IConditional) element;
 				if (conditional.isVersionDeclaration()) {
 					IJavaElement[] children = conditional.getChildren();
@@ -390,6 +395,14 @@ public class JavaElementFinder {
 							((IInitializer) children[1]).isElse()) {
 						return (IParent) children[1];
 					}
+				}
+			}
+			
+			// Search in anonymous types
+			else if (element instanceof IType) {
+				IType type = (IType) element;
+				if (type.isAnonymous()) {
+					return type;
 				}
 			}
 		} catch (JavaModelException e) {

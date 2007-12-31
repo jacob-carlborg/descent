@@ -241,8 +241,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	
 	@Override
 	public String getSignature() {
-		// TODO Auto-generated method stub
-		return super.getSignature();
+		return SemanticMixin.getSignature(this);
 	}
 
 }

@@ -643,8 +643,32 @@ public class SemanticMixin {
 			sb.append(parentSignature);
 		}
 		
-		sb.append(aThis.ident().length);
+		sb.append(aThis.ident().ident.length);
 		sb.append(aThis.ident());
+		return sb.toString();
+	}
+	
+	public static String getSignature(IFuncDeclaration aThis) {
+		if (aThis.parent() == null) {
+			return null;
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("O");
+		
+		// If my parent is a class, then the signature will start
+		// with the letter C, so remove it. Same for other types
+		String parentSignature = aThis.parent().getSignature();
+		if (parentSignature.length() > 0 && 
+				!Character.isDigit(parentSignature.charAt(0))) {
+			sb.append(parentSignature.substring(1));
+		} else {
+			sb.append(parentSignature);
+		}
+		
+		sb.append(aThis.ident().ident.length);
+		sb.append(aThis.ident());
+		sb.append(aThis.type().getSignature());
 		return sb.toString();
 	}
 	

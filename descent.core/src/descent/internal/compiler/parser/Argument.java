@@ -179,6 +179,11 @@ public class Argument extends ASTDmdNode {
 	public IdentifierExp ident;
 	public Expression defaultArg, sourceDefaultArg;
 	public TypeFunction parentType; // Added field to keep track of the argument's parent
+	
+	/*
+	 * The variable declaration this argument generated. Useful for bindings.
+	 */
+	public VarDeclaration var;
 
 	public Argument(int storageClass, Type type, IdentifierExp ident,
 			Expression defaultArg) {

@@ -327,5 +327,19 @@ public class Argument extends ASTNode {
 			+ (this.defaultValue == null ? 0 : getDefaultValue().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the variable declared in this argument.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public final IVariableBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveArgument(this);
+	}
 
 }

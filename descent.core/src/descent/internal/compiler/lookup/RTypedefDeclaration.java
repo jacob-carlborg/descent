@@ -4,6 +4,7 @@ import descent.core.IField;
 import descent.internal.compiler.parser.IInitializer;
 import descent.internal.compiler.parser.ITypedefDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeTypedef;
 
@@ -63,6 +64,11 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	
 	public ITypedefDeclaration isTypedefDeclaration() {
 		return this;
+	}
+	
+	@Override
+	public String getSignature() {
+		return SemanticMixin.getSignature(this);
 	}
 
 }

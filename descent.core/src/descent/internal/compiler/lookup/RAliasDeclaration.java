@@ -4,6 +4,7 @@ import descent.core.IField;
 import descent.internal.compiler.parser.IAliasDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 
 public class RAliasDeclaration extends RDeclaration implements IAliasDeclaration {
@@ -38,6 +39,11 @@ public class RAliasDeclaration extends RDeclaration implements IAliasDeclaration
 	@Override
 	public IAliasDeclaration isAliasDeclaration() {
 		return this;
+	}
+	
+	@Override
+	public String getSignature() {
+		return SemanticMixin.getSignature(this);
 	}
 
 }

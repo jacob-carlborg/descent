@@ -17,6 +17,7 @@ import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
@@ -180,7 +181,11 @@ public class SelectionEngine extends AstVisitorAdapter {
 			if (sym.getJavaElement() != null) {
 				selectedElements.add(sym.getJavaElement());
 			} else {
-				add(sym.getSignature());
+				if (sym instanceof VarDeclaration) {
+					add((VarDeclaration) sym);
+				} else {
+					add(sym.getSignature());
+				}
 			}
 			return false;
 		}
@@ -221,6 +226,21 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
+	public boolean visit(EnumMember node) {
+		if (isInRange(node)) {
+			add(node.getSignature());
+		}
+		return false;
+	}
+	
+	private boolean visitType(ASTDmdNode node, IdentifierExp ident, Type type) {
+		if (isInRange(ident)) {
+			add(type);
+		}
+		return isInRange(node);
+	}
+	
 	private void add(VarExp varExp) {
 		IDeclaration var = varExp.var;
 		if (var instanceof FuncDeclaration) {
@@ -242,15 +262,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 			add(decl.getSignature());
 		}
 	}
-	
-	private boolean visitType(ASTDmdNode node, IdentifierExp ident, Type type) {
-		if (isInRange(ident)) {
-			add(type);
-		}
-		return isInRange(node);
-	}
-	
-	// Other utility methods
 	
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
 		return node.parent instanceof FuncDeclaration;

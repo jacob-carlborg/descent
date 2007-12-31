@@ -23,7 +23,6 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
-import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 
 public class RClassDeclaration extends RAggregateDeclaration implements

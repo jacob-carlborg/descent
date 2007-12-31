@@ -1364,6 +1364,10 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 					}
 					VarDeclaration v = new VarDeclaration(loc, arg.type, id,
 							null);
+					
+					// Descent: for binding resolution
+					arg.var = v;
+					
 					v.storage_class |= STCparameter;
 					if (f.varargs == 2 && i + 1 == nparams) {
 						v.storage_class |= STCvariadic;
@@ -1866,27 +1870,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	}
 
 	public String getSignature() {
-		if (parent == null) {
-			return null;
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("O");
-		
-		// If my parent is a class, then the signature will start
-		// with the letter C, so remove it. Same for other types
-		String parentSignature = parent.getSignature();
-		if (parentSignature.length() > 0 && 
-				!Character.isDigit(parentSignature.charAt(0))) {
-			sb.append(parentSignature.substring(1));
-		} else {
-			sb.append(parentSignature);
-		}
-		
-		sb.append(ident.length);
-		sb.append(ident);
-		sb.append(type.getSignature());
-		return sb.toString();
+		return SemanticMixin.getSignature(this);
 	}
 	
 	public IDeclaration overnext() {

@@ -87,6 +87,10 @@ public class IdentifierExp extends Expression {
 		IDsymbol[] scopesym = { null };
 
 		s = sc.search(loc, this, scopesym, context);
+		
+		// Descent: for binding resolution
+		resolvedSymbol = s;
+		
 		if (s != null) {
 			Expression e;
 			WithScopeSymbol withsym;
@@ -145,6 +149,8 @@ public class IdentifierExp extends Expression {
 				e.start = start;
 				e.length = length;
 			}
+			
+			// Descent: for binding resolution
 			return resolvedExpression = e.semantic(sc, context);
 		}
 		context.acceptProblem(Problem.newSemanticTypeError(

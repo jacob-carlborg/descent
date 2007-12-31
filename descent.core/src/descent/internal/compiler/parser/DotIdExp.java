@@ -39,8 +39,11 @@ public class DotIdExp extends UnaExp {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e = semantic0(sc, context);
+		
+		// Descent: for binding resolution
 		resolvedExpression = e;
 		ident.resolvedExpression = resolvedExpression;
+		
 		return e;
 	}
 	

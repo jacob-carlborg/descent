@@ -71,6 +71,17 @@ public class Scope {
 	public AnonymousAggregateDeclaration anonAgg; // for temporary analysis
 
 	public SemanticContext context;
+	
+	/*
+	 * The number of this scope, for determining the correct signature of local
+	 * variables. The first scope is 0, the second is 1. For example:
+	 * void foo() {
+	 *   { 0 }
+	 *   { 1 { 0 } { 1 } }
+	 *   { 2 } 
+	 * }
+	 */
+	public int numberForLocalVariables = -1;
 
 	public Scope(SemanticContext context) {
 		this.context = context;

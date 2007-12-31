@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;
@@ -16,16 +17,25 @@ import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
+import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
+import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.VarExp;
+import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
+import descent.internal.core.LocalVariable;
 import descent.internal.core.util.Util;
 
 public class DefaultBindingResolver extends BindingResolver {
@@ -73,6 +83,11 @@ public class DefaultBindingResolver extends BindingResolver {
 	IJavaProject javaProject;
 	
 	/**
+	 * The finder to lookup inside elements.
+	 */
+	JavaElementFinder finder;
+	
+	/**
 	 * Constructor for DefaultBindingResolver.
 	 */
 	DefaultBindingResolver(IJavaProject project, WorkingCopyOwner workingCopyOwner, BindingTables bindingTables) {
@@ -81,6 +96,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		this.bindingTables = bindingTables;
 		this.workingCopyOwner = workingCopyOwner;
 		this.newAstToOldAst = new HashMap();
+		this.finder = new JavaElementFinder(javaProject);
 	}
 	
 	@Override
@@ -144,9 +160,7 @@ public class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		VarDeclaration v = (VarDeclaration) old;
-		String key = v.getSignature();
-		return (IVariableBinding) resolveBinding(variable, key);
+		return resolveVar((VarDeclaration) old, variable);
 	}
 	
 	@Override
@@ -177,13 +191,138 @@ public class DefaultBindingResolver extends BindingResolver {
 					return resolveMethod((FunctionDeclaration) parent);
 				}
 				break;
+			case ASTNode.ARGUMENT:
+				return resolveArgument((descent.core.dom.Argument) parent);
 			default:
 				if (parent instanceof descent.core.dom.Type) {
 					return resolveType((descent.core.dom.Type) parent);
 				}
+				if (name.isSimpleName()) {
+					ASTDmdNode old = newAstToOldAst.get(name);
+					if (!(old instanceof IdentifierExp)) {
+						return null;
+					}
+					
+					IdentifierExp node = (IdentifierExp) old;
+					
+					if (node.resolvedSymbol != null) {
+						IDsymbol sym = node.resolvedSymbol;
+						if (sym.getJavaElement() != null) {
+							IJavaElement elem = sym.getJavaElement();
+							IBinding binding = resolveBinding(elem, sym.getSignature(), name);
+							if (binding != null) {
+								return binding;
+							}
+						} else if (sym instanceof VarDeclaration) {
+							IBinding binding = resolveVar((VarDeclaration) sym, name);
+							if (binding != null) {
+								return binding;
+							}
+						} else {
+							IBinding binding = resolveBinding(sym.getSignature());
+							if (binding != null) {
+								return binding;
+							}
+						}
+					}
+					
+					Expression resolved = node.resolvedExpression;
+					if (resolved == null) {
+						return null;
+					}
+					
+					switch(resolved.getNodeType()) {
+					case ASTDmdNode.VAR_EXP:
+						resolveVarExp((VarExp) resolved);
+						break;
+					case ASTDmdNode.DOT_VAR_EXP:
+						resolveDotVarExp((DotVarExp) resolved);
+						break;
+					case ASTDmdNode.TYPE_EXP:
+						resolveType(name, ((TypeExp) resolved).type);
+						break;
+					}
+					
+					return null;
+				}
 			}
 		}
 		return null;
+	}
+	
+	private IBinding resolveBinding(IJavaElement elem, String signature, ASTNode node) {
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return binding;
+		}
+		
+		switch(elem.getElementType()) {
+		case IJavaElement.TYPE:
+			binding = new TypeBinding(this, (IType) elem, signature);
+			break;
+		case IJavaElement.METHOD:
+			binding = new MethodBinding(this, (IMethod) elem, signature);
+			break;
+		case IJavaElement.FIELD:
+			binding = new VariableBinding(this, (IField) elem, false /* not a parameter */, signature);
+			break;
+		}
+		
+		if (binding != null) {
+			bindingTables.bindingKeysToBindings.put(signature, binding);
+			bindingsToAstNodes.put(binding, node);
+			return binding;
+		}
+		
+		return binding;
+	}
+
+	private IBinding resolveVarExp(VarExp varExp) {
+		return null;
+	}
+	
+	private IBinding resolveDotVarExp(DotVarExp dotVarExp) {
+		return null;
+	}
+	
+	private IVariableBinding resolveVar(VarDeclaration var, ASTNode node) {
+		if (isLocal(var)) {
+			return resolveLocalVar(var, node);
+		} else {
+			String key = var.getSignature();
+			return (IVariableBinding) resolveBinding(node, key);
+		}
+	}
+	
+	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
+		return node.parent instanceof FuncDeclaration;
+	}
+	
+	private IVariableBinding resolveLocalVar(VarDeclaration var, ASTNode node) {
+		String signature = var.getSignature();
+		
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return (IVariableBinding) binding;
+		}
+		
+		FuncDeclaration parent = (FuncDeclaration) var.parent;
+		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+		
+		IJavaElement element = new LocalVariable(
+				func, 
+				var.ident.toString(),
+				var.start,
+				var.start + var.length - 1,
+				var.ident.start,
+				var.ident.start + var.ident.length - 1,
+				var.type.getSignature(),
+				Flags.AccDefault);
+		
+		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
+		bindingTables.bindingKeysToBindings.put(signature, binding);
+		bindingsToAstNodes.put(binding, node);
+		return (IVariableBinding) binding;
 	}
 	
 	@Override
@@ -204,7 +343,10 @@ public class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		Type t = (Type) old;
+		return resolveType(type, (Type) old);
+	}
+	
+	private ITypeBinding resolveType(ASTNode node, Type t) {
 		String signature = t.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -218,13 +360,13 @@ public class DefaultBindingResolver extends BindingResolver {
 			if (elem.getElementType() == IJavaElement.TYPE) {
 				binding = new TypeBinding(this, (IType) elem, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
-				bindingsToAstNodes.put(binding, type);
+				bindingsToAstNodes.put(binding, node);
 				return (ITypeBinding) binding;
 			}
 		}
 		
 		// Else, try with the signature
-		return (ITypeBinding) resolveBinding(type, signature);
+		return (ITypeBinding) resolveBinding(node, signature);
 	}
 	
 	@Override
@@ -280,6 +422,17 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		FuncDeclaration func = (FuncDeclaration) old;
 		return (IMethodBinding) resolveBinding(method, func.getSignature()); 
+	}
+	
+	@Override
+	public IVariableBinding resolveArgument(descent.core.dom.Argument argument) {
+		ASTDmdNode old = newAstToOldAst.get(argument);
+		if (!(old instanceof descent.internal.compiler.parser.Argument)) {
+			return null;
+		}
+		
+		descent.internal.compiler.parser.Argument arg = (Argument) old;
+		return resolveVar(arg.var, argument);
 	}
 	
 	/*
@@ -366,7 +519,7 @@ public class DefaultBindingResolver extends BindingResolver {
 							binding = new TypeBinding(this, (IType) current, JavaElementFinder.uncorrect(signature.substring(0, i)));
 							
 						} else if (current instanceof IField) {
-							binding = new VariableBinding(this, (IField) current, JavaElementFinder.uncorrect(signature.substring(0, i)));
+							binding = new VariableBinding(this, (IField) current, false /* not a parameter */, JavaElementFinder.uncorrect(signature.substring(0, i)));
 						}
 					}
 					break;

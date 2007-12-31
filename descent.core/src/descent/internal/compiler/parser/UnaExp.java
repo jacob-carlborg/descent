@@ -97,7 +97,10 @@ public abstract class UnaExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
+		
+		// Descent: for binding resolution
 		sourceE1.resolvedExpression = e1;
+		
 		return this;
 	}
 

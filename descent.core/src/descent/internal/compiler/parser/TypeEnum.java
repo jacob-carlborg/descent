@@ -67,6 +67,10 @@ public class TypeEnum extends Type {
 		Expression em;
 
 		s = sym.symtab().lookup(ident);
+		
+		// Descent: for binding resolution
+		ident.resolvedSymbol = s;
+		
 		if (null == s) {
 			return getProperty(e.loc, ident, context);
 		}

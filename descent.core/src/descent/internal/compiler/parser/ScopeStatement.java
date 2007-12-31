@@ -70,6 +70,8 @@ public class ScopeStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
+		sc.numberForLocalVariables++;
+		
 		ScopeDsymbol sym;
 
 		if (statement != null) {

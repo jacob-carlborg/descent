@@ -140,5 +140,10 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	public IVarDeclaration isVarDeclaration() {
 		return this;
 	}
+	
+	@Override
+	public String getSignature() {
+		return SemanticMixin.getSignature(this);
+	}
 
 }

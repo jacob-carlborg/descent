@@ -371,6 +371,25 @@ class BindingResolver {
 	}
 	
 	/**
+	 * Resolves the given argument and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>Argument.resolveBinding</code>
+	 * forwards to this method.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param argument the argument of interest
+	 * @return the binding for the given argument, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	public IVariableBinding resolveArgument(Argument argument) {
+		return null;
+	} 
+	
+	/**
 	 * Resolves the given well known type by name and returns the type binding
 	 * for it.
 	 * <p>
@@ -404,6 +423,6 @@ class BindingResolver {
 	 */
 	void store(ASTNode newNode, ASTDmdNode oldASTNode) {
 		// default implementation: do nothing
-	} 
+	}
 	
 }

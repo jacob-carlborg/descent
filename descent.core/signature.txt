@@ -15,3 +15,18 @@ is Q, i.e.:
   Q4test1foo     --> variable, foo in module test.
   Q4test3Foo3foo --> foo enum member, ailas, typedef, variable or enum memeber
                      in module test, declaration Foo
+                     
+For functions, the prefix is O, and immediately after the fully qualified
+name, comes the real function signature: the signature of the parameters,
+followed by X, Y or Z (TODO: find out what is this) and the signature of the
+return type. For example:
+
+  Q4test1fooFiZc --> function foo in module test, taking and int and returning
+                     a char
+
+For local variables, it's the signature of the containing function followed
+by #, numbers and the name of the variable. For example:
+
+  Q4test1fooFiZc#x   --> variable x declared in the above function
+  Q4test1fooFiZc#0#x --> variable x declared in the first scope block of the 
+                         above function
