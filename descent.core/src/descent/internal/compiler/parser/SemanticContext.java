@@ -84,7 +84,7 @@ public class SemanticContext {
 		this.signatureToTypeCache = new HashMap<String, Type>();
 		
 		// for debugging purposes
-//		global.path.add("c:\\ary\\programacion\\d\\dstress");
+//		global.path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
 //		this.moduleFinder = new DmdModuleFinder(global);
 
 		Module_init();

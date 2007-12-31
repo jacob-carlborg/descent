@@ -181,9 +181,10 @@ public class Argument extends ASTDmdNode {
 	public TypeFunction parentType; // Added field to keep track of the argument's parent
 	
 	/*
-	 * The variable declaration this argument generated. Useful for bindings.
+	 * The variable, alias or typedef 
+	 * declaration this argument generated. Useful for bindings.
 	 */
-	public VarDeclaration var;
+	public Dsymbol var;
 
 	public Argument(int storageClass, Type type, IdentifierExp ident,
 			Expression defaultArg) {

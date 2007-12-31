@@ -80,11 +80,19 @@ public abstract class BinExp extends Expression {
 
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
+		
+		// Descent: for binding resolution
+		sourceE1.resolvedExpression = e1;
+		
 		if (e1.type == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e1, new String[] { e1.toChars(context) }));
 			e1.type = Type.terror;
 		}
 		e2 = e2.semantic(sc, context);
+		
+		// Descent: for binding resolution
+		sourceE2.resolvedExpression = e2;
+		
 		if (e2.type == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e2, new String[] { e2.toChars(context) }));
 			e2.type = Type.terror;

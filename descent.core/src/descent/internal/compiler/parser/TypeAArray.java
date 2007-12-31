@@ -14,12 +14,12 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 // DMD 1.020
 public class TypeAArray extends TypeArray {
 
-	public Type index;
+	public Type index, sourceIndex;
 	public Type key;
 
 	public TypeAArray(Type t, Type index) {
 		super(TY.Taarray, t);
-		this.index = index;
+		this.index = this.sourceIndex = index;
 		this.key = null;
 	}
 
@@ -27,7 +27,7 @@ public class TypeAArray extends TypeArray {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, index);
+			TreeVisitor.acceptChildren(visitor, sourceIndex);
 			TreeVisitor.acceptChildren(visitor, key);
 		}
 		visitor.endVisit(this);

@@ -21,8 +21,14 @@ name, comes the real function signature: the signature of the parameters,
 followed by X, Y or Z (TODO: find out what is this) and the signature of the
 return type. For example:
 
-  Q4test1fooFiZc --> function foo in module test, taking and int and returning
+  O4test1fooFiZc --> function foo in module test, taking and int and returning
                      a char
+                     
+For nested functions, it's O followed by the parent signature (unchanged)
+followed by an @ followed by the signature of the function's type. For example:
+
+  OO4test1fooFiZc@FiZc --> a nested function in the above function, taking an
+                           int and returning a char
 
 For local variables, it's the signature of the containing function followed
 by #, numbers and the name of the variable. For example:

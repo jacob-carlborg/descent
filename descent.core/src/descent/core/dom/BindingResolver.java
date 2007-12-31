@@ -371,6 +371,54 @@ class BindingResolver {
 	}
 	
 	/**
+	 * Resolves the given alias declaration and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>AliasDeclarationFragment.resolveBinding</code>
+	 * forwards to this method. How the variable declaration resolves is often
+	 * a function of the context in which the variable declaration node is 
+	 * embedded as well as the variable declaration subtree itself. VariableDeclaration 
+	 * declarations used as local variable, formal parameter and exception 
+	 * variables resolve to local variable bindings; variable declarations
+	 * used to declare fields resolve to field bindings.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param variable the variable declaration of interest
+	 * @return the binding for the given variable declaration, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	IVariableBinding resolveAliasFragment(AliasDeclarationFragment variable) {
+		return null;
+	}
+	
+	/**
+	 * Resolves the given alias declaration and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>AliasDeclaration.resolveBinding</code>
+	 * forwards to this method. How the variable declaration resolves is often
+	 * a function of the context in which the variable declaration node is 
+	 * embedded as well as the variable declaration subtree itself. VariableDeclaration 
+	 * declarations used as local variable, formal parameter and exception 
+	 * variables resolve to local variable bindings; variable declarations
+	 * used to declare fields resolve to field bindings.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param variable the variable declaration of interest
+	 * @return the binding for the given variable declaration, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	IBinding resolveAlias(AliasDeclaration variable) {
+		return null;
+	}
+	
+	/**
 	 * Resolves the given argument and returns the binding for it.
 	 * <p>
 	 * The implementation of <code>Argument.resolveBinding</code>

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 
@@ -57,9 +58,9 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	public Object isym;
 	
 	/*
-	 * Keep the scope, so we can do local variables signatures.
+	 * Keep numbers of scopes, so we can do local variables signatures.
 	 */
-	private Scope scope;
+	private int[] scopeNumbers;
 
 	public VarDeclaration(Loc loc, Type type, char[] ident, IInitializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
@@ -191,11 +192,16 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	public boolean needThis() {
 		return (storage_class & STCfield) != 0;
 	}
-
+	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		scope = sc;
+		semantic0(sc, context);
 		
+		// Descent: for binding resolution
+		computeScope(sc);
+	}
+
+	private void semantic0(Scope sc, SemanticContext context) {
 		storage_class |= sc.stc;
 		if ((storage_class & STCextern) != 0 && init != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -602,17 +608,9 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 			StringBuilder sb = new StringBuilder();
 			sb.append(parent.getSignature());
 			
-			Stack<Integer> nums = new Stack<Integer>();
-			
-			Scope sc = scope.enclosing;
-			while(sc.func == parent) {
-				nums.push(sc.numberForLocalVariables);
-				sc = sc.enclosing;
-			}
-			
-			while(!nums.isEmpty()) {
+			for(int i : scopeNumbers) {
 				sb.append("#");
-				sb.append(nums.pop());
+				sb.append(i);
 			}
 			
 			sb.append("#");
@@ -621,6 +619,21 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		} else {
 			// Im a field or global variable
 			return SemanticMixin.getSignature(this);
+		}
+	}
+	
+	private void computeScope(Scope scope) {
+		List<Integer> nums = new ArrayList<Integer>();
+		
+		Scope sc = scope.enclosing;
+		while(sc.func == parent) {
+			nums.add(sc.numberForLocalVariables);
+			sc = sc.enclosing;
+		}
+
+		this.scopeNumbers = new int[nums.size()];
+		for(int i = nums.size() - 1, j = 0; i >= 0; i--, j++) {
+			scopeNumbers[j] = nums.get(i);
 		}
 	}
 	

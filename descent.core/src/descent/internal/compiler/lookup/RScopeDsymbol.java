@@ -34,7 +34,7 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 
 		public char[][] keys() {
 			members();
-			return childrenCache.keys();
+			return hitCache.keys();
 		}
 
 		public IDsymbol lookup(IdentifierExp ident) {
@@ -93,14 +93,14 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 				}
 				char[] elemNameC = elemName.toCharArray();
 				
-				if (childrenCache == null) {
-					childrenCache = new HashtableOfCharArrayAndObject();
+				if (hitCache == null) {
+					hitCache = new HashtableOfCharArrayAndObject();
 				}
 				
 				IDsymbol converted = null;
 				
 				if (!ov.containsKey(elemNameC)) {
-					converted = (IDsymbol) childrenCache.get(elemNameC);
+					converted = (IDsymbol) hitCache.get(elemNameC);
 				}
 				
 				if (converted == null) {
@@ -109,7 +109,7 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 				
 				if (converted != null) {
 					members.add(converted);
-					childrenCache.put(elemNameC, converted);
+					hitCache.put(elemNameC, converted);
 					ov.put(elemNameC, converted);
 				}
 			}
@@ -140,7 +140,11 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	
 	@Override
 	public String getSignature() {
-		return type().getSignature();
+		if (type() == null) {
+			return "";
+		} else {
+			return type().getSignature();
+		}
 	}
 
 }

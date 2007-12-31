@@ -38,8 +38,8 @@ public class TypeSArray extends TypeArray {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, next);
-			TreeVisitor.acceptChildren(visitor, dim);
+			TreeVisitor.acceptChildren(visitor, sourceNext);
+			TreeVisitor.acceptChildren(visitor, sourceDim);
 		}
 		visitor.endVisit(this);
 	}

@@ -295,6 +295,14 @@ public class Lookup_Test extends AbstractModelTest {
 		assertNoErrors();
 	}
 	
+	public void testNestedPackagesProblem1() throws Exception {
+		one("");
+		createCompilationUnit("first", "file.d", "");
+		createCompilationUnit("first.second", "file.d", "class Foo { int x; } alias Foo FOO;");
+		two("import first.second.file; void foo(FOO f) { f.x = 2; }");
+		assertNoErrors();
+	}
+	
 	protected ICompilationUnit one;
 	protected ICompilationUnit two;
 	protected ICompilationUnit three;

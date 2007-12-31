@@ -20,7 +20,6 @@ import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.internal.compiler.ICompilerRequestor;
@@ -210,9 +209,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		// First adhere to DMD: if there are syntaxis errors, don't do
 		// semantic analysis.
-		if (module.problems != null && module.problems.size() > 0) {
-			return context;
-		}
+		// COMMENTED THIS, since when there are syntax errors we would
+		// like to have a better recovery
+//		if (module.problems != null && module.problems.size() > 0) {
+//			return context;
+//		}
 		
 		module.semantic(context);
 		

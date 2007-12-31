@@ -22,7 +22,7 @@ public class CtorDeclaration extends FuncDeclaration implements ICtorDeclaration
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, arguments);
 			TreeVisitor.acceptChildren(visitor, sourceFrequire);

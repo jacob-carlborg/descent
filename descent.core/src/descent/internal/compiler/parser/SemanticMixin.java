@@ -634,7 +634,7 @@ public class SemanticMixin {
 		sb.append("Q");
 		
 		// If my parent is a class, then the signature will start
-		// with the letter C, so remove it. Same for other types
+		// with the letter C, so remove it. Same for other types.
 		String parentSignature = aThis.parent().getSignature();
 		if (parentSignature.length() > 0 && 
 				!Character.isDigit(parentSignature.charAt(0))) {
@@ -656,14 +656,20 @@ public class SemanticMixin {
 		StringBuilder sb = new StringBuilder();
 		sb.append("O");
 		
-		// If my parent is a class, then the signature will start
-		// with the letter C, so remove it. Same for other types
-		String parentSignature = aThis.parent().getSignature();
-		if (parentSignature.length() > 0 && 
-				!Character.isDigit(parentSignature.charAt(0))) {
-			sb.append(parentSignature.substring(1));
+		// If it's a nested function, append the @
+		if (aThis.parent() instanceof IFuncDeclaration) {
+			sb.append(aThis.parent().getSignature());
+			sb.append("@");
 		} else {
-			sb.append(parentSignature);
+			// If my parent is a class, then the signature will start
+			// with the letter C, so remove it. Same for other types.
+			String parentSignature = aThis.parent().getSignature();
+			if (parentSignature.length() > 0 && 
+					!Character.isDigit(parentSignature.charAt(0))) {
+				sb.append(parentSignature.substring(1));
+			} else {
+				sb.append(parentSignature);
+			}
 		}
 		
 		sb.append(aThis.ident().ident.length);

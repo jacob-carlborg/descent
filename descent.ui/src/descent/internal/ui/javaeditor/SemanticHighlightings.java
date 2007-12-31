@@ -924,11 +924,14 @@ public class SemanticHighlightings {
 			SimpleName node= token.getNode();
 			StructuralPropertyDescriptor location= node.getLocationInParent();
 			if (location == VariableDeclarationFragment.NAME_PROPERTY) {
-				ASTNode parent= node.getParent();
-				if (parent instanceof VariableDeclaration) {
-					parent= parent.getParent();
-					return parent == null || !(parent instanceof VariableDeclaration);
-				}
+				IBinding binding = token.getBinding();
+				return binding != null && binding instanceof IVariableBinding && !((IVariableBinding) binding).isField()
+					&& !((IVariableBinding) binding).isParameter();
+//				ASTNode parent= node.getParent();
+//				if (parent instanceof VariableDeclaration) {
+//					parent= parent.getParent();
+//					return parent == null || !(parent instanceof VariableDeclaration);
+//				}
 			}
 			return false;
 		}
@@ -986,7 +989,10 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			if (binding != null && binding.getKind() == IBinding.VARIABLE && !((IVariableBinding) binding).isField()) {
+			if (binding != null && binding.getKind() == IBinding.VARIABLE 
+					&& !((IVariableBinding) binding).isField()
+					&& !((IVariableBinding) binding).isParameter()) {
+				return true;
 				/* TODO JDT UI binding
 				ASTNode decl= token.getRoot().findDeclaringNode(binding);
 				return decl instanceof VariableDeclaration;

@@ -14,6 +14,7 @@ import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
@@ -68,7 +69,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		this.owner = owner;
 		this.settings = settings;
 		this.compilerOptions = new CompilerOptions(settings);
-		this.finder = new JavaElementFinder(javaProject);
+		this.finder = new JavaElementFinder(javaProject, owner);
 	}
 	
 	public IJavaElement[] select(ICompilationUnit sourceUnit, int offset, int length) {
@@ -143,10 +144,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 			return false;
 		} else if (isInRange(node.sourceType)) {
 			IDsymbol sym = node.aliassym;
-			if (sym.getJavaElement() != null) {
-				selectedElements.add(sym.getJavaElement());
-			} else {
-				add(sym.getSignature());
+			if (sym != null) {
+				if (sym.getJavaElement() != null) {
+					selectedElements.add(sym.getJavaElement());
+				} else {
+					add(sym.getSignature());
+				}
 			}
 		}
 		return false;
@@ -232,6 +235,21 @@ public class SelectionEngine extends AstVisitorAdapter {
 			add(node.getSignature());
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean visit(Argument node) {
+		if (node.var != null && isInRange(node.ident)) {
+			if (node.var instanceof VarDeclaration) {
+				add((VarDeclaration) node.var);
+			} else if (node.var instanceof AliasDeclaration) {
+				add((AliasDeclaration) node.var);
+			} else if (node.var instanceof TypedefDeclaration) {
+				add((TypedefDeclaration) node.var);
+			} 
+			return false;
+		}
+		return true;
 	}
 	
 	private boolean visitType(ASTDmdNode node, IdentifierExp ident, Type type) {

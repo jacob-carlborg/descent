@@ -1,5 +1,7 @@
 package descent.internal.compiler.lookup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import descent.core.Flags;
@@ -83,10 +85,11 @@ public class RDsymbol extends RNode implements IDsymbol {
 	protected IDsymbol parent;
 	protected IdentifierExp ident;
 	
-	// This hashtable is here to:
+	// This hashtables is here to:
 	// - speed up searches
 	// - avoid creating duplicated classes
-	protected HashtableOfCharArrayAndObject childrenCache;
+	protected HashtableOfCharArrayAndObject hitCache; 
+	protected HashtableOfCharArrayAndObject missCache;
 
 	public RDsymbol(IJavaElement element, SemanticContext context) {
 		super(element, context);
@@ -391,10 +394,18 @@ public class RDsymbol extends RNode implements IDsymbol {
 			return null;
 		}
 		
-		if (childrenCache == null) {
-			childrenCache = new HashtableOfCharArrayAndObject();
+		if (missCache == null) {
+			missCache = new HashtableOfCharArrayAndObject();
 		} else {
-			Object result = childrenCache.get(ident);
+			if (missCache.containsKey(ident)) {
+				return null;
+			}
+		}
+		
+		if (hitCache == null) {
+			hitCache = new HashtableOfCharArrayAndObject();
+		} else {
+			Object result = hitCache.get(ident);
 			if (result != null) {
 				return (IDsymbol) result;
 			}
@@ -402,7 +413,14 @@ public class RDsymbol extends RNode implements IDsymbol {
 		
 		String sident = new String(ident);		
 		IParent parent = (IParent) element;
-		return searchInChildren(parent, ident, sident);
+		IDsymbol result = searchInChildren(parent, ident, sident);
+		
+		if (result == null) {
+			missCache.put(ident, this);
+			return null;
+		} else {
+			return result;	
+		}		
 	}
 	
 	private IDsymbol searchInChildren(IParent parent, char[] ident, String sident) {
@@ -420,7 +438,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 				String elementName = child.getElementName();
 				if (elementName.equals(sident)) {
 					IDsymbol result = toDsymbol(child);
-					childrenCache.put(ident, result);
+					hitCache.put(ident, result);
 					return result;
 				}
 			}
@@ -606,7 +624,9 @@ public class RDsymbol extends RNode implements IDsymbol {
 				case 'C':   // class
 				case 'S':   // struct
 				case 'T': { // typedef
-					Object current = element.getJavaProject();
+					
+					// Gather pieces
+					List<char[]> piecesList = new ArrayList<char[]>();
 					
 					int i;
 					for(i = 1; i < signature.length(); i++) {
@@ -618,39 +638,59 @@ public class RDsymbol extends RNode implements IDsymbol {
 							c = signature.charAt(i);
 						}
 						String name = signature.substring(i, i + n);
-						current = findChild(current, name);
-						if (current == null) {
-							// TODO signal error
-							break;
-						}
+						piecesList.add(name.toCharArray());
 						i += n - 1;
 					}
 					
-					if (current != null && current instanceof IDsymbol) {
-						IDsymbol symbol = (IDsymbol) current;
-						switch(first) {
-						case 'E':
-							IEnumDeclaration e = symbol.isEnumDeclaration();
-							if (e != null) {
-								type = new TypeEnum(e);
-								type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
+					// Search the deepest module. For example in
+					// one.two.three.Four, Four can't be a module, but
+					// three can be, and also two (with three a member).
+					// So search compound names up to before the last piece.
+					char[][] all = (char[][]) piecesList.toArray(new char[piecesList.size()][]);
+					for(int j = all.length - 1; j >= 1; j--) {
+						char[][] compoundName = new char[j][];
+						System.arraycopy(all, 0, compoundName, 0, j);
+						
+						Object current = context.moduleFinder.findModule(compoundName, context);
+						if (current != null) {
+							// Keep searching
+							
+							for(int k = j; k < all.length; k++) {
+								current = findChild(current, new String(all[k]));
+								if (current == null) {
+									break;
+								}
 							}
-							break;
-						case 'C':
-							IClassDeclaration c = symbol.isClassDeclaration();
-							if (c != null) {
-								type = new TypeClass(c);
-								type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
+							
+							if (current != null && current instanceof IDsymbol) {
+								IDsymbol symbol = (IDsymbol) current;
+								switch(first) {
+								case 'E':
+									IEnumDeclaration e = symbol.isEnumDeclaration();
+									if (e != null) {
+										type = new TypeEnum(e);
+										type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
+									}
+									break;
+								case 'C':
+									IClassDeclaration c = symbol.isClassDeclaration();
+									if (c != null) {
+										type = new TypeClass(c);
+										type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
+									}
+									break;
+								case 'S':
+									IStructDeclaration s = symbol.isStructDeclaration();
+									if (s != null) {
+										type = new TypeStruct(s);
+										type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
+									}
+									break;
+								}						
 							}
+							
 							break;
-						case 'S':
-							IStructDeclaration s = symbol.isStructDeclaration();
-							if (s != null) {
-								type = new TypeStruct(s);
-								type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
-							}
-							break;
-						}						
+						}
 					}
 					break;
 				}
@@ -713,7 +753,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 					int i = 1;
 					Type targ = getTypeFromSignature(signature.substring(i));
 					while(targ != null) {
-						// TODO default arg
+						// TODO storage class and default arg
 						args.add(new Argument(0, targ, new IdentifierExp(Id.empty), null));
 						i += targ.deco.length();
 						

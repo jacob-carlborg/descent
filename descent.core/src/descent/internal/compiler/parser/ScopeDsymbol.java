@@ -236,7 +236,12 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 	
 	@Override
 	public String getSignature() {
-		return type().deco;
+		// TODO Descent it may be null if my parent is a template mixin, fix this
+		if (type() != null) {
+			return type().deco;
+		} else {
+			return "";
+		}
 	}
 
 }

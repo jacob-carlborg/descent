@@ -9,21 +9,22 @@ import static descent.internal.compiler.parser.TY.*;
 // DMD 1.020
 public class TypeSlice extends Type {
 
-	public Expression lwr;
-	public Expression upr;
+	public Expression lwr, sourceLwr;
+	public Expression upr, sourceUpr;
 
 	public TypeSlice(Type next, Expression lwr, Expression upr) {
 		super(TY.Tslice, next);
-		this.lwr = lwr;
-		this.upr = upr;
+		this.lwr = this.sourceLwr = lwr;
+		this.upr = this.sourceUpr = upr;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, lwr);
-			TreeVisitor.acceptChildren(visitor, upr);
+			TreeVisitor.acceptChildren(visitor, sourceNext);
+			TreeVisitor.acceptChildren(visitor, sourceLwr);
+			TreeVisitor.acceptChildren(visitor, sourceUpr);
 		}
 		visitor.endVisit(this);
 	}

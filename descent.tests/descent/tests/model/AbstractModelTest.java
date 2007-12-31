@@ -18,6 +18,7 @@ import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
+import descent.core.IParent;
 import descent.core.JavaCore;
 
 public abstract class AbstractModelTest extends TestCase {
@@ -122,18 +123,18 @@ public abstract class AbstractModelTest extends TestCase {
 		javaProject.getProject().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, null);
 	}
 	
-	protected IJavaElement getVariable(ICompilationUnit unit, int num) throws Exception {
+	protected IJavaElement getVariable(IJavaElement unit, int num) throws Exception {
 		return getElement(unit, num, IJavaElement.FIELD);
 	}
 	
-	protected IJavaElement getFunction(ICompilationUnit unit, int num) throws Exception {
+	protected IJavaElement getFunction(IJavaElement unit, int num) throws Exception {
 		return getElement(unit, num, IJavaElement.METHOD);
 	}
 	
-	protected IJavaElement getElement(ICompilationUnit unit, int num, int type) throws Exception {
+	protected IJavaElement getElement(IJavaElement unit, int num, int type) throws Exception {
 		int count = 0;
 		
-		for(IJavaElement child : unit.getChildren()) {
+		for(IJavaElement child : ((IParent) unit).getChildren()) {
 			if (child.getElementType() == type) {
 				if (count == num) {
 					return child;

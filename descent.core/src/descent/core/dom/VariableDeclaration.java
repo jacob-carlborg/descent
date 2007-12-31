@@ -285,5 +285,4 @@ public class VariableDeclaration extends Declaration {
 		return this.ast.getBindingResolver().resolveVariable(this);
 	}
 
-
 }

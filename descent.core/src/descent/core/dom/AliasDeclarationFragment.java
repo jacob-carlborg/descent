@@ -185,5 +185,20 @@ public class AliasDeclarationFragment extends ASTNode {
 			+ (this.name == null ? 0 : getName().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the alias declared in this
+	 * alias declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public IVariableBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveAliasFragment(this);
+	}
 
 }

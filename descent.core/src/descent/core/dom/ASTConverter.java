@@ -490,6 +490,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -513,6 +518,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -842,6 +852,11 @@ public class ASTConverter {
 				b.setSpecialization(convert(a.tspec));
 			}
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		} else {
 			descent.core.dom.IsTypeSpecializationExpression b = new descent.core.dom.IsTypeSpecializationExpression(ast);
@@ -865,6 +880,11 @@ public class ASTConverter {
 			case TOKsuper: b.setSpecialization(TypeSpecialization.SUPER); break;
 			}
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		}
 	}
@@ -883,6 +903,11 @@ public class ASTConverter {
 			b.setOperator(PostfixExpression.Operator.DECREMENT);
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -933,6 +958,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -951,6 +981,11 @@ public class ASTConverter {
 			b.setToExpression(convert(a.upr));
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -963,6 +998,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1011,6 +1051,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1146,6 +1191,11 @@ public class ASTConverter {
 		convertExpressions(b.newArguments(), a.sourceNewargs);
 		convertExpressions(b.constructorArguments(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1159,6 +1209,11 @@ public class ASTConverter {
 		convertBaseClasses(b.baseClasses(), a.cd.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.cd.members);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1170,11 +1225,11 @@ public class ASTConverter {
 				b.setComponentType(convertedType);
 			}
 		}
-		if (a.lwr != null) {
-			b.setFromExpression(convert(a.lwr));
+		if (a.sourceLwr != null) {
+			b.setFromExpression(convert(a.sourceLwr));
 		}
-		if (a.upr != null) {
-			b.setToExpression(convert(a.upr));
+		if (a.sourceUpr != null) {
+			b.setToExpression(convert(a.sourceUpr));
 		}
 		b.setSourceRange(a.start, a.length);
 		return convertModifiedType(a, b);
@@ -1236,6 +1291,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1263,8 +1323,8 @@ public class ASTConverter {
 				b.setComponentType(convertedType);
 			}
 		}
-		if (a.index != null) {
-			descent.core.dom.Type convertedIndex = convert(a.index);
+		if (a.sourceIndex != null) {
+			descent.core.dom.Type convertedIndex = convert(a.sourceIndex);
 			if (convertedIndex != null) {
 				b.setKeyType(convertedIndex);
 			}
@@ -1327,6 +1387,11 @@ public class ASTConverter {
 				b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
 			}
 		}
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1498,6 +1563,11 @@ public class ASTConverter {
 		convertArguments(b.arguments(), ty.parameters);
 		fillFunction(b, a.fd);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1716,6 +1786,11 @@ public class ASTConverter {
 		b.setKind(ConstructorDeclaration.Kind.DESTRUCTOR);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1726,6 +1801,11 @@ public class ASTConverter {
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1734,6 +1814,11 @@ public class ASTConverter {
 		b.setKind(ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1742,6 +1827,11 @@ public class ASTConverter {
 		b.setKind(ConstructorDeclaration.Kind.STATIC_DESTRUCTOR);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1751,6 +1841,11 @@ public class ASTConverter {
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1760,6 +1855,11 @@ public class ASTConverter {
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -1843,6 +1943,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -1890,12 +1995,22 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(DollarExp a) {
 		descent.core.dom.DollarLiteral b = new descent.core.dom.DollarLiteral(ast);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2167,6 +2282,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2188,6 +2308,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2201,6 +2326,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2270,6 +2400,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.sourceEcond.start, a.sourceE2.start + a.sourceE2.length - a.sourceEcond.start);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2310,6 +2445,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2334,6 +2474,11 @@ public class ASTConverter {
 			}
 			b.setSourceRange(a.ident.start, a.ident.length);
 		}
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	
@@ -2396,6 +2541,11 @@ public class ASTConverter {
 		}
 		convertExpressions(b.indexes(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2447,6 +2597,11 @@ public class ASTConverter {
 		descent.core.dom.ArrayLiteral b = new descent.core.dom.ArrayLiteral(ast);
 		convertExpressions(b.arguments(), a.sourceElements);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2483,6 +2638,11 @@ public class ASTConverter {
 			b.setMessage(convert(a.msg));
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2522,6 +2682,11 @@ public class ASTConverter {
 		}
 		convertExpressions(b.arguments(), a.sourceArguments);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2562,6 +2727,11 @@ public class ASTConverter {
 				}
 			}
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		} else {
 			descent.core.dom.CastToModifierExpression b = new descent.core.dom.CastToModifierExpression(ast);
@@ -2580,6 +2750,11 @@ public class ASTConverter {
 			
 			b.setExpression(convertedExp);
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		}
 	}
@@ -2702,6 +2877,11 @@ public class ASTConverter {
 		if (a.sourceE2 != null && a.sourceE2 != null) {
 			b.setSourceRange(a.sourceE1.start, a.sourceE2.start + a.sourceE2.length - a.sourceE1.start);
 		}
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2712,6 +2892,11 @@ public class ASTConverter {
 				b.setBooleanValue(a.value.equals(BigInteger.ONE));
 			}
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		} else if (a.type == Type.tchar || a.type == Type.twchar || a.type == Type.tdchar) {
 			CharacterLiteral b = new CharacterLiteral(ast);
@@ -2719,6 +2904,11 @@ public class ASTConverter {
 				b.internalSetEscapedValue(new String(a.str));
 			}
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		} else {
 			descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
@@ -2726,6 +2916,11 @@ public class ASTConverter {
 				b.internalSetToken(new String(a.str));
 			}
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		}
 	}
@@ -2734,24 +2929,44 @@ public class ASTConverter {
 		descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
 		b.internalSetToken(new String(a.str));
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(NullExp a) {
 		descent.core.dom.NullLiteral b = new descent.core.dom.NullLiteral(ast);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(ThisExp a) {
 		descent.core.dom.ThisLiteral b = new descent.core.dom.ThisLiteral(ast);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Expression convert(SuperExp a) {
 		descent.core.dom.SuperLiteral b = new descent.core.dom.SuperLiteral(ast);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2762,13 +2977,23 @@ public class ASTConverter {
 				b.stringLiterals().add((StringLiteral) convert(next));
 			}
 			StringExp last = a.allStringExps.get(a.allStringExps.size() - 1);			
-			b.setSourceRange(a.start, last.start + last.length - a.start);			
+			b.setSourceRange(a.start, last.start + last.length - a.start);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return b;
 		} else {
 			descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
 			b.internalSetEscapedValue(a.sourceString == null ?
 					"" : new String(a.sourceString));
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertParenthesizedExpression(a, b);
 		}
 	}
@@ -2799,17 +3024,27 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeTypeof a) {
 		descent.core.dom.TypeofType b = new descent.core.dom.TypeofType(ast);
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
 		}
 		if (a.idents == null || a.idents.size() == 0) {
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertModifiedType(a, b);
 		} else {
 			b.setSourceRange(a.typeofStart, a.typeofLength);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertModifiedType(a, convertQualifiedType(b, a, a.start));
 		}
 	}
@@ -2863,6 +3098,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -2929,6 +3169,11 @@ public class ASTConverter {
 				ParenthesizedExpression c = new ParenthesizedExpression(ast);
 				c.setSourceRange(paren.startPosition, paren.length);
 				c.setExpression(b);
+				
+				if (resolveBindings) {
+					recordNodes(c, a);
+				}
+				
 				b = c;
 			}
 		}		
@@ -3201,6 +3446,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -3220,6 +3470,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -3233,6 +3488,11 @@ public class ASTConverter {
 		}
 		b.setOperator(op);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	
@@ -3246,6 +3506,11 @@ public class ASTConverter {
 		}
 		b.setOperator(op);
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return convertParenthesizedExpression(a, b);
 	}
 	

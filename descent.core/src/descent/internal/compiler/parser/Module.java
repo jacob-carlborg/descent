@@ -79,14 +79,18 @@ public class Module extends Package implements IModule {
 
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
-		if (context.global.errors > 0) {
-			return;
-		}
+		// COMMENTED THIS, since when there are syntax errors we would
+		// like to have a better recovery
+//		if (context.global.errors > 0) {
+//			return;
+//		}
 
+		// COMMENTED THIS, since when there are syntax errors we would
+		// like to have a better recovery
 		semantic2(null, context);
-		if (context.global.errors > 0) {
-			return;
-		}
+//		if (context.global.errors > 0) {
+//			return;
+//		}
 
 		semantic3(null, context);
 	}

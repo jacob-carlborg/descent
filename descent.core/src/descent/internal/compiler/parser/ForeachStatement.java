@@ -79,8 +79,8 @@ public class ForeachStatement extends Statement {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, arguments);
-			TreeVisitor.acceptChildren(visitor, aggr);
-			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, sourceAggr);
+			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
 	}
@@ -219,6 +219,9 @@ public class ForeachStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
+		// Descent: for local variable binding signature
+		sc.numberForLocalVariables++;
+		
 		ScopeDsymbol sym;
 		Statement s = this;
 		int dim = arguments.size();
@@ -297,6 +300,10 @@ public class ForeachStatement extends Statement {
 							loc, k));
 					VarDeclaration var = new VarDeclaration(loc, arg.type,
 							arg.ident, ie);
+					
+					// Descent: for binding resolution
+					arg.var = var;
+					
 					var.storage_class |= STCconst;
 					DeclarationExp de = new DeclarationExp(loc, var);
 					st.add(new ExpStatement(loc, de));
@@ -306,7 +313,7 @@ public class ForeachStatement extends Statement {
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NoStorageClassForSymbol, this, new String[] { arg.ident.toChars() }));
 				}
-				Dsymbol var;
+				Dsymbol var = null;
 				if (te != null) {
 					if (e.type.toBasetype(context).ty == Tfunction
 							&& e.op == TOKvar) {
@@ -329,6 +336,10 @@ public class ForeachStatement extends Statement {
 				} else {
 					var = new AliasDeclaration(loc, arg.ident, t);
 				}
+				
+				// Descent: for binding resolution
+				arg.var = var;
+				
 				DeclarationExp de = new DeclarationExp(loc, var);
 				st.add(new ExpStatement(loc, de));
 
@@ -404,6 +415,10 @@ public class ForeachStatement extends Statement {
 				var.storage_class |= STCforeach;
 				var.storage_class |= arg.storageClass
 						& (STCin | STCout | STCref);
+				
+				// Descent: for binding resolution
+				arg.var = var;
+				
 				DeclarationExp de = new DeclarationExp(loc, var);
 				de.semantic(sc, context);
 				if (dim == 2 && i == 0) {

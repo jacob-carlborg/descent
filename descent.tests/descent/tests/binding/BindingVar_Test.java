@@ -2,6 +2,8 @@ package descent.tests.binding;
 
 import descent.core.ICompilationUnit;
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.Assignment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.EnumDeclaration;

@@ -109,5 +109,14 @@ public class CodeSelectFunction_Test extends AbstractModelTest {
 		
 		assertEquals(other.getAllTypes()[0].getChildren()[0], elements[0]);
 	}
+	
+	public void testSelectNestedFunction() throws Exception {
+		ICompilationUnit test = createCompilationUnit("test.d", "void foo() { void bar() { } }");
+		
+		IJavaElement[] elements = test.codeSelect(19, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(getFunction(getFunction(test, 0), 0), elements[0]);
+	}
 
 }
