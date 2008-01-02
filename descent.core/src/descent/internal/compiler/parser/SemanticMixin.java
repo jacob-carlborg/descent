@@ -627,12 +627,20 @@ public class SemanticMixin {
 	 * Only for var, typedef, alias and enum member.
 	 */
 	public static String getSignature(IDsymbol aThis) {
+		if (aThis.parent() == null) {
+			return null;
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		appendDsymbolSignature(aThis, 'Q', sb);
 		return sb.toString();
 	}
 	
 	public static String getSignature(IFuncDeclaration aThis) {
+		if (aThis.parent() == null) {
+			return null;
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		appendDsymbolSignature(aThis, 'O', sb);
 		sb.append(aThis.type().getSignature());

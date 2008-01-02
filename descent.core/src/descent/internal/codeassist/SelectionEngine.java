@@ -372,6 +372,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void add(String signature) {
+		if (signature == null || signature.length() == 0) {
+			return;
+		}
+		
 		IJavaElement result = finder.find(signature);
 		if (result != null) {
 			selectedElements.add(result);

@@ -71,8 +71,8 @@ public abstract class TypeQualified extends Type {
 						
 						// Descent: for binding resolution
 						id.resolvedSymbol = sm;
-						
 					}
+					
 					if (sm == null) {
 						v = s.isVarDeclaration();
 						if (v != null

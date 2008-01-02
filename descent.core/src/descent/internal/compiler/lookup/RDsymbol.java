@@ -73,6 +73,7 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.SignatureProcessor;
@@ -695,8 +696,12 @@ public class RDsymbol extends RNode implements IDsymbol {
 		public void acceptStruct(char[][] compoundName, String signature) {
 			acceptType('S', compoundName, signature);
 		}
+		
+		public void acceptTypedef(char[][] compoundName, String signature) {
+			acceptType('T', compoundName, signature);
+		}
 
-		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
+		public void acceptVariableOrAlias(char[][] compoundName, String signature) {
 			throw new IllegalStateException("Should not be called");
 		}
 		
@@ -742,6 +747,14 @@ public class RDsymbol extends RNode implements IDsymbol {
 								IStructDeclaration s = symbol.isStructDeclaration();
 								if (s != null) {
 									type = new TypeStruct(s);
+									type.deco = SignatureProcessor.uncorrect(signature);
+									stack.push(type);
+								}
+								break;
+							case 'T':
+								ITypedefDeclaration t = symbol.isTypedefDeclaration();
+								if (t != null) {
+									type = new TypeTypedef(t);
 									type.deco = SignatureProcessor.uncorrect(signature);
 									stack.push(type);
 								}

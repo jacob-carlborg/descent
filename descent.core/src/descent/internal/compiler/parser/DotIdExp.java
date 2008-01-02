@@ -112,6 +112,10 @@ public class DotIdExp extends UnaExp {
 			ScopeExp ie = (ScopeExp) eright;
 
 			s = ie.sds.search(loc, ident, 0, context);
+			
+			// Descent: for binding resolution
+			ident.resolvedSymbol = s;
+			
 			if (s != null) {
 				s = s.toAlias(context);
 				checkDeprecated(sc, s, context);

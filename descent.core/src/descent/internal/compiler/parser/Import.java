@@ -279,7 +279,7 @@ public class Import extends Dsymbol {
 	
 	@Override
 	public String getSignature() {
-		if (mod != null) {
+		if (mod != null && equals(mod.ident(), ident)) {
 			return mod.getSignature();
 		}
 		return null;
@@ -287,7 +287,7 @@ public class Import extends Dsymbol {
 	
 	@Override
 	public IJavaElement getJavaElement() {
-		if (mod != null) {
+		if (mod != null && equals(mod.ident(), ident)) {
 			return mod.getJavaElement();
 		}
 		return null;

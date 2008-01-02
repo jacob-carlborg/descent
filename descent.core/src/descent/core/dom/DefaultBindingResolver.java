@@ -722,8 +722,12 @@ public class DefaultBindingResolver extends BindingResolver {
 		public void acceptStruct(char[][] compoundName, String signature) {
 			acceptType(compoundName, signature);
 		}
+		
+		public void acceptTypedef(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature);
+		}
 
-		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
+		public void acceptVariableOrAlias(char[][] compoundName, String signature) {
 			acceptType(compoundName, signature);
 		}
 

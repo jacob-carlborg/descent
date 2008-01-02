@@ -1,21 +1,10 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.IJavaElement;
-import descent.core.compiler.IProblem;
-
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.STC.STCfield;
-
 import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
@@ -44,6 +33,14 @@ import static descent.internal.compiler.parser.TY.Tuns64;
 import static descent.internal.compiler.parser.TY.Tuns8;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.IJavaElement;
+import descent.core.compiler.IProblem;
 
 // DMD 1.020
 public abstract class Type extends ASTDmdNode implements Cloneable {

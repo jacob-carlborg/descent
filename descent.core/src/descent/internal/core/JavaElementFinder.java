@@ -62,7 +62,7 @@ public class JavaElementFinder {
 				modifiers.push("");
 			} else if (stc == (STC.STCout)) {
 				modifiers.push("J");
-			} else if (stc == (STC.STCin | STC.STCout)) {
+			} else if (stc == (STC.STCref)) {
 				modifiers.push("K");
 			} else if (stc == STC.STClazy) {
 				modifiers.push("L");
@@ -160,12 +160,16 @@ public class JavaElementFinder {
 			acceptType(compoundName, signature);
 		}
 
-		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
+		public void acceptVariableOrAlias(char[][] compoundName, String signature) {
 			acceptType(compoundName, signature);
 		}
 		
 		public void acceptModule(char[][] compoundName, String signature) {
 			element = find(compoundName);
+		}
+		
+		public void acceptTypedef(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature);
 		}
 		
 		private void acceptType(char[][] all, String signature) {

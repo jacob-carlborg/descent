@@ -112,7 +112,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase {
 	public void testVariableAliasOrTypedef() {
 		checking(new Expectations() {{
 			char[][] expected = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).acceptVariableAliasOrTypedef(expected, "Q4test3foo");
+			one(requestor).acceptVariableOrAlias(expected, "Q4test3foo");
 		}});
 		
 		SignatureProcessor.process("Q4test3foo", requestor);

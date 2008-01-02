@@ -83,6 +83,7 @@ public class TypeIdentifier extends TypeQualified {
 		Dsymbol[] s = { null };
 
 		resolve(loc, sc, e, t, s, context);
+		
 		if (t[0] != null) {
 			if (t[0].ty == TY.Ttypedef) {
 				TypeTypedef tt = (TypeTypedef) t[0];

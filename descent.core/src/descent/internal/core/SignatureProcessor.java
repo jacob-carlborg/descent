@@ -79,6 +79,13 @@ public class SignatureProcessor {
 		void acceptStruct(char[][] compoundName, String signature);
 		
 		/**
+		 * The processor has found a typedef.
+		 * @param compoundName the fully qualified name of the typedef
+		 * @param signature the signature from which the typedef originated
+		 */
+		void acceptTypedef(char[][] compoundName, String signature);
+		
+		/**
 		 * The processor has found a module.
 		 * @param compoundName the fully qualified name of the module
 		 * @param signature the signature from which the module originated
@@ -92,7 +99,7 @@ public class SignatureProcessor {
 		 * @param signature the signature from which the variable, alias
 		 * or typedef originated
 		 */
-		void acceptVariableAliasOrTypedef(char[][] compoundName, String signature);
+		void acceptVariableOrAlias(char[][] compoundName, String signature);
 
 		/**
 		 * The processor has found a delegate.
@@ -275,7 +282,8 @@ public class SignatureProcessor {
 			case 'E': // enum
 			case 'C': // class
 			case 'S': // struct
-			case 'Q': // var, alias, typedef
+			case 'Q': // var, alias
+			case 'T': // typedef
 			case 'O': // function
 				char second = signature.charAt(1);
 				if (Character.isDigit(second)) {
@@ -354,7 +362,7 @@ public class SignatureProcessor {
 				char c = signature.charAt(i);
 				switch(c) {
 				case 'J': requestor.acceptArgumentModifier(STC.STCout); i++; break;
-				case 'K': requestor.acceptArgumentModifier(STC.STCin | STC.STCout); i++; break;
+				case 'K': requestor.acceptArgumentModifier(STC.STCref); i++; break;
 				case 'L': requestor.acceptArgumentModifier(STC.STClazy); i++; break;
 				default: requestor.acceptArgumentModifier(STC.STCin); break;
 				}
@@ -366,7 +374,7 @@ public class SignatureProcessor {
 					c = signature.charAt(i);
 					switch(c) {
 					case 'J': requestor.acceptArgumentModifier(STC.STCout); i++; break;
-					case 'K': requestor.acceptArgumentModifier(STC.STCin | STC.STCout); i++; break;
+					case 'K': requestor.acceptArgumentModifier(STC.STCref); i++; break;
 					case 'L': requestor.acceptArgumentModifier(STC.STClazy); i++; break;
 					default: requestor.acceptArgumentModifier(STC.STCin); break;
 					}
@@ -460,8 +468,11 @@ public class SignatureProcessor {
 			case 'S': // struct
 				requestor.acceptStruct(compoundName, originalSignature.substring(0, consumed - dif));
 				break;
-			case 'Q': // var, alias or typedef
-				requestor.acceptVariableAliasOrTypedef(compoundName, originalSignature.substring(0, consumed - dif));
+			case 'T': // typedef
+				requestor.acceptTypedef(compoundName, originalSignature.substring(0, consumed - dif));
+				break;
+			case 'Q': // var or alias
+				requestor.acceptVariableOrAlias(compoundName, originalSignature.substring(0, consumed - dif));
 				break;
 			}
 			return consumed;
