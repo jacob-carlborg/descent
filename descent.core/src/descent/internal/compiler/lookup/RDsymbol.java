@@ -1,7 +1,5 @@
 package descent.internal.compiler.lookup;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import descent.core.Flags;
@@ -48,7 +46,6 @@ import descent.internal.compiler.parser.ITemplateDeclaration;
 import descent.internal.compiler.parser.ITypedefDeclaration;
 import descent.internal.compiler.parser.IUnionDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
-import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.IntegerExp;
@@ -78,6 +75,8 @@ import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.core.JavaElementFinder;
+import descent.internal.core.SignatureProcessor;
+import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
 public class RDsymbol extends RNode implements IDsymbol {
@@ -602,187 +601,173 @@ public class RDsymbol extends RNode implements IDsymbol {
 		return symbol;
 	}
 	
-	protected Type getTypeFromSignature(String signature) {
-		signature = JavaElementFinder.correct(signature);
+	private class TypeFromSignature implements ISignatureRequestor {
 		
-		Type type = context.signatureToTypeCache.get(signature);
-		if (type != null) {
-			return type;
+		private Stack<Type> stack = new Stack<Type>();
+		private Stack<Integer> modifiersStack = new Stack<Integer>();
+		
+		public Type getType() {
+			if (stack.isEmpty()) {
+				return null;
+			} else {
+				return stack.pop();
+			}
+		}
+
+		public void acceptArgumentBreak(char c) {
+			// empty
+		}
+
+		public void acceptArgumentModifier(int stc) {
+			modifiersStack.push(stc);
+		}
+
+		public void acceptAssociativeArray(String signature) {
+			TypeAArray type = new TypeAArray(stack.pop(), stack.pop());
+			type.deco = signature;
+			stack.push(type);
+		}
+
+		public void acceptClass(char[][] compoundName, String signature) {
+			acceptType('C', compoundName, signature);
+		}
+
+		public void acceptDelegate(String signature) {
+			TypeDelegate type = new TypeDelegate(stack.pop());
+			type.deco = signature;
+			stack.push(type);
+		}
+
+		public void acceptDynamicArray(String signature) {
+			TypeDArray type = new TypeDArray(stack.pop());
+			type.deco = signature;
+			stack.push(type);
+		}
+
+		public void acceptEnum(char[][] compoundName, String signature) {
+			acceptType('E', compoundName, signature);
+		}
+
+		public void acceptFunction(char[][] compoundName, String signature) {
+			throw new IllegalStateException("Should not be called");
 		}
 		
-		// TODO optimize using IJavaProject#find and NameLookup
-		// TODO make an "extract number" function in order to avoid duplication
-		try {
-			if (signature == null || signature.length() == 0) {
-				// TODO signal error
-				type = Type.tint32;
-			} else {
-				char first = signature.charAt(0);
-				
-				switch(first) {
-				case 'E':   // enum
-				case 'C':   // class
-				case 'S':   // struct
-				case 'T': { // typedef
+		public void enterFunctionType() {
+			// empty
+		}
+
+		public void exitFunctionType(LINK link, String signature) {
+			Arguments arguments = new Arguments();
+			TypeFunction type = new TypeFunction(arguments, stack.pop(), 0, link);
+			
+			while(!stack.isEmpty()) {
+				Type argType = stack.pop();
+				// TODO default value
+				arguments.add(0, new Argument(modifiersStack.pop(), argType, IdentifierExp.EMPTY, null));
+			}
+			
+			// TODO varargs
+			
+			type.deco = signature;
+			stack.push(type);
+		}
+
+		public void acceptPointer(String signature) {
+			TypePointer type = new TypePointer(stack.pop());
+			type.deco = signature;
+			stack.push(type);
+		}
+
+		public void acceptPrimitive(TypeBasic type) {
+			stack.push(type);
+		}
+
+		public void acceptStaticArray(int dimension, String signature) {
+			TypeSArray type = new TypeSArray(stack.pop(), new IntegerExp(dimension));
+			type.deco = signature;
+			stack.push(type);
+		}
+
+		public void acceptStruct(char[][] compoundName, String signature) {
+			acceptType('S', compoundName, signature);
+		}
+
+		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
+			throw new IllegalStateException("Should not be called");
+		}
+		
+		private void acceptType(char first, char[][] all, String signature) {
+			try {
+				for(int j = all.length - 1; j >= 1; j--) {
+					char[][] compoundName = new char[j][];
+					System.arraycopy(all, 0, compoundName, 0, j);
 					
-					// Gather pieces
-					List<char[]> piecesList = new ArrayList<char[]>();
-					
-					int i;
-					for(i = 1; i < signature.length(); i++) {
-						char c = signature.charAt(i);
-						int n = 0;
-						while(Character.isDigit(c)) {
-							n = 10 * n + (c - '0');
-							i++;
-							c = signature.charAt(i);
-						}
-						String name = signature.substring(i, i + n);
-						piecesList.add(name.toCharArray());
-						i += n - 1;
-					}
-					
-					// Search the deepest module. For example in
-					// one.two.three.Four, Four can't be a module, but
-					// three can be, and also two (with three a member).
-					// So search compound names up to before the last piece.
-					char[][] all = (char[][]) piecesList.toArray(new char[piecesList.size()][]);
-					for(int j = all.length - 1; j >= 1; j--) {
-						char[][] compoundName = new char[j][];
-						System.arraycopy(all, 0, compoundName, 0, j);
+					Object current = context.moduleFinder.findModule(compoundName, context);
+					if (current != null) {
+						// Keep searching
 						
-						Object current = context.moduleFinder.findModule(compoundName, context);
-						if (current != null) {
-							// Keep searching
-							
-							for(int k = j; k < all.length; k++) {
-								current = findChild(current, new String(all[k]));
-								if (current == null) {
-									break;
-								}
+						for(int k = j; k < all.length; k++) {
+							current = findChild(current, new String(all[k]));
+							if (current == null) {
+								break;
 							}
-							
-							if (current != null && current instanceof IDsymbol) {
-								IDsymbol symbol = (IDsymbol) current;
-								switch(first) {
-								case 'E':
-									IEnumDeclaration e = symbol.isEnumDeclaration();
-									if (e != null) {
-										type = new TypeEnum(e);
-										type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
-									}
-									break;
-								case 'C':
-									IClassDeclaration c = symbol.isClassDeclaration();
-									if (c != null) {
-										type = new TypeClass(c);
-										type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
-									}
-									break;
-								case 'S':
-									IStructDeclaration s = symbol.isStructDeclaration();
-									if (s != null) {
-										type = new TypeStruct(s);
-										type.deco = JavaElementFinder.uncorrect(signature.substring(0, i));
-									}
-									break;
-								}						
-							}
-							
-							break;
 						}
-					}
-					break;
-				}
-				case 'D': { // delegate
-					type = new TypeDelegate(getTypeFromSignature(signature.substring(1)));
-					type.deco = signature.substring(0, type.next.deco.length() + 1);
-					break;
-				}
-				case 'P': { // pointer
-					type = new TypePointer(getTypeFromSignature(signature.substring(1)));
-					type.deco = signature.substring(0, type.next.deco.length() + 1);
-					break;
-				}
-				case 'A': { // dynamic array
-					type = new TypeDArray(getTypeFromSignature(signature.substring(1)));
-					type.deco = signature.substring(0, type.next.deco.length() + 1);
-					break;
-				}
-				case 'G': { // static array
-					int n = 0;
-					int i;
-					for(i = 1; i < signature.length(); i++) {
-						char c = signature.charAt(i);
-						while(Character.isDigit(c)) {
-							n = 10 * n + (c - '0');
-							i++;
-							c = signature.charAt(i);
+						
+						if (current != null && current instanceof IDsymbol) {
+							IDsymbol symbol = (IDsymbol) current;
+							Type type;
+							switch(first) {
+							case 'E': {
+								IEnumDeclaration e = symbol.isEnumDeclaration();
+								if (e != null) {
+									type = new TypeEnum(e);
+									type.deco = JavaElementFinder.uncorrect(signature);
+									stack.push(type);
+								}
+								break;
+							}
+							case 'C':
+								IClassDeclaration c = symbol.isClassDeclaration();
+								if (c != null) {
+									type = new TypeClass(c);
+									type.deco = JavaElementFinder.uncorrect(signature);
+									stack.push(type);
+								}
+								break;
+							case 'S':
+								IStructDeclaration s = symbol.isStructDeclaration();
+								if (s != null) {
+									type = new TypeStruct(s);
+									type.deco = JavaElementFinder.uncorrect(signature);
+									stack.push(type);
+								}
+								break;
+							}						
 						}
 						break;
 					}
-					
-					type = new TypeSArray(getTypeFromSignature(signature.substring(i)), new IntegerExp(n));
-					type.deco = signature.substring(0, i + type.next.deco.length());
-					break;
 				}
-				case 'H': {// associative array
-					Type k = getTypeFromSignature(signature.substring(1));
-					Type v = getTypeFromSignature(signature.substring(1 + k.deco.length()));
-					type = new TypeAArray(k, v);
-					type.deco = signature.substring(0, k.deco.length() + v.deco.length() + 1);
-					break;
-				}
-				case 'F': // Type function
-				case 'U':
-				case 'W':
-				case 'V':
-				case 'R':
-					LINK link;
-					switch(first) {
-					case 'F': link = LINK.LINKd; break;
-					case 'U': link = LINK.LINKc; break;
-					case 'W': link = LINK.LINKwindows; break;
-					case 'V': link = LINK.LINKpascal; break;
-					case 'R': link = LINK.LINKcpp; break;
-					default: throw new IllegalStateException("Should not happen");
-					}
-					
-					Arguments args = new Arguments();
-					
-					int i = 1;
-					Type targ = getTypeFromSignature(signature.substring(i));
-					while(targ != null) {
-						// TODO storage class and default arg
-						args.add(new Argument(0, targ, new IdentifierExp(Id.empty), null));
-						i += targ.deco.length();
-						
-						targ = getTypeFromSignature(signature.substring(i));
-					}
-					
-					i++;
-					Type tret = getTypeFromSignature(signature.substring(i));
-					
-					// TODO varargs
-					type = new TypeFunction(args, tret, 0, link);
-					type.deco = signature.substring(0, i + tret.deco.length());
-					break;
-				case 'X': // Argument break
-				case 'Y':
-				case 'Z':
-					return null;
-				default: // Try with type basic
-					char c = signature.charAt(0);
-					type = TypeBasic.fromSignature(c);
-				}
+			} catch (JavaModelException e) {
+				Util.log(e);
 			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-			type = Type.tint32;
+		}
+		
+	}
+	
+	protected Type getTypeFromSignature(String signature) {
+		if (signature == null || signature.length() == 0) {
+			return null;
+		}
+		
+		Type type = context.signatureToTypeCache.get(signature);
+		if (type == null) {
+			TypeFromSignature tfs = new TypeFromSignature();
+			SignatureProcessor.process(signature, tfs);
+			type = tfs.getType();
 		}
 		
 		if (type == null) {
-			type = Type.tint32;
+			type = Type.terror;
 		}
 		
 		context.signatureToTypeCache.put(signature, type);

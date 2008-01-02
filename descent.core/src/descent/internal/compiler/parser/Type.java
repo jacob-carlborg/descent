@@ -65,35 +65,35 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 
-	public final static Type tvoid = new TypeBasic(TY.Tvoid);
-	public final static Type tint8 = new TypeBasic(TY.Tint8);
-	public final static Type tuns8 = new TypeBasic(TY.Tuns8);
-	public final static Type tint16 = new TypeBasic(TY.Tint16);
-	public final static Type tuns16 = new TypeBasic(TY.Tuns16);
-	public final static Type tint32 = new TypeBasic(TY.Tint32);
-	public final static Type tuns32 = new TypeBasic(TY.Tuns32);
-	public final static Type tint64 = new TypeBasic(TY.Tint64);
-	public final static Type tuns64 = new TypeBasic(TY.Tuns64);
-	public final static Type tfloat32 = new TypeBasic(TY.Tfloat32);
-	public final static Type tfloat64 = new TypeBasic(TY.Tfloat64);
-	public final static Type tfloat80 = new TypeBasic(TY.Tfloat80);
-	public final static Type timaginary32 = new TypeBasic(TY.Timaginary32);
-	public final static Type timaginary64 = new TypeBasic(TY.Timaginary64);
-	public final static Type timaginary80 = new TypeBasic(TY.Timaginary80);
-	public final static Type tcomplex32 = new TypeBasic(TY.Tcomplex32);
-	public final static Type tcomplex64 = new TypeBasic(TY.Tcomplex64);
-	public final static Type tcomplex80 = new TypeBasic(TY.Tcomplex80);
-	public final static Type tbit = new TypeBasic(TY.Tbit);
-	public final static Type tbool = new TypeBasic(TY.Tbool);
-	public final static Type tchar = new TypeBasic(TY.Tchar);
-	public final static Type twchar = new TypeBasic(TY.Twchar);
-	public final static Type tdchar = new TypeBasic(TY.Tdchar);
-	public final static Type terror = new TypeBasic(TY.Tint32); // for error recovery
-	public final static Type tindex = tint32;
-	public final static Type tboolean = tbool;
-	public final static Type tsize_t = tuns32;
-	public final static Type tptrdiff_t = tint32;
-	public final static Type tshiftcnt = tint32;
+	public final static TypeBasic tvoid = new TypeBasic(TY.Tvoid);
+	public final static TypeBasic tint8 = new TypeBasic(TY.Tint8);
+	public final static TypeBasic tuns8 = new TypeBasic(TY.Tuns8);
+	public final static TypeBasic tint16 = new TypeBasic(TY.Tint16);
+	public final static TypeBasic tuns16 = new TypeBasic(TY.Tuns16);
+	public final static TypeBasic tint32 = new TypeBasic(TY.Tint32);
+	public final static TypeBasic tuns32 = new TypeBasic(TY.Tuns32);
+	public final static TypeBasic tint64 = new TypeBasic(TY.Tint64);
+	public final static TypeBasic tuns64 = new TypeBasic(TY.Tuns64);
+	public final static TypeBasic tfloat32 = new TypeBasic(TY.Tfloat32);
+	public final static TypeBasic tfloat64 = new TypeBasic(TY.Tfloat64);
+	public final static TypeBasic tfloat80 = new TypeBasic(TY.Tfloat80);
+	public final static TypeBasic timaginary32 = new TypeBasic(TY.Timaginary32);
+	public final static TypeBasic timaginary64 = new TypeBasic(TY.Timaginary64);
+	public final static TypeBasic timaginary80 = new TypeBasic(TY.Timaginary80);
+	public final static TypeBasic tcomplex32 = new TypeBasic(TY.Tcomplex32);
+	public final static TypeBasic tcomplex64 = new TypeBasic(TY.Tcomplex64);
+	public final static TypeBasic tcomplex80 = new TypeBasic(TY.Tcomplex80);
+	public final static TypeBasic tbit = new TypeBasic(TY.Tbit);
+	public final static TypeBasic tbool = new TypeBasic(TY.Tbool);
+	public final static TypeBasic tchar = new TypeBasic(TY.Tchar);
+	public final static TypeBasic twchar = new TypeBasic(TY.Twchar);
+	public final static TypeBasic tdchar = new TypeBasic(TY.Tdchar);
+	public final static TypeBasic terror = new TypeBasic(TY.Tint32); // for error recovery
+	public final static TypeBasic tindex = tint32;
+	public final static TypeBasic tboolean = tbool;
+	public final static TypeBasic tsize_t = tuns32;
+	public final static TypeBasic tptrdiff_t = tint32;
+	public final static TypeBasic tshiftcnt = tint32;
 
 	public static final boolean impcnvWarn[][];
 	public static final TY impcnvResult[][];

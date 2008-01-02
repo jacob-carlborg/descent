@@ -28,6 +28,7 @@ Export-Package: descent.core,
  descent.internal.compiler.lookup;x-friends:="descent.tests",
  descent.internal.compiler.parser;x-friends:="descent.tests",
  descent.internal.compiler.parser.ast;x-friends:="descent.tests",
+ descent.internal.core;x-friends:="descent.tests",
  melnorme.miscutil,
  melnorme.miscutil.log,
  melnorme.miscutil.tree

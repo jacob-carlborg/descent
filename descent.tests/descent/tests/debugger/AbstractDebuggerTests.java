@@ -12,7 +12,6 @@ import descent.debug.core.model.IDebugElementFactory;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.model.IDebuggerListener;
 import descent.internal.debug.core.model.ddbg.DdbgDebugger;
-import descent.tests.ddoc.DdocParserTests;
 
 public abstract class AbstractDebuggerTests extends MockObjectTestCase {
 	

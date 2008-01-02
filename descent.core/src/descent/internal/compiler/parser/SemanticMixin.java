@@ -627,36 +627,25 @@ public class SemanticMixin {
 	 * Only for var, typedef, alias and enum member.
 	 */
 	public static String getSignature(IDsymbol aThis) {
-		if (aThis.parent() == null) {
-			return null;
-		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("Q");
-		
-		// If my parent is a class, then the signature will start
-		// with the letter C, so remove it. Same for other types.
-		String parentSignature = aThis.parent().getSignature();
-		if (parentSignature.length() > 0 && 
-				!Character.isDigit(parentSignature.charAt(0))) {
-			sb.append(parentSignature.substring(1));
-		} else {
-			sb.append(parentSignature);
-		}
-		
-		sb.append(aThis.ident().ident.length);
-		sb.append(aThis.ident());
+		appendDsymbolSignature(aThis, 'Q', sb);
 		return sb.toString();
 	}
 	
 	public static String getSignature(IFuncDeclaration aThis) {
-		if (aThis.parent() == null) {
-			return null;
-		}
-		
 		StringBuilder sb = new StringBuilder();
-		sb.append("O");
+		appendDsymbolSignature(aThis, 'O', sb);
+		sb.append(aThis.type().getSignature());
+		return sb.toString();
+	}
+	
+	private static void appendDsymbolSignature(IDsymbol aThis, char first, StringBuilder sb) {
+		if (aThis.parent() == null) {
+			return;
+		}
+		sb.append(first);
 		
-		// If it's a nested function, append the @
+		// If it's nested in a function, append the @
 		if (aThis.parent() instanceof IFuncDeclaration) {
 			sb.append(aThis.parent().getSignature());
 			sb.append("@");
@@ -674,8 +663,6 @@ public class SemanticMixin {
 		
 		sb.append(aThis.ident().ident.length);
 		sb.append(aThis.ident());
-		sb.append(aThis.type().getSignature());
-		return sb.toString();
 	}
 	
 	public static String mangle(IClassDeclaration aThis, SemanticContext context) {

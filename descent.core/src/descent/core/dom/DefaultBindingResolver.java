@@ -1,9 +1,8 @@
 package descent.core.dom;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
@@ -15,6 +14,7 @@ import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -35,7 +35,11 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
+import descent.internal.core.JavaProject;
 import descent.internal.core.LocalVariable;
+import descent.internal.core.SearchableEnvironment;
+import descent.internal.core.SignatureProcessor;
+import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
 public class DefaultBindingResolver extends BindingResolver {
@@ -88,6 +92,11 @@ public class DefaultBindingResolver extends BindingResolver {
 	JavaElementFinder finder;
 	
 	/**
+	 * The name environment to search for compilation units.
+	 */
+	INameEnvironment environment;
+	
+	/**
 	 * Constructor for DefaultBindingResolver.
 	 */
 	DefaultBindingResolver(IJavaProject project, WorkingCopyOwner workingCopyOwner, BindingTables bindingTables) {
@@ -97,6 +106,12 @@ public class DefaultBindingResolver extends BindingResolver {
 		this.workingCopyOwner = workingCopyOwner;
 		this.newAstToOldAst = new HashMap();
 		this.finder = new JavaElementFinder(javaProject, workingCopyOwner);
+		try {
+			this.environment = new SearchableEnvironment((JavaProject) javaProject, workingCopyOwner);
+		} catch (JavaModelException e) {
+			Util.log(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override
@@ -564,8 +579,178 @@ public class DefaultBindingResolver extends BindingResolver {
 		return binding;
 	}
 	
-	// TODO see how not tu "duplilcate" this code, it's also
-	// in RDsymbol#getTypeFromSignature, although a little different
+	private class SignatureSolver implements ISignatureRequestor {
+		
+		private Stack<IBinding> stack = new Stack<IBinding>();
+		private IJavaElement element;
+
+		public void acceptArgumentBreak(char c) {
+			// empty
+		}
+
+		public void acceptArgumentModifier(int stc) {
+			// TODO Descent binding argument modifier
+		}
+
+		public void acceptAssociativeArray(String signature) {
+			stack.push(new TypeAArrayBinding(
+					DefaultBindingResolver.this, 
+					(ITypeBinding) stack.pop(), 
+					(ITypeBinding) stack.pop(), 
+					signature));
+		}
+
+		public void acceptClass(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature, true /* create binding */);
+		}
+
+		public void acceptDelegate(String signature) {
+			TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) stack.pop();
+			next.isFunction = false;
+			next.signature = signature;
+			stack.push(next);
+		}
+
+		public void acceptDynamicArray(String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				binding = new TypeDArrayBinding(
+						DefaultBindingResolver.this,
+						(ITypeBinding) stack.pop(),
+						signature);
+			}
+			stack.push(binding);
+		}
+
+		public void acceptEnum(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature, true /* create binding */);
+		}
+
+		public void acceptFunction(char[][] compoundName, String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				IParent parent = null;
+				if (element == null) {
+					acceptType(compoundName, signature, false /* don't create binding */);
+					
+					parent = (IParent) element.getParent();
+				} else {
+					parent = (IParent) element;
+				}
+				
+				ITypeBinding func = (ITypeBinding) stack.pop();
+				
+				String[] paramsAndReturnTypes = new String[func.getParametersTypes().length + 1];
+				for(int i = 0; i < func.getParametersTypes().length; i++) {
+					paramsAndReturnTypes[i] = func.getParametersTypes()[i].getKey();
+				}
+				paramsAndReturnTypes[paramsAndReturnTypes.length - 1] = func.getReturnType().getKey();
+				
+				try {
+					element = JavaElementFinder.findFunction(parent, new String(compoundName[compoundName.length - 1]), paramsAndReturnTypes);
+				} catch (JavaModelException e) {
+					Util.log(e);
+				}
+				
+				binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
+			}
+			
+			if (binding != null) {
+				stack.push(binding);
+			}
+		}
+
+		public void acceptPointer(String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				binding = new TypePointerBinding(
+						DefaultBindingResolver.this,
+						(ITypeBinding) stack.pop(),
+						signature);
+			}
+			stack.push(binding);
+		}
+
+		public void acceptPrimitive(TypeBasic type) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(type.deco);
+			if (binding == null) {
+				binding = new TypeBasicBinding(DefaultBindingResolver.this, type);
+			}
+			stack.push(binding);
+		}
+
+		public void acceptStaticArray(int dimension, String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				binding = new TypeSArrayBinding(
+					DefaultBindingResolver.this,
+					(ITypeBinding) stack.pop(),
+					dimension,
+					signature);
+			}
+			stack.push(binding);
+		}
+
+		public void acceptStruct(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature, true /* create binding */);
+		}
+
+		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature, true /* create binding */);
+		}
+
+		public void enterFunctionType() {
+			// empty
+		}
+
+		public void exitFunctionType(LINK link, String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				ITypeBinding[] parameterTypes = new ITypeBinding[stack.size() - 1];
+				
+				ITypeBinding returnType = (ITypeBinding) stack.pop();
+				
+				int i = stack.size() - 1;
+				while(!stack.isEmpty()) {
+					parameterTypes[i] = (ITypeBinding) stack.pop();
+					i--;
+				}
+				
+				binding = new TypeFunctionOrDelegateBinding(
+						DefaultBindingResolver.this,
+						parameterTypes,
+						returnType,
+						false, // TODO varargs
+						link,
+						signature,
+						true /* is function */);
+			}
+			stack.push(binding);
+		}
+		
+		private void acceptType(char[][] all, String signature, boolean createBinding) {
+			if (createBinding) {
+				IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+				if (binding == null) {
+					element = finder.find(all);
+					if (element != null) {
+						if (element instanceof IType) {
+							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+						} else if (element instanceof IField) {
+							binding = new VariableBinding(DefaultBindingResolver.this, (IField) element, false /* not a parameter */, signature);
+						}
+					}
+				}
+				if (binding != null) {
+					stack.push(binding);
+				}
+			} else {
+				element = finder.find(all);
+			}
+		}
+		
+	}
+	
 	IBinding resolveBinding(String signature) {
 		signature = JavaElementFinder.correct(signature);
 		
@@ -574,166 +759,13 @@ public class DefaultBindingResolver extends BindingResolver {
 			return binding;
 		}
 		
-		// TODO optimize using IJavaProject#find and NameLookup
-		// TODO make an "extract number" function in order to avoid duplication
-		try {
-			if (signature == null || signature.length() == 0) {
-				// TODO signal error
-				return null;
-			} else {
-				char first = signature.charAt(0);
-				
-				switch(first) {
-				case 'E': // enum
-				case 'C': // class
-				case 'S': // struct
-				case 'T': // typedef
-				case 'Q': // var, alias, typedef
-				case 'O': { // function 
-					
-					// TODO make the pieces here also
-					
-					IJavaElement current = javaProject;
-					String name = null;
-					
-					int i;
-					for(i = 1; i < signature.length(); i++) {
-						char c = signature.charAt(i);
-						if (!Character.isDigit(c)) {
-							break;
-						}
-						int n = 0;
-						while(Character.isDigit(c)) {
-							n = 10 * n + (c - '0');
-							i++;
-							c = signature.charAt(i);
-						}
-						try {
-							name = signature.substring(i, i + n);
-							current = JavaElementFinder.findChild(current, name);
-							if (current == null) {
-								// TODO signal error
-								break;
-							}
-							i += n - 1;
-						} catch (StringIndexOutOfBoundsException t) {
-							t.printStackTrace();
-						}
-					}
-					
-					// If it's a function, search it using the parameters
-					if (first == 'O' && current != null && 
-							current.getParent() != null && 
-							current instanceof IParent &&
-							name != null) {
-						String[] paramsAndRetType = JavaElementFinder.getParametersAndReturnType(signature.substring(i + 1));
-						current = JavaElementFinder.findFunction((IParent) current.getParent(), name, paramsAndRetType);
-						if (current != null && current instanceof IMethod) {
-							// TODO the signature passed here is wrong!
-							binding = new MethodBinding(this, (IMethod) current, signature);
-						}
-					} else if (current != null) {
-						if (current instanceof IType) {
-							binding = new TypeBinding(this, (IType) current, JavaElementFinder.uncorrect(signature.substring(0, i)));
-							
-						} else if (current instanceof IField) {
-							binding = new VariableBinding(this, (IField) current, false /* not a parameter */, JavaElementFinder.uncorrect(signature.substring(0, i)));
-						}
-					}
-					break;
-				}
-				case 'D': { // delegate
-					TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) resolveBinding(signature.substring(1));
-					next.isFunction = true;
-					next.signature = signature.substring(0, next.getKey().length() + 1);
-					binding = next;
-					break;
-				}
-				case 'P': { // pointer
-					ITypeBinding next = (ITypeBinding) resolveBinding(signature.substring(1));
-					if (next.isFunction()) {
-						TypeFunctionOrDelegateBinding fp = (TypeFunctionOrDelegateBinding) next;
-						fp.signature = signature.substring(0, next.getKey().length() + 1);
-						binding = fp;
-					} else {
-						binding = new TypePointerBinding(this, next, signature.substring(0, next.getKey().length() + 1));
-					}
-					break;
-				}
-				case 'A': { // dynamic array
-					ITypeBinding next = (ITypeBinding) resolveBinding(signature.substring(1));
-					binding = new TypeDArrayBinding(this, next, signature.substring(0, next.getKey().length() + 1));
-					break;
-				}
-				case 'G': { // static array
-					int n = 0;
-					int i;
-					for(i = 1; i < signature.length(); i++) {
-						char c = signature.charAt(i);
-						while(Character.isDigit(c)) {
-							n = 10 * n + (c - '0');
-							i++;
-							c = signature.charAt(i);
-						}
-						break;
-					}
-					ITypeBinding next = (ITypeBinding) resolveBinding(signature.substring(i));
-					binding = new TypeSArrayBinding(this, next, n, signature.substring(0, i + next.getKey().length()));
-					break;
-				}
-				case 'H': {// associative array
-					ITypeBinding k = (ITypeBinding) resolveBinding(signature.substring(1));
-					ITypeBinding v = (ITypeBinding) resolveBinding(signature.substring(1 + k.getKey().length()));
-					binding = new TypeAArrayBinding(this, k, v, signature.substring(0, k.getKey().length() + v.getKey().length() + 1));
-					break;
-				}
-				case 'F': // Type function
-				case 'U':
-				case 'W':
-				case 'V':
-				case 'R':
-					LINK link;
-					switch(first) {
-					case 'F': link = LINK.LINKd; break;
-					case 'U': link = LINK.LINKc; break;
-					case 'W': link = LINK.LINKwindows; break;
-					case 'V': link = LINK.LINKpascal; break;
-					case 'R': link = LINK.LINKcpp; break;
-					default: throw new IllegalStateException("Should not happen");
-					}
-					
-					List<ITypeBinding> args = new ArrayList<ITypeBinding>(); 
-					
-					int i = 1;
-					ITypeBinding targ = (ITypeBinding) resolveBinding(signature.substring(i));
-					while(targ != null) {
-						// TODO default arg
-						args.add(targ);
-						i += targ.getKey().length();
-						
-						targ = (ITypeBinding) resolveBinding(signature.substring(i));
-					}
-					
-					i++;
-					ITypeBinding tret = (ITypeBinding) resolveBinding(signature.substring(i));
-					
-					// TODO varargs
-					binding = new TypeFunctionOrDelegateBinding(this, args.toArray(new ITypeBinding[args.size()]), tret, false, link, signature.substring(0, i + tret.getKey().length()), true);
-					break;
-				case 'X': // Argument break
-				case 'Y':
-				case 'Z':
-					return null;
-				default: // Try with type basic
-					TypeBasic typeBasic = TypeBasic.fromSignature(first);
-					if (typeBasic != null) {
-						binding = new TypeBasicBinding(this, typeBasic);
-					}
-					break;
-				}
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
+		SignatureSolver solver = new SignatureSolver();
+		SignatureProcessor.process(signature, solver);
+		
+		if (solver.stack.isEmpty()) {
+			binding = null;
+		} else {
+			binding = solver.stack.pop();
 		}
 		
 		if (binding != null) {

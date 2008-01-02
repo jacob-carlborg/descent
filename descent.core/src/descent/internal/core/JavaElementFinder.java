@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Map.Entry;
 
 import descent.core.ICompilationUnit;
@@ -20,6 +21,10 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.STC;
+import descent.internal.compiler.parser.TypeBasic;
+import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
 /**
@@ -130,119 +135,165 @@ public class JavaElementFinder {
 		return signature;
 	}
 	
-	/**
-	 * Finds the java element denoted by the given signature.
-	 */
-	public IJavaElement find(String signature) {
-		// TODO and other types too
-		signature = correct(signature);
+	// TODO improve performance to not find a type that is part of the
+	// signature of an internal function
+	private class InternalFinder implements ISignatureRequestor {
 		
-		// TODO optimize using IJavaProject#find and NameLookup
-		// TODO make an "extract number" function in order to avoid duplication
-		// TODO refactor this code, it's become a mess!
-		try {
-			if (signature == null || signature.length() == 0) {
-				// TODO signal error
-				return null;
+		private IJavaElement element;
+		private Stack<String> stack = new Stack<String>();
+		private Stack<String> modifiers = new Stack<String>();
+		private Stack<String[]> paramsAndReturnTypesStack = new Stack<String[]>();
+		
+		private int typeFunctionCounter;
+
+		public void acceptArgumentBreak(char c) {
+			// empty
+		}
+
+		public void acceptArgumentModifier(int stc) {
+			if (stc == STC.STCin) {
+				modifiers.push("");
+			} else if (stc == (STC.STCout)) {
+				modifiers.push("J");
+			} else if (stc == (STC.STCin | STC.STCout)) {
+				modifiers.push("K");
+			} else if (stc == STC.STClazy) {
+				modifiers.push("L");
 			} else {
-				char first = signature.charAt(0);
+				throw new IllegalStateException();
+			}
+		}
+
+		public void acceptAssociativeArray(String signature) {
+			stack.pop();
+			stack.pop();
+			stack.push(signature);
+		}
+
+		public void acceptClass(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature);
+		}
+
+		public void acceptDelegate(String signature) {
+			stack.pop();
+			stack.push(signature);
+		}
+
+		public void acceptDynamicArray(String signature) {
+			stack.pop();
+			stack.push(signature);
+		}
+
+		public void acceptEnum(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature);
+		}
+
+		public void acceptFunction(char[][] compoundName, String signature) {
+			// Pop the type function signature
+			stack.pop();
+			
+			String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
+			
+			IParent parent = null;
+			if (element == null) {
+				acceptType(compoundName, signature);
+				stack.pop();
 				
-				switch(first) {
-				case 'E': // enum
-				case 'C': // class
-				case 'S': // struct
-				case 'T': // typedef
-				case 'Q': // var, alias, typedef
-				case 'O': // function
-					
-					char second = signature.charAt(1);
-					if (second != 'O') {
-						// Gather pieces
-						List<char[]> piecesList = new ArrayList<char[]>();
-						
-						String name = null;
-						
-						int i;
-						for(i = 1; i < signature.length(); i++) {
-							char c = signature.charAt(i);
-							if (!Character.isDigit(c)) {
-								break;
-							}
-							int n = 0;
-							while(Character.isDigit(c)) {
-								n = 10 * n + (c - '0');
-								i++;
-								c = signature.charAt(i);
-							}
-							name = signature.substring(i, i + n);
-							piecesList.add(name.toCharArray());
-							i += n - 1;
+				parent = (IParent) element.getParent();
+			} else {
+				parent = (IParent) element;
+			}
+			
+			try {
+				element = findFunction(parent, new String(compoundName[compoundName.length - 1]), paramsAndReturnTypes);
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+		
+		public void enterFunctionType() {
+			typeFunctionCounter++;
+		}
+
+		public void exitFunctionType(LINK link, String signature) {
+			String[] paramsAndReturnTypes = new String[stack.size()];
+			paramsAndReturnTypes[stack.size() - 1] = stack.pop();
+			int i = stack.size() - 1;
+			while(!stack.isEmpty()) {
+				paramsAndReturnTypes[i] = modifiers.pop() + stack.pop();
+				i--;
+			}
+			
+			paramsAndReturnTypesStack.push(paramsAndReturnTypes);
+			
+			stack.push(signature);
+			
+			typeFunctionCounter--;
+		}
+
+		public void acceptPointer(String signature) {
+			stack.pop();
+			stack.push(signature);
+		}
+
+		public void acceptPrimitive(TypeBasic type) {
+			stack.push(type.deco);
+		}
+
+		public void acceptStaticArray(int dimension, String signature) {
+			stack.pop();
+			stack.push(signature);
+		}
+
+		public void acceptStruct(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature);
+		}
+
+		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
+			acceptType(compoundName, signature);
+		}
+		
+		private void acceptType(char[][] all, String signature) {
+			stack.push(signature);
+			
+			if (typeFunctionCounter > 0) {
+				return;
+			}
+			
+			try {
+				if (element == null) {
+					element = find(all);
+				} else {
+					element = findChild(element, new String(all[all.length - 1]));
+				}
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+		}
+		
+	}
+	
+	/**
+	 * Finds a java element denoted by the given compound name.
+	 * @param compoundName the compound name
+	 * @return the element, if any, or null
+	 */
+	public IJavaElement find(char[][] compoundName) {
+		IJavaElement element = null;
+		
+		try {
+			for(int j = compoundName.length - 1; j >= 1; j--) {
+				char[][] compoundName0 = new char[j][];
+				System.arraycopy(compoundName, 0, compoundName0, 0, j);
+				
+				element = environment.findCompilationUnit(compoundName0);
+				if (element != null) {
+					// Keep searching ...
+					for(int k = j; k < compoundName.length; k++) {
+						element = findChild(element, new String(compoundName[k]));
+						if (element == null) {
+							break;
 						}
-						
-						// Search the deepest module. For example in
-						// one.two.three.Four, Four can't be a module, but
-						// three can be, and also two (with three a member).
-						// So search compound names up to before the last piece.
-						char[][] all = (char[][]) piecesList.toArray(new char[piecesList.size()][]);
-						for(int j = all.length - 1; j >= 1; j--) {
-							char[][] compoundName = new char[j][];
-							System.arraycopy(all, 0, compoundName, 0, j);
-							
-							IJavaElement current = environment.findCompilationUnit(compoundName);
-							if (current != null) {
-								// Keep searching
-								
-								for(int k = j; k < all.length; k++) {
-									current = findChild(current, new String(all[k]));
-									if (current == null) {
-										break;
-									}
-								}
-								
-								// If it's a function, search it using the parameters
-								if (first == 'O' && current != null && 
-										current.getParent() != null && 
-										current instanceof IParent &&
-										name != null) {
-									String[] paramsAndRetType = getParametersAndReturnType(signature.substring(i + 1));
-									current = findFunction((IParent) current.getParent(), name, paramsAndRetType);
-								}
-								
-								return current;
-							}
-						}
-					} else {
-						IJavaElement current = find(signature.substring(1));
-						int next = signature.indexOf('@') + 1;
-						
-						String name = null;
-						int i;
-						for(i = next; i < signature.length(); i++) {
-							char c = signature.charAt(i);
-							if (!Character.isDigit(c)) {
-								break;
-							}
-							int n = 0;
-							while(Character.isDigit(c)) {
-								n = 10 * n + (c - '0');
-								i++;
-								c = signature.charAt(i);
-							}
-							name = signature.substring(i, i + n);
-							current = findChild(current, name);
-							i += n - 1;
-						}
-						
-						// If it's a function, search it using the parameters
-						if (first == 'O' && current != null && 
-								current.getParent() != null && 
-								current instanceof IParent &&
-								name != null) {
-							String[] paramsAndRetType = getParametersAndReturnType(signature.substring(i + 1));
-							current = findFunction((IParent) current.getParent(), name, paramsAndRetType);
-						}
-						
-						return current;
 					}
 				}
 			}
@@ -250,7 +301,16 @@ public class JavaElementFinder {
 			Util.log(e);
 		}
 		
-		return null;
+		return element;
+	}
+	
+	/**
+	 * Finds the java element denoted by the given signature.
+	 */
+	public IJavaElement find(String signature) {
+		InternalFinder finder = new InternalFinder();
+		SignatureProcessor.process(signature, finder);
+		return finder.element;
 	}
 
 	/**
@@ -258,11 +318,12 @@ public class JavaElementFinder {
 	 * The function signature must not start with the starting F (it must
 	 * start with the immediately next character).
 	 */
-	public static String[] getParametersAndReturnType(String signature) {
+	public static String[] getParametersAndReturnType(String signature, int[] length) {
 		boolean foundSeparator = false;
 		
 		List<String> types = new ArrayList<String>();
-		for(int i = 0; i < signature.length(); i++) {
+		int i;
+		for(i = 0; i < signature.length(); i++) {
 			char c = signature.charAt(i);
 			if (c == 'X' || c == 'Y' || c == 'Z') {
 				foundSeparator = true;
@@ -281,6 +342,11 @@ public class JavaElementFinder {
 				break;
 			}
 		}
+		
+		if (length != null) {
+			length[0] = i;
+		}
+		
 		return (String[]) types.toArray(new String[types.size()]);
 	}
 	
