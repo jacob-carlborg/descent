@@ -4,10 +4,12 @@ import java.util.Stack;
 
 import descent.core.ICompilationUnit;
 import descent.core.IConditional;
+import descent.core.IImportDeclaration;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMethod;
+import descent.core.IPackageDeclaration;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.IType;
@@ -162,6 +164,10 @@ public class JavaElementFinder {
 			acceptType(compoundName, signature);
 		}
 		
+		public void acceptModule(char[][] compoundName, String signature) {
+			element = find(compoundName);
+		}
+		
 		private void acceptType(char[][] all, String signature) {
 			stack.push(signature);
 			
@@ -191,7 +197,7 @@ public class JavaElementFinder {
 		IJavaElement element = null;
 		
 		try {
-			for(int j = compoundName.length - 1; j >= 1; j--) {
+			for(int j = compoundName.length; j >= 1; j--) {
 				char[][] compoundName0 = new char[j][];
 				System.arraycopy(compoundName, 0, compoundName0, 0, j);
 				
@@ -215,6 +221,10 @@ public class JavaElementFinder {
 		}
 		
 		return element;
+	}
+	
+	public ICompilationUnit findCompilationUnit(char[][] compoundName) {
+		return environment.findCompilationUnit(compoundName);
 	}
 	
 	/**
@@ -278,6 +288,10 @@ public class JavaElementFinder {
 	
 	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
+			if (child instanceof IPackageDeclaration || child instanceof IImportDeclaration) {
+				continue;
+			}
+			
 			IParent searchInChildren = mustSearchInChildren(child);
 			if (searchInChildren != null) {
 				IJavaElement result = searchInChildren(searchInChildren, name);

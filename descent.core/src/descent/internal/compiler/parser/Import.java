@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
@@ -278,7 +279,17 @@ public class Import extends Dsymbol {
 	
 	@Override
 	public String getSignature() {
-		// TODO Auto-generated method stub
+		if (mod != null) {
+			return mod.getSignature();
+		}
+		return null;
+	}
+	
+	@Override
+	public IJavaElement getJavaElement() {
+		if (mod != null) {
+			return mod.getJavaElement();
+		}
 		return null;
 	}
 	

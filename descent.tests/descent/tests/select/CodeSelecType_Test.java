@@ -4,7 +4,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.tests.model.AbstractModelTest;
 
-public class CodeSelecTypet_Test extends AbstractModelTest {
+public class CodeSelecType_Test extends AbstractModelTest {
 	
 	public void testSelectClassFromName() throws Exception {
 		ICompilationUnit unit = createCompilationUnit("test.d", "class Foo { }");
@@ -68,6 +68,22 @@ public class CodeSelecTypet_Test extends AbstractModelTest {
 		IJavaElement[] elements = unit.codeSelect(24, 0);
 		assertEquals(1, elements.length);
 		assertEquals(unit.getAllTypes()[0], elements[0]);
+	}
+	
+	public void testSelectNestedClassFromParameterInFuncDeclaration1() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "class Foo { class Bar { } } void foo(Foo.Bar f) { }");
+		
+		IJavaElement[] elements = unit.codeSelect(38, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getAllTypes()[0], elements[0]);
+	}
+	
+	public void testSelectNestedClassFromParameterInFuncDeclaration2() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "class Foo { class Bar { } } void foo(Foo.Bar f) { }");
+		
+		IJavaElement[] elements = unit.codeSelect(42, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getAllTypes()[0].getChildren()[0], elements[0]);
 	}
 
 }

@@ -318,7 +318,7 @@ class BindingResolver {
 	 * @return the binding for the given type, or <code>null</code>
 	 *    if no binding is available 
 	 */
-	ITypeBinding resolveType(Type type) {
+	IBinding resolveType(Type type) {
 		return null;
 	}
 	

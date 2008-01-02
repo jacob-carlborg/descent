@@ -77,6 +77,13 @@ public class SignatureProcessor {
 		 * @param signature the signature from which the struct originated
 		 */
 		void acceptStruct(char[][] compoundName, String signature);
+		
+		/**
+		 * The processor has found a module.
+		 * @param compoundName the fully qualified name of the module
+		 * @param signature the signature from which the module originated
+		 */
+		void acceptModule(char[][] compoundName, String signature);
 
 		/**
 		 * The processor has found a variable, alias or typedef.
@@ -330,7 +337,7 @@ public class SignatureProcessor {
 			case 'U':
 			case 'W':
 			case 'V':
-			case 'R':
+			case 'R': {
 				requestor.enterFunctionType();
 				
 				LINK link;
@@ -376,18 +383,29 @@ public class SignatureProcessor {
 				// TODO varargs
 				requestor.exitFunctionType(link, signature.substring(0, consumed));
 				return consumed;
+			}
 			case 'X': // Argument break
 			case 'Y':
 			case 'Z':
 				requestor.acceptArgumentBreak(first);
 				return 0;
-			default: // Try with type basic
-				TypeBasic type = TypeBasic.fromSignature(first);
-				if (type != null) {
-					requestor.acceptPrimitive(type);
-					return 1;
+			default:
+				// It's a module name
+				if (Character.isDigit(first)) {
+					int[] length = { 0 };
+					char[][] compoundName = splitSignature(signature, 0, length);
+					int consumed = length[0];
+					requestor.acceptModule(compoundName, signature.substring(0, consumed));
+					return consumed;
 				} else {
-					throw new IllegalArgumentException("Invalid signature: " + signature);
+					// Try with type basic
+					TypeBasic type = TypeBasic.fromSignature(first);
+					if (type != null) {
+						requestor.acceptPrimitive(type);
+						return 1;
+					} else {
+						throw new IllegalArgumentException("Invalid signature: " + signature);
+					}
 				}
 			}
 		}

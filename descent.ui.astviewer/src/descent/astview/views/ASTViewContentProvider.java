@@ -120,7 +120,7 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 		
 		// references:
 		} else if (node instanceof Type) {
-			ITypeBinding binding = ((Type) node).resolveBinding();
+			IBinding binding = ((Type) node).resolveBinding();
 			res.add(createBinding(node, binding));
 //		} else if (node instanceof ConstructorInvocation) {
 //			IMethodBinding binding= ((ConstructorInvocation) node).resolveConstructorBinding();

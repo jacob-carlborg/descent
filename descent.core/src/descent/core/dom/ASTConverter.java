@@ -3002,20 +3002,18 @@ public class ASTConverter {
 			b = new descent.core.dom.SimpleType(ast);
 			b.setName((SimpleName) convert(a.ident));
 			b.setSourceRange(a.ident.start, a.ident.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a.ident);
+			}
 		} else {
 			b = null;
 		}
 		
 		if (a.idents == null || a.idents.isEmpty()) {
-			if (resolveBindings && b != null) {
-				recordNodes(b, a.resolvedType);
-			}
 			return convertModifiedType(a, b);
 		} else {
 			descent.core.dom.Type fqnType = convertQualifiedType(b, a, a.start);
-			if (resolveBindings && fqnType != null) {
-				recordNodes(fqnType, a.resolvedType);
-			}
 			return convertModifiedType(a, fqnType);
 		}
 	}
@@ -3082,6 +3080,11 @@ public class ASTConverter {
 				t.setSourceRange(n.getStartPosition(), n.getLength());
 				q = ast.newQualifiedType(q, t);
 				q.setSourceRange(start, idExp.start + idExp.length - start);
+				
+				if (resolveBindings) {
+					recordNodes(t, idExp);
+					recordNodes(q, idExp);
+				}
 			}
 		}
 		return q;

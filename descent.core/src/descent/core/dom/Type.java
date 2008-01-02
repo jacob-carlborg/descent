@@ -41,7 +41,7 @@ public abstract class Type extends ASTNode {
 	 * @return the type binding, or <code>null</code> if the binding cannot be 
 	 *    resolved
 	 */	
-	public final ITypeBinding resolveBinding() {
+	public final IBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveType(this);
 	}
 

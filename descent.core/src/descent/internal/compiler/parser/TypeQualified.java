@@ -44,6 +44,10 @@ public abstract class TypeQualified extends Type {
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 						id = ti.name;
 						sm = s.search(loc, id, 0, context);
+						
+						// Descent: for binding resolution
+						id.resolvedSymbol = sm;
+						
 						if (sm == null) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.NotAMember, id, new String[] { new String(
@@ -64,6 +68,10 @@ public abstract class TypeQualified extends Type {
 						sm = ti.toAlias(context);
 					} else {
 						sm = s.search(loc, id, 0, context);
+						
+						// Descent: for binding resolution
+						id.resolvedSymbol = sm;
+						
 					}
 					if (sm == null) {
 						v = s.isVarDeclaration();
@@ -85,6 +93,7 @@ public abstract class TypeQualified extends Type {
 							return;
 						}
 						t = s.getType();
+						
 						if (t == null && s.isDeclaration() != null) {
 							t = s.isDeclaration().type();
 						}

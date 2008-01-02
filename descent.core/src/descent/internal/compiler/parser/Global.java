@@ -11,7 +11,7 @@ public class Global {
 	public Array<String> path = new Array<String>();
 	
 	public Global() {
-		path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
+		path.add("C:\\d\\dmd_1.0.20\\dmd\\src\\phobos");
 	}
 
 }

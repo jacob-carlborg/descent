@@ -12,20 +12,6 @@ import static descent.internal.compiler.parser.TY.Tident;
 public class TypeIdentifier extends TypeQualified {
 
 	public IdentifierExp ident;
-	
-	/*
-	 * An identifier may refer to an alias, like string, and the
-	 * resolved type will be pointing to char[]. We would really like
-	 * to know it was pointing to the alias, so we keep a reference
-	 * to it here, if any.
-	 */
-	public IDsymbol resolvedSymbol;
-	
-	/*
-	 * Once the semantic pass is done, the resolved type is kept in
-	 * this variable. This is useful for linking source with resolution. 
-	 */
-	public Type resolvedType;
 
 	public TypeIdentifier(Loc loc, char[] ident) {
 		this(loc, new IdentifierExp(loc, ident));
@@ -40,8 +26,8 @@ public class TypeIdentifier extends TypeQualified {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, idents);
 			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, idents);			
 		}
 		visitor.endVisit(this);
 	}
@@ -85,7 +71,7 @@ public class TypeIdentifier extends TypeQualified {
 		s = sc.search(loc, ident, scopesym, context);
 		
 		// Descent: for binding resolution
-		resolvedSymbol = s;
+		ident.resolvedSymbol = s;
 		
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
 	}
@@ -116,9 +102,6 @@ public class TypeIdentifier extends TypeQualified {
 			}
 			t[0] = tvoid;
 		}
-		
-		// Descent: for binding resolution
-		resolvedType = t[0];
 		
 		return t[0];
 	}

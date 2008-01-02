@@ -671,6 +671,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 			type.deco = signature;
 			stack.push(type);
 		}
+		
+		public void acceptModule(char[][] compoundName, String signature) {
+			throw new IllegalStateException("Should not be called");
+		}
 
 		public void acceptPointer(String signature) {
 			TypePointer type = new TypePointer(stack.pop());

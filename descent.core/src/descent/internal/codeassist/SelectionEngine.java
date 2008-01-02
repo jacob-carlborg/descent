@@ -31,7 +31,6 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
-import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -110,22 +109,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(EnumDeclaration node) {
 		return visitType(node, node.ident, node.type);
-	}
-	
-	@Override
-	public boolean visit(TypeIdentifier node) {
-		if (isInRange(node.ident)) {
-			if (node.resolvedSymbol != null) {
-				if (node.resolvedSymbol.getJavaElement() != null) {
-					selectedElements.add(node.resolvedSymbol.getJavaElement());
-				} else {
-					add(node.resolvedSymbol.getSignature());
-				}
-			} else {
-				add(node.resolvedType);
-			}
-		}
-		return false;
 	}
 	
 	@Override

@@ -315,6 +315,9 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		switch(elem.getElementType()) {
+		case IJavaElement.COMPILATION_UNIT:
+			binding = new PackageBinding(this, (ICompilationUnit) elem, signature);
+			break;
 		case IJavaElement.TYPE:
 			binding = new TypeBinding(this, (IType) elem, signature);
 			break;
@@ -420,24 +423,15 @@ public class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	@Override
-	ITypeBinding resolveType(descent.core.dom.Type type) {
-		// If the type is the last SimpleType of a QualifiedType...
-		if (type.getNodeType() == ASTNode.SIMPLE_TYPE) {
-			if (type.getParent() != null && type.getParent().getNodeType() == ASTNode.QUALIFIED_TYPE) {
-				QualifiedType qType = (QualifiedType) type.getParent();
-				if (qType.getType() == type) {
-					return resolveType((descent.core.dom.Type) type.getParent());
-				}
-			}
-			
-		}
-		
+	IBinding resolveType(descent.core.dom.Type type) {
 		ASTDmdNode old = newAstToOldAst.get(type);
-		if (!(old instanceof descent.internal.compiler.parser.Type)) {
+		if (old instanceof descent.internal.compiler.parser.Type) {
+			return resolveType(type, (Type) old);
+		} else if (old instanceof IdentifierExp) {
+			return resolveIdentifierExp(type, (IdentifierExp) old);
+		} else {
 			return null;
 		}
-		
-		return resolveType(type, (Type) old);
 	}
 	
 	private ITypeBinding resolveType(ASTNode node, Type t) {
@@ -593,11 +587,16 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 
 		public void acceptAssociativeArray(String signature) {
-			stack.push(new TypeAArrayBinding(
-					DefaultBindingResolver.this, 
-					(ITypeBinding) stack.pop(), 
-					(ITypeBinding) stack.pop(), 
-					signature));
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				binding = new TypeAArrayBinding(
+						DefaultBindingResolver.this, 
+						(ITypeBinding) stack.pop(), 
+						(ITypeBinding) stack.pop(), 
+						signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
+			}
+			stack.push(binding);
 		}
 
 		public void acceptClass(char[][] compoundName, String signature) {
@@ -605,10 +604,15 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 
 		public void acceptDelegate(String signature) {
-			TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) stack.pop();
-			next.isFunction = false;
-			next.signature = signature;
-			stack.push(next);
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) stack.pop();
+				next.isFunction = false;
+				next.signature = signature;
+				binding = next;
+				bindingTables.bindingKeysToBindings.put(signature, binding);
+			}
+			stack.push(binding);
 		}
 
 		public void acceptDynamicArray(String signature) {
@@ -618,6 +622,7 @@ public class DefaultBindingResolver extends BindingResolver {
 						DefaultBindingResolver.this,
 						(ITypeBinding) stack.pop(),
 						signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
 			stack.push(binding);
 		}
@@ -657,8 +662,24 @@ public class DefaultBindingResolver extends BindingResolver {
 				}
 				
 				binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
 			
+			if (binding != null) {
+				stack.push(binding);
+			}
+		}
+		
+		public void acceptModule(char[][] compoundName, String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				element = finder.findCompilationUnit(compoundName);
+				if (element != null) {
+					binding = new PackageBinding(DefaultBindingResolver.this,
+							(ICompilationUnit) element, signature);
+					bindingTables.bindingKeysToBindings.put(signature, binding);
+				}
+			}
 			if (binding != null) {
 				stack.push(binding);
 			}
@@ -671,6 +692,7 @@ public class DefaultBindingResolver extends BindingResolver {
 						DefaultBindingResolver.this,
 						(ITypeBinding) stack.pop(),
 						signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
 			stack.push(binding);
 		}
@@ -679,6 +701,7 @@ public class DefaultBindingResolver extends BindingResolver {
 			IBinding binding = bindingTables.bindingKeysToBindings.get(type.deco);
 			if (binding == null) {
 				binding = new TypeBasicBinding(DefaultBindingResolver.this, type);
+				bindingTables.bindingKeysToBindings.put(type.deco, binding);
 			}
 			stack.push(binding);
 		}
@@ -691,6 +714,7 @@ public class DefaultBindingResolver extends BindingResolver {
 					(ITypeBinding) stack.pop(),
 					dimension,
 					signature);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
 			stack.push(binding);
 		}
@@ -728,6 +752,7 @@ public class DefaultBindingResolver extends BindingResolver {
 						link,
 						signature,
 						true /* is function */);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
 			stack.push(binding);
 		}
@@ -739,8 +764,10 @@ public class DefaultBindingResolver extends BindingResolver {
 				if (element != null) {
 					if (element instanceof IType) {
 						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+						bindingTables.bindingKeysToBindings.put(signature, binding);
 					} else if (element instanceof IField) {
 						binding = new VariableBinding(DefaultBindingResolver.this, (IField) element, false /* not a parameter */, signature);
+						bindingTables.bindingKeysToBindings.put(signature, binding);
 					}
 				}
 			}

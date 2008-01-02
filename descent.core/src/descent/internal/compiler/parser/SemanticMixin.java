@@ -704,7 +704,7 @@ public class SemanticMixin {
 			try {
 				String p = aThis.parent().mangle(context);
 				if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
-					p += 2;
+					p = p.substring(2);
 				}
 				buf.writestring(p);
 			} catch (NullPointerException e) {

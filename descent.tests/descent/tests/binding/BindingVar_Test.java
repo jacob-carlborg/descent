@@ -2,8 +2,6 @@ package descent.tests.binding;
 
 import descent.core.ICompilationUnit;
 import descent.core.dom.AggregateDeclaration;
-import descent.core.dom.AliasDeclaration;
-import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.Assignment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.EnumDeclaration;
@@ -120,7 +118,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		VariableDeclaration var = (VariableDeclaration) unit.declarations().get(1);
 		QualifiedType qType = (QualifiedType) var.getType();
 		
-		ITypeBinding typeBinding = qType.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) qType.resolveBinding();
 		assertNotNull(typeBinding);
 		
 		assertEquals(imported.getAllTypes()[0], typeBinding.getJavaElement());

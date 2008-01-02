@@ -28,5 +28,15 @@ public class CodeSelectModule_Test extends AbstractModelTest {
 		elements = test.codeSelect(8, 0); // pack
 		assertEquals(0, elements.length);
 	}
+	
+	public void testSelectReferenceToModule3() throws Exception {
+		ICompilationUnit other = createCompilationUnit("", "other.d", "class Foo { }");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other; other.Foo f;");
+		
+		IJavaElement[] elements = test.codeSelect(15, 0); // other
+		assertEquals(1, elements.length);
+		
+		assertEquals(other, elements[0]);
+	}
 
 }
