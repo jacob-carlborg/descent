@@ -7,18 +7,18 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class StaticIfCondition extends Condition {
 
-	public Expression exp;
+	public Expression exp, sourceExp;
 
 	public StaticIfCondition(Loc loc, Expression exp) {
 		super(loc);
-		this.exp = exp;
+		this.exp = this.sourceExp = exp;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, sourceExp);
 		}
 		visitor.endVisit(this);
 	}

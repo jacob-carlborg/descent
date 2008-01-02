@@ -7,22 +7,22 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class StaticAssert extends Dsymbol {
 
-	public Expression exp;
-	public Expression msg;
+	public Expression exp, sourceExp;
+	public Expression msg, sourceMsg;
 
 	public StaticAssert(Loc loc, Expression exp, Expression msg) {
 		super(IdentifierExp.EMPTY);
 		this.loc = loc;
-		this.exp = exp;
-		this.msg = msg;
+		this.exp = this.sourceExp = exp;
+		this.msg = this.sourceMsg = msg;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, exp);
-			TreeVisitor.acceptChildren(visitor, msg);
+			TreeVisitor.acceptChildren(visitor, sourceExp);
+			TreeVisitor.acceptChildren(visitor, sourceMsg);
 		}
 		visitor.endVisit(this);
 	}

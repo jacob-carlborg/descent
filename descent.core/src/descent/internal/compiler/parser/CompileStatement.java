@@ -10,18 +10,18 @@ import static descent.internal.compiler.parser.TOK.TOKeof;
 // DMD 1.020
 public class CompileStatement extends Statement {
 
-	public Expression exp;
+	public Expression exp, sourceExp;
 
 	public CompileStatement(Loc loc, Expression exp) {
 		super(loc);
-		this.exp = exp;
+		this.exp = this.sourceExp = exp;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, sourceExp);
 		}
 		visitor.endVisit(this);
 	}

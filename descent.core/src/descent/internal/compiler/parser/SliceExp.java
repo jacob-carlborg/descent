@@ -10,14 +10,14 @@ import static descent.internal.compiler.parser.Constfold.ArrayLength;
 // DMD 1.020
 public class SliceExp extends UnaExp {
 
-	public Expression lwr;
-	public Expression upr;
+	public Expression lwr, sourceLwr;
+	public Expression upr, sourceUpr;
 	public VarDeclaration lengthVar;
 
 	public SliceExp(Loc loc, Expression e1, Expression lwr, Expression upr) {
 		super(loc, TOK.TOKslice, e1);
-		this.lwr = lwr;
-		this.upr = upr;
+		this.lwr = this.sourceLwr = lwr;
+		this.upr = this.sourceUpr = upr;
 		this.lengthVar = null;
 	}
 
@@ -25,7 +25,9 @@ public class SliceExp extends UnaExp {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, sourceE1);
+			TreeVisitor.acceptChildren(visitor, sourceLwr);
+			TreeVisitor.acceptChildren(visitor, sourceUpr);
 		}
 		visitor.endVisit(this);
 	}

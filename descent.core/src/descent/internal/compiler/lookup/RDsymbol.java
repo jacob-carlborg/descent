@@ -721,7 +721,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 								IEnumDeclaration e = symbol.isEnumDeclaration();
 								if (e != null) {
 									type = new TypeEnum(e);
-									type.deco = JavaElementFinder.uncorrect(signature);
+									type.deco = SignatureProcessor.uncorrect(signature);
 									stack.push(type);
 								}
 								break;
@@ -730,7 +730,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 								IClassDeclaration c = symbol.isClassDeclaration();
 								if (c != null) {
 									type = new TypeClass(c);
-									type.deco = JavaElementFinder.uncorrect(signature);
+									type.deco = SignatureProcessor.uncorrect(signature);
 									stack.push(type);
 								}
 								break;
@@ -738,7 +738,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 								IStructDeclaration s = symbol.isStructDeclaration();
 								if (s != null) {
 									type = new TypeStruct(s);
-									type.deco = JavaElementFinder.uncorrect(signature);
+									type.deco = SignatureProcessor.uncorrect(signature);
 									stack.push(type);
 								}
 								break;
@@ -843,7 +843,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 			sb.append(ident);
 		}
 		String signature = sb.toString();
-		return JavaElementFinder.uncorrect(signature);
+		return SignatureProcessor.uncorrect(signature);
 	}
 	
 	protected long getFlags() {

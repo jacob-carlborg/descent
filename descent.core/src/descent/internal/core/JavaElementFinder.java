@@ -1,11 +1,6 @@
 package descent.internal.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Stack;
-import java.util.Map.Entry;
 
 import descent.core.ICompilationUnit;
 import descent.core.IConditional;
@@ -32,34 +27,6 @@ import descent.internal.core.util.Util;
  */
 public class JavaElementFinder {
 	
-	private final static Map<String, String> corrections = new HashMap<String, String>();
-	private final static Map<String, String> uncorrections = new HashMap<String, String>();
-	
-	static {
-		corrections.put("6Object", "6object6Object");
-		corrections.put("9ClassInfo", "6object9ClassInfo");
-		corrections.put("8TypeInfo", "6object8TypeInfo");
-		corrections.put("16TypeInfo_Typedef", "6object16TypeInfo_Typedef");
-		corrections.put("13TypeInfo_Enum", "6object13TypeInfo_Enum");
-		corrections.put("16TypeInfo_Pointer", "6object16TypeInfo_Pointer");
-		corrections.put("14TypeInfo_Array", "6object14TypeInfo_Array");
-		corrections.put("20TypeInfo_StaticArray", "6object20TypeInfo_StaticArray");
-		corrections.put("25TypeInfo_AssociativeArray", "6object25TypeInfo_AssociativeArray");
-		corrections.put("17TypeInfo_Function", "6object17TypeInfo_Function");
-		corrections.put("17TypeInfo_Delegate", "6object17TypeInfo_Delegate");
-		corrections.put("14TypeInfo_Class", "6object14TypeInfo_Class");
-		corrections.put("18TypeInfo_Interface", "6object13TypeInfo_Enum");
-		corrections.put("15TypeInfo_Struct", "6object15TypeInfo_Struct");
-		corrections.put("14TypeInfo_Tuple", "6object14TypeInfo_Tuple");
-		corrections.put("14TypeInfo_Const", "6object14TypeInfo_Const");
-		corrections.put("18TypeInfo_Invariant", "6object18TypeInfo_Invariant");
-		corrections.put("9Exception", "6object9Exception");
-		
-		for(Map.Entry<String, String> kv : corrections.entrySet()) {
-			uncorrections.put(kv.getValue(), kv.getKey());
-		}
-	}
-	
 	private final JavaProject javaProject;
 	private final INameEnvironment environment;
 
@@ -71,68 +38,6 @@ public class JavaElementFinder {
 			Util.log(e);
 			throw new RuntimeException(e);
 		}
-	}
-	
-	/**
-	 * Corrects some signatures. For example, it transforms C6Object
-	 * into C6object6Object.
-	 * @param signature the signature to correct
-	 * @return the corrected signature
-	 * 
-	 * TODO: move this method somewhere else
-	 */
-	public static String correct(String signature) {
-		if (signature != null && signature.length() > 0) {
-			switch(signature.charAt(0)) {
-			case 'E':
-			case 'C':
-			case 'S':
-			case 'T':
-			case 'Q':
-			case 'O':
-				String sub = signature.substring(1);
-				for(Entry<String, String> entry : corrections.entrySet()) {
-					if (sub.startsWith(entry.getKey())) {
-						return signature.charAt(0) + entry.getValue() + sub.substring(entry.getKey().length());
-					}
-				}
-				break;
-			default:
-				return signature;
-			}
-		}
-		return signature;
-	}
-	
-	/**
-	 * Uncorrects some signatures. For example, it transforms C6object6Object
-	 * into C6Object.
-	 * @param signature the signature to correct
-	 * @return the corrected signature
-	 * 
-	 * TODO: move this method somewhere else
-	 */
-	public static String uncorrect(String signature) {
-		if (signature != null && signature.length() > 0) {
-			switch(signature.charAt(0)) {
-			case 'E':
-			case 'C':
-			case 'S':
-			case 'T':
-			case 'Q':
-			case 'O':
-				String sub = signature.substring(1);
-				for(Entry<String, String> entry : uncorrections.entrySet()) {
-					if (sub.startsWith(entry.getKey())) {
-						return signature.charAt(0) + entry.getValue() + sub.substring(entry.getKey().length());
-					}
-				}
-				break;
-			default:
-				return signature;
-			}
-		}
-		return signature;
 	}
 	
 	// TODO improve performance to not find a type that is part of the
@@ -198,6 +103,10 @@ public class JavaElementFinder {
 			if (element == null) {
 				acceptType(compoundName, signature);
 				stack.pop();
+				
+				if (element == null || !(element instanceof IParent)) {
+					return;
+				}
 				
 				parent = (IParent) element.getParent();
 			} else {
@@ -295,6 +204,10 @@ public class JavaElementFinder {
 							break;
 						}
 					}
+					
+					if (element != null) {
+						return element;
+					}
 				}
 			}
 		} catch (JavaModelException e) {
@@ -311,115 +224,6 @@ public class JavaElementFinder {
 		InternalFinder finder = new InternalFinder();
 		SignatureProcessor.process(signature, finder);
 		return finder.element;
-	}
-
-	/**
-	 * Returns the parameters and return types of a function signature.
-	 * The function signature must not start with the starting F (it must
-	 * start with the immediately next character).
-	 */
-	public static String[] getParametersAndReturnType(String signature, int[] length) {
-		boolean foundSeparator = false;
-		
-		List<String> types = new ArrayList<String>();
-		int i;
-		for(i = 0; i < signature.length(); i++) {
-			char c = signature.charAt(i);
-			if (c == 'X' || c == 'Y' || c == 'Z') {
-				foundSeparator = true;
-				continue;
-			}
-			int start = i;
-			int end = getEnd(signature, i);
-			try {
-				types.add(signature.substring(start, end));
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-			i = end - 1;
-			
-			if (foundSeparator) {
-				break;
-			}
-		}
-		
-		if (length != null) {
-			length[0] = i;
-		}
-		
-		return (String[]) types.toArray(new String[types.size()]);
-	}
-	
-	private static int getEnd(String signature, int i) {
-		try {
-			char c = signature.charAt(i);
-			switch(c) {
-			case 'E': // enum
-			case 'C': // class
-			case 'S': // struct
-				i++;
-				c = signature.charAt(i);
-				if (Character.isDigit(c)) {				
-					while(Character.isDigit(c)) {
-						int n = 0;
-						while(Character.isDigit(c)) {
-							n = 10 * n + (c - '0');
-							i++;
-							c = signature.charAt(i);
-						}
-						i += n;
-						if (i >= signature.length()) {
-							break;
-						}
-						c = signature.charAt(i);
-					}
-				}
-				return i;
-			case 'D': // delegate
-			case 'P': // pointer
-			case 'A': // dynamic array
-			case 'J': // out
-			case 'K': // inout
-			case 'L': // lazy
-				return getEnd(signature, i + 1);
-			case 'G': // static array
-				for(i = 1; i < signature.length(); i++) {
-					c = signature.charAt(i);
-					while(Character.isDigit(c)) {
-						i++;
-						c = signature.charAt(i);
-					}
-					break;
-				}
-				return getEnd(signature, i);
-			case 'H': // associative array
-				i = getEnd(signature, i + 1);
-				i = getEnd(signature, i);
-				return i;
-			case 'F': // Type function
-			case 'U':
-			case 'W':
-			case 'V':
-			case 'R':
-				i = getEnd(signature, i + 1);
-				
-				while(i < signature.length() && 
-						signature.charAt(i) != 'X' &&
-						signature.charAt(i) != 'Y' &&
-						signature.charAt(i) != 'Z') {
-					i = getEnd(signature, i + 1);
-				}
-	
-				i = getEnd(signature, i + 1);
-				return i + 1;
-			default:
-				// Primitive type, or X, Y, Z
-				return i + 1;
-			}
-		} catch (StringIndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
-		return 0;
 	}
 	
 	/**

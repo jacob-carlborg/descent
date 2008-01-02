@@ -601,7 +601,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 
 		public void acceptClass(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature, true /* create binding */);
+			acceptType(compoundName, signature);
 		}
 
 		public void acceptDelegate(String signature) {
@@ -623,7 +623,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 
 		public void acceptEnum(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature, true /* create binding */);
+			acceptType(compoundName, signature);
 		}
 
 		public void acceptFunction(char[][] compoundName, String signature) {
@@ -631,7 +631,11 @@ public class DefaultBindingResolver extends BindingResolver {
 			if (binding == null) {
 				IParent parent = null;
 				if (element == null) {
-					acceptType(compoundName, signature, false /* don't create binding */);
+					element = finder.find(compoundName);
+					
+					if (element == null || !(element instanceof IParent)) {
+						return;
+					}
 					
 					parent = (IParent) element.getParent();
 				} else {
@@ -692,11 +696,11 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 
 		public void acceptStruct(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature, true /* create binding */);
+			acceptType(compoundName, signature);
 		}
 
 		public void acceptVariableAliasOrTypedef(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature, true /* create binding */);
+			acceptType(compoundName, signature);
 		}
 
 		public void enterFunctionType() {
@@ -728,31 +732,31 @@ public class DefaultBindingResolver extends BindingResolver {
 			stack.push(binding);
 		}
 		
-		private void acceptType(char[][] all, String signature, boolean createBinding) {
-			if (createBinding) {
-				IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-				if (binding == null) {
-					element = finder.find(all);
-					if (element != null) {
-						if (element instanceof IType) {
-							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
-						} else if (element instanceof IField) {
-							binding = new VariableBinding(DefaultBindingResolver.this, (IField) element, false /* not a parameter */, signature);
-						}
+		private void acceptType(char[][] all, String signature) {
+			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+			if (binding == null) {
+				element = finder.find(all);
+				if (element != null) {
+					if (element instanceof IType) {
+						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+					} else if (element instanceof IField) {
+						binding = new VariableBinding(DefaultBindingResolver.this, (IField) element, false /* not a parameter */, signature);
 					}
 				}
-				if (binding != null) {
-					stack.push(binding);
-				}
-			} else {
-				element = finder.find(all);
+			}
+			if (binding != null) {
+				stack.push(binding);
 			}
 		}
 		
 	}
 	
 	IBinding resolveBinding(String signature) {
-		signature = JavaElementFinder.correct(signature);
+		if (signature == null || signature.length() == 0) {
+			return null;
+		}
+		
+		signature = SignatureProcessor.correct(signature);
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 		if (binding != null) {

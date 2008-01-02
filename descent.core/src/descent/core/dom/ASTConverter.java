@@ -765,14 +765,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.StaticAssert convert(StaticAssert a) {
 		descent.core.dom.StaticAssert b = new descent.core.dom.StaticAssert(ast);
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExpression = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExpression = convert(a.sourceExp);
 			if (convertedExpression != null) {
 				b.setExpression(convertedExpression);
 			}
 		}
-		if (a.msg != null) {
-			descent.core.dom.Expression convertedMessage = convert(a.msg);
+		if (a.sourceMsg != null) {
+			descent.core.dom.Expression convertedMessage = convert(a.sourceMsg);
 			if (convertedMessage != null) {
 				b.setMessage(convertedMessage);
 			}
@@ -974,11 +974,11 @@ public class ASTConverter {
 				b.setExpression(converted);
 			}
 		}
-		if (a.lwr != null) {
-			b.setFromExpression(convert(a.lwr));
+		if (a.sourceLwr != null) {
+			b.setFromExpression(convert(a.sourceLwr));
 		}
-		if (a.upr != null) {
-			b.setToExpression(convert(a.upr));
+		if (a.sourceUpr != null) {
+			b.setToExpression(convert(a.sourceUpr));
 		}
 		b.setSourceRange(a.start, a.length);
 		
@@ -1070,8 +1070,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.ThrowStatement convert(ThrowStatement a) {
 		descent.core.dom.ThrowStatement b = new descent.core.dom.ThrowStatement(ast);
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -1530,8 +1530,8 @@ public class ASTConverter {
 	public descent.core.dom.DeclarationStatement convert(CompileStatement a) {
 		descent.core.dom.DeclarationStatement b = new descent.core.dom.DeclarationStatement(ast);
 		MixinDeclaration mixin = new MixinDeclaration(ast);
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				mixin.setExpression(convertedExp);
 			}
@@ -1924,8 +1924,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.GotoCaseStatement convert(GotoCaseStatement a) {
 		descent.core.dom.GotoCaseStatement b = new descent.core.dom.GotoCaseStatement(ast);
-		if (a.exp != null) {
-			descent.core.dom.Expression convertedExp = convert(a.exp);
+		if (a.sourceExp != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceExp);
 			if (convertedExp != null) {
 				b.setLabel(convertedExp);
 			}
@@ -2162,8 +2162,8 @@ public class ASTConverter {
 		case Condition.STATIC_IF: {
 			StaticIfCondition cond = (StaticIfCondition) a.condition;
 			StaticIfDeclaration b = new StaticIfDeclaration(ast);
-			if (cond.exp != null) {
-				descent.core.dom.Expression convertedExp = convert(cond.exp);
+			if (cond.sourceExp != null) {
+				descent.core.dom.Expression convertedExp = convert(cond.sourceExp);
 				if (convertedExp != null) {
 					b.setExpression(convertedExp);
 				}
@@ -2238,8 +2238,8 @@ public class ASTConverter {
 			{
 				StaticIfCondition cond = (StaticIfCondition) a.condition;
 				StaticIfStatement b = new StaticIfStatement(ast);
-				if (cond.exp != null) {
-					descent.core.dom.Expression convertedExp = convert(cond.exp);
+				if (cond.sourceExp != null) {
+					descent.core.dom.Expression convertedExp = convert(cond.sourceExp);
 					if (convertedExp != null) {
 						b.setExpression(convertedExp);
 					}
@@ -2701,8 +2701,6 @@ public class ASTConverter {
 		if (x.sourceExp != null) {
 			b.expressions().add(convert(x.sourceExp));
 		}
-		
-		
 		
 		if (x.sourceStatement != null && ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).statements.size() > 0) {
 			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).statements);
