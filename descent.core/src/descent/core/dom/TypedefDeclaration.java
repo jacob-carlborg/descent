@@ -282,5 +282,20 @@ public class TypedefDeclaration extends Declaration {
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the type typedefed in this typedef
+	 * declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public final IBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveTypedef(this);
+	}
 
 }

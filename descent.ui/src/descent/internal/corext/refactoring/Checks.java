@@ -834,7 +834,7 @@ public class Checks {
 			}
 		}
 		
-		ITypeBinding tb= e.resolveTypeBinding();
+		IBinding tb= e.resolveTypeBinding();
 		if (tb == null)
 			return NOT_RVALUE_MISC;
 		else if (tb.getName().equals("void")) //$NON-NLS-1$

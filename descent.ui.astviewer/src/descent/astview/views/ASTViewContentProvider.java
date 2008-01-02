@@ -86,8 +86,11 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 		
 		if (node instanceof Expression) {
 			Expression expression= (Expression) node;
-			ITypeBinding expressionTypeBinding= expression.resolveTypeBinding();
-			res.add(createExpressionTypeBinding(node, expressionTypeBinding));
+//			ITypeBinding expressionTypeBinding= expression.resolveTypeBinding();
+//			res.add(createExpressionTypeBinding(node, expressionTypeBinding));
+			
+			IBinding expressionTypeBinding= expression.resolveTypeBinding();
+			res.add(createBinding(node, expressionTypeBinding));
 			
 			// expressions:
 			if (expression instanceof Name) {

@@ -82,7 +82,7 @@ public interface IVariableBinding extends IBinding {
 	 * 
 	 * @return the binding for the type of this field or local variable
 	 */
-	public ITypeBinding getType();
+	public IBinding getType();
 	
 	/**
 	 * Returns a small integer variable id for this variable binding.

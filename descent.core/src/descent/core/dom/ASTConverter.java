@@ -2713,8 +2713,8 @@ public class ASTConverter {
 		descent.core.dom.Expression convertedExp = convert(a.sourceE1);
 		if (a.tok == null) {
 			descent.core.dom.CastExpression b = new descent.core.dom.CastExpression(ast);
-			if (a.to != null) {
-				descent.core.dom.Type convertedType = convert(a.to);
+			if (a.sourceTo != null) {
+				descent.core.dom.Type convertedType = convert(a.sourceTo);
 				if (convertedType != null) {
 					b.setType(convertedType);
 				}

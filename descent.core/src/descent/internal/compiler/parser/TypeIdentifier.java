@@ -156,6 +156,10 @@ public class TypeIdentifier extends TypeQualified {
 
 		IDsymbol[] scopesym = { null };
 		IDsymbol s = sc.search(loc, ident, scopesym, context);
+		
+		// Descent: for binding resolution
+		ident.resolvedSymbol = s;
+		
 		if (s != null) {
 			if (idents != null) {
 				for (int i = 0; i < idents.size(); i++) {

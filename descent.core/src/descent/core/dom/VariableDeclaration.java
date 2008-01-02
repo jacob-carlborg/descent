@@ -281,7 +281,7 @@ public class VariableDeclaration extends Declaration {
 	 * @return the binding, or <code>null</code> if the binding cannot be 
 	 *    resolved
 	 */	
-	public final ITypeBinding resolveBinding() {
+	public final IBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveVariable(this);
 	}
 

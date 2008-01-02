@@ -27,7 +27,7 @@ public class AddrExp extends UnaExp {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, sourceE1);
 		}
 		visitor.endVisit(this);
 	}

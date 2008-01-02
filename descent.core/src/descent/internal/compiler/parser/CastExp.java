@@ -21,7 +21,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public class CastExp extends UnaExp {
 
-	public Type to;
+	public Type to, sourceTo;
 	public TOK tok;
 	public int modifierStart;
 
@@ -34,7 +34,7 @@ public class CastExp extends UnaExp {
 
 	public CastExp(Loc loc, Expression e1, Type t) {
 		super(loc, TOK.TOKcast, e1);
-		this.to = t;
+		this.to = this.sourceTo = t;
 		this.tok = null;
 	}
 
@@ -42,7 +42,8 @@ public class CastExp extends UnaExp {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, sourceTo);
+			TreeVisitor.acceptChildren(visitor, sourceE1);
 		}
 		visitor.endVisit(this);
 	}

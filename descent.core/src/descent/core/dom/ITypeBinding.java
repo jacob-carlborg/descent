@@ -306,7 +306,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the parameters types bindings, or an empty list if this is
 	 *   not a function or delegate type binding
 	 */	
-	public ITypeBinding[] getParametersTypes();
+	public IBinding[] getParametersTypes();
 	
 	/**
 	 * Returns the fully qualified name of the type represented by this 
@@ -379,7 +379,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the return type binding, or <code>null</code> if this is
 	 *   not a function or delegate type binding
 	 */	
-	public ITypeBinding getReturnType();
+	public IBinding getReturnType();
 	
 	/**
 	 * Returns the type binding for the superclass of the type represented

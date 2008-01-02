@@ -5,13 +5,13 @@ import descent.internal.compiler.parser.LINK;
 public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final ITypeBinding[] args;
-	private final ITypeBinding retType;
+	private final IBinding[] args;
+	private final IBinding retType;
 	private final boolean varargs;
 	private final LINK linkage;
 	public boolean isFunction;
 
-	public TypeFunctionOrDelegateBinding(DefaultBindingResolver bindingResolver, ITypeBinding[] args, ITypeBinding retType, boolean varargs, LINK linkage, String signature, boolean isFunction) {
+	public TypeFunctionOrDelegateBinding(DefaultBindingResolver bindingResolver, IBinding[] args, IBinding retType, boolean varargs, LINK linkage, String signature, boolean isFunction) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
 		this.args = args;
@@ -53,11 +53,11 @@ public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implemen
 		return sb.toString();
 	}
 	
-	public ITypeBinding[] getParametersTypes() {
+	public IBinding[] getParametersTypes() {
 		return args;
 	}
 	
-	public ITypeBinding getReturnType() {
+	public IBinding getReturnType() {
 		return retType;
 	}
 	

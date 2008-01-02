@@ -42,7 +42,7 @@ import descent.internal.core.SignatureProcessor;
 import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
-public class DefaultBindingResolver extends BindingResolver {
+class DefaultBindingResolver extends BindingResolver {
 	
 	/*
 	 * Holds on binding tables that can be shared by several ASTs.
@@ -153,7 +153,7 @@ public class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	@Override
-	ITypeBinding resolveVariable(VariableDeclaration variable) {
+	IBinding resolveVariable(VariableDeclaration variable) {
 		if (variable.fragments().size() == 0) {
 			return null;
 		}
@@ -165,7 +165,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		
 		VarDeclaration v = (VarDeclaration) old;
 		String key = v.type.getSignature();
-		return (ITypeBinding) resolveBinding(variable, key);
+		return resolveBinding(variable, key);
 	}
 	
 	@Override
@@ -178,45 +178,70 @@ public class DefaultBindingResolver extends BindingResolver {
 		return resolveVar((VarDeclaration) old, variable);
 	}
 	
-//	@Override
-//	IBinding resolveAlias(AliasDeclaration alias) {
-//		if (alias.fragments().size() == 0) {
-//			return null;
-//		}
-//		
-//		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
-//		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
-//			return null;
-//		}
-//		
-//		descent.internal.compiler.parser.AliasDeclaration a = (descent.internal.compiler.parser.AliasDeclaration) old;
-//		IDsymbol elem = a.aliassym;
-//		if (elem == null) {
-//			return null;
-//		}
-//		
-//		String signature = elem.getSignature();
-//		if (elem.getJavaElement() != null) {
-//			IBinding binding = resolveBinding(elem.getJavaElement(), signature, alias);
-//			if (binding != null) {
-//				return (ITypeBinding) binding;
-//			}
-//		} else {
-//			return resolveBinding(signature);
-//		}
-//		
-//		return null;
-//	}
-//	
-//	@Override
-//	IVariableBinding resolveAliasFragment(AliasDeclarationFragment variable) {
-//		ASTDmdNode old = newAstToOldAst.get(variable);
-//		if (!(old instanceof VarDeclaration)) {
-//			return null;
-//		}
-//		
-//		return resolveAlias((descent.internal.compiler.parser.AliasDeclaration) old, variable);
-//	}
+	@Override
+	IBinding resolveAlias(AliasDeclaration alias) {
+		if (alias.fragments().size() == 0) {
+			return null;
+		}
+		
+		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
+		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
+			return null;
+		}
+		
+		descent.internal.compiler.parser.AliasDeclaration a = (descent.internal.compiler.parser.AliasDeclaration) old;
+		IDsymbol elem = a.aliassym;
+		if (elem == null) {
+			return null;
+		}
+		
+		String signature = elem.getSignature();
+		if (elem.getJavaElement() != null) {
+			IBinding binding = resolveBinding(elem.getJavaElement(), signature, alias);
+			if (binding != null) {
+				return binding;
+			}
+		} else {
+			return resolveBinding(signature);
+		}
+		
+		return null;
+	}
+	
+	@Override
+	IVariableBinding resolveAliasFragment(AliasDeclarationFragment variable) {
+		ASTDmdNode old = newAstToOldAst.get(variable);
+		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
+			return null;
+		}
+		
+		return resolveAlias((descent.internal.compiler.parser.AliasDeclaration) old, variable);
+	}
+	
+	@Override
+	IBinding resolveTypedef(descent.core.dom.TypedefDeclaration alias) {
+		if (alias.fragments().size() == 0) {
+			return null;
+		}
+		
+		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
+		if (!(old instanceof descent.internal.compiler.parser.TypedefDeclaration)) {
+			return null;
+		}
+		
+		descent.internal.compiler.parser.TypedefDeclaration a = (descent.internal.compiler.parser.TypedefDeclaration) old;
+		return resolveType(alias, a.basetype);
+	}
+	
+	@Override
+	IVariableBinding resolveTypedefFragment(TypedefDeclarationFragment variable) {
+		ASTDmdNode old = newAstToOldAst.get(variable);
+		if (!(old instanceof descent.internal.compiler.parser.TypedefDeclaration)) {
+			return null;
+		}
+		
+		return resolveTypedef((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
+	}
 	
 	@Override
 	IBinding resolveName(Name name) {
@@ -229,6 +254,10 @@ public class DefaultBindingResolver extends BindingResolver {
 				return resolveEnum((descent.core.dom.EnumDeclaration) parent);
 			case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
 				return resolveVariableFragment((VariableDeclarationFragment) parent);
+			case ASTNode.ALIAS_DECLARATION_FRAGMENT:
+				return resolveAliasFragment((AliasDeclarationFragment) parent);
+			case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:
+				return resolveTypedefFragment((TypedefDeclarationFragment) parent);
 			case ASTNode.ENUM_MEMBER:
 				return resolveEnumMember((descent.core.dom.EnumMember) parent);
 			case ASTNode.SIMPLE_TYPE:
@@ -277,6 +306,16 @@ public class DefaultBindingResolver extends BindingResolver {
 				}
 			} else if (sym instanceof VarDeclaration) {
 				IBinding binding = resolveVar((VarDeclaration) sym, node);
+				if (binding != null) {
+					return binding;
+				}
+			} else if (sym instanceof descent.internal.compiler.parser.AliasDeclaration) {
+				IBinding binding = resolveAlias((descent.internal.compiler.parser.AliasDeclaration) sym, node);
+				if (binding != null) {
+					return binding;
+				}
+			} else if (sym instanceof descent.internal.compiler.parser.TypedefDeclaration) {
+				IBinding binding = resolveTypedef((descent.internal.compiler.parser.TypedefDeclaration) sym, node);
 				if (binding != null) {
 					return binding;
 				}
@@ -364,6 +403,15 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 	}
 	
+	private IVariableBinding resolveTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
+		if (isLocal(var)) {
+			return resolveLocalTypedef(var, node);
+		} else {
+			String key = var.getSignature();
+			return (IVariableBinding) resolveBinding(node, key);
+		}
+	}
+	
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
 		return node.parent instanceof FuncDeclaration;
 	}
@@ -422,6 +470,33 @@ public class DefaultBindingResolver extends BindingResolver {
 		return (IVariableBinding) binding;
 	}
 	
+	private IVariableBinding resolveLocalTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
+		String signature = var.getSignature();
+		
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return (IVariableBinding) binding;
+		}
+		
+		FuncDeclaration parent = (FuncDeclaration) var.parent;
+		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+		
+		IJavaElement element = new LocalVariable(
+				func, 
+				var.ident.toString(),
+				var.start,
+				var.start + var.length - 1,
+				var.ident.start,
+				var.ident.start + var.ident.length - 1,
+				var.type.getSignature(),
+				Flags.AccDefault);
+		
+		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
+		bindingTables.bindingKeysToBindings.put(signature, binding);
+		bindingsToAstNodes.put(binding, node);
+		return (IVariableBinding) binding;
+	}
+	
 	@Override
 	IBinding resolveType(descent.core.dom.Type type) {
 		ASTDmdNode old = newAstToOldAst.get(type);
@@ -434,7 +509,7 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 	}
 	
-	private ITypeBinding resolveType(ASTNode node, Type t) {
+	private IBinding resolveType(ASTNode node, Type t) {
 		if (t == null) {
 			return null;
 		}
@@ -453,12 +528,12 @@ public class DefaultBindingResolver extends BindingResolver {
 				binding = new TypeBinding(this, (IType) elem, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 				bindingsToAstNodes.put(binding, node);
-				return (ITypeBinding) binding;
+				return binding;
 			}
 		}
 		
 		// Else, try with the signature
-		return (ITypeBinding) resolveBinding(node, signature);
+		return resolveBinding(node, signature);
 	}
 	
 	@Override
@@ -513,7 +588,13 @@ public class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		FuncDeclaration func = (FuncDeclaration) old;
-		return (IMethodBinding) resolveBinding(method, func.getSignature()); 
+		
+		IBinding binding = resolveBinding(method, func.getSignature());
+		if (binding instanceof IMethodBinding) {
+			return (IMethodBinding) binding;
+		}
+		
+		return null; 
 	}
 	
 	@Override
@@ -536,7 +617,7 @@ public class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	@Override
-	ITypeBinding resolveExpressionType(descent.core.dom.Expression expression) {
+	IBinding resolveExpressionType(descent.core.dom.Expression expression) {
 		ASTDmdNode old = newAstToOldAst.get(expression);
 		if (!(old instanceof descent.internal.compiler.parser.Expression)) {
 			return null;
@@ -738,13 +819,13 @@ public class DefaultBindingResolver extends BindingResolver {
 		public void exitFunctionType(LINK link, String signature) {
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
-				ITypeBinding[] parameterTypes = new ITypeBinding[stack.size() - 1];
+				IBinding[] parameterTypes = new IBinding[stack.size() - 1];
 				
-				ITypeBinding returnType = (ITypeBinding) stack.pop();
+				IBinding returnType = stack.pop();
 				
 				int i = stack.size() - 1;
 				while(!stack.isEmpty()) {
-					parameterTypes[i] = (ITypeBinding) stack.pop();
+					parameterTypes[i] = stack.pop();
 					i--;
 				}
 				

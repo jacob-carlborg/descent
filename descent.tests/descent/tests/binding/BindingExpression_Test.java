@@ -5,7 +5,7 @@ import descent.core.dom.DeclarationStatement;
 import descent.core.dom.Expression;
 import descent.core.dom.ExpressionInitializer;
 import descent.core.dom.FunctionDeclaration;
-import descent.core.dom.ITypeBinding;
+import descent.core.dom.IBinding;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 
@@ -27,7 +27,7 @@ public class BindingExpression_Test extends AbstractBinding_Test {
 		ExpressionInitializer init = (ExpressionInitializer) fragment.getInitializer();
 		Expression exp = init.getExpression();
 		
-		ITypeBinding typeBinding = exp.resolveTypeBinding();
+		IBinding typeBinding = exp.resolveTypeBinding();
 		assertEquals(expectedSignature, typeBinding.getKey());
 		
 		assertSame(typeBinding, var.resolveBinding());

@@ -19,7 +19,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -40,7 +40,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -65,7 +65,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -95,7 +95,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block2.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -169,7 +169,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(2);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);

@@ -2,6 +2,8 @@ package descent.tests.binding;
 
 import descent.core.ICompilationUnit;
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.Assignment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.EnumDeclaration;
@@ -13,6 +15,8 @@ import descent.core.dom.IVariableBinding;
 import descent.core.dom.QualifiedType;
 import descent.core.dom.SimpleName;
 import descent.core.dom.SimpleType;
+import descent.core.dom.TypedefDeclaration;
+import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 
@@ -23,7 +27,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		VariableDeclaration var = (VariableDeclaration) unit.declarations().get(1);
 		VariableDeclarationFragment fragment = var.fragments().get(0);
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertNotNull(typeBinding);
 
 		assertTrue(typeBinding.isClass());
@@ -55,7 +59,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		VariableDeclaration var = (VariableDeclaration) agg.declarations().get(0);
 		VariableDeclarationFragment fragment = var.fragments().get(0);
 		
-		ITypeBinding typeBinding = var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertNotNull(typeBinding);
 
 		assertTrue(typeBinding.isClass());
@@ -156,6 +160,66 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		assertEquals("Q8imported1x", varBinding.getKey());
 		
 		assertEquals(getVariable(imported, 0), varBinding.getJavaElement());
+	}
+	
+	public void testTypeBindingForAlias() throws Exception {
+		CompilationUnit unit = createCU("test.d", "class Foo { } alias Foo f;");
+		AliasDeclaration var = (AliasDeclaration) unit.declarations().get(1);
+		AliasDeclarationFragment fragment = var.fragments().get(0);
+		
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		assertNotNull(typeBinding);
+
+		assertTrue(typeBinding.isClass());
+		
+		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
+		assertEquals("C4test3Foo", typeBinding.getKey());
+		assertEquals("Foo", typeBinding.getName());
+		assertEquals(0, typeBinding.getDimension());
+		assertEquals("test.Foo", typeBinding.getQualifiedName());
+		assertEquals(true, typeBinding.isFromSource());
+		
+		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
+		
+		IVariableBinding varBinding = fragment.resolveBinding();
+		assertNotNull(varBinding);
+		assertEquals("f",varBinding.getName());
+		assertEquals("Q4test1f", varBinding.getKey());
+		
+		assertEquals(getVariable(lastCompilationUnit, 0), varBinding.getJavaElement());
+		
+		assertSame(typeBinding, var.getType().resolveBinding());
+		assertSame(varBinding, fragment.getName().resolveBinding());
+	}
+	
+	public void testTypeBindingForTypedef() throws Exception {
+		CompilationUnit unit = createCU("test.d", "class Foo { } typedef Foo f;");
+		TypedefDeclaration var = (TypedefDeclaration) unit.declarations().get(1);
+		TypedefDeclarationFragment fragment = var.fragments().get(0);
+		
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		assertNotNull(typeBinding);
+
+		assertTrue(typeBinding.isClass());
+		
+		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
+		assertEquals("C4test3Foo", typeBinding.getKey());
+		assertEquals("Foo", typeBinding.getName());
+		assertEquals(0, typeBinding.getDimension());
+		assertEquals("test.Foo", typeBinding.getQualifiedName());
+		assertEquals(true, typeBinding.isFromSource());
+		
+		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
+		
+		IVariableBinding varBinding = fragment.resolveBinding();
+		assertNotNull(varBinding);
+		assertEquals("f",varBinding.getName());
+		assertEquals("Q4test1f", varBinding.getKey());
+		
+		assertEquals(getVariable(lastCompilationUnit, 0), varBinding.getJavaElement());
+		
+		assertSame(typeBinding, var.getType().resolveBinding());
+		assertSame(varBinding, fragment.getName().resolveBinding());
 	}
 
 }

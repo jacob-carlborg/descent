@@ -236,5 +236,10 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 			return false;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return element.toString();
+	}
 
 }

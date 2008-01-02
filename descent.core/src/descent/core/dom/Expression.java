@@ -69,7 +69,7 @@ public abstract class Expression extends ASTNode {
 	 * @return the binding for the type of this expression, or
 	 *    <code>null</code> if the type cannot be resolved
 	 */	
-	public final ITypeBinding resolveTypeBinding() {
+	public final IBinding resolveTypeBinding() {
 		return this.ast.getBindingResolver().resolveExpressionType(this);
 	}
 	
