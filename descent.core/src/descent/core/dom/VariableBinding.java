@@ -70,8 +70,48 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		return false;
 	}
 
-	public boolean isField() {
-		return element instanceof IField;
+	public boolean isVariable() {
+		try {
+			if (element instanceof IField) {
+				return ((IField) element).isVariable();
+			} else {
+				return ((ILocalVariable) element).isVariable();
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		return false;
+	}
+	
+	public boolean isAlias() {
+		try {
+			if (element instanceof IField) {
+				return ((IField) element).isAlias();
+			} else {
+				return ((ILocalVariable) element).isAlias();
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		return false;
+	}
+	
+	public boolean isLocal() {
+		return element instanceof ILocalVariable &&
+			!isParameter();
+	}
+	
+	public boolean isTypedef() {
+		try {
+			if (element instanceof IField) {
+				return ((IField) element).isTypedef();
+			} else {
+				return ((ILocalVariable) element).isTypedef();
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		return false;
 	}
 
 	public boolean isParameter() {

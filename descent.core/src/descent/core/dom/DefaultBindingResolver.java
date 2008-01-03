@@ -18,6 +18,7 @@ import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
@@ -417,65 +418,27 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	private IVariableBinding resolveLocalVar(VarDeclaration var, ASTNode node) {
-		String signature = var.getSignature();
-		
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
-			return (IVariableBinding) binding;
-		}
-		
-		FuncDeclaration parent = (FuncDeclaration) var.parent;
-		JavaElement func = (JavaElement) finder.find(parent.getSignature());
-		
-		IJavaElement element = new LocalVariable(
-				func, 
-				var.ident.toString(),
-				var.start,
-				var.start + var.length - 1,
-				var.ident.start,
-				var.ident.start + var.ident.length - 1,
-				var.type.getSignature(),
-				Flags.AccDefault);
-		
-		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
-		bindingTables.bindingKeysToBindings.put(signature, binding);
-		bindingsToAstNodes.put(binding, node);
-		return (IVariableBinding) binding;
+		return resolveLocal(node, var, Flags.AccDefault);
 	}
 	
 	private IVariableBinding resolveLocalAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
-		String signature = var.getSignature();
-		
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
-			return (IVariableBinding) binding;
-		}
-		
-		FuncDeclaration parent = (FuncDeclaration) var.parent;
-		JavaElement func = (JavaElement) finder.find(parent.getSignature());
-		
-		IJavaElement element = new LocalVariable(
-				func, 
-				var.ident.toString(),
-				var.start,
-				var.start + var.length - 1,
-				var.ident.start,
-				var.ident.start + var.ident.length - 1,
-				var.type.getSignature(),
-				Flags.AccDefault);
-		
-		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
-		bindingTables.bindingKeysToBindings.put(signature, binding);
-		bindingsToAstNodes.put(binding, node);
-		return (IVariableBinding) binding;
+		return resolveLocal(node, var, Flags.AccAlias);
 	}
 	
 	private IVariableBinding resolveLocalTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
+		return resolveLocal(node, var, Flags.AccTypedef);
+	}
+	
+	private IVariableBinding resolveLocal(ASTNode node, Declaration var, long modifiers) {
 		String signature = var.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 		if (binding != null) {
 			return (IVariableBinding) binding;
+		}
+		
+		if (var.type == null) {
+			return null;
 		}
 		
 		FuncDeclaration parent = (FuncDeclaration) var.parent;
@@ -489,7 +452,7 @@ class DefaultBindingResolver extends BindingResolver {
 				var.ident.start,
 				var.ident.start + var.ident.length - 1,
 				var.type.getSignature(),
-				Flags.AccDefault);
+				modifiers);
 		
 		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
 		bindingTables.bindingKeysToBindings.put(signature, binding);
@@ -769,6 +732,10 @@ class DefaultBindingResolver extends BindingResolver {
 		public void acceptPointer(String signature) {
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
+				if (stack.isEmpty() || !(stack.peek() instanceof ITypeBinding)) {
+					return;
+				}
+				
 				binding = new TypePointerBinding(
 						DefaultBindingResolver.this,
 						(ITypeBinding) stack.pop(),
@@ -790,6 +757,10 @@ class DefaultBindingResolver extends BindingResolver {
 		public void acceptStaticArray(int dimension, String signature) {
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
+				if (stack.isEmpty() || !(stack.peek() instanceof ITypeBinding)) {
+					return;
+				}
+				
 				binding = new TypeSArrayBinding(
 					DefaultBindingResolver.this,
 					(ITypeBinding) stack.pop(),

@@ -608,9 +608,11 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 			StringBuilder sb = new StringBuilder();
 			sb.append(parent.getSignature());
 			
-			for(int i : scopeNumbers) {
-				sb.append("#");
-				sb.append(i);
+			if (scopeNumbers != null) {
+				for(int i : scopeNumbers) {
+					sb.append("#");
+					sb.append(i);
+				}
 			}
 			
 			sb.append("#");

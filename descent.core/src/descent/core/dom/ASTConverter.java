@@ -1455,8 +1455,8 @@ public class ASTConverter {
 				b.setLabel(convertedIdent);
 			}
 		}
-		if (a.statement != null) {
-			descent.core.dom.Statement convertedStatement = convert(a.statement);
+		if (a.sourceStatement != null) {
+			descent.core.dom.Statement convertedStatement = convert(a.sourceStatement);
 			if (convertedStatement != null) {
 				b.setBody(convertedStatement);
 			}

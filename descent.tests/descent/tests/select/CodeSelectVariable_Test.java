@@ -100,6 +100,16 @@ public class CodeSelectVariable_Test extends AbstractModelTest {
 		assertEquals(getVariable(other, 0), elements[0]);
 	}
 	
+	public void testSelectExternalReferenceToStructVariableThroughPointer() throws Exception {
+		ICompilationUnit other = createCompilationUnit("other.d", "struct Foo { int x; }");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other; void foo(Foo* f) { f.x = 2; }");
+		
+		IJavaElement[] elements = test.codeSelect(35, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(other.getAllTypes()[0].getChildren()[0], elements[0]);
+	}
+	
 	public void testSelectAlias() throws Exception {
 		ICompilationUnit test = createCompilationUnit("test.d", "alias int FOO;");
 		

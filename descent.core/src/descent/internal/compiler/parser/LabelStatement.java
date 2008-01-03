@@ -9,14 +9,14 @@ import static descent.internal.compiler.parser.Scope.CSXlabel;
 public class LabelStatement extends Statement {
 
 	public IdentifierExp ident;
-	public Statement statement;
+	public Statement statement, sourceStatement;
 	public TryFinallyStatement tf;
 	public boolean isReturnLabel;
 
 	public LabelStatement(Loc loc, IdentifierExp ident, Statement statement) {
 		super(loc);
 		this.ident = ident;
-		this.statement = statement;
+		this.statement = this.sourceStatement = statement;
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class LabelStatement extends Statement {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, statement);
+			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
 	}

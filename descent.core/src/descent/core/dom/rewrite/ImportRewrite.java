@@ -802,7 +802,7 @@ public final class ImportRewrite {
 		if (Modifier.isStatic(binding.getModifiers())) {
 			if (binding instanceof IVariableBinding) {
 				IVariableBinding variableBinding= (IVariableBinding) binding;
-				if (variableBinding.isField()) {
+				if (variableBinding.isVariable()) {
 					ITypeBinding declaringType= variableBinding.getDeclaringClass();
 					return addStaticImport(getRawQualifiedName(declaringType), binding.getName(), true, context);
 				}

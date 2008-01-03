@@ -77,7 +77,9 @@ public class Binding extends ASTAttribute {
 			switch (fBinding.getKind()) {
 				case IBinding.VARIABLE:
 					IVariableBinding variableBinding= (IVariableBinding) fBinding;
-					res.add(new BindingProperty(this, "IS FIELD", variableBinding.isField(), true)); //$NON-NLS-1$
+					res.add(new BindingProperty(this, "IS VARIABLE", variableBinding.isVariable(), true)); //$NON-NLS-1$
+					res.add(new BindingProperty(this, "IS ALIAS", variableBinding.isAlias(), true)); //$NON-NLS-1$
+					res.add(new BindingProperty(this, "IS TYPEDEF", variableBinding.isTypedef(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS ENUM CONSTANT", variableBinding.isEnumConstant(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS PARAMETER", variableBinding.isParameter(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "VARIABLE ID", variableBinding.getVariableId(), true)); //$NON-NLS-1$
@@ -212,7 +214,7 @@ public class Binding extends ASTAttribute {
 			switch (fBinding.getKind()) {
 				case IBinding.VARIABLE:
 					IVariableBinding variableBinding= (IVariableBinding) fBinding;
-					if (!variableBinding.isField()) {
+					if (!variableBinding.isVariable()) {
 						buf.append(variableBinding.getName());
 					} else if (variableBinding.getDeclaringClass() == null) {
 						buf.append("array type"); //$NON-NLS-1$

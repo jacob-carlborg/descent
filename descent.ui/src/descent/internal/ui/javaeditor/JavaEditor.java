@@ -3165,7 +3165,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 
 		if (kind == IBinding.VARIABLE) {
 			IVariableBinding variableBinding= (IVariableBinding)binding;
-			if (variableBinding.isField()) {
+			if (variableBinding.isVariable()) {
 				int constantModifier= Flags.AccStatic | Flags.AccFinal;
 				boolean isConstant= (variableBinding.getModifiers() & constantModifier) == constantModifier;
 				if (isConstant)

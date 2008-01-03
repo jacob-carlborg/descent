@@ -48,10 +48,10 @@ public class NewExp extends Expression {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, thisexp);
-			TreeVisitor.acceptChildren(visitor, newargs);
-			TreeVisitor.acceptChildren(visitor, newtype);
-			TreeVisitor.acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChildren(visitor, sourceThisexp);
+			TreeVisitor.acceptChildren(visitor, sourceNewargs);
+			TreeVisitor.acceptChildren(visitor, sourceNewtype);
+			TreeVisitor.acceptChildren(visitor, sourceArguments);
 		}
 		visitor.endVisit(this);
 	}

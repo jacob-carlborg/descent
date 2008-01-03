@@ -25,15 +25,28 @@ package descent.core.dom;
 public interface IVariableBinding extends IBinding {
 	
 	/**
-	 * Returns whether this binding is for a field.
-	 * Note that this method returns <code>true</code> for constants,
-	 * including enum constants. This method returns <code>false</code>
-	 * for local variables.
+	 * Returns whether this binding is for a variable.
 	 * 
-	 * @return <code>true</code> if this is the binding for a field,
+	 * @return <code>true</code> if this is the binding for a variable,
 	 *    and <code>false</code> otherwise
 	 */ 
-	public boolean isField();
+	public boolean isVariable();
+	
+	/**
+	 * Returns whether this binding is for an alias.
+	 * 
+	 * @return <code>true</code> if this is the binding for an alias,
+	 *    and <code>false</code> otherwise
+	 */ 
+	public boolean isAlias();
+	
+	/**
+	 * Returns whether this binding is for a typedef.
+	 * 
+	 * @return <code>true</code> if this is the binding for a typedef,
+	 *    and <code>false</code> otherwise
+	 */ 
+	public boolean isTypedef();
 	
 	/**
 	 * Returns whether this binding is for an enum constant.
@@ -54,6 +67,16 @@ public interface IVariableBinding extends IBinding {
 	 * @since 3.2
 	 */
 	public boolean isParameter();
+	
+	/**
+	 * Returns whether this binding corresponds to a local variable, alias
+	 * or typedef. 
+	 * 
+	 * @return <code>true</code> if this is the binding for a local variable,
+	 * alias or typedef, and <code>false</code> otherwise
+	 * @since 3.2
+	 */
+	public boolean isLocal();
 
 	/**
 	 * Returns the name of the field or local variable declared in this binding.
@@ -78,9 +101,9 @@ public interface IVariableBinding extends IBinding {
 	public ITypeBinding getDeclaringClass();
 
 	/**
-	 * Returns the binding for the type of this field or local variable.
+	 * Returns the binding for the type of this field, alias, typedef or local variable.
 	 * 
-	 * @return the binding for the type of this field or local variable
+	 * @return the binding for the type of this field, alias, typedef or local variable
 	 */
 	public IBinding getType();
 	

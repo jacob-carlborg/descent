@@ -14,6 +14,7 @@ package descent.internal.ui.javaeditor;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Expression;
 import descent.core.dom.IBinding;
+import descent.core.dom.IVariableBinding;
 import descent.core.dom.SimpleName;
 
 /**
@@ -41,10 +42,21 @@ public final class SemanticToken {
 		if (!fIsBindingResolved) {
 			fIsBindingResolved= true;
 			if (fNode != null)
-				fBinding= fNode.resolveBinding();
+				fBinding= toAlias(fNode.resolveBinding());
 		}
 		
 		return fBinding;
+	}
+	
+	private IBinding toAlias(IBinding binding) {
+		if (binding instanceof IVariableBinding) {
+			IVariableBinding varBinding = (IVariableBinding) binding;
+			if (varBinding.isAlias() || varBinding.isTypedef()) {
+				return toAlias(varBinding.getType());
+			}
+		}
+		
+		return binding;
 	}
 
 	/**

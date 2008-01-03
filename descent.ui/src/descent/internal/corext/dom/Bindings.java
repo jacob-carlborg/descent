@@ -108,7 +108,7 @@ public class Bindings {
 	}
 
 	private static String asString(IVariableBinding variableBinding) {
-		if (! variableBinding.isField())
+		if (! variableBinding.isVariable())
 			return variableBinding.toString();
 		if (variableBinding.getDeclaringClass() == null) {
 			Assert.isTrue(variableBinding.getName().equals("length"));//$NON-NLS-1$

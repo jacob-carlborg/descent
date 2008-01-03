@@ -347,6 +347,7 @@ public class CallExp extends UnaExp {
 						e = e.semantic(sc, context);
 						return e;
 					}
+					
 					/* It's a struct literal
 					 */
 					Expression e = new StructLiteralExp(loc,

@@ -153,6 +153,9 @@ public class TypeStruct extends Type {
 		} else {
 			s = sym.search(e.loc, ident, 0, context);
 		}
+		
+		// Descent: for binding resolution
+		ident.resolvedSymbol = s;
 
 		//L1:
 		if (null == s) {

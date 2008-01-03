@@ -292,7 +292,8 @@ public class JavaElementFinder {
 	
 	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
-			if (child instanceof IPackageDeclaration || child instanceof IImportDeclaration) {
+			if (child instanceof IPackageDeclaration ||
+				child instanceof IImportDeclaration) {
 				continue;
 			}
 			

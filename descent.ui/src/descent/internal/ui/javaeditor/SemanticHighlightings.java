@@ -33,7 +33,6 @@ import descent.core.dom.QualifiedName;
 import descent.core.dom.SimpleName;
 import descent.core.dom.StructuralPropertyDescriptor;
 import descent.core.dom.Type;
-import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.internal.corext.dom.Bindings;
 import descent.ui.PreferenceConstants;
@@ -235,7 +234,7 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isField() && (binding.getModifiers() & (Modifier.FINAL | Modifier.STATIC)) == (Modifier.FINAL | Modifier.STATIC);
+			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isVariable() && (binding.getModifiers() & (Modifier.FINAL | Modifier.STATIC)) == (Modifier.FINAL | Modifier.STATIC);
 		}
 	}
 
@@ -291,7 +290,7 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isField() && (binding.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
+			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isVariable() && (binding.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
 		}
 	}
 
@@ -347,7 +346,9 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isField();
+			return binding != null && binding.getKind() == IBinding.VARIABLE && 
+				!((IVariableBinding)binding).isLocal() &&
+				!((IVariableBinding)binding).isParameter();
 		}
 	}
 
@@ -925,8 +926,7 @@ public class SemanticHighlightings {
 			StructuralPropertyDescriptor location= node.getLocationInParent();
 			if (location == VariableDeclarationFragment.NAME_PROPERTY) {
 				IBinding binding = token.getBinding();
-				return binding != null && binding instanceof IVariableBinding && !((IVariableBinding) binding).isField()
-					&& !((IVariableBinding) binding).isParameter();
+				return binding != null && binding instanceof IVariableBinding && ((IVariableBinding) binding).isLocal();
 //				ASTNode parent= node.getParent();
 //				if (parent instanceof VariableDeclaration) {
 //					parent= parent.getParent();
@@ -990,8 +990,7 @@ public class SemanticHighlightings {
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
 			if (binding != null && binding.getKind() == IBinding.VARIABLE 
-					&& !((IVariableBinding) binding).isField()
-					&& !((IVariableBinding) binding).isParameter()) {
+					&& ((IVariableBinding) binding).isLocal()) {
 				return true;
 				/* TODO JDT UI binding
 				ASTNode decl= token.getRoot().findDeclaringNode(binding);
@@ -1179,7 +1178,8 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION)
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
+					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT)
 				return false;
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
@@ -1251,7 +1251,8 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION)
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
+					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT)
 				return false;
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
@@ -1323,7 +1324,8 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION)
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
+					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT)
 				return false;
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
@@ -1467,7 +1469,8 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION)
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
+					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT)
 				return false;
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();

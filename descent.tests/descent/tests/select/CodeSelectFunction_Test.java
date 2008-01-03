@@ -118,5 +118,35 @@ public class CodeSelectFunction_Test extends AbstractModelTest {
 		
 		assertEquals(getFunction(getFunction(test, 0), 0), elements[0]);
 	}
+	
+	public void testSelectDefaultCtor() throws Exception {
+		ICompilationUnit other = createCompilationUnit("other.d", "class Foo { }");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other; void bla() { new Foo(); }");
+		
+		IJavaElement[] elements = test.codeSelect(32, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(other.getAllTypes()[0], elements[0]);
+	}
+	
+	public void testSelectCtor() throws Exception {
+		ICompilationUnit other = createCompilationUnit("other.d", "class Foo { this(int x) { } }");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other; void bla() { new Foo(1); }");
+		
+		IJavaElement[] elements = test.codeSelect(32, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(other.getAllTypes()[0].getChildren()[0], elements[0]);
+	}
+	
+	public void testSelectOpcall() throws Exception {
+		ICompilationUnit other = createCompilationUnit("other.d", "struct Foo { static Foo opCall(int x) { return null; } }");
+		ICompilationUnit test = createCompilationUnit("test.d", "import other; void bla() { Foo(1); }");
+		
+		IJavaElement[] elements = test.codeSelect(28, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(other.getAllTypes()[0].getChildren()[0], elements[0]);
+	}
 
 }

@@ -15,12 +15,15 @@ import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
@@ -28,6 +31,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
@@ -176,6 +180,18 @@ public class SelectionEngine extends AstVisitorAdapter {
 			return false;
 		}
 		
+		return addResolvedExpression(node);
+	}
+	
+	@Override
+	public boolean visit(CallExp node) {
+//		if (isInRange(node.sourceE1)) {
+//			return addResolvedExpression(node);
+//		}
+		return true;
+	}
+	
+	private boolean addResolvedExpression(Expression node) {
 		Expression resolved = node.resolvedExpression;
 		if (resolved == null) {
 			return false;
@@ -230,6 +246,20 @@ public class SelectionEngine extends AstVisitorAdapter {
 			} else if (node.var instanceof TypedefDeclaration) {
 				add((TypedefDeclaration) node.var);
 			} 
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean visit(NewExp node) {
+		if (isInRange(node.sourceNewtype) && node.member != null) {
+			ICtorDeclaration ctorDeclaration = node.member;
+			if (ctorDeclaration.getJavaElement() != null) {
+				selectedElements.add(ctorDeclaration.getJavaElement());
+			} else {
+				add(ctorDeclaration.getSignature());
+			}
 			return false;
 		}
 		return true;
@@ -308,38 +338,18 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void addLocalVar(VarDeclaration var) {
-		FuncDeclaration parent = (FuncDeclaration) var.parent;
-		JavaElement func = (JavaElement) finder.find(parent.getSignature());
-		
-		selectedElements.add(
-			new LocalVariable(
-				func, 
-				var.ident.toString(),
-				var.start,
-				var.start + var.length - 1,
-				var.ident.start,
-				var.ident.start + var.ident.length - 1,
-				var.type.getSignature(),
-				Flags.AccDefault));
+		addLocal(var, Flags.AccDefault);
 	}
 	
 	private void addLocalAlias(AliasDeclaration var) {
-		FuncDeclaration parent = (FuncDeclaration) var.parent;
-		JavaElement func = (JavaElement) finder.find(parent.getSignature());
-		
-		selectedElements.add(
-			new LocalVariable(
-				func, 
-				var.ident.toString(),
-				var.start,
-				var.start + var.length - 1,
-				var.ident.start,
-				var.ident.start + var.ident.length - 1,
-				var.type.getSignature(),
-				Flags.AccAlias));
+		addLocal(var, Flags.AccAlias);
 	}
 	
 	private void addLocalTypedef(TypedefDeclaration var) {
+		addLocal(var, Flags.AccTypedef);
+	}
+	
+	private void addLocal(Declaration var, long modifiers) {
 		FuncDeclaration parent = (FuncDeclaration) var.parent;
 		JavaElement func = (JavaElement) finder.find(parent.getSignature());
 		
@@ -352,7 +362,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 				var.ident.start,
 				var.ident.start + var.ident.length - 1,
 				var.type.getSignature(),
-				Flags.AccTypedef));
+				modifiers));
 	}
 	
 	private void add(Type type) {
