@@ -258,6 +258,16 @@ boolean isNew() throws JavaModelException;
 boolean isDelete() throws JavaModelException;
 
 /**
+ * Returns whether this method is a template.
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method is a template, false otherwise
+ */
+boolean isTemplate() throws JavaModelException;
+
+/**
  * Returns whether this method is a main method.
  * It is a main method if:
  * <ul>

@@ -317,6 +317,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		info.modifiers = getFlags(node.modifiers);
 		info.modifiers |= flags;
+		if (templateDeclaration != null) {
+			info.modifiers |= Flags.AccTemplate;
+		}
+		
 		if (node.ident != null) {
 			info.name = node.ident.ident;
 			info.nameSourceEnd = endOf(node.ident);
@@ -461,6 +465,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
 		info.modifiers = getFlags(node.modifiers);
+		if (templateDeclaration != null) {
+			info.modifiers |= Flags.AccTemplate;
+		}
+		
 		if (ty.varargs != 0) {
 			info.modifiers |= Flags.AccVarargs;
 		}

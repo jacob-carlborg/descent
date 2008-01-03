@@ -527,7 +527,9 @@ public class RDsymbol extends RNode implements IDsymbol {
 			break;
 		case IJavaElement.TYPE:
 			IType type = (IType) element;
-			if (type.isClass()) {
+			if (type.isTemplate()) {
+				symbol = new RTemplateDeclaration(type, context);
+			} else if (type.isClass()) {
 				symbol = new RClassDeclaration(type, context);
 			} else if (type.isInterface()) {
 				symbol = new RInterfaceDeclaration(type, context);
@@ -537,8 +539,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 				symbol = new RUnionDeclaration(type, context);
 			} else if (type.isEnum()) {
 				symbol = new REnumDeclaration(type, context);
-			} else if (type.isTemplate()) {
-				symbol = new RTemplateDeclaration(type, context);
 			} else {
 				throw new IllegalStateException("Should not happen");
 			}
@@ -563,7 +563,9 @@ public class RDsymbol extends RNode implements IDsymbol {
 			break;
 		case IJavaElement.METHOD:
 			IMethod method = (IMethod) element;
-			if (method.isMethod()) {
+			if (method.isTemplate()) {
+				symbol = new RTemplateDeclaration(method, context);
+			} else if (method.isMethod()) {
 				symbol = new RFuncDeclaration(method, context);
 			} else if (method.isConstructor()) {
 				symbol = new RCtorDeclaration(method, context);

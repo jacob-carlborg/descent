@@ -252,6 +252,9 @@ public boolean isNew() throws JavaModelException {
 public boolean isDelete() throws JavaModelException {
 	return Flags.isDelete(getFlags());
 }
+public boolean isTemplate() throws JavaModelException {
+	return Flags.isTemplate(getFlags());
+}
 /**
  * @see IMethod#isMainMethod()
  */

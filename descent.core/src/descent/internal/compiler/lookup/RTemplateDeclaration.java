@@ -2,8 +2,8 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.IJavaElement;
 import descent.core.ISourceReference;
-import descent.core.IType;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.IDsymbol;
@@ -31,7 +31,7 @@ public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDecl
 	
 	private TemplateDeclaration temp;
 
-	public RTemplateDeclaration(IType element, SemanticContext context) {
+	public RTemplateDeclaration(IJavaElement element, SemanticContext context) {
 		super(element, context);
 	}
 

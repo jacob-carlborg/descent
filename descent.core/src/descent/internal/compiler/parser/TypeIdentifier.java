@@ -80,7 +80,7 @@ public class TypeIdentifier extends TypeQualified {
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		Type[] t = { null };
 		Expression[] e = { null };
-		Dsymbol[] s = { null };
+		IDsymbol[] s = { null };
 
 		resolve(loc, sc, e, t, s, context);
 		

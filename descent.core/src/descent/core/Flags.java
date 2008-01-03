@@ -176,7 +176,7 @@ public final class Flags {
 	 * Template property flag.
 	 * @since 2.0
 	 */
-	public static final int AccTemplate = 0x00080000;
+	public static final int AccTemplate = 0x00100000;
 	
 	// Extensions for methods (can reuse flags)
 	
