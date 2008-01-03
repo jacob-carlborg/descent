@@ -133,6 +133,7 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -183,7 +184,6 @@ import descent.internal.ui.javaeditor.selectionactions.StructureSelectHistoryAct
 import descent.internal.ui.javaeditor.selectionactions.StructureSelectNextAction;
 import descent.internal.ui.javaeditor.selectionactions.StructureSelectPreviousAction;
 import descent.internal.ui.javaeditor.selectionactions.StructureSelectionAction;
-import descent.internal.ui.search.BreakContinueTargetFinder;
 import descent.internal.ui.search.NaiveOccurrencesFinder;
 import descent.internal.ui.text.DocumentCharacterIterator;
 import descent.internal.ui.text.HTMLTextPresenter;
@@ -1690,9 +1690,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * The override and implements indicator manager for this editor.
 	 * @since 3.0
 	 */
-	/* TODO JDT UI override
 	protected OverrideIndicatorManager fOverrideIndicatorManager;
-	*/
 	/**
 	 * Semantic highlighting manager
 	 * @since 3.0
@@ -2654,7 +2652,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 
 			((JavaSourceViewerConfiguration)getSourceViewerConfiguration()).handlePropertyChangeEvent(event);
 
-			/* TODO JDT UI override
 			if (affectsOverrideIndicatorAnnotations(event)) {
 				if (isShowingOverrideIndicators()) {
 					if (fOverrideIndicatorManager == null)
@@ -2665,7 +2662,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 				}
 				return;
 			}
-			*/
 
 			if (PreferenceConstants.EDITOR_FOLDING_PROVIDER.equals(property)) {
 				if (sourceViewer instanceof ProjectionViewer) {
@@ -3204,12 +3200,10 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	}
 
 	protected void uninstallOverrideIndicator() {
-		/* TODO JDT UI override
 		if (fOverrideIndicatorManager != null) {
 			fOverrideIndicatorManager.removeAnnotations();
 			fOverrideIndicatorManager= null;
 		}
-		*/
 	}
 
 	protected void installOverrideIndicator(boolean provideAST) {
@@ -3220,7 +3214,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		if (model == null || inputElement == null)
 			return;
 
-		/* TODO JDT UI override
 		fOverrideIndicatorManager= new OverrideIndicatorManager(model, inputElement, null);
 
 		if (provideAST) {
@@ -3236,7 +3229,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 			job.setSystem(true);
 			job.schedule();
 		}
-		*/
 	}
 
 	/**
@@ -3246,15 +3238,12 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @since 3.0
 	 */
 	protected boolean isShowingOverrideIndicators() {
-		/* TODO JDT UI override
 		AnnotationPreference preference= getAnnotationPreferenceLookup().getAnnotationPreference(OverrideIndicatorManager.ANNOTATION_TYPE);
 		IPreferenceStore store= getPreferenceStore();
 		return getBoolean(store, preference.getHighlightPreferenceKey())
 			|| getBoolean(store, preference.getVerticalRulerPreferenceKey())
 			|| getBoolean(store, preference.getOverviewRulerPreferenceKey())
 			|| getBoolean(store, preference.getTextPreferenceKey());
-		*/
-		return false;
 	}
 
 	/**
@@ -3278,7 +3267,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @since 3.0
 	 */
 	protected boolean affectsOverrideIndicatorAnnotations(PropertyChangeEvent event) {
-		/* TODO JDT UI override
 		String key= event.getProperty();
 		AnnotationPreference preference= getAnnotationPreferenceLookup().getAnnotationPreference(OverrideIndicatorManager.ANNOTATION_TYPE);
 		if (key == null || preference == null)
@@ -3288,8 +3276,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 			|| key.equals(preference.getVerticalRulerPreferenceKey())
 			|| key.equals(preference.getOverviewRulerPreferenceKey())
 			|| key.equals(preference.getTextPreferenceKey());
-		*/
-		return false;
 	}
 
 	/**

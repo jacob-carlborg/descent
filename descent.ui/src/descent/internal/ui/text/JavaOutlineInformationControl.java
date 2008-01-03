@@ -542,7 +542,7 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 		fInnerLabelProvider.addLabelDecorator(new ProblemsLabelDecorator(null));
 		IDecoratorManager decoratorMgr= PlatformUI.getWorkbench().getDecoratorManager();
 		
-		/* TODO JDT UI override
+		/* TODO JDT UI override indicator
 		if (decoratorMgr.getEnabled("descent.ui.override.decorator")) //$NON-NLS-1$
 			fInnerLabelProvider.addLabelDecorator(new OverrideIndicatorLabelDecorator(null));
 		*/

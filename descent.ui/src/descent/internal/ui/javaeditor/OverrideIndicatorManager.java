@@ -13,10 +13,21 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
+import org.eclipse.ui.PartInitException;
 
 import descent.core.IJavaElement;
+import descent.core.JavaModelException;
+import descent.core.dom.ASTNode;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IMethodBinding;
+import descent.core.dom.ITypeBinding;
+import descent.core.dom.SimpleName;
+import descent.internal.corext.dom.Bindings;
+import descent.internal.corext.util.JdtFlags;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.actions.OpenActionUtil;
 import descent.internal.ui.text.java.IJavaReconcilingListener;
 
 /**
@@ -68,11 +79,10 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 			boolean hasLogEntry= false;
 			CompilationUnit ast= JavaPlugin.getDefault().getASTProvider().getAST(fJavaElement, ASTProvider.WAIT_ACTIVE_ONLY, null);
 			if (ast != null) {
-				/* TODO JDT UI override indicator
 				ASTNode node= ast.findDeclaringNode(fAstNodeKey);
-				if (node instanceof MethodDeclaration) {
+				if (node instanceof FunctionDeclaration) {
 					try {
-						IMethodBinding methodBinding= ((MethodDeclaration)node).resolveBinding();
+						IMethodBinding methodBinding= ((FunctionDeclaration)node).resolveBinding();
 						IMethodBinding definingMethodBinding= Bindings.findOverriddenMethod(methodBinding, true);
 						if (definingMethodBinding != null) {
 							IJavaElement definingMethod= definingMethodBinding.getJavaElement();
@@ -89,7 +99,6 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 						hasLogEntry= true;
 					}
 				}
-				*/
 			}
 			String title= JavaEditorMessages.OverrideIndicatorManager_open_error_title;
 			String message;
@@ -151,9 +160,8 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 
 		final Map annotationMap= new HashMap(50);
 
-		/* TODO JDT UI override indicator
-		ast.accept(new ASTVisitor(false) {
-			public boolean visit(MethodDeclaration node) {
+		ast.accept(new ASTVisitor() {
+			public boolean visit(FunctionDeclaration node) {
 				IMethodBinding binding= node.resolveBinding();
 				if (binding != null) {
 					IMethodBinding definingMethod= Bindings.findOverriddenMethod(binding, true);
@@ -163,11 +171,13 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 						String qualifiedMethodName= definingType.getQualifiedName() + "." + binding.getName(); //$NON-NLS-1$
 
 						boolean isImplements= JdtFlags.isAbstract(definingMethod);
-						String text;
+						String text = null;
+						/* TODO JDT UI override indicator
 						if (isImplements)
 							text= Messages.format(JavaEditorMessages.OverrideIndicatorManager_implements, qualifiedMethodName);
 						else
 							text= Messages.format(JavaEditorMessages.OverrideIndicatorManager_overrides, qualifiedMethodName);
+							*/
 
 						SimpleName name= node.getName();
 						Position position= new Position(name.getStartPosition(), name.getLength());
@@ -181,7 +191,6 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 				return true;
 			}
 		});
-		*/
 
 		if (progressMonitor.isCanceled())
 			return;
