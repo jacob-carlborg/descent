@@ -475,7 +475,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				/* Trying to soldier on rarely generates useful messages
 				 * at this point.
 				 */
-				fatal();
+				fatal(context);
 			}
 			return;
 		}

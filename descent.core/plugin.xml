@@ -55,7 +55,7 @@
          point="org.eclipse.core.runtime.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.text"
-            file-extensions="d"
+            file-extensions="d, di"
             id="dSource"
             name="%javaSourceName"
             priority="high"/>

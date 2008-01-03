@@ -176,9 +176,11 @@ public class JavaProjectWizardSecondPage extends JavaCapabilityConfigurationPage
 	
 			if (fFirstPage.getDetect()) {
 				if (!fCurrProject.getFile(FILENAME_CLASSPATH).exists()) { 
+					/* TODO JDT detect classpath
 					final ClassPathDetector detector= new ClassPathDetector(fCurrProject, new SubProgressMonitor(monitor, 2));
 					entries= detector.getClasspath();
                     outputLocation= detector.getOutputLocation();
+                    */
 				} else {
 					monitor.worked(2);
 				}

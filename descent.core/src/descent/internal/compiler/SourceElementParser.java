@@ -55,7 +55,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private final static long[] NO_LONG = new long[0];
 	
 	public ISourceElementRequestor requestor;
-	private Module module;
+	protected Module module;
 	private boolean foundType = false;
 	private CompilerOptions options;
 	private NaiveASTFlattener flattener;
@@ -76,7 +76,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		this.attribDeclarationStack.push(new Stack<AttribDeclaration>());
 	}
 	
-	private int getASTlevel() {
+	protected int getASTlevel() {
 		String source = (String) options.getMap().get(CompilerOptions.OPTION_Source);
 		if (source == null || source.length() == 0) {
 			return AST.D2;
@@ -118,7 +118,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return node.start;
 	}
 	
-	private int endOf(ASTDmdNode node) {
+	protected int endOf(ASTDmdNode node) {
 		if (node == null) return 0;
 		return startOf(node) + node.length - 1;
 	}

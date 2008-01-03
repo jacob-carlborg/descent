@@ -779,8 +779,12 @@ public class RDsymbol extends RNode implements IDsymbol {
 		Type type = context.signatureToTypeCache.get(signature);
 		if (type == null) {
 			TypeFromSignature tfs = new TypeFromSignature();
-			SignatureProcessor.process(signature, tfs);
-			type = tfs.getType();
+			try {
+				SignatureProcessor.process(signature, tfs);
+				type = tfs.getType();
+			} catch (IllegalArgumentException e) {
+				Util.log(e);
+			}
 		}
 		
 		if (type == null) {

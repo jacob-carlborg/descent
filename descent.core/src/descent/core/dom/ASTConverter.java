@@ -1267,11 +1267,21 @@ public class ASTConverter {
 			b.setVariadic(ty.varargs != 0);
 			convertArguments(b.arguments(), ty.parameters);
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertModifiedType(a, b);
 		} else {
 			PointerType b = new PointerType(ast);
 			b.setComponentType(convert(a.sourceNext));
 			b.setSourceRange(a.start, a.length);
+			
+			if (resolveBindings) {
+				recordNodes(b, a);
+			}
+			
 			return convertModifiedType(a, b);
 		}
 	}
@@ -1740,8 +1750,8 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		if (a.value != null) {
-			b.setValue(convert(a.value));
+		if (a.sourceValue != null) {
+			b.setValue(convert(a.sourceValue));
 		}
 		b.setSourceRange(a.start, a.length);
 		

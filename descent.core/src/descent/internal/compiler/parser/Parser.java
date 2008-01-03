@@ -194,20 +194,36 @@ public class Parser extends Lexer {
 	
 	public Parser(int apiLevel, char[] source, int offset, 
 			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename) {
-		super(source, offset, length, 
+		this(source, offset, length, 
 				true /* tokenize comments */, 
 				true /* tokenize pragmas */,
 				false /* don't tokenize whitespace */, 
 				true /* record line separators */,
-				apiLevel, 
+				apiLevel,
+				taskTags, taskPriorities, isTaskCaseSensitive,
 				filename);
-		this.apiLevel = apiLevel;
-		this.comments = new ArrayList<Comment>();
-		this.pragmas = new ArrayList<Pragma>();
+	}
+	
+	public Parser(char[] source, int offset, int length,
+			boolean tokenizeComments, boolean tokenizePragmas,
+			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
+			int apiLevel,
+			char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
+			char[] filename) {
+		super(source, offset, length, tokenizeComments, tokenizePragmas,
+				tokenizeWhiteSpace, recordLineSeparator,
+				apiLevel, filename);
+		if (tokenizeComments) {
+			this.comments = new ArrayList<Comment>(0);
+		}
+		if (tokenizePragmas) {
+			this.pragmas = new ArrayList<Pragma>();
+		}
 		this.taskTags = taskTags;
 		this.taskPriorities = taskPriorities;
 		this.isTaskCaseSensitive = isTaskCaseSensitive;
-		//nextToken();
+		
+		// nextToken();
 	}
 	
 	public Module parseModuleObj() {

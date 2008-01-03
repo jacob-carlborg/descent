@@ -82,7 +82,7 @@ public class StaticAssert extends Dsymbol {
 						IProblem.AssertionFailedNoMessage, exp, new String[] { exp.toChars(context) }));
 			}
 			if (context.global.gag == 0) {
-				fatal();
+				fatal(context);
 			}
 		} else if (!e.isBool(true)) {
 			context.acceptProblem(Problem.newSemanticTypeError(

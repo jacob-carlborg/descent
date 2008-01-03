@@ -190,7 +190,7 @@ class AddJarFileToIndex extends IndexRequest {
 			File[] files = root.listFiles();
 			for(File file : files) {
 				if (file.isFile()) {
-					if (Util.isJavaFileName(file.getName())) {
+					if (descent.internal.core.util.Util.isJavaLikeFileName(file.getName())) {
 						indexedFileNames.put(relativePath(superRoot, file), EXISTS);
 					}
 				} else {
@@ -205,7 +205,7 @@ class AddJarFileToIndex extends IndexRequest {
 			File[] files = root.listFiles();
 			for(File file : files) {
 				if (file.isFile()) {
-					if (Util.isJavaFileName(file.getName())) {
+					if (descent.internal.core.util.Util.isJavaLikeFileName(file.getName())) {
 						try {
 							char[] charContents = descent.internal.core.util.Util.getFileContentsAsCharArray(file);
 							JavaSearchDocument entryDocument = new JavaSearchDocument(file.getAbsolutePath(), participant, charContents);

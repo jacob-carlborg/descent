@@ -34,7 +34,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		return null;
 	}
 
-	public ITypeBinding getType() {
+	public IBinding getType() {
 		String signature;
 		try {
 			if (element instanceof IField) {
@@ -44,7 +44,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 			} else {
 				throw new IllegalStateException("element must be IField or ILocalVariable");
 			}
-			return (ITypeBinding) bindingResolver.resolveBinding(signature);
+			return bindingResolver.resolveBinding(signature);
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}

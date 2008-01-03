@@ -124,7 +124,7 @@ public class JarPackageFragmentRoot extends PackageFragmentRoot {
 				// add classfile info amongst children
 				ArrayList[] children = (ArrayList[]) packageFragToTypes.get(pkgName);
 				//if (descent.internal.compiler.util.Util.isClassFileName(entryName)) {
-				if (descent.internal.compiler.util.Util.isJavaFileName(entryName)) {
+				if (descent.internal.core.util.Util.isJavaLikeFileName(entryName)) {
 					if (children[JAVA] == EMPTY_LIST) children[JAVA] = new ArrayList();
 					children[JAVA].add(fileName);
 				} else {

@@ -48,6 +48,9 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		this.loc = loc;
 		this.parameters = parameters;
 		this.members = decldefs;
+		if (decldefs != null){
+			this.sourceMembers = new Dsymbols(decldefs);
+		}
 	}
 
 	@Override

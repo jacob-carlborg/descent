@@ -438,15 +438,20 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			Type bt;
 
 			if (context.ClassDeclaration_object == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.MissingOrCurruptObjectDotD, this));
-				fatal();
+				fatal(context);
 			}
 			bt = tbase.semantic(loc, sc, context).toBasetype(context);
 			b = new BaseClass(bt, PROT.PROTpublic);
 			baseclasses.add(0, b);
 			if (b.type.ty != Tclass) {
-				throw new IllegalStateException("assert(b.type.ty == Tclass);");
+				
+				// This may happen if object.d is not found.
+				// So, just return: another error somewhere else be reported
+				return;
+				
+				//throw new IllegalStateException("assert(b.type.ty == Tclass);");
 			}
 			tc = (TypeClass) (b.type);
 			baseClass = tc.sym;

@@ -177,7 +177,7 @@ public boolean exists() {
  * @exception IllegalArgumentException if the name does not end with ".class"
  */
 public IClassFile getClassFile(String classFileName) {
-	if (!descent.internal.compiler.util.Util.isJavaFileName(classFileName)) {
+	if (!descent.internal.core.util.Util.isJavaLikeFileName(classFileName)) {
 		throw new IllegalArgumentException(Messages.element_invalidClassFileName); 
 	}
 	return new ClassFile(this, new String(classFileName));

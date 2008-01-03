@@ -137,9 +137,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 				} else {
 					add(sym.getSignature());
 				}
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	@Override

@@ -719,8 +719,8 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 		}
 	}
 
-	protected void fatal() {
-		// throw new IllegalStateException("Problem reporting not implemented");
+	protected void fatal(SemanticContext context) {
+		context.fatalWasSignaled = true;
 	}
 
 	public boolean findCondition(List<char[]> ids, char[] ident) {

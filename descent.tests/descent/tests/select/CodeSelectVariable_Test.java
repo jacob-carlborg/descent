@@ -145,5 +145,14 @@ public class CodeSelectVariable_Test extends AbstractModelTest {
 		
 		assertEquals(test.getAllTypes()[0], elements[0]);
 	}
+	
+	public void testSelectAliasTypeAsPointer() throws Exception {
+		ICompilationUnit test = createCompilationUnit("test.d", "class Foo { } alias Foo* FOO;");
+		
+		IJavaElement[] elements = test.codeSelect(21, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(test.getAllTypes()[0], elements[0]);
+	}
 
 }

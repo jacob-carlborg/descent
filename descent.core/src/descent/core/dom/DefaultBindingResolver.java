@@ -922,7 +922,12 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		SignatureSolver solver = new SignatureSolver();
-		SignatureProcessor.process(signature, solver);
+		try {
+			SignatureProcessor.process(signature, solver);
+		} catch (IllegalArgumentException e) {
+			Util.log(e);
+			return null;
+		}
 		
 		if (solver.stack.isEmpty()) {
 			binding = null;

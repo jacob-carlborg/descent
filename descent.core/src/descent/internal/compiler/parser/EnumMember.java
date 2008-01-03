@@ -6,12 +6,12 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class EnumMember extends Dsymbol implements IEnumMember {
 
-	public Expression value;
+	public Expression value, sourceValue;
 
 	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
 		super(id);
 		this.loc = loc;
-		this.value = value;
+		this.value = this.sourceValue = value;
 		if (value == null) {
 			start = id.start;
 			length = id.length;
@@ -27,7 +27,7 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, value);
+			TreeVisitor.acceptChildren(visitor, sourceValue);
 		}
 		visitor.endVisit(this);
 	}

@@ -221,6 +221,12 @@ public class Import extends Dsymbol {
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
+		// Descent: mod may be null if there was some problem resolving
+		// this import, but semantic is continued.
+		if (mod == null) {
+			return;
+		}
+		
 		mod.semantic2(sc, context);
 		if (mod.needmoduleinfo()) {
 			sc.module.needmoduleinfo = true;

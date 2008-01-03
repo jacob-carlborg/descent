@@ -65,6 +65,8 @@ public class SemanticContext {
 	public IDsymbolTable st;
 	public int muteProblems = 0;
 	
+	public boolean fatalWasSignaled;
+	
 	// A cache to retrieve faster a type from it's signature
 	public Map<String, Type> signatureToTypeCache;
 
@@ -128,7 +130,11 @@ public class SemanticContext {
 	}
 
 	public void acceptProblem(IProblem problem) {
-//		System.out.println(problem);
+		// Don't report more problems if fatal was signaled
+		if (fatalWasSignaled) {
+			return;
+		}
+		
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
 			problemRequestor.acceptProblem(problem);
 		}

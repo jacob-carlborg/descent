@@ -1023,7 +1023,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 			for (int i = 0; i < cd.interfaces().size() && !gotoL2; i++) {
 				BaseClass b = cd.interfaces().get(i);
 				for (vi = 0; vi < b.base.vtbl().size() && !gotoL2; vi++) {
-					IDsymbol s = (Dsymbol) b.base.vtbl().get(vi);
+					IDsymbol s = (IDsymbol) b.base.vtbl().get(vi);
 					IFuncDeclaration fdv = s.isFuncDeclaration();
 					if (fdv != null && equals(fdv.ident(), ident)) {
 						int cov = type.covariant(fdv.type(), context);

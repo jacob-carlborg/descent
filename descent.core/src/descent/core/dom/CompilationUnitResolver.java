@@ -173,11 +173,12 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 					global.path.add(root.getResource().getLocation().toOSString());
 				}
 			}
+			return resolve(module, project, global, owner);
 		} catch (JavaModelException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
-		
-		return resolve(module, project, global, owner);
+
+		return null;
 	}
 	
 	public static SemanticContext resolve(
