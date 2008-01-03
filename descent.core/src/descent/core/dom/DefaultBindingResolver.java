@@ -820,6 +820,10 @@ class DefaultBindingResolver extends BindingResolver {
 					Util.log(e);
 				}
 				
+				if (element == null) {
+					return;
+				}
+				
 				binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}

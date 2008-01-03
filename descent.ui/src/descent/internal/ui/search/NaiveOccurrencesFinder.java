@@ -11,6 +11,7 @@ import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.IBinding;
 import descent.core.dom.SimpleName;
 import descent.internal.corext.dom.ASTNodes;
 import descent.internal.corext.dom.NodeFinder;
@@ -26,6 +27,7 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 	
 	private AST fAST;
 	private SimpleName fSelectedName;
+	private IBinding fBinding;
 	
 	private ASTNode fStart;
 	private List<ASTNode> fResult;
@@ -35,7 +37,7 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 	}
 
 	public void collectOccurrenceMatches(IJavaElement element, IDocument document, Collection resultingMatches) {
-		int a = 2;
+		
 	}
 	
 	public String initialize(CompilationUnit root, int offset, int length) {
@@ -48,6 +50,7 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 			return "Node must be SimpleName";  
 		}
 		fSelectedName = (SimpleName) node;
+		fBinding = fSelectedName.resolveBinding();
 		fStart = root;
 		return null;
 	}
@@ -81,10 +84,15 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 	
 	@Override
 	public boolean visit(SimpleName node) {
-		if (fSelectedName != null && fSelectedName != node && fSelectedName.getIdentifier().equals(node.getIdentifier())) {
+		if (fBinding != null && fBinding == node.resolveBinding()) {
 			fResult.add(node);
 		}
 		return false;
+		
+//		if (fSelectedName != null && fSelectedName != node && fSelectedName.getIdentifier().equals(node.getIdentifier())) {
+//			fResult.add(node);
+//		}
+//		return false;
 	}
 
 }
