@@ -15,7 +15,6 @@ import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Argument;
-import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
@@ -183,14 +182,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return addResolvedExpression(node);
 	}
 	
-	@Override
-	public boolean visit(CallExp node) {
-//		if (isInRange(node.sourceE1)) {
-//			return addResolvedExpression(node);
-//		}
-		return true;
-	}
-	
 	private boolean addResolvedExpression(Expression node) {
 		Expression resolved = node.resolvedExpression;
 		if (resolved == null) {
@@ -254,11 +245,11 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(NewExp node) {
 		if (isInRange(node.sourceNewtype) && node.member != null) {
-			ICtorDeclaration ctorDeclaration = node.member;
-			if (ctorDeclaration.getJavaElement() != null) {
-				selectedElements.add(ctorDeclaration.getJavaElement());
+			ICtorDeclaration ctor = node.member;
+			if (ctor.getJavaElement() != null) {
+				selectedElements.add(ctor.getJavaElement());
 			} else {
-				add(ctorDeclaration.getSignature());
+				add(ctor.getSignature());
 			}
 			return false;
 		}

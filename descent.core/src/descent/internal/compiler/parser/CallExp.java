@@ -338,7 +338,12 @@ public class CallExp extends UnaExp {
 
 				if (t1.ty == Tstruct) {
 					ad = ((TypeStruct) t1).sym;
-					if (search_function(ad, Id.call, context) != null) {
+					IDsymbol opCall = search_function(ad, Id.call, context);
+					if (opCall != null) {
+						
+						// Descent: for binding resolution
+						sourceE1.setResolvedSymbol(opCall);
+						
 						// goto L1;	// overload of opCall, therefore it's a call
 						// Rewrite as e1.call(arguments)
 						Expression e = new DotIdExp(loc, e1, new IdentifierExp(

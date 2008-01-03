@@ -23,9 +23,11 @@ import descent.core.dom.CompilationUnit;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.Expression;
 import descent.core.dom.IBinding;
+import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.Import;
 import descent.core.dom.Name;
+import descent.core.dom.NewExpression;
 import descent.core.dom.StructuralPropertyDescriptor;
 import descent.core.dom.Type;
 import descent.core.dom.VariableDeclaration;
@@ -90,13 +92,16 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 //			res.add(createExpressionTypeBinding(node, expressionTypeBinding));
 			
 			IBinding expressionTypeBinding= expression.resolveTypeBinding();
-			res.add(createBinding(node, expressionTypeBinding));
+			res.add(createExpressionTypeBinding(node, expressionTypeBinding));
 			
 			// expressions:
 			if (expression instanceof Name) {
 				IBinding binding= ((Name) expression).resolveBinding();
 				if (binding != expressionTypeBinding)
 					res.add(createBinding(expression, binding));
+			} else if (expression instanceof NewExpression) {
+				IMethodBinding binding = ((NewExpression) expression).resolveNewBinding();
+				res.add(createBinding(expression, binding));
 			// TODO ASTView bindings
 //			} else if (expression instanceof MethodInvocation) {
 //				IMethodBinding binding= ((MethodInvocation) expression).resolveMethodBinding();
@@ -235,7 +240,7 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 		return new Binding(parent, label, binding, true);
 	}
 	
-	private Object createExpressionTypeBinding(ASTNode parent, ITypeBinding binding) {
+	private Object createExpressionTypeBinding(ASTNode parent, IBinding binding) {
 		String label= "> (Expression) type binding"; //$NON-NLS-1$
 		return new Binding(parent, label, binding, true);
 	}

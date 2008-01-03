@@ -306,5 +306,19 @@ public class NewExpression extends Expression {
 			+ (this.constructorArguments.listSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for this new expression.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding for this new expression, or
+	 *    <code>null</code> if the binding cannot be resolved
+	 */	
+	public final IMethodBinding resolveNewBinding() {
+		return this.ast.getBindingResolver().resolveNewExpression(this);
+	}
 
 }

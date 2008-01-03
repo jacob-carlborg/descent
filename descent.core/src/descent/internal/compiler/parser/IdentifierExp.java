@@ -237,5 +237,10 @@ public class IdentifierExp extends Expression {
 			return new String(ident);
 		}
 	}
+	
+	@Override
+	public void setResolvedSymbol(IDsymbol symbol) {
+		resolvedSymbol = symbol;
+	}
 
 }

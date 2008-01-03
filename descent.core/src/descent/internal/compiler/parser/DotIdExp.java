@@ -241,5 +241,10 @@ public class DotIdExp extends UnaExp {
 	    buf.writeByte('.');
 	    buf.writestring(ident.toChars());
 	}
+	
+	@Override
+	public void setResolvedSymbol(IDsymbol symbol) {
+		ident.resolvedSymbol = symbol;
+	}
 
 }

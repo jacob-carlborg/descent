@@ -494,5 +494,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public void setLineNumber(int lineNumber) {
 		loc.linnum = lineNumber;
 	}
+	
+	public void setResolvedSymbol(IDsymbol symbol) {
+		
+	}
 
 }

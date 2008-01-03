@@ -14,6 +14,7 @@ import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
@@ -24,11 +25,14 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeExp;
@@ -295,10 +299,47 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		return null;
 	}
+	
+	@Override
+	public IMethodBinding resolveNewExpression(NewExpression expression) {
+		ASTDmdNode old = newAstToOldAst.get(expression);
+		if (!(old instanceof descent.internal.compiler.parser.NewExp)) {
+			return null;
+		}
+		
+		NewExp exp = (NewExp) old;
+		ICtorDeclaration ctor = exp.member;
+		if (ctor == null) {
+			return null;
+		}
+		
+		String signature = ctor.getSignature();
+		
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return (IMethodBinding) binding;
+		}
+		
+		if (ctor.getJavaElement() != null) {
+			binding = new MethodBinding(this, (IMethod) ctor.getJavaElement(), signature);
+		} else {
+			binding = resolveBinding(signature);
+		}
+		
+		bindingTables.bindingKeysToBindings.put(signature, binding);
+		bindingsToAstNodes.put(binding, expression);
+		return (IMethodBinding) binding;
+	}
 
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {
 		if (id.resolvedSymbol != null) {
 			IDsymbol sym = id.resolvedSymbol;
+			
+			// If it resolves to an opCall, use the parent
+			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident().ident, Id.call)) {
+				sym = sym.parent();
+			}
+			
 			if (sym.getJavaElement() != null) {
 				IJavaElement elem = sym.getJavaElement();
 				IBinding binding = resolveBinding(elem, sym.getSignature(), node);

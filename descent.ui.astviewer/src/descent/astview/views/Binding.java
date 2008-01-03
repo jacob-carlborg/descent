@@ -234,8 +234,10 @@ public class Binding extends ASTAttribute {
 					break;
 				case IBinding.METHOD:
 					IMethodBinding methodBinding= (IMethodBinding) fBinding;
-					buf.append(methodBinding.getDeclaringClass().getName());
-					buf.append('.');
+					if (methodBinding.getDeclaringClass() != null) {
+						buf.append(methodBinding.getDeclaringClass().getName());
+						buf.append('.');
+					}
 					buf.append(methodBinding.getName());
 					buf.append('(');
 					ITypeBinding[] parameters= methodBinding.getParameterTypes();

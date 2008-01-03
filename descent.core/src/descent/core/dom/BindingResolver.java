@@ -483,7 +483,26 @@ class BindingResolver {
 	 */
 	public IVariableBinding resolveArgument(Argument argument) {
 		return null;
-	} 
+	}
+	
+	/**
+	 * Resolves the given new expression and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>NewExpression.resolveNewBinding</code>
+	 * forwards to this method.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param expression the expression of interest
+	 * @return the binding for the given new expression, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	public IMethodBinding resolveNewExpression(NewExpression expression) {
+		return null;
+	}
 	
 	/**
 	 * Resolves the given well known type by name and returns the type binding
