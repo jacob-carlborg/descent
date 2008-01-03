@@ -1,16 +1,11 @@
 package descent.tests.lookup;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
-
-import descent.core.ICompilationUnit;
-import descent.tests.model.AbstractModelTest;
 
 /*
  * Tests to check that the implementation of the resolved part of the
  * semantic analysis is working as expected.
  */
-public class Lookup_Test extends AbstractModelTest {
+public class Lookup_Test extends AbstractLookupTest {
 	
 	public void testDefinedNotOk() throws Exception {
 		one("");
@@ -301,40 +296,6 @@ public class Lookup_Test extends AbstractModelTest {
 		createCompilationUnit("first.second", "file.d", "class Foo { int x; } alias Foo FOO;");
 		two("import first.second.file; void foo(FOO f) { f.x = 2; }");
 		assertNoErrors();
-	}
-	
-	protected ICompilationUnit one;
-	protected ICompilationUnit two;
-	protected ICompilationUnit three;
-	
-	protected ICompilationUnit one(String contents) throws Exception {
-		return one = createCompilationUnit(
-				"one.d", 
-				contents);
-	}
-	
-	protected ICompilationUnit three(String contents) throws Exception {
-		return three = createCompilationUnit(
-				"three.d", 
-				contents);
-	}
-	
-	protected ICompilationUnit two(String contents) throws Exception {
-		two = createCompilationUnit(
-				"two.d", 
-				"import one; " + contents);
-		build();
-		return two;
-	}
-	
-	// Assertions on the precense of errors in "two.d"
-	
-	protected void assertNoErrors() throws CoreException {
-		assertEquals(0, two.getResource().findMarkers(IMarker.PROBLEM, true, 0).length);
-	}
-	
-	protected void assertErrors() throws CoreException {
-		assertTrue(two.getResource().findMarkers(IMarker.PROBLEM, true, 0).length > 0);
 	}
 
 }

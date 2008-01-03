@@ -32,6 +32,7 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -180,6 +181,11 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		
 		return addResolvedExpression(node);
+	}
+	
+	@Override
+	public boolean visit(TemplateInstance node) {
+		return false;
 	}
 	
 	private boolean addResolvedExpression(Expression node) {

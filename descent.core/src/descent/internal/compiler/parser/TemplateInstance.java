@@ -54,7 +54,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, name);
 			TreeVisitor.acceptChildren(visitor, tiargs);
 		}
 		visitor.endVisit(this);
@@ -512,6 +512,9 @@ public class TemplateInstance extends ScopeDsymbol {
 			if (null != tempdecl) {
 				tempdecl = findBestMatch(sc, context);
 			}
+			
+			name.resolvedSymbol = tempdecl;
+			
 			if (null == tempdecl || context.global.errors > 0) {
 				inst = this;
 				return; // error recovery
