@@ -789,6 +789,10 @@ class DefaultBindingResolver extends BindingResolver {
 		public void acceptFunction(char[][] compoundName, String signature) {
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
+				if (stack.isEmpty()) {
+					return;
+				}
+				
 				IParent parent = null;
 				if (element == null) {
 					element = finder.find(compoundName);
@@ -901,6 +905,10 @@ class DefaultBindingResolver extends BindingResolver {
 		public void exitFunctionType(LINK link, String signature) {
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
+				if (stack.isEmpty()) {
+					return;
+				}
+				
 				IBinding[] parameterTypes = new IBinding[stack.size() - 1];
 				
 				IBinding returnType = stack.pop();

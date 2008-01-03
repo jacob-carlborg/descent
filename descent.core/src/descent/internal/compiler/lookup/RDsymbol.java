@@ -680,6 +680,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 		}
 
 		public void acceptPointer(String signature) {
+			if (stack.isEmpty()) {
+				return;
+			}
+			
 			TypePointer type = new TypePointer(stack.pop());
 			type.deco = signature;
 			stack.push(type);
@@ -690,6 +694,10 @@ public class RDsymbol extends RNode implements IDsymbol {
 		}
 
 		public void acceptStaticArray(int dimension, String signature) {
+			if (stack.isEmpty()) {
+				return;
+			}
+			
 			TypeSArray type = new TypeSArray(stack.pop(), new IntegerExp(dimension));
 			type.deco = signature;
 			stack.push(type);
