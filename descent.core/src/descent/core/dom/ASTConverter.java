@@ -2197,6 +2197,11 @@ public class ASTConverter {
 		convertDeclarations(ret.thenDeclarations(), a.decl);
 		convertDeclarations(ret.elseDeclarations(), a.elsedecl);
 		fillDeclaration(ret, a);
+		
+		if (resolveBindings) {
+			recordNodes(ret, a);
+		}
+		
 		return ret;
 	}
 	
@@ -2280,6 +2285,11 @@ public class ASTConverter {
 			ret.setElseBody(convert(a.elsebody));
 		}
 		ret.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(ret, a);
+		}
+		
 		return ret;
 	}
 	

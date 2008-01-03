@@ -20,6 +20,8 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.ConditionalDeclaration;
+import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
@@ -132,6 +134,40 @@ class DefaultBindingResolver extends BindingResolver {
 		if (binding != null) {
 			return findDeclaringNode(binding);
 		}
+		return null;
+	}
+	
+	@Override
+	public Boolean resolveConditionalDeclaration(descent.core.dom.ConditionalDeclaration declaration) {
+		ASTDmdNode old = newAstToOldAst.get(declaration);
+		if (!(old instanceof ConditionalDeclaration)) {
+			return false;
+		}
+		
+		int c = ((ConditionalDeclaration) old).condition.inc;
+		switch(c) {
+		case 0: return null;
+		case 1: return true;
+		case 2: return false;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public Boolean resolveConditionalStatement(descent.core.dom.ConditionalStatement statement) {
+		ASTDmdNode old = newAstToOldAst.get(statement);
+		if (!(old instanceof ConditionalStatement)) {
+			return false;
+		}
+		
+		int c = ((ConditionalStatement) old).condition.inc;
+		switch(c) {
+		case 0: return null;
+		case 1: return true;
+		case 2: return false;
+		}
+		
 		return null;
 	}
 	

@@ -544,6 +544,14 @@ class BindingResolver {
 		return null;
 	}
 	
+	public Boolean resolveConditionalDeclaration(ConditionalDeclaration declaration) {
+		return null;
+	}
+	
+	public Boolean resolveConditionalStatement(ConditionalStatement statement) {
+		return null;
+	}
+	
 	/**
 	 * Allows the user to store information about the given old/new pair of
 	 * AST nodes.

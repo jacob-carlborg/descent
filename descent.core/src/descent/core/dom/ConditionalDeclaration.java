@@ -121,5 +121,17 @@ public abstract class ConditionalDeclaration extends Declaration {
 	public List<Declaration> elseDeclarations() {
 		return this.elseDeclarations;
 	}
+	
+	/**
+	 * Determines if the condition of this declaration is active. 
+	 * This return {@link Boolean#TRUE}
+	 * if it's active, {@link Boolean#FALSE} if it is not active,
+	 * or <code>null</code> if it is unknown, or bindings are not available. 
+	 * @return true, false or null if condiiton of this declaration is
+	 * active, not active, or if it is unknown or bindings are not available. 
+	 */
+	public final Boolean isActive() {
+		return ast.getBindingResolver().resolveConditionalDeclaration(this);
+	}
 
 }

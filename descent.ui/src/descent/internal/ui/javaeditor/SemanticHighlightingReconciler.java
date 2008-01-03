@@ -18,28 +18,37 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.source.ISourceViewer;
-
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import descent.core.IJavaElement;
 import descent.core.dom.ASTNode;
+import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.CharacterLiteral;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConditionalDeclaration;
+import descent.core.dom.ConditionalStatement;
+import descent.core.dom.DebugDeclaration;
+import descent.core.dom.DebugStatement;
+import descent.core.dom.Declaration;
 import descent.core.dom.Expression;
 import descent.core.dom.GenericVisitor;
+import descent.core.dom.IftypeDeclaration;
+import descent.core.dom.IftypeStatement;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.SimpleName;
-
+import descent.core.dom.Statement;
+import descent.core.dom.StaticIfDeclaration;
+import descent.core.dom.StaticIfStatement;
+import descent.core.dom.VersionDeclaration;
+import descent.core.dom.VersionStatement;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.SemanticHighlightingManager.HighlightedPosition;
 import descent.internal.ui.javaeditor.SemanticHighlightingManager.Highlighting;
@@ -125,6 +134,141 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 				}
 			}
 			fToken.clear();
+			return false;
+		}
+		
+		@Override
+		public boolean visit(VersionDeclaration node) {
+			return visitConditionalDeclaration(node);
+		}
+		
+		@Override
+		public boolean visit(StaticIfDeclaration node) {
+			return visitConditionalDeclaration(node);
+		}
+		
+		@Override
+		public boolean visit(IftypeDeclaration node) {
+			return visitConditionalDeclaration(node);
+		}
+		
+		@Override
+		public boolean visit(DebugDeclaration node) {
+			return visitConditionalDeclaration(node);
+		}
+		
+		private boolean visitConditionalDeclaration(ConditionalDeclaration node) {
+			Boolean active = node.isActive();
+			if (active == null) {
+				return true;
+			}
+			
+			List<Declaration> enabledDeclarations;
+			List<Declaration> disabledDeclarations;
+			if (active) {
+				enabledDeclarations = node.thenDeclarations();
+				disabledDeclarations = node.elseDeclarations();
+			} else {
+				enabledDeclarations = node.elseDeclarations();
+				disabledDeclarations = node.thenDeclarations();
+			}
+			
+			if (disabledDeclarations != null && disabledDeclarations.size() > 0) {
+				Declaration first = disabledDeclarations.get(0);
+				Declaration last = disabledDeclarations.get(disabledDeclarations.size() - 1);
+				int offset, length;
+				
+				// If there's no else, disable everything
+				if (enabledDeclarations == null || enabledDeclarations.size() == 0) {
+					offset = node.getStartPosition();
+					length = node.getLength();
+				} else {
+					offset = first.getStartPosition();
+					length = last.getStartPosition() + last.getLength() - offset;
+				}
+				addPosition(offset, length, fDisabledHighlighting);
+			}
+			
+			if (enabledDeclarations != null) {
+				for(Declaration d : enabledDeclarations) {
+					d.accept(this);
+				}
+			}
+			
+			return false;
+		}
+		
+		@Override
+		public boolean visit(VersionStatement node) {
+			return visitConditionalStatement(node);
+		}
+		
+		@Override
+		public boolean visit(StaticIfStatement node) {
+			return visitConditionalStatement(node);
+		}
+		
+		@Override
+		public boolean visit(IftypeStatement node) {
+			return visitConditionalStatement(node);
+		}
+		
+		@Override
+		public boolean visit(DebugStatement node) {
+			return visitConditionalStatement(node);
+		}
+		
+		private boolean visitConditionalStatement(ConditionalStatement node) {
+			Boolean active = node.isActive();
+			if (active == null) {
+				return true;
+			}
+			
+			Statement enabledStatement;
+			Statement disabledStatement;
+			if (active) {
+				enabledStatement = node.getThenBody();
+				disabledStatement = node.getElseBody();
+			} else {
+				enabledStatement = node.getElseBody();
+				disabledStatement = node.getThenBody();
+			}
+			
+			if (disabledStatement != null) {
+				int offset, length;
+				
+				// If it's a block, it looks nicer if only the statements
+				// inside it are shown as disbaled
+				if (disabledStatement instanceof Block) {
+					List<Statement> disabledStatements = ((Block) disabledStatement).statements();
+					if (disabledStatements.size() > 0) {
+						Statement first = disabledStatements.get(0);
+						Statement last = disabledStatements.get(disabledStatements.size() - 1);
+						if (enabledStatement == null) {
+							offset = node.getStartPosition();
+							length = node.getLength();
+						} else {
+							offset = first.getStartPosition();
+							length = last.getStartPosition() + last.getLength() - offset;
+						}
+						addPosition(offset, length, fDisabledHighlighting);
+					}
+				} else {
+					if (enabledStatement == null) {
+						offset = node.getStartPosition();
+						length = node.getLength();
+					} else {
+						offset = disabledStatement.getStartPosition();
+						length = disabledStatement.getLength();
+					}
+					addPosition(offset, length, fDisabledHighlighting);
+				}
+			}
+			
+			if (enabledStatement != null) {
+				enabledStatement.accept(this);
+			}
+			
 			return false;
 		}
 
@@ -215,6 +359,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 	private SemanticHighlighting[] fJobSemanticHighlightings;
 	/** Highlightings - cache for background thread, only valid during {@link #reconciled(CompilationUnit, boolean, IProgressMonitor)} */
 	private Highlighting[] fJobHighlightings;
+	private Highlighting fDisabledHighlighting;
 
 	/*
 	 * @see descent.internal.ui.text.java.IJavaReconcilingListener#aboutToBeReconciled()
@@ -358,13 +503,14 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 	 * @param semanticHighlightings the semantic highlightings
 	 * @param highlightings the highlightings
 	 */
-	public void install(JavaEditor editor, ISourceViewer sourceViewer, SemanticHighlightingPresenter presenter, SemanticHighlighting[] semanticHighlightings, Highlighting[] highlightings) {
+	public void install(JavaEditor editor, ISourceViewer sourceViewer, SemanticHighlightingPresenter presenter, SemanticHighlighting[] semanticHighlightings, Highlighting[] highlightings, Highlighting disabledHighlighting) {
 		fPresenter= presenter;
 		fSemanticHighlightings= semanticHighlightings;
 		fHighlightings= highlightings;
 
 		fEditor= editor;
 		fSourceViewer= sourceViewer;
+		fDisabledHighlighting = disabledHighlighting;
 
 		if (fEditor instanceof CompilationUnitEditor) {
 			((CompilationUnitEditor)fEditor).addReconcileListener(this);

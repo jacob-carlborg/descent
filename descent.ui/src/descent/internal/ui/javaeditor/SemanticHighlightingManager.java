@@ -263,6 +263,8 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 	private SemanticHighlighting[] fSemanticHighlightings;
 	/** Highlightings */
 	private Highlighting[] fHighlightings;
+	/** The disabled highlighting */
+	private Highlighting fDisabledHighlighting;
 
 	/** The editor */
 	private JavaEditor fEditor;
@@ -331,7 +333,7 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 
 		if (fEditor != null) {
 			fReconciler= new SemanticHighlightingReconciler();
-			fReconciler.install(fEditor, fSourceViewer, fPresenter, fSemanticHighlightings, fHighlightings);
+			fReconciler.install(fEditor, fSourceViewer, fPresenter, fSemanticHighlightings, fHighlightings, fDisabledHighlighting);
 		} else {
 			fPresenter.updatePresentation(null, createHardcodedPositions(), new HighlightedPosition[0]);
 		}
@@ -452,6 +454,9 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 
 			fHighlightings[i]= new Highlighting(new TextAttribute(fColorManager.getColor(PreferenceConverter.getColor(fPreferenceStore, colorKey)), null, style), isEnabled);
 		}
+		
+		// TODO Descent disabled highlighting make it configurable?
+		fDisabledHighlighting = new Highlighting(new TextAttribute(fColorManager.getColor(new RGB(128, 128, 128))), true);
 	}
 
 	/**

@@ -159,5 +159,17 @@ public abstract class ConditionalStatement extends Statement {
 		this.elseBody = elseBody;
 		postReplaceChild(oldChild, elseBody, getElseBodyProperty());
 	}
+	
+	/**
+	 * Determines if the condition of this statement is active. 
+	 * This return {@link Boolean#TRUE}
+	 * if it's active, {@link Boolean#FALSE} if it is not active,
+	 * or <code>null</code> if it is unknown or bindings are not available. 
+	 * @return true, false or null if condiiton of this statement is
+	 * active, not active, or it is unknown or bindings are not available. 
+	 */
+	public final Boolean isActive() {
+		return ast.getBindingResolver().resolveConditionalStatement(this);
+	}
 
 }
