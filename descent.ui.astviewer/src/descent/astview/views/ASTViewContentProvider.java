@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.CallExpression;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.Expression;
@@ -101,6 +102,9 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 					res.add(createBinding(expression, binding));
 			} else if (expression instanceof NewExpression) {
 				IMethodBinding binding = ((NewExpression) expression).resolveNewBinding();
+				res.add(createBinding(expression, binding));
+			} else if (expression instanceof CallExpression) {
+				IMethodBinding binding = ((CallExpression) expression).resolveCallBinding();
 				res.add(createBinding(expression, binding));
 			// TODO ASTView bindings
 //			} else if (expression instanceof MethodInvocation) {

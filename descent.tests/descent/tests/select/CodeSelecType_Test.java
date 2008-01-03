@@ -85,5 +85,21 @@ public class CodeSelecType_Test extends AbstractModelTest {
 		assertEquals(1, elements.length);
 		assertEquals(unit.getAllTypes()[0].getChildren()[0], elements[0]);
 	}
+	
+	public void testTypeInTypeof() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "class Foo { } void foo() { typeof(Foo) f; }");
+		
+		IJavaElement[] elements = unit.codeSelect(35, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getAllTypes()[0], elements[0]);
+	}
+	
+	public void testTypeInTypeid() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "class Foo { } void foo() { auto o = typeid(Foo); }");
+		
+		IJavaElement[] elements = unit.codeSelect(44, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getAllTypes()[0], elements[0]);
+	}
 
 }

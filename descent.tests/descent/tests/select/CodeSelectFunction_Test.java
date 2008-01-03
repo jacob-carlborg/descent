@@ -139,7 +139,7 @@ public class CodeSelectFunction_Test extends AbstractModelTest {
 		assertEquals(other.getAllTypes()[0].getChildren()[0], elements[0]);
 	}
 	
-	public void testSelectOpcall() throws Exception {
+	public void testSelectStructOpcall() throws Exception {
 		ICompilationUnit other = createCompilationUnit("other.d", "struct Foo { static Foo opCall(int x) { return null; } }");
 		ICompilationUnit test = createCompilationUnit("test.d", "import other; void bla() { Foo(1); }");
 		
@@ -147,6 +147,15 @@ public class CodeSelectFunction_Test extends AbstractModelTest {
 		assertEquals(1, elements.length);
 		
 		assertEquals(other.getAllTypes()[0].getChildren()[0], elements[0]);
+	}
+	
+	public void testSelectFunctionAsArrayMethod() throws Exception {
+		ICompilationUnit test = createCompilationUnit("test.d", "int len(int[] a) { return 0; } void foo() { int[] a = null; a.len(); }");
+		
+		IJavaElement[] elements = test.codeSelect(63, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(getFunction(test, 0), elements[0]);
 	}
 
 }

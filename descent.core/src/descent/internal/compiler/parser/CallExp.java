@@ -607,6 +607,9 @@ public class CallExp extends UnaExp {
 
 				f = f.overloadResolve(arguments, context, this);
 				checkDeprecated(sc, f, context);
+				
+				// Descent: for binding resolution
+				this.sourceE1.setResolvedSymbol(f);
 
 				if (f.needThis() && hasThis(sc) != null) {
 					// Supply an implicit 'this', as in

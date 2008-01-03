@@ -223,5 +223,19 @@ public class CallExpression extends Expression {
 			+ (this.arguments.listSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for this cal expression.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding for this call expression, or
+	 *    <code>null</code> if the binding cannot be resolved
+	 */	
+	public final IMethodBinding resolveCallBinding() {
+		return this.ast.getBindingResolver().resolveCallExpression(this);
+	}
 
 }

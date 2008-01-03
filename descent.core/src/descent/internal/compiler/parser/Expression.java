@@ -498,5 +498,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public void setResolvedSymbol(IDsymbol symbol) {
 		
 	}
+	
+	public IDsymbol getResolvedSymbol() {
+		return null;
+	}
 
 }

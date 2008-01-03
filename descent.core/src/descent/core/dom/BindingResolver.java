@@ -505,6 +505,25 @@ class BindingResolver {
 	}
 	
 	/**
+	 * Resolves the given call expression and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>CallExpression.resolveCallBinding</code>
+	 * forwards to this method.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param expression the expression of interest
+	 * @return the binding for the given new expression, or 
+	 *    <code>null</code> if no binding is available
+	 */
+	public IMethodBinding resolveCallExpression(CallExpression expression) {
+		return null;
+	}
+	
+	/**
 	 * Resolves the given well known type by name and returns the type binding
 	 * for it.
 	 * <p>

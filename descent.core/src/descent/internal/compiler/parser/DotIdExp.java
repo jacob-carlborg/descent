@@ -246,5 +246,10 @@ public class DotIdExp extends UnaExp {
 	public void setResolvedSymbol(IDsymbol symbol) {
 		ident.resolvedSymbol = symbol;
 	}
+	
+	@Override
+	public IDsymbol getResolvedSymbol() {
+		return ident.resolvedSymbol;
+	}
 
 }

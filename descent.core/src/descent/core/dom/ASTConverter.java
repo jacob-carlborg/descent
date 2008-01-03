@@ -951,8 +951,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(TypeidExp a) {
 		descent.core.dom.TypeidExpression b = new descent.core.dom.TypeidExpression(ast);
-		if (a.typeidType != null) {
-			descent.core.dom.Type converted = convert(a.typeidType);
+		if (a.sourceTypeidType != null) {
+			descent.core.dom.Type converted = convert(a.sourceTypeidType);
 			if (converted != null) {
 				b.setType(converted);
 			}

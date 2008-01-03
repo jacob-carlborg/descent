@@ -2,8 +2,12 @@ package descent.tests.binding;
 
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.DeclarationStatement;
 import descent.core.dom.EnumDeclaration;
+import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ITypeBinding;
+import descent.core.dom.Statement;
+import descent.core.dom.VariableDeclaration;
 
 public class BindingType_Test extends AbstractBinding_Test {
 	
@@ -72,6 +76,15 @@ public class BindingType_Test extends AbstractBinding_Test {
 		
 		// The binding for the name of the class should be the same
 		assertSame(binding, agg.getName().resolveBinding());
+	}
+	
+	public void testTypeTypeof() throws Exception {
+		CompilationUnit unit = createCU("test.d", "enum Foo { a } void foo() { typeof(Foo) f; }");
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(1);
+		DeclarationStatement stm = (DeclarationStatement) func.getBody().statements().get(0);
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 	}
 
 }

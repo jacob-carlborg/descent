@@ -19,6 +19,7 @@ import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
@@ -27,6 +28,7 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -322,6 +324,38 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		if (ctor.getJavaElement() != null) {
 			binding = new MethodBinding(this, (IMethod) ctor.getJavaElement(), signature);
+		} else {
+			binding = resolveBinding(signature);
+		}
+		
+		bindingTables.bindingKeysToBindings.put(signature, binding);
+		bindingsToAstNodes.put(binding, expression);
+		return (IMethodBinding) binding;
+	}
+	
+	@Override
+	public IMethodBinding resolveCallExpression(CallExpression expression) {
+		ASTDmdNode old = newAstToOldAst.get(expression);
+		if (!(old instanceof descent.internal.compiler.parser.CallExp)) {
+			return null;
+		}
+		
+		CallExp exp = (CallExp) old;
+		if (exp.sourceE1.getResolvedSymbol() == null ||
+				!(exp.sourceE1.getResolvedSymbol() instanceof IFuncDeclaration)) {
+			return null;
+		}
+		
+		IFuncDeclaration sym = (IFuncDeclaration) exp.sourceE1.getResolvedSymbol();
+		String signature = sym.getSignature();
+		
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding != null) {
+			return (IMethodBinding) binding;
+		}
+		
+		if (sym.getJavaElement() != null) {
+			binding = new MethodBinding(this, (IMethod) sym.getJavaElement(), signature);
 		} else {
 			binding = resolveBinding(signature);
 		}

@@ -35,7 +35,8 @@ public abstract class AbstractModelTest extends TestCase {
 		
 		IClasspathEntry[] oldEntries = javaProject.getRawClasspath();		
 		IClasspathEntry entry = JavaCore.newLibraryEntry(
-				new Path("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos"), 
+				//new Path("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos"),
+				new Path("C:\\d\\dmd_1.0.20\\dmd\\src\\phobos"),
 				null, null);
 		
 		IClasspathEntry[] newEntries = new IClasspathEntry[oldEntries.length + 1];

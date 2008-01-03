@@ -6,18 +6,18 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class TypeidExp extends Expression {
 
-	public Type typeidType;
+	public Type typeidType, sourceTypeidType;
 
 	public TypeidExp(Loc loc, Type typeidType) {
 		super(loc, TOK.TOKtypeid);
-		this.typeidType = typeidType;
+		this.typeidType = this.sourceTypeidType = typeidType;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, typeidType);
+			TreeVisitor.acceptChildren(visitor, sourceTypeidType);
 		}
 		visitor.endVisit(this);
 	}

@@ -242,5 +242,10 @@ public class IdentifierExp extends Expression {
 	public void setResolvedSymbol(IDsymbol symbol) {
 		resolvedSymbol = symbol;
 	}
+	
+	@Override
+	public IDsymbol getResolvedSymbol() {
+		return resolvedSymbol;
+	}
 
 }

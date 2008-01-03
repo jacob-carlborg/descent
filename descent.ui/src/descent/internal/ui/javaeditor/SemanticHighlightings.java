@@ -1180,8 +1180,9 @@ public class SemanticHighlightings {
 			int nodeType= node.getNodeType();
 			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
 					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
-					&& nodeType != ASTNode.CALL_EXPRESSION
-					&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION) // For opCall
+					&& nodeType != ASTNode.CALL_EXPRESSION // For opCall
+					&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
+					&& nodeType != ASTNode.TYPEOF_TYPE)
 				return false;
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();

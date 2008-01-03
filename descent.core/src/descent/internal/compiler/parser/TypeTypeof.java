@@ -117,10 +117,10 @@ public class TypeTypeof extends TypeQualified {
 	
 	@Override
 	public String getSignature() {
-		StringBuilder sb = new StringBuilder();
-		sb.append('*');
-		sb.append(ASTNodeEncoder.encodeExpression(exp));
-		return sb.toString();
+		if (exp.type != null) {
+			return exp.type.getSignature();
+		}
+		return null;
 	}
 
 }
