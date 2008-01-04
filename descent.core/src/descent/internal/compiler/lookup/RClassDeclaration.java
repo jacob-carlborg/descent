@@ -16,6 +16,7 @@ import descent.internal.compiler.parser.ICtorDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IInterfaceDeclaration;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.PROT;
@@ -28,7 +29,7 @@ import descent.internal.core.util.Util;
 public class RClassDeclaration extends RAggregateDeclaration implements
 		IClassDeclaration {
 	
-	private TypeClass type;
+	private Type type;
 	private IClassDeclaration baseClass;
 	private ICtorDeclaration ctor;
 	private BaseClasses interfaces;
@@ -245,7 +246,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	public Type type() {
 		if (type == null) {
 			type = new TypeClass(this);
-			type.deco = getTypeDeco("C");
+			type = type.merge(context);
 		}
 		return type;
 	}
@@ -296,6 +297,10 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	
 	public int vtblOffset() {
 		return 1;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.CLASS;
 	}
 
 }

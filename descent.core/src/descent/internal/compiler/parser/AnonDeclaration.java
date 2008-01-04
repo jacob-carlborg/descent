@@ -201,8 +201,7 @@ public class AnonDeclaration extends AttribDeclaration {
 	
 	@Override
 	public String getSignature() {
-		// TODO Auto-generated method stub
-		return null;
+		return parent.getSignature();
 	}
 
 }

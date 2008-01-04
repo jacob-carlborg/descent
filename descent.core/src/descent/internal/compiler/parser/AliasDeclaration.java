@@ -270,10 +270,8 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		buf.writenl();
 	}
 	
-	// Specific for Descent
-
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+	public char getSignaturePrefix() {
+		return ISignatureConstants.ALIAS;
 	}
 
 }

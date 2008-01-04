@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import descent.core.IField;
 import descent.internal.compiler.parser.IInitializer;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.ITypedefDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
@@ -52,8 +53,7 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	public Type type() {
 		if (type == null) {
 			type = new TypeTypedef(this);
-			// TODO Descent is this ok?
-			type.deco = getTypeDeco("");
+			type.merge(context);
 		}
 		return type;
 	}
@@ -65,10 +65,9 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	public ITypedefDeclaration isTypedefDeclaration() {
 		return this;
 	}
-	
-	@Override
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+
+	public char getSignaturePrefix() {
+		return ISignatureConstants.TYPEDEF;
 	}
 
 }

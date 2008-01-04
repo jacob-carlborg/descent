@@ -20,6 +20,7 @@ import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IScopeDsymbol;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InlineScanState;
 import descent.internal.compiler.parser.InterState;
@@ -193,9 +194,8 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 		return this;
 	}
 	
-	@Override
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+	public char getSignaturePrefix() {
+		return ISignatureConstants.FUNCTION;
 	}
 
 }

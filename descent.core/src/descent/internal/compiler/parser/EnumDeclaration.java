@@ -341,10 +341,6 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 			return 4; // "enum".length()
 		}
 	}
-
-	public String getSignature() {
-		return type.getSignature();
-	}
 	
 	public Type memtype() {
 		return memtype;
@@ -360,6 +356,11 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 
 	public integer_t minval() {
 		return minval;
+	}
+	
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.ENUM;
 	}
 
 }

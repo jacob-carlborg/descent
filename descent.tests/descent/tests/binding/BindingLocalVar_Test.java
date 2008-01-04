@@ -29,7 +29,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, fragment.getName().resolveBinding());
 	}
@@ -51,7 +51,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#0#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#0#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, fragment.getName().resolveBinding());
 	}
@@ -77,7 +77,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#1#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#1#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, fragment.getName().resolveBinding());
 	}
@@ -108,7 +108,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#1#2#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#1#2#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, fragment.getName().resolveBinding());
 	}
@@ -128,7 +128,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#0#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#0#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, argument.getName().resolveBinding());
 	}
@@ -148,7 +148,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#0#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#0#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, argument.getName().resolveBinding());
 		
@@ -161,7 +161,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#1#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#1#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, argument.getName().resolveBinding());
 	}
@@ -186,7 +186,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertFalse(varBinding.isParameter());
 		assertTrue(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFZv#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, fragment.getName().resolveBinding());
 	}
@@ -203,7 +203,7 @@ public class BindingLocalVar_Test extends AbstractBinding_Test {
 		assertTrue(varBinding.isParameter());
 		assertFalse(varBinding.isLocal());
 		
-		assertEquals("O4test3fooFiZv#x", varBinding.getKey());
+		assertEquals(MODULE + "4test" + FUNCTION + "3fooFiZv#" + VARIABLE + "x", varBinding.getKey());
 		
 		assertSame(varBinding, argument.getName().resolveBinding());
 	}

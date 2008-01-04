@@ -8,6 +8,7 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.Statement;
 import descent.core.dom.VariableDeclaration;
+import descent.internal.compiler.parser.ISignatureConstants;
 
 public class BindingType_Test extends AbstractBinding_Test {
 	
@@ -16,7 +17,7 @@ public class BindingType_Test extends AbstractBinding_Test {
 	private final static int UNION = 3;
 	private final static int INTERFACE = 4;
 	
-	private void assertTypeBinding(String keyword, String signatureStart, int type) throws Exception {
+	private void assertTypeBinding(String keyword, char signatureStart, int type) throws Exception {
 		CompilationUnit unit = createCU("test.d", keyword + " Foo { }");
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		ITypeBinding binding = agg.resolveBinding();
@@ -28,7 +29,7 @@ public class BindingType_Test extends AbstractBinding_Test {
 		assertEquals(type == INTERFACE, binding.isInterface());
 		
 		assertEquals(ITypeBinding.TYPE, binding.getKind());
-		assertEquals(signatureStart + "4test3Foo", binding.getKey());
+		assertEquals(MODULE + "4test" + signatureStart + "3Foo", binding.getKey());
 		assertEquals("Foo", binding.getName());
 		assertEquals(0, binding.getDimension());
 		assertEquals("test.Foo", binding.getQualifiedName());
@@ -41,20 +42,20 @@ public class BindingType_Test extends AbstractBinding_Test {
 	}
 	
 	public void testTypeBindingInClassDeclaration() throws Exception {
-		assertTypeBinding("class", "C", CLASS);
+		assertTypeBinding("class", ISignatureConstants.CLASS, CLASS);
 	}
 	
 	public void testTypeBindingInStructDeclaration() throws Exception {
-		assertTypeBinding("struct", "S", STRUCT);
+		assertTypeBinding("struct", ISignatureConstants.STRUCT, STRUCT);
 	}
 
 	public void testTypeBindingInUnionDeclaration() throws Exception {
-		assertTypeBinding("union", "S", UNION);
+		assertTypeBinding("union", ISignatureConstants.UNION, UNION);
 	}
 	
 
 	public void testTypeBindingInInterfaceDeclaration() throws Exception {
-		assertTypeBinding("interface", "C", INTERFACE);
+		assertTypeBinding("interface", ISignatureConstants.INTERFACE, INTERFACE);
 	}
 
 	public void testTypeBindingInEnumDeclaration() throws Exception {
@@ -66,7 +67,7 @@ public class BindingType_Test extends AbstractBinding_Test {
 		assertTrue(binding.isEnum());
 		
 		assertEquals(ITypeBinding.TYPE, binding.getKind());
-		assertEquals("E4test3Foo", binding.getKey());
+		assertEquals(MODULE + "4test" + ENUM + "3Foo", binding.getKey());
 		assertEquals("Foo", binding.getName());
 		assertEquals(0, binding.getDimension());
 		assertEquals("test.Foo", binding.getQualifiedName());

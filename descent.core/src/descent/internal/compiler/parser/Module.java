@@ -405,7 +405,7 @@ public class Module extends Package implements IModule {
 		return signature;
 	}
 	
-	protected void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.MODULE);
 		String[] pieces = moduleName.split("\\.");
 		for(String piece : pieces) {

@@ -16,5 +16,6 @@ public interface ISignatureConstants {
 	char ALIAS = '=';
 	char TYPEDEF = 'T';
 	char FUNCTION = '[';
+	char TEMPLATE = '{';
 
 }

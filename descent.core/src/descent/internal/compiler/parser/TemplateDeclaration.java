@@ -797,15 +797,6 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		// buf.writeByte(0);
 		return buf.extractData();
 	}
-
-	public String getSignature() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("N");
-		sb.append(parent.mangle((SemanticContext) null));
-		sb.append(ident.length);
-		sb.append(ident);
-		return sb.toString();
-	}
 	
 	public ITemplateDeclaration overroot() {
 		return overroot;

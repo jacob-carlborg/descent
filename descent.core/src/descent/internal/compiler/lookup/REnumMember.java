@@ -5,6 +5,7 @@ import descent.core.JavaModelException;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IEnumMember;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.SourceField;
 import descent.internal.core.SourceFieldElementInfo;
@@ -46,6 +47,10 @@ public class REnumMember extends RDsymbol implements IEnumMember {
 	@Override
 	public IEnumMember isEnumMember() {
 		return this;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.ENUM_MEMBER;
 	}
 
 }

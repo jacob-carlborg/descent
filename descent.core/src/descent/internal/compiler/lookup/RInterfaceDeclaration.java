@@ -4,6 +4,7 @@ import descent.core.IType;
 import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.IInterfaceDeclaration;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.SemanticContext;
 
@@ -25,6 +26,10 @@ public class RInterfaceDeclaration extends RClassDeclaration implements IInterfa
 	@Override
 	public IInterfaceDeclaration isInterfaceDeclaration() {
 		return this;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.INTERFACE;
 	}
 
 }

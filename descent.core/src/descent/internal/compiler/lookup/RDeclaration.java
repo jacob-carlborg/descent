@@ -13,7 +13,7 @@ import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.core.util.Util;
 
-public class RDeclaration extends RDsymbol implements IDeclaration {
+public abstract class RDeclaration extends RDsymbol implements IDeclaration {
 	
 	private int storage_class = -1;
 

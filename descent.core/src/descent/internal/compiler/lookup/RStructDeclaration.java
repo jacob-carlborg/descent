@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import descent.core.IType;
 import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IStructDeclaration;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
@@ -11,7 +12,7 @@ import descent.internal.compiler.parser.TypeStruct;
 
 public class RStructDeclaration extends RAggregateDeclaration implements IStructDeclaration {
 	
-	private TypeStruct type;
+	private Type type;
 	private boolean zeroInitCalculated;
 	private boolean zeroInit;
 
@@ -38,7 +39,7 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	public Type type() {
 		if (type == null) {
 			type = new TypeStruct(this);
-			type.deco = getTypeDeco("S");
+			type = type.merge(context);
 		}
 		return type;
 	}
@@ -54,6 +55,10 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 			zeroInitCalculated = true;
 		}
 		return zeroInit;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.STRUCT;
 	}
 
 }

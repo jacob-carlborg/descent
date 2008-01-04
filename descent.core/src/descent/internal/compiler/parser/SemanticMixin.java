@@ -623,54 +623,29 @@ public class SemanticMixin {
 		return buffer.toString();
 	}
 	
-	/**
-	 * Only for var, typedef, alias and enum member.
-	 */
 	public static String getSignature(IDsymbol aThis) {
 		if (aThis.parent() == null) {
 			return null;
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		appendDsymbolSignature(aThis, 'Q', sb);
+		appendSignature(aThis, sb);
 		return sb.toString();
 	}
 	
-	public static String getSignature(IFuncDeclaration aThis) {
-		if (aThis.parent() == null) {
-			return null;
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		appendDsymbolSignature(aThis, 'O', sb);
-		sb.append(aThis.type().getSignature());
-		return sb.toString();
-	}
-	
-	private static void appendDsymbolSignature(IDsymbol aThis, char first, StringBuilder sb) {
+	public static void appendSignature(IDsymbol aThis, StringBuilder sb) {
 		if (aThis.parent() == null) {
 			return;
 		}
-		sb.append(first);
 		
-		// If it's nested in a function, append the @
-		if (aThis.parent() instanceof IFuncDeclaration) {
-			sb.append(aThis.parent().getSignature());
-			sb.append("@");
-		} else {
-			// If my parent is a class, then the signature will start
-			// with the letter C, so remove it. Same for other types.
-			String parentSignature = aThis.parent().getSignature();
-			if (parentSignature.length() > 0 && 
-					!Character.isDigit(parentSignature.charAt(0))) {
-				sb.append(parentSignature.substring(1));
-			} else {
-				sb.append(parentSignature);
-			}
-		}
-		
+		aThis.parent().appendSignature(sb);
+		sb.append(aThis.getSignaturePrefix());
 		sb.append(aThis.ident().ident.length);
-		sb.append(aThis.ident());
+		sb.append(aThis.ident().ident);
+		
+		if (aThis instanceof IFuncDeclaration) {
+			aThis.type().appendSignature(sb);
+		}
 	}
 	
 	public static String mangle(IClassDeclaration aThis, SemanticContext context) {

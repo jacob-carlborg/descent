@@ -8,7 +8,6 @@ import descent.core.IField;
 import descent.core.IImportDeclaration;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
-import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IPackageFragment;
@@ -39,6 +38,7 @@ import descent.internal.compiler.parser.INewDeclaration;
 import descent.internal.compiler.parser.INode;
 import descent.internal.compiler.parser.IPackage;
 import descent.internal.compiler.parser.IScopeDsymbol;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IStaticCtorDeclaration;
 import descent.internal.compiler.parser.IStructDeclaration;
 import descent.internal.compiler.parser.ISymbolDeclaration;
@@ -76,7 +76,7 @@ import descent.internal.core.SignatureProcessor;
 import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
-public class RDsymbol extends RNode implements IDsymbol {
+public abstract class RDsymbol extends RNode implements IDsymbol {
 	
 	protected IDsymbol parent;
 	protected IdentifierExp ident;
@@ -124,11 +124,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 
 	public IModule getModule() {
 		return SemanticMixin.getModule(this);
-	}
-	
-	public String getSignature() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public Type getType() {
@@ -505,92 +500,96 @@ public class RDsymbol extends RNode implements IDsymbol {
 		return null;
 	}
 
-	protected IDsymbol toDsymbol(IJavaElement element) throws JavaModelException {
+	protected IDsymbol toDsymbol(IJavaElement element) {
 		IDsymbol symbol = null;
 		
-		switch(element.getElementType()) {
-		case IJavaElement.JAVA_MODEL:
-		case IJavaElement.JAVA_PROJECT:
-		case IJavaElement.PACKAGE_FRAGMENT_ROOT:
-		default:
-			return null;
-		case IJavaElement.PACKAGE_FRAGMENT:
-			symbol = new RPackage((IPackageFragment) element, context);
-			break;
-		case IJavaElement.COMPILATION_UNIT:
-		case IJavaElement.CLASS_FILE:
-			symbol = new RModule((ICompilationUnit) element, context);
-			break;
-		case IJavaElement.TYPE:
-			IType type = (IType) element;
-			if (type.isTemplate()) {
-				symbol = new RTemplateDeclaration(type, context);
-			} else if (type.isClass()) {
-				symbol = new RClassDeclaration(type, context);
-			} else if (type.isInterface()) {
-				symbol = new RInterfaceDeclaration(type, context);
-			} else if (type.isStruct()) {
-				symbol = new RStructDeclaration(type, context);
-			} else if (type.isUnion()) {
-				symbol = new RUnionDeclaration(type, context);
-			} else if (type.isEnum()) {
-				symbol = new REnumDeclaration(type, context);
-			} else {
-				throw new IllegalStateException("Should not happen");
+		try {
+			switch(element.getElementType()) {
+			case IJavaElement.JAVA_MODEL:
+			case IJavaElement.JAVA_PROJECT:
+			case IJavaElement.PACKAGE_FRAGMENT_ROOT:
+			default:
+				return null;
+			case IJavaElement.PACKAGE_FRAGMENT:
+				symbol = new RPackage((IPackageFragment) element, context);
+				break;
+			case IJavaElement.COMPILATION_UNIT:
+			case IJavaElement.CLASS_FILE:
+				symbol = new RModule((ICompilationUnit) element, context);
+				break;
+			case IJavaElement.TYPE:
+				IType type = (IType) element;
+				if (type.isTemplate()) {
+					symbol = new RTemplateDeclaration(type, context);
+				} else if (type.isClass()) {
+					symbol = new RClassDeclaration(type, context);
+				} else if (type.isInterface()) {
+					symbol = new RInterfaceDeclaration(type, context);
+				} else if (type.isStruct()) {
+					symbol = new RStructDeclaration(type, context);
+				} else if (type.isUnion()) {
+					symbol = new RUnionDeclaration(type, context);
+				} else if (type.isEnum()) {
+					symbol = new REnumDeclaration(type, context);
+				} else {
+					throw new IllegalStateException("Should not happen");
+				}
+				break;
+			case IJavaElement.FIELD:
+				IField field = (IField) element;
+				if (field.isVariable()) {
+					symbol = new RVarDeclaration(field, context);
+				} else if (field.isEnumConstant()) {
+					symbol = new REnumMember(field, context);
+				} else if (field.isAlias()) {
+					symbol = new RAliasDeclaration(field, context);
+				} else if (field.isTypedef()) {
+					symbol = new RTypedefDeclaration(field, context);
+				} else if (field.isTemplateMixin()) {
+					// TODO should never hit this, since it will already be expanded
+					// But check...
+					throw new IllegalStateException("Should not happen");
+				} else {
+					throw new IllegalStateException("Should not happen");
+				}
+				break;
+			case IJavaElement.METHOD:
+				IMethod method = (IMethod) element;
+				if (method.isTemplate()) {
+					symbol = new RTemplateDeclaration(method, context);
+				} else if (method.isMethod()) {
+					symbol = new RFuncDeclaration(method, context);
+				} else if (method.isConstructor()) {
+					symbol = new RCtorDeclaration(method, context);
+				} else if (method.isDestructor()) {
+					symbol = new RDtorDeclaration(method, context);
+				} else if (method.isNew()) {
+					symbol = new RNewDeclaration(method, context);
+				} else if (method.isDelete()) {
+					symbol = new RDeleteDeclaration(method, context);
+				} else {
+					throw new IllegalStateException("Should not happen");
+				}
+				break;
+			case IJavaElement.INITIALIZER:
+				IInitializer init = (IInitializer) element;
+				return null;
+			case IJavaElement.IMPORT_DECLARATION:
+				IImportDeclaration imp = (IImportDeclaration) element;
+				
+				// TODO improve performance of this
+				StringBuilder sb = new StringBuilder();
+				sb.append("import ");
+				sb.append(imp.getElementName());
+				sb.append(";");
+				
+				Parser parser = new Parser(Util.getApiLevel(element), sb.toString());
+				parser.nextToken();
+				Module mod = parser.parseModuleObj();
+				return mod.members.get(0);
 			}
-			break;
-		case IJavaElement.FIELD:
-			IField field = (IField) element;
-			if (field.isVariable()) {
-				symbol = new RVarDeclaration(field, context);
-			} else if (field.isEnumConstant()) {
-				symbol = new REnumMember(field, context);
-			} else if (field.isAlias()) {
-				symbol = new RAliasDeclaration(field, context);
-			} else if (field.isTypedef()) {
-				symbol = new RTypedefDeclaration(field, context);
-			} else if (field.isTemplateMixin()) {
-				// TODO should never hit this, since it will already be expanded
-				// But check...
-				throw new IllegalStateException("Should not happen");
-			} else {
-				throw new IllegalStateException("Should not happen");
-			}
-			break;
-		case IJavaElement.METHOD:
-			IMethod method = (IMethod) element;
-			if (method.isTemplate()) {
-				symbol = new RTemplateDeclaration(method, context);
-			} else if (method.isMethod()) {
-				symbol = new RFuncDeclaration(method, context);
-			} else if (method.isConstructor()) {
-				symbol = new RCtorDeclaration(method, context);
-			} else if (method.isDestructor()) {
-				symbol = new RDtorDeclaration(method, context);
-			} else if (method.isNew()) {
-				symbol = new RNewDeclaration(method, context);
-			} else if (method.isDelete()) {
-				symbol = new RDeleteDeclaration(method, context);
-			} else {
-				throw new IllegalStateException("Should not happen");
-			}
-			break;
-		case IJavaElement.INITIALIZER:
-			IInitializer init = (IInitializer) element;
-			return null;
-		case IJavaElement.IMPORT_DECLARATION:
-			IImportDeclaration imp = (IImportDeclaration) element;
-			
-			// TODO improve performance of this
-			StringBuilder sb = new StringBuilder();
-			sb.append("import ");
-			sb.append(imp.getElementName());
-			sb.append(";");
-			
-			Parser parser = new Parser(Util.getApiLevel(element), sb.toString());
-			parser.nextToken();
-			Module mod = parser.parseModuleObj();
-			return mod.members.get(0);
+		} catch (JavaModelException e) {
+			Util.log(e);
 		}
 		
 		if (symbol != null) {
@@ -602,24 +601,62 @@ public class RDsymbol extends RNode implements IDsymbol {
 	
 	private class TypeFromSignature implements ISignatureRequestor {
 		
-		private Stack<Type> stack = new Stack<Type>();
+		private Stack<Type> typesStack = new Stack<Type>();
+		private Stack<IDsymbol> symbolStack = new Stack<IDsymbol>();
 		private Stack<Integer> modifiersStack = new Stack<Integer>();
 		
+		public TypeFromSignature() {
+			symbolStack.push(null);
+		}
+		
 		public Type getType() {
-			if (stack.isEmpty()) {
+			if (!symbolStack.isEmpty()) {
+				IDsymbol sym = symbolStack.pop();
+				if (sym != null) {
+					return sym.type();
+				}
+			}
+			if (typesStack.isEmpty()) {
 				return null;
 			} else {
-				return stack.pop();
+				return typesStack.pop();
 			}
 		}
 		
 		public void acceptModule(char[][] compoundName, String signature) {
+			if (symbolStack.isEmpty()) {
+				return;
+			}
 			
+			symbolStack.pop();
+			
+			IModule module = context.moduleFinder.findModule(compoundName, context);
+			if (module != null) {
+				symbolStack.add(module);
+			}
 		}
 		
 		public void acceptSymbol(char type, char[] name, String signature) {
-			// TODO Auto-generated method stub
+			if (symbolStack.isEmpty()) {
+				return;
+			}
 			
+			IDsymbol symbol = symbolStack.pop();
+			if (type == ISignatureConstants.FUNCTION) {
+				IDsymbol parent = symbol;
+				IJavaElement element = symbol.getJavaElement();
+				// TODO parameters and return types
+				element = JavaElementFinder.findFunction((IParent) element, new String(name), null);
+				if (element != null) {
+					symbol = toDsymbol(element);
+					symbol.parent(parent);
+				}
+			} else {
+				symbol = symbol.search(Loc.ZERO, name, 0, context);
+			}
+			if (symbol != null) {
+				symbolStack.push(symbol);
+			}
 		}
 
 		public void acceptArgumentBreak(char c) {
@@ -631,69 +668,83 @@ public class RDsymbol extends RNode implements IDsymbol {
 		}
 
 		public void acceptAssociativeArray(String signature) {
-			TypeAArray type = new TypeAArray(stack.pop(), stack.pop());
-			type.deco = signature;
-			stack.push(type);
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				type = new TypeAArray(typesStack.pop(), typesStack.pop());
+				type = type.merge(context);
+			}
+			typesStack.push(type);
 		}
 
 		public void acceptDelegate(String signature) {
-			TypeDelegate type = new TypeDelegate(stack.pop());
-			type.deco = signature;
-			stack.push(type);
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				type = new TypeDelegate(typesStack.pop());
+				type = type.merge(context);
+			}
+			typesStack.push(type);
 		}
 
 		public void acceptDynamicArray(String signature) {
-			TypeDArray type = new TypeDArray(stack.pop());
-			type.deco = signature;
-			stack.push(type);
-		}
-
-		public void acceptFunction(char[] name, String signature) {
-			throw new IllegalStateException("Should not be called");
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				type = new TypeDArray(typesStack.pop());
+				type = type.merge(context);
+			}
+			typesStack.push(type);
 		}
 		
 		public void enterFunctionType() {
-			// empty
+			symbolStack.push(null);
 		}
 
 		public void exitFunctionType(LINK link, String signature) {
-			Arguments arguments = new Arguments();
-			TypeFunction type = new TypeFunction(arguments, stack.pop(), 0, link);
-			
-			while(!stack.isEmpty()) {
-				Type argType = stack.pop();
-				// TODO default value
-				arguments.add(0, new Argument(modifiersStack.pop(), argType, IdentifierExp.EMPTY, null));
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				Arguments arguments = new Arguments();				
+				type = new TypeFunction(arguments, typesStack.pop(), 0, link);
+				while(!typesStack.isEmpty()) {
+					Type argType = typesStack.pop();
+					// TODO default value
+					arguments.add(0, new Argument(modifiersStack.pop(), argType, IdentifierExp.EMPTY, null));
+				}				
+				type = type.merge(context);
 			}
 			
 			// TODO varargs
+			typesStack.push(type);
 			
-			type.deco = signature;
-			stack.push(type);
+			symbolStack.pop();
 		}
 
 		public void acceptPointer(String signature) {
-			if (stack.isEmpty()) {
-				return;
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				if (typesStack.isEmpty()) {
+					return;
+				}
+				
+				type = new TypePointer(typesStack.pop());
+				type = type.merge(context);
 			}
-			
-			TypePointer type = new TypePointer(stack.pop());
-			type.deco = signature;
-			stack.push(type);
+			typesStack.push(type);
 		}
 
 		public void acceptPrimitive(TypeBasic type) {
-			stack.push(type);
+			typesStack.push(type);
 		}
 
 		public void acceptStaticArray(int dimension, String signature) {
-			if (stack.isEmpty()) {
-				return;
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				if (typesStack.isEmpty()) {
+					return;
+				}
+				
+				type = new TypeSArray(typesStack.pop(), new IntegerExp(dimension));
+				type = type.merge(context);
 			}
-			
-			TypeSArray type = new TypeSArray(stack.pop(), new IntegerExp(dimension));
-			type.deco = signature;
-			stack.push(type);
+			typesStack.push(type);
 		}
 		
 	}
@@ -709,6 +760,9 @@ public class RDsymbol extends RNode implements IDsymbol {
 			try {
 				SignatureProcessor.process(signature, tfs);
 				type = tfs.getType();
+				if (type != null) {
+					type = type.merge(context);
+				}
 			} catch (IllegalArgumentException e) {
 				Util.log(e);
 			}
@@ -721,77 +775,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 		context.signatureToTypeCache.put(signature, type);
 		
 		return type;
-	}
-	
-	private Object findChild(Object current, String name) throws JavaModelException {
-		if (current instanceof IJavaProject) {
-			return findChild((IJavaProject) current, name);
-		} else if (current instanceof IPackageFragment) {
-			return findChild((IPackageFragment) current, name);
-		} else if (current instanceof IDsymbol) {
-			return ((IDsymbol) current).search(null, name.toCharArray(), 0, null);
-		} else {
-			return null;
-		}
-	}
-	
-	private Object findChild(IJavaProject project, String name) throws JavaModelException {
-		IPackageFragment[] fragments = project.getPackageFragments();
-		for(IPackageFragment fragment : fragments) {
-			Object child = findChild(fragment, name);
-			if (child != null) {
-				return child;
-			}
-		}
-		return null;
-	}
-	
-	private Object findChild(IPackageFragment fragment, String name) throws JavaModelException {
-		if (fragment.isDefaultPackage()) {
-			ICompilationUnit unit;
-			
-			// First class files, because if a class file is open, then there
-			// will be a working copy *which does not have an underlying resource
-			// with the CompilationUnit semantics*, and something fails.
-			unit = fragment.getClassFile(name + ".d");
-			if (unit != null && unit.exists()) {
-				return new RModule(unit, context);
-			}
-			unit = fragment.getCompilationUnit(name + ".d");
-			if (unit != null && unit.exists()) {
-				return new RModule(unit, context);
-			}
-		} else if (fragment.getElementName().equals(name)) {
-			return fragment;
-		}
-		
-		IJavaElement element = JavaElementFinder.searchInChildren(fragment, name);
-		if (element instanceof ICompilationUnit) {
-			return new RModule((ICompilationUnit) element, context);
-		} else {
-			return element;
-		}
-	}
-	
-	protected String getTypeDeco(String prefix) {
-		Stack<IDsymbol> stack = new Stack<IDsymbol>();
-		
-		IDsymbol current = this;
-		while(current != null) {
-			stack.push(current);
-			current = current.parent();
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(prefix);
-		while(!stack.isEmpty()) {
-			IDsymbol s = stack.pop();
-			char[] ident = s.ident().ident;
-			sb.append(ident.length);
-			sb.append(ident);
-		}
-		String signature = sb.toString();
-		return SignatureProcessor.uncorrect(signature);
 	}
 	
 	protected long getFlags() {
@@ -835,6 +818,14 @@ public class RDsymbol extends RNode implements IDsymbol {
 		// TODO STC.STCvariadic
 		
 		return storage_class;
+	}
+	
+	public String getSignature() {
+		return SemanticMixin.getSignature(this);
+	}
+	
+	public void appendSignature(StringBuilder sb) {
+		SemanticMixin.appendSignature(this, sb);
 	}
 	
 	@Override

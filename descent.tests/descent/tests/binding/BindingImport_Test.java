@@ -21,7 +21,7 @@ public class BindingImport_Test extends AbstractBinding_Test {
 		
 		assertEquals(imported, binding.getJavaElement());
 		
-		assertEquals("8imported", binding.getKey());
+		assertEquals(MODULE + "8imported", binding.getKey());
 		assertEquals(imported, binding.getJavaElement());
 		assertEquals("imported", binding.getName());
 		assertEquals(1, binding.getNameComponents().length);
@@ -41,7 +41,7 @@ public class BindingImport_Test extends AbstractBinding_Test {
 		
 		assertEquals(imported, binding.getJavaElement());
 		
-		assertEquals("4pack8imported", binding.getKey());
+		assertEquals(MODULE + "4pack8imported", binding.getKey());
 		assertEquals(imported, binding.getJavaElement());
 		assertEquals("pack.imported", binding.getName());
 		assertEquals(2, binding.getNameComponents().length);

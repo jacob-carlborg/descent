@@ -82,8 +82,9 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 		this.value = value;
 	}
 	
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.ENUM_MEMBER;
 	}
 
 }

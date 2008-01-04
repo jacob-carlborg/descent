@@ -184,5 +184,9 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	public int sem() {
 		return sem;
 	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.TYPEDEF;
+	}
 
 }

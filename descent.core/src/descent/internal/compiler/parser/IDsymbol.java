@@ -151,8 +151,12 @@ public interface IDsymbol extends INode {
 	// Used to get the type of a symbol
 	Type type();
 	
-	// The "extended" signature of this symbol
+	// The Descent signature of this symbol
 	String getSignature();
+	
+	void appendSignature(StringBuilder sb);
+	
+	char getSignaturePrefix();
 	
 	// The java element associated with this symbol, if any
 	IJavaElement getJavaElement();

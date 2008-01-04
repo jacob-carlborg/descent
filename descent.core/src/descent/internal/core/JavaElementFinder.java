@@ -18,6 +18,7 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.TypeBasic;
@@ -52,7 +53,11 @@ public class JavaElementFinder {
 		private int typeFunctionCounter;
 		
 		public void acceptModule(char[][] compoundName, String signature) {
-			element = findCompilationUnit(compoundName);
+			if (typeFunctionCounter == 0) {
+				element = findCompilationUnit(compoundName);
+			} else {
+				stack.push(signature);
+			}
 		}
 		
 		public void acceptSymbol(char type, char[] name, String signature) {
@@ -60,7 +65,24 @@ public class JavaElementFinder {
 				return;
 			}
 			
-			element = findChild(element, new String(name));
+			if (typeFunctionCounter == 0) {
+				if (type == ISignatureConstants.FUNCTION) {
+					if (stack.isEmpty() ||  element == null || !(element instanceof IParent)) {
+						return;
+					}
+					
+					// Pop the type function signature
+					stack.pop();
+					
+					String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
+					element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+				} else {
+					element = findChild(element, new String(name));
+				}
+			} else {
+				stack.pop();
+				stack.push(signature);
+			}
 		}
 
 		public void acceptArgumentBreak(char c) {
@@ -95,23 +117,6 @@ public class JavaElementFinder {
 		public void acceptDynamicArray(String signature) {
 			stack.pop();
 			stack.push(signature);
-		}
-
-		public void acceptFunction(char[] name, String signature) {
-			if (stack.isEmpty() ||  element == null || !(element instanceof IParent)) {
-				return;
-			}
-			
-			// Pop the type function signature
-			stack.pop();
-			
-			String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
-			
-			try {
-				element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
-			} catch (JavaModelException e) {
-				Util.log(e);
-			}
 		}
 		
 		public void enterFunctionType() {
@@ -168,32 +173,36 @@ public class JavaElementFinder {
 	 * and types signatures.
 	 * @see #getParametersAndReturnType(String)
 	 */
-	public static IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) throws JavaModelException {
-		for(IJavaElement child : parent.getChildren()) {
-			IParent searchInChildren = mustSearchInChildren(child);
-			if (searchInChildren != null) {
-				IJavaElement result = findFunction(searchInChildren, name, paramsAndRetTypes);
-				if (result != null) {
-					return result;
+	public static IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) {
+		try {
+			for(IJavaElement child : parent.getChildren()) {
+				IParent searchInChildren = mustSearchInChildren(child);
+				if (searchInChildren != null) {
+					IJavaElement result = findFunction(searchInChildren, name, paramsAndRetTypes);
+					if (result != null) {
+						return result;
+					}
 				}
-			}
-			
-			if (child.getElementType() == IJavaElement.METHOD &&
-					child.getElementName().equals(name)) {
-				IMethod method = (IMethod) child;
-				String retType = method.getReturnType();
-				String[] paramTypes = method.getParameterTypes();
-				if (paramTypes.length == paramsAndRetTypes.length - 1) {
-					if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
-						for(int i = 0; i < paramTypes.length; i++) {
-							if (!paramTypes[i].equals(paramsAndRetTypes[i])) {
-								continue;
+				
+				if (child.getElementType() == IJavaElement.METHOD &&
+						child.getElementName().equals(name)) {
+					IMethod method = (IMethod) child;
+					String retType = method.getReturnType();
+					String[] paramTypes = method.getParameterTypes();
+					if (paramTypes.length == paramsAndRetTypes.length - 1) {
+						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
+							for(int i = 0; i < paramTypes.length; i++) {
+								if (!paramTypes[i].equals(paramsAndRetTypes[i])) {
+									continue;
+								}
 							}
+							return method;
 						}
-						return method;
 					}
 				}
 			}
+		} catch (JavaModelException e) {
+			Util.log(e);
 		}
 		return null;
 	}

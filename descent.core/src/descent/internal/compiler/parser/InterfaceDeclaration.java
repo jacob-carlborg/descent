@@ -265,5 +265,9 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 		}
 		return 1;
 	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.INTERFACE;
+	}
 
 }

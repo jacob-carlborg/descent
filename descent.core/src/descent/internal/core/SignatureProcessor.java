@@ -1,10 +1,7 @@
 package descent.internal.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
@@ -15,36 +12,6 @@ import descent.internal.compiler.parser.TypeBasic;
  * A class for processing a signature.
  */
 public class SignatureProcessor implements ISignatureConstants {
-	
-	
-	private final static Map<String, String> corrections = new HashMap<String, String>();
-	private final static Map<String, String> uncorrections = new HashMap<String, String>();
-	
-	static {
-		corrections.put("6Object", "6object6Object");
-		corrections.put("9ClassInfo", "6object9ClassInfo");
-		corrections.put("8TypeInfo", "6object8TypeInfo");
-		corrections.put("16TypeInfo_Typedef", "6object16TypeInfo_Typedef");
-		corrections.put("13TypeInfo_Enum", "6object13TypeInfo_Enum");
-		corrections.put("16TypeInfo_Pointer", "6object16TypeInfo_Pointer");
-		corrections.put("14TypeInfo_Array", "6object14TypeInfo_Array");
-		corrections.put("20TypeInfo_StaticArray", "6object20TypeInfo_StaticArray");
-		corrections.put("25TypeInfo_AssociativeArray", "6object25TypeInfo_AssociativeArray");
-		corrections.put("17TypeInfo_Function", "6object17TypeInfo_Function");
-		corrections.put("17TypeInfo_Delegate", "6object17TypeInfo_Delegate");
-		corrections.put("14TypeInfo_Class", "6object14TypeInfo_Class");
-		corrections.put("18TypeInfo_Interface", "6object13TypeInfo_Enum");
-		corrections.put("15TypeInfo_Struct", "6object15TypeInfo_Struct");
-		corrections.put("14TypeInfo_Tuple", "6object14TypeInfo_Tuple");
-		corrections.put("14TypeInfo_Const", "6object14TypeInfo_Const");
-		corrections.put("18TypeInfo_Invariant", "6object18TypeInfo_Invariant");
-		corrections.put("9Exception", "6object9Exception");
-		corrections.put("9C:gcstats7GCStats", "7gcstats7GCStats");
-		
-		for(Map.Entry<String, String> kv : corrections.entrySet()) {
-			uncorrections.put(kv.getValue(), kv.getKey());
-		}
-	}
 	
 	/**
 	 * The requestor for a signature processing. The processor notifies
@@ -203,9 +170,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				signature.getChars(i, i + n, name, 0);
 				i += n;
 				
-				if (i < signature.length() && 
-						(signature.charAt(i) == 'F' || signature.charAt(i) == 'U' || signature.charAt(i) == 'W'
-							|| signature.charAt(i) == 'V' || signature.charAt(i) == 'R')) {
+				if (first == FUNCTION) {
 					i = process0(signature, i, requestor);
 					requestor.acceptSymbol(first, name, signature.substring(start, i));
 				} else {
@@ -309,68 +274,6 @@ public class SignatureProcessor implements ISignatureConstants {
 		default: requestor.acceptArgumentModifier(STC.STCin); break;
 		}
 		return i;
-	}
-	
-	/**
-	 * Corrects some signatures. For example, it transforms C6Object
-	 * into C6object6Object.
-	 * @param signature the signature to correct
-	 * @return the corrected signature
-	 * 
-	 * TODO: move this method somewhere else
-	 */
-	public static String correct(String signature) {
-		if (signature != null && signature.length() > 0) {
-			switch(signature.charAt(0)) {
-			case 'E':
-			case 'C':
-			case 'S':
-			case 'T':
-			case 'Q':
-			case 'O':
-				String sub = signature.substring(1);
-				for(Entry<String, String> entry : corrections.entrySet()) {
-					if (sub.startsWith(entry.getKey())) {
-						return signature.charAt(0) + entry.getValue() + sub.substring(entry.getKey().length());
-					}
-				}
-				break;
-			default:
-				return signature;
-			}
-		}
-		return signature;
-	}
-	
-	/**
-	 * Uncorrects some signatures. For example, it transforms C6object6Object
-	 * into C6Object.
-	 * @param signature the signature to correct
-	 * @return the corrected signature
-	 * 
-	 * TODO: move this method somewhere else
-	 */
-	public static String uncorrect(String signature) {
-		if (signature != null && signature.length() > 0) {
-			switch(signature.charAt(0)) {
-			case 'E':
-			case 'C':
-			case 'S':
-			case 'T':
-			case 'Q':
-			case 'O':
-				String sub = signature.substring(1);
-				for(Entry<String, String> entry : uncorrections.entrySet()) {
-					if (sub.startsWith(entry.getKey())) {
-						return signature.charAt(0) + entry.getValue() + sub.substring(entry.getKey().length());
-					}
-				}
-				break;
-			default:
-				return signature;
-			}
-		}
-		return signature;
 	}
 	
 	/*

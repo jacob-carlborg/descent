@@ -3,6 +3,7 @@ package descent.internal.compiler.lookup;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.IEnumDeclaration;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeEnum;
@@ -13,7 +14,7 @@ import descent.internal.core.util.Util;
 
 public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration {
 	
-	private TypeEnum type;
+	private Type type;
 	private integer_t[] values;
 	private Type memtype;
 
@@ -30,7 +31,7 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 	public Type getType() {
 		if (type == null) {
 			type = new TypeEnum(this);
-			type.deco = getTypeDeco("E");
+			type = type.merge(context);
 		}
 		return type;
 	}
@@ -82,6 +83,10 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 				Util.log(e);
 			}
 		}
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.ENUM;
 	}
 
 }

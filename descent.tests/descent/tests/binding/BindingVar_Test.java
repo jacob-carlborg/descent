@@ -33,7 +33,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		assertTrue(typeBinding.isClass());
 		
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
-		assertEquals("C4test3Foo", typeBinding.getKey());
+		assertEquals(MODULE + "4test" + CLASS + "3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
 		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
@@ -44,7 +44,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		IVariableBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
-		assertEquals("Q4test1f", varBinding.getKey());
+		assertEquals(MODULE + "4test" + VARIABLE + "1f", varBinding.getKey());
 		
 		assertEquals(getVariable(lastCompilationUnit, 0), varBinding.getJavaElement());
 		
@@ -65,7 +65,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		assertTrue(typeBinding.isClass());
 		
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
-		assertEquals("C4test3Foo", typeBinding.getKey());
+		assertEquals(MODULE + "4test" + CLASS + "3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
 		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
@@ -76,7 +76,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		IVariableBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
-		assertEquals("Q4test3Foo1f", varBinding.getKey());
+		assertEquals(MODULE + "4test" + CLASS + "3Foo" + VARIABLE + "1f", varBinding.getKey());
 		
 		assertEquals(lastCompilationUnit.getAllTypes()[0].getChildren()[0], varBinding.getJavaElement());
 		
@@ -96,7 +96,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		assertTrue(typeBinding.isEnum());
 		
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
-		assertEquals("E4test3Foo", typeBinding.getKey());
+		assertEquals(MODULE + "4test" + ENUM + "3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
 		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
@@ -157,7 +157,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		IVariableBinding varBinding = (IVariableBinding) name.resolveBinding(); 
 		assertNotNull(varBinding);
 		
-		assertEquals("Q8imported1x", varBinding.getKey());
+		assertEquals(MODULE + "8imported" + VARIABLE + "1x", varBinding.getKey());
 		
 		assertEquals(getVariable(imported, 0), varBinding.getJavaElement());
 	}
@@ -173,7 +173,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		assertTrue(typeBinding.isClass());
 		
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
-		assertEquals("C4test3Foo", typeBinding.getKey());
+		assertEquals(MODULE + "4test" + CLASS + "3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
 		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
@@ -184,7 +184,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		IVariableBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
-		assertEquals("Q4test1f", varBinding.getKey());
+		assertEquals(MODULE + "4test" + ALIAS + "1f", varBinding.getKey());
 		
 		assertEquals(getVariable(lastCompilationUnit, 0), varBinding.getJavaElement());
 		
@@ -203,7 +203,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		assertTrue(typeBinding.isClass());
 		
 		assertEquals(ITypeBinding.TYPE, typeBinding.getKind());
-		assertEquals("C4test3Foo", typeBinding.getKey());
+		assertEquals(MODULE + "4test" + CLASS + "3Foo", typeBinding.getKey());
 		assertEquals("Foo", typeBinding.getName());
 		assertEquals(0, typeBinding.getDimension());
 		assertEquals("test.Foo", typeBinding.getQualifiedName());
@@ -214,7 +214,7 @@ public class BindingVar_Test extends AbstractBinding_Test {
 		IVariableBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
-		assertEquals("Q4test1f", varBinding.getKey());
+		assertEquals(MODULE + "4test" + TYPEDEF + "1f", varBinding.getKey());
 		
 		assertEquals(getVariable(lastCompilationUnit, 0), varBinding.getJavaElement());
 		

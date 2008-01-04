@@ -23,8 +23,6 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 public class TypeClass extends Type {
 
 	public IClassDeclaration sym;
-	
-	private String signature; // Descent signature
 
 	public TypeClass(IClassDeclaration sym) {
 		super(TY.Tclass, null);

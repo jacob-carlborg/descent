@@ -361,8 +361,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	private char[] getTypeSignature(IClassDeclaration b) {
 		if (b != null) { // May be null if c is actually Object
-			Type t = b.type();
-			return getSignature(t);
+			return b.getSignature().toCharArray();
 		} else {
 			return CharOperation.NO_CHAR;
 		}
@@ -591,7 +590,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		if (node.type != null) {
 			info.type = getSignature(node.type);
 		} else if (node.aliassym != null) {
-			info.type = getSignature(node.aliassym.type());
+			info.type = node.aliassym.getSignature().toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}
@@ -626,7 +625,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		if (node.type != null) {
 			info.type = getSignature(node.type);
 		} else if (node.aliassym != null) {
-			info.type = getSignature(node.aliassym.type());
+			info.type = node.aliassym.getSignature().toCharArray();
 		} else {
 			info.type = CharOperation.NO_CHAR;
 		}

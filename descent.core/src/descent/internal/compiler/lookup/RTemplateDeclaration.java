@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.INode;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.ITemplateDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.MATCH;
@@ -107,6 +108,10 @@ public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDecl
 		if (temp == null) {
 			temp = (TemplateDeclaration) ((RModule) getModule()).materialize((ISourceReference) element);
 		}
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.TEMPLATE;
 	}
 
 }

@@ -22,7 +22,7 @@ import descent.internal.core.SourceType;
 import descent.internal.core.SourceTypeElementInfo;
 import descent.internal.core.util.Util;
 
-public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDeclaration {
+public abstract class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDeclaration {
 	
 	private Symbol sinit;
 	private List<IVarDeclaration> fields;
@@ -185,11 +185,6 @@ public class RAggregateDeclaration extends RScopeDsymbol implements IAggregateDe
 	
 	public int structalign() {
 		return alignsize();
-	}
-	
-	@Override
-	public String getSignature() {
-		return type().getSignature();
 	}
 
 }

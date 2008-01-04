@@ -1868,10 +1868,6 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	public int getLineNumber() {
 		return loc.linnum;
 	}
-
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
-	}
 	
 	public IDeclaration overnext() {
 		return overnext;
@@ -1891,6 +1887,10 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	
 	public void nestedFrameRef(boolean nestedFrameRef) {
 		this.nestedFrameRef = nestedFrameRef;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.FUNCTION;
 	}
 
 }

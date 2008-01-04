@@ -272,7 +272,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			String id = "__anonclass";
 			ident = context.generateId(id);
 		}
-
+		
 		if (null == scope) {
 			if (parent == null && sc.parent != null
 					&& sc.parent.isModule() == null) {
@@ -743,10 +743,6 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	public String mangle(SemanticContext context) {
 		return SemanticMixin.mangle(this, context);
 	}
-
-	public String getSignature() {
-		return type.getSignature();
-	}
 	
 	public IClassDeclaration baseClass() {
 		return baseClass;
@@ -806,6 +802,10 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	
 	public void vclassinfo(ClassInfoDeclaration vclassinfo) {
 		this.vclassinfo = vclassinfo;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.CLASS;
 	}
 
 }

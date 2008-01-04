@@ -16,7 +16,7 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.core.util.Util;
 
-public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
+public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	
 	private class RDsymbolTable implements IDsymbolTable {
 
@@ -136,15 +136,6 @@ public class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	@Override
 	public IScopeDsymbol isScopeDsymbol() {
 		return this;
-	}
-	
-	@Override
-	public String getSignature() {
-		if (type() == null) {
-			return "";
-		} else {
-			return type().getSignature();
-		}
 	}
 
 }

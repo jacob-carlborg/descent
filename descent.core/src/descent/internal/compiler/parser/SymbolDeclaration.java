@@ -34,5 +34,11 @@ public class SymbolDeclaration extends Declaration implements ISymbolDeclaration
     	// TODO Auto-generated method stub
     	return null;
     }
+    
+    @Override
+    public char getSignaturePrefix() {
+    	// TODO Auto-generated method stub
+    	return super.getSignaturePrefix();
+    }
 	
 }

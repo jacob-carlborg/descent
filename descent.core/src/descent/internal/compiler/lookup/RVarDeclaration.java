@@ -7,6 +7,7 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IExpInitializer;
 import descent.internal.compiler.parser.IInitializer;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.Loc;
@@ -141,9 +142,8 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 		return this;
 	}
 	
-	@Override
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+	public char getSignaturePrefix() {
+		return ISignatureConstants.VARIABLE;
 	}
 
 }

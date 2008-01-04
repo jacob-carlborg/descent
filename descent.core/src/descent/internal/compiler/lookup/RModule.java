@@ -11,6 +11,7 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IModuleDeclaration;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Module;
@@ -197,15 +198,21 @@ public class RModule extends RPackage implements IModule {
 	@Override
 	public String getSignature() {
 		if (signature == null) {
-			StringBuilder sig = new StringBuilder();
-			String[] pieces = ((ICompilationUnit) element).getFullyQualifiedName().split("\\.");
-			for(String piece : pieces) {
-				sig.append(piece.length());
-				sig.append(piece);
-			}
-			signature = sig.toString();
+			StringBuilder sb = new StringBuilder();
+			appendSignature(sb);
+			signature = sb.toString();
 		}
 		return signature;
+	}
+	
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		sb.append(ISignatureConstants.MODULE);
+		String[] pieces = ((ICompilationUnit) element).getFullyQualifiedName().split("\\.");
+		for(String piece : pieces) {
+			sb.append(piece.length());
+			sb.append(piece);
+		}
 	}
 
 }

@@ -281,13 +281,13 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 		}
 		return 6; // "struct".length()
 	}
-
-	public String getSignature() {
-		return type.getSignature();
-	}
 	
 	public boolean zeroInit() {
 		return zeroInit;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.STRUCT;
 	}
 
 }

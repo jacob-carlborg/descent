@@ -616,11 +616,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 			}
 			
 			sb.append("#");
+			sb.append(ISignatureConstants.VARIABLE);
 			sb.append(ident);
 			return sb.toString();
 		} else {
 			// Im a field or global variable
-			return SemanticMixin.getSignature(this);
+			return super.getSignature();
 		}
 	}
 	
@@ -689,6 +690,10 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	
 	public void nestedref(int nestedref) {
 		this.nestedref = nestedref;
+	}
+	
+	public char getSignaturePrefix() {
+		return ISignatureConstants.VARIABLE;
 	}
 
     // PERHAPS Symbol *toSymbol();

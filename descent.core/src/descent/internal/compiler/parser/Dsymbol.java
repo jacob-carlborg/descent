@@ -538,11 +538,19 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	}
 	
 	public String getSignature() {
-		return null;
+		return SemanticMixin.getSignature(this);
+	}
+	
+	public void appendSignature(StringBuilder sb) {
+		SemanticMixin.appendSignature(this, sb);
 	}
 	
 	public IJavaElement getJavaElement() {
 		return null;
+	}
+	
+	public char getSignaturePrefix() {
+		return 0;
 	}
 
 }
