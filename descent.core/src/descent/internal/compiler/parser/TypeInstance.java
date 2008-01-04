@@ -171,5 +171,16 @@ public class TypeInstance extends TypeQualified {
 			buf.writestring(ident.toChars());
 		}
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Descent signature
+		return null;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		// TODO Descent signature		
+	}
 
 }

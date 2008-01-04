@@ -237,5 +237,15 @@ public class TypeEnum extends Type {
 	public IJavaElement getJavaElement() {
 		return sym.getJavaElement();
 	}
+	
+	@Override
+	public String getSignature() {
+		return sym.getSignature();
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(getSignature());
+	}
 
 }

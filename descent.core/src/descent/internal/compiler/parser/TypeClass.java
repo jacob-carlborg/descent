@@ -23,6 +23,8 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 public class TypeClass extends Type {
 
 	public IClassDeclaration sym;
+	
+	private String signature; // Descent signature
 
 	public TypeClass(IClassDeclaration sym) {
 		super(TY.Tclass, null);
@@ -428,6 +430,16 @@ public class TypeClass extends Type {
 	@Override
 	public IJavaElement getJavaElement() {
 		return sym.getJavaElement();
+	}
+	
+	@Override
+	public String getSignature() {
+		return sym.getSignature();
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(getSignature());
 	}
 
 }

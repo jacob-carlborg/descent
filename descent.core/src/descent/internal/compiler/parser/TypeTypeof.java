@@ -122,5 +122,10 @@ public class TypeTypeof extends TypeQualified {
 		}
 		return null;
 	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(getSignature());
+	}
 
 }

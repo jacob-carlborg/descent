@@ -191,24 +191,13 @@ public class TypeIdentifier extends TypeQualified {
 	
 	@Override
 	public String getSignature() {
-		StringBuilder sb = new StringBuilder();
-		sb.append('?');
-		if (idents != null && idents.size() > 0) {
-			for(IdentifierExp ident : idents) {
-				if (ident.ident != null && ident.ident.length > 0) {
-					sb.append(ident.ident);
-					sb.append('.');
-				}
-			}
-		}
-		if (ident != null) {
-			sb.append(ident);
-		} else if (sb.length() > 0) {
-			// If idents is present, but no ident, then here will be
-			// a trailing dot
-			sb.setLength(sb.length() - 1);
-		}
-		return sb.toString();
+		// TODO Descent signature
+		return null;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		// TODO Descent signature		
 	}
 
 }

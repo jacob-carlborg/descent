@@ -259,24 +259,27 @@ public class Argument extends ASTDmdNode {
 	}
 
 	public String getSignature() {
-		// TODO insert also modifiers in the signature, like in, out, etc.
-		if (type != null) {
-			return type.getSignature();
+		StringBuilder sb = new StringBuilder();
+		appendSignature(sb);
+		return sb.toString();
+	}
+	
+	public void appendSignature(StringBuilder sb) {
+		switch (storageClass & (STCin | STCout | STCref | STClazy)) {
+		case 0:
+		case STCin:
+			break;
+		case STCout:
+			sb.append('J');
+			break;
+		case STCref:
+			sb.append('K');
+			break;
+		case STClazy:
+			sb.append('L');
+			break;
 		}
-		
-		return String.valueOf(TY.Tint32.mangleChar);
-		
-//		StringBuilder sb = new StringBuilder();
-//		for(Modifier modifier : modifiers) {
-//			sb.append(modifier.toCharArray());
-//			sb.append(" ");
-//		}
-//		
-//		if (type != null) {
-//			sb.append(type.toString());
-//		}
-//		
-//		return sb.toString();
+		type.appendSignature(sb);
 	}
 
 }

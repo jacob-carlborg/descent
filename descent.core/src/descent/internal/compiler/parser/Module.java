@@ -44,7 +44,7 @@ public class Module extends Package implements IModule {
 	// Very important: this field must be set to the module name
 	// if signatures are to be requested
 	public String moduleName; // foo.bar 
-	private String signature;
+	private String signature; // Descent signature
 
 	public Module(String filename, IdentifierExp ident) {
 		super(ident);
@@ -398,15 +398,20 @@ public class Module extends Package implements IModule {
 	@Override
 	public String getSignature() {
 		if (signature == null) {
-			StringBuilder sig = new StringBuilder();
-			String[] pieces = moduleName.split("\\.");
-			for(String piece : pieces) {
-				sig.append(piece.length());
-				sig.append(piece);
-			}
-			signature = sig.toString();
+			StringBuilder sb = new StringBuilder();
+			appendSignature(sb);
+			signature = sb.toString();
 		}
 		return signature;
+	}
+	
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(ISignatureConstants.MODULE);
+		String[] pieces = moduleName.split("\\.");
+		for(String piece : pieces) {
+			sb.append(piece.length());
+			sb.append(piece);
+		}
 	}
 
 	// PERHAPS void inlineScan();

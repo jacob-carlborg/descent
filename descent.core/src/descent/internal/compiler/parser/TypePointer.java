@@ -14,6 +14,8 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
 public class TypePointer extends Type {
+	
+	private String signature; // Descent signature
 
 	public TypePointer(Type next) {
 		super(TY.Tpointer, next);
@@ -125,6 +127,22 @@ public class TypePointer extends Type {
 			buf.writestring(ident.toChars());
 		}
 		next.toCBuffer2(buf, ident, hgs, context);
+	}
+	
+	@Override
+	public String getSignature() {
+		if (signature == null) {
+			StringBuilder sb = new StringBuilder();
+			appendSignature(sb);
+			signature = sb.toString();
+		}
+		return signature;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append('P');
+		next.appendSignature(sb);
 	}
 
 }

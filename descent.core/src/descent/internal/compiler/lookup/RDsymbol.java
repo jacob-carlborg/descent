@@ -65,15 +65,11 @@ import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
-import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeDelegate;
-import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
-import descent.internal.compiler.parser.TypeStruct;
-import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.SignatureProcessor;
@@ -616,6 +612,15 @@ public class RDsymbol extends RNode implements IDsymbol {
 				return stack.pop();
 			}
 		}
+		
+		public void acceptModule(char[][] compoundName, String signature) {
+			
+		}
+		
+		public void acceptSymbol(char type, char[] name, String signature) {
+			// TODO Auto-generated method stub
+			
+		}
 
 		public void acceptArgumentBreak(char c) {
 			// empty
@@ -631,10 +636,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 			stack.push(type);
 		}
 
-		public void acceptClass(char[][] compoundName, String signature) {
-			acceptType('C', compoundName, signature);
-		}
-
 		public void acceptDelegate(String signature) {
 			TypeDelegate type = new TypeDelegate(stack.pop());
 			type.deco = signature;
@@ -647,11 +648,7 @@ public class RDsymbol extends RNode implements IDsymbol {
 			stack.push(type);
 		}
 
-		public void acceptEnum(char[][] compoundName, String signature) {
-			acceptType('E', compoundName, signature);
-		}
-
-		public void acceptFunction(char[][] compoundName, String signature) {
+		public void acceptFunction(char[] name, String signature) {
 			throw new IllegalStateException("Should not be called");
 		}
 		
@@ -673,10 +670,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 			
 			type.deco = signature;
 			stack.push(type);
-		}
-		
-		public void acceptModule(char[][] compoundName, String signature) {
-			throw new IllegalStateException("Should not be called");
 		}
 
 		public void acceptPointer(String signature) {
@@ -701,82 +694,6 @@ public class RDsymbol extends RNode implements IDsymbol {
 			TypeSArray type = new TypeSArray(stack.pop(), new IntegerExp(dimension));
 			type.deco = signature;
 			stack.push(type);
-		}
-
-		public void acceptStruct(char[][] compoundName, String signature) {
-			acceptType('S', compoundName, signature);
-		}
-		
-		public void acceptTypedef(char[][] compoundName, String signature) {
-			acceptType('T', compoundName, signature);
-		}
-
-		public void acceptVariableOrAlias(char[][] compoundName, String signature) {
-			throw new IllegalStateException("Should not be called");
-		}
-		
-		private void acceptType(char first, char[][] all, String signature) {
-			try {
-				for(int j = all.length - 1; j >= 1; j--) {
-					char[][] compoundName = new char[j][];
-					System.arraycopy(all, 0, compoundName, 0, j);
-					
-					Object current = context.moduleFinder.findModule(compoundName, context);
-					if (current != null) {
-						// Keep searching
-						
-						for(int k = j; k < all.length; k++) {
-							current = findChild(current, new String(all[k]));
-							if (current == null) {
-								break;
-							}
-						}
-						
-						if (current != null && current instanceof IDsymbol) {
-							IDsymbol symbol = (IDsymbol) current;
-							Type type;
-							switch(first) {
-							case 'E': {
-								IEnumDeclaration e = symbol.isEnumDeclaration();
-								if (e != null) {
-									type = new TypeEnum(e);
-									type.deco = SignatureProcessor.uncorrect(signature);
-									stack.push(type);
-								}
-								break;
-							}
-							case 'C':
-								IClassDeclaration c = symbol.isClassDeclaration();
-								if (c != null) {
-									type = new TypeClass(c);
-									type.deco = SignatureProcessor.uncorrect(signature);
-									stack.push(type);
-								}
-								break;
-							case 'S':
-								IStructDeclaration s = symbol.isStructDeclaration();
-								if (s != null) {
-									type = new TypeStruct(s);
-									type.deco = SignatureProcessor.uncorrect(signature);
-									stack.push(type);
-								}
-								break;
-							case 'T':
-								ITypedefDeclaration t = symbol.isTypedefDeclaration();
-								if (t != null) {
-									type = new TypeTypedef(t);
-									type.deco = SignatureProcessor.uncorrect(signature);
-									stack.push(type);
-								}
-								break;
-							}						
-						}
-						break;
-					}
-				}
-			} catch (JavaModelException e) {
-				Util.log(e);
-			}
 		}
 		
 	}

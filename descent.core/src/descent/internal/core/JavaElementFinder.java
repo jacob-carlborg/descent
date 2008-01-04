@@ -42,8 +42,6 @@ public class JavaElementFinder {
 		}
 	}
 	
-	// TODO improve performance to not find a type that is part of the
-	// signature of an internal function
 	private class InternalFinder implements ISignatureRequestor {
 		
 		private IJavaElement element;
@@ -52,6 +50,18 @@ public class JavaElementFinder {
 		private Stack<String[]> paramsAndReturnTypesStack = new Stack<String[]>();
 		
 		private int typeFunctionCounter;
+		
+		public void acceptModule(char[][] compoundName, String signature) {
+			element = findCompilationUnit(compoundName);
+		}
+		
+		public void acceptSymbol(char type, char[] name, String signature) {
+			if (element == null) {
+				return;
+			}
+			
+			element = findChild(element, new String(name));
+		}
 
 		public void acceptArgumentBreak(char c) {
 			// empty
@@ -77,10 +87,6 @@ public class JavaElementFinder {
 			stack.push(signature);
 		}
 
-		public void acceptClass(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature);
-		}
-
 		public void acceptDelegate(String signature) {
 			stack.pop();
 			stack.push(signature);
@@ -91,32 +97,18 @@ public class JavaElementFinder {
 			stack.push(signature);
 		}
 
-		public void acceptEnum(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature);
-		}
-
-		public void acceptFunction(char[][] compoundName, String signature) {
+		public void acceptFunction(char[] name, String signature) {
+			if (stack.isEmpty() ||  element == null || !(element instanceof IParent)) {
+				return;
+			}
+			
 			// Pop the type function signature
 			stack.pop();
 			
 			String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
 			
-			IParent parent = null;
-			if (element == null) {
-				acceptType(compoundName, signature);
-				stack.pop();
-				
-				if (element == null || !(element instanceof IParent)) {
-					return;
-				}
-				
-				parent = (IParent) element.getParent();
-			} else {
-				parent = (IParent) element;
-			}
-			
 			try {
-				element = findFunction(parent, new String(compoundName[compoundName.length - 1]), paramsAndReturnTypes);
+				element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}
@@ -155,76 +147,7 @@ public class JavaElementFinder {
 			stack.pop();
 			stack.push(signature);
 		}
-
-		public void acceptStruct(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature);
-		}
-
-		public void acceptVariableOrAlias(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature);
-		}
 		
-		public void acceptModule(char[][] compoundName, String signature) {
-			element = find(compoundName);
-		}
-		
-		public void acceptTypedef(char[][] compoundName, String signature) {
-			acceptType(compoundName, signature);
-		}
-		
-		private void acceptType(char[][] all, String signature) {
-			stack.push(signature);
-			
-			if (typeFunctionCounter > 0) {
-				return;
-			}
-			
-			try {
-				if (element == null) {
-					element = find(all);
-				} else {
-					element = findChild(element, new String(all[all.length - 1]));
-				}
-			} catch (JavaModelException e) {
-				Util.log(e);
-			}
-		}
-		
-	}
-	
-	/**
-	 * Finds a java element denoted by the given compound name.
-	 * @param compoundName the compound name
-	 * @return the element, if any, or null
-	 */
-	public IJavaElement find(char[][] compoundName) {
-		IJavaElement element = null;
-		
-		try {
-			for(int j = compoundName.length; j >= 1; j--) {
-				char[][] compoundName0 = new char[j][];
-				System.arraycopy(compoundName, 0, compoundName0, 0, j);
-				
-				element = environment.findCompilationUnit(compoundName0);
-				if (element != null) {
-					// Keep searching ...
-					for(int k = j; k < compoundName.length; k++) {
-						element = findChild(element, new String(compoundName[k]));
-						if (element == null) {
-							break;
-						}
-					}
-					
-					if (element != null) {
-						return element;
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		
-		return element;
 	}
 	
 	public ICompilationUnit findCompilationUnit(char[][] compoundName) {
@@ -275,19 +198,25 @@ public class JavaElementFinder {
 		return null;
 	}
 
-	public static IJavaElement findChild(IJavaElement current, String name) throws JavaModelException {
-		switch(current.getElementType()) {
-		case IJavaElement.JAVA_PROJECT:
-			return findChild((IJavaProject) current, name);
-		case IJavaElement.PACKAGE_FRAGMENT:
-			return findChild((IPackageFragment) current, name);
+	public static IJavaElement findChild(IJavaElement current, String name) {
+		try {
+			switch(current.getElementType()) {
+			case IJavaElement.JAVA_PROJECT:
+				return findChild((IJavaProject) current, name);
+			case IJavaElement.PACKAGE_FRAGMENT:
+				return findChild((IPackageFragment) current, name);
+			}
+			
+			if (!(current instanceof IParent)) {
+				return null;
+			}
+			
+			return searchInChildren((IParent) current, name);
+		} catch (JavaModelException e) {
+			Util.log(e);
 		}
 		
-		if (!(current instanceof IParent)) {
-			return null;
-		}
-		
-		return searchInChildren((IParent) current, name);
+		return null;		
 	}
 	
 	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {

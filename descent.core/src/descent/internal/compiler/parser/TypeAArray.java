@@ -16,6 +16,8 @@ public class TypeAArray extends TypeArray {
 
 	public Type index, sourceIndex;
 	public Type key;
+	
+	private String signature; // Descent signature
 
 	public TypeAArray(Type t, Type index) {
 		super(TY.Taarray, t);
@@ -228,6 +230,23 @@ public class TypeAArray extends TypeArray {
 			buf.write(ibuf);
 		}
 		buf.writeByte(']');
+	}
+	
+	@Override
+	public String getSignature() {
+		if (signature == null) {
+			StringBuilder sb = new StringBuilder();
+			appendSignature(sb);
+			signature = sb.toString();
+		}
+		return signature;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append('H');
+		index.appendSignature(sb);
+		next.appendSignature(sb);
 	}
 
 }

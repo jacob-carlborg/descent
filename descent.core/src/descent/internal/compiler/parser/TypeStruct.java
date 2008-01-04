@@ -342,6 +342,16 @@ public class TypeStruct extends Type {
 		return sym.getJavaElement();
 	}
 	
+	@Override
+	public String getSignature() {
+		return sym.getSignature();
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(getSignature());
+	}
+	
 	//PERHAPS dt_t **toDt(dt_t **pdt);
 	//PERHAPS type *toCtype();
 }

@@ -71,5 +71,16 @@ public class TypeReference extends Type {
 	@Override
 	protected void accept0(IASTVisitor visitor) {
 	}
+	
+	@Override
+	public String getSignature() {
+		// TODO Descent signature
+		return null;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		// TODO Descent signature		
+	}
 
 }

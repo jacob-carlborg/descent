@@ -17,6 +17,8 @@ import static descent.internal.compiler.parser.TY.Twchar;
 
 // DMD 1.020
 public class TypeDArray extends TypeArray {
+	
+	private String signature; // Descent signature
 
 	public TypeDArray(Type next) {
 		super(TY.Tarray, next);
@@ -184,6 +186,22 @@ public class TypeDArray extends TypeArray {
 		if (next != null) {
 			next.toTypeInfoBuffer(buf, context);
 		}
+	}
+	
+	@Override
+	public String getSignature() {
+		if (signature == null) {
+			StringBuilder sb = new StringBuilder();
+			appendSignature(sb);
+			signature = sb.toString();
+		}
+		return signature;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append('A');
+		next.appendSignature(sb);
 	}
 
 }

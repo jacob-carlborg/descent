@@ -26,6 +26,9 @@ public class TypeFunction extends Type {
 	public LINK linkage; // calling convention
 	public Arguments parameters, sourceParameters;
 	public int varargs;
+	
+	private String signature; // Descent signature
+	private char linkageChar;
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
@@ -334,6 +337,10 @@ public class TypeFunction extends Type {
 		default:
 			throw new IllegalStateException("assert(0);");
 		}
+		
+		// For Descent signature
+		linkageChar = mc;
+		
 		buf.writeByte(mc);
 		// Write argument types
 		Argument.argsToDecoBuffer(buf, parameters, context);
@@ -573,6 +580,26 @@ public class TypeFunction extends Type {
 	}
 
 	private static final GotoL1 GOTO_L1 = new GotoL1();
+	
+	@Override
+	public String getSignature() {
+		if (signature == null) {
+			StringBuilder sb = new StringBuilder();
+			appendSignature(sb);
+			signature = sb.toString();
+		}
+		return signature;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(linkageChar);
+		for(Argument arg : parameters) {
+			arg.appendSignature(sb);
+		}
+		sb.append('Z');
+		next.appendSignature(sb);
+	}
 
 	// PERHAPS type *toCtype();
 	// PERHAPS enum RET retStyle();

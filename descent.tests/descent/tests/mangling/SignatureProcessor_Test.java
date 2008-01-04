@@ -4,6 +4,7 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Type;
@@ -11,7 +12,7 @@ import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.core.SignatureProcessor;
 import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 
-public class SignatureProcessor_Test extends MockObjectTestCase {
+public class SignatureProcessor_Test extends MockObjectTestCase implements ISignatureConstants {
 	
 	protected Mockery mockery = new Mockery();
 	protected ISignatureRequestor requestor;
@@ -76,68 +77,6 @@ public class SignatureProcessor_Test extends MockObjectTestCase {
 		mockery.assertIsSatisfied();
 	}
 	
-	public void testEnum() {
-		checking(new Expectations() {{
-			char[][] expected = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).acceptEnum(expected, "E4test3foo");
-		}});
-		
-		SignatureProcessor.process("E4test3foo", requestor);
-		
-		mockery.assertIsSatisfied();
-	}
-	
-	public void testClass() {
-		checking(new Expectations() {{
-			char[][] expected = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).acceptClass(expected, "C4test3foo");
-		}});
-		
-		SignatureProcessor.process("C4test3foo", requestor);
-		
-		mockery.assertIsSatisfied();
-	}
-	
-	public void testStruct() {
-		checking(new Expectations() {{
-			char[][] expected = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).acceptStruct(expected, "S4test3foo");
-		}});
-		
-		SignatureProcessor.process("S4test3foo", requestor);
-		
-		mockery.assertIsSatisfied();
-	}
-	
-	public void testVariableAliasOrTypedef() {
-		checking(new Expectations() {{
-			char[][] expected = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).acceptVariableOrAlias(expected, "Q4test3foo");
-		}});
-		
-		SignatureProcessor.process("Q4test3foo", requestor);
-		
-		mockery.assertIsSatisfied();
-	}
-	
-	public void testFunction() {
-		checking(new Expectations() {{
-			char[][] expectedName = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).enterFunctionType();
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tchar);
-			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tint32);
-			one(requestor).exitFunctionType(LINK.LINKd, "FiZa");
-			one(requestor).acceptFunction(expectedName, "O4test3fooFiZa");
-		}});
-		
-		SignatureProcessor.process("O4test3fooFiZa", requestor);
-		
-		mockery.assertIsSatisfied();
-	}
-	
 	public void testFunctionType() {
 		checking(new Expectations() {{
 			one(requestor).enterFunctionType();
@@ -154,97 +93,136 @@ public class SignatureProcessor_Test extends MockObjectTestCase {
 		mockery.assertIsSatisfied();
 	}
 	
-	public void testFunction2() {
+	public void testModule() {
+		final String sig = MODULE + "4test3foo";
+		
 		checking(new Expectations() {{
-			char[][] expectedName = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).enterFunctionType();
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptClass(expectedName, "C4test3foo");
-			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptClass(expectedName, "C4test3foo");
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptClass(expectedName, "C4test3foo");
-			one(requestor).exitFunctionType(LINK.LINKd, "FC4test3fooC4test3fooZC4test3foo");
-			one(requestor).acceptFunction(expectedName, "O4test3fooFC4test3fooC4test3fooZC4test3foo");
+			char[][] expected = { "test".toCharArray(), "foo".toCharArray() };
+			one(requestor).acceptModule(expected, sig);
 		}});
 		
-		SignatureProcessor.process("O4test3fooFC4test3fooC4test3fooZC4test3foo", requestor);
+		SignatureProcessor.process(sig, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
 	
-	public void testNestedFunction() {
+	public void testSymbol() {
+		for(final char type : new char[] { 
+			CLASS, STRUCT, UNION, INTERFACE, ENUM, ENUM_MEMBER, VARIABLE, ALIAS, TYPEDEF 
+			}) {
+			
+			final String sig = type + "4test";
+			
+			checking(new Expectations() {{
+				char[] expected = "test".toCharArray();
+				one(requestor).acceptSymbol(type, expected, sig);
+			}});
+			
+			SignatureProcessor.process(sig, requestor);
+			
+			mockery.assertIsSatisfied();
+		}
+	}
+	
+	public void testFunction() {
+		final char type = FUNCTION;
+		final String sig = type + "4testFZv";
+		
 		checking(new Expectations() {{
-			char[][] expectedName = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expected = "test".toCharArray();
 			one(requestor).enterFunctionType();
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tchar);
 			one(requestor).acceptArgumentBreak('Z');
 			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tint32);
-			one(requestor).exitFunctionType(LINK.LINKd, "FiZa");
-			one(requestor).acceptFunction(expectedName, "O4test3fooFiZa");
-			one(requestor).enterFunctionType();
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tchar);
-			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tint32);
-			one(requestor).exitFunctionType(LINK.LINKd, "FiZa");
-			one(requestor).acceptFunction(expectedName, "OO4test3fooFiZa@4test3fooFiZa");
+			one(requestor).acceptPrimitive(TypeBasic.tvoid);
+			one(requestor).exitFunctionType(LINK.LINKd, "FZv");
+			one(requestor).acceptSymbol(type, expected, type + "4testFZv");
 		}});
 		
-		SignatureProcessor.process("OO4test3fooFiZa@4test3fooFiZa", requestor);
+		SignatureProcessor.process(sig, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
 	
-	public void testNestedClass() {
+	public void testClassInModule() {
+		final String sigModule = MODULE + "4test3foo";
+		final String sigClass = sigModule + CLASS + "3Bar";
+		
 		checking(new Expectations() {{
-			char[][] expectedName = { "test".toCharArray(), "foo".toCharArray() };
-			one(requestor).enterFunctionType();
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tchar);
-			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptPrimitive(TypeBasic.tint32);
-			one(requestor).exitFunctionType(LINK.LINKd, "FiZa");
-			one(requestor).acceptFunction(expectedName, "O4test3fooFiZa");
-			one(requestor).acceptClass(expectedName, "CO4test3fooFiZa@4test3foo");
+			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expectedClass = "Bar".toCharArray();
+			one(requestor).acceptModule(expectedModule, sigModule);
+			one(requestor).acceptSymbol(CLASS, expectedClass, sigClass);
 		}});
 		
-		SignatureProcessor.process("CO4test3fooFiZa@4test3foo", requestor);
+		SignatureProcessor.process(sigClass, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
 	
-	public void testObject() {
+	public void testClassInClassInModule() {
+		final String sigModule = MODULE + "4test3foo";
+		final String sigClass1 = sigModule + CLASS + "3Bar";
+		final String sigClass2 = sigClass1 + CLASS + "4Bazz";
+		
 		checking(new Expectations() {{
-			char[][] expected = { "object".toCharArray(), "Object".toCharArray() };
-			one(requestor).acceptClass(expected, "C6Object");
+			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expectedClass1 = "Bar".toCharArray();
+			char[] expectedClass2 = "Bazz".toCharArray();
+			one(requestor).acceptModule(expectedModule, sigModule);
+			one(requestor).acceptSymbol(CLASS, expectedClass1, sigClass1);
+			one(requestor).acceptSymbol(CLASS, expectedClass2, sigClass2);
 		}});
 		
-		SignatureProcessor.process("C6Object", requestor);
+		SignatureProcessor.process(sigClass2, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
 	
-	public void testFunction3() {
+	public void testFunctionInModule() {
+		final String sigModule = MODULE + "4test3foo";
+		final String sigFunction = sigModule + FUNCTION + "8someFuncFZv";
+		
 		checking(new Expectations() {{
-			char[][] expectedObjName = { "object".toCharArray(), "Object".toCharArray() };
-			char[][] expectedFuncName = { "test".toCharArray(), "foo".toCharArray() };
+			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expectedFunction = "someFunc".toCharArray();
+			one(requestor).acceptModule(expectedModule, sigModule);
 			one(requestor).enterFunctionType();
-			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptClass(expectedObjName, "C6Object");
 			one(requestor).acceptArgumentBreak('Z');
 			one(requestor).acceptArgumentModifier(STC.STCin);
-			one(requestor).acceptClass(expectedObjName, "C6Object");
-			one(requestor).exitFunctionType(LINK.LINKd, "FC6ObjectZC6Object");
-			one(requestor).acceptFunction(expectedFuncName, "O4test3fooFC6ObjectZC6Object");
+			one(requestor).acceptPrimitive(TypeBasic.tvoid);
+			one(requestor).exitFunctionType(LINK.LINKd, "FZv");
+			one(requestor).acceptSymbol(FUNCTION, expectedFunction, sigFunction);
 		}});
 		
-		SignatureProcessor.process("O4test3fooFC6ObjectZC6Object", requestor);
+		SignatureProcessor.process(sigFunction, requestor);
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testFunctionInModule2() {
+		final String sigModule = MODULE + "4test3foo";
+		final String sigClass = sigModule + CLASS + "3Bar";
+		final String sigFunctionType = "F" + sigClass + "Z" + sigClass;
+		final String sigFunction = sigModule + FUNCTION + "8someFunc" + sigFunctionType;
+		
+		checking(new Expectations() {{
+			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expectedClass = "Bar".toCharArray();
+			char[] expectedFunction = "someFunc".toCharArray();
+			one(requestor).acceptModule(expectedModule, sigModule);
+			one(requestor).enterFunctionType();
+			one(requestor).acceptArgumentModifier(STC.STCin);
+			one(requestor).acceptModule(expectedModule, sigModule);
+			one(requestor).acceptSymbol(CLASS, expectedClass, sigClass);
+			one(requestor).acceptArgumentBreak('Z');
+			one(requestor).acceptArgumentModifier(STC.STCin);
+			one(requestor).acceptModule(expectedModule, sigModule);
+			one(requestor).acceptSymbol(CLASS, expectedClass, sigClass);
+			one(requestor).exitFunctionType(LINK.LINKd, sigFunctionType);
+			one(requestor).acceptSymbol(FUNCTION, expectedFunction, sigFunction);
+		}});
+		
+		SignatureProcessor.process(sigFunction, requestor);
 		
 		mockery.assertIsSatisfied();
 	}

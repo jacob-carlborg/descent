@@ -794,5 +794,15 @@ public class TypeBasic extends Type {
 		}
 		return (TypeBasic) TypeBasic.basic[ty.ordinal()];
 	}
+	
+	@Override
+	public String getSignature() {
+		return deco;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(deco);
+	}
 
 }

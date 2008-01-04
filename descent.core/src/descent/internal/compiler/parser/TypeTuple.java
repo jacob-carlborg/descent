@@ -176,5 +176,15 @@ public class TypeTuple extends Type {
 		return tt;
 	}
 	
+	@Override
+	public String getSignature() {
+		// TODO Descent signature
+		return null;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		// TODO Descent signature		
+	}
 
 }

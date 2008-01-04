@@ -1178,9 +1178,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 	
-	public String getSignature() {
-		return deco;
-	}
+	public abstract String getSignature();
+	
+	protected abstract void appendSignature(StringBuilder sb);
 	
 	/**
 	 * Returns the java element associated with this type, if any,

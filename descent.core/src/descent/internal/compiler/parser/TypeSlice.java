@@ -173,4 +173,15 @@ public class TypeSlice extends Type {
 		next.toCBuffer2(buf, null, hgs, context);
 	}
 	
+	@Override
+	public String getSignature() {
+		// TODO Descent signature
+		return null;
+	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		// TODO Descent signature		
+	}
+	
 }
