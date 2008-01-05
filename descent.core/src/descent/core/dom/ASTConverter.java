@@ -1686,7 +1686,7 @@ public class ASTConverter {
 
 	private descent.core.dom.Statement convertBlockVars(CompoundStatement block) {
 		List<VarDeclaration> varDeclarations = new ArrayList<VarDeclaration>();
-		for(Statement stm : block.statements) {
+		for(Statement stm : block.sourceStatements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
 				Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
@@ -1703,7 +1703,7 @@ public class ASTConverter {
 	
 	private descent.core.dom.Statement convertBlockAlias(CompoundStatement block) {
 		List<AliasDeclaration> varDeclarations = new ArrayList<AliasDeclaration>();
-		for(Statement stm : block.statements) {
+		for(Statement stm : block.sourceStatements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
 				Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
@@ -1720,7 +1720,7 @@ public class ASTConverter {
 	
 	private descent.core.dom.Statement convertBlockTypedef(CompoundStatement block) {
 		List<TypedefDeclaration> varDeclarations = new ArrayList<TypedefDeclaration>();
-		for(Statement stm : block.statements) {
+		for(Statement stm : block.sourceStatements) {
 			if (stm instanceof DeclarationStatement) {
 				DeclarationStatement declStm = (DeclarationStatement) stm;
 				Dsymbol declaration = (Dsymbol) ((DeclarationExp) declStm.sourceExp).sourceDeclaration; // SEMANTIC
@@ -2110,14 +2110,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.SwitchStatement convert(SwitchStatement a) {
 		descent.core.dom.SwitchStatement b = new descent.core.dom.SwitchStatement(ast);
-		if (a.body != null) {
-			descent.core.dom.Statement convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
-		if (a.condition != null) {
-			descent.core.dom.Expression convertedExp = convert(a.condition);
+		if (a.sourceCondition != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceCondition);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
@@ -2313,7 +2313,7 @@ public class ASTConverter {
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
 		if(!(a.sourceStatement instanceof SwitchErrorStatement))
-			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.sourceStatement).sourceStatement).statements);
+			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.sourceStatement).sourceStatement).sourceStatements);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2430,7 +2430,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Statement convert(CompoundStatement a) {
 		if (a.manyVars) {
-			Statement firstStatement = a.statements.get(0);
+			Statement firstStatement = a.sourceStatements.get(0);
 			
 			if (!(firstStatement instanceof DeclarationStatement)) {
 				throw new RuntimeException("Can't happen");
@@ -2722,8 +2722,8 @@ public class ASTConverter {
 			b.expressions().add(convert(x.sourceExp));
 		}
 		
-		if (x.sourceStatement != null && ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).statements.size() > 0) {
-			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).statements);
+		if (x.sourceStatement != null && ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).sourceStatements.size() > 0) {
+			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).sourceStatements);
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

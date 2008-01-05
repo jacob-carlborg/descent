@@ -48,8 +48,8 @@ public class CompletionParser extends Parser {
 	// version identifier in a CompletionOnVersionCondition
 	public HashtableOfCharArrayAndObject versions;
 
-	public CompletionParser(int apiLevel, char[] source) {
-		super(apiLevel, source);
+	public CompletionParser(int apiLevel, char[] source, char[] filename) {
+		super(apiLevel, source, 0, source.length, null, null, false, filename);
 	}
 	
 	public ASTDmdNode getAssistNode() {

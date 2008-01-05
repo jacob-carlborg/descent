@@ -16,6 +16,7 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IAggregateDeclaration;
+import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
@@ -118,13 +119,15 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 		for(IDsymbol s : parentS.members()) {
 			if (s == this) {
 				foundMe = true;
-			} else if (foundMe && CharOperation.equals(s.ident().ident, ident().ident)) {
+			} else if (foundMe && s.isFuncDeclaration() != null &&
+					CharOperation.equals(s.ident().ident, ident().ident)) {
 				IDeclaration d = s.isDeclaration();
 				if (d != null) {
 					return d;
 				}
 			}
 		}
+		
 		return null;
 	}
 

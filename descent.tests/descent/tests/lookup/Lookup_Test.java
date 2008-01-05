@@ -290,6 +290,18 @@ public class Lookup_Test extends AbstractLookupTest {
 		assertNoErrors();
 	}
 	
+	public void testClassOverloadMethodsInSuperMustUseAlias1() throws Exception {
+		one("class Base { void foo(int x); } class Child : Base { void foo(); }");
+		two("void foo(Child c) { c.foo(1); }");
+		assertErrors();
+	}
+	
+	public void testClassOverloadMethodsInSuperMustUseAlias2() throws Exception {
+		one("class Base { void foo(int x); } class Child : Base { void foo(); }");
+		two("void foo(Child c) { alias Base.foo foo; c.foo(1); }");
+		assertErrors();
+	}
+	
 	public void testNestedPackagesProblem1() throws Exception {
 		one("");
 		createCompilationUnit("first", "file.d", "");

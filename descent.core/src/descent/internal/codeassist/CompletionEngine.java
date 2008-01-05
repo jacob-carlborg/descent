@@ -191,12 +191,12 @@ public class CompletionEngine extends Engine
 			}
 			CharOperation.replace(sourceUnitFqn, '/', '.');
 			
-			parser = new CompletionParser(Util.getApiLevel(this.compilerOptions.getMap()), source);
-			parser.filename = this.fileName;
+			parser = new CompletionParser(Util.getApiLevel(this.compilerOptions.getMap()), source, this.fileName);
 			parser.cursorLocation = completionPosition;
 			parser.nextToken();
 			
 			this.module = parser.parseModuleObj();
+			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
 			this.requestor.acceptContext(buildContext(parser));
@@ -812,8 +812,9 @@ public class CompletionEngine extends Engine
 			if (!excludedNames.containsKey(proposition) &&
 					CharOperation.prefixEquals(name, proposition, false)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
-				proposal.setName(proposition);
+				proposal.setName(member.ident().ident);
 				proposal.setCompletion(proposition);
+				proposal.setSignature(member.getSignature().toCharArray());
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
@@ -822,7 +823,7 @@ public class CompletionEngine extends Engine
 	
 	private void completeJavadoc(CompletionOnJavadocImpl node) {
 		// A very naïve solution for now...
-		char[] ddocSource = node.getSource();		
+		char[] ddocSource = node.getSource();
 		DdocParser parser = new DdocParser(ddocSource);
 		Ddoc ddoc = parser.parse();
 		

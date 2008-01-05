@@ -1648,13 +1648,20 @@ public class Parser extends Lexer {
 						value = parseAssignExp();
 					}
 					
+					List<Comment> lastComments = getLastComments();
+					
 					EnumMember em = new EnumMember(loc(), ident, value);
 					e.addMember(em);
+					
+					em.preComments = lastComments;
+					
 					if (token.value == TOKrcurly) {
 						;
 					} else {
 						check(TOKcomma);
 					}
+					
+					attachLeadingComments(em);					
 				} else {
 					parsingErrorInsertToComplete(prevToken, "EnumMember", "EnumDeclaration");
 					nextToken();

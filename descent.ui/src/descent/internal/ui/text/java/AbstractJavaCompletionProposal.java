@@ -10,30 +10,19 @@
  *******************************************************************************/
 package descent.internal.ui.text.java;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
-
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
-import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.DefaultPositionUpdater;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.DocumentEvent;
@@ -59,28 +48,32 @@ import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.LinkedModeUI.ExitFlags;
 import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
-
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
+import org.osgi.framework.Bundle;
 
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
-
+import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.infoviews.JavadocViewHelper;
+import descent.internal.ui.text.HTMLPrinter;
+import descent.internal.ui.text.java.hover.AbstractReusableInformationControlCreator;
+import descent.internal.ui.text.java.hover.BrowserInformationControl;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.IJavaPartitions;
 import descent.ui.text.JavaTextTools;
 import descent.ui.text.java.IJavaCompletionProposal;
-
-import descent.internal.ui.JavaPlugin;
-import descent.internal.ui.text.HTMLPrinter;
-import descent.internal.ui.text.HTMLTextPresenter;
-import descent.internal.ui.text.TextPresenter;
-import descent.internal.ui.text.java.hover.AbstractReusableInformationControlCreator;
-import descent.internal.ui.text.java.hover.BrowserInformationControl;
-
-import org.osgi.framework.Bundle;
 
 /**
  * 
@@ -445,7 +438,23 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 			if (info != null && info.length() > 0) {
 				StringBuffer buffer= new StringBuffer();
 				if (proposalInfo.needsHtmlRendering()) {
-					HTMLPrinter.insertPageProlog(buffer, 0, getStyleSheetURL());
+					URL styleSheetURL = getStyleSheetURL();
+					try {
+						BufferedReader reader= new BufferedReader(new InputStreamReader(styleSheetURL.openStream()));
+						StringBuffer stylesheet = new StringBuffer();
+						String line= reader.readLine();
+						while (line != null) {
+							stylesheet.append(line);
+							stylesheet.append('\n');
+							line= reader.readLine();
+						}
+						
+						JavadocViewHelper.addPreferencesFontsAndColorsToStyleSheet(stylesheet);
+						
+						HTMLPrinter.insertPageProlog(buffer, 0, stylesheet.toString());
+					} catch (Exception e) {
+						HTMLPrinter.insertPageProlog(buffer, 0, styleSheetURL);
+					}
 				}
 				buffer.append(info);
 				if (proposalInfo.needsHtmlRendering()) {

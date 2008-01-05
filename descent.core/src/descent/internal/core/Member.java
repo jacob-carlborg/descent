@@ -289,7 +289,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	if (module.members == null || module.members.size() == 0) {
 		return null;
 	}
-	Dsymbol declaration = (Dsymbol) module.members.get(0); // SEMANTIC
+	Dsymbol declaration = (Dsymbol) module.members.get(0);
 	
 	List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);
 	if (declaration instanceof VarDeclaration) {

@@ -10,13 +10,26 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.Flags;
+import descent.core.IBuffer;
+import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;
+import descent.core.ISourceRange;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.Signature;
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
+import descent.internal.compiler.parser.Comment;
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 
 /**
  * @see IField
@@ -212,4 +225,58 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		}
 	}
 }
+
+@Override
+public ISourceRange[] getJavadocRanges() throws JavaModelException {
+	if (isEnumConstant()) {
+		// Need to do something else for enum members, since alone they are not valid
+		// declarations
+		
+		ISourceRange range= this.getSourceRange();
+		if (range == null) return null;
+		IBuffer buf= null;
+		if (this.isBinary()) {
+			buf = this.getClassFile().getBuffer();
+		} else {
+			ICompilationUnit compilationUnit = this.getCompilationUnit();
+			if (!compilationUnit.isConsistent()) {
+				return null;
+			}
+			buf = compilationUnit.getBuffer();
+		}
+		final int start= range.getOffset();
+		final int length= range.getLength();
+		
+		String text = "enum Foo{" + buf.getText(start, length) + "}";
+		
+		Parser parser = new Parser(AST.D2, text);
+		Module module = parser.parseModuleObj();
+		if (module.members == null || module.members.size() == 0) {
+			return null;
+		}
+		EnumDeclaration declaration = (EnumDeclaration) module.members.get(0);
+		EnumMember member = (EnumMember) declaration.members.get(0);
+		
+		// Build source ranges, but subtract 9 = "enumFoo{".length();
+		List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);
+		if (member.preComments != null) {
+			for(int i = member.preComments.size() - 1; i >= 0; i--) {
+				Comment ddoc = member.preComments.get(i);
+				if (!ddoc.isDDocComment()) {
+					break;
+				}
+				sourceRanges.add(0, new SourceRange(start + ddoc.start - 9, ddoc.length));
+			}
+		}
+		
+		if (member.postComment != null && member.postComment.isDDocComment()) {
+			sourceRanges.add(new SourceRange(start + member.postComment.start - 9,
+					member.postComment.length));
+		}
+		return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);
+	} else {
+		return super.getJavadocRanges();
+	}
+}
+
 }

@@ -3209,6 +3209,11 @@ public class JavaProject
 	public int getApiLevel() {
 		return Util.getApiLevel(this);
 	}
+	
+	public IJavaElement findBySignature(String signature) {
+		JavaElementFinder finder = new JavaElementFinder(this, null);
+		return finder.find(signature);
+	}
 
 	/*
 	 * Update eclipse preferences from old preferences.

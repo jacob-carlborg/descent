@@ -14,8 +14,8 @@ import static descent.internal.compiler.parser.TY.Tarray;
 // DMD 1.020
 public class SwitchStatement extends Statement {
 
-	public Expression condition;
-	public Statement body;
+	public Expression condition, sourceCondition;
+	public Statement body, sourceBody;
 	public DefaultStatement sdefault;
 	public List gotoCases; // array of unresolved GotoCaseStatement's
 	public List cases; // array of CaseStatement's
@@ -23,16 +23,16 @@ public class SwitchStatement extends Statement {
 
 	public SwitchStatement(Loc loc, Expression c, Statement b) {
 		super(loc);
-		this.condition = c;
-		this.body = b;
+		this.condition = this.sourceCondition = c;
+		this.body = this.sourceBody = b;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, condition);
-			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, sourceCondition);
+			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
 	}

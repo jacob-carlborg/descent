@@ -1,4 +1,2 @@
  - Select good default colors for structs and unions.
- - Improve search for java elements and dsymbols, and fix it (if there are 
-   packages etc and etc.c, and you search for "S3etc1c..." then it currently
-   won't find anything. See RDsymbol and DefaultBindingResolver.
+ - Test code select and binding for aliased symbols (i.e. alias Foo.Bar myAlias).

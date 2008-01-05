@@ -101,5 +101,17 @@ public class CodeSelecType_Test extends AbstractModelTest {
 		assertEquals(1, elements.length);
 		assertEquals(unit.getAllTypes()[0], elements[0]);
 	}
+	
+	public void testAliasOfSymbolDotSymbol() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "class Foo { void bar(); } alias Foo.bar myAlias;");
+		
+		IJavaElement[] elements = unit.codeSelect(33, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getAllTypes()[0], elements[0]);
+		
+		elements = unit.codeSelect(37, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getAllTypes()[0].getChildren()[0], elements[0]);
+	}
 
 }

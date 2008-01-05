@@ -12,6 +12,7 @@ package descent.internal.ui.text.java;
 
 import descent.core.CompletionProposal;
 import descent.core.IField;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IType;
@@ -45,20 +46,27 @@ public final class FieldProposalInfo extends MemberProposalInfo {
 	 * @throws JavaModelException if accessing the java model fails
 	 */
 	protected IMember resolveMember() throws JavaModelException {
-		char[] declarationSignature= fProposal.getDeclarationSignature();
-		// for synthetic fields on arrays, declaration signatures may be null
-		// TODO remove when https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
-		if (declarationSignature == null)
+		IJavaElement result = fJavaProject.findBySignature(new String(fProposal.getSignature()));
+		if (result != null && result instanceof IMember) {
+			return (IMember) result;
+		} else {
 			return null;
-		String typeName= SignatureUtil.stripSignatureToFQN(String.valueOf(declarationSignature));
-		IType type= fJavaProject.findType(typeName);
-		if (type != null) {
-			String name= String.valueOf(fProposal.getName());
-			IField field= type.getField(name);
-			if (field.exists())
-				return field;
 		}
-
-		return null;
+		
+//		char[] declarationSignature= fProposal.getDeclarationSignature();
+//		// for synthetic fields on arrays, declaration signatures may be null
+//		// TODO remove when https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
+//		if (declarationSignature == null)
+//			return null;
+//		String typeName= SignatureUtil.stripSignatureToFQN(String.valueOf(declarationSignature));
+//		IType type= fJavaProject.findType(typeName);
+//		if (type != null) {
+//			String name= String.valueOf(fProposal.getName());
+//			IField field= type.getField(name);
+//			if (field.exists())
+//				return field;
+//		}
+//
+//		return null;
 	}
 }

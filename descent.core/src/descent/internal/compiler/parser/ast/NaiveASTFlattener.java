@@ -28,7 +28,7 @@ import descent.internal.compiler.parser.Type.Modification;
  */
 public class NaiveASTFlattener extends AstVisitorAdapter {
 	
-	private final static boolean USE_RESOLVED = false;
+	private boolean useResolved = false;
 	
 	private final String EMPTY= ""; //$NON-NLS-1$
 	private final String LINE_END= "\n"; //$NON-NLS-1$
@@ -105,14 +105,14 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	
 	void visitPre(UnaExp node, String pre) {
 		this.buffer.append(pre);
-		if (USE_RESOLVED)
+		if (useResolved)
 			node.e1.accept(this);
 		else
 			node.sourceE1.accept(this);
 	}
 	
 	void visitPost(UnaExp node, String post) {
-		if (USE_RESOLVED)
+		if (useResolved)
 			node.e1.accept(this);
 		else
 			node.sourceE1.accept(this);
@@ -120,14 +120,14 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 	
 	void visit(BinExp node, String separator) {
-		if (USE_RESOLVED)
+		if (useResolved)
 			node.e1.accept(this);
 		else
 			node.sourceE1.accept(this);
 		this.buffer.append(" ");
 		this.buffer.append(separator);
 		this.buffer.append(" ");
-		if (USE_RESOLVED)
+		if (useResolved)
 			node.e2.accept(this);
 		else
 			node.e2.accept(this);
@@ -144,7 +144,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(AddAssignExp node) {
 		if (node.isPreIncrement) {
 			this.buffer.append("++");
-			if (USE_RESOLVED)
+			if (useResolved)
 				node.e1.accept(this);
 			else 
 				node.sourceE1.accept(this);
@@ -175,7 +175,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			printIndent();
 			visitModifiers(node.modifiers);
 			this.buffer.append("alias ");
-			Type type = USE_RESOLVED ? node.type : node.sourceType;
+			Type type = useResolved ? node.type : node.sourceType;
 			if (type != null) {
 				type.accept(this);
 				this.buffer.append(" ");
@@ -271,7 +271,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitList(node.modifiers, " ");
 		
 		boolean mustAppendSpace = node.modifiers != null && node.modifiers.size() > 0;
-		Type type = USE_RESOLVED ? node.type : node.sourceType;
+		Type type = useResolved ? node.type : node.sourceType;
 		if (type != null) {
 			if (mustAppendSpace) {
 				this.buffer.append(" ");
@@ -285,7 +285,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			}
 			this.buffer.append(node.ident);
 		}
-		Expression defaultArg = USE_RESOLVED ? node.defaultArg : node.sourceDefaultArg; 
+		Expression defaultArg = useResolved ? node.defaultArg : node.sourceDefaultArg; 
 		if (defaultArg != null) {
 			this.buffer.append(" = ");
 			defaultArg.accept(this);
@@ -303,8 +303,8 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(ArrayInitializer node) {
 		this.buffer.append("[");
-		Expressions eindex = USE_RESOLVED ? node.index : node.sourceIndex;
-		Initializers evalue = USE_RESOLVED ? node.value : node.sourceValue;
+		Expressions eindex = useResolved ? node.index : node.sourceIndex;
+		Initializers evalue = useResolved ? node.value : node.sourceValue;
 		if (eindex != null) {
 			for(int i = 0; i < eindex.size(); i++) {
 				if (i != 0) {
@@ -332,7 +332,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(ArrayLiteralExp node) {
 		this.buffer.append("[");
-		if (USE_RESOLVED)
+		if (useResolved)
 			visitList(node.elements, ", ");
 		else
 			visitList(node.sourceElements, ", ");
@@ -1016,8 +1016,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(DotIdExp node) {
-		if (node.e1 != null) {
-			node.e1.accept(this);
+		Expression exp = useResolved ? node.e1 : node.sourceE1;
+		if (exp != null) {
+			exp.accept(this);
 		}
 		this.buffer.append(".");
 		node.ident.accept(this);
@@ -1037,8 +1038,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(DotTemplateInstanceExp node) {
-		if (node.e1 != null) {
-			node.e1.accept(this);
+		Expression exp = useResolved ? node.e1 : node.sourceE1;
+		if (exp != null) {
+			exp.accept(this);
 		}
 		this.buffer.append(".");
 		node.ti.accept(this);
@@ -1090,28 +1092,34 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitModifiers(node.modifiers);
 		this.buffer.append("~this");
 		this.buffer.append("()");
-		if (node.frequire != null) {
+		
+		Statement frequire = useResolved ? node.frequire : node.sourceFrequire;
+		if (frequire != null) {
 			this.buffer.append(LINE_END);
 			printIndent();
 			this.buffer.append("in ");
-			node.frequire.accept(this);
+			frequire.accept(this);
 			this.buffer.append(LINE_END);
 			printIndent();
 		}
-		if (node.fensure != null) {
+		
+		Statement fensure = useResolved ? node.fensure: node.sourceFensure;
+		if (fensure != null) {
 			this.buffer.append(LINE_END);
 			printIndent();
 			this.buffer.append("out ");
-			node.fensure.accept(this);
+			fensure.accept(this);
 			this.buffer.append(LINE_END);
 			printIndent();
 		}
-		if (node.frequire != null || node.fensure != null) {
+		if (frequire != null || fensure != null) {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		if (node.fbody != null) {
-			node.fbody.accept(this);
+		
+		Statement fbody = useResolved ? node.fbody : node.sourceFbody;
+		if (fbody != null) {
+			fbody.accept(this);
 		}
 		if (node.postComment != null) {
 			this.buffer.append(" ");

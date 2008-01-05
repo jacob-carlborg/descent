@@ -1050,4 +1050,11 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 */
 	int getApiLevel();
 	
+	/**
+	 * Finds a java element denoted by the given signature.
+	 * @param signature the signature of the element
+	 * @return the resulting element
+	 */
+	IJavaElement findBySignature(String signature);
+	
 }

@@ -36,6 +36,7 @@ import descent.core.IJavaElement;
 import descent.core.JavaModelException;
 import descent.internal.corext.util.Messages;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.infoviews.JavadocViewHelper;
 import descent.internal.ui.javaeditor.WorkingCopyManager;
 import descent.internal.ui.text.HTMLTextPresenter;
 import descent.internal.ui.text.JavaWordFinder;
@@ -190,6 +191,9 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 						buffer.append('\n');
 						line= reader.readLine();
 					}
+					
+					JavadocViewHelper.addPreferencesFontsAndColorsToStyleSheet(buffer);
+					
 					fgStyleSheet= buffer.toString();
 				} catch (IOException ex) {
 					JavaPlugin.log(ex);

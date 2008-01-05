@@ -20,7 +20,7 @@ public class DefaultStatement extends Statement {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, statement);
+			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
 	}
