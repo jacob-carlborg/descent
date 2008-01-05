@@ -94,7 +94,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 			return overnext.overloadInsert(s, context);
 		}
 	}
-
+	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (aliassym != null) {

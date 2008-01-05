@@ -5,7 +5,7 @@ This document explains the signature of types and symbols in Descent.
      - For modules, the symbol @ is used: @4some6module
      - For classes, the letter C is used: C3Foo
      - For structs, the letter S is used: S3Foo
-     - For interfaces, the symbol $ is used: $3Foo
+     - For interfaces, the symbol | is used: $3Foo
      - For unions, the symbol & is used: &3Foo
      - For enums, the symbol E is used: E3Foo
      - For enum members, the symbol ~ is used: ~3Foo
@@ -22,9 +22,13 @@ For example:
  	taking class Bar in module test as the first argument, and returning
  	void
  @test[3fooFZvCBar --> class Bar in function foo in module test
+  
+For symbols local to functions,
+it's the signature of the enclosing function followed by a single $, followed
+by the absolute start position of the symbol, folloed by the normal type signature. For example:
 
-For local variables, it's the signature of the containing function followed
-by #, numbers and the name of the variable. For example:
-
-  ...#/x   --> variable x declared in the function
-  ...#0#/x --> variable x declared in the first scope block of the function
+  ...$50C3Bar   --> class Bar declared in the function, at absolute position 50
+  
+For invariants, unittests, static ctors and static dtors, it's the 
+signature of the enclosing symbol, followed by $,
+the position of it in the source file, and }.

@@ -8,7 +8,7 @@ public interface ISignatureConstants {
 	char MODULE = '@';
 	char CLASS = 'C';
 	char STRUCT = 'S';
-	char INTERFACE = '$';
+	char INTERFACE = '|';
 	char UNION = '&';
 	char ENUM = 'E';
 	char ENUM_MEMBER = '~';
@@ -17,5 +17,8 @@ public interface ISignatureConstants {
 	char TYPEDEF = 'T';
 	char FUNCTION = '[';
 	char TEMPLATE = '{';
+	char OTHER = '}'; // unittest, invariant, static ctor, static dtor
+	char SCOPE = '#';
+	char POSITION = '$';
 
 }

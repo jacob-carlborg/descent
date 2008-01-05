@@ -95,5 +95,10 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		buf.writestring("unittest");
 		bodyToCBuffer(buf, hgs, context);
 	}
+	
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.OTHER;
+	}
 
 }

@@ -28,10 +28,13 @@ public class SignatureProcessor implements ISignatureConstants {
 		
 		/**
 		 * The processos has found a symbol.
+		 * @param type the type of the symbol
 		 * @param name the name of the symbol
+		 * @param startPosition if the symbol is local, this parameter holds the
+		 * start position of it. Else, it holds the value -1.
 		 * @signature the signature of the symbol
 		 */
-		void acceptSymbol(char type, char[] name, String signature);
+		void acceptSymbol(char type, char[] name, int startPosition, String signature);
 
 		/**
 		 * The processor has found a delegate.
@@ -133,6 +136,7 @@ public class SignatureProcessor implements ISignatureConstants {
 			throw new IllegalArgumentException("Invalid signature: " + signature);
 		}
 		
+		int localPosition = -1;		
 		int start = i;
 		
 		while(i < signature.length()) {
@@ -172,10 +176,17 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				if (first == FUNCTION) {
 					i = process0(signature, i, requestor);
-					requestor.acceptSymbol(first, name, signature.substring(start, i));
+					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				} else {
-					requestor.acceptSymbol(first, name, signature.substring(start, i));
+					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				}
+				
+				localPosition = -1;				
+				continue;
+			case OTHER:
+				i++;
+				requestor.acceptSymbol(first, null, localPosition, signature.substring(start, i));
+				localPosition = -1;
 				continue;
 			case 'D': { // delegate
 				i = process0(signature, i + 1, requestor);
@@ -250,6 +261,17 @@ public class SignatureProcessor implements ISignatureConstants {
 			case 'Y':
 			case 'Z':
 				return i;
+			case POSITION:
+				n = 0;
+				i++;
+				c = signature.charAt(i);
+				while(Character.isDigit(c)) {
+					n = 10 * n + (c - '0');
+					i++;
+					c = signature.charAt(i);
+				}
+				localPosition = n;
+				continue;
 			default:
 				// Try with type basic
 				TypeBasic type = TypeBasic.fromSignature(first);

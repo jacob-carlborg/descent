@@ -195,13 +195,13 @@
             class="descent.internal.ui.text.java.hover.JavadocHover"
             id="descent.ui.JavadocHover">
       </hover>
-      <!--
       <hover
             label="%sourceHover"
             description="%sourceHoverDescription"
             class="descent.internal.ui.text.java.hover.JavaSourceHover"
             id="descent.ui.JavaSourceHover">
       </hover>
+      <!--
       <hover
             label="%annotationHover"
             description="%annotationHoverDescription"

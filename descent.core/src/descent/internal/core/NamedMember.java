@@ -179,13 +179,21 @@ public abstract class NamedMember extends Member {
 	}
 	
 	public String getFullyQualifiedName(char enclosingTypeSeparator, boolean showParameters) throws JavaModelException {
-		String moduleName = parent.getElementName().substring(0, this.parent.getElementName().lastIndexOf('.'));
+		StringBuilder initial = new StringBuilder();
+		JavaElement theParent = parent;
+		while(!(theParent instanceof ICompilationUnit)) {
+			initial.insert(0, '.');
+			initial.insert(0, theParent.getElementName());
+			theParent = theParent.parent;
+		}
+		
+		String moduleName = theParent.getElementName().substring(0, theParent.getElementName().lastIndexOf('.'));
 		
 		String packageName = getPackageFragment().getElementName();
 		if (packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME)) {
-			return moduleName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
+			return initial + moduleName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 		}
-		return moduleName + '.' + packageName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
+		return initial + moduleName + '.' + packageName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 	}
 
 	public String getTypeQualifiedName(char enclosingTypeSeparator, boolean showParameters) throws JavaModelException {
@@ -225,7 +233,12 @@ public abstract class NamedMember extends Member {
 			default:
 				return null;
 		}
-		StringBuffer buffer = new StringBuffer(declaringType.getTypeQualifiedName(enclosingTypeSeparator, showParameters));
+		
+		StringBuffer buffer = new StringBuffer();
+		if (declaringType != null) {
+			buffer.append(declaringType.getTypeQualifiedName(enclosingTypeSeparator, showParameters));
+		}		
+		
 		buffer.append(enclosingTypeSeparator);
 		String simpleName = this.name.length() == 0 ? Integer.toString(this.occurrenceCount) : this.name;
 		buffer.append(simpleName);

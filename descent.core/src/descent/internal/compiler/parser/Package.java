@@ -73,4 +73,14 @@ public class Package extends ScopeDsymbol implements IPackage {
 		// empty
 	}
 	
+	@Override
+	public String getSignature() {
+		return null;
+	}
+	
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		
+	}
+	
 }

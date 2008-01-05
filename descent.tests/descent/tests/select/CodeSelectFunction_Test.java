@@ -2,6 +2,7 @@ package descent.tests.select;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
+import descent.core.IMethod;
 import descent.tests.model.AbstractModelTest;
 
 public class CodeSelectFunction_Test extends AbstractModelTest {
@@ -116,7 +117,10 @@ public class CodeSelectFunction_Test extends AbstractModelTest {
 		IJavaElement[] elements = test.codeSelect(19, 0);
 		assertEquals(1, elements.length);
 		
-		assertEquals(getFunction(getFunction(test, 0), 0), elements[0]);
+		IMethod method = (IMethod) elements[0];
+		assertEquals("bar", method.getElementName());
+		assertEquals(13, method.getSourceRange().getOffset());
+		assertEquals(14, method.getSourceRange().getLength());
 	}
 	
 	public void testSelectDefaultCtor() throws Exception {

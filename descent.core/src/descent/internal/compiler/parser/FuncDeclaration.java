@@ -802,7 +802,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 		}
 		return (LabelDsymbol) s;
 	}
-
+	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		boolean gotoL1 = false;

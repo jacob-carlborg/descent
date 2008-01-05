@@ -115,7 +115,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			
 			checking(new Expectations() {{
 				char[] expected = "test".toCharArray();
-				one(requestor).acceptSymbol(type, expected, sig);
+				one(requestor).acceptSymbol(type, expected, -1, sig);
 			}});
 			
 			SignatureProcessor.process(sig, requestor);
@@ -135,7 +135,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid);
 			one(requestor).exitFunctionType(LINK.LINKd, "FZv");
-			one(requestor).acceptSymbol(type, expected, type + "4testFZv");
+			one(requestor).acceptSymbol(type, expected, -1, type + "4testFZv");
 		}});
 		
 		SignatureProcessor.process(sig, requestor);
@@ -151,7 +151,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
 			char[] expectedClass = "Bar".toCharArray();
 			one(requestor).acceptModule(expectedModule, sigModule);
-			one(requestor).acceptSymbol(CLASS, expectedClass, sigClass);
+			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass);
 		}});
 		
 		SignatureProcessor.process(sigClass, requestor);
@@ -169,8 +169,8 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			char[] expectedClass1 = "Bar".toCharArray();
 			char[] expectedClass2 = "Bazz".toCharArray();
 			one(requestor).acceptModule(expectedModule, sigModule);
-			one(requestor).acceptSymbol(CLASS, expectedClass1, sigClass1);
-			one(requestor).acceptSymbol(CLASS, expectedClass2, sigClass2);
+			one(requestor).acceptSymbol(CLASS, expectedClass1, -1, sigClass1);
+			one(requestor).acceptSymbol(CLASS, expectedClass2, -1, sigClass2);
 		}});
 		
 		SignatureProcessor.process(sigClass2, requestor);
@@ -191,7 +191,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid);
 			one(requestor).exitFunctionType(LINK.LINKd, "FZv");
-			one(requestor).acceptSymbol(FUNCTION, expectedFunction, sigFunction);
+			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction);
 		}});
 		
 		SignatureProcessor.process(sigFunction, requestor);
@@ -213,13 +213,13 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType();
 			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptModule(expectedModule, sigModule);
-			one(requestor).acceptSymbol(CLASS, expectedClass, sigClass);
+			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass);
 			one(requestor).acceptArgumentBreak('Z');
 			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptModule(expectedModule, sigModule);
-			one(requestor).acceptSymbol(CLASS, expectedClass, sigClass);
+			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass);
 			one(requestor).exitFunctionType(LINK.LINKd, sigFunctionType);
-			one(requestor).acceptSymbol(FUNCTION, expectedFunction, sigFunction);
+			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction);
 		}});
 		
 		SignatureProcessor.process(sigFunction, requestor);

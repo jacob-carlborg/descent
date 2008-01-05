@@ -916,6 +916,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	public boolean visit(DeclarationStatement node) {
 		Dsymbol dsymbol = (Dsymbol) ((DeclarationExp) node.sourceExp).declaration; // SEMANTIC
 		switch(dsymbol.getNodeType()) {
+		case ASTDmdNode.ENUM_DECLARATION:
 		case ASTDmdNode.CLASS_DECLARATION:
 		case ASTDmdNode.INTERFACE_DECLARATION:
 		case ASTDmdNode.STRUCT_DECLARATION:
@@ -1601,7 +1602,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(ReturnStatement node) {
-		return false;
+		return true;
 	}
 
 	public boolean visit(ScopeDsymbol node) {
@@ -1613,7 +1614,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(ScopeStatement node) {
-		return false;
+		return true;
 	}
 
 	public boolean visit(ShlAssignExp node) {
@@ -1905,7 +1906,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(VersionCondition node) {
-		return false;
+		return true;
 	}
 
 	public boolean visit(VoidInitializer node) {
@@ -1921,11 +1922,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(WithScopeSymbol node) {
-		return false;
+		return true;
 	}
 
 	public boolean visit(WithStatement node) {
-		return false;
+		return true;
 	}
 
 	public boolean visit(XorAssignExp node) {

@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
 
 import static descent.internal.compiler.parser.STC.STCconst;
@@ -639,13 +642,61 @@ public class SemanticMixin {
 		}
 		
 		aThis.parent().appendSignature(sb);
-		sb.append(aThis.getSignaturePrefix());
-		sb.append(aThis.ident().ident.length);
-		sb.append(aThis.ident().ident);
 		
-		if (aThis instanceof IFuncDeclaration) {
-			aThis.type().appendSignature(sb);
+		if (isLoca(aThis)) {
+			sb.append('$');
+			sb.append(aThis.getStart());
 		}
+		
+		if (aThis instanceof UnitTestDeclaration || 
+			aThis instanceof InvariantDeclaration ||
+			aThis instanceof IStaticCtorDeclaration ||
+			aThis instanceof StaticDtorDeclaration) {
+			
+			// Simplified signature for this symbols
+			sb.append('$');
+			sb.append(aThis.getStart());
+			
+			sb.append(aThis.getSignaturePrefix());
+			
+		} else {
+			
+			sb.append(aThis.getSignaturePrefix());
+			
+			sb.append(aThis.ident().ident.length);
+			sb.append(aThis.ident().ident);
+			if (aThis instanceof IFuncDeclaration) {
+				aThis.type().appendSignature(sb);
+			}
+			
+		}
+	}
+	
+	public static int[] computeScopeNumbers(IDsymbol aThis, Scope scope) {
+		List<Integer> nums = new ArrayList<Integer>();
+		
+		Scope sc = scope.enclosing;
+		while(sc != null && sc.func == aThis.parent()) {
+			nums.add(sc.numberForLocalVariables);
+			sc = sc.enclosing;
+		}
+		
+		if (nums.isEmpty()) {
+			return null;
+		}
+
+		int[] scopeNumbers = new int[nums.size()];
+		for(int i = nums.size() - 1, j = 0; i >= 0; i--, j++) {
+			scopeNumbers[j] = nums.get(i);
+		}
+		return scopeNumbers;
+	}
+	
+	/*
+	 * Determines if a symbol is local to a function.
+	 */
+	private static boolean isLoca(IDsymbol symbol) {
+		return symbol.parent() instanceof IFuncDeclaration;
 	}
 	
 	public static String mangle(IClassDeclaration aThis, SemanticContext context) {

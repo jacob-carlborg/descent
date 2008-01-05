@@ -3,11 +3,12 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.STC.*;
 
 // DMD 1.020
-public class SymbolDeclaration extends Declaration implements ISymbolDeclaration {
-	
+public class SymbolDeclaration extends Declaration implements
+		ISymbolDeclaration {
+
 	public Symbol sym;
 	public IStructDeclaration dsym;
-	
+
 	public SymbolDeclaration(Loc loc, Symbol s, IStructDeclaration dsym) {
 		super(new IdentifierExp(s.Sident));
 		this.loc = loc;
@@ -16,29 +17,28 @@ public class SymbolDeclaration extends Declaration implements ISymbolDeclaration
 		storage_class |= STCconst;
 	}
 
-    public SymbolDeclaration isSymbolDeclaration()
-    {
-        return this;
-    }
-    
-    public IStructDeclaration dsym() {
-    	return dsym;
-    }
-    
-    public Symbol sym() {
-    	return sym;
-    }
-    
-    @Override
-    public String getSignature() {
-    	// TODO Auto-generated method stub
-    	return null;
-    }
-    
-    @Override
-    public char getSignaturePrefix() {
-    	// TODO Auto-generated method stub
-    	return super.getSignaturePrefix();
-    }
-	
+	public SymbolDeclaration isSymbolDeclaration() {
+		return this;
+	}
+
+	public IStructDeclaration dsym() {
+		return dsym;
+	}
+
+	public Symbol sym() {
+		return sym;
+	}
+
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public char getSignaturePrefix() {
+		// TODO Auto-generated method stub
+		return super.getSignaturePrefix();
+	}
+
 }

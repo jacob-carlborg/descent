@@ -5,7 +5,6 @@ import descent.internal.compiler.parser.IAliasDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.SemanticContext;
-import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 
 public class RAliasDeclaration extends RDeclaration implements IAliasDeclaration {

@@ -101,4 +101,9 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 		return 4; // "this".length()
 	}
 
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.OTHER;
+	}
+
 }

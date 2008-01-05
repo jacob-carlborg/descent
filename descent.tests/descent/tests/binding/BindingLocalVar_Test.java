@@ -1,211 +1,45 @@
 package descent.tests.binding;
 
-import descent.core.dom.Argument;
-import descent.core.dom.Block;
+import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.DeclarationStatement;
-import descent.core.dom.ForeachStatement;
 import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
-import descent.core.dom.IVariableBinding;
-import descent.core.dom.VariableDeclaration;
-import descent.core.dom.VariableDeclarationFragment;
 
 public class BindingLocalVar_Test extends AbstractBinding_Test {
 	
-	public void testLocalVarBinding() throws Exception {
-		CompilationUnit unit = createCU("test.d", "void foo() { int x; }");
+	public void testLocalClassBinding() throws Exception {
+		CompilationUnit unit = createCU("test.d", "void foo() { class Bar { } }");
 		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(0);
-		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
+		AggregateDeclaration agg = (AggregateDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
-		assertEquals("i", typeBinding.getKey());
+		ITypeBinding typeBinding = (ITypeBinding) agg.resolveBinding();
+		assertTrue(typeBinding.isClass());
+		assertEquals("Bar", typeBinding.getName());
 		
-		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, fragment.getName().resolveBinding());
+		assertSame(typeBinding, agg.getName().resolveBinding());
 	}
 	
-	public void testLocalVarBinding2() throws Exception {
-		CompilationUnit unit = createCU("test.d", "void foo() { { int x; } }");
+	public void testLocalClassBinding2() throws Exception {
+		CompilationUnit unit = createCU("test.d", "void foo() { void bar() { class Bar { } } }");
 		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		Block block = (Block) func.getBody().statements().get(0);
-		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
-		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
+		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(0);
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
-		assertEquals("i", typeBinding.getKey());
+		FunctionDeclaration func2 = (FunctionDeclaration) statement.getDeclaration();
+		DeclarationStatement statement2 = (DeclarationStatement) func2.getBody().statements().get(0);
 		
-		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
+		IMethodBinding funcBinding = func2.resolveBinding();
+		assertEquals("bar", funcBinding.getName());
 		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#0#" + VARIABLE + "x", varBinding.getKey());
+		AggregateDeclaration agg = (AggregateDeclaration) statement2.getDeclaration();
 		
-		assertSame(varBinding, fragment.getName().resolveBinding());
-	}
-	
-	public void testLocalVarBinding3() throws Exception {
-		CompilationUnit unit = createCU("test.d", 
-			"void foo() { " +
-				"{ } " +
-				"{ int x; } " +
-			"}");
-		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		Block block = (Block) func.getBody().statements().get(1);
-		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
-		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
+		ITypeBinding typeBinding = (ITypeBinding) agg.resolveBinding();
+		assertTrue(typeBinding.isClass());
+		assertEquals("Bar", typeBinding.getName());
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
-		assertEquals("i", typeBinding.getKey());
-		
-		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#1#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, fragment.getName().resolveBinding());
-	}
-	
-	public void testLocalVarBinding4() throws Exception {
-		CompilationUnit unit = createCU("test.d", 
-			"void foo() { " +
-				"{ } " +
-				"{ " +
-					"{} " +
-					"{} " +
-					"{ int x; } " +
-				"} " +
-			"}");
-		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		Block block1 = (Block) func.getBody().statements().get(1);
-		Block block2 = (Block) block1.statements().get(2);
-		DeclarationStatement statement = (DeclarationStatement) block2.statements().get(0);
-		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
-		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
-		assertEquals("i", typeBinding.getKey());
-		
-		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#1#2#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, fragment.getName().resolveBinding());
-	}
-	
-	public void testLocalVarBindingInForeach() throws Exception {
-		CompilationUnit unit = createCU("test.d", 
-			"void foo() { " +
-				"foreach(x; \"hey\") { } " +
-			"}");
-		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		ForeachStatement statement = (ForeachStatement) func.getBody().statements().get(0);
-		Argument argument = statement.arguments().get(0);
-
-		IVariableBinding varBinding = argument.resolveBinding();;
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#0#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, argument.getName().resolveBinding());
-	}
-	
-	public void testLocalVarBindingInForeach2() throws Exception {
-		CompilationUnit unit = createCU("test.d", 
-			"void foo() { " +
-				"foreach(x; \"hey\") { } foreach(x; \"hey\") { }" +
-			"}");
-		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		ForeachStatement statement = (ForeachStatement) func.getBody().statements().get(0);
-		Argument argument = statement.arguments().get(0);
-
-		IVariableBinding varBinding = argument.resolveBinding();;
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#0#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, argument.getName().resolveBinding());
-		
-		statement = (ForeachStatement) func.getBody().statements().get(1);
-		argument = statement.arguments().get(0);
-
-		varBinding = argument.resolveBinding();;
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#1#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, argument.getName().resolveBinding());
-	}
-	
-	public void testLocalVarBindingInForeach3() throws Exception {
-		CompilationUnit unit = createCU("test.d", 
-			"void foo() { " +
-				"foreach(x; \"hey\") { } foreach(x; \"hey\") { } int x;" +
-			"}");
-		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		
-		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(2);
-		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
-		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
-		assertEquals("i", typeBinding.getKey());
-		
-		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFZv#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, fragment.getName().resolveBinding());
-	}
-	
-	public void testParameter() throws Exception {
-		CompilationUnit unit = createCU("test.d", "void foo(int x) { }");
-		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		Argument argument = func.arguments().get(0);
-		
-		IVariableBinding varBinding = argument.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertEquals("i", varBinding.getType().getKey());
-		assertTrue(varBinding.isVariable());
-		assertTrue(varBinding.isParameter());
-		assertFalse(varBinding.isLocal());
-		
-		assertEquals(MODULE + "4test" + FUNCTION + "3fooFiZv#" + VARIABLE + "x", varBinding.getKey());
-		
-		assertSame(varBinding, argument.getName().resolveBinding());
+		assertSame(typeBinding, agg.getName().resolveBinding());
 	}
 
 }

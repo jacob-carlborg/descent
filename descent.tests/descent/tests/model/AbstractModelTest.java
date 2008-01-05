@@ -14,8 +14,10 @@ import org.eclipse.core.runtime.Path;
 
 import descent.core.IClasspathEntry;
 import descent.core.ICompilationUnit;
+import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
 import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IParent;
@@ -35,8 +37,8 @@ public abstract class AbstractModelTest extends TestCase {
 		
 		IClasspathEntry[] oldEntries = javaProject.getRawClasspath();		
 		IClasspathEntry entry = JavaCore.newLibraryEntry(
-				//new Path("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos"),
-				new Path("C:\\d\\dmd_1.0.20\\dmd\\src\\phobos"),
+				new Path("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos"),
+				//new Path("C:\\d\\dmd_1.0.20\\dmd\\src\\phobos"),
 				null, null);
 		
 		IClasspathEntry[] newEntries = new IClasspathEntry[oldEntries.length + 1];
@@ -124,12 +126,12 @@ public abstract class AbstractModelTest extends TestCase {
 		javaProject.getProject().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, null);
 	}
 	
-	protected IJavaElement getVariable(IJavaElement unit, int num) throws Exception {
-		return getElement(unit, num, IJavaElement.FIELD);
+	protected IField getVariable(IJavaElement unit, int num) throws Exception {
+		return (IField) getElement(unit, num, IJavaElement.FIELD);
 	}
 	
-	protected IJavaElement getFunction(IJavaElement unit, int num) throws Exception {
-		return getElement(unit, num, IJavaElement.METHOD);
+	protected IMethod getFunction(IJavaElement unit, int num) throws Exception {
+		return (IMethod) getElement(unit, num, IJavaElement.METHOD);
 	}
 	
 	protected IJavaElement getElement(IJavaElement unit, int num, int type) throws Exception {

@@ -75,7 +75,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	public String mangle(SemanticContext context) {
 		return Dsymbol_mangle(context);
 	}
-
+	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (sem == 0) {

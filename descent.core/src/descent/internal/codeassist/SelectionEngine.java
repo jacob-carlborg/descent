@@ -160,7 +160,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean visit(IdentifierExp node) {
 		if (!isInRange(node)) {
@@ -296,27 +296,27 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return node.parent instanceof FuncDeclaration;
 	}
 	
-	private void add(VarDeclaration var) {
-		if (isLocal(var)) {
-			addLocalVar(var);
+	private void add(VarDeclaration node) {
+		if (isLocal(node)) {
+			addLocalVar(node);
 		} else {
-			add(var.getSignature());
+			add(node.getSignature());
 		}
 	}
 	
-	private void add(AliasDeclaration alias) {
-		if (isLocal(alias)) {
-			addLocalAlias(alias);
+	private void add(AliasDeclaration node) {
+		if (isLocal(node)) {
+			addLocalAlias(node);
 		} else {
-			add(alias.getSignature());
+			add(node.getSignature());
 		}
 	}
 	
-	private void add(TypedefDeclaration typedef) {
-		if (isLocal(typedef)) {
-			addLocalTypedef(typedef);
+	private void add(TypedefDeclaration node) {
+		if (isLocal(node)) {
+			addLocalTypedef(node);
 		} else {
-			add(typedef.getSignature());
+			add(node.getSignature());
 		}
 	}
 	
@@ -335,31 +335,31 @@ public class SelectionEngine extends AstVisitorAdapter {
 		return node.start <= offset && offset + length <= node.start + node.length;
 	}
 	
-	private void addLocalVar(VarDeclaration var) {
-		addLocal(var, Flags.AccDefault);
+	private void addLocalVar(VarDeclaration node) {
+		addLocal(node, Flags.AccDefault);
 	}
 	
-	private void addLocalAlias(AliasDeclaration var) {
-		addLocal(var, Flags.AccAlias);
+	private void addLocalAlias(AliasDeclaration node) {
+		addLocal(node, Flags.AccAlias);
 	}
 	
-	private void addLocalTypedef(TypedefDeclaration var) {
-		addLocal(var, Flags.AccTypedef);
+	private void addLocalTypedef(TypedefDeclaration node) {
+		addLocal(node, Flags.AccTypedef);
 	}
 	
-	private void addLocal(Declaration var, long modifiers) {
-		FuncDeclaration parent = (FuncDeclaration) var.parent;
+	private void addLocal(Declaration node, long modifiers) {
+		FuncDeclaration parent = (FuncDeclaration) node.parent;
 		JavaElement func = (JavaElement) finder.find(parent.getSignature());
 		
 		selectedElements.add(
 			new LocalVariable(
 				func, 
-				var.ident.toString(),
-				var.start,
-				var.start + var.length - 1,
-				var.ident.start,
-				var.ident.start + var.ident.length - 1,
-				var.type.getSignature(),
+				node.ident.toString(),
+				node.start,
+				node.start + node.length - 1,
+				node.ident.start,
+				node.ident.start + node.ident.length - 1,
+				node.type.getSignature(),
 				modifiers));
 	}
 	

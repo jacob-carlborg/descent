@@ -12,6 +12,7 @@ import descent.core.IMethod;
 import descent.core.IPackageDeclaration;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
+import descent.core.ISourceReference;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -60,24 +61,28 @@ public class JavaElementFinder {
 			}
 		}
 		
-		public void acceptSymbol(char type, char[] name, String signature) {
+		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 			if (element == null) {
 				return;
 			}
 			
 			if (typeFunctionCounter == 0) {
-				if (type == ISignatureConstants.FUNCTION) {
-					if (stack.isEmpty() ||  element == null || !(element instanceof IParent)) {
-						return;
-					}
-					
-					// Pop the type function signature
-					stack.pop();
-					
-					String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
-					element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+				if (startPosition >= 0) {
+					element = JavaElementFinder.findChild(element, startPosition);
 				} else {
-					element = findChild(element, new String(name));
+					if (type == ISignatureConstants.FUNCTION) {
+						if (stack.isEmpty() ||  element == null || !(element instanceof IParent)) {
+							return;
+						}
+						
+						// Pop the type function signature
+						stack.pop();
+						
+						String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
+						element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+					} else {
+						element = findChild(element, new String(name));
+					}
 				}
 			} else {
 				stack.pop();
@@ -128,6 +133,10 @@ public class JavaElementFinder {
 			paramsAndReturnTypes[stack.size() - 1] = stack.pop();
 			int i = stack.size() - 1;
 			while(!stack.isEmpty()) {
+				if (modifiers.isEmpty()) {
+					return;
+				}
+				
 				paramsAndReturnTypes[i] = modifiers.pop() + stack.pop();
 				i--;
 			}
@@ -284,6 +293,29 @@ public class JavaElementFinder {
 		}
 		
 		return searchInChildren(fragment, name);
+	}
+	
+	public static IJavaElement findChild(IJavaElement current, int startPosition) {
+		if (!(current instanceof IParent)) {
+			return null;
+		}
+		
+		try {
+			for(IJavaElement child : ((IParent) current).getChildren()) {
+				if (!(child instanceof ISourceReference)) {
+					continue;
+				}
+				
+				int start = ((ISourceReference) child).getSourceRange().getOffset();
+				if (start == startPosition) {
+					return child;
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		
+		return null;
 	}
 	
 	private static Global global = new Global();

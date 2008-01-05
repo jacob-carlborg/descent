@@ -109,5 +109,10 @@ public class StaticCtorDeclaration extends FuncDeclaration implements IStaticCto
 	public int getErrorLength() {
 		return 4; // "this".length()
 	}
+	
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.OTHER;
+	}
 
 }

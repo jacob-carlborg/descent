@@ -108,5 +108,10 @@ public class InvariantDeclaration extends FuncDeclaration implements IInvariantD
 	public int getErrorLength() {
 		return 9; // "invariant".length()
 	}
+	
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.OTHER;
+	}
 
 }

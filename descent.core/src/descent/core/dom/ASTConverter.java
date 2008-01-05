@@ -1489,8 +1489,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.UnitTestDeclaration convert(UnitTestDeclaration a) {
 		descent.core.dom.UnitTestDeclaration b = new descent.core.dom.UnitTestDeclaration(ast);
-		if (a.fbody != null) {
-			Block convertedBlock = (Block) convert(a.fbody);
+		if (a.sourceFbody != null) {
+			Block convertedBlock = (Block) convert(a.sourceFbody);
 			if (convertedBlock != null) {
 				b.setBody(convertedBlock);
 			}

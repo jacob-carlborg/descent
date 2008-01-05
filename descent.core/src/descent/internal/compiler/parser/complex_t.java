@@ -84,4 +84,9 @@ public class complex_t {
 		return x.im;
 	}
 	
+	@Override
+	public String toString() {
+		return re.toString() + im.toString() + "i";
+	}
+	
 }

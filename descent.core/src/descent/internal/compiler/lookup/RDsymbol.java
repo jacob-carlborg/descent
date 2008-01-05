@@ -636,27 +636,52 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			}
 		}
 		
-		public void acceptSymbol(char type, char[] name, String signature) {
+		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 			if (symbolStack.isEmpty()) {
 				return;
 			}
 			
 			IDsymbol symbol = symbolStack.pop();
-			if (type == ISignatureConstants.FUNCTION) {
-				IDsymbol parent = symbol;
-				IJavaElement element = symbol.getJavaElement();
-				// TODO parameters and return types
-				element = JavaElementFinder.findFunction((IParent) element, new String(name), null);
-				if (element != null) {
-					symbol = toDsymbol(element);
-					symbol.parent(parent);
+			
+			if (startPosition >= 0) {
+				IDsymbol parent =  symbolStack.pop();
+				IJavaElement element = parent.getJavaElement();
+				element = JavaElementFinder.findChild(element, startPosition);
+				if (element == null) {
+					return;
 				}
+				
+				symbol = toDsymbol(element);
+				symbol.parent(parent);
 			} else {
-				symbol = symbol.search(Loc.ZERO, name, 0, context);
+				if (type == ISignatureConstants.FUNCTION) {
+					IDsymbol parent = symbol;
+					IJavaElement element = symbol.getJavaElement();
+					if (element == null) {
+						return;
+					}
+					
+					// TODO parameters and return types
+					element = JavaElementFinder.findFunction((IParent) element, new String(name), null);
+					if (element != null) {
+						symbol = toDsymbol(element);
+						symbol.parent(parent);
+					}
+				} else {
+					symbol = symbol.search(Loc.ZERO, name, 0, context);
+				}
 			}
 			if (symbol != null) {
 				symbolStack.push(symbol);
 			}
+		}
+		
+		public void acceptLocalPosition(int startPosition) {
+			if (symbolStack.isEmpty()) {
+				return;
+			}
+			
+			
 		}
 
 		public void acceptArgumentBreak(char c) {
@@ -670,6 +695,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptAssociativeArray(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
+				if (typesStack.isEmpty()) {
+					return;
+				}
+				
 				type = new TypeAArray(typesStack.pop(), typesStack.pop());
 				type = type.merge(context);
 			}
@@ -679,6 +708,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptDelegate(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
+				if (typesStack.isEmpty()) {
+					return;
+				}
+				
 				type = new TypeDelegate(typesStack.pop());
 				type = type.merge(context);
 			}
@@ -688,6 +721,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptDynamicArray(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
+				if (typesStack.isEmpty()) {
+					return;
+				}
+				
 				type = new TypeDArray(typesStack.pop());
 				type = type.merge(context);
 			}
@@ -701,13 +738,22 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void exitFunctionType(LINK link, String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
+				if (typesStack.isEmpty()) {
+					return;
+				}
+				
 				Arguments arguments = new Arguments();				
 				type = new TypeFunction(arguments, typesStack.pop(), 0, link);
 				while(!typesStack.isEmpty()) {
 					Type argType = typesStack.pop();
+					
+					if (modifiersStack.isEmpty()) {
+						return;
+					}
+					
 					// TODO default value
 					arguments.add(0, new Argument(modifiersStack.pop(), argType, IdentifierExp.EMPTY, null));
-				}				
+				}
 				type = type.merge(context);
 			}
 			

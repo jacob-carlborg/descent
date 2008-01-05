@@ -262,7 +262,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		}
 		return s;
 	}
-
+	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		int i;
