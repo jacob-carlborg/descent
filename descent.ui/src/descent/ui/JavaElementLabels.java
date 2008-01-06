@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
+import descent.core.BindingKey;
 import descent.core.ClasspathContainerInitializer;
 import descent.core.Flags;
 import descent.core.IClassFile;
@@ -465,15 +466,11 @@ public class JavaElementLabels {
 	 */		
 	public static void getMethodLabel(IMethod method, long flags, StringBuffer buf) {
 		try {
-			/* TODO JDT UI binding
 			BindingKey resolvedKey= getFlag(flags, USE_RESOLVED) && method.isResolved() ? new BindingKey(method.getKey()) : null;
 			String resolvedSig= (resolvedKey != null) ? resolvedKey.toSignature() : null;
-			*/
-			String resolvedSig= null;
 			
 			// type parameters
 			if (getFlag(flags, M_PRE_TYPE_PARAMETERS)) {
-				/*
 				if (resolvedKey != null) {
 					if (resolvedKey.isParameterizedMethod()) {
 						String[] typeArgRefs= resolvedKey.getTypeArguments();
@@ -489,7 +486,6 @@ public class JavaElementLabels {
 						}
 					}
 				} else 
-				*/ 
 				if (method.exists()) {
 					ITypeParameter[] typeParameters= method.getTypeParameters();
 					if (typeParameters.length > 0) {
@@ -501,14 +497,8 @@ public class JavaElementLabels {
 			
 			// return type
 			if (getFlag(flags, M_PRE_RETURNTYPE) && method.exists() && method.isMethod()) {
-				if (resolvedSig != null) {
-					String returnTypeSig = Signature.getReturnType(resolvedSig);
-					getTypeSignatureLabel(returnTypeSig, flags, buf);
-				} else {
-					buf.append(method.getRawReturnType());
-				}
-				//String returnTypeSig= resolvedSig != null ? Signature.getReturnType(resolvedSig) : method.getReturnType();
-				//getTypeSignatureLabel(returnTypeSig, flags, buf);
+				String returnTypeSig= resolvedSig != null ? Signature.getReturnType(resolvedSig) : method.getReturnType();
+				getTypeSignatureLabel(returnTypeSig, flags, buf);
 				buf.append(' ');
 			}
 			
@@ -532,7 +522,6 @@ public class JavaElementLabels {
 			
 			// template parameters (moved after the method name, like in D)
 			if (getFlag(flags, M_APP_TYPE_PARAMETERS)) {
-				/*
 				if (resolvedKey != null) {
 					if (resolvedKey.isParameterizedMethod()) {
 						String[] typeArgRefs= resolvedKey.getTypeArguments();
@@ -548,7 +537,6 @@ public class JavaElementLabels {
 						}
 					}
 				} else
-				*/ 
 				if (method.exists()) {
 					ITypeParameter[] typeParameters= method.getTypeParameters();
 					if (typeParameters.length > 0) {
@@ -565,18 +553,14 @@ public class JavaElementLabels {
 				int nParams= 0;
 				boolean renderVarargs= false;
 				if (getFlag(flags, M_PARAMETER_TYPES)) {
-					/*
 					if (resolvedKey != null) {
 						types= Signature.getParameterTypes(resolvedKey.toSignature());
 					} else {
-					*/
-						//types= method.getParameterTypes();
-						types= method.getRawParameterTypes();
-					// }
+						types= method.getParameterTypes();
+					}
 					nParams= types.length;
-					/*
-					renderVarargs= method.exists() && Flags.isVarargs(method.getFlags());
-					*/
+					//renderVarargs= method.exists() && Flags.isVarargs(method.getFlags());
+					renderVarargs = false;
 				}
 				String[] names= null;
 				if (getFlag(flags, M_PARAMETER_NAMES) && method.exists()) {
@@ -607,8 +591,7 @@ public class JavaElementLabels {
 							}
 							buf.append(ELLIPSIS_STRING);
 						} else {
-							// getTypeSignatureLabel(paramSig, flags, buf);
-							buf.append(paramSig);
+							getTypeSignatureLabel(paramSig, flags, buf);
 						}
 					}
 					if (names != null) {
@@ -705,9 +688,7 @@ public class JavaElementLabels {
 			
 			if (getFlag(flags, F_PRE_TYPE_SIGNATURE) && field.exists() && !Flags.isEnum(field.getFlags())) {
 				if (getFlag(flags, USE_RESOLVED) && field.isResolved()) {
-					/* TODO JDT UI binding
 					getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
-					*/
 				} else {
 					getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
 				}
@@ -734,16 +715,12 @@ public class JavaElementLabels {
 					if (!annonymous) {
 						buf.append(DECL_STRING);
 					}
-					/* TODO JDT UI binding
 					getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
-					*/
 				} else {
-					//getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
-					String rawType = field.getRawType();
-					if (!annonymous && rawType.length() > 0) {
+					if (!annonymous) {
 						buf.append(DECL_STRING);
-						buf.append(rawType);
-					}					
+					}
+					getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
 				}
 			}
 
@@ -859,8 +836,8 @@ public class JavaElementLabels {
 	}
 	
 	private static void getTypeSignatureLabel(String typeSig, long flags, StringBuffer buf) {
-		buf.append(typeSig);
-		/* TODO implement correctly
+		buf.append(Signature.getSimpleName(Signature.toString(typeSig)));
+		/* TODO implement correctly, flags are not taken into account
 		int sigKind= Signature.getTypeSignatureKind(typeSig);
 		switch (sigKind) {
 			case Signature.BASE_TYPE_SIGNATURE:
@@ -941,11 +918,14 @@ public class JavaElementLabels {
 	public static void getTypeLabel(IType type, long flags, StringBuffer buf) {
 		
 		if (getFlag(flags, T_FULLY_QUALIFIED)) {
-			IPackageFragment pack= type.getPackageFragment();
-			if (!pack.isDefaultPackage()) {
-				getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
-				buf.append('.');
-			}
+			ICompilationUnit unit = type.getCompilationUnit();
+			getCompilationUnitLabel(unit, flags & QUALIFIER_FLAGS, buf);
+			buf.append('.');
+//			IPackageFragment pack= type.getPackageFragment();
+//			if (!pack.isDefaultPackage()) {
+//				getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
+//				buf.append('.');
+//			}
 		}
 		if (getFlag(flags, T_FULLY_QUALIFIED | T_CONTAINER_QUALIFIED)) {
 			IType declaringType= type.getDeclaringType();
@@ -1086,14 +1066,15 @@ public class JavaElementLabels {
 	 * @param buf The buffer to append the resulting label to.
 	 */
 	public static void getCompilationUnitLabel(ICompilationUnit cu, long flags, StringBuffer buf) {
-		if (getFlag(flags, CU_QUALIFIED)) {
-			IPackageFragment pack= (IPackageFragment) cu.getParent();
-			if (!pack.isDefaultPackage()) {
-				getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
-				buf.append('.');
-			}
-		}
-		buf.append(cu.getElementName());
+//		if (getFlag(flags, CU_QUALIFIED)) {
+//			IPackageFragment pack= (IPackageFragment) cu.getParent();
+//			if (!pack.isDefaultPackage()) {
+//				getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
+//				buf.append('.');
+//			}
+//		}
+//		buf.append(cu.getElementName());
+		buf.append(cu.getFullyQualifiedName());
 		
 		if (getFlag(flags, CU_POST_QUALIFIED)) {
 			buf.append(CONCAT_STRING);

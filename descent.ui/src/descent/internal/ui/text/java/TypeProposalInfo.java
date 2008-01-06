@@ -12,10 +12,6 @@ package descent.internal.ui.text.java;
 
 import descent.core.CompletionProposal;
 import descent.core.IJavaProject;
-import descent.core.IMember;
-import descent.core.JavaModelException;
-
-import descent.internal.corext.template.java.SignatureUtil;
 
 
 /**
@@ -42,9 +38,9 @@ public final class TypeProposalInfo extends MemberProposalInfo {
 	 * @return the resolved member or <code>null</code> if none is found
 	 * @throws JavaModelException if accessing the java model fails
 	 */
-	protected IMember resolveMember() throws JavaModelException {
-		char[] signature= fProposal.getSignature();
-		String typeName= SignatureUtil.stripSignatureToFQN(String.valueOf(signature));
-		return fJavaProject.findType(typeName);
-	}
+//	protected IMember resolveMember() throws JavaModelException {
+//		char[] signature= fProposal.getSignature();
+//		String typeName= SignatureUtil.stripSignatureToFQN(String.valueOf(signature));
+//		return fJavaProject.findType(typeName);
+//	}
 }

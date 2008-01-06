@@ -65,7 +65,19 @@ public abstract class MemberProposalInfo extends ProposalInfo {
 	 * @return the resolved member or <code>null</code> if none is found
 	 * @throws JavaModelException if accessing the java model fails
 	 */
-	protected abstract IMember resolveMember() throws JavaModelException;
+	protected IMember resolveMember() throws JavaModelException {
+		char[] signature = fProposal.getSignature();
+		if (signature == null) {
+			return null;
+		}
+		
+		IJavaElement result = fJavaProject.findBySignature(new String(signature));
+		if (result != null && result instanceof IMember) {
+			return (IMember) result;
+		} else {
+			return null;
+		}
+	}
 
 
 }

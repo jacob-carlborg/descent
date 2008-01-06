@@ -11,22 +11,18 @@
 package descent.ui.text.java;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-
 import org.eclipse.jface.text.Assert;
 
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.Flags;
 import descent.core.Signature;
-
 import descent.internal.corext.template.java.SignatureUtil;
 import descent.internal.corext.util.Messages;
-
-import descent.ui.JavaElementImageDescriptor;
-import descent.ui.JavaElementLabels;
-
 import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.viewsupport.JavaElementImageProvider;
+import descent.ui.JavaElementImageDescriptor;
+import descent.ui.JavaElementLabels;
 
 
 /**
@@ -175,12 +171,7 @@ public class CompletionProposalLabelProvider {
 	 */
 	String createMethodProposalLabel(CompletionProposal methodProposal) {
 		StringBuffer nameBuffer= new StringBuffer();
-
-		// method name
 		nameBuffer.append(methodProposal.getName());
-
-		/* TODO JDT code complete method parameters and return types
-		// parameters
 		nameBuffer.append('(');
 		appendUnboundedParameterList(nameBuffer, methodProposal);
 		nameBuffer.append(')');
@@ -198,7 +189,6 @@ public class CompletionProposalLabelProvider {
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
 		declaringType= Signature.getSimpleName(declaringType);
 		nameBuffer.append(declaringType);
-		*/
 
 		return nameBuffer.toString();
 	}
@@ -369,7 +359,7 @@ public class CompletionProposalLabelProvider {
 
 	String createLabelWithTypeAndDeclaration(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
-		buf.append(proposal.getCompletion());
+		buf.append(proposal.getName());
 		/* TODO JDT code complete
 		char[] typeName= Signature.getSignatureSimpleName(proposal.getSignature());
 		if (typeName.length > 0) {
@@ -482,6 +472,10 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.TYPE_REF:
 				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
 					case Signature.CLASS_TYPE_SIGNATURE:
+					case Signature.INTERFACE_TYPE_SIGNATURE:
+					case Signature.STRUCT_TYPE_SIGNATURE:
+					case Signature.UNION_TYPE_SIGNATURE:
+					case Signature.ENUM_TYPE_SIGNATURE:
 						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
 						break;
 					case Signature.TYPE_VARIABLE_SIGNATURE:

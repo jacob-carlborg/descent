@@ -227,10 +227,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);
 		assertEquals("x", method.getParameterNames()[0]);
-		assertEquals("I", method.getParameterTypes()[0]);
-		assertEquals("int", method.getRawParameterTypes()[0]);
-		assertEquals("V", method.getReturnType());
-		assertEquals("void", method.getRawReturnType());
+		assertEquals("i", method.getParameterTypes()[0]);
+		assertEquals("v", method.getReturnType());
 		assertEquals(0, method.getTypeParameters().length);
 	}
 	
@@ -261,10 +259,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);
 		assertEquals("x", method.getParameterNames()[0]);
-		assertEquals("I", method.getParameterTypes()[0]);
-		assertEquals("int", method.getRawParameterTypes()[0]);
-		assertEquals("V", method.getReturnType());
-		assertEquals("void", method.getRawReturnType());
+		assertEquals("i", method.getParameterTypes()[0]);
+		assertEquals("v", method.getReturnType());
 		assertEquals(1, method.getTypeParameters().length);
 		assertEquals("T", method.getTypeParameters()[0].getElementName());
 		assertEquals(37, method.getTypeParameters()[0].getSourceRange().getOffset());
@@ -297,10 +293,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);
 		assertEquals("x", method.getParameterNames()[0]);
-		assertEquals("I", method.getParameterTypes()[0]);
-		assertEquals("int", method.getRawParameterTypes()[0]);
-		assertEquals("V", method.getReturnType());
-		assertEquals("void", method.getRawReturnType());
+		assertEquals("i", method.getParameterTypes()[0]);
+		assertEquals("v", method.getReturnType());
 		assertEquals(0, method.getTypeParameters().length);
 	}
 	
@@ -322,8 +316,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(0, method.getNumberOfParameters());
 		assertEquals(0, method.getParameterNames().length);
 		assertEquals(0, method.getParameterTypes().length);
-		assertEquals("V", method.getReturnType());
-		assertEquals("void", method.getRawReturnType());
+		assertEquals("v", method.getReturnType());
 		assertEquals(0, method.getTypeParameters().length);
 	}
 	
@@ -352,10 +345,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);
 		assertEquals("x", method.getParameterNames()[0]);
-		assertEquals("I", method.getParameterTypes()[0]);
-		assertEquals("int", method.getRawParameterTypes()[0]);
-		assertEquals("V", method.getReturnType());
-		assertEquals("void", method.getRawReturnType());
+		assertEquals("i", method.getParameterTypes()[0]);
+		assertEquals("v", method.getReturnType());
 		assertEquals(0, method.getTypeParameters().length);
 	}
 	
@@ -384,10 +375,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);
 		assertEquals("x", method.getParameterNames()[0]);
-		assertEquals("I", method.getParameterTypes()[0]);
-		assertEquals("int", method.getRawParameterTypes()[0]);
-		assertEquals("V", method.getReturnType());
-		assertEquals("void", method.getRawReturnType());
+		assertEquals("i", method.getParameterTypes()[0]);
+		assertEquals("v", method.getReturnType());
 		assertEquals(0, method.getTypeParameters().length);
 	}
 	

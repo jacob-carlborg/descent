@@ -1,10 +1,6 @@
 package descent.internal.ui.text.java;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.jface.dialogs.MessageDialog;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -13,17 +9,16 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
-
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import descent.core.CompletionProposal;
-
-import descent.ui.text.java.JavaContentAssistInvocationContext;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.EditorHighlightingSynchronizer;
 import descent.internal.ui.javaeditor.JavaEditor;
+import descent.ui.text.java.JavaContentAssistInvocationContext;
 
 /**
  * An experimental proposal.
@@ -93,7 +88,7 @@ public final class ExperimentalProposal extends JavaMethodCompletionProposal {
 		
 		if (!hasParameters() || !hasArgumentList())
 			return super.computeReplacementString();
-
+		
 		char[][] parameterNames= fProposal.findParameterNames(null);
 		int count= parameterNames.length;
 		fArgumentOffsets= new int[count];

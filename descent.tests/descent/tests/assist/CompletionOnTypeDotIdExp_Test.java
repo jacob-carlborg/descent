@@ -117,6 +117,8 @@ public class CompletionOnTypeDotIdExp_Test extends AbstractCompletionTest {
 				CompletionProposal.FIELD_REF, "c", s.length(), s.length(),
 				CompletionProposal.FIELD_REF, "init", s.length(), s.length(),
 				CompletionProposal.FIELD_REF, "mangleof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "max", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "min", s.length(), s.length(),
 				CompletionProposal.FIELD_REF, "sizeof", s.length(), s.length(),
 				CompletionProposal.FIELD_REF, "stringof", s.length(), s.length()
 				);

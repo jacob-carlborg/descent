@@ -35,5 +35,12 @@ public interface IFuncDeclaration extends IDeclaration {
 	void nestedFrameRef(boolean nestedFrameRef);
 	
 	boolean isVirtual(SemanticContext context);
+	
+	/**
+	 * Returns the signature of this function, but without the
+	 * parent's signature prefixing it, and also without the
+	 * [ prefix in front of it.
+	 */
+	String getFunctionSignature();
 
 }

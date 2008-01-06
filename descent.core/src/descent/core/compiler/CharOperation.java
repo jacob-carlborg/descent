@@ -427,6 +427,21 @@ public static String[] charArrayToStringArray(char[][] charArrays) {
 }
 
 /**
+ * Returns the string array as an array of char array
+ */
+public static char[][] stringArrayToCharArray(String[] charArrays) {
+	if (charArrays == null)
+		return null;
+	int length = charArrays.length;
+	if (length == 0)
+		return NO_CHAR_CHAR;
+	char[][] strings= new char[length][];
+	for (int i= 0; i < length; i++)
+		strings[i]= charArrays[i].toCharArray();
+	return strings;
+}
+
+/**
  * Returns the char array as a String
 
  * @param charArray the char array to convert

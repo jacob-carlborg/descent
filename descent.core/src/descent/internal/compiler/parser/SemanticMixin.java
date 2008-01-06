@@ -643,7 +643,11 @@ public class SemanticMixin {
 		
 		aThis.parent().appendSignature(sb);
 		
-		if (isLoca(aThis)) {
+		appendNameSignature(aThis, sb);
+	}
+	
+	public static void appendNameSignature(IDsymbol aThis, StringBuilder sb) {
+		if (isLocal(aThis)) {
 			sb.append('$');
 			sb.append(aThis.getStart());
 		}
@@ -695,7 +699,7 @@ public class SemanticMixin {
 	/*
 	 * Determines if a symbol is local to a function.
 	 */
-	private static boolean isLoca(IDsymbol symbol) {
+	private static boolean isLocal(IDsymbol symbol) {
 		return symbol.parent() instanceof IFuncDeclaration;
 	}
 	

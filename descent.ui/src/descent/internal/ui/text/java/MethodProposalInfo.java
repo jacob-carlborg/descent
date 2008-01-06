@@ -16,13 +16,11 @@ import java.util.Map;
 
 import descent.core.CompletionProposal;
 import descent.core.IJavaProject;
-import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 import descent.core.Signature;
-
 import descent.internal.corext.template.java.SignatureUtil;
 
 
@@ -49,30 +47,30 @@ public final class MethodProposalInfo extends MemberProposalInfo {
 		super(project, proposal);
 	}
 
-	/**
-	 * Resolves the member described by the receiver and returns it if found.
-	 * Returns <code>null</code> if no corresponding member can be found.
-	 *
-	 * @return the resolved member or <code>null</code> if none is found
-	 * @throws JavaModelException if accessing the java model fails
-	 */
-	protected IMember resolveMember() throws JavaModelException {
-		char[] declarationSignature= fProposal.getDeclarationSignature();
-		String typeName= SignatureUtil.stripSignatureToFQN(String.valueOf(declarationSignature));
-		IType type= fJavaProject.findType(typeName);
-		if (type != null) {
-			String name= String.valueOf(fProposal.getName());
-			String[] parameters= Signature.getParameterTypes(String.valueOf(SignatureUtil.fix83600(fProposal.getSignature())));
-			for (int i= 0; i < parameters.length; i++) {
-				parameters[i]= SignatureUtil.getLowerBound(parameters[i]);
-			}
-			boolean isConstructor= fProposal.isConstructor();
-
-			return findMethod(name, parameters, isConstructor, type);
-		}
-
-		return null;
-	}
+//	/**
+//	 * Resolves the member described by the receiver and returns it if found.
+//	 * Returns <code>null</code> if no corresponding member can be found.
+//	 *
+//	 * @return the resolved member or <code>null</code> if none is found
+//	 * @throws JavaModelException if accessing the java model fails
+//	 */
+//	protected IMember resolveMember() throws JavaModelException {
+//		char[] declarationSignature= fProposal.getDeclarationSignature();
+//		String typeName= SignatureUtil.stripSignatureToFQN(String.valueOf(declarationSignature));
+//		IType type= fJavaProject.findType(typeName);
+//		if (type != null) {
+//			String name= String.valueOf(fProposal.getName());
+//			String[] parameters= Signature.getParameterTypes(String.valueOf(SignatureUtil.fix83600(fProposal.getSignature())));
+//			for (int i= 0; i < parameters.length; i++) {
+//				parameters[i]= SignatureUtil.getLowerBound(parameters[i]);
+//			}
+//			boolean isConstructor= fProposal.isConstructor();
+//
+//			return findMethod(name, parameters, isConstructor, type);
+//		}
+//
+//		return null;
+//	}
 
 	/* adapted from JavaModelUtil */
 

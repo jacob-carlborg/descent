@@ -1,195 +1,162 @@
 package descent.tests.mangling;
 
-import descent.core.dom.AST;
-import descent.internal.compiler.parser.AliasDeclaration;
-import descent.internal.compiler.parser.ClassDeclaration;
-import descent.internal.compiler.parser.ConditionalDeclaration;
-import descent.internal.compiler.parser.EnumDeclaration;
-import descent.internal.compiler.parser.EnumMember;
-import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.Module;
-import descent.internal.compiler.parser.StructDeclaration;
-import descent.internal.compiler.parser.TY;
-import descent.internal.compiler.parser.TemplateDeclaration;
-import descent.internal.compiler.parser.TypeBasic;
-import descent.internal.compiler.parser.TypedefDeclaration;
-import descent.internal.compiler.parser.VarDeclaration;
-import descent.tests.mars.Parser_Test;
+import junit.framework.TestCase;
+import descent.core.Signature;
+import descent.internal.compiler.parser.ISignatureConstants;
 
-public class Signature_Test extends Parser_Test {
+public class Signature_Test extends TestCase implements ISignatureConstants {
 	
-	public void testTypeBasic() {
-		assertEquals("v", new TypeBasic(TY.Tvoid).getSignature());
-		assertEquals("g", new TypeBasic(TY.Tint8).getSignature());
-		assertEquals("h", new TypeBasic(TY.Tuns8).getSignature());
-		assertEquals("s", new TypeBasic(TY.Tint16).getSignature());
-		assertEquals("t", new TypeBasic(TY.Tuns16).getSignature());
-		assertEquals("i", new TypeBasic(TY.Tint32).getSignature());
-		assertEquals("k", new TypeBasic(TY.Tuns32).getSignature());
-		assertEquals("l", new TypeBasic(TY.Tint64).getSignature());
-		assertEquals("m", new TypeBasic(TY.Tuns64).getSignature());
-		assertEquals("f", new TypeBasic(TY.Tfloat32).getSignature());
-		assertEquals("d", new TypeBasic(TY.Tfloat64).getSignature());
-		assertEquals("e", new TypeBasic(TY.Tfloat80).getSignature());
-		assertEquals("o", new TypeBasic(TY.Timaginary32).getSignature());
-		assertEquals("p", new TypeBasic(TY.Timaginary64).getSignature());
-		assertEquals("j", new TypeBasic(TY.Timaginary80).getSignature());
-		assertEquals("q", new TypeBasic(TY.Tcomplex32).getSignature());
-		assertEquals("r", new TypeBasic(TY.Tcomplex64).getSignature());
-		assertEquals("c", new TypeBasic(TY.Tcomplex80).getSignature());
-		assertEquals("b", new TypeBasic(TY.Tbool).getSignature());
-		assertEquals("a", new TypeBasic(TY.Tchar).getSignature());
-		assertEquals("u", new TypeBasic(TY.Twchar).getSignature());
-		assertEquals("w", new TypeBasic(TY.Tdchar).getSignature());
+	public void testParameterCount0() {
+		pc(0, MODULE + "4test" + FUNCTION + "3fooFZv");
 	}
 	
-	public void testTypePointer() {
-		assertVarType("Pi", "int*");
+	public void testParameterCount1() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooFiZv");
 	}
 	
-	public void testTypeDArray() {
-		assertVarType("Ai", "int[]");
+	public void testParameterCount2() {
+		pc(2, MODULE + "4test" + FUNCTION + "3fooFiiZv");
 	}
 	
-	public void testTypeSArray() {
-		assertVarType("G3i", "int[3]");
+	public void testParameterCountPointer() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooFPiZv");
 	}
 	
-	public void testTypeAArray() {
-		assertVarType("Hui", "int[wchar]");
+	public void testParameterCountTypeFunction() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooFFiZvZv");
 	}
 	
-	public void testClass() {
-		String s = "module main; class Foo { }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
+	public void testParameterCountTypeFunction2() {
+		pc(2, MODULE + "4test" + FUNCTION + "3fooFFiZvFiZvZv");
+	}
+	
+	public void testParameterCountTypeFunction3() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooFFFZvZvZv");
+	}
+	
+	public void testParameterCountTypeSymbol() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooF" + MODULE + "4test" + CLASS + "3BarZv");
+	}
+	
+	public void testParameterCountTypeSymbol2() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooFF" + MODULE + "4test" + CLASS + "3BarZvZv");
+	}
+	
+	public void testParameterCountTypeSymbol3() {
+		pc(1, MODULE + "4test" + FUNCTION + "3fooF" + MODULE + "4test" + FUNCTION + "3fooFZvZv");
+	}
+	
+	public void testToCharArray() {
+		tca("void foo()", "FZv", "foo", new String[] { }, false, true, false);
+	}
+	
+	public void testToCharArrayDontIncludeReturnType() {
+		tca("foo()", "FZv", "foo", new String[] { }, false, false, false);
+	}
+	
+	public void testToCharArray2() {
+		tca("void foo(int x)", "FiZv", "foo", new String[] { "x" }, false, true, false);
+	}
+	
+	public void testToCharArray3() {
+		tca("void foo(int x, float foo)", "FifZv", "foo", new String[] { "x", "foo" }, false, true, false);
+	}
+	
+	public void testToCharArray4() {
+		tca("int foo(int x, float foo)", "FifZi", "foo", new String[] { "x", "foo" }, false, true, false);
+	}
+	
+	public void testToCharArray5() {
+		tca("void foo(Object o)", "F" + MODULE + "6objectC6ObjectZv", "foo", new String[] { "o" }, false, true, false);
+	}
+	
+	public void testToCharArray6() {
+		tca("void foo(object.Object o)", "F" + MODULE + "6object" + CLASS + "6ObjectZv", "foo", new String[] { "o" }, true, true, false);
+	}
+	
+	public void testToCharArray7() {
+		tca("void foo(void function() x)", "FFZvZv", "foo", new String[] { "x" }, true, true, false);
+	}
+	
+	public void testToCharArray8() {
+		tca("int foo(int* x)", "FPiZi", "foo", new String[] { "x" }, false, true, false);
+	}
+	
+	public void testToCharArray9() {
+		tca("int foo(int[char] x)", "FHaiZi", "foo", new String[] { "x" }, false, true, false);
+	}
+	
+	public void testToCharArray10() {
+		tca("void foo(one.two(int).Foo o)", "F" + MODULE + "3one" + FUNCTION + "3twoFiZv" + POSITION + "10" + CLASS + "3FooZv", "foo", new String[] { "o" }, true, true, false);
+	}
+	
+	public void testToCharArray11() {
+		tca("void foo(void delegate() x)", "FDFZvZv", "foo", new String[] { "x" }, true, true, false);
+	}
+	
+	public void testGetParameterTypes() {
+		gpa(new String[] { }, "FZv");
+	}
+	
+	public void testGetParameterTypes2() {
+		gpa(new String[] { "FZv" }, "FFZvZv");
+	}
+	
+	public void testGetParameterTypes3() {
+		gpa(new String[] { "i", "f", "a" }, "FifaZv");
+	}
+	
+	public void testGetParameterTypes4() {
+		gpa(new String[] { "FFZvZv" }, "FFFZvZvZv");
+	}
+	
+	public void testGetParameterTypes5() {
+		gpa(new String[] { "FFFZvZvZv" }, "FFFFZvZvZvZv");
+	}
+	
+	public void testToCharArray12() {
+		tca("object.Object", MODULE + "6object" + CLASS + "6Object");
+	}
+	
+	public void testToCharArray13() {
+		tca("object.Object.foo()", MODULE + "6object" + CLASS + "6Object" + FUNCTION + "3fooFZv");
+	}
+	
+	public void testToCharArray14() {
+		tca("object.Object.foo(int)", MODULE + "6object" + CLASS + "6Object" + FUNCTION + "3fooFiZv");
+	}
+	
+	public void testToCharArray15() {
+		tca("int", "i");
+	}
+	
+	public void testToCharArray16() {
+		tca("int*", "Pi");
+	}
+	
+	protected void tca(String expected, String signature) {
+		assertEquals(expected, new String(Signature.toCharArray(signature.toCharArray())));
+	}
+	
+	protected void tca(String expected, String signature, String methodName, String[] parameterNames, boolean fullyQualifyTypeNames, boolean includeReturnType, boolean isVargArgs) {
+		char[][] c = new char[parameterNames.length][];
+		for(int i = 0; i < parameterNames.length; i++) {
+			c[i] = parameterNames[i].toCharArray();
+		}
 		
-		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
-		assertEquals("C4main3Foo", c.getSignature());
+		assertEquals(expected, new String(Signature.toCharArray(signature.toCharArray(), methodName.toCharArray(), c, fullyQualifyTypeNames, includeReturnType, isVargArgs)));
 	}
 	
-	public void testStruct() {
-		String s = "module main; struct Foo { }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		StructDeclaration c = (StructDeclaration) m.members.get(1);
-		assertEquals("S4main3Foo", c.getSignature());
+	protected void pc(int count, String signature) {
+		assertEquals(count, Signature.getParameterCount(signature));
 	}
 	
-	public void testEnum() {
-		String s = "module main; enum Foo { x }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		EnumDeclaration c = (EnumDeclaration) m.members.get(1);
-		assertEquals("E4main3Foo", c.getSignature());
-	}
-	
-	public void testEnumMember() {
-		String s = "module main; enum Foo { x }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		EnumDeclaration c = (EnumDeclaration) m.members.get(1);
-		EnumMember em = (EnumMember) c.members.get(0);
-		assertEquals("Q4main3Foo1x", em.getSignature());
-	}
-	
-	public void testTypedef() {
-		String s = "module main; typedef int Foo;";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		TypedefDeclaration c = (TypedefDeclaration) m.members.get(1);
-		assertEquals("Q4main3Foo", c.getSignature());
-	}
-	
-	public void testVar() {
-		String s = "module main; int Foo;";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		VarDeclaration c = (VarDeclaration) m.members.get(1);
-		assertEquals("Q4main3Foo", c.getSignature());
-	}
-	
-	public void testVarInClass() {
-		String s = "module main; class Foo { int x; }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
-		VarDeclaration v = (VarDeclaration) c.members.get(0);
-		assertEquals("Q4main3Foo1x", v.getSignature());
-	}
-	
-	public void testTypedefInClass() {
-		String s = "module main; class Foo { typedef int x; }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
-		TypedefDeclaration v = (TypedefDeclaration) c.members.get(0);
-		assertEquals("Q4main3Foo1x", v.getSignature());
-	}
-	
-	public void testAliasInClass() {
-		String s = "module main; class Foo { alias int x; }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		ClassDeclaration c = (ClassDeclaration) m.members.get(1);
-		AliasDeclaration v = (AliasDeclaration) c.members.get(0);
-		assertEquals("Q4main3Foo1x", v.getSignature());
-	}
-	
-	public void testVarInClassInDebug() {
-		String s = "module main; debug { } else { class Foo { int x; } }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		ConditionalDeclaration cd = (ConditionalDeclaration) m.members.get(1);
-		ClassDeclaration c = (ClassDeclaration) cd.elsedecl.get(0);
-		VarDeclaration v = (VarDeclaration) c.members.get(0);
-		assertEquals("Q4main3Foo1x", v.getSignature());
-	}
-	
-	public void testFunction() {
-		String s = "module main; void Foo() { }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		FuncDeclaration c = (FuncDeclaration) m.members.get(1);
-		assertEquals("O4main3FooFZv", c.getSignature());
-	}
-	
-	// TODO missing parameter information
-	public void testTemplate() {
-		String s = "module main; template Foo() { }";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		TemplateDeclaration c = (TemplateDeclaration) m.members.get(1);
-		assertEquals("N4main3Foo", c.getSignature());
-	}
-	
-	public void testAlias() {
-		String s = "module main; alias int Foo;";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		AliasDeclaration c = (AliasDeclaration) m.members.get(1);
-		assertEquals("Q4main3Foo", c.getSignature());
-	}
-	
-	private void assertVarType(String expected, String source) {
-		String s = source + " x;";
-		Module m = getModuleSemantic(s, AST.D1).module;
-		m.moduleName = "main";
-		
-		VarDeclaration v = (VarDeclaration) m.members.get(1);
-		assertEquals(expected, v.type.getSignature());
+	protected void gpa(String[] expected, String signature) {
+		String[] actual = Signature.getParameterTypes(signature);
+		assertEquals(expected.length, actual.length);
+		for(int i = 0; i < actual.length; i++) {
+			assertEquals(expected[i], actual[i]);
+		}
 	}
 	
 }

@@ -36,11 +36,16 @@ import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.AttribDeclaration;
+import descent.internal.compiler.parser.BaseClass;
+import descent.internal.compiler.parser.BaseClasses;
+import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.Expression;
@@ -49,9 +54,11 @@ import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IClassDeclaration;
+import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IEnumMember;
+import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IStructDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
@@ -70,6 +77,7 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeEnum;
+import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.UnionDeclaration;
@@ -100,6 +108,8 @@ public class CompletionEngine extends Engine
 	private static final char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
 	private static final char[][] integralTypesProperties = { Id.max, Id.min };
 	private static final char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
+	private static final char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };
+	private static final char[][] associativeArrayProperties = { Id.length, Id.keys, Id.values, Id.rehash };
 	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
 	private static final char[][] specialTokens = { Id.FILE, Id.LINE, Id.DATE, Id.TIME, Id.TIMESTAMP, Id.VERSION, Id.VENDOR };
 	
@@ -290,6 +300,7 @@ public class CompletionEngine extends Engine
 				}
 			}
 		} catch (JavaModelException e) {
+			Util.log(e);
 		}
 		
 		SemanticContext context = new SemanticContext(
@@ -501,8 +512,6 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// TODO maybe make each node implement something like
-		// "findEnumDeclaration"
 		TypeEnum typeEnum;
 		
 		Expression condition = sw.condition;
@@ -581,21 +590,19 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// For now, just complete basic types and enums
-		
 		// If it's a basic type, no semantic analysis is needed
 		if (type.getNodeType() == ASTDmdNode.TYPE_BASIC) {
 			char[] name = computePrefixAndSourceRange(node.ident);
-			completeTypeBasic((TypeBasic) type, name);
+			completeTypeBasicProperties((TypeBasic) type, name);
 		} else {
 			// else, do semantic, then see what the type is
 			// it's typeof(exp)
 			doSemantic(module);
 			
-			completeType(node.resolvedType, node.ident);
+			completeType(node.resolvedType, node.ident, true /* only statics */);
 		}
 	}
-	
+
 	private void completeDotIdExp(CompletionOnDotIdExp node) throws JavaModelException {
 		if (node.e1 == null) {
 			return;
@@ -603,10 +610,29 @@ public class CompletionEngine extends Engine
 		
 		doSemantic(module);
 
-		completeType(node.e1.type, node.ident);
+		completeExpression(node.e1, node.ident);
 	}
 
-	private void completeType(Type type, IdentifierExp ident) {
+	private void completeExpression(Expression e1, IdentifierExp ident) {
+		if (e1 instanceof VarExp) {
+			VarExp var = (VarExp) e1;
+			IDeclaration decl = var.var;
+			if (decl == null) {
+				return;
+			}
+			
+			Type type = decl.type();
+			completeType(type, ident, false /* not only statics */);
+		} else if (e1 instanceof CallExp) {
+			Type type = ((CallExp) e1).type;
+			completeType(type, ident, false /* not only statics */);
+		} else if (e1 instanceof TypeExp) {
+			Type type = e1.type;
+			completeType(type, ident, true /* only statics */);
+		}
+	}
+
+	private void completeType(Type type, IdentifierExp ident, boolean onlyStatics) {
 		if (type == null) {
 			return;
 		}
@@ -614,70 +640,92 @@ public class CompletionEngine extends Engine
 		char[] name = computePrefixAndSourceRange(ident);		
 		switch(type.getNodeType()) {
 		case ASTDmdNode.TYPE_BASIC:
-			completeTypeBasic((TypeBasic) type, name);
+			completeTypeBasicProperties((TypeBasic) type, name);
 			break;
 		case ASTDmdNode.TYPE_CLASS:
-			completeTypeClass((TypeClass) type, name);
+			completeTypeClass((TypeClass) type, name, onlyStatics);
 			break;
 		case ASTDmdNode.TYPE_STRUCT:
-			completeTypeStruct((TypeStruct) type, name);
+			completeTypeStruct((TypeStruct) type, name, onlyStatics);
 			break;
 		case ASTDmdNode.TYPE_ENUM:
 			completeTypeEnum((TypeEnum) type, name);
 			break;
+		case ASTDmdNode.TYPE_S_ARRAY:
+		case ASTDmdNode.TYPE_D_ARRAY:
+			completeTypeStaticOrDynamicArrayProperties(name);
+			break;
+		case ASTDmdNode.TYPE_A_ARRAY:
+			completeTypeAssociativeArrayProperties(name);
+			break;
 		}
 	}
 
-	private void completeTypeBasic(TypeBasic type, char[] name) {
+	private void completeTypeBasicProperties(TypeBasic type, char[] name) {
 		// Nothing for type void
 		if (type.ty == TY.Tvoid) {
 			return;
 		}
 		
-		suggestProperties(name, allTypesProperties);
+		suggestProperties(name, allTypesProperties, R_DEFAULT);
 		
 		if (type.isintegral()) {
-			suggestProperties(name, integralTypesProperties);
+			suggestProperties(name, integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
 		}
 		
 		if (type.isfloating()) {
-			suggestProperties(name, floatingPointTypesProperties);
+			suggestProperties(name, floatingPointTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
 		}
 	}
 	
-	private void completeTypeClass(TypeClass type, char[] name) {
+	private void completeTypeStaticOrDynamicArrayProperties(char[] name) {
+		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		suggestProperties(name, staticAndDynamicArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	private void completeTypeAssociativeArrayProperties(char[] name) {
+		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		suggestProperties(name, associativeArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	private void completeTypeClass(TypeClass type, char[] name, boolean onlyStatics) {
+		// Keep a hashtable of already used signatures, in order to avoid
+		// suggesting overriden functions
+		HashtableOfCharArrayAndObject funcSignatures = new HashtableOfCharArrayAndObject();
+		
+		completeTypeClassRecursively(type, name, onlyStatics, funcSignatures);
+		
+		// And also all type's properties
+		suggestProperties(name, allTypesProperties, R_DEFAULT);
+	}
+	
+	private void completeTypeClassRecursively(TypeClass type, char[] name, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
 		IClassDeclaration decl = type.sym;
 		if (decl == null) {
 			return;
 		}
 		
-		// Suggest fields
-		suggestFields(decl.fields(), name);
+		// Suggest members
+		suggestMembers(decl.members(), name, onlyStatics, funcSignatures);
 		
-		// Then virtual functions
-		suggestFunctions(decl.vtbl(), name);
-		
-		// Then functions
-		suggestFunctions(decl.vtblFinal(), name);
-		
-		// And also all type's properties
-		suggestProperties(name, allTypesProperties);
+		// Suggest superclass and superinterface members
+		BaseClasses baseClasses = decl.baseclasses();
+		for(BaseClass baseClass : baseClasses) {
+			completeTypeClassRecursively((TypeClass) baseClass.base.type(), name, onlyStatics, funcSignatures);
+		}
 	}
 	
-	private void completeTypeStruct(TypeStruct type, char[] name) {
+	private void completeTypeStruct(TypeStruct type, char[] name, boolean onlyStatics) {
 		IStructDeclaration decl = type.sym;
 		if (decl == null) {
 			return;
 		}
 		
-		// Suggest fields
-		suggestFields(decl.fields(), name);
-		
-		// And functions
-		suggestFunctions(decl.members(), name);
+		// Suggest members
+		suggestMembers(decl.members(), name, onlyStatics, null);
 		
 		// And also all type's properties
-		suggestProperties(name, allTypesProperties);
+		suggestProperties(name, allTypesProperties, R_DEFAULT);
 	}
 	
 	private void completeTypeEnum(TypeEnum type, char[] name) {
@@ -690,101 +738,107 @@ public class CompletionEngine extends Engine
 		completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
 		
 		// And also all type's properties
-		suggestProperties(name, allTypesProperties);
+		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		
+		// If the base type of the enum is integral, also suggest integer properties
+		if (enumDeclaration.memtype().isintegral()) {
+			suggestProperties(name, integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+		}
 	}
 	
-	private void suggestFields(List<IVarDeclaration> list, char[] name) {
-		if (list == null) {
+	private void suggestMembers(Dsymbols members, char[] name, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
+		suggestMembers(members, name, onlyStatics, 0, funcSignatures);
+	}
+	
+	private void suggestMembers(Dsymbols members, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures) {
+		if (members == null || members.isEmpty()) {
 			return;
 		}
 		
-		for(IVarDeclaration var : list) {
+		for(IDsymbol member : members) {
+			suggestMember(member, name, onlyStatics, flags, funcSignatures);
+		}
+	}
+	
+	private void suggestMember(IDsymbol member, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures) {
+		// TODO Descent don't allow all of the attrib declarations to enter
+		if (member instanceof AttribDeclaration) {
+			AttribDeclaration attrib = (AttribDeclaration) member;
+			suggestMembers(attrib.decl, name, onlyStatics, flags | attrib.getFlags(), funcSignatures);
+			return;
+		}
+		
+		
+		// Types act like statics
+		boolean isType = member instanceof IClassDeclaration || 
+						member instanceof IStructDeclaration ||
+						member instanceof IEnumDeclaration;
+		
+			// Filter statics if only statics were requested
+		IDeclaration decl = member.isDeclaration();
+		if (decl != null) {
+			if (!isType && !decl.isStatic() && !decl.isConst() && onlyStatics) {
+				return;
+			}
+		}
+		
+		// See if it's a variable
+		IVarDeclaration var = member.isVarDeclaration();
+		if (var != null) {
 			if (CharOperation.prefixEquals(name, var.ident().ident, false)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(var.ident().ident);
 				proposal.setCompletion(var.ident().ident);
+				proposal.setSignature(var.getSignature().toCharArray());
+				proposal.setFlags(flags | var.getFlags());
+				proposal.setRelevance(R_INTERESTING);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
-		}
-	}
-	
-	private void suggestFunctions(List list, char[] name) {
-		if (list == null) {
 			return;
 		}
 		
-		for(Object obj : list) {
-			if (!(obj instanceof FuncDeclaration)) {
-				continue;
+		// See if it's a function
+		IFuncDeclaration func = member.isFuncDeclaration();
+		if (func != null) {
+			// Don't suggest already suggested functions
+			char[] signature = func.getSignature().toCharArray();
+			if (funcSignatures != null && funcSignatures.containsKey(signature)) {
+				return;
 			}
 			
-			FuncDeclaration func = (FuncDeclaration) obj;
-			if (CharOperation.prefixEquals(name, func.ident.ident, false)) {
+			if (CharOperation.prefixEquals(name, func.ident().ident, false)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
-				proposal.setName(getNameForFuncProposal(func));
-				proposal.setCompletion(getCompletionForFuncProposal(func));
+				proposal.setName(func.ident().ident);
+				proposal.setCompletion((func.ident().toString() + "()").toCharArray());
+				proposal.setSignature(func.getSignature().toCharArray());
+				proposal.setFlags(flags | func.getFlags());
+				proposal.setRelevance(R_INTERESTING);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+				
+				if (funcSignatures != null) {
+					funcSignatures.put(signature, proposal);
+				}
+			}
+			return;
+		}
+		
+		if (isType) {
+			if (CharOperation.prefixEquals(name, member.ident().ident, false)) {
+				CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+				proposal.setName(member.ident().ident);
+				proposal.setCompletion(member.ident().ident);
+				proposal.setSignature(member.getSignature().toCharArray());
+				proposal.setFlags(flags | member.getFlags());
+				proposal.setRelevance(R_INTERESTING);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
 		}
 	}
 
-	private char[] getCompletionForFuncProposal(FuncDeclaration func) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(func.ident.ident);
-		sb.append('(');
-		TypeFunction tf = (TypeFunction) func.type;
-		if (tf.parameters != null) {						
-			for(int i = 0; i < tf.parameters.size(); i++) {
-				if (i != 0) {
-					sb.append(", ");
-				}
-				
-				Argument arg = tf.parameters.get(i);
-				if (arg.ident != null && arg.ident.ident != null) {
-					sb.append(arg.ident.ident);
-				}
-			}
-		}
-		sb.append(')');
-		
-		char[] ret = new char[sb.length()];
-		sb.getChars(0, sb.length(), ret, 0);
-		return ret;
-	}
-
-	private char[] getNameForFuncProposal(FuncDeclaration func) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(func.ident.ident);
-		sb.append('(');
-		
-		TypeFunction tf = (TypeFunction) func.type;
-		if (tf.parameters != null) {						
-			for(int i = 0; i < tf.parameters.size(); i++) {
-				if (i != 0) {
-					sb.append(", ");
-				}
-				
-				Argument arg = tf.parameters.get(i);
-				if (arg.type != null) {
-					sb.append(arg.type.toCharArray());
-					sb.append(' ');
-				}
-				
-				if (arg.ident != null && arg.ident.ident != null) {
-					sb.append(arg.ident.ident);
-				}
-			}
-		}
-		sb.append(')');
-		
-		char[] ret = new char[sb.length()];
-		sb.getChars(0, sb.length(), ret, 0);
-		return ret;
-	}
-
-	private void suggestProperties(char[] name, char[][] properties) {
+	private void suggestProperties(char[] name, char[][] properties, int relevance) {
 		for(char[] property : properties) {
 			if (CharOperation.prefixEquals(name, property, false)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
@@ -809,12 +863,16 @@ public class CompletionEngine extends Engine
 			} else {
 				proposition = member.ident().ident;
 			}
-			if (!excludedNames.containsKey(proposition) &&
-					CharOperation.prefixEquals(name, proposition, false)) {
+			if (!excludedNames.containsKey(proposition) && (
+					CharOperation.prefixEquals(name, proposition, false) || 
+					CharOperation.prefixEquals(name, member.ident().ident, false)
+					)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(member.ident().ident);
 				proposal.setCompletion(proposition);
 				proposal.setSignature(member.getSignature().toCharArray());
+				proposal.setFlags(member.getFlags());		
+				proposal.setRelevance(R_INTERESTING);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
@@ -1132,6 +1190,7 @@ public class CompletionEngine extends Engine
 
 	protected CompletionProposal createProposal(int kind, int completionOffset) {
 		CompletionProposal proposal = CompletionProposal.create(kind, completionOffset - this.offset);
+		proposal.javaProject = javaProject;
 		proposal.nameLookup = this.nameEnvironment.nameLookup;
 		proposal.completionEngine = this;
 		return proposal;

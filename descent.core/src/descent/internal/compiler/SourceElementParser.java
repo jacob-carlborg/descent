@@ -171,7 +171,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		int flags = 0;
 		if (modifiers != null) {
 			for(Modifier modifier : modifiers) {
-				flags |= modifierToFlag(modifier);	
+				flags |= modifier.getFlags();	
 			}
 		}
 		
@@ -180,45 +180,18 @@ public class SourceElementParser extends AstVisitorAdapter {
 				if (a instanceof ProtDeclaration) {
 					ProtDeclaration p = (ProtDeclaration) a;
 					if (p.modifier != null) {
-						flags |= modifierToFlag(p.modifier);	
+						flags |= p.modifier.getFlags();	
 					}
 				} else if (a instanceof StorageClassDeclaration) {
 					StorageClassDeclaration p = (StorageClassDeclaration) a;
 					if (p.modifier != null) {
-						flags |= modifierToFlag(p.modifier);	
+						flags |= p.modifier.getFlags();	
 					}
 				}
 			}
 		}
 		
 		return flags;
-	}
-	
-	private int modifierToFlag(Modifier modifier) {
-		switch(modifier.tok) {
-		case TOKprivate: return Flags.AccPrivate;
-		case TOKpackage: return Flags.AccPackage;
-		case TOKprotected: return Flags.AccProtected;
-		case TOKpublic: return Flags.AccPublic;
-		case TOKexport: return Flags.AccExport;
-		case TOKstatic: return Flags.AccStatic;
-		case TOKfinal: return Flags.AccFinal;
-		case TOKabstract: return Flags.AccAbstract;
-		case TOKoverride: return Flags.AccOverride;
-		case TOKauto: return Flags.AccAuto;
-		case TOKsynchronized: return Flags.AccSynchronized;
-		case TOKdeprecated: return Flags.AccDeprecated;
-		case TOKextern: return Flags.AccExtern;
-		case TOKconst: return Flags.AccConst;
-		case TOKscope: return Flags.AccScope;
-		case TOKinvariant: return  Flags.AccInvariant;
-		case TOKin: return 0;
-		case TOKout: return 0;
-		case TOKinout: return 0;
-		case TOKlazy: return 0;
-		case TOKref: return 0;
-		default: return 0;
-		}
 	}
 	
 	private char[][] getTokens(BaseClasses baseClasses) {

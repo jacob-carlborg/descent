@@ -28,7 +28,7 @@ public class TypeFunction extends Type {
 	public int varargs;
 	
 	private String signature; // Descent signature
-	private char linkageChar;
+	public char linkageChar;
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {

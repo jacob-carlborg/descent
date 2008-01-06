@@ -71,9 +71,9 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.WithScopeSymbol;
+import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.SignatureProcessor;
-import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
 public abstract class RDsymbol extends RNode implements IDsymbol {
@@ -599,13 +599,13 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		return symbol;
 	}
 	
-	private class TypeFromSignature implements ISignatureRequestor {
+	private class SignatureToType implements ISignatureRequestor {
 		
 		private Stack<Type> typesStack = new Stack<Type>();
 		private Stack<IDsymbol> symbolStack = new Stack<IDsymbol>();
 		private Stack<Integer> modifiersStack = new Stack<Integer>();
 		
-		public TypeFromSignature() {
+		public SignatureToType() {
 			symbolStack.push(null);
 		}
 		
@@ -802,7 +802,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		
 		Type type = context.signatureToTypeCache.get(signature);
 		if (type == null) {
-			TypeFromSignature tfs = new TypeFromSignature();
+			SignatureToType tfs = new SignatureToType();
 			try {
 				SignatureProcessor.process(signature, tfs);
 				type = tfs.getType();
@@ -823,7 +823,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		return type;
 	}
 	
-	protected long getFlags() {
+	public long getFlags() {
 		try {
 			if (element instanceof IMember) {
 				IMember f = (IMember) element;

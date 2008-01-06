@@ -3128,6 +3128,11 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Type convert(TypeBasic a) {
+		// If the type is an error, return null (missing type)
+		if (a == Type.terror) {
+			return null;
+		}
+		
 		descent.core.dom.PrimitiveType b = new descent.core.dom.PrimitiveType(ast);
 		switch(a.ty) {
 		case Tvoid: b.setPrimitiveTypeCode(PrimitiveType.Code.VOID); break;

@@ -180,6 +180,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				
 				// TODO link
 				type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
+				type.linkageChar = 'F';
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}
@@ -199,6 +200,12 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	
 	public char getSignaturePrefix() {
 		return ISignatureConstants.FUNCTION;
+	}
+	
+	public String getFunctionSignature() {
+		StringBuilder sb = new StringBuilder();
+		SemanticMixin.appendNameSignature(this, sb);
+		return sb.toString();
 	}
 
 }

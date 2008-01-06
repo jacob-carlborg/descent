@@ -1892,5 +1892,11 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	public char getSignaturePrefix() {
 		return ISignatureConstants.FUNCTION;
 	}
+	
+	public String getFunctionSignature() {
+		StringBuilder sb = new StringBuilder();
+		SemanticMixin.appendNameSignature(this, sb);
+		return sb.toString();
+	}
 
 }

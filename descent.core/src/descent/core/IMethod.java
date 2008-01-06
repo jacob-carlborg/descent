@@ -131,14 +131,6 @@ String[] getParameterNames() throws JavaModelException;
  */
 String[] getParameterTypes();
 /**
- * Returns the types for the parameters of this method, as found in the source code.
- * Returns an empty array if this method has no parameters.
- * This is a handle-only method.
- * 
- * @return the type for the parameters of this method, an empty array if this method has no parameters
- */
-String[] getRawParameterTypes() throws JavaModelException;
-/**
  * Returns the names of parameters in this method.
  * For binary types, these names are invented as "arg"+i, where i starts at 0 
  * (even if source is associated with the binary or if Javdoc is attached to the binary).
@@ -174,13 +166,6 @@ String[] getRawParameterNames() throws JavaModelException;
  * @see Signature
  */
 String getReturnType() throws JavaModelException;
-/**
- * Returns the return type of this method as found in the source code.
- * @return the return type of this method
- * @throws JavaModelException if this element does not exist or if an
- *      exception occurs while accessing its corresponding resource
- */
-String getRawReturnType() throws JavaModelException;
 /**
  * Returns the signature of this method. This includes the signatures for the
  * parameter types and return type, but does not include the method name,

@@ -170,5 +170,9 @@ public interface IDsymbol extends INode {
 	
 	// The java element associated with this symbol, if any
 	IJavaElement getJavaElement();
+	
+	// Returns the flags of this symbol
+	// @see Flags
+	long getFlags();
 
 }

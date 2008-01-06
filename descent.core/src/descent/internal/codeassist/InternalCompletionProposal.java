@@ -11,6 +11,7 @@
 package descent.internal.codeassist;
 
 import descent.core.IAccessRule;
+import descent.core.IJavaProject;
 import descent.core.compiler.CharOperation;
 import descent.internal.core.NameLookup;
 
@@ -33,6 +34,7 @@ public class InternalCompletionProposal {
 	
 	protected CompletionEngine completionEngine;
 	protected NameLookup nameLookup;
+	protected IJavaProject javaProject;
 	
 	protected char[] declarationPackageName;
 	protected char[] declarationTypeName;

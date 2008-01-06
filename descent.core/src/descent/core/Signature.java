@@ -12,9 +12,16 @@
 package descent.core;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ISignatureConstants;
+import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.ScannerHelper;
+import descent.internal.compiler.parser.TypeBasic;
+import descent.internal.core.ISignatureRequestor;
+import descent.internal.core.SignatureProcessor;
+import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
 
 
@@ -402,6 +409,34 @@ public final class Signature {
 	 * @since 3.1
 	 */
 	public static final int CAPTURE_TYPE_SIGNATURE = 6;
+	
+	/**
+	 * Kind constant for an interface type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int INTERFACE_TYPE_SIGNATURE = 7;
+	
+	/**
+	 * Kind constant for a struct type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int STRUCT_TYPE_SIGNATURE = 8;
+	
+	/**
+	 * Kind constant for a union type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int UNION_TYPE_SIGNATURE = 9;
+	
+	/**
+	 * Kind constant for an enum signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int ENUM_TYPE_SIGNATURE = 10;
 
 	private static final char[] BOOLEAN = "boolean".toCharArray(); //$NON-NLS-1$
 	private static final char[] BYTE = "byte".toCharArray(); //$NON-NLS-1$
@@ -987,29 +1022,7 @@ public static String getElementType(String typeSignature) throws IllegalArgument
  * @since 2.0
  */
 public static int getParameterCount(char[] methodSignature) throws IllegalArgumentException {
-	try {
-		int count = 0;
-		int i = CharOperation.indexOf(C_PARAM_START, methodSignature);
-		if (i < 0) {
-			throw new IllegalArgumentException();
-		} else {
-			i++;
-		}
-		for (;;) {
-			if (methodSignature[i] == C_PARAM_END) {
-				return count;
-			}
-			int e= Util.scanTypeSignature(methodSignature, i);
-			if (e < 0) {
-				throw new IllegalArgumentException();
-			} else {
-				i = e + 1;
-			}
-			count++;
-		}
-	} catch (ArrayIndexOutOfBoundsException e) {
-		throw new IllegalArgumentException();
-	}
+	return getParameterCount(new String(methodSignature));
 }
 
 /**
@@ -1024,56 +1037,7 @@ public static int getParameterCount(char[] methodSignature) throws IllegalArgume
  * @since 3.0
  */
 public static int getTypeSignatureKind(char[] typeSignature) {
-	// need a minimum 1 char
-	if (typeSignature.length < 1) {
-		throw new IllegalArgumentException();
-	}
-	char c = typeSignature[0];
-	if (c == C_GENERIC_START) {
-		int count = 1;
-		for (int i = 1, length = typeSignature.length; i < length; i++) {
-			switch (typeSignature[i]) {
-				case 	C_GENERIC_START:
-					count++;
-					break;
-				case C_GENERIC_END:
-					count--;
-					break;
-			}
-			if (count == 0) {
-				if (i+1 < length)
-					c = typeSignature[i+1]; 
-				break;
-			}
-		}
-	}
-	switch (c) {
-		case C_ARRAY :
-			return ARRAY_TYPE_SIGNATURE;
-		case C_RESOLVED :
-		case C_UNRESOLVED :
-			return CLASS_TYPE_SIGNATURE;
-		case C_TYPE_VARIABLE :
-			return TYPE_VARIABLE_SIGNATURE;
-		case C_BOOLEAN :
-		case C_BYTE :
-		case C_CHAR :
-		case C_DOUBLE :
-		case C_FLOAT :
-		case C_INT :
-		case C_LONG :
-		case C_SHORT :
-		case C_VOID :
-			return BASE_TYPE_SIGNATURE;
-		case C_STAR :
-		case C_SUPER :
-		case C_EXTENDS :
-			return WILDCARD_TYPE_SIGNATURE;
-		case C_CAPTURE :
-			return CAPTURE_TYPE_SIGNATURE;
-		default :
-			throw new IllegalArgumentException();
-	}
+	return getTypeSignatureKind(new String(typeSignature));
 }
 
 /**
@@ -1088,56 +1052,25 @@ public static int getTypeSignatureKind(char[] typeSignature) {
  * @since 3.0
  */
 public static int getTypeSignatureKind(String typeSignature) {
-	// need a minimum 1 char
-	if (typeSignature.length() < 1) {
-		throw new IllegalArgumentException();
-	}
-	char c = typeSignature.charAt(0);
-	if (c == C_GENERIC_START) {
-		int count = 1;
-		for (int i = 1, length = typeSignature.length(); i < length; i++) {
-			switch (typeSignature.charAt(i)) {
-				case 	C_GENERIC_START:
-					count++;
-					break;
-				case C_GENERIC_END:
-					count--;
-					break;
-			}
-			if (count == 0) {
-				if (i+1 < length)
-					c = typeSignature.charAt(i+1); 
-				break;
+	final int[] theType = { CLASS_TYPE_SIGNATURE };
+	SignatureProcessor.process(typeSignature, new SignatureRequestorAdapter() {
+		private boolean found = false;	
+		@Override
+		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+			switch(type) {
+			case ISignatureConstants.CLASS: theType[0] = CLASS_TYPE_SIGNATURE; break;
+			case ISignatureConstants.INTERFACE: theType[0] = INTERFACE_TYPE_SIGNATURE; break;
+			case ISignatureConstants.STRUCT: theType[0] = STRUCT_TYPE_SIGNATURE; break;
+			case ISignatureConstants.UNION: theType[0] = UNION_TYPE_SIGNATURE; break;
+			case ISignatureConstants.ENUM: theType[0] = ENUM_TYPE_SIGNATURE; break;
 			}
 		}
-	}
-	switch (c) {
-		case C_ARRAY :
-			return ARRAY_TYPE_SIGNATURE;
-		case C_RESOLVED :
-		case C_UNRESOLVED :
-			return CLASS_TYPE_SIGNATURE;
-		case C_TYPE_VARIABLE :
-			return TYPE_VARIABLE_SIGNATURE;
-		case C_BOOLEAN :
-		case C_BYTE :
-		case C_CHAR :
-		case C_DOUBLE :
-		case C_FLOAT :
-		case C_INT :
-		case C_LONG :
-		case C_SHORT :
-		case C_VOID :
-			return BASE_TYPE_SIGNATURE;
-		case C_STAR :
-		case C_SUPER :
-		case C_EXTENDS :
-			return WILDCARD_TYPE_SIGNATURE;
-		case C_CAPTURE :
-			return CAPTURE_TYPE_SIGNATURE;
-		default :
-			throw new IllegalArgumentException();
-	}
+		@Override
+		public void enterFunctionType() {
+			found = true;
+		}
+	});
+	return theType[0];
 }
 
 /**
@@ -1149,7 +1082,31 @@ public static int getTypeSignatureKind(String typeSignature) {
  *   correct
  */
 public static int getParameterCount(String methodSignature) throws IllegalArgumentException {
-	return getParameterCount(methodSignature.toCharArray());
+	final int[] count = { 0 };	
+	SignatureProcessor.process(methodSignature, new SignatureRequestorAdapter() {
+		private int functionTypeCount = 0;
+		private int stack;
+		
+		public void acceptArgumentModifier(int stc) { 
+			if (functionTypeCount == 1) {
+				stack++;
+			}
+		}
+
+		public void enterFunctionType() {
+			functionTypeCount++;
+		}
+
+		public void exitFunctionType(LINK link, String signature) {
+			if (functionTypeCount == 1) {
+				// Parameters + Return type = Stack size
+				count[0] = stack;
+			}
+			
+			functionTypeCount--;
+		}
+	});
+	return count[0];
 }
 
 /**
@@ -1164,34 +1121,7 @@ public static int getParameterCount(String methodSignature) throws IllegalArgume
  * @since 2.0
  */
 public static char[][] getParameterTypes(char[] methodSignature) throws IllegalArgumentException {
-	try {
-		int count = getParameterCount(methodSignature);
-		char[][] result = new char[count][];
-		if (count == 0) {
-			return result;
-		}
-		int i = CharOperation.indexOf(C_PARAM_START, methodSignature);
-		if (i < 0) {
-			throw new IllegalArgumentException();
-		} else {
-			i++;
-		}
-		int t = 0;
-		for (;;) {
-			if (methodSignature[i] == C_PARAM_END) {
-				return result;
-			}
-			int e = Util.scanTypeSignature(methodSignature, i);
-			if (e < 0) {
-				throw new IllegalArgumentException();
-			}
-			result[t] = CharOperation.subarray(methodSignature, i, e + 1);
-			t++;
-			i = e + 1;
-		}
-	} catch (ArrayIndexOutOfBoundsException e) {
-		throw new IllegalArgumentException();
-	}
+	return CharOperation.stringArrayToCharArray(getParameterTypes(new String(methodSignature)));
 }
 
 /**
@@ -1204,8 +1134,135 @@ public static char[][] getParameterTypes(char[] methodSignature) throws IllegalA
  *   incorrect
  */
 public static String[] getParameterTypes(String methodSignature) throws IllegalArgumentException {
-	char[][] parameterTypes = getParameterTypes(methodSignature.toCharArray());
-	return CharOperation.toStrings(parameterTypes);
+	ParameterTypesSignatureRequestor requestor = new ParameterTypesSignatureRequestor();
+	SignatureProcessor.process(methodSignature, requestor);
+	
+	if (requestor.stack.isEmpty()) {
+		return CharOperation.NO_STRINGS;
+	}
+	
+	Stack<String> stack = requestor.stack;
+	if (stack.isEmpty()) {
+		return CharOperation.NO_STRINGS;
+	}
+	
+	stack.pop();
+	if (stack.isEmpty()) {
+		return CharOperation.NO_STRINGS;
+	}
+	
+	String[] parameterTypes = new String[stack.size()];
+	int i = parameterTypes.length - 1;
+	while(!stack.isEmpty()) {
+		parameterTypes[i] = stack.pop();
+		i--;
+	}
+	return parameterTypes;
+}
+
+private static class ParameterTypesSignatureRequestor implements ISignatureRequestor {
+	
+	private Stack<String> stack = new Stack<String>();
+	private int functionTypeCount;
+
+	public ParameterTypesSignatureRequestor() {
+	}
+	
+	public void acceptArgumentBreak(char c) {
+	}
+
+	public void acceptArgumentModifier(int stc) {
+		// TODO Descent Signature
+	}
+
+	public void acceptAssociativeArray(String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.pop();
+		stack.pop();
+		stack.push(signature);
+	}
+
+	public void acceptDelegate(String signature) { 
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.pop();
+		stack.push(signature);
+	}
+
+	public void acceptDynamicArray(String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.pop();
+		stack.push(signature);
+	}
+
+	public void acceptModule(char[][] compoundName, String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.push(signature);
+	}
+
+	public void acceptPointer(String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.pop();
+		stack.push(signature);
+	}
+
+	public void acceptPrimitive(TypeBasic type) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.push(type.deco);
+	}
+
+	public void acceptStaticArray(int dimension, String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.pop();
+		stack.push(signature);
+	}
+
+	public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		stack.pop();
+		if (type == ISignatureConstants.FUNCTION && !stack.isEmpty()) {
+			stack.pop();
+		}
+		stack.push(signature);
+	}
+
+	public void enterFunctionType() {
+		functionTypeCount++;
+	}
+
+	public void exitFunctionType(LINK link, String signature) {
+		if (functionTypeCount != 1) {
+			if (!stack.isEmpty()) {
+				stack.pop();
+			}
+			stack.push(signature);
+		}
+		functionTypeCount--;
+	}
+	
 }
 
 /**
@@ -1639,14 +1696,7 @@ public static String getQualifier(String name) {
  * @since 2.0
  */
 public static char[] getReturnType(char[] methodSignature) throws IllegalArgumentException {
-	// skip type parameters
-	int paren = CharOperation.lastIndexOf(C_PARAM_END, methodSignature);
-	if (paren == -1) {
-		throw new IllegalArgumentException();
-	}
-	// there could be thrown exceptions behind, thus scan one type exactly
-	int last = Util.scanTypeSignature(methodSignature, paren+1);
-	return CharOperation.subarray(methodSignature, paren + 1, last+1);
+	return getReturnType(new String(methodSignature)).toCharArray();
 }
 /**
  * Extracts the return type from the given method signature. The method signature is 
@@ -1658,7 +1708,14 @@ public static char[] getReturnType(char[] methodSignature) throws IllegalArgumen
  *   incorrect
  */
 public static String getReturnType(String methodSignature) throws IllegalArgumentException {
-	return new String(getReturnType(methodSignature.toCharArray()));
+	ParameterTypesSignatureRequestor requestor = new ParameterTypesSignatureRequestor();
+	SignatureProcessor.process(methodSignature, requestor);
+	
+	if (requestor.stack.isEmpty()) {
+		return CharOperation.NO_STRINGS[0];
+	}
+	
+	return requestor.stack.pop();
 }
 /**
  * Returns package fragment of a type signature. The package fragment separator must be '.'
@@ -1809,7 +1866,6 @@ public static String getSignatureSimpleName(String typeSignature) {
  * @since 2.0
  */
 public static char[] getSimpleName(char[] name) {
-
 	int lastDot = -1, lastGenericStart = -1, lastGenericEnd = -1;
 	int depth = 0;
 	int length = name.length;
@@ -1844,7 +1900,7 @@ public static char[] getSimpleName(char[] name) {
 	buffer.append(name, lastGenericEnd+1, length-lastGenericEnd-1); // copy trailing portion, may contain dimensions	
 	char[] result = new char[length = buffer.length()];
 	buffer.getChars(0, length, result, 0);
-	return result;	
+	return result;
 }
 /**
  * Returns the last segment of the given dot-separated qualified name.
@@ -1866,42 +1922,40 @@ public static char[] getSimpleName(char[] name) {
  * @exception NullPointerException if name is null
  */
 public static String getSimpleName(String name) {
-	return name;
-	// TODO JDT signature
-//	int lastDot = -1, lastGenericStart = -1, lastGenericEnd = -1;
-//	int depth = 0;
-//	int length = name.length();
-//	lastDotLookup: for (int i = length -1; i >= 0; i--) {
-//		switch (name.charAt(i)) {
-//			case '.':
-//				if (depth == 0) {
-//					lastDot = i;
-//					break lastDotLookup;
-//				}
-//				break;
-//			case '<':
-//				depth--;
-//				if (depth == 0) lastGenericStart = i;
-//				break;
-//			case '>':
-//				if (depth == 0) lastGenericEnd = i;
-//				depth++;
-//				break;
-//		}
-//	}
-//	if (lastGenericStart < 0) {
-//		if (lastDot < 0) {
-//			return name;
-//		}
-//		return name.substring(lastDot + 1, length);
-//	}
-//	StringBuffer buffer = new StringBuffer(10);
-//	char[] nameChars = name.toCharArray();
-//	int nameStart = lastDot < 0 ? 0 : lastDot+1;
-//	buffer.append(nameChars, nameStart, lastGenericStart - nameStart);
-//	appendArgumentSimpleNames(nameChars, lastGenericStart, lastGenericEnd, buffer);
-//	buffer.append(nameChars, lastGenericEnd+1, length-lastGenericEnd-1); // copy trailing portion, may contain dimensions	
-//	return buffer.toString();
+	int lastDot = -1, lastGenericStart = -1, lastGenericEnd = -1;
+	int depth = 0;
+	int length = name.length();
+	lastDotLookup: for (int i = length -1; i >= 0; i--) {
+		switch (name.charAt(i)) {
+			case '.':
+				if (depth == 0) {
+					lastDot = i;
+					break lastDotLookup;
+				}
+				break;
+			case '<':
+				depth--;
+				if (depth == 0) lastGenericStart = i;
+				break;
+			case '>':
+				if (depth == 0) lastGenericEnd = i;
+				depth++;
+				break;
+		}
+	}
+	if (lastGenericStart < 0) {
+		if (lastDot < 0) {
+			return name;
+		}
+		return name.substring(lastDot + 1, length);
+	}
+	StringBuffer buffer = new StringBuffer(10);
+	char[] nameChars = name.toCharArray();
+	int nameStart = lastDot < 0 ? 0 : lastDot+1;
+	buffer.append(nameChars, nameStart, lastGenericStart - nameStart);
+	appendArgumentSimpleNames(nameChars, lastGenericStart, lastGenericEnd, buffer);
+	buffer.append(nameChars, lastGenericEnd+1, length-lastGenericEnd-1); // copy trailing portion, may contain dimensions	
+	return buffer.toString();
 }
 
 private static void appendSimpleName(char[] name, int start, int end, StringBuffer buffer) {
@@ -2181,48 +2235,221 @@ public static char[] toCharArray(char[] methodSignature, char[] methodName, char
  * @since 3.1
  */
 public static char[] toCharArray(char[] methodSignature, char[] methodName, char[][] parameterNames, boolean fullyQualifyTypeNames, boolean includeReturnType, boolean isVargArgs) {
-	int firstParen = CharOperation.indexOf(C_PARAM_START, methodSignature);
-	if (firstParen == -1) {
-		throw new IllegalArgumentException();
-	}
+	ToCharArraySignatureRequestor requestor = new ToCharArraySignatureRequestor(fullyQualifyTypeNames);
 	
-	StringBuffer buffer = new StringBuffer(methodSignature.length + 10);
+	SignatureProcessor.process(new String(methodSignature), requestor);
 	
-	// return type
-	if (includeReturnType) {
-		char[] rts = getReturnType(methodSignature);
-		appendTypeSignature(rts, 0 , fullyQualifyTypeNames, buffer);
-		buffer.append(' ');
-	}
-	
-	// selector
-	if (methodName != null) {
-		buffer.append(methodName);
-	}
-	
-	// parameters
-	buffer.append('(');
-	char[][] pts = getParameterTypes(methodSignature);
-	for (int i = 0, max = pts.length; i < max; i++) {
-		if (i == max - 1) {
-			appendTypeSignature(pts[i], 0 , fullyQualifyTypeNames, buffer, isVargArgs);
-		} else {
-			appendTypeSignature(pts[i], 0 , fullyQualifyTypeNames, buffer);
-		}
-		if (parameterNames != null) {
-			buffer.append(' ');
-			buffer.append(parameterNames[i]);
-		}
-		if (i != pts.length - 1) {
-			buffer.append(',');
-			buffer.append(' ');
+	if (!requestor.stack.isEmpty()) {
+		Stack<String> stack = requestor.stack.pop();
+		if (!stack.isEmpty()) {
+			StringBuilder sb = new StringBuilder();		
+			appendFunction(stack, sb, methodName, parameterNames, includeReturnType);
+			char[] array = new char[sb.length()];
+			sb.getChars(0, sb.length(), array, 0);
+			return array;
 		}
 	}
-	buffer.append(')');
-	char[] result = new char[buffer.length()];
-	buffer.getChars(0, buffer.length(), result, 0);
-	return result;
+	
+	return CharOperation.NO_CHAR;
 }
+
+private final static char[] FUNCTION = "function".toCharArray();
+private static class ToCharArraySignatureRequestor implements ISignatureRequestor {
+	
+	private Stack<Stack<String>> stack = new Stack<Stack<String>>();
+	private int functionTypeCount;
+	private boolean fullyQualifyTypeNames;
+	
+	private boolean forFunction = true;
+
+	public ToCharArraySignatureRequestor(boolean fullyQualifyTypeNames) {
+		this.fullyQualifyTypeNames = fullyQualifyTypeNames;
+	}
+	
+	public void acceptArgumentBreak(char c) {
+	}
+
+	public void acceptArgumentModifier(int stc) {
+		// TODO Descent Signature
+	}
+
+	public void acceptAssociativeArray(String signature) {
+		Stack<String> stack = this.stack.peek();
+		String value = stack.pop();
+		String key = stack.pop();
+		stack.push(value + "[" + key + "]");
+	}
+
+	public void acceptDelegate(String signature) { 
+		Stack<String> stack = this.stack.peek();
+		String value = stack.peek();
+		int index = value.indexOf("function");
+		if (index != -1) {
+			stack.pop();
+			stack.push(value.substring(0, index) + "delegate" + value.substring(index + 8)); 
+		}
+	}
+
+	public void acceptDynamicArray(String signature) {
+		Stack<String> stack = this.stack.peek();
+		stack.push(stack.pop() + "[]");
+	}
+
+	public void acceptModule(char[][] compoundName, String signature) {
+		Stack<String> stack;
+		if (forFunction) {
+			if (this.stack.isEmpty()) {
+				return;
+			}
+			
+			stack = this.stack.peek();
+		} else {
+			stack = new Stack<String>();
+			this.stack.push(stack);
+		}
+		stack.push(CharOperation.toString(compoundName));
+	}
+
+	public void acceptPointer(String signature) {
+		Stack<String> stack = this.stack.peek();
+		stack.push(stack.pop() + "*");
+	}
+
+	public void acceptPrimitive(TypeBasic type) {
+		Stack<String> stack;
+		if (this.stack.isEmpty()) {
+			stack = new Stack<String>();
+			this.stack.push(stack);
+		} else {
+			stack = this.stack.peek();
+		}
+		stack.push(type.ty.name);
+	}
+
+	public void acceptStaticArray(int dimension, String signature) {
+		Stack<String> stack = this.stack.peek();
+		stack.push(stack.pop() + "[" + dimension + "]");
+	}
+
+	public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+		if (forFunction) {
+			if (this.stack.isEmpty()) {
+				return;
+			}
+		}
+		
+		Stack<String> stack = this.stack.peek();
+		String prev = stack.pop();
+		if (type == ISignatureConstants.FUNCTION && !stack.isEmpty()) {
+			String one = stack.pop();
+			if (fullyQualifyTypeNames) {
+				stack.push(one + "." + String.valueOf(name) + stripFunctionOrDelegate(prev));
+			} else {
+				stack.push(String.valueOf(name));
+			}
+		} else {
+			if (fullyQualifyTypeNames) {
+				stack.push(prev + "." + String.valueOf(name));
+			} else {
+				stack.push(String.valueOf(name));
+			}
+		}
+	}
+	
+	private String stripFunctionOrDelegate(String value) {
+		int parenCount = 0;
+		int bracketCount = 0;
+		for(int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			switch(c) {
+			case '(':
+				parenCount++;
+				break;
+			case ')':
+				parenCount--;
+				break;
+			case '[':
+				bracketCount++;
+				break;
+			case ']':
+				bracketCount--;
+				break;
+			case ' ':
+				if (parenCount == 0 && bracketCount == 0) {
+					int index = value.indexOf('(', i);
+					if (index == -1) {
+						return value;
+					} else {
+						return value.substring(index);
+					}
+				}
+				break;
+			}
+		}
+		
+		return value;
+	}
+
+	public void enterFunctionType() {
+		functionTypeCount++;
+		this.stack.push(new Stack<String>());
+	}
+
+	public void exitFunctionType(LINK link, String signature) {
+		if (stack.size() > 1) {
+			Stack<String> stack = this.stack.pop();
+			
+			StringBuilder sb = new StringBuilder();
+			appendFunction(stack, sb, FUNCTION, null, true);
+			
+			this.stack.peek().push(sb.toString());
+		}
+		functionTypeCount--;
+	}
+	
+}
+
+private static <T> Stack<T> reverse(Stack<T> s) {
+	Stack<T> other = new Stack<T>();
+	while(!s.isEmpty()) {
+		other.push(s.pop());
+	}
+	return other;
+}
+
+private static void appendFunction(Stack<String> stack, StringBuilder sb, char[] methodName, char[][] parameterNames, boolean includeReturnType) {
+	if (includeReturnType) {
+		sb.append(stack.pop());
+		sb.append(' ');
+	} else {
+		stack.pop();
+	}
+	if (methodName != null) {
+		sb.append(methodName);
+	}
+	sb.append('(');
+	
+	// Invert parameter order
+	stack = reverse(stack);
+	
+	int i = 0;
+	while(!stack.isEmpty()) {
+		if (i != 0) {
+			sb.append(", ");
+		}
+		
+		sb.append(stack.pop());
+		if (parameterNames != null) {
+			sb.append(' ');
+			sb.append(parameterNames[i]);
+		}
+		
+		i++;
+	}
+	
+	sb.append(')');
+}
+
 /**
  * Converts the given type signature to a readable string. The signature is expected to
  * be dot-based.
@@ -2253,16 +2480,20 @@ public static char[] toCharArray(char[] methodSignature, char[] methodName, char
  * @since 2.0
  */
 public static char[] toCharArray(char[] signature) throws IllegalArgumentException {
-		int sigLength = signature.length;
-		if (sigLength == 0 || signature[0] == C_PARAM_START || signature[0] == C_GENERIC_START) {
-			return toCharArray(signature, CharOperation.NO_CHAR, null, true, true);
+		ToCharArraySignatureRequestor requestor = new ToCharArraySignatureRequestor(true);
+		requestor.forFunction = false;
+		SignatureProcessor.process(new String(signature), requestor);
+		
+		if (requestor.stack.isEmpty()) {
+			return CharOperation.NO_CHAR;
 		}
 		
-		StringBuffer buffer = new StringBuffer(signature.length + 10);
-		appendTypeSignature(signature, 0, true, buffer);
-		char[] result = new char[buffer.length()];
-		buffer.getChars(0, buffer.length(), result, 0);
-		return result;
+		Stack<String> stack = requestor.stack.pop();
+		if (stack.isEmpty()) {
+			return CharOperation.NO_CHAR;
+		}
+		
+		return stack.pop().toCharArray();
 }
 
 /**

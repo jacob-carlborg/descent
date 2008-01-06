@@ -11,6 +11,7 @@
 package descent.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import descent.core.compiler.CharOperation;
 import descent.internal.codeassist.InternalCompletionProposal;
 
@@ -1598,63 +1599,29 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		if (!this.parameterNamesComputed) {
 			this.parameterNamesComputed = true;
 			
-			switch(this.completionKind) {
-				case ANONYMOUS_CLASS_DECLARATION:
-					try {
-						this.parameterNames = this.findMethodParameterNames(
-								this.declarationPackageName,
-								this.declarationTypeName,
-								CharOperation.lastSegment(this.declarationTypeName, '.'),
-								Signature.getParameterTypes(this.originalSignature == null ? this.signature : this.originalSignature));
-					} catch(IllegalArgumentException e) {
-						// protection for invalid signature
-						if(this.parameterTypeNames != null) {
-							this.parameterNames =  this.createDefaultParameterNames(this.parameterTypeNames.length);
-						} else {
-							this.parameterNames = null;
-						}
-					}
-					break;
-				case METHOD_REF:
-					try {
-						this.parameterNames = this.findMethodParameterNames(
-								this.declarationPackageName,
-								this.declarationTypeName,
-								this.name,
-								Signature.getParameterTypes(this.originalSignature == null ? this.signature : this.originalSignature));
-					} catch(IllegalArgumentException e) {
-						// protection for invalid signature
-						if(this.parameterTypeNames != null) {
-							this.parameterNames =  this.createDefaultParameterNames(this.parameterTypeNames.length);
-						} else {
-							this.parameterNames = null;
-						}
-					}
-					break;
-				case METHOD_DECLARATION:
-					try {
-						this.parameterNames = this.findMethodParameterNames(
-								this.declarationPackageName,
-								this.declarationTypeName,
-								this.name,
-								Signature.getParameterTypes(this.originalSignature == null ? this.signature : this.originalSignature));
-					} catch(IllegalArgumentException e) {
-						// protection for invalid signature
-						if(this.parameterTypeNames != null) {
-							this.parameterNames =  this.createDefaultParameterNames(this.parameterTypeNames.length);
-						} else {
-							this.parameterNames = null;
-						}
-					}
-					if(this.parameterNames != null) {
-						this.updateCompletion = true;
-					}
-					break;
-			}			
+			try {
+				IJavaElement element = getJavaElement();
+				if (!(element instanceof IMethod)) {
+					return CharOperation.NO_CHAR_CHAR;
+				}
+				
+				IMethod method = (IMethod) element;
+				String[] parameterNamesS = method.getParameterNames();
+				this.parameterNames = new char[parameterNamesS.length][];
+				for(int i = 0; i < parameterNamesS.length; i++) {
+					this.parameterNames[i] = parameterNamesS[i].toCharArray();
+				}
+			} catch (JavaModelException e) {
+				this.parameterNames = new char[0][];	
+			}
 		}
 		return this.parameterNames;
 	}
 	
+	private IJavaElement getJavaElement() {
+		return javaProject.findBySignature(new String(getSignature()));
+	}
+
 	/**
 	 * Sets the method parameter names.
 	 * This information is relevant to method reference (and

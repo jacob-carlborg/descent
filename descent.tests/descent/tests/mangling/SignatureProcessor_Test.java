@@ -9,8 +9,8 @@ import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
+import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.SignatureProcessor;
-import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 
 public class SignatureProcessor_Test extends MockObjectTestCase implements ISignatureConstants {
 	
@@ -83,7 +83,6 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptPrimitive(TypeBasic.tchar);
 			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptPrimitive(TypeBasic.tint32);
 			one(requestor).exitFunctionType(LINK.LINKd, "FiZa");
 		}});
@@ -132,7 +131,6 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			char[] expected = "test".toCharArray();
 			one(requestor).enterFunctionType();
 			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid);
 			one(requestor).exitFunctionType(LINK.LINKd, "FZv");
 			one(requestor).acceptSymbol(type, expected, -1, type + "4testFZv");
@@ -188,7 +186,6 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptModule(expectedModule, sigModule);
 			one(requestor).enterFunctionType();
 			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid);
 			one(requestor).exitFunctionType(LINK.LINKd, "FZv");
 			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction);
@@ -215,7 +212,6 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptModule(expectedModule, sigModule);
 			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass);
 			one(requestor).acceptArgumentBreak('Z');
-			one(requestor).acceptArgumentModifier(STC.STCin);
 			one(requestor).acceptModule(expectedModule, sigModule);
 			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass);
 			one(requestor).exitFunctionType(LINK.LINKd, sigFunctionType);

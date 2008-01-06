@@ -84,6 +84,11 @@ public class NewExp extends Expression {
 		if (type != null) {
 			return this;
 		}
+		
+		// Descent: May be null if the source code has syntax errors
+		if (newtype == null) {
+			return this;
+		}
 
 		boolean loop = true;
 		Lagain: while (loop) {
@@ -321,7 +326,10 @@ public class NewExp extends Expression {
 			argsToCBuffer(buf, newargs, hgs, context);
 			buf.writeByte(')');
 		}
-		newtype.toCBuffer(buf, null, hgs, context);
+		// Descent: may be null if source has syntax errors
+		if (newtype != null) {
+			newtype.toCBuffer(buf, null, hgs, context);
+		}
 		if (arguments != null && arguments.size() > 0) {
 			buf.writeByte('(');
 			argsToCBuffer(buf, arguments, hgs, context);

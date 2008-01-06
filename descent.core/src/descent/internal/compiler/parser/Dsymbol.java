@@ -552,5 +552,15 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	public char getSignaturePrefix() {
 		return 0;
 	}
+	
+	public long getFlags() {
+		long flags = 0;
+		if (modifiers != null) {
+			for(Modifier modifier : modifiers) {
+				flags |= modifier.getFlags();
+			}
+		}
+		return flags;
+	}
 
 }

@@ -11,14 +11,7 @@
 package descent.internal.ui.text.java;
 
 import descent.core.CompletionProposal;
-import descent.core.IField;
-import descent.core.IJavaElement;
 import descent.core.IJavaProject;
-import descent.core.IMember;
-import descent.core.IType;
-import descent.core.JavaModelException;
-
-import descent.internal.corext.template.java.SignatureUtil;
 
 
 /**
@@ -38,21 +31,14 @@ public final class FieldProposalInfo extends MemberProposalInfo {
 		super(project, proposal);
 	}
 
-	/**
-	 * Resolves the member described by the receiver and returns it if found.
-	 * Returns <code>null</code> if no corresponding member can be found.
-	 *
-	 * @return the resolved member or <code>null</code> if none is found
-	 * @throws JavaModelException if accessing the java model fails
-	 */
-	protected IMember resolveMember() throws JavaModelException {
-		IJavaElement result = fJavaProject.findBySignature(new String(fProposal.getSignature()));
-		if (result != null && result instanceof IMember) {
-			return (IMember) result;
-		} else {
-			return null;
-		}
-		
+//	/**
+//	 * Resolves the member described by the receiver and returns it if found.
+//	 * Returns <code>null</code> if no corresponding member can be found.
+//	 *
+//	 * @return the resolved member or <code>null</code> if none is found
+//	 * @throws JavaModelException if accessing the java model fails
+//	 */
+//	protected IMember resolveMember() throws JavaModelException {
 //		char[] declarationSignature= fProposal.getDeclarationSignature();
 //		// for synthetic fields on arrays, declaration signatures may be null
 //		// TODO remove when https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
@@ -68,5 +54,5 @@ public final class FieldProposalInfo extends MemberProposalInfo {
 //		}
 //
 //		return null;
-	}
+//	}
 }

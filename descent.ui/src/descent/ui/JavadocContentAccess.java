@@ -31,6 +31,7 @@ import descent.core.IPackageDeclaration;
 import descent.core.IParent;
 import descent.core.ISourceRange;
 import descent.core.JavaModelException;
+import descent.core.Signature;
 import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
@@ -168,7 +169,10 @@ public class JavadocContentAccess {
 			IMethod method = (IMethod) member;
 			try {
 				String[] parameterNames = method.getParameterNames();
-				String[] parameterTypes = method.getRawParameterTypes();
+				String[] parameterTypes = method.getParameterTypes();
+				for(int i = 0; i < parameterNames.length; i++) {
+					parameterTypes[i] = Signature.toString(parameterTypes[i]);
+				}
 				
 				parameters = new HashMap<String, String>();
 				for(int i = 0; i < parameterNames.length && i < parameterTypes.length; i++) {

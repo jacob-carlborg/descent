@@ -44,13 +44,13 @@ import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
+import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.JavaProject;
 import descent.internal.core.LocalVariable;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.SignatureProcessor;
-import descent.internal.core.SignatureProcessor.ISignatureRequestor;
 import descent.internal.core.util.Util;
 
 class DefaultBindingResolver extends BindingResolver {
@@ -220,7 +220,12 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		return resolveVar((VarDeclaration) old, variable);
+		IBinding binding = resolveVar((VarDeclaration) old, variable);
+		if (binding instanceof IVariableBinding) {
+			return (IVariableBinding) binding;
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -260,7 +265,12 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		return resolveAlias((descent.internal.compiler.parser.AliasDeclaration) old, variable);
+		IBinding binding = resolveAlias((descent.internal.compiler.parser.AliasDeclaration) old, variable);
+		if (binding instanceof IVariableBinding) {
+			return (IVariableBinding) binding;
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -285,7 +295,12 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		return resolveTypedef((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
+		IBinding binding = resolveTypedef((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
+		if (binding instanceof IVariableBinding) {
+			return (IVariableBinding) binding;
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -499,30 +514,30 @@ class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 	
-	private IVariableBinding resolveVar(VarDeclaration var, ASTNode node) {
+	private IBinding resolveVar(VarDeclaration var, ASTNode node) {
 		if (isLocal(var)) {
 			return resolveLocalVar(var, node);
 		} else {
 			String key = var.getSignature();
-			return (IVariableBinding) resolveBinding(node, key);
+			return resolveBinding(node, key);
 		}
 	}
 	
-	private IVariableBinding resolveAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
+	private IBinding resolveAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
 		if (isLocal(var)) {
 			return resolveLocalAlias(var, node);
 		} else {
 			String key = var.getSignature();
-			return (IVariableBinding) resolveBinding(node, key);
+			return resolveBinding(node, key);
 		}
 	}
 	
-	private IVariableBinding resolveTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
+	private IBinding resolveTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
 		if (isLocal(var)) {
 			return resolveLocalTypedef(var, node);
 		} else {
 			String key = var.getSignature();
-			return (IVariableBinding) resolveBinding(node, key);
+			return resolveBinding(node, key);
 		}
 	}
 	
@@ -530,19 +545,19 @@ class DefaultBindingResolver extends BindingResolver {
 		return node.parent instanceof FuncDeclaration;
 	}
 	
-	private IVariableBinding resolveLocalVar(VarDeclaration var, ASTNode node) {
+	private IBinding resolveLocalVar(VarDeclaration var, ASTNode node) {
 		return resolveLocal(node, var, Flags.AccDefault);
 	}
 	
-	private IVariableBinding resolveLocalAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
+	private IBinding resolveLocalAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
 		return resolveLocal(node, var, Flags.AccAlias);
 	}
 	
-	private IVariableBinding resolveLocalTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
+	private IBinding resolveLocalTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
 		return resolveLocal(node, var, Flags.AccTypedef);
 	}
 	
-	private IVariableBinding resolveLocal(ASTNode node, Declaration var, long modifiers) {
+	private IBinding resolveLocal(ASTNode node, Declaration var, long modifiers) {
 		String signature = var.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -570,7 +585,7 @@ class DefaultBindingResolver extends BindingResolver {
 		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
 		bindingTables.bindingKeysToBindings.put(signature, binding);
 		bindingsToAstNodes.put(binding, node);
-		return (IVariableBinding) binding;
+		return binding;
 	}
 	
 	@Override
@@ -683,13 +698,14 @@ class DefaultBindingResolver extends BindingResolver {
 		descent.internal.compiler.parser.Argument arg = (Argument) old;
 		if (arg.var != null) {
 			if (arg.var instanceof VarDeclaration) {
-				return resolveVar((VarDeclaration) arg.var, argument);
-			} else {
-				return null;
+				IBinding binding = resolveVar((VarDeclaration) arg.var, argument);
+				if (binding instanceof IVariableBinding) {
+					return (IVariableBinding) binding;
+				}
 			}
-		} else {
-			return null;
 		}
+		
+		return null;
 	}
 	
 	@Override
