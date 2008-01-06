@@ -25,8 +25,8 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, index);
-			TreeVisitor.acceptChildren(visitor, value);
+			TreeVisitor.acceptChildren(visitor, sourceIndex);
+			TreeVisitor.acceptChildren(visitor, sourceValue);
 		}
 		visitor.endVisit(this);
 	}

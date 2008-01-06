@@ -20,45 +20,50 @@ import descent.core.ToolFactory;
 import descent.core.dom.Complex;
 import descent.core.formatter.CodeFormatter;
 
-public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements ITextHoverExtension, IInformationProviderExtension2 {
-	
+public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
+		ITextHoverExtension, IInformationProviderExtension2 {
+
+	private Object result;
+
 	@Override
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		ICodeAssist resolve= getCodeAssist();
+		ICodeAssist resolve = getCodeAssist();
 		if (resolve != null) {
 			try {
-				Object result= resolve.codeEvaluate(hoverRegion.getOffset());
-				if (result == null)
-					return null;
-
+				result = resolve.codeEvaluate(hoverRegion.getOffset());
 				return getHoverInfo(result);
 
 			} catch (JavaModelException x) {
 				return null;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private String getHoverInfo(Object result) {
-		if (result instanceof descent.core.dom.Void ||  
-				result instanceof Number || 
-				result instanceof Complex) {
+		if (result == null) {
+			return "<html><body style='background-color:white;font-size:14px'><i>Cannot evaluate at compile-time</i></body></html>"; //$NON-NLS-1$
+		}
+
+		if (result instanceof descent.core.dom.Void || result instanceof Number
+				|| result instanceof Complex) {
 			return result.toString();
 		}
-		
+
 		if (result instanceof String) {
 			String text = (String) result;
-			
+
 			// Try to format the code, it could be a list of declarations or statements
 			CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
 			try {
 				// The most common example is something inside a function 
-				TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
+				TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS,
+						text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
 				if (edit == null) {
 					// If not, try parsing a whole compilation unit
-					edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT, text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
+					edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT,
+							text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
 				}
 				if (edit != null) {
 					Document doc = new Document(text);
@@ -67,10 +72,10 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements IT
 				}
 			} catch (Exception e) {
 			}
-			
+
 			return text;
 		}
-		
+
 		return null;
 	}
 
@@ -78,21 +83,31 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements IT
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
 		return new Region(offset, 0);
 	}
-	
+
 	/*
 	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
 	 * @since 3.0
 	 */
 	public IInformationControlCreator getHoverControlCreator() {
-		return new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				IEditorPart editor= getEditor(); 
-				int shellStyle= SWT.TOOL | SWT.NO_TRIM;
-				if (editor instanceof IWorkbenchPartOrientation)
-					shellStyle |= ((IWorkbenchPartOrientation)editor).getOrientation();
-				return new SourceViewerInformationControl(parent, shellStyle, SWT.NONE, getTooltipAffordanceString());
-			}
-		};
+		if (result == null) {
+			return new AbstractReusableInformationControlCreator() {
+				public IInformationControl doCreateInformationControl(Shell parent) {
+					return new BrowserInformationControl(parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
+				}
+			};
+		} else {
+			return new IInformationControlCreator() {
+				public IInformationControl createInformationControl(Shell parent) {
+					IEditorPart editor = getEditor();
+					int shellStyle = SWT.TOOL | SWT.NO_TRIM;
+					if (editor instanceof IWorkbenchPartOrientation)
+						shellStyle |= ((IWorkbenchPartOrientation) editor)
+								.getOrientation();
+					return new SourceViewerInformationControl(parent,
+							shellStyle, SWT.NONE, getTooltipAffordanceString());
+				}
+			};
+		}
 	}
 
 	/*
@@ -100,16 +115,26 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements IT
 	 * @since 3.0
 	 */
 	public IInformationControlCreator getInformationPresenterControlCreator() {
-		return new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				int style= SWT.V_SCROLL | SWT.H_SCROLL;
-				int shellStyle= SWT.RESIZE | SWT.TOOL;
-				IEditorPart editor= getEditor(); 
-				if (editor instanceof IWorkbenchPartOrientation)
-					shellStyle |= ((IWorkbenchPartOrientation)editor).getOrientation();
-				return new SourceViewerInformationControl(parent, shellStyle, style);
-			}
-		};
+		if (result == null) {
+			return new AbstractReusableInformationControlCreator() {
+				public IInformationControl doCreateInformationControl(Shell parent) {
+					return new BrowserInformationControl(parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
+				}
+			};
+		} else {
+			return new IInformationControlCreator() {
+				public IInformationControl createInformationControl(Shell parent) {
+					int style = SWT.V_SCROLL | SWT.H_SCROLL;
+					int shellStyle = SWT.RESIZE | SWT.TOOL;
+					IEditorPart editor = getEditor();
+					if (editor instanceof IWorkbenchPartOrientation)
+						shellStyle |= ((IWorkbenchPartOrientation) editor)
+								.getOrientation();
+					return new SourceViewerInformationControl(parent,
+							shellStyle, style);
+				}
+			};
+		}
 	}
 
 }

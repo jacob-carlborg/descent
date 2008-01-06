@@ -1074,7 +1074,11 @@ public class JavaElementLabels {
 //			}
 //		}
 //		buf.append(cu.getElementName());
-		buf.append(cu.getFullyQualifiedName());
+		if (getFlag(flags, CU_QUALIFIED)) {
+			buf.append(cu.getFullyQualifiedName());
+		} else {
+			buf.append(cu.getElementName());
+		}
 		
 		if (getFlag(flags, CU_POST_QUALIFIED)) {
 			buf.append(CONCAT_STRING);

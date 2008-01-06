@@ -26,8 +26,8 @@ public class StructInitializer extends Initializer {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, field);
-			TreeVisitor.acceptChildren(visitor, value);
+			TreeVisitor.acceptChildren(visitor, sourceField);
+			TreeVisitor.acceptChildren(visitor, sourceValue);
 		}
 		visitor.endVisit(this);
 	}

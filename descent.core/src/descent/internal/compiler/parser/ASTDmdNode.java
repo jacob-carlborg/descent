@@ -1752,6 +1752,11 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 	}
 	
 	public final void copySourceRange(ASTDmdNode first, ASTDmdNode last) {
+		int newLength = last.start + last.length - first.start;
+		if (newLength <= 0) {
+			return;
+		}
+		
 		this.start = first.start;
 		this.length = last.start + last.length - first.start;
 	}

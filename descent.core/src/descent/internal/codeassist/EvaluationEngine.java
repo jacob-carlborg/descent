@@ -9,10 +9,13 @@ import descent.core.WorkingCopyOwner;
 import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.Complex;
 import descent.core.dom.Void;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
+import descent.internal.compiler.parser.DotIdExp;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -20,6 +23,7 @@ import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.RealExp;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.integer_t;
@@ -40,6 +44,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	WorkingCopyOwner owner;
 	Map settings;
 	CompilerOptions compilerOptions;
+	SemanticContext context;
 	
 	int offset;
 	int length;
@@ -62,7 +67,11 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		this.offset = offset;
 		
 		try {
-			Module module = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, true, null).module;
+			ParseResult parseResult = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, true, null);
+			
+			context = parseResult.context;
+			
+			Module module = parseResult.module;
 			module.accept(this);
 			return result;
 		} catch (JavaModelException e) {
@@ -75,6 +84,16 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	public boolean visit(VarDeclaration node) {
 		if (result == null && node.isConst() && isInRange(node.ident)) {
 			evalInit((Initializer) node.init);
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean visit(CallExp node) {
+		if (isInRange(node.sourceE1)) {
+			Expression exp = node.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, context);
+			evalExp(exp);
 			return false;
 		}
 		return true;
