@@ -63,5 +63,90 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				CompletionProposal.FIELD_REF, "stringof", s.length(), s.length()
 				);
 	}
+	
+	public void testOnStruct() throws Exception {
+		String s = "struct Bar { int x; int y; void foo(int x) { } } void foo() { Bar x; auto y = x.";
+		
+		assertCompletions(null, "test.d", s, s.length(), 
+				CompletionProposal.FIELD_REF, "alignof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "foo()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "init", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "mangleof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "sizeof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "stringof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "x", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "y", s.length(), s.length()
+				);
+	}
+	
+	public void testOnClass() throws Exception {
+		String s = "class Bar { int x; int y; void foo(int x) { } } void foo() { Bar x; auto y = x.";
+		
+		assertCompletions(null, "test.d", s, s.length(), 
+				CompletionProposal.FIELD_REF, "alignof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "factory()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "foo()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "init", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "mangleof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "notifyRegister()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "notifyUnRegister()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "opCmp()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "opEquals()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "print()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "sizeof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "stringof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "toHash()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "toString()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "x", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "y", s.length(), s.length()
+				);
+	}
+	
+	public void testOnClassWithBaseInterface() throws Exception {
+		String s = "interface Foo { void bar(int x); } class Bar : Foo { int x; int y; void foo(int x) { } } void foo() { Bar x; auto y = x.";
+		
+		assertCompletions(null, "test.d", s, s.length(), 
+				CompletionProposal.FIELD_REF, "alignof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "bar()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "factory()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "foo()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "init", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "mangleof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "notifyRegister()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "notifyUnRegister()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "opCmp()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "opEquals()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "print()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "sizeof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "stringof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "toHash()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "toString()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "x", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "y", s.length(), s.length()
+				);
+	}
+	
+	public void testOnClassWithBaseInterfaceDontDuplicateMethods() throws Exception {
+		String s = "interface Foo { void foo(int x); } class Bar : Foo { int x; int y; void foo(int x) { } } void foo() { Bar x; auto y = x.";
+		
+		assertCompletions(null, "test.d", s, s.length(), 
+				CompletionProposal.FIELD_REF, "alignof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "factory()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "foo()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "init", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "mangleof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "notifyRegister()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "notifyUnRegister()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "opCmp()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "opEquals()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "print()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "sizeof", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "stringof", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "toHash()", s.length(), s.length(),
+				CompletionProposal.METHOD_REF, "toString()", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "x", s.length(), s.length(),
+				CompletionProposal.FIELD_REF, "y", s.length(), s.length()
+				);
+	}
 
 }

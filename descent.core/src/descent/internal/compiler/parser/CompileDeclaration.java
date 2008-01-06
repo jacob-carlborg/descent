@@ -23,7 +23,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, sourceExp);
 			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);

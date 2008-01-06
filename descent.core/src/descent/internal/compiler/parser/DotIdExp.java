@@ -248,6 +248,16 @@ public class DotIdExp extends UnaExp {
 	}
 	
 	@Override
+	public void setEvaluatedExpression(Expression exp) {
+		ident.evaluatedExpression = exp;
+	}
+	
+	@Override
+	public void setResolvedExpression(Expression exp) {
+		ident.setResolvedExpression(exp);
+	}
+	
+	@Override
 	public IDsymbol getResolvedSymbol() {
 		return ident.resolvedSymbol;
 	}

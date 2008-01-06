@@ -162,4 +162,13 @@ public class CodeSelectFunction_Test extends AbstractModelTest {
 		assertEquals(getFunction(test, 0), elements[0]);
 	}
 
+	public void testSelectFunctionInInitializer() throws Exception {
+		ICompilationUnit test = createCompilationUnit("test.d", "int foo() { return 0; } const int x = foo();");
+		
+		IJavaElement[] elements = test.codeSelect(39, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(getFunction(test, 0), elements[0]);
+	}
+
 }

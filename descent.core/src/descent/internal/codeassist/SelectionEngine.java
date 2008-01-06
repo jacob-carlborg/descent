@@ -20,6 +20,7 @@ import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
+import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.ICtorDeclaration;
@@ -28,6 +29,7 @@ import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
@@ -195,15 +197,19 @@ public class SelectionEngine extends AstVisitorAdapter {
 			return false;
 		}
 		
-		switch(resolved.getNodeType()) {
+		return addExpression(resolved);
+	}
+	
+	private boolean addExpression(Expression exp) {
+		switch(exp.getNodeType()) {
 		case ASTDmdNode.VAR_EXP:
-			add((VarExp) resolved);
+			add((VarExp) exp);
 			break;
 		case ASTDmdNode.DOT_VAR_EXP:
-			add((DotVarExp) resolved);
+			add((DotVarExp) exp);
 			break;
 		case ASTDmdNode.TYPE_EXP:
-			add(((TypeExp) resolved).type);
+			add(((TypeExp) exp).type);
 			break;
 		}
 		

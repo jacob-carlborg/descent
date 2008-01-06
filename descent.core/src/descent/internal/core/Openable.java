@@ -33,6 +33,7 @@ import descent.core.IOpenable;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.internal.codeassist.CompletionEngine;
+import descent.internal.codeassist.EvaluationEngine;
 import descent.internal.codeassist.SelectionEngine;
 import descent.internal.core.util.Util;
 
@@ -184,7 +185,13 @@ protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUn
 	return requestor.getElements();
 	*/
 }
-
+protected Object codeEvaluate(descent.internal.compiler.env.ICompilationUnit cu, int offset, WorkingCopyOwner owner) throws JavaModelException {
+	// TODO Descent improve performance?
+	JavaProject project = (JavaProject)getJavaProject();
+	
+	EvaluationEngine engine = new EvaluationEngine(project.getOptions(true), project, owner);
+	return engine.evaluate(cu, offset);
+}
 /*
  * Returns a new element info for this element.
  */

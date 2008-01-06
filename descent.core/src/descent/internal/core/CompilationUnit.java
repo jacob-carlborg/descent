@@ -283,6 +283,12 @@ public IJavaElement[] codeSelect(int offset, int length) throws JavaModelExcepti
 public IJavaElement[] codeSelect(int offset, int length, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	return super.codeSelect(this, offset, length, workingCopyOwner);
 }
+public Object codeEvaluate(int offset) throws JavaModelException {
+	return codeEvaluate(offset, DefaultWorkingCopyOwner.PRIMARY);
+}
+public Object codeEvaluate(int offset, WorkingCopyOwner owner) throws JavaModelException {
+	return super.codeEvaluate(this, offset, owner);
+}
 /**
  * @see IWorkingCopy#commit(boolean, IProgressMonitor)
  * @deprecated

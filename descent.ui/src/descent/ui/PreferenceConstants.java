@@ -621,6 +621,14 @@ public class PreferenceConstants {
 	 * @since 2.1
 	 */
 	public static final String ID_SOURCE_HOVER= "descent.ui.JavaSourceHover"; //$NON-NLS-1$
+	
+	/**
+	 * The id of the evalute code hover contributed for extension point
+	 * <code>javaEditorTextHovers</code>.
+	 *
+	 * @since 2.1
+	 */
+	public static final String ID_EVALUATE_HOVER= "descent.ui.JavaEvaluateHover"; //$NON-NLS-1$
 
 	/**
 	 * The id of the javadoc hover contributed for extension point
@@ -3856,8 +3864,11 @@ public class PreferenceConstants {
 		
 		int sourceHoverModifier= SWT.MOD2;
 		String sourceHoverModifierName= Action.findModifierString(sourceHoverModifier);	// Shift
-		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIERS, "descent.ui.BestMatchHover;0;descent.ui.JavaSourceHover;" + sourceHoverModifierName); //$NON-NLS-1$
-		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS, "descent.ui.BestMatchHover;0;descent.ui.JavaSourceHover;" + sourceHoverModifier); //$NON-NLS-1$
+		int evaluateHoverModifier= SWT.MOD1 | SWT.MOD2;
+		String evaluateHoverModifierName= Action.findModifierString(SWT.MOD1) + " + " + Action.findModifierString(SWT.MOD2);	// Control + Shift //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIERS, "descent.ui.BestMatchHover;0;descent.ui.JavaSourceHover;" + sourceHoverModifierName + ";descent.ui.JavaEvaluateHover;" + evaluateHoverModifierName); //$NON-NLS-1$ //$NON-NLS-2$
+		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS, "descent.ui.BestMatchHover;0;descent.ui.JavaSourceHover;" + sourceHoverModifier + ";descent.ui.JavaEvaluateHover;" + evaluateHoverModifier); //$NON-NLS-1$ //$NON-NLS-2$
+		
 		store.setDefault(PreferenceConstants.EDITOR_SHOW_TEXT_HOVER_AFFORDANCE, true);
 		
 		store.setDefault(PreferenceConstants.EDITOR_SMART_TAB, true);

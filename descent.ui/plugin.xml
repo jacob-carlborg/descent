@@ -201,14 +201,12 @@
             class="descent.internal.ui.text.java.hover.JavaSourceHover"
             id="descent.ui.JavaSourceHover">
       </hover>
-      <!--
       <hover
-            label="%annotationHover"
-            description="%annotationHoverDescription"
-            class="descent.internal.ui.text.java.hover.AnnotationHover"
-            id="descent.ui.AnnotationHover">
+            label="%evaluateHover"
+            description="%evaluateHoverDescription"
+            class="descent.internal.ui.text.java.hover.JavaEvaluateHover"
+            id="descent.ui.JavaEvaluateHover">
       </hover>
-      -->
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -752,6 +750,7 @@
             id="descent.ui.preferences.CodeAssistPreferenceAdvanced">
             <keywordReference id="descent.ui.contentassist"/>
       </page>
+      -->
       <page
             name="%editorHoversPageName"
             category="descent.ui.preferences.JavaEditorPreferencePage"
@@ -759,7 +758,6 @@
             id="descent.ui.preferences.JavaEditorHoverPreferencePage">
             <keywordReference id="descent.ui.hover"/>
       </page>
-      -->
       <page
             name="%editorSyntaxColoringPage"
             category="descent.ui.preferences.JavaEditorPreferencePage"

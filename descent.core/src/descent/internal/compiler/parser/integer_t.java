@@ -5,7 +5,7 @@ import java.math.BigInteger;
 // DMD 1.020
 // This is also an alias of uinteger_t, as defined by DMD
 public class integer_t extends Number {
-	
+
 	private final static long MAX_INT = 0xFFFFFFFFL;
 	private final static int MAX_SHORT = 0xFFFF;
 	private final static int MAX_BYTE = 0xFF;
@@ -27,7 +27,7 @@ public class integer_t extends Number {
 		this.longValue = intValue;
 		this.bigIntegerValue = null;
 	}
-	
+
 	// add
 
 	public integer_t add(BigInteger value) {
@@ -41,7 +41,8 @@ public class integer_t extends Number {
 	public integer_t add(long value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t optimize
-			return new integer_t(toBigInteger(longValue).add(toBigInteger(value)));
+			return new integer_t(toBigInteger(longValue).add(
+					toBigInteger(value)));
 		} else {
 			return new integer_t(bigIntegerValue.add(toBigInteger(value)));
 		}
@@ -54,7 +55,7 @@ public class integer_t extends Number {
 			return add(value.bigIntegerValue);
 		}
 	}
-	
+
 	// and
 
 	public integer_t and(BigInteger value) {
@@ -64,7 +65,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.and(value));
 		}
 	}
-	
+
 	public integer_t and(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue & value);
@@ -72,7 +73,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.and(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t and(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return and(value.longValue);
@@ -80,7 +81,7 @@ public class integer_t extends Number {
 			return and(value.bigIntegerValue);
 		}
 	}
-	
+
 	// compareTo
 
 	public int compareTo(BigInteger value) {
@@ -106,7 +107,7 @@ public class integer_t extends Number {
 			return compareTo(value.bigIntegerValue);
 		}
 	}
-	
+
 	// complement
 
 	public integer_t complement() {
@@ -114,9 +115,9 @@ public class integer_t extends Number {
 			return new integer_t(~longValue);
 		} else {
 			return new integer_t(bigIntegerValue.not());
-		}			
+		}
 	}
-	
+
 	// divide
 
 	public integer_t divide(BigInteger value) {
@@ -126,7 +127,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.divide(value));
 		}
 	}
-	
+
 	public integer_t divide(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue / value);
@@ -134,7 +135,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.divide(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t divide(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return divide(value.longValue);
@@ -142,9 +143,9 @@ public class integer_t extends Number {
 			return divide(value.bigIntegerValue);
 		}
 	}
-	
+
 	// equals
-	
+
 	public boolean equals(BigInteger value) {
 		if (bigIntegerValue == null) {
 			return toBigInteger(longValue).equals(value);
@@ -152,7 +153,7 @@ public class integer_t extends Number {
 			return bigIntegerValue.equals(value);
 		}
 	}
-	
+
 	public boolean equals(long value) {
 		if (bigIntegerValue == null) {
 			return longValue == value;
@@ -160,7 +161,7 @@ public class integer_t extends Number {
 			return bigIntegerValue.equals(toBigInteger(value));
 		}
 	}
-	
+
 	public boolean equals(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return equals(value.longValue);
@@ -168,7 +169,7 @@ public class integer_t extends Number {
 			return equals(value.bigIntegerValue);
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Integer) {
@@ -183,7 +184,7 @@ public class integer_t extends Number {
 			return false;
 		}
 	}
-	
+
 	// mod
 
 	public integer_t mod(BigInteger value) {
@@ -193,7 +194,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.mod(value));
 		}
 	}
-	
+
 	public integer_t mod(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue % value);
@@ -201,7 +202,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.mod(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t mod(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return mod(value.longValue);
@@ -209,7 +210,7 @@ public class integer_t extends Number {
 			return mod(value.bigIntegerValue);
 		}
 	}
-	
+
 	// multiply
 
 	public integer_t multiply(BigInteger value) {
@@ -219,16 +220,17 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.multiply(value));
 		}
 	}
-	
+
 	public integer_t multiply(long value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t optimize
-			return new integer_t(toBigInteger(longValue).multiply(toBigInteger(value)));
+			return new integer_t(toBigInteger(longValue).multiply(
+					toBigInteger(value)));
 		} else {
 			return new integer_t(bigIntegerValue.multiply(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t multiply(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return multiply(value.longValue);
@@ -236,9 +238,9 @@ public class integer_t extends Number {
 			return multiply(value.bigIntegerValue);
 		}
 	}
-	
+
 	// negate
-	
+
 	public integer_t negate() {
 		if (bigIntegerValue == null) {
 			return new integer_t(-longValue);
@@ -246,7 +248,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.negate());
 		}
 	}
-	
+
 	// or
 
 	public integer_t or(BigInteger value) {
@@ -256,7 +258,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.or(value));
 		}
 	}
-	
+
 	public integer_t or(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue | value);
@@ -264,7 +266,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.or(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t or(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return or(value.longValue);
@@ -272,18 +274,19 @@ public class integer_t extends Number {
 			return or(value.bigIntegerValue);
 		}
 	}
-	
+
 	// shiftLeft
-	
+
 	public integer_t shiftLeft(BigInteger value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t this may not work if value is bigger than int
-			return new integer_t(toBigInteger(longValue).shiftLeft(value.intValue()));
+			return new integer_t(toBigInteger(longValue).shiftLeft(
+					value.intValue()));
 		} else {
 			return new integer_t(bigIntegerValue.shiftLeft(value.intValue()));
 		}
 	}
-	
+
 	public integer_t shiftLeft(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue << value);
@@ -292,7 +295,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.shiftLeft((int) value));
 		}
 	}
-	
+
 	public integer_t shiftLeft(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return shiftLeft(value.longValue);
@@ -300,18 +303,19 @@ public class integer_t extends Number {
 			return shiftLeft(value.bigIntegerValue);
 		}
 	}
-	
+
 	// shiftRight
-	
+
 	public integer_t shiftRight(BigInteger value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t this may not work if value is bigger than int
-			return new integer_t(toBigInteger(longValue).shiftRight(value.intValue()));
+			return new integer_t(toBigInteger(longValue).shiftRight(
+					value.intValue()));
 		} else {
 			return new integer_t(bigIntegerValue.shiftRight(value.intValue()));
 		}
 	}
-	
+
 	public integer_t shiftRight(long value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t optimize
@@ -321,7 +325,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.shiftRight((int) value));
 		}
 	}
-	
+
 	public integer_t shiftRight(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return shiftRight(value.longValue);
@@ -329,7 +333,7 @@ public class integer_t extends Number {
 			return shiftRight(value.bigIntegerValue);
 		}
 	}
-	
+
 	// subtract
 
 	public integer_t subtract(BigInteger value) {
@@ -339,16 +343,17 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.subtract(value));
 		}
 	}
-	
+
 	public integer_t subtract(long value) {
 		if (bigIntegerValue == null) {
 			// TODO integer_t optimize
-			return new integer_t(toBigInteger(longValue).subtract(toBigInteger(value)));
+			return new integer_t(toBigInteger(longValue).subtract(
+					toBigInteger(value)));
 		} else {
 			return new integer_t(bigIntegerValue.subtract(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t subtract(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return subtract(value.longValue);
@@ -356,17 +361,18 @@ public class integer_t extends Number {
 			return subtract(value.bigIntegerValue);
 		}
 	}
-	
+
 	// unsignedShiftRight
-	
+
 	public integer_t unsignedShiftRight(BigInteger value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue >>> value.intValue());
 		} else {
-			return new integer_t(bigIntegerValue.intValue() >>> value.intValue());
+			return new integer_t(bigIntegerValue.intValue() >>> value
+					.intValue());
 		}
 	}
-	
+
 	public integer_t unsignedShiftRight(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue >>> value);
@@ -375,7 +381,7 @@ public class integer_t extends Number {
 			return new integer_t(intValue() >>> value);
 		}
 	}
-	
+
 	public integer_t unsignedShiftRight(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return unsignedShiftRight(value.longValue);
@@ -383,7 +389,7 @@ public class integer_t extends Number {
 			return unsignedShiftRight(value.bigIntegerValue);
 		}
 	}
-	
+
 	// xor
 
 	public integer_t xor(BigInteger value) {
@@ -393,7 +399,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.xor(value));
 		}
 	}
-	
+
 	public integer_t xor(long value) {
 		if (bigIntegerValue == null) {
 			return new integer_t(longValue ^ value);
@@ -401,7 +407,7 @@ public class integer_t extends Number {
 			return new integer_t(bigIntegerValue.xor(toBigInteger(value)));
 		}
 	}
-	
+
 	public integer_t xor(integer_t value) {
 		if (value.bigIntegerValue == null) {
 			return xor(value.longValue);
@@ -409,13 +415,13 @@ public class integer_t extends Number {
 			return xor(value.bigIntegerValue);
 		}
 	}
-	
+
 	// casts
-	
+
 	public integer_t castToUns64() {
 		return this;
 	}
-	
+
 	public integer_t castToInt64() {
 		if (bigIntegerValue == null) {
 			return this;
@@ -423,7 +429,7 @@ public class integer_t extends Number {
 			return new integer_t(this.bigIntegerValue());
 		}
 	}
-	
+
 	public integer_t castToUns32() {
 		long b = this.longValue();
 		if (b < 0) {
@@ -437,11 +443,11 @@ public class integer_t extends Number {
 		}
 		return new integer_t(toBigInteger(b));
 	}
-	
+
 	public integer_t castToInt32() {
 		return new integer_t(this.intValue());
 	}
-	
+
 	public integer_t castToUns16() {
 		int b = this.intValue();
 		if (b < 0) {
@@ -455,11 +461,11 @@ public class integer_t extends Number {
 		}
 		return new integer_t(b);
 	}
-	
+
 	public integer_t castToInt16() {
 		return new integer_t(this.shortValue());
 	}
-	
+
 	public integer_t castToUns8() {
 		short b = this.shortValue();
 		if (b < 0) {
@@ -473,13 +479,13 @@ public class integer_t extends Number {
 		}
 		return new integer_t(b);
 	}
-	
+
 	public integer_t castToInt8() {
 		return new integer_t(this.byteValue());
 	}
-	
+
 	// isTrue
-	
+
 	public boolean isTrue() {
 		if (bigIntegerValue == null) {
 			return longValue != 0;
@@ -487,9 +493,9 @@ public class integer_t extends Number {
 			return bigIntegerValue.compareTo(BigInteger.ZERO) != 0;
 		}
 	}
-	
+
 	// xxxValue
-	
+
 	public BigInteger bigIntegerValue() {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue;
@@ -533,7 +539,7 @@ public class integer_t extends Number {
 			return longValue;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		if (bigIntegerValue != null) {
@@ -542,27 +548,25 @@ public class integer_t extends Number {
 			return String.valueOf(longValue);
 		}
 	}
-	
+
 	public integer_t castToSinteger_t() {
 		// TODO implement
 		return this;
 	}
-	
+
 	private static BigInteger toBigInteger(long value) {
 		return BigInteger.valueOf(value);
 	}
-	
-	public boolean isExactly(float f)
-	{
+
+	public boolean isExactly(float f) {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.longValue() == f;
 		} else {
 			return longValue == f;
 		}
 	}
-	
-	public boolean isExactly(double d)
-	{
+
+	public boolean isExactly(double d) {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.longValue() == d;
 		} else {

@@ -22,6 +22,12 @@ public class IdentifierExp extends Expression {
 	}
 
 	public char[] ident;
+	
+	/*
+	 * Once the semantic pass is done, the evaluated expression is kept in
+	 * this variable. Only for compile-time function evaluation. 
+	 */
+	public Expression evaluatedExpression;
 
 	public IdentifierExp(Loc loc) {
 		super(loc, TOK.TOKidentifier);
@@ -241,6 +247,20 @@ public class IdentifierExp extends Expression {
 	@Override
 	public void setResolvedSymbol(IDsymbol symbol) {
 		resolvedSymbol = symbol;
+	}
+	
+	@Override
+	public void setEvaluatedExpression(Expression exp) {
+		this.evaluatedExpression = exp;
+	}
+	
+	@Override
+	public void setResolvedExpression(Expression exp) {
+		if (exp instanceof CallExp) {
+			this.resolvedExpression = ((CallExp) exp).e1;
+		} else {
+			this.resolvedExpression = exp;
+		}
 	}
 	
 	@Override

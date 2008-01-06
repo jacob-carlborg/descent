@@ -322,12 +322,24 @@ public class real_t {
 		return value == null && Double.isInfinite(nanOrInfinite) && nanOrInfinite < 0;
 	}
 	
+	public double floatValue() {
+		if (value != null) {
+			return value.floatValue();
+		} else {
+			return nanOrInfinite;
+		}
+	}
+	
 	public double doubleValue() {
 		if (value != null) {
 			return value.doubleValue();
 		} else {
 			return nanOrInfinite;
 		}
+	}
+	
+	public BigDecimal bigDecimalValue() {
+		return value;
 	}
 
 	@Override

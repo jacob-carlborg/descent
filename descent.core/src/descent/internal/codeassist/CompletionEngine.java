@@ -705,14 +705,14 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// Suggest members
-		suggestMembers(decl.members(), name, onlyStatics, funcSignatures);
-		
-		// Suggest superclass and superinterface members
+		// First suggest superclass and superinterface members
 		BaseClasses baseClasses = decl.baseclasses();
 		for(BaseClass baseClass : baseClasses) {
 			completeTypeClassRecursively((TypeClass) baseClass.base.type(), name, onlyStatics, funcSignatures);
 		}
+		
+		// Then suggest my members
+		suggestMembers(decl.members(), name, onlyStatics, funcSignatures);
 	}
 	
 	private void completeTypeStruct(TypeStruct type, char[] name, boolean onlyStatics) {
@@ -774,7 +774,7 @@ public class CompletionEngine extends Engine
 						member instanceof IStructDeclaration ||
 						member instanceof IEnumDeclaration;
 		
-			// Filter statics if only statics were requested
+		// Filter statics if only statics were requested
 		IDeclaration decl = member.isDeclaration();
 		if (decl != null) {
 			if (!isType && !decl.isStatic() && !decl.isConst() && onlyStatics) {
@@ -802,7 +802,7 @@ public class CompletionEngine extends Engine
 		IFuncDeclaration func = member.isFuncDeclaration();
 		if (func != null) {
 			// Don't suggest already suggested functions
-			char[] signature = func.getSignature().toCharArray();
+			char[] signature = func.getFunctionSignature().toCharArray();
 			if (funcSignatures != null && funcSignatures.containsKey(signature)) {
 				return;
 			}

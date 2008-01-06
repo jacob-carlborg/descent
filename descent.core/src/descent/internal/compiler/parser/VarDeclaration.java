@@ -187,6 +187,15 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		semantic0(sc, context);
+		
+		// Descent: for code evaluate
+		if (sourceInit != null) {
+			((Initializer) sourceInit).resolvedInitializer = (Initializer) init;
+		}
+	}
+	
+	private void semantic0(Scope sc, SemanticContext context) {
 		storage_class |= sc.stc;
 		if ((storage_class & STCextern) != 0 && init != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -482,6 +491,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 					Expression e = ei.exp().syntaxCopy(context);
 					inuse++;
 					e = e.semantic(sc, context);
+					
+					// Descent: for binding resolution
+					if (sourceInit instanceof ExpInitializer) {
+						((ExpInitializer) sourceInit).sourceExp.setResolvedExpression(e);
+					}
+					
 					inuse--;
 					e = e.implicitCastTo(sc, type, context);
 					context.global.gag--;
@@ -491,6 +506,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 							context.global.errors = errors; // act as if nothing happened
 					} else {
 						e = e.optimize(WANTvalue | WANTinterpret, context);
+						
+						// Descent: for binding resolution
+						if (sourceInit instanceof ExpInitializer) {
+							((ExpInitializer) sourceInit).sourceExp.setEvaluatedExpression(e);
+						}
+						
 						if (e.op == TOKint64 || e.op == TOKstring) {
 							ei.exp(e); // no errors, keep result
 						}
@@ -499,9 +520,18 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 			}
 		}
 	}
-
+	
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
+		semantic20(sc, context);
+		
+		// Descent: for code evaluate
+		if (sourceInit != null) {
+			((Initializer) sourceInit).resolvedInitializer = (Initializer) init;
+		}
+	}
+
+	private void semantic20(Scope sc, SemanticContext context) {
 		if (init != null && toParent().isFuncDeclaration() == null) {
 			inuse++;
 			init = init.semantic(sc, type, context);

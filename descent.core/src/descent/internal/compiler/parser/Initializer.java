@@ -6,6 +6,11 @@ import descent.core.compiler.IProblem;
 public abstract class Initializer extends ASTDmdNode implements IInitializer {
 	
 	public Loc loc;
+	
+	/*
+	 * Descent: for code evaluate.
+	 */
+	public Initializer resolvedInitializer;
 
 	public Initializer(Loc loc) {
 		this.loc = loc;

@@ -195,6 +195,12 @@ public class CallExp extends UnaExp {
 				}
 			}
 		}
+		
+		// Descent: for code evaluation
+		if (e != this) {
+			this.sourceE1.setEvaluatedExpression(e);
+		}
+		
 		e.copySourceRange(this);
 		return e;
 	}
@@ -692,6 +698,16 @@ public class CallExp extends UnaExp {
 	@Override
 	public int getErrorLength() {
 		return e1.getErrorLength();
+	}
+	
+	@Override
+	public void setResolvedExpression(Expression exp) {
+		this.sourceE1.setResolvedExpression(exp);
+	}
+	
+	@Override
+	public void setEvaluatedExpression(Expression exp) {
+		this.sourceE1.setEvaluatedExpression(exp);
 	}
 
 }
