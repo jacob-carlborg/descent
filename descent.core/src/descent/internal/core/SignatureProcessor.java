@@ -43,7 +43,7 @@ public class SignatureProcessor implements ISignatureConstants {
 			throw new IllegalArgumentException("Invalid signature: " + signature);
 		}
 		
-		int localPosition = -1;		
+		int localPosition = -1;
 		int start = i;
 		
 		while(i < signature.length()) {
@@ -164,6 +164,11 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.exitFunctionType(link, signature.substring(start, i));
 				return i;
 			}
+			case 'J': // Argument modifiers
+			case 'K': 
+			case 'L':
+				i = argumentModifier(signature, i, requestor);
+				continue;
 			case 'X': // Argument break
 			case 'Y':
 			case 'Z':

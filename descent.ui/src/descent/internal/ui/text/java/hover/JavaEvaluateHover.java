@@ -15,15 +15,15 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.IWorkbenchPartOrientation;
 
 import descent.core.ICodeAssist;
+import descent.core.IEvaluationResult;
 import descent.core.JavaModelException;
 import descent.core.ToolFactory;
-import descent.core.dom.Complex;
 import descent.core.formatter.CodeFormatter;
 
 public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 		ITextHoverExtension, IInformationProviderExtension2 {
 
-	private Object result;
+	private IEvaluationResult result;
 
 	@Override
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
@@ -41,19 +41,38 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 		return null;
 	}
 
-	private String getHoverInfo(Object result) {
+	private String getHoverInfo(IEvaluationResult result) {
 		if (result == null) {
 			return "<html><body style='background-color:white;font-size:14px'><i>Cannot evaluate at compile-time</i></body></html>"; //$NON-NLS-1$
 		}
-
-		if (result instanceof descent.core.dom.Void || result instanceof Number
-				|| result instanceof Complex) {
+		
+		switch(result.getKind()) {
+		case IEvaluationResult.BOOL:
+		case IEvaluationResult.BYTE:
+		case IEvaluationResult.UBYTE:
+		case IEvaluationResult.SHORT:
+		case IEvaluationResult.USHORT:
+		case IEvaluationResult.INT:
+		case IEvaluationResult.UINT:
+		case IEvaluationResult.LONG:
+		case IEvaluationResult.ULONG:
+		case IEvaluationResult.FLOAT:
+		case IEvaluationResult.DOUBLE:
+		case IEvaluationResult.REAL:
+		case IEvaluationResult.IFLOAT:
+		case IEvaluationResult.IDOUBLE:
+		case IEvaluationResult.IREAL:
+		case IEvaluationResult.CFLOAT:
+		case IEvaluationResult.CDOUBLE:
+		case IEvaluationResult.CREAL:
+		case IEvaluationResult.CHAR:
+		case IEvaluationResult.WCHAR:
+		case IEvaluationResult.DCHAR:
 			return result.toString();
-		}
-
-		if (result instanceof String) {
-			String text = (String) result;
-
+		case IEvaluationResult.CHAR_ARRAY:
+		case IEvaluationResult.WCHAR_ARRAY:
+		case IEvaluationResult.DCHAR_ARRAY:
+			String text = (String) result.getValue();
 			// Try to format the code, it could be a list of declarations or statements
 			CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
 			try {
@@ -74,9 +93,9 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 			}
 
 			return text;
-		}
-
-		return null;
+		default:
+			return null;
+		}		
 	}
 
 	@Override

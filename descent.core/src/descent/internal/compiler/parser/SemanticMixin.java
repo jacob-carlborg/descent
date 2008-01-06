@@ -647,6 +647,10 @@ public class SemanticMixin {
 	}
 	
 	public static void appendNameSignature(IDsymbol aThis, StringBuilder sb) {
+		if (aThis.ident() == null || aThis.ident().ident == null || aThis.ident().ident.length == 0) {
+			return;
+		}
+		
 		if (isLocal(aThis)) {
 			sb.append('$');
 			sb.append(aThis.getStart());
@@ -666,7 +670,6 @@ public class SemanticMixin {
 		} else {
 			
 			sb.append(aThis.getSignaturePrefix());
-			
 			sb.append(aThis.ident().ident.length);
 			sb.append(aThis.ident().ident);
 			if (aThis instanceof IFuncDeclaration) {

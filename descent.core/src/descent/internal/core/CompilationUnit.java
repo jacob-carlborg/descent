@@ -33,6 +33,7 @@ import descent.core.IBuffer;
 import descent.core.IBufferFactory;
 import descent.core.ICodeAssist;
 import descent.core.ICompilationUnit;
+import descent.core.IEvaluationResult;
 import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
@@ -283,10 +284,10 @@ public IJavaElement[] codeSelect(int offset, int length) throws JavaModelExcepti
 public IJavaElement[] codeSelect(int offset, int length, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	return super.codeSelect(this, offset, length, workingCopyOwner);
 }
-public Object codeEvaluate(int offset) throws JavaModelException {
+public IEvaluationResult codeEvaluate(int offset) throws JavaModelException {
 	return codeEvaluate(offset, DefaultWorkingCopyOwner.PRIMARY);
 }
-public Object codeEvaluate(int offset, WorkingCopyOwner owner) throws JavaModelException {
+public IEvaluationResult codeEvaluate(int offset, WorkingCopyOwner owner) throws JavaModelException {
 	return super.codeEvaluate(this, offset, owner);
 }
 /**

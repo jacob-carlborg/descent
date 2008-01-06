@@ -2,22 +2,25 @@ package descent.internal.codeassist;
 
 import java.util.Map;
 
-import descent.core.IJavaElement;
+import descent.core.Complex;
+import descent.core.IEvaluationResult;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.dom.CompilationUnitResolver;
-import descent.core.dom.Complex;
-import descent.core.dom.Void;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.ArrayExp;
+import descent.internal.compiler.parser.ArrayInitializer;
+import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
-import descent.internal.compiler.parser.DotIdExp;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.IntegerExp;
@@ -25,6 +28,8 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.RealExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StringExp;
+import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.integer_t;
 import descent.internal.compiler.parser.real_t;
@@ -38,8 +43,6 @@ import descent.internal.core.util.Util;
  */
 public class EvaluationEngine extends AstVisitorAdapter {
 	
-	private final static IJavaElement[] NO_ELEMENTS = new IJavaElement[0];
-	
 	IJavaProject javaProject;
 	WorkingCopyOwner owner;
 	Map settings;
@@ -48,7 +51,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	
 	int offset;
 	int length;
-	Object result;
+	IEvaluationResult result;
 	
 	JavaElementFinder finder;
 
@@ -63,7 +66,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		this.finder = new JavaElementFinder(javaProject, owner);
 	}
 	
-	public Object evaluate(ICompilationUnit sourceUnit, int offset) {
+	public IEvaluationResult evaluate(ICompilationUnit sourceUnit, int offset) {
 		this.offset = offset;
 		
 		try {
@@ -76,7 +79,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			return result;
 		} catch (JavaModelException e) {
 			Util.log(e);
-			return NO_ELEMENTS;
+			return null;
 		}
 	}
 	
@@ -90,8 +93,16 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	}
 	
 	@Override
+	public boolean visit(EnumMember node) {
+		if (result == null && isInRange(node.ident)) {
+			evalExp(node.value);
+		}
+		return false;
+	}
+	
+	@Override
 	public boolean visit(CallExp node) {
-		if (isInRange(node.sourceE1)) {
+		if (result == null && isInRange(node.sourceE1)) {
 			Expression exp = node.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, context);
 			evalExp(exp);
 			return false;
@@ -101,7 +112,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(IdentifierExp node) {
-		if (isInRange(node)) {
+		if (result == null && isInRange(node)) {
 			if (node.evaluatedExpression != null) {
 				evalExp(node.evaluatedExpression);
 			} else if (node.resolvedExpression != null) {
@@ -114,7 +125,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	
 	private void evalInit(Initializer init) {
 		if (init.isVoidInitializer() != null) {
-			result = Void.getInstance();
+			result = new EvaluationResult(null, IEvaluationResult.VOID);
 		} else if (init.isExpInitializer() != null) {
 			ExpInitializer expInit = (ExpInitializer) init;
 			evalExp((Expression) expInit.exp);
@@ -134,31 +145,51 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	}
 	
 	private void evalInt(IntegerExp exp) {
-		integer_t value = ((IntegerExp) exp).value;
-		switch(exp.type.ty) {
+		evalInt(exp.value, exp.type);
+	}
+
+	private void evalInt(integer_t value, Type type) {
+		switch(type.ty) {
 		case Tbool:
-			result = value.isTrue();
+			result = new EvaluationResult(value.isTrue(), IEvaluationResult.BOOL);
 			break;
 		case Tchar:
+			result = new EvaluationResult(new Character((char) value.intValue()), IEvaluationResult.CHAR);
+			break;
 		case Tdchar:
+			result = new EvaluationResult(new Character((char) value.intValue()), IEvaluationResult.DCHAR);
+			break;
 		case Twchar:
-			result = new Character((char) value.intValue());
+			result = new EvaluationResult(new Character((char) value.intValue()), IEvaluationResult.WCHAR);
 			break;
 		case Tint8:
-			result = value.byteValue();
+			result = new EvaluationResult(value.byteValue(), IEvaluationResult.BYTE);
 			break;
 		case Tuns8:
+			result = new EvaluationResult(value.shortValue(), IEvaluationResult.UBYTE);
+			break;
 		case Tint16:
-			result = value.shortValue();
+			result = new EvaluationResult(value.shortValue(), IEvaluationResult.SHORT);
 			break;
 		case Tuns16:
+			result = new EvaluationResult(value.intValue(), IEvaluationResult.USHORT);
+			break;
 		case Tint32:
-			result = value.intValue();
+			result = new EvaluationResult(value.intValue(), IEvaluationResult.INT);
 			break;
 		case Tuns32:
+			result = new EvaluationResult(value.longValue(), IEvaluationResult.UINT);
+			break;
 		case Tint64:
+			result = new EvaluationResult(value.longValue(), IEvaluationResult.LONG);
+			break;
 		case Tuns64:
-			result = value.bigIntegerValue();
+			result = new EvaluationResult(value.bigIntegerValue(), IEvaluationResult.ULONG);
+			break;
+		case Tenum:
+			TypeEnum te = (TypeEnum) type;
+			IEnumDeclaration e = te.sym;
+			evalInt(value, e.memtype());
 			break;
 		}
 	}
@@ -168,46 +199,82 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		switch(exp.type.ty) {
 		case Tfloat32:
 			if (value.isNaN()) {
-				result = Float.NaN;
+				result = new EvaluationResult(Float.NaN, IEvaluationResult.FLOAT);
 			} else if (value.isPositiveInfinity()) {
-				result = Float.POSITIVE_INFINITY;
+				result = new EvaluationResult(Float.POSITIVE_INFINITY, IEvaluationResult.FLOAT);
 			} else if (value.isNegativeInfinity()) {
-				result = Float.NEGATIVE_INFINITY;
+				result = new EvaluationResult(Float.NEGATIVE_INFINITY, IEvaluationResult.FLOAT);
 			} else {
-				result = value.floatValue();
+				result = new EvaluationResult(value.floatValue(), IEvaluationResult.FLOAT);
 			}
 			break;
 		case Tfloat64:
 			if (value.isNaN()) {
-				result = Double.NaN;
+				result = new EvaluationResult(Double.NaN, IEvaluationResult.DOUBLE);
 			} else if (value.isPositiveInfinity()) {
-				result = Double.POSITIVE_INFINITY;
+				result = new EvaluationResult(Double.POSITIVE_INFINITY, IEvaluationResult.DOUBLE);
 			} else if (value.isNegativeInfinity()) {
-				result = Double.NEGATIVE_INFINITY;
+				result = new EvaluationResult(Double.NEGATIVE_INFINITY, IEvaluationResult.DOUBLE);
 			} else {
-				result = value.doubleValue();
+				result = new EvaluationResult(value.doubleValue(), IEvaluationResult.DOUBLE);
 			}
 			break;
 		case Tfloat80:
 			if (value.isNaN()) {
-				result = Double.NaN;
+				result = new EvaluationResult(Double.NaN, IEvaluationResult.REAL);
 			} else if (value.isPositiveInfinity()) {
-				result = Double.POSITIVE_INFINITY;
+				result = new EvaluationResult(Double.POSITIVE_INFINITY, IEvaluationResult.REAL);
 			} else if (value.isNegativeInfinity()) {
-				result = Double.NEGATIVE_INFINITY;
+				result = new EvaluationResult(Double.NEGATIVE_INFINITY, IEvaluationResult.REAL);
 			} else {
-				result = value.bigDecimalValue();
+				result = new EvaluationResult(value.bigDecimalValue(), IEvaluationResult.REAL);
 			}
 			break;
 		}
 	}
 	
 	private void evalComplex(ComplexExp exp) {
-		result = new Complex(exp.value.re.bigDecimalValue(), exp.value.im.bigDecimalValue());
+		Complex c = new Complex(exp.value.re.bigDecimalValue(), exp.value.im.bigDecimalValue());
+		switch(exp.type.ty) {
+		case Timaginary32:
+			result = new EvaluationResult(c, IEvaluationResult.IFLOAT);
+			break;
+		case Timaginary64:
+			result = new EvaluationResult(c, IEvaluationResult.IDOUBLE);
+			break;
+		case Timaginary80:
+			result = new EvaluationResult(c, IEvaluationResult.IREAL);
+			break;
+		case Tcomplex32:
+			result = new EvaluationResult(c, IEvaluationResult.CFLOAT);
+			break;
+		case Tcomplex64:
+			result = new EvaluationResult(c, IEvaluationResult.CDOUBLE);
+			break;
+		case Tcomplex80:
+			result = new EvaluationResult(c, IEvaluationResult.CREAL);
+			break;
+		}
 	}
 	
 	private void evalString(StringExp exp) {
-		result = new String(exp.string);
+		String s = new String(exp.string); 
+		Type next = exp.type.next;
+		if (next == null) {
+			return;
+		}
+		
+		switch(next.ty) {
+		case Tchar:
+			result = new EvaluationResult(s, IEvaluationResult.CHAR_ARRAY);
+			break;
+		case Tdchar:
+			result =  new EvaluationResult(s, IEvaluationResult.DCHAR_ARRAY);
+			break;
+		case Twchar:
+			result = new EvaluationResult(s, IEvaluationResult.WCHAR_ARRAY);
+			break;
+		}
 	}
 	
 	private boolean isInRange(IdentifierExp ident) {

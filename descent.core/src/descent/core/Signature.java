@@ -2482,7 +2482,12 @@ private static void appendFunction(Stack<String> stack, StringBuilder sb, char[]
 public static char[] toCharArray(char[] signature) throws IllegalArgumentException {
 		ToCharArraySignatureRequestor requestor = new ToCharArraySignatureRequestor(true);
 		requestor.forFunction = false;
-		SignatureProcessor.process(new String(signature), requestor);
+		
+		try {
+			SignatureProcessor.process(new String(signature), requestor);
+		} catch (Exception e) {
+			return CharOperation.NO_CHAR;
+		}
 		
 		if (requestor.stack.isEmpty()) {
 			return CharOperation.NO_CHAR;

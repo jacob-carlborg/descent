@@ -116,15 +116,17 @@ public interface ICodeAssist {
 	/**
 	 * Returns an object that is the result of compile-time evaluating the element
 	 * in the given offset, or <code>null</code> if no compile-time evaluation can be done.
+	 * 
 	 * @param offset the given offset position
 	 * @return the evaluated object, or <code>null</code> if no compile-time evaluation can be done
 	 * @throws JavaModelException
 	 */
-	Object codeEvaluate(int offset) throws JavaModelException;
+	IEvaluationResult codeEvaluate(int offset) throws JavaModelException;
 	
 	/**
 	 * Returns an object that is the result of compile-time evaluating the element
 	 * in the given offset, or <code>null</code> if no compile-time evaluation can be done.
+	 * 
 	 * @param offset the given offset position
 	 * @param owner the owner of working copies that take precedence over their original compilation units
 	 * @return the evaluated object, or <code>null</code> if no compile-time evaluation can be done

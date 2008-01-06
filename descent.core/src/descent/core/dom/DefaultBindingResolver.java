@@ -569,23 +569,28 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		FuncDeclaration parent = (FuncDeclaration) var.parent;
-		JavaElement func = (JavaElement) finder.find(parent.getSignature());
-		
-		IJavaElement element = new LocalVariable(
-				func, 
-				var.ident.toString(),
-				var.start,
-				var.start + var.length - 1,
-				var.ident.start,
-				var.ident.start + var.ident.length - 1,
-				var.type.getSignature(),
-				modifiers);
-		
-		binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
-		bindingTables.bindingKeysToBindings.put(signature, binding);
-		bindingsToAstNodes.put(binding, node);
-		return binding;
+		try {
+			FuncDeclaration parent = (FuncDeclaration) var.parent;
+			JavaElement func = (JavaElement) finder.find(parent.getSignature());
+			
+			IJavaElement element = new LocalVariable(
+					func, 
+					var.ident.toString(),
+					var.start,
+					var.start + var.length - 1,
+					var.ident.start,
+					var.ident.start + var.ident.length - 1,
+					var.type.getSignature(),
+					modifiers);
+			
+			binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
+			bindingTables.bindingKeysToBindings.put(signature, binding);
+			bindingsToAstNodes.put(binding, node);
+			return binding;
+		} catch (Exception e) {
+			Util.log(e);
+			return null;
+		}
 	}
 	
 	@Override
@@ -1060,7 +1065,7 @@ class DefaultBindingResolver extends BindingResolver {
 		SignatureSolver solver = new SignatureSolver();
 		try {
 			SignatureProcessor.process(signature, solver);
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			Util.log(e);
 			return null;
 		}

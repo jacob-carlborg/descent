@@ -27,6 +27,7 @@ import descent.core.CompletionRequestor;
 import descent.core.IBuffer;
 import descent.core.IBufferChangedListener;
 import descent.core.IBufferFactory;
+import descent.core.IEvaluationResult;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
 import descent.core.IOpenable;
@@ -185,7 +186,7 @@ protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUn
 	return requestor.getElements();
 	*/
 }
-protected Object codeEvaluate(descent.internal.compiler.env.ICompilationUnit cu, int offset, WorkingCopyOwner owner) throws JavaModelException {
+protected IEvaluationResult codeEvaluate(descent.internal.compiler.env.ICompilationUnit cu, int offset, WorkingCopyOwner owner) throws JavaModelException {
 	// TODO Descent improve performance?
 	JavaProject project = (JavaProject)getJavaProject();
 	
