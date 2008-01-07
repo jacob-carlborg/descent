@@ -7,15 +7,16 @@
  *******************************************************************************/
 package descent.internal.unittest.flute;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.IStreamListener;
-import org.eclipse.debug.core.Launch;
-import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.core.model.IStreamMonitor;
-import org.eclipse.debug.core.model.IStreamsProxy;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.Socket;
 
 /**
  * Interfaces with the streams of a fluted application to do cool stuff
@@ -25,6 +26,103 @@ import org.eclipse.debug.core.model.IStreamsProxy;
  */
 public class FluteApplicationInstance
 {
+	/**
+	 * Non-blocking mechanism for reading socket input line-by-line
+	 * and forwarding calls to the interpret() method
+	 * 
+	 * @author Robert Fraser
+	 */
+	private static class LineByLineReader
+	{
+		// TODO make this class non-static once tested, so interpret()
+		// can be called.
+		
+		private Thread fThread;
+		private BufferedReader fReader;
+		private long lastSleep;
+		
+		LineByLineReader(InputStream stream)
+		{
+			try
+			{
+				fReader = new BufferedReader(new InputStreamReader(stream,
+						"UTF-8"));
+			}
+			catch(UnsupportedEncodingException e)
+			{
+				//TODO DescentUnittestPlugin.log(e);
+				System.out.println(e);
+			}
+		}
+		
+		void startMonitoring()
+		{
+			if (fThread == null)
+			{
+				fThread= new Thread(new Runnable()
+				{
+					public void run()
+					{
+						read();
+					}
+				}); 
+				
+	            fThread.setDaemon(true);
+	            fThread.setPriority(Thread.MIN_PRIORITY);
+				fThread.start();
+			}
+		}
+		
+		private void read()
+		{
+			lastSleep = System.currentTimeMillis();
+			long currentTime = lastSleep;
+			while (true)
+			{
+				try
+				{
+					String text = fReader.readLine();
+					if (null == text)
+						break;
+					else
+						// TODO interpret(text);
+						System.out.println("APPENDED: " + text.trim());
+				}
+				catch (IOException e)
+				{
+					//TODO DescentUnittestPlugin.log(e);
+					System.out.println(e);
+					return;
+				}
+
+				// Give up some CPU time to maintain UI responsiveness
+				currentTime = System.currentTimeMillis();
+				if (currentTime - lastSleep > 1000)
+				{
+					lastSleep = currentTime;
+					try
+					{
+						Thread.sleep(1);
+					}
+					catch (InterruptedException e)
+					{
+						// Do nothing
+					}
+				}
+			}
+
+			try
+			{
+				fReader.close();
+			}
+			catch (IOException e)
+			{
+				//TODO DescentUnittestPlugin.log(e);
+				System.out.println(e);
+			}
+		}
+	}
+	
 	public static final String FLUTE_VERSION = "flute 0.1";
 	
 	/**
@@ -72,7 +170,7 @@ public class FluteApplicationInstance
 			setState(new RunningOneTest(this));
 			
 			beforeWaitStateReturn();
-			fProxy.write("r " + signature + "\n"); //$NON-NLS-1$
+			fOut.write("r " + signature + "\r\n"); //$NON-NLS-1$
 			waitStateReturn();
 			
 			return ((RunningOneTest) fState).getResult();	
@@ -89,59 +187,7 @@ public class FluteApplicationInstance
 	 */
 	public void terminate() throws IOException
 	{
-		fProxy.write("x\n");
-	}
-	
-	private class FluteStreamListener implements IStreamListener
-	{	
-		private final StringBuilder fStreamBuffer = new StringBuilder();
-		
-		public void streamAppended(String text, IStreamMonitor monitor)
-		{
-			try {
-				fStreamBuffer.append(text);
-				
-				if (fStreamBuffer.toString().trim().equals(AWAITING_INPUT)) {
-					interpret(AWAITING_INPUT);
-					fStreamBuffer.setLength(0);
-				}
-				
-				int indexOfLine = fStreamBuffer.indexOf("\n"); //$NON-NLS-1$
-				if (indexOfLine == -1) return;
-				
-				text = fStreamBuffer.toString();
-				
-				int lastIndexOfLine = 0;
-				
-				while(indexOfLine != -1) {
-					String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
-					interpret(line);
-					
-					lastIndexOfLine = indexOfLine + 1;
-					indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine); //$NON-NLS-1$
-				}
-				
-				fStreamBuffer.delete(0, lastIndexOfLine);
-				
-				String remainder = fStreamBuffer.toString().trim();
-				
-				if (remainder.equals(AWAITING_INPUT)) {
-					interpret(AWAITING_INPUT);
-					fStreamBuffer.setLength(0);
-					
-				// Special case, may happen
-				} else if (remainder.endsWith(AWAITING_INPUT)) {
-					int index = remainder.length() - AWAITING_INPUT.length();
-					interpret(remainder.substring(0, index));
-					interpret(AWAITING_INPUT);
-					fStreamBuffer.setLength(0);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		fOut.write("x\r\n");
 	}
 	
 	static final String AWAITING_INPUT = "(flute)";
@@ -151,18 +197,18 @@ public class FluteApplicationInstance
 	private volatile boolean fWaitLockUsed;
 	
 	private IState fState;
-	private IState fWaitingState = new Waiting(this);
+	private final IState fWaitingState = new Waiting(this);
 	
-	private final IProcess fProcess;
-	private final IStreamsProxy fProxy;
+	private final int port;
 	
-	public FluteApplicationInstance(IProcess process)
+	private Writer fOut;
+	private Reader fIn;
+	
+	public FluteApplicationInstance(int port)
 	{
-		fProcess = process;
-		fProxy = fProcess.getStreamsProxy();
-		fProxy.getOutputStreamMonitor().addListener(
-				new FluteStreamListener());
-		setState(new StartingUp(this));
+		// Just save the port number, init() will actually create the
+		// connection
+		this.port = port;
 	}
 	
 	void beforeWaitStateReturn() {
@@ -200,45 +246,77 @@ public class FluteApplicationInstance
 	
 	// Note: this is just for ad-hoc internal testing & should be removed
 	// from the final version
-	public static void adHocTest() throws Exception
+	public static void main(String[] args) throws Exception
 	{
-		Process javaProc = (new ProcessBuilder(new String[] {
+		/*
+		Process proc = (new ProcessBuilder(new String[] {
 				"C:/Users/xycos/workspace/descent.unittest/testdata/" +
 					"src/test.exe"
 			})).start();
-		IProcess eclipseProc = DebugPlugin.newProcess(new Launch(null,
-				ILaunchManager.RUN_MODE, null), javaProc, "test");
-		FluteApplicationInstance instance = new FluteApplicationInstance(
-				eclipseProc);
+		FluteApplicationInstance instance = 
+			new FluteApplicationInstance(30587);
 		
-		FluteTestResult res;
-		
+		System.out.println("Starting test...");
 		instance.init();
 		
-		res = instance.runTest("sample.module1.0");
-		System.out.println("sample.module1.0 " + res.getResultType());
+		System.out.print("Running sample.module1.0... ");
+		FluteTestResult res = instance.runTest("sample.module1.0");
+		System.out.println(res.getResultType());
 		
-		res = instance.runTest("sample.module1.1");
-		System.out.println("sample.module1.1 " + res.getResultType());
-		
-		res = instance.runTest("sample.module1.2");
-		System.out.println("sample.module1.2 " + res.getResultType());
-		
-		res = instance.runTest("sample.module1.Bar.0");
-		System.out.println("sample.module1.Bar.0 " + res.getResultType());
-		
+		System.out.println("Shutting down...");
 		instance.terminate();
 		
 		Thread.sleep(1000); // Let it finish up whatever it's doing
 		try
 		{
 			System.out.println("App finished with exit code: " +
-					javaProc.exitValue());
+					proc.exitValue());
 		}
 		catch(IllegalThreadStateException e)
 		{
-			System.out.println("Had to manually kill the process...");
-			javaProc.destroy();
+			System.out.println("Had to manually kill the process");
+			proc.destroy();
+		}
+		*/
+		
+		System.out.println("Starting test...");
+		
+		Process proc = (new ProcessBuilder(new String[] {
+				"C:/Users/xycos/workspace/descent.unittest/testdata/" +
+					"src/test.exe"
+			})).start();
+		Socket sock = new Socket("127.0.0.1", 30587);
+		InputStream in = sock.getInputStream();
+		OutputStream out = sock.getOutputStream();
+		
+		LineByLineReader reader = new LineByLineReader(in);
+		reader.startMonitoring();
+		
+		Writer writer = new OutputStreamWriter(out, "UTF-8");
+		
+		Thread.sleep(500);
+		synchronized(System.out)
+		{
+			System.out.println("WRITING: r sample.module1.0");
+			writer.write("r sample.module1.0\r\n");
+		}
+		
+		Thread.sleep(500);
+		synchronized(System.out)
+		{
+			System.out.println("WRITING: x");
+			writer.write("x\r\n");
+		}
+		
+		try
+		{
+			System.out.println("App finished with exit code: " +
+					proc.exitValue());
+		}
+		catch(IllegalThreadStateException e)
+		{
+			System.out.println("Had to manually kill the process");
+			proc.destroy();
 		}
 	}
 }
