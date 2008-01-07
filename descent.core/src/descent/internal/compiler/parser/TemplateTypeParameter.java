@@ -11,14 +11,14 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 // DMD 1.020
 public class TemplateTypeParameter extends TemplateParameter {
 
-	public Type specType;
-	public Type defaultType;
+	public Type specType, sourceSpecType;
+	public Type defaultType, sourceDefaultType;
 
 	public TemplateTypeParameter(Loc loc, IdentifierExp ident, Type specType,
 			Type defaultType) {
 		super(loc, ident);
-		this.specType = specType;
-		this.defaultType = defaultType;
+		this.specType = this.sourceSpecType = specType;
+		this.defaultType = this.sourceDefaultType = defaultType;
 	}
 
 	@Override
@@ -26,8 +26,8 @@ public class TemplateTypeParameter extends TemplateParameter {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, specType);
-			TreeVisitor.acceptChildren(visitor, defaultType);
+			TreeVisitor.acceptChildren(visitor, sourceSpecType);
+			TreeVisitor.acceptChildren(visitor, sourceDefaultType);
 		}
 		visitor.endVisit(this);
 	}

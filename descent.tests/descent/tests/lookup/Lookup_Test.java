@@ -302,6 +302,18 @@ public class Lookup_Test extends AbstractLookupTest {
 		assertErrors();
 	}
 	
+	public void testHangBug() throws Exception {
+		one("");
+		two("string[] foo() { return [\"one\", \"two\"]; } const string[] x = foo();");
+		assertNoErrors();
+	}
+	
+	public void testHangBug2() throws Exception {
+		one("");
+		two("void foo() { return [\"one\"; }");
+		assertErrors();
+	}
+	
 	public void testNestedPackagesProblem1() throws Exception {
 		one("");
 		createCompilationUnit("first", "file.d", "");

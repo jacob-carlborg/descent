@@ -9,21 +9,24 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 // DMD 1.020
 public class TryCatchStatement extends Statement {
 
-	public Statement body;
-	public Array<Catch> catches;
+	public Statement body, sourceBody;
+	public Array<Catch> catches, sourceCatches;
 
 	public TryCatchStatement(Loc loc, Statement body, Array<Catch> catches) {
 		super(loc);
-		this.body = body;
+		this.body = this.sourceBody = body;
 		this.catches = catches;
+		if (this.catches != null) {
+			this.sourceCatches = new Array<Catch>(this.catches);
+		}
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, body);
-			TreeVisitor.acceptChildren(visitor, catches);
+			TreeVisitor.acceptChildren(visitor, sourceBody);
+			TreeVisitor.acceptChildren(visitor, sourceCatches);
 		}
 		visitor.endVisit(this);
 	}

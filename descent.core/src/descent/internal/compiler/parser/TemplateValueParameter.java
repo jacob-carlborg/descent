@@ -35,10 +35,10 @@ public class TemplateValueParameter extends TemplateParameter {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, valType);
+			TreeVisitor.acceptChildren(visitor, sourceValType);
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, specValue);
-			TreeVisitor.acceptChildren(visitor, defaultValue);
+			TreeVisitor.acceptChildren(visitor, sourceSpecValue);
+			TreeVisitor.acceptChildren(visitor, sourceDefaultValue);
 		}
 		visitor.endVisit(this);
 	}

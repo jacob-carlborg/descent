@@ -43,7 +43,8 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 
 	private String getHoverInfo(IEvaluationResult result) {
 		if (result == null) {
-			return "<html><body style='background-color:white;font-size:14px'><i>Cannot evaluate at compile-time</i></body></html>"; //$NON-NLS-1$
+			//return "<html><body style='background-color:white;font-size:14px'><i>Cannot evaluate at compile-time</i></body></html>"; //$NON-NLS-1$
+			return null;
 		}
 		
 		switch(result.getKind()) {

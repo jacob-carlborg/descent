@@ -7,19 +7,19 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class IftypeExp extends Expression {
 
-	public Type targ;
+	public Type targ, sourceTarg;
 	public IdentifierExp id;
 	public TOK tok;
-	public Type tspec;
+	public Type tspec, sourceTspec;
 	public TOK tok2;
 
 	public IftypeExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
 			TOK tok2) {
 		super(loc, TOK.TOKis);
-		this.targ = targ;
+		this.targ = this.sourceTarg = targ;
 		this.id = id;
 		this.tok = tok;
-		this.tspec = tspec;
+		this.tspec = this.sourceTspec = tspec;
 		this.tok2 = tok2;
 	}
 
@@ -32,9 +32,9 @@ public class IftypeExp extends Expression {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, targ);
+			TreeVisitor.acceptChildren(visitor, sourceTarg);
 			TreeVisitor.acceptChildren(visitor, id);
-			TreeVisitor.acceptChildren(visitor, tspec);
+			TreeVisitor.acceptChildren(visitor, sourceTspec);
 		}
 		visitor.endVisit(this);
 	}

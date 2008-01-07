@@ -17,22 +17,28 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 // DMD 1.020
 public class AssocArrayLiteralExp extends Expression {
 
-	public Expressions keys;
-	public Expressions values;
+	public Expressions keys, sourceKeys;
+	public Expressions values, sourceValues;
 
 	public AssocArrayLiteralExp(Loc loc, Expressions keys,
 			Expressions values) {
 		super(loc, TOK.TOKassocarrayliteral);
 		this.keys = keys;
 		this.values = values;
+		if (this.keys != null) {
+			this.sourceKeys = new Expressions(this.keys);
+		}
+		if (this.values != null) {
+			this.sourceValues = new Expressions(this.values);
+		}
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, keys);
-			TreeVisitor.acceptChildren(visitor, values);
+			TreeVisitor.acceptChildren(visitor, sourceKeys);
+			TreeVisitor.acceptChildren(visitor, sourceValues);
 		}
 		visitor.endVisit(this);
 	}

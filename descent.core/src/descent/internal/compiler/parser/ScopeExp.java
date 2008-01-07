@@ -6,18 +6,18 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ScopeExp extends Expression {
 
-	public IScopeDsymbol sds;
+	public IScopeDsymbol sds, sourceSds;
 
 	public ScopeExp(Loc loc, IScopeDsymbol pkg) {
 		super(loc, TOK.TOKimport);
-		this.sds = pkg;
+		this.sds = this.sourceSds = pkg;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, sds);
+			TreeVisitor.acceptChildren(visitor, sourceSds);
 		}
 		visitor.endVisit(this);
 	}

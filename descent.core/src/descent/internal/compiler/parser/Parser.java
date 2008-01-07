@@ -5803,6 +5803,10 @@ public class Parser extends Lexer {
 			if (token.value != TOKrbracket) {
 				while (true) {
 					Expression e2 = parseAssignExp();
+					if (e2 instanceof ErrorExp) {
+						break;
+					}
+					
 					if (token.value == TOKcolon
 							&& (keys != null || values.size() == 0)) {
 						nextToken();

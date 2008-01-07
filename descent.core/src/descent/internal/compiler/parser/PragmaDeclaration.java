@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 // DMD 1.020
 public class PragmaDeclaration extends AttribDeclaration {
 
-	public Expressions args;
+	public Expressions args, sourceArgs;
 
 	public PragmaDeclaration(Loc loc, IdentifierExp ident,
 			Expressions args, Dsymbols decl) {
@@ -19,13 +19,16 @@ public class PragmaDeclaration extends AttribDeclaration {
 		this.loc = loc;
 		this.ident = ident;
 		this.args = args;
+		if (args != null) {
+			sourceArgs = new Expressions(args);
+		}
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, args);
+			TreeVisitor.acceptChildren(visitor, sourceArgs);
 			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);

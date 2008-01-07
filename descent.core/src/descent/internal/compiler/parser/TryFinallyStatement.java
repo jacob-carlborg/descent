@@ -6,8 +6,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class TryFinallyStatement extends Statement {
 
-	public Statement body;
-	public Statement finalbody;
+	public Statement body, sourceBody;
+	public Statement finalbody, sourceFinalBody;
 	public boolean isTryCatchFinally;
 
 	public TryFinallyStatement(Loc loc, Statement body, Statement finalbody) {
@@ -17,8 +17,8 @@ public class TryFinallyStatement extends Statement {
 	public TryFinallyStatement(Loc loc, Statement body, Statement finalbody,
 			boolean isTryCatchFinally) {
 		super(loc);
-		this.body = body;
-		this.finalbody = finalbody;
+		this.body = this.sourceBody = body;
+		this.finalbody = this.sourceFinalBody = finalbody;
 		this.isTryCatchFinally = isTryCatchFinally;
 	}
 
@@ -26,8 +26,8 @@ public class TryFinallyStatement extends Statement {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, body);
-			TreeVisitor.acceptChildren(visitor, finalbody);
+			TreeVisitor.acceptChildren(visitor, sourceBody);
+			TreeVisitor.acceptChildren(visitor, sourceFinalBody);
 		}
 		visitor.endVisit(this);
 	}

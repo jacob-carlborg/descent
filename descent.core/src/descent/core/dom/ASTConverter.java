@@ -500,10 +500,10 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(AssocArrayLiteralExp a) {
 		AssociativeArrayLiteral b = new AssociativeArrayLiteral(ast);
-		if (a.keys != null) {
-			for(int i = 0; i < a.keys.size(); i++) {
-				Expression key = a.keys.get(i);
-				Expression value = a.values.get(i);
+		if (a.sourceKeys != null) {
+			for(int i = 0; i < a.sourceKeys.size(); i++) {
+				Expression key = a.sourceKeys.get(i);
+				Expression value = a.sourceValues.get(i);
 				AssociativeArrayLiteralFragment fragment = new AssociativeArrayLiteralFragment(ast);
 				descent.core.dom.Expression convetedKey = convert(key);
 				if (convetedKey != null) {
@@ -727,8 +727,8 @@ public class ASTConverter {
 			convertModifiers(varToReturn.modifiers(), first.modifiers);
 		}
 		
-		if (first.basetype != null) {
-			varToReturn.setType(convert(first.basetype));
+		if (first.sourceBasetype != null) {
+			varToReturn.setType(convert(first.sourceBasetype));
 		}
 		
 		for(Object var : decls) {
@@ -793,14 +793,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.TryStatement convert(TryCatchStatement a) {
 		descent.core.dom.TryStatement b = new descent.core.dom.TryStatement(ast);
-		if (a.body != null) {
-			descent.core.dom.Statement convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
-		if (a.catches != null) {
-			for(Catch c : a.catches) {
+		if (a.sourceCatches != null) {
+			for(Catch c : a.sourceCatches) {
 				CatchClause convertedCatch = convert(c);
 				if (convertedCatch != null) {
 					b.catchClauses().add(convertedCatch);
@@ -814,8 +814,8 @@ public class ASTConverter {
 	public descent.core.dom.TryStatement convert(TryFinallyStatement a) {
 		TryStatement b = null;
 		descent.core.dom.Statement convertedBody = null;
-		if (a.body != null) {
-			convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			convertedBody = convert(a.sourceBody);
 		}
 		if (a.isTryCatchFinally) {
 			b = (TryStatement) convertedBody;			
@@ -827,8 +827,8 @@ public class ASTConverter {
 			b.setSourceRange(a.start, a.length);
 		}
 		if (b != null) {
-			if (a.finalbody != null) {
-				b.setFinally(convert(a.finalbody));
+			if (a.sourceFinalBody != null) {
+				b.setFinally(convert(a.sourceFinalBody));
 			}
 		}
 		return b;
@@ -836,8 +836,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(IftypeExp a) {
 		descent.core.dom.Type convertedTarg = null;
-		if (a.targ != null) {
-			convertedTarg = convert(a.targ);
+		if (a.sourceTarg != null) {
+			convertedTarg = convert(a.sourceTarg);
 		}
 		if (a.tok2 == TOK.TOKreserved) {
 			descent.core.dom.IsTypeExpression b = new descent.core.dom.IsTypeExpression(ast);
@@ -848,8 +848,8 @@ public class ASTConverter {
 			if (a.id != null) {
 				b.setName((SimpleName) convert(a.id));
 			}
-			if (a.tspec != null) {
-				b.setSpecialization(convert(a.tspec));
+			if (a.sourceTspec != null) {
+				b.setSpecialization(convert(a.sourceTspec));
 			}
 			b.setSourceRange(a.start, a.length);
 			
@@ -916,7 +916,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName((SimpleName) convert(a.ident));
 		}
-		convertExpressions(b.arguments(), a.args);
+		convertExpressions(b.arguments(), a.sourceArgs);
 		convertDeclarations(b.declarations(), a.decl);
 		fillDeclaration(b, a);
 		return b;
@@ -927,14 +927,15 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName((SimpleName) convert(a.ident));
 		}
-		convertExpressions(b.arguments(), a.args);
-		if (a.body != null) {
-			b.setBody(convert(a.body));
+		convertExpressions(b.arguments(), a.sourceArgs);
+		if (a.sourceBody != null) {
+			b.setBody(convert(a.sourceBody));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
+	// TODO ASTConverter use source
 	public descent.core.dom.TemplateMixinDeclaration convert(TemplateMixin a) {
 		descent.core.dom.TemplateMixinDeclaration b = new descent.core.dom.TemplateMixinDeclaration(ast);
 		if (a.ident != null) {
@@ -991,8 +992,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(ScopeExp a) {
 		descent.core.dom.TypeExpression b = new descent.core.dom.TypeExpression(ast);
-		if (a.sds != null) {
-			descent.core.dom.Type converted = (descent.core.dom.Type) convert((ScopeDsymbol) a.sds); // SEMANTIC
+		if (a.sourceSds != null) {
+			descent.core.dom.Type converted = (descent.core.dom.Type) convert((ScopeDsymbol) a.sourceSds);
 			if (converted != null) {
 				b.setType(converted);
 			}
@@ -1006,6 +1007,7 @@ public class ASTConverter {
 		return convertParenthesizedExpression(a, b);
 	}
 	
+	// TODO ASTConverter use source
 	public descent.core.dom.TemplateType convert(TemplateInstanceWrapper a) {
 		TemplateInstance tempinst = a.tempinst;
 		TemplateType tt = new TemplateType(ast);
@@ -1024,6 +1026,7 @@ public class ASTConverter {
 		return tt;
 	}
 	
+	// TODO ASTConverter use source
 	public descent.core.dom.TemplateType convert(TemplateInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
 		if (a.name != null) {
@@ -1039,6 +1042,7 @@ public class ASTConverter {
 		return b;
 	}
 	
+	// TODO ASTConverter use source
 	public descent.core.dom.Expression convert(DotTemplateInstanceExp a) {
 		descent.core.dom.DotTemplateTypeExpression b = new descent.core.dom.DotTemplateTypeExpression(ast);
 		if (a.sourceE1 != null) {
@@ -1102,11 +1106,11 @@ public class ASTConverter {
 	public descent.core.dom.TypeTemplateParameter convert(TemplateTypeParameter a) {
 		descent.core.dom.TypeTemplateParameter b = new descent.core.dom.TypeTemplateParameter(ast);
 		b.setName((SimpleName) convert(a.ident));
-		if (a.defaultType != null) {
-			b.setDefaultType(convert(a.defaultType));
+		if (a.sourceDefaultType != null) {
+			b.setDefaultType(convert(a.sourceDefaultType));
 		}
-		if (a.specType != null) {
-			b.setSpecificType(convert(a.specType));
+		if (a.sourceSpecType != null) {
+			b.setSpecificType(convert(a.sourceSpecType));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1132,11 +1136,11 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		if (a.defaultAlias != null) {
-			b.setDefaultType(convert(a.defaultAlias));
+		if (a.sourceDefaultAlias != null) {
+			b.setDefaultType(convert(a.sourceDefaultAlias));
 		}
-		if (a.specAliasT != null) {
-			b.setSpecificType(convert(a.specAliasT));
+		if (a.sourceSpecAliasT != null) {
+			b.setSpecificType(convert(a.sourceSpecAliasT));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1199,6 +1203,7 @@ public class ASTConverter {
 		return convertParenthesizedExpression(a, b);
 	}
 	
+	// TODO ASTConverter use source
 	public descent.core.dom.Expression convert(NewAnonClassExp a) {
 		descent.core.dom.NewAnonymousClassExpression b = new descent.core.dom.NewAnonymousClassExpression(ast);
 		if (a.thisexp != null) {
@@ -1288,8 +1293,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(TypeDotIdExp a) {
 		descent.core.dom.TypeDotIdentifierExpression b = new descent.core.dom.TypeDotIdentifierExpression(ast);
-		if (a.type != null) {
-			descent.core.dom.Type convertedType = convert(a.type);
+		if (a.sourceType != null) {
+			descent.core.dom.Type convertedType = convert(a.sourceType);
 			if (convertedType != null) {
 				b.setType(convertedType);
 			}
@@ -1380,6 +1385,7 @@ public class ASTConverter {
 		return b;
 	}
 	
+	// TODO ASTConverter use source
 	public descent.core.dom.TypedefDeclarationFragment convert(TypedefDeclaration a) {
 		descent.core.dom.TypedefDeclarationFragment b = new descent.core.dom.TypedefDeclarationFragment(ast);
 		if (a.ident != null) {

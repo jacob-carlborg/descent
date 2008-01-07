@@ -8,15 +8,18 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class PragmaStatement extends Statement {
 
 	public IdentifierExp ident;
-	public Expressions args;
-	public Statement body;
+	public Expressions args, sourceArgs;
+	public Statement body, sourceBody;
 
 	public PragmaStatement(Loc loc, IdentifierExp ident, Expressions args,
 			Statement body) {
 		super(loc);
 		this.ident = ident;
 		this.args = args;
-		this.body = body;
+		if (args != null) {
+			this.sourceArgs = new Expressions(args);
+		}
+		this.body = this.sourceBody = body;		
 	}
 
 	@Override
@@ -24,8 +27,8 @@ public class PragmaStatement extends Statement {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, args);
-			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, sourceArgs);
+			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
 	}

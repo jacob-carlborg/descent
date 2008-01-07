@@ -10,15 +10,15 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 // DMD 1.020
 public class TemplateAliasParameter extends TemplateParameter {
 
-	public Type specAliasT;
-	public Type defaultAlias;
+	public Type specAliasT, sourceSpecAliasT;
+	public Type defaultAlias, sourceDefaultAlias;
 	public IDsymbol specAlias;
 
 	public TemplateAliasParameter(Loc loc, IdentifierExp ident,
 			Type specAliasT, Type defaultAlias) {
 		super(loc, ident);
-		this.specAliasT = specAliasT;
-		this.defaultAlias = defaultAlias;
+		this.specAliasT = this.sourceSpecAliasT = specAliasT;
+		this.defaultAlias = this.sourceDefaultAlias = defaultAlias;
 
 		this.specAlias = null;
 	}
@@ -28,7 +28,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, defaultAlias);
+			TreeVisitor.acceptChildren(visitor, sourceSpecAliasT);
+			TreeVisitor.acceptChildren(visitor, sourceDefaultAlias);
 		}
 		visitor.endVisit(this);
 	}
