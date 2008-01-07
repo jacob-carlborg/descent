@@ -382,7 +382,7 @@ public class JavaSearchResultPage extends AbstractTextSearchViewPage implements 
 		};
 	}
 	
-	int getElementLimit() {
+	public Integer getElementLimit() {
 		return fElementLimit;
 	}
 
