@@ -8,6 +8,7 @@
 package descent.internal.unittest.flute;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +32,8 @@ public class FluteApplicationInstance
 	static final String AWAITING_INPUT = "(flute)";
 	private static final String LOCALHOST  = "127.0.0.1";
 	
+	private SocketConnection fConn;
+	
 	private long fTimeout = 10000;
 	private final Object fWaitLock = new Object();
 	private volatile boolean fWaitLockUsed;
@@ -39,10 +42,6 @@ public class FluteApplicationInstance
 	private final IState fWaitingState = new Waiting(this);
 	
 	private final int fPort;
-	
-	private Socket fConn;
-	private OutputStream fOut;
-	private LineByLineReader fIn;
 	
 	/**
 	 * Creates a new FluteApplicationInstance to connect to the specified
@@ -80,10 +79,8 @@ public class FluteApplicationInstance
 		{	
 			beforeWaitStateReturn();
 			
-			fConn = new Socket(LOCALHOST, fPort);
-			fIn = new LineByLineReader(fConn.getInputStream());
-			fOut = fConn.getOutputStream();
-			fIn.startMonitoring();
+			// Make the connection (interpretation will begin automatically)
+			fConn = new SocketConnection(fPort);
 			
 			waitStateReturn();
 			assert(((StartingUp) fState).hasCorrectVersion);
@@ -109,7 +106,7 @@ public class FluteApplicationInstance
 			setState(new RunningOneTest(this));
 			
 			beforeWaitStateReturn();
-			write("r " + signature + "\r\n"); //$NON-NLS-1$
+			fConn.write("r " + signature + "\r\n"); //$NON-NLS-1$
 			waitStateReturn();
 			
 			return ((RunningOneTest) fState).getResult();	
@@ -128,7 +125,7 @@ public class FluteApplicationInstance
 	{
 		try
 		{
-			write("x\r\n");
+			fConn.write("x\r\n");
 		}
 		finally
 		{
@@ -169,148 +166,138 @@ public class FluteApplicationInstance
 		fState.interpret(text.trim());
 	}
 	
-	private void write(String text) throws IOException
+	private class SocketConnection implements Closeable
 	{
-		fOut.write(text.getBytes());
-	}
-	
-	/**
-	 * Non-blocking mechanism for reading socket input line-by-line
-	 * and forwarding calls to the interpret() method
-	 * 
-	 * @author Robert Fraser
-	 */
-	private class LineByLineReader
-	{		
-		private Thread fThread;
-		private BufferedReader fReader;
-		private long lastSleep;
-		
-		LineByLineReader(InputStream stream)
+		private final Socket socket;
+		private final OutputStream out;
+		private final LineByLineReader in;
+
+		private static final String LOCALHOST = "127.0.0.1";
+
+		SocketConnection(int port)
+				throws IOException
+		{
+			socket = new Socket(LOCALHOST, port);
+			in = new LineByLineReader(socket.getInputStream());
+			out = socket.getOutputStream();
+			in.start();
+		}
+
+		void write(String text) throws IOException
+		{
+			out.write(text.getBytes());
+		}
+
+		/**
+		 * Closes the socket (the other stuff will close on its own)
+		 * 
+		 * @throws IOException
+		 */
+		public void close() throws IOException
 		{
 			try
 			{
-				fReader = new BufferedReader(new InputStreamReader(stream,
-						"UTF-8"));
+				socket.close();
 			}
-			catch(UnsupportedEncodingException e)
+			catch (IOException e)
 			{
-				DescentUnittestPlugin.log(e);
 			}
 		}
-		
-		void startMonitoring()
+
+		/**
+		 * Non-blocking mechanism for reading socket input line-by-line
+		 * and forwarding calls to the interpret() method
+		 * 
+		 * @author Robert Fraser
+		 */
+		private class LineByLineReader
 		{
-			if (fThread == null)
-			{
-				fThread= new Thread(new Runnable()
-				{
-					public void run()
-					{
-						read();
-					}
-				}); 
-				
-	            fThread.setDaemon(true);
-	            fThread.setPriority(Thread.MIN_PRIORITY);
-				fThread.start();
-			}
-		}
-		
-		void read()
-		{
-			lastSleep = System.currentTimeMillis();
-			long currentTime = lastSleep;
-			while (true)
+			private Thread thread;
+			private BufferedReader reader;
+			private long lastSleep;
+
+			LineByLineReader(InputStream stream)
 			{
 				try
 				{
-					String text = fReader.readLine();
-					if (null == text)
-						break;
-					else
-						interpret(text);
+					reader = new BufferedReader(new InputStreamReader(stream,
+							"UTF-8"));
 				}
-				catch(SocketException e)
+				catch (UnsupportedEncodingException e)
 				{
-					break;
+					reader = new BufferedReader(new InputStreamReader(stream));
+				}
+			}
+
+			void start()
+			{
+				if (thread == null)
+				{
+					thread = new Thread(new Runnable()
+					{
+						public void run()
+						{
+							read();
+						}
+					});
+
+					thread.setDaemon(true);
+					thread.setPriority(Thread.MIN_PRIORITY);
+					thread.start();
+				}
+			}
+
+			void read()
+			{
+				lastSleep = System.currentTimeMillis();
+				long currentTime = lastSleep;
+				while (true)
+				{
+					try
+					{
+						String text = reader.readLine();
+						if (null == text)
+							break;
+						else
+							interpret(text);
+					}
+					catch (SocketException e)
+					{
+						// If a socket exception is sent, it usually means
+						// we're done, since the socket was closed.
+						break;
+					}
+					catch (IOException e)
+					{
+						DescentUnittestPlugin.log(e);
+						return;
+					}
+
+					// Give up some CPU time to maintain UI responsiveness
+					currentTime = System.currentTimeMillis();
+					if (currentTime - lastSleep > 1000)
+					{
+						lastSleep = currentTime;
+						try
+						{
+							Thread.sleep(1);
+						}
+						catch (InterruptedException e)
+						{
+							// Do nothing
+						}
+					}
+				}
+
+				try
+				{
+					reader.close();
 				}
 				catch (IOException e)
 				{
 					DescentUnittestPlugin.log(e);
-					return;
-				}
-
-				// Give up some CPU time to maintain UI responsiveness
-				currentTime = System.currentTimeMillis();
-				if (currentTime - lastSleep > 1000)
-				{
-					lastSleep = currentTime;
-					try
-					{
-						Thread.sleep(1);
-					}
-					catch (InterruptedException e)
-					{
-						// Do nothing
-					}
 				}
 			}
-			
-			try
-			{
-				fReader.close();
-			}
-			catch (IOException e)
-			{
-				DescentUnittestPlugin.log(e);
-			}
-		}
-	}
-	
-	// Note: this is just for ad-hoc internal testing & should be removed
-	// from the final version
-	public static void main(String[] args) throws Exception
-	{
-		Process proc = (new ProcessBuilder(new String[] {
-				"C:/Users/xycos/workspace/descent.unittest/testdata/" +
-					"src/test.exe"
-			})).start();
-		FluteApplicationInstance instance = 
-			new FluteApplicationInstance(30587);
-		
-		System.out.println("Starting test...");
-		instance.init();
-		
-		System.out.print("Running sample.module1.0... ");
-		FluteTestResult res = instance.runTest("sample.module1.0");
-		System.out.println(res.getResultType());
-		
-		System.out.print("Running sample.module1.1... ");
-		res = instance.runTest("sample.module1.1");
-		System.out.println(res.getResultType());
-		
-		System.out.print("Running sample.module1.2... ");
-		res = instance.runTest("sample.module1.2");
-		System.out.println(res.getResultType());
-		
-		System.out.print("Running sample.module1.Bar.0... ");
-		res = instance.runTest("sample.module1.Bar.0");
-		System.out.println(res.getResultType());
-		
-		System.out.println("Shutting down...");
-		instance.terminate();
-		
-		Thread.sleep(1000); // Let it finish up whatever it's doing
-		try
-		{
-			System.out.println("App finished with exit code: " +
-					proc.exitValue());
-		}
-		catch(IllegalThreadStateException e)
-		{
-			System.out.println("Had to manually kill the process");
-			proc.destroy();
 		}
 	}
 }

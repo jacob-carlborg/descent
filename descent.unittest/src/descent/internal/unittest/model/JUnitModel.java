@@ -234,7 +234,7 @@ public final class JUnitModel {
 					ITestRunListener[] testRunListeners= DescentUnittestPlugin.getDefault().getTestRunListeners();
 					for (int i= 0; i < testRunListeners.length; i++) {
 						ITestRunListener testRunListener= testRunListeners[i];
-						testRunListener.testReran(testCaseElement.getId(), testCaseElement.getClassName(), testCaseElement.getTestMethodName(), status.getOldCode(), trace);
+						testRunListener.testReran(testCaseElement.getId(), testCaseElement.getTestMethodName(), status.getOldCode(), trace);
 					}
 				}
 			};

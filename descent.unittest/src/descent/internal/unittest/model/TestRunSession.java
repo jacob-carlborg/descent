@@ -451,14 +451,14 @@ public class TestRunSession {
 				return string;
 		}
 	
-		public void testReran(String testId, String testClass, String testName, int status, String trace) {
-			testReran(testId, testClass, testName, status, trace, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		public void testReran(String testId, String testName, int status, String trace) {
+			testReran(testId, testName, status, trace, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		/* (non-Javadoc)
 		 * @see descent.internal.unittest.model.ITestRunListener2#testReran(java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void testReran(String testId, String className, String testName, int statusCode, String trace, String expectedResult, String actualResult) {
+		public void testReran(String testId, String testName, int statusCode, String trace, String expectedResult, String actualResult) {
 			TestElement testElement= getTestElement(testId);
 			if (! (testElement instanceof TestCaseElement)) {
 				logUnexpectedTest(testId, testElement); //JTODO: rerun suites?

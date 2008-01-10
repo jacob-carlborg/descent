@@ -103,7 +103,7 @@ package descent.unittest;
 	 * @param trace the stack trace in the case of abnormal termination,
 	 * or the empty string if none
 	 */
-	public void testReran(String testId, String testClass, String testName, int status, String trace);
+	public void testReran(String testId, String testName, int status, String trace);
 }
 
 
