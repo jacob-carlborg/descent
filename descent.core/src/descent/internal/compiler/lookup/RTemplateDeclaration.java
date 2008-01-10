@@ -4,11 +4,13 @@ import java.util.List;
 
 import descent.core.IJavaElement;
 import descent.core.ISourceReference;
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.INode;
+import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.ITemplateDeclaration;
 import descent.internal.compiler.parser.Loc;
@@ -25,8 +27,6 @@ import descent.internal.compiler.parser.TemplateTupleParameter;
 /*
  * For now, a quick and dirty solution: parse the template and forward the
  * calls to it.
- * TODO: improve this if the template is simple, or is a class or template
- * function.
  */
 public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDeclaration {
 	
@@ -78,15 +78,37 @@ public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDecl
 	}
 
 	public ITemplateDeclaration overnext() {
-		// TODO this is wrong!
-		materialize();
-		return temp.overnext();
+		boolean foundMe = false;
+		
+		IScopeDsymbol parentS = (IScopeDsymbol) parent;
+		for(IDsymbol s : parentS.members()) {
+			if (s == this) {
+				foundMe = true;
+			} else if (foundMe && s.isTemplateDeclaration() != null &&
+					CharOperation.equals(s.ident().ident, ident().ident)) {
+				ITemplateDeclaration d = s.isTemplateDeclaration();
+				if (d != null) {
+					return d;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	public ITemplateDeclaration overroot() {
-		// TODO this is wrong!
-		materialize();
-		return temp.overroot();
+		IScopeDsymbol parentS = (IScopeDsymbol) parent;
+		for(IDsymbol s : parentS.members()) {
+			if (s.isTemplateDeclaration() != null &&
+					CharOperation.equals(s.ident().ident, ident().ident)) {
+				ITemplateDeclaration d = s.isTemplateDeclaration();
+				if (d != null) {
+					return d;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	public TemplateParameters parameters() {

@@ -1,5 +1,6 @@
 package descent.internal.core;
 
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.TypeBasic;
@@ -89,12 +90,67 @@ public interface ISignatureRequestor {
 	void acceptArgumentBreak(char c);
 
 	/**
-	 * The requestor has found an argument modifier.
+	 * The processor has found an argument modifier.
 	 * @param stc the modifier
 	 * @see STC#STCin
 	 * @see STC#STCout
 	 * @see STC#STClazy
 	 */
 	void acceptArgumentModifier(int stc);
+
+	/**
+	 * The processor will start signaling template parameters.
+	 */
+	void enterTemplateParameters();
+
+	/**
+	 * The processor stoped processing template parameters.
+	 */
+	void exitTemplateParameters();
+
+	/**
+	 * The processor has found a template tuple parameter.
+	 */
+	void acceptTemplateTupleParameter();
+
+	/**
+	 * The processor has found a template alias parameter and there
+	 * is a change that it will report the specific type.
+	 */
+	void enterTemplateAliasParameter();
+
+	/**
+	 * The processor has finished processing a template alias parameter
+	 */
+	void exitTemplateAliasParameter(String signature);
+
+	/**
+	 * The processor has found a template type parameter and there
+	 * is a change that it will report the specific type.
+	 */
+	void enterTemplateTypeParameter();
+
+	/**
+	 * The processor has finished processing a template type parameter
+	 */
+	void exitTemplateTypeParameter(String signature);
+
+	/**
+	 * The processor has found a template value parameter. Next it
+	 * will report a type and there is a change that it will report 
+	 * the specific value.
+	 */
+	void enterTemplateValueParameter();
+
+	/**
+	 * The processor is reporting the specific value of a
+	 * template value parameter.
+	 */
+	void acceptTemplateValueParameterSpecificValue(Expression exp);
+
+	/**
+	 * The processor has finished processing a template value parameter
+	 */
+	void exitTemplateValueParameter(String signature);
 
 }

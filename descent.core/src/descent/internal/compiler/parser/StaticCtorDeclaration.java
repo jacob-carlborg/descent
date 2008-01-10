@@ -112,7 +112,7 @@ public class StaticCtorDeclaration extends FuncDeclaration implements IStaticCto
 	
 	@Override
 	public char getSignaturePrefix() {
-		return ISignatureConstants.OTHER;
+		return ISignatureConstants.UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR;
 	}
 
 }

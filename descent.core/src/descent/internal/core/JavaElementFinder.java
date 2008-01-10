@@ -43,7 +43,8 @@ public class JavaElementFinder {
 		}
 	}
 	
-	private class InternalFinder implements ISignatureRequestor {
+	// TODO Descent templates!
+	private class InternalFinder extends SignatureRequestorAdapter {
 		
 		private IJavaElement element;
 		private Stack<String> stack = new Stack<String>();

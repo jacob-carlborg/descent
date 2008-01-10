@@ -110,5 +110,10 @@ public class TemplateTupleParameter extends TemplateParameter {
 		buf.writestring(ident.toChars());
 	    buf.writestring("...");
 	}
+	
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		sb.append(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER);
+	}
 
 }

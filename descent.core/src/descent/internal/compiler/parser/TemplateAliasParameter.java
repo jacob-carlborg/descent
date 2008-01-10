@@ -197,5 +197,14 @@ public class TemplateAliasParameter extends TemplateParameter {
 			defaultAlias.toCBuffer(buf, null, hgs, context);
 		}
 	}
+	
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER);
+		if (specAliasT != null) {
+			sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER);
+			specAliasT.appendSignature(sb);
+		}
+	}
 
 }

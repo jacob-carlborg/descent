@@ -59,6 +59,16 @@ public class SemanticHighlightings {
 	 * A named preference part that controls the highlighting of fields.
 	 */
 	public static final String FIELD="field"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of aliases.
+	 */
+	public static final String ALIAS="alias"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of typedefs.
+	 */
+	public static final String TYPEDEF="typedef"; //$NON-NLS-1$
 
 	/**
 	 * A named preference part that controls the highlighting of method declarations.
@@ -331,7 +341,7 @@ public class SemanticHighlightings {
 		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
 		 */
 		public boolean isEnabledByDefault() {
-			return true;
+			return false;
 		}
 
 		/*
@@ -346,9 +356,124 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE && 
+			return binding != null && binding.getKind() == IBinding.VARIABLE &&
+				((IVariableBinding) binding).isVariable() &&
 				!((IVariableBinding)binding).isLocal() &&
 				!((IVariableBinding)binding).isParameter();
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for aliases.
+	 */
+	private static final class AliasHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return ALIAS;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 128, 128);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return true;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_alias;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+			IBinding binding= token.getBinding();
+			return binding != null && binding.getKind() == IBinding.VARIABLE &&
+				((IVariableBinding) binding).isAlias();
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for typedefs.
+	 */
+	private static final class TypedefHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return TYPEDEF;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(128, 0, 0);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_typedef;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+			IBinding binding= token.getBinding();
+			return binding != null && binding.getKind() == IBinding.VARIABLE &&
+				((IVariableBinding) binding).isTypedef();
 		}
 	}
 
@@ -1571,6 +1696,8 @@ public class SemanticHighlightings {
 				new StaticFinalFieldHighlighting(),
 				new StaticFieldHighlighting(),
 				new FieldHighlighting(),
+				new AliasHighlighting(),
+				new TypedefHighlighting(),
 				new MethodDeclarationHighlighting(),
 				new StaticMethodInvocationHighlighting(),
 				new AbstractMethodInvocationHighlighting(),

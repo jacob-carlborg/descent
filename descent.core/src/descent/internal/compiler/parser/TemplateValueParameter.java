@@ -255,5 +255,16 @@ public class TemplateValueParameter extends TemplateParameter {
 			defaultValue.toCBuffer(buf, hgs, context);
 		}
 	}
+	
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
+		if (specValue != null) {
+			char[] exp = ASTNodeEncoder.encodeExpression(specValue);
+			sb.append(exp.length);
+			sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
+			sb.append(exp);
+		}
+	}
 
 }

@@ -3,6 +3,7 @@ package descent.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
@@ -10,6 +11,8 @@ import descent.internal.compiler.parser.TypeBasic;
 
 /**
  * A class for processing a signature.
+ * 
+ * @see ISignatureRequestor
  */
 public class SignatureProcessor implements ISignatureConstants {	
 	
@@ -66,6 +69,7 @@ public class SignatureProcessor implements ISignatureConstants {
 			case ALIAS:
 			case TYPEDEF:
 			case FUNCTION:
+			case TEMPLATE:
 				i++;
 				char c = signature.charAt(i);
 				if (!Character.isDigit(c)) {
@@ -84,33 +88,43 @@ public class SignatureProcessor implements ISignatureConstants {
 				if (first == FUNCTION) {
 					i = process0(signature, i, requestor);
 					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
+				} else if (first == TEMPLATE) {
+					requestor.enterTemplateParameters();
+					
+					while(signature.charAt(i) != TEMPLATE_PARAMETERS_BREAK) {
+						i = process0(signature, i, requestor);
+					}
+					i++;
+					
+					requestor.exitTemplateParameters();
+					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				} else {
 					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				}
 				
 				localPosition = -1;				
 				continue;
-			case OTHER:
+			case UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR:
 				i++;
 				requestor.acceptSymbol(first, null, localPosition, signature.substring(start, i));
 				localPosition = -1;
 				continue;
-			case 'D': { // delegate
+			case DELEGATE: {
 				i = process0(signature, i + 1, requestor);
 				requestor.acceptDelegate(signature.substring(start, i));
 				return i;
 			}
-			case 'P': { // pointer
+			case POINTER: { // pointer
 				i = process0(signature, i + 1, requestor);
 				requestor.acceptPointer(signature.substring(start, i));
 				return i;
 			}
-			case 'A': { // dynamic array
+			case DYNAMIC_ARRAY: { // dynamic array
 				i = process0(signature, i + 1, requestor);
 				requestor.acceptDynamicArray(signature.substring(start, i));
 				return i;
 			}
-			case 'G': { // static array
+			case STATIC_ARRAY: { // static array
 				int dimension = 0;
 				i++;
 				for(; i < signature.length(); i++) {
@@ -127,31 +141,33 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.acceptStaticArray(dimension, signature.substring(start, i));
 				return i;
 			}
-			case 'H': {// associative array
+			case ASSOCIATIVE_ARRAY: {// associative array
 				i = process0(signature, i + 1, requestor);
 				i = process0(signature, i, requestor);
 				requestor.acceptAssociativeArray(signature.substring(start, i));
 				return i;
 			}
-			case 'F': // Type function
-			case 'U':
-			case 'W':
-			case 'V':
-			case 'R': {
+			case LINK_D: // Type function
+			case LINK_C:
+			case LINK_WINDOWS:
+			case LINK_PASCAL:
+			case LINK_CPP: {
 				requestor.enterFunctionType();
 				
 				LINK link;
 				switch(first) {
-				case 'F': link = LINK.LINKd; break;
-				case 'U': link = LINK.LINKc; break;
-				case 'W': link = LINK.LINKwindows; break;
-				case 'V': link = LINK.LINKpascal; break;
-				case 'R': link = LINK.LINKcpp; break;
+				case LINK_D: link = LINK.LINKd; break;
+				case LINK_C: link = LINK.LINKc; break;
+				case LINK_WINDOWS: link = LINK.LINKwindows; break;
+				case LINK_PASCAL: link = LINK.LINKpascal; break;
+				case LINK_CPP: link = LINK.LINKcpp; break;
 				default: throw new IllegalStateException("Should not happen");
 				}
 				
 				i++;
-				while(signature.charAt(i) != 'X' && signature.charAt(i) != 'Y' && signature.charAt(i) != 'Z') {
+				while(signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_1 && 
+						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_2 && 
+						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_3) {
 					i = argumentModifier(signature, i, requestor);
 					i = process0(signature, i, requestor);
 				}
@@ -164,14 +180,63 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.exitFunctionType(link, signature.substring(start, i));
 				return i;
 			}
-			case 'J': // Argument modifiers
-			case 'K': 
-			case 'L':
+			case TEMPLATE_TUPLE_PARAMETER:
+				requestor.acceptTemplateTupleParameter();
+				return i + 1;
+			case TEMPLATE_ALIAS_PARAMETER:
+				requestor.enterTemplateAliasParameter();
+				
+				i++;
+				if (i < signature.length() && signature.charAt(i) == TEMPLATE_ALIAS_PARAMETER) {
+					i = process0(signature, i+1, requestor);
+				}
+				
+				requestor.exitTemplateAliasParameter(signature.substring(start, i));
+				return i;
+			case TEMPLATE_TYPE_PARAMETER:
+				requestor.enterTemplateTypeParameter();
+				
+				i++;
+				if (i < signature.length() && signature.charAt(i) == TEMPLATE_TYPE_PARAMETER) {
+					i = process0(signature, i+1, requestor);
+				}
+				
+				requestor.exitTemplateTypeParameter(signature.substring(start, i));
+				return i;
+			case TEMPLATE_VALUE_PARAMETER:
+				requestor.enterTemplateValueParameter();
+				
+				i = process0(signature, i + 1, requestor);
+				
+				c = signature.charAt(i);
+				if (i < signature.length() && Character.isDigit(c)) {
+					n = 0;
+					
+					while(c != TEMPLATE_VALUE_PARAMETER) {
+						n = 10 * n + (c - '0');
+						i++;
+						c = signature.charAt(i);
+					}
+					i++;
+					
+					requestor.acceptTemplateValueParameterSpecificValue(
+							ASTNodeEncoder.decodeExpression(
+									signature.substring(i, i + n).toCharArray()));
+					
+					i += n;
+				}
+				
+				requestor.exitTemplateValueParameter(signature.substring(start, i));
+				return i;
+			case MODIFIER_OUT:
+			case MODIFIER_REF: 
+			case MODIFIER_LAZY:
 				i = argumentModifier(signature, i, requestor);
 				continue;
-			case 'X': // Argument break
-			case 'Y':
-			case 'Z':
+			case TEMPLATE_PARAMETERS_BREAK: // Template parameters break
+			case FUNCTION_PARAMETERS_BREAK_1: // Argument break
+			case FUNCTION_PARAMETERS_BREAK_2:
+			case FUNCTION_PARAMETERS_BREAK_3:
 				return i;
 			case POSITION:
 				n = 0;
@@ -202,9 +267,9 @@ public class SignatureProcessor implements ISignatureConstants {
 	private static int argumentModifier(String signature, int i, ISignatureRequestor requestor) {
 		char c = signature.charAt(i);
 		switch(c) {
-		case 'J': requestor.acceptArgumentModifier(STC.STCout); i++; break;
-		case 'K': requestor.acceptArgumentModifier(STC.STCref); i++; break;
-		case 'L': requestor.acceptArgumentModifier(STC.STClazy); i++; break;
+		case MODIFIER_OUT: requestor.acceptArgumentModifier(STC.STCout); i++; break;
+		case MODIFIER_REF: requestor.acceptArgumentModifier(STC.STCref); i++; break;
+		case MODIFIER_LAZY: requestor.acceptArgumentModifier(STC.STClazy); i++; break;
 		default: requestor.acceptArgumentModifier(STC.STCin); break;
 		}
 		return i;

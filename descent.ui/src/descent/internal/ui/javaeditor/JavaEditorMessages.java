@@ -115,6 +115,8 @@ final class JavaEditorMessages extends NLS {
 	public static String OverrideIndicatorManager_open_error_messageHasLogEntry;
 	public static String SemanticHighlighting_job;
 	public static String SemanticHighlighting_field;
+	public static String SemanticHighlighting_alias;
+	public static String SemanticHighlighting_typedef;
 	public static String SemanticHighlighting_staticField;
 	public static String SemanticHighlighting_staticFinalField;
 	public static String SemanticHighlighting_methodDeclaration;

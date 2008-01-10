@@ -5,7 +5,7 @@ This document explains the signature of types and symbols in Descent.
      - For modules, the symbol @ is used: @4some6module
      - For classes, the letter C is used: C3Foo
      - For structs, the letter S is used: S3Foo
-     - For interfaces, the symbol | is used: $3Foo
+     - For interfaces, the symbol | is used: |3Foo
      - For unions, the symbol & is used: &3Foo
      - For enums, the symbol E is used: E3Foo
      - For enum members, the symbol ~ is used: ~3Foo
@@ -32,3 +32,11 @@ by the absolute start position of the symbol, folloed by the normal type signatu
 For invariants, unittests, static ctors and static dtors, it's the 
 signature of the enclosing symbol, followed by $,
 the position of it in the source file, and }.
+
+For templates, the symbol used is {. Following are the template parameters, followed by ':
+ - For an alias parameter, it's ]. If another ] comes, the specific type comes.
+ - For a tuple parameter, it's %.
+ - For a type parameter, it's #. If another # comes, the specific type comes.
+ - For a value parameter, it's "," and then follows the type. If a number follows, 
+   it's the length of the specific value expression, whose start is marked by
+   another ",".

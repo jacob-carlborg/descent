@@ -201,5 +201,13 @@ public class TemplateTypeParameter extends TemplateParameter {
 			defaultType.toCBuffer(buf, null, hgs, context);
 		}
 	}
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER);
+		if (specType != null) {
+			sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER);
+			specType.appendSignature(sb);
+		}
+	}
 
 }

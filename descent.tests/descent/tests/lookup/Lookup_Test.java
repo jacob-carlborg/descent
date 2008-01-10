@@ -321,5 +321,17 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("import first.second.file; void foo(FOO f) { f.x = 2; }");
 		assertNoErrors();
 	}
+	
+	public void testTemplate() throws Exception {
+		one("template Temp() { const int Temp = 3; }");
+		two("mixin Temp!();");
+		assertNoErrors();
+	}
+	
+	public void testTemplateOverload() throws Exception {
+		one("template Temp(T) { const int Temp = 3; } template Temp() { const int Temp = 3; }");
+		two("mixin Temp!();");
+		assertNoErrors();
+	}
 
 }

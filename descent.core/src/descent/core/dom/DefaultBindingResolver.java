@@ -51,6 +51,7 @@ import descent.internal.core.JavaProject;
 import descent.internal.core.LocalVariable;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.SignatureProcessor;
+import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
 
 class DefaultBindingResolver extends BindingResolver {
@@ -780,7 +781,8 @@ class DefaultBindingResolver extends BindingResolver {
 		
 	}
 	
-	private class SignatureSolver implements ISignatureRequestor {
+	// TODO Descent templates!
+	private class SignatureSolver extends SignatureRequestorAdapter {
 		
 		private Stack<Stack<IBinding>> stack = new Stack<Stack<IBinding>>();
 		

@@ -1,7 +1,5 @@
 package descent.internal.compiler.lookup;
 
-import static descent.internal.compiler.parser.STC.STCstatic;
-
 import java.util.List;
 
 import descent.core.Flags;
@@ -16,7 +14,6 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IAggregateDeclaration;
-import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IFuncDeclaration;
@@ -32,6 +29,8 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.util.Util;
+
+import static descent.internal.compiler.parser.STC.STCstatic;
 
 public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	

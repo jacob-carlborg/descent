@@ -1160,7 +1160,8 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 	return parameterTypes;
 }
 
-private static class ParameterTypesSignatureRequestor implements ISignatureRequestor {
+// TODO Descent templates!
+private static class ParameterTypesSignatureRequestor extends SignatureRequestorAdapter {
 	
 	private Stack<String> stack = new Stack<String>();
 	private int functionTypeCount;
@@ -2254,7 +2255,9 @@ public static char[] toCharArray(char[] methodSignature, char[] methodName, char
 }
 
 private final static char[] FUNCTION = "function".toCharArray();
-private static class ToCharArraySignatureRequestor implements ISignatureRequestor {
+
+// TODO Descent templates!
+private static class ToCharArraySignatureRequestor extends SignatureRequestorAdapter {
 	
 	private Stack<Stack<String>> stack = new Stack<Stack<String>>();
 	private int functionTypeCount;

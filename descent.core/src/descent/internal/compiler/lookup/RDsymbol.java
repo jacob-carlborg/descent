@@ -74,6 +74,7 @@ import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.SignatureProcessor;
+import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
 
 public abstract class RDsymbol extends RNode implements IDsymbol {
@@ -599,7 +600,8 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		return symbol;
 	}
 	
-	private class SignatureToType implements ISignatureRequestor {
+	// TODO Descent templates!
+	private class SignatureToType extends SignatureRequestorAdapter {
 		
 		private Stack<Type> typesStack = new Stack<Type>();
 		private Stack<IDsymbol> symbolStack = new Stack<IDsymbol>();

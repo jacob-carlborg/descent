@@ -1,5 +1,6 @@
 package descent.internal.core;
 
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.TypeBasic;
 
@@ -50,6 +51,46 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	}
 
 	public void exitFunctionType(LINK link, String signature) {
+		
+	}
+	
+	public void acceptTemplateTupleParameter() {
+		
+	}
+	
+	public void acceptTemplateValueParameterSpecificValue(Expression exp) {
+		
+	}
+	
+	public void enterTemplateAliasParameter() {
+		
+	}
+	
+	public void enterTemplateParameters() {
+		
+	}
+	
+	public void enterTemplateTypeParameter() {
+		
+	}
+	
+	public void enterTemplateValueParameter() {
+		
+	}
+	
+	public void exitTemplateAliasParameter(String signature) {
+		
+	}
+	
+	public void exitTemplateParameters() {
+		
+	}
+	
+	public void exitTemplateTypeParameter(String signature) {
+		
+	}
+	
+	public void exitTemplateValueParameter(String signature) {
 		
 	}
 

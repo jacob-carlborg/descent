@@ -674,29 +674,14 @@ public class SemanticMixin {
 			sb.append(aThis.ident().ident);
 			if (aThis instanceof IFuncDeclaration) {
 				aThis.type().appendSignature(sb);
+			} else if (aThis instanceof ITemplateDeclaration) {
+				ITemplateDeclaration temp = (ITemplateDeclaration) aThis;
+				for(TemplateParameter parameter : temp.parameters()) {
+					parameter.appendSignature(sb);
+				}
 			}
 			
 		}
-	}
-	
-	public static int[] computeScopeNumbers(IDsymbol aThis, Scope scope) {
-		List<Integer> nums = new ArrayList<Integer>();
-		
-		Scope sc = scope.enclosing;
-		while(sc != null && sc.func == aThis.parent()) {
-			nums.add(sc.numberForLocalVariables);
-			sc = sc.enclosing;
-		}
-		
-		if (nums.isEmpty()) {
-			return null;
-		}
-
-		int[] scopeNumbers = new int[nums.size()];
-		for(int i = nums.size() - 1, j = 0; i >= 0; i--, j++) {
-			scopeNumbers[j] = nums.get(i);
-		}
-		return scopeNumbers;
 	}
 	
 	/*
