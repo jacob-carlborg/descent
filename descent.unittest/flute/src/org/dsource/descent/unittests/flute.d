@@ -490,7 +490,7 @@ else static if(cn.kuehne.flectioned.inPhobos)
 		version(FluteCommandLine)
 			writef(str);
 		else
-			stream.write(str);
+			stream.writeString(str);
 	}
 	
 	private char[] readln()
@@ -626,7 +626,7 @@ private class TestResult
 					AssertError ae = cast(AssertError) e;
 					assert(ae !is null);
 					write("Assertion failed in " ~ ae.filename ~ " at line " ~
-						itoa(ae.linnum));
+						itoa(ae.linnum) ~  " ");
 					char[] msg = extractMessage(ae.msg);
 					if(msg)
 						write(": " ~ msg);

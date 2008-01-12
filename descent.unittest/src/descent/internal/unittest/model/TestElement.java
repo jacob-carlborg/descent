@@ -188,12 +188,10 @@ public abstract class TestElement {
 			parent.childChangedStatus(this, status);
 	}
 	
-	public void setStatus(Status status, String trace, String expected, String actual) {
+	public void setStatus(Status status, String trace) {
 		//JTODO: notify about change?
 		//JTODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
 		fTrace= trace;
-		fExpected= expected;
-		fActual= actual;
 		setStatus(status);
 	}
 

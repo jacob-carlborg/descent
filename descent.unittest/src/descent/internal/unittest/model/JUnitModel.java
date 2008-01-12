@@ -37,7 +37,7 @@ import descent.core.JavaCore;
 import descent.unittest.ITestRunListener;
 
 import descent.internal.unittest.DescentUnittestPlugin;
-import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
+import descent.internal.unittest.launcher.JUnitLaunchConfiguration;
 import descent.internal.unittest.model.TestElement.Status;
 import descent.internal.unittest.ui.JUnitPreferencesConstants;
 import descent.internal.unittest.ui.TestRunnerViewPart;
@@ -83,8 +83,8 @@ public final class JUnitModel {
 				return;
 			
 			// test whether the launch defines the JUnit attributes
-			String portStr= launch.getAttribute(JUnitBaseLaunchConfiguration.PORT_ATTR);
-			String projectStr= launch.getAttribute(JUnitBaseLaunchConfiguration.TESTPROJECT_ATTR);
+			String portStr= launch.getAttribute(JUnitLaunchConfiguration.PORT_ATTR);
+			String projectStr= launch.getAttribute(JUnitLaunchConfiguration.TESTPROJECT_ATTR);
 			if (portStr == null || projectStr == null)
 				return;
 			
@@ -214,7 +214,7 @@ public final class JUnitModel {
 					}
 				}
 				
-				public void testFailed(TestElement testElement, Status status, String trace, String expected, String actual) {
+				public void testFailed(TestElement testElement, Status status, String trace) {
 					ITestRunListener[] testRunListeners= DescentUnittestPlugin.getDefault().getTestRunListeners();
 					for (int i= 0; i < testRunListeners.length; i++) {
 						ITestRunListener testRunListener= testRunListeners[i];
@@ -230,7 +230,7 @@ public final class JUnitModel {
 					}
 				}
 				
-				public void testReran(TestCaseElement testCaseElement, Status status, String trace, String expectedResult, String actualResult) {
+				public void testReran(TestCaseElement testCaseElement, Status status, String trace) {
 					ITestRunListener[] testRunListeners= DescentUnittestPlugin.getDefault().getTestRunListeners();
 					for (int i= 0; i < testRunListeners.length; i++) {
 						ITestRunListener testRunListener= testRunListeners[i];

@@ -99,7 +99,7 @@ import descent.internal.ui.viewsupport.ViewHistory;
 
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
-import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
+import descent.internal.unittest.launcher.JUnitLaunchConfiguration;
 import descent.internal.unittest.model.ITestRunSessionListener;
 import descent.internal.unittest.model.ITestSessionListener;
 import descent.internal.unittest.model.TestCaseElement;
@@ -451,7 +451,7 @@ public class TestRunnerViewPart extends ViewPart {
 			registerInfoMessage(status); 
 		}
 
-		public void testFailed(TestElement testElement, TestElement.Status status, String trace, String expected, String actual) {
+		public void testFailed(TestElement testElement, TestElement.Status status, String trace) {
 			if (isAutoScroll()) {
 				fTestViewer.registerFailedForAutoScroll(testElement);
 			}
@@ -474,7 +474,7 @@ public class TestRunnerViewPart extends ViewPart {
 			fTestViewer.registerViewerUpdate(testCaseElement);
 		}
 
-		public void testReran(TestCaseElement testCaseElement, TestElement.Status status, String trace, String expectedResult, String actualResult) {
+		public void testReran(TestCaseElement testCaseElement, TestElement.Status status, String trace) {
 			fTestViewer.registerViewerUpdate(testCaseElement);
 			postSyncProcessChanges();
 			showFailure(testCaseElement);
@@ -862,11 +862,11 @@ public class TestRunnerViewPart extends ViewPart {
 
 	private ILaunchConfiguration prepareLaunchConfigForRelaunch(ILaunchConfiguration configuration) {
 		try {
-			String attribute= configuration.getAttribute(JUnitBaseLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
+			String attribute= configuration.getAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
 			if (attribute.length() != 0) {
 				String configName= Messages.format(JUnitMessages.TestRunnerViewPart_configName, configuration.getName()); 
 				ILaunchConfigurationWorkingCopy tmp= configuration.copy(configName); 
-				tmp.setAttribute(JUnitBaseLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
+				tmp.setAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
 				return tmp;
 			}
 		} catch (CoreException e) {
@@ -888,7 +888,7 @@ public class TestRunnerViewPart extends ViewPart {
 				if (launchConfiguration != null) {
 					try {
 						String oldName= launchConfiguration.getName(); 
-						String oldFailuresFilename= launchConfiguration.getAttribute(JUnitBaseLaunchConfiguration.FAILURES_FILENAME_ATTR, (String) null);
+						String oldFailuresFilename= launchConfiguration.getAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, (String) null);
 						String configName;
 						if (oldFailuresFilename != null) {
 							configName= oldName;
@@ -896,7 +896,7 @@ public class TestRunnerViewPart extends ViewPart {
 							configName= Messages.format(JUnitMessages.TestRunnerViewPart_rerunFailedFirstLaunchConfigName, oldName); 
 						}
 						ILaunchConfigurationWorkingCopy tmp= launchConfiguration.copy(configName); 
-						tmp.setAttribute(JUnitBaseLaunchConfiguration.FAILURES_FILENAME_ATTR, createFailureNamesFile());
+						tmp.setAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, createFailureNamesFile());
 						tmp.launch(fTestRunSession.getLaunch().getLaunchMode(), null);	
 						return;	
 					} catch (CoreException e) {

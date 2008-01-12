@@ -2,6 +2,9 @@ package descent.internal.unittest.flute;
 
 public class FluteTestResult
 {
+	private String file;
+	private int line;
+	
 	public static enum ResultType
 	{
 		PASSED,

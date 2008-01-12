@@ -278,7 +278,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 		updateProjectFromConfig(config);
 		String containerHandle= ""; //$NON-NLS-1$
 		try {
-			containerHandle = config.getAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+			containerHandle = config.getAttribute(JUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
 		} catch (CoreException ce) {			
 		}
 		
@@ -299,7 +299,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 		String containerHandle= ""; //$NON-NLS-1$
 		IJavaElement containerElement = null;
 		try {
-			containerHandle = config.getAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+			containerHandle = config.getAttribute(JUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
 			if (containerHandle.length() > 0) {
 				containerElement= JavaCore.create(containerHandle);
 			}
@@ -321,13 +321,13 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
 		if (fTestContainerRadioButton.getSelection() && fContainerElement != null) {
 			//TODO config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, fContainerElement.getJavaProject().getElementName());
-			config.setAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fContainerElement.getHandleIdentifier());
+			config.setAttribute(JUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fContainerElement.getHandleIdentifier());
 			//TODO config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, ""); //$NON-NLS-1$
 		} else {
 			// TODO config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
 			// TODO config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, fTestText.getText());
-			config.setAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
-			config.setAttribute(JUnitBaseLaunchConfiguration.TESTNAME_ATTR, fOriginalTestMethodName);
+			config.setAttribute(JUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+			config.setAttribute(JUnitLaunchConfiguration.TESTNAME_ATTR, fOriginalTestMethodName);
 		}
 	}
 	
@@ -559,7 +559,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 			// for these attributes being set on a config if there is nothing in the
 			// corresponding text boxes)
 			// TODO config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
-			config.setAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+			config.setAttribute(JUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
 		}
 		initializeTestAttributes(javaElement, config);
 	}
@@ -572,7 +572,7 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 	}
 
 	private void initializeTestContainer(IJavaElement javaElement, ILaunchConfigurationWorkingCopy config) {
-		config.setAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, javaElement.getHandleIdentifier());
+		config.setAttribute(JUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, javaElement.getHandleIdentifier());
 		initializeName(config, javaElement.getElementName());
 	}
 

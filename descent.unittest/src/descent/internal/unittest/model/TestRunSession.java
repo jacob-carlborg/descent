@@ -411,15 +411,10 @@ public class TestRunSession {
 			}
 		}
 		
-		
-		public void testFailed(int status, String testId, String testName, String trace) {
-			testFailed(status, testId, testName, trace, null, null);
-		}
-		
 		/* (non-Javadoc)
 		 * @see descent.internal.unittest.model.ITestRunListener2#testFailed(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void testFailed(int statusCode, String testId, String testName, String trace, String expected, String actual) {
+		public void testFailed(int statusCode, String testId, String testName, String trace) {
 			TestElement testElement= getTestElement(testId);
 			if (testElement == null) {
 				logUnexpectedTest(testId, testElement);
@@ -427,7 +422,7 @@ public class TestRunSession {
 			}
 
 			Status status= Status.convert(statusCode);
-			setStatus(testElement, status, trace, nullifyEmpty(expected), nullifyEmpty(actual));
+			setStatus(testElement, status, trace);
 			
 			if (statusCode == ITestRunListener.STATUS_ERROR) {
 				fErrorCount++;
@@ -437,7 +432,7 @@ public class TestRunSession {
 			
 			Object[] listeners= fSessionListeners.getListeners();
 			for (int i= 0; i < listeners.length; ++i) {
-				((ITestSessionListener) listeners[i]).testFailed(testElement, status, trace, expected, actual);
+				((ITestSessionListener) listeners[i]).testFailed(testElement, status, trace);
 			}
 		}
 
@@ -450,15 +445,11 @@ public class TestRunSession {
 			else
 				return string;
 		}
-	
-		public void testReran(String testId, String testName, int status, String trace) {
-			testReran(testId, testName, status, trace, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		}
 		
 		/* (non-Javadoc)
 		 * @see descent.internal.unittest.model.ITestRunListener2#testReran(java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void testReran(String testId, String testName, int statusCode, String trace, String expectedResult, String actualResult) {
+		public void testReran(String testId, String testName, int statusCode, String trace) {
 			TestElement testElement= getTestElement(testId);
 			if (! (testElement instanceof TestCaseElement)) {
 				logUnexpectedTest(testId, testElement); //JTODO: rerun suites?
@@ -471,12 +462,12 @@ public class TestRunSession {
 				fErrorCount++;
 			else if (status == Status.FAILURE)
 				fFailureCount++;
-			testCaseElement.setStatus(status, trace, nullifyEmpty(expectedResult), nullifyEmpty(actualResult));
+			testCaseElement.setStatus(status, trace);
 			
 			Object[] listeners= fSessionListeners.getListeners();
 			for (int i= 0; i < listeners.length; ++i) {
 				//JTODO: post old & new status?
-				((ITestSessionListener) listeners[i]).testReran(testCaseElement, status, trace, expectedResult, actualResult);
+				((ITestSessionListener) listeners[i]).testReran(testCaseElement, status, trace);
 			}
 		}
 	
@@ -484,8 +475,8 @@ public class TestRunSession {
 			testElement.setStatus(status);
 		}
 		
-		private void setStatus(TestElement testElement, Status status, String trace, String expected, String actual) {
-			testElement.setStatus(status, trace, expected, actual);
+		private void setStatus(TestElement testElement, Status status, String trace) {
+			testElement.setStatus(status, trace);
 		}
 		
 		private void logUnexpectedTest(String testId, TestElement testElement) {

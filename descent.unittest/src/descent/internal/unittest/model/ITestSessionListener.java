@@ -68,7 +68,7 @@ public interface ITestSessionListener {
 	 * @param expected expected value
 	 * @param actual actual value
 	 */
-	public void testFailed(TestElement testElement, Status status, String trace, String expected, String actual);
+	public void testFailed(TestElement testElement, Status status, String trace);
 	/**
  	 * An individual test has been rerun.
 	 * 
@@ -80,6 +80,6 @@ public interface ITestSessionListener {
 	 * @param expectedResult expected value
 	 * @param actualResult actual value
 	 */
-	public void testReran(TestCaseElement testCaseElement, Status status, String trace, String expectedResult, String actualResult);
+	public void testReran(TestCaseElement testCaseElement, Status status, String trace);
 
 }

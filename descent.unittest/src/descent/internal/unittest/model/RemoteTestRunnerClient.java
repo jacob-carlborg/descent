@@ -399,33 +399,33 @@ public class RemoteTestRunnerClient implements Runnable
 
 			public void testReran(String testId, String testName, int status, String trace)
 			{
-				System.out.println("testReran(" + testId + ", " + testName + ", " +
-						+ status + ", " + trace + ");");
+				//System.out.println("testReran(" + testId + ", " + testName + ", " +
+				//		+ status + ", " + trace + ");");
 			}
 
 			public void testRunEnded(long elapsedTime)
 			{
-				System.out.println("testRunEnded();");
+				//System.out.println("testRunEnded();");
 			}
 
 			public void testRunStarted(int testCount)
 			{
-				System.out.println("testRunStarted();");
+				//System.out.println("testRunStarted();");
 			}
 
 			public void testRunStopped(long elapsedTime)
 			{
-				System.out.println("testRunStopped();");
+				//System.out.println("testRunStopped();");
 			}
 
 			public void testRunTerminated()
 			{
-				System.out.println("testRunTerminated();");
+				//System.out.println("testRunTerminated();");
 			}
 
 			public void testStarted(String testId, String testName)
 			{
-				System.out.println("testStarted(" + testId + ", " + testName + ");");
+				//System.out.println("testStarted(" + testId + ", " + testName + ");");
 			}
 		});
 		
