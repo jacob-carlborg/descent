@@ -154,5 +154,13 @@ public class CodeSelectVariable_Test extends AbstractModelTest {
 		
 		assertEquals(test.getAllTypes()[0], elements[0]);
 	}
+	
+	public void testSelectVarInForeach() throws Exception {
+		ICompilationUnit test = createCompilationUnit("test.d", "void foo(dchar[] s) { foreach(dchar d; s) { d = 0; } }");
+		
+		IJavaElement[] elements = test.codeSelect(44, 0);
+		assertEquals(1, elements.length);
+		assertNotNull(elements[0]);
+	}
 
 }

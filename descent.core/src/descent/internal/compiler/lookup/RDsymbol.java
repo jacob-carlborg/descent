@@ -876,6 +876,11 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		SemanticMixin.appendSignature(this, sb);
 	}
 	
+	public IDsymbol effectiveParent() {
+		// It's impossible that my parent is a FuncLiteralDeclaration
+		return parent;
+	}
+	
 	@Override
 	public String toString() {
 		return element.toString();

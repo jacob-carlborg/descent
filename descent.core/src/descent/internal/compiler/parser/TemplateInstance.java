@@ -902,7 +902,11 @@ public class TemplateInstance extends ScopeDsymbol {
 	
 	@Override
 	public String getSignature() {
-		return tempdecl.getSignature();
+		if (tempdecl != null) {
+			return tempdecl.getSignature();
+		} else {
+			return "";
+		}
 	}
 	
 	public void tiargs(Objects tiargs) {

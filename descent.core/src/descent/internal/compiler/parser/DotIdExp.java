@@ -110,6 +110,11 @@ public class DotIdExp extends UnaExp {
 		{
 			IDsymbol s;
 			ScopeExp ie = (ScopeExp) eright;
+			
+			// Descent: if it's null, problems were reported
+			if (ie.sds == null) {
+				return this;
+			}
 
 			s = ie.sds.search(loc, ident, 0, context);
 			

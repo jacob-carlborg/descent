@@ -725,6 +725,16 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 					s[0].parent = this;
 				}
 			}
+			
+			// Descent: do semantic of my members without reporting
+			// problems, in order to get code selection, code completion,
+			// code evaluation and bindings.
+			// TODO see if it's worth enabling this
+			// context.muteProblems++;
+			// for(IDsymbol member : members) {
+				// member.semantic(scope, context);
+			// }
+			// context.muteProblems--;
 		}
 	}
 

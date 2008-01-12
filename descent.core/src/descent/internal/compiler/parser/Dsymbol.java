@@ -85,6 +85,11 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		parent = sd;
 		if (!isAnonymous()) // no name, so can't add it to symbol table
 		{
+			// Descent: if it's null, problems were reported
+			if (sd == null) {
+				return 0;
+			}
+			
 			if (sd.symtab().insert(this) == null) // if name is already defined
 			{
 				Dsymbol s2;
@@ -561,6 +566,14 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 			}
 		}
 		return flags;
+	}
+	
+	public IDsymbol effectiveParent() {
+		IDsymbol p = parent;
+		while(p instanceof FuncLiteralDeclaration) {
+			p = parent.parent();
+		}
+		return p;
 	}
 
 }

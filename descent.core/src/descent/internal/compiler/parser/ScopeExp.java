@@ -29,6 +29,11 @@ public class ScopeExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
+		// Descent: if it's null, problems were reported
+		if (sds == null) {
+			return this;
+		}
+		
 		TemplateInstance ti;
 		IScopeDsymbol sds2;
 
@@ -80,6 +85,11 @@ public class ScopeExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
+		// Descent: if it's null, problems were reported
+		if (sds == null) {
+			return;
+		}
+		
 		if (sds.isTemplateInstance() != null) {
 			sds.toCBuffer(buf, hgs, context);
 		} else {

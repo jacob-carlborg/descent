@@ -1922,6 +1922,10 @@ public static char[] getSimpleName(char[] name) {
  * @exception NullPointerException if name is null
  */
 public static String getSimpleName(String name) {
+	if (name == null) {
+		return "";
+	}
+	
 	int lastDot = -1, lastGenericStart = -1, lastGenericEnd = -1;
 	int depth = 0;
 	int length = name.length();

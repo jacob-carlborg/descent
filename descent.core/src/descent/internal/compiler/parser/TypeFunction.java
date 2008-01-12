@@ -594,8 +594,10 @@ public class TypeFunction extends Type {
 	@Override
 	protected void appendSignature(StringBuilder sb) {
 		sb.append(linkageChar);
-		for(Argument arg : parameters) {
-			arg.appendSignature(sb);
+		if (parameters != null) {
+			for(Argument arg : parameters) {
+				arg.appendSignature(sb);
+			}
 		}
 		sb.append('Z');
 		next.appendSignature(sb);

@@ -5356,7 +5356,8 @@ public class Lexer implements IProblemRequestor {
 
 	public int[] getLineEnds() {
 		// return a bounded copy of this.lineEnds
-		if (this.linnum == -1) {
+		// Return empty if line ends were not requested
+		if (this.linnum == -1 || this.lineEnds == null || this.linnum >= this.lineEnds.length) {
 			return EMPTY_LINE_ENDS;
 		}
 		int[] copy;

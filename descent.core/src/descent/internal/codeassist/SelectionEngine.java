@@ -18,6 +18,7 @@ import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
@@ -58,8 +59,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 	Map settings;
 	CompilerOptions compilerOptions;
 	
-	int moduleMembers;
-	
 	int offset;
 	int length;
 	List<IJavaElement> selectedElements;
@@ -90,8 +89,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 			Module module = parser.parseModuleObj();
 			module.moduleName = sourceUnit.getFullyQualifiedName();
 			
-			moduleMembers = module.members.size() + 1; // import object was added
-			
 			CompilationUnitResolver.resolve(module, javaProject, owner);
 			
 			module.accept(this);
@@ -104,10 +101,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(Module node) {
-		// Be sure to visit only members created during the parse stage,
-		// in order to not visit template instances
-		for (int i = 0; i < moduleMembers; i++) {
-			node.members.get(i).accept(this);
+		// Don't visit template instances in the module scope
+		for(IDsymbol symbol : node.members) {
+			Dsymbol dsymbol = (Dsymbol) symbol;
+			if (null == dsymbol.isTemplateInstance()) {
+				dsymbol.accept(this);
+			}
 		}
 		return false;
 	}
@@ -314,7 +313,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
-		return node.parent instanceof FuncDeclaration;
+		return node.effectiveParent() instanceof FuncDeclaration;
 	}
 	
 	private void add(VarDeclaration node) {
@@ -369,7 +368,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void addLocal(Declaration node, long modifiers) {
-		FuncDeclaration parent = (FuncDeclaration) node.parent;
+		FuncDeclaration parent = (FuncDeclaration) node.effectiveParent();
 		JavaElement func = (JavaElement) finder.find(parent.getSignature());
 		
 		selectedElements.add(

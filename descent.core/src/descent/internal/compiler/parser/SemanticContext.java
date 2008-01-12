@@ -63,11 +63,20 @@ public class SemanticContext {
 	public StringTable stringTable;
 
 	public IDsymbolTable st;
+	
+	/*
+	 * If != 0, problems are not reported.
+	 */
 	public int muteProblems = 0;
 	
+	/*
+	 * If true, errors no longer are reported.
+	 */
 	public boolean fatalWasSignaled;
 	
-	// A cache to retrieve faster a type from it's signature
+	/*
+	 * A cache to retrieve faster a type from it's signature
+	 */
 	public Map<String, Type> signatureToTypeCache;
 
 	public SemanticContext(

@@ -195,7 +195,12 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		TemplateDeclaration temp = (TemplateDeclaration) old;
 		String key = temp.getSignature();
-		return (ITypeBinding) resolveBinding(type, key);
+		IBinding binding = resolveBinding(type, key);
+		if (binding instanceof ITypeBinding) {
+			return (ITypeBinding) binding;
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -439,7 +444,7 @@ class DefaultBindingResolver extends BindingResolver {
 			
 			// If it resolves to an opCall, use the parent
 			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident().ident, Id.call)) {
-				sym = sym.parent();
+				sym = sym.effectiveParent();
 			}
 			
 			if (sym.getJavaElement() != null) {
@@ -557,7 +562,7 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
-		return node.parent instanceof FuncDeclaration;
+		return node.effectiveParent() instanceof FuncDeclaration;
 	}
 	
 	private IBinding resolveLocalVar(VarDeclaration var, ASTNode node) {
@@ -585,7 +590,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		try {
-			FuncDeclaration parent = (FuncDeclaration) var.parent;
+			FuncDeclaration parent = (FuncDeclaration) var.effectiveParent();
 			JavaElement func = (JavaElement) finder.find(parent.getSignature());
 			
 			IJavaElement element = new LocalVariable(

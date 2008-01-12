@@ -174,5 +174,11 @@ public interface IDsymbol extends INode {
 	// Returns the flags of this symbol
 	// @see Flags
 	long getFlags();
+	
+	/*
+	 * Returns parent, except parent is FuncLiteralDeclaration. In that
+	 * case, it return the effective parent of that FuncLiteralDeclaration.
+	 */
+	IDsymbol effectiveParent();
 
 }

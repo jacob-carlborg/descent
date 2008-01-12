@@ -637,11 +637,12 @@ public class SemanticMixin {
 	}
 	
 	public static void appendSignature(IDsymbol aThis, StringBuilder sb) {
-		if (aThis.parent() == null) {
+		IDsymbol parent = aThis.effectiveParent();
+		if (parent == null) {
 			return;
 		}
 		
-		aThis.parent().appendSignature(sb);
+		parent.appendSignature(sb);
 		
 		appendNameSignature(aThis, sb);
 	}
