@@ -18,6 +18,8 @@ public interface ISignatureConstants {
 	char FUNCTION = '[';
 	char UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR = '}';
 	char TEMPLATE = '{';
+	char TEMPLATED_AGGREGATE = '<';
+	char TEMPLATED_FUNCTION = '>';
 	char TEMPLATE_ALIAS_PARAMETER = ']';
 	char TEMPLATE_TUPLE_PARAMETER = '%';
 	char TEMPLATE_TYPE_PARAMETER = '#';

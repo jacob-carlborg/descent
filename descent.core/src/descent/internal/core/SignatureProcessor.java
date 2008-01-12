@@ -70,6 +70,8 @@ public class SignatureProcessor implements ISignatureConstants {
 			case TYPEDEF:
 			case FUNCTION:
 			case TEMPLATE:
+			case TEMPLATED_AGGREGATE:
+			case TEMPLATED_FUNCTION:
 				i++;
 				char c = signature.charAt(i);
 				if (!Character.isDigit(c)) {
@@ -85,10 +87,12 @@ public class SignatureProcessor implements ISignatureConstants {
 				signature.getChars(i, i + n, name, 0);
 				i += n;
 				
-				if (first == FUNCTION) {
+				if (first == FUNCTION || first == TEMPLATED_FUNCTION) {
 					i = process0(signature, i, requestor);
-					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
-				} else if (first == TEMPLATE) {
+				}
+				
+				if (first == TEMPLATE || first == TEMPLATED_FUNCTION ||
+						first == TEMPLATED_AGGREGATE) {
 					requestor.enterTemplateParameters();
 					
 					while(signature.charAt(i) != TEMPLATE_PARAMETERS_BREAK) {
@@ -97,10 +101,9 @@ public class SignatureProcessor implements ISignatureConstants {
 					i++;
 					
 					requestor.exitTemplateParameters();
-					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
-				} else {
-					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				}
+				
+				requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				
 				localPosition = -1;
 				

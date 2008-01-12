@@ -333,5 +333,30 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("mixin Temp!();");
 		assertNoErrors();
 	}
+	
+	public void testTemplatedClass() throws Exception {
+		one("class Bar(T) { }");
+		two("Bar!(int) x;");
+		assertNoErrors();
+	}
+	
+
+	public void testTemplatedClass2() throws Exception {
+		one("class Bar(int T) { } class Bar(float T) { }");
+		two("Bar!(1) x; Bar!(1.3) y;");
+		assertNoErrors();
+	}
+	
+	public void testTemplatedFunction() throws Exception {
+		one("void foo(int T)() { }");
+		two("void main() { foo!(1); }");
+		assertNoErrors();
+	}
+	
+	public void testTemplatedFunction2() throws Exception {
+		one("void foo(int T)() { } void foo(float T)() { }");
+		two("void main() { foo!(1); foo!(1.3); }");
+		assertNoErrors();
+	}
 
 }

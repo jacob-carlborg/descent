@@ -423,6 +423,56 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		mockery.assertIsSatisfied();
 	}
 	
+	public void testTemplatedClass() {
+		final Sequence s = mockery.sequence("seq");
+		
+		final String sigModule = MODULE + "4test3foo";
+		final String sigTemplate = sigModule + TEMPLATED_AGGREGATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
+		
+		checking(new Expectations() {{
+			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expectedTemplate = "Bar".toCharArray();
+			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
+			one(requestor).enterTemplateParameters(); inSequence(s);
+			one(requestor).enterTemplateValueParameter(); inSequence(s);
+			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
+			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i"); inSequence(s);
+			one(requestor).exitTemplateParameters(); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATED_AGGREGATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+		}});
+		
+		SignatureProcessor.process(sigTemplate, requestor);
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testTemplatedFunction() {
+		final Sequence s = mockery.sequence("seq");
+		
+		final String sigModule = MODULE + "4test3foo";
+		final String sigTemplate = sigModule + TEMPLATED_FUNCTION + "3BarFZv" + TEMPLATE_VALUE_PARAMETER + "i'";
+		
+		checking(new Expectations() {{
+			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
+			char[] expectedTemplate = "Bar".toCharArray();
+			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
+			one(requestor).enterFunctionType();inSequence(s);
+			one(requestor).acceptArgumentBreak('Z');inSequence(s);
+			one(requestor).acceptPrimitive(TypeBasic.tvoid);inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, "FZv");inSequence(s);
+			one(requestor).enterTemplateParameters(); inSequence(s);
+			one(requestor).enterTemplateValueParameter(); inSequence(s);
+			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
+			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i"); inSequence(s);
+			one(requestor).exitTemplateParameters(); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATED_FUNCTION, expectedTemplate, -1, sigTemplate); inSequence(s);
+		}});
+		
+		SignatureProcessor.process(sigTemplate, requestor);
+		
+		mockery.assertIsSatisfied();
+	}
+	
 	// It works, but how to test
 	// one(requestor).acceptTemplateValueParameterSpecificValue(new IntegerExp(3));
 	// ??

@@ -162,19 +162,20 @@ public String[] getTypeParameterSignatures() throws JavaModelException {
 	int length = typeParameters.length;
 	String[] typeParameterSignatures = new String[length];
 	for (int i = 0; i < length; i++) {
-		TypeParameter typeParameter = (TypeParameter) typeParameters[i];
-		TypeParameterElementInfo info = (TypeParameterElementInfo) typeParameter.getElementInfo();
-		char[][] bounds = info.bounds;
-		if (bounds == null) {
-			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameter.getElementName(), CharOperation.NO_STRINGS);
-		} else {
-			int boundsLength = bounds.length;
-			char[][] boundSignatures = new char[boundsLength][];
-			for (int j = 0; j < boundsLength; j++) {
-				boundSignatures[j] = Signature.createCharArrayTypeSignature(bounds[j], false);
-			}
-			typeParameterSignatures[i] = new String(Signature.createTypeParameterSignature(typeParameter.getElementName().toCharArray(), boundSignatures));
-		}
+		typeParameterSignatures[i] = typeParameters[i].getSignature();
+//		TypeParameter typeParameter = (TypeParameter) typeParameters[i];
+//		TypeParameterElementInfo info = (TypeParameterElementInfo) typeParameter.getElementInfo();
+//		char[][] bounds = info.bounds;
+//		if (bounds == null) {
+//			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameter.getElementName(), CharOperation.NO_STRINGS);
+//		} else {
+//			int boundsLength = bounds.length;
+//			char[][] boundSignatures = new char[boundsLength][];
+//			for (int j = 0; j < boundsLength; j++) {
+//				boundSignatures[j] = Signature.createCharArrayTypeSignature(bounds[j], false);
+//			}
+//			typeParameterSignatures[i] = new String(Signature.createTypeParameterSignature(typeParameter.getElementName().toCharArray(), boundSignatures));
+//		}
 	}
 	return typeParameterSignatures;
 }

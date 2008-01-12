@@ -36,6 +36,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	// Back end
     Symbol stag;		// tag symbol for debug data
     Symbol sinit;
+	
+	// Wether this aggregate is actually a templated aggregate 
+	public boolean templated;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(id);
@@ -277,6 +280,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	
 	public int structalign() {
 		return structalign;
+	}
+	
+	@Override
+	public boolean templated() {
+		return templated;
 	}
 	
 }

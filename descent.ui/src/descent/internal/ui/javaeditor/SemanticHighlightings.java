@@ -1310,13 +1310,9 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
-					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
-					&& nodeType != ASTNode.CALL_EXPRESSION // For opCall
-					&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
-					&& nodeType != ASTNode.TYPEOF_TYPE
-					&& nodeType != ASTNode.SELECTIVE_IMPORT)
+			if (isNotAggregateContainer(nodeType)) {
 				return false;
+			}
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
 				nodeType= node.getNodeType();
@@ -1404,7 +1400,12 @@ public class SemanticHighlightings {
 
 			// 2: match templates
 			IBinding binding= token.getBinding();
-			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isTemplate();
+			return binding instanceof ITypeBinding && 
+				((ITypeBinding) binding).isTemplate() && 
+				!((ITypeBinding) binding).isClass() && 
+				!((ITypeBinding) binding).isInterface() &&
+				!((ITypeBinding) binding).isUnion() &&
+				!((ITypeBinding) binding).isStruct();
 		}
 	}
 	
@@ -1465,12 +1466,9 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
-					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
-					 && nodeType != ASTNode.CALL_EXPRESSION
-					 && nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
-					 && nodeType != ASTNode.SELECTIVE_IMPORT)
+			if (isNotAggregateContainer(nodeType)) {
 				return false;
+			}
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
 				nodeType= node.getNodeType();
@@ -1541,12 +1539,9 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
-					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
-					&& nodeType != ASTNode.CALL_EXPRESSION
-					&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
-					&& nodeType != ASTNode.SELECTIVE_IMPORT)
+			if (isNotAggregateContainer(nodeType)) {
 				return false;
+			}
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
 				nodeType= node.getNodeType();
@@ -1689,11 +1684,9 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
-					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
-					&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
-					&& nodeType != ASTNode.SELECTIVE_IMPORT)
+			if (isNotAggregateContainer(nodeType)) {
 				return false;
+			}
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
 				nodeType= node.getNodeType();
@@ -1947,6 +1940,16 @@ public class SemanticHighlightings {
 			store.setValue(enabledkey, true);
 		}
 		
+	}
+	
+	private static boolean isNotAggregateContainer(int nodeType) {
+		return nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
+			&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
+			&& nodeType != ASTNode.CALL_EXPRESSION // For opCall
+			&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
+			&& nodeType != ASTNode.TEMPLATE_TYPE
+			&& nodeType != ASTNode.TYPEOF_TYPE
+			&& nodeType != ASTNode.SELECTIVE_IMPORT;
 	}
 	
 	/**

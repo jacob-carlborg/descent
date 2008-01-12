@@ -263,6 +263,8 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
+		elem = eraseTemplate(elem);
+		
 		String signature = elem.getSignature();
 		if (elem.getJavaElement() != null) {
 			IBinding binding = resolveBinding(elem.getJavaElement(), signature, alias);
@@ -358,7 +360,8 @@ class DefaultBindingResolver extends BindingResolver {
 			case ASTNode.ARGUMENT:
 				return resolveArgument((descent.core.dom.Argument) parent);
 			default:
-				if (parent instanceof descent.core.dom.Type) {
+				if (parent instanceof descent.core.dom.Type &&
+						!(parent instanceof TemplateType)) {
 					return resolveType((descent.core.dom.Type) parent);
 				}
 				if (name.isSimpleName()) {
@@ -413,13 +416,24 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
+		IFuncDeclaration sym;
+		
 		CallExp exp = (CallExp) old;
 		if (exp.sourceE1.getResolvedSymbol() == null ||
 				!(exp.sourceE1.getResolvedSymbol() instanceof IFuncDeclaration)) {
-			return null;
+			if (exp.sourceE1.resolvedExpression == null ||
+					!(exp.sourceE1.resolvedExpression instanceof VarExp)) {
+				return null;
+			}
+			
+			VarExp varExp = (VarExp) exp.sourceE1.resolvedExpression;
+			if (!(varExp.var instanceof IFuncDeclaration)) {
+				return null;
+			}
+			sym = (IFuncDeclaration) varExp.var;
+		} else {
+			sym = (IFuncDeclaration) exp.sourceE1.getResolvedSymbol();
 		}
-		
-		IFuncDeclaration sym = (IFuncDeclaration) exp.sourceE1.getResolvedSymbol();
 		String signature = sym.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -441,6 +455,7 @@ class DefaultBindingResolver extends BindingResolver {
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {
 		if (id.resolvedSymbol != null) {
 			IDsymbol sym = id.resolvedSymbol;
+			sym = eraseTemplate(sym);
 			
 			// If it resolves to an opCall, use the parent
 			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident().ident, Id.call)) {
@@ -496,6 +511,16 @@ class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 	
+	private IDsymbol eraseTemplate(IDsymbol sym) {
+		if (sym instanceof TemplateDeclaration) {
+			TemplateDeclaration temp = (TemplateDeclaration) sym;
+			if (temp.wrapper) {
+				return temp.members.get(0);
+			}
+		}
+		return sym;
+	}
+
 	private IBinding resolveBinding(IJavaElement elem, String signature, ASTNode node) {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 		if (binding != null) {
@@ -868,7 +893,8 @@ class DefaultBindingResolver extends BindingResolver {
 				} else {
 					binding = stack.pop();
 					
-					if (type == ISignatureConstants.FUNCTION) {
+					if (type == ISignatureConstants.FUNCTION ||
+							type == ISignatureConstants.TEMPLATED_FUNCTION) {
 						ITypeBinding func = (ITypeBinding) binding;
 						
 						String[] paramsAndReturnTypes = new String[func.getParametersTypes().length + 1];
@@ -889,14 +915,26 @@ class DefaultBindingResolver extends BindingResolver {
 							return;
 						}
 						
-						element = JavaElementFinder.findFunction((IParent) element, new String(name), paramsAndReturnTypes);
-						if (element == null) {
-							return;
+						if (type == ISignatureConstants.FUNCTION) {
+							element = JavaElementFinder.findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+							if (element == null) {
+								return;
+							}
+						} else {
+							String[] paramsTypes = new String[templateStack.size()];
+							int i = paramsTypes.length - 1;
+							while(!templateStack.isEmpty()) {
+								paramsTypes[i] = templateStack.pop();
+								i--;
+							}
+							
+							element = JavaElementFinder.findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramsTypes);
 						}
 						
 						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
-					} else if (type == ISignatureConstants.TEMPLATE) {
+					} else if (type == ISignatureConstants.TEMPLATE
+							|| type == ISignatureConstants.TEMPLATED_AGGREGATE) {
 						IJavaElement element = binding.getJavaElement(); 
 						if (element == null) {
 							return;
@@ -909,7 +947,11 @@ class DefaultBindingResolver extends BindingResolver {
 							i--;
 						}
 						
-						element = JavaElementFinder.findTemplate((IParent) element, new String(name), paramsTypes);
+						if (type == ISignatureConstants.TEMPLATE) {
+							element = JavaElementFinder.findTemplate((IParent) element, new String(name), paramsTypes);
+						} else {
+							element = JavaElementFinder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
+						}
 						if (element == null) {
 							return;
 						}
@@ -1107,6 +1149,10 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		@Override
 		public void exitTemplateValueParameter(String signature) {
+			// Discard the binding of the template value type
+			Stack<IBinding> stack = this.stack.peek();
+			stack.pop();
+			
 			templateStack.push(signature);
 		}
 		

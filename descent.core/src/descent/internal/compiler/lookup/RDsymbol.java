@@ -881,6 +881,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		return parent;
 	}
 	
+	public boolean templated() {
+		return false;
+	}
+	
 	@Override
 	public String toString() {
 		return element.toString();

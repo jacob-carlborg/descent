@@ -215,6 +215,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.declarationStart = startOfDeclaration(param);
 			info.declarationEnd = endOf(param);			
 			info.name = param.ident.ident;
+			info.signature = param.getSignature().toCharArray();
 			info.nameSourceStart = startOf(param.ident);
 			info.nameSourceEnd = endOf(param.ident);
 			infos[i] = info;
@@ -259,7 +260,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		switch(node.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 			ClassDeclaration classDecl = (ClassDeclaration) node;
-			visit(classDecl, 0, classDecl.sourceBaseclasses, templateDeclaration);
+			visit(classDecl, Flags.AccClass, classDecl.sourceBaseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.INTERFACE_DECLARATION:
 			InterfaceDeclaration intDecl = (InterfaceDeclaration) node;
@@ -354,7 +355,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(ClassDeclaration node) {
-		visit(node, 0, node.sourceBaseclasses, null);
+		visit(node, Flags.AccClass, node.sourceBaseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}

@@ -1,6 +1,8 @@
 package descent.core.dom;
 
+import descent.core.IMember;
 import descent.core.IMethod;
+import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
 
@@ -101,6 +103,15 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	public boolean isSubsignature(IMethodBinding otherMethod) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public boolean isTemplate() {
+		try {
+			return ((IMethod) element).isTemplate();
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
 	}
 
 	public boolean isVarargs() {

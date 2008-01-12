@@ -1,20 +1,18 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
-
-import static descent.internal.compiler.parser.STC.STCconst;
-import static descent.internal.compiler.parser.STC.STCstatic;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ASTDmdNode.Match;
+
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+
 import static descent.internal.compiler.parser.PROT.PROTnone;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
+
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCstatic;
 
 /**
  * Groups a bunch of methods that are shared amongst the source hierarchy
@@ -627,7 +625,7 @@ public class SemanticMixin {
 	}
 	
 	public static String getSignature(IDsymbol aThis) {
-		if (aThis.parent() == null) {
+		if (aThis.effectiveParent() == null) {
 			return null;
 		}
 		
@@ -640,6 +638,12 @@ public class SemanticMixin {
 		IDsymbol parent = aThis.effectiveParent();
 		if (parent == null) {
 			return;
+		}
+		
+		// If aThis is a templated symbol, don't put the template's
+		// signature, just it's parent's signature
+		if (aThis.templated()) {
+			parent = parent.effectiveParent();
 		}
 		
 		parent.appendSignature(sb);
@@ -673,16 +677,29 @@ public class SemanticMixin {
 			sb.append(aThis.getSignaturePrefix());
 			sb.append(aThis.ident().ident.length);
 			sb.append(aThis.ident().ident);
+			
 			if (aThis instanceof IFuncDeclaration) {
 				aThis.type().appendSignature(sb);
-			} else if (aThis instanceof ITemplateDeclaration) {
-				ITemplateDeclaration temp = (ITemplateDeclaration) aThis;
+			}
+			
+			if (aThis instanceof ITemplateDeclaration || aThis.templated()) {
+				ITemplateDeclaration temp;
+				
+				if (aThis.templated()) {
+					IDsymbol effectiveParent = aThis.effectiveParent();
+					if (effectiveParent instanceof TemplateInstance) {
+						temp = ((TemplateInstance) effectiveParent).tempdecl;
+					} else {
+						temp = (ITemplateDeclaration) effectiveParent;
+					}
+				} else {
+					temp = (ITemplateDeclaration) aThis;
+				}
 				for(TemplateParameter parameter : temp.parameters()) {
 					parameter.appendSignature(sb);
 				}
 				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
 			}
-			
 		}
 	}
 	

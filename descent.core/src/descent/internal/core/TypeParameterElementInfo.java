@@ -28,4 +28,9 @@ public class TypeParameterElementInfo extends SourceRefElementInfo {
 	 * The bounds names of this type parameter.
 	 */
 	public char[][] bounds;
+	
+	/*
+	 * The signature of this type parameter.
+	 */
+	public char[] signature;
 }

@@ -34,6 +34,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -137,6 +138,15 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	@Override
+	public boolean visit(TemplateDeclaration node) {
+		if (isInRange(node.ident) && !node.wrapper) {
+			add(node.getSignature());
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
 	public boolean visit(VarDeclaration node) {
 		if (isInRange(node.ident)) {
 			add(node);
@@ -196,7 +206,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 				if (sym instanceof VarDeclaration) {
 					add((VarDeclaration) sym);
 				} else {
-					add(sym.getSignature());
+					add(sym);
 				}
 			}
 			return false;
@@ -299,7 +309,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		} else if (var.getJavaElement() != null) {
 			selectedElements.add(var.getJavaElement());
 		} else {
-			add(var.getSignature());
+			add(var);
 		}
 	}
 	
@@ -308,7 +318,20 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (decl.getJavaElement() != null) {
 			selectedElements.add(decl.getJavaElement());
 		} else {
-			add(decl.getSignature());
+			add(decl);
+		}
+	}
+	
+	private void add(IDsymbol sym) {
+		if (sym instanceof TemplateDeclaration) {
+			TemplateDeclaration decl = (TemplateDeclaration) sym;
+			if (decl.wrapper) {
+				add(decl.members.get(0));
+			} else {
+				add(sym.getSignature());
+			}
+		} else {
+			add(sym.getSignature());
 		}
 	}
 	

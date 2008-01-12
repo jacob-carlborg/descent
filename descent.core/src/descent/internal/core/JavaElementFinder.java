@@ -70,7 +70,8 @@ public class JavaElementFinder {
 				if (startPosition >= 0) {
 					element = JavaElementFinder.findChild(element, startPosition);
 				} else {
-					if (type == ISignatureConstants.FUNCTION) {
+					if (type == ISignatureConstants.FUNCTION ||
+							type == ISignatureConstants.TEMPLATED_FUNCTION) {
 						if (stack.isEmpty() ||  element == null || !(element instanceof IParent)) {
 							return;
 						}
@@ -79,8 +80,21 @@ public class JavaElementFinder {
 						stack.pop();
 						
 						String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
-						element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
-					} else if (type == ISignatureConstants.TEMPLATE) {
+						
+						if (type == ISignatureConstants.FUNCTION) {
+							element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+						} else {
+							String[] paramTypes = new String[templateStack.size()];
+							int i = paramTypes.length - 1;
+							while(!templateStack.isEmpty()) {
+								paramTypes[i] = templateStack.pop();
+								i--;
+							}
+							
+							element = findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramTypes);
+						}
+					} else if (type == ISignatureConstants.TEMPLATE ||
+							type == ISignatureConstants.TEMPLATED_AGGREGATE) {
 						if (element == null || !(element instanceof IParent)) {
 							return;
 						}
@@ -92,7 +106,11 @@ public class JavaElementFinder {
 							i--;
 						}
 						
-						element = findTemplate((IParent) element, new String(name), paramTypes);
+						if (type == ISignatureConstants.TEMPLATE) {
+							element = findTemplate((IParent) element, new String(name), paramTypes);
+						} else {
+							element = findTemplatedAggregate((IParent) element, new String(name), paramTypes);
+						}
 					} else {
 						element = findChild(element, new String(name));
 					}
@@ -193,6 +211,8 @@ public class JavaElementFinder {
 		
 		@Override
 		public void exitTemplateValueParameter(String signature) {
+			// Discard the type of the template value type
+			stack.pop();
 			templateStack.push(signature);
 		}
 		
@@ -217,6 +237,7 @@ public class JavaElementFinder {
 	 */
 	public static IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) {
 		try {
+		loop:
 			for(IJavaElement child : parent.getChildren()) {
 				IParent searchInChildren = mustSearchInChildren(child);
 				if (searchInChildren != null) {
@@ -235,12 +256,15 @@ public class JavaElementFinder {
 						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
 							for(int i = 0; i < mParamTypes.length; i++) {
 								if (!mParamTypes[i].equals(paramsAndRetTypes[i])) {
-									continue;
+									continue loop;
 								}
 							}
-							return method;
 						}
+					} else {
+						continue;
 					}
+					
+					return method;
 				}
 			}
 		} catch (JavaModelException e) {
@@ -250,11 +274,77 @@ public class JavaElementFinder {
 	}
 	
 	/**
+	 * Finds a function in the given parent with the given name and parameter
+	 * and types signatures.
+	 */
+	public static IJavaElement findTemplatedFunction(IParent parent, String name, String[] paramsAndRetTypes, String[] paramTypes) {
+		try {
+		loop:
+			for(IJavaElement child : parent.getChildren()) {
+				IParent searchInChildren = mustSearchInChildren(child);
+				if (searchInChildren != null) {
+					IJavaElement result = findFunction(searchInChildren, name, paramsAndRetTypes);
+					if (result != null) {
+						return result;
+					}
+				}
+				
+				if (child.getElementType() == IJavaElement.METHOD &&
+						child.getElementName().equals(name)) {
+					IMethod method = (IMethod) child;
+					if (!method.isTemplate()) {
+						continue;
+					}
+					
+					String retType = method.getReturnType();
+					String[] mParamTypes = method.getParameterTypes();
+					if (mParamTypes.length == paramsAndRetTypes.length - 1) {
+						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
+							for(int i = 0; i < mParamTypes.length; i++) {
+								if (!mParamTypes[i].equals(paramsAndRetTypes[i])) {
+									continue loop;
+								}
+							}
+						}
+					} else {
+						continue;
+					}
+					
+					mParamTypes = method.getTypeParameterSignatures();
+					if (mParamTypes.length == paramTypes.length) {
+						for(int i = 0; i < mParamTypes.length; i++) {
+							if (!mParamTypes[i].equals(paramTypes[i])) {
+								continue loop;
+							}
+						}
+					} else {
+						continue;
+					}
+					
+					return method;
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds a template aggregate in the given parent with the given name and parameter
+	 * types signatures.
+	 */
+	public static IJavaElement findTemplatedAggregate(IParent parent, String name, String[] paramTypes) {
+		return findTemplate(parent, name, paramTypes);
+	}
+	
+	/**
 	 * Finds a template function in the given parent with the given name and parameter
 	 * types signatures.
 	 */
 	public static IJavaElement findTemplate(IParent parent, String name, String[] paramTypes) {
 		try {
+		loop:
 			for(IJavaElement child : parent.getChildren()) {
 				IParent searchInChildren = mustSearchInChildren(child);
 				if (searchInChildren != null) {
@@ -267,15 +357,21 @@ public class JavaElementFinder {
 				if (child.getElementType() == IJavaElement.TYPE &&
 						child.getElementName().equals(name)) {
 					IType type = (IType) child;
+					if (!type.isTemplate()) {
+						continue;
+					}
 					String[] mParamTypes = type.getTypeParameterSignatures();
 					if (mParamTypes.length == paramTypes.length) {
 						for(int i = 0; i < mParamTypes.length; i++) {
 							if (!mParamTypes[i].equals(paramTypes[i])) {
-								continue;
+								continue loop;
 							}
 						}
-						return type;
+					} else {
+						continue;
 					}
+					
+					return type;
 				}
 			}
 		} catch (JavaModelException e) {

@@ -91,6 +91,9 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	// Support for NRVO (named return value optimization)
 	public int nrvo_can; // !=0 means we can do it
 	public IVarDeclaration nrvo_var; // variable to replace with shidden
+	
+	// Wether this function is actually a templated function
+	public boolean templated;
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
 			Type type) {
@@ -1847,6 +1850,10 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 			f = new FuncDeclaration(loc, ident, storage_class, type
 					.syntaxCopy(context));
 		}
+		
+		// Descent
+		f.templated = templated;
+		
 		f.outId = outId;
 		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;
 		f.fensure = fensure != null ? fensure.syntaxCopy(context) : null;
@@ -1890,13 +1897,22 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 	}
 	
 	public char getSignaturePrefix() {
-		return ISignatureConstants.FUNCTION;
+		if (templated) {
+			return ISignatureConstants.TEMPLATED_FUNCTION;
+		} else {
+			return ISignatureConstants.FUNCTION;
+		}
 	}
 	
 	public String getFunctionSignature() {
 		StringBuilder sb = new StringBuilder();
 		SemanticMixin.appendNameSignature(this, sb);
 		return sb.toString();
+	}
+	
+	@Override
+	public boolean templated() {
+		return templated;
 	}
 
 }

@@ -177,6 +177,11 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccTemplate = 0x00100000;
+	/**
+	 * Class property flag.
+	 * @since 2.0
+	 */
+	public static final int AccClass = 0x00200000;
 	
 	// Extensions for methods (can reuse flags)
 	
@@ -520,6 +525,16 @@ public final class Flags {
 	 */
 	public static boolean isTemplate(long flags) {
 		return (flags & AccTemplate) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>class</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>enum</code> modifier is included
+	 */
+	public static boolean isClass(long flags) {
+		return (flags & AccClass) != 0;
 	}
 	
 	/**

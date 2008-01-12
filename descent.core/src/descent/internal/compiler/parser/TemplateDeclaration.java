@@ -31,6 +31,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		}
 		return tp;
 	}
+	
 	// Wether this template declaration is just a wrapper for "class B(T) ..."
 	public boolean wrapper;
 	public TemplateParameters parameters;

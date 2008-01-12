@@ -60,6 +60,15 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 		TypeParameterElementInfo info = (TypeParameterElementInfo) getElementInfo();
 		return CharOperation.toStrings(info.bounds);
 	}
+	
+	public String getSignature() throws JavaModelException {
+		TypeParameterElementInfo info = (TypeParameterElementInfo) getElementInfo();
+		if (info.signature != null) {
+			return new String(info.signature);
+		} else {
+			return CharOperation.NO_STRINGS[0];
+		}
+	}
 
 	public IMember getDeclaringMember() {
 			return (IMember) getParent();

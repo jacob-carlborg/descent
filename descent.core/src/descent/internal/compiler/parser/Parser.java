@@ -1810,6 +1810,7 @@ public class Parser extends Lexer {
 			tempdecl = new TemplateDeclaration(loc(), id, tpl, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
 			tempdecl.wrapper = true;
+			a.templated = true;
 			return tempdecl;
 	    }
 
@@ -3099,6 +3100,11 @@ public class Parser extends Lexer {
 				FuncDeclaration f = new FuncDeclaration(loc(), ident, storage_class, typeFunction);
 				parseContracts(f);
 				f.setSourceRange(t.start, prevToken.ptr + prevToken.sourceLen - t.start);
+				
+				// it's a function template
+				if (tpl != null) {
+					f.templated = true;
+				}
 				
 				if (link == linkage) {
 					s = f;

@@ -298,6 +298,14 @@ public interface IMethodBinding extends IBinding {
 	public boolean isVarargs();
 	
 	/**
+	 * Returns whether this method is templated.
+	 *
+	 * @return <code>true</code> if this object represents a templated function,
+	 *    and <code>false</code> otherwise
+	 */
+	public boolean isTemplate();
+	
+	/**
 	 * Returns whether this method overrides the given method,
 	 * as specified in section 8.4.8.1 of <em>The Java Language 
 	 * Specification, Third Edition</em> (JLS3).

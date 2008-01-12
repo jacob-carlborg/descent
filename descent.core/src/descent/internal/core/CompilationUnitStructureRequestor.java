@@ -499,6 +499,7 @@ protected void enterTypeParameter(TypeParameterInfo typeParameterInfo) {
 	info.nameStart = typeParameterInfo.nameSourceStart;
 	info.nameEnd = typeParameterInfo.nameSourceEnd;
 	info.bounds = typeParameterInfo.bounds;
+	info.signature = typeParameterInfo.signature;
 	if (parentInfo instanceof SourceTypeElementInfo) {
 		SourceTypeElementInfo elementInfo = (SourceTypeElementInfo) parentInfo;
 		ITypeParameter[] typeParameters = elementInfo.typeParameters;

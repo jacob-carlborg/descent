@@ -60,6 +60,7 @@ public interface ISourceElementRequestor {
 		public int declarationStart;
 		public int declarationEnd;
 		public char[] name;
+		public char[] signature;
 		public int nameSourceStart;
 		public int nameSourceEnd;
 		public char[][] bounds;

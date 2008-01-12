@@ -575,5 +575,9 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 		}
 		return p;
 	}
+	
+	public boolean templated() {
+		return false;
+	}
 
 }

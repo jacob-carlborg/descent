@@ -690,6 +690,9 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		} else {
 			cd = new ClassDeclaration(loc, ident, null);
 		}
+		
+		// Descent
+		cd.templated = templated;
 
 		cd.storage_class |= storage_class;
 
@@ -805,7 +808,11 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	}
 	
 	public char getSignaturePrefix() {
-		return ISignatureConstants.CLASS;
+		if (templated) {
+			return ISignatureConstants.TEMPLATED_AGGREGATE;
+		} else {
+			return ISignatureConstants.CLASS;
+		}
 	}
 
 }

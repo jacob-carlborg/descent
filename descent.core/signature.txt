@@ -41,3 +41,8 @@ For templates, the symbol used is {. Following are the template parameters, foll
  - For a value parameter, it's "," and then follows the type. If a number follows, 
    it's the length of the specific value expression, whose start is marked by
    another ",".
+   
+For a templated class, the symbol used is <. Following are the template parameters.
+
+For a templated function, the symbol used is >. Following is the function type, then come
+the template parameters.

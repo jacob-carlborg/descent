@@ -180,5 +180,11 @@ public interface IDsymbol extends INode {
 	 * case, it return the effective parent of that FuncLiteralDeclaration.
 	 */
 	IDsymbol effectiveParent();
+	
+	/*
+	 * Wether this symbols is a templated symbol. (i.e templated
+	 * function or templated aggregate).
+	 */
+	boolean templated();
 
 }
