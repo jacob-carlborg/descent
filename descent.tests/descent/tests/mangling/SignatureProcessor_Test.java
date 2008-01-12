@@ -103,6 +103,31 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		mockery.assertIsSatisfied();
 	}
 	
+	public void testFunctionType2() {
+		final Sequence s = mockery.sequence("seq");
+		
+		checking(new Expectations() {{
+			char[][] expectedModule = { "object".toCharArray() };
+			char[] className = "Object".toCharArray();
+			
+			one(requestor).enterFunctionType(); inSequence(s);
+			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
+			one(requestor).acceptModule(expectedModule, "@6object");
+			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
+			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
+			one(requestor).acceptModule(expectedModule, "@6object");
+			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
+			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
+			one(requestor).acceptModule(expectedModule, "@6object");
+			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
+			one(requestor).exitFunctionType(LINK.LINKd, "F@6objectC6Object@6objectC6ObjectZ@6objectC6Object"); inSequence(s);
+		}});
+		
+		SignatureProcessor.process("F@6objectC6Object@6objectC6ObjectZ@6objectC6Object", requestor);
+		
+		mockery.assertIsSatisfied();
+	}
+	
 	public void testModule() {
 		final String sig = MODULE + "4test3foo";
 		

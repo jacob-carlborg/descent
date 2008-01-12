@@ -31,8 +31,8 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.StructDeclaration;
-import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -58,6 +58,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 	Map settings;
 	CompilerOptions compilerOptions;
 	
+	int moduleMembers;
+	
 	int offset;
 	int length;
 	List<IJavaElement> selectedElements;
@@ -81,13 +83,33 @@ public class SelectionEngine extends AstVisitorAdapter {
 		this.selectedElements = new ArrayList<IJavaElement>();
 		
 		try {
-			Module module = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, true, null).module;
+			char[] contents = sourceUnit.getContents();
+			Parser parser = new Parser(contents, 0, contents.length, false, false, false, false, javaProject.getApiLevel(), null, null, false, sourceUnit.getFileName());
+			parser.nextToken();
+			
+			Module module = parser.parseModuleObj();
+			module.moduleName = sourceUnit.getFullyQualifiedName();
+			
+			moduleMembers = module.members.size() + 1; // import object was added
+			
+			CompilationUnitResolver.resolve(module, javaProject, owner);
+			
 			module.accept(this);
 			return selectedElements.toArray(new IJavaElement[selectedElements.size()]);
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return NO_ELEMENTS;
 		}
+	}
+	
+	@Override
+	public boolean visit(Module node) {
+		// Be sure to visit only members created during the parse stage,
+		// in order to not visit template instances
+		for (int i = 0; i < moduleMembers; i++) {
+			node.members.get(i).accept(this);
+		}
+		return false;
 	}
 	
 	@Override
@@ -182,11 +204,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		
 		return addResolvedExpression(node);
-	}
-	
-	@Override
-	public boolean visit(TemplateInstance node) {
-		return false;
 	}
 	
 	private boolean addResolvedExpression(Expression node) {

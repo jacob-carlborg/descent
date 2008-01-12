@@ -25,6 +25,10 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	public void acceptDynamicArray(String signature) {
 		
 	}
+	
+	public void acceptIdentifier(char[] name, String signature) {
+		
+	}
 
 	public void acceptModule(char[][] compoundName, String signature) {
 		

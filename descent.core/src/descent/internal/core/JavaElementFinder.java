@@ -43,12 +43,12 @@ public class JavaElementFinder {
 		}
 	}
 	
-	// TODO Descent templates!
 	private class InternalFinder extends SignatureRequestorAdapter {
 		
 		private IJavaElement element;
 		private Stack<String> stack = new Stack<String>();
 		private Stack<String> modifiers = new Stack<String>();
+		private Stack<String> templateStack = new Stack<String>();
 		private Stack<String[]> paramsAndReturnTypesStack = new Stack<String[]>();
 		
 		private int typeFunctionCounter;
@@ -80,6 +80,19 @@ public class JavaElementFinder {
 						
 						String[] paramsAndReturnTypes = paramsAndReturnTypesStack.pop();
 						element = findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+					} else if (type == ISignatureConstants.TEMPLATE) {
+						if (element == null || !(element instanceof IParent)) {
+							return;
+						}
+						
+						String[] paramTypes = new String[templateStack.size()];
+						int i = paramTypes.length - 1;
+						while(!templateStack.isEmpty()) {
+							paramTypes[i] = templateStack.pop();
+							i--;
+						}
+						
+						element = findTemplate((IParent) element, new String(name), paramTypes);
 					} else {
 						element = findChild(element, new String(name));
 					}
@@ -88,10 +101,6 @@ public class JavaElementFinder {
 				stack.pop();
 				stack.push(signature);
 			}
-		}
-
-		public void acceptArgumentBreak(char c) {
-			// empty
 		}
 
 		public void acceptArgumentModifier(int stc) {
@@ -162,6 +171,31 @@ public class JavaElementFinder {
 			stack.push(signature);
 		}
 		
+		@Override
+		public void acceptTemplateTupleParameter() {
+			templateStack.push(String.valueOf(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER));
+		}
+		
+		@Override
+		public void enterTemplateAliasParameter() {
+			
+		}
+		
+		@Override
+		public void exitTemplateAliasParameter(String signature) {
+			templateStack.push(signature);
+		}
+		
+		@Override
+		public void exitTemplateTypeParameter(String signature) {
+			templateStack.push(signature);
+		}
+		
+		@Override
+		public void exitTemplateValueParameter(String signature) {
+			templateStack.push(signature);
+		}
+		
 	}
 	
 	public ICompilationUnit findCompilationUnit(char[][] compoundName) {
@@ -180,7 +214,6 @@ public class JavaElementFinder {
 	/**
 	 * Finds a function in the given parent with the given name and parameter
 	 * and types signatures.
-	 * @see #getParametersAndReturnType(String)
 	 */
 	public static IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) {
 		try {
@@ -197,16 +230,51 @@ public class JavaElementFinder {
 						child.getElementName().equals(name)) {
 					IMethod method = (IMethod) child;
 					String retType = method.getReturnType();
-					String[] paramTypes = method.getParameterTypes();
-					if (paramTypes.length == paramsAndRetTypes.length - 1) {
+					String[] mParamTypes = method.getParameterTypes();
+					if (mParamTypes.length == paramsAndRetTypes.length - 1) {
 						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
-							for(int i = 0; i < paramTypes.length; i++) {
-								if (!paramTypes[i].equals(paramsAndRetTypes[i])) {
+							for(int i = 0; i < mParamTypes.length; i++) {
+								if (!mParamTypes[i].equals(paramsAndRetTypes[i])) {
 									continue;
 								}
 							}
 							return method;
 						}
+					}
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds a template function in the given parent with the given name and parameter
+	 * types signatures.
+	 */
+	private IJavaElement findTemplate(IParent parent, String name, String[] paramTypes) {
+		try {
+			for(IJavaElement child : parent.getChildren()) {
+				IParent searchInChildren = mustSearchInChildren(child);
+				if (searchInChildren != null) {
+					IJavaElement result = findTemplate(searchInChildren, name, paramTypes);
+					if (result != null) {
+						return result;
+					}
+				}
+				
+				if (child.getElementType() == IJavaElement.TYPE &&
+						child.getElementName().equals(name)) {
+					IType type = (IType) child;
+					String[] mParamTypes = type.getTypeParameterSignatures();
+					if (mParamTypes.length == paramTypes.length) {
+						for(int i = 0; i < mParamTypes.length; i++) {
+							if (!mParamTypes[i].equals(paramTypes[i])) {
+								continue;
+							}
+						}
+						return type;
 					}
 				}
 			}

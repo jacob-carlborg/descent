@@ -776,7 +776,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(CompileDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccMixin, String.valueOf(node.exp.toString()).toCharArray());
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccMixin, String.valueOf(node.sourceExp.toString()).toCharArray());
 		return false;
 	}
 	
@@ -1499,7 +1499,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(Module node) {
-		return true;
+		// Don't visit template instances in the module scope
+		for(IDsymbol symbol : node.members) {
+			Dsymbol dsymbol = (Dsymbol) symbol;
+			if (null == dsymbol.isTemplateInstance()) {
+				dsymbol.accept(this);
+			}
+		}
+		return false;
 	}
 
 	public boolean visit(ModuleInfoDeclaration node) {

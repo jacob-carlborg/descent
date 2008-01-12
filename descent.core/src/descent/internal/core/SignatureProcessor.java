@@ -102,8 +102,14 @@ public class SignatureProcessor implements ISignatureConstants {
 					requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
 				}
 				
-				localPosition = -1;				
-				continue;
+				localPosition = -1;
+				
+				// If a module comes, don't process further
+				if (i < signature.length() && signature.charAt(i) == MODULE) {
+					return i;
+				} else {
+					continue;
+				}
 			case UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR:
 				i++;
 				requestor.acceptSymbol(first, null, localPosition, signature.substring(start, i));
@@ -237,6 +243,20 @@ public class SignatureProcessor implements ISignatureConstants {
 			case FUNCTION_PARAMETERS_BREAK_1: // Argument break
 			case FUNCTION_PARAMETERS_BREAK_2:
 			case FUNCTION_PARAMETERS_BREAK_3:
+				return i;
+			case IDENTIFIER:
+				n = 0;
+				i++;
+				c = signature.charAt(i);
+				while(Character.isDigit(c)) {
+					n = 10 * n + (c - '0');
+					i++;
+					c = signature.charAt(i);
+				}
+				
+				requestor.acceptIdentifier(signature.substring(i, i + n).toCharArray(), signature.substring(start, i + n));
+				
+				i += n;
 				return i;
 			case POSITION:
 				n = 0;

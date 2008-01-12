@@ -113,8 +113,8 @@ public class ASTConverter {
 	}
 
 	private Pragma[] convertPragmas(descent.internal.compiler.parser.Pragma[] from) {
-		Pragma[] to = new Pragma[from.length];
-		for(int i = 0; i < from.length; i++) {
+		Pragma[] to = new Pragma[from == null ? 0 : from.length];
+		for(int i = 0; i < (from == null ? 0 : from.length); i++) {
 			to[i] = ast.newPragma();
 			to[i].setSourceRange(from[i].start, from[i].length);
 		}
@@ -942,7 +942,7 @@ public class ASTConverter {
 			b.setName((SimpleName) convert(a.ident));
 		}
 		
-		descent.core.dom.Type convertedType = convertTemplateMixin(a.typeStart, a.typeLength, a.tqual, a.idents, a.tiargs);
+		descent.core.dom.Type convertedType = convertTemplateMixin(a.typeStart, a.typeLength, a.tqual, a.idents, a.sourceTiargs);
 		if (convertedType != null) {
 			b.setType(convertedType);
 		}
@@ -1014,8 +1014,8 @@ public class ASTConverter {
 		if (tempinst.name != null) {
 			tt.setName((SimpleName) convert(tempinst.name));
 		}
-		if (tempinst.tiargs != null) {
-			for(INode node : tempinst.tiargs) {
+		if (tempinst.sourceTiargs != null) {
+			for(INode node : tempinst.sourceTiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					tt.arguments().add(convertedNode);
@@ -1032,10 +1032,12 @@ public class ASTConverter {
 		if (a.name != null) {
 			b.setName((SimpleName) convert(a.name));
 		}
-		for(INode node : a.tiargs) {
-			ASTNode convertedNode = convert(node);
-			if (convertedNode != null) {
-				b.arguments().add(convertedNode);
+		if (a.sourceMembers != null) {
+			for(INode node : a.sourceTiargs) {
+				ASTNode convertedNode = convert(node);
+				if (convertedNode != null) {
+					b.arguments().add(convertedNode);
+				}
 			}
 		}
 		b.setSourceRange(a.start, a.length);
@@ -3079,8 +3081,8 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		if (a.tempinst.tiargs != null) {
-			for(INode node : a.tempinst.tiargs) {
+		if (a.tempinst.sourceTiargs != null) {
+			for(INode node : a.tempinst.sourceTiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					b.arguments().add(convertedNode);

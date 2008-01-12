@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -253,8 +254,12 @@ public class Parser extends Lexer {
 		module.members = parseModule();
 		module.sourceMembers = new Dsymbols(module.members);
 		module.md = md;
-		module.comments = comments.toArray(new Comment[comments.size()]);
-		module.pragmas = pragmas.toArray(new Pragma[pragmas.size()]);
+		if (comments != null) {
+			module.comments = comments.toArray(new Comment[comments.size()]);
+		}
+		if (module.pragmas != null) {
+			module.pragmas = pragmas.toArray(new Pragma[pragmas.size()]);
+		}
 		module.lineEnds = getLineEnds();
 		
 		if (taskTags != null) {
@@ -2121,7 +2126,7 @@ public class Parser extends Lexer {
 			
 			if (tiargs != null) {
 				TemplateInstance tempinst = new TemplateInstance(loc(), id);
-			    tempinst.tiargs = tiargs;
+			    tempinst.tiargs(tiargs);
 			    tempinst.start = thisStart;
 			    tempinst.length = prevToken.ptr + prevToken.sourceLen - thisStart;
 			    id = new TemplateInstanceWrapper(loc(), tempinst); // "(PIdentifier *)tempinst;" cant work in Java 
@@ -2392,7 +2397,7 @@ public class Parser extends Lexer {
 			if (token.value == TOKnot) {
 				nextToken();
 				tempinst = new TemplateInstance(loc(), id);
-				tempinst.tiargs = parseTemplateArgumentList();
+				tempinst.tiargs(parseTemplateArgumentList());
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				tid = new TypeInstance(loc(), tempinst);
 				tid.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
@@ -2518,7 +2523,7 @@ public class Parser extends Lexer {
 			if (token.value == TOKnot) {
 				nextToken();
 				tempinst[0] = new TemplateInstance(loc(), id[0]);
-				tempinst[0].tiargs = parseTemplateArgumentList();
+				tempinst[0].tiargs(parseTemplateArgumentList());
 				tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
 				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
 			} else {
@@ -5425,7 +5430,7 @@ public class Parser extends Lexer {
 		    	
 		    	tempinst = new TemplateInstance(loc(), id);		    	
 		    	nextToken();
-		    	tempinst.tiargs = parseTemplateArgumentList();
+		    	tempinst.tiargs(parseTemplateArgumentList());
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				e = new ScopeExp(loc(), tempinst);
 				e.setSourceRange(tempinst.start, tempinst.length);
@@ -5889,7 +5894,7 @@ public class Parser extends Lexer {
 						tempinst = new TemplateInstance(loc(), id);						
 						nextToken();
 						
-						tempinst.tiargs = parseTemplateArgumentList();
+						tempinst.tiargs(parseTemplateArgumentList());
 						tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 						e = new DotTemplateInstanceExp(loc(), e, tempinst);
 					} else {
@@ -6840,6 +6845,10 @@ public class Parser extends Lexer {
 	}
 	
 	private List<Comment> getLastComments() {
+		if (comments == null) {
+			return Collections.emptyList();
+		}
+		
 		LinkedList<Comment> toReturn = new LinkedList<Comment>();
 		for(int i = comments.size() - 1; i >= lastCommentRead; i--) {
 			Comment comment = comments.get(i);
@@ -7001,7 +7010,9 @@ public class Parser extends Lexer {
 	}
 	
 	private void discardLastComments() {
-		this.lastCommentRead = this.comments.size();
+		if (this.comments != null) {
+			this.lastCommentRead = this.comments.size();
+		}
 	}
 	
 	private Loc loc() {

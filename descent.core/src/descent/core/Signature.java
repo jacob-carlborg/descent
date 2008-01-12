@@ -19,7 +19,6 @@ import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.parser.TypeBasic;
-import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.SignatureProcessor;
 import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
@@ -2275,6 +2274,14 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	public void acceptArgumentModifier(int stc) {
 		// TODO Descent Signature
 	}
+	
+	@Override
+	public void acceptIdentifier(char[] name, String signature) {
+		Stack<String> stack = new Stack<String>();
+		stack.push(new String(name));
+		
+		this.stack.push(stack);		
+	}
 
 	public void acceptAssociativeArray(String signature) {
 		Stack<String> stack = this.stack.peek();
@@ -2483,25 +2490,7 @@ private static void appendFunction(Stack<String> stack, StringBuilder sb, char[]
  * @since 2.0
  */
 public static char[] toCharArray(char[] signature) throws IllegalArgumentException {
-		ToCharArraySignatureRequestor requestor = new ToCharArraySignatureRequestor(true);
-		requestor.forFunction = false;
-		
-		try {
-			SignatureProcessor.process(new String(signature), requestor);
-		} catch (Exception e) {
-			return CharOperation.NO_CHAR;
-		}
-		
-		if (requestor.stack.isEmpty()) {
-			return CharOperation.NO_CHAR;
-		}
-		
-		Stack<String> stack = requestor.stack.pop();
-		if (stack.isEmpty()) {
-			return CharOperation.NO_CHAR;
-		}
-		
-		return stack.pop().toCharArray();
+	return toString(new String(signature)).toCharArray();
 }
 
 /**
@@ -2963,7 +2952,25 @@ public static String toQualifiedName(String[] segments) {
  *   correct
  */
 public static String toString(String signature) throws IllegalArgumentException {
-	return new String(toCharArray(signature.toCharArray()));
+	ToCharArraySignatureRequestor requestor = new ToCharArraySignatureRequestor(true);
+	requestor.forFunction = false;
+	
+	try {
+		SignatureProcessor.process(signature, requestor);
+	} catch (Exception e) {
+		return "";
+	}
+	
+	if (requestor.stack.isEmpty()) {
+		return "";
+	}
+	
+	Stack<String> stack = requestor.stack.pop();
+	if (stack.isEmpty()) {
+		return "";
+	}
+	
+	return stack.pop();
 }
 /**
  * Converts the given method signature to a readable string. The method signature is expected to

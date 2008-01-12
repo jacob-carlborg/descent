@@ -28,7 +28,8 @@ public class DotTemplateInstanceExp extends UnaExp {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, sourceE1);
+			TreeVisitor.acceptChildren(visitor, ti);
 		}
 		visitor.endVisit(this);
 	}
@@ -101,8 +102,13 @@ public class DotTemplateInstanceExp extends UnaExp {
 		id = ti.name.ident;
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident().ident) }));
+			if (s instanceof TemplateInstance) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(((TemplateInstance) s).name.ident) }));
+			} else {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident().ident) }));
+			}
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

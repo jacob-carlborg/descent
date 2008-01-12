@@ -191,13 +191,16 @@ public class TypeIdentifier extends TypeQualified {
 	
 	@Override
 	public String getSignature() {
-		// TODO Descent signature
-		return null;
+		StringBuilder sb = new StringBuilder();
+		appendSignature(sb);
+		return sb.toString();
 	}
 	
 	@Override
 	protected void appendSignature(StringBuilder sb) {
-		// TODO Descent signature		
+		sb.append(ISignatureConstants.IDENTIFIER);
+		sb.append(ident.ident.length);
+		sb.append(ident.ident);
 	}
 
 }

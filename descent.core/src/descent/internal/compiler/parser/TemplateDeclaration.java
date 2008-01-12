@@ -821,5 +821,10 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 	public List<TemplateInstance> instances() {
 		return instances;
 	}
+	
+	@Override
+	public char getSignaturePrefix() {
+		return ISignatureConstants.TEMPLATE;
+	}
 
 }

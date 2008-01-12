@@ -18,7 +18,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 // DMD 1.020
 public class TemplateInstance extends ScopeDsymbol {
 
-	public Objects tiargs;
+	public Objects tiargs, sourceTiargs;
 	public ITemplateDeclaration tempdecl; // referenced by foo.bar.abc
 	public TemplateInstance inst; // refer to existing instance
 	public AliasDeclaration aliasdecl; // != null if instance is an alias for its
@@ -45,7 +45,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		super(null);
 		this.loc = loc;
 		this.name = td.ident;
-		this.tiargs = tiargs;
+		tiargs(tiargs);
 		this.tempdecl = td;
 		this.havetempdecl = 1;
 	}
@@ -55,7 +55,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, name);
-			TreeVisitor.acceptChildren(visitor, tiargs);
+			TreeVisitor.acceptChildren(visitor, sourceTiargs);
 		}
 		visitor.endVisit(this);
 	}
@@ -893,6 +893,23 @@ public class TemplateInstance extends ScopeDsymbol {
 	@Override
 	public int getErrorLength() {
 		return name.getErrorLength();
+	}
+	
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		tempdecl.appendSignature(sb);
+	}
+	
+	@Override
+	public String getSignature() {
+		return tempdecl.getSignature();
+	}
+	
+	public void tiargs(Objects tiargs) {
+		this.tiargs = tiargs;
+		if (tiargs != null) {
+			this.sourceTiargs = new Objects(tiargs);
+		}
 	}
 
 	// PERHAPS void inlineScan();

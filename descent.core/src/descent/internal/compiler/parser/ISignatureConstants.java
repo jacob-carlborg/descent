@@ -39,6 +39,7 @@ public interface ISignatureConstants {
 	char FUNCTION_PARAMETERS_BREAK_1 = 'X';
 	char FUNCTION_PARAMETERS_BREAK_2 = 'Y';
 	char FUNCTION_PARAMETERS_BREAK_3 = 'Z';
+	char IDENTIFIER = '?';
 	char SCOPE = '#';
 	char POSITION = '$';
 

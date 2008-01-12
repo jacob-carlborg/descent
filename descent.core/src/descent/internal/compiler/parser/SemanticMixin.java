@@ -679,6 +679,7 @@ public class SemanticMixin {
 				for(TemplateParameter parameter : temp.parameters()) {
 					parameter.appendSignature(sb);
 				}
+				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
 			}
 			
 		}

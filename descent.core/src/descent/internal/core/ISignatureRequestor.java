@@ -29,6 +29,13 @@ public interface ISignatureRequestor {
 	 */
 	void acceptSymbol(char type, char[] name, int startPosition,
 			String signature);
+	
+	/**
+	 * The processor has found an identifier.
+	 * @param name the identifier name
+	 * @param signature the signature of the identifier
+	 */
+	void acceptIdentifier(char[] name, String signature);
 
 	/**
 	 * The processor has found a delegate.
