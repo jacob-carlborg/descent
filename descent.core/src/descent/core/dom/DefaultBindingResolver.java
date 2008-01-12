@@ -39,12 +39,12 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
-import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.JavaProject;
@@ -187,6 +187,18 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	@Override
+	ITypeBinding resolveTemplate(descent.core.dom.TemplateDeclaration type) {
+		ASTDmdNode old = newAstToOldAst.get(type);
+		if (!(old instanceof TemplateDeclaration)) {
+			return null;
+		}
+		
+		TemplateDeclaration temp = (TemplateDeclaration) old;
+		String key = temp.getSignature();
+		return (ITypeBinding) resolveBinding(type, key);
+	}
+	
+	@Override
 	ITypeBinding resolveEnum(descent.core.dom.EnumDeclaration type) {
 		ASTDmdNode old = newAstToOldAst.get(type);
 		if (!(old instanceof EnumDeclaration)) {
@@ -313,6 +325,8 @@ class DefaultBindingResolver extends BindingResolver {
 				return resolveAggregate((descent.core.dom.AggregateDeclaration) parent);
 			case ASTNode.ENUM_DECLARATION:
 				return resolveEnum((descent.core.dom.EnumDeclaration) parent);
+			case ASTNode.TEMPLATE_DECLARATION:
+				return resolveTemplate((descent.core.dom.TemplateDeclaration) parent);
 			case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
 				return resolveVariableFragment((VariableDeclarationFragment) parent);
 			case ASTNode.ALIAS_DECLARATION_FRAGMENT:
@@ -785,6 +799,7 @@ class DefaultBindingResolver extends BindingResolver {
 	private class SignatureSolver extends SignatureRequestorAdapter {
 		
 		private Stack<Stack<IBinding>> stack = new Stack<Stack<IBinding>>();
+		private Stack<String> templateStack = new Stack<String>();
 		
 		public SignatureSolver() {
 			stack.push(new Stack<IBinding>());
@@ -876,6 +891,28 @@ class DefaultBindingResolver extends BindingResolver {
 						
 						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
+					} else if (type == ISignatureConstants.TEMPLATE) {
+						IJavaElement element = binding.getJavaElement(); 
+						if (element == null) {
+							return;
+						}
+						
+						String[] paramsTypes = new String[templateStack.size()];
+						int i = paramsTypes.length - 1;
+						while(!templateStack.isEmpty()) {
+							paramsTypes[i] = templateStack.pop();
+							i--;
+						}
+						
+						element = JavaElementFinder.findTemplate((IParent) element, new String(name), paramsTypes);
+						if (element == null) {
+							return;
+						}
+						
+						if (element instanceof IType) {
+							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+							bindingTables.bindingKeysToBindings.put(signature, binding);
+						}
 					} else {
 						IJavaElement element = binding.getJavaElement(); 
 						if (element == null) {
@@ -912,10 +949,6 @@ class DefaultBindingResolver extends BindingResolver {
 				}
 			}
 			stack.push(binding);
-		}
-
-		public void acceptArgumentBreak(char c) {
-			// empty
 		}
 
 		public void acceptArgumentModifier(int stc) {
@@ -1050,6 +1083,26 @@ class DefaultBindingResolver extends BindingResolver {
 			}
 			
 			stack.push(binding);
+		}
+		
+		@Override
+		public void acceptTemplateTupleParameter() {
+			templateStack.push(String.valueOf(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER));
+		}
+		
+		@Override
+		public void exitTemplateAliasParameter(String signature) {
+			templateStack.push(signature);
+		}
+		
+		@Override
+		public void exitTemplateTypeParameter(String signature) {
+			templateStack.push(signature);
+		}
+		
+		@Override
+		public void exitTemplateValueParameter(String signature) {
+			templateStack.push(signature);
 		}
 		
 	}

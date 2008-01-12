@@ -222,6 +222,15 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public boolean isTemplate() {
+		try {
+			return ((IType) element).isTemplate();
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
+	}
 
 	public boolean isTopLevel() {
 		// TODO Auto-generated method stub

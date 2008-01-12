@@ -1032,7 +1032,7 @@ public class ASTConverter {
 		if (a.name != null) {
 			b.setName((SimpleName) convert(a.name));
 		}
-		if (a.sourceMembers != null) {
+		if (a.sourceTiargs != null) {
 			for(INode node : a.sourceTiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
@@ -1041,6 +1041,11 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a.name);
+		}
+		
 		return b;
 	}
 	
@@ -1174,6 +1179,11 @@ public class ASTConverter {
 		convertTemplateParameters(b.templateParameters(), a.parameters);
 		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	

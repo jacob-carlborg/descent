@@ -101,6 +101,10 @@ public abstract class PrimitiveTypeBinding implements ITypeBinding {
 	public final boolean isUnion() {
 		return false;
 	}
+	
+	public boolean isTemplate() {
+		return false;
+	}
 
 	public final IJavaElement getJavaElement() {
 		return null;

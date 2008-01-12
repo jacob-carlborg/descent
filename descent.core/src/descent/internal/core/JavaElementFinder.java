@@ -253,7 +253,7 @@ public class JavaElementFinder {
 	 * Finds a template function in the given parent with the given name and parameter
 	 * types signatures.
 	 */
-	private IJavaElement findTemplate(IParent parent, String name, String[] paramTypes) {
+	public static IJavaElement findTemplate(IParent parent, String name, String[] paramTypes) {
 		try {
 			for(IJavaElement child : parent.getChildren()) {
 				IParent searchInChildren = mustSearchInChildren(child);

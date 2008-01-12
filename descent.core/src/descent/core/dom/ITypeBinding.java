@@ -479,6 +479,14 @@ public interface ITypeBinding extends IBinding {
 	 *    and <code>false</code> otherwise
 	 */
 	public boolean isClass();
+	
+	/**
+	 * Returns whether this type binding represents a template type.
+	 *
+	 * @return <code>true</code> if this object represents a template,
+	 *    and <code>false</code> otherwise
+	 */
+	public boolean isTemplate();
 			
 	/**
 	 * Returns whether this type binding represents a delegate type.

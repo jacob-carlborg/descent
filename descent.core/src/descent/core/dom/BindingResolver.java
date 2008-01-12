@@ -258,6 +258,28 @@ class BindingResolver {
 	ITypeBinding resolveAggregate(AggregateDeclaration type) {
 		return null;
 	}
+	
+	/**
+	 * Resolves the given template declaration and returns the binding
+	 * for it.
+	 * <p>
+	 * The implementation of <code>TemplateDeclaration.resolveBinding</code> 
+	 * forwards to this method. How the declaration resolves is often a 
+	 * function of the context in which the declaration node is embedded as well
+	 * as the declaration subtree itself.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param type the anonymous class declaration of interest
+	 * @return the binding for the given class declaration, or <code>null</code>
+	 *    if no binding is available
+	 */
+	ITypeBinding resolveTemplate(TemplateDeclaration type) {
+		return null;
+	}
 
 	/**
 	 * Resolves the given enum declaration and returns the binding

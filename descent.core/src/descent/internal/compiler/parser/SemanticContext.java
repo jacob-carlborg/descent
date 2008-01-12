@@ -118,8 +118,13 @@ public class SemanticContext {
 				acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ModuleIsInMultiplePackages, module.md(), new String[] { module.md().toChars(this) }));
 			} else {
-				acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ModuleIsInMultipleDefined, module.md()));
+				if (module.md() == null) {
+					acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ModuleIsInMultipleDefined, 0, 0, 1));
+				} else {
+					acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ModuleIsInMultipleDefined, module.md()));
+				}
 			}
 		} else {
 			if (Module_amodules == null) {

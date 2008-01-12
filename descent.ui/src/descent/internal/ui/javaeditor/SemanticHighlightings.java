@@ -146,6 +146,13 @@ public class SemanticHighlightings {
 	public static final String CLASS="class"; //$NON-NLS-1$
 	
 	/**
+	 * A named preference part that controls the highlighting of templates.
+	 *
+	 * @since 3.2
+	 */
+	public static final String TEMPLATE="template"; //$NON-NLS-1$
+	
+	/**
 	 * A named preference part that controls the highlighting of enums.
 	 *
 	 * @since 3.2
@@ -1324,6 +1331,84 @@ public class SemanticHighlightings {
 	}
 	
 	/**
+	 * Semantic highlighting for templates.
+	 * @since 3.2
+	 */
+	private static final class TemplateHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return TEMPLATE;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(128, 64, 64);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_templates;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+
+			// 1: match types
+			SimpleName name= token.getNode();
+			ASTNode node= name.getParent();
+			int nodeType= node.getNodeType();
+			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.TEMPLATE_DECLARATION
+					&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
+					&& nodeType != ASTNode.CALL_EXPRESSION // For opCall
+					&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION
+					&& nodeType != ASTNode.TYPEOF_TYPE
+					&& nodeType != ASTNode.SELECTIVE_IMPORT
+					&& nodeType != ASTNode.TEMPLATE_TYPE)
+				return false;
+			while (nodeType == ASTNode.QUALIFIED_NAME) {
+				node= node.getParent();
+				nodeType= node.getNodeType();
+				if (nodeType == ASTNode.IMPORT_DECLARATION)
+					return false;
+			}
+
+			// 2: match templates
+			IBinding binding= token.getBinding();
+			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isTemplate();
+		}
+	}
+	
+	/**
 	 * Semantic highlighting for structs.
 	 * @since 3.2
 	 */
@@ -1712,6 +1797,7 @@ public class SemanticHighlightings {
 				new UnionHighlighting(),
 				new EnumHighlighting(),
 				new InterfaceHighlighting(),
+				new TemplateHighlighting(),
 			};
 		return fgSemanticHighlightings;
 	}

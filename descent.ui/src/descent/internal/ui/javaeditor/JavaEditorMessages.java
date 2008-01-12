@@ -132,6 +132,7 @@ final class JavaEditorMessages extends NLS {
 	public static String SemanticHighlighting_method;
 	public static String SemanticHighlighting_autoboxing;
 	public static String SemanticHighlighting_classes;
+	public static String SemanticHighlighting_templates;
 	public static String SemanticHighlighting_structs;
 	public static String SemanticHighlighting_unions;
 	public static String SemanticHighlighting_enums;
