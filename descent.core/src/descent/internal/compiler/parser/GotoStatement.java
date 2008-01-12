@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -75,6 +77,10 @@ public class GotoStatement extends Statement {
 
 			a.add(this);
 			s = new CompoundStatement(loc, a);
+			
+			if (sc.fes.gotos == null) {
+				sc.fes.gotos = new ArrayList();
+			}			
 			sc.fes.gotos.add(s); // 'look at this later' list
 			return s;
 		}

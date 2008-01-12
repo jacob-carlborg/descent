@@ -358,5 +358,11 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("void main() { foo!(1); foo!(1.3); }");
 		assertNoErrors();
 	}
+	
+	public void testProblemMultipleDefined() throws Exception {
+		one("");
+		two("import std.stdio; import std.c.stdio;");
+		assertNoErrors();
+	}
 
 }

@@ -348,7 +348,7 @@ public class SemanticHighlightings {
 		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
 		 */
 		public boolean isEnabledByDefault() {
-			return false;
+			return true;
 		}
 
 		/*
@@ -407,7 +407,7 @@ public class SemanticHighlightings {
 		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
 		 */
 		public boolean isEnabledByDefault() {
-			return true;
+			return false;
 		}
 
 		/*

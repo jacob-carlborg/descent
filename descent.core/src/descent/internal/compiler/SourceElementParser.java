@@ -1500,6 +1500,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(Module node) {
+		if (node.md != null) {
+			node.md.accept(this);
+		}
+		
 		// Don't visit template instances in the module scope
 		for(IDsymbol symbol : node.members) {
 			Dsymbol dsymbol = (Dsymbol) symbol;

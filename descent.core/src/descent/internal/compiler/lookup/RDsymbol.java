@@ -71,7 +71,6 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.WithScopeSymbol;
-import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.SignatureProcessor;
 import descent.internal.core.SignatureRequestorAdapter;
@@ -608,7 +607,6 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		private Stack<Integer> modifiersStack = new Stack<Integer>();
 		
 		public SignatureToType() {
-			symbolStack.push(null);
 		}
 		
 		public Type getType() {
@@ -626,12 +624,6 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		}
 		
 		public void acceptModule(char[][] compoundName, String signature) {
-			if (symbolStack.isEmpty()) {
-				return;
-			}
-			
-			symbolStack.pop();
-			
 			IModule module = context.moduleFinder.findModule(compoundName, context);
 			if (module != null) {
 				symbolStack.add(module);
@@ -697,11 +689,13 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptAssociativeArray(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
-				if (typesStack.isEmpty()) {
-					return;
-				}
+				Type t = getPreviousType();
+				if (t == null) return;
+				Type index = getPreviousType();
+				if (index == null) return;
 				
-				type = new TypeAArray(typesStack.pop(), typesStack.pop());
+				type = new TypeAArray(t, index);
+				((TypeAArray) type).key = index.toBasetype(context);
 				type = type.merge(context);
 			}
 			typesStack.push(type);
@@ -710,11 +704,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptDelegate(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
-				if (typesStack.isEmpty()) {
-					return;
-				}
+				Type next = getPreviousType();
+				if (next == null) return;
 				
-				type = new TypeDelegate(typesStack.pop());
+				type = new TypeDelegate(next);
 				type = type.merge(context);
 			}
 			typesStack.push(type);
@@ -723,18 +716,16 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptDynamicArray(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
-				if (typesStack.isEmpty()) {
-					return;
-				}
+				Type next = getPreviousType();
+				if (next == null) return;
 				
-				type = new TypeDArray(typesStack.pop());
+				type = new TypeDArray(next);
 				type = type.merge(context);
 			}
 			typesStack.push(type);
 		}
 		
 		public void enterFunctionType() {
-			symbolStack.push(null);
 		}
 
 		public void exitFunctionType(LINK link, String signature) {
@@ -761,18 +752,15 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			
 			// TODO varargs
 			typesStack.push(type);
-			
-			symbolStack.pop();
 		}
 
 		public void acceptPointer(String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
-				if (typesStack.isEmpty()) {
-					return;
-				}
+				Type next = getPreviousType();
+				if (next == null) return;
 				
-				type = new TypePointer(typesStack.pop());
+				type = new TypePointer(next);
 				type = type.merge(context);
 			}
 			typesStack.push(type);
@@ -785,14 +773,28 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		public void acceptStaticArray(int dimension, String signature) {
 			Type type = context.signatureToTypeCache.get(signature);
 			if (type == null) {
-				if (typesStack.isEmpty()) {
-					return;
-				}
+				Type next = getPreviousType();
+				if (next == null) return;
 				
-				type = new TypeSArray(typesStack.pop(), new IntegerExp(dimension));
+				type = new TypeSArray(next, new IntegerExp(dimension));
 				type = type.merge(context);
 			}
 			typesStack.push(type);
+		}
+		
+		private Type getPreviousType() {
+			Type prev;
+			if (typesStack.isEmpty()) {
+				if (symbolStack.isEmpty()) {
+					prev = null;
+				} else {
+					IDsymbol pop = symbolStack.pop();
+					prev = pop.type();
+				}
+			} else {
+				prev = typesStack.pop();
+			}
+			return prev;
 		}
 		
 	}

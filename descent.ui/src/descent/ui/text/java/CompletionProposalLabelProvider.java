@@ -140,7 +140,9 @@ public class CompletionProposalLabelProvider {
 					buffer.append(' ');
 				}
 				buffer.append(parameterTypes[i]);
-				if (parameterNames != null && parameterNames[i] != null) {
+				
+				// parameterNames[i] may not exist, since void is valid parameter, which has no name
+				if (parameterNames != null && i < parameterNames.length && parameterNames[i] != null) {
 					buffer.append(' ');
 					buffer.append(parameterNames[i]);
 				}

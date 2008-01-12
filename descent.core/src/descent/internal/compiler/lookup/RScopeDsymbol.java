@@ -99,7 +99,8 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 				
 				IDsymbol converted = null;
 				
-				if (!ov.containsKey(elemNameC)) {
+				boolean isOverloaded = ov.containsKey(elemNameC);
+				if (!isOverloaded) {
 					converted = (IDsymbol) hitCache.get(elemNameC);
 				}
 				
@@ -109,8 +110,10 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 				
 				if (converted != null) {
 					members.add(converted);
-					hitCache.put(elemNameC, converted);
-					ov.put(elemNameC, converted);
+					if (!isOverloaded) {
+						hitCache.put(elemNameC, converted);
+						ov.put(elemNameC, converted);
+					}
 				}
 			}
 		} catch (JavaModelException e) {

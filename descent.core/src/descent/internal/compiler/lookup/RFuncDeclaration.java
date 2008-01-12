@@ -141,7 +141,8 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	
 	@Override
 	public Type getType() {
-		return type();
+		// FuncDeclaration returns null
+		return null;
 	}
 	
 	@Override
