@@ -238,8 +238,8 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 		structalign = sc.structalign;
 		sc.offset = 8;
 
-		for (IDsymbol s : members) {
-			s.semantic(sc, context);
+		for (int j = 0; j < size(members); j++) {
+			members.get(i).semantic(sc, context);
 		}
 		sc.pop();
 	}

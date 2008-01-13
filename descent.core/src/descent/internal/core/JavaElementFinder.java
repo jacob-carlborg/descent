@@ -272,11 +272,6 @@ public class JavaElementFinder {
 					IMethod method = (IMethod) child;
 					String retType = method.getReturnType();
 					String[] mParamTypes = method.getParameterTypes();
-					
-					if (mParamTypes == null || paramsAndRetTypes == null) {
-						System.out.println(1);
-					}
-					
 					if (mParamTypes.length == paramsAndRetTypes.length - 1) {
 						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
 							for(int i = 0; i < mParamTypes.length; i++) {

@@ -33,6 +33,7 @@ public class TypeFunction extends Type {
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
 		super(Tfunction, treturn);
+		
 		this.parameters = parameters;
 		if (this.parameters != null) {
 			this.sourceParameters = new Arguments(parameters);
@@ -345,6 +346,7 @@ public class TypeFunction extends Type {
 		// Write argument types
 		Argument.argsToDecoBuffer(buf, parameters, context);
 		buf.writeByte('Z' - varargs); // mark end of arg list
+		
 		next.toDecoBuffer(buf, context);
 		inuse--;
 	}

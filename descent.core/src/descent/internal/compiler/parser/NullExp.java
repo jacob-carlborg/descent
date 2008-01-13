@@ -58,6 +58,11 @@ public class NullExp extends Expression {
 	
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
+		// TODO Descent this check is not in DMD, see why it can be null here (bug in Descent, probably)
+		if (type == null) {
+			type = Type.tvoid.pointerTo(context);
+		}
+		
 		if (this.type.equals(t)) {
 			return MATCHexact;
 		}

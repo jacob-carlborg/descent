@@ -544,10 +544,6 @@ public class CallExp extends UnaExp {
 				return this;
 			} else if (t1.ty != Tfunction) {
 				if (t1.ty == Tdelegate) {
-					if (!(t1.next.ty == Tfunction)) {
-						System.out.println(1);
-					}
-					
 					Assert.isTrue(t1.next.ty == Tfunction);
 					tf = (TypeFunction) (t1.next);
 					// goto Lcheckargs;

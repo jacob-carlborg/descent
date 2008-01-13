@@ -20,11 +20,6 @@ public class VarExp extends Expression {
 
 	public VarExp(Loc loc, IDeclaration var) {
 		super(loc, TOK.TOKvar);
-		
-		if (var == null) {
-			System.out.println(1);
-		}
-		
 		this.var = var;
 		this.type = var.type();
 	}
