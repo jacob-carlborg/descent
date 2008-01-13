@@ -24,6 +24,10 @@ public class DmdModuleFinder implements IModuleFinder {
 	public DmdModuleFinder(Global global) {
 		this.global = global;
 	}
+	
+	public boolean isLoaded(char[][] compoundName) {
+		return false;
+	}
 
 	public IModule findModule(char[][] compoundName, SemanticContext context) {
 		Module m;

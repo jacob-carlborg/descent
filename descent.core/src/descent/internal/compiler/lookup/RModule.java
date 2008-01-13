@@ -1,5 +1,6 @@
 package descent.internal.compiler.lookup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.Flags;
@@ -30,6 +31,15 @@ public class RModule extends RPackage implements IModule {
 	private IModuleDeclaration md;
 	private boolean mdCalculated;
 	private String signature;
+	
+	/*
+	 * The list of modules publicly imported by this module.
+	 * This list may not contain all of them: another module may have
+	 * loaded a module publicly imported by this module. This is
+	 * done in order to avoid "processing" twice, and search twice,
+	 * a module. 
+	 */
+	private List<IModule> publiclyImportedModules;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
@@ -116,21 +126,29 @@ public class RModule extends RPackage implements IModule {
 			return sym;
 		}
 		
-		try {
-			return searchInPublicImports((IParent) element, loc, ident, flags, context);
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return null;
+		if (publiclyImportedModules == null) {
+			publiclyImportedModules = new ArrayList<IModule>();
+			try {
+				searchInPublicImports((IParent) element);
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
 		}
+		
+		for(IModule module : publiclyImportedModules) {
+			sym = module.search(loc, ident, flags, context);
+			if (sym != null) {
+				return sym;
+			}
+		}
+		
+		return null;
 	}
 	
-	private IDsymbol searchInPublicImports(IParent parent, Loc loc, char[] ident, int flags, SemanticContext context) throws JavaModelException {
+	private void searchInPublicImports(IParent parent) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
 			if (child.getElementType() == IJavaElement.IMPORT_CONTAINER) {
-				IDsymbol sym = searchInPublicImports((IParent) child, loc, ident, flags, context);
-				if (sym != null) {
-					return sym;
-				}
+				searchInPublicImports((IParent) child);
 			} else if (child.getElementType() == IJavaElement.IMPORT_DECLARATION) {
 				IImportDeclaration imp = (IImportDeclaration) child;
 				if (Flags.isPublic(imp.getFlags())) {
@@ -140,21 +158,18 @@ public class RModule extends RPackage implements IModule {
 					if (name.indexOf(':') == -1 && name.indexOf('=') == -1) {
 						String[] compoundNameS = name.split("\\.");
 						char[][] compoundName = CharOperation.stringArrayToCharArray(compoundNameS);
-						IModule mod = context.load(compoundName);
-						if (mod == null) {
-							continue;
-						}
 						
-						IDsymbol sym = mod.search(loc, ident, flags, context);
-						if (sym != null) {
-							return sym;
+						// Only add if it was not already loaded
+						if (!context.moduleFinder.isLoaded(compoundName)) {
+							IModule mod = context.load(compoundName);
+							if (mod != null) {
+								publiclyImportedModules.add(mod);
+							}
 						}
 					}
 				}
 			}
 		}
-		
-		return null;
 	}
 
 	public int semanticdone() {

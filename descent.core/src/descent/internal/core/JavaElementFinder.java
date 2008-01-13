@@ -19,6 +19,7 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
@@ -32,6 +33,11 @@ public class JavaElementFinder {
 	
 	private final JavaProject javaProject;
 	private final INameEnvironment environment;
+	/*
+	 * Cache results for speedup, and also for not loading multiple
+	 * times the same module.
+	 */
+	private final HashtableOfCharArrayAndObject cache = new HashtableOfCharArrayAndObject();
 
 	public JavaElementFinder(IJavaProject project, WorkingCopyOwner owner) {
 		this.javaProject = (JavaProject) project;
@@ -219,7 +225,15 @@ public class JavaElementFinder {
 	}
 	
 	public ICompilationUnit findCompilationUnit(char[][] compoundName) {
-		return environment.findCompilationUnit(compoundName);
+		char[] name = CharOperation.concatWith(compoundName, '.');
+		ICompilationUnit unit = (ICompilationUnit) cache.get(name);
+		if (unit == null) {
+			unit = environment.findCompilationUnit(compoundName);
+			if (unit != null) {
+				cache.put(name, unit);
+			}
+		}
+		return unit;
 	}
 	
 	/**

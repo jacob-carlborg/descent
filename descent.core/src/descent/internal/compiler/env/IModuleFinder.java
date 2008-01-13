@@ -9,6 +9,11 @@ import descent.internal.compiler.parser.SemanticContext;
 public interface IModuleFinder {
 	
 	/**
+	 * Determines if a module was already loaded.
+	 */
+	boolean isLoaded(char[][] compoundName);
+	
+	/**
 	 * Finds and loads the module denoted by the given compound name.
 	 */
 	IModule findModule(char[][] compoundName, SemanticContext context);
