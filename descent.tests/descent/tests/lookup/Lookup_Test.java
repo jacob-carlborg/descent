@@ -371,19 +371,5 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("void foo() { x = 3; }");
 		assertNoErrors();
 	}
-	
-	public void testProblemMultipleDefined2() throws Exception {
-		one("");
-		two("import std.c.stdio;\r\n" + 
-				"import std.stdio;\r\n" + 
-				"\r\n" + 
-				"int main(char[][] args)\r\n" + 
-				"{\r\n" + 
-				"    writefln(\"hola\");\r\n" + 
-				"    printf(\"Success!\");\r\n" + 
-				"    return 0;\r\n" + 
-				"}");
-		assertNoErrors();
-	}
 
 }

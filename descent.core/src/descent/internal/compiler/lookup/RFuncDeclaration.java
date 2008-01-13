@@ -34,7 +34,7 @@ import static descent.internal.compiler.parser.STC.STCstatic;
 
 public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	
-	private TypeFunction type;
+	private Type type;
 	private FuncDeclaration func; // The underlying function, only for interpreting
 
 	public RFuncDeclaration(IMethod element, SemanticContext context) {
@@ -180,7 +180,8 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				
 				// TODO link
 				type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
-				type.linkageChar = 'F';
+				((TypeFunction) type).linkageChar = 'F';
+				type = type.merge(context);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

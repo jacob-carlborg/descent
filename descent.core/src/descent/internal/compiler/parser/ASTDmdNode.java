@@ -929,7 +929,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 		if (tf.linkage == LINKd && tf.varargs == 1) {
 			Expression e;
 			e = createTypeInfoArray(sc, 
-					arguments.subList(nparams, nparams + arguments.size() - nparams), 
+					arguments.subList(nparams, arguments.size()), 
 					arguments.size() - nparams);
 			arguments.add(0, e);
 		}

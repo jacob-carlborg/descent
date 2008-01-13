@@ -115,8 +115,12 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	}
 
 	public boolean isVarargs() {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			return ((IMethod) element).isVarargs();
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return false;
+		}
 	}
 
 	public boolean overrides(IMethodBinding method) {

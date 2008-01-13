@@ -256,6 +256,9 @@ public boolean isDelete() throws JavaModelException {
 public boolean isTemplate() throws JavaModelException {
 	return Flags.isTemplate(getFlags());
 }
+public boolean isVarargs() throws JavaModelException {
+	return Flags.isVarargs(getFlags());
+}
 /**
  * @see IMethod#isMainMethod()
  */

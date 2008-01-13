@@ -1172,7 +1172,7 @@ class DefaultBindingResolver extends BindingResolver {
 		try {
 			SignatureProcessor.process(signature, solver);
 		} catch (Exception e) {
-			Util.log(e);
+			Util.log(e, "processing signature: " + signature);
 			return null;
 		}
 		

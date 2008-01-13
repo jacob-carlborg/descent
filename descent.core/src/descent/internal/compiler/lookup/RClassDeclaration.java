@@ -38,6 +38,8 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	private boolean vtblReady;
 	private List vtbl;
 	private List vtblFinal;
+	
+	private ClassInfoDeclaration vclassinfo;
 
 	public RClassDeclaration(IType element, SemanticContext context) {
 		super(element, context);
@@ -262,13 +264,11 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	}
 	
 	public ClassInfoDeclaration vclassinfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return vclassinfo;
 	}
 	
 	public void vclassinfo(ClassInfoDeclaration vclassinfo) {
-		// TODO Auto-generated method stub
-		
+		this.vclassinfo = vclassinfo;
 	}
 	
 	public boolean isCOMclass() {

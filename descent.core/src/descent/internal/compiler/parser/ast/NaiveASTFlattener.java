@@ -2630,7 +2630,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		case Tint16: this.buffer.append("short"); break;
 		case Tuns16: this.buffer.append("ushort"); break;
 		case Tint32: this.buffer.append("int"); break;
-		case Tuns32: this.buffer.append("unit"); break;
+		case Tuns32: this.buffer.append("uint"); break;
 		case Tint64: this.buffer.append("long"); break;
 		case Tuns64: this.buffer.append("ulong"); break;
 		case Tfloat32: this.buffer.append("float"); break;

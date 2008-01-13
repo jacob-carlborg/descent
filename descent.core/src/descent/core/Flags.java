@@ -668,6 +668,16 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>varargs</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>varargs</code> modifier is included
+	 */
+	public static boolean isVarargs(long flags) {
+		return (flags & AccVarargs) != 0;
+	}
+	
+	/**
 	 * Returns whether the given integer includes the <code>debug assignment</code> modifier.
 	 *
 	 * @param flags the flags

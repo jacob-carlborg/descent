@@ -7,6 +7,7 @@ import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.core.SourceField;
 import descent.internal.core.SourceFieldElementInfo;
 import descent.internal.core.util.Util;
@@ -30,7 +31,11 @@ public class REnumMember extends RDsymbol implements IEnumMember {
 				if (encodedValue != null) {
 					value = ASTNodeEncoder.decodeExpression(encodedValue);
 					// The expression's type must be my enum's type 
-					value.type = parent.getType();
+					if (parent.isEnumDeclaration() != null) {
+						value.type = parent.getType();
+					} else {
+						value.type = TypeBasic.tint32;
+					}
 				}
 			} catch (JavaModelException e) {
 				Util.log(e);

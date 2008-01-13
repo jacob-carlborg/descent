@@ -22,7 +22,9 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.core.util.Util;
 
 public class RModule extends RPackage implements IModule {
@@ -34,10 +36,6 @@ public class RModule extends RPackage implements IModule {
 	
 	/*
 	 * The list of modules publicly imported by this module.
-	 * This list may not contain all of them: another module may have
-	 * loaded a module publicly imported by this module. This is
-	 * done in order to avoid "processing" twice, and search twice,
-	 * a module. 
 	 */
 	private List<IModule> publiclyImportedModules;
 
@@ -159,12 +157,16 @@ public class RModule extends RPackage implements IModule {
 						String[] compoundNameS = name.split("\\.");
 						char[][] compoundName = CharOperation.stringArrayToCharArray(compoundNameS);
 						
-						// Only add if it was not already loaded
-						if (!context.moduleFinder.isLoaded(compoundName)) {
-							IModule mod = context.load(compoundName);
-							if (mod != null) {
-								publiclyImportedModules.add(mod);
-							}
+						IModule mod;
+						
+						// This check is here to avoid loading twice the same module
+						if (context.moduleFinder.isLoaded(compoundName)) {
+							mod = context.moduleFinder.findModule(compoundName, context);
+						} else {
+							mod = context.load(compoundName);
+						}
+						if (mod != null) {
+							publiclyImportedModules.add(mod);
 						}
 					}
 				}
@@ -254,6 +256,13 @@ public class RModule extends RPackage implements IModule {
 			Dsymbol sym = (Dsymbol) m.members.get(importCount);
 			
 			m.semantic(context);
+			
+			while(sym instanceof StorageClassDeclaration) {
+				sym = (Dsymbol) ((StorageClassDeclaration) sym).decl.get(0);
+			}
+			while(sym instanceof ProtDeclaration) {
+				sym = (Dsymbol) ((ProtDeclaration) sym).decl.get(0);
+			}
 			
 			return sym;
 		} catch (JavaModelException e) {

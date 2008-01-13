@@ -241,7 +241,12 @@ public class JavaElementFinder {
 	 */
 	public IJavaElement find(String signature) {
 		InternalFinder finder = new InternalFinder();
-		SignatureProcessor.process(signature, finder);
+		try {
+			SignatureProcessor.process(signature, finder);
+		} catch (Throwable e) {
+			Util.log(e, "processing signature: " + signature);
+			return null;
+		}
 		return finder.element;
 	}
 	
@@ -259,6 +264,7 @@ public class JavaElementFinder {
 					if (result != null) {
 						return result;
 					}
+					continue;
 				}
 				
 				if (child.getElementType() == IJavaElement.METHOD &&
@@ -266,6 +272,11 @@ public class JavaElementFinder {
 					IMethod method = (IMethod) child;
 					String retType = method.getReturnType();
 					String[] mParamTypes = method.getParameterTypes();
+					
+					if (mParamTypes == null || paramsAndRetTypes == null) {
+						System.out.println(1);
+					}
+					
 					if (mParamTypes.length == paramsAndRetTypes.length - 1) {
 						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
 							for(int i = 0; i < mParamTypes.length; i++) {
@@ -301,6 +312,7 @@ public class JavaElementFinder {
 					if (result != null) {
 						return result;
 					}
+					continue;
 				}
 				
 				if (child.getElementType() == IJavaElement.METHOD &&
@@ -366,6 +378,7 @@ public class JavaElementFinder {
 					if (result != null) {
 						return result;
 					}
+					continue;
 				}
 				
 				if (child.getElementType() == IJavaElement.TYPE &&
@@ -428,6 +441,11 @@ public class JavaElementFinder {
 				if (result != null) {
 					return result;
 				}
+				continue;
+			}
+			
+			if (!JavaElementFinder.isReturnTarget(child)) {
+				continue;
 			}
 			
 			String elementName = child.getElementName();
@@ -559,6 +577,28 @@ public class JavaElementFinder {
 		}
 		
 		return null;
+	}
+	
+	public static boolean isReturnTarget(IJavaElement element) {
+		try {
+			if (element.getElementType() == IJavaElement.INITIALIZER) {
+				IInitializer init = (IInitializer) element;
+				if (init.isAlign() || init.isExtern()) {
+					return false;
+				}
+			} else if (element instanceof IConditional) {
+				return false;
+			} else if (element instanceof IType) {
+				IType type = (IType) element;
+				if (type.isAnonymous()) {
+					return false;
+				}
+			}
+			
+			return true;
+		} catch (JavaModelException e) {
+			return false;
+		}
 	}
 
 }

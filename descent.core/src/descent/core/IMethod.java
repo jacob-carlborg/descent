@@ -291,4 +291,13 @@ boolean isResolved();
  * @since 2.0
  */
 boolean isSimilar(IMethod method);
+/**
+ * Returns whether this method has variadic arguments.
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method has variadic arguments, false otherwise
+ */
+boolean isVarargs() throws JavaModelException;
 }

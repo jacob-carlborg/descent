@@ -228,6 +228,12 @@ public class IfStatement extends Statement {
 		} else {
 			scd = sc.push();
 		}
+		
+		// ifbody may be null if there is a syntaxis error
+		if (ifbody == null) {
+			return this;
+		}
+		
 		ifbody = ifbody.semantic(scd, context);
 		scd.pop();
 

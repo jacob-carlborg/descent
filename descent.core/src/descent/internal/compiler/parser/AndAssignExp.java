@@ -33,7 +33,7 @@ public class AndAssignExp extends BinExp {
 
 	@Override
 	public char[] opId() {
-		return Id.addass;
+		return Id.andass;
 	}
 
 	@Override

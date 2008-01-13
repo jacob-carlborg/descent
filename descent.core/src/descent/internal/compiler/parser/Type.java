@@ -820,10 +820,27 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	// 1. Each different semantic pass creates different types
 	// 2. Later types will be hidden in an interface (I guess)
 	public boolean same(Type t) {
-		return this == t || 
-			(t != null && 
-					(singleton == t.singleton || 
-							(this.singleton.deco != null && t.singleton.deco != null && this.singleton.deco.equals(t.singleton.deco))));
+		if (this == t) {
+			return true;
+		}
+		
+		if (t == null) {
+			return false;
+		}
+		
+		if (singleton == t.singleton) {
+			return true;
+		}
+		
+		if (singleton.deco != null && t.singleton.deco != null && singleton.deco.equals(t.singleton.deco)) {
+			return true;
+		}
+		
+//		if (getSignature().equals(t.getSignature())) {
+//			return true;
+//		}
+		
+		return false;
 	}
 
 	public MATCH implicitConvTo(Type to, SemanticContext context) {

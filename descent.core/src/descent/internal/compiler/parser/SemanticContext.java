@@ -11,7 +11,6 @@ import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.compiler.lookup.DmdModuleFinder;
 
 public class SemanticContext {
 
@@ -96,8 +95,8 @@ public class SemanticContext {
 		this.signatureToTypeCache = new HashMap<String, Type>();
 		
 		// for debugging purposes
-		global.path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
-		this.moduleFinder = new DmdModuleFinder(global);
+//		global.path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
+//		this.moduleFinder = new DmdModuleFinder(global);
 
 		Module_init();
 		afterParse(module);

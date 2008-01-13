@@ -141,6 +141,9 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 			throw new IllegalStateException("assert(index.dim == value.dim);");
 		}
 
+		ai.index = new Expressions(index.size());
+		ai.value = new Initializers(value.size());
+		
 		ai.index.setDim(index.size());
 		ai.value.setDim(value.size());
 		for (int i = 0; i < ai.value.size(); i++) {

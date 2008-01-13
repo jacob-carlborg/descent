@@ -27,7 +27,7 @@ public class DescentModuleFinder implements IModuleFinder {
 	
 	public boolean isLoaded(char[][] compoundName) {
 		char[] name = CharOperation.concatWith(compoundName, '.');
-		return cache.get(name) == null;
+		return cache.get(name) != null;
 	}
 
 	public IModule findModule(char[][] compoundName, SemanticContext context) {
