@@ -2,18 +2,23 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.Flags;
 import descent.core.ICompilationUnit;
+import descent.core.IImportDeclaration;
+import descent.core.IJavaElement;
 import descent.core.IPackageDeclaration;
+import descent.core.IParent;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Dsymbol;
-import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
@@ -102,6 +107,54 @@ public class RModule extends RPackage implements IModule {
 	public void needmoduleinfo(boolean value) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		IDsymbol sym = super.search(loc, ident, flags, context);
+		if (sym != null) {
+			return sym;
+		}
+		
+		try {
+			return searchInPublicImports((IParent) element, loc, ident, flags, context);
+		} catch (JavaModelException e) {
+			Util.log(e);
+			return null;
+		}
+	}
+	
+	private IDsymbol searchInPublicImports(IParent parent, Loc loc, char[] ident, int flags, SemanticContext context) throws JavaModelException {
+		for(IJavaElement child : parent.getChildren()) {
+			if (child.getElementType() == IJavaElement.IMPORT_CONTAINER) {
+				IDsymbol sym = searchInPublicImports((IParent) child, loc, ident, flags, context);
+				if (sym != null) {
+					return sym;
+				}
+			} else if (child.getElementType() == IJavaElement.IMPORT_DECLARATION) {
+				IImportDeclaration imp = (IImportDeclaration) child;
+				if (Flags.isPublic(imp.getFlags())) {
+					// Make sure the import is not selective, because that
+					// currently doesn't work as public in DMD
+					String name = imp.getElementName();
+					if (name.indexOf(':') == -1 && name.indexOf('=') == -1) {
+						String[] compoundNameS = name.split("\\.");
+						char[][] compoundName = CharOperation.stringArrayToCharArray(compoundNameS);
+						IModule mod = context.load(compoundName);
+						if (mod == null) {
+							continue;
+						}
+						
+						IDsymbol sym = mod.search(loc, ident, flags, context);
+						if (sym != null) {
+							return sym;
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	public int semanticdone() {

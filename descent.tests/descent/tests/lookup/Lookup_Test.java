@@ -364,5 +364,12 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("import std.stdio; import std.c.stdio;");
 		assertNoErrors();
 	}
+	
+	public void testPublicImport() throws Exception {
+		createCompilationUnit("another.d", "int x;");
+		one("public import another;");
+		two("void foo() { x = 3; }");
+		assertNoErrors();
+	}
 
 }

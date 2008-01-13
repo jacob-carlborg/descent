@@ -864,6 +864,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			}
 			
 			int flags = node.isstatic ? Flags.AccStatic : 0;
+			flags |= getFlags(node.modifiers);
 			
 			requestor.acceptImport(start, end, node.toString(), false, flags);
 			
