@@ -12,9 +12,6 @@ import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
-import descent.internal.compiler.parser.ArrayExp;
-import descent.internal.compiler.parser.ArrayInitializer;
-import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.EnumMember;
@@ -85,8 +82,12 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(VarDeclaration node) {
-		if (result == null && node.isConst() && isInRange(node.ident)) {
-			evalInit((Initializer) node.init);
+		if (result == null) {
+			if (node.isConst() && isInRange(node.ident)) { 
+				evalInit((Initializer) node.init);
+			} else if (isInRange((Initializer) node.sourceInit)) {
+				node.sourceInit.accept(this);
+			}
 			return false;
 		}
 		return true;
@@ -105,7 +106,6 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		if (result == null && isInRange(node.sourceE1)) {
 			Expression exp = node.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, context);
 			evalExp(exp);
-			return false;
 		}
 		return true;
 	}
@@ -289,6 +289,9 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	}
 	
 	private boolean isInRange(ASTDmdNode node) {
+		if (node == null) {
+			return false;
+		}
 		return node.start <= offset && offset + length <= node.start + node.length;
 	}
 
