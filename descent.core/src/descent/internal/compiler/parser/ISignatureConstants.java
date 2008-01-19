@@ -42,6 +42,10 @@ public interface ISignatureConstants {
 	char FUNCTION_PARAMETERS_BREAK_2 = 'Y';
 	char FUNCTION_PARAMETERS_BREAK_3 = 'Z';
 	char IDENTIFIER = '?';
+	char TEMPLATE_INSTANCE = '!';
+	char TEMPLATE_INSTANCE_TYPE = '^';
+	char TEMPLATE_INSTANCE_VALUE = '-';
+	char TEMPLATE_INSTANCE_SYMBOL = '*';
 	char SCOPE = '#';
 	char POSITION = '$';
 

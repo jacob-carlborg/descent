@@ -62,7 +62,7 @@ public class GotoStatement extends Statement {
 			return this;
 		}
 		
-		FuncDeclaration fd = sc.parent.isFuncDeclaration();
+		FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
 		tf = sc.tf;
 		label = fd.searchLabel(ident);
 		if (null == label.statement && sc.fes != null) {

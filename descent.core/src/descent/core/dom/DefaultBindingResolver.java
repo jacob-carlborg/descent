@@ -860,7 +860,8 @@ class DefaultBindingResolver extends BindingResolver {
 				}
 				
 				if (startPosition >= 0) {
-					if (type == ISignatureConstants.FUNCTION) {
+					if (type == ISignatureConstants.FUNCTION ||
+							type == ISignatureConstants.TEMPLATED_FUNCTION) {
 						this.stack.pop();
 						stack = this.stack.peek();
 						

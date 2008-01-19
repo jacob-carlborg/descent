@@ -46,3 +46,13 @@ For a templated class, the symbol used is <. Following are the template paramete
 
 For a templated function, the symbol used is >. Following is the function type, then come
 the template parameters.
+
+For a template instance, the symbol used is !. Then follows the parameters of
+the instance, then '.
+ - For a type parameter, the symbol used is ^, the comes the type.
+ - For an expression parameter, the symbol - is used, the comes the length,
+   then - again, then the expression. 
+ - For a symbol, the symbol * is used. Then comes the symbol's signature.
+ - TODO: tuples
+ 
+Template instances always follows a template.

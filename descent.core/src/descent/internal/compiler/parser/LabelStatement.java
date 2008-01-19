@@ -83,7 +83,7 @@ public class LabelStatement extends Statement {
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		LabelDsymbol ls;
-		FuncDeclaration fd = sc.parent.isFuncDeclaration();
+		FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
 
 		ls = fd.searchLabel(ident);
 		if (ls.statement != null) {

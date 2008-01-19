@@ -102,7 +102,7 @@ public class ReturnStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		FuncDeclaration fd = sc.parent.isFuncDeclaration();
+		FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
 		Scope scx = sc;
 		int implicit0 = 0;
 

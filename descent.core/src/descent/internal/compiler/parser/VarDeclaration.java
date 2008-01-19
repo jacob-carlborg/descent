@@ -269,7 +269,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 
 				OutBuffer buf = new OutBuffer();
 				buf.data.append("_").append(ident.ident).append("_field_")
-						.append(i).append("u");
+						.append(i);
 				String name = buf.extractData();
 				IdentifierExp id = new IdentifierExp(loc, name.toCharArray());
 

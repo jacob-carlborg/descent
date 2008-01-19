@@ -65,7 +65,7 @@ public class ThisExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		IFuncDeclaration fd;
 		@SuppressWarnings("unused")
-		FuncDeclaration fdthis;
+		IFuncDeclaration fdthis;
 		@SuppressWarnings("unused")
 		int nested = 0;
 

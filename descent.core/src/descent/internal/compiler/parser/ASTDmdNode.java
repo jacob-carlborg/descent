@@ -948,7 +948,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 			}
 		}
 
-		if (s != null && s == sc.module.parent) {
+		if (s != null && s == sc.module.parent()) {
 			return true;
 		}
 
@@ -961,7 +961,7 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 	 */
 	public IFuncDeclaration hasThis(Scope sc) {
 		IFuncDeclaration fd;
-		FuncDeclaration fdthis;
+		IFuncDeclaration fdthis;
 
 		fdthis = sc.parent.isFuncDeclaration();
 

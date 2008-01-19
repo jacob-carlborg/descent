@@ -160,4 +160,43 @@ public interface ISignatureRequestor {
 	 */
 	void exitTemplateValueParameter(String signature);
 
+	/**
+	 * The processor will be processing a template instance.
+	 */
+	void enterTemplateInstance();
+	
+	/**
+	 * The processor has finished processing a template instance.
+	 */
+	void exitTemplateInstance(String signature);
+
+	/**
+	 * The processos has found a template instance type parameter
+	 * and will report it's type.
+	 */
+	void enterTemplateInstanceType();
+	
+	/**
+	 * The processor has finished reporting a template instance
+	 * type parameter.
+	 */
+	void exitTemplateInstanceTypeParameter(String signature);
+
+	/**
+	 * The processor has found a template instance value.
+	 */
+	void acceptTemplateInstanceValue(Expression exp, String signature);
+
+	/**
+	 * The processos has found a template instance symbol parameter
+	 * and will report it's symbol.
+	 */
+	void enterTemplateInstanceSymbol();
+
+	/**
+	 * The processor has finished reporting a template instance
+	 * symbol parameter.
+	 */
+	void exitTemplateInstanceSymbol(String string);
+
 }

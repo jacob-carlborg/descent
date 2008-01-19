@@ -97,5 +97,33 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	public void exitTemplateValueParameter(String signature) {
 		
 	}
+	
+	public void enterTemplateInstance() {
+		
+	}
+	
+	public void exitTemplateInstance(String signature) {
+		
+	}
+	
+	public void enterTemplateInstanceType() {
+		
+	}
+	
+	public void exitTemplateInstanceTypeParameter(String signature) {
+		
+	}
+	
+	public void acceptTemplateInstanceValue(Expression exp, String signature) {
+		
+	}
+	
+	public void enterTemplateInstanceSymbol() {
+	
+	}
+	
+	public void exitTemplateInstanceSymbol(String string) {
+		
+	}
 
 }

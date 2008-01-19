@@ -55,7 +55,7 @@ public class SuperExp extends ThisExp {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		IFuncDeclaration fd;
 		@SuppressWarnings("unused")
-		FuncDeclaration fdthis;
+		IFuncDeclaration fdthis;
 		IClassDeclaration cd;
 		IDsymbol s;
 

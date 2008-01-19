@@ -147,7 +147,7 @@ public class Import extends Dsymbol {
 			// if so then insert alias
 
 			if (null == mod.importedFrom()) {
-				mod.importedFrom(null != sc ? sc.module.importedFrom
+				mod.importedFrom(null != sc ? sc.module.importedFrom()
 						: context.Module_rootModule);
 			}
 		}
@@ -195,13 +195,13 @@ public class Import extends Dsymbol {
 			}
 
 			// Modules need a list of each imported module
-			if (sc.module.aimports == null) {
-				sc.module.aimports = new Array();
+			if (sc.module.aimports() == null) {
+				sc.module.aimports(new Array());
 			}
-			sc.module.aimports.add(mod);
+			sc.module.aimports().add(mod);
 
 			if (mod.needmoduleinfo()) {
-				sc.module.needmoduleinfo = true;
+				sc.module.needmoduleinfo(true);
 			}
 
 			sc = sc.push(mod);
@@ -229,7 +229,7 @@ public class Import extends Dsymbol {
 		
 		mod.semantic2(sc, context);
 		if (mod.needmoduleinfo()) {
-			sc.module.needmoduleinfo = true;
+			sc.module.needmoduleinfo(true);
 		}
 	}
 

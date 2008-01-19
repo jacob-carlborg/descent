@@ -41,10 +41,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		this.name = id;
 	}
 
-	public TemplateInstance(Loc loc, TemplateDeclaration td, Objects tiargs) {
+	public TemplateInstance(Loc loc, ITemplateDeclaration td, Objects tiargs) {
 		super(null);
 		this.loc = loc;
-		this.name = td.ident;
+		this.name = td.ident();
 		tiargs(tiargs);
 		this.tempdecl = td;
 		this.havetempdecl = 1;
@@ -273,7 +273,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		Objects args;
 
 		id = tempdecl.ident().toChars(context);
-		buf.data.append("__T").append(id.length()).append("u").append(id);
+		buf.data.append("__T").append(id.length()).append(id);
 		args = tiargs;
 		for (int i = 0; i < size(args); i++) {
 			INode o = args.get(i);
@@ -310,7 +310,7 @@ public class TemplateInstance extends ScopeDsymbol {
 								IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 					} else {
 						String p2 = sa.mangle(context);
-						buf.data.append(p2.length()).append("u").append(p2);
+						buf.data.append(p2.length()).append(p2);
 					}
 				}
 				if (!gotoLsa) {
@@ -326,7 +326,7 @@ public class TemplateInstance extends ScopeDsymbol {
 									IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 						} else {
 							String p2 = sa.mangle(context);
-							buf.data.append(p2.length()).append("u").append(p2);
+							buf.data.append(p2.length()).append(p2);
 						}
 					}
 					if (!gotoLsa) {
@@ -349,7 +349,7 @@ public class TemplateInstance extends ScopeDsymbol {
 							IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 				} else {
 					String p = sa.mangle(context);
-					buf.data.append(p.length()).append("u").append(p);
+					buf.data.append(p.length()).append(p);
 				}
 			} else if (va != null) {
 				assert (i + 1 == args.size()); // must be last one
@@ -456,7 +456,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 			buf.writestring(p);
 		}
-		buf.data.append(id.length()).append("u").append(id);
+		buf.data.append(id.length()).append(id);
 		id = buf.toChars();
 		buf.data = null;
 		return id;
@@ -589,7 +589,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					a.add(this);
 					break;
 				}
-				if (this == (Dsymbol) a.get(i)) {
+				if (this == a.get(i)) {
 					break;
 				}
 			}
@@ -699,8 +699,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 		semanticdone = 2;
 
-		if (context.global.errors == 0 // TODO this just says errors; I'm assuming it's global.errors
-				&& null != members) {
+		if (errors == 0 && null != members) {
 			sc = tempdecl.scope();
 			assert (null != sc);
 			sc = sc.push(argsym);
@@ -723,8 +722,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			return;
 		}
 		semanticdone = 3;
-		if (0 == context.global.errors // TODO this just says errors; I'm assuming it's global.errors
-				&& null != members) {
+		if (0 == errors && null != members) {
 			sc = tempdecl.scope();
 			sc = sc.push(argsym);
 			sc = sc.push(this);
@@ -897,16 +895,38 @@ public class TemplateInstance extends ScopeDsymbol {
 	
 	@Override
 	public void appendSignature(StringBuilder sb) {
-		tempdecl.appendSignature(sb);
+		sb.append(ISignatureConstants.TEMPLATE_INSTANCE);
+		for (int j = 0; j < size(tiargs); j++) {
+			INode o = tiargs.get(j);
+			Type ta = isType(o);
+			Expression ea = isExpression(o);
+			IDsymbol sa = isDsymbol(o);
+			
+			if (ta != null) {
+				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_TYPE);
+				ta.appendSignature(sb);
+			} else if (ea != null) {
+				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
+				char[] exp = ASTNodeEncoder.encodeExpression(ea);
+				sb.append(exp.length);
+				sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
+				sb.append(exp);
+			} else if (sa != null) {
+				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_SYMBOL);
+				sa.appendSignature(sb);
+			} else {
+				// TODO Descent probably tuple
+			}
+			
+		}
+		sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	@Override
 	public String getSignature() {
-		if (tempdecl != null) {
-			return tempdecl.getSignature();
-		} else {
-			return "";
-		}
+		StringBuilder sb = new StringBuilder();
+		appendSignature(sb);
+		return sb.toString();
 	}
 	
 	public void tiargs(Objects tiargs) {

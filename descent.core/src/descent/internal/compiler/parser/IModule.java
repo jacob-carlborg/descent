@@ -39,5 +39,17 @@ public interface IModule extends IPackage {
 	void versionidsNot(List<char[]> versionidsNot);
 	
 	IModuleDeclaration md();
+	
+	Array aimports();
+	
+	void aimports(Array aimports);
+
+	void runDeferredSemantic(SemanticContext context);
+
+	void toModuleArray();
+
+	void toModuleAssert();
+
+	void addDeferredSemantic(Dsymbol symbol, SemanticContext context);
 
 }

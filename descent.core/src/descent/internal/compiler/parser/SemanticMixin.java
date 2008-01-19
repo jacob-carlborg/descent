@@ -579,7 +579,7 @@ public class SemanticMixin {
 	public static void checkNestedReference(IVarDeclaration aThis, Scope sc, Loc loc, SemanticContext context) {
 		if (!aThis.isDataseg(context) && aThis.parent() != sc.parent && aThis.parent() != null) {
 			IFuncDeclaration fdv = aThis.toParent().isFuncDeclaration();
-			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
+			FuncDeclaration fdthis = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
 
 			if (fdv != null && fdthis != null) {
 				if (loc != null && loc.filename != null)
@@ -640,14 +640,15 @@ public class SemanticMixin {
 			return;
 		}
 		
-		// If aThis is a templated symbol, don't put the template's
-		// signature, just it's parent's signature
-		if (aThis.templated()) {
-			parent = parent.effectiveParent();
+		if (parent instanceof TemplateInstance) {
+			TemplateInstance tempinst = (TemplateInstance) parent;
+			ITemplateDeclaration tempdecl = tempinst.tempdecl;
+			tempdecl.parent().appendSignature(sb);
+		} else if (aThis.templated()) {
+			parent.effectiveParent().appendSignature(sb);
+		} else {
+			parent.appendSignature(sb);
 		}
-		
-		parent.appendSignature(sb);
-		
 		appendNameSignature(aThis, sb);
 	}
 	
@@ -682,21 +683,18 @@ public class SemanticMixin {
 				aThis.type().appendSignature(sb);
 			}
 			
-			if (aThis instanceof ITemplateDeclaration || aThis.templated()) {
-				ITemplateDeclaration temp;
-				
-				if (aThis.templated()) {
-					IDsymbol effectiveParent = aThis.effectiveParent();
-					if (effectiveParent instanceof TemplateInstance) {
-						temp = ((TemplateInstance) effectiveParent).tempdecl;
-					} else {
-						temp = (ITemplateDeclaration) effectiveParent;
-					}
-				} else {
-					temp = (ITemplateDeclaration) aThis;
+			if (aThis.parent() instanceof TemplateInstance) {
+				TemplateInstance tempinst = (TemplateInstance) aThis.parent();
+				ITemplateDeclaration tempdecl = tempinst.tempdecl;
+				for(TemplateParameter param : tempdecl.parameters()) {
+					param.appendSignature(sb);
 				}
-				for(TemplateParameter parameter : temp.parameters()) {
-					parameter.appendSignature(sb);
+				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
+				tempinst.appendSignature(sb);
+			} else if (aThis.templated()) {
+				ITemplateDeclaration tempdecl = (ITemplateDeclaration) aThis.parent();
+				for(TemplateParameter param : tempdecl.parameters()) {
+					param.appendSignature(sb);
 				}
 				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
 			}
@@ -756,7 +754,7 @@ public class SemanticMixin {
 				e.printStackTrace();
 			}
 		}
-		buf.data.append(id.length())/*.append("u")*/.append(id);
+		buf.data.append(id.length()).append(id);
 		id = buf.toChars();
 		buf.data = null;
 		return id;

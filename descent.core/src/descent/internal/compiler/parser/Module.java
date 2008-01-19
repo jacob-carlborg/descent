@@ -395,6 +395,14 @@ public class Module extends Package implements IModule {
 		return md;
 	}
 	
+	public Array aimports() {
+		return aimports;
+	}
+	
+	public void aimports(Array aimports) {
+		this.aimports = aimports;
+	}
+	
 	@Override
 	public String getSignature() {
 		if (signature == null) {

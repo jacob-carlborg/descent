@@ -247,6 +247,49 @@ public class SignatureProcessor implements ISignatureConstants {
 			case FUNCTION_PARAMETERS_BREAK_2:
 			case FUNCTION_PARAMETERS_BREAK_3:
 				return i;
+			case TEMPLATE_INSTANCE:
+				requestor.enterTemplateInstance();
+
+				i++;
+				while(signature.charAt(i) != TEMPLATE_PARAMETERS_BREAK) {
+					i = process0(signature, i, requestor);
+				}
+				i++;
+				
+				requestor.exitTemplateInstance(signature.substring(start, i));
+				return i;
+			case TEMPLATE_INSTANCE_TYPE:
+				requestor.enterTemplateInstanceType();
+				i++;
+				i = process0(signature, i, requestor);
+				requestor.exitTemplateInstanceTypeParameter(signature.substring(start, i));
+				return i;
+			case TEMPLATE_INSTANCE_VALUE:
+				i++;
+				c = signature.charAt(i);
+				if (i < signature.length() && Character.isDigit(c)) {
+					n = 0;
+					
+					while(c != TEMPLATE_INSTANCE_VALUE) {
+						n = 10 * n + (c - '0');
+						i++;
+						c = signature.charAt(i);
+					}
+					i++;
+					
+					requestor.acceptTemplateInstanceValue(
+							ASTNodeEncoder.decodeExpression(
+									signature.substring(i, i + n).toCharArray()), signature.substring(start, i + n));
+					
+					i += n;
+				}
+				
+				return i;
+			case TEMPLATE_INSTANCE_SYMBOL:
+				requestor.enterTemplateInstanceSymbol();
+				i = process0(signature, i + 1, requestor);
+				requestor.exitTemplateInstanceSymbol(signature.substring(start, i));
+				return i;
 			case IDENTIFIER:
 				n = 0;
 				i++;

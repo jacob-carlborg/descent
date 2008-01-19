@@ -91,7 +91,7 @@ public class AssertExp extends UnaExp {
 			msg = msg.optimize(WANTvalue, context);
 		}
 		if (e1.isBool(false)) {
-			FuncDeclaration fd = sc.parent.isFuncDeclaration();
+			FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
 			fd.hasReturnExp |= 4;
 
 			if (!context.global.params.useAssert) {

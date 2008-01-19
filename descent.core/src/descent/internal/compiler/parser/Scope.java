@@ -19,7 +19,7 @@ public class Scope {
 	public final static int SCOPEctor = 0x0001; // constructor type
 	public final static int SCOPEstaticif = 0x0002; // inside static if
 
-	public static Scope createGlobal(Module module, SemanticContext context) {
+	public static Scope createGlobal(IModule module, SemanticContext context) {
 		Scope sc;
 
 		sc = new Scope(context);
@@ -42,11 +42,11 @@ public class Scope {
 		return sc;
 	}
 	public Scope enclosing; // enclosing Scope
-	public Module module; // Root module
+	public IModule module; // Root module
 	public IScopeDsymbol scopesym; // current symbol
 	public IScopeDsymbol sd; // if in static if, and declaring new symbols,
 	public FuncDeclaration func; // function we are in
-	public Dsymbol parent; // parent to use
+	public IDsymbol parent; // parent to use
 	public LabelStatement slabel; // enclosing labelled statement
 	public SwitchStatement sw; // enclosing switch statement
 	public TryFinallyStatement tf; // enclosing try finally statement

@@ -12,6 +12,7 @@ import descent.core.IParent;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.Array;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
@@ -23,6 +24,7 @@ import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
+import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.core.util.Util;
@@ -33,6 +35,7 @@ public class RModule extends RPackage implements IModule {
 	private IModuleDeclaration md;
 	private boolean mdCalculated;
 	private String signature;
+	private Scope scope;
 	
 	/*
 	 * The list of modules publicly imported by this module.
@@ -41,6 +44,11 @@ public class RModule extends RPackage implements IModule {
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
+	}
+	
+	public void addDeferredSemantic(Dsymbol symbol, SemanticContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public List<char[]> debugids() {
@@ -211,6 +219,38 @@ public class RModule extends RPackage implements IModule {
 	@Override
 	public IModule isModule() {
 		return this;
+	}
+	
+	public void runDeferredSemantic(SemanticContext context) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void toModuleAssert() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void toModuleArray() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public Array aimports() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public void aimports(Array aimports) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public Scope getScope() {
+		if (scope == null) {
+			scope = Scope.createGlobal(this, context);
+		}
+		return scope;
 	}
 	
 	/**
