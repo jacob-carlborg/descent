@@ -149,5 +149,27 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		IModule imodule = (IModule) tempdecl.parent();
 		assertNotNull(imodule);
 	}
+	
+	public void testNestedTemplatedClass3() throws Exception {
+		one("template Bar(U) { class Foo(T) { T prop; } Bar!(char[]).Foo!(int) x; }");
+		two("void foo() { x = null; }");
+		
+		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
+				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+		FuncDeclaration func = (FuncDeclaration) module.members.get(2);
+		CompoundStatement cs = (CompoundStatement) func.fbody;
+		ExpStatement ex = (ExpStatement) cs.statements.get(0);
+		AssignExp ae = (AssignExp) ex.exp;
+		VarExp ve = (VarExp) ae.e1;
+		IVarDeclaration var = (IVarDeclaration) ve.var;
+		TypeClass type = (TypeClass) var.type();
+		IClassDeclaration cd = type.sym;
+		TemplateInstance ti = (TemplateInstance) cd.parent();
+		assertEquals(1, ti.tiargs.size());
+		assertSame(TypeBasic.tint32, ti.tiargs.get(0));
+		ITemplateDeclaration tempdecl = ti.tempdecl;
+		IModule imodule = (IModule) tempdecl.parent();
+		assertNotNull(imodule);
+	}
 
 }

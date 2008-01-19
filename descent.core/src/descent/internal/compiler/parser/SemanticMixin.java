@@ -643,6 +643,10 @@ public class SemanticMixin {
 		if (parent instanceof TemplateInstance) {
 			TemplateInstance tempinst = (TemplateInstance) parent;
 			ITemplateDeclaration tempdecl = tempinst.tempdecl;
+			while(tempdecl.parent() instanceof TemplateInstance) {
+				tempinst = (TemplateInstance) tempdecl.parent();
+				tempdecl = tempinst.tempdecl;
+			}
 			tempdecl.parent().appendSignature(sb);
 		} else if (aThis.templated()) {
 			parent.effectiveParent().appendSignature(sb);
@@ -675,22 +679,18 @@ public class SemanticMixin {
 			
 		} else {
 			
-			sb.append(aThis.getSignaturePrefix());
-			sb.append(aThis.ident().ident.length);
-			sb.append(aThis.ident().ident);
+			if (!(aThis.parent() instanceof TemplateInstance)) {
+				sb.append(aThis.getSignaturePrefix());
+				sb.append(aThis.ident().ident.length);
+				sb.append(aThis.ident().ident);
+			}
 			
 			if (aThis instanceof IFuncDeclaration) {
 				aThis.type().appendSignature(sb);
 			}
 			
 			if (aThis.parent() instanceof TemplateInstance) {
-				TemplateInstance tempinst = (TemplateInstance) aThis.parent();
-				ITemplateDeclaration tempdecl = tempinst.tempdecl;
-				for(TemplateParameter param : tempdecl.parameters()) {
-					param.appendSignature(sb);
-				}
-				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
-				tempinst.appendSignature(sb);
+				appendTemplateInstanceSignature(aThis, sb);
 			} else if (aThis.templated()) {
 				ITemplateDeclaration tempdecl = (ITemplateDeclaration) aThis.parent();
 				for(TemplateParameter param : tempdecl.parameters()) {
@@ -699,6 +699,24 @@ public class SemanticMixin {
 				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
 			}
 		}
+	}
+	
+	private static void appendTemplateInstanceSignature(IDsymbol aThis, StringBuilder sb) {
+		TemplateInstance tempinst = (TemplateInstance) aThis.parent();
+		ITemplateDeclaration tempdecl = tempinst.tempdecl;
+		if (tempdecl.parent() instanceof TemplateInstance) {
+			appendTemplateInstanceSignature(tempdecl, sb);
+		}
+		
+		sb.append(aThis.getSignaturePrefix());
+		sb.append(tempinst.name.ident.length);
+		sb.append(tempinst.name.ident);
+		
+		for(TemplateParameter param : tempdecl.parameters()) {
+			param.appendSignature(sb);
+		}
+		sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
+		tempinst.appendSignature(sb);
 	}
 	
 	/*

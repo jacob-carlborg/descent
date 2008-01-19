@@ -909,7 +909,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
 				char[] exp = ASTNodeEncoder.encodeExpression(ea);
 				sb.append(exp.length);
-				sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
+				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
 				sb.append(exp);
 			} else if (sa != null) {
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_SYMBOL);

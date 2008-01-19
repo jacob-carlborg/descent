@@ -4,6 +4,7 @@ import java.util.Stack;
 
 import descent.core.ICompilationUnit;
 import descent.core.IConditional;
+import descent.core.IField;
 import descent.core.IImportDeclaration;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
@@ -530,6 +531,13 @@ public class JavaElementFinder {
 				// TODO consider others
 				if (init.isAlign() || init.isExtern()) {
 					return init;
+				}
+			}
+			
+			else if (element instanceof IField) {
+				IField field = (IField) element;
+				if (field.isTemplateMixin()) {
+					return field;
 				}
 			}
 			

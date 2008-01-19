@@ -257,7 +257,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				
 				requestor.exitTemplateInstance(signature.substring(start, i));
-				return i;
+				continue;
 			case TEMPLATE_INSTANCE_TYPE:
 				requestor.enterTemplateInstanceType();
 				i++;

@@ -1510,6 +1510,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 			Dsymbol dsymbol = (Dsymbol) symbol;
 			if (null == dsymbol.isTemplateInstance()) {
 				dsymbol.accept(this);
+			} else {
+				// Report members created by template mixins
+				TemplateMixin mixin = dsymbol.isTemplateMixin();
+				if (mixin != null) {
+					for(IDsymbol member : mixin.members) {
+						member.accept(this);
+					}
+				}
 			}
 		}
 		return false;

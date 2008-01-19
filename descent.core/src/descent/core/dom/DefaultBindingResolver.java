@@ -183,7 +183,12 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) old;
 		String key = agg.type().getSignature();
-		return (ITypeBinding) resolveBinding(type, key);
+		IBinding binding =  resolveBinding(type, key);
+		if (binding instanceof ITypeBinding) {
+			return (ITypeBinding) binding;
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -212,7 +217,12 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		EnumDeclaration e = (EnumDeclaration) old;
 		String key = e.type.getSignature();
-		return (ITypeBinding) resolveBinding(type, key);
+		IBinding binding = resolveBinding(type, key);
+		if (binding instanceof ITypeBinding) {
+			return (ITypeBinding) binding;
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -658,7 +668,7 @@ class DefaultBindingResolver extends BindingResolver {
 		String signature = t.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
+		if (binding != null && binding instanceof ITypeBinding) {
 			return (ITypeBinding) binding;
 		}
 		
