@@ -70,7 +70,10 @@ public class SignatureProcessor implements ISignatureConstants {
 			case TYPEDEF:
 			case FUNCTION:
 			case TEMPLATE:
-			case TEMPLATED_AGGREGATE:
+			case TEMPLATED_CLASS:
+			case TEMPLATED_STRUCT:
+			case TEMPLATED_UNION:
+			case TEMPLATED_INTERFACE:
 			case TEMPLATED_FUNCTION:
 				i++;
 				char c = signature.charAt(i);
@@ -92,7 +95,8 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 				
 				if (first == TEMPLATE || first == TEMPLATED_FUNCTION ||
-						first == TEMPLATED_AGGREGATE) {
+						first == TEMPLATED_CLASS || first == TEMPLATED_STRUCT ||
+						first == TEMPLATED_UNION || first == TEMPLATED_INTERFACE) {
 					requestor.enterTemplateParameters();
 					
 					while(signature.charAt(i) != TEMPLATE_PARAMETERS_BREAK) {
@@ -174,9 +178,9 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 				
 				i++;
-				while(signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_1 && 
-						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_2 && 
-						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_3) {
+				while(signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_VARIADIC2 && 
+						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_VARIADIC && 
+						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK) {
 					i = argumentModifier(signature, i, requestor);
 					i = process0(signature, i, requestor);
 				}
@@ -243,9 +247,9 @@ public class SignatureProcessor implements ISignatureConstants {
 				i = argumentModifier(signature, i, requestor);
 				continue;
 			case TEMPLATE_PARAMETERS_BREAK: // Template parameters break
-			case FUNCTION_PARAMETERS_BREAK_1: // Argument break
-			case FUNCTION_PARAMETERS_BREAK_2:
-			case FUNCTION_PARAMETERS_BREAK_3:
+			case FUNCTION_PARAMETERS_BREAK_VARIADIC2: // Argument break
+			case FUNCTION_PARAMETERS_BREAK_VARIADIC:
+			case FUNCTION_PARAMETERS_BREAK:
 				return i;
 			case TEMPLATE_INSTANCE:
 				requestor.enterTemplateInstance();

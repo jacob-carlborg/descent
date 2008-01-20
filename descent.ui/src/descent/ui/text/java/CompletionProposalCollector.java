@@ -44,6 +44,7 @@ import descent.internal.ui.text.java.GetterSetterCompletionProposal;
 import descent.internal.ui.text.java.JavaCompletionProposal;
 import descent.internal.ui.text.java.JavaMethodCompletionProposal;
 import descent.internal.ui.text.java.JavaTemplateCompletionProposal;
+import descent.internal.ui.text.java.JavaTemplatedFunctionCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import descent.internal.ui.text.java.MethodCompletionProposal;
@@ -399,7 +400,10 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.JAVADOC_METHOD_REF:
 				return createMethodReferenceProposal(proposal);
 			case CompletionProposal.TEMPLATE_REF:
+			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
 				return createTemplateReferenceProposal(proposal);
+			case CompletionProposal.TEMPLATED_FUNCTION_REF:
+				return createTemplatedFunctionReferenceProposal(proposal);
 			case CompletionProposal.METHOD_DECLARATION:
 				return createMethodDeclarationProposal(proposal);
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
@@ -748,6 +752,12 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	
 	private IJavaCompletionProposal createTemplateReferenceProposal(CompletionProposal tempProposal) {
 		LazyJavaCompletionProposal proposal= new JavaTemplateCompletionProposal(tempProposal, getInvocationContext());
+		adaptLength(proposal, tempProposal);
+		return proposal;
+	}
+	
+	private IJavaCompletionProposal createTemplatedFunctionReferenceProposal(CompletionProposal tempProposal) {
+		LazyJavaCompletionProposal proposal= new JavaTemplatedFunctionCompletionProposal(tempProposal, getInvocationContext());
 		adaptLength(proposal, tempProposal);
 		return proposal;
 	}

@@ -731,12 +731,38 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 			// problems, in order to get code selection, code completion,
 			// code evaluation and bindings.
 			// TODO see if it's worth enabling this
-			// context.muteProblems++;
-			// for(IDsymbol member : members) {
-				// member.semantic(scope, context);
-			// }
-			// context.muteProblems--;
+//			 context.muteProblems++;
+//			 for(IDsymbol member : members) {
+//				 member.semantic(scope, context);
+//			 }
+//			 context.muteProblems--;
 		}
+	}
+	
+	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+		// Descent: do semantic of my members without reporting
+		// problems, in order to get code selection, code completion,
+		// code evaluation and bindings.
+		// TODO see if it's worth enabling this
+//		 context.muteProblems++;
+//		 for(IDsymbol member : members) {
+//			 member.semantic2(scope, context);
+//		 }
+//		 context.muteProblems--;
+	}
+	
+	@Override
+	public void semantic3(Scope sc, SemanticContext context) {
+		// Descent: do semantic of my members without reporting
+		// problems, in order to get code selection, code completion,
+		// code evaluation and bindings.
+		// TODO see if it's worth enabling this
+//		 context.muteProblems++;
+//		 for(IDsymbol member : members) {
+//			 member.semantic3(scope, context);
+//		 }
+//		 context.muteProblems--;
 	}
 
 	@Override
@@ -835,7 +861,12 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 	
 	@Override
 	public char getSignaturePrefix() {
-		return ISignatureConstants.TEMPLATE;
+		if (wrapper) {
+			Dsymbol member = (Dsymbol) members.get(0);
+			return member.getSignaturePrefix();
+		} else {
+			return ISignatureConstants.TEMPLATE;
+		}
 	}
 
 }

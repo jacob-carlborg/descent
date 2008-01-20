@@ -36,7 +36,10 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 			case CompletionProposal.TYPE_REF:
 				return createTypeProposal(proposal);
 			case CompletionProposal.TEMPLATE_REF:
+			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
 				return createTemplateProposal(proposal);
+			case CompletionProposal.TEMPLATED_FUNCTION_REF:
+				return createTemplatedFunctionProposal(proposal);
 			default:
 				return super.createJavaCompletionProposal(proposal);
 		}
@@ -73,6 +76,26 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
 		else
 			proposal= new ExperimentalTemplateProposal(tempProposal, getInvocationContext());
+		return proposal;
+	}
+	
+	private IJavaCompletionProposal createTemplatedFunctionProposal(CompletionProposal tempProposal) {
+		String completion= String.valueOf(tempProposal.getCompletion());
+		
+		// super class' behavior if this is not a normal completion or has no
+		// parameters
+		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || 
+				Signature.getTemplateParameterCount(tempProposal.getSignature()) == 0 || 
+				Signature.getParameterCount(tempProposal.getSignature()) == 0 ||
+				getContext().isInJavadoc())
+			return super.createJavaCompletionProposal(tempProposal);
+
+		LazyJavaCompletionProposal proposal;
+		ICompilationUnit compilationUnit= getCompilationUnit();
+		if (compilationUnit != null && fIsGuessArguments)
+			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
+		else
+			proposal= new ExperimentalTemplatedFunctionProposal(tempProposal, getInvocationContext());
 		return proposal;
 	}
 

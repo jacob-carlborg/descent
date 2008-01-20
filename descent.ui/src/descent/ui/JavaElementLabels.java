@@ -836,6 +836,24 @@ public class JavaElementLabels {
 	}
 	
 	private static void getTypeSignatureLabel(String typeSig, long flags, StringBuffer buf) {
+		if (typeSig.length() > 0) {
+			char c = typeSig.charAt(0);
+			switch(c) {
+			case 'J':
+				buf.append("out ");
+				typeSig = typeSig.substring(1);
+				break;
+			case 'K':
+				buf.append("ref ");
+				typeSig = typeSig.substring(1);
+				break;
+			case 'L':
+				buf.append("lazy ");
+				typeSig = typeSig.substring(1);
+				break;
+			}
+		}
+		
 		buf.append(Signature.getSimpleName(Signature.toString(typeSig)));
 		/* TODO implement correctly, flags are not taken into account
 		int sigKind= Signature.getTypeSignatureKind(typeSig);

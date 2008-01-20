@@ -101,7 +101,10 @@ public class JavaElementFinder {
 							element = findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramTypes);
 						}
 					} else if (type == ISignatureConstants.TEMPLATE ||
-							type == ISignatureConstants.TEMPLATED_AGGREGATE) {
+							type == ISignatureConstants.TEMPLATED_CLASS ||
+							type == ISignatureConstants.TEMPLATED_STRUCT ||
+							type == ISignatureConstants.TEMPLATED_INTERFACE ||
+							type == ISignatureConstants.TEMPLATED_UNION) {
 						if (element == null || !(element instanceof IParent)) {
 							return;
 						}

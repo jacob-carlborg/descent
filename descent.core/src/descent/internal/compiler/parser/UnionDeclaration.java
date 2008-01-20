@@ -69,7 +69,7 @@ public class UnionDeclaration extends StructDeclaration implements IUnionDeclara
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_AGGREGATE;
+			return ISignatureConstants.TEMPLATED_UNION;
 		} else {
 			return ISignatureConstants.UNION;
 		}

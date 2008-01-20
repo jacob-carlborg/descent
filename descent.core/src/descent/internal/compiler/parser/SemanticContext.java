@@ -153,7 +153,10 @@ public class SemanticContext {
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
 			problemRequestor.acceptProblem(problem);
 		}
-		global.errors++;
+		
+		if (muteProblems == 0) {
+			global.errors++;
+		}
 	}
 
 	private int generatedIds;	

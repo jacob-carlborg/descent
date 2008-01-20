@@ -19,6 +19,7 @@ public interface RelevanceConstants {
 	int R_METHOD = 20;
 	int R_ALIAS = 20;
 	int R_TYPEDEF = 20;
+	int R_VAR = 20;
 	int R_ANNOTATION = 20;
 	int R_EXCEPTION = 20;
 	int R_ENUM_CONSTANT = 20;

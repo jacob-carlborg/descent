@@ -288,7 +288,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_AGGREGATE;
+			return ISignatureConstants.TEMPLATED_STRUCT;
 		} else {
 			return ISignatureConstants.STRUCT;
 		}

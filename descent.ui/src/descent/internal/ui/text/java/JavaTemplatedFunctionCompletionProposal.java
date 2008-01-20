@@ -22,7 +22,7 @@ import descent.ui.PreferenceConstants;
 import descent.ui.text.java.JavaContentAssistInvocationContext;
 
 
-public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
+public class JavaTemplatedFunctionCompletionProposal extends LazyJavaCompletionProposal {
 	/** Triggers for method proposals without parameters. Do not modify. */
 	protected final static char[] METHOD_TRIGGERS= new char[] { ';', ',', '.', '\t', '[' };
 	/** Triggers for method proposals. Do not modify. */
@@ -32,12 +32,12 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	
 	private boolean fHasParameters;
 	private boolean fHasParametersComputed= false;
-	private boolean fIsVariadic;
-	private boolean fIsVariadicComputed= false;
+	private boolean fHasTemplateParameters;
+	private boolean fHasTemplateParametersComputed= false;
 	private int fContextInformationPosition;
 	private FormatterPrefs fFormatterPrefs;
 
-	public JavaMethodCompletionProposal(CompletionProposal proposal, JavaContentAssistInvocationContext context) {
+	public JavaTemplatedFunctionCompletionProposal(CompletionProposal proposal, JavaContentAssistInvocationContext context) {
 		super(proposal, context);
 	}
 
@@ -70,7 +70,8 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	protected IContextInformation computeContextInformation() {
 		// no context information for METHOD_NAME_REF proposals (e.g. for static imports)
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=94654
-		if (fProposal.getKind() == CompletionProposal.METHOD_REF &&  hasParameters() && (getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0)) {
+		if (fProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF &&  
+				(hasParameters() || hasTemplateParameters()) && (getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0)) {
 			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal);
 			if (fContextInformationPosition != 0 && fProposal.getCompletion().length == 0)
 				contextInformation.setContextInformationPosition(fContextInformationPosition);
@@ -103,21 +104,21 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		}
 		return fHasParameters;
 	}
-	
-	private final boolean isVariadic() {
-		if (!fIsVariadicComputed) {
-			fIsVariadicComputed= true;
-			fIsVariadic= computeIsVariadic();
-		}
-		return fIsVariadic;
-	}
 
 	private boolean computeHasParameters() throws IllegalArgumentException {
 		return Signature.getParameterCount(fProposal.getSignature()) > 0;
 	}
 	
-	private boolean computeIsVariadic() throws IllegalArgumentException {
-		return Signature.isVariadic(fProposal.getSignature());
+	protected final boolean hasTemplateParameters() {
+		if (!fHasTemplateParametersComputed) {
+			fHasTemplateParametersComputed= true;
+			fHasTemplateParameters= computeHasTemplateParameters();
+		}
+		return fHasTemplateParameters;
+	}
+
+	private boolean computeHasTemplateParameters() throws IllegalArgumentException {
+		return Signature.getTemplateParameterCount(fProposal.getSignature()) > 0;
 	}
 
 	/**
@@ -161,9 +162,10 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		FormatterPrefs prefs= getFormatterPrefs();
 		if (prefs.beforeOpeningParen)
 			buffer.append(SPACE);
+		buffer.append(EXCLAMATION);
 		buffer.append(LPAREN);
 		
-		if (hasParameters()) {
+		if (hasTemplateParameters()) {
 			setCursorPosition(buffer.length());
 			
 			if (prefs.afterOpeningParen)
@@ -174,14 +176,28 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 //			if (prefs.beforeClosingParen)
 //				buffer.append(SPACE);
 		} else {
-			if (isVariadic()) {
-				setCursorPosition(buffer.length());
-			}
-			
 			if (prefs.inEmptyList)
 				buffer.append(SPACE);
 		}
+		buffer.append(RPAREN);
+		
+		buffer.append(LPAREN);
+		if (hasParameters()) {
+			if (!hasTemplateParameters()) {
+				setCursorPosition(buffer.length());
+			}
+			
+			if (prefs.afterOpeningParen)
+				buffer.append(SPACE);
+			
 
+			// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
+//			if (prefs.beforeClosingParen)
+//				buffer.append(SPACE);
+		} else {
+			if (prefs.inEmptyList)
+				buffer.append(SPACE);
+		}
 		buffer.append(RPAREN);
 
 		return buffer.toString();
@@ -190,7 +206,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	protected ProposalInfo computeProposalInfo() {
 		IJavaProject project= fInvocationContext.getProject();
 		if (project != null)
-			return new MethodProposalInfo(project, fProposal);
+			return new TemplateProposalInfo(project, fProposal);
 		return super.computeProposalInfo();
 	}
 	
@@ -216,7 +232,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		 */
 		char[] name= fProposal.getName();
 		char[] parameterList= Signature.toCharArray(fProposal.getSignature(), null, null, false, false);
-		int parameterCount= Signature.getParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters
+		int parameterCount= Signature.getTemplateParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters
 		StringBuffer buf= new StringBuffer(name.length + 2 + parameterList.length);
 		
 		buf.append(name);

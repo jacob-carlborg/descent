@@ -157,11 +157,18 @@ public class JavaParameterListValidator implements IContextInformationValidator,
 					}
 				case ')':
 					if (considerNesting) {
-						if (nestingMode == PAREN)
-							if (--nestingLevel == 0)
-								nestingMode= NONE;
+						// Template parameters just ended
+						if (offset < document.getLength() && document.getChar(offset) == '(') {
+							++ charCount;
+							++ offset;
+						} else {
+							if (nestingMode == PAREN)
+								if (--nestingLevel == 0)
+									nestingMode= NONE;
+						}
 						break;
-					}
+					} 
+					break;
 				case '{':
 					if (considerNesting) {
 						if (nestingMode == ANGLE) {

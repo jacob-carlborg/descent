@@ -114,7 +114,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		Type type = (Type) var.type;
-		assertEquals(MODULE + "3one" + TEMPLATED_AGGREGATE + "3Foo" + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK, type.getSignature());
+		assertEquals(MODULE + "3one" + TEMPLATED_CLASS + "3Foo" + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK, type.getSignature());
 	}
 	
 	public void testTemplatedClass2() throws Exception {
@@ -125,7 +125,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		Type type = (Type) var.type;
-		assertEquals(MODULE + "3one" + TEMPLATED_AGGREGATE + "3Foo" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + "i" + TEMPLATE_PARAMETERS_BREAK, type.getSignature());
+		assertEquals(MODULE + "3one" + TEMPLATED_CLASS + "3Foo" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + "i" + TEMPLATE_PARAMETERS_BREAK, type.getSignature());
 	}
 	
 	public void testTemplatedClass3() throws Exception {

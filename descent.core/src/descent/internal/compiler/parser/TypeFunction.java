@@ -345,7 +345,7 @@ public class TypeFunction extends Type {
 		buf.writeByte(mc);
 		// Write argument types
 		Argument.argsToDecoBuffer(buf, parameters, context);
-		buf.writeByte('Z' - varargs); // mark end of arg list
+		buf.writeByte((char) ('Z' - varargs)); // mark end of arg list
 		
 		next.toDecoBuffer(buf, context);
 		inuse--;
@@ -601,7 +601,7 @@ public class TypeFunction extends Type {
 				arg.appendSignature(sb);
 			}
 		}
-		sb.append('Z');
+		sb.append((char) ('Z' - varargs));
 		next.appendSignature(sb);
 	}
 

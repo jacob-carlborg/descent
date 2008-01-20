@@ -97,7 +97,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			if (i > 0) {
 				this.buffer.append(separator);
 			}
-			p.accept(this);
+			if (p != null) {
+				p.accept(this);
+			}
 			i++;
 		}
 		this.buffer.append(post);

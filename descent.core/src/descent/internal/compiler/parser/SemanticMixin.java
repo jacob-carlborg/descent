@@ -649,7 +649,9 @@ public class SemanticMixin {
 			}
 			tempdecl.parent().appendSignature(sb);
 		} else if (aThis.templated()) {
-			parent.effectiveParent().appendSignature(sb);
+			if (parent.effectiveParent() != null) {
+				parent.effectiveParent().appendSignature(sb);	
+			}
 		} else {
 			parent.appendSignature(sb);
 		}
@@ -689,9 +691,16 @@ public class SemanticMixin {
 				aThis.type().appendSignature(sb);
 			}
 			
+			if (aThis instanceof TemplateDeclaration) {
+				TemplateDeclaration temp = (TemplateDeclaration) aThis;
+				if (temp.wrapper && temp.members.get(0) instanceof IFuncDeclaration) {
+					temp.members.get(0).type().appendSignature(sb);
+				}
+			}
+			
 			if (aThis.parent() instanceof TemplateInstance) {
 				appendTemplateInstanceSignature(aThis, sb);
-			} else if (aThis.templated()) {
+			} else if (aThis.templated() && aThis.parent() instanceof ITemplateDeclaration) {
 				ITemplateDeclaration tempdecl = (ITemplateDeclaration) aThis.parent();
 				for(TemplateParameter param : tempdecl.parameters()) {
 					param.appendSignature(sb);

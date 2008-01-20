@@ -268,7 +268,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_AGGREGATE;
+			return ISignatureConstants.TEMPLATED_INTERFACE;
 		} else {
 			return ISignatureConstants.INTERFACE;
 		}

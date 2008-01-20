@@ -780,7 +780,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 					} else {
 						IDsymbol symbol = null;
 						if (kind == ISignatureConstants.TEMPLATE ||
-								kind == ISignatureConstants.TEMPLATED_AGGREGATE) {
+								kind == ISignatureConstants.TEMPLATED_CLASS ||
+								kind == ISignatureConstants.TEMPLATED_STRUCT ||
+								kind == ISignatureConstants.TEMPLATED_INTERFACE ||
+								kind == ISignatureConstants.TEMPLATED_UNION) {
 							
 							String[] paramsTypes = new String[templateStack.size()];
 							int i = paramsTypes.length - 1;
@@ -889,6 +892,8 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				}
 				
 				Arguments arguments = new Arguments();				
+				
+				// TODO varargs
 				type = new TypeFunction(arguments, getPreviousType(), 0, link);
 				while(!typesStack.peek().isEmpty()) {
 					Type argType = getPreviousType();

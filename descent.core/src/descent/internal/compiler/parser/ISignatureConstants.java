@@ -18,8 +18,11 @@ public interface ISignatureConstants {
 	char FUNCTION = '[';
 	char UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR = '}';
 	char TEMPLATE = '{';
-	char TEMPLATED_AGGREGATE = '<';
-	char TEMPLATED_FUNCTION = '>';
+	char TEMPLATED_CLASS = '<';
+	char TEMPLATED_STRUCT = ';';
+	char TEMPLATED_UNION = ':';
+	char TEMPLATED_INTERFACE = '(';
+	char TEMPLATED_FUNCTION = ')';
 	char TEMPLATE_ALIAS_PARAMETER = ']';
 	char TEMPLATE_ALIAS_PARAMETER2 = '"';
 	char TEMPLATE_TUPLE_PARAMETER = '%';
@@ -40,9 +43,9 @@ public interface ISignatureConstants {
 	char MODIFIER_OUT = 'J';
 	char MODIFIER_REF = 'K';
 	char MODIFIER_LAZY = 'L';
-	char FUNCTION_PARAMETERS_BREAK_1 = 'X';
-	char FUNCTION_PARAMETERS_BREAK_2 = 'Y';
-	char FUNCTION_PARAMETERS_BREAK_3 = 'Z';
+	char FUNCTION_PARAMETERS_BREAK_VARIADIC2 = 'X';
+	char FUNCTION_PARAMETERS_BREAK_VARIADIC = 'Y';
+	char FUNCTION_PARAMETERS_BREAK = 'Z';
 	char IDENTIFIER = '?';
 	char TEMPLATE_INSTANCE = '!';
 	char TEMPLATE_INSTANCE_TYPE = '^';

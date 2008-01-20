@@ -809,7 +809,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_AGGREGATE;
+			return ISignatureConstants.TEMPLATED_CLASS;
 		} else {
 			return ISignatureConstants.CLASS;
 		}

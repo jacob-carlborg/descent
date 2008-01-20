@@ -48,6 +48,8 @@ import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.DotVarExp;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.ErrorExp;
@@ -66,6 +68,7 @@ import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.IStructDeclaration;
 import descent.internal.compiler.parser.ITemplateDeclaration;
 import descent.internal.compiler.parser.ITypedefDeclaration;
@@ -661,9 +664,17 @@ public class CompletionEngine extends Engine
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
 		doSemantic(module);
 		
+		if (!(node.exp instanceof IdentifierExp)) {
+			return;
+		}
+		
 		char[] name = computePrefixAndSourceRange((IdentifierExp) node.exp);
 		
 		Scope scope = node.scope;
+		if (scope == null) {
+			return;
+		}
+		
 		completeScope(scope, name, getIncludesForScope(scope));
 	}
 	
@@ -694,19 +705,27 @@ public class CompletionEngine extends Engine
 				completeType(var.type, name, false /* include statics */);
 			}
 		} else {
-			IDsymbolTable table = scope.scopesym.symtab();
-			if (table == null) {
-				return;
-			}
-			
-			for(char[] key : table.keys()) {
-				if (key == null) {
-					continue;
+			if (sym instanceof IScopeDsymbol && ((IScopeDsymbol) sym).members() != null) {
+				for(IDsymbol member : ((IScopeDsymbol) sym).members()) {
+					if (member != null) {
+						suggestDsymbol(member, name, includes);
+					}
+				}
+			} else {
+				IDsymbolTable table = scope.scopesym.symtab();
+				if (table == null) {
+					return;
 				}
 				
-				IDsymbol dsymbol = table.lookup(key);
-				if (dsymbol != null) {
-					suggestDsymbol(dsymbol, name, includes);
+				for(char[] key : table.keys()) {
+					if (key == null) {
+						continue;
+					}
+					
+					IDsymbol dsymbol = table.lookup(key);
+					if (dsymbol != null) {
+						suggestDsymbol(dsymbol, name, includes);
+					}
 				}
 			}
 		}
@@ -758,6 +777,15 @@ public class CompletionEngine extends Engine
 	private void completeExpression(Expression e1, IdentifierExp ident) {
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
+			IDeclaration decl = var.var;
+			if (decl == null) {
+				return;
+			}
+			
+			Type type = decl.type();
+			completeType(type, ident, false /* not only statics */);
+		} else if (e1 instanceof DotVarExp) {
+			DotVarExp var = (DotVarExp) e1;
 			IDeclaration decl = var.var;
 			if (decl == null) {
 				return;
@@ -936,6 +964,7 @@ public class CompletionEngine extends Engine
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, var.ident().ident);
+					relevance += R_VAR;
 					
 					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(var.ident().ident);
@@ -1018,7 +1047,20 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
 					relevance += R_TEMPLATE;
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.TEMPLATE_REF, this.actualCompletionPosition);
+					int kind = CompletionProposal.TEMPLATE_REF;
+					if (member instanceof TemplateDeclaration) {
+						TemplateDeclaration temp = (TemplateDeclaration) member;
+						if (temp.wrapper) {
+							Dsymbol first = (Dsymbol) temp.members.get(0);
+							if (first instanceof IFuncDeclaration) {
+								kind = CompletionProposal.TEMPLATED_FUNCTION_REF;
+							} else if (first instanceof IAggregateDeclaration) {
+								kind = CompletionProposal.TEMPLATED_AGGREGATE_REF;
+							}
+						}
+					}
+					
+					CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition);
 					proposal.setName(member.ident().ident);
 					proposal.setCompletion(member.ident().ident);
 					proposal.setSignature(member.getSignature().toCharArray());

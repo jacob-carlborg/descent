@@ -17,6 +17,7 @@ import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.Flags;
 import descent.core.Signature;
+import descent.core.compiler.CharOperation;
 import descent.internal.corext.template.java.SignatureUtil;
 import descent.internal.corext.util.Messages;
 import descent.internal.ui.JavaPluginImages;
@@ -65,8 +66,26 @@ public class CompletionProposalLabelProvider {
 	 * @return the list of comma-separated parameters suitable for display
 	 */
 	public String createParameterList(CompletionProposal methodProposal) {
-		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF);
-		return appendUnboundedParameterList(new StringBuffer(), methodProposal).toString();
+		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.TEMPLATE_REF ||
+				methodProposal.getKind() == CompletionProposal.TEMPLATED_AGGREGATE_REF ||
+				methodProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF);
+		
+		StringBuffer sb1 = new StringBuffer();
+		
+		appendTemplateParameterList(sb1, methodProposal);
+		
+		StringBuffer sb2 = new StringBuffer();
+		appendUnboundedParameterList(sb2, methodProposal);
+		
+		if (sb1.length() > 0 && sb2.length() > 0) {
+			sb1.append(',');
+			sb1.append(' ');
+		}
+		
+		sb1.append(sb2);
+		
+		return sb1.toString();
 	}
 
 	/**
@@ -124,7 +143,30 @@ public class CompletionProposalLabelProvider {
 	 * @see Signature#getSimpleName(char[])
 	 */
 	private char[] createTypeDisplayName(char[] typeSignature) throws IllegalArgumentException {
+		char[] prefix = null;
+		
+		if (typeSignature.length > 0) {
+			char c = typeSignature[0];
+			switch(c) {
+			case 'J':
+				prefix = new char[] { 'o', 'u', 't' };
+				typeSignature = CharOperation.subarray(typeSignature, 1, typeSignature.length);
+				break;
+			case 'K':
+				prefix = new char[] { 'l', 'a', 'z', 'y' };
+				typeSignature = CharOperation.subarray(typeSignature, 1, typeSignature.length);
+				break;
+			case 'L':
+				prefix = new char[] { 'r', 'e', 'f' };
+				typeSignature = CharOperation.subarray(typeSignature, 1, typeSignature.length);
+				break;
+			}
+		}
+		
 		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature));
+		if (prefix != null) {
+			displayName = CharOperation.concat(prefix, displayName, ' ');
+		}
 
 		// XXX see https://bugs.eclipse.org/bugs/show_bug.cgi?id=84675
 		boolean useShortGenerics= false;
@@ -200,6 +242,16 @@ public class CompletionProposalLabelProvider {
 		nameBuffer.append(methodProposal.getName());
 		nameBuffer.append('(');
 		appendUnboundedParameterList(nameBuffer, methodProposal);
+		
+		if (Signature.isVariadic(methodProposal.getSignature())) {
+			if (nameBuffer.charAt(nameBuffer.length() - 1) != '(') {
+				nameBuffer.append(',');
+			}
+			nameBuffer.append('.');
+			nameBuffer.append('.');
+			nameBuffer.append('.');
+		}
+		
 		nameBuffer.append(')');
 
 		// return type
@@ -211,10 +263,20 @@ public class CompletionProposalLabelProvider {
 		}
 
 		// declaring type
-		nameBuffer.append(" - "); //$NON-NLS-1$
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
-		declaringType= Signature.getSimpleName(declaringType);
-		nameBuffer.append(declaringType);
+		if (declaringType != null) {
+			nameBuffer.append(" - "); //$NON-NLS-1$
+			declaringType= Signature.getSimpleName(declaringType);
+			nameBuffer.append(declaringType);
+		} else {
+			// module name
+			char[] fullName= Signature.toCharArray(methodProposal.getSignature());
+			int qIndex= findSimpleNameStart(fullName);
+			if (qIndex > 0) {
+				nameBuffer.append(JavaElementLabels.CONCAT_STRING);
+				nameBuffer.append(fullName, 0, qIndex - 1);
+			}
+		}
 
 		return nameBuffer.toString();
 	}
@@ -222,9 +284,42 @@ public class CompletionProposalLabelProvider {
 	String createTemplateProposalLabel(CompletionProposal tempProposal) {
 		StringBuffer nameBuffer= new StringBuffer();
 		nameBuffer.append(tempProposal.getName());
+		nameBuffer.append('!');
 		nameBuffer.append('(');
 		appendTemplateParameterList(nameBuffer, tempProposal);
 		nameBuffer.append(')');
+		
+		// module name
+		char[] fullName= Signature.toCharArray(tempProposal.getSignature());
+		int qIndex= findSimpleNameStart(fullName);
+		if (qIndex > 0) {
+			nameBuffer.append(JavaElementLabels.CONCAT_STRING);
+			nameBuffer.append(fullName, 0, qIndex - 1);
+		}
+		
+		return nameBuffer.toString();
+	}
+	
+	String createTemplatedFunctionProposalLabel(CompletionProposal tempProposal) {
+		StringBuffer nameBuffer= new StringBuffer();
+		nameBuffer.append(tempProposal.getName());
+		nameBuffer.append('!');
+		nameBuffer.append('(');
+		appendTemplateParameterList(nameBuffer, tempProposal);
+		nameBuffer.append(')');
+		nameBuffer.append('(');
+		appendUnboundedParameterList(nameBuffer, tempProposal);
+		nameBuffer.append(')');
+		
+		// TODO Descent this is not working properly
+		// module name
+		char[] fullName= Signature.toCharArray(tempProposal.getSignature());
+		int qIndex= findSimpleNameStart(fullName);
+		if (qIndex > 0) {
+			nameBuffer.append(JavaElementLabels.CONCAT_STRING);
+			nameBuffer.append(fullName, 0, qIndex - 1);
+		}
+		
 		return nameBuffer.toString();
 	}
 	
@@ -299,7 +394,7 @@ public class CompletionProposalLabelProvider {
 		// special methods may not have a declaring type: methods defined on arrays etc.
 		// TODO remove when bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
 		if (declaringTypeSignature == null)
-			return "java.lang.Object"; //$NON-NLS-1$
+			return null; //$NON-NLS-1$
 		return SignatureUtil.stripSignatureToFQN(String.valueOf(declaringTypeSignature));
 	}
 
@@ -451,7 +546,10 @@ public class CompletionProposalLabelProvider {
 					return createJavadocMethodProposalLabel(proposal);
 				return createMethodProposalLabel(proposal);
 			case CompletionProposal.TEMPLATE_REF:
+			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
 				return createTemplateProposalLabel(proposal);
+			case CompletionProposal.TEMPLATED_FUNCTION_REF:
+				return createTemplatedFunctionProposalLabel(proposal);
 			case CompletionProposal.METHOD_DECLARATION:
 				return createOverrideMethodProposalLabel(proposal);
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
@@ -501,6 +599,7 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.METHOD_DECLARATION:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.TEMPLATED_FUNCTION_REF:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				descriptor= JavaElementImageProvider.getMethodImageDescriptor(false, flags);
@@ -509,11 +608,19 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.TYPE_REF:
 				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
 					case Signature.CLASS_TYPE_SIGNATURE:
-					case Signature.INTERFACE_TYPE_SIGNATURE:
-					case Signature.STRUCT_TYPE_SIGNATURE:
-					case Signature.UNION_TYPE_SIGNATURE:
-					case Signature.ENUM_TYPE_SIGNATURE:
 						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
+						break;
+					case Signature.INTERFACE_TYPE_SIGNATURE:
+						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccInterface, false);
+						break;
+					case Signature.STRUCT_TYPE_SIGNATURE:
+						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccStruct, false);
+						break;
+					case Signature.UNION_TYPE_SIGNATURE:
+						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccUnion, false);
+						break;
+					case Signature.ENUM_TYPE_SIGNATURE:
+						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccEnum, false);
 						break;
 					case Signature.TYPE_VARIABLE_SIGNATURE:
 						descriptor= JavaPluginImages.DESC_OBJS_TYPEVARIABLE;
@@ -523,7 +630,25 @@ public class CompletionProposalLabelProvider {
 				}
 				break;
 			case CompletionProposal.TEMPLATE_REF:
-				descriptor = JavaElementImageProvider.getTypeImageDescriptor(false, false, Flags.AccTemplate, true);
+				descriptor = JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccTemplate, false);
+				break;
+			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
+				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
+				case Signature.TEMPLATED_CLASS_TYPE_SIGNATURE:
+					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
+					break;
+				case Signature.TEMPLATED_INTERFACE_TYPE_SIGNATURE:
+					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccInterface, false);
+					break;
+				case Signature.TEMPLATED_STRUCT_TYPE_SIGNATURE:
+					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccStruct, false);
+					break;
+				case Signature.TEMPLATED_UNION_TYPE_SIGNATURE:
+					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccUnion, false);
+					break;
+				default:
+					descriptor= null;
+				}
 				break;
 			case CompletionProposal.FIELD_REF:
 				descriptor= JavaElementImageProvider.getFieldImageDescriptor(false, flags);

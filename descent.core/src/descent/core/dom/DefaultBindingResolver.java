@@ -950,7 +950,10 @@ class DefaultBindingResolver extends BindingResolver {
 						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
 					} else if (type == ISignatureConstants.TEMPLATE
-							|| type == ISignatureConstants.TEMPLATED_AGGREGATE) {
+							|| type == ISignatureConstants.TEMPLATED_CLASS
+							|| type == ISignatureConstants.TEMPLATED_STRUCT
+							|| type == ISignatureConstants.TEMPLATED_INTERFACE
+							|| type == ISignatureConstants.TEMPLATED_UNION) {
 						IJavaElement element = binding.getJavaElement(); 
 						if (element == null) {
 							return;

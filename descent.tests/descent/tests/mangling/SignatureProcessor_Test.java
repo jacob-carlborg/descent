@@ -428,7 +428,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATED_AGGREGATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
+		final String sigTemplate = sigModule + TEMPLATED_CLASS + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -439,7 +439,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
 			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATED_AGGREGATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATED_CLASS, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, requestor);

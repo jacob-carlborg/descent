@@ -17,6 +17,7 @@ import java.util.Stack;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.core.SignatureProcessor;
@@ -436,6 +437,34 @@ public final class Signature {
 	 * @since 3.0
 	 */
 	public static final int ENUM_TYPE_SIGNATURE = 10;
+	
+	/**
+	 * Kind constant for a templated class type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_CLASS_TYPE_SIGNATURE = 11;
+	
+	/**
+	 * Kind constant for a templated struct type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_STRUCT_TYPE_SIGNATURE = 12;
+	
+	/**
+	 * Kind constant for a templated union type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_UNION_TYPE_SIGNATURE = 13;
+	
+	/**
+	 * Kind constant for a templated interface type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_INTERFACE_TYPE_SIGNATURE = 14;
 
 	private static final char[] BOOLEAN = "boolean".toCharArray(); //$NON-NLS-1$
 	private static final char[] BYTE = "byte".toCharArray(); //$NON-NLS-1$
@@ -1066,7 +1095,6 @@ public static int getTypeSignatureKind(char[] typeSignature) {
 public static int getTypeSignatureKind(String typeSignature) {
 	final int[] theType = { CLASS_TYPE_SIGNATURE };
 	SignatureProcessor.process(typeSignature, new SignatureRequestorAdapter() {
-		private boolean found = false;	
 		@Override
 		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 			switch(type) {
@@ -1075,11 +1103,11 @@ public static int getTypeSignatureKind(String typeSignature) {
 			case ISignatureConstants.STRUCT: theType[0] = STRUCT_TYPE_SIGNATURE; break;
 			case ISignatureConstants.UNION: theType[0] = UNION_TYPE_SIGNATURE; break;
 			case ISignatureConstants.ENUM: theType[0] = ENUM_TYPE_SIGNATURE; break;
+			case ISignatureConstants.TEMPLATED_CLASS: theType[0] = TEMPLATED_CLASS_TYPE_SIGNATURE; break;
+			case ISignatureConstants.TEMPLATED_INTERFACE: theType[0] = TEMPLATED_INTERFACE_TYPE_SIGNATURE; break;
+			case ISignatureConstants.TEMPLATED_STRUCT: theType[0] = TEMPLATED_STRUCT_TYPE_SIGNATURE; break;
+			case ISignatureConstants.TEMPLATED_UNION: theType[0] = TEMPLATED_UNION_TYPE_SIGNATURE; break;
 			}
-		}
-		@Override
-		public void enterFunctionType() {
-			found = true;
 		}
 	});
 	return theType[0];
@@ -1218,7 +1246,11 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 	String[] parameterTypes = new String[stack.size()];
 	int i = parameterTypes.length - 1;
 	while(!stack.isEmpty()) {
-		parameterTypes[i] = stack.pop();
+		if (requestor.modifiers.isEmpty()) {
+			parameterTypes[i] = stack.pop();
+		} else {
+			parameterTypes[i] = requestor.modifiers.pop() + stack.pop();	
+		}
 		i--;
 	}
 	return parameterTypes;
@@ -1228,6 +1260,7 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 private static class ParameterTypesSignatureRequestor extends SignatureRequestorAdapter {
 	
 	private Stack<String> stack = new Stack<String>();
+	private Stack<String> modifiers = new Stack<String>();
 	private int functionTypeCount;
 
 	public ParameterTypesSignatureRequestor() {
@@ -1237,7 +1270,21 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptArgumentModifier(int stc) {
-		// TODO Descent Signature
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		if ((stc & STC.STCout) != 0) {
+			sb.append("J");
+		}
+		if ((stc & STC.STClazy) != 0) {
+			sb.append("K");
+		}
+		if ((stc & STC.STCref) != 0) {
+			sb.append("L");
+		}
+		modifiers.push(sb.toString());
 	}
 
 	public void acceptAssociativeArray(String signature) {
@@ -1777,7 +1824,7 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 	SignatureProcessor.process(methodSignature, requestor);
 	
 	if (requestor.stack.isEmpty()) {
-		return CharOperation.NO_STRINGS[0];
+		return "";
 	}
 	
 	return requestor.stack.pop();
@@ -2310,9 +2357,10 @@ public static char[] toCharArray(char[] methodSignature, char[] methodName, char
 	
 	if (!requestor.stack.isEmpty()) {
 		Stack<String> stack = requestor.stack.pop();
+		Stack<String> modifiers = requestor.modifiers.pop();
 		if (!stack.isEmpty()) {
 			StringBuilder sb = new StringBuilder();		
-			appendFunction(stack, sb, methodName, parameterNames, includeReturnType);
+			appendFunction(stack, modifiers, sb, methodName, parameterNames, includeReturnType);
 			char[] array = new char[sb.length()];
 			sb.getChars(0, sb.length(), array, 0);
 			return array;
@@ -2328,6 +2376,7 @@ private final static char[] FUNCTION = "function".toCharArray();
 private static class ToCharArraySignatureRequestor extends SignatureRequestorAdapter {
 	
 	private Stack<Stack<String>> stack = new Stack<Stack<String>>();
+	private Stack<Stack<String>> modifiers = new Stack<Stack<String>>();
 	private int functionTypeCount;
 	private boolean fullyQualifyTypeNames;
 	
@@ -2341,7 +2390,29 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	}
 
 	public void acceptArgumentModifier(int stc) {
-		// TODO Descent Signature
+		StringBuilder sb = new StringBuilder();
+		if ((stc & STC.STCin) != 0) {
+			sb.append("in");
+		}
+		if ((stc & STC.STCout) != 0) {
+			if (sb.length() > 0) {
+				sb.append(' ');
+			}
+			sb.append("out");
+		}
+		if ((stc & STC.STClazy) != 0) {
+			if (sb.length() > 0) {
+				sb.append(' ');
+			}
+			sb.append("lazy");
+		}
+		if ((stc & STC.STCref) != 0) {
+			if (sb.length() > 0) {
+				sb.append(' ');
+			}
+			sb.append("ref");
+		}
+		modifiers.peek().push(sb.toString());
 	}
 	
 	@Override
@@ -2349,7 +2420,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 		Stack<String> stack = new Stack<String>();
 		stack.push(new String(name));
 		
-		this.stack.push(stack);		
+		this.stack.push(stack);
 	}
 
 	public void acceptAssociativeArray(String signature) {
@@ -2472,14 +2543,16 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	public void enterFunctionType() {
 		functionTypeCount++;
 		this.stack.push(new Stack<String>());
+		this.modifiers.push(new Stack<String>());
 	}
 
 	public void exitFunctionType(LINK link, String signature) {
 		if (stack.size() > 1) {
 			Stack<String> stack = this.stack.pop();
+			Stack<String> modifiers = this.modifiers.pop();
 			
 			StringBuilder sb = new StringBuilder();
-			appendFunction(stack, sb, FUNCTION, null, true);
+			appendFunction(stack, modifiers, sb, FUNCTION, null, true);
 			
 			this.stack.peek().push(sb.toString());
 		}
@@ -2496,7 +2569,7 @@ private static <T> Stack<T> reverse(Stack<T> s) {
 	return other;
 }
 
-private static void appendFunction(Stack<String> stack, StringBuilder sb, char[] methodName, char[][] parameterNames, boolean includeReturnType) {
+private static void appendFunction(Stack<String> stack, Stack<String> modifiers, StringBuilder sb, char[] methodName, char[][] parameterNames, boolean includeReturnType) {
 	if (includeReturnType) {
 		sb.append(stack.pop());
 		sb.append(' ');
@@ -2514,7 +2587,14 @@ private static void appendFunction(Stack<String> stack, StringBuilder sb, char[]
 	int i = 0;
 	while(!stack.isEmpty()) {
 		if (i != 0) {
-			sb.append(", ");
+			sb.append(',');
+			sb.append(' ');
+		}
+		
+		String modifier = modifiers.pop();
+		if (!modifier.equals("in")) {
+			sb.append(modifier);
+			sb.append(' ');
 		}
 		
 		sb.append(stack.pop());
@@ -3095,4 +3175,24 @@ public static String toString(String methodSignature, String methodName, String[
 	}
 	return new String(toCharArray(methodSignature.toCharArray(), methodName == null ? null : methodName.toCharArray(), params, fullyQualifyTypeNames, includeReturnType, isVarArgs));
 }
+
+public static boolean isVariadic(char[] signature) throws IllegalArgumentException {
+	return isVariadic(new String(signature));
+}
+
+public static boolean isVariadic(String signature) throws IllegalArgumentException {
+	final boolean[] variadic = { false };
+	
+	SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
+		@Override
+		public void acceptArgumentBreak(char c) {
+			variadic[0] = 
+				c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC ||
+				c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC2;
+		}
+	});
+	
+	return variadic[0];
+}
+
 }
