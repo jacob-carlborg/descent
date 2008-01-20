@@ -301,7 +301,7 @@ import cn.kuehne.flectioned;
  */
 const ushort PORT = 30587;
 
-static if(cn.kuehne.flectioned.inTango)
+static if(is(typeof((new object.Object()).toUtf8()) == char[]))
 {
 	version = inTango;
 	
@@ -422,7 +422,7 @@ static if(cn.kuehne.flectioned.inTango)
 		return res == haystack.length ? -1 : res;
 	}
 }
-else static if(cn.kuehne.flectioned.inPhobos)
+else
 {
 	version = inPhobos;
 	
@@ -505,10 +505,6 @@ else static if(cn.kuehne.flectioned.inPhobos)
 	{
 		return format("%d", i);
 	}
-}
-else
-{
-	static assert(false, "Not in Phobos or Tango");
 }
 
 // Needed for clean program exit
@@ -626,7 +622,7 @@ private class TestResult
 					AssertError ae = cast(AssertError) e;
 					assert(ae !is null);
 					write("Assertion failed in " ~ ae.filename ~ " at line " ~
-						itoa(ae.linnum) ~  " ");
+						itoa(ae.linnum));
 					char[] msg = extractMessage(ae.msg);
 					if(msg)
 						write(": " ~ msg);
@@ -639,9 +635,11 @@ private class TestResult
 			case ResultType.ERROR:
 				write("ERROR\r\n");
 				static if(is(typeof((new Object).toString)))
-					write(e.classinfo.name ~ ": " ~ e.toString() ~ "\r\n");
+					write("Exception " ~ e.classinfo.name ~ ": " ~ e.toString()
+						~ "\r\n");
 				else
-					write(e.classinfo.name ~ ": " ~ e.toUtf8() ~ "\r\n");
+					write("Exception " ~ e.classinfo.name ~ ": " ~ e.toUtf8()
+						~ "\r\n");
 				goto LprintStackTrace;
 		}
 		

@@ -187,9 +187,12 @@ public class RemoteTestRunnerClient implements Runnable
 			notifyTestStarted(id);
 		
 		FluteTestResult result = app.runTest(id);
+		System.out.println("-------------");
+		System.out.println(result);
+		System.out.println("-------------");
 		
 		int statusCode;
-		switch(result.getResultType())
+		switch(result.resultType)
 		{
 			case PASSED:
 				statusCode = ITestRunListener.STATUS_OK;
@@ -388,13 +391,13 @@ public class RemoteTestRunnerClient implements Runnable
 		{
 			public void testEnded(String testId, String testName )
 			{
-				System.out.println("testEnded(" + testId + ", " + testName + ");");
+				//System.out.println("testEnded(" + testId + ", " + testName + ");");
 			}
 
 			public void testFailed(int status, String testId, String testName,  String trace)
 			{
-				System.out.println("testFailed(" + status + ", " + testId
-						+ ", " + testName + ", " + trace + ");");
+				//System.out.println("testFailed(" + status + ", " + testId
+				//		+ ", " + testName + ", " + trace + ");");
 			}
 
 			public void testReran(String testId, String testName, int status, String trace)
@@ -434,22 +437,27 @@ public class RemoteTestRunnerClient implements Runnable
 					"src/test.exe"
 			})).start();
 		
-		RemoteTestRunnerClient client = new RemoteTestRunnerClient(
-				30587, tests, listeners);
-		client.init();
-		client.run();
-		client.terminate();
-		
-		Thread.sleep(1000); // Let it finish up whatever it's doing
 		try
 		{
-			System.out.println("App finished with exit code: " +
-					proc.exitValue());
+			RemoteTestRunnerClient client = new RemoteTestRunnerClient(
+					30587, tests, listeners);
+			client.init();
+			client.run();
+			client.terminate();
 		}
-		catch(IllegalThreadStateException e)
+		finally
 		{
-			System.out.println("Had to manually kill the process");
-			proc.destroy();
+			Thread.sleep(1000); // Let it finish up whatever it's doing
+			try
+			{
+				System.out.println("App finished with exit code: " +
+						proc.exitValue());
+			}
+			catch(IllegalThreadStateException e)
+			{
+				System.out.println("Had to manually kill the process");
+				proc.destroy();
+			}
 		}
 	}
 }

@@ -1,8 +1,13 @@
 package descent.internal.unittest.flute;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static descent.internal.unittest.flute.FluteTestResult.ResultType;
+import static descent.internal.unittest.flute.FluteTestResult.StackTraceElement;
 import static descent.internal.unittest.flute.FluteTestResult.ResultType.PASSED;
 import static descent.internal.unittest.flute.FluteTestResult.ResultType.FAILED;
 import static descent.internal.unittest.flute.FluteTestResult.ResultType.ERROR;
@@ -14,11 +19,26 @@ class RunningOneTest implements IState
 	private static final String FAILED_MSG = "FAILED";
 	private static final String ERROR_MSG = "ERROR";
 	
-	private static final String ASSERTION_FAILED_MSG = "Assertion failed in ";
-	private static final String AT_LINE              = " at line ";
+	private static final Pattern ASSERTION_FAILURE = Pattern.compile(
+			"Assertion failed in (\\S*) at line (\\d*)(?:\\: (.*))?");
+	private static final Pattern ERROR_CONDITION = Pattern.compile(
+			"Exception ([^\\:]*): (.*)");
+	private static final Pattern STACK_TRACE_ELEMENT = Pattern.compile(
+			"\\<\\<ST\\>\\> (\\S*) \\(([^\\:]*):(\\d*)\\)");
+	
 	
 	private final FluteApplicationInstance cli;
+	
+	// Are we appending output to the message buffer (to support multi-
+	// line error messages)?
+	private boolean isAppending = false;
+	
 	private ResultType resultType = null;
+	private String file;
+	private int line;
+	private String exceptionType;
+	private StringBuffer message;
+	private List<StackTraceElement> stackTrace;
 	
 	RunningOneTest(FluteApplicationInstance cli)
 	{
@@ -26,11 +46,16 @@ class RunningOneTest implements IState
 	}
 
 	public void interpret(String text) throws IOException
-	{	
+	{
+		// Implementation note: these conditions are order-dependent. I'm
+		// not proud of this function, but I'm too lazy to do anything
+		// about it.
+		
 		// If it's time to return, do it
 		if(text.equals(FluteApplicationInstance.AWAITING_INPUT))
 		{
 			cli.notifyStateReturn();
+			return;
 		}
 		
 		// Check for a PASSED/FAILED/ERROR if the PASSED/FAILED/ERROR
@@ -49,32 +74,90 @@ class RunningOneTest implements IState
 				return;
 		}
 		
-		// If it's an assertion failure, grab the file/line and message
-		if(text.startsWith(ASSERTION_FAILED_MSG) && resultType == FAILED)
+		// If it's a stack trace element, add it to the stack trace
+		Matcher m = STACK_TRACE_ELEMENT.matcher(text);
+		if(m.find())
 		{
-			text = text.substring(ASSERTION_FAILED_MSG.length());
-			System.out.println("Chopped 1: " + text);
-			int i = text.indexOf(AT_LINE);
-			assert(i > 0);
-			String file = text.substring(0, i);
-			System.out.println("File: " + file);
-			text = text.substring(i + AT_LINE.length());
-			System.out.println("Chopped 2: " + text);
-			i = text.indexOf(" ");
-			assert(i > 0);
-			String lineNum = text.substring(0, i);
+			// If we've gotten to the stack trace, we're done with
+			// processing error messages.
+			isAppending = false;
+			
+			if(null == stackTrace)
+				stackTrace = new ArrayList<StackTraceElement>(16);
+			
+			String function = m.group(1);
+			String file = m.group(2);
+			String lineStr = m.group(3);
+			
 			int line;
 			try
 			{
-				line = Integer.valueOf(lineNum);
+				line = null != lineStr ? Integer.valueOf(lineStr) : -1;
 			}
 			catch(NumberFormatException e)
 			{
 				line = -1;
 			}
-			System.out.println("Line: " + line);
+			
+			stackTrace.add(new StackTraceElement(function, file, line));
+			return;
 		}
-		// TODO finish
+		
+		// If we're appending to the error message, tack this on (and put
+		// the line break back in)
+		if(isAppending)
+		{
+			message.append("\r\n" + text);
+			return;
+		}
+		
+		// If it's an assertion failure, grab the file/line and message
+		m = ASSERTION_FAILURE.matcher(text);
+		if(m.find())
+		{
+			file = m.group(1);
+			
+			String lineStr = m.group(2);
+			try
+			{
+				line = null != lineStr ? Integer.valueOf(lineStr) : -1;
+			}
+			catch(NumberFormatException e)
+			{
+				line = -1;
+			}
+			
+			String msgStr = m.group(3);
+			if(msgStr != null)
+			{
+				message = new StringBuffer();
+				message.append(msgStr);
+				isAppending = true;
+			}
+			
+			return;
+		}
+		
+		// If it's an error condition (unexpected exception), grab the
+		// exception type and message
+		m = ERROR_CONDITION.matcher(text);
+		if(m.find())
+		{
+			exceptionType = m.group(1);
+			
+			String msgStr = m.group(2);
+			if(msgStr != null)
+			{
+				message = new StringBuffer();
+				message.append(msgStr);
+				isAppending = true;
+			}
+			
+			return;
+		}
+		
+		// If we get here, it's probably invalid text. Don't throw an
+		// exception because it might be a network error of some sort.
 	}
 	
 	FluteTestResult getResult()
@@ -82,6 +165,27 @@ class RunningOneTest implements IState
 		if(resultType == null)
 			return null;
 		
-		return new FluteTestResult(resultType);
+		switch(resultType)
+		{
+			case PASSED:
+				return FluteTestResult.passed();
+			case FAILED:
+				return FluteTestResult.failed(
+						file,
+						line, 
+						message != null ? message.toString() : null, 
+						stackTrace != null ?
+								stackTrace.toArray(new StackTraceElement[stackTrace.size()]) :
+								null);
+			case ERROR:
+				return FluteTestResult.error(
+						message != null ? message.toString() : null,
+						exceptionType,
+						stackTrace != null ?
+								stackTrace.toArray(new StackTraceElement[stackTrace.size()]) :
+								null);
+			default:
+				throw new IllegalStateException();
+		}
 	}
 }
