@@ -18,8 +18,8 @@ Flute is an interactive tool for executing D unit tests. It is based on Thomas
  Kuehne's <a href="http://flectioned.kuehne.cn/#unittest">UnittestWalker</a>. Like
  UnittestWalker, it requires <a href="http://flectioned.kuehne.cn">Flectioned</a> to work
  correctly, and right now is only compatible with D version 1.x. It extends
- UnittestWalker by providing an interactive (stdin/stdout-based) way to find and
- execute unit tests.
+ UnittestWalker by providing an interactive (console or network-based) way to find
+ and execute unit tests.
 <br><br>
 
  However, while 
@@ -41,6 +41,15 @@ Flute is an interactive tool for executing D unit tests. It is based on Thomas
  application. If all you want is to run all the unittests in the project,
  UnittestWalker is a better bet. If using the command line version directly, I
  would suggest redirecting stdin from a file to create testing suites.
+<br><br>
+
+ A good example of a program that interfaces ith Flute via IPC is descent.unittest.
+ You can find the relevant files at
+ .
+ In particular, check out
+ ,
+ , and
+ .
 
 <br><br>
 <b>Usage:</b><br>
@@ -77,6 +86,17 @@ The interface is well-defined. That is, while it is designed to be human-
  testing tools. The interface may change between versions.
 <br><br>
 
+ There are two interfaces for Flute - a console I/O based one and a socket-based
+ one. Since there's no way to pass parameters to Flute upon execution, the interface
+ to use is spcified at compile-time, using the version switch <b>FluteCommandLine</b>.
+ If FluteCommandLine is NOT active, Flute will instead bind to a local socket for
+ IPC. It opens on port <b>30587</b> (Someday, I'll make a config file or somthing
+ for that, but right now hardcoding it seems like a good option). When connected
+ via thesocket, the exact same interface is preserved as the console I/O version.
+ Thus, the following documentation applies equally well to both the command-line
+ and network versions.
+<br><br>
+
  When the program is executed, one or more lines containing version information
  will be displayed. For this version, the version line will be "<b>
 <span class="currsymbol">flute</span>
@@ -85,8 +105,8 @@ The interface is well-defined. That is, while it is designed to be human-
  0.1</b>".
  Warnings may be displayed after this for tests with multiple names unless
  version(Flute_NoWarnings) has been specified. The program will then enter a
- loop where it will await input from stdin, process the given command, and
- await futher input. The commands are: <ul>    <li><b>r <i>test signature</i></b> -
+ loop where it will await input, process the given command, and  await futher
+ input. The commands are: <ul>    <li><b>r <i>test signature</i></b> -
         (An r, followed by a space, followed by the signature or name
         of a test). Will run the specified test and print the
         results to stdout. See "test signature specification" for the
@@ -200,9 +220,9 @@ After a test is run, there are four possible results: <ul>   <li>The test could 
 <b>Stack Trace Specification:</b><br>
 The test runner has support for Flectioned's TracedException, but will work
  correctly even if the thrown exception is not a TracedException. The stack trace
- will begin with a line containing the name of the thrown exception. If the
- exception has a message, this will be followed by ": " and then the exception
- message.
+ will begin with a line containing "Exception " and the name of the thrown
+ exception. If the exception has a message, this will be followed by ": " and then
+ the exception message.
 <br><br>
 
  If the exception is an assertion failure (AssertError in Phobos, AssertException
@@ -213,16 +233,15 @@ The test runner has support for Flectioned's TracedException, but will work
 <br><br>
 
  If the exception is a subclass of TracedException, this will be followed by the
- actual stack trace of the exception. Each line of the stack trace will begin with
- three spaces, which will allow stack traces to be easily visually parsed
- from the surrounding information and dealt with in automated tools. The stack
- trace differs from the standard Flectioned stack trace for a TracedException to
- ease processing.
-<br><br>
-
- Each line of the stack trace represents a stack frame that was executing when the
- exception was thrown. The stack frames will be reported in reverse order (the
- "unwinding" of the stack). TODO - finish this.
+ actual stack trace of the exception. Each line of the stack trace represents a
+ stack frame that was executing when the exception was thrown. The stack frames
+ will be reported in reverse order (the "unwinding" of the stack). Each line
+ begins with "&lt;&lt;STE&gt;&gt; ", followed by the name of the executing
+ function, followed by " (", followed by the file the function is defined on, then
+ ":", then the line the function is dfined on (sadly not the line the exception was
+ thrown from, I'm working on that part), and then ")". For example, one line could
+ look like "<i><b>&lt;&lt;STE&gt;&gt; com.initech.dbinterface.getCustomerById
+ (dbinterface.d:420)</b></i>".
 
 <br><br>
 <b>Limitations:</b><br>
@@ -288,7 +307,7 @@ Copyright (c) 2007 Robert Fraser (fraserofthenight@gmail.com)
 		<tr><td id="docfooter">
 			Page was generated with
 			<img src="candydoc/img/candydoc.gif" style="vertical-align:middle; position:relative; top:-1px">
-			on Mon Dec  3 14:18:20 2007
+			on Sat Jan 19 20:27:42 2008
 
 		</td></tr>
 	</table>

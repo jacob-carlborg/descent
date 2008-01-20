@@ -1,13 +1,11 @@
 /**
- * TODO Document prompts & network
- * 
  * Summary:
  * Flute is an interactive tool for executing D unit tests. It is based on Thomas
  * Kuehne's $(LINK2 http://flectioned.kuehne.cn/#unittest,UnittestWalker). Like
  * UnittestWalker, it requires $(LINK2 http://flectioned.kuehne.cn,Flectioned) to work
  * correctly, and right now is only compatible with D version 1.x. It extends
- * UnittestWalker by providing an interactive (stdin/stdout-based) way to find and
- * execute unit tests.
+ * UnittestWalker by providing an interactive (console or network-based) way to find
+ * and execute unit tests.
  * 
  * However, while flute can be used interactively, it is mainly
  * designed to be extended by automated testing tools, such as 
@@ -20,6 +18,14 @@
  * application. If all you want is to run all the unittests in the project,
  * UnittestWalker is a better bet. If using the command line version directly, I
  * would suggest redirecting stdin from a file to create testing suites.
+ * 
+ * A good example of a program that interfaces ith Flute via IPC is descent.unittest.
+ * You can find the relevant files at 
+ * $(LINK1 http://www.dsource.org/projects/descent/browser/trunk/descent.unittest/src/descent/internal/unittest/flute).
+ * In particular, check out
+ * $(LINK1 http://www.dsource.org/projects/descent/browser/trunk/descent.unittest/src/descent/internal/unittest/flute/FluteApplicationInstance.java),
+ * $(LINK1 http://www.dsource.org/projects/descent/browser/trunk/descent.unittest/src/descent/internal/unittest/flute/RunningOneTest.java), and
+ * $(LINK1 http://www.dsource.org/projects/descent/browser/trunk/descent.unittest/src/descent/internal/unittest/flute/FluteTestResult.java).
  * 
  * Usage:
  * Flute must be statically linked against an application, just like UnittestWalker.
@@ -40,12 +46,22 @@
  * readable, it is fully specified and can hopefully be processed by automated
  * testing tools. The interface may change between versions.
  * 
+ * There are two interfaces for Flute - a console I/O based one and a socket-based
+ * one. Since there's no way to pass parameters to Flute upon execution, the interface
+ * to use is spcified at compile-time, using the version switch $(B FluteCommandLine).
+ * If FluteCommandLine is NOT active, Flute will instead bind to a local socket for
+ * IPC. It opens on port $(B 30587) (Someday, I'll make a config file or somthing 
+ * for that, but right now hardcoding it seems like a good option). When connected 
+ * via thesocket, the exact same interface is preserved as the console I/O version.
+ * Thus, the following documentation applies equally well to both the command-line 
+ * and network versions.
+ * 
  * When the program is executed, one or more lines containing version information
  * will be displayed. For this version, the version line will be "$(B flute 0.1)".
  * Warnings may be displayed after this for tests with multiple names unless
  * version(Flute_NoWarnings) has been specified. The program will then enter a
- * loop where it will await input from stdin, process the given command, and 
- * await futher input. The commands are: $(UL
+ * loop where it will await input, process the given command, and  await futher 
+ * input. The commands are: $(UL
  *     $(LI $(B r $(I test signature)) -
  *        (An r, followed by a space, followed by the signature or name
  *        of a test). Will run the specified test and print the
@@ -159,9 +175,9 @@
  * Stack_Trace_Specification:
  * The test runner has support for Flectioned's TracedException, but will work
  * correctly even if the thrown exception is not a TracedException. The stack trace
- * will begin with a line containing the name of the thrown exception. If the
- * exception has a message, this will be followed by ": " and then the exception
- * message.
+ * will begin with a line containing "Exception " and the name of the thrown 
+ * exception. If the exception has a message, this will be followed by ": " and then
+ * the exception message.
  * 
  * If the exception is an assertion failure (AssertError in Phobos, AssertException
  * in Tango), the line will instead be "$(B Assertion failed in $(I &lt;filename&gt;)
@@ -170,15 +186,17 @@
  * Tango and Phobos, which report their assert errors differently.
  * 
  * If the exception is a subclass of TracedException, this will be followed by the
- * actual stack trace of the exception. Each line of the stack trace will begin with
- * three spaces, which will allow stack traces to be easily visually parsed
- * from the surrounding information and dealt with in automated tools. The stack
- * trace differs from the standard Flectioned stack trace for a TracedException to
- * ease processing.
- * 
- * Each line of the stack trace represents a stack frame that was executing when the
- * exception was thrown. The stack frames will be reported in reverse order (the
- * "unwinding" of the stack). TODO - finish this.
+ * actual stack trace of the exception. Each line of the stack trace represents a 
+ * stack frame that was executing when the exception was thrown. The stack frames 
+ * will be reported in reverse order (the "unwinding" of the stack). Each line
+ * begins with "&lt;&lt;STE&gt;&gt; ", followed by the name of the executing
+ * function, followed by " (", followed by the file the function is defined on, then
+ * ":", then the line that was executing, and then ")". For example, one line could
+ * look like "$(I $(B &lt;&lt;STE&gt;&gt; com.initech.dbinterface.getCustomerById
+ * (dbinterface.d:420)))". If the name of the function that was executing cannot be
+ * found, it will be replaced with a "?". If the location it was executing at cannot
+ * be found in the debug info, the hexidecimal represenation of the code position will
+ * appear instead of the file/line.
  * 
  * Limitations:
  * $(UL
@@ -294,12 +312,36 @@ module org.dsource.descent.unittests.flute;
  */
 //private char[] readln();
 
+/**
+ * Initalize libraries needed to lookup file/line information in exception stack
+ * traces. 
+ */
+//private void initDebugInfo();
+
+/**
+ * Close librries needed to lookup file/line information in exception stack traces.
+ */
+//private void closeDebugInfo();
+
+/**
+ * Attempts to look up the file/line in the debug info given an execution
+ * address.
+ * 
+ * Params:
+ *     addr = the execution address to look up
+ * Returns: If the lookup is succesful, returns "[file]:[line]", where [file]
+ *    is the filename where the code is located and [line] is th line of code
+ *    the address refers to. On failure returns "0x[address]", where [address]
+ *    is the hexadecimal representation of addr.
+ */
+//private static char[] getDebugInfo(void* addr)
+
 import cn.kuehne.flectioned;
 
 /**
  * Port to listen on (this should be configurable somehow)...
  */
-const ushort PORT = 30587;
+private const ushort PORT = 30587;
 
 static if(is(typeof((new object.Object()).toUtf8()) == char[]))
 {
@@ -427,6 +469,7 @@ else
 	version = inPhobos;
 	
 	import std.c.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
+	import std.c.string : strlen;
 	import std.string : atoi, format, find, trim = strip;
 	import std.ctype : isdigit;
 	import std.asserterror : AssertError;
@@ -461,7 +504,6 @@ else
 			serv.listen(0);
 			Socket conn = serv.accept();
 			stream = new SocketStream(conn);
-			// PERHAPS figure out why we can't use a buffered stream here
 		}
 	}
 	
@@ -505,6 +547,197 @@ else
 	{
 		return format("%d", i);
 	}
+}
+
+version(Windows)
+{
+	/// Can we lookup debug info?
+	private bool debugInfo = false;
+	
+	import std.c.windows.windows;
+	
+	private enum
+	{
+		MAX_MODULE_NAME32 = 255,
+		TH32CS_SNAPMODULE = 0x00000008,
+		SYMOPT_LOAD_LINES = 0x10,
+	}
+	
+	private extern(Windows) struct MODULEENTRY32
+	{
+		DWORD  dwSize;
+		DWORD  th32ModuleID;
+		DWORD  th32ProcessID;
+		DWORD  GlblcntUsage;
+		DWORD  ProccntUsage;
+		BYTE  *modBaseAddr;
+		DWORD  modBaseSize;
+		HMODULE hModule;
+		char   szModule[MAX_MODULE_NAME32 + 1];
+		char   szExePath[MAX_PATH];
+	}
+	
+	private extern(Windows) struct IMAGEHLP_LINE
+	{
+		DWORD SizeOfStruct;
+	    PVOID Key; 
+	    DWORD LineNumber; 
+	    PTSTR FileName; 
+	    DWORD Address;
+	}
+	alias IMAGEHLP_LINE* PIMAGEHLP_LINE;
+	
+	private extern(Windows) BOOL Module32First(HANDLE, MODULEENTRY32*);
+	private extern(Windows) BOOL Module32Next(HANDLE, MODULEENTRY32*);
+	private extern(Windows) HANDLE CreateToolhelp32Snapshot(DWORD,DWORD);
+	
+	private HMODULE imagehlp;
+	private HANDLE proc;
+	private extern(Windows) DWORD function(DWORD) SymSetOptions;
+	private extern(Windows) BOOL function(HANDLE, PCSTR, BOOL) SymInitialize;
+	private extern(Windows) BOOL function(HANDLE) SymCleanup;
+	private extern(Windows) DWORD function(HANDLE, HANDLE, PCSTR, PCSTR, DWORD, DWORD) SymLoadModule;
+	private extern(Windows) BOOL function(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINE) SymGetLineFromAddr;
+		
+	private void initDebugInfo()
+	{
+		MODULEENTRY32 moduleEntry;
+		moduleEntry.dwSize = moduleEntry.sizeof;
+		char buffer[4096];
+		
+		try
+		{
+			scope(failure)
+			{
+				if(imagehlp)
+					FreeLibrary(imagehlp);
+				
+				SymSetOptions = null;
+				SymInitialize = null;
+				SymCleanup = null;
+				SymLoadModule = null;
+				SymGetLineFromAddr = null;
+			}
+			
+			proc = GetCurrentProcess();
+			if(!proc)
+				throw new Exception("GetCurrentProcess() returned null");
+			
+			HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0);
+			if(!snapshot)
+				throw new Exception("CreateToolHelp32Snapshot failed");
+			
+			imagehlp = LoadLibraryA("imagehlp.dll");
+			if(!imagehlp)
+				throw new Exception("Failed to load imagehlp.dll");
+			
+			SymSetOptions = cast(typeof(SymSetOptions)) GetProcAddress(imagehlp, "SymSetOptions");
+			if(!SymSetOptions)
+				throw new Exception("Failed to load SymSetOptions");
+			
+			SymInitialize = cast(typeof(SymInitialize)) GetProcAddress(imagehlp, "SymInitialize");
+			if(!SymInitialize)
+				throw new Exception("Failed to load SymInitialize");
+			
+			SymCleanup = cast(typeof(SymCleanup)) GetProcAddress(imagehlp, "SymCleanup");
+			if(!SymCleanup)
+				throw new Exception("Failed to load SymCleanup");
+			
+			SymLoadModule = cast(typeof(SymLoadModule)) GetProcAddress(imagehlp, "SymLoadModule");
+			if(!SymLoadModule)
+				throw new Exception("Failed to load SymLoadModule");
+			
+			SymGetLineFromAddr = cast(typeof(SymGetLineFromAddr)) GetProcAddress(imagehlp, "SymGetLineFromAddr");
+			if(!SymGetLineFromAddr)
+				throw new Exception("Failed to load SymGetLineFromAddr");
+			
+			// Since Flectioned doesn't load the line inforamtion when loading
+			// symbols, we have little choice but to load all the symbols again, this
+			// time with SYMOPT_LOAD_LINES on.
+			if(!SymCleanup(proc))
+				throw new Exception("SymCleanup failed");
+			SymSetOptions(SYMOPT_LOAD_LINES);
+			if(!SymInitialize(proc, null, FALSE))
+				throw new Exception("SymInitialize failed");
+			
+			// We have to enumerate through the modules individually so that each
+			// module finds its search path
+			if(!Module32First(snapshot, &moduleEntry))
+				throw new Exception("Module32First Failed");
+			do
+			{
+				if(GetModuleFileNameA(moduleEntry.hModule, buffer.ptr, buffer.length))
+					SymLoadModule(proc, HANDLE.init, buffer.ptr, null, 0, 0);
+			}
+			while(Module32Next(snapshot, &moduleEntry));
+			
+			debugInfo = true;
+		}
+		catch(Exception e)
+		{
+			//write(e.toString() ~ "\n");
+		}
+	}
+		
+	private void closeDebugInfo()
+	{
+		if(debugInfo)
+		{
+			SymCleanup(proc);
+			FreeLibrary(imagehlp);
+			
+			SymSetOptions = null;
+			SymInitialize = null;
+			SymCleanup = null;
+			SymLoadModule = null;
+			SymGetLineFromAddr = null;
+		}
+	}
+	
+	private char[] getDebugInfo(void* addr)
+	{
+		char[] toHex(size_t val)
+		{
+			const int percision = (void*).sizeof * 2;
+			
+			version(inPhobos)
+				return format("%#0.*x", percision, val);
+			else
+				{ } // TANGO
+		}
+		
+		char[] getSimpleFilename(char[] filename)
+		{
+			char[] simple = "";
+			foreach_reverse(c; filename)
+			{
+				if(c == '\\' || c == '/')
+					break;
+				simple = c ~ simple;
+			}
+			return simple;
+		}
+		
+		if(!debugInfo || !addr)
+			goto Lunknown;
+		
+		IMAGEHLP_LINE lineInfo;
+		DWORD displacement;
+		lineInfo.SizeOfStruct = lineInfo.sizeof;
+		
+		if(!SymGetLineFromAddr(proc, cast(DWORD) addr, &displacement, &lineInfo))
+			goto Lunknown;
+		
+		return getSimpleFilename(lineInfo.FileName[0 .. strlen(lineInfo.FileName)])
+			~ ":" ~ itoa(lineInfo.LineNumber);
+		
+		Lunknown:
+			return toHex(cast(size_t) addr);
+	}
+}
+else
+{
+	// TODO
 }
 
 // Needed for clean program exit
@@ -599,6 +832,7 @@ private class TestResult
 				write("FAILED\r\n");
 				version(inTango)
 				{
+					// TODO
 					AssertException ae = cast(AssertException) e;
 					assert(ae !is null);
 					write("Assertion failed in " ~ ae.file ~ " at line " ~
@@ -644,7 +878,32 @@ private class TestResult
 		}
 		
 		LprintStackTrace:
-			; // TODO
+			Trace[]* trace;
+			TracedException te = cast(TracedException) e;
+			if(te)
+			{
+				trace = &te.trace;
+			}
+			else
+			{
+				Exception ex = cast(Exception) e;
+				if(ex)
+					trace = ex in TracedException.retraced;
+			}
+				
+			if(!trace)
+				return;
+				
+			foreach(ste; *trace)
+			{
+				char[] buf = "   <<ST>> ";
+				if(ste.symbol)
+					buf ~= ste.symbol.name ~ "";
+				else
+					buf ~= "?";
+				buf ~= " (" ~ getDebugInfo(ste.code) ~ ")\r\n";
+				write(buf);
+			}
 	}
 }
 
@@ -1054,7 +1313,9 @@ private TestRegistry registry;
  */
 private void fluteMain()
 {
+	TracedException.traceAllExceptions();
 	initIO();
+	initDebugInfo();
 	write(VERSION_STRING ~ "\r\n");
 	initRegistry();
 	if(!commandLoop())
@@ -1068,6 +1329,7 @@ private void fluteMain()
 private void fluteExit()
 {
 	flush();
+	closeDebugInfo();
 	closeIO();
 	_moduleDtor();
 	gc_term();
