@@ -28,6 +28,7 @@ import descent.ui.text.java.JavaContentAssistInvocationContext;
 
 public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	
+	protected static final String EXCLAMATION= "!"; //$NON-NLS-1$
 	protected static final String LPAREN= "("; //$NON-NLS-1$
 	protected static final String RPAREN= ")"; //$NON-NLS-1$
 	protected static final String COMMA= ","; //$NON-NLS-1$
@@ -381,6 +382,9 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 			case CompletionProposal.KEYWORD:
 				return baseRelevance + 2;
 			case CompletionProposal.TYPE_REF:
+			case CompletionProposal.TEMPLATE_REF:
+			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
+			case CompletionProposal.TEMPLATED_FUNCTION_REF:
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 				return baseRelevance + 3;
 			case CompletionProposal.METHOD_REF:

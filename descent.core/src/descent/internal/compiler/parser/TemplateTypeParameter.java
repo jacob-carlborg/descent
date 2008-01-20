@@ -205,7 +205,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 	public void appendSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER);
 		if (specType != null) {
-			sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER);
+			sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER2);
 			specType.appendSignature(sb);
 		}
 	}

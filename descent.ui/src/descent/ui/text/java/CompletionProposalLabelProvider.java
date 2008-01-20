@@ -88,6 +88,30 @@ public class CompletionProposalLabelProvider {
 		}
 		return appendParameterSignature(buffer, parameterTypes, parameterNames);
 	}
+	
+	private StringBuffer appendTemplateParameterList(StringBuffer buffer, CompletionProposal tempProposal) {
+		// TODO remove once https://bugs.eclipse.org/bugs/show_bug.cgi?id=85293
+		// gets fixed.
+		//char[] signature= SignatureUtil.fix83600(tempProposal.getSignature());
+		char[][] parameterNames= tempProposal.findTemplateParameterNames(null);
+		
+		for (int i = 0; i < parameterNames.length; i++) {
+			if (i != 0) {
+				buffer.append(',');
+				buffer.append(' ');
+			}
+			
+			buffer.append(parameterNames[i]);
+		}
+		
+		return buffer;
+		
+//		char[][] parameterTypes= Signature.getParameterTypes(signature);
+//		for (int i= 0; i < parameterTypes.length; i++) {
+//			parameterTypes[i]= createTypeDisplayName(SignatureUtil.getLowerBound(parameterTypes[i]));
+//		}
+//		return appendParameterSignature(buffer, parameterTypes, parameterNames);
+	}
 
 	/**
 	 * Returns the display string for a java type signature.
@@ -192,6 +216,15 @@ public class CompletionProposalLabelProvider {
 		declaringType= Signature.getSimpleName(declaringType);
 		nameBuffer.append(declaringType);
 
+		return nameBuffer.toString();
+	}
+	
+	String createTemplateProposalLabel(CompletionProposal tempProposal) {
+		StringBuffer nameBuffer= new StringBuffer();
+		nameBuffer.append(tempProposal.getName());
+		nameBuffer.append('(');
+		appendTemplateParameterList(nameBuffer, tempProposal);
+		nameBuffer.append(')');
 		return nameBuffer.toString();
 	}
 	
@@ -417,6 +450,8 @@ public class CompletionProposalLabelProvider {
 				if (fContext != null && fContext.isInJavadoc())
 					return createJavadocMethodProposalLabel(proposal);
 				return createMethodProposalLabel(proposal);
+			case CompletionProposal.TEMPLATE_REF:
+				return createTemplateProposalLabel(proposal);
 			case CompletionProposal.METHOD_DECLARATION:
 				return createOverrideMethodProposalLabel(proposal);
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
@@ -486,6 +521,9 @@ public class CompletionProposalLabelProvider {
 					default:
 						descriptor= null;
 				}
+				break;
+			case CompletionProposal.TEMPLATE_REF:
+				descriptor = JavaElementImageProvider.getTypeImageDescriptor(false, false, Flags.AccTemplate, true);
 				break;
 			case CompletionProposal.FIELD_REF:
 				descriptor= JavaElementImageProvider.getFieldImageDescriptor(false, flags);

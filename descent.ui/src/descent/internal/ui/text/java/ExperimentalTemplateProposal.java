@@ -23,13 +23,13 @@ import descent.ui.text.java.JavaContentAssistInvocationContext;
 /**
  * An experimental proposal.
  */
-public final class ExperimentalProposal extends JavaMethodCompletionProposal {
+public final class ExperimentalTemplateProposal extends JavaTemplateCompletionProposal {
 
 	private IRegion fSelectedRegion; // initialized by apply()
 	private int[] fArgumentOffsets;
 	private int[] fArgumentLengths;
 
-	public ExperimentalProposal(CompletionProposal proposal, JavaContentAssistInvocationContext context) {
+	public ExperimentalTemplateProposal(CompletionProposal proposal, JavaContentAssistInvocationContext context) {
 		super(proposal, context);
 	}
 
@@ -89,7 +89,7 @@ public final class ExperimentalProposal extends JavaMethodCompletionProposal {
 		if (!hasParameters() || !hasArgumentList())
 			return super.computeReplacementString();
 		
-		char[][] parameterNames= fProposal.findParameterNames(null);
+		char[][] parameterNames= fProposal.findTemplateParameterNames(null);
 		int count= parameterNames.length;
 		fArgumentOffsets= new int[count];
 		fArgumentLengths= new int[count];
@@ -98,6 +98,7 @@ public final class ExperimentalProposal extends JavaMethodCompletionProposal {
 		FormatterPrefs prefs= getFormatterPrefs();
 		if (prefs.beforeOpeningParen)
 			buffer.append(SPACE);
+		buffer.append(EXCLAMATION);
 		buffer.append(LPAREN);
 		
 		setCursorPosition(buffer.length());

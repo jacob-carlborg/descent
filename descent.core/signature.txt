@@ -35,9 +35,9 @@ signature of the enclosing symbol, followed by $,
 the position of it in the source file, and }.
 
 For templates, the symbol used is {. Following are the template parameters, followed by ':
- - For an alias parameter, it's ]. If another ] comes, the specific type comes.
+ - For an alias parameter, it's ]. If a " comes, the specific type comes.
  - For a tuple parameter, it's %.
- - For a type parameter, it's #. If another # comes, the specific type comes.
+ - For a type parameter, it's #. If a + comes, the specific type comes.
  - For a value parameter, it's "," and then follows the type. If a number follows, 
    it's the length of the specific value expression, whose start is marked by
    another ",".

@@ -36,6 +36,9 @@ public class JavadocCompletionProposalComputer extends JavaCompletionProposalCom
 		collector.setIgnored(CompletionProposal.JAVADOC_PARAM_REF, false);
 		collector.setIgnored(CompletionProposal.JAVADOC_VALUE_REF, false);
 		collector.setIgnored(CompletionProposal.TYPE_REF, false);
+		collector.setIgnored(CompletionProposal.TEMPLATE_REF, false);
+		collector.setIgnored(CompletionProposal.TEMPLATED_AGGREGATE_REF, false);
+		collector.setIgnored(CompletionProposal.TEMPLATED_FUNCTION_REF, false);
 		return collector;
 	}
 }

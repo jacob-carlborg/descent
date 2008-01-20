@@ -1025,6 +1025,19 @@ public static int getParameterCount(char[] methodSignature) throws IllegalArgume
 }
 
 /**
+ * Returns the number of parameter types in the given method signature.
+ *
+ * @param tempSignature the method signature
+ * @return the number of parameters
+ * @exception IllegalArgumentException if the signature is not syntactically
+ *   correct
+ * @since 2.0
+ */
+public static int getTemplateParameterCount(char[] tempSignature) throws IllegalArgumentException {
+	return getTemplateParameterCount(new String(tempSignature));
+}
+
+/**
  * Returns the kind of type signature encoded by the given string.
  * 
  * @param typeSignature the type signature string
@@ -1103,6 +1116,58 @@ public static int getParameterCount(String methodSignature) throws IllegalArgume
 			}
 			
 			functionTypeCount--;
+		}
+	});
+	return count[0];
+}
+
+/**
+ * Returns the number of parameter types in the given method signature.
+ *
+ * @param tempSignature the method signature
+ * @return the number of parameters
+ * @exception IllegalArgumentException if the signature is not syntactically
+ *   correct
+ */
+public static int getTemplateParameterCount(String tempSignature) throws IllegalArgumentException {
+	final int[] count = { 0 };	
+	SignatureProcessor.process(tempSignature, new SignatureRequestorAdapter() {
+		private int paramCount = 0;
+		private int stack;
+		
+		@Override
+		public void enterTemplateParameters() {
+			stack++;
+		}
+		
+		@Override
+		public void enterTemplateAliasParameter() {
+			paramCount++;
+		}
+		
+		@Override
+		public void enterTemplateTypeParameter() {
+			paramCount++;
+		}
+		
+		@Override
+		public void enterTemplateValueParameter() {
+			paramCount++;
+		}
+		
+		@Override
+		public void acceptTemplateTupleParameter() {
+			paramCount++;
+		}
+		
+		@Override
+		public void exitTemplateParameters() {
+			if (stack == 1) {
+				count[0] = paramCount;
+			}
+			
+			stack--;
+			paramCount = 0;
 		}
 	});
 	return count[0];

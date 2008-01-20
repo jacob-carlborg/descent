@@ -196,7 +196,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.enterTemplateAliasParameter();
 				
 				i++;
-				if (i < signature.length() && signature.charAt(i) == TEMPLATE_ALIAS_PARAMETER) {
+				if (i < signature.length() && signature.charAt(i) == TEMPLATE_ALIAS_PARAMETER2) {
 					i = process0(signature, i+1, requestor);
 				}
 				
@@ -206,7 +206,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.enterTemplateTypeParameter();
 				
 				i++;
-				if (i < signature.length() && signature.charAt(i) == TEMPLATE_TYPE_PARAMETER) {
+				if (i < signature.length() && signature.charAt(i) == TEMPLATE_TYPE_PARAMETER2) {
 					i = process0(signature, i+1, requestor);
 				}
 				

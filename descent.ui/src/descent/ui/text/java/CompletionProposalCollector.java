@@ -43,6 +43,7 @@ import descent.internal.ui.text.java.FieldProposalInfo;
 import descent.internal.ui.text.java.GetterSetterCompletionProposal;
 import descent.internal.ui.text.java.JavaCompletionProposal;
 import descent.internal.ui.text.java.JavaMethodCompletionProposal;
+import descent.internal.ui.text.java.JavaTemplateCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import descent.internal.ui.text.java.MethodCompletionProposal;
@@ -333,6 +334,9 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.KEYWORD:
 				return baseRelevance + 2;
 			case CompletionProposal.TYPE_REF:
+			case CompletionProposal.TEMPLATE_REF:
+			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
+			case CompletionProposal.TEMPLATED_FUNCTION_REF:
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 				return baseRelevance + 3;
 			case CompletionProposal.METHOD_REF:
@@ -394,6 +398,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.JAVADOC_METHOD_REF:
 				return createMethodReferenceProposal(proposal);
+			case CompletionProposal.TEMPLATE_REF:
+				return createTemplateReferenceProposal(proposal);
 			case CompletionProposal.METHOD_DECLARATION:
 				return createMethodDeclarationProposal(proposal);
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
@@ -737,6 +743,12 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	private IJavaCompletionProposal createMethodReferenceProposal(CompletionProposal methodProposal) {
 		LazyJavaCompletionProposal proposal= new JavaMethodCompletionProposal(methodProposal, getInvocationContext());
 		adaptLength(proposal, methodProposal);
+		return proposal;
+	}
+	
+	private IJavaCompletionProposal createTemplateReferenceProposal(CompletionProposal tempProposal) {
+		LazyJavaCompletionProposal proposal= new JavaTemplateCompletionProposal(tempProposal, getInvocationContext());
+		adaptLength(proposal, tempProposal);
 		return proposal;
 	}
 

@@ -653,7 +653,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @see #getKind()
 	 * @since 3.2
 	 */
-	public static final int TEMPLATE = 23;
+	public static final int TEMPLATE_REF = 23;
 	
 	/**
 	 * Completion is a templated aggregate.
@@ -661,7 +661,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @see #getKind()
 	 * @since 3.2
 	 */
-	public static final int TEMPLATED_AGGREGATE = 24;
+	public static final int TEMPLATED_AGGREGATE_REF = 24;
 	
 	/**
 	 * Completion is a templated function.
@@ -669,7 +669,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @see #getKind()
 	 * @since 3.2
 	 */
-	public static final int TEMPLATED_FUNCTION = 25;
+	public static final int TEMPLATED_FUNCTION_REF = 25;
 
 	/**
 	 * First valid completion kind.
@@ -683,7 +683,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = TEMPLATED_FUNCTION;
+	protected static final int LAST_KIND = TEMPLATED_FUNCTION_REF;
 	
 	/**
 	 * Kind of completion request.
@@ -789,6 +789,18 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * Indicates whether parameter names have been computed.
 	 */
 	private boolean parameterNamesComputed = false;
+	
+	/**
+	 * Parameter names (for template completions), or
+	 * <code>null</code> if none. Lazily computed.
+	 * Defaults to <code>null</code>.
+	 */
+	private char[][] templateParameterNames = null;
+	
+	/**
+	 * Indicates whether template parameter names have been computed.
+	 */
+	private boolean templateParameterNamesComputed = false;
 	
 	/**
 	 * Creates a basic completion proposal. All instance
@@ -1640,6 +1652,51 @@ public final class CompletionProposal extends InternalCompletionProposal {
 			}
 		}
 		return this.parameterNames;
+	}
+	
+	/**
+	 * Finds the template parameter names.
+	 * This information is relevant to template reference (and
+	 * template declaration proposals). Returns <code>null</code>
+	 * if not available or not relevant.
+	 * <p>
+	 * The client must not modify the array returned.
+	 * </p>
+	 * <p>
+	 * <b>Note that this is an expensive thing to compute, which may require
+	 * parsing Java source files, etc. Use sparingly.</b>
+	 * </p>
+	 * 
+	 * @param monitor the progress monitor, or <code>null</code> if none
+	 * @return the parameter names, or <code>null</code> if none
+	 * or not available or not relevant
+	 */
+	public char[][] findTemplateParameterNames(IProgressMonitor monitor) {
+		if (!this.templateParameterNamesComputed) {
+			this.templateParameterNamesComputed = true;
+			
+			try {
+				IJavaElement element = getJavaElement();
+				
+				ITypeParameter[] typeParameters;
+				
+				if (element instanceof IType) {
+					typeParameters = ((IType) element).getTypeParameters();
+				} else if (element instanceof IMethod) {
+					typeParameters = ((IMethod) element).getTypeParameters();
+				} else {
+					return CharOperation.NO_CHAR_CHAR;
+				}
+				
+				this.templateParameterNames = new char[typeParameters.length][];
+				for(int i = 0; i < typeParameters.length; i++) {
+					this.templateParameterNames[i] = typeParameters[i].getElementName().toCharArray();
+				}
+			} catch (JavaModelException e) {
+				this.templateParameterNames = new char[0][];	
+			}
+		}
+		return this.templateParameterNames;
 	}
 	
 	private IJavaElement getJavaElement() {

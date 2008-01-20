@@ -21,8 +21,10 @@ public interface ISignatureConstants {
 	char TEMPLATED_AGGREGATE = '<';
 	char TEMPLATED_FUNCTION = '>';
 	char TEMPLATE_ALIAS_PARAMETER = ']';
+	char TEMPLATE_ALIAS_PARAMETER2 = '"';
 	char TEMPLATE_TUPLE_PARAMETER = '%';
 	char TEMPLATE_TYPE_PARAMETER = '#';
+	char TEMPLATE_TYPE_PARAMETER2 = '+';
 	char TEMPLATE_VALUE_PARAMETER = ',';
 	char TEMPLATE_PARAMETERS_BREAK = '\'';
 	char DELEGATE = 'D';

@@ -1018,7 +1018,7 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
 					relevance += R_TEMPLATE;
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.TEMPLATE, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(CompletionProposal.TEMPLATE_REF, this.actualCompletionPosition);
 					proposal.setName(member.ident().ident);
 					proposal.setCompletion(member.ident().ident);
 					proposal.setSignature(member.getSignature().toCharArray());

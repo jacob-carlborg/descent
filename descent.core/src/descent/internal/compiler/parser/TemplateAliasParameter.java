@@ -202,7 +202,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public void appendSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER);
 		if (specAliasT != null) {
-			sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER);
+			sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER2);
 			specAliasT.appendSignature(sb);
 		}
 	}

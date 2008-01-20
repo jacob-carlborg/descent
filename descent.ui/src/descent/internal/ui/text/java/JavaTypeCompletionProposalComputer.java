@@ -1,18 +1,15 @@
 package descent.internal.ui.text.java;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.text.BadLocationException;
 
 import descent.core.CompletionProposal;
 import descent.core.IJavaProject;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.Signature;
-import descent.internal.ui.JavaPlugin;
 import descent.ui.text.java.CompletionProposalCollector;
 import descent.ui.text.java.ContentAssistInvocationContext;
 import descent.ui.text.java.IJavaCompletionProposal;
@@ -53,6 +50,9 @@ public class JavaTypeCompletionProposalComputer extends JavaCompletionProposalCo
 		collector.setIgnored(CompletionProposal.JAVADOC_VALUE_REF, true);
 		
 		collector.setIgnored(CompletionProposal.TYPE_REF, false);
+		collector.setIgnored(CompletionProposal.TEMPLATE_REF, false);
+		collector.setIgnored(CompletionProposal.TEMPLATED_AGGREGATE_REF, false);
+		collector.setIgnored(CompletionProposal.TEMPLATED_FUNCTION_REF, false);
 		return collector;
 	}
 	

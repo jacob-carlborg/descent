@@ -134,6 +134,14 @@ public class Signature_Test extends TestCase implements ISignatureConstants {
 		tca("int*", "Pi");
 	}
 	
+	public void testTemplateParameterCount1() {
+		tpc(0, String.valueOf(TEMPLATE) + "3Foo" + TEMPLATE_PARAMETERS_BREAK);
+	}
+	
+	public void testTemplateParameterCount2() {
+		tpc(1, String.valueOf(TEMPLATE) + "3Foo" + TEMPLATE_TUPLE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
+	}
+	
 	protected void tca(String expected, String signature) {
 		assertEquals(expected, new String(Signature.toCharArray(signature.toCharArray())));
 	}
@@ -149,6 +157,10 @@ public class Signature_Test extends TestCase implements ISignatureConstants {
 	
 	protected void pc(int count, String signature) {
 		assertEquals(count, Signature.getParameterCount(signature));
+	}
+	
+	protected void tpc(int count, String signature) {
+		assertEquals(count, Signature.getTemplateParameterCount(signature));
 	}
 	
 	protected void gpa(String[] expected, String signature) {

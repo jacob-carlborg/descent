@@ -39,6 +39,9 @@ public class JavaNoTypeCompletionProposalComputer extends JavaCompletionProposal
 		collector.setIgnored(CompletionProposal.JAVADOC_VALUE_REF, true);
 		
 		collector.setIgnored(CompletionProposal.TYPE_REF, true);
+		collector.setIgnored(CompletionProposal.TEMPLATE_REF, true);
+		collector.setIgnored(CompletionProposal.TEMPLATED_AGGREGATE_REF, true);
+		collector.setIgnored(CompletionProposal.TEMPLATED_FUNCTION_REF, true);
 		return collector;
 	}
 }

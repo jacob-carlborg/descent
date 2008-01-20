@@ -236,6 +236,9 @@ public class ParameterGuesser {
 			setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, true);
 			setIgnored(CompletionProposal.VARIABLE_DECLARATION, true);
 			setIgnored(CompletionProposal.TYPE_REF, true);
+			setIgnored(CompletionProposal.TEMPLATE_REF, true);
+			setIgnored(CompletionProposal.TEMPLATED_AGGREGATE_REF, true);
+			setIgnored(CompletionProposal.TEMPLATED_FUNCTION_REF, true);
 			setIgnored(CompletionProposal.ANNOTATION_ATTRIBUTE_REF, false);
 			setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, false);
 		}

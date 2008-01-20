@@ -5,15 +5,12 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
-import descent.core.JavaCore;
 import descent.core.Signature;
-
+import descent.internal.ui.JavaPlugin;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.java.CompletionProposalCollector;
 import descent.ui.text.java.IJavaCompletionProposal;
 import descent.ui.text.java.JavaContentAssistInvocationContext;
-
-import descent.internal.ui.JavaPlugin;
 
 /**
  * Bin to collect the proposal of the infrastructure on code assist in a java text.
@@ -38,6 +35,8 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 				return createMethodReferenceProposal(proposal);
 			case CompletionProposal.TYPE_REF:
 				return createTypeProposal(proposal);
+			case CompletionProposal.TEMPLATE_REF:
+				return createTemplateProposal(proposal);
 			default:
 				return super.createJavaCompletionProposal(proposal);
 		}
@@ -56,7 +55,24 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		if (compilationUnit != null && fIsGuessArguments)
 			proposal= new ParameterGuessingProposal(methodProposal, getInvocationContext());
 		else
-			proposal= new ExperimentalProposal(methodProposal, getInvocationContext());
+			proposal= new ExperimentalMethodProposal(methodProposal, getInvocationContext());
+		return proposal;
+	}
+	
+	private IJavaCompletionProposal createTemplateProposal(CompletionProposal tempProposal) {
+		String completion= String.valueOf(tempProposal.getCompletion());
+		
+		// super class' behavior if this is not a normal completion or has no
+		// parameters
+		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getTemplateParameterCount(tempProposal.getSignature()) == 0 || getContext().isInJavadoc())
+			return super.createJavaCompletionProposal(tempProposal);
+
+		LazyJavaCompletionProposal proposal;
+		ICompilationUnit compilationUnit= getCompilationUnit();
+		if (compilationUnit != null && fIsGuessArguments)
+			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
+		else
+			proposal= new ExperimentalTemplateProposal(tempProposal, getInvocationContext());
 		return proposal;
 	}
 
