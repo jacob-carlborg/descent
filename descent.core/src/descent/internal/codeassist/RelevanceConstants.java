@@ -12,7 +12,13 @@ public interface RelevanceConstants {
 	int R_EXACT_EXPECTED_TYPE = 30;
 	int R_INTERFACE = 20;
 	int R_CLASS = 20;
+	int R_STRUCT = 20;
+	int R_UNION = 20;
+	int R_TEMPLATE = 20;
 	int R_ENUM = 20;
+	int R_METHOD = 20;
+	int R_ALIAS = 20;
+	int R_TYPEDEF = 20;
 	int R_ANNOTATION = 20;
 	int R_EXCEPTION = 20;
 	int R_ENUM_CONSTANT = 20;

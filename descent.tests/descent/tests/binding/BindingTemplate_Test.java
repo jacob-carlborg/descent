@@ -8,7 +8,6 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.MixinDeclaration;
-import descent.core.dom.SimpleName;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateType;
 import descent.core.dom.TypeExpression;

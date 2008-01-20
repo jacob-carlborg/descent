@@ -6,6 +6,19 @@ public class DsymbolTable implements IDsymbolTable {
 	
 	private HashtableOfCharArrayAndObject map = new HashtableOfCharArrayAndObject();
 	
+	public DsymbolTable() {
+	}
+	
+	public DsymbolTable(IDsymbolTable table) {
+		for(char[] key : table.keys()) {
+			if (key == null) {
+				continue;
+			}
+			
+			insert(key, table.lookup(key));
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see descent.internal.compiler.parser.IDsymbolTable#insert(descent.internal.compiler.parser.IDsymbol)
 	 */

@@ -22,11 +22,14 @@ import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnDotIdExp;
+import descent.internal.codeassist.complete.CompletionOnExpStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
+import descent.internal.codeassist.complete.CompletionOnIdentifierExp;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnJavadocImpl;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionOnTypeDotIdExp;
+import descent.internal.codeassist.complete.CompletionOnTypeIdentifier;
 import descent.internal.codeassist.complete.CompletionOnVersionCondition;
 import descent.internal.codeassist.complete.CompletionParser;
 import descent.internal.codeassist.complete.ICompletionOnKeyword;
@@ -53,20 +56,28 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.IAggregateDeclaration;
+import descent.internal.compiler.parser.IAliasDeclaration;
 import descent.internal.compiler.parser.IClassDeclaration;
 import descent.internal.compiler.parser.IDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.IDsymbolTable;
 import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.IFuncDeclaration;
+import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IStructDeclaration;
+import descent.internal.compiler.parser.ITemplateDeclaration;
+import descent.internal.compiler.parser.ITypedefDeclaration;
 import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LabelStatement;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -85,6 +96,7 @@ import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.VersionCondition;
+import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.CancelableNameEnvironment;
@@ -131,6 +143,11 @@ public class CompletionEngine extends Engine
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	HashtableOfObject knownKeywords = new HashtableOfObject(10);
+	
+	int INCLUDE_TYPES = 1;
+	int INCLUDE_VARIABLES = 2;
+	int INCLUDE_FUNCTIONS = 4;
+	int INCLUDE_ALL = INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS;
 	
 	/**
 	 * The CompletionEngine is responsible for computing source completions.
@@ -245,6 +262,15 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnDotIdExp) {
 					CompletionOnDotIdExp node = (CompletionOnDotIdExp) assistNode;
 					completeDotIdExp(node);
+				} else if (assistNode instanceof CompletionOnTypeIdentifier) {
+					CompletionOnTypeIdentifier node = (CompletionOnTypeIdentifier) assistNode;
+					completeTypeIdentifier(node);
+				} else if (assistNode instanceof CompletionOnExpStatement) {
+					CompletionOnExpStatement node = (CompletionOnExpStatement) assistNode;
+					completeExpStatement(node);
+				} else if (assistNode instanceof CompletionOnIdentifierExp) {
+					CompletionOnIdentifierExp node = (CompletionOnIdentifierExp) assistNode;
+					completeIdentifierExp(node);
 				}
 			}
 			
@@ -278,7 +304,7 @@ public class CompletionEngine extends Engine
 			this.requestor.endReporting();
 		}
 	}
-
+	
 	private CompletionContext buildContext(CompletionParser parser) {
 		// TODO Descent completion context
 		CompletionContext context = new CompletionContext();
@@ -324,7 +350,7 @@ public class CompletionEngine extends Engine
 			this.endPosition++;
 		}
 		
-		if (CharOperation.prefixEquals(fqnBeforeCursor, sourceUnitFqn, false)) {
+		if (fqnBeforeCursor.length == 0 || CharOperation.camelCaseMatch(fqnBeforeCursor, sourceUnitFqn)) {
 			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
 			proposal.setCompletion(sourceUnitFqn);
 			proposal.setReplaceRange(this.startPosition, this.endPosition);
@@ -459,11 +485,16 @@ public class CompletionEngine extends Engine
 			char[] prefix = computePrefixAndSourceRange(ident);			
 			for(char[] label : labels) {
 				if (label != null) {
-					if (CharOperation.prefixEquals(prefix, label, false) && !CharOperation.equals(prefix, label)) {
+					if (prefix.length == 0 || CharOperation.camelCaseMatch(prefix, label) && !CharOperation.equals(prefix, label)) {
+						int relevance = computeBaseRelevance();
+						relevance += computeRelevanceForInterestingProposal();
+						relevance += computeRelevanceForCaseMatching(prefix, label);
+						
 						CompletionProposal proposal = this.createProposal(CompletionProposal.LABEL_REF, this.actualCompletionPosition);
 						proposal.setName(label);
 						proposal.setCompletion(label);
 						proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+						proposal.setRelevance(relevance);
 						CompletionEngine.this.requestor.accept(proposal);
 					}
 				}
@@ -492,11 +523,16 @@ public class CompletionEngine extends Engine
 				continue;
 			}
 			
-			if (CharOperation.prefixEquals(name, id, false) && !CharOperation.equals(name, id)) {
+			if (name.length == 0 || CharOperation.camelCaseMatch(name, id) && !CharOperation.equals(name, id)) {
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				relevance += computeRelevanceForCaseMatching(name, id);
+				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.VERSION_REF, this.actualCompletionPosition);
 				proposal.setName(id);
 				proposal.setCompletion(id);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				proposal.setRelevance(relevance);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
 		}
@@ -612,6 +648,112 @@ public class CompletionEngine extends Engine
 
 		completeExpression(node.e1, node.ident);
 	}
+	
+	private void completeTypeIdentifier(CompletionOnTypeIdentifier node) throws JavaModelException {
+		doSemantic(module);
+		
+		char[] name = computePrefixAndSourceRange(node.ident);
+		
+		Scope scope = node.scope;
+		completeScope(scope, name, getIncludesForScope(scope));
+	}
+	
+	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
+		doSemantic(module);
+		
+		char[] name = computePrefixAndSourceRange((IdentifierExp) node.exp);
+		
+		Scope scope = node.scope;
+		completeScope(scope, name, getIncludesForScope(scope));
+	}
+	
+	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
+		doSemantic(module);
+		
+		char[] name = computePrefixAndSourceRange(node);
+		
+		Scope scope = node.scope;
+		completeScope(scope, name, getIncludesForScope(scope));
+	}
+
+	private void completeScope(Scope scope, char[] name, int includes) {
+		if (scope.enclosing != null) {
+			completeScope(scope.enclosing, name, includes);
+		}
+		
+		IDsymbol sym = getScopeSymbol(scope);
+		if (sym ==  null) {
+			return;
+		}
+		
+		// If it's a with(...) { }
+		WithScopeSymbol wsc = sym.isWithScopeSymbol();
+		if (wsc != null) {
+			VarDeclaration var = wsc.withstate.wthis;
+			if (var != null) {
+				completeType(var.type, name, false /* include statics */);
+			}
+		} else {
+			IDsymbolTable table = scope.scopesym.symtab();
+			if (table == null) {
+				return;
+			}
+			
+			for(char[] key : table.keys()) {
+				if (key == null) {
+					continue;
+				}
+				
+				IDsymbol dsymbol = table.lookup(key);
+				if (dsymbol != null) {
+					suggestDsymbol(dsymbol, name, includes);
+				}
+			}
+		}
+	}
+	
+	private int getIncludesForScope(Scope scope) {
+		if (scope.scopesym == null) {
+			return INCLUDE_ALL;
+		}
+		
+		IDsymbol sym = getScopeSymbol(scope);
+		if (sym == null) {
+			return INCLUDE_ALL;
+		}
+		
+		if (sym instanceof IModule) {
+			return INCLUDE_TYPES;
+		} else if (sym instanceof IAggregateDeclaration ||
+				sym instanceof ITypedefDeclaration) {
+			return INCLUDE_TYPES;
+		} else if (sym instanceof IFuncDeclaration) {
+			return INCLUDE_TYPES | INCLUDE_FUNCTIONS | INCLUDE_VARIABLES;
+		} else {
+			return INCLUDE_ALL;
+		}
+	}
+	
+	private IDsymbol getScopeSymbol(Scope scope) {
+		if (scope.scopesym == null || scope.scopesym.members() == null
+				|| scope.scopesym.members().isEmpty()) {
+			return null;
+		} else {
+		 return scope.scopesym.members().get(0);
+		}
+	}
+
+	private void suggestDsymbol(IDsymbol dsymbol, char[] name, int includes) {
+		if (dsymbol instanceof Import) {
+			IModule mod = ((Import) dsymbol).mod;
+			if (mod != null) {
+				suggestMembers(mod.members(), name, false, new HashtableOfCharArrayAndObject(0), includes);
+			}
+		} else {
+			suggestMember(dsymbol, name, false, 0, new HashtableOfCharArrayAndObject(0), includes);
+		}
+	}
+
 
 	private void completeExpression(Expression e1, IdentifierExp ident) {
 		if (e1 instanceof VarExp) {
@@ -633,11 +775,15 @@ public class CompletionEngine extends Engine
 	}
 
 	private void completeType(Type type, IdentifierExp ident, boolean onlyStatics) {
+		char[] name = computePrefixAndSourceRange(ident);
+		completeType(type, name, onlyStatics);
+	}
+	
+	private void completeType(Type type, char[] name, boolean onlyStatics) {
 		if (type == null) {
 			return;
 		}
 		
-		char[] name = computePrefixAndSourceRange(ident);		
 		switch(type.getNodeType()) {
 		case ASTDmdNode.TYPE_BASIC:
 			completeTypeBasicProperties((TypeBasic) type, name);
@@ -712,7 +858,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Then suggest my members
-		suggestMembers(decl.members(), name, onlyStatics, funcSignatures);
+		suggestMembers(decl.members(), name, onlyStatics, funcSignatures, INCLUDE_ALL);
 	}
 	
 	private void completeTypeStruct(TypeStruct type, char[] name, boolean onlyStatics) {
@@ -722,7 +868,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Suggest members
-		suggestMembers(decl.members(), name, onlyStatics, null);
+		suggestMembers(decl.members(), name, onlyStatics, null, INCLUDE_ALL);
 		
 		// And also all type's properties
 		suggestProperties(name, allTypesProperties, R_DEFAULT);
@@ -746,25 +892,25 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void suggestMembers(Dsymbols members, char[] name, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
-		suggestMembers(members, name, onlyStatics, 0, funcSignatures);
+	private void suggestMembers(Dsymbols members, char[] name, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		suggestMembers(members, name, onlyStatics, 0, funcSignatures, includes);
 	}
 	
-	private void suggestMembers(Dsymbols members, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures) {
+	private void suggestMembers(Dsymbols members, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (members == null || members.isEmpty()) {
 			return;
 		}
 		
 		for(IDsymbol member : members) {
-			suggestMember(member, name, onlyStatics, flags, funcSignatures);
+			suggestMember(member, name, onlyStatics, flags, funcSignatures, includes);
 		}
 	}
 	
-	private void suggestMember(IDsymbol member, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures) {
+	private void suggestMember(IDsymbol member, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		// TODO Descent don't allow all of the attrib declarations to enter
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
-			suggestMembers(attrib.decl, name, onlyStatics, flags | attrib.getFlags(), funcSignatures);
+			suggestMembers(attrib.decl, name, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
 			return;
 		}
 		
@@ -783,64 +929,144 @@ public class CompletionEngine extends Engine
 		}
 		
 		// See if it's a variable
-		IVarDeclaration var = member.isVarDeclaration();
-		if (var != null) {
-			if (CharOperation.prefixEquals(name, var.ident().ident, false)) {
-				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
-				proposal.setName(var.ident().ident);
-				proposal.setCompletion(var.ident().ident);
-				proposal.setSignature(var.getSignature().toCharArray());
-				proposal.setFlags(flags | var.getFlags());
-				proposal.setRelevance(R_INTERESTING);
-				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-				CompletionEngine.this.requestor.accept(proposal);
+		if ((includes & INCLUDE_VARIABLES) != 0) {
+			IVarDeclaration var = member.isVarDeclaration();
+			if (var != null) {
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, var.ident().ident)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(name, var.ident().ident);
+					
+					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					proposal.setName(var.ident().ident);
+					proposal.setCompletion(var.ident().ident);
+					proposal.setSignature(var.getSignature().toCharArray());
+					proposal.setFlags(flags | var.getFlags());
+					proposal.setRelevance(relevance);
+					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					CompletionEngine.this.requestor.accept(proposal);
+				}
+				return;
 			}
-			return;
 		}
 		
-		// See if it's a function
-		IFuncDeclaration func = member.isFuncDeclaration();
-		if (func != null) {
-			// Don't suggest already suggested functions
-			char[] signature = func.getFunctionSignature().toCharArray();
-			if (funcSignatures != null && funcSignatures.containsKey(signature)) {
+		if ((includes & INCLUDE_TYPES) != 0) {
+			// See if it's an alias
+			IAliasDeclaration alias = member.isAliasDeclaration();
+			if (alias != null) {
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, alias.ident().ident)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(name, alias.ident().ident);
+					relevance += R_ALIAS;
+					
+					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					proposal.setName(alias.ident().ident);
+					proposal.setCompletion(alias.ident().ident);
+					proposal.setSignature(alias.getSignature().toCharArray());
+					proposal.setFlags(flags | alias.getFlags());
+					proposal.setRelevance(relevance);
+					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					CompletionEngine.this.requestor.accept(proposal);
+				}
 				return;
 			}
 			
-			if (CharOperation.prefixEquals(name, func.ident().ident, false)) {
-				CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
-				proposal.setName(func.ident().ident);
-				proposal.setCompletion((func.ident().toString() + "()").toCharArray());
-				proposal.setSignature(func.getSignature().toCharArray());
-				proposal.setFlags(flags | func.getFlags());
-				proposal.setRelevance(R_INTERESTING);
-				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-				CompletionEngine.this.requestor.accept(proposal);
-				
-				if (funcSignatures != null) {
-					funcSignatures.put(signature, proposal);
+			// See if it's a typedef
+			ITypedefDeclaration typedef = member.isTypedefDeclaration();
+			if (typedef != null) {
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, typedef.ident().ident)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(name, typedef.ident().ident);
+					relevance += R_TYPEDEF;
+					
+					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					proposal.setName(typedef.ident().ident);
+					proposal.setCompletion(typedef.ident().ident);
+					proposal.setSignature(typedef.getSignature().toCharArray());
+					proposal.setFlags(flags | typedef.getFlags());
+					proposal.setRelevance(relevance);
+					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					CompletionEngine.this.requestor.accept(proposal);
+				}
+				return;
+			}
+			
+			if (isType) {
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, member.ident().ident)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
+					relevance += R_CLASS;
+					
+					CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+					proposal.setName(member.ident().ident);
+					proposal.setCompletion(member.ident().ident);
+					proposal.setSignature(member.getSignature().toCharArray());
+					proposal.setFlags(flags | member.getFlags());
+					proposal.setRelevance(relevance);
+					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					CompletionEngine.this.requestor.accept(proposal);
 				}
 			}
-			return;
+			
+			if (member instanceof ITemplateDeclaration) {
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, member.ident().ident)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
+					relevance += R_TEMPLATE;
+					
+					CompletionProposal proposal = this.createProposal(CompletionProposal.TEMPLATE, this.actualCompletionPosition);
+					proposal.setName(member.ident().ident);
+					proposal.setCompletion(member.ident().ident);
+					proposal.setSignature(member.getSignature().toCharArray());
+					proposal.setFlags(flags | member.getFlags());
+					proposal.setRelevance(relevance);
+					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					CompletionEngine.this.requestor.accept(proposal);
+				}
+			}
 		}
 		
-		if (isType) {
-			if (CharOperation.prefixEquals(name, member.ident().ident, false)) {
-				CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
-				proposal.setName(member.ident().ident);
-				proposal.setCompletion(member.ident().ident);
-				proposal.setSignature(member.getSignature().toCharArray());
-				proposal.setFlags(flags | member.getFlags());
-				proposal.setRelevance(R_INTERESTING);
-				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-				CompletionEngine.this.requestor.accept(proposal);
+		if ((includes & INCLUDE_FUNCTIONS) != 0) {
+			// See if it's a function
+			IFuncDeclaration func = member.isFuncDeclaration();
+			if (func != null) {
+				// Don't suggest already suggested functions
+				char[] signature = func.getFunctionSignature().toCharArray();
+				if (funcSignatures != null && funcSignatures.containsKey(signature)) {
+					return;
+				}
+				
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, func.ident().ident)) {
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(name, func.ident().ident);
+					relevance += R_METHOD;
+					
+					CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
+					proposal.setName(func.ident().ident);
+					proposal.setCompletion((func.ident().toString() + "()").toCharArray());
+					proposal.setSignature(func.getSignature().toCharArray());
+					proposal.setFlags(flags | func.getFlags());
+					proposal.setRelevance(relevance);
+					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					CompletionEngine.this.requestor.accept(proposal);
+					
+					if (funcSignatures != null) {
+						funcSignatures.put(signature, proposal);
+					}
+				}
+				return;
 			}
 		}
 	}
 
 	private void suggestProperties(char[] name, char[][] properties, int relevance) {
 		for(char[] property : properties) {
-			if (CharOperation.prefixEquals(name, property, false)) {
+			if (name.length == 0 || CharOperation.camelCaseMatch(name, property)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(property);
 				proposal.setCompletion(property);
@@ -864,15 +1090,21 @@ public class CompletionEngine extends Engine
 				proposition = member.ident().ident;
 			}
 			if (!excludedNames.containsKey(proposition) && (
-					CharOperation.prefixEquals(name, proposition, false) || 
-					CharOperation.prefixEquals(name, member.ident().ident, false)
+					name.length == 0 || 
+					CharOperation.camelCaseMatch(name, proposition) || 
+					CharOperation.camelCaseMatch(name, member.ident().ident)
 					)) {
+				
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
+				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(member.ident().ident);
 				proposal.setCompletion(proposition);
 				proposal.setSignature(member.getSignature().toCharArray());
 				proposal.setFlags(member.getFlags());		
-				proposal.setRelevance(R_INTERESTING);
+				proposal.setRelevance(relevance);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
@@ -966,15 +1198,20 @@ public class CompletionEngine extends Engine
 		// Suggest sections that doesn't already exist
 		for(char[] name : ddocSections) {
 			if (!excludedNames.containsKey(name) && 
-					CharOperation.prefixEquals(prefix, name, false)) {
+					(prefix.length == 0 || CharOperation.camelCaseMatch(prefix, name))) {
 				char[] nameColon = new char[name.length + 1];
 				System.arraycopy(name, 0, nameColon, 0, name.length);
 				nameColon[nameColon.length - 1] = ':';
+				
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				relevance += computeRelevanceForCaseMatching(prefix, name);
 				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
 				proposal.setName(nameColon);
 				proposal.setCompletion(nameColon);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				proposal.setRelevance(relevance);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
 		}		
@@ -999,14 +1236,19 @@ public class CompletionEngine extends Engine
 			char[] name = new char[macroName.length() + 1];
 			System.arraycopy(macroName.toCharArray(), 0, name, 1, macroName.length());
 			name[0] = '$';
-			if (CharOperation.prefixEquals(prefix, name, false)) {
+			if (prefix.length == 0 || CharOperation.camelCaseMatch(prefix, name)) {
 				// TODO document this somewhere: the "name" is the
 				// macro replacement, while the completion is the
 				// name of the macro
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				relevance += computeRelevanceForCaseMatching(prefix, name);
+				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.DDOC_MACRO, this.actualCompletionPosition);
 				proposal.setName(macroValue.toCharArray());
 				proposal.setCompletion(name);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				proposal.setRelevance(relevance);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
 		}

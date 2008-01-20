@@ -615,11 +615,12 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	class DsymbolType extends Type {
 		
 		private final IDsymbol symbol;
-		private TemplateInstance tempinst;
+		private final TemplateInstance tempinst;
 
 		public DsymbolType(IDsymbol symbol, TemplateInstance tempinst) {
 			super(null, null);
 			this.symbol = symbol;
+			this.tempinst = tempinst;
 		}
 
 		@Override
@@ -1019,7 +1020,13 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				return;
 			}
 			
-			ITemplateDeclaration tempdecl = (ITemplateDeclaration) sym;
+			ITemplateDeclaration tempdecl;
+			
+//			if (dstype.tempinst == null) {
+				tempdecl = (ITemplateDeclaration) sym;
+//			} else {
+//				tempdecl = dstype.tempinst.tempdecl;
+//			}
 			
 			Objects tiargs = instanceStack.pop();
 			

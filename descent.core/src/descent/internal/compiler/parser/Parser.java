@@ -38,8 +38,8 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 public class Parser extends Lexer {
 	
 	// Tokens expected in several parse locations
-	private final static char[][] moduleExpectations =  { TOKmodule.charArrayValue };
-	private final static char[][] declDefsExpectations = toCharArray(new TOK[] { 
+	protected final static char[][] moduleExpectations =  { TOKmodule.charArrayValue };
+	protected final static char[][] declDefsExpectations = toCharArray(new TOK[] { 
 		TOKenum, TOKstruct, TOKunion, TOKclass, TOKinterface, TOKimport,
 		TOKtemplate, TOKmixin, TOKwchar, TOKdchar, /* TOKbit, */ TOKbool,
 		TOKchar, TOKint8, TOKuns8, TOKint16, TOKuns16, TOKint32,
@@ -53,34 +53,34 @@ public class Parser extends Lexer {
 		TOKexport, TOKalign, TOKpragma, TOKdebug, TOKversion
 		/*, TOKiftype */ 
 	});
-	private final static char[][] declDefs_Lstc2Expectations = toCharArray(new TOK[] {
+	protected final static char[][] declDefs_Lstc2Expectations = toCharArray(new TOK[] {
 		TOKconst, TOKinvariant, TOKfinal, TOKauto, TOKscope,
 		TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated
 	});
-	private final static char[][] afterStaticExpectations = { 
+	protected final static char[][] afterStaticExpectations = { 
 		TOKthis.charArrayValue, TOKassert.charArrayValue, TOKimport.charArrayValue
 	};
-	private final static char[][] elseExpectations = { TOKelse.charArrayValue };
-	private final static char[][] thisExpectations = { TOKthis.charArrayValue };
-	private final static char[][] aliasExpectations = { TOKalias.charArrayValue };
-	private final static char[][] typedefAliasExpectations = { TOKtypedef.charArrayValue, TOKalias.charArrayValue };
-	private final static char[][] typeofExpectations = { TOKtypeof.charArrayValue };
-	private final static char[][] classExpectations = { TOKclass.charArrayValue };
-	private final static char[][] voidExpectations = { TOKvoid.charArrayValue };
-	private final static char[][] traitsExpectations = { TOKtraits.charArrayValue };
-	private final static char[][] whileExpectations = { TOKwhile.charArrayValue };
-	private final static char[][] autoExpectations = { TOKauto.charArrayValue };
-	private final static char[][] catchExpectations = { TOKcatch.charArrayValue };
-	private final static char[][] finallyExpectations = { TOKfinally.charArrayValue };
-	private final static char[][] contractsExpectations = { TOKin.charArrayValue, TOKout.charArrayValue, TOKbody.charArrayValue };
-	private final static char[][] parameters1Expectations = toCharArray(new TOK[] { 
+	protected final static char[][] elseExpectations = { TOKelse.charArrayValue };
+	protected final static char[][] thisExpectations = { TOKthis.charArrayValue };
+	protected final static char[][] aliasExpectations = { TOKalias.charArrayValue };
+	protected final static char[][] typedefAliasExpectations = { TOKtypedef.charArrayValue, TOKalias.charArrayValue };
+	protected final static char[][] typeofExpectations = { TOKtypeof.charArrayValue };
+	protected final static char[][] classExpectations = { TOKclass.charArrayValue };
+	protected final static char[][] voidExpectations = { TOKvoid.charArrayValue };
+	protected final static char[][] traitsExpectations = { TOKtraits.charArrayValue };
+	protected final static char[][] whileExpectations = { TOKwhile.charArrayValue };
+	protected final static char[][] autoExpectations = { TOKauto.charArrayValue };
+	protected final static char[][] catchExpectations = { TOKcatch.charArrayValue };
+	protected final static char[][] finallyExpectations = { TOKfinally.charArrayValue };
+	protected final static char[][] contractsExpectations = { TOKin.charArrayValue, TOKout.charArrayValue, TOKbody.charArrayValue };
+	protected final static char[][] parameters1Expectations = toCharArray(new TOK[] { 
 		TOKin, TOKout, TOKinout, TOKref, TOKlazy
 	});
-	private final static char[][] parameters2Expectations = toCharArray(new TOK[] { 
+	protected final static char[][] parameters2Expectations = toCharArray(new TOK[] { 
 		TOKconst, TOKinvariant, TOKin, TOKout, TOKinout, TOKref,
 		TOKlazy, TOKscope, TOKfinal, TOKstatic
 	});
-	private final static char[][] basicTypeExpectations = toCharArray(new TOK[] { 
+	protected final static char[][] basicTypeExpectations = toCharArray(new TOK[] { 
 		TOKwchar, TOKdchar, /* TOKbit, */ TOKbool,
 		TOKchar, TOKint8, TOKuns8, TOKint16, TOKuns16, TOKint32,
 		TOKuns32, TOKint64, TOKuns64, TOKfloat32, TOKfloat64,
@@ -88,15 +88,15 @@ public class Parser extends Lexer {
 		TOKcomplex32, TOKcomplex64, TOKcomplex80, TOKvoid,
 		TOKtypeof, TOKconst, TOKinvariant
 	});
-	private final static char[][] delegateFunctionExpectations = toCharArray(new TOK[] { 
+	protected final static char[][] delegateFunctionExpectations = toCharArray(new TOK[] { 
 		TOKdelegate, TOKfunction
 	});
-	private final static char[][] modifierExpectations = toCharArray(new TOK[] { 
+	protected final static char[][] modifierExpectations = toCharArray(new TOK[] { 
 		TOKconst, TOKinvariant, TOKstatic, TOKfinal, TOKauto, TOKscope,
 		TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated,
 		TOKextern
 	});
-	private final static char[][] statementExpectations = toCharArray(new TOK[] { 
+	protected final static char[][] statementExpectations = toCharArray(new TOK[] { 
 		TOKtypeof, TOKassert, TOKthis, TOKsuper, TOKnull, TOKtrue,
 		TOKfalse, TOKcast, TOKnew, TOKdelete, TOKdelegate, TOKfunction,
 		TOKtypeid, TOKis, TOKstatic, TOKwchar, TOKdchar, /* TOKbit, */ TOKbool,
@@ -112,7 +112,7 @@ public class Parser extends Lexer {
 		TOKbreak, TOKcontinue, TOKgoto, TOKsynchronized, TOKwith,
 		TOKtry, TOKthrow, TOKvolatile, TOKasm
 	});
-	private final static char[][] primaryExpExpectations = toCharArray(new TOK[] { 
+	protected final static char[][] primaryExpExpectations = toCharArray(new TOK[] { 
 		TOKthis, TOKsuper, TOKnull, TOKtrue, TOKfalse, TOKvoid,
 		TOKint8, TOKuns8, TOKint16, TOKuns16, TOKint32, TOKuns32,
 		TOKint64, TOKuns64, TOKfloat32, TOKfloat64, TOKfloat80,
@@ -122,8 +122,8 @@ public class Parser extends Lexer {
 		TOKtypeid, TOKis, TOKassert, TOKmixin, TOKimport,
 		TOKfunction, TOKdelegate
 	});
-	private final static char[][] unaryExpExpectations = { TOKdelete.charArrayValue, TOKnew.charArrayValue, TOKcast.charArrayValue };
-	private final static char[][] traitsArgsExpectations = { 
+	protected final static char[][] unaryExpExpectations = { TOKdelete.charArrayValue, TOKnew.charArrayValue, TOKcast.charArrayValue };
+	protected final static char[][] traitsArgsExpectations = { 
 		Id.isArithmetic, Id.isFloating, Id.isIntegral, Id.isScalar, 
 		Id.isUnsigned, Id.isAssociativeArray, Id.isStaticArray,
 		Id.isAbstractClass, Id.isFinalClass, Id.isAbstractFunction, 
@@ -132,13 +132,13 @@ public class Parser extends Lexer {
 		Id.classInstanceSize, Id.allMembers, Id.derivedMembers,
 		Id.isSame, Id.compiles
 	};
-	private final static char[][] scopeArgsExpectations = { 
+	protected final static char[][] scopeArgsExpectations = { 
 		Id.exit, Id.failure, Id.success
 	};
-	private final static char[][] externArgsExpectations = { 
+	protected final static char[][] externArgsExpectations = { 
 		Id.C, Id.Cpp, Id.D, Id.Pascal, Id.System, Id.Windows
 	};
-	private final static char[][] pragmaArgsExpectations = { 
+	protected final static char[][] pragmaArgsExpectations = { 
 		Id.msg, Id.lib
 	};
 	
@@ -2419,7 +2419,7 @@ public class Parser extends Lexer {
 
 			}
 			// Lident:
-			tid = new TypeIdentifier(loc(), id);
+			tid = newTypeIdentifier(loc(), id);
 			// Lident2:
 			{
 			Type[] p_t = { t };
@@ -2438,7 +2438,7 @@ public class Parser extends Lexer {
 		case TOKdot:
 			id = new IdentifierExp(loc(), Id.empty);
 			// goto Lident;
-			tid = new TypeIdentifier(loc(), id);
+			tid = newTypeIdentifier(loc(), id);
 			{
 			Type[] p_t = { t };
 			IdentifierExp[] p_id = { id };
@@ -3021,7 +3021,7 @@ public class Parser extends Lexer {
 			}
 			if (ident == null) {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier");
-				return a;
+				//return a;
 			}
 
 			if (tok == TOKtypedef || tok == TOKalias) {
@@ -3465,7 +3465,7 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 
 		if (token.value != TOKlcurly) {
-			expect(statementExpectations);			
+			expect(statementExpectations);
 			if (apiLevel == D2) {
 				expect(traitsExpectations);
 			}
@@ -3500,7 +3500,7 @@ public class Parser extends Lexer {
 				// goto Lexp;
 				Expression exp = parseExpression();
 				check(TOKsemicolon);
-				s = new ExpStatement(loc(), exp);
+				s = newExpStatement(loc(), exp);
 				break;
 			}
 			// break;
@@ -3545,7 +3545,7 @@ public class Parser extends Lexer {
 		{
 			Expression exp = parseExpression();
 			check(TOKsemicolon);
-			s = new ExpStatement(loc(), exp);
+			s = newExpStatement(loc(), exp);
 			s.setSourceRange(exp.start, prevToken.ptr + prevToken.sourceLen - exp.start);
 			break;
 		}
@@ -3726,7 +3726,7 @@ public class Parser extends Lexer {
 			}
 			nextToken();
 			
-			s = new ExpStatement(loc(), null);
+			s = newExpStatement(loc(), null);
 			break;
 
 		case TOKdo: {
@@ -6999,7 +6999,7 @@ public class Parser extends Lexer {
 		}
 	}
 	
-	private IdentifierExp newIdentifierExp() {
+	protected IdentifierExp newIdentifierExp() {
 		return new IdentifierExp(loc(), token);
 	}
 	
@@ -7073,6 +7073,14 @@ public class Parser extends Lexer {
 	
 	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
 		return new DotIdExp(loc, e, id);
+	}
+	
+	protected TypeQualified newTypeIdentifier(Loc loc, IdentifierExp id) {
+		return new TypeIdentifier(loc, id);
+	}
+	
+	protected ExpStatement newExpStatement(Loc loc, Expression exp) {
+		return new ExpStatement(loc, exp);
 	}
 	
 	/**

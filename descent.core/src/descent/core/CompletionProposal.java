@@ -646,6 +646,30 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @since 3.2
 	 */
 	public static final int DDOC_MACRO = 22;
+	
+	/**
+	 * Completion is a template.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int TEMPLATE = 23;
+	
+	/**
+	 * Completion is a templated aggregate.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int TEMPLATED_AGGREGATE = 24;
+	
+	/**
+	 * Completion is a templated function.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int TEMPLATED_FUNCTION = 25;
 
 	/**
 	 * First valid completion kind.
@@ -659,7 +683,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = DDOC_MACRO;
+	protected static final int LAST_KIND = TEMPLATED_FUNCTION;
 	
 	/**
 	 * Kind of completion request.

@@ -1381,7 +1381,11 @@ public class ASTConverter {
 			}
 		}
 		if (a.sourceInit == null) {
-			b.setSourceRange(a.ident.start, a.ident.length);
+			if (a.ident == null) {
+				b.setSourceRange(a.type.start + a.type.length, 0);
+			} else {
+				b.setSourceRange(a.ident.start, a.ident.length);
+			}
 		} else {
 			descent.core.dom.Initializer init = (descent.core.dom.Initializer) convert(a.sourceInit); // SEMANTIC
 			if (init != null) {

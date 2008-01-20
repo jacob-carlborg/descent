@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DotIdExp;
 import descent.internal.compiler.parser.ErrorExp;
+import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
@@ -27,6 +28,7 @@ import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeDotIdExp;
+import descent.internal.compiler.parser.TypeQualified;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
@@ -36,7 +38,6 @@ public class CompletionParser extends Parser {
 	public int cursorLocation;
 	private ASTDmdNode assistNode;
 	private List<ICompletionOnKeyword> keywordCompletions;
-	private boolean includeExpectations = true;
 	
 	// Javadoc completion, and other ddocs found, in order to
 	// provide autocompletion for macros in other places
@@ -57,7 +58,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
-		if (includeExpectations && javadocCompletion == null) {
+		if (javadocCompletion == null) {
 			return keywordCompletions;
 		} else {
 			return Collections.EMPTY_LIST;
@@ -93,8 +94,6 @@ public class CompletionParser extends Parser {
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 		
 		if (start <= cursorLocation && cursorLocation <= end) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnModuleDeclaration(packages, module, cursorLocation);
 			return (ModuleDeclaration) assistNode;
 		} else {
@@ -108,8 +107,6 @@ public class CompletionParser extends Parser {
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 	
 		if (start <= cursorLocation && cursorLocation <= end) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnImport(loc, packages, module, aliasid, isstatic, cursorLocation);
 			return (Import) assistNode;
 		} else {
@@ -120,8 +117,6 @@ public class CompletionParser extends Parser {
 	@Override
 	protected Argument newArgument(int storageClass, Type at, IdentifierExp ai, Expression ae) {
 		if (inCompletion()) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnArgumentName(storageClass, at, ai, ae);
 			return (Argument) assistNode;
 		} else {
@@ -132,8 +127,6 @@ public class CompletionParser extends Parser {
 	@Override
 	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
 		if (inCompletion()) {		
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnGotoStatement(loc, ident);
 			return (GotoStatement) assistNode;
 		} else {			
@@ -144,8 +137,6 @@ public class CompletionParser extends Parser {
 	@Override
 	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
 		if (inCompletion()) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnBreakStatement(loc, ident);
 			return (BreakStatement) assistNode;
 		} else {			
@@ -156,8 +147,6 @@ public class CompletionParser extends Parser {
 	@Override
 	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
 		if (inCompletion()) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnContinueStatement(loc, ident);
 			return (ContinueStatement) assistNode;
 		} else {			
@@ -166,13 +155,42 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected void expect(char[][] toks) {
-		// If we are completing already a more important thing, exclude
-		// the keyword completion
-		if (!includeExpectations) {
-			return;
+	protected IdentifierExp newIdentifierExp() {
+		if (token.ptr + token.sourceLen == cursorLocation) {
+			assistNode = new CompletionOnIdentifierExp(loc, token);
+			return (IdentifierExp) assistNode;
+		} else {
+			return super.newIdentifierExp();	
 		}
-		
+	}
+	
+	@Override
+	protected TypeQualified newTypeIdentifier(Loc loc, IdentifierExp id) {
+		if (id.start + id.length == cursorLocation) {
+			assistNode = new CompletionOnTypeIdentifier(loc, id);
+			return (TypeQualified) assistNode;
+		} else {
+			return super.newTypeIdentifier(loc, id);
+		}
+	}
+	
+	@Override
+	protected ExpStatement newExpStatement(Loc loc, Expression exp) {
+		if (exp instanceof IdentifierExp) {
+			IdentifierExp id = (IdentifierExp) exp;			
+			if (id.start + id.length == cursorLocation) {
+				assistNode = new CompletionOnExpStatement(loc, exp);
+				return (ExpStatement) assistNode;
+			} else {
+				return super.newExpStatement(loc, exp);	
+			}
+		} else {
+			return super.newExpStatement(loc, exp);	
+		}
+	}
+	
+	@Override
+	protected void expect(char[][] toks) {
 		if (inCompletion()) {
 			if (keywordCompletions == null) {
 				keywordCompletions = new ArrayList<ICompletionOnKeyword>();
@@ -209,8 +227,6 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (inCompletion() && isId) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnVersionCondition(module, loc, level, id);
 			return (VersionCondition) assistNode;
 		} else {
@@ -234,8 +250,6 @@ public class CompletionParser extends Parser {
 		// exp.start is -1 if it's an error expression
 		if (caseEnd <= cursorLocation && cursorLocation <= expStart + expLength && exp != null && (exp instanceof ErrorExp || 
 				(exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP))) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnCaseStatement(loc, exp, statement);
 			return (CaseStatement) assistNode;
 		} else {
@@ -246,8 +260,6 @@ public class CompletionParser extends Parser {
 	@Override
 	protected TypeDotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
 		if (prevToken.ptr + prevToken.sourceLen == cursorLocation || token.ptr + token.sourceLen == cursorLocation) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnTypeDotIdExp(loc, t, exp);
 			return (TypeDotIdExp) assistNode;
 		} else {
@@ -258,8 +270,6 @@ public class CompletionParser extends Parser {
 	@Override
 	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
 		if (prevToken.ptr + prevToken.sourceLen == cursorLocation || token.ptr + token.sourceLen == cursorLocation) {
-			includeExpectations = false;
-			
 			assistNode = new CompletionOnDotIdExp(loc, e, id);
 			return (DotIdExp) assistNode;
 		} else {

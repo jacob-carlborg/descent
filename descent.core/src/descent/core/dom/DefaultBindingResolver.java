@@ -459,7 +459,12 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		bindingTables.bindingKeysToBindings.put(signature, binding);
 		bindingsToAstNodes.put(binding, expression);
-		return (IMethodBinding) binding;
+		
+		if (binding instanceof IMethodBinding) {
+			return (IMethodBinding) binding;
+		} else {
+			return null;
+		}
 	}
 
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {

@@ -698,6 +698,10 @@ public class SemanticMixin {
 				}
 				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
 			}
+			
+			if (aThis instanceof ITemplateDeclaration) {
+				appendTemplateParameters((ITemplateDeclaration) aThis, sb);
+			}
 		}
 	}
 	
@@ -712,11 +716,16 @@ public class SemanticMixin {
 		sb.append(tempinst.name.ident.length);
 		sb.append(tempinst.name.ident);
 		
+		appendTemplateParameters(tempdecl, sb);
+		
+		tempinst.appendSignature(sb);
+	}
+	
+	private static void appendTemplateParameters(ITemplateDeclaration tempdecl, StringBuilder sb) {
 		for(TemplateParameter param : tempdecl.parameters()) {
 			param.appendSignature(sb);
 		}
 		sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
-		tempinst.appendSignature(sb);
 	}
 	
 	/*
