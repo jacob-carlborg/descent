@@ -17,6 +17,7 @@ import descent.core.ddoc.DdocMacros;
 import descent.core.ddoc.DdocParser;
 import descent.core.ddoc.DdocSection;
 import descent.core.ddoc.DdocSection.Parameter;
+import descent.core.dom.BuiltinProperties;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
@@ -83,6 +84,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
+import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.TY;
@@ -119,12 +121,6 @@ public class CompletionEngine extends Engine
 	
 	public static boolean DEBUG = false;
 	public static boolean PERF = false;
-	
-	private static final char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
-	private static final char[][] integralTypesProperties = { Id.max, Id.min };
-	private static final char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
-	private static final char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };
-	private static final char[][] associativeArrayProperties = { Id.length, Id.keys, Id.values, Id.rehash };
 	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
 	private static final char[][] specialTokens = { Id.FILE, Id.LINE, Id.DATE, Id.TIME, Id.TIMESTAMP, Id.VERSION, Id.VENDOR };
 	
@@ -799,6 +795,9 @@ public class CompletionEngine extends Engine
 		} else if (e1 instanceof TypeExp) {
 			Type type = e1.type;
 			completeType(type, ident, true /* only statics */);
+		} else if (e1 instanceof StringExp) {
+			Type type = e1.type;
+			completeType(type, ident, true /* only statics */);
 		}
 	}
 
@@ -841,25 +840,25 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
 		
 		if (type.isintegral()) {
-			suggestProperties(name, integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+			suggestProperties(name, BuiltinProperties.integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
 		}
 		
 		if (type.isfloating()) {
-			suggestProperties(name, floatingPointTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+			suggestProperties(name, BuiltinProperties.floatingPointTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
 		}
 	}
 	
 	private void completeTypeStaticOrDynamicArrayProperties(char[] name) {
-		suggestProperties(name, allTypesProperties, R_DEFAULT);
-		suggestProperties(name, staticAndDynamicArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
+		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
+		suggestProperties(name, BuiltinProperties.staticAndDynamicArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	private void completeTypeAssociativeArrayProperties(char[] name) {
-		suggestProperties(name, allTypesProperties, R_DEFAULT);
-		suggestProperties(name, associativeArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
+		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
+		suggestProperties(name, BuiltinProperties.associativeArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	private void completeTypeClass(TypeClass type, char[] name, boolean onlyStatics) {
@@ -870,7 +869,7 @@ public class CompletionEngine extends Engine
 		completeTypeClassRecursively(type, name, onlyStatics, funcSignatures);
 		
 		// And also all type's properties
-		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, char[] name, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
@@ -899,7 +898,7 @@ public class CompletionEngine extends Engine
 		suggestMembers(decl.members(), name, onlyStatics, null, INCLUDE_ALL);
 		
 		// And also all type's properties
-		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
 	}
 	
 	private void completeTypeEnum(TypeEnum type, char[] name) {
@@ -912,11 +911,11 @@ public class CompletionEngine extends Engine
 		completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
 		
 		// And also all type's properties
-		suggestProperties(name, allTypesProperties, R_DEFAULT);
+		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
 		
 		// If the base type of the enum is integral, also suggest integer properties
 		if (enumDeclaration.memtype().isintegral()) {
-			suggestProperties(name, integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+			suggestProperties(name, BuiltinProperties.integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
 		}
 	}
 	

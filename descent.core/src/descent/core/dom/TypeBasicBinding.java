@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.TypeBasic;
 public class TypeBasicBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final TypeBasic type;
+	final TypeBasic type;
 	
 	public TypeBasicBinding(DefaultBindingResolver bindingResolver, TypeBasic type) {
 		super(type.deco);

@@ -2223,7 +2223,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 				this.buffer.append('"');
 			} else {
 				this.buffer.append('"');
-				this.buffer.append(node.string);
+				this.buffer.append(node.sourceString);
 				this.buffer.append('"');
 			}
 		}

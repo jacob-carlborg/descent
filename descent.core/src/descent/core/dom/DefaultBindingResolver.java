@@ -374,6 +374,19 @@ class DefaultBindingResolver extends BindingResolver {
 						!(parent instanceof TemplateType)) {
 					return resolveType((descent.core.dom.Type) parent);
 				}
+			
+				// See if it's a built-in property
+				if (name.isSimpleName() &&
+						parent instanceof descent.core.dom.DotIdentifierExpression && 
+						name.getLocationInParent().equals(DotIdentifierExpression.NAME_PROPERTY)) {
+					DotIdentifierExpression dotid = (DotIdentifierExpression) parent;
+					descent.core.dom.Expression exp = dotid.getExpression();
+					IBinding binding = exp.resolveTypeBinding();
+					if (binding != null && binding instanceof ITypeBinding) {
+						return resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
+					}
+				}
+			
 				if (name.isSimpleName()) {
 					ASTDmdNode old = newAstToOldAst.get(name);
 					if (!(old instanceof IdentifierExp)) {
@@ -388,6 +401,94 @@ class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 	
+	private IBinding resolveBuiltinProperty(ITypeBinding typeBinding, SimpleName name) {
+		String identifier = name.getIdentifier();
+		String signature = typeBinding.getKey() + ISignatureConstants.VARIABLE + identifier.length() + identifier;
+		
+		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+		if (binding == null) {
+			
+			char[] prop = identifier.toCharArray();
+			
+			if (CharOperation.equals(prop, Id.init)) {
+				binding = new BuiltinPropertyBinding(typeBinding, typeBinding, identifier, signature);
+			} else if (CharOperation.equals(prop, Id.__sizeof) ||
+					CharOperation.equals(prop, Id.alignof)) {
+				binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding("i"), identifier, signature);
+			} else if (CharOperation.equals(prop, Id.mangleof) || 
+					CharOperation.equals(prop, Id.stringof)) {
+				// TODO it's probably a static array, fix this
+				binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding("Aa"), identifier, signature);
+			} else if ((typeBinding.isPrimitive() || typeBinding.isEnum()) 
+					&& (CharOperation.equals(prop, Id.min)
+					|| CharOperation.equals(prop, Id.max))) {
+				if (typeBinding.isPrimitive()) {
+					TypeBasicBinding tbb = (TypeBasicBinding) typeBinding;
+					Type type = tbb.type;
+					if (type.isintegral() || type.isfloating()) {
+						binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding(type.deco), identifier, signature);
+					}
+				} else if (typeBinding.isEnum()) {
+					binding = new BuiltinPropertyBinding(typeBinding, typeBinding, identifier, signature);
+				}
+			} else if (typeBinding.isPrimitive() && 
+					((TypeBasicBinding) typeBinding).type.isfloating() && 
+					(CharOperation.equals(prop, Id.infinity) || 
+					CharOperation.equals(prop, Id.nan) ||
+					CharOperation.equals(prop, Id.epsilon))) {
+				TypeBasicBinding tbb = (TypeBasicBinding) typeBinding;
+				Type type = tbb.type;
+				binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding(type.deco), identifier, signature);
+			} else if (typeBinding.isPrimitive() && 
+					((TypeBasicBinding) typeBinding).type.isfloating() && 
+					(CharOperation.equals(prop, Id.dig) || 
+					CharOperation.equals(prop, Id.mant_dig) ||
+					CharOperation.equals(prop, Id.max_10_exp) ||
+					CharOperation.equals(prop, Id.max_exp) ||
+					CharOperation.equals(prop, Id.min_10_exp) ||
+					CharOperation.equals(prop, Id.min_exp))) {
+				binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding("i"), identifier, signature);
+			} else if (typeBinding.isStaticArray() || typeBinding.isDynamicArray()) {
+				if (CharOperation.equals(prop, Id.dup) ||
+						CharOperation.equals(prop, Id.sort) ||
+						CharOperation.equals(prop, Id.reverse)) {
+					binding = new BuiltinPropertyBinding(typeBinding, typeBinding, identifier, signature);
+				} else if (CharOperation.equals(prop, Id.length) ||
+						CharOperation.equals(prop, Id.ptr)) {
+					binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding("i"), identifier, signature);
+				}
+			} else if (typeBinding.isAssociativeArray()) {
+				if (CharOperation.equals(prop, Id.length)) {
+					binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) resolveBinding("i"), identifier, signature);
+				} else if (CharOperation.equals(prop, Id.rehash)) {
+					binding = new BuiltinPropertyBinding(typeBinding, typeBinding, identifier, signature);
+				} else if (CharOperation.equals(prop, Id.keys)) {
+					String otherSignature = "A" + typeBinding.getKeyType().getKey();
+					IBinding otherBinding = resolveBinding(otherSignature);
+					if (otherBinding == null) {
+						otherBinding = new TypeDArrayBinding(this, typeBinding.getKeyType(), otherSignature);
+					}
+					
+					if (otherBinding instanceof ITypeBinding) {
+						binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) otherBinding, identifier, signature);
+					}
+				} else if (CharOperation.equals(prop, Id.values)) {
+					String otherSignature = "A" + typeBinding.getValueType().getKey();
+					IBinding otherBinding = resolveBinding(otherSignature);
+					if (otherBinding == null) {
+						otherBinding = new TypeDArrayBinding(this, typeBinding.getValueType(), otherSignature);
+					}
+					
+					if (otherBinding instanceof ITypeBinding) {
+						binding = new BuiltinPropertyBinding(typeBinding, (ITypeBinding) otherBinding, identifier, signature);
+					}
+				}
+			}
+		}
+		
+		return binding;
+	}
+
 	@Override
 	public IMethodBinding resolveNewExpression(NewExpression expression) {
 		ASTDmdNode old = newAstToOldAst.get(expression);
@@ -404,7 +505,7 @@ class DefaultBindingResolver extends BindingResolver {
 		String signature = ctor.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
+		if (binding != null && binding instanceof IMethodBinding) {
 			return (IMethodBinding) binding;
 		}
 		
@@ -414,9 +515,13 @@ class DefaultBindingResolver extends BindingResolver {
 			binding = resolveBinding(signature);
 		}
 		
-		bindingTables.bindingKeysToBindings.put(signature, binding);
-		bindingsToAstNodes.put(binding, expression);
-		return (IMethodBinding) binding;
+		if (binding instanceof IMethodBinding) {
+			bindingTables.bindingKeysToBindings.put(signature, binding);
+			bindingsToAstNodes.put(binding, expression);
+			return (IMethodBinding) binding;
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -513,14 +618,11 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		switch(resolved.getNodeType()) {
 		case ASTDmdNode.VAR_EXP:
-			resolveVarExp((VarExp) resolved);
-			break;
+			return resolveVarExp((VarExp) resolved);
 		case ASTDmdNode.DOT_VAR_EXP:
-			resolveDotVarExp((DotVarExp) resolved);
-			break;
+			return resolveDotVarExp((DotVarExp) resolved);
 		case ASTDmdNode.TYPE_EXP:
-			resolveType(node, ((TypeExp) resolved).type);
-			break;
+			return resolveType(node, ((TypeExp) resolved).type);
 		}
 		
 		return null;
@@ -621,7 +723,7 @@ class DefaultBindingResolver extends BindingResolver {
 		String signature = var.getSignature();
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
+		if (binding != null && binding instanceof IVariableBinding) {
 			return (IVariableBinding) binding;
 		}
 		
@@ -1053,11 +1155,20 @@ class DefaultBindingResolver extends BindingResolver {
 		public void acceptDynamicArray(String signature) {
 			Stack<IBinding> stack = this.stack.peek();
 			
+			if (stack.isEmpty()) {
+				return;
+			}
+			
+			IBinding prev = stack.pop();
+			if (!(prev instanceof ITypeBinding)) {
+				return;
+			}
+			
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
 				binding = new TypeDArrayBinding(
 						DefaultBindingResolver.this,
-						(ITypeBinding) stack.pop(),
+						(ITypeBinding) prev,
 						signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}

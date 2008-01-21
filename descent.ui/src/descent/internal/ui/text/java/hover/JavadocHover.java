@@ -20,8 +20,10 @@ import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IMember;
+import descent.core.IPackageDeclaration;
 import descent.core.JavaModelException;
 import descent.internal.ui.text.HTMLPrinter;
 import descent.internal.ui.text.HTMLTextPresenter;
@@ -166,6 +168,22 @@ public class JavadocHover extends AbstractJavaEditorTextHover implements IInform
 			} else if (curr.getElementType() == IJavaElement.LOCAL_VARIABLE || curr.getElementType() == IJavaElement.TYPE_PARAMETER) {
 				HTMLPrinter.addSmallHeader(buffer, getInfoText(curr));
 				hasContents= true;
+			} else if (curr instanceof ICompilationUnit) {
+				ICompilationUnit cu = (ICompilationUnit) curr;
+				try {
+					IPackageDeclaration[] pds = cu.getPackageDeclarations();
+					if (pds.length > 0) {
+						IPackageDeclaration member= pds[0];
+						HTMLPrinter.addSmallHeader(buffer, getInfoText(cu));
+						Reader reader= JavadocContentAccess.getHTMLContentReader(member, true, true);
+						if (reader != null) {
+							HTMLPrinter.addParagraph(buffer, reader);
+						}
+						hasContents= true;
+					}
+				} catch (JavaModelException ex) {
+					return null;
+				}
 			}
 		}
 		
