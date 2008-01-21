@@ -42,18 +42,59 @@ public final class FluteTestResult
 		/** The name of the function. */
 		public final String function;
 		
-		/** The file the function is defined in. */
+		/** The file the function is defined in, or null if only the
+		 *  address was found. */
 		public final String file;
 		
-		/** The line the function is defined on. */
+		/** The line the function is defined on, or -1 if only the
+		 *  address was found. */
 		public final int line;
 		
-		public StackTraceElement(String function, String file,
-				int line)
+		/** The address of the executing code or -1 if the file/line was
+		 *  found. */
+		public final long addr;
+		
+		private StackTraceElement(String function, String file,
+				int line, long addr)
 		{
 			this.function = function;
 			this.file = file;
 			this.line = line;
+			this.addr = addr;
+		}
+		
+		public static StackTraceElement line(String function, String file,
+				int line)
+		{
+			return new StackTraceElement(
+					function, // function
+					file,     // file
+					line,     // line
+					-1);      // addr
+		}
+		
+		public static StackTraceElement address(String function, long addr)
+		{
+			return new StackTraceElement(
+					function, // function
+					null,     // file
+					-1,       // line
+					addr);    // addr
+		}
+		
+		public String toString()
+		{
+			StringBuffer buf = new StringBuffer();
+			
+			buf.append(function);
+			buf.append(" (");
+			if(addr >= 0)
+				buf.append(String.format("0x%1$x", addr));
+			else
+				buf.append(file + ":" + line);
+			buf.append(")");
+			
+			return buf.toString();
 		}
 	}
 	
@@ -117,8 +158,7 @@ public final class FluteTestResult
 		{
 			buf.append("stackTrace: [\n");
 			for(StackTraceElement ste: stackTrace)
-				buf.append("   " + ste.function + "(" + ste.file + ":" + 
-						ste.line + ")\n");
+				buf.append("   " + ste.toString() + "\n");
 			buf.append("]");
 		}
 		else

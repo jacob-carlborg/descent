@@ -24,7 +24,7 @@ class RunningOneTest implements IState
 	private static final Pattern ERROR_CONDITION = Pattern.compile(
 			"Exception ([^\\:]*): (.*)");
 	private static final Pattern STACK_TRACE_ELEMENT = Pattern.compile(
-			"\\<\\<ST\\>\\> (\\S*) \\(([^\\:]*):(\\d*)\\)");
+			"\\<\\<ST\\>\\> (.*) \\((?:(?:([^\\:]*)\\:(.*))|(?:0x(\\w*)))\\)");
 	
 	
 	private final FluteApplicationInstance cli;
@@ -88,18 +88,35 @@ class RunningOneTest implements IState
 			String function = m.group(1);
 			String file = m.group(2);
 			String lineStr = m.group(3);
+			String addrStr = m.group(4);
 			
-			int line;
-			try
+			if(file != null)
 			{
-				line = null != lineStr ? Integer.valueOf(lineStr) : -1;
+				int line;
+				try
+				{
+					line = null != lineStr ? Integer.parseInt(lineStr) : -1;
+				}
+				catch(NumberFormatException e)
+				{
+					line = -1;
+				}
+				stackTrace.add(StackTraceElement.line(function, file, line));
 			}
-			catch(NumberFormatException e)
+			else
 			{
-				line = -1;
+				long addr;
+				try
+				{
+					addr = null != addrStr ? Long.parseLong(addrStr, 16) : -1;
+				}
+				catch(NumberFormatException e)
+				{
+					addr = -1;
+				}
+				stackTrace.add(StackTraceElement.address(function, addr));
 			}
 			
-			stackTrace.add(new StackTraceElement(function, file, line));
 			return;
 		}
 		
