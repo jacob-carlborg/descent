@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 
 import static descent.internal.unittest.flute.FluteTestResult.ResultType;
 import static descent.internal.unittest.flute.FluteTestResult.StackTraceElement;
-import static descent.internal.unittest.flute.FluteTestResult.ResultType.PASSED;
-import static descent.internal.unittest.flute.FluteTestResult.ResultType.FAILED;
-import static descent.internal.unittest.flute.FluteTestResult.ResultType.ERROR;
+import static descent.unittest.ITestResult.ResultType.PASSED;
+import static descent.unittest.ITestResult.ResultType.FAILED;
+import static descent.unittest.ITestResult.ResultType.ERROR;
 
 
 class RunningOneTest implements IState

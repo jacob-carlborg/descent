@@ -13,7 +13,7 @@
 package descent.internal.unittest.launcher;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -40,14 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
@@ -73,24 +66,15 @@ import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 
-//import descent.internal.corext.util.JavaModelUtil;
-
-import descent.launching.IJavaLaunchConfigurationConstants;
-
 import descent.ui.JavaElementLabelProvider;
 import descent.ui.JavaElementSorter;
 import descent.ui.StandardJavaElementContentProvider;
-
-//import descent.internal.ui.wizards.TypedElementSelectionValidator;
-//import descent.internal.ui.wizards.TypedViewerFilter;
 
 import descent.internal.ui.wizards.TypedElementSelectionValidator;
 import descent.internal.ui.wizards.TypedViewerFilter;
 import descent.internal.unittest.Messages;
 import descent.internal.unittest.ui.JUnitMessages;
-import descent.internal.unittest.util.TestSearchEngine;
 import descent.internal.unittest.DescentUnittestPlugin;
-//import descent.internal.unittest.util.TestSearchEngine;
 
 /**
  * This tab appears in the LaunchConfigurationDialog for launch configurations that
@@ -363,8 +347,10 @@ public class JUnitMainTab extends JUnitLaunchConfigurationTab {
 			radioSetting[0]= fTestRadioButton.getSelection();
 			radioSetting[1]= fTestContainerRadioButton.getSelection();
 			
-			modules = TestSearchEngine.findTests(getLaunchConfigurationDialog(),
-					new Object[] {javaProject}); 
+			Map<ICompilationUnit, String[]> tests = DUnittestFinder.
+					findTests(getLaunchConfigurationDialog(),
+					new Object[] {javaProject});
+			modules = tests.keySet().toArray(new ICompilationUnit[tests.size()]);
 		} catch (InterruptedException e) {
 			setErrorMessage(e.getMessage());
 			return;

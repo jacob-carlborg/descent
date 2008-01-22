@@ -36,7 +36,7 @@ import descent.core.JavaCore;
 
 import descent.launching.IJavaLaunchConfigurationConstants;
 
-import descent.internal.unittest.util.LayoutUtil;
+import descent.internal.unittest.ui.LayoutUtil;
 
 /**
  * Common function for Java launch configuration tabs.

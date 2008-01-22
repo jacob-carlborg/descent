@@ -192,7 +192,7 @@ public class RemoteTestRunnerClient implements Runnable
 		System.out.println("-------------");
 		
 		int statusCode;
-		switch(result.resultType)
+		switch(result.getResultType())
 		{
 			case PASSED:
 				statusCode = ITestRunListener.STATUS_OK;
@@ -352,25 +352,6 @@ public class RemoteTestRunnerClient implements Runnable
 					listener.testReran(testId, tests.get(testId), status, trace);
 				}
 			});
-		}
-	}
-	
-	// TODO where should this be called?
-	private void notifyTestTreeEntry(final String treeEntry)
-	{
-		for(final ITestRunListener listener : listeners)
-		{
-			if(listener instanceof ITestRunListener2)
-			{
-				SafeRunner.run(new ListenerSafeRunnable()
-				{
-					public void run()
-					{
-						((ITestRunListener2) listener).
-							testTreeEntry(treeEntry);
-					}
-				});
-			}
 		}
 	}
 	

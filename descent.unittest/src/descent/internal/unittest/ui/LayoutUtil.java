@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package descent.internal.unittest.util;
+package descent.internal.unittest.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

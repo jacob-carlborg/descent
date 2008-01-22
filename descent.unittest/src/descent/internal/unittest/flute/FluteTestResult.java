@@ -1,57 +1,22 @@
 package descent.internal.unittest.flute;
 
-public final class FluteTestResult
+import descent.unittest.IStackTraceElement;
+import descent.unittest.ITestResult;
+
+public final class FluteTestResult implements ITestResult
 {
-	// The simplicity of this stuff being public outweighs the benefits of
-	// encapsulation here, IMO.
+	private final ResultType resultType;
+	private final String file;
+	private final int line;
+	private final String message;
+	private final String exceptionType;
+	private final StackTraceElement[] stackTrace;
 	
-	/** The result type */
-	public final ResultType resultType;
-	
-	/** The file in which the exception was thrown for a FAILED result,
-	 *  or null for a PASSED/ERROR result. */
-	public final String file;
-	
-	/** The line on which the exception was thrown for a FAILED result,
-	 *  or <b>-1</b> for a PASSED/ERROR result. */
-	public final int line;
-	
-	/** The exception message. Will always be null for a PASSED result, 
-	 *  and may be null if there was no error message specified for a 
-	 *  FAILED or ERROR result. */
-	public final String message;
-	
-	/** The class of the exception for an ERROR result, or null for a 
-	 *  PASSED/FAILED result. */
-	public final String exceptionType;
-	
-	/** The stack trace of the thrown exception. Will always be null for
-	 *  a PASSED result, and may be null for a FAILED/ERROR result if the
-	 *  exception wasn't traced. */
-	public final StackTraceElement[] stackTrace;
-	
-	public static enum ResultType
+	public static final class StackTraceElement implements IStackTraceElement
 	{
-		PASSED,
-		FAILED,
-		ERROR
-	}
-	
-	public static final class StackTraceElement
-	{
-		/** The name of the function. */
 		public final String function;
-		
-		/** The file the function is defined in, or null if only the
-		 *  address was found. */
 		public final String file;
-		
-		/** The line the function is defined on, or -1 if only the
-		 *  address was found. */
 		public final int line;
-		
-		/** The address of the executing code or -1 if the file/line was
-		 *  found. */
 		public final long addr;
 		
 		private StackTraceElement(String function, String file,
@@ -95,6 +60,31 @@ public final class FluteTestResult
 			buf.append(")");
 			
 			return buf.toString();
+		}
+
+		public final String getFunction()
+		{
+			return function;
+		}
+
+		public final String getFile()
+		{
+			return file;
+		}
+
+		public final int getLine()
+		{
+			return line;
+		}
+
+		public final long getAddress()
+		{
+			return addr;
+		}
+
+		public boolean lineInfoFound()
+		{
+			return addr < 0;
 		}
 	}
 	
@@ -165,5 +155,35 @@ public final class FluteTestResult
 			buf.append("stackTrace: null");
 		
 		return buf.toString();
+	}
+
+	public final ResultType getResultType()
+	{
+		return resultType;
+	}
+
+	public final String getFile()
+	{
+		return file;
+	}
+
+	public final int getLine()
+	{
+		return line;
+	}
+
+	public final String getMessage()
+	{
+		return message;
+	}
+
+	public final String getExceptionType()
+	{
+		return exceptionType;
+	}
+
+	public final StackTraceElement[] getStackTrace()
+	{
+		return stackTrace;
 	}
 }

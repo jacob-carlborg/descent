@@ -312,7 +312,7 @@ public class TestRunSession {
 	 * {@link RemoteTestRunnerClient} and translates them into high-level model
 	 * events (broadcasted to {@link ITestSessionListener}s).
 	 */
-	private class TestSessionNotifier implements ITestRunListener, ITestRunListener2 {
+	private class TestSessionNotifier implements ITestRunListener {
 		
 		public void testRunStarted(int testCount) {
 			fIncompleteTestSuites= new ArrayList();
