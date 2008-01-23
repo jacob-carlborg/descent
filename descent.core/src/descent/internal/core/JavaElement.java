@@ -388,6 +388,10 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 				if (aChild instanceof SourceRefElement) {
 					SourceRefElement child = (SourceRefElement) children[i];
 					ISourceRange range = child.getSourceRange();
+					if (range == null) {
+						continue;
+					}
+					
 					int start = range.getOffset();
 					int end = start + range.getLength();
 					if (start <= position && position <= end) {
@@ -472,6 +476,20 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 		Object elementInfo = JavaModelManager.getJavaModelManager().getInfo(this);
 		if (elementInfo instanceof JavaElementInfo) {
 			return ((JavaElementInfo)elementInfo).getChildren().length > 0;
+		} else {
+			return true;
+		}
+	}
+	public boolean hasNonCompileTimeGeneratedChildren() throws JavaModelException {
+		Object elementInfo = JavaModelManager.getJavaModelManager().getInfo(this);
+		if (elementInfo instanceof JavaElementInfo) {
+			IJavaElement[] children = ((JavaElementInfo)elementInfo).getChildren();
+			for (IJavaElement child : children) {
+				if (!child.isCompileTimeGenerated()) {
+					return true;
+				}
+			}
+			return false;
 		} else {
 			return true;
 		}

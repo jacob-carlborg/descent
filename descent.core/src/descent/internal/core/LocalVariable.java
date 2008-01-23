@@ -203,4 +203,8 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 		}
 		toStringName(buffer);
 	}
+	public boolean isCompileTimeGenerated() throws JavaModelException {
+		// TODO Descent Auto-generated method stub
+		return false;
+	}
 }

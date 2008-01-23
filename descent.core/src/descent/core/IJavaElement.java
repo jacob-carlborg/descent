@@ -367,4 +367,13 @@ public interface IJavaElement extends IAdaptable {
 	 *		exception occurs while accessing its corresponding resource
 	 */// TODO JDT (philippe) predicate shouldn't throw an exception
 	boolean isStructureKnown() throws JavaModelException;
+	
+	/**
+	 * Returns whether this element was generated at compile-time, in constrast
+	 * with an element that is declared in the source code.
+	 * @return <code>true</code> if this element was generated at compile-time,
+	 * <code>false</code> otherwise
+	 */
+	boolean isCompileTimeGenerated() throws JavaModelException;
+	
 }

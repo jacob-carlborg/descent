@@ -239,7 +239,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 		sc.offset = 8;
 
 		for (int j = 0; j < size(members); j++) {
-			members.get(i).semantic(sc, context);
+			members.get(j).semantic(sc, context);
 		}
 		sc.pop();
 	}

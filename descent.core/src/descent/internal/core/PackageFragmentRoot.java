@@ -15,13 +15,7 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import org.eclipse.core.resources.*;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.*;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import descent.core.*;
 import descent.core.compiler.CharOperation;
 import descent.internal.core.util.MementoTokenizer;
@@ -848,6 +842,13 @@ protected void verifyAttachSource(IPath sourcePath) throws JavaModelException {
 	} else if (sourcePath != null && !sourcePath.isAbsolute()) {
 		throw new JavaModelException(new JavaModelStatus(IJavaModelStatusConstants.RELATIVE_PATH, sourcePath));
 	}
+}
+/*
+ * (non-Javadoc)
+ * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ */
+public boolean isCompileTimeGenerated() throws JavaModelException {
+	return false;
 }
 
 }

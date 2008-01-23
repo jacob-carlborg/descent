@@ -449,6 +449,13 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 	}
 }
 /*
+ * (non-Javadoc)
+ * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ */
+public boolean isCompileTimeGenerated() throws JavaModelException {
+	return false;
+}
+/*
  * @see IJavaElement#getAttachedJavadoc(IProgressMonitor)
  */
 /* TODO JDT attached javadoc

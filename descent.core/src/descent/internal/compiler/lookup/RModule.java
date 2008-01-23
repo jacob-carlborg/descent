@@ -1,9 +1,7 @@
 package descent.internal.compiler.lookup;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
@@ -20,14 +18,15 @@ import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.core.util.Util;
+import static descent.internal.compiler.parser.PROT.PROTprivate;
 
 public class RModule extends RPackage implements IModule {
 
@@ -36,14 +35,23 @@ public class RModule extends RPackage implements IModule {
 	private boolean mdCalculated;
 	private String signature;
 	private Scope scope;
-	
-	/*
-	 * The list of modules publicly imported by this module.
-	 */
-	private List<IModule> publiclyImportedModules;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
+	}
+	
+	@Override
+	public void semantic(Scope scope, SemanticContext context) {
+		// Note that modules get their own scope, from scratch.
+		// This is so regardless of where in the syntax a module
+		// gets imported, it is unaffected by context.
+		Scope sc = Scope.createGlobal(this, context);
+		
+		try {
+			loadPubliclyImportedModules((IParent) element, sc);
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
 	}
 	
 	public void addDeferredSemantic(Dsymbol symbol, SemanticContext context) {
@@ -125,57 +133,36 @@ public class RModule extends RPackage implements IModule {
 		
 	}
 	
-	@Override
-	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		IDsymbol sym = super.search(loc, ident, flags, context);
-		if (sym != null) {
-			return sym;
-		}
-		
-		if (publiclyImportedModules == null) {
-			publiclyImportedModules = new ArrayList<IModule>();
-			try {
-				searchInPublicImports((IParent) element);
-			} catch (JavaModelException e) {
-				Util.log(e);
-			}
-		}
-		
-		for(IModule module : publiclyImportedModules) {
-			sym = module.search(loc, ident, flags, context);
-			if (sym != null) {
-				return sym;
-			}
-		}
-		
-		return null;
-	}
-	
-	private void searchInPublicImports(IParent parent) throws JavaModelException {
-		for(IJavaElement child : parent.getChildren()) {
+	private void loadPubliclyImportedModules(IParent element, Scope sc) throws JavaModelException {
+		for(IJavaElement child : element.getChildren()) {
 			if (child.getElementType() == IJavaElement.IMPORT_CONTAINER) {
-				searchInPublicImports((IParent) child);
+				loadPubliclyImportedModules((IParent) child, sc);
 			} else if (child.getElementType() == IJavaElement.IMPORT_DECLARATION) {
 				IImportDeclaration imp = (IImportDeclaration) child;
-				if (Flags.isPublic(imp.getFlags())) {
-					// Make sure the import is not selective, because that
-					// currently doesn't work as public in DMD
-					String name = imp.getElementName();
-					if (name.indexOf(':') == -1 && name.indexOf('=') == -1) {
-						String[] compoundNameS = name.split("\\.");
-						char[][] compoundName = CharOperation.stringArrayToCharArray(compoundNameS);
-						
-						IModule mod;
-						
-						// This check is here to avoid loading twice the same module
-						if (context.moduleFinder.isLoaded(compoundName)) {
-							mod = context.moduleFinder.findModule(compoundName, context);
-						} else {
-							mod = context.load(compoundName);
+				
+				// Make sure the import is not selective, because that
+				// currently doesn't work as public in DMD
+				String name = imp.getElementName();
+				if (name.indexOf(':') == -1 && name.indexOf('=') == -1) {
+					String[] compoundNameS = name.split("\\.");
+					char[][] compoundName = CharOperation.stringArrayToCharArray(compoundNameS);
+					
+					IModule mod;
+					
+					// This check is here to avoid loading twice the same module
+					if (context.moduleFinder.isLoaded(compoundName)) {
+						mod = context.moduleFinder.findModule(compoundName, context);
+					} else {
+						mod = context.load(compoundName);
+					}
+					if (mod != null) {
+						/* Default to private importing
+						 */
+						PROT prot = sc.protection;
+						if (sc.explicitProtection == 0) {
+							prot = PROTprivate;
 						}
-						if (mod != null) {
-							publiclyImportedModules.add(mod);
-						}
+						sc.scopesym.importScope(mod, prot);
 					}
 				}
 			}

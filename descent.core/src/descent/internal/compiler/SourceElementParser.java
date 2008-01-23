@@ -167,8 +167,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 	}
 	
-	private int getFlags(List<Modifier> modifiers) {
+	private int getFlags(ASTDmdNode node, List<Modifier> modifiers) {
 		int flags = 0;
+		if (node.synthetic) {
+			flags |= Flags.AccCompileTimeGenerated;
+		}
 		if (modifiers != null) {
 			for(Modifier modifier : modifiers) {
 				flags |= modifier.getFlags();	
@@ -289,7 +292,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.declarationStart = startOfDeclaration(node);
 		}
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= flags;
 		if (templateDeclaration != null) {
 			info.modifiers |= Flags.AccTemplate;
@@ -404,7 +407,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccTemplate;
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -437,7 +440,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.declarationStart = startOfDeclaration(node);
 		}
 		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		if (templateDeclaration != null) {
 			info.modifiers |= Flags.AccTemplate;
 		}
@@ -474,7 +477,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
 		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= flags;
 		info.name = name;
 		if (arguments != null) {
@@ -520,25 +523,25 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(StaticCtorDeclaration node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers), CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers), CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(StaticDtorDeclaration node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccStaticDestructor, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticDestructor, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(InvariantDeclaration node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccInvariant, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccInvariant, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(UnitTestDeclaration node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccUnitTest, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccUnitTest, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -553,7 +556,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(last);
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		if (node.ident != null) {
 			info.name = node.ident.ident;
 			info.nameSourceStart = startOf(node.ident);
@@ -587,7 +590,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(last);
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccAlias;
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -619,7 +622,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(last);
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccTypedef;
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -640,22 +643,22 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccStaticAssert, node.exp.toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, node.exp.toCharArray());
 		return false;
 	}
 	
 	public boolean visit(DebugSymbol node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccDebugAssignment, node.version.value);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccDebugAssignment, node.version.value);
 		return false;
 	}
 
 	public boolean visit(VersionSymbol node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccVersionAssignment, node.version.value);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccVersionAssignment, node.version.value);
 		return false;
 	}
 	
 	public boolean visit(AlignDeclaration node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccAlign, node.salign == 0 ? CharOperation.NO_CHAR : String.valueOf(node.salign).toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccAlign, node.salign == 0 ? CharOperation.NO_CHAR : String.valueOf(node.salign).toCharArray());
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -671,7 +674,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		case LINKsystem: id = Id.System;
 		case LINKwindows: id = Id.Windows;
 		}
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccExternDeclaration, id);
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccExternDeclaration, id);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -687,7 +690,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 				sb.append(node.args.get(i).toString());
 			}
 		}
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node.modifiers) | Flags.AccPragma, sb.toString().toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccPragma, sb.toString().toCharArray());
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -700,7 +703,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccEnum;
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -757,7 +760,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
-		info.modifiers = getFlags(node.modifiers);
+		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccTemplateMixin;
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -777,7 +780,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(CompileDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers) | Flags.AccMixin, String.valueOf(node.sourceExp.toString()).toCharArray());
+		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, String.valueOf(node.sourceExp.toString()).toCharArray());
 		return false;
 	}
 	
@@ -809,7 +812,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			break;
 		}
 		}
-		requestor.enterConditional(startOf(node), getFlags(node.modifiers) | flags, displayString);
+		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString);
 		
 		Dsymbols thenDeclarations = node.decl;
 		Dsymbols elseDeclarations = node.elsedecl;
@@ -864,7 +867,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			}
 			
 			int flags = node.isstatic ? Flags.AccStatic : 0;
-			flags |= getFlags(node.modifiers);
+			flags |= getFlags(node, node.modifiers);
 			
 			requestor.acceptImport(start, end, node.toString(), false, flags);
 			

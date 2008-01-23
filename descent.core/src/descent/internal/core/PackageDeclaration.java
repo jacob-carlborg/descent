@@ -114,4 +114,11 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		buffer.append(" (not open)"); //$NON-NLS-1$
 	}
 }
+/*
+ * (non-Javadoc)
+ * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ */
+public boolean isCompileTimeGenerated() throws JavaModelException {
+	return false;
+}
 }

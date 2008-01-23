@@ -410,4 +410,11 @@ public static synchronized File getDirectory(Object target) {
 	
 	return null;
 }
+/*
+ * (non-Javadoc)
+ * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ */
+public boolean isCompileTimeGenerated() throws JavaModelException {
+	return false;
+}
 }

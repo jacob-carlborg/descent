@@ -898,6 +898,9 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 	private void computeFoldingStructure(IJavaElement[] elements, FoldingStructureComputationContext ctx) throws JavaModelException {
 		for (int i= 0; i < elements.length; i++) {
 			IJavaElement element= elements[i];
+			if (element.isCompileTimeGenerated()) {
+				continue;
+			}
 
 			computeFoldingStructure(element, ctx);
 
@@ -928,6 +931,13 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 	 * @param ctx the computation context
 	 */
 	protected void computeFoldingStructure(IJavaElement element, FoldingStructureComputationContext ctx) {
+		try {
+			if (element.isCompileTimeGenerated()) {
+				return;
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
 
 		boolean collapse= false;
 		boolean collapseCode= true;

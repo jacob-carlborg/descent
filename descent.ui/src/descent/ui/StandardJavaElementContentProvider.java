@@ -176,7 +176,28 @@ public class StandardJavaElementContentProvider implements ITreeContentProvider,
 				return getResources((IFolder)element);
 			
 			if (getProvideMembers() && element instanceof ISourceReference && element instanceof IParent) {
-				return ((IParent)element).getChildren();
+				IJavaElement[] children = ((IParent)element).getChildren();
+				
+				// Don't return compile-time generated elements
+				boolean hasCompileTimeGenerated = false;
+				for (IJavaElement child : children) {
+					if (child.isCompileTimeGenerated()) {
+						hasCompileTimeGenerated = true;
+						break;
+					}
+				}
+				
+				if (!hasCompileTimeGenerated) {
+					return children;
+				}
+				
+				List<IJavaElement> childrenL = new ArrayList<IJavaElement>(children.length);
+				for (IJavaElement child : children) {
+					if (!child.isCompileTimeGenerated()) {
+						childrenL.add(child);
+					}
+				}
+				return childrenL.toArray(new IJavaElement[childrenL.size()]);
 			}
 		} catch (JavaModelException e) {
 			return NO_CHILDREN;
@@ -212,8 +233,9 @@ public class StandardJavaElementContentProvider implements ITreeContentProvider,
 		if (element instanceof IParent) {
 			try {
 				// when we have Java children return true, else we fetch all the children
-				if (((IParent)element).hasChildren())
+				if (((IParent)element).hasNonCompileTimeGeneratedChildren()) {
 					return true;
+				}
 			} catch(JavaModelException e) {
 				return true;
 			}

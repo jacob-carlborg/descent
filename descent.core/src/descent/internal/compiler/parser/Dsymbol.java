@@ -530,6 +530,10 @@ public class Dsymbol extends ASTDmdNode implements IDsymbol {
 	
 	@Override
 	public int getLineNumber() {
+		// TODO Descent semantic line number
+		if (loc == null) {
+			return 0;
+		}
 		return loc.linnum;
 	}
 	

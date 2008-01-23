@@ -37,4 +37,11 @@ IJavaElement[] getChildren() throws JavaModelException;
  * @return true if the immediate children of this element, false otherwise
  */
 boolean hasChildren() throws JavaModelException;
+
+/**
+ * Returns whether this element has one or more non compile-time generated
+ * immediate children.
+ */
+boolean hasNonCompileTimeGeneratedChildren() throws JavaModelException;
+
 }

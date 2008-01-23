@@ -23,7 +23,6 @@ import descent.core.IPackageFragmentRoot;
 import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
@@ -129,10 +128,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			Module module = parser.parseModuleObj();
 			module.moduleName = unit.getFullyQualifiedName();
 			
-			CompilationUnitResolver.resolve(
-					module, 
-					javaProject,
-					unit.getOwner());
+			CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
 			
 			removeTasks(file);
 			removeProblems(file);

@@ -129,4 +129,12 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 		buffer.append(getElementName());
 		buffer.append('>');
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see descent.core.IJavaElement#isCompileTimeGenerated()
+	 */
+	public boolean isCompileTimeGenerated() throws JavaModelException {
+		return false;
+	}
 }

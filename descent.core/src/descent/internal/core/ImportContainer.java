@@ -84,10 +84,28 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
  */
 public ISourceRange getSourceRange() throws JavaModelException {
 	IJavaElement[] imports= getChildren();
-	ISourceRange firstRange= ((ISourceReference)imports[0]).getSourceRange();
-	ISourceRange lastRange= ((ISourceReference)imports[imports.length - 1]).getSourceRange();
-	SourceRange range= new SourceRange(firstRange.getOffset(), lastRange.getOffset() + lastRange.getLength() - firstRange.getOffset());
-	return range;
+	
+	ISourceRange firstRange = null;
+	ISourceRange lastRange = null;
+	
+	// Skip compile-time generated imports
+	for(int i = 0; i < imports.length; i++) {
+		if (!imports[i].isCompileTimeGenerated()) {
+			firstRange = ((ISourceReference) imports[i]).getSourceRange();
+		}
+	}
+	for(int i = imports.length - 1; i >= 0; i--) {
+		if (!imports[i].isCompileTimeGenerated()) {
+			lastRange = ((ISourceReference) imports[i]).getSourceRange();
+		}
+	}
+	
+	if (firstRange != null && lastRange != null) {
+		SourceRange range= new SourceRange(firstRange.getOffset(), lastRange.getOffset() + lastRange.getLength() - firstRange.getOffset());
+		return range;
+	} else {
+		return null;
+	}
 }
 /**
  */
@@ -116,5 +134,19 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 	if (info == null) {
 		buffer.append(" (not open)"); //$NON-NLS-1$
 	}
+}
+/*
+ * (non-Javadoc)
+ * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ */
+public boolean isCompileTimeGenerated() throws JavaModelException {
+	// true, if all of my children are compile time generated
+	IJavaElement[] imports= getChildren();
+	for(IJavaElement element : imports) {
+		if (!element.isCompileTimeGenerated()) {
+			return false;
+		}
+	}
+	return true;
 }
 }

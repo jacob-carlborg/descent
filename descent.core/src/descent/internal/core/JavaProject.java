@@ -3238,4 +3238,11 @@ public class JavaProject
 			}
 		}
 	 }
+	 /*
+	  * (non-Javadoc)
+	  * @see descent.core.IJavaElement#isCompileTimeGenerated()
+	  */
+	 public boolean isCompileTimeGenerated() throws JavaModelException {
+		return false;
+	}
 }
