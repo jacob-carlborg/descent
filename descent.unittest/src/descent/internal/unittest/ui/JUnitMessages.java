@@ -88,31 +88,12 @@ public final class JUnitMessages extends NLS {
 	public static String JUnitContainerWizardPage_warning_java5_required;
 
 	public static String JUnitContainerWizardPage_wizard_description;
-
-	public static String JUnitContainerWizardPage_wizard_title;
-	public static String JUnitMainTab_error_invalidProjectName;
-	public static String JUnitMainTab_error_noContainer;
-	public static String JUnitMainTab_error_notJavaProject;
-	public static String JUnitMainTab_error_projectnotdefined;
-	public static String JUnitMainTab_error_projectnotexists;
-	public static String JUnitMainTab_error_testcasenotonpath;
-	public static String JUnitMainTab_error_testnotdefined;
-	public static String JUnitMainTab_folderdialog_message;
-	public static String JUnitMainTab_folderdialog_title;
-	public static String JUnitMainTab_label_browse;
-	public static String JUnitMainTab_label_containerTest;
-	public static String JUnitMainTab_label_defaultpackage;
-	public static String JUnitMainTab_label_keeprunning;
-	public static String JUnitMainTab_label_method;
-	public static String JUnitMainTab_label_oneTest;
-	public static String JUnitMainTab_label_project;
-	public static String JUnitMainTab_label_search;
-	public static String JUnitMainTab_label_test;
+	
 	public static String JUnitMainTab_projectdialog_message;
 	public static String JUnitMainTab_projectdialog_title;
 	public static String JUnitMainTab_tab_label;
-	public static String JUnitMainTab_testdialog_message;
-	public static String JUnitMainTab_testdialog_title;
+	public static String JUnitMainTab_label_project;
+	public static String JUnitMainTab_label_browse;
 
 	public static String JUnitPreferencePage_description;
 
@@ -217,4 +198,8 @@ public final class JUnitMessages extends NLS {
 	public static String TestRunnerViewPart_clear_history_label;
 
 	public static String TestRunnerViewPart_layout_menu;
+	
+	// TODO externalize these
+	public static String UnittestLaunchConfigurationTab_all_tests_in_project = "Run all tests in the specified project";
+	public static String UnittestLaunchConfigurationTab_selected_container = "Run tests in the selected package or module";
 }

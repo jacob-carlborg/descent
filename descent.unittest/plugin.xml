@@ -29,7 +29,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            class="descent.internal.unittest.launcher.JUnitTabGroup"
+            class="descent.internal.unittest.launcher.UnittestLaunchConfigurationTabGroup"
             helpContextId="descent.unittest.junit_tab_group"
             id="descent.unittest.launchConfigurationTabGroup"
             type="descent.unittest.launchconfig">
@@ -46,7 +46,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="descent.internal.unittest.launcher.JUnitLaunchConfiguration"
+            delegate="descent.internal.unittest.launcher.UnittestLaunchConfiguration"
             id="descent.unittest.launchconfig"
             modes="run, debug"
             name="D Unit Test"

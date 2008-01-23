@@ -33,11 +33,13 @@ import org.eclipse.debug.core.ILaunchManager;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.debug.core.IDescentLaunchConfigurationConstants;
 
 import descent.unittest.ITestRunListener;
 
 import descent.internal.unittest.DescentUnittestPlugin;
-import descent.internal.unittest.launcher.JUnitLaunchConfiguration;
+import descent.internal.unittest.launcher.IUnittestLaunchConfigurationAttributes;
+import descent.internal.unittest.launcher.UnittestLaunchConfiguration;
 import descent.internal.unittest.model.TestElement.Status;
 import descent.internal.unittest.ui.JUnitPreferencesConstants;
 import descent.internal.unittest.ui.TestRunnerViewPart;
@@ -83,8 +85,8 @@ public final class JUnitModel {
 				return;
 			
 			// test whether the launch defines the JUnit attributes
-			String portStr= launch.getAttribute(JUnitLaunchConfiguration.PORT_ATTR);
-			String projectStr= launch.getAttribute(JUnitLaunchConfiguration.TESTPROJECT_ATTR);
+			String portStr= launch.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR);
+			String projectStr= launch.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME);
 			if (portStr == null || projectStr == null)
 				return;
 			

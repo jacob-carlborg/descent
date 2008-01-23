@@ -20,14 +20,13 @@ import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
 
 import descent.internal.debug.ui.MainTab;
 
-public class JUnitTabGroup extends AbstractLaunchConfigurationTabGroup {
+public class UnittestLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 	/**
 	 * @see ILaunchConfigurationTabGroup#createTabs(ILaunchConfigurationDialog, String)
 	 */
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {		
 		ILaunchConfigurationTab[] tabs= new ILaunchConfigurationTab[] {
-			new JUnitMainTab(),
-			new MainTab(mode),
+			new UnittestLaunchConfigurationTab(),
 			new EnvironmentTab(),
 			new SourceLookupTab(),
 			new CommonTab(),

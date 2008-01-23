@@ -3,10 +3,8 @@ package descent.internal.unittest.launcher;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -92,16 +90,19 @@ public class DUnittestFinder
 				Object container= DUnittestFinder.computeScope(elements[i]);
 				if (container instanceof IJavaProject) {
 					IJavaProject project= (IJavaProject) container;
-					findTestsInProject(project, result);
+					findTestsInProject(project, result, pm);
 				} else if (container instanceof IPackageFragmentRoot) {
 					IPackageFragmentRoot root= (IPackageFragmentRoot) container;
-					findTestsInPackageFragmentRoot(root, result);
+					findTestsInPackageFragmentRoot(root, result, pm);
 				} else if (container instanceof IPackageFragment) {
 					IPackageFragment fragment= (IPackageFragment) container;
-					findTestsInPackageFragment(fragment, result);
+					findTestsInPackageFragment(fragment, result, pm);
 				} else if (container instanceof ICompilationUnit) {
 					ICompilationUnit module= (ICompilationUnit) container;
+					pm.beginTask("Finding unit tests", 1);
 					findTestsInCompilationUnit(module, result);
+					pm.worked(1);
+					pm.done();
 				}
 			}			
 		} catch (JavaModelException e) {
@@ -110,37 +111,49 @@ public class DUnittestFinder
 	}
 	
 	private static void findTestsInProject(IJavaProject project,
-			Map<ICompilationUnit, String[]> result) throws JavaModelException {
+			Map<ICompilationUnit, String[]> result,
+			IProgressMonitor pm) throws JavaModelException {
 		IPackageFragmentRoot[] roots= project.getPackageFragmentRoots();
+		pm.beginTask("Finding unit tests", 100 * roots.length);
 		for (int i= 0; i < roots.length; i++) {
 			IPackageFragmentRoot root= roots[i];
-			findTestsInPackageFragmentRoot(root, result);
+			findTestsInPackageFragmentRoot(root, result,
+					new SubProgressMonitor(pm, 100));
 		}
+		pm.done();
 	}
 
 	private static void findTestsInPackageFragmentRoot(IPackageFragmentRoot root, 
-			Map<ICompilationUnit, String[]> result) throws JavaModelException {
+			Map<ICompilationUnit, String[]> result,
+			IProgressMonitor pm) throws JavaModelException {
 		IJavaElement[] children= root.getChildren();
+		pm.beginTask("Finding unit tests", 100 * children.length);
 		for (int j= 0; j < children.length; j++) {
 			IPackageFragment fragment= (IPackageFragment) children[j];
-			findTestsInPackageFragment(fragment, result);
+			findTestsInPackageFragment(fragment, result,
+					new SubProgressMonitor(pm, 100));
 		}
+		pm.done();
 	}
 
 	private static void findTestsInPackageFragment(IPackageFragment fragment,
-			Map<ICompilationUnit, String[]> result) throws JavaModelException {
+			Map<ICompilationUnit, String[]> result,
+			IProgressMonitor pm) throws JavaModelException {
 		ICompilationUnit[] compilationUnits= fragment.getCompilationUnits();
+		pm.beginTask("Finding unit tests", compilationUnits.length);
 		for (int k= 0; k < compilationUnits.length; k++) {
 			ICompilationUnit module = compilationUnits[k];
 			findTestsInCompilationUnit(module, result);
+			pm.worked(1);
 		}
+		pm.done();
 	}
 	
 	private static void findTestsInCompilationUnit(ICompilationUnit module,
 			Map<ICompilationUnit, String[]> result) throws JavaModelException
 	{
 		List<String> tests = new ArrayList<String>(10);
-		testSearch(tests, module.getModuleName(), module);
+		testSearch(tests, module.getFullyQualifiedName(), module);
 		if(tests.size() > 0)
 			result.put(module, tests.toArray(new String[tests.size()]));
 	}
@@ -155,7 +168,7 @@ public class DUnittestFinder
 			if(child instanceof IType)
 			{
 				IType type = (IType) child;
-				testSearch(tests, type.getFullyQualifiedName(), type);
+				testSearch(tests, prefix + "." + type.getElementName(), type);
 			}
 			
 			if(child instanceof IInitializer)

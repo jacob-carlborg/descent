@@ -26,12 +26,6 @@ import descent.internal.ui.util.PixelConverter;
 
 public class LayoutUtil {
 	
-	private static void modifyLabelSpans(Control[][] controls, int nCulumns) {
-		for (int i= 0; i < controls.length; i++) {
-			setHorizontalSpan(controls[i][0], nCulumns);
-		}
-	}
-	
 	/*
 	 * Sets the span of a control. Assumes that MGridData is used.
 	 */

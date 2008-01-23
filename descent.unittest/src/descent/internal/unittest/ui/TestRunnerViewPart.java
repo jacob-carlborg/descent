@@ -99,7 +99,7 @@ import descent.internal.ui.viewsupport.ViewHistory;
 
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
-import descent.internal.unittest.launcher.JUnitLaunchConfiguration;
+import descent.internal.unittest.launcher.UnittestLaunchConfiguration;
 import descent.internal.unittest.model.ITestRunSessionListener;
 import descent.internal.unittest.model.ITestSessionListener;
 import descent.internal.unittest.model.TestCaseElement;
@@ -862,11 +862,11 @@ public class TestRunnerViewPart extends ViewPart {
 
 	private ILaunchConfiguration prepareLaunchConfigForRelaunch(ILaunchConfiguration configuration) {
 		try {
-			String attribute= configuration.getAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
+			String attribute= configuration.getAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
 			if (attribute.length() != 0) {
 				String configName= Messages.format(JUnitMessages.TestRunnerViewPart_configName, configuration.getName()); 
 				ILaunchConfigurationWorkingCopy tmp= configuration.copy(configName); 
-				tmp.setAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
+				tmp.setAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
 				return tmp;
 			}
 		} catch (CoreException e) {
@@ -888,7 +888,7 @@ public class TestRunnerViewPart extends ViewPart {
 				if (launchConfiguration != null) {
 					try {
 						String oldName= launchConfiguration.getName(); 
-						String oldFailuresFilename= launchConfiguration.getAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, (String) null);
+						String oldFailuresFilename= launchConfiguration.getAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, (String) null);
 						String configName;
 						if (oldFailuresFilename != null) {
 							configName= oldName;
@@ -896,7 +896,7 @@ public class TestRunnerViewPart extends ViewPart {
 							configName= Messages.format(JUnitMessages.TestRunnerViewPart_rerunFailedFirstLaunchConfigName, oldName); 
 						}
 						ILaunchConfigurationWorkingCopy tmp= launchConfiguration.copy(configName); 
-						tmp.setAttribute(JUnitLaunchConfiguration.FAILURES_FILENAME_ATTR, createFailureNamesFile());
+						tmp.setAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, createFailureNamesFile());
 						tmp.launch(fTestRunSession.getLaunch().getLaunchMode(), null);	
 						return;	
 					} catch (CoreException e) {

@@ -14,15 +14,16 @@ package descent.unittest;
 import descent.internal.unittest.DescentUnittestPlugin;
 
 /**
- * Class for accessing JUnit support; all functionality is provided by 
- * static methods. 
+ * Class for accessing Descent unittest support; all functionality is provided
+ * by static methods.
+ * 
  * <p>
  * This class is not intended to be subclassed or instantiated by clients.
  * </p>
  * 
  * @since 2.1
  */
-public class JUnitCore {
+public class DescentUnittestCore {
 
 	/**
 	 * Adds a listener for test runs.
