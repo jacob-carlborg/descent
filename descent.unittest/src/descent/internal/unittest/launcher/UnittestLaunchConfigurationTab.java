@@ -4,17 +4,20 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 
 import org.eclipse.swt.SWT;
@@ -46,6 +49,7 @@ import descent.core.JavaModelException;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 
 import descent.ui.JavaElementLabelProvider;
+import descent.ui.JavaElementSorter;
 
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.ui.JUnitMessages;
@@ -218,15 +222,15 @@ public class UnittestLaunchConfigurationTab extends
 
 	//--------------------------------------------------------------------------
 	// Test container selection
-
+	
 	private Button fTestContainerRadioButton;
-	private TestContainerSelector fSelector;
+	private Button fIncludeSubpackagesCheckbox;
+	private TreeViewer fContainerSelectionViewer;
 
 	private void createTestContainerSelector(Composite comp)
 	{
 		fTestContainerRadioButton = new Button(comp, SWT.RADIO);
-		fTestContainerRadioButton
-				.setText(JUnitMessages.UnittestLaunchConfigurationTab_selected_container);
+		fTestContainerRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_selected_container);
 		GridData gd = new GridData();
 		gd.horizontalSpan = 3;
 		fTestContainerRadioButton.setLayoutData(gd);
@@ -238,11 +242,27 @@ public class UnittestLaunchConfigurationTab extends
 					testModeChanged();
 			}
 		});
+		
+		fIncludeSubpackagesCheckbox = new Button(comp, SWT.CHECK);
+		fIncludeSubpackagesCheckbox.setText("Include sub-packages if a package is selected");
+		gd = new GridData();
+		gd.horizontalSpan = 3;
+		gd.horizontalIndent = 25;
+		fIncludeSubpackagesCheckbox.setLayoutData(gd);
+		
+		fContainerSelectionViewer = new TreeViewer(comp);
+		gd = new GridData(GridData.FILL_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL);
+		gd.horizontalSpan = 3;
+		gd.horizontalIndent = 25;
+		fContainerSelectionViewer.getControl().setLayoutData(gd);
+		fContainerSelectionViewer.setLabelProvider(new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT));
+		fContainerSelectionViewer.setSorter(new JavaElementSorter());
 	}
-
-	private static class TestContainerSelector
+	
+	private void setEnableContainerSelection(boolean enabled)
 	{
-
+		fIncludeSubpackagesCheckbox.setEnabled(enabled);
+		fContainerSelectionViewer.getControl().setEnabled(enabled);
 	}
 
 	//--------------------------------------------------------------------------
@@ -250,15 +270,47 @@ public class UnittestLaunchConfigurationTab extends
 
 	private void testModeChanged()
 	{
-		// TODO
+		boolean isAllTestsMode = fAllTestsRadioButton.getSelection();
+		setEnableContainerSelection(!isAllTestsMode);
+		validatePage();
+		updateLaunchConfigurationDialog();
 	}
 
 	//--------------------------------------------------------------------------
 	// Initialization
 
-	public void initializeFrom(ILaunchConfiguration configuration)
+	public void initializeFrom(ILaunchConfiguration config)
 	{
-		// TODO
+		updateProjectFromConfig(config);
+		updateTestContainerFromConfig(config);
+	}
+	
+	private void updateProjectFromConfig(ILaunchConfiguration config)
+	{
+		String projectName= ""; //$NON-NLS-1$
+		try {
+			projectName = config.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
+		} catch (CoreException ce) {
+		}
+		fProjText.setText(projectName);
+	}
+
+	public void updateTestContainerFromConfig(ILaunchConfiguration config)
+	{
+		String containerHandle= ""; //$NON-NLS-1$
+		try {
+			containerHandle = config.getAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+		} catch (CoreException ce) {			
+		}
+		
+		if(containerHandle.equals(""))
+		{
+			fAllTestsRadioButton.setSelection(true);
+		}
+		else
+		{
+			fTestContainerRadioButton.setSelection(true);
+		}
 	}
 
 	//--------------------------------------------------------------------------
@@ -275,46 +327,37 @@ public class UnittestLaunchConfigurationTab extends
 		setErrorMessage(null);
 		setMessage(null);
 
-		validateProject();
+		String errorMsg = validateProject();
+		if(null != errorMsg)
+			setErrorMessage(errorMsg);
 	}
 
-	private void validateProject()
+	private String validateProject()
 	{
 		String projectName = fProjText.getText().trim();
 		if (projectName.length() == 0)
-		{
-			setErrorMessage("Project not defined");
-			return;
-		}
+			return "Project not defined";
 
 		IStatus status = ResourcesPlugin.getWorkspace().validatePath(
 				IPath.SEPARATOR + projectName, IResource.PROJECT);
 		if (!status.isOK())
-		{
-			setErrorMessage(String.format("Invalid project name: %$1s",
-					projectName));
-			return;
-		}
+			return String.format("Invalid project name: %$1s", projectName);
 
 		IProject project = getWorkspaceRoot().getProject(projectName);
 		if (!project.exists())
-		{
-			setErrorMessage("Project does not exist");
-			return;
-		}
+			return "Project does not exist";
 
 		try
 		{
 			if (!project.hasNature(JavaCore.NATURE_ID))
-			{
-				setErrorMessage("Not a D project");
-				return;
-			}
+				return "Not a D project";
 		}
 		catch (Exception e)
 		{
 			// Ignore
 		}
+		
+		return null;
 	}
 
 	//--------------------------------------------------------------------------
@@ -322,21 +365,33 @@ public class UnittestLaunchConfigurationTab extends
 
 	public void performApply(ILaunchConfigurationWorkingCopy config)
 	{
-		config.setAttribute(
-				IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME,
-				fProjText.getText());
-		config.setAttribute(
-				IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME, ""); // TODO
-		config.setAttribute(
-				IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR,
-				"");
+		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
+		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME, ""); // TODO
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
 	}
 
 	//--------------------------------------------------------------------------
 	// Defaults
 	public void setDefaults(ILaunchConfigurationWorkingCopy config)
 	{
-		// TODO
+		IJavaElement javaElement = getContext();
+		String name = "";
+		if (javaElement != null)
+		{
+			IJavaProject javaProject = javaElement.getJavaProject();
+			name = (javaProject != null && javaProject.exists()) ?
+					javaProject.getElementName() : "";
+			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, name); //$NON-NLS-1$
+		}
+		else
+		{
+			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
+		}
+		
+		name = getLaunchConfigurationDialog().generateName(name);
+		config.rename(name);
+		
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
 	}
 
 	/**

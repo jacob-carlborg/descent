@@ -11,19 +11,29 @@
  *******************************************************************************/
 package descent.internal.unittest.launcher;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaProject;
 import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;
 
 /**
  * Launch configuration delegate for a plain JUnit test.
  */
-public class UnittestLaunchConfiguration extends DescentLaunchConfigurationDelegate  {
-	
+public class UnittestLaunchConfiguration extends 
+	DescentLaunchConfigurationDelegate 
+{
 	/**
 	 * The file to load as the list of tests to prioritize (maybe I should
 	 * rethink how this is done -- no need for a whole file if we're using IPC).
@@ -35,17 +45,51 @@ public class UnittestLaunchConfiguration extends DescentLaunchConfigurationDeleg
 	public void launch(ILaunchConfiguration config, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
+		if (monitor == null)
+			monitor = new NullProgressMonitor();
+		
 		try
 		{
 			monitor.beginTask("Launching unit test application", 100);
-			monitor.subTask("Finding unit tests");
+			if (monitor.isCanceled())
+				return;
+			
+			//super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
+			monitor.worked(30);
+			
+			Set<String> tests = findTests(config, new SubProgressMonitor(monitor, 70));
+			for(String test : tests)
+				System.out.println(test);
+		}
+		finally
+		{
+			monitor.done();
+		}
+	}
+	
+	Set<String> findTests(ILaunchConfiguration config, IProgressMonitor monitor) 
+		throws CoreException
+	{
+		try
+		{
+			monitor.beginTask("Finding unit tests", 100);
+			IJavaProject project = getJavaProject(config);
+			Object[] elements = new Object[] { project };
+			Map<ICompilationUnit, String[]> result = new HashMap<ICompilationUnit, String[]>();
+			monitor.worked(5);
+			DUnittestFinder.findTestsInContainer(elements, result, new SubProgressMonitor(monitor, 80));
+			Set<String> tests = new HashSet<String>();
+			for(String[] arr : result.values())
+				for(String test : arr)
+					tests.add(test);
+			monitor.worked(15);
+			return tests;
 		}
 		finally
 		{
 			monitor.done();
 		}
 		
-		//super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
 	}
 	
 	@Override

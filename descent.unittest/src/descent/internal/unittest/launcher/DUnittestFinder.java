@@ -82,7 +82,7 @@ public class DUnittestFinder
 		return result;
 	}
 	
-	private static void findTestsInContainer(Object[] elements,
+	public static void findTestsInContainer(Object[] elements,
 			Map<ICompilationUnit, String[]> result, IProgressMonitor pm)
 	{
 		try {
