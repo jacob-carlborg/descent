@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.SafeRunner;
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.flute.FluteApplicationInstance;
 import descent.internal.unittest.flute.FluteTestResult;
+import descent.internal.unittest.launcher.TestSpecification;
 import descent.unittest.ITestRunListener;
 
 /**
@@ -27,8 +28,7 @@ import descent.unittest.ITestRunListener;
  */
 public class RemoteTestRunnerClient implements Runnable
 {
-	// TODO use a list so order is preserved
-	private final Map<String, String> tests;
+	private final List<TestSpecification> tests;
 	private final List<ITestRunListener> listeners;
 	private final int port;
 	private boolean stopped = true;
@@ -36,7 +36,7 @@ public class RemoteTestRunnerClient implements Runnable
 	
 	private FluteApplicationInstance app;
 	
-	public RemoteTestRunnerClient(int $port, Map<String, String> $tests,
+	public RemoteTestRunnerClient(int $port, List<TestSpecification> $tests,
 			List<ITestRunListener> $listeners)
 	{
 		port = $port;
@@ -82,12 +82,12 @@ public class RemoteTestRunnerClient implements Runnable
 		
 		try
 		{
-			for(String id : tests.keySet())
+			for(TestSpecification test : tests)
 			{
 				if(stopped)
 					break;
 				
-				runTest(id, false);
+				runTest(test, false);
 			}
 			
 			long elapsedTime = System.currentTimeMillis() - startTime;
@@ -140,9 +140,8 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 	}
 	
-	public void rerunTest(String testId)
+	public void rerunTest(TestSpecification test)
 	{
-		assert(tests.keySet().contains(testId));
 		if(isRunning() && stopped)
 		{
 			synchronized(this)
@@ -152,7 +151,7 @@ public class RemoteTestRunnerClient implements Runnable
 			
 			try
 			{
-				runTest(testId, true);
+				runTest(test, true);
 			}
 			catch(IOException e)
 			{
@@ -181,12 +180,12 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 	}
 	
-	private void runTest(String id, boolean rerun) throws IOException
+	private void runTest(TestSpecification test, boolean rerun) throws IOException
 	{
 		if(!rerun)
-			notifyTestStarted(id);
+			notifyTestStarted(test.getId(), test.getName());
 		
-		FluteTestResult result = app.runTest(id);
+		FluteTestResult result = app.runTest(test.getId());
 		System.out.println("-------------");
 		System.out.println(result);
 		System.out.println("-------------");
@@ -217,13 +216,13 @@ public class RemoteTestRunnerClient implements Runnable
 		if(!rerun)
 		{
 			if(statusCode == ITestRunListener.STATUS_OK)
-				notifyTestEnded(id);
+				notifyTestEnded(test.getId(), test.getName());
 			else
-				notifyTestFailed(statusCode, id, trace);
+				notifyTestFailed(statusCode, test.getId(), test.getName(), trace);
 		}
 		else
 		{
-			notifyTestReran(id, statusCode, trace);
+			notifyTestReran(test.getId(), test.getName(), statusCode, trace);
 		}
 	}
 	
@@ -297,7 +296,7 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 	}
 	
-	private void notifyTestStarted(final String testId)
+	private void notifyTestStarted(final String testId, final String testName)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -305,13 +304,13 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testStarted(testId, tests.get(testId));
+					listener.testStarted(testId, testName);
 				}
 			});
 		}
 	}
 	
-	private void notifyTestEnded(final String testId)
+	private void notifyTestEnded(final String testId, final String testName)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -319,14 +318,14 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testEnded(testId, tests.get(testId));
+					listener.testEnded(testId, testName);
 				}
 			});
 		}
 	}
 	
 	private void notifyTestFailed(final int status, final String testId,
-			final String trace)
+			final String testName, final String trace)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -334,14 +333,14 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testFailed(status, testId, tests.get(testId), trace);
+					listener.testFailed(status, testId, testName, trace);
 				}
 			});
 		}
 	}
 	
-	private void notifyTestReran(final String testId, final int status,
-			final String trace)
+	private void notifyTestReran(final String testId, final String testName,
+			final int status, final String trace)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -349,7 +348,7 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testReran(testId, tests.get(testId), status, trace);
+					listener.testReran(testId, testName, status, trace);
 				}
 			});
 		}
@@ -360,11 +359,11 @@ public class RemoteTestRunnerClient implements Runnable
 	// from the final version
 	public static void main(String[] args) throws Exception
 	{
-		Map<String, String> tests = new HashMap<String, String>();
-		tests.put("sample.module1.0", "test1");
-		tests.put("sample.module1.1", "test2");
-		tests.put("sample.module1.2", "test3");
-		tests.put("sample.module1.Bar.0", "test4");
+		List<TestSpecification> tests = new ArrayList<TestSpecification>();
+		tests.add(new TestSpecification("sample.module1.0", "test1", null));
+		tests.add(new TestSpecification("sample.module1.1", "test2", null));
+		tests.add(new TestSpecification("sample.module1.2", "test3", null));
+		tests.add(new TestSpecification("sample.module1.Bar.0", "test4", null));
 		
 		List<ITestRunListener> listeners = 
 			new ArrayList<ITestRunListener>(1);

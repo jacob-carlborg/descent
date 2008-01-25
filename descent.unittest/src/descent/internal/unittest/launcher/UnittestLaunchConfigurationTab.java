@@ -1,5 +1,8 @@
 package descent.internal.unittest.launcher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -17,7 +20,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 
 import org.eclipse.swt.SWT;
@@ -50,6 +55,7 @@ import descent.debug.core.IDescentLaunchConfigurationConstants;
 
 import descent.ui.JavaElementLabelProvider;
 import descent.ui.JavaElementSorter;
+import descent.ui.StandardJavaElementContentProvider;
 
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.ui.JUnitMessages;
@@ -111,6 +117,7 @@ public class UnittestLaunchConfigurationTab extends
 		{
 			public void modifyText(ModifyEvent evt)
 			{
+				resetTestMode();
 				validatePage();
 				updateLaunchConfigurationDialog();
 			}
@@ -229,6 +236,8 @@ public class UnittestLaunchConfigurationTab extends
 
 	private void createTestContainerSelector(Composite comp)
 	{
+		// TODO this is way too slow; make it a dialog with a progress monitor
+		
 		fTestContainerRadioButton = new Button(comp, SWT.RADIO);
 		fTestContainerRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_selected_container);
 		GridData gd = new GridData();
@@ -263,6 +272,9 @@ public class UnittestLaunchConfigurationTab extends
 	{
 		fIncludeSubpackagesCheckbox.setEnabled(enabled);
 		fContainerSelectionViewer.getControl().setEnabled(enabled);
+		
+		if(enabled)
+			fContainerSelectionViewer.setInput(getJavaProject());
 	}
 
 	//--------------------------------------------------------------------------
@@ -274,6 +286,17 @@ public class UnittestLaunchConfigurationTab extends
 		setEnableContainerSelection(!isAllTestsMode);
 		validatePage();
 		updateLaunchConfigurationDialog();
+	}
+	
+	/**
+	 * This is called whenever the project changes. It switchs to the "run
+	 * all tests in project", since test lookup takes time.
+	 */
+	private void resetTestMode()
+	{
+		fTestContainerRadioButton.setSelection(false);
+		fAllTestsRadioButton.setSelection(true);
+		testModeChanged();
 	}
 
 	//--------------------------------------------------------------------------
@@ -366,7 +389,6 @@ public class UnittestLaunchConfigurationTab extends
 	public void performApply(ILaunchConfigurationWorkingCopy config)
 	{
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
-		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME, ""); // TODO
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
 	}
 
@@ -382,14 +404,14 @@ public class UnittestLaunchConfigurationTab extends
 			name = (javaProject != null && javaProject.exists()) ?
 					javaProject.getElementName() : "";
 			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, name); //$NON-NLS-1$
+			
+			name = getLaunchConfigurationDialog().generateName(name);
+			config.rename(name);
 		}
 		else
 		{
 			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
 		}
-		
-		name = getLaunchConfigurationDialog().generateName(name);
-		config.rename(name);
 		
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
 	}

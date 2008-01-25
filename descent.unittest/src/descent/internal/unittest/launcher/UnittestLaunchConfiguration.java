@@ -11,8 +11,10 @@
  *******************************************************************************/
 package descent.internal.unittest.launcher;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,9 +59,9 @@ public class UnittestLaunchConfiguration extends
 			//super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
 			monitor.worked(30);
 			
-			Set<String> tests = findTests(config, new SubProgressMonitor(monitor, 70));
-			for(String test : tests)
-				System.out.println(test);
+			List<TestSpecification> tests = findTests(config, new SubProgressMonitor(monitor, 70));
+			for(TestSpecification test : tests)
+				System.out.println(test.getId());
 		}
 		finally
 		{
@@ -67,29 +69,15 @@ public class UnittestLaunchConfiguration extends
 		}
 	}
 	
-	Set<String> findTests(ILaunchConfiguration config, IProgressMonitor monitor) 
+	List<TestSpecification> findTests(ILaunchConfiguration config, IProgressMonitor monitor) 
 		throws CoreException
 	{
-		try
-		{
-			monitor.beginTask("Finding unit tests", 100);
-			IJavaProject project = getJavaProject(config);
-			Object[] elements = new Object[] { project };
-			Map<ICompilationUnit, String[]> result = new HashMap<ICompilationUnit, String[]>();
-			monitor.worked(5);
-			DUnittestFinder.findTestsInContainer(elements, result, new SubProgressMonitor(monitor, 80));
-			Set<String> tests = new HashSet<String>();
-			for(String[] arr : result.values())
-				for(String test : arr)
-					tests.add(test);
-			monitor.worked(15);
-			return tests;
-		}
-		finally
-		{
-			monitor.done();
-		}
-		
+		IJavaProject project = getJavaProject(config);
+		Object[] elements = new Object[] { project };
+		final List<TestSpecification> result = 
+			new ArrayList<TestSpecification>(DUnittestFinder.LIST_PREALLOC);
+		DUnittestFinder.findTestsInContainer(elements, result, monitor);
+		return result;
 	}
 	
 	@Override

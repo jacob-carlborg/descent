@@ -2,15 +2,15 @@ package descent.internal.unittest.launcher;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 
@@ -28,6 +28,11 @@ import descent.core.JavaModelException;
 public class DUnittestFinder
 {
 	/**
+	 * Expectd number of unit tests.
+	 */
+	static final int LIST_PREALLOC = 100;
+	
+	/**
 	 * Finds unit tests in a separate runnable. Safe to be called from the
 	 * UI thread.
 	 * 
@@ -35,12 +40,12 @@ public class DUnittestFinder
 	 * @param elements The elements to search
 	 * @return         An array of modules containing unit tests
 	 */
-	public static Map<ICompilationUnit, String[]> findTests(
+	public static List<TestSpecification> findTests(
 			IRunnableContext context, final Object[] elements)
 			throws InvocationTargetException, InterruptedException
 	{
-		final Map<ICompilationUnit, String[]> result = 
-			new HashMap<ICompilationUnit, String[]>();
+		final List<TestSpecification> result = 
+			new ArrayList<TestSpecification>(LIST_PREALLOC);
 
 		if (elements.length > 0) {
 			IRunnableWithProgress runnable = new IRunnableWithProgress()
@@ -62,11 +67,11 @@ public class DUnittestFinder
 	 * @param elements The elements to search
 	 * @return         An array of modules containing unit tests
 	 */
-	public static Map<ICompilationUnit, String[]> findTests(final Object[] elements) 
+	public static List<TestSpecification> findTests(final Object[] elements) 
 			throws InvocationTargetException, InterruptedException
 	{
-		final Map<ICompilationUnit, String[]> result = 
-			new HashMap<ICompilationUnit, String[]>();
+		final List<TestSpecification> result = 
+			new ArrayList<TestSpecification>(LIST_PREALLOC);
 
 		if (elements.length > 0)
 		{
@@ -83,7 +88,7 @@ public class DUnittestFinder
 	}
 	
 	public static void findTestsInContainer(Object[] elements,
-			Map<ICompilationUnit, String[]> result, IProgressMonitor pm)
+			List<TestSpecification> result, IProgressMonitor pm)
 	{
 		try {
 			for (int i= 0; i < elements.length; i++) {
@@ -111,7 +116,7 @@ public class DUnittestFinder
 	}
 	
 	private static void findTestsInProject(IJavaProject project,
-			Map<ICompilationUnit, String[]> result,
+			List<TestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		IPackageFragmentRoot[] roots= project.getPackageFragmentRoots();
 		pm.beginTask("Finding unit tests", 100 * roots.length);
@@ -124,7 +129,7 @@ public class DUnittestFinder
 	}
 
 	private static void findTestsInPackageFragmentRoot(IPackageFragmentRoot root, 
-			Map<ICompilationUnit, String[]> result,
+			List<TestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		IJavaElement[] children= root.getChildren();
 		pm.beginTask("Finding unit tests", 100 * children.length);
@@ -137,7 +142,7 @@ public class DUnittestFinder
 	}
 
 	private static void findTestsInPackageFragment(IPackageFragment fragment,
-			Map<ICompilationUnit, String[]> result,
+			List<TestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		ICompilationUnit[] compilationUnits= fragment.getCompilationUnits();
 		pm.beginTask("Finding unit tests", compilationUnits.length);
@@ -150,15 +155,12 @@ public class DUnittestFinder
 	}
 	
 	private static void findTestsInCompilationUnit(ICompilationUnit module,
-			Map<ICompilationUnit, String[]> result) throws JavaModelException
+			List<TestSpecification> result) throws JavaModelException
 	{
-		List<String> tests = new ArrayList<String>(10);
-		testSearch(tests, module.getFullyQualifiedName(), module);
-		if(tests.size() > 0)
-			result.put(module, tests.toArray(new String[tests.size()]));
+		testSearch(result, module.getFullyQualifiedName(), module);
 	}
 	
-	private static void testSearch(List<String> tests, String prefix,
+	private static void testSearch(List<TestSpecification> result, String prefix,
 			IParent node) throws JavaModelException
 	{
 		short count = 0;
@@ -168,7 +170,7 @@ public class DUnittestFinder
 			if(child instanceof IType)
 			{
 				IType type = (IType) child;
-				testSearch(tests, prefix + "." + type.getElementName(), type);
+				testSearch(result, prefix + "." + type.getElementName(), type);
 			}
 			
 			if(child instanceof IInitializer)
@@ -176,7 +178,9 @@ public class DUnittestFinder
 				IInitializer init = (IInitializer) child;
 				if(init.isUnitTest())
 				{
-					tests.add(prefix + "." + count);
+					String id = prefix + "." + count;
+					String name = id; // TODO
+					result.add(new TestSpecification(id, name, init));
 					count++;
 				}
 			}
