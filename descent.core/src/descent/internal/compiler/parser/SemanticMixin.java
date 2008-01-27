@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
@@ -794,6 +796,91 @@ public class SemanticMixin {
 		id = buf.toChars();
 		buf.data = null;
 		return id;
+	}
+	
+	public static void importScope(IScopeDsymbol aThis, IScopeDsymbol s, PROT protection) {
+		if (s != aThis) {
+			if (aThis.imports() == null) {
+				aThis.imports(new ArrayList<IScopeDsymbol>());
+			} else {
+				for (int i = 0; i < aThis.imports().size(); i++) {
+					IScopeDsymbol ss;
+
+					ss = aThis.imports().get(i);
+					if (ss == s) {
+						if (protection.ordinal() > aThis.prots().get(i).ordinal()) {
+							aThis.prots().set(i, protection); // upgrade access
+						}
+						return;
+					}
+				}
+			}
+			aThis.imports().add(s);
+			// TODO semantic check this translation
+			// prots = (unsigned char *)mem.realloc(prots, imports.dim *
+			// sizeof(prots[0]));
+			// prots[imports.dim - 1] = protection;
+			if (aThis.prots() == null) {
+				aThis.prots(new Array<PROT>());
+			}
+			aThis.prots().set(ASTDmdNode.size(aThis.imports()) - 1, protection);
+		}
+	}
+	
+	public static IDsymbol search(IScopeDsymbol aThis, Loc loc, char[] ident, int flags, SemanticContext context) {
+		IDsymbol s;
+		int i;
+
+		// Look in symbols declared in this module
+		s = aThis.symtab() != null ? aThis.symtab().lookup(ident) : null;
+		if (s != null) {
+		} else if (aThis.imports() != null) {
+			// Look in imported modules
+
+			i = -1;
+			for (IScopeDsymbol ss : aThis.imports()) {
+				i++;
+				IDsymbol s2;
+
+				// If private import, don't search it
+				if ((flags & 1) != 0 && aThis.prots().get(i) == PROT.PROTprivate) {
+					continue;
+				}
+
+				s2 = ss.search(loc, ident, ss.isModule() != null ? 1 : 0, context);
+				if (s == null) {
+					s = s2;
+				} else if (s2 != null && s != s2) {
+					if (s.toAlias(context) == s2.toAlias(context)) {
+						if (s.isDeprecated()) {
+							s = s2;
+						}
+					} else {
+						/*
+						 * Two imports of the same module should be regarded as
+						 * the same.
+						 */
+						Import i1 = s.isImport();
+						Import i2 = s2.isImport();
+						if (!(i1 != null && i2 != null && (i1.mod == i2.mod || (i1.parent()
+								.isImport() == null
+								&& i2.parent().isImport() == null && ASTDmdNode.equals(i1.ident(), i2.ident()))))) {
+							ScopeDsymbol.multiplyDefined(loc, s, s2, context);
+							break;
+						}
+					}
+				}
+			}
+			if (s != null) {
+				IDeclaration d = s.isDeclaration();
+				if (d != null && d.protection() == PROT.PROTprivate
+						&& d.parent().isTemplateMixin() == null) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.MemberIsPrivate, aThis, new String[] { new String(d.ident().ident) }));
+				}
+			}
+		}
+		return s;
 	}
 
 }

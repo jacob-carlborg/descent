@@ -529,23 +529,21 @@ public class JavaElementFinder {
 		}
 		
 		try {
-			if (element.getElementType() == IJavaElement.INITIALIZER) {
+			switch(element.getElementType()) {
+			case IJavaElement.INITIALIZER:
 				IInitializer init = (IInitializer) element;
 				// TODO consider others
 				if (init.isAlign() || init.isExtern()) {
 					return init;
 				}
-			}
-			
-			else if (element instanceof IField) {
+				break;
+			case IJavaElement.FIELD:
 				IField field = (IField) element;
 				if (field.isTemplateMixin()) {
 					return field;
 				}
-			}
-			
-			// For now, hack and use the predefined versions
-			else if (element instanceof IConditional) {
+				break;
+			case IJavaElement.CONDITIONAL:
 				IConditional conditional = (IConditional) element;
 				if (conditional.isVersionDeclaration()) {
 					IJavaElement[] children = conditional.getChildren();
@@ -569,14 +567,15 @@ public class JavaElementFinder {
 						return (IParent) children[1];
 					}
 				}
-			}
-			
-			// Search in anonymous types
-			else if (element instanceof IType) {
+				break;
+			case IJavaElement.TYPE:
 				IType type = (IType) element;
 				if (type.isAnonymous()) {
 					return type;
 				}
+				break;
+			case IJavaElement.IMPORT_CONTAINER:
+				return (IParent) element;
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);

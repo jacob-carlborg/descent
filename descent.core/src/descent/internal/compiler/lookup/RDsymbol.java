@@ -23,7 +23,6 @@ import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncAliasDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
-import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.HdrGenState;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IAliasDeclaration;
@@ -87,12 +86,6 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	
 	protected IDsymbol parent;
 	protected IdentifierExp ident;
-	
-	// This hashtables is here to:
-	// - speed up searches
-	// - avoid creating duplicated classes
-	protected HashtableOfCharArrayAndObject hitCache; 
-	protected HashtableOfCharArrayAndObject missCache;
 
 	public RDsymbol(IJavaElement element, SemanticContext context) {
 		super(element, context);
@@ -388,66 +381,6 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		if (!(element instanceof IParent)) {
-			return null;
-		}
-		
-		if (missCache == null) {
-			missCache = new HashtableOfCharArrayAndObject();
-		} else {
-			if (missCache.containsKey(ident)) {
-				return null;
-			}
-		}
-		
-		if (hitCache == null) {
-			hitCache = new HashtableOfCharArrayAndObject();
-		} else {
-			Object result = hitCache.get(ident);
-			if (result != null) {
-				return (IDsymbol) result;
-			}
-		}
-		
-		String sident = new String(ident);		
-		IParent parent = (IParent) element;
-		IDsymbol result = searchInChildren(parent, ident, sident);
-		
-		if (result == null) {
-			missCache.put(ident, this);
-			return null;
-		} else {
-			return result;	
-		}		
-	}
-	
-	private IDsymbol searchInChildren(IParent parent, char[] ident, String sident) {
-		try {
-			IJavaElement[] children = parent.getChildren();
-			for(IJavaElement child : children) {
-				IParent searchInChildren = JavaElementFinder.mustSearchInChildren(child);
-				if (searchInChildren != null) {
-					IDsymbol result = searchInChildren(searchInChildren, ident, sident);
-					if (result != null) {
-						return result;
-					}
-					continue;
-				}
-				
-				if (!JavaElementFinder.isReturnTarget(child)) {
-					continue;
-				}
-				
-				String elementName = child.getElementName();
-				if (elementName.equals(sident)) {
-					IDsymbol result = toDsymbol(child);
-					hitCache.put(ident, result);
-					return result;
-				}
-			}
-		} catch (JavaModelException e) {
-			Util.log(e, "Exception retrieveing children");
-		}
 		return null;
 	}
 

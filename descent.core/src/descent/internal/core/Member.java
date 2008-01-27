@@ -316,7 +316,9 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		for(int i = declaration.preComments.size() - 1; i >= 0; i--) {
 			Comment ddoc = declaration.preComments.get(i);
 			if (!ddoc.isDDocComment()) {
-				break;
+				// Work even if there are non-ddoc comments in between
+				// break;
+				continue;
 			}
 			sourceRanges.add(0, new SourceRange(start + ddoc.start, ddoc.length));
 		}

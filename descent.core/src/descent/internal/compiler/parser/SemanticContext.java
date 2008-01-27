@@ -204,6 +204,8 @@ public class SemanticContext {
 		}
 		compoundName[compoundName.length - 1] = ident.ident;
 		
+		boolean wasLoaded = moduleFinder.isLoaded(compoundName);
+		
 		IModule m = moduleFinder.findModule(compoundName, this);
 		if (m == null){
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
@@ -212,13 +214,15 @@ public class SemanticContext {
 			acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, ident.getLineNumber(), start, length, new String[] { CharOperation.toString(compoundName) }));
 			return null;
 		}
-		
-		afterParse(m);
-		
-		// If we're in object.d, assign the well known class declarations
-		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
-			for (IDsymbol symbol : m.members()) {
-				checkObjectMember(symbol);
+
+		if (!wasLoaded) {
+			afterParse(m);
+			
+			// If we're in object.d, assign the well known class declarations
+			if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
+				for (IDsymbol symbol : m.members()) {
+					checkObjectMember(symbol);
+				}
 			}
 		}
 		

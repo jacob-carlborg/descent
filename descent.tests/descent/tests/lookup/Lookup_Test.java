@@ -371,5 +371,12 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("void foo() { x = 3; }");
 		assertNoErrors();
 	}
+	
+	public void testPrivateImportBug() throws Exception {
+		createCompilationUnit("another.d", "int x;");
+		one("import another;");
+		two("void foo() { another.x = 3; }");
+		assertNoErrors();
+	}
 
 }

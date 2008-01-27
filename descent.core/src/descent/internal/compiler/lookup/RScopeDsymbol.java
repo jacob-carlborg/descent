@@ -1,7 +1,10 @@
 package descent.internal.compiler.lookup;
 
+import java.util.List;
+
 import descent.core.ICompilationUnit;
 import descent.core.IImportContainer;
+import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
 import descent.core.IParent;
 import descent.core.JavaModelException;
@@ -11,9 +14,12 @@ import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IDsymbolTable;
 import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
+import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 
 public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
@@ -42,21 +48,29 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 		}
 
 		public IDsymbol lookup(char[] ident) {
-			return search(null, ident, 0, null);
+			return RScopeDsymbol.this.lookup(ident);
 		}
 		
 	}
 	
 	private IDsymbolTable symtab;
 	private Dsymbols members;
+	
+	public List<IScopeDsymbol> imports; // imported ScopeDsymbol's
+	public List<PROT> prots; // PROT for each import
+	
+	// This hashtables is here to:
+	// - speed up searches
+	// - avoid creating duplicated classes
+	protected HashtableOfCharArrayAndObject hitCache; 
+	protected HashtableOfCharArrayAndObject missCache;
 
 	public RScopeDsymbol(IJavaElement element, SemanticContext context) {
 		super(element, context);
 	}
 
 	public void importScope(IScopeDsymbol s, PROT protection) {
-		// TODO Auto-generated method stub
-
+		SemanticMixin.importScope(this, s, protection);
 	}	
 	
 	@Override
@@ -77,6 +91,88 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 			}
 		}
 		return members;
+	}
+	
+	@Override
+	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		IDsymbol sym = SemanticMixin.search(this, loc, ident, flags, context);
+		// This is here to get the "import bug", with which you can
+		// access members of modules privately improted, if you use fqn
+		if (sym instanceof Import) {
+			Import imp = (Import) sym;
+			if (imp.pkg == null) {
+				imp.load(((RModule) getModule()).getScope(), context);
+			}
+		}
+		return sym;
+	}
+	
+	private IDsymbol lookup(char[] ident) {
+		if (!(element instanceof IParent)) {
+			return null;
+		}
+		
+		if (missCache == null) {
+			missCache = new HashtableOfCharArrayAndObject();
+		} else {
+			if (missCache.containsKey(ident)) {
+				return null;
+			}
+		}
+		
+		if (hitCache == null) {
+			hitCache = new HashtableOfCharArrayAndObject();
+		} else {
+			Object result = hitCache.get(ident);
+			if (result != null) {
+				return (IDsymbol) result;
+			}
+		}
+		
+		String sident = new String(ident);		
+		IParent parent = (IParent) element;
+		IDsymbol result = searchInChildren(parent, ident, sident);
+		
+		if (result == null) {
+			missCache.put(ident, this);
+			return null;
+		} else {
+			return result;	
+		}
+	}
+	
+	private IDsymbol searchInChildren(IParent parent, char[] ident, String sident) {
+		try {
+			IJavaElement[] children = parent.getChildren();
+			for(IJavaElement child : children) {
+				IParent searchInChildren = JavaElementFinder.mustSearchInChildren(child);
+				if (searchInChildren != null) {
+					IDsymbol result = searchInChildren(searchInChildren, ident, sident);
+					if (result != null) {
+						return result;
+					}
+					continue;
+				}
+				
+				if (!JavaElementFinder.isReturnTarget(child)) {
+					continue;
+				}
+				
+				// Imports are also returned, but only if the first
+				// piece of the name matches
+				String elementName = child.getElementName();
+				if (elementName.equals(sident) ||
+						(child instanceof IImportDeclaration &&
+							elementName.startsWith(sident + "."))) {
+					IDsymbol result = toDsymbol(child);
+					hitCache.put(ident, result);
+					return result;
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e, "Exception retrieveing children");
+		}
+		return null;
 	}
 	
 	private void listMembers(Dsymbols members, HashtableOfCharArrayAndObject ov, IParent parent) {
@@ -139,6 +235,22 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	@Override
 	public IScopeDsymbol isScopeDsymbol() {
 		return this;
+	}
+	
+	public List<IScopeDsymbol> imports() {
+		return imports;
+	}
+	
+	public void imports(List<IScopeDsymbol> imports) {
+		this.imports = imports;
+	}
+	
+	public List<PROT> prots() {
+		return prots;
+	}
+	
+	public void prots(List<PROT> prots) {
+		this.prots = prots;
 	}
 
 }

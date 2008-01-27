@@ -59,7 +59,8 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("char[] source = getContents(new File(file));\r\n" + 
 				"		Parser parser = new Parser(AST.D1, source);\r\n" + 
 				"		parser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n" + 
-				"		final Module module = parser.parseModuleObj();\r\n" + 
+				"		final Module module = parser.parseModuleObj();\r\n" +
+				"		module.moduleName = \"foo\";\r\n" + 
 				"		Global global = new Global();\r\n" + 
 				"		global.params.warnings = false;\r\n" + 
 				"		\r\n" + 
@@ -171,7 +172,8 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("char[] source = getContents(new File(file));\r\n" + 
 				"		Parser parser = new Parser(AST.D1, source);\r\n" + 
 				"		parser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n" + 
-				"		final Module module = parser.parseModuleObj();\r\n" + 
+				"		final Module module = parser.parseModuleObj();\r\n" +
+				"		module.moduleName = \"foo\";\r\n" +
 				"		Global global = new Global();\r\n" + 
 				"		global.params.warnings = false;\r\n" + 
 				"		\r\n" + 
@@ -202,7 +204,8 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 		sb.append("char[] source = getContents(new File(file));\r\n" + 
 				"		Parser parser = new Parser(AST.D1, source);\r\n" + 
 				"		parser.filename = file.substring(DSTRESS_WHERE_PATH.length()).toCharArray();\r\n" + 
-				"		final Module module = parser.parseModuleObj();\r\n" + 
+				"		final Module module = parser.parseModuleObj();\r\n" +
+				"		module.moduleName = \"foo\";\r\n" +
 				"		Global global = new Global();\r\n" + 
 				"		global.params.warnings = false;\r\n" + 
 				"		\r\n" + 

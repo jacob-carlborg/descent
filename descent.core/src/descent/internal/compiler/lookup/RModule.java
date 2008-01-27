@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import java.util.List;
 
+import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
@@ -35,6 +36,7 @@ public class RModule extends RPackage implements IModule {
 	private boolean mdCalculated;
 	private String signature;
 	private Scope scope;
+	private boolean semanticRun = false;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
@@ -42,13 +44,14 @@ public class RModule extends RPackage implements IModule {
 	
 	@Override
 	public void semantic(Scope scope, SemanticContext context) {
-		// Note that modules get their own scope, from scratch.
-		// This is so regardless of where in the syntax a module
-		// gets imported, it is unaffected by context.
-		Scope sc = Scope.createGlobal(this, context);
+		if (semanticRun) {
+			return;
+		}
+		
+		semanticRun = true;
 		
 		try {
-			loadPubliclyImportedModules((IParent) element, sc);
+			loadPubliclyImportedModules((IParent) element, getScope());
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
@@ -156,6 +159,14 @@ public class RModule extends RPackage implements IModule {
 						mod = context.load(compoundName);
 					}
 					if (mod != null) {
+						PROT protection_save = sc.protection;
+						int explicitProtection_save = sc.explicitProtection;
+						
+						if ((imp.getFlags() & Flags.AccPublic) != 0) {
+							sc.protection = PROT.PROTpublic;
+							sc.explicitProtection = 1;
+						}
+						
 						/* Default to private importing
 						 */
 						PROT prot = sc.protection;
@@ -163,6 +174,9 @@ public class RModule extends RPackage implements IModule {
 							prot = PROTprivate;
 						}
 						sc.scopesym.importScope(mod, prot);
+						
+						sc.protection = protection_save;
+						sc.explicitProtection = explicitProtection_save;
 					}
 				}
 			}
