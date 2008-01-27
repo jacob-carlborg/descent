@@ -378,5 +378,17 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("void foo() { another.x = 3; }");
 		assertNoErrors();
 	}
+	
+	public void testAsmMovEaxVoidsNoReturnError() throws Exception {
+		one("");
+		two("int foo() { asm { mov EAX, 1; } }");
+		assertNoErrors();
+	}
+	
+	public void testFunctionDefaultValue() throws Exception {
+		one("void foo(int x, int y = 1) { }");
+		two("void bar() { foo(1); }");
+		assertNoErrors();
+	}
 
 }
