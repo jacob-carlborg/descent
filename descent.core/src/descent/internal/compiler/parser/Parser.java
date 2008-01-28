@@ -1675,7 +1675,9 @@ public class Parser extends Lexer {
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
 			
 			// Discard any previous comments
-			lastCommentRead = comments.size();
+			if (comments != null) {
+				lastCommentRead = comments.size();
+			}
 			
 			nextToken();
 		} else {

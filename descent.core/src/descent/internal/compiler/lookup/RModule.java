@@ -299,6 +299,16 @@ public class RModule extends RPackage implements IModule {
 			m.ident(getModule().ident());
 			
 			Dsymbol sym = (Dsymbol) m.members.get(importCount);
+			
+			while(sym instanceof StorageClassDeclaration ||
+					sym instanceof ProtDeclaration) {
+				if (sym instanceof StorageClassDeclaration) {
+					sym = (Dsymbol) ((StorageClassDeclaration) sym).decl.get(0);
+				} else {
+					sym = (Dsymbol) ((ProtDeclaration) sym).decl.get(0);
+				}
+			}
+			
 			if (sym instanceof FuncDeclaration && clearBody) {
 				FuncDeclaration func = (FuncDeclaration) sym;
 				func.fbody = new CompoundStatement(Loc.ZERO, new Statements(0));
@@ -309,13 +319,6 @@ public class RModule extends RPackage implements IModule {
 			context.muteProblems++;
 			m.semantic(context);
 			context.muteProblems--;
-			
-			while(sym instanceof StorageClassDeclaration) {
-				sym = (Dsymbol) ((StorageClassDeclaration) sym).decl.get(0);
-			}
-			while(sym instanceof ProtDeclaration) {
-				sym = (Dsymbol) ((ProtDeclaration) sym).decl.get(0);
-			}
 			
 			return sym;
 		} catch (JavaModelException e) {

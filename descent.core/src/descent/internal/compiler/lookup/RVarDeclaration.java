@@ -65,7 +65,9 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 					init = ASTNodeEncoder.decodeInitializer(encodedValue);
 					// Run semantic in order to compute type
 					if (init != null) {
+						context.muteProblems++;
 						init.semantic(null, type(), context);
+						context.muteProblems--;
 					}
 				}
 			} catch (JavaModelException e) {
