@@ -80,6 +80,7 @@ public interface ISourceElementRequestor {
 		public TypeParameterInfo[] typeParameters;
 		public long[] annotationPositions;
 		public char[][] categories;
+		public boolean hasDefaultValues;
 	}
 	
 	public static class FieldInfo {

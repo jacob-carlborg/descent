@@ -49,6 +49,11 @@ public abstract class SourceMethodElementInfo extends MemberElementInfo /* imple
 	 */
 	protected ITypeParameter[] typeParameters = TypeParameter.NO_TYPE_PARAMETERS;
 	
+	/*
+	 * Whether the function has default values or not. 
+	 */
+	protected boolean hasDefaultValues;
+	
 public char[][] getArgumentNames() {
 	return this.argumentNames;
 }
@@ -89,4 +94,11 @@ protected void setExceptionTypeNames(char[][] types) {
 	this.exceptionTypes = types;
 }
 protected abstract void setReturnType(char[] type);
+
+public void setHasDefaultValues(boolean hasDefaultValues) {
+	this.hasDefaultValues = hasDefaultValues;
+}
+public boolean getHasDefaultValues() {
+	return hasDefaultValues;
+}
 }

@@ -257,6 +257,15 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return types;
 	}
 	
+	private boolean hasDefaultValues(Arguments parameters) {
+		for(Argument arg : parameters) {
+			if (arg.defaultArg != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	// ------------------------------------------------------------------------
 	
 	public void visit(AggregateDeclaration node, TemplateDeclaration templateDeclaration) {
@@ -462,9 +471,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
+		info.hasDefaultValues = hasDefaultValues(ty.parameters);
+		
 		requestor.enterMethod(info);
 	}
-	
+
 	public boolean visit(FuncDeclaration node) {
 		visit(node, null);
 		pushLevelInAttribDeclarationStack();

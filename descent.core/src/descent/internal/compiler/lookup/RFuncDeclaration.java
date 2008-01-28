@@ -28,6 +28,8 @@ import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.core.SourceMethod;
+import descent.internal.core.SourceMethodElementInfo;
 import descent.internal.core.util.Util;
 
 import static descent.internal.compiler.parser.STC.STCstatic;
@@ -63,7 +65,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 
 	public Expression interpret(InterState istate, Expressions arguments, SemanticContext context) {
 		if (func == null) {
-			func = (FuncDeclaration) ((RModule) getModule()).materialize((ISourceReference) element);
+			func = (FuncDeclaration) ((RModule) getModule()).materialize((ISourceReference) element, false /* keep body */);
 		}
 		return func.interpret(istate, arguments, context);
 	}
@@ -151,37 +153,45 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 		if (type == null) {
 			try {
 				IMethod method = (IMethod) element;
-				String retTypeSig = method.getReturnType();
-				
-				Type retType;
-				
-				if (isCtorDeclaration() != null) {
-					// For a constructor, the return type is the
-					// type of its class
-					retType = parent().type();
+				SourceMethodElementInfo info = (SourceMethodElementInfo) ((SourceMethod) method).getElementInfo();
+				if (info.getHasDefaultValues()) {
+					// If it has default values, these may be needed by the semantic
+					// analysis. Materialize the function in that case.
+					FuncDeclaration func = (FuncDeclaration) ((RModule) getModule()).materialize((ISourceReference) element, true /* discard body */);
+					return func.type();
 				} else {
-					retType = getTypeFromSignature(retTypeSig);
+					String retTypeSig = method.getReturnType();
+					
+					Type retType;
+					
+					if (isCtorDeclaration() != null) {
+						// For a constructor, the return type is the
+						// type of its class
+						retType = parent().type();
+					} else {
+						retType = getTypeFromSignature(retTypeSig);
+					}
+					
+					Arguments args = new Arguments();
+					
+					String[] paramNames = method.getParameterNames();
+					String[] paramTypesSig = method.getParameterTypes();
+					
+					for(int i = 0; i < paramNames.length; i++) {
+						// TODO storage class and default value
+						args.add(new Argument(
+								0, // storage class
+								getTypeFromSignature(paramTypesSig[i]), // type 
+								new IdentifierExp(paramNames[i].toCharArray()), // name 
+								null // default value
+								));
+					}
+					
+					// TODO link
+					type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
+					((TypeFunction) type).linkageChar = 'F';
+					type = type.merge(context);
 				}
-				
-				Arguments args = new Arguments();
-				
-				String[] paramNames = method.getParameterNames();
-				String[] paramTypesSig = method.getParameterTypes();
-				
-				for(int i = 0; i < paramNames.length; i++) {
-					// TODO storage class and default value
-					args.add(new Argument(
-							0, // storage class
-							getTypeFromSignature(paramTypesSig[i]), // type 
-							new IdentifierExp(paramNames[i].toCharArray()), // name 
-							null // default value
-							));
-				}
-				
-				// TODO link
-				type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
-				((TypeFunction) type).linkageChar = 'F';
-				type = type.merge(context);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

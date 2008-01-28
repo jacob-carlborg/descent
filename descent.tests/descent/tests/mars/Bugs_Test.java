@@ -5,6 +5,7 @@ import descent.core.dom.AST;
 import descent.core.dom.Block;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.Declaration;
 import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.FunctionDeclaration;
@@ -354,6 +355,40 @@ public class Bugs_Test extends Parser_Test {
 		assertEquals(4, ((IntegerExp) ts.dim).value.intValue());
 		ts = (TypeSArray) ts.next;
 		assertEquals(2, ((IntegerExp) ts.dim).value.intValue());
+	}
+	
+	public void testFunctionSourceRangeBugWithEnumBefore() {
+		String s = 
+			"enum {\r\n" + 
+			"	a, // x\r\n" + 
+			"}\r\n" + 
+			"\r\n" + 
+			"void b() {\r\n" + 
+			"	\r\n" + 
+			"}";
+		
+		CompilationUnit unit = getCompilationUnit(s);
+		Declaration decl = unit.declarations().get(1);
+		assertPosition(decl, 23, s.length() - 23);
+		
+		assertEquals(23, unit.getExtendedStartPosition(decl));
+		assertEquals(s.length() - 23, unit.getExtendedLength(decl));
+	}
+	
+	public void testFunctionSourceRangeBugWithEnumBefore2() {
+		String s = 
+			"enum {\r\n" + 
+			"	a, // x\r\n" + 
+			"}\r\n" + 
+			"\r\n" + 
+			"void b() {\r\n" + 
+			"	\r\n" + 
+			"}";
+		
+		Module m = getParseResult(s, AST.D1).module;
+		
+		ASTDmdNode node = (ASTDmdNode) m.members.get(1);
+		assertEquals(0, node.preComments.size());
 	}
 
 }

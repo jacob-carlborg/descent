@@ -1074,5 +1074,23 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(38, bang.getSourceRange().getOffset());
 		assertEquals(15, bang.getSourceRange().getLength());
 	}
+	
+	public void testFunctionSourceRangeBugWithEnumBefore() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", 
+				"enum {\r\n" + 
+				"	a, // x\r\n" + 
+				"}\r\n" + 
+				"\r\n" + 
+				"void b() {\r\n" + 
+				"	\r\n" + 
+				"}"
+				);
+		
+		IJavaElement[] children = unit.getChildren();
+		assertEquals(2, children.length);
+		
+		IMember b = (IMember) children[1];
+		assertEquals(23, b.getSourceRange().getOffset());
+	}
 
 }

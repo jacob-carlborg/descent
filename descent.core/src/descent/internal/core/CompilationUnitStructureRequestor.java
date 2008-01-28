@@ -421,6 +421,7 @@ public void enterMethod(MethodInfo methodInfo) {
 	info.setExceptionTypeNames(exceptionTypes);
 	for (int i = 0, length = exceptionTypes.length; i < length; i++)
 		exceptionTypes[i] = manager.intern(exceptionTypes[i]);
+	info.setHasDefaultValues(methodInfo.hasDefaultValues);
 	this.unitInfo.addAnnotationPositions(handle, methodInfo.annotationPositions);
 	addToChildren(parentInfo, handle);
 	//parentInfo.addCategories(handle, methodInfo.categories);

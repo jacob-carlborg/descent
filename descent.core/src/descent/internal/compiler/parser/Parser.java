@@ -1674,6 +1674,9 @@ public class Parser extends Lexer {
 			}
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
 			
+			// Discard any previous comments
+			lastCommentRead = comments.size();
+			
 			nextToken();
 		} else {
 			error(IProblem.EnumDeclarationIsInvalid, enumTokenLineNumber, enumTokenStart, enumTokenLength);

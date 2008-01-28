@@ -12,19 +12,23 @@ import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Array;
+import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.core.util.Util;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
@@ -257,7 +261,7 @@ public class RModule extends RPackage implements IModule {
 	/**
 	 * Materializes an ISourceReference element.
 	 */
-	public Dsymbol materialize(ISourceReference r) {
+	public Dsymbol materialize(ISourceReference r, boolean clearBody) {
 		try {
 			// We build the function from the source in order to interpret it
 			// But we have to also include in the source:
@@ -295,8 +299,16 @@ public class RModule extends RPackage implements IModule {
 			m.ident(getModule().ident());
 			
 			Dsymbol sym = (Dsymbol) m.members.get(importCount);
+			if (sym instanceof FuncDeclaration && clearBody) {
+				FuncDeclaration func = (FuncDeclaration) sym;
+				func.fbody = new CompoundStatement(Loc.ZERO, new Statements(0));
+				func.frequire = new CompoundStatement(Loc.ZERO, new Statements(0));
+				func.fensure = new CompoundStatement(Loc.ZERO, new Statements(0));
+			}
 			
+			context.muteProblems++;
 			m.semantic(context);
+			context.muteProblems--;
 			
 			while(sym instanceof StorageClassDeclaration) {
 				sym = (Dsymbol) ((StorageClassDeclaration) sym).decl.get(0);

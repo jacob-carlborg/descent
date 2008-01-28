@@ -128,7 +128,7 @@ public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDecl
 	
 	private void materialize() {
 		if (temp == null) {
-			temp = (TemplateDeclaration) ((RModule) getModule()).materialize((ISourceReference) element);
+			temp = (TemplateDeclaration) ((RModule) getModule()).materialize((ISourceReference) element, false /* keep body */);
 		}
 	}
 	

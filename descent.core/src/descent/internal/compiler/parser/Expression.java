@@ -488,6 +488,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	
 	@Override
 	public int getLineNumber() {
+		if (loc == null) {
+			return 0;
+		}
 		return loc.linnum;
 	}
 	
