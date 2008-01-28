@@ -422,6 +422,10 @@ public class Module extends Package implements IModule {
 			sb.append(piece);
 		}
 	}
+	
+	public String getFullyQualifiedName() {
+		return moduleName;
+	}
 
 	// PERHAPS void inlineScan();
 

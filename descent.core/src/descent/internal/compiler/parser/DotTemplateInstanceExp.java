@@ -64,7 +64,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			eright = e1;
 		}
 		if (eright.op == TOKimport) {
-			s = (Dsymbol) ((ScopeExp) eright).sds; // SEMANTIC
+			s = ((ScopeExp) eright).sds;
 		} else if (e1.op == TOKtype) {
 			s = t1.isClassHandle();
 			if (s == null) {

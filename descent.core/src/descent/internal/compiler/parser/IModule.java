@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import descent.internal.compiler.parser.ast.ASTNode;
+
 public interface IModule extends IPackage {
 	
 	IModule importedFrom();
@@ -51,5 +53,7 @@ public interface IModule extends IPackage {
 	void toModuleAssert();
 
 	void addDeferredSemantic(Dsymbol symbol, SemanticContext context);
+
+	String getFullyQualifiedName();
 
 }

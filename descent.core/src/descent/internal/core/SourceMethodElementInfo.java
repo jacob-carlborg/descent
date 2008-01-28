@@ -50,9 +50,9 @@ public abstract class SourceMethodElementInfo extends MemberElementInfo /* imple
 	protected ITypeParameter[] typeParameters = TypeParameter.NO_TYPE_PARAMETERS;
 	
 	/*
-	 * Whether the function has default values or not. 
+	 * Number of default values. 
 	 */
-	protected boolean hasDefaultValues;
+	protected int defaultValuesCount;
 	
 public char[][] getArgumentNames() {
 	return this.argumentNames;
@@ -95,10 +95,10 @@ protected void setExceptionTypeNames(char[][] types) {
 }
 protected abstract void setReturnType(char[] type);
 
-public void setHasDefaultValues(boolean hasDefaultValues) {
-	this.hasDefaultValues = hasDefaultValues;
+public void setDefaultValuesCount(int defaultValuesCount) {
+	this.defaultValuesCount = defaultValuesCount;
 }
-public boolean getHasDefaultValues() {
-	return hasDefaultValues;
+public int getDefaultValuesCount() {
+	return defaultValuesCount;
 }
 }

@@ -602,7 +602,11 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				if (t instanceof DsymbolType) {
 					DsymbolType dt = (DsymbolType) t;
 					IDsymbol sym = dt.symbol;
-					return sym.type();
+					if (sym instanceof IEnumDeclaration) {
+						return sym.getType();
+					} else {
+						return sym.type();
+					}
 				} else {
 					return t;
 				}

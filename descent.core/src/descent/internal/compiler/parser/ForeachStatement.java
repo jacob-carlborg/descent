@@ -703,7 +703,7 @@ public class ForeachStatement extends Statement {
 			// cases 2...
 			for (int j = 0; j < cases.size(); j++) {
 				s[0] = (Statement) cases.get(j);
-				s[0] = new CaseStatement(loc, new IntegerExp(loc, i + 2), s[0]);
+				s[0] = new CaseStatement(loc, new IntegerExp(loc, j + 2), s[0]);
 				a2.add(s[0]);
 			}
 

@@ -56,6 +56,10 @@ public class Package extends ScopeDsymbol implements IPackage {
 
 	public Package(IdentifierExp ident) {
 		super(ident);
+		if (ident != null) {
+			this.start = ident.start;
+			this.length = ident.length;
+		}
 	}
 
 	@Override

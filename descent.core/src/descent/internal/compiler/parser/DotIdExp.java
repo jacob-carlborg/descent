@@ -198,6 +198,7 @@ public class DotIdExp extends UnaExp {
 				IScopeDsymbol sds = s.isScopeDsymbol();
 				if (sds != null) {
 					e = new ScopeExp(loc, sds);
+					e.copySourceRange(this);
 					e = e.semantic(sc, context);
 					if (eleft != null) {
 						e = new DotExp(loc, eleft, e);

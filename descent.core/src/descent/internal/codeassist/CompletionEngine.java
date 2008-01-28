@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
@@ -81,7 +82,9 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LabelStatement;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.ScopeExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StringExp;
@@ -138,10 +141,12 @@ public class CompletionEngine extends Engine
 	char[] completionToken;
 	char[] qualifiedCompletionToken;
 	
-	public HashtableOfObject typeCache;
+	HashtableOfObject typeCache;
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	HashtableOfObject knownKeywords = new HashtableOfObject(10);
+	
+	boolean isCompletingPackage;
 	
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
@@ -655,6 +660,10 @@ public class CompletionEngine extends Engine
 		
 		Scope scope = node.scope;
 		completeScope(scope, name, getIncludesForScope(scope));
+		
+		// Also suggest packages
+		isCompletingPackage = true;
+		nameEnvironment.findCompilationUnits(name, this);
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -672,6 +681,10 @@ public class CompletionEngine extends Engine
 		}
 		
 		completeScope(scope, name, getIncludesForScope(scope));
+		
+		// Also suggest packages
+		isCompletingPackage = true;
+		nameEnvironment.findCompilationUnits(name, this);
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
@@ -684,6 +697,10 @@ public class CompletionEngine extends Engine
 	}
 
 	private void completeScope(Scope scope, char[] name, int includes) {
+		if (scope == null) {
+			return;
+		}
+		
 		if (scope.enclosing != null) {
 			completeScope(scope.enclosing, name, includes);
 		}
@@ -728,7 +745,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private int getIncludesForScope(Scope scope) {
-		if (scope.scopesym == null) {
+		if (scope == null || scope.scopesym == null) {
 			return INCLUDE_ALL;
 		}
 		
@@ -798,7 +815,51 @@ public class CompletionEngine extends Engine
 		} else if (e1 instanceof StringExp) {
 			Type type = e1.type;
 			completeType(type, ident, true /* only statics */);
+		} else if (e1 instanceof ScopeExp) {
+			ScopeExp se = (ScopeExp) e1;
+			if (se.sds instanceof IModule) {
+				char[] name = computePrefixAndSourceRange(ident);
+				suggestMembers(((IModule) se.sds).members(), name, false /* not only statics */, 
+						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+			} else if (se.sds instanceof Package) {
+				char[] name = ident.ident;
+				this.startPosition = se.start;
+				this.endPosition = se.start + se.length;
+				completePackage((Package) se.sds, name, ident);
+			}
 		}
+	}
+
+	private void completePackage(Package sds, char[] name, IdentifierExp ident) {
+		Stack<char[]> pieces = new Stack<char[]>();
+		while(true) {
+			pieces.push(sds.ident.ident);
+			if (sds.parent instanceof Package) {
+				sds = (Package) sds.parent;
+			} else {
+				break;
+			}
+		}
+		
+		char[][] fqnPieces = new char[pieces.size()][];
+		int i = 0;
+		while(!pieces.isEmpty()) {
+			fqnPieces[i] = pieces.pop();
+			i++;
+		}
+		
+		char[] fqn = CharOperation.concatWith(fqnPieces, '.');
+		if (ident.ident != null && ident.ident.length != 0) {
+			fqn = CharOperation.concat(fqn, ident.ident, '.');
+		}
+		
+		// Also include the next dot, if any
+		if (this.endPosition < this.source.length && this.source[this.endPosition] == '.') {
+			this.endPosition++;
+		}
+		
+		isCompletingPackage = true;
+		nameEnvironment.findCompilationUnits(fqn, this);
 	}
 
 	private void completeType(Type type, IdentifierExp ident, boolean onlyStatics) {
@@ -1483,6 +1544,28 @@ public class CompletionEngine extends Engine
 		if (knownCompilationUnits.containsKey(fullyQualifiedName)
 				|| CharOperation.equals(fullyQualifiedName, this.sourceUnitFqn) ) {
 			return;
+		}
+		
+		// If we are completing a package, only show those packages for which
+		// there is an import
+		if (isCompletingPackage) {
+			if (module.aimports != null) {
+				boolean skip = true;
+				for(Object sym : module.aimports) {
+					if (sym instanceof IModule) {
+						IModule mod = (IModule) sym;
+						char[] fqn = mod.getFullyQualifiedName().toCharArray();
+						if (CharOperation.equals(fqn, fullyQualifiedName)) {
+							skip = false;
+							break;
+						}
+					}
+				}
+				
+				if (skip) {
+					return;
+				}
+			}
 		}
 		
 		knownCompilationUnits.put(fullyQualifiedName, this);

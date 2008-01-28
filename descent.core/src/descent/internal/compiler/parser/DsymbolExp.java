@@ -145,6 +145,7 @@ public class DsymbolExp extends Expression {
 				ScopeExp ie;
 
 				ie = new ScopeExp(loc, imp.pkg);
+				ie.copySourceRange(this);
 				return ie.semantic(sc, context);
 			}
 			pkg = s.isPackage();
@@ -152,6 +153,7 @@ public class DsymbolExp extends Expression {
 				ScopeExp ie;
 
 				ie = new ScopeExp(loc, pkg);
+				ie.copySourceRange(this);
 				return ie.semantic(sc, context);
 			}
 			IModule mod = s.isModule();

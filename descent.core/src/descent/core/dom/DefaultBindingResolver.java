@@ -381,9 +381,11 @@ class DefaultBindingResolver extends BindingResolver {
 						name.getLocationInParent().equals(DotIdentifierExpression.NAME_PROPERTY)) {
 					DotIdentifierExpression dotid = (DotIdentifierExpression) parent;
 					descent.core.dom.Expression exp = dotid.getExpression();
-					IBinding binding = exp.resolveTypeBinding();
-					if (binding != null && binding instanceof ITypeBinding) {
-						return resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
+					if (exp != null) {
+						IBinding binding = exp.resolveTypeBinding();
+						if (binding != null && binding instanceof ITypeBinding) {
+							return resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
+						}
 					}
 				}
 			

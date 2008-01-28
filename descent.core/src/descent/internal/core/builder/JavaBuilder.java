@@ -102,7 +102,6 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	public static void build(IFile file) throws CoreException {
 		IJavaElement element = JavaCore.create(file);
 		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
-			
 			removeTasks(file);
 			removeProblems(file);
 			
@@ -129,9 +128,6 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			module.moduleName = unit.getFullyQualifiedName();
 			
 			CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
-			
-			removeTasks(file);
-			removeProblems(file);
 			
 			associateTaskTags(file, parser);
 			associateProblems(file, module);

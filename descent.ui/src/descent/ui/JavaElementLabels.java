@@ -836,6 +836,10 @@ public class JavaElementLabels {
 	}
 	
 	private static void getTypeSignatureLabel(String typeSig, long flags, StringBuffer buf) {
+		if (typeSig == null) {
+			return;
+		}
+		
 		if (typeSig.length() > 0) {
 			char c = typeSig.charAt(0);
 			switch(c) {

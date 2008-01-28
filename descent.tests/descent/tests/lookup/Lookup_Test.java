@@ -372,6 +372,13 @@ public class Lookup_Test extends AbstractLookupTest {
 		assertNoErrors();
 	}
 	
+	public void testPublicImport2() throws Exception {
+		createCompilationUnit("another.d", "int x;");
+		one("public { import another; }");
+		two("void foo() { x = 3; }");
+		assertNoErrors();
+	}
+	
 	public void testPrivateImportBug() throws Exception {
 		createCompilationUnit("another.d", "int x;");
 		one("import another;");
@@ -388,6 +395,31 @@ public class Lookup_Test extends AbstractLookupTest {
 	public void testFunctionDefaultValue() throws Exception {
 		one("void foo(int x, int y = 1) { }");
 		two("void bar() { foo(1); }");
+		assertNoErrors();
+	}
+	
+	public void testForeachBug() throws Exception {
+		one("");
+		two("bool inPattern(dchar c, char[] pattern) {\r\n" + 
+				"	foreach(dchar p; pattern) {\r\n" + 
+				"		if(true) {\r\n" + 
+				"			return true;\r\n" + 
+				"		} else if(false) {\r\n" + 
+				"			return false;\r\n" + 
+				"		}\r\n" + 
+				"	}\r\n" + 
+				"	return false;\r\n" + 
+				"}");
+		assertNoErrors();
+	}
+	
+	public void testEnumTypeBug() throws Exception {
+		one("");
+		two("import std.system;\r\n" + 
+				"\r\n" + 
+				"void foo() {\r\n" + 
+				"	Endian e = std.system.endian;\r\n" + 
+				"}");
 		assertNoErrors();
 	}
 

@@ -10,6 +10,8 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
+import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.FuncDeclaration;
@@ -21,13 +23,18 @@ import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InlineScanState;
+import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.Loc;
+import descent.internal.compiler.parser.NullExp;
+import descent.internal.compiler.parser.RealExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.complex_t;
 import descent.internal.core.SourceMethod;
 import descent.internal.core.SourceMethodElementInfo;
 import descent.internal.core.util.Util;
@@ -65,7 +72,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 
 	public Expression interpret(InterState istate, Expressions arguments, SemanticContext context) {
 		if (func == null) {
-			func = (FuncDeclaration) ((RModule) getModule()).materialize((ISourceReference) element, false /* keep body */);
+			func = (FuncDeclaration) ((RModule) getModule()).materialize((ISourceReference) element);
 		}
 		return func.interpret(istate, arguments, context);
 	}
@@ -149,54 +156,105 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	
 	@Override
 	public Type type() {
-		// TODO Auto-generated method stub
 		if (type == null) {
 			try {
 				IMethod method = (IMethod) element;
 				SourceMethodElementInfo info = (SourceMethodElementInfo) ((SourceMethod) method).getElementInfo();
-				if (info.getHasDefaultValues()) {
-					// If it has default values, these may be needed by the semantic
-					// analysis. Materialize the function in that case.
-					FuncDeclaration func = (FuncDeclaration) ((RModule) getModule()).materialize((ISourceReference) element, true /* discard body */);
-					return func.type();
+				int defaultValuesCount = info.getDefaultValuesCount();
+
+				String retTypeSig = method.getReturnType();
+				
+				Type retType;
+				
+				if (isCtorDeclaration() != null) {
+					// For a constructor, the return type is the
+					// type of its class
+					retType = parent().type();
 				} else {
-					String retTypeSig = method.getReturnType();
-					
-					Type retType;
-					
-					if (isCtorDeclaration() != null) {
-						// For a constructor, the return type is the
-						// type of its class
-						retType = parent().type();
-					} else {
-						retType = getTypeFromSignature(retTypeSig);
-					}
-					
-					Arguments args = new Arguments();
-					
-					String[] paramNames = method.getParameterNames();
-					String[] paramTypesSig = method.getParameterTypes();
-					
-					for(int i = 0; i < paramNames.length; i++) {
-						// TODO storage class and default value
-						args.add(new Argument(
-								0, // storage class
-								getTypeFromSignature(paramTypesSig[i]), // type 
-								new IdentifierExp(paramNames[i].toCharArray()), // name 
-								null // default value
-								));
-					}
-					
-					// TODO link
-					type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
-					((TypeFunction) type).linkageChar = 'F';
-					type = type.merge(context);
+					retType = getTypeFromSignature(retTypeSig);
 				}
+				
+				Arguments args = new Arguments();
+				
+				String[] paramNames = method.getParameterNames();
+				String[] paramTypesSig = method.getParameterTypes();
+				
+				for(int i = 0; i < paramNames.length; i++) {
+					Type argType = getTypeFromSignature(paramTypesSig[i]);
+					// TODO storage class and default value
+					// Observation: the default value doesn't matter. It only
+					// matters if it's null or not.
+					args.add(new Argument(
+							0, // storage class
+							argType, // type 
+							new IdentifierExp(paramNames[i].toCharArray()), // name 
+							paramNames.length - i <= defaultValuesCount ? defaultValue(argType) : null // default value
+							));
+				}
+				
+				// TODO link
+				type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
+				((TypeFunction) type).linkageChar = 'F';
+				type = type.merge(context);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}
 		}
 		return type;
+	}
+
+	private Expression defaultValue(Type argType) {
+		if (argType == null) {
+			return null;	
+		}
+		
+		switch(argType.ty) {
+		case Tstruct:
+			// TODO Descent what can be the default value of a struct?
+			return null;
+		case Tbit:
+		case Tbool:
+		case Tchar:
+		case Tdchar:
+		case Twchar:
+		case Tint8:
+		case Tuns8:
+		case Tint16:
+		case Tuns16:
+		case Tint32:
+		case Tuns32:
+		case Tint64:
+		case Tuns64:
+		case Tenum:
+			return new IntegerExp(0);
+			
+		case Tfloat32:
+		case Tfloat64:
+		case Tfloat80:
+			return new RealExp(Loc.ZERO, 0, argType);
+			
+		case Tcomplex32:
+		case Tcomplex64:
+		case Tcomplex80:
+		case Timaginary32:
+		case Timaginary64:
+		case Timaginary80:
+			return new ComplexExp(Loc.ZERO, complex_t.ZERO, argType);
+		
+		case Taarray:
+		case Tarray:
+		case Tsarray:
+		case Tdelegate:
+		case Tclass:
+		case Tfunction:
+		case Tinstance:
+		case Tpointer:
+		case Treference:
+			return new NullExp(Loc.ZERO);
+
+		default:
+			return null;
+		}
 	}
 
 	public VarDeclaration vthis() {

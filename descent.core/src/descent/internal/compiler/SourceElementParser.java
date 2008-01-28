@@ -132,7 +132,16 @@ public class SourceElementParser extends AstVisitorAdapter {
 			if (stack.isEmpty()) {
 				return startOfCommentIfAny(node);
 			} else {
-				return startOfCommentIfAny(stack.get(0));
+				for (int i = 0; i < stack.size(); i++) {
+					AttribDeclaration att = stack.get(i);
+					if ((att instanceof StorageClassDeclaration &&
+							((StorageClassDeclaration) att).single) ||
+						(att instanceof ProtDeclaration &&
+								((ProtDeclaration) att).single)) {
+						return startOfCommentIfAny(att);
+					}
+				}
+				return startOfCommentIfAny(node);
 			}
 		}
 	}	
@@ -146,7 +155,16 @@ public class SourceElementParser extends AstVisitorAdapter {
 			if (stack.isEmpty()) {
 				return endOfCommentIfAny(node);
 			} else {
-				return endOfCommentIfAny(stack.get(stack.size() - 1));
+				for (int i = stack.size() - 1; i >= 0; i--) {
+					AttribDeclaration att = stack.get(i);
+					if ((att instanceof StorageClassDeclaration &&
+							((StorageClassDeclaration) att).single) ||
+						(att instanceof ProtDeclaration &&
+								((ProtDeclaration) att).single)) {
+						return endOfCommentIfAny(att);
+					}
+				}
+				return endOfCommentIfAny(node);
 			}
 		}
 	}
@@ -257,13 +275,17 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return types;
 	}
 	
-	private boolean hasDefaultValues(Arguments parameters) {
+	private int getDefaultValuesCount(Arguments parameters) {
+		if (parameters == null) {
+			return 0;
+		}
+		int count = 0;
 		for(Argument arg : parameters) {
 			if (arg.defaultArg != null) {
-				return true;
+				count++;
 			}
 		}
-		return false;
+		return count;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -471,7 +493,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
-		info.hasDefaultValues = hasDefaultValues(ty.parameters);
+		info.defaultValuesCount = getDefaultValuesCount(ty.parameters);
 		
 		requestor.enterMethod(info);
 	}
@@ -502,6 +524,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 				info.modifiers |= Flags.AccVarargs;
 			}
 			info.returnType = getSignature(ty.next);
+			info.defaultValuesCount = getDefaultValuesCount(ty.parameters);
 		}
 		info.typeParameters = new TypeParameterInfo[0];
 		
@@ -889,16 +912,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(ProtDeclaration node) {
-		if (node.single) {
-			pushAttribDeclaration(node);
-		}
+		pushAttribDeclaration(node);
 		return true;
 	}
 	
 	public boolean visit(StorageClassDeclaration node) {
-		if (node.single) {
-			pushAttribDeclaration(node);
-		}
+		pushAttribDeclaration(node);
 		return true;
 	}
 	
@@ -1116,15 +1135,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public void endVisit(ProtDeclaration node) {
-		if (node.single) {
-			popAttribDeclaration();
-		}
+		popAttribDeclaration();
 	}
 
 	public void endVisit(StorageClassDeclaration node) {
-		if (node.single) {
-			popAttribDeclaration();
-		}
+		popAttribDeclaration();
 	}
 	
 	private void popAttribDeclaration() {
