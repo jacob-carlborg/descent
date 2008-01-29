@@ -79,18 +79,25 @@ public class Module extends Package implements IModule {
 
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
+		
 		// COMMENTED THIS, since when there are syntax errors we would
-		// like to have a better recovery
+		// like to have a better recovery. But halt if fatal was signaled.
 //		if (context.global.errors > 0) {
 //			return;
 //		}
+		if (context.fatalWasSignaled) {
+			return;
+		}
 
 		// COMMENTED THIS, since when there are syntax errors we would
-		// like to have a better recovery
+		// like to have a better recovery. But halt if fatal was signaled.
 		semantic2(null, context);
 //		if (context.global.errors > 0) {
 //			return;
 //		}
+		if (context.fatalWasSignaled) {
+			return;
+		}
 
 		semantic3(null, context);
 	}
@@ -293,28 +300,7 @@ public class Module extends Package implements IModule {
 	@Override
 	public IDsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
-		
-		/* Since modules can be circularly referenced,
-		 * need to stop infinite recursive searches.
-		 */
-
-		IDsymbol s;
-		if (insearch) {
-			s = null;
-		} else if (equals(searchCacheIdent, ident)
-				&& searchCacheFlags == flags) {
-			s = searchCacheSymbol;
-		} else {
-			insearch = true;
-			s = super.search(loc, ident, flags, context);
-			insearch = false;
-
-			searchCacheIdent = ident;
-			searchCacheSymbol = s;
-			searchCacheFlags = flags;
-		}
-		
-		return s;
+		return SemanticMixin.search(this, loc, ident, flags, context);
 	}
 
 	public boolean needmoduleinfo() {
@@ -425,6 +411,42 @@ public class Module extends Package implements IModule {
 	
 	public String getFullyQualifiedName() {
 		return moduleName;
+	}
+	
+	public boolean insearch() {
+		return insearch;
+	}
+	
+	public void insearch(boolean insearch) {
+		this.insearch = insearch;
+	}
+	
+	public int searchCacheFlags() {
+		return searchCacheFlags;
+	}
+	
+	public void searchCacheFlags(int searchCacheFlags) {
+		this.searchCacheFlags = searchCacheFlags;
+	}
+	
+	public char[] searchCacheIdent() {
+		return searchCacheIdent;
+	}
+	
+	public void searchCacheIdent(char[] searchCacheIdent) {
+		this.searchCacheIdent = searchCacheIdent;
+	}
+	
+	public IDsymbol searchCacheSymbol() {
+		return searchCacheSymbol;
+	}
+	
+	public void searchCacheSymbol(IDsymbol searchCacheSymbol) {
+		this.searchCacheSymbol = searchCacheSymbol;
+	}
+	
+	public IDsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		return super.search(loc, ident, flags, context);
 	}
 
 	// PERHAPS void inlineScan();

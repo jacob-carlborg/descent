@@ -882,5 +882,29 @@ public class SemanticMixin {
 		}
 		return s;
 	}
+	
+	public static IDsymbol search(IModule aThis, Loc loc, char[] ident, int flags, SemanticContext context) {
+		/* Since modules can be circularly referenced,
+		 * need to stop infinite recursive searches.
+		 */
+
+		IDsymbol s;
+		if (aThis.insearch()) {
+			s = null;
+		} else if (ASTDmdNode.equals(aThis.searchCacheIdent(), ident)
+				&& aThis.searchCacheFlags() == flags) {
+			s = aThis.searchCacheSymbol();
+		} else {
+			aThis.insearch(true);
+			s = aThis.super_search(loc, ident, flags, context);
+			aThis.insearch(false);
+
+			aThis.searchCacheIdent(ident);
+			aThis.searchCacheSymbol(s);
+			aThis.searchCacheFlags(flags);
+		}
+		
+		return s;
+	}
 
 }

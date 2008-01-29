@@ -10,7 +10,6 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
-import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;

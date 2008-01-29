@@ -320,6 +320,11 @@ public class SignatureProcessor implements ISignatureConstants {
 				localPosition = n;
 				continue;
 			default:
+				// If it's a digit, it may be a template value parameter
+				if (Character.isDigit(first)) {
+					return i;
+				}
+				
 				// Try with type basic
 				TypeBasic type = TypeBasic.fromSignature(first);
 				if (type != null) {

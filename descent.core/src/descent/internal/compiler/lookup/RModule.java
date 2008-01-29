@@ -19,12 +19,14 @@ import descent.internal.compiler.parser.IModuleDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
@@ -38,6 +40,10 @@ public class RModule extends RPackage implements IModule {
 	private String signature;
 	private Scope scope;
 	private boolean semanticRun = false;
+	public boolean insearch;
+	public char[] searchCacheIdent;
+	public int searchCacheFlags;
+	public IDsymbol searchCacheSymbol;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
@@ -159,9 +165,11 @@ public class RModule extends RPackage implements IModule {
 						mod = context.moduleFinder.findModule(compoundName, context);
 					} else {
 						mod = context.load(compoundName);
-						context.muteProblems++;
-						mod.semantic(null, context);
-						context.muteProblems--;
+						if (mod != null) {
+							context.muteProblems++;
+							mod.semantic(null, context);
+							context.muteProblems--;
+						}
 					}
 					if (mod != null) {
 						PROT protection_save = sc.protection;
@@ -186,6 +194,11 @@ public class RModule extends RPackage implements IModule {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		return SemanticMixin.search(this, loc, ident, flags, context);
 	}
 
 	public int semanticdone() {
@@ -345,6 +358,42 @@ public class RModule extends RPackage implements IModule {
 	
 	public String getFullyQualifiedName() {
 		return ((ICompilationUnit) element).getFullyQualifiedName();
+	}
+	
+	public boolean insearch() {
+		return insearch;
+	}
+	
+	public void insearch(boolean insearch) {
+		this.insearch = insearch;
+	}
+	
+	public int searchCacheFlags() {
+		return searchCacheFlags;
+	}
+	
+	public void searchCacheFlags(int searchCacheFlags) {
+		this.searchCacheFlags = searchCacheFlags;
+	}
+	
+	public char[] searchCacheIdent() {
+		return searchCacheIdent;
+	}
+	
+	public void searchCacheIdent(char[] searchCacheIdent) {
+		this.searchCacheIdent = searchCacheIdent;
+	}
+	
+	public IDsymbol searchCacheSymbol() {
+		return searchCacheSymbol;
+	}
+	
+	public void searchCacheSymbol(IDsymbol searchCacheSymbol) {
+		this.searchCacheSymbol = searchCacheSymbol;
+	}
+	
+	public IDsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		return super.search(loc, ident, flags, context);
 	}
 
 }

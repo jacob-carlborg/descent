@@ -1130,10 +1130,16 @@ class DefaultBindingResolver extends BindingResolver {
 			
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 			if (binding == null) {
+				IBinding pop1 = stack.pop();
+				IBinding pop2 = stack.pop();
+				if (!(pop1 instanceof ITypeBinding && pop2 instanceof ITypeBinding)) {
+					return;
+				}
+				
 				binding = new TypeAArrayBinding(
 						DefaultBindingResolver.this, 
-						(ITypeBinding) stack.pop(), 
-						(ITypeBinding) stack.pop(), 
+						(ITypeBinding) pop1, 
+						(ITypeBinding) pop2, 
 						signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}

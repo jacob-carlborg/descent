@@ -1432,12 +1432,13 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 	 * @since 3.0
 	 */
 	protected void installOverrideIndicator(boolean provideAST) {
-		super.installOverrideIndicator(provideAST);
-
-		if (fOverrideIndicatorManager == null)
-			return;
-
-		addReconcileListener(fOverrideIndicatorManager);
+		// TODO JDT UI override indicator
+//		super.installOverrideIndicator(provideAST);
+//
+//		if (fOverrideIndicatorManager == null)
+//			return;
+//
+//		addReconcileListener(fOverrideIndicatorManager);
 	}
 
 	/*
@@ -1445,9 +1446,10 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 	 * @since 3.0
 	 */
 	protected void uninstallOverrideIndicator() {
-		if (fOverrideIndicatorManager != null)
-			removeReconcileListener(fOverrideIndicatorManager);
-		super.uninstallOverrideIndicator();
+		// TODO JDT UI override indicator
+//		if (fOverrideIndicatorManager != null)
+//			removeReconcileListener(fOverrideIndicatorManager);
+//		super.uninstallOverrideIndicator();
 	}
 
 	/**

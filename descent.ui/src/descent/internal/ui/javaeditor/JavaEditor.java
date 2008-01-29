@@ -1690,7 +1690,8 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * The override and implements indicator manager for this editor.
 	 * @since 3.0
 	 */
-	protected OverrideIndicatorManager fOverrideIndicatorManager;
+	// TODO JDT UI override indicator
+//	protected OverrideIndicatorManager fOverrideIndicatorManager;
 	/**
 	 * Semantic highlighting manager
 	 * @since 3.0
@@ -2652,16 +2653,17 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 
 			((JavaSourceViewerConfiguration)getSourceViewerConfiguration()).handlePropertyChangeEvent(event);
 
-			if (affectsOverrideIndicatorAnnotations(event)) {
-				if (isShowingOverrideIndicators()) {
-					if (fOverrideIndicatorManager == null)
-						installOverrideIndicator(true);
-				} else {
-					if (fOverrideIndicatorManager != null)
-						uninstallOverrideIndicator();
-				}
-				return;
-			}
+			// TODO JDT UI override indicator
+//			if (affectsOverrideIndicatorAnnotations(event)) {
+//				if (isShowingOverrideIndicators()) {
+//					if (fOverrideIndicatorManager == null)
+//						installOverrideIndicator(true);
+//				} else {
+//					if (fOverrideIndicatorManager != null)
+//						uninstallOverrideIndicator();
+//				}
+//				return;
+//			}
 
 			if (PreferenceConstants.EDITOR_FOLDING_PROVIDER.equals(property)) {
 				if (sourceViewer instanceof ProjectionViewer) {
@@ -3200,35 +3202,37 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	}
 
 	protected void uninstallOverrideIndicator() {
-		if (fOverrideIndicatorManager != null) {
-			fOverrideIndicatorManager.removeAnnotations();
-			fOverrideIndicatorManager= null;
-		}
+		// TODO JDT UI override indicator
+//		if (fOverrideIndicatorManager != null) {
+//			fOverrideIndicatorManager.removeAnnotations();
+//			fOverrideIndicatorManager= null;
+//		}
 	}
 
 	protected void installOverrideIndicator(boolean provideAST) {
-		uninstallOverrideIndicator();
-		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
-		final IJavaElement inputElement= getInputJavaElement();
-
-		if (model == null || inputElement == null)
-			return;
-
-		fOverrideIndicatorManager= new OverrideIndicatorManager(model, inputElement, null);
-
-		if (provideAST) {
-			Job job= new Job(JavaEditorMessages.OverrideIndicatorManager_intallJob) {
-				protected IStatus run(IProgressMonitor monitor) {
-					CompilationUnit ast= JavaPlugin.getDefault().getASTProvider().getAST(inputElement, ASTProvider.WAIT_YES, null);
-					if (fOverrideIndicatorManager != null) // editor might have been closed in the meanwhile
-						fOverrideIndicatorManager.reconciled(ast, true, monitor);
-					return Status.OK_STATUS;
-				}
-			};
-			job.setPriority(Job.DECORATE);
-			job.setSystem(true);
-			job.schedule();
-		}
+		// TODO JDT UI override indicator
+//		uninstallOverrideIndicator();
+//		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
+//		final IJavaElement inputElement= getInputJavaElement();
+//
+//		if (model == null || inputElement == null)
+//			return;
+//
+//		fOverrideIndicatorManager= new OverrideIndicatorManager(model, inputElement, null);
+//
+//		if (provideAST) {
+//			Job job= new Job(JavaEditorMessages.OverrideIndicatorManager_intallJob) {
+//				protected IStatus run(IProgressMonitor monitor) {
+//					CompilationUnit ast= JavaPlugin.getDefault().getASTProvider().getAST(inputElement, ASTProvider.WAIT_YES, null);
+//					if (fOverrideIndicatorManager != null) // editor might have been closed in the meanwhile
+//						fOverrideIndicatorManager.reconciled(ast, true, monitor);
+//					return Status.OK_STATUS;
+//				}
+//			};
+//			job.setPriority(Job.DECORATE);
+//			job.setSystem(true);
+//			job.schedule();
+//		}
 	}
 
 	/**

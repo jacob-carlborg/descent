@@ -2,8 +2,6 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-import descent.internal.compiler.parser.ast.ASTNode;
-
 public interface IModule extends IPackage {
 	
 	IModule importedFrom();
@@ -55,5 +53,23 @@ public interface IModule extends IPackage {
 	void addDeferredSemantic(Dsymbol symbol, SemanticContext context);
 
 	String getFullyQualifiedName();
+	
+	boolean insearch();
+	
+	void insearch(boolean insearch);
+	
+	char[] searchCacheIdent();
+	
+	void searchCacheIdent(char[] searchCacheIdent);
+	
+	int searchCacheFlags();
+	
+	void searchCacheFlags(int searchCacheFlags);
+	
+	IDsymbol searchCacheSymbol();
+	
+	void searchCacheSymbol(IDsymbol searchCacheSymbol);
+
+	IDsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context);
 
 }
