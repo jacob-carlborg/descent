@@ -22,6 +22,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.Signature;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.ui.JavaPlugin;
 import descent.ui.text.java.JavaContentAssistInvocationContext;
 
@@ -33,11 +34,14 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	protected static final String RPAREN= ")"; //$NON-NLS-1$
 	protected static final String COMMA= ","; //$NON-NLS-1$
 	protected static final String SPACE= " "; //$NON-NLS-1$
+	protected static final String ASSIGN= "="; //$NON-NLS-1$
 	
 	protected static final class FormatterPrefs {
 		/* Methods & constructors */
 		public final boolean beforeOpeningParen;
 		public final boolean afterOpeningParen;
+		public final boolean beforeAssignmentOperator;
+		public final boolean afterAssignmentOperator;
 		public final boolean beforeComma;
 		public final boolean afterComma;
 		public final boolean beforeClosingParen;
@@ -53,18 +57,20 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 		// TODO JDT formatter preferences
 		
 		FormatterPrefs(IJavaProject project) {
-			beforeOpeningParen= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_METHOD_INVOCATION, false);
-			afterOpeningParen= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_METHOD_INVOCATION, false);
-			beforeComma= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_METHOD_INVOCATION_ARGUMENTS, false);
-			afterComma= true; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_METHOD_INVOCATION_ARGUMENTS, true);
-			beforeClosingParen= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_METHOD_INVOCATION, false);
-			inEmptyList= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_METHOD_INVOCATION, false);
+			beforeOpeningParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION, false);
+			afterOpeningParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, false);
+			beforeComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, false);
+			afterComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, true);
+			beforeAssignmentOperator= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASSIGNMENT_OPERATOR, false);
+			afterAssignmentOperator= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_ASSIGNMENT_OPERATOR, true);
+			beforeClosingParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, false);
+			inEmptyList= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, false);
 			
-			beforeOpeningBracket= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_ANGLE_BRACKET_IN_PARAMETERIZED_TYPE_REFERENCE, false);
-			afterOpeningBracket= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_ANGLE_BRACKET_IN_PARAMETERIZED_TYPE_REFERENCE, false);
-			beforeTypeArgumentComma= false;; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_PARAMETERIZED_TYPE_REFERENCE, false);
-			afterTypeArgumentComma= true; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_PARAMETERIZED_TYPE_REFERENCE, true);
-			beforeClosingBracket= false; //getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_ANGLE_BRACKET_IN_PARAMETERIZED_TYPE_REFERENCE, false);
+			beforeOpeningBracket= false;
+			afterOpeningBracket= false;
+			beforeTypeArgumentComma= false; // getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_PARAMETERIZED_TYPE_REFERENCE, false);
+			afterTypeArgumentComma= false; // getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_PARAMETERIZED_TYPE_REFERENCE, true);
+			beforeClosingBracket= false; // getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_ANGLE_BRACKET_IN_PARAMETERIZED_TYPE_REFERENCE, false);
 		}
 	
 		protected final boolean getCoreOption(IJavaProject project, String key, boolean def) {

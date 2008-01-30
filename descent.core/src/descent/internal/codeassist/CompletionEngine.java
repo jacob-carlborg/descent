@@ -218,7 +218,8 @@ public class CompletionEngine extends Engine
 			if (index != -1) {
 				sourceUnitFqn = CharOperation.subarray(this.fileName, 0, index);
 			} else {
-				sourceUnitFqn = Arrays.copyOf(sourceUnitFqn, sourceUnitFqn.length);
+				sourceUnitFqn = new char[sourceUnitFqn.length];
+				System.arraycopy(sourceUnitFqn, 0, sourceUnitFqn, 0, sourceUnitFqn.length);
 			}
 			CharOperation.replace(sourceUnitFqn, '/', '.');
 			
@@ -1151,7 +1152,11 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
 					proposal.setName(func.ident().ident);
 					proposal.setCompletion((func.ident().toString() + "()").toCharArray());
-					proposal.setSignature(func.getSignature().toCharArray());
+					
+					String sig = func.getSignature();
+					if (sig != null) {
+						proposal.setSignature(sig.toCharArray());
+					}
 					proposal.setFlags(flags | func.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1570,8 +1575,13 @@ public class CompletionEngine extends Engine
 		
 		knownCompilationUnits.put(fullyQualifiedName, this);
 		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForInterestingProposal();
+		relevance += R_QUALIFIED + R_COMPILATION_UNIT;
+		
 		CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
 		proposal.setCompletion(fullyQualifiedName);
+		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		this.requestor.accept(proposal);
 	}

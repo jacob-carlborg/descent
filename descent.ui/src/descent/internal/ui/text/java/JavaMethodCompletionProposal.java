@@ -34,6 +34,10 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	private boolean fHasParametersComputed= false;
 	private boolean fIsVariadic;
 	private boolean fIsVariadicComputed= false;
+	private boolean fIsSetter;
+	private boolean fIsSetterComputed= false;
+	private boolean fIsGetter;
+	private boolean fIsGetterComputed= false;
 	private int fContextInformationPosition;
 	private FormatterPrefs fFormatterPrefs;
 
@@ -51,7 +55,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	}
 
 	protected boolean needsLinkedMode() {
-		return hasArgumentList() && hasParameters();
+		return hasArgumentList() && hasParameters() && !isSetter() && !isGetter();
 	}
 	
 	public CharSequence getPrefixCompletionText(IDocument document, int completionOffset) {
@@ -104,12 +108,28 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		return fHasParameters;
 	}
 	
-	private final boolean isVariadic() {
+	protected final boolean isVariadic() {
 		if (!fIsVariadicComputed) {
 			fIsVariadicComputed= true;
 			fIsVariadic= computeIsVariadic();
 		}
 		return fIsVariadic;
+	}
+	
+	protected final boolean isSetter() {
+		if (!fIsSetterComputed) {
+			fIsSetterComputed= true;
+			fIsSetter = computeIsSetter();
+		}
+		return fIsSetter;
+	}
+	
+	protected final boolean isGetter() {
+		if (!fIsGetterComputed) {
+			fIsGetterComputed= true;
+			fIsGetter = computeIsGetter();
+		}
+		return fIsGetter;
 	}
 
 	private boolean computeHasParameters() throws IllegalArgumentException {
@@ -118,6 +138,22 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	
 	private boolean computeIsVariadic() throws IllegalArgumentException {
 		return Signature.isVariadic(fProposal.getSignature());
+	}
+	
+	private boolean computeIsSetter() throws IllegalArgumentException {
+		char[] retType = Signature.getReturnType(fProposal.getSignature());
+		if (retType.length == 1 && retType[0] == 'v') {
+			return Signature.getParameterCount(fProposal.getSignature()) == 1;
+		}
+		return false;
+	}
+	
+	private boolean computeIsGetter() throws IllegalArgumentException {
+		char[] retType = Signature.getReturnType(fProposal.getSignature());
+		if (retType.length != 1 || retType[0] != 'v') {
+			return !hasParameters();
+		}
+		return false;
 	}
 
 	/**
@@ -157,32 +193,44 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		// we're inserting a method plus the argument list - respect formatter preferences
 		StringBuffer buffer= new StringBuffer();
 		buffer.append(fProposal.getName());
-
-		FormatterPrefs prefs= getFormatterPrefs();
-		if (prefs.beforeOpeningParen)
-			buffer.append(SPACE);
-		buffer.append(LPAREN);
 		
-		if (hasParameters()) {
-			setCursorPosition(buffer.length());
-			
-			if (prefs.afterOpeningParen)
+		FormatterPrefs prefs= getFormatterPrefs();
+		
+		if (isSetter()) {
+			if (prefs.beforeAssignmentOperator)
 				buffer.append(SPACE);
-			
-
-			// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
-//			if (prefs.beforeClosingParen)
-//				buffer.append(SPACE);
+			buffer.append(ASSIGN);
+			if (prefs.afterAssignmentOperator)
+				buffer.append(SPACE);
+		} else if (isGetter()) {
+			setCursorPosition(buffer.length());
 		} else {
-			if (isVariadic()) {
+			
+			if (prefs.beforeOpeningParen)
+				buffer.append(SPACE);
+			buffer.append(LPAREN);
+			
+			if (hasParameters()) {
 				setCursorPosition(buffer.length());
+				
+				if (prefs.afterOpeningParen)
+					buffer.append(SPACE);
+				
+	
+				// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
+	//			if (prefs.beforeClosingParen)
+	//				buffer.append(SPACE);
+			} else {
+				if (isVariadic()) {
+					setCursorPosition(buffer.length());
+				}
+				
+				if (prefs.inEmptyList)
+					buffer.append(SPACE);
 			}
 			
-			if (prefs.inEmptyList)
-				buffer.append(SPACE);
-		}
-
-		buffer.append(RPAREN);
+			buffer.append(RPAREN);
+		}		
 
 		return buffer.toString();
 	}

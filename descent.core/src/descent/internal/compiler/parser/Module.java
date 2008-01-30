@@ -204,7 +204,9 @@ public class Module extends Package implements IModule {
 		}
 
 		if (semanticstarted != 2) {
-			throw new IllegalStateException("assert(semanticstarted == 2);");
+			// SEMANTIC
+			// throw new IllegalStateException("assert(semanticstarted == 2);");
+			return;
 		}
 		semanticstarted = 3;
 

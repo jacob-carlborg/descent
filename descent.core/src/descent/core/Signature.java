@@ -1050,6 +1050,9 @@ public static String getElementType(String typeSignature) throws IllegalArgument
  * @since 2.0
  */
 public static int getParameterCount(char[] methodSignature) throws IllegalArgumentException {
+	if (methodSignature == null) {
+		return 0;
+	}
 	return getParameterCount(new String(methodSignature));
 }
 

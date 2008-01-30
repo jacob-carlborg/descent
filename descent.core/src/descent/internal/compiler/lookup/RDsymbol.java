@@ -490,12 +490,8 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 					symbol = new RAliasDeclaration(field, context);
 				} else if (field.isTypedef()) {
 					symbol = new RTypedefDeclaration(field, context);
-				} else if (field.isTemplateMixin()) {
-					// TODO should never hit this, since it will already be expanded
-					// But check...
-					throw new IllegalStateException("Should not happen");
 				} else {
-					throw new IllegalStateException("Should not happen");
+					return null;
 				}
 				break;
 			case IJavaElement.METHOD:

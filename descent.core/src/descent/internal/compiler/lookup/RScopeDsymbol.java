@@ -96,6 +96,7 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	@Override
 	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
 		IDsymbol sym = SemanticMixin.search(this, loc, ident, flags, context);
+		
 		// This is here to get the "import bug", with which you can
 		// access members of modules privately improted, if you use fqn
 		if (sym instanceof Import) {

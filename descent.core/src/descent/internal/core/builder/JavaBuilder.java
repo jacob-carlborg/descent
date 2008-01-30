@@ -127,7 +127,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			Module module = parser.parseModuleObj();
 			module.moduleName = unit.getFullyQualifiedName();
 			
-			CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
+			//CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
 			
 			associateTaskTags(file, parser);
 			associateProblems(file, module);

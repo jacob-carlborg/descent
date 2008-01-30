@@ -41,7 +41,7 @@ public final class ExperimentalMethodProposal extends JavaMethodCompletionPropos
 		int baseOffset= getReplacementOffset();
 		String replacement= getReplacementString();
 
-		if (fArgumentOffsets != null && getTextViewer() != null) {
+		if (fArgumentOffsets != null && getTextViewer() != null && !isSetter() && !isGetter()) {
 			try {
 				LinkedModeModel model= new LinkedModeModel();
 				for (int i= 0; i != fArgumentOffsets.length; i++) {
@@ -96,33 +96,45 @@ public final class ExperimentalMethodProposal extends JavaMethodCompletionPropos
 		StringBuffer buffer= new StringBuffer(String.valueOf(fProposal.getName()));
 		
 		FormatterPrefs prefs= getFormatterPrefs();
-		if (prefs.beforeOpeningParen)
-			buffer.append(SPACE);
-		buffer.append(LPAREN);
 		
-		setCursorPosition(buffer.length());
-		
-		if (prefs.afterOpeningParen)
-			buffer.append(SPACE);
-		
-		for (int i= 0; i != count; i++) {
-			if (i != 0) {
-				if (prefs.beforeComma)
-					buffer.append(SPACE);
-				buffer.append(COMMA);
-				if (prefs.afterComma)
-					buffer.append(SPACE);
+		if (isSetter()) {
+			if (prefs.beforeAssignmentOperator)
+				buffer.append(SPACE);
+			buffer.append(ASSIGN);
+			if (prefs.afterAssignmentOperator)
+				buffer.append(SPACE);
+		} else if (isGetter()) {
+			setCursorPosition(buffer.length());
+		} else {
+			
+			if (prefs.beforeOpeningParen)
+				buffer.append(SPACE);
+			buffer.append(LPAREN);
+			
+			setCursorPosition(buffer.length());
+			
+			if (prefs.afterOpeningParen)
+				buffer.append(SPACE);
+			
+			for (int i= 0; i != count; i++) {
+				if (i != 0) {
+					if (prefs.beforeComma)
+						buffer.append(SPACE);
+					buffer.append(COMMA);
+					if (prefs.afterComma)
+						buffer.append(SPACE);
+				}
+				
+				fArgumentOffsets[i]= buffer.length();
+				buffer.append(parameterNames[i]);
+				fArgumentLengths[i]= parameterNames[i].length;
 			}
 			
-			fArgumentOffsets[i]= buffer.length();
-			buffer.append(parameterNames[i]);
-			fArgumentLengths[i]= parameterNames[i].length;
+			if (prefs.beforeClosingParen)
+				buffer.append(SPACE);
+	
+			buffer.append(RPAREN);
 		}
-		
-		if (prefs.beforeClosingParen)
-			buffer.append(SPACE);
-
-		buffer.append(RPAREN);
 
 		return buffer.toString();
 	}

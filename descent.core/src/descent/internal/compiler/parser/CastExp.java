@@ -103,7 +103,9 @@ public class CastExp extends UnaExp {
 	@Override
 	public Expression optimize(int result, SemanticContext context) {
 		if (type == null) {
-			throw new IllegalStateException("assert(type);");
+			// SEMANTIC 
+			// throw new IllegalStateException("assert(type);");
+			return e1;
 		}
 		TOK op1 = e1.op;
 
@@ -174,6 +176,7 @@ public class CastExp extends UnaExp {
 		if (type != null) {
 			return this;
 		}
+		
 		super.semantic(sc, context);
 		if (e1.type != null) // if not a tuple
 		{

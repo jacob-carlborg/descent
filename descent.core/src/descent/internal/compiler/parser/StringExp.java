@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -230,11 +229,11 @@ public class StringExp extends Expression {
 		unique = 0;
 		if (!committed) {
 			// Copy when committing the type
-			char[] s;
+			char[] s = new char[string.length];
 			// TODO see if the following translation is ok, and if a copy is needed
 			// s = mem.malloc((len + 1) * sz);
 			// memcpy(s, string, (len + 1) * sz);
-			s = Arrays.copyOf(string, string.length);
+			System.arraycopy(string, 0, s, 0, string.length);
 			se = new StringExp(loc, s, len);
 			se.type = type;
 			se.sz = sz;

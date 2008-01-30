@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -343,7 +344,7 @@ public final class BuildPathDialogAccess {
 			throw new IllegalArgumentException();
 		}
 		
-		Class[] acceptedClasses= new Class[] { IFile.class };
+		Class[] acceptedClasses= new Class[] { IFolder.class };
 		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, true);
 		ArrayList usedJars= new ArrayList(usedEntries.length);
 		IWorkspaceRoot root= ResourcesPlugin.getWorkspace().getRoot();
@@ -423,26 +424,19 @@ public final class BuildPathDialogAccess {
 		if (lastUsedPath == null) {
 			lastUsedPath= ""; //$NON-NLS-1$
 		}
-		FileDialog dialog= new FileDialog(shell, SWT.MULTI);
+		DirectoryDialog dialog= new DirectoryDialog(shell, SWT.MULTI);
 		dialog.setText(NewWizardMessages.BuildPathDialogAccess_ExtJARArchiveDialog_new_title); 
-		dialog.setFilterExtensions(ArchiveFileFilter.FILTER_EXTENSIONS);
 		dialog.setFilterPath(lastUsedPath);
 		
 		String res= dialog.open();
 		if (res == null) {
 			return null;
 		}
-		String[] fileNames= dialog.getFileNames();
-		int nChosen= fileNames.length;
-			
-		IPath filterPath= Path.fromOSString(dialog.getFilterPath());
-		IPath[] elems= new IPath[nChosen];
-		for (int i= 0; i < nChosen; i++) {
-			elems[i]= filterPath.append(fileNames[i]).makeAbsolute();	
-		}
+		
 		JavaPlugin.getDefault().getDialogSettings().put(IUIConstants.DIALOGSTORE_LASTEXTJAR, dialog.getFilterPath());
 		
-		return elems;
+		IPath path = new Path(res);
+		return new IPath[] { path };
 	}
 		
 	/**

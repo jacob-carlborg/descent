@@ -95,6 +95,8 @@ public class SemanticContext {
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.signatureToTypeCache = new HashMap<String, Type>();
 		
+		muteProblems++;
+		
 		// for debugging purposes
 //		global.path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
 //		this.moduleFinder = new DmdModuleFinder(global);

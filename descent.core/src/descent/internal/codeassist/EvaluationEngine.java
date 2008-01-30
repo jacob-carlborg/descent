@@ -22,6 +22,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.NegExp;
 import descent.internal.compiler.parser.RealExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StringExp;
@@ -141,6 +142,8 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			evalComplex((ComplexExp) exp);
 		} else if (exp instanceof StringExp) {
 			evalString((StringExp) exp);
+		} else if (exp instanceof NegExp) {
+			// evalExp(((NegExp) exp).e1);
 		}
 	}
 	

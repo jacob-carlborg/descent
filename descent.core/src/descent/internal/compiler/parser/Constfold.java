@@ -1467,7 +1467,9 @@ public class Constfold {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CannotCastSymbolToSymbol, e1, new String[] { e1.type.toChars(context),
 					        type.toChars(context) }));
-			e = new IntegerExp(loc, 0, type);
+			// Changed for Descent to not explode in other semantic
+			// e = new IntegerExp(loc, 0, type);
+			e = new IntegerExp(loc, 0, Type.tint32);
 		}
 		e.copySourceRange(e1);
 		return e;
