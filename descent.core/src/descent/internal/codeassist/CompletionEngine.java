@@ -1,6 +1,5 @@
 package descent.internal.codeassist;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +70,7 @@ import descent.internal.compiler.parser.IEnumMember;
 import descent.internal.compiler.parser.IFuncDeclaration;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IScopeDsymbol;
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IStructDeclaration;
 import descent.internal.compiler.parser.ITemplateDeclaration;
 import descent.internal.compiler.parser.ITypedefDeclaration;
@@ -138,13 +138,13 @@ public class CompletionEngine extends Engine
 	int startPosition, actualCompletionPosition, endPosition, offset;
 	
 	char[] source;
-	char[] completionToken;
-	char[] qualifiedCompletionToken;
+	char[] currentName;
 	
 	HashtableOfObject typeCache;
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	HashtableOfObject knownKeywords = new HashtableOfObject(10);
+	HashtableOfObject knownTypes = new HashtableOfObject(10);
 	
 	boolean isCompletingPackage;
 	
@@ -230,6 +230,10 @@ public class CompletionEngine extends Engine
 			this.module = parser.parseModuleObj();
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
+			
+			if (assistNode != null) {
+				System.out.println(assistNode.getClass());
+			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -382,9 +386,13 @@ public class CompletionEngine extends Engine
 		nameEnvironment.findCompilationUnits(fqnBeforeCursor, this);
 	}
 	
-	private void completeArgumentName(CompletionOnArgumentName node) {
-		char[] name = computePrefixAndSourceRange(node.ident);
-		findVariableNames(name, node.type, findExcludedNames(node));
+	private void completeArgumentName(CompletionOnArgumentName node) throws JavaModelException {
+		if (node.type instanceof CompletionOnTypeIdentifier) {
+			completeTypeIdentifier((CompletionOnTypeIdentifier) node.type);
+		} else {
+			char[] name = computePrefixAndSourceRange(node.ident);
+			findVariableNames(name, node.type, findExcludedNames(node));
+		}
 	}
 	
 	private void completeGotoBreakOrContinueStatement(IdentifierExp ident, final boolean inLoop) {
@@ -657,14 +665,19 @@ public class CompletionEngine extends Engine
 	private void completeTypeIdentifier(CompletionOnTypeIdentifier node) throws JavaModelException {
 		doSemantic(module);
 		
-		char[] name = computePrefixAndSourceRange(node.ident);
+		currentName = computePrefixAndSourceRange(node.ident);
 		
 		Scope scope = node.scope;
-		completeScope(scope, name, getIncludesForScope(scope));
+		
+		// Exclude types, since they will be reported later
+		completeScope(scope, currentName, getIncludesForScope(scope) & ~INCLUDE_TYPES);
 		
 		// Also suggest packages
 		isCompletingPackage = true;
-		nameEnvironment.findCompilationUnits(name, this);
+		nameEnvironment.findCompilationUnits(currentName, this);
+		
+		// And top level declarations
+		nameEnvironment.findTypes(currentName, false, true, this);
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -674,18 +687,22 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		char[] name = computePrefixAndSourceRange((IdentifierExp) node.exp);
+		currentName = computePrefixAndSourceRange((IdentifierExp) node.exp);		
 		
 		Scope scope = node.scope;
 		if (scope == null) {
 			return;
 		}
 		
-		completeScope(scope, name, getIncludesForScope(scope));
+		// Exclude types, since they will be reported later
+		completeScope(scope, currentName, getIncludesForScope(scope) & ~INCLUDE_TYPES);
 		
 		// Also suggest packages
 		isCompletingPackage = true;
-		nameEnvironment.findCompilationUnits(name, this);
+		nameEnvironment.findCompilationUnits(currentName, this);
+		
+		// And top level declarations
+		nameEnvironment.findTypes(currentName, false, true, this);
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
@@ -1171,6 +1188,27 @@ public class CompletionEngine extends Engine
 		}
 	}
 
+	private char[] getFQN(IDsymbol member) {
+		StringBuilder sb = new StringBuilder();
+		getFQN(member, sb);
+		
+		char[] res = new char[sb.length()];
+		sb.getChars(0, sb.length(), res, 0);
+		return res;
+	}
+
+	private void getFQN(IDsymbol member, StringBuilder sb) {
+		if (member instanceof IModule) {
+			sb.append(((IModule) member).getFullyQualifiedName());
+		} else {
+			if (member.parent() != null) {
+				getFQN(member.parent(), sb);
+				sb.append('.');
+			}
+			sb.append(member.ident());
+		}
+	}
+
 	private void suggestProperties(char[] name, char[][] properties, int relevance) {
 		for(char[] property : properties) {
 			if (name.length == 0 || CharOperation.camelCaseMatch(name, property)) {
@@ -1591,6 +1629,35 @@ public class CompletionEngine extends Engine
 	}
 
 	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
+		char[] fullName = CharOperation.concat(packageName, typeName, '.');
+		
+		if (knownTypes.containsKey(fullName)) {
+			return;
+		}
+		knownTypes.put(fullName, this);
+		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForInterestingProposal();
+		relevance += computeRelevanceForCaseMatching(currentName, typeName);
+		relevance += R_CLASS;
+		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+		proposal.setName(typeName);
+		proposal.setCompletion(fullName);
+		
+		StringBuilder sig = new StringBuilder();
+		sig.append(ISignatureConstants.MODULE);
+		sig.append(packageName.length);
+		sig.append(packageName);
+		sig.append(ISignatureConstants.CLASS);
+		sig.append(typeName.length);
+		sig.append(typeName);
+		
+		proposal.setSignature(sig.toString().toCharArray());
+		proposal.setFlags(modifiers);
+		proposal.setRelevance(relevance);
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+		CompletionEngine.this.requestor.accept(proposal);
 	}
 
 }

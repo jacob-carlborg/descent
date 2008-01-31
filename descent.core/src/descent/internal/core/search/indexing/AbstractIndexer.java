@@ -154,6 +154,10 @@ public abstract class AbstractIndexer implements IIndexConstants {
 		addIndexEntry(REF, name);
 	}
 	public void addTypeReference(char[] typeName) {
+		if (typeName == null) {
+			return;
+		}
+		
 		addNameReference(CharOperation.lastSegment(typeName, '.'));
 	}
 	public abstract void indexDocument();

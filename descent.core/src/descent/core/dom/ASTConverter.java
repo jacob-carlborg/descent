@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
@@ -96,8 +97,9 @@ public class ASTConverter {
 		ast.setBindingResolver(new DefaultBindingResolver(project, owner, tables));
 	}
 	
-	public CompilationUnit convert(Module module) {
+	public CompilationUnit convert(Module module, ICompilationUnit cu) {
 		CompilationUnit unit = new CompilationUnit(ast);
+		unit.setJavaElement(cu);
 		
 		moduleComments = convertComments(module.comments);
 		unit.setCommentTable(moduleComments);

@@ -48,7 +48,7 @@ public abstract class TypeInfo {
 	
 	static final String EMPTY_STRING= ""; //$NON-NLS-1$
 	
-	protected TypeInfo(String pkg, String name, char[][] enclosingTypes, int modifiers) {
+	protected TypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers) {
 		fPackage= pkg;
 		fName= name;
 		fModifiers= modifiers;

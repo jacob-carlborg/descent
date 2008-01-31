@@ -68,9 +68,9 @@ public class SourceIndexer extends AbstractIndexer implements SuffixConstants {
 			// TODO JDT check if bindings get done in JDT... here, not
 			parser.parseCompilationUnit(new BasicCompilationUnit(source, null, null, new String(name)), true /* resolve bindings */);
 		} catch (Exception e) {
-			if (JobManager.VERBOSE) {
+//			if (JobManager.VERBOSE) {
 				e.printStackTrace();
-			}
+//			}
 		}
 	}
 }

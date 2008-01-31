@@ -113,7 +113,7 @@ public class TypeInfoViewer {
 		public void setHistory(Set history) {
 			fHistory= history;
 		}
-		public void acceptType(int modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
+		public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 			if (fStop)
 				return;
 			if (TypeFilter.isFiltered(packageName, simpleTypeName))

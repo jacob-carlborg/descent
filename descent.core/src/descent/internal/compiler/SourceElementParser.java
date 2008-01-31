@@ -331,12 +331,13 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		if (node.ident != null) {
 			info.name = node.ident.ident;
+			
 			info.nameSourceEnd = endOf(node.ident);
 			info.nameSourceStart = startOf(node.ident);
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		info.secondary = !foundType;
+		//info.secondary = !foundType;
 		
 		if (node instanceof IClassDeclaration) {
 			IClassDeclaration c = (IClassDeclaration) node;

@@ -99,7 +99,7 @@ public class ContextSensitiveImportRewriteContext extends ImportRewriteContext {
 			}
 		}
 		
-		if (qualifier.equals("java.lang")) { //$NON-NLS-1$
+		if (qualifier.equals("object")) { //$NON-NLS-1$
 			//No explicit import statement required
 			IJavaElement parent= fCompilationUnit.getJavaElement().getParent();
 			if (parent instanceof IPackageFragment) {
@@ -176,6 +176,9 @@ public class ContextSensitiveImportRewriteContext extends ImportRewriteContext {
 			fDeclarationsInScope= analyzer.getDeclarationsInScope(fPosition, ScopeAnalyzer.METHODS | ScopeAnalyzer.TYPES | ScopeAnalyzer.VARIABLES);
 		}
 		*/
+		if (fDeclarationsInScope == null) {
+			fDeclarationsInScope = new IBinding[0];
+		}
 		return fDeclarationsInScope;
 	}
 	
@@ -192,6 +195,9 @@ public class ContextSensitiveImportRewriteContext extends ImportRewriteContext {
 			fImportedNames= (Name[])imports.toArray(new Name[imports.size()]);
 		}
 		*/
+		if (fImportedNames == null) {
+			fImportedNames = new Name[0];
+		}
 		return fImportedNames;
 	}
 }

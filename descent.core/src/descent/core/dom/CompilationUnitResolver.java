@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
@@ -225,7 +226,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return context;
 	}
 	
-	public static CompilationUnit convert(AST ast, ParseResult parseResult, IJavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) {
+	public static CompilationUnit convert(AST ast, ParseResult parseResult, IJavaProject project, ICompilationUnit unit, WorkingCopyOwner owner, IProgressMonitor monitor) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
@@ -237,7 +238,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		} else {
 			converter.ast.setBindingResolver(new BindingResolver());
 		}
-		CompilationUnit result = converter.convert(parseResult.module);
+		CompilationUnit result = converter.convert(parseResult.module, unit);
 		result.setLineEndTable(parseResult.module.lineEnds);
 		result.problems = parseResult.module.problems;
 		result.initCommentMapper(parseResult.scanner);

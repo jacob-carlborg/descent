@@ -320,28 +320,35 @@ public final class ImportRewrite {
 	}
 	
 	private static int compareImport(char prefix, String qualifier, String name, String curr) {
-		if (curr.charAt(0) != prefix || !curr.endsWith(name)) {
+		//if (curr.charAt(0) != prefix || !curr.endsWith(name)) {
+		if (curr.charAt(0) != prefix || !curr.endsWith(qualifier)) {
 			return ImportRewriteContext.RES_NAME_UNKNOWN;
 		}
 		
 		curr= curr.substring(1); // remove the prefix
 		
-		if (curr.length() == name.length()) {
-			if (qualifier.length() == 0) {
-				return ImportRewriteContext.RES_NAME_FOUND;
-			}
-			return ImportRewriteContext.RES_NAME_CONFLICT; 
+		if (curr.equals(qualifier)) {
+			return ImportRewriteContext.RES_NAME_FOUND; 
 		}
-		// at this place: curr.length > name.length
 		
-		int dotPos= curr.length() - name.length() - 1;
-		if (curr.charAt(dotPos) != '.') {
-			return ImportRewriteContext.RES_NAME_UNKNOWN;
-		}
-		if (qualifier.length() != dotPos || !curr.startsWith(qualifier)) {
-			return ImportRewriteContext.RES_NAME_CONFLICT; 
-		}
-		return ImportRewriteContext.RES_NAME_FOUND; 
+		return ImportRewriteContext.RES_NAME_UNKNOWN;
+		
+//		if (curr.length() == name.length()) {
+//			if (qualifier.length() == 0) {
+//				return ImportRewriteContext.RES_NAME_FOUND;
+//			}
+//			return ImportRewriteContext.RES_NAME_CONFLICT;
+//		}
+//		// at this place: curr.length > name.length
+//		
+//		int dotPos= curr.length() - name.length() - 1;
+//		if (curr.charAt(dotPos) != '.') {
+//			return ImportRewriteContext.RES_NAME_UNKNOWN;
+//		}
+//		if (qualifier.length() != dotPos || !curr.startsWith(qualifier)) {
+//			return ImportRewriteContext.RES_NAME_CONFLICT; 
+//		}
+//		return ImportRewriteContext.RES_NAME_FOUND; 
 	}
 	
 	/**

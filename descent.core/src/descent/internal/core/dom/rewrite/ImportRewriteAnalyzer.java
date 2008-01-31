@@ -454,6 +454,7 @@ public final class ImportRewriteAnalyzer {
 	}
 	
 	public static List<ImportDeclaration> getImports(CompilationUnit root) {
+		// TODO JDT UI import rewrite: get this well done
 		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
 		for(Declaration declaration : root.declarations()) {
 			if (declaration.getNodeType() == ASTNode.IMPORT_DECLARATION) {
@@ -561,7 +562,7 @@ public final class ImportRewriteAnalyzer {
 					
 					if (region == null) { // new entry
 						if (!doStarImport || currDecl.isOnDemand() || (onDemandConflicts != null && onDemandConflicts.contains(currDecl.getSimpleName()))) {
-							String str= getNewImportString(currDecl.getElementName(), isStatic, lineDelim);
+							String str= getNewImportString(currDecl.getTypeContainerName(), isStatic, lineDelim);
 							stringsToInsert.add(str);
 						}
 					} else {
@@ -790,6 +791,10 @@ public final class ImportRewriteAnalyzer {
 				
 		public String getElementName() {
 			return this.elementName;
+		}
+		
+		public String getTypeContainerName() {
+			return Signature.getQualifier(this.elementName);
 		}
 		
 		public int compareTo(String fullName, boolean isStaticImport) {

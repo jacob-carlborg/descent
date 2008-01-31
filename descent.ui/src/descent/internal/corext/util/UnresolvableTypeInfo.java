@@ -16,7 +16,7 @@ public class UnresolvableTypeInfo extends TypeInfo {
 	
 	private final String fPath;
 	
-	public UnresolvableTypeInfo(String pkg, String name, char[][] enclosingTypes, int modifiers, String path) {
+	public UnresolvableTypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, String path) {
 		super(pkg, name, enclosingTypes, modifiers);
 		fPath= path;
 	}

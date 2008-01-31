@@ -33,7 +33,7 @@ public class JarFileEntryTypeInfo extends TypeInfo {
 	private final String fFileName;
 	private final String fExtension;
 	
-	public JarFileEntryTypeInfo(String pkg, String name, char[][] enclosingTypes, int modifiers, String jar, String fileName, String extension) {
+	public JarFileEntryTypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, String jar, String fileName, String extension) {
 		super(pkg, name, enclosingTypes, modifiers);
 		fJar= jar;
 		fFileName= fileName;
@@ -96,14 +96,29 @@ public class JarFileEntryTypeInfo extends TypeInfo {
 	
 	private IJavaElement findElementInRoot(IPackageFragmentRoot root) {
 		IJavaElement res;
-		IPackageFragment frag= root.getPackageFragment(getPackageName());
-		String extension= getExtension();
-		String fullName= getFileName() + '.' + extension;
+		String packageName = getPackageName();
+		int index = packageName.lastIndexOf('.');
+		if (index != - 1) {
+			packageName = packageName.substring(0, index);
+		} else {
+			packageName = "";
+		}
 		
-		if ("class".equals(extension)) { //$NON-NLS-1$
+		String extension= getExtension();
+		String fileName = getFileName();
+		index = fileName.lastIndexOf('/');
+		if (index == -1) {
+			index = fileName.lastIndexOf('\\');
+		}
+		if (index != -1) {
+			fileName = fileName.substring(index + 1);
+		}
+		String fullName= fileName + '.' + extension;
+		
+		IPackageFragment frag= root.getPackageFragment(packageName);
+		
+		if (JavaCore.isJavaLikeFileName(fullName)) {
 			res=  frag.getClassFile(fullName);
-		} else if (JavaCore.isJavaLikeFileName(fullName)) {
-			res=  frag.getCompilationUnit(fullName);
 		} else {
 			return null;
 		}

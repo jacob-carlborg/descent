@@ -365,7 +365,6 @@ public void indexAll(IProject project) {
  */
 public void indexLibrary(IPath path, IProject requestingProject) {
 	// requestingProject is no longer used to cancel jobs but leave it here just in case
-	/* TODO JDT index library
 	if (JavaCore.getPlugin() == null) return;
 	
 	Object target = JavaModel.getTarget(ResourcesPlugin.getWorkspace().getRoot(), path, true);
@@ -388,7 +387,6 @@ public void indexLibrary(IPath path, IProject requestingProject) {
 	// check if the same request is not already in the queue
 	if (!isJobWaiting(request))
 		this.request(request);
-	*/
 }
 /**
  * Index the content of the given source folder.

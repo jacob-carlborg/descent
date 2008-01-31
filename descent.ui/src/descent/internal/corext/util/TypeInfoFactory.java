@@ -28,7 +28,7 @@ public class TypeInfoFactory {
 		fBuffer= new char[512];
 	}
 
-	public TypeInfo create(char[] packageName, char[] typeName, char[][] enclosingName, int modifiers, String path) {
+	public TypeInfo create(char[] packageName, char[] typeName, char[][] enclosingName, long modifiers, String path) {
 		String pn= getPackageName(packageName);
 		String tn= new String(typeName);
 		TypeInfo result= null;
@@ -61,13 +61,13 @@ public class TypeInfoFactory {
 		return (IFileTypeInfo)info;
 	}
 	
-	private TypeInfo createJarFileEntryTypeInfo(String packageName, String typeName, char[][] enclosingName, int modifiers, String path, JarFileEntryTypeInfo last, int index) {
+	private TypeInfo createJarFileEntryTypeInfo(String packageName, String typeName, char[][] enclosingName, long modifiers, String path, JarFileEntryTypeInfo last, int index) {
 		String jar= path.substring(0, index);
 		String rest= path.substring(index + 1);
-		index= rest.lastIndexOf(TypeInfo.SEPARATOR);
-		if (index != -1) {
-			rest= rest.substring(index + 1);
-		}
+//		index= rest.lastIndexOf(TypeInfo.SEPARATOR);
+//		if (index != -1) {
+//			rest= rest.substring(index + 1);
+//		}
 		String file= null;
 		String extension= null;
 		index= rest.lastIndexOf(TypeInfo.EXTENSION_SEPARATOR);
@@ -101,7 +101,7 @@ public class TypeInfoFactory {
 		return new JarFileEntryTypeInfo(packageName, typeName, enclosingName, modifiers, jar, file, extension);
 	}
 	
-	private TypeInfo createIFileTypeInfo(String packageName, String typeName, char[][] enclosingName, int modifiers, String path, IFileTypeInfo last, String project) {
+	private TypeInfo createIFileTypeInfo(String packageName, String typeName, char[][] enclosingName, long modifiers, String path, IFileTypeInfo last, String project) {
 		String rest= path.substring(project.length() + 1); // the first slashes.
 		int index= rest.lastIndexOf(TypeInfo.SEPARATOR);
 		if (index == -1)

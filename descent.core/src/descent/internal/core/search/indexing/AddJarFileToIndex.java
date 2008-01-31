@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.JavaModelException;
+import descent.core.search.IJavaSearchConstants;
+import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
 import descent.core.search.SearchParticipant;
 import descent.internal.compiler.util.SimpleLookupTable;
@@ -164,7 +166,7 @@ class AddJarFileToIndex extends IndexRequest {
 					return false;
 				}
 				
-				visitToIndexDocuments(root, root, participant, index);
+				visitToIndexDocuments(root, root, participant, index, "");
 				this.manager.saveIndex(index);
 				if (JobManager.VERBOSE)
 					descent.internal.core.util.Util.verbose("-> done indexing of " //$NON-NLS-1$
@@ -200,7 +202,7 @@ class AddJarFileToIndex extends IndexRequest {
 		}
 	}
 	
-	private void visitToIndexDocuments(File superRoot, File root, SearchParticipant participant, Index index) {
+	private void visitToIndexDocuments(File superRoot, File root, SearchParticipant participant, Index index, String prev) {
 		if (root.isDirectory()) {
 			File[] files = root.listFiles();
 			for(File file : files) {
@@ -208,14 +210,24 @@ class AddJarFileToIndex extends IndexRequest {
 					if (descent.internal.core.util.Util.isJavaLikeFileName(file.getName())) {
 						try {
 							char[] charContents = descent.internal.core.util.Util.getFileContentsAsCharArray(file);
-							JavaSearchDocument entryDocument = new JavaSearchDocument(file.getAbsolutePath(), participant, charContents);
+							
+							StringBuilder path = new StringBuilder();
+							path.append(superRoot.getAbsolutePath());
+							path.append(IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR);
+							if (prev.length() > 0) {
+								path.append(prev);
+								path.append("/"); // TODO Descent jre index path separator
+							}
+							path.append(file.getName());
+							
+							JavaSearchDocument entryDocument = new JavaSearchDocument(path.toString(), participant, charContents);
 							this.manager.indexDocument(entryDocument, participant, index, this.containerPath);
 						} catch (JavaModelException e) {
 							e.printStackTrace();
 						}
 					}
 				} else {
-					visitToIndexDocuments(superRoot, file, participant, index);
+					visitToIndexDocuments(superRoot, file, participant, index, prev.length() == 0 ? file.getName() : prev + "/" + file.getName());
 				}
 			}
 		}

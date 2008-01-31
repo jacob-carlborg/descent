@@ -898,9 +898,9 @@ public class ASTParser {
 			AST ast = AST.newAST(this.apiLevel);
 			CompilationUnit unit;
 			if (needToResolveBindings) {
-				unit = CompilationUnitResolver.convert(ast, result, compilationUnitSource.getJavaProject(), compilationUnitSource.getOwner(), monitor);	
+				unit = CompilationUnitResolver.convert(ast, result, compilationUnitSource.getJavaProject(), compilationUnitSource, compilationUnitSource.getOwner(), monitor);	
 			} else {
-				unit = CompilationUnitResolver.convert(ast, result, null, null, monitor);
+				unit = CompilationUnitResolver.convert(ast, result, null, null, null, monitor);
 			}
 			
 			unit.setJavaElement(element);

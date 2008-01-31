@@ -217,7 +217,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 			ASTConverter converter = new ASTConverter(true, pm);
 			converter.setAST(AST.newAST(AST.D2));
 			converter.init(getJavaProject(), getOwner());
-			((ASTHolderCUInfo) info).ast = converter.convert(module);
+			((ASTHolderCUInfo) info).ast = converter.convert(module, this);
 		}
 	} finally {
 		/*
