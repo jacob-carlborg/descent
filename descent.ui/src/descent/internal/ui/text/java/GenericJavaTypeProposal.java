@@ -619,10 +619,12 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 		buffer.append(getReplacementString());
 
 		FormatterPrefs prefs= getFormatterPrefs();
-		final char LESS= '<';
-		final char GREATER= '>';
+		final char EXCL= '!';
+		final char LESS= '(';
+		final char GREATER= ')';
 		if (prefs.beforeOpeningBracket)
 			buffer.append(SPACE);
+		buffer.append(EXCL);
 		buffer.append(LESS);
 		if (prefs.afterOpeningBracket)
 			buffer.append(SPACE);

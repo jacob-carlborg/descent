@@ -68,8 +68,8 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 			
 			beforeOpeningBracket= false;
 			afterOpeningBracket= false;
-			beforeTypeArgumentComma= false; // getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_PARAMETERIZED_TYPE_REFERENCE, false);
-			afterTypeArgumentComma= false; // getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_PARAMETERIZED_TYPE_REFERENCE, true);
+			beforeTypeArgumentComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_TEMPLATE_INVOCATION, false);
+			afterTypeArgumentComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_TEMPLATE_INVOCATION, true);
 			beforeClosingBracket= false; // getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_ANGLE_BRACKET_IN_PARAMETERIZED_TYPE_REFERENCE, false);
 		}
 	

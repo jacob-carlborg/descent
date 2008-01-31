@@ -32,9 +32,15 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.Declaration;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.GenericVisitor;
+import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
+import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.UnitTestDeclaration;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.core.search.IJavaSearchConstants;
 import descent.core.search.IJavaSearchScope;
@@ -155,34 +161,34 @@ public final class ImportRewriteAnalyzer {
 		}
 	}
 
-	private static String getQualifier(ImportDeclaration decl) {
+	private static String getQualifier(Import decl) {
 		// TODO JDT import rewrite
-		String name= decl.imports().get(0).getName().getFullyQualifiedName();
+		String name= decl.getName().getFullyQualifiedName();
 		return name;
 		//return decl.imports().isOnDemand() ? name : Signature.getQualifier(name);
 	}
 
-	private static String getFullName(ImportDeclaration decl) {
+	private static String getFullName(Import decl) {
 //		 TODO JDT import rewrite
-		String name= decl.imports().get(0).getName().getFullyQualifiedName();
+		String name= decl.getName().getFullyQualifiedName();
 		return name;
 		//return decl.isOnDemand() ? name + ".*": name; //$NON-NLS-1$
 	}
 	
 	private void addExistingImports(CompilationUnit root) {
-		List/*ImportDeclaration*/ decls= getImports(root);
+		List<Import> decls= getTopImports(root);
 		if (decls.isEmpty()) {
 			return;
 		}				
 		PackageEntry currPackage= null;
 			
-		ImportDeclaration curr= (ImportDeclaration) decls.get(0);
-		int currOffset= curr.getStartPosition();
-		int currLength= curr.getLength();
+		Import curr= decls.get(0);
+		int currOffset= curr.getParent().getStartPosition();
+		int currLength= curr.getParent().getLength();
 		int currEndLine= root.getLineNumber(currOffset + currLength);
 		
 		for (int i= 1; i < decls.size(); i++) {
-			boolean isStatic= curr.isStatic();
+			boolean isStatic= false; //curr.isStatic();
 			String name= getFullName(curr);
 			String packName= getQualifier(curr);
 			if (currPackage == null || currPackage.compareTo(packName, isStatic) != 0) {
@@ -190,9 +196,9 @@ public final class ImportRewriteAnalyzer {
 				this.packageEntries.add(currPackage);
 			}
 
-			ImportDeclaration next= (ImportDeclaration) decls.get(i);
-			int nextOffset= next.getStartPosition();
-			int nextLength= next.getLength();
+			Import next= decls.get(i);
+			int nextOffset= next.getParent().getStartPosition();
+			int nextLength= next.getParent().getLength();
 			int nextOffsetLine= root.getLineNumber(nextOffset); 
 
 			// if next import is on a different line, modify the end position to the next line begin offset
@@ -217,15 +223,15 @@ public final class ImportRewriteAnalyzer {
 			currEndLine= root.getLineNumber(nextOffset + nextLength);
 		}
 
-		boolean isStatic= curr.isStatic();
+		boolean isStatic= false; // curr.isStatic();
 		String name= getFullName(curr);
 		String packName= getQualifier(curr);
 		if (currPackage == null || currPackage.compareTo(packName, isStatic) != 0) {
 			currPackage= new PackageEntry(packName, null, isStatic);
 			this.packageEntries.add(currPackage);
 		}
-		int length= this.replaceRange.getOffset() + this.replaceRange.getLength() - curr.getStartPosition();
-		currPackage.add(new ImportDeclEntry(name, isStatic, new Region(curr.getStartPosition(), length)));
+		int length= this.replaceRange.getOffset() + this.replaceRange.getLength() - curr.getParent().getStartPosition();
+		currPackage.add(new ImportDeclEntry(name, isStatic, new Region(curr.getParent().getStartPosition(), length)));
 	}
 			
 	/**
@@ -453,25 +459,57 @@ public final class ImportRewriteAnalyzer {
 		}
 	}
 	
-	public static List<ImportDeclaration> getImports(CompilationUnit root) {
-		// TODO JDT UI import rewrite: get this well done
-		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-		for(Declaration declaration : root.declarations()) {
-			if (declaration.getNodeType() == ASTNode.IMPORT_DECLARATION) {
-				imports.add((ImportDeclaration) declaration);
+	public static List<Import> getImports(CompilationUnit root) {
+		final List<Import> imports = new ArrayList<Import>();
+		root.accept(new GenericVisitor() {
+			@Override
+			public boolean visit(FunctionDeclaration node) {
+				return false;
+			}
+			@Override
+			public boolean visit(InvariantDeclaration node) {
+				return false;
+			}
+			@Override
+			public boolean visit(UnitTestDeclaration node) {
+				return false;
+			}
+			@Override
+			public boolean visit(ConstructorDeclaration node) {
+				return false;
+			}
+			@Override
+			public boolean visit(Import imp) {
+				imports.add(imp);
+				return false;
+			}
+		});
+		return imports;
+	}
+	
+	public static List<Import> getTopImports(CompilationUnit root) {
+		List<Import> imports = new ArrayList<Import>();
+		
+		for(Declaration decl : root.declarations()) {
+			if (decl.getNodeType() == ASTNode.IMPORT_DECLARATION) {
+				ImportDeclaration impDecl = (ImportDeclaration) decl;
+				for(Import imp : impDecl.imports()) {
+					imports.add(imp);
+				}
 			}
 		}
+		
 		return imports;
 	}
 			
 	private IRegion evaluateReplaceRange(CompilationUnit root) {
-		List imports= getImports(root);
+		List<Import> imports= getTopImports(root);
 		if (!imports.isEmpty()) {
-			ImportDeclaration first= (ImportDeclaration) imports.get(0);
-			ImportDeclaration last= (ImportDeclaration) imports.get(imports.size() - 1);
+			Import first= imports.get(0);
+			Import last= imports.get(imports.size() - 1);
 			
-			int startPos= first.getStartPosition(); // no extended range for first: bug 121428
-			int endPos= root.getExtendedStartPosition(last) + root.getExtendedLength(last);
+			int startPos= first.getParent().getStartPosition(); // no extended range for first: bug 121428
+			int endPos= root.getExtendedStartPosition(last.getParent()) + root.getExtendedLength(last.getParent());
 			int endLine= root.getLineNumber(endPos);
 			if (endLine > 0) {
 				int nextLinePos= root.getPosition(endLine + 1, 0);

@@ -10,16 +10,25 @@
  *******************************************************************************/
 package descent.internal.corext.codemanipulation;
 
-import descent.core.ICompilationUnit;
-import descent.core.IJavaElement;
-import descent.core.IPackageFragment;
-import descent.core.IType;
-import descent.core.JavaModelException;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AlignDeclaration;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.Declaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.GenericVisitor;
 import descent.core.dom.IBinding;
 import descent.core.dom.ITypeBinding;
+import descent.core.dom.Import;
+import descent.core.dom.ImportDeclaration;
+import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.Name;
+import descent.core.dom.TemplateDeclaration;
+import descent.core.dom.UnitTestDeclaration;
 import descent.core.dom.rewrite.ImportRewrite;
+import descent.core.dom.rewrite.ImportRewriteStub;
 import descent.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
 import descent.internal.corext.util.JavaModelUtil;
 
@@ -43,85 +52,90 @@ public class ContextSensitiveImportRewriteContext extends ImportRewriteContext {
 		fImportedNames= null;
 	}
 
-	public int findInContext(String qualifier, String name, int kind) {
-		IBinding[] declarationsInScope= getDeclarationsInScope();
-		for (int i= 0; i < declarationsInScope.length; i++) {
-			if (declarationsInScope[i] instanceof ITypeBinding) {
-				ITypeBinding typeBinding= (ITypeBinding)declarationsInScope[i];
-				if (isSameType(typeBinding, qualifier, name)) {
-					return RES_NAME_FOUND;
-				} else if (isConflicting(typeBinding, name)) {
-					return RES_NAME_CONFLICT;
-				}
-			} else if (declarationsInScope[i] != null) {
-				if (isConflicting(declarationsInScope[i], name)) {
-					return RES_NAME_CONFLICT;
-				}
-			}
-		}
+	public int findInContext(final String qualifier, String name, int kind) {
+		return ImportRewriteStub.findInImports(fCompilationUnit, qualifier, name, kind);
 		
-		Name[] names= getImportedNames();
-		for (int i= 0; i < names.length; i++) {
-			IBinding binding= names[i].resolveBinding();
-			if (binding instanceof ITypeBinding) {
-				ITypeBinding typeBinding= (ITypeBinding)binding;
-				if (isConflictingType(typeBinding, qualifier, name)) {
-					return RES_NAME_CONFLICT;
-				}
-			}
-		}
-		
-		/* TODO JDT UI import rewrite 
-		List list= fCompilationUnit.types();
-		for (Iterator iter= list.iterator(); iter.hasNext();) {
-			AbstractTypeDeclaration type= (AbstractTypeDeclaration)iter.next();
-			ITypeBinding binding= type.resolveBinding();
-			if (binding != null) {
-				if (isSameType(binding, qualifier, name)) {
-					return RES_NAME_FOUND;
-				} else {
-					if (containsDeclaration(binding, qualifier, name))
-						return RES_NAME_CONFLICT;
-				}
-			}
-		}
-		*/
-		
-		String[] addedImports= fImportRewrite.getAddedImports();
-		String qualifiedName= JavaModelUtil.concatenateName(qualifier, name);
-		for (int i= 0; i < addedImports.length; i++) {
-			String addedImport= addedImports[i];
-			if (qualifiedName.equals(addedImport)) {
-				return RES_NAME_FOUND;
-			} else {
-				if (isConflicting(name, addedImport))
-					return RES_NAME_CONFLICT;
-			}
-		}
-		
-		if (qualifier.equals("object")) { //$NON-NLS-1$
-			//No explicit import statement required
-			IJavaElement parent= fCompilationUnit.getJavaElement().getParent();
-			if (parent instanceof IPackageFragment) {
-				IPackageFragment packageFragment= (IPackageFragment)parent;
-				try {
-					ICompilationUnit[] compilationUnits= packageFragment.getCompilationUnits();
-					for (int i= 0; i < compilationUnits.length; i++) {
-						ICompilationUnit cu= compilationUnits[i];
-						IType[] allTypes= cu.getAllTypes();
-						for (int j= 0; j < allTypes.length; j++) {
-							IType type= allTypes[j];
-							String packageTypeName= type.getFullyQualifiedName();
-							if (isConflicting(name, packageTypeName))
-								return RES_NAME_CONFLICT;
-						}
-					}
-				} catch (JavaModelException e) {
-				}
-			}
-		}
-		
-		return RES_NAME_UNKNOWN;
+		// TODO JDT UI import rewrite improve
+//		IBinding[] declarationsInScope= getDeclarationsInScope();
+//		for (int i= 0; i < declarationsInScope.length; i++) {
+//			if (declarationsInScope[i] instanceof ITypeBinding) {
+//				ITypeBinding typeBinding= (ITypeBinding)declarationsInScope[i];
+//				if (isSameType(typeBinding, qualifier, name)) {
+//					return RES_NAME_FOUND;
+//				} else if (isConflicting(typeBinding, name)) {
+//					return RES_NAME_CONFLICT;
+//				}
+//			} else if (declarationsInScope[i] != null) {
+//				if (isConflicting(declarationsInScope[i], name)) {
+//					return RES_NAME_CONFLICT;
+//				}
+//			}
+//		}
+//		
+//		Name[] names= getImportedNames();
+//		for (int i= 0; i < names.length; i++) {
+//			IBinding binding= names[i].resolveBinding();
+//			if (binding instanceof ITypeBinding) {
+//				ITypeBinding typeBinding= (ITypeBinding)binding;
+//				if (isConflictingType(typeBinding, qualifier, name)) {
+//					return RES_NAME_CONFLICT;
+//				}
+//			}
+//		}
+//		
+//		List list= fCompilationUnit.types();
+//		for (Iterator iter= list.iterator(); iter.hasNext();) {
+//			AbstractTypeDeclaration type= (AbstractTypeDeclaration)iter.next();
+//			ITypeBinding binding= type.resolveBinding();
+//			if (binding != null) {
+//				if (isSameType(binding, qualifier, name)) {
+//					return RES_NAME_FOUND;
+//				} else {
+//					if (containsDeclaration(binding, qualifier, name))
+//						return RES_NAME_CONFLICT;
+//				}
+//			}
+//		}
+//		
+//		String[] addedImports= fImportRewrite.getAddedImports();
+//		String qualifiedName= JavaModelUtil.concatenateName(qualifier, name);
+//		for (int i= 0; i < addedImports.length; i++) {
+//			String addedImport= addedImports[i];
+//			if (qualifiedName.equals(addedImport)) {
+//				return RES_NAME_FOUND;
+//			} else {
+//				if (isConflicting(name, addedImport))
+//					return RES_NAME_CONFLICT;
+//			}
+//		}
+//		
+//		if (qualifier.equals("object")) { //$NON-NLS-1$
+//			//No explicit import statement required
+//			IJavaElement parent= fCompilationUnit.getJavaElement().getParent();
+//			if (parent instanceof IPackageFragment) {
+//				IPackageFragment packageFragment= (IPackageFragment)parent;
+//				try {
+//					ICompilationUnit[] compilationUnits= packageFragment.getCompilationUnits();
+//					for (int i= 0; i < compilationUnits.length; i++) {
+//						ICompilationUnit cu= compilationUnits[i];
+//						IType[] allTypes= cu.getAllTypes();
+//						for (int j= 0; j < allTypes.length; j++) {
+//							IType type= allTypes[j];
+//							String packageTypeName= type.getFullyQualifiedName();
+//							if (isConflicting(name, packageTypeName))
+//								return RES_NAME_CONFLICT;
+//						}
+//					}
+//				} catch (JavaModelException e) {
+//				}
+//			}
+//		}
+//		
+//		return RES_NAME_UNKNOWN;
+	}
+	
+	private boolean importEquals(Import imp, String qualifier) {
+		return imp.getName().toString().equals(qualifier);
 	}
 
 	private boolean isConflicting(String name, String importt) {

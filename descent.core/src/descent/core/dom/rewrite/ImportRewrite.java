@@ -27,16 +27,28 @@ import descent.core.IImportDeclaration;
 import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.dom.AST;
+import descent.core.dom.ASTNode;
 import descent.core.dom.ASTParser;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AlignDeclaration;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.Declaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.GenericVisitor;
 import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
+import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
+import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.PrimitiveType;
+import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.Type;
+import descent.core.dom.UnitTestDeclaration;
 import descent.internal.core.dom.rewrite.ImportRewriteAnalyzer;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
@@ -166,10 +178,11 @@ public final class ImportRewrite {
 		List existingImport= null;
 		if (restoreExistingImports) {
 			existingImport= new ArrayList();
-			IImportDeclaration[] imports= cu.getImports();
+			IImportDeclaration[] imports= ImportRewriteStub.collectImports(cu);
 			for (int i= 0; i < imports.length; i++) {
 				IImportDeclaration curr= imports[i];
-				char prefix= Flags.isStatic(curr.getFlags()) ? STATIC_PREFIX : NORMAL_PREFIX;			
+				//char prefix= Flags.isStatic(curr.getFlags()) ? STATIC_PREFIX : NORMAL_PREFIX;			
+				char prefix= NORMAL_PREFIX;
 				existingImport.add(prefix + curr.getElementName());
 			}
 		}
@@ -202,9 +215,9 @@ public final class ImportRewrite {
 			existingImport= new ArrayList();
 			List imports= ImportRewriteAnalyzer.getImports(astRoot);
 			for (int i= 0; i < imports.size(); i++) {
-				ImportDeclaration curr= (ImportDeclaration) imports.get(i);
+				Import curr= (Import) imports.get(i);
 				StringBuffer buf= new StringBuffer();
-				buf.append(curr.isStatic() ? STATIC_PREFIX : NORMAL_PREFIX).append(curr.imports().get(0).getName().getFullyQualifiedName());
+				buf.append(NORMAL_PREFIX).append(curr.getName().getFullyQualifiedName());
 				/* TODO JDT import rewrite
 				if (curr.isOnDemand()) {
 					if (buf.length() > 1)
@@ -218,7 +231,7 @@ public final class ImportRewrite {
 		return new ImportRewrite((ICompilationUnit) astRoot.getJavaElement(), astRoot, existingImport);
 	}
 		
-	private ImportRewrite(ICompilationUnit cu, CompilationUnit astRoot, List existingImports) {
+	private ImportRewrite(ICompilationUnit cu, CompilationUnit astRoot, List<Import> existingImports) {
 		this.compilationUnit= cu;
 		this.astRoot= null; // might be null
 		if (existingImports != null) {
@@ -354,7 +367,7 @@ public final class ImportRewrite {
 	/**
 	 * Not API, package visibility as accessed from an anonymous type
 	 */
-	/* package */ final int findInImports(String qualifier, String name, int kind) {
+	/* package */ final int findInImports(final String qualifier, String name, int kind) {
 		boolean allowAmbiguity=  (kind == ImportRewriteContext.KIND_STATIC_METHOD) || (name.length() == 1 && name.charAt(0) == '*');
 		List imports= this.existingImports;
 		char prefix= (kind == ImportRewriteContext.KIND_TYPE) ? NORMAL_PREFIX : STATIC_PREFIX;
