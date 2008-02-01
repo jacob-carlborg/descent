@@ -12,14 +12,12 @@ package descent.internal.core.search.matching;
 
 import descent.core.compiler.CharOperation;
 
-public abstract class VariablePattern extends JavaSearchPattern {
+public abstract class VariablePattern extends FQNPattern {
 
 protected boolean findDeclarations;
 protected boolean findReferences;
 protected boolean readAccess;
 protected boolean writeAccess;
-
-protected char[] name;
 
 public VariablePattern(int patternKind, boolean findDeclarations, boolean readAccess, boolean writeAccess, char[] name, int matchRule) {
 	super(patternKind, matchRule);
@@ -29,7 +27,7 @@ public VariablePattern(int patternKind, boolean findDeclarations, boolean readAc
 	this.writeAccess = writeAccess; // set to find any reference, write only references & all occurences
 	this.findReferences = readAccess || writeAccess;
 
-	this.name = (isCaseSensitive() || isCamelCase())  ? name : CharOperation.toLowerCase(name);
+	this.simpleName = (isCaseSensitive() || isCamelCase())  ? name : CharOperation.toLowerCase(name);
 }
 /*
  * Returns whether a method declaration or message send will need to be resolved to 

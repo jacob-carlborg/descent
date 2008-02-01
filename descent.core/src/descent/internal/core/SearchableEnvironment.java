@@ -21,6 +21,7 @@ import descent.internal.compiler.env.ISourceType;
 import descent.internal.compiler.env.NameEnvironmentAdapter;
 import descent.internal.compiler.env.NameEnvironmentAnswer;
 import descent.internal.core.search.BasicSearchEngine;
+import descent.internal.core.search.IRestrictedAccessDeclarationRequestor;
 import descent.internal.core.search.IRestrictedAccessTypeRequestor;
 
 /**
@@ -371,4 +372,125 @@ public class SearchableEnvironment
 	public void cleanup() {
 		// nothing to do
 	}
+	
+	public void findDeclarations(char[] prefix, final boolean findMembers, boolean camelCaseMatch, final ISearchRequestor storage) {
+
+		/*
+			if (true){
+				findTypes(new String(prefix), storage, NameLookup.ACCEPT_CLASSES | NameLookup.ACCEPT_INTERFACES);
+				return;		
+			}
+		*/
+		try {
+			final String excludePath;
+			if (this.unitToSkip != null) {
+				if (!(this.unitToSkip instanceof IJavaElement)) {
+					// revert to model investigation
+					findTypes(
+						new String(prefix),
+						storage,
+						NameLookup.ACCEPT_ALL);
+					return;
+				}
+				excludePath = ((IJavaElement) this.unitToSkip).getPath().toString();
+			} else {
+				excludePath = null;
+			}
+			int lastDotIndex = CharOperation.lastIndexOf('.', prefix);
+			char[] qualification, simpleName;
+			if (lastDotIndex < 0) {
+				qualification = null;
+				if (camelCaseMatch) {
+					simpleName = prefix;
+				} else {
+					simpleName = CharOperation.toLowerCase(prefix);
+				}
+			} else {
+				qualification = CharOperation.subarray(prefix, 0, lastDotIndex);
+				if (camelCaseMatch) {
+					simpleName = CharOperation.subarray(prefix, lastDotIndex + 1, prefix.length);
+				} else {
+					simpleName =
+						CharOperation.toLowerCase(
+							CharOperation.subarray(prefix, lastDotIndex + 1, prefix.length));
+				}
+			}
+
+			IProgressMonitor progressMonitor = new IProgressMonitor() {
+				boolean isCanceled = false;
+				public void beginTask(String name, int totalWork) {
+					// implements interface method
+				}
+				public void done() {
+					// implements interface method
+				}
+				public void internalWorked(double work) {
+					// implements interface method
+				}
+				public boolean isCanceled() {
+					return isCanceled;
+				}
+				public void setCanceled(boolean value) {
+					isCanceled = value;
+				}
+				public void setTaskName(String name) {
+					// implements interface method
+				}
+				public void subTask(String name) {
+					// implements interface method
+				}
+				public void worked(int work) {
+					// implements interface method
+				}
+			};
+			IRestrictedAccessDeclarationRequestor typeRequestor = new IRestrictedAccessDeclarationRequestor() {
+				public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+					if (excludePath != null && excludePath.equals(path))
+						return;
+					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
+						return; // accept only top level types
+					storage.acceptType(packageName, simpleTypeName, enclosingTypeNames, modifiers, access);
+				}
+				public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+					if (excludePath != null && excludePath.equals(path))
+						return;
+					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
+						return; // accept only top level types
+					storage.acceptField(packageName, name, typeName, enclosingTypeNames, modifiers, access);
+				}
+				public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, String path, AccessRestriction access) {
+					if (excludePath != null && excludePath.equals(path))
+						return;
+					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
+						return; // accept only top level types
+					storage.acceptMethod(packageName, name, enclosingTypeNames, signature, modifiers, access);
+				}
+			};
+			try {
+				int matchRule = SearchPattern.R_PREFIX_MATCH;
+				if (camelCaseMatch) matchRule |= SearchPattern.R_CAMELCASE_MATCH;
+				new BasicSearchEngine(this.workingCopies).searchAllDeclarations(
+					qualification,
+					simpleName,
+					matchRule, // not case sensitive
+					IJavaSearchConstants.DECLARATIONS,
+					this.searchScope,
+					typeRequestor,
+					CANCEL_IF_NOT_READY_TO_SEARCH,
+					progressMonitor);
+			} catch (OperationCanceledException e) {
+				findTypes(
+					new String(prefix),
+					storage,
+					NameLookup.ACCEPT_ALL);
+			}
+		} catch (JavaModelException e) {
+			findTypes(
+				new String(prefix),
+				storage,
+				NameLookup.ACCEPT_ALL);
+		}
+	}
+
+	
 }

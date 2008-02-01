@@ -1289,6 +1289,18 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 		}
 		modifiers.push(sb.toString());
 	}
+	
+	@Override
+	public void acceptIdentifier(char[] name, String signature) {
+		if (functionTypeCount != 1) {
+			return;
+		}
+		
+//		if (!stack.isEmpty()) {
+//			stack.pop();
+//		}
+		stack.push(signature);
+	}
 
 	public void acceptAssociativeArray(String signature) {
 		if (functionTypeCount != 1) {
@@ -1918,30 +1930,12 @@ public static char[] getSignatureSimpleName(char[] typeSignature) {
 	
 	char[] qualifiedType = Signature.toCharArray(typeSignature);
 	
-	int dotCount = 0;
-	indexFound: for(int i = 0; i < typeSignature.length; i++) {
-		switch(typeSignature[i]) {
-			case C_DOT:
-				dotCount++;
-				break;
-			case C_GENERIC_START:
-				break indexFound;
-			case C_DOLLAR:
-				break indexFound;
-		}
+	int index = CharOperation.lastIndexOf('.', qualifiedType);
+	if (index != -1) {
+		return CharOperation.subarray(qualifiedType, index + 1, qualifiedType.length);
+	} else {
+		return qualifiedType;
 	}
-	
-	if(dotCount > 0) {
-		for(int i = 0; i < qualifiedType.length; i++) {
-			if(qualifiedType[i] == '.') {
-				dotCount--;
-			}
-			if(dotCount <= 0) {
-				return CharOperation.subarray(qualifiedType, i + 1, qualifiedType.length);
-			}
-		}
-	}
-	return qualifiedType;
 }
 /**
  * Returns type fragment of a type signature. The package fragment separator must be '.'
@@ -2420,10 +2414,19 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	
 	@Override
 	public void acceptIdentifier(char[] name, String signature) {
-		Stack<String> stack = new Stack<String>();
-		stack.push(new String(name));
-		
-		this.stack.push(stack);
+		if (this.stack.isEmpty()) {
+			Stack<String> stack = new Stack<String>();
+			stack.push(new String(name));
+			
+			this.stack.push(stack);
+		} else {
+			Stack<String> stack = this.stack.peek();
+			if (!stack.isEmpty()) {
+				stack.pop();
+			}
+			
+			stack.push(new String(name));
+		}
 	}
 
 	public void acceptAssociativeArray(String signature) {

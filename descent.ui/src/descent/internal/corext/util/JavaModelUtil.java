@@ -982,7 +982,7 @@ public final class JavaModelUtil {
 	}
 	
 	public static boolean isImplicitImport(String qualifier, ICompilationUnit cu) {
-		if ("java.lang".equals(qualifier)) {  //$NON-NLS-1$
+		if ("object".equals(qualifier)) {  //$NON-NLS-1$
 			return true;
 		}
 		String packageName= cu.getParent().getElementName();

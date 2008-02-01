@@ -46,6 +46,8 @@ import descent.internal.ui.text.java.JavaMethodCompletionProposal;
 import descent.internal.ui.text.java.JavaTemplateCompletionProposal;
 import descent.internal.ui.text.java.JavaTemplatedFunctionCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaCompletionProposal;
+import descent.internal.ui.text.java.LazyJavaFieldCompletionProposal;
+import descent.internal.ui.text.java.LazyJavaMethodCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import descent.internal.ui.text.java.MethodCompletionProposal;
 import descent.internal.ui.text.java.ProposalContextInformation;
@@ -642,14 +644,14 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	}
 
 	private IJavaCompletionProposal createFieldProposal(CompletionProposal proposal) {
-		String completion= String.valueOf(proposal.getCompletion());
-		int start= proposal.getReplaceStart();
-		int length= getLength(proposal);
-		String label= fLabelProvider.createLabelWithTypeAndDeclaration(proposal);
-		Image image= getImage(fLabelProvider.createFieldImageDescriptor(proposal));
-		int relevance= computeRelevance(proposal);
+//		String completion= String.valueOf(proposal.getCompletion());
+//		int start= proposal.getReplaceStart();
+//		int length= getLength(proposal);
+//		String label= fLabelProvider.createLabelWithTypeAndDeclaration(proposal);
+//		Image image= getImage(fLabelProvider.createFieldImageDescriptor(proposal));
+//		int relevance= computeRelevance(proposal);
 
-		JavaCompletionProposal javaProposal= new JavaCompletionProposal(completion, start, length, image, label, relevance, getContext().isInJavadoc());
+		LazyJavaFieldCompletionProposal javaProposal= new LazyJavaFieldCompletionProposal(proposal, getInvocationContext());
 		if (fJavaProject != null)
 			javaProposal.setProposalInfo(new FieldProposalInfo(fJavaProject, proposal));
 
@@ -745,7 +747,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	}
 
 	private IJavaCompletionProposal createMethodReferenceProposal(CompletionProposal methodProposal) {
-		LazyJavaCompletionProposal proposal= new JavaMethodCompletionProposal(methodProposal, getInvocationContext());
+		LazyJavaCompletionProposal proposal= new LazyJavaMethodCompletionProposal(methodProposal, getInvocationContext());
 		adaptLength(proposal, methodProposal);
 		return proposal;
 	}

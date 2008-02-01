@@ -25,12 +25,61 @@ protected char[] declaringSimpleName;
 protected char[] typeQualification;
 protected char[] typeSimpleName;
 
+public char[] typeName;
+
 protected static char[][] REF_CATEGORIES = { REF };
 protected static char[][] REF_AND_DECL_CATEGORIES = { REF, FIELD_DECL };
 protected static char[][] DECL_CATEGORIES = { FIELD_DECL };
 
-public static char[] createIndexKey(char[] fieldName) {
-	return fieldName;
+/*
+ * Create index key for field declaration pattern:
+ *		key = fieldName / typeName / packageName / enclosingTypeName / modifiers
+ */
+public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] fieldName, char[] typeName) {
+	int fieldNameLength = fieldName == null ? 0 : fieldName.length;
+	int typeNameLength = typeName == null ? 0 : typeName.length;
+	int packageLength = packageName == null ? 0 : packageName.length;
+	int enclosingNamesLength = 0;
+	if (enclosingTypeNames != null) {
+		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
+			enclosingNamesLength += enclosingTypeNames[i].length;
+			if (++i < length)
+				enclosingNamesLength++; // for the '.' separator
+		}
+	}
+
+	int resultLength = fieldNameLength + typeNameLength + packageLength + enclosingNamesLength + 6;
+	char[] result = new char[resultLength];
+	int pos = 0;
+	if (fieldNameLength > 0) {
+		System.arraycopy(fieldName, 0, result, pos, fieldNameLength);
+		pos += fieldNameLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (typeNameLength > 0) {
+		System.arraycopy(typeName, 0, result, pos, typeNameLength);
+		pos += typeNameLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (packageLength > 0) {
+		System.arraycopy(packageName, 0, result, pos, packageLength);
+		pos += packageLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (enclosingTypeNames != null && enclosingNamesLength > 0) {
+		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
+			char[] enclosingName = enclosingTypeNames[i];
+			int itsLength = enclosingName.length;
+			System.arraycopy(enclosingName, 0, result, pos, itsLength);
+			pos += itsLength;
+			if (++i < length)
+				result[pos++] = '.';
+		}
+	}
+	result[pos++] = SEPARATOR;
+	result[pos++] = (char) modifiers;
+	result[pos] = (char) (modifiers>>16);
+	return result;
 }
 
 public FieldPattern(
@@ -76,14 +125,62 @@ public FieldPattern(
 		setTypeArguments(Util.getAllTypeArguments(this.typeSignatures));
 	}
 }
+/*
+ * Type entries are encoded as:
+ * 	simpleTypeName / packageName / enclosingTypeName / modifiers
+ *			e.g. Object/java.lang//0
+ * 		e.g. Cloneable/java.lang//512
+ * 		e.g. LazyValue/javax.swing/UIDefaults/0
+ * or for secondary types as:
+ * 	simpleTypeName / packageName / enclosingTypeName / modifiers / S
+ */
 public void decodeIndexKey(char[] key) {
-	this.name = key;
+	int slash = CharOperation.indexOf(SEPARATOR, key, 0);
+	this.simpleName = CharOperation.subarray(key, 0, slash);
+	
+	int start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.typeName = CharOperation.NO_CHAR;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		this.typeName = CharOperation.subarray(key, start, slash);
+	}
+
+	start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.pkg = CharOperation.NO_CHAR;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		this.pkg = TypeDeclarationPattern.internedPackageNames.add(CharOperation.subarray(key, start, slash));
+	}
+
+	// Continue key read by the end to decode modifiers
+	int last = key.length-1;
+	this.modifiers = key[last-1] + (key[last]<<16);
+	decodeModifiers();
+
+	// Retrieve enclosing type names
+	start = slash + 1;
+	last -= 2; // position of ending slash
+	if (start == last) {
+		this.enclosingTypeNames = CharOperation.NO_CHAR_CHAR;
+	} else {
+		if (last == (start+1) && key[start] == ZERO_CHAR) {
+			this.enclosingTypeNames = ONE_ZERO_CHAR;
+		} else {
+			this.enclosingTypeNames = CharOperation.splitOn('.', key, start, last);
+		}
+	}
 }
+private void decodeModifiers() {
+	// TODO Auto-generated method stub
+}
+
 public SearchPattern getBlankPattern() {
 	return new FieldPattern(false, false, false, null, null, null, null, null, R_EXACT_MATCH | R_CASE_SENSITIVE);
 }
 public char[] getIndexKey() {
-	return this.name;
+	return this.simpleName;
 }
 public char[][] getIndexCategories() {
 	if (this.findReferences)
@@ -113,10 +210,10 @@ protected StringBuffer print(StringBuffer output) {
 	if (declaringSimpleName != null) 
 		output.append(declaringSimpleName).append('.');
 	else if (declaringQualification != null) output.append("*."); //$NON-NLS-1$
-	if (name == null) {
+	if (simpleName == null) {
 		output.append("*"); //$NON-NLS-1$
 	} else {
-		output.append(name);
+		output.append(simpleName);
 	}
 	if (typeQualification != null) 
 		output.append(" --> ").append(typeQualification).append('.'); //$NON-NLS-1$

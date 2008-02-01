@@ -17,7 +17,6 @@ import descent.core.ddoc.DdocMacros;
 import descent.core.ddoc.DdocParser;
 import descent.core.ddoc.DdocSection;
 import descent.core.ddoc.DdocSection.Parameter;
-import descent.core.dom.BuiltinProperties;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
@@ -93,11 +92,14 @@ import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
+import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
@@ -122,6 +124,9 @@ import descent.internal.core.util.Util;
 public class CompletionEngine extends Engine 
 	implements RelevanceConstants, ISearchRequestor {
 	
+	public final static char[] sigInt = new char[] { TY.Tint32.mangleChar };
+	public final static char[] sigCharArray = new char[] { TY.Tarray.mangleChar, TY.Tchar.mangleChar };
+	
 	public static boolean DEBUG = false;
 	public static boolean PERF = false;
 	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
@@ -144,7 +149,7 @@ public class CompletionEngine extends Engine
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	HashtableOfObject knownKeywords = new HashtableOfObject(10);
-	HashtableOfObject knownTypes = new HashtableOfObject(10);
+	HashtableOfObject knownDeclarations = new HashtableOfObject(10);
 	
 	boolean isCompletingPackage;
 	
@@ -669,15 +674,14 @@ public class CompletionEngine extends Engine
 		
 		Scope scope = node.scope;
 		
-		// Exclude types, since they will be reported later
-		completeScope(scope, currentName, getIncludesForScope(scope) & ~INCLUDE_TYPES);
+		completeScope(scope, currentName, INCLUDE_ALL);
 		
 		// Also suggest packages
 		isCompletingPackage = true;
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
-		nameEnvironment.findTypes(currentName, false, true, this);
+		nameEnvironment.findDeclarations(currentName, false, true, this);
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -694,15 +698,14 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// Exclude types, since they will be reported later
-		completeScope(scope, currentName, getIncludesForScope(scope) & ~INCLUDE_TYPES);
+		completeScope(scope, currentName, INCLUDE_ALL);
 		
 		// Also suggest packages
 		isCompletingPackage = true;
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
-		nameEnvironment.findTypes(currentName, false, true, this);
+		nameEnvironment.findDeclarations(currentName, false, true, this);
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
@@ -711,7 +714,7 @@ public class CompletionEngine extends Engine
 		char[] name = computePrefixAndSourceRange(node);
 		
 		Scope scope = node.scope;
-		completeScope(scope, name, getIncludesForScope(scope));
+		completeScope(scope, name, INCLUDE_ALL);
 	}
 
 	private void completeScope(Scope scope, char[] name, int includes) {
@@ -762,28 +765,6 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private int getIncludesForScope(Scope scope) {
-		if (scope == null || scope.scopesym == null) {
-			return INCLUDE_ALL;
-		}
-		
-		IDsymbol sym = getScopeSymbol(scope);
-		if (sym == null) {
-			return INCLUDE_ALL;
-		}
-		
-		if (sym instanceof IModule) {
-			return INCLUDE_TYPES;
-		} else if (sym instanceof IAggregateDeclaration ||
-				sym instanceof ITypedefDeclaration) {
-			return INCLUDE_TYPES;
-		} else if (sym instanceof IFuncDeclaration) {
-			return INCLUDE_TYPES | INCLUDE_FUNCTIONS | INCLUDE_VARIABLES;
-		} else {
-			return INCLUDE_ALL;
-		}
-	}
-	
 	private IDsymbol getScopeSymbol(Scope scope) {
 		if (scope.scopesym == null || scope.scopesym.members() == null
 				|| scope.scopesym.members().isEmpty()) {
@@ -795,10 +776,10 @@ public class CompletionEngine extends Engine
 
 	private void suggestDsymbol(IDsymbol dsymbol, char[] name, int includes) {
 		if (dsymbol instanceof Import) {
-			IModule mod = ((Import) dsymbol).mod;
-			if (mod != null) {
-				suggestMembers(mod.members(), name, false, new HashtableOfCharArrayAndObject(0), includes);
-			}
+//			IModule mod = ((Import) dsymbol).mod;
+//			if (mod != null) {
+//				suggestMembers(mod.members(), name, false, new HashtableOfCharArrayAndObject(0), includes);
+//			}
 		} else {
 			suggestMember(dsymbol, name, false, 0, new HashtableOfCharArrayAndObject(0), includes);
 		}
@@ -904,11 +885,13 @@ public class CompletionEngine extends Engine
 			completeTypeEnum((TypeEnum) type, name);
 			break;
 		case ASTDmdNode.TYPE_S_ARRAY:
+			completeTypeStaticArrayProperties((TypeSArray) type, name);
+			break;
 		case ASTDmdNode.TYPE_D_ARRAY:
-			completeTypeStaticOrDynamicArrayProperties(name);
+			completeTypeDynamicArrayProperties((TypeDArray) type, name);
 			break;
 		case ASTDmdNode.TYPE_A_ARRAY:
-			completeTypeAssociativeArrayProperties(name);
+			completeTypeAssociativeArrayProperties((TypeAArray) type, name);
 			break;
 		}
 	}
@@ -919,25 +902,74 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
+		char[] sigType = type.getSignature().toCharArray();
+		
+		suggestAllTypesProperties(name, sigType);
 		
 		if (type.isintegral()) {
-			suggestProperties(name, BuiltinProperties.integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+			suggestIntegralProperties(name);
 		}
 		
 		if (type.isfloating()) {
-			suggestProperties(name, BuiltinProperties.floatingPointTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+			suggestFloatingProperties(name, sigType);
 		}
 	}
 	
-	private void completeTypeStaticOrDynamicArrayProperties(char[] name) {
-		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
-		suggestProperties(name, BuiltinProperties.staticAndDynamicArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
+	public final static char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
+	private void suggestAllTypesProperties(char[] name, char[] sigType) {
+		suggestProperties(name, 
+				allTypesProperties, 
+				new char[][] { sigType, sigInt, sigInt, sigCharArray, sigCharArray }, 
+				R_DEFAULT);
 	}
 	
-	private void completeTypeAssociativeArrayProperties(char[] name) {
-		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
-		suggestProperties(name, BuiltinProperties.associativeArrayProperties, R_INTERESTING_BUILTIN_PROPERTY);
+	public final static char[][] integralTypesProperties = { Id.max, Id.min };
+	private void suggestIntegralProperties(char[] name) {
+		suggestProperties(name, 
+				integralTypesProperties, 
+				new char[][] { sigInt, sigInt },
+				R_DEFAULT);
+	}
+	
+	public final static char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
+	private void suggestFloatingProperties(char[] name, char[] sigType) {
+		suggestProperties(name, 
+				floatingPointTypesProperties, 
+				new char[][] { sigType, sigType, sigInt, sigType, sigInt, sigInt, sigInt, sigInt, sigInt, sigType, sigType },
+				R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	public final static char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };
+
+	private void completeTypeStaticArrayProperties(TypeSArray type, char[] name) {
+		char[] sigType = type.getSignature().toCharArray();		
+		suggestAllTypesProperties(name, sigType);		
+		suggestProperties(name, 
+				staticAndDynamicArrayProperties, 
+				new char[][] { sigType, sigType, sigInt, sigInt, sigType },
+				R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	private void completeTypeDynamicArrayProperties(TypeDArray type, char[] name) {
+		char[] sigType = type.getSignature().toCharArray();		
+		suggestAllTypesProperties(name, sigType);
+		suggestProperties(name, 
+				staticAndDynamicArrayProperties,
+				new char[][] { sigType, sigType, sigInt, sigInt, sigType },
+				R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	public final static char[][] associativeArrayProperties = { Id.length, Id.keys, Id.values, Id.rehash };
+	private void completeTypeAssociativeArrayProperties(TypeAArray type, char[] name) {
+		char[] sigType = type.getSignature().toCharArray();		
+		suggestAllTypesProperties(name, sigType);
+		suggestProperties(name, 
+				associativeArrayProperties,
+				new char[][] { sigInt, 
+					type.next.getSignature().toCharArray(), 
+					type.index.getSignature().toCharArray(),
+					sigType },
+				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	private void completeTypeClass(TypeClass type, char[] name, boolean onlyStatics) {
@@ -948,7 +980,8 @@ public class CompletionEngine extends Engine
 		completeTypeClassRecursively(type, name, onlyStatics, funcSignatures);
 		
 		// And also all type's properties
-		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
+		char[] sigType = type.getSignature().toCharArray();		
+		suggestAllTypesProperties(name, sigType);
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, char[] name, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
@@ -977,7 +1010,8 @@ public class CompletionEngine extends Engine
 		suggestMembers(decl.members(), name, onlyStatics, null, INCLUDE_ALL);
 		
 		// And also all type's properties
-		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
+		char[] sigType = type.getSignature().toCharArray();		
+		suggestAllTypesProperties(name, sigType);
 	}
 	
 	private void completeTypeEnum(TypeEnum type, char[] name) {
@@ -990,11 +1024,12 @@ public class CompletionEngine extends Engine
 		completeEnumMembers(name, enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
 		
 		// And also all type's properties
-		suggestProperties(name, BuiltinProperties.allTypesProperties, R_DEFAULT);
+		char[] sigType = type.getSignature().toCharArray();		
+		suggestAllTypesProperties(name, sigType);
 		
 		// If the base type of the enum is integral, also suggest integer properties
 		if (enumDeclaration.memtype().isintegral()) {
-			suggestProperties(name, BuiltinProperties.integralTypesProperties, R_INTERESTING_BUILTIN_PROPERTY);
+			suggestIntegralProperties(name);
 		}
 	}
 	
@@ -1047,6 +1082,7 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(var.ident().ident);
 					proposal.setCompletion(var.ident().ident);
+					proposal.setTypeName(var.type().getSignature().toCharArray());
 					proposal.setSignature(var.getSignature().toCharArray());
 					proposal.setFlags(flags | var.getFlags());
 					proposal.setRelevance(relevance);
@@ -1071,6 +1107,7 @@ public class CompletionEngine extends Engine
 					proposal.setName(alias.ident().ident);
 					proposal.setCompletion(alias.ident().ident);
 					proposal.setSignature(alias.getSignature().toCharArray());
+					proposal.setTypeName(alias.type().getSignature().toCharArray());
 					proposal.setFlags(flags | alias.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1092,6 +1129,7 @@ public class CompletionEngine extends Engine
 					proposal.setName(typedef.ident().ident);
 					proposal.setCompletion(typedef.ident().ident);
 					proposal.setSignature(typedef.getSignature().toCharArray());
+					proposal.setTypeName(typedef.basetype().getSignature().toCharArray());
 					proposal.setFlags(flags | typedef.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1209,12 +1247,18 @@ public class CompletionEngine extends Engine
 		}
 	}
 
-	private void suggestProperties(char[] name, char[][] properties, int relevance) {
-		for(char[] property : properties) {
+	private void suggestProperties(char[] name, 
+			char[][] properties,
+			char[][] types,
+			int relevance) {
+		for (int i = 0; i < properties.length; i++) {
+			char[] property = properties[i];
+			char[] type = types[i];
 			if (name.length == 0 || CharOperation.camelCaseMatch(name, property)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(property);
 				proposal.setCompletion(property);
+				proposal.setTypeName(type);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
@@ -1631,11 +1675,6 @@ public class CompletionEngine extends Engine
 	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
 		char[] fullName = CharOperation.concat(packageName, typeName, '.');
 		
-		if (knownTypes.containsKey(fullName)) {
-			return;
-		}
-		knownTypes.put(fullName, this);
-		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForInterestingProposal();
 		relevance += computeRelevanceForCaseMatching(currentName, typeName);
@@ -1652,6 +1691,62 @@ public class CompletionEngine extends Engine
 		sig.append(ISignatureConstants.CLASS);
 		sig.append(typeName.length);
 		sig.append(typeName);
+		
+		proposal.setSignature(sig.toString().toCharArray());
+		proposal.setFlags(modifiers);
+		proposal.setRelevance(relevance);
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+		CompletionEngine.this.requestor.accept(proposal);
+	}
+	
+	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
+		char[] fullName = CharOperation.concat(packageName, name, '.');
+		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForInterestingProposal();
+		relevance += computeRelevanceForCaseMatching(currentName, name);
+		relevance += R_VAR;
+		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+		proposal.setName(name);
+		proposal.setCompletion(fullName);
+		
+		StringBuilder sig = new StringBuilder();
+		sig.append(ISignatureConstants.MODULE);
+		sig.append(packageName.length);
+		sig.append(packageName);
+		sig.append(ISignatureConstants.VARIABLE);
+		sig.append(name.length);
+		sig.append(name);
+		
+		proposal.setSignature(sig.toString().toCharArray());
+		proposal.setTypeName(typeName);
+		proposal.setFlags(modifiers);
+		proposal.setRelevance(relevance);
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+		CompletionEngine.this.requestor.accept(proposal);
+	}
+	
+	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, AccessRestriction accessRestriction) {
+		char[] fullName = CharOperation.concat(packageName, name, '.');
+		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForInterestingProposal();
+		relevance += computeRelevanceForCaseMatching(currentName, name);
+		relevance += R_METHOD;
+		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
+		proposal.setName(name);
+		proposal.setCompletion(CharOperation.concat(fullName, "()".toCharArray()));
+		
+		StringBuilder sig = new StringBuilder();
+		sig.append(ISignatureConstants.MODULE);
+		sig.append(packageName.length);
+		sig.append(packageName);
+		sig.append(ISignatureConstants.FUNCTION);
+		sig.append(name.length);
+		sig.append(name);
+		sig.append(signature);
 		
 		proposal.setSignature(sig.toString().toCharArray());
 		proposal.setFlags(modifiers);

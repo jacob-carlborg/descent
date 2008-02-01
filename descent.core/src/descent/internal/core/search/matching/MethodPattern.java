@@ -19,7 +19,7 @@ import descent.internal.core.index.*;
 import descent.internal.core.search.indexing.IIndexConstants;
 import descent.internal.core.util.Util;
 
-public class MethodPattern extends JavaSearchPattern implements IIndexConstants {
+public class MethodPattern extends FQNPattern implements IIndexConstants {
 
 protected boolean findDeclarations;
 protected boolean findReferences;
@@ -48,6 +48,8 @@ char[][][][] parametersTypeArguments;
 boolean methodParameters = false;
 char[][] methodArguments;
 
+public char[] signature;
+
 protected static char[][] REF_CATEGORIES = { METHOD_REF };
 protected static char[][] REF_AND_DECL_CATEGORIES = { METHOD_REF, METHOD_DECL };
 protected static char[][] DECL_CATEGORIES = { METHOD_DECL };
@@ -56,11 +58,124 @@ protected static char[][] DECL_CATEGORIES = { METHOD_DECL };
  * Method entries are encoded as selector '/' Arity:
  * e.g. 'foo/0'
  */
-public static char[] createIndexKey(char[] selector, int argCount) {
+/*
+ * selector / packageName / signature / enclosingTypeName / modifiers / arity
+ */
+public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] selector, char[] signature, int argCount) {
 	char[] countChars = argCount < 10
 		? COUNTS[argCount]
-		: ("/" + String.valueOf(argCount)).toCharArray(); //$NON-NLS-1$
-	return CharOperation.concat(selector, countChars);
+		: ("/" + String.valueOf(argCount)).toCharArray();
+		
+	int countCharsLength = countChars.length;
+	
+	int selectorLength = selector == null ? 0 : selector.length;
+	int packageLength = packageName == null ? 0 : packageName.length;
+	int signatureLength = signature == null ? 0 : signature.length;
+	int enclosingNamesLength = 0;
+	if (enclosingTypeNames != null) {
+		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
+			enclosingNamesLength += enclosingTypeNames[i].length;
+			if (++i < length)
+				enclosingNamesLength++; // for the '.' separator
+		}
+	}
+
+	int resultLength = selectorLength + packageLength + signatureLength + enclosingNamesLength + countCharsLength + 6;
+	char[] result = new char[resultLength];
+	int pos = 0;
+	if (selectorLength > 0) {
+		System.arraycopy(selector, 0, result, pos, selectorLength);
+		pos += selectorLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (packageLength > 0) {
+		System.arraycopy(packageName, 0, result, pos, packageLength);
+		pos += packageLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (signatureLength > 0) {
+		System.arraycopy(signature, 0, result, pos, signatureLength);
+		pos += signatureLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (enclosingTypeNames != null && enclosingNamesLength > 0) {
+		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
+			char[] enclosingName = enclosingTypeNames[i];
+			int itsLength = enclosingName.length;
+			System.arraycopy(enclosingName, 0, result, pos, itsLength);
+			pos += itsLength;
+			if (++i < length)
+				result[pos++] = '.';
+		}
+	}
+	result[pos++] = SEPARATOR;
+	result[pos++] = (char) modifiers;
+	result[pos++] = (char) (modifiers>>16);
+	if (countCharsLength > 0) {
+		System.arraycopy(countChars, 0, result, pos, countCharsLength);
+	}
+	return result;
+}
+public void decodeIndexKey(char[] key) {
+	int slash = CharOperation.indexOf(SEPARATOR, key, 0);
+	this.selector = CharOperation.subarray(key, 0, slash);
+	
+	int start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.pkg = CharOperation.NO_CHAR;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		this.pkg = TypeDeclarationPattern.internedPackageNames.add(CharOperation.subarray(key, start, slash));
+	}
+	
+	start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.signature = CharOperation.NO_CHAR;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		this.signature = CharOperation.subarray(key, start, slash);
+	}
+	
+	// Continue key read by the end to decode arity
+	int last = key.length - 1;
+	this.parameterCount = 0;
+	int power = 1;
+	for (int i=last; i>=0; i--) {
+		if (key[i] == SEPARATOR) {
+			i--;
+			last = i;
+			break;
+		}
+		if (i == last) {
+			this.parameterCount = key[i] - '0';
+		} else {
+			power *= 10;
+			this.parameterCount += power * (key[i] - '0');
+		}
+	}
+
+	// Continue key read by the end to decode modifiers
+	// int last = key.length-1;
+	this.modifiers = key[last-1] + (key[last]<<16);
+	decodeModifiers();
+
+	// Retrieve enclosing type names
+	start = slash + 1;
+	last -= 2; // position of ending slash
+	if (start == last) {
+		this.enclosingTypeNames = CharOperation.NO_CHAR_CHAR;
+	} else {
+		if (last == (start+1) && key[start] == ZERO_CHAR) {
+			this.enclosingTypeNames = ONE_ZERO_CHAR;
+		} else {
+			this.enclosingTypeNames = CharOperation.splitOn('.', key, start, last);
+		}
+	}
+	
+	
+}
+private void decodeModifiers() {
+	// TODO Auto-generated method stub
 }
 
 MethodPattern(int matchRule) {
@@ -243,24 +358,7 @@ public MethodPattern(
 	methodArguments = arguments;
 	if (hasMethodArguments())  ((InternalSearchPattern)this).mustResolve = true;
 }
-public void decodeIndexKey(char[] key) {
-	int last = key.length - 1;
-	this.parameterCount = 0;
-	this.selector = null;
-	int power = 1;
-	for (int i=last; i>=0; i--) {
-		if (key[i] == SEPARATOR) {
-			System.arraycopy(key, 0, this.selector = new char[i], 0, i);
-			break;
-		}
-		if (i == last) {
-			this.parameterCount = key[i] - '0';
-		} else {
-			power *= 10;
-			this.parameterCount += power * (key[i] - '0');
-		}
-	}
-}
+
 public SearchPattern getBlankPattern() {
 	return new MethodPattern(R_EXACT_MATCH | R_CASE_SENSITIVE);
 }
@@ -313,7 +411,9 @@ EntryResult[] queryIn(Index index) throws IOException {
 		case R_EXACT_MATCH :
 			if (this.isCamelCase) break;
 			if (this.selector != null && this.parameterCount >= 0 && !this.varargs)
-				key = createIndexKey(this.selector, this.parameterCount);
+				// TODO JDT search method pattern
+				// key = createIndexKey(this.selector, this.parameterCount);
+				key = CharOperation.NO_CHAR;
 			else { // do a prefix query with the selector
 				matchRule &= ~R_EXACT_MATCH;
 				matchRule |= R_PREFIX_MATCH;
@@ -324,7 +424,9 @@ EntryResult[] queryIn(Index index) throws IOException {
 			break;
 		case R_PATTERN_MATCH :
 			if (this.parameterCount >= 0 && !this.varargs)
-				key = createIndexKey(this.selector == null ? ONE_STAR : this.selector, this.parameterCount);
+				// TODO JDT search method pattern
+				// key = createIndexKey(this.selector == null ? ONE_STAR : this.selector, this.parameterCount);
+				key = CharOperation.NO_CHAR; 
 			else if (this.selector != null && this.selector[this.selector.length - 1] != '*')
 				key = CharOperation.concat(this.selector, ONE_STAR, SEPARATOR);
 			// else do a pattern query with just the selector

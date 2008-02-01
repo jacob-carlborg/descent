@@ -201,7 +201,13 @@ private void enterEnum(TypeInfo typeInfo) {
  * @see ISourceElementRequestor#enterField(FieldInfo)
  */
 public void enterField(FieldInfo fieldInfo) {
-	this.indexer.addFieldDeclaration(fieldInfo.type, fieldInfo.name);
+	char[][] typeNames;
+	if (this.methodDepth > 0) {
+		typeNames = ONE_ZERO_CHAR;
+	} else {
+		typeNames = this.enclosingTypeNames();
+	}
+	this.indexer.addFieldDeclaration(fieldInfo.modifiers, this.packageName, typeNames, fieldInfo.type, fieldInfo.name);
 	this.methodDepth++;
 }
 /**
@@ -239,7 +245,13 @@ private void enterInterface(TypeInfo typeInfo) {
  * @see ISourceElementRequestor#enterMethod(MethodInfo)
  */
 public void enterMethod(MethodInfo methodInfo) {
-	this.indexer.addMethodDeclaration(methodInfo.name, methodInfo.parameterTypes, methodInfo.returnType, methodInfo.exceptionTypes);
+	char[][] typeNames;
+	if (this.methodDepth > 0) {
+		typeNames = ONE_ZERO_CHAR;
+	} else {
+		typeNames = this.enclosingTypeNames();
+	}
+	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, methodInfo.returnType, methodInfo.exceptionTypes, methodInfo.signature);
 	this.methodDepth++;
 }
 /**

@@ -81,6 +81,7 @@ public interface ISourceElementRequestor {
 		public long[] annotationPositions;
 		public char[][] categories;
 		public int defaultValuesCount;
+		public char[] signature;
 	}
 	
 	public static class FieldInfo {

@@ -403,7 +403,7 @@ public class UnittestLaunchConfigurationTab extends
 			IJavaProject javaProject = javaElement.getJavaProject();
 			name = (javaProject != null && javaProject.exists()) ?
 					javaProject.getElementName() : "";
-			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, name); //$NON-NLS-1$
+			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, name);
 			
 			name = getLaunchConfigurationDialog().generateName(name);
 			config.rename(name);

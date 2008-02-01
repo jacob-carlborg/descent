@@ -490,6 +490,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.parameterNames = getParameterNames(ty.parameters);
 		info.parameterTypes = getParameterTypes(ty.parameters);
 		info.returnType = getSignature(ty.next);
+		info.signature = getSignature(ty);
 		if (templateDeclaration != null) {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
@@ -526,6 +527,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			}
 			info.returnType = getSignature(ty.next);
 			info.defaultValuesCount = getDefaultValuesCount(ty.parameters);
+			info.signature = getSignature(ty);
 		}
 		info.typeParameters = new TypeParameterInfo[0];
 		

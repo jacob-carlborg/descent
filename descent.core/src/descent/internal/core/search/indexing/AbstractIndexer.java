@@ -108,8 +108,8 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			}
 		}
 	}	
-	public void addFieldDeclaration(char[] typeName, char[] fieldName) {
-		addIndexEntry(FIELD_DECL, FieldPattern.createIndexKey(fieldName));
+	public void addFieldDeclaration(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] typeName, char[] fieldName) {
+		addIndexEntry(FIELD_DECL, FieldPattern.createIndexKey(modifiers, packageName, enclosingTypeNames, fieldName, typeName));
 		addTypeReference(typeName);
 	}
 	public void addFieldReference(char[] fieldName) {
@@ -133,9 +133,9 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			}
 		}
 	}
-	public void addMethodDeclaration(char[] methodName, char[][] parameterTypes, char[] returnType, char[][] exceptionTypes) {
+	public void addMethodDeclaration(long modifiers, char[] packageName, char[] methodName, char[][] enclosingTypeNames, char[][] parameterTypes, char[] returnType, char[][] exceptionTypes, char[] signature) {
 		int argCount = parameterTypes == null ? 0 : parameterTypes.length;
-		addIndexEntry(METHOD_DECL, MethodPattern.createIndexKey(methodName, argCount));
+		addIndexEntry(METHOD_DECL, MethodPattern.createIndexKey(modifiers, packageName, enclosingTypeNames, methodName, signature, argCount));
 	
 		if (parameterTypes != null) {
 			for (int i = 0; i < argCount; i++)
@@ -148,7 +148,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			addTypeReference(returnType);
 	}
 	public void addMethodReference(char[] methodName, int argCount) {
-		addIndexEntry(METHOD_REF, MethodPattern.createIndexKey(methodName, argCount));
+		addIndexEntry(METHOD_REF, MethodPattern.createIndexKey(0, null, null, methodName, null, argCount));
 	}
 	public void addNameReference(char[] name) {
 		addIndexEntry(REF, name);

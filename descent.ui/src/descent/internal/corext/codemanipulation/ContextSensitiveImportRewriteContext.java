@@ -53,6 +53,10 @@ public class ContextSensitiveImportRewriteContext extends ImportRewriteContext {
 	}
 
 	public int findInContext(final String qualifier, String name, int kind) {
+		if (qualifier.equals("object")) {
+			return RES_NAME_FOUND;
+		}
+		
 		return ImportRewriteStub.findInImports(fCompilationUnit, qualifier, name, kind);
 		
 		// TODO JDT UI import rewrite improve

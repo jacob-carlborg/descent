@@ -84,6 +84,8 @@ public class PatternLocator implements IIndexConstants {
 				return new LocalVariableLocator((LocalVariablePattern) pattern);
 			case IIndexConstants.TYPE_PARAM_PATTERN:
 				return new TypeParameterLocator((TypeParameterPattern) pattern);
+			case IIndexConstants.DECL_PATTERN :
+				return new DeclarationLocator((DeclarationPattern) pattern);
 		}
 		return null;
 	}

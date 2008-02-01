@@ -130,6 +130,14 @@ public class JavaElementFinder {
 				stack.push(signature);
 			}
 		}
+		
+		@Override
+		public void acceptIdentifier(char[] name, String signature) {
+//			if (!stack.isEmpty()) {
+//				stack.pop();
+//			}
+			stack.push(signature);
+		}
 
 		public void acceptArgumentModifier(int stc) {
 			if (stc == STC.STCin) {
@@ -277,12 +285,30 @@ public class JavaElementFinder {
 					String retType = method.getReturnType();
 					String[] mParamTypes = method.getParameterTypes();
 					if (mParamTypes.length == paramsAndRetTypes.length - 1) {
-						if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
-							for(int i = 0; i < mParamTypes.length; i++) {
-								if (!mParamTypes[i].equals(paramsAndRetTypes[i])) {
-									continue loop;
+						
+						// See if any of the parameters or the return type contains an
+						// unresolved identifier
+						boolean hasUnresolved = false;
+						for (int i = 0; i < paramsAndRetTypes.length; i++) {
+							if (paramsAndRetTypes[i].indexOf(ISignatureConstants.IDENTIFIER) != -1) {
+								hasUnresolved = true;
+								break;
+							}
+						}
+						
+						if (!hasUnresolved) {
+							if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
+								for(int i = 0; i < mParamTypes.length; i++) {
+									if (!mParamTypes[i].equals(paramsAndRetTypes[i])) {
+										continue loop;
+									}
 								}
 							}
+						} else {
+							// If anything is unresolved, but the parameter count
+							// is the same, just return it
+							// TODO Descent JavaElementFinder improve unresolved
+							return method;
 						}
 					} else {
 						continue;

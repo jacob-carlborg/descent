@@ -58,7 +58,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		if (compilationUnit != null && fIsGuessArguments)
 			proposal= new ParameterGuessingProposal(methodProposal, getInvocationContext());
 		else
-			proposal= new ExperimentalMethodProposal(methodProposal, getInvocationContext());
+			proposal= new LazyJavaMethodCompletionProposal(methodProposal, getInvocationContext());
 		return proposal;
 	}
 	

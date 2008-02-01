@@ -394,7 +394,7 @@ public class CompletionProposalLabelProvider {
 		// special methods may not have a declaring type: methods defined on arrays etc.
 		// TODO remove when bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
 		if (declaringTypeSignature == null)
-			return null; //$NON-NLS-1$
+			return null;
 		return SignatureUtil.stripSignatureToFQN(String.valueOf(declaringTypeSignature));
 	}
 
@@ -490,21 +490,24 @@ public class CompletionProposalLabelProvider {
 	String createLabelWithTypeAndDeclaration(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getName());
-		/* TODO JDT code complete
-		char[] typeName= Signature.getSignatureSimpleName(proposal.getSignature());
+		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
 		if (typeName.length > 0) {
 			buf.append("    "); //$NON-NLS-1$
 			buf.append(typeName);
 		}
-		char[] declaration= proposal.getDeclarationSignature();
-		if (declaration != null) {
-			declaration= Signature.getSignatureSimpleName(declaration);
-			if (declaration.length > 0) {
-				buf.append(" - "); //$NON-NLS-1$
-				buf.append(declaration);
+		
+		if (proposal.getSignature() != null) {
+			char[] fullName= Signature.toCharArray(proposal.getSignature());
+			
+			// only display innermost type name as type name, using any
+			// enclosing types as qualification
+			int qIndex= findSimpleNameStart(fullName);
+			if (qIndex > 0) {
+				buf.append(JavaElementLabels.CONCAT_STRING);
+				buf.append(fullName, 0, qIndex - 1);
 			}
+			return buf.toString();
 		}
-		*/
 		return buf.toString();
 	}
 
@@ -651,7 +654,13 @@ public class CompletionProposalLabelProvider {
 				}
 				break;
 			case CompletionProposal.FIELD_REF:
-				descriptor= JavaElementImageProvider.getFieldImageDescriptor(false, flags);
+				if ((flags & Flags.AccAlias) != 0) {
+					descriptor= JavaElementImageProvider.getAliasImageDescriptor(flags);
+				} else if ((flags & Flags.AccTypedef) != 0) {
+					descriptor= JavaElementImageProvider.getTypedefImageDescriptor(flags);
+				} else {
+					descriptor= JavaElementImageProvider.getFieldImageDescriptor(false, flags);
+				}
 				break;
 			case CompletionProposal.LOCAL_VARIABLE_REF:
 			case CompletionProposal.VARIABLE_DECLARATION:

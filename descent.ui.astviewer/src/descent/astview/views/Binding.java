@@ -120,7 +120,7 @@ public class Binding extends ASTAttribute {
 					if (typeBinding.isStruct()) kinds.append(" isStruct"); //$NON-NLS-1$
 					if (typeBinding.isUnion()) kinds.append(" isUnion"); //$NON-NLS-1$
 					if (typeBinding.isEnum()) kinds.append(" isEnum"); //$NON-NLS-1$
-					res.add(new BindingProperty(this, kinds, true)); //$NON-NLS-1$
+					res.add(new BindingProperty(this, kinds, true));
 					
 					StringBuffer generics= new StringBuffer("GENERICS:"); //$NON-NLS-1$
 					if (typeBinding.isParameterizedType()) generics.append(" isParameterizedType"); //$NON-NLS-1$

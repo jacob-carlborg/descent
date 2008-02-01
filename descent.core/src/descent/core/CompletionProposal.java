@@ -1281,6 +1281,10 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return this.signature;
 	}
 	
+	public char[] getTypeName() {
+		return this.typeName;
+	}
+	
 	/**
 	 * Returns the key relevant in the context,
 	 * or <code>null</code> if none.

@@ -19,7 +19,11 @@ import descent.internal.core.index.EntryResult;
 import descent.internal.core.index.Index;
 import descent.internal.core.search.indexing.IIndexConstants;
 
-public class TypeDeclarationPattern extends FQNPattern implements IIndexConstants {
+public class DeclarationPattern extends JavaSearchPattern implements IIndexConstants {
+
+public char[] simpleName;
+public char[] pkg;
+public char[][] enclosingTypeNames;
 
 // set to CLASS_SUFFIX for only matching classes 
 // set to INTERFACE_SUFFIX for only matching interfaces
@@ -27,9 +31,10 @@ public class TypeDeclarationPattern extends FQNPattern implements IIndexConstant
 // set to ANNOTATION_TYPE_SUFFIX for only matching annotation types
 // set to TYPE_SUFFIX for matching both classes and interfaces
 public char typeSuffix; 
+public int modifiers;
 public boolean secondary = false;
 
-protected static char[][] CATEGORIES = { TYPE_DECL };
+protected static char[][] CATEGORIES = { TYPE_DECL, FIELD_DECL /*, METHOD_DECL */ };
 
 // want to save space by interning the package names for each match
 static PackageNameSet internedPackageNames = new PackageNameSet(1001);
@@ -128,7 +133,7 @@ public static char[] createIndexKey(long modifiers, char[] typeName, char[] pack
 	return result;
 }
 
-public TypeDeclarationPattern(
+public DeclarationPattern(
 	char[] pkg,
 	char[][] enclosingTypeNames,
 	char[] simpleName,
@@ -151,8 +156,8 @@ public TypeDeclarationPattern(
 
 	((InternalSearchPattern)this).mustResolve = (this.pkg != null && this.enclosingTypeNames != null) || typeSuffix != TYPE_SUFFIX;
 }
-TypeDeclarationPattern(int matchRule) {
-	super(TYPE_DECL_PATTERN, matchRule);
+DeclarationPattern(int matchRule) {
+	super(DECL_PATTERN, matchRule);
 }
 /*
  * Type entries are encoded as:
@@ -165,35 +170,39 @@ TypeDeclarationPattern(int matchRule) {
  */
 public void decodeIndexKey(char[] key) {
 	int slash = CharOperation.indexOf(SEPARATOR, key, 0);
-	this.simpleName = CharOperation.subarray(key, 0, slash);
-
-	int start = ++slash;
-	if (key[start] == SEPARATOR) {
-		this.pkg = CharOperation.NO_CHAR;
+	if (slash == -1) {
+		this.simpleName = key;
 	} else {
-		slash = CharOperation.indexOf(SEPARATOR, key, start);
-		this.pkg = internedPackageNames.add(CharOperation.subarray(key, start, slash));
-	}
-
-	// Continue key read by the end to decode modifiers
-	int last = key.length-1;
-	this.secondary = key[last] == 'S';
-	if (this.secondary) {
-		last -= 2;
-	}
-	this.modifiers = key[last-1] + (key[last]<<16);
-	decodeModifiers();
-
-	// Retrieve enclosing type names
-	start = slash + 1;
-	last -= 2; // position of ending slash
-	if (start == last) {
-		this.enclosingTypeNames = CharOperation.NO_CHAR_CHAR;
-	} else {
-		if (last == (start+1) && key[start] == ZERO_CHAR) {
-			this.enclosingTypeNames = ONE_ZERO_CHAR;
+		this.simpleName = CharOperation.subarray(key, 0, slash);
+	
+		int start = ++slash;
+		if (key[start] == SEPARATOR) {
+			this.pkg = CharOperation.NO_CHAR;
 		} else {
-			this.enclosingTypeNames = CharOperation.splitOn('.', key, start, last);
+			slash = CharOperation.indexOf(SEPARATOR, key, start);
+			this.pkg = internedPackageNames.add(CharOperation.subarray(key, start, slash));
+		}
+	
+		// Continue key read by the end to decode modifiers
+		int last = key.length-1;
+		this.secondary = key[last] == 'S';
+		if (this.secondary) {
+			last -= 2;
+		}
+		this.modifiers = key[last-1] + (key[last]<<16);
+		decodeModifiers();
+	
+		// Retrieve enclosing type names
+		start = slash + 1;
+		last -= 2; // position of ending slash
+		if (start == last) {
+			this.enclosingTypeNames = CharOperation.NO_CHAR_CHAR;
+		} else {
+			if (last == (start+1) && key[start] == ZERO_CHAR) {
+				this.enclosingTypeNames = ONE_ZERO_CHAR;
+			} else {
+				this.enclosingTypeNames = CharOperation.splitOn('.', key, start, last);
+			}
 		}
 	}
 }
@@ -240,13 +249,13 @@ protected void decodeModifiers() {
 	
 }
 public SearchPattern getBlankPattern() {
-	return new TypeDeclarationPattern(R_EXACT_MATCH | R_CASE_SENSITIVE);
+	return new DeclarationPattern(R_EXACT_MATCH | R_CASE_SENSITIVE);
 }
 public char[][] getIndexCategories() {
 	return CATEGORIES;
 }
 public boolean matchesDecodedKey(SearchPattern decodedPattern) {
-	TypeDeclarationPattern pattern = (TypeDeclarationPattern) decodedPattern;
+	DeclarationPattern pattern = (DeclarationPattern) decodedPattern;
 	switch(this.typeSuffix) {
 		case CLASS_SUFFIX :
 			switch (pattern.typeSuffix) {
