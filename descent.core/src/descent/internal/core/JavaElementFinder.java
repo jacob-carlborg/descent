@@ -19,7 +19,6 @@ import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
-import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
@@ -34,6 +33,8 @@ public class JavaElementFinder {
 	
 	private final JavaProject javaProject;
 	private final INameEnvironment environment;
+	private final CompilerConfiguration config;
+	
 	/*
 	 * Cache results for speedup, and also for not loading multiple
 	 * times the same module.
@@ -42,6 +43,7 @@ public class JavaElementFinder {
 
 	public JavaElementFinder(IJavaProject project, WorkingCopyOwner owner) {
 		this.javaProject = (JavaProject) project;
+		this.config = new CompilerConfiguration();
 		try {
 			this.environment = new SearchableEnvironment(javaProject, owner);
 		} catch (JavaModelException e) {
@@ -84,7 +86,7 @@ public class JavaElementFinder {
 			
 			if (typeFunctionCounter == 0) {
 				if (startPosition >= 0) {
-					element = JavaElementFinder.findChild(element, startPosition);
+					element = findChild(element, startPosition);
 				} else {
 					if (type == ISignatureConstants.FUNCTION ||
 							type == ISignatureConstants.TEMPLATED_FUNCTION) {
@@ -337,7 +339,7 @@ public class JavaElementFinder {
 	 * Finds a function in the given parent with the given name and parameter
 	 * and types signatures.
 	 */
-	public static IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) {
+	public IJavaElement findFunction(IParent parent, String name, String[] paramsAndRetTypes) {
 		try {
 		loop:
 			for(IJavaElement child : parent.getChildren()) {
@@ -406,7 +408,10 @@ public class JavaElementFinder {
 	 * Finds a function in the given parent with the given name and parameter
 	 * and types signatures.
 	 */
-	public static IJavaElement findTemplatedFunction(IParent parent, String name, String[] paramsAndRetTypes, String[] paramTypes) {
+	public IJavaElement findTemplatedFunction(IParent parent, 
+			String name, 
+			String[] paramsAndRetTypes, 
+			String[] paramTypes) {
 		try {
 		loop:
 			for(IJavaElement child : parent.getChildren()) {
@@ -464,7 +469,9 @@ public class JavaElementFinder {
 	 * Finds a template aggregate in the given parent with the given name and parameter
 	 * types signatures.
 	 */
-	public static IJavaElement findTemplatedAggregate(IParent parent, String name, String[] paramTypes) {
+	public IJavaElement findTemplatedAggregate(IParent parent, 
+			String name, 
+			String[] paramTypes) {
 		return findTemplate(parent, name, paramTypes);
 	}
 	
@@ -472,7 +479,8 @@ public class JavaElementFinder {
 	 * Finds a template function in the given parent with the given name and parameter
 	 * types signatures.
 	 */
-	public static IJavaElement findTemplate(IParent parent, String name, String[] paramTypes) {
+	public IJavaElement findTemplate(IParent parent, 
+			String name, String[] paramTypes) {
 		try {
 		loop:
 			for(IJavaElement child : parent.getChildren()) {
@@ -511,7 +519,7 @@ public class JavaElementFinder {
 		return null;
 	}
 
-	public static IJavaElement findChild(IJavaElement current, String name) {
+	public IJavaElement findChild(IJavaElement current, String name) {
 		try {
 			switch(current.getElementType()) {
 			case IJavaElement.JAVA_PROJECT:
@@ -532,7 +540,7 @@ public class JavaElementFinder {
 		return null;		
 	}
 	
-	public static IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
+	public IJavaElement searchInChildren(IParent parent, String name) throws JavaModelException {
 		for(IJavaElement child : parent.getChildren()) {
 			if (child instanceof IPackageDeclaration ||
 				child instanceof IImportDeclaration) {
@@ -562,7 +570,7 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	public static IJavaElement findChild(IJavaProject project, String name) throws JavaModelException {
+	public IJavaElement findChild(IJavaProject project, String name) throws JavaModelException {
 		IPackageFragment[] fragments = project.getPackageFragments();
 		for(IPackageFragment fragment : fragments) {
 			IJavaElement child = findChild(fragment, name);
@@ -573,7 +581,7 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	public static IJavaElement findChild(IPackageFragment fragment, String name) throws JavaModelException {
+	public IJavaElement findChild(IPackageFragment fragment, String name) throws JavaModelException {
 		if (fragment.isDefaultPackage()) {
 			ICompilationUnit unit;
 			
@@ -595,7 +603,7 @@ public class JavaElementFinder {
 		return searchInChildren(fragment, name);
 	}
 	
-	public static IJavaElement findChild(IJavaElement current, int startPosition) {
+	public IJavaElement findChild(IJavaElement current, int startPosition) {
 		if (!(current instanceof IParent)) {
 			return null;
 		}
@@ -618,8 +626,6 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	private static Global global = new Global();
-	
 	/*
 	 * Determines if an element is to be searched in it's children. For example,
 	 * if element is an align declaration, this method returns true. If it's
@@ -628,7 +634,7 @@ public class JavaElementFinder {
 	 * 
 	 * If it must be searched, the element to search is returned.
 	 */
-	public static IParent mustSearchInChildren(IJavaElement element) {
+	public IParent mustSearchInChildren(IJavaElement element) {
 		if (!(element instanceof IParent)) {
 			return null;
 		}
@@ -652,24 +658,37 @@ public class JavaElementFinder {
 				IConditional conditional = (IConditional) element;
 				if (conditional.isVersionDeclaration()) {
 					IJavaElement[] children = conditional.getChildren();
-					
-					char[] version = conditional.getElementName().toCharArray();
-					for(char[] v : global.params.versionids) {
-						if (CharOperation.equals(v, version)) {
-							if (children.length == 2 && 
-								children[0].getElementType() == IJavaElement.INITIALIZER &&
-								((IInitializer) children[0]).isThen()) {
-								return (IParent) children[0];
-							} else {
-								return conditional;
-							}
+					String version = conditional.getElementName();
+					try {
+						long level = Long.parseLong(version);
+						if (level >= config.versionLevel) {
+							return conditionalThen(conditional, children);
+						} else {
+							return conditionalElse(conditional, children);
+						}
+					} catch (NumberFormatException e) {
+						if (config.versionIdentifiers.containsKey(version.toCharArray())) {
+							return conditionalThen(conditional, children);
+						} else {
+							return conditionalElse(conditional, children);
 						}
 					}
-					
-					if (children.length == 2 && 
-							children[1].getElementType() == IJavaElement.INITIALIZER &&
-							((IInitializer) children[1]).isElse()) {
-						return (IParent) children[1];
+				} else if (conditional.isDebugDeclaration()) {
+					IJavaElement[] children = conditional.getChildren();
+					String version = conditional.getElementName();
+					try {
+						long level = Long.parseLong(version);
+						if (level >= config.debugLevel) {
+							return conditionalThen(conditional, children);
+						} else {
+							return conditionalElse(conditional, children);
+						}
+					} catch (NumberFormatException e) {
+						if (config.debugIdentifiers.containsKey(version.toCharArray())) {
+							return conditionalThen(conditional, children);
+						} else {
+							return conditionalElse(conditional, children);
+						}
 					}
 				}
 				break;
@@ -687,6 +706,26 @@ public class JavaElementFinder {
 		}
 		
 		return null;
+	}
+	
+	private static IParent conditionalThen(IConditional conditional, IJavaElement[] children) throws JavaModelException {
+		if (children.length == 2 && 
+			children[0].getElementType() == IJavaElement.INITIALIZER &&
+			((IInitializer) children[0]).isThen()) {
+			return (IParent) children[0];
+		} else {
+			return conditional;
+		}
+	}
+	
+	private static IParent conditionalElse(IConditional conditional, IJavaElement[] children) throws JavaModelException {
+		if (children.length == 2 && 
+				children[1].getElementType() == IJavaElement.INITIALIZER &&
+				((IInitializer) children[1]).isElse()) {
+			return (IParent) children[1];
+		} else {
+			return conditional;
+		}
 	}
 	
 	public static boolean isReturnTarget(IJavaElement element) {

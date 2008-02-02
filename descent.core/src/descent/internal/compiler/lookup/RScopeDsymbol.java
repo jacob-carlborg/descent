@@ -146,7 +146,7 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 		try {
 			IJavaElement[] children = parent.getChildren();
 			for(IJavaElement child : children) {
-				IParent searchInChildren = JavaElementFinder.mustSearchInChildren(child);
+				IParent searchInChildren = getFinder().mustSearchInChildren(child);
 				if (searchInChildren != null) {
 					IDsymbol result = searchInChildren(searchInChildren, ident, sident);
 					if (result != null) {

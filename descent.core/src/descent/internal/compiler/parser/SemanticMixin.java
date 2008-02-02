@@ -876,7 +876,7 @@ public class SemanticMixin {
 				if (d != null && d.protection() == PROT.PROTprivate
 						&& d.parent().isTemplateMixin() == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.MemberIsPrivate, aThis, new String[] { new String(d.ident().ident) }));
+							IProblem.MemberIsPrivate, d, new String[] { new String(d.ident().ident) }));
 				}
 			}
 		}

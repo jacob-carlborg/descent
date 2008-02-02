@@ -1,0 +1,49 @@
+package descent.internal.core;
+
+import descent.core.JavaCore;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.core.util.Util;
+
+public class CompilerConfiguration {
+	
+	public long versionLevel;
+	public HashtableOfCharArrayAndObject versionIdentifiers;
+	public long debugLevel;
+	public HashtableOfCharArrayAndObject debugIdentifiers;
+	public boolean useDeprecated;
+	public boolean warnings;
+	
+	public CompilerConfiguration() {
+		debugLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
+		debugIdentifiers = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS);
+		
+		versionLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
+		versionIdentifiers = getIdentifiers(JavaCore.COMPILER_VERSION_IDENTIFIERS);
+		
+		useDeprecated = JavaCore.getOption(JavaCore.COMPILER_ALLOW_DEPRECATED).equals(JavaCore.ENABLED);
+		warnings = JavaCore.getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
+	}
+	
+	private static long getLevel(String prefKey) {
+		String Level = JavaCore.getOption(prefKey);
+		try {
+			return Long.parseLong(Level);
+		} catch (NumberFormatException e) {
+			Util.log(e);
+			return 0;
+		}
+	}
+	
+	private HashtableOfCharArrayAndObject getIdentifiers(String pref) {
+		HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
+		
+		String prefValue = JavaCore.getOption(pref);
+		String[] idents = prefValue.split(",");
+		for(String ident : idents) {
+			hash.put(ident.trim().toCharArray(), this);
+		}
+		
+		return hash;
+	}
+
+}

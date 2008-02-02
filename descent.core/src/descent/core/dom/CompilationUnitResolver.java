@@ -31,10 +31,12 @@ import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.CancelableNameEnvironment;
+import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;
 import descent.internal.core.util.Util;
 
@@ -229,31 +231,23 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			Util.log(e);
 		}
 		
-		global.params.versionlevel = getLevel(JavaCore.COMPILER_VERSION_LEVEL);
-		global.params.debuglevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
-		addIdentifiers(JavaCore.COMPILER_VERSION_IDENTIFIERS, global.params.versionids);
-		addIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS, global.params.debugids);
-		global.params.useDeprecated = JavaCore.getOption(JavaCore.COMPILER_ALLOW_DEPRECATED).equals(JavaCore.ENABLED);
-		global.params.warnings = JavaCore.getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
+		CompilerConfiguration config = new CompilerConfiguration();
+		
+		global.params.versionlevel = config.versionLevel;
+		global.params.debuglevel = config.debugLevel;
+		addIdentifiers(config.versionIdentifiers, global.params.versionids);
+		addIdentifiers(config.debugIdentifiers, global.params.debugids);
+		global.params.useDeprecated = config.useDeprecated;
+		global.params.warnings = config.warnings;
 		
 		return global;
 	}
 	
-	private static long getLevel(String prefKey) {
-		String Level = JavaCore.getOption(prefKey);
-		try {
-			return Long.parseLong(Level);
-		} catch (NumberFormatException e) {
-			Util.log(e);
-			return 0;
-		}
-	}
-	
-	private static void addIdentifiers(String pref, List<char[]> list) {
-		String prefValue = JavaCore.getOption(pref);
-		String[] idents = prefValue.split(",");
-		for(String ident : idents) {
-			list.add(ident.trim().toCharArray());
+	private static void addIdentifiers(HashtableOfCharArrayAndObject hash, List<char[]> list) {
+		for(char[] key : hash.keys()) {
+			if (key != null) {
+				list.add(key);
+			}
 		}
 	}
 	

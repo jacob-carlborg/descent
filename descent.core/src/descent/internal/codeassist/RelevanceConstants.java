@@ -20,6 +20,7 @@ public interface RelevanceConstants {
 	int R_ALIAS = 20;
 	int R_TYPEDEF = 20;
 	int R_VAR = 20;
+	int R_LOCAL_VAR = 25;
 	int R_ANNOTATION = 20;
 	int R_EXCEPTION = 20;
 	int R_COMPILATION_UNIT = 20;

@@ -8,8 +8,8 @@ import java.util.Stack;
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.CompletionRequestor;
+import descent.core.Flags;
 import descent.core.IJavaProject;
-import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.ddoc.Ddoc;
@@ -37,7 +37,6 @@ import descent.internal.codeassist.complete.ICompletionOnKeyword;
 import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
-import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.AttribDeclaration;
@@ -57,7 +56,6 @@ import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
-import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IAggregateDeclaration;
 import descent.internal.compiler.parser.IAliasDeclaration;
@@ -85,7 +83,6 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeExp;
-import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -110,10 +107,8 @@ import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
-import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
-import descent.internal.core.JavaProject;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 
@@ -153,6 +148,7 @@ public class CompletionEngine extends Engine
 	HashtableOfObject knownDeclarations = new HashtableOfObject(10);
 	
 	boolean isCompletingPackage;
+	boolean isCompletingTypeIdentifier;
 	
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
@@ -237,9 +233,9 @@ public class CompletionEngine extends Engine
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-			if (assistNode != null) {
-				System.out.println(assistNode.getClass());
-			}
+//			if (assistNode != null) {
+//				System.out.println(assistNode.getClass());
+//			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -319,7 +315,7 @@ public class CompletionEngine extends Engine
 			this.requestor.endReporting();
 		}
 	}
-	
+
 	private CompletionContext buildContext(CompletionParser parser) {
 		// TODO Descent completion context
 		CompletionContext context = new CompletionContext();
@@ -653,24 +649,66 @@ public class CompletionEngine extends Engine
 		
 		Scope scope = node.scope;
 		
-		completeScope(scope, currentName, INCLUDE_ALL);
+		completeScope(scope, currentName, INCLUDE_TYPES);
 		
 		// Also suggest packages
 		isCompletingPackage = true;
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
+		isCompletingTypeIdentifier = true;
 		nameEnvironment.findDeclarations(currentName, false, true, this);
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
 		doSemantic(module);
 		
-		if (!(node.exp instanceof IdentifierExp)) {
+		startPosition = node.start;
+		endPosition = node.start + node.length;
+		
+		if (node.exp instanceof ScopeExp) {
+			ScopeExp se = (ScopeExp) node.exp;
+			if (se.sds instanceof IModule) {
+				currentName = computePrefixAndSourceRange(((IModule) se.sds).ident());
+			} else if (se.sds instanceof Package) {
+				currentName = computePrefixAndSourceRange(((Package) se.sds).ident());
+			} else {
+				return;
+			}
+		} else if (node.exp instanceof IdentifierExp) {
+			currentName = computePrefixAndSourceRange((IdentifierExp) node.exp);
+		} else if (node.exp instanceof TypeExp) {
+			TypeExp te = (TypeExp) node.exp;
+			Type type = te.type;
+			IDsymbol sym = null;
+			if (type instanceof TypeClass) {
+				sym = ((TypeClass) type).sym;
+			} else if (type instanceof TypeStruct) {
+				sym = ((TypeStruct) type).sym;
+			} else if (type instanceof TypeEnum) {
+				sym = ((TypeEnum) type).sym;
+			} else {
+				return;
+			}
+			
+			if (sym == null) {
+				return;
+			}
+			
+			currentName = sym.ident().ident;
+		} else if (node.exp instanceof CallExp) {
+			CallExp ce = (CallExp) node.exp;
+			if (ce.e1 instanceof IdentifierExp) {
+				currentName = computePrefixAndSourceRange((IdentifierExp) ce.e1);
+			} else if (ce.e1 instanceof VarExp) {
+				IDeclaration var = ((VarExp) ce.e1).var;
+				currentName = var.ident().ident;
+			} else {
+				return;
+			}
+		} else {
 			return;
 		}
-		
-		currentName = computePrefixAndSourceRange((IdentifierExp) node.exp);		
 		
 		Scope scope = node.scope;
 		if (scope == null) {
@@ -864,13 +902,13 @@ public class CompletionEngine extends Engine
 			completeTypeEnum((TypeEnum) type, name);
 			break;
 		case ASTDmdNode.TYPE_S_ARRAY:
-			completeTypeStaticArrayProperties((TypeSArray) type, name);
+			suggestTypeStaticArrayProperties((TypeSArray) type, name);
 			break;
 		case ASTDmdNode.TYPE_D_ARRAY:
-			completeTypeDynamicArrayProperties((TypeDArray) type, name);
+			suggestTypeDynamicArrayProperties((TypeDArray) type, name);
 			break;
 		case ASTDmdNode.TYPE_A_ARRAY:
-			completeTypeAssociativeArrayProperties((TypeAArray) type, name);
+			suggestTypeAssociativeArrayProperties((TypeAArray) type, name);
 			break;
 		}
 	}
@@ -920,16 +958,16 @@ public class CompletionEngine extends Engine
 	
 	public final static char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };
 
-	private void completeTypeStaticArrayProperties(TypeSArray type, char[] name) {
-		char[] sigType = type.getSignature().toCharArray();		
-		suggestAllTypesProperties(name, sigType);		
+	private void suggestTypeStaticArrayProperties(TypeSArray type, char[] name) {
+		char[] sigType = type.getSignature().toCharArray();
+		suggestAllTypesProperties(name, sigType);
 		suggestProperties(name, 
 				staticAndDynamicArrayProperties, 
 				new char[][] { sigType, sigType, sigInt, sigInt, sigType },
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
-	private void completeTypeDynamicArrayProperties(TypeDArray type, char[] name) {
+	private void suggestTypeDynamicArrayProperties(TypeDArray type, char[] name) {
 		char[] sigType = type.getSignature().toCharArray();		
 		suggestAllTypesProperties(name, sigType);
 		suggestProperties(name, 
@@ -939,14 +977,15 @@ public class CompletionEngine extends Engine
 	}
 	
 	public final static char[][] associativeArrayProperties = { Id.length, Id.keys, Id.values, Id.rehash };
-	private void completeTypeAssociativeArrayProperties(TypeAArray type, char[] name) {
+	private void suggestTypeAssociativeArrayProperties(TypeAArray type, char[] name) {
 		char[] sigType = type.getSignature().toCharArray();		
 		suggestAllTypesProperties(name, sigType);
 		suggestProperties(name, 
 				associativeArrayProperties,
 				new char[][] { sigInt, 
-					type.next.getSignature().toCharArray(), 
-					type.index.getSignature().toCharArray(),
+					// These are arrays of the respective types
+					("A" + type.index.getSignature()).toCharArray(), 
+					("A" + type.next.getSignature()).toCharArray(),
 					sigType },
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
@@ -1027,6 +1066,10 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestMember(IDsymbol member, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		if (!isVisible(member)) {
+			return;
+		}
+		
 		// TODO Descent don't allow all of the attrib declarations to enter
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
@@ -1056,7 +1099,11 @@ public class CompletionEngine extends Engine
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, var.ident().ident);
-					relevance += R_VAR;
+					if (var.parent() instanceof IFuncDeclaration) {
+						relevance += R_LOCAL_VAR;
+					} else {
+						relevance += R_VAR;	
+					}
 					
 					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(var.ident().ident);
@@ -1208,24 +1255,59 @@ public class CompletionEngine extends Engine
 		}
 	}
 
-	private char[] getFQN(IDsymbol member) {
-		StringBuilder sb = new StringBuilder();
-		getFQN(member, sb);
-		
-		char[] res = new char[sb.length()];
-		sb.getChars(0, sb.length(), res, 0);
-		return res;
-	}
-
-	private void getFQN(IDsymbol member, StringBuilder sb) {
-		if (member instanceof IModule) {
-			sb.append(((IModule) member).getFullyQualifiedName());
-		} else {
-			if (member.parent() != null) {
-				getFQN(member.parent(), sb);
-				sb.append('.');
+	private boolean isVisible(IDsymbol member) {
+		if (member.getModule() != this.module) {
+			// private and protected excluded
+			if ((member.getFlags() & (Flags.AccPrivate | Flags.AccProtected)) != 0) {
+				return false;
+			} else if ((member.getFlags() & Flags.AccPackage) != 0) {
+				// package only if in same package
+				IDsymbol myParent = module.parent();
+				IDsymbol hisParent = member.getModule().parent();
+				
+				while(myParent != null && hisParent != null && 
+					myParent instanceof Package && hisParent instanceof Package) {
+					Package myPack = (Package) myParent;
+					Package hisPack = (Package) hisParent;
+					
+					if (!ASTDmdNode.equals(myPack.ident, hisPack.ident)) {
+						return false;
+					}
+					
+					myParent = myParent.parent();
+					hisParent = hisParent.parent();
+				}
+				
+				return myParent == null && hisParent == null;
 			}
-			sb.append(member.ident());
+		}
+		return true;
+	}
+	
+	private boolean isVisible(long modifiers, char[] packageName) {
+		if ((modifiers & (Flags.AccPrivate | Flags.AccProtected)) != 0) {
+			return false;
+		} else if ((modifiers & Flags.AccPackage) != 0) {
+			int myIndex = CharOperation.indexOf('.', sourceUnitFqn);
+			int hisIndex = CharOperation.indexOf('.', packageName);
+			
+			if (myIndex == -1) {
+				if (hisIndex == -1) {
+					return CharOperation.equals(sourceUnitFqn, packageName);
+				} else {
+					return false;
+				}
+			} else {
+				if (hisIndex != -1) {
+					char[] me = CharOperation.subarray(sourceUnitFqn, 0, myIndex);
+					char[] he = CharOperation.subarray(packageName, 0, hisIndex);
+					return CharOperation.equals(me, he);
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return true;
 		}
 	}
 
@@ -1618,22 +1700,8 @@ public class CompletionEngine extends Engine
 		// If we are completing a package, only show those packages for which
 		// there is an import
 		if (isCompletingPackage) {
-			if (module.aimports != null) {
-				boolean skip = true;
-				for(Object sym : module.aimports) {
-					if (sym instanceof IModule) {
-						IModule mod = (IModule) sym;
-						char[] fqn = mod.getFullyQualifiedName().toCharArray();
-						if (CharOperation.equals(fqn, fullyQualifiedName)) {
-							skip = false;
-							break;
-						}
-					}
-				}
-				
-				if (skip) {
-					return;
-				}
+			if (!isImported(fullyQualifiedName)) {
+				return;
 			}
 		}
 		
@@ -1659,6 +1727,10 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		if (!isVisible(modifiers, packageName)) {
+			return;
+		}
+		
 		char[] fullName = CharOperation.concat(packageName, typeName, '.');
 		if (knownDeclarations.containsKey(fullName)) {
 			return;
@@ -1666,7 +1738,9 @@ public class CompletionEngine extends Engine
 		knownDeclarations.put(fullName, this);
 		
 		int relevance = computeBaseRelevance();
-		relevance += computeRelevanceForInterestingProposal();
+		if (isImported(packageName)) {
+			relevance += computeRelevanceForInterestingProposal();
+		}
 		relevance += computeRelevanceForCaseMatching(currentName, typeName);
 		relevance += R_CLASS;
 		
@@ -1694,6 +1768,18 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		// Don't show variables if completing type identifier
+		if (isCompletingTypeIdentifier) {
+			if ((modifiers & Flags.AccTypedef) == 0 &&
+					(modifiers & Flags.AccAlias) == 0) {
+				return;
+			}
+		}
+		
+		if (!isVisible(modifiers, packageName)) {
+			return;
+		}
+		
 		char[] fullName = CharOperation.concat(packageName, name, '.');
 		if (knownDeclarations.containsKey(fullName)) {
 			return;
@@ -1701,7 +1787,9 @@ public class CompletionEngine extends Engine
 		knownDeclarations.put(fullName, this);
 		
 		int relevance = computeBaseRelevance();
-		relevance += computeRelevanceForInterestingProposal();
+		if (isImported(packageName)) {
+			relevance += computeRelevanceForInterestingProposal();
+		}
 		relevance += computeRelevanceForCaseMatching(currentName, name);
 		relevance += R_VAR;
 		
@@ -1730,6 +1818,15 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		// Don't show methods for type identifier completions
+		if (isCompletingTypeIdentifier) {
+			return;
+		}
+		
+		if (!isVisible(modifiers, packageName)) {
+			return;
+		}
+		
 		StringBuilder sig = new StringBuilder();
 		sig.append(ISignatureConstants.MODULE);
 		sig.append(packageName.length);
@@ -1747,7 +1844,9 @@ public class CompletionEngine extends Engine
 		char[] fullName = CharOperation.concat(packageName, name, '.');
 		
 		int relevance = computeBaseRelevance();
-		relevance += computeRelevanceForInterestingProposal();
+		if (isImported(packageName)) {
+			relevance += computeRelevanceForInterestingProposal();
+		}
 		relevance += computeRelevanceForCaseMatching(currentName, name);
 		relevance += R_METHOD;
 		
@@ -1760,6 +1859,22 @@ public class CompletionEngine extends Engine
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		CompletionEngine.this.requestor.accept(proposal);
+	}
+	
+	private boolean isImported(char[] fullyQualifiedName) {
+		if (module.aimports != null) {
+			for(Object sym : module.aimports) {
+				if (sym instanceof IModule) {
+					IModule mod = (IModule) sym;
+					char[] fqn = mod.getFullyQualifiedName().toCharArray();
+					if (CharOperation.equals(fqn, fullyQualifiedName)) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 
 }

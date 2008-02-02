@@ -6824,7 +6824,7 @@ public class Parser extends Lexer {
 		return voidInitializer;
 	}
 	
-	private TypeBasic newTypeBasicForCurrentToken() {
+	protected Type newTypeBasicForCurrentToken() {
 		TypeBasic t = null;
 		switch(token.value) {
 		case TOKvoid: t = new TypeBasic(Type.tvoid); break;

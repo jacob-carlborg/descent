@@ -27,6 +27,7 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeQualified;
 import descent.internal.compiler.parser.Version;
@@ -275,6 +276,18 @@ public class CompletionParser extends Parser {
 		} else {
 			return super.newDotIdExp(loc, e, id);
 		}
+	}
+	
+	@Override
+	protected Type newTypeBasicForCurrentToken() {
+		Type typeBasic = super.newTypeBasicForCurrentToken();
+		if (token.ptr + token.sourceLen == cursorLocation) {
+			IdentifierExp identifierExp = new IdentifierExp(typeBasic.toCharArray());
+			identifierExp.copySourceRange(typeBasic);
+			typeBasic = new CompletionOnTypeIdentifier(loc, identifierExp);
+			assistNode = typeBasic;
+		}
+		return typeBasic;
 	}
 	
 	private boolean inCompletion() {

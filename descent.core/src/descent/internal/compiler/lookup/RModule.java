@@ -44,9 +44,12 @@ public class RModule extends RPackage implements IModule {
 	public char[] searchCacheIdent;
 	public int searchCacheFlags;
 	public IDsymbol searchCacheSymbol;
+	public JavaElementFinder finder;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
+		
+		this.finder = new JavaElementFinder(unit.getJavaProject(), unit.getOwner());
 	}
 	
 	@Override
@@ -145,7 +148,7 @@ public class RModule extends RPackage implements IModule {
 	
 	private void loadImportedModules(IParent element, Scope sc) throws JavaModelException {
 		for(IJavaElement child : element.getChildren()) {
-			IParent parent = JavaElementFinder.mustSearchInChildren(child);
+			IParent parent = finder.mustSearchInChildren(child);
 			if (parent != null) {
 				loadImportedModules(parent, sc);
 			} else if (child.getElementType() == IJavaElement.IMPORT_DECLARATION) {

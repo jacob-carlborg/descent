@@ -66,11 +66,20 @@ public class SourceIndexer extends AbstractIndexer implements SuffixConstants {
 		if (source == null || name == null) return; // could not retrieve document info (e.g. resource was discarded)
 		try {
 			// TODO JDT check if bindings get done in JDT... here, not
-			parser.parseCompilationUnit(new BasicCompilationUnit(source, null, null, new String(name)), true /* resolve bindings */);
+			parser.parseCompilationUnit(new BasicCompilationUnit(source, null, getFqn(), new String(name)), true /* resolve bindings */);
 		} catch (Exception e) {
 //			if (JobManager.VERBOSE) {
 				e.printStackTrace();
 //			}
 		}
+	}
+	private String getFqn() {
+		String relativePath = document.getContainerRelativePath();
+		if (relativePath.endsWith(".d")) {
+			relativePath = relativePath.substring(0, relativePath.length() - 2);
+		}
+		relativePath = relativePath.replace('/', '.');
+		relativePath = relativePath.replace('/', '.');
+		return relativePath;
 	}
 }

@@ -37,7 +37,7 @@ public class InternalSearchDocument {
 			}
 		}
 	}
-	private String getContainerRelativePath() {
+	public String getContainerRelativePath() {
 		if (this.containerRelativePath == null)
 			this.containerRelativePath = this.index.containerRelativePath(getPath());
 		return this.containerRelativePath;

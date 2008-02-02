@@ -11,9 +11,8 @@ import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.compiler.lookup.DmdModuleFinder;
+import descent.internal.core.JavaElementFinder;
 
 public class SemanticContext {
 
@@ -81,6 +80,8 @@ public class SemanticContext {
 	 * A cache to retrieve faster a type from it's signature
 	 */
 	public Map<String, Type> signatureToTypeCache;
+	
+	public JavaElementFinder finder;
 
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 

@@ -412,6 +412,7 @@ public class ForeachStatement extends Statement {
 				VarDeclaration var;
 
 				var = new VarDeclaration(loc, arg.type, arg.ident, null);
+				var.copySourceRange(arg);
 				var.storage_class |= STCforeach;
 				var.storage_class |= arg.storageClass
 						& (STCin | STCout | STCref);

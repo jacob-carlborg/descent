@@ -61,9 +61,12 @@ class AddJarFileToIndex extends IndexRequest {
 			// MUST reset the IndexManager if a jar file is changed
 			Index index = this.manager.getIndexForUpdate(this.containerPath, false, /*do not reuse index file*/ false /*do not create if none*/);
 			if (index != null) {
-				if (JobManager.VERBOSE)
-					descent.internal.core.util.Util.verbose("-> no indexing required (index already exists) for " + this.containerPath); //$NON-NLS-1$
-				return true;
+				index.remove("");
+				index.save();
+				// Descent: reindex anyways
+//				if (JobManager.VERBOSE)
+//					descent.internal.core.util.Util.verbose("-> no indexing required (index already exists) for " + this.containerPath); //$NON-NLS-1$
+//				return true;
 			}
 
 			index = this.manager.getIndexForUpdate(this.containerPath, true, /*reuse index file*/ true /*create if none*/);

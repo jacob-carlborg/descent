@@ -1,2 +1,4 @@
  - Select good default colors for structs and unions.
  - Test code select and binding for aliased symbols (i.e. alias Foo.Bar myAlias).
+ - std.c.stdio doesn't participate in autocompletions
+ - link class files with project explorer

@@ -1367,6 +1367,7 @@ public class FuncDeclaration extends Declaration implements IFuncDeclaration {
 					}
 					VarDeclaration v = new VarDeclaration(loc, arg.type, id,
 							null);
+					v.copySourceRange(arg);
 					
 					// Descent: for binding resolution
 					arg.var = v;

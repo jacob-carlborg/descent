@@ -729,7 +729,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return (IVariableBinding) binding;
 		}
 		
-		if (var.type == null) {
+		if (var.type == null || var.ident() == null) {
 			return null;
 		}
 		
@@ -992,7 +992,7 @@ class DefaultBindingResolver extends BindingResolver {
 					binding = stack.pop();
 					
 					IJavaElement element = binding.getJavaElement();
-					element =  JavaElementFinder.findChild(element, startPosition);
+					element =  finder.findChild(element, startPosition);
 					
 					if (element instanceof IType) {
 						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
@@ -1036,7 +1036,7 @@ class DefaultBindingResolver extends BindingResolver {
 						}
 						
 						if (type == ISignatureConstants.FUNCTION) {
-							element = JavaElementFinder.findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+							element = finder.findFunction((IParent) element, new String(name), paramsAndReturnTypes);
 							if (element == null) {
 								return;
 							}
@@ -1048,7 +1048,7 @@ class DefaultBindingResolver extends BindingResolver {
 								i--;
 							}
 							
-							element = JavaElementFinder.findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramsTypes);
+							element = finder.findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramsTypes);
 						}
 						
 						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
@@ -1071,9 +1071,9 @@ class DefaultBindingResolver extends BindingResolver {
 						}
 						
 						if (type == ISignatureConstants.TEMPLATE) {
-							element = JavaElementFinder.findTemplate((IParent) element, new String(name), paramsTypes);
+							element = finder.findTemplate((IParent) element, new String(name), paramsTypes);
 						} else {
-							element = JavaElementFinder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
+							element = finder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
 						}
 						if (element == null) {
 							return;
@@ -1089,7 +1089,7 @@ class DefaultBindingResolver extends BindingResolver {
 							return;
 						}
 						
-						element = JavaElementFinder.findChild(element, new String(name));
+						element = finder.findChild(element, new String(name));
 						if (element == null) {
 							return;
 						}

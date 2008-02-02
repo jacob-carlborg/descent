@@ -113,7 +113,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return module;
 	}
 	
-	private int startOf(ASTDmdNode node) {
+	protected int startOf(ASTDmdNode node) {
 		if (node == null) return 0;
 		return node.start;
 	}
@@ -185,7 +185,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 	}
 	
-	private int getFlags(ASTDmdNode node, List<Modifier> modifiers) {
+	protected int getFlags(ASTDmdNode node, List<Modifier> modifiers) {
 		int flags = 0;
 		if (node.synthetic) {
 			flags |= Flags.AccCompileTimeGenerated;
@@ -962,7 +962,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		stack.push(node);
 	}
 	
-	private void pushLevelInAttribDeclarationStack() {
+	protected void pushLevelInAttribDeclarationStack() {
 		attribDeclarationStack.push(new Stack<AttribDeclaration>());
 	}
 	

@@ -668,7 +668,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				
 				if (startPosition >= 0) {
 					IJavaElement element = parent.getJavaElement();
-					element = JavaElementFinder.findChild(element, startPosition);
+					element = getFinder().findChild(element, startPosition);
 					if (element == null) {
 						return;
 					}
@@ -701,7 +701,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 						paramsAndRetTypes[paramsAndRetTypes.length - 1] = tf.next.getSignature();
 						
 						if (kind == ISignatureConstants.FUNCTION) {
-							element = JavaElementFinder.findFunction((IParent) element, new String(name), paramsAndRetTypes);
+							element = getFinder().findFunction((IParent) element, new String(name), paramsAndRetTypes);
 						} else {
 							String[] paramsTypes = new String[templateStack.size()];
 							int i = paramsTypes.length - 1;
@@ -710,7 +710,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 								i--;
 							}
 							
-							element = JavaElementFinder.findTemplatedFunction((IParent) element, new String(name), paramsAndRetTypes, paramsTypes);
+							element = getFinder().findTemplatedFunction((IParent) element, new String(name), paramsAndRetTypes, paramsTypes);
 						}
 						if (element != null) {
 							IDsymbol symbol = toDsymbol(element);
@@ -735,9 +735,9 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 							
 							IJavaElement element = parent.getJavaElement();
 							if (kind == ISignatureConstants.TEMPLATE) {
-								element = JavaElementFinder.findTemplate((IParent) element, new String(name), paramsTypes);
+								element = getFinder().findTemplate((IParent) element, new String(name), paramsTypes);
 							} else {
-								element = JavaElementFinder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
+								element = getFinder().findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
 							}
 							if (element != null) {
 								symbol = toDsymbol(element);
@@ -1029,6 +1029,10 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			}
 		}
 		
+	}
+	
+	protected JavaElementFinder getFinder() {
+		return ((RModule) getModule()).finder;
 	}
 	
 	protected Type getTypeFromSignature(String signature) {
