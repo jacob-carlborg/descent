@@ -390,12 +390,20 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(ClassDeclaration node) {
+		if (node.templated) {
+			return true;
+		}
+		
 		visit(node, Flags.AccClass, node.sourceBaseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(InterfaceDeclaration node) {
+		if (node.templated) {
+			return true;
+		}
+		
 		visit(node, Flags.AccInterface, node.sourceBaseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
@@ -411,12 +419,20 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(StructDeclaration node) {
+		if (node.templated) {
+			return true;
+		}
+		
 		visit(node, Flags.AccStruct, null, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(UnionDeclaration node) {
+		if (node.templated) {
+			return true;
+		}
+		
 		visit(node, Flags.AccUnion, null, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
@@ -428,10 +444,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 			Dsymbol wrappedSymbol = (Dsymbol) node.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				visit((FuncDeclaration) wrappedSymbol, node);
-				return false;
+				return true;
 			} else {
 				visit((AggregateDeclaration) wrappedSymbol, node);
-				return false;
+				return true;
 			}
 		}
 		
@@ -501,8 +517,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(FuncDeclaration node) {
-		visit(node, null);
-		pushLevelInAttribDeclarationStack();
+		if (!node.templated) {
+			visit(node, null);
+			pushLevelInAttribDeclarationStack();
+		}
 		return true;
 	}
 	
@@ -959,21 +977,37 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public void endVisit(ClassDeclaration node) {
+		if (node.templated) {
+			return;
+		}
+		
 		requestor.exitType(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 	
 	public void endVisit(InterfaceDeclaration node) {
+		if (node.templated) {
+			return;
+		}
+		
 		requestor.exitType(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 	
 	public void endVisit(StructDeclaration node) {
+		if (node.templated) {
+			return;
+		}
+		
 		requestor.exitType(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 	
 	public void endVisit(UnionDeclaration node) {
+		if (node.templated) {
+			return;
+		}
+		
 		requestor.exitType(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
@@ -990,6 +1024,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public void endVisit(FuncDeclaration node) {
+		if (node.templated) {
+			return;
+		}
+		
 		requestor.exitMethod(endOfDeclaration(node), -1, -1);
 		popLevelInAttribDeclarationStack();
 	}

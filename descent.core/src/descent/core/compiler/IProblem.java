@@ -647,5 +647,8 @@ public interface IProblem {
 	int Utf16LowValueOutOfRange = 437;
 	int UnpairedUtf16Value = 438;
 	int IllegalUtf16Value = 439;
+	
+	// Extra for Descent: warn about '== null' comparisons 
+	int UseIsNull = 10001;
 
 }

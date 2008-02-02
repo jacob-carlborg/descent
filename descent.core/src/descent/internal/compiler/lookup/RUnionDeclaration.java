@@ -19,5 +19,10 @@ public class RUnionDeclaration extends RStructDeclaration implements IUnionDecla
 	public char getSignaturePrefix() {
 		return ISignatureConstants.UNION;
 	}
+	
+	@Override
+	public String kind() {
+		return "union";
+	}
 
 }

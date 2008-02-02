@@ -59,8 +59,13 @@ public class JavaElementFinder {
 		private Stack<String[]> paramsAndReturnTypesStack = new Stack<String[]>();
 		
 		private int typeFunctionCounter;
+		private int templateInstanceCounter;
 		
 		public void acceptModule(char[][] compoundName, String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			if (typeFunctionCounter == 0) {
 				element = findCompilationUnit(compoundName);
 			} else {
@@ -70,6 +75,10 @@ public class JavaElementFinder {
 		
 		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 			if (element == null) {
+				return;
+			}
+			
+			if (templateInstanceCounter > 0) {
 				return;
 			}
 			
@@ -133,13 +142,17 @@ public class JavaElementFinder {
 		
 		@Override
 		public void acceptIdentifier(char[] name, String signature) {
-//			if (!stack.isEmpty()) {
-//				stack.pop();
-//			}
+			if (templateInstanceCounter > 0) {
+				return;
+			}
 			stack.push(signature);
 		}
 
 		public void acceptArgumentModifier(int stc) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			if (stc == STC.STCin) {
 				modifiers.push("");
 			} else if (stc == (STC.STCout)) {
@@ -154,61 +167,97 @@ public class JavaElementFinder {
 		}
 
 		public void acceptAssociativeArray(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			stack.pop();
 			stack.pop();
 			stack.push(signature);
 		}
 
 		public void acceptDelegate(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			stack.pop();
 			stack.push(signature);
 		}
 
 		public void acceptDynamicArray(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			stack.pop();
 			stack.push(signature);
 		}
 		
 		public void enterFunctionType() {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			typeFunctionCounter++;
 		}
 
 		public void exitFunctionType(LINK link, String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
+			typeFunctionCounter--;
+			
 			String[] paramsAndReturnTypes = new String[stack.size()];
 			paramsAndReturnTypes[stack.size() - 1] = stack.pop();
 			int i = stack.size() - 1;
 			while(!stack.isEmpty()) {
 				if (modifiers.isEmpty()) {
-					return;
+					paramsAndReturnTypes[i] = stack.pop();
+				} else {
+					paramsAndReturnTypes[i] = modifiers.pop() + stack.pop();
 				}
-				
-				paramsAndReturnTypes[i] = modifiers.pop() + stack.pop();
 				i--;
 			}
 			
 			paramsAndReturnTypesStack.push(paramsAndReturnTypes);
 			
 			stack.push(signature);
-			
-			typeFunctionCounter--;
 		}
 
 		public void acceptPointer(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			stack.pop();
 			stack.push(signature);
 		}
 
 		public void acceptPrimitive(TypeBasic type) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			stack.push(type.deco);
 		}
 
 		public void acceptStaticArray(int dimension, String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			stack.pop();
 			stack.push(signature);
 		}
 		
 		@Override
 		public void acceptTemplateTupleParameter() {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			templateStack.push(String.valueOf(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER));
 		}
 		
@@ -219,19 +268,41 @@ public class JavaElementFinder {
 		
 		@Override
 		public void exitTemplateAliasParameter(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			templateStack.push(signature);
 		}
 		
 		@Override
 		public void exitTemplateTypeParameter(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			templateStack.push(signature);
 		}
 		
 		@Override
 		public void exitTemplateValueParameter(String signature) {
+			if (templateInstanceCounter > 0) {
+				return;
+			}
+			
 			// Discard the type of the template value type
 			stack.pop();
 			templateStack.push(signature);
+		}
+		
+		@Override
+		public void enterTemplateInstance() {
+			templateInstanceCounter++;
+		}
+		
+		@Override
+		public void exitTemplateInstance(String signature) {
+			templateInstanceCounter--;
 		}
 		
 	}
@@ -288,15 +359,10 @@ public class JavaElementFinder {
 						
 						// See if any of the parameters or the return type contains an
 						// unresolved identifier
-						boolean hasUnresolved = false;
-						for (int i = 0; i < paramsAndRetTypes.length; i++) {
-							if (paramsAndRetTypes[i].indexOf(ISignatureConstants.IDENTIFIER) != -1) {
-								hasUnresolved = true;
-								break;
-							}
-						}
+						boolean isUnresolved = isUnresolved(paramsAndRetTypes) || 
+							isUnresolved(retType) || isUnresolved(mParamTypes);
 						
-						if (!hasUnresolved) {
+						if (!isUnresolved) {
 							if (retType.equals(paramsAndRetTypes[paramsAndRetTypes.length - 1])) {
 								for(int i = 0; i < mParamTypes.length; i++) {
 									if (!mParamTypes[i].equals(paramsAndRetTypes[i])) {
@@ -321,6 +387,19 @@ public class JavaElementFinder {
 			Util.log(e);
 		}
 		return null;
+	}
+	
+	private static boolean isUnresolved(String[] array) {
+		for (int i = 0; i < array.length; i++) {
+			if (isUnresolved(array[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static boolean isUnresolved(String elem) {
+		return elem.indexOf(ISignatureConstants.IDENTIFIER) != -1;
 	}
 	
 	/**

@@ -31,5 +31,10 @@ public class RInterfaceDeclaration extends RClassDeclaration implements IInterfa
 	public char getSignaturePrefix() {
 		return ISignatureConstants.INTERFACE;
 	}
+	
+	@Override
+	public String kind() {
+		return "interface";
+	}
 
 }

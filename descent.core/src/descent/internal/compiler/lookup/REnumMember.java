@@ -57,5 +57,10 @@ public class REnumMember extends RDsymbol implements IEnumMember {
 	public char getSignaturePrefix() {
 		return ISignatureConstants.ENUM_MEMBER;
 	}
+	
+	@Override
+	public String kind() {
+		return "enum member";
+	}
 
 }

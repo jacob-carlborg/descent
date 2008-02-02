@@ -1265,6 +1265,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	private Stack<String> stack = new Stack<String>();
 	private Stack<String> modifiers = new Stack<String>();
 	private int functionTypeCount;
+	private int templateInstanceCount;
 
 	public ParameterTypesSignatureRequestor() {
 	}
@@ -1273,7 +1274,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptArgumentModifier(int stc) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1292,7 +1293,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	
 	@Override
 	public void acceptIdentifier(char[] name, String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1303,7 +1304,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptAssociativeArray(String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1313,7 +1314,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptDelegate(String signature) { 
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1322,7 +1323,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptDynamicArray(String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1331,7 +1332,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptModule(char[][] compoundName, String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1339,7 +1340,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptPointer(String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1348,7 +1349,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptPrimitive(TypeBasic type) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1356,7 +1357,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptStaticArray(int dimension, String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1365,7 +1366,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-		if (functionTypeCount != 1) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
@@ -1377,10 +1378,18 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 
 	public void enterFunctionType() {
+		if (templateInstanceCount != 0) {
+			return;
+		}
+		
 		functionTypeCount++;
 	}
 
 	public void exitFunctionType(LINK link, String signature) {
+		if (templateInstanceCount != 0) {
+			return;
+		}
+		
 		if (functionTypeCount != 1) {
 			if (!stack.isEmpty()) {
 				stack.pop();
@@ -1388,6 +1397,16 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 			stack.push(signature);
 		}
 		functionTypeCount--;
+	}
+	
+	@Override
+	public void enterTemplateInstance() {
+		templateInstanceCount++;
+	}
+	
+	@Override
+	public void exitTemplateInstance(String signature) {
+		templateInstanceCount--;
 	}
 	
 }

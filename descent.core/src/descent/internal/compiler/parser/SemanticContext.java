@@ -8,8 +8,10 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
+import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.lookup.DmdModuleFinder;
 
@@ -95,7 +97,9 @@ public class SemanticContext {
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.signatureToTypeCache = new HashMap<String, Type>();
 		
-		muteProblems++;
+		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals(JavaCore.DISABLED)) {
+			muteProblems++;
+		}
 		
 		// for debugging purposes
 //		global.path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");

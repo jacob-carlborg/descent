@@ -5,7 +5,6 @@ import descent.internal.compiler.parser.IInitializer;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.ITypedefDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
-import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeTypedef;
 
@@ -68,6 +67,11 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 
 	public char getSignaturePrefix() {
 		return ISignatureConstants.TYPEDEF;
+	}
+	
+	@Override
+	public String kind() {
+		return "typedef";
 	}
 
 }

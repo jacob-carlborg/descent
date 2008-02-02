@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.core.dom;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -164,25 +165,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final IJavaProject project,
 			final WorkingCopyOwner owner) 
 		throws JavaModelException {
+		
 		// Add the package fragment roots as an import path
-		Global global = new Global();
-		try {
-			for(IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
-				if (root.getResource() == null) {
-					global.path.add(root.getPath().toOSString());
-				} else {
-					global.path.add(root.getResource().getLocation().toOSString());
-				}
-			}
-			return resolve(module, project, global, owner);
-		} catch (JavaModelException e) {
-			//e.printStackTrace();
-		}
-
-		return null;
+		Global global = prepareForSemantic(project);
+		return resolve(module, project, global, owner);
 	}
 	
-	public static SemanticContext resolve(
+	private static SemanticContext resolve(
 			final Module module, 
 			final IJavaProject project,
 			final Global global,
@@ -224,6 +213,48 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		}
 		
 		return context;
+	}
+	
+	public static Global prepareForSemantic(IJavaProject project) {
+		Global global = new Global();
+		try {
+			for(IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
+				if (root.getResource() == null) {
+					global.path.add(root.getPath().toOSString());
+				} else {
+					global.path.add(root.getResource().getLocation().toOSString());
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		
+		global.params.versionlevel = getLevel(JavaCore.COMPILER_VERSION_LEVEL);
+		global.params.debuglevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
+		addIdentifiers(JavaCore.COMPILER_VERSION_IDENTIFIERS, global.params.versionids);
+		addIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS, global.params.debugids);
+		global.params.useDeprecated = JavaCore.getOption(JavaCore.COMPILER_ALLOW_DEPRECATED).equals(JavaCore.ENABLED);
+		global.params.warnings = JavaCore.getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
+		
+		return global;
+	}
+	
+	private static long getLevel(String prefKey) {
+		String Level = JavaCore.getOption(prefKey);
+		try {
+			return Long.parseLong(Level);
+		} catch (NumberFormatException e) {
+			Util.log(e);
+			return 0;
+		}
+	}
+	
+	private static void addIdentifiers(String pref, List<char[]> list) {
+		String prefValue = JavaCore.getOption(pref);
+		String[] idents = prefValue.split(",");
+		for(String ident : idents) {
+			list.add(ident.trim().toCharArray());
+		}
 	}
 	
 	public static CompilationUnit convert(AST ast, ParseResult parseResult, IJavaProject project, ICompilationUnit unit, WorkingCopyOwner owner, IProgressMonitor monitor) {

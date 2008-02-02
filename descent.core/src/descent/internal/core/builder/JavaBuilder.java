@@ -26,6 +26,8 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.core.JavaModelManager;
+import descent.internal.core.search.indexing.IndexManager;
 import descent.internal.core.util.Util;
 
 /**
@@ -50,6 +52,9 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	}
 
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
+		// Reindex everything, since compiler options also affect libraries
+		JavaModelManager.getJavaModelManager().getIndexManager().indexAll(project);
+		
 		IResource[] members = project.members();
 		build(members, monitor);
 	}
@@ -127,7 +132,9 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			Module module = parser.parseModuleObj();
 			module.moduleName = unit.getFullyQualifiedName();
 			
-			//CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
+			if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals(JavaCore.ENABLED)) {
+				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
+			}
 			
 			associateTaskTags(file, parser);
 			associateProblems(file, module);

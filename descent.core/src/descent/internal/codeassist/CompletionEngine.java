@@ -17,6 +17,7 @@ import descent.core.ddoc.DdocMacros;
 import descent.core.ddoc.DdocParser;
 import descent.core.ddoc.DdocSection;
 import descent.core.ddoc.DdocSection.Parameter;
+import descent.core.dom.CompilationUnitResolver;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
@@ -327,29 +328,7 @@ public class CompletionEngine extends Engine
 	}
 
 	private void doSemantic(Module module) throws JavaModelException {
-		Global global = new Global();
-		
-		IPackageFragmentRoot[] roots;
-		try {
-			roots = this.javaProject.getAllPackageFragmentRoots();
-			for(IPackageFragmentRoot root : roots) {
-				if (root.getResource() == null) {
-					global.path.add(root.getPath().toOSString());
-				} else {
-					global.path.add(root.getResource().getLocation().toOSString());
-				}
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		
-		SemanticContext context = new SemanticContext(
-				null, 
-				module, 
-				this.javaProject,
-				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) this.javaProject, null, null)),
-				global);
-		module.semantic(context);
+		CompilationUnitResolver.resolve(module, this.javaProject, null);
 	}
 
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {
@@ -1072,7 +1051,7 @@ public class CompletionEngine extends Engine
 		// See if it's a variable
 		if ((includes & INCLUDE_VARIABLES) != 0) {
 			IVarDeclaration var = member.isVarDeclaration();
-			if (var != null) {
+			if (var != null && var.ident() != null) {
 				if (name.length == 0 || CharOperation.camelCaseMatch(name, var.ident().ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
@@ -1106,7 +1085,10 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(alias.ident().ident);
 					proposal.setCompletion(alias.ident().ident);
-					proposal.setSignature(alias.getSignature().toCharArray());
+					String signature = alias.getSignature();
+					if (signature != null) {
+						proposal.setSignature(signature.toCharArray());
+					}
 					proposal.setTypeName(alias.type().getSignature().toCharArray());
 					proposal.setFlags(flags | alias.getFlags());
 					proposal.setRelevance(relevance);
@@ -1673,7 +1655,15 @@ public class CompletionEngine extends Engine
 	}
 
 	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
+		if (packageName == null || packageName.length == 0) {
+			return;
+		}
+		
 		char[] fullName = CharOperation.concat(packageName, typeName, '.');
+		if (knownDeclarations.containsKey(fullName)) {
+			return;
+		}
+		knownDeclarations.put(fullName, this);
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForInterestingProposal();
@@ -1700,7 +1690,15 @@ public class CompletionEngine extends Engine
 	}
 	
 	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
+		if (packageName == null || packageName.length == 0) {
+			return;
+		}
+		
 		char[] fullName = CharOperation.concat(packageName, name, '.');
+		if (knownDeclarations.containsKey(fullName)) {
+			return;
+		}
+		knownDeclarations.put(fullName, this);
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForInterestingProposal();
@@ -1728,6 +1726,24 @@ public class CompletionEngine extends Engine
 	}
 	
 	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, AccessRestriction accessRestriction) {
+		if (packageName == null || packageName.length == 0) {
+			return;
+		}
+		
+		StringBuilder sig = new StringBuilder();
+		sig.append(ISignatureConstants.MODULE);
+		sig.append(packageName.length);
+		sig.append(packageName);
+		sig.append(ISignatureConstants.FUNCTION);
+		sig.append(name.length);
+		sig.append(name);
+		sig.append(signature);
+		char[] sigChars = sig.toString().toCharArray();
+		if (knownDeclarations.containsKey(sigChars)) {
+			return;
+		}
+		knownDeclarations.put(sigChars, this);
+		
 		char[] fullName = CharOperation.concat(packageName, name, '.');
 		
 		int relevance = computeBaseRelevance();
@@ -1739,16 +1755,7 @@ public class CompletionEngine extends Engine
 		proposal.setName(name);
 		proposal.setCompletion(CharOperation.concat(fullName, "()".toCharArray()));
 		
-		StringBuilder sig = new StringBuilder();
-		sig.append(ISignatureConstants.MODULE);
-		sig.append(packageName.length);
-		sig.append(packageName);
-		sig.append(ISignatureConstants.FUNCTION);
-		sig.append(name.length);
-		sig.append(name);
-		sig.append(signature);
-		
-		proposal.setSignature(sig.toString().toCharArray());
+		proposal.setSignature(sigChars);
 		proposal.setFlags(modifiers);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);

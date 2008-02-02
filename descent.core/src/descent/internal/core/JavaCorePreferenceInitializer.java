@@ -50,6 +50,13 @@ public class JavaCorePreferenceInitializer extends AbstractPreferenceInitializer
 		defaultOptionsMap.put(JavaCore.COMPILER_DOC_COMMENT_SUPPORT, JavaCore.ENABLED);
 		defaultOptionsMap.put(JavaCore.COMPILER_PB_FORBIDDEN_REFERENCE, JavaCore.ERROR);
 		defaultOptionsMap.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_x);
+		defaultOptionsMap.put(JavaCore.COMPILER_VERSION_LEVEL, "0");
+		defaultOptionsMap.put(JavaCore.COMPILER_VERSION_IDENTIFIERS, "DigitalMars, Windows, Win32, X86, LittleEndian, D_InlineAsm, D_InlineAsm_X86, all");
+		defaultOptionsMap.put(JavaCore.COMPILER_DEBUG_LEVEL, "0");
+		defaultOptionsMap.put(JavaCore.COMPILER_DEBUG_IDENTIFIERS, "");
+		defaultOptionsMap.put(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, JavaCore.ENABLED);
+		defaultOptionsMap.put(JavaCore.COMPILER_ENABLE_WARNINGS, JavaCore.ENABLED);
+		defaultOptionsMap.put(JavaCore.COMPILER_ALLOW_DEPRECATED, JavaCore.DISABLED);
 		
 		// Builder settings
 		defaultOptionsMap.put(JavaCore.CORE_JAVA_BUILD_RESOURCE_COPY_FILTER, ""); //$NON-NLS-1$

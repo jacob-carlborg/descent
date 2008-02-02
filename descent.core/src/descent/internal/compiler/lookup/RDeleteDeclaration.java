@@ -9,5 +9,10 @@ public class RDeleteDeclaration extends RFuncDeclaration implements IDeleteDecla
 	public RDeleteDeclaration(IMethod element, SemanticContext context) {
 		super(element, context);
 	}
+	
+	@Override
+	public String kind() {
+		return "deallocator";
+	}
 
 }

@@ -99,7 +99,8 @@ public class CompletionProposalLabelProvider {
 	private StringBuffer appendUnboundedParameterList(StringBuffer buffer, CompletionProposal methodProposal) {
 		// TODO remove once https://bugs.eclipse.org/bugs/show_bug.cgi?id=85293
 		// gets fixed.
-		char[] signature= SignatureUtil.fix83600(methodProposal.getSignature());
+		//char[] signature= SignatureUtil.fix83600(methodProposal.getSignature());
+		char[] signature= methodProposal.getSignature();
 		char[][] parameterNames= methodProposal.findParameterNames(null);
 		char[][] parameterTypes= Signature.getParameterTypes(signature);
 		for (int i= 0; i < parameterTypes.length; i++) {

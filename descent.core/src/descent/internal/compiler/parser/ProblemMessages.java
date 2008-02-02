@@ -449,6 +449,7 @@ final class ProblemMessages extends NLS {
 	public static String Utf16LowValueOutOfRange;
 	public static String UnpairedUtf16Value;
 	public static String IllegalUtf16Value;
+	public static String UseIsNull;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

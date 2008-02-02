@@ -44,5 +44,10 @@ public class RAliasDeclaration extends RDeclaration implements IAliasDeclaration
 	public char getSignaturePrefix() {
 		return ISignatureConstants.ALIAS;
 	}
+	
+	@Override
+	public String kind() {
+		return "alias";
+	}
 
 }

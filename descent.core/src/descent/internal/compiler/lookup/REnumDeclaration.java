@@ -88,5 +88,10 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 	public char getSignaturePrefix() {
 		return ISignatureConstants.ENUM;
 	}
+	
+	@Override
+	public String kind() {
+		return "enum";
+	}
 
 }

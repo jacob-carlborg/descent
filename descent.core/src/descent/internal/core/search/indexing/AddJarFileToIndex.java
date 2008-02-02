@@ -234,7 +234,7 @@ class AddJarFileToIndex extends IndexRequest {
 	}
 	
 	private String relativePath(File outer, File inner) {
-		return outer.toString().substring(inner.toString().length());
+		return inner.toString().substring(outer.toString().length() + 1);
 	}
 	
 	protected Integer updatedIndexState() {

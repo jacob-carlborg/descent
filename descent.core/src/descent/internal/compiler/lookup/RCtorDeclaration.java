@@ -19,5 +19,10 @@ public class RCtorDeclaration extends RFuncDeclaration implements ICtorDeclarati
 	public String toChars(SemanticContext context) {
 		return "this";
 	}
+	
+	@Override
+	public String kind() {
+		return "constructor";
+	}
 
 }

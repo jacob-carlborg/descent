@@ -275,5 +275,10 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 		SemanticMixin.appendNameSignature(this, sb);
 		return sb.toString();
 	}
+	
+	@Override
+	public String kind() {
+		return "function";
+	}
 
 }

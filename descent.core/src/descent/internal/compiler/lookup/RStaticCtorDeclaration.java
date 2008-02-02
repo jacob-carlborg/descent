@@ -20,5 +20,10 @@ public class RStaticCtorDeclaration extends RFuncDeclaration implements IStaticC
 	public char getSignaturePrefix() {
 		return ISignatureConstants.UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR;
 	}
+	
+	@Override
+	public String kind() {
+		return "static constructor";
+	}
 
 }

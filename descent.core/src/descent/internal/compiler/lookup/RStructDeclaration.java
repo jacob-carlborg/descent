@@ -60,5 +60,10 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	public char getSignaturePrefix() {
 		return ISignatureConstants.STRUCT;
 	}
+	
+	@Override
+	public String kind() {
+		return "struct";
+	}
 
 }

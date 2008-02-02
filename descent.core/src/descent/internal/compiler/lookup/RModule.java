@@ -395,5 +395,10 @@ public class RModule extends RPackage implements IModule {
 	public IDsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context) {
 		return super.search(loc, ident, flags, context);
 	}
+	
+	@Override
+	public String kind() {
+		return "module";
+	}
 
 }

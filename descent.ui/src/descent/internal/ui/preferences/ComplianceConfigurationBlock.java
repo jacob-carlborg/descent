@@ -25,9 +25,19 @@ import descent.launching.JavaRuntime;
 /**
   */
 public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
+	
+	private static final String[] trueFalse= new String[] { JavaCore.ENABLED, JavaCore.DISABLED };
 
 	// Preference store keys, see JavaCore.getOptions
 	private static final Key PREF_SOURCE= getJDTCoreKey(JavaCore.COMPILER_SOURCE);
+	private static final Key PREF_VERSION_LEVEL= getJDTCoreKey(JavaCore.COMPILER_VERSION_LEVEL);
+	private static final Key PREF_VERSION_IDENTIFIERS= getJDTCoreKey(JavaCore.COMPILER_VERSION_IDENTIFIERS);
+	private static final Key PREF_DEBUG_LEVEL= getJDTCoreKey(JavaCore.COMPILER_DEBUG_LEVEL);
+	private static final Key PREF_DEBUG_IDENTIFIERS= getJDTCoreKey(JavaCore.COMPILER_DEBUG_IDENTIFIERS);
+	private static final Key PREF_SHOW_SEMANTIC_ERRORS= getJDTCoreKey(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+	private static final Key PREF_ENABLE_WARNINGS= getJDTCoreKey(JavaCore.COMPILER_ENABLE_WARNINGS);
+	private static final Key PREF_ALLOW_DEPRECATED= getJDTCoreKey(JavaCore.COMPILER_ALLOW_DEPRECATED);
+
 	private static final Key INTR_DEFAULT_COMPLIANCE= getJDTUIKey("internal.default.compliance"); //$NON-NLS-1$
 
 	// values
@@ -64,7 +74,14 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 	
 	private static Key[] getKeys() {
 		return new Key[] {
-				PREF_SOURCE
+				PREF_SOURCE,
+				PREF_VERSION_LEVEL,
+				PREF_VERSION_IDENTIFIERS,
+				PREF_DEBUG_LEVEL,
+				PREF_DEBUG_IDENTIFIERS,
+				PREF_SHOW_SEMANTIC_ERRORS,
+				PREF_ENABLE_WARNINGS,
+				PREF_ALLOW_DEPRECATED,
 			};
 	}
 		
@@ -145,6 +162,33 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 	
 		String label= PreferencesMessages.ComplianceConfigurationBlock_compiler_compliance_label; 
 		addComboBox(group, label, PREF_SOURCE, values3456, values3456Labels, 0);
+		
+		layout= new GridLayout();
+		layout.numColumns= nColumns;
+
+		group= new Group(fControlsComposite, SWT.NONE);
+		group.setFont(fControlsComposite.getFont());
+		group.setText("Compiler configuration"); 
+		group.setLayoutData(new GridData(GridData.BEGINNING, GridData.END, true, false));
+		group.setLayout(layout);
+		
+		addTextField(group, "Version level:", PREF_VERSION_LEVEL, 0, 20);
+		addTextField(group, "Version identifiers:", PREF_VERSION_IDENTIFIERS, 0, 290);
+		addTextField(group, "Debug level:", PREF_DEBUG_LEVEL, 0, 20);
+		addTextField(group, "Debug identifiers:", PREF_DEBUG_IDENTIFIERS, 0, 290);
+		
+		layout= new GridLayout();
+		layout.numColumns= nColumns;
+
+		group= new Group(fControlsComposite, SWT.NONE);
+		group.setFont(fControlsComposite.getFont());
+		group.setText("Semantic analysis"); 
+		group.setLayoutData(new GridData(GridData.BEGINNING, GridData.END, true, false));
+		group.setLayout(layout);
+		
+		addCheckBox(group, "Show semantic errors", PREF_SHOW_SEMANTIC_ERRORS, trueFalse, 0);
+		addCheckBox(group, "Enable warnings", PREF_ENABLE_WARNINGS, trueFalse, 0);
+		addCheckBox(group, "Allow deprecated features", PREF_ALLOW_DEPRECATED, trueFalse, 0);
 
 		
 		//label= PreferencesMessages.ComplianceConfigurationBlock_default_settings_label; 
@@ -189,6 +233,24 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 			    updateComplianceEnableState();
 				updateComplianceDefaultSettings(USER_CONF.equals(oldDefault), oldValue);
 				fComplianceStatus= validateCompliance();
+			} else if (PREF_VERSION_LEVEL.equals(changedKey)) {
+				IStatus status = validatePositiveNumber(newValue, 
+					"The version level must be specified.", 
+					"The version level must be positive or zero.", 
+					"The version level must be a number");
+				if (!status.isOK()) {
+					fContext.statusChanged(status);
+					return;
+				}
+			} else if (PREF_DEBUG_LEVEL.equals(changedKey)) {
+				IStatus status = validatePositiveNumber(newValue, 
+					"The debug level must be specified.", 
+					"The debug level must be positive or zero.", 
+					"The debug level must be a number");
+				if (!status.isOK()) {
+					fContext.statusChanged(status);
+					return;
+				}
 			} else {
 				return;
 			}
@@ -197,6 +259,24 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 			fComplianceStatus= validateCompliance();
 		}		
 		fContext.statusChanged(fComplianceStatus);
+	}
+	
+	protected static IStatus validatePositiveNumber(final String number, String emptyError, String negativeError, String nanError) {
+
+		final StatusInfo status= new StatusInfo();
+		if (number.length() == 0) {
+			status.setError(emptyError); 
+		} else {
+			try {
+				final int value= Integer.parseInt(number);
+				if (value < 0) {
+					status.setError(negativeError); 
+				}
+			} catch (NumberFormatException exception) {
+				status.setError(nanError); 
+			}
+		}
+		return status;
 	}
 	
 	private IStatus validateCompliance() {

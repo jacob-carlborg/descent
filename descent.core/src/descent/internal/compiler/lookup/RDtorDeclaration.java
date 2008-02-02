@@ -9,5 +9,10 @@ public class RDtorDeclaration extends RFuncDeclaration implements IDtorDeclarati
 	public RDtorDeclaration(IMethod element, SemanticContext context) {
 		super(element, context);
 	}
+	
+	@Override
+	public String kind() {
+		return "destructor";
+	}
 
 }

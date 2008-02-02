@@ -229,7 +229,7 @@ public class AddVMDialog extends StatusDialog {
 	}
 	
 	private IStatus validateJRELocation() {
-		String locationName= fJRERoot.getText();
+		String locationName= fJRERoot.getText().trim();
 		IStatus s = null;
 		File file = null;
 		if (locationName.length() == 0) {

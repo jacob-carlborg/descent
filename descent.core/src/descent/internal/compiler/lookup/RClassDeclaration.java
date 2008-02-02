@@ -302,5 +302,10 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	public char getSignaturePrefix() {
 		return ISignatureConstants.CLASS;
 	}
+	
+	@Override
+	public String kind() {
+		return "class";
+	}
 
 }

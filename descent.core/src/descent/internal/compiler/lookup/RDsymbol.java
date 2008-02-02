@@ -114,8 +114,18 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	}
 	
 	public String kindForError(SemanticContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder sb = new StringBuilder();
+		String p = locToChars(context);
+		if (p != null) {
+			sb.append(p);
+			sb.append(": ");
+		}
+
+		sb.append(kind());
+		sb.append(" ");
+		sb.append(toPrettyChars(context));
+		sb.append(" ");
+		return sb.toString();
 	}
 	
 	public IJavaElement getJavaElement() {
@@ -313,8 +323,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public String kind() {
-		// TODO Auto-generated method stub
-		return null;
+		return "symbol";
 	}
 
 	public Loc loc() {
@@ -323,8 +332,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	}
 
 	public String locToChars(SemanticContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		return getModule().getFullyQualifiedName();
 	}
 
 	public String mangle(SemanticContext context) {

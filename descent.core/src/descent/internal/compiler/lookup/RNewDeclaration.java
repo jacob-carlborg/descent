@@ -15,4 +15,9 @@ public class RNewDeclaration extends RFuncDeclaration implements INewDeclaration
 		return this;
 	}
 	
+	@Override
+	public String kind() {
+		return "allocator";
+	}
+	
 }

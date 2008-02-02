@@ -135,5 +135,11 @@ public class RTemplateDeclaration extends RScopeDsymbol implements ITemplateDecl
 	public char getSignaturePrefix() {
 		return ISignatureConstants.TEMPLATE;
 	}
+	
+	@Override
+	public String kind() {
+		// TODO Descent fix kind
+		return "template";
+	}
 
 }

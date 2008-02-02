@@ -614,6 +614,48 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * @see #getDefaultOptions()
 	 * @since 2.0
 	 */
+	public static final String COMPILER_VERSION_LEVEL = PLUGIN_ID + ".compiler.versionLevel"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_VERSION_IDENTIFIERS = PLUGIN_ID + ".compiler.versionIdentifiers"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_DEBUG_LEVEL = PLUGIN_ID + ".compiler.debugLevel"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_DEBUG_IDENTIFIERS = PLUGIN_ID + ".compiler.debugIdentifiers"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_SHOW_SEMANTIC_ERRORS = PLUGIN_ID + ".compiler.enableSemanticErrorReporting"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_ENABLE_WARNINGS = PLUGIN_ID + ".compiler.enableWarnings"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_ALLOW_DEPRECATED = PLUGIN_ID + ".compiler.allowDeprecated"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
 	// Not used, use COMPILER_SOURCE
 	public static final String COMPILER_COMPLIANCE = PLUGIN_ID + ".compiler.compliance"; //$NON-NLS-1$
 	/**

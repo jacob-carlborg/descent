@@ -21,34 +21,21 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 
-import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
 import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.dom.AST;
-import descent.core.dom.ASTNode;
 import descent.core.dom.ASTParser;
-import descent.core.dom.AggregateDeclaration;
-import descent.core.dom.AlignDeclaration;
 import descent.core.dom.CompilationUnit;
-import descent.core.dom.ConstructorDeclaration;
-import descent.core.dom.Declaration;
-import descent.core.dom.EnumDeclaration;
-import descent.core.dom.FunctionDeclaration;
-import descent.core.dom.GenericVisitor;
 import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
 import descent.core.dom.Import;
-import descent.core.dom.ImportDeclaration;
-import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.PrimitiveType;
-import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.Type;
-import descent.core.dom.UnitTestDeclaration;
 import descent.internal.core.dom.rewrite.ImportRewriteAnalyzer;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
@@ -178,6 +165,11 @@ public final class ImportRewrite {
 		List existingImport= null;
 		if (restoreExistingImports) {
 			existingImport= new ArrayList();
+			
+			// TODO Descent: remove this, it may slow down stuff...
+			// But it prevents from creating duplicated import entries
+			cu.reconcile();
+			
 			IImportDeclaration[] imports= ImportRewriteStub.collectImports(cu);
 			for (int i= 0; i < imports.length; i++) {
 				IImportDeclaration curr= imports[i];
@@ -186,6 +178,7 @@ public final class ImportRewrite {
 				existingImport.add(prefix + curr.getElementName());
 			}
 		}
+		
 		return new ImportRewrite(cu, null, existingImport);
 	}
 	

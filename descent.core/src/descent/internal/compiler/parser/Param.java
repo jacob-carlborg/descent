@@ -74,14 +74,15 @@ public class Param {
 	
 	public Param() {
 		versionids = new ArrayList<char[]>();
-		versionids.add("DigitalMars".toCharArray());
-		versionids.add("Windows".toCharArray());
-		versionids.add("Win32".toCharArray());
-		versionids.add("X86".toCharArray());
-		versionids.add("LittleEndian".toCharArray());
-		versionids.add("D_InlineAsm".toCharArray());
-		versionids.add("D_InlineAsm_X86".toCharArray());
-		versionids.add("all".toCharArray());
+		debugids = new ArrayList<char[]>();
+//		versionids.add("DigitalMars".toCharArray());
+//		versionids.add("Windows".toCharArray());
+//		versionids.add("Win32".toCharArray());
+//		versionids.add("X86".toCharArray());
+//		versionids.add("LittleEndian".toCharArray());
+//		versionids.add("D_InlineAsm".toCharArray());
+//		versionids.add("D_InlineAsm_X86".toCharArray());
+//		versionids.add("all".toCharArray());
 	}
 
     // Linker stuff

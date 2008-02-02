@@ -147,5 +147,10 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	public char getSignaturePrefix() {
 		return ISignatureConstants.VARIABLE;
 	}
+	
+	@Override
+	public String kind() {
+		return "variable";
+	}
 
 }

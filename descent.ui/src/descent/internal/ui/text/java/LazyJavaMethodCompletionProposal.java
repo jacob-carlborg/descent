@@ -10,17 +10,10 @@
  *******************************************************************************/
 package descent.internal.ui.text.java;
 
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.text.edits.TextEdit;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -30,6 +23,10 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
@@ -40,21 +37,16 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.rewrite.ImportRewrite;
-
 import descent.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import descent.internal.corext.codemanipulation.StubUtility;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.corext.util.QualifiedTypeNameHistory;
-
-import descent.ui.PreferenceConstants;
-import descent.ui.text.java.JavaContentAssistInvocationContext;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.EditorHighlightingSynchronizer;
 import descent.internal.ui.javaeditor.JavaEditor;
-import descent.internal.ui.text.java.AbstractJavaCompletionProposal.ExitPolicy;
-import descent.internal.ui.text.java.LazyJavaCompletionProposal.FormatterPrefs;
+import descent.ui.PreferenceConstants;
+import descent.ui.text.java.JavaContentAssistInvocationContext;
 
 /**
  * If passed compilation unit is not null, the replacement string will be seen as a qualified type name.
@@ -94,7 +86,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	
 	public final String getQualifiedTypeName() {
 		if (fQualifiedName == null)
-			fQualifiedName= String.valueOf(Signature.toCharArray(Signature.getTypeErasure(fProposal.getSignature())));
+			fQualifiedName= String.valueOf(Signature.toCharArray(fProposal.getSignature()));
 		return fQualifiedName;
 	}
 	
@@ -285,10 +277,14 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			int baseOffset= getReplacementOffset();
 			String replacement= getReplacementString();
 
+			int offestAdded = 0;
+			
 			if (fImportRewrite != null && fImportRewrite.hasRecordedChanges()) {
 				int oldLen= document.getLength();
 				fImportRewrite.rewriteImports(new NullProgressMonitor()).apply(document, TextEdit.UPDATE_REGIONS);
-				setReplacementOffset(getReplacementOffset() + document.getLength() - oldLen);
+				
+				offestAdded = document.getLength() - oldLen;
+				setReplacementOffset(getReplacementOffset() + offestAdded);
 			}
 			
 			if (fArgumentOffsets != null && getTextViewer() != null && !isSetter() && !isGetter()) {
@@ -296,7 +292,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 					LinkedModeModel model= new LinkedModeModel();
 					for (int i= 0; i != fArgumentOffsets.length; i++) {
 						LinkedPositionGroup group= new LinkedPositionGroup();
-						group.addPosition(new LinkedPosition(document, baseOffset + fArgumentOffsets[i], fArgumentLengths[i], LinkedPositionGroup.NO_STOP));
+						group.addPosition(new LinkedPosition(document, baseOffset + fArgumentOffsets[i] + offestAdded, fArgumentLengths[i], LinkedPositionGroup.NO_STOP));
 						model.addGroup(group);
 					}
 
