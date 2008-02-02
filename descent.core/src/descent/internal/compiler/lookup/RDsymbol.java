@@ -72,6 +72,7 @@ import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypeInstance;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
@@ -551,8 +552,8 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 	// Fake type to hold a dsymbol
 	class DsymbolType extends Type {
 		
-		private final IDsymbol symbol;
-		private final TemplateInstance tempinst;
+		final IDsymbol symbol;
+		final TemplateInstance tempinst;
 
 		public DsymbolType(IDsymbol symbol, TemplateInstance tempinst) {
 			super(null, null);
@@ -566,6 +567,9 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 
 		@Override
 		public String getSignature() {
+			if (symbol instanceof IFuncDeclaration) {
+				return ((IFuncDeclaration) symbol).getSignature();
+			}
 			return null;
 		}
 
@@ -576,6 +580,11 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 
 		@Override
 		protected void accept0(IASTVisitor visitor) {
+		}
+		
+		@Override
+		public String toString() {
+			return symbol.toString();
 		}
 		
 	}
@@ -608,6 +617,9 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 					IDsymbol sym = dt.symbol;
 					if (sym instanceof IEnumDeclaration) {
 						return sym.getType();
+					} else if (sym instanceof IFuncDeclaration) {
+						// if it's a function, then probably RAliasDeclaration.toAlias was invoked
+						return dt;
 					} else {
 						return sym.type();
 					}
@@ -685,17 +697,14 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 							return;
 						}
 						
-						if (stack.isEmpty()) {
+						if (tf == null) {
 							return;
 						}
 						
-						t = stack.pop();
-						if (!(t instanceof TypeFunction)) {
-							return;
-						}
+						int paramsSize = tf.parameters == null ? 0 : tf.parameters.size();
 						
-						String[] paramsAndRetTypes = new String[tf.parameters.size() + 1];
-						for (int i = 0; i < tf.parameters.size(); i++) {
+						String[] paramsAndRetTypes = new String[paramsSize + 1];
+						for (int i = 0; i < paramsSize; i++) {
 							paramsAndRetTypes[i] = tf.parameters.get(i).getSignature();
 						}
 						paramsAndRetTypes[paramsAndRetTypes.length - 1] = tf.next.getSignature();
@@ -832,10 +841,15 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 					return;
 				}
 				
-				Arguments arguments = new Arguments();				
+				Arguments arguments = new Arguments();
+				
+				Type retType = getPreviousType();
+				if (retType == null) {
+					System.out.println(1);
+				}
 				
 				// TODO varargs
-				type = new TypeFunction(arguments, getPreviousType(), 0, link);
+				type = new TypeFunction(arguments, retType, 0, link);
 				while(!typesStack.peek().isEmpty()) {
 					Type argType = getPreviousType();
 					if (modifiersStack.peek().isEmpty()) {
@@ -885,6 +899,16 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				context.signatureToTypeCache.put(signature, type);
 			} else {
 				getPreviousType();
+			}
+			typesStack.peek().push(type);
+		}
+		
+		@Override
+		public void acceptIdentifier(char[] name, String signature) {
+			Type type = context.signatureToTypeCache.get(signature);
+			if (type == null) {
+				type = new TypeIdentifier(Loc.ZERO, name);
+				context.signatureToTypeCache.put(signature, type);
 			}
 			typesStack.peek().push(type);
 		}
@@ -1046,7 +1070,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			try {
 				SignatureProcessor.process(signature, tfs);
 				type = tfs.getType();
-				if (type != null) {
+				if (type != null && !(type instanceof DsymbolType)) {
 					type = type.merge(context);
 				}
 			} catch (IllegalArgumentException e) {
@@ -1058,7 +1082,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			type = Type.terror;
 		}
 		
-		if (type instanceof DsymbolType) {
+		if (type instanceof DsymbolType && !(((DsymbolType) type).symbol instanceof IFuncDeclaration)) {
 			Type t = ((DsymbolType) type).symbol.type();
 			if (t == null) {
 				t = ((DsymbolType) type).symbol.getType();

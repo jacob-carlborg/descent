@@ -31,6 +31,10 @@ public class RAliasDeclaration extends RDeclaration implements IAliasDeclaration
 	@Override
 	public IDsymbol toAlias(SemanticContext context) {
 		Type type = type();
+		if (type instanceof DsymbolType) {
+			return ((DsymbolType) type).symbol;
+		}
+		
 		IDsymbol aliassym = type.toDsymbol(null, context);
 		IDsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;

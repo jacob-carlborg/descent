@@ -30,6 +30,7 @@ import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.NaiveASTFlattener;
+import descent.internal.core.search.indexing.IndexingParser;
 import descent.internal.core.util.Util;
 
 /**
@@ -220,7 +221,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		char[][] tokens = new char[baseClasses.size()][];
 		for(int i = 0; i < baseClasses.size(); i++) {
-			tokens[i] = baseClasses.get(i).sourceType.toCharArray();
+			tokens[i] = baseClasses.get(i).type.toCharArray();
 		}
 		return tokens;
 	}	
@@ -294,11 +295,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 		switch(node.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 			ClassDeclaration classDecl = (ClassDeclaration) node;
-			visit(classDecl, Flags.AccClass, classDecl.sourceBaseclasses, templateDeclaration);
+			visit(classDecl, Flags.AccClass, classDecl.baseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.INTERFACE_DECLARATION:
 			InterfaceDeclaration intDecl = (InterfaceDeclaration) node;
-			visit(intDecl, Flags.AccInterface, intDecl.sourceBaseclasses, templateDeclaration);
+			visit(intDecl, Flags.AccInterface, intDecl.baseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.STRUCT_DECLARATION:
 			StructDeclaration strDecl = (StructDeclaration) node;
@@ -394,7 +395,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			return true;
 		}
 		
-		visit(node, Flags.AccClass, node.sourceBaseclasses, null);
+		visit(node, Flags.AccClass, node.baseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -404,7 +405,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			return true;
 		}
 		
-		visit(node, Flags.AccInterface, node.sourceBaseclasses, null);
+		visit(node, Flags.AccInterface, node.baseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -477,7 +478,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	private void visit(FuncDeclaration node, TemplateDeclaration templateDeclaration) {
-		TypeFunction ty = (TypeFunction) node.sourceType;
+		TypeFunction ty = (TypeFunction) node.type;
 		
 		MethodInfo info = new MethodInfo();
 		info.annotationPositions = NO_LONG;

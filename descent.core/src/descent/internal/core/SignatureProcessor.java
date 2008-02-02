@@ -111,8 +111,8 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				localPosition = -1;
 				
-				// If a module comes, don't process further
-				if (i < signature.length() && signature.charAt(i) == MODULE) {
+				// If a symbol does not come next, don't process further
+				if (i < signature.length() && !isSymbol(signature.charAt(i))) {
 					return i;
 				} else {
 					continue;
@@ -337,6 +337,30 @@ public class SignatureProcessor implements ISignatureConstants {
 		}
 		
 		return i;
+	}
+	
+	private static boolean isSymbol(char c) {
+		switch(c) {
+		case CLASS:
+		case STRUCT:
+		case UNION:
+		case INTERFACE:
+		case ENUM:
+		case ENUM_MEMBER:
+		case VARIABLE:
+		case ALIAS:
+		case TYPEDEF:
+		case FUNCTION:
+		case TEMPLATE:
+		case TEMPLATED_CLASS:
+		case TEMPLATED_STRUCT:
+		case TEMPLATED_UNION:
+		case TEMPLATED_INTERFACE:
+		case TEMPLATED_FUNCTION:
+			return true;
+		default:
+			return false;
+		}
 	}
 	
 	private static int argumentModifier(String signature, int i, ISignatureRequestor requestor) {

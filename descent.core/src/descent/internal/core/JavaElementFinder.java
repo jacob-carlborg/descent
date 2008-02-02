@@ -68,6 +68,10 @@ public class JavaElementFinder {
 				return;
 			}
 			
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
+			
 			if (typeFunctionCounter == 0) {
 				element = findCompilationUnit(compoundName);
 			} else {
@@ -76,6 +80,10 @@ public class JavaElementFinder {
 		}
 		
 		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
+			
 			if (element == null) {
 				return;
 			}
@@ -147,10 +155,18 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
+			
 			stack.push(signature);
 		}
 
 		public void acceptArgumentModifier(int stc) {
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
+			
 			if (templateInstanceCounter > 0) {
 				return;
 			}
@@ -172,6 +188,9 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
 			
 			stack.pop();
 			stack.pop();
@@ -182,6 +201,9 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
 			
 			stack.pop();
 			stack.push(signature);
@@ -189,6 +211,9 @@ public class JavaElementFinder {
 
 		public void acceptDynamicArray(String signature) {
 			if (templateInstanceCounter > 0) {
+				return;
+			}
+			if (typeFunctionCounter >= 2) {
 				return;
 			}
 			
@@ -211,6 +236,11 @@ public class JavaElementFinder {
 			
 			typeFunctionCounter--;
 			
+			if (typeFunctionCounter >= 1) {
+				stack.push(signature);
+				return;
+			}
+			
 			String[] paramsAndReturnTypes = new String[stack.size()];
 			paramsAndReturnTypes[stack.size() - 1] = stack.pop();
 			int i = stack.size() - 1;
@@ -232,6 +262,9 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
 			
 			stack.pop();
 			stack.push(signature);
@@ -239,6 +272,9 @@ public class JavaElementFinder {
 
 		public void acceptPrimitive(TypeBasic type) {
 			if (templateInstanceCounter > 0) {
+				return;
+			}
+			if (typeFunctionCounter >= 2) {
 				return;
 			}
 			
@@ -249,6 +285,9 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
 			
 			stack.pop();
 			stack.push(signature);
@@ -257,6 +296,9 @@ public class JavaElementFinder {
 		@Override
 		public void acceptTemplateTupleParameter() {
 			if (templateInstanceCounter > 0) {
+				return;
+			}
+			if (typeFunctionCounter >= 2) {
 				return;
 			}
 			
@@ -273,6 +315,9 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
 			
 			templateStack.push(signature);
 		}
@@ -282,6 +327,9 @@ public class JavaElementFinder {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
+			if (typeFunctionCounter >= 2) {
+				return;
+			}
 			
 			templateStack.push(signature);
 		}
@@ -289,6 +337,9 @@ public class JavaElementFinder {
 		@Override
 		public void exitTemplateValueParameter(String signature) {
 			if (templateInstanceCounter > 0) {
+				return;
+			}
+			if (typeFunctionCounter >= 2) {
 				return;
 			}
 			

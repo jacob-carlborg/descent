@@ -270,7 +270,10 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 
 		JavaModelManager manager = JavaModelManager.getJavaModelManager();
 		Object info = manager.getInfo(this);
-		if (info != null) return info;
+		if (info != null) {
+			return info;
+		}
+		
 		return openWhenClosed(createElementInfo(), monitor);
 	}
 	/**

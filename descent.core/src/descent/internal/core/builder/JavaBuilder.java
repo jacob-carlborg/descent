@@ -27,7 +27,6 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.core.JavaModelManager;
-import descent.internal.core.search.indexing.IndexManager;
 import descent.internal.core.util.Util;
 
 /**
@@ -107,6 +106,8 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	public static void build(IFile file) throws CoreException {
 		IJavaElement element = JavaCore.create(file);
 		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
+//			long time = System.currentTimeMillis();
+			
 			removeTasks(file);
 			removeProblems(file);
 			
@@ -138,6 +139,9 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			
 			associateTaskTags(file, parser);
 			associateProblems(file, module);
+			
+//			time = System.currentTimeMillis() - time;
+//			System.out.println(time);
 		}
 	}
 

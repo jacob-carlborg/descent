@@ -1391,9 +1391,9 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 		}
 		
 		if (functionTypeCount != 1) {
-			if (!stack.isEmpty()) {
-				stack.pop();
-			}
+//			if (!stack.isEmpty()) {
+//				stack.pop();
+//			}
 			stack.push(signature);
 		}
 		functionTypeCount--;
@@ -2572,14 +2572,21 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	}
 
 	public void exitFunctionType(LINK link, String signature) {
-		if (stack.size() > 1) {
+		if (stack.size() >= 1) {
 			Stack<String> stack = this.stack.pop();
 			Stack<String> modifiers = this.modifiers.pop();
 			
 			StringBuilder sb = new StringBuilder();
 			appendFunction(stack, modifiers, sb, FUNCTION, null, true);
 			
-			this.stack.peek().push(sb.toString());
+			if (this.stack.isEmpty()) {
+				stack = new Stack<String>();
+				stack.push(sb.toString());
+				
+				this.stack.push(stack);
+			} else {
+				this.stack.peek().push(sb.toString());
+			}
 		}
 		functionTypeCount--;
 	}

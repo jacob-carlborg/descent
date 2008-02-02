@@ -123,7 +123,7 @@ public class LRUCache implements Cloneable {
 	/**
 	 * Default amount of space in the cache
 	 */
-	protected static final int DEFAULT_SPACELIMIT = 100;
+	protected static final int DEFAULT_SPACELIMIT = 200;
 	/**
 	 * Creates a new cache.  Size of cache is defined by 
 	 * <code>DEFAULT_SPACELIMIT</code>.
@@ -322,8 +322,7 @@ public class LRUCache implements Cloneable {
 	 * @param shuffle Indicates whether we are just shuffling the queue 
 	 * (in which case, the entry table is not modified).
 	 */
-	protected void privateAddEntry (LRUCacheEntry entry, boolean shuffle) {
-		
+	protected void privateAddEntry (LRUCacheEntry entry, boolean shuffle) {		
 		if (!shuffle) {
 			fEntryTable.put (entry._fKey, entry);
 			fCurrentSpace += entry._fSpace;

@@ -347,6 +347,10 @@ public class TypeFunction extends Type {
 		Argument.argsToDecoBuffer(buf, parameters, context);
 		buf.writeByte((char) ('Z' - varargs)); // mark end of arg list
 		
+		if (next == null) {
+			System.out.println(1);
+		}
+		
 		next.toDecoBuffer(buf, context);
 		inuse--;
 	}

@@ -40,6 +40,13 @@ public class JREContainerInitializer extends ClasspathContainerInitializer {
 		if (size > 0) {
 			if (containerPath.segment(0).equals(JavaRuntime.JRE_CONTAINER)) {
 				IVMInstall vm = resolveVM(containerPath);
+				
+				// Descent: added this check, since you can live without a standard library
+				// (e.g. you are editing a standard library)
+				if (vm == null) {
+					return;
+				}
+				
 				JREContainer container = null;
 				if (vm != null) {
 					container = new JREContainer(vm, containerPath);

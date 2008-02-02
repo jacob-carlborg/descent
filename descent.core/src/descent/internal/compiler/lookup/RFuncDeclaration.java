@@ -126,7 +126,8 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 		for(IDsymbol s : parentS.members()) {
 			if (s == this) {
 				foundMe = true;
-			} else if (foundMe && s.isFuncDeclaration() != null &&
+			} else if (foundMe && 
+					(s.isFuncDeclaration() != null || s.isAliasDeclaration() != null) &&
 					CharOperation.equals(s.ident().ident, ident().ident)) {
 				IDeclaration d = s.isDeclaration();
 				if (d != null) {

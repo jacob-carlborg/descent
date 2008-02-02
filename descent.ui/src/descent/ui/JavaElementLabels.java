@@ -858,7 +858,13 @@ public class JavaElementLabels {
 			}
 		}
 		
-		buf.append(Signature.getSimpleName(Signature.toString(typeSig)));
+		String toString = Signature.toString(typeSig);
+		if (toString.indexOf("function") == -1 && toString.indexOf("delegate") == -1) {
+			buf.append(Signature.getSimpleName(toString));	
+		} else {
+			buf.append(toString);
+		}
+		
 		/* TODO implement correctly, flags are not taken into account
 		int sigKind= Signature.getTypeSignatureKind(typeSig);
 		switch (sigKind) {

@@ -480,7 +480,7 @@ public class CompletionProposalLabelProvider {
 	String createSimpleLabelWithType(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getCompletion());
-		char[] typeName= Signature.getSignatureSimpleName(proposal.getSignature());
+		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
 		if (typeName.length > 0) {
 			buf.append("    "); //$NON-NLS-1$
 			buf.append(typeName);

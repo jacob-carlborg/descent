@@ -7,6 +7,7 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Global;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Loc;
@@ -83,6 +84,10 @@ public class DmdModuleFinder implements IModuleFinder {
 		parser.parseModuleObj(m);
 
 		return m;
+	}
+	
+	public HashtableOfCharArrayAndObject getHints(char[] ident) {
+		return null;
 	}
 	
 	private static char[] getContents(File file) {

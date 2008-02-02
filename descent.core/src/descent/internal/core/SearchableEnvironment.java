@@ -373,7 +373,23 @@ public class SearchableEnvironment
 		// nothing to do
 	}
 	
-	public void findDeclarations(char[] prefix, final boolean findMembers, boolean camelCaseMatch, final ISearchRequestor storage) {
+	@Override
+	public void findDeclarations(char[] ident, ISearchRequestor requestor) {
+		findExactDeclarations(ident, 
+				false /* don't search members */, 
+				false /* no camel case match */, 
+				requestor);
+	}
+	
+	public void findExactDeclarations(char[] prefix, final boolean findMembers, boolean camelCaseMatch, final ISearchRequestor storage) {
+		findDeclarations(prefix, findMembers, camelCaseMatch, storage, true /* exact match */);
+	}
+	
+	public void findPrefixDeclarations(char[] prefix, final boolean findMembers, boolean camelCaseMatch, final ISearchRequestor storage) {
+		findDeclarations(prefix, findMembers, camelCaseMatch, storage, false /* not exact match */);
+	}
+
+	private void findDeclarations(char[] prefix, final boolean findMembers, boolean camelCaseMatch, final ISearchRequestor storage, boolean exactMatch) {
 
 		/*
 			if (true){
@@ -467,8 +483,18 @@ public class SearchableEnvironment
 				}
 			};
 			try {
-				int matchRule = SearchPattern.R_PREFIX_MATCH;
-				if (camelCaseMatch) matchRule |= SearchPattern.R_CAMELCASE_MATCH;
+				int matchRule;
+				
+				if (exactMatch) {
+					matchRule = SearchPattern.R_PATTERN_MATCH;
+				} else {
+					matchRule = SearchPattern.R_PREFIX_MATCH;
+				}
+				
+				if (camelCaseMatch) {
+					matchRule |= SearchPattern.R_CAMELCASE_MATCH;
+				}
+				
 				new BasicSearchEngine(this.workingCopies).searchAllDeclarations(
 					qualification,
 					simpleName,
@@ -476,7 +502,7 @@ public class SearchableEnvironment
 					IJavaSearchConstants.DECLARATIONS,
 					this.searchScope,
 					typeRequestor,
-					CANCEL_IF_NOT_READY_TO_SEARCH,
+					exactMatch ? WAIT_UNTIL_READY_TO_SEARCH : CANCEL_IF_NOT_READY_TO_SEARCH,
 					progressMonitor);
 			} catch (OperationCanceledException e) {
 				findTypes(
@@ -491,6 +517,5 @@ public class SearchableEnvironment
 				NameLookup.ACCEPT_ALL);
 		}
 	}
-
 	
 }

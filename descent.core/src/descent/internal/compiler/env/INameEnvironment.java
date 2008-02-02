@@ -10,6 +10,8 @@
  *******************************************************************************/
 package descent.internal.compiler.env;
 
+import descent.internal.codeassist.ISearchRequestor;
+
 
 /**
  * The name environment provides a callback API that the compiler
@@ -59,6 +61,8 @@ NameEnvironmentAnswer findType(char[] typeName, char[][] packageName);
 boolean isPackage(char[][] parentPackageName, char[] packageName);
 
 descent.core.ICompilationUnit findCompilationUnit(char[][] compoundName);
+
+void findDeclarations(char[] ident, ISearchRequestor requestor);
 
 /**
  * This method cleans the environment uo. It is responsible for releasing the memory

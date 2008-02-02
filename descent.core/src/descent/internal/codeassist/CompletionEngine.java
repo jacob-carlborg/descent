@@ -89,6 +89,7 @@ import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
@@ -127,6 +128,15 @@ public class CompletionEngine extends Engine
 	public static boolean PERF = false;
 	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
 	private static final char[][] specialTokens = { Id.FILE, Id.LINE, Id.DATE, Id.TIME, Id.TIMESTAMP, Id.VERSION, Id.VENDOR };
+	
+	private static final HashtableOfCharArrayAndObject specialFunctions = new HashtableOfCharArrayAndObject();
+	{
+		Object dummy = new Object();
+		specialFunctions.put(Id.ctor, dummy);
+		specialFunctions.put(Id.dtor, dummy);
+		specialFunctions.put(Id.classNew, dummy);
+		specialFunctions.put(Id.classDelete, dummy);
+	}
 	
 	IJavaProject javaProject;
 	CompletionParser parser;
@@ -233,9 +243,9 @@ public class CompletionEngine extends Engine
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-//			if (assistNode != null) {
-//				System.out.println(assistNode.getClass());
-//			}
+			if (assistNode != null) {
+				System.out.println(assistNode.getClass());
+			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -657,7 +667,7 @@ public class CompletionEngine extends Engine
 		
 		// And top level declarations
 		isCompletingTypeIdentifier = true;
-		nameEnvironment.findDeclarations(currentName, false, true, this);
+		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -722,16 +732,23 @@ public class CompletionEngine extends Engine
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
-		nameEnvironment.findDeclarations(currentName, false, true, this);
+		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
 		doSemantic(module);
 		
-		char[] name = computePrefixAndSourceRange(node);
+		currentName = computePrefixAndSourceRange(node);
 		
 		Scope scope = node.scope;
-		completeScope(scope, name, INCLUDE_ALL);
+		completeScope(scope, currentName, INCLUDE_ALL);
+		
+		// Also suggest packages
+		isCompletingPackage = true;
+		nameEnvironment.findCompilationUnits(currentName, this);
+		
+		// And top level declarations
+		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
 	}
 
 	private void completeScope(Scope scope, char[] name, int includes) {
@@ -756,10 +773,13 @@ public class CompletionEngine extends Engine
 				completeType(var.type, name, false /* include statics */);
 			}
 		} else {
-			if (sym instanceof IScopeDsymbol && ((IScopeDsymbol) sym).members() != null) {
-				for(IDsymbol member : ((IScopeDsymbol) sym).members()) {
-					if (member != null) {
-						suggestDsymbol(member, name, includes);
+			if (sym instanceof IScopeDsymbol) {
+				IScopeDsymbol scopeSym = (IScopeDsymbol) sym;
+				if (scopeSym.members() != null) {
+					for(IDsymbol member : (scopeSym).members()) {
+						if (member != null) {
+							suggestDsymbol(member, name, includes);
+						}
 					}
 				}
 			} else {
@@ -843,6 +863,10 @@ public class CompletionEngine extends Engine
 				this.endPosition = se.start + se.length;
 				completePackage((Package) se.sds, name, ident);
 			}
+		} else if (e1 instanceof ThisExp) {
+			ThisExp thisExp = (ThisExp) e1;
+			Type type = thisExp.type;
+			completeType(type, ident, false);
 		}
 	}
 
@@ -879,6 +903,10 @@ public class CompletionEngine extends Engine
 	}
 
 	private void completeType(Type type, IdentifierExp ident, boolean onlyStatics) {
+		if (type == null) {
+			return;
+		}
+		
 		char[] name = computePrefixAndSourceRange(ident);
 		completeType(type, name, onlyStatics);
 	}
@@ -1066,10 +1094,6 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestMember(IDsymbol member, char[] name, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
-		if (!isVisible(member)) {
-			return;
-		}
-		
 		// TODO Descent don't allow all of the attrib declarations to enter
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
@@ -1077,6 +1101,9 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		if (!isVisible(member)) {
+			return;
+		}
 		
 		// Types act like statics
 		boolean isType = member instanceof IClassDeclaration || 
@@ -1099,13 +1126,16 @@ public class CompletionEngine extends Engine
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, var.ident().ident);
-					if (var.parent() instanceof IFuncDeclaration) {
+					
+					boolean isLocal = var.parent() instanceof IFuncDeclaration;
+					
+					if (isLocal) {
 						relevance += R_LOCAL_VAR;
 					} else {
 						relevance += R_VAR;	
 					}
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(var.ident().ident);
 					proposal.setCompletion(var.ident().ident);
 					proposal.setTypeName(var.type().getSignature().toCharArray());
@@ -1129,14 +1159,25 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForCaseMatching(name, alias.ident().ident);
 					relevance += R_ALIAS;
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					boolean isLocal = alias.parent() instanceof IFuncDeclaration;
+					
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(alias.ident().ident);
 					proposal.setCompletion(alias.ident().ident);
 					String signature = alias.getSignature();
 					if (signature != null) {
 						proposal.setSignature(signature.toCharArray());
 					}
-					proposal.setTypeName(alias.type().getSignature().toCharArray());
+					Type type = alias.type();
+					if (type == null) {
+						return;
+					}
+					String sig = type.getSignature();
+					if (sig == null) {
+						return;
+					}
+					
+					proposal.setTypeName(sig.toCharArray());
 					proposal.setFlags(flags | alias.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1154,7 +1195,9 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForCaseMatching(name, typedef.ident().ident);
 					relevance += R_TYPEDEF;
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					boolean isLocal = typedef.parent() instanceof IFuncDeclaration;
+					
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(typedef.ident().ident);
 					proposal.setCompletion(typedef.ident().ident);
 					proposal.setSignature(typedef.getSignature().toCharArray());
@@ -1221,6 +1264,11 @@ public class CompletionEngine extends Engine
 			// See if it's a function
 			IFuncDeclaration func = member.isFuncDeclaration();
 			if (func != null) {
+				char[] funcName = func.ident().ident;
+				if (specialFunctions.containsKey(funcName)) {
+					return;
+				}
+				
 				// Don't suggest already suggested functions
 				char[] signature = func.getFunctionSignature().toCharArray();
 				if (funcSignatures != null && funcSignatures.containsKey(signature)) {
@@ -1234,7 +1282,7 @@ public class CompletionEngine extends Engine
 					relevance += R_METHOD;
 					
 					CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
-					proposal.setName(func.ident().ident);
+					proposal.setName(funcName);
 					proposal.setCompletion((func.ident().toString() + "()").toCharArray());
 					
 					String sig = func.getSignature();
@@ -1768,6 +1816,11 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		// Skip variables
+		if ((modifiers & (Flags.AccAlias | Flags.AccTypedef)) == 0) {
+			return;
+		}
+		
 		// Don't show variables if completing type identifier
 		if (isCompletingTypeIdentifier) {
 			if ((modifiers & Flags.AccTypedef) == 0 &&
@@ -1820,6 +1873,10 @@ public class CompletionEngine extends Engine
 		
 		// Don't show methods for type identifier completions
 		if (isCompletingTypeIdentifier) {
+			return;
+		}
+		
+		if (specialFunctions.containsKey(name)) {
 			return;
 		}
 		

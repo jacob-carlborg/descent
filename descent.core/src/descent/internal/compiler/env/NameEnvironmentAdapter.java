@@ -1,5 +1,7 @@
 package descent.internal.compiler.env;
 
+import descent.internal.codeassist.ISearchRequestor;
+
 
 public class NameEnvironmentAdapter implements INameEnvironment {
 
@@ -20,6 +22,10 @@ public class NameEnvironmentAdapter implements INameEnvironment {
 
 	public boolean isPackage(char[][] parentPackageName, char[] packageName) {
 		return false;
+	}
+	
+	public void findDeclarations(char[] ident, ISearchRequestor requestor) {
+		
 	}
 
 }

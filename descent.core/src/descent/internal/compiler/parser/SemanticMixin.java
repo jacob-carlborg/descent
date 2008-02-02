@@ -834,8 +834,11 @@ public class SemanticMixin {
 		// Look in symbols declared in this module
 		s = aThis.symtab() != null ? aThis.symtab().lookup(ident) : null;
 		if (s != null) {
-		} else if (aThis.imports() != null) {
+		} else if (aThis.imports() != null && !aThis.imports().isEmpty()) {
 			// Look in imported modules
+			
+			// Speed up things
+//			HashtableOfCharArrayAndObject hints = context.moduleFinder.getHints(ident);
 
 			i = -1;
 			for (IScopeDsymbol ss : aThis.imports()) {
@@ -846,6 +849,13 @@ public class SemanticMixin {
 				if ((flags & 1) != 0 && aThis.prots().get(i) == PROT.PROTprivate) {
 					continue;
 				}
+				
+				// Skip modules not in hints
+//				IModule mod = ss.isModule();
+//				if (mod != null && hints != null && 
+//					!hints.containsKey(mod.getFullyQualifiedName().toCharArray())) {
+//					continue;
+//				}
 
 				s2 = ss.search(loc, ident, ss.isModule() != null ? 1 : 0, context);
 				if (s == null) {

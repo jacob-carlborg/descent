@@ -23,6 +23,7 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
@@ -130,6 +131,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			buffer.append(ASSIGN);
 			if (prefs.afterAssignmentOperator)
 				buffer.append(SPACE);
+			
+			fArgumentOffsets[0]= buffer.length();
+			buffer.append(parameterNames[0]);
+			fArgumentLengths[0]= parameterNames[0].length;			
 		} else if (isGetter()) {
 			setCursorPosition(buffer.length());
 		} else {
@@ -285,9 +290,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				
 				offestAdded = document.getLength() - oldLen;
 				setReplacementOffset(getReplacementOffset() + offestAdded);
+				setCursorPosition(getCursorPosition() + offestAdded);
 			}
 			
-			if (fArgumentOffsets != null && getTextViewer() != null && !isSetter() && !isGetter()) {
+			if (fArgumentOffsets != null && getTextViewer() != null && !isGetter()) {
 				try {
 					LinkedModeModel model= new LinkedModeModel();
 					for (int i= 0; i != fArgumentOffsets.length; i++) {
@@ -304,7 +310,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 
 					LinkedModeUI ui= new EditorLinkedModeUI(model, getTextViewer());
 					ui.setExitPosition(getTextViewer(), baseOffset + replacement.length(), 0, Integer.MAX_VALUE);
-					ui.setExitPolicy(new ExitPolicy(')', document));
+					ui.setExitPolicy(new ExitPolicy(isSetter() ? ';' : ')', document));
 					ui.setDoContextInfo(true);
 					ui.setCyclingMode(LinkedModeUI.CYCLE_WHEN_NO_PARENT);
 					ui.enter();
@@ -316,7 +322,8 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 					openErrorDialog(e);
 				}
 			} else {
-				fSelectedRegion= new Region(baseOffset + replacement.length(), 0);
+				// Before the last )
+				fSelectedRegion= new Region(baseOffset + replacement.length() + offestAdded - 1, 0);
 			}
 			
 			//rememberSelection();
@@ -613,6 +620,14 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			return contextInformation;
 		}
 		return super.computeContextInformation();
+	}
+	
+	@Override
+	public Point getSelection(IDocument document) {
+		if (fSelectedRegion == null)
+			return new Point(getReplacementOffset(), 0);
+
+		return new Point(fSelectedRegion.getOffset(), fSelectedRegion.getLength());
 	}
 	
 }

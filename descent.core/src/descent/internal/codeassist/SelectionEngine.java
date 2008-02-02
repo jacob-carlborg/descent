@@ -393,6 +393,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 	private void addLocal(Declaration node, long modifiers) {
 		FuncDeclaration parent = (FuncDeclaration) node.effectiveParent();
 		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+		if (func == null) {
+			return;
+		}
 		
 		selectedElements.add(
 			new LocalVariable(
