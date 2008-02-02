@@ -773,10 +773,10 @@ public class CompletionEngine extends Engine
 				completeType(var.type, name, false /* include statics */);
 			}
 		} else {
-			if (sym instanceof IScopeDsymbol) {
+			if (sym instanceof IScopeDsymbol && ((IScopeDsymbol) sym).members() != null) {
 				IScopeDsymbol scopeSym = (IScopeDsymbol) sym;
 				if (scopeSym.members() != null) {
-					for(IDsymbol member : (scopeSym).members()) {
+					for(IDsymbol member : scopeSym.members()) {
 						if (member != null) {
 							suggestDsymbol(member, name, includes);
 						}
