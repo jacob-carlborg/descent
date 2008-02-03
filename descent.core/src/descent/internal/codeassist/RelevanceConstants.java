@@ -39,5 +39,6 @@ public interface RelevanceConstants {
 	int R_TRUE_OR_FALSE = 1;
 	int R_INLINE_TAG = 31;
 	int R_VALUE_TAG = 31;
+	int R_CONSTRUCTOR = 10;
 
 }

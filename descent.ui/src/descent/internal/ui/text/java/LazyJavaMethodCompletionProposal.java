@@ -428,7 +428,9 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#isValidPrefix(java.lang.String)
 	 */
 	protected boolean isValidPrefix(String prefix) {
-		return isPrefix(prefix, getSimpleTypeName()) || isPrefix(prefix, getQualifiedTypeName());
+		String simple = getSimpleTypeName();
+		return isPrefix(prefix, simple) || isPrefix(prefix, getQualifiedTypeName()) 
+			|| simple.equals("_ctor") || simple.equals("opCall");
 	}
 
 	/*

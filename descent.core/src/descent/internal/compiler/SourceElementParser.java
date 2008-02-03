@@ -197,18 +197,35 @@ public class SourceElementParser extends AstVisitorAdapter {
 			}
 		}
 		
+		// Hack: protection attribute get reported wrong with
+		//
+		// public:
+		//   int x;
+		// private:
+		//   int z;
+		// 
+		// you get both protections. So remove previous ones.
+		
+		long lastFlags = -1;
+		
 		for(Stack<AttribDeclaration> sa : attribDeclarationStack) {
 			for(AttribDeclaration a : sa) {
 				if (a instanceof ProtDeclaration) {
 					ProtDeclaration p = (ProtDeclaration) a;
 					if (p.modifier != null) {
-						flags |= p.modifier.getFlags();	
+						long pFlags = p.modifier.getFlags();
+						if (lastFlags != -1) {
+							flags &= ~lastFlags;
+						}
+						flags |= pFlags;
+						lastFlags = pFlags;
 					}
 				} else if (a instanceof StorageClassDeclaration) {
 					StorageClassDeclaration p = (StorageClassDeclaration) a;
 					if (p.modifier != null) {
-						flags |= p.modifier.getFlags();	
+						flags |= p.modifier.getFlags();
 					}
+					lastFlags = -1;
 				}
 			}
 		}

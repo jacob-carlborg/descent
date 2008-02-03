@@ -138,6 +138,13 @@ public class CompletionEngine extends Engine
 		specialFunctions.put(Id.classDelete, dummy);
 	}
 	
+	private static final HashtableOfCharArrayAndObject constructors = new HashtableOfCharArrayAndObject();
+	{
+		Object dummy = new Object();
+		constructors.put(Id.ctor, dummy);
+		constructors.put(Id.call, dummy);
+	}
+	
 	IJavaProject javaProject;
 	CompletionParser parser;
 	CompletionRequestor requestor;
@@ -163,6 +170,7 @@ public class CompletionEngine extends Engine
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
 	int INCLUDE_FUNCTIONS = 4;
+	int INCLUDE_CONSTRUCTORS = 8;
 	int INCLUDE_ALL = INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS;
 	
 	/**
@@ -243,9 +251,9 @@ public class CompletionEngine extends Engine
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-			if (assistNode != null) {
-				System.out.println(assistNode.getClass());
-			}
+//			if (assistNode != null) {
+//				System.out.println(assistNode.getClass());
+//			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -668,6 +676,17 @@ public class CompletionEngine extends Engine
 		// And top level declarations
 		isCompletingTypeIdentifier = true;
 		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
+		
+		// Show constructors and opCalls
+		if (node.ident.resolvedSymbol != null) {
+			IDsymbol sym = node.ident.resolvedSymbol;
+			if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
+				IScopeDsymbol cd = (IScopeDsymbol) sym;
+				if (cd.members() != null && !cd.members().isEmpty()) {
+					suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+				}
+			}
+		}
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -749,6 +768,17 @@ public class CompletionEngine extends Engine
 		
 		// And top level declarations
 		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
+		
+		// Show constructors and opCalls
+		if (node.resolvedSymbol != null) {
+			IDsymbol sym = node.resolvedSymbol;
+			if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
+				IScopeDsymbol cd = (IScopeDsymbol) sym;
+				if (cd.members() != null && !cd.members().isEmpty()) {
+					suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+				}
+			}
+		}
 	}
 
 	private void completeScope(Scope scope, char[] name, int includes) {
@@ -1260,12 +1290,14 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
-		if ((includes & INCLUDE_FUNCTIONS) != 0) {
+		if ((includes & (INCLUDE_FUNCTIONS | INCLUDE_CONSTRUCTORS)) != 0) {
 			// See if it's a function
 			IFuncDeclaration func = member.isFuncDeclaration();
 			if (func != null) {
 				char[] funcName = func.ident().ident;
-				if (specialFunctions.containsKey(funcName)) {
+				
+				// Skip special functions if not completing constructors and opCall
+				if ((includes & INCLUDE_FUNCTIONS) != 0 && specialFunctions.containsKey(funcName)) {
 					return;
 				}
 				
@@ -1275,15 +1307,28 @@ public class CompletionEngine extends Engine
 					return;
 				}
 				
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, func.ident().ident)) {
+				boolean construct = (includes & INCLUDE_CONSTRUCTORS) != 0;
+				if (name.length == 0 || CharOperation.camelCaseMatch(name, func.ident().ident)
+						|| (construct && constructors.containsKey(funcName)) ) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
-					relevance += computeRelevanceForCaseMatching(name, func.ident().ident);
+					if (construct) {
+						relevance += R_CAMEL_CASE;
+						relevance += R_CONSTRUCTOR;
+					} else {
+						relevance += computeRelevanceForCaseMatching(name, func.ident().ident);
+					}
 					relevance += R_METHOD;
 					
 					CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
-					proposal.setName(funcName);
-					proposal.setCompletion((func.ident().toString() + "()").toCharArray());
+					
+					if (construct) {
+						proposal.setName(currentName);
+						proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+					} else {
+						proposal.setName(funcName);
+						proposal.setCompletion((func.ident().toString() + "()").toCharArray());
+					}
 					
 					String sig = func.getSignature();
 					if (sig != null) {
@@ -1306,7 +1351,9 @@ public class CompletionEngine extends Engine
 	private boolean isVisible(IDsymbol member) {
 		if (member.getModule() != this.module) {
 			// private and protected excluded
-			if ((member.getFlags() & (Flags.AccPrivate | Flags.AccProtected)) != 0) {
+			
+			if ((member.getFlags() & (Flags.AccPrivate | Flags.AccProtected)) != 0
+					&& (member.getFlags() & Flags.AccPublic) == 0) {
 				return false;
 			} else if ((member.getFlags() & Flags.AccPackage) != 0) {
 				// package only if in same package
@@ -1785,16 +1832,20 @@ public class CompletionEngine extends Engine
 		}
 		knownDeclarations.put(fullName, this);
 		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+		
 		int relevance = computeBaseRelevance();
-		if (isImported(packageName)) {
-			relevance += computeRelevanceForInterestingProposal();
-		}
 		relevance += computeRelevanceForCaseMatching(currentName, typeName);
 		relevance += R_CLASS;
 		
-		CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+		if (isImported(packageName)) {
+			relevance += computeRelevanceForInterestingProposal();
+			proposal.setCompletion(typeName);
+		} else {
+			proposal.setCompletion(fullName);
+		}
+		
 		proposal.setName(typeName);
-		proposal.setCompletion(fullName);
 		
 		StringBuilder sig = new StringBuilder();
 		sig.append(ISignatureConstants.MODULE);
@@ -1839,16 +1890,21 @@ public class CompletionEngine extends Engine
 		}
 		knownDeclarations.put(fullName, this);
 		
+		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+		
 		int relevance = computeBaseRelevance();
-		if (isImported(packageName)) {
-			relevance += computeRelevanceForInterestingProposal();
-		}
 		relevance += computeRelevanceForCaseMatching(currentName, name);
 		relevance += R_VAR;
 		
-		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+		if (isImported(packageName)) {
+			relevance += computeRelevanceForInterestingProposal();
+			proposal.setCompletion(name);
+		} else {
+			proposal.setCompletion(fullName);
+		}
+		
 		proposal.setName(name);
-		proposal.setCompletion(fullName);
 		
 		StringBuilder sig = new StringBuilder();
 		sig.append(ISignatureConstants.MODULE);
@@ -1900,17 +1956,20 @@ public class CompletionEngine extends Engine
 		
 		char[] fullName = CharOperation.concat(packageName, name, '.');
 		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
+		
 		int relevance = computeBaseRelevance();
-		if (isImported(packageName)) {
-			relevance += computeRelevanceForInterestingProposal();
-		}
 		relevance += computeRelevanceForCaseMatching(currentName, name);
 		relevance += R_METHOD;
 		
-		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
-		proposal.setName(name);
-		proposal.setCompletion(CharOperation.concat(fullName, "()".toCharArray()));
+		if (isImported(packageName)) {
+			relevance += computeRelevanceForInterestingProposal();
+			proposal.setCompletion(CharOperation.concat(name, "()".toCharArray()));
+		} else {
+			proposal.setCompletion(CharOperation.concat(fullName, "".toCharArray()));
+		}
 		
+		proposal.setName(name);
 		proposal.setSignature(sigChars);
 		proposal.setFlags(modifiers);
 		proposal.setRelevance(relevance);
