@@ -357,12 +357,18 @@ public class CompletionEngine extends Engine
 			this.endPosition++;
 		}
 		
-		if (fqnBeforeCursor.length == 0 || CharOperation.camelCaseMatch(fqnBeforeCursor, sourceUnitFqn)) {
+		if (fqnBeforeCursor.length == 0 || 
+				match(fqnBeforeCursor, sourceUnitFqn)) {
 			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
 			proposal.setCompletion(sourceUnitFqn);
 			proposal.setReplaceRange(this.startPosition, this.endPosition);
 			this.requestor.accept(proposal);
 		}
+	}
+	
+	private boolean match(char[] prefix, char[] name) {
+		return CharOperation.prefixEquals(prefix, name) || 
+			(options.camelCaseMatch && CharOperation.camelCaseMatch(prefix, name));
 	}
 	
 	private void completeImport(CompletionOnImport node) {
@@ -496,7 +502,7 @@ public class CompletionEngine extends Engine
 			char[] prefix = computePrefixAndSourceRange(ident);			
 			for(char[] label : labels) {
 				if (label != null) {
-					if (prefix.length == 0 || CharOperation.camelCaseMatch(prefix, label) && !CharOperation.equals(prefix, label)) {
+					if (prefix.length == 0 || match(prefix, label) && !CharOperation.equals(prefix, label)) {
 						int relevance = computeBaseRelevance();
 						relevance += computeRelevanceForInterestingProposal();
 						relevance += computeRelevanceForCaseMatching(prefix, label);
@@ -534,7 +540,7 @@ public class CompletionEngine extends Engine
 				continue;
 			}
 			
-			if (name.length == 0 || CharOperation.camelCaseMatch(name, id) && !CharOperation.equals(name, id)) {
+			if (name.length == 0 || match(name, id) && !CharOperation.equals(name, id)) {
 				int relevance = computeBaseRelevance();
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(name, id);
@@ -675,7 +681,7 @@ public class CompletionEngine extends Engine
 		
 		// And top level declarations
 		isCompletingTypeIdentifier = true;
-		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
+		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 		
 		// Show constructors and opCalls
 		if (node.ident.resolvedSymbol != null) {
@@ -751,7 +757,7 @@ public class CompletionEngine extends Engine
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
-		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
+		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
@@ -767,7 +773,7 @@ public class CompletionEngine extends Engine
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
-		nameEnvironment.findPrefixDeclarations(currentName, false, true, this);
+		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 		
 		// Show constructors and opCalls
 		if (node.resolvedSymbol != null) {
@@ -1152,7 +1158,7 @@ public class CompletionEngine extends Engine
 		if ((includes & INCLUDE_VARIABLES) != 0) {
 			IVarDeclaration var = member.isVarDeclaration();
 			if (var != null && var.ident() != null) {
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, var.ident().ident)) {
+				if (name.length == 0 || match(name, var.ident().ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, var.ident().ident);
@@ -1183,7 +1189,7 @@ public class CompletionEngine extends Engine
 			// See if it's an alias
 			IAliasDeclaration alias = member.isAliasDeclaration();
 			if (alias != null) {
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, alias.ident().ident)) {
+				if (name.length == 0 || match(name, alias.ident().ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, alias.ident().ident);
@@ -1219,7 +1225,7 @@ public class CompletionEngine extends Engine
 			// See if it's a typedef
 			ITypedefDeclaration typedef = member.isTypedefDeclaration();
 			if (typedef != null) {
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, typedef.ident().ident)) {
+				if (name.length == 0 || match(name, typedef.ident().ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, typedef.ident().ident);
@@ -1241,7 +1247,7 @@ public class CompletionEngine extends Engine
 			}
 			
 			if (isType) {
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, member.ident().ident)) {
+				if (name.length == 0 || match(name, member.ident().ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
@@ -1259,7 +1265,7 @@ public class CompletionEngine extends Engine
 			}
 			
 			if (member instanceof ITemplateDeclaration) {
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, member.ident().ident)) {
+				if (name.length == 0 || match(name, member.ident().ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(name, member.ident().ident);
@@ -1308,7 +1314,7 @@ public class CompletionEngine extends Engine
 				}
 				
 				boolean construct = (includes & INCLUDE_CONSTRUCTORS) != 0;
-				if (name.length == 0 || CharOperation.camelCaseMatch(name, func.ident().ident)
+				if (name.length == 0 || match(name, func.ident().ident)
 						|| (construct && constructors.containsKey(funcName)) ) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
@@ -1349,7 +1355,7 @@ public class CompletionEngine extends Engine
 	}
 
 	private boolean isVisible(IDsymbol member) {
-		if (member.getModule() != this.module) {
+		if (options.checkVisibility && member.getModule() != this.module) {
 			// private and protected excluded
 			
 			if ((member.getFlags() & (Flags.AccPrivate | Flags.AccProtected)) != 0
@@ -1376,34 +1382,47 @@ public class CompletionEngine extends Engine
 				return myParent == null && hisParent == null;
 			}
 		}
+		
+		if (options.checkDeprecation && (member.getFlags() & Flags.AccDeprecated) != 0) {
+			return false;
+		}
+		
 		return true;
 	}
 	
 	private boolean isVisible(long modifiers, char[] packageName) {
-		if ((modifiers & (Flags.AccPrivate | Flags.AccProtected)) != 0) {
-			return false;
-		} else if ((modifiers & Flags.AccPackage) != 0) {
-			int myIndex = CharOperation.indexOf('.', sourceUnitFqn);
-			int hisIndex = CharOperation.indexOf('.', packageName);
-			
-			if (myIndex == -1) {
-				if (hisIndex == -1) {
-					return CharOperation.equals(sourceUnitFqn, packageName);
+		if (options.checkVisibility) { 
+			if ((modifiers & (Flags.AccPrivate | Flags.AccProtected)) != 0) {
+				return false;
+			} else if ((modifiers & Flags.AccPackage) != 0) {
+				int myIndex = CharOperation.indexOf('.', sourceUnitFqn);
+				int hisIndex = CharOperation.indexOf('.', packageName);
+				
+				if (myIndex == -1) {
+					if (hisIndex == -1) {
+						return CharOperation.equals(sourceUnitFqn, packageName);
+					} else {
+						return false;
+					}
 				} else {
-					return false;
+					if (hisIndex != -1) {
+						char[] me = CharOperation.subarray(sourceUnitFqn, 0, myIndex);
+						char[] he = CharOperation.subarray(packageName, 0, hisIndex);
+						return CharOperation.equals(me, he);
+					} else {
+						return false;
+					}
 				}
 			} else {
-				if (hisIndex != -1) {
-					char[] me = CharOperation.subarray(sourceUnitFqn, 0, myIndex);
-					char[] he = CharOperation.subarray(packageName, 0, hisIndex);
-					return CharOperation.equals(me, he);
-				} else {
-					return false;
-				}
+				return true;
 			}
-		} else {
-			return true;
 		}
+		
+		if (options.checkDeprecation && (modifiers & Flags.AccDeprecated) != 0) {
+			return false;
+		}
+		
+		return true;
 	}
 
 	private void suggestProperties(char[] name, 
@@ -1413,7 +1432,7 @@ public class CompletionEngine extends Engine
 		for (int i = 0; i < properties.length; i++) {
 			char[] property = properties[i];
 			char[] type = types[i];
-			if (name.length == 0 || CharOperation.camelCaseMatch(name, property)) {
+			if (name.length == 0 || match(name, property)) {
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(property);
 				proposal.setCompletion(property);
@@ -1439,8 +1458,8 @@ public class CompletionEngine extends Engine
 			}
 			if (!excludedNames.containsKey(proposition) && (
 					name.length == 0 || 
-					CharOperation.camelCaseMatch(name, proposition) || 
-					CharOperation.camelCaseMatch(name, member.ident().ident)
+					match(name, proposition) || 
+					match(name, member.ident().ident)
 					)) {
 				
 				int relevance = computeBaseRelevance();
@@ -1546,7 +1565,7 @@ public class CompletionEngine extends Engine
 		// Suggest sections that doesn't already exist
 		for(char[] name : ddocSections) {
 			if (!excludedNames.containsKey(name) && 
-					(prefix.length == 0 || CharOperation.camelCaseMatch(prefix, name))) {
+					(prefix.length == 0 || match(prefix, name))) {
 				char[] nameColon = new char[name.length + 1];
 				System.arraycopy(name, 0, nameColon, 0, name.length);
 				nameColon[nameColon.length - 1] = ':';
@@ -1584,7 +1603,7 @@ public class CompletionEngine extends Engine
 			char[] name = new char[macroName.length() + 1];
 			System.arraycopy(macroName.toCharArray(), 0, name, 1, macroName.length());
 			name[0] = '$';
-			if (prefix.length == 0 || CharOperation.camelCaseMatch(prefix, name)) {
+			if (prefix.length == 0 || match(prefix, name)) {
 				// TODO document this somewhere: the "name" is the
 				// macro replacement, while the completion is the
 				// name of the macro

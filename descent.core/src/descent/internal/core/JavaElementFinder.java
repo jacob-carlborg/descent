@@ -710,14 +710,22 @@ public class JavaElementFinder {
 				if (conditional.isVersionDeclaration()) {
 					IJavaElement[] children = conditional.getChildren();
 					String version = conditional.getElementName();
-					try {
-						long level = Long.parseLong(version);
-						if (level >= config.versionLevel) {
-							return conditionalThen(conditional, children);
-						} else {
-							return conditionalElse(conditional, children);
+					if (version.length() > 0 && Character.isDigit(version.charAt(0))) {
+						try {
+							long level = Long.parseLong(version);
+							if (level >= config.versionLevel) {
+								return conditionalThen(conditional, children);
+							} else {
+								return conditionalElse(conditional, children);
+							}
+						} catch (NumberFormatException e) {
+							if (config.versionIdentifiers.containsKey(version.toCharArray())) {
+								return conditionalThen(conditional, children);
+							} else {
+								return conditionalElse(conditional, children);
+							}
 						}
-					} catch (NumberFormatException e) {
+					} else {
 						if (config.versionIdentifiers.containsKey(version.toCharArray())) {
 							return conditionalThen(conditional, children);
 						} else {
@@ -727,14 +735,22 @@ public class JavaElementFinder {
 				} else if (conditional.isDebugDeclaration()) {
 					IJavaElement[] children = conditional.getChildren();
 					String version = conditional.getElementName();
-					try {
-						long level = Long.parseLong(version);
-						if (level >= config.debugLevel) {
-							return conditionalThen(conditional, children);
-						} else {
-							return conditionalElse(conditional, children);
+					if (version.length() > 0 && Character.isDigit(version.charAt(0))) {
+						try {
+							long level = Long.parseLong(version);
+							if (level >= config.debugLevel) {
+								return conditionalThen(conditional, children);
+							} else {
+								return conditionalElse(conditional, children);
+							}
+						} catch (NumberFormatException e) {
+							if (config.debugIdentifiers.containsKey(version.toCharArray())) {
+								return conditionalThen(conditional, children);
+							} else {
+								return conditionalElse(conditional, children);
+							}
 						}
-					} catch (NumberFormatException e) {
+					} else {
 						if (config.debugIdentifiers.containsKey(version.toCharArray())) {
 							return conditionalThen(conditional, children);
 						} else {

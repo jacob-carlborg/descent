@@ -54,10 +54,10 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 			return super.createJavaCompletionProposal(methodProposal);
 
 		LazyJavaCompletionProposal proposal;
-		ICompilationUnit compilationUnit= getCompilationUnit();
-		if (compilationUnit != null && fIsGuessArguments)
-			proposal= new ParameterGuessingProposal(methodProposal, getInvocationContext());
-		else
+//		ICompilationUnit compilationUnit= getCompilationUnit();
+//		if (compilationUnit != null && fIsGuessArguments)
+//			proposal= new ParameterGuessingProposal(methodProposal, getInvocationContext());
+//		else
 			proposal= new LazyJavaMethodCompletionProposal(methodProposal, getInvocationContext());
 		return proposal;
 	}
@@ -71,10 +71,10 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 			return super.createJavaCompletionProposal(tempProposal);
 
 		LazyJavaCompletionProposal proposal;
-		ICompilationUnit compilationUnit= getCompilationUnit();
-		if (compilationUnit != null && fIsGuessArguments)
-			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
-		else
+//		ICompilationUnit compilationUnit= getCompilationUnit();
+//		if (compilationUnit != null && fIsGuessArguments)
+//			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
+//		else
 			proposal= new ExperimentalTemplateProposal(tempProposal, getInvocationContext());
 		return proposal;
 	}
@@ -91,10 +91,10 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 			return super.createJavaCompletionProposal(tempProposal);
 
 		LazyJavaCompletionProposal proposal;
-		ICompilationUnit compilationUnit= getCompilationUnit();
-		if (compilationUnit != null && fIsGuessArguments)
-			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
-		else
+//		ICompilationUnit compilationUnit= getCompilationUnit();
+//		if (compilationUnit != null && fIsGuessArguments)
+//			proposal= new ParameterGuessingProposal(tempProposal, getInvocationContext());
+//		else
 			proposal= new ExperimentalTemplatedFunctionProposal(tempProposal, getInvocationContext());
 		return proposal;
 	}

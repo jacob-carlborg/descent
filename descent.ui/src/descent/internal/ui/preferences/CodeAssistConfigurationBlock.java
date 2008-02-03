@@ -71,10 +71,10 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 				PREF_CODEASSIST_SHOW_VISIBLE_PROPOSALS,
 				PREF_CODEASSIST_SORTER,
 				PREF_CODEASSIST_CASE_SENSITIVITY,
-				PREF_CODEASSIST_ADDIMPORT,
+//				PREF_CODEASSIST_ADDIMPORT,
 				PREF_CODEASSIST_INSERT_COMPLETION,
-				PREF_CODEASSIST_FILL_ARGUMENT_NAMES,
-				PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS,
+//				PREF_CODEASSIST_FILL_ARGUMENT_NAMES,
+//				PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS,
 				PREF_CODEASSIST_PREFIX_COMPLETION,
 				PREF_CODEASSIST_FORBIDDEN_REFERENCE_CHECK,
 				PREF_CODEASSIST_DISCOURAGED_REFERENCE_CHECK,
@@ -143,15 +143,15 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		label= PreferencesMessages.JavaEditorPreferencePage_completePrefixes; 
 		addCheckBox(composite, label, PREF_CODEASSIST_PREFIX_COMPLETION, trueFalse, 0);
 		
-		label= PreferencesMessages.JavaEditorPreferencePage_automaticallyAddImportInsteadOfQualifiedName; 
-		addCheckBox(composite, label, PREF_CODEASSIST_ADDIMPORT, trueFalse, 0);
+//		label= PreferencesMessages.JavaEditorPreferencePage_automaticallyAddImportInsteadOfQualifiedName; 
+//		addCheckBox(composite, label, PREF_CODEASSIST_ADDIMPORT, trueFalse, 0);
 		
-		label= PreferencesMessages.JavaEditorPreferencePage_fillArgumentNamesOnMethodCompletion; 
-		Button master= addCheckBox(composite, label, PREF_CODEASSIST_FILL_ARGUMENT_NAMES, trueFalse, 0);
+//		label= PreferencesMessages.JavaEditorPreferencePage_fillArgumentNamesOnMethodCompletion; 
+//		Button master= addCheckBox(composite, label, PREF_CODEASSIST_FILL_ARGUMENT_NAMES, trueFalse, 0);
 		
-		label= PreferencesMessages.JavaEditorPreferencePage_guessArgumentNamesOnMethodCompletion; 
-		Button slave= addCheckBox(composite, label, PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS, trueFalse, 20);
-		createSelectionDependency(master, slave);
+//		label= PreferencesMessages.JavaEditorPreferencePage_guessArgumentNamesOnMethodCompletion; 
+//		Button slave= addCheckBox(composite, label, PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS, trueFalse, 20);
+//		createSelectionDependency(master, slave);
 	}
 
 	/**
@@ -195,13 +195,11 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		label= PreferencesMessages.JavaEditorPreferencePage_showOnlyProposalsVisibleInTheInvocationContext; 
 		addCheckBox(composite, label, PREF_CODEASSIST_SHOW_VISIBLE_PROPOSALS, trueFalse, 0);
 		
-		/* TODO JDT code assist preference page
-		label= PreferencesMessages.CodeAssistConfigurationBlock_restricted_link;
-		Map targetInfo= new java.util.HashMap(2);
-		targetInfo.put(ProblemSeveritiesPreferencePage.DATA_SELECT_OPTION_KEY,	JavaCore.COMPILER_PB_FORBIDDEN_REFERENCE);
-		targetInfo.put(ProblemSeveritiesPreferencePage.DATA_SELECT_OPTION_QUALIFIER, JavaCore.PLUGIN_ID);
-		createPreferencePageLink(composite, label, targetInfo);
-		*/
+//		label= PreferencesMessages.CodeAssistConfigurationBlock_restricted_link;
+//		Map targetInfo= new java.util.HashMap(2);
+//		targetInfo.put(ProblemSeveritiesPreferencePage.DATA_SELECT_OPTION_KEY,	JavaCore.COMPILER_PB_FORBIDDEN_REFERENCE);
+//		targetInfo.put(ProblemSeveritiesPreferencePage.DATA_SELECT_OPTION_QUALIFIER, JavaCore.PLUGIN_ID);
+//		createPreferencePageLink(composite, label, targetInfo);
 		
 		String[] enabledDisabled= new String[] { JavaCore.ENABLED, JavaCore.DISABLED };
 		
@@ -332,7 +330,7 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
         setControlEnabled(PREF_CODEASSIST_AUTOACTIVATION_DELAY, autoactivation);
         setControlEnabled(PREF_CODEASSIST_AUTOACTIVATION_TRIGGERS_JAVA, autoactivation);
         setControlEnabled(PREF_CODEASSIST_AUTOACTIVATION_TRIGGERS_JAVADOC, autoactivation);
-        setControlEnabled(PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS, getBooleanValue(PREF_CODEASSIST_FILL_ARGUMENT_NAMES));
+//        setControlEnabled(PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS, getBooleanValue(PREF_CODEASSIST_FILL_ARGUMENT_NAMES));
     }
 
     

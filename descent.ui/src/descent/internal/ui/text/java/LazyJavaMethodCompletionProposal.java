@@ -112,7 +112,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		}
 		
 		if (!hasParameters() || !hasArgumentList()) {
-			setCursorPosition(replacement.length() + 1);
+			setCursorPosition(replacement.length() + (isVariadic() ? 1 : 2));
 			return replacement + "()"; //$NON-NLS-1$
 		}
 		
@@ -323,7 +323,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				}
 			} else {
 				// Before the last )
-				fSelectedRegion= new Region(baseOffset + replacement.length() + offestAdded - 1, 0);
+				fSelectedRegion= new Region(baseOffset + replacement.length() + offestAdded - (isVariadic() ? 1 : 0), 0);
 			}
 			
 			//rememberSelection();
