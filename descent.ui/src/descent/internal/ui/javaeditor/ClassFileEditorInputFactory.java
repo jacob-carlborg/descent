@@ -16,7 +16,6 @@ import descent.core.JavaModelException;
  * inputs stored in a memento.
  */
 public class ClassFileEditorInputFactory implements IElementFactory {
-
 	public final static String ID=  "descent.ui.ClassFileEditorInputFactory"; //$NON-NLS-1$
 	public final static String KEY= "descent.ui.ClassFileIdentifier"; //$NON-NLS-1$
 

@@ -1770,7 +1770,8 @@ public class JavaProject
 			default:
 				// a path ending with .jar/.zip is still ambiguous and could still resolve to a source/lib folder 
 				// thus will try to guess based on existing resource
-				if (descent.internal.compiler.util.Util.isArchiveFileName(path.lastSegment())) {
+//				if (descent.internal.compiler.util.Util.isArchiveFileName(path.lastSegment())) {
+				if (path.isAbsolute()) {
 					IResource resource = this.project.getWorkspace().getRoot().findMember(path); 
 					if (resource != null && resource.getType() == IResource.FOLDER){
 						return getPackageFragmentRoot(resource);

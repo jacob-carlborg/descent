@@ -384,7 +384,10 @@ class DefaultBindingResolver extends BindingResolver {
 					if (exp != null) {
 						IBinding binding = exp.resolveTypeBinding();
 						if (binding != null && binding instanceof ITypeBinding) {
-							return resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
+							binding = resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
+							if (binding != null) {
+								return binding;
+							}
 						}
 					}
 				}

@@ -3452,4 +3452,55 @@
       </viewer>
    </extension>
 <!-- End Java Compare -->	
+<extension
+       point="org.eclipse.ui.navigator.linkHelper">
+		<linkHelper
+	          class="descent.internal.ui.navigator.JavaFileLinkHelper"
+	          id="descent.java.ui.javaLinkHelper">          
+	         <editorInputEnablement>
+		         <or> 
+		         	<instanceof
+							value="org.eclipse.ui.IFileEditorInput" />
+		         	<instanceof
+							value="descent.internal.ui.javaeditor.IClassFileEditorInput" />
+		         </or>
+	         </editorInputEnablement>
+	         <selectionEnablement>
+	         	<or>
+					<adapt
+							type="org.eclipse.core.resources.IProject" >
+					</adapt>
+					<instanceof
+							value="org.eclipse.core.resources.IWorkspaceRoot" />
+					<instanceof
+							value="org.eclipse.core.resources.IFolder" />
+					<instanceof
+							value="org.eclipse.core.resources.IFile" />
+					<instanceof
+							value="org.eclipse.core.resources.IStorage" />
+					<instanceof
+							value="descent.core.IJavaProject" />
+					<instanceof
+							value="descent.core.IJavaElement" />
+					<instanceof
+							value="descent.internal.core.JarEntryFile" />
+					<instanceof
+							value="descent.core.IClassFile" />
+					<instanceof
+							value="descent.internal.ui.packageview.ClassPathContainer" />
+				</or>
+	         </selectionEnablement>
+      	</linkHelper>          
+ </extension>
+ <extension
+         point="org.eclipse.ui.elementFactories">
+      <factory
+            class="descent.internal.ui.javaeditor.ClassFileEditorInputFactory"
+            id="descent.ui.ClassFileEditorInputFactory">
+      </factory>
+      <factory
+            class="descent.internal.ui.PersistableJavaElementFactory"
+            id="descent.ui.PersistableJavaElementFactory">
+      </factory>
+   </extension>
 </plugin>

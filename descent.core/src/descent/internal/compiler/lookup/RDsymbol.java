@@ -845,13 +845,17 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				
 				Type retType = getPreviousType();
 				if (retType == null) {
-					System.out.println(1);
+					return;
 				}
 				
 				// TODO varargs
 				type = new TypeFunction(arguments, retType, 0, link);
 				while(!typesStack.peek().isEmpty()) {
 					Type argType = getPreviousType();
+					if (argType == null) {
+						return;
+					}
+					
 					if (modifiersStack.peek().isEmpty()) {
 						return;
 					}
