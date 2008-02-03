@@ -27,8 +27,10 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;
+import descent.internal.unittest.model.JUnitModel;
 
 /**
  * Launch configuration delegate for a plain JUnit test.
@@ -46,7 +48,7 @@ public class UnittestLaunchConfiguration extends
 	@Override
 	public void launch(ILaunchConfiguration config, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
-	{
+	{	
 		if (monitor == null)
 			monitor = new NullProgressMonitor();
 		
@@ -56,12 +58,21 @@ public class UnittestLaunchConfiguration extends
 			if (monitor.isCanceled())
 				return;
 			
+			// Launch the applicataion
 			//super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
 			monitor.worked(30);
 			
-			List<TestSpecification> tests = findTests(config, new SubProgressMonitor(monitor, 70));
-			for(TestSpecification test : tests)
-				System.out.println(test.getId());
+			// Find the tests (this takes up most of the monitor because
+			// for a large project, this can take a long time)
+			List<TestSpecification> tests = findTests(config, new SubProgressMonitor(monitor, 65));
+			
+			// Transfer the launch config attributes to the launch
+			launch.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, getProjectName(config));
+			launch.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "30587");
+			
+			// Start the Descent side of things
+			DescentUnittestPlugin.getModel().notifyLaunch(launch, tests);
+			monitor.worked(5);
 		}
 		finally
 		{

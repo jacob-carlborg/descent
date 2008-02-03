@@ -34,6 +34,7 @@ import descent.unittest.ITestRunListener;
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
 //import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
+import descent.internal.unittest.launcher.TestSpecification;
 import descent.internal.unittest.model.TestElement.Status;
 import descent.internal.unittest.ui.JUnitMessages;
 
@@ -45,7 +46,9 @@ public class TestRunSession {
 	private final IJavaProject fProject;
 	private final ILaunch fLaunch;
 	private final String fLaunchConfigName;
-
+	
+	private final RemoteTestRunnerClient fTestRunnerClient;
+	
 	private final ListenerList/*<ITestSessionListener>*/ fSessionListeners;
 	
 	/**
@@ -92,7 +95,9 @@ public class TestRunSession {
 	volatile boolean fIsStopped;
 	
 
-	public TestRunSession(IJavaProject testedProject, int port, ILaunch launch) {
+	public TestRunSession(IJavaProject testedProject, int port, ILaunch launch,
+			List<TestSpecification> tests)
+	{
 		Assert.isNotNull(testedProject);
 		Assert.isNotNull(launch);
 		
@@ -107,9 +112,11 @@ public class TestRunSession {
 		fTestRoot= new TestRoot();
 		fIdToTest= new HashMap();
 		
-		/* TODO fTestRunnerClient= new RemoteTestRunnerClient();
-		fTestRunnerClient.startListening(new ITestRunListener[] { new TestSessionNotifier() }, port); */
-
+		// Add the run listener that translates tuff to the session listeners
+		List<ITestRunListener> listeners = new ArrayList<ITestRunListener>();
+		listeners.add(new TestSessionNotifier());
+		
+		fTestRunnerClient= new RemoteTestRunnerClient(port, tests, listeners);
 		fSessionListeners= new ListenerList();
 	}
 	
@@ -171,15 +178,14 @@ public class TestRunSession {
 	public void stopTestRun() {
 		if (isRunning() || ! isKeptAlive())
 			fIsStopped= true;
-		// TODO fTestRunnerClient.stopTest();
+		fTestRunnerClient.stopTest();
 	}
 
 	/**
 	 * @return <code>true</code> iff the runtime VM of this test session is still alive 
 	 */
 	public boolean isKeptAlive() {
-		// TODO return fTestRunnerClient.isRunning() && ILaunchManager.DEBUG_MODE.equals(getLaunch().getLaunchMode());
-		return false;
+		return fTestRunnerClient.isRunning() && ILaunchManager.DEBUG_MODE.equals(getLaunch().getLaunchMode());
 	}
 
 	/**
