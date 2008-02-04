@@ -10,9 +10,21 @@ import descent.internal.compiler.parser.Token;
 public class CompletionOnIdentifierExp extends IdentifierExp {
 	
 	public Scope scope;
+	
+	/*
+	 * If it's type.|
+	 * then dot is the cursor position. Else, it's -1.
+	 */
+	public int dot;
 
 	public CompletionOnIdentifierExp(Loc loc, Token token) {
 		super(loc, token);
+		this.dot = -1;
+	}
+	
+	public CompletionOnIdentifierExp(Loc loc, Token token, int dot) {
+		super(loc, token);
+		this.dot = dot;
 	}
 	
 	@Override

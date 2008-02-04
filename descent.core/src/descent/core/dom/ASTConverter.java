@@ -1392,7 +1392,11 @@ public class ASTConverter {
 			descent.core.dom.Initializer init = (descent.core.dom.Initializer) convert(a.sourceInit); // SEMANTIC
 			if (init != null) {
 				b.setInitializer(init);
-				b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
+				if (a.ident != null) {
+					b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);	
+				} else {
+					b.setSourceRange(a.start, a.length);
+				}
 			}
 		}
 		

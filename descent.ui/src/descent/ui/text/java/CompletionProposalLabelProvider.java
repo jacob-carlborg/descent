@@ -685,6 +685,8 @@ public class CompletionProposalLabelProvider {
 				break;
 			case CompletionProposal.VERSION_REF:
 				descriptor= JavaPluginImages.DESC_OBJS_VERSION_DECLARATION;
+			case CompletionProposal.DEBUG_REF:
+				descriptor= JavaPluginImages.DESC_OBJS_DEBUG_DECLARATION;
 			case CompletionProposal.DDOC_MACRO:
 				descriptor= JavaPluginImages.DESC_OBJS_DDOC_MACRO;
 				break;
@@ -724,6 +726,10 @@ public class CompletionProposalLabelProvider {
 	
 	ImageDescriptor createVersionImageDescriptor(CompletionProposal proposal) {
 		return decorateImageDescriptor(JavaPluginImages.DESC_OBJS_VERSION_DECLARATION, proposal);
+	}
+	
+	ImageDescriptor createDebugImageDescriptor(CompletionProposal proposal) {
+		return decorateImageDescriptor(JavaPluginImages.DESC_OBJS_DEBUG_DECLARATION, proposal);
 	}
 
 	/**

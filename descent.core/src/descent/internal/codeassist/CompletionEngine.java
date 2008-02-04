@@ -22,6 +22,7 @@ import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
+import descent.internal.codeassist.complete.CompletionOnDebugCondition;
 import descent.internal.codeassist.complete.CompletionOnDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnExpStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
@@ -29,6 +30,8 @@ import descent.internal.codeassist.complete.CompletionOnIdentifierExp;
 import descent.internal.codeassist.complete.CompletionOnImport;
 import descent.internal.codeassist.complete.CompletionOnJavadocImpl;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
+import descent.internal.codeassist.complete.CompletionOnSuperDotExp;
+import descent.internal.codeassist.complete.CompletionOnThisDotExp;
 import descent.internal.codeassist.complete.CompletionOnTypeDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnTypeIdentifier;
 import descent.internal.codeassist.complete.CompletionOnVersionCondition;
@@ -48,6 +51,7 @@ import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.DVCondition;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Dsymbols;
@@ -104,10 +108,10 @@ import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
-import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.util.HashtableOfObject;
+import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
 import descent.internal.core.SearchableEnvironment;
@@ -148,6 +152,7 @@ public class CompletionEngine extends Engine
 	IJavaProject javaProject;
 	CompletionParser parser;
 	CompletionRequestor requestor;
+	CompilerConfiguration compilerConfig;
 	
 	Module module;
 	
@@ -200,6 +205,7 @@ public class CompletionEngine extends Engine
 		this.requestor = requestor;
 		this.nameEnvironment = nameEnvironment;
 		this.typeCache = new HashtableOfObject(5);
+		this.compilerConfig = new CompilerConfiguration();
 	}
 
 	/**
@@ -282,6 +288,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnVersionCondition) {
 					CompletionOnVersionCondition node = (CompletionOnVersionCondition) assistNode;
 					completeVersionCondition(node);
+				} else if (assistNode instanceof CompletionOnDebugCondition) {
+					CompletionOnDebugCondition node = (CompletionOnDebugCondition) assistNode;
+					completeDebugCondition(node);
 				} else if (assistNode instanceof CompletionOnCaseStatement) {
 					CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
 					completeCaseStatement(node);
@@ -300,6 +309,12 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnIdentifierExp) {
 					CompletionOnIdentifierExp node = (CompletionOnIdentifierExp) assistNode;
 					completeIdentifierExp(node);
+				} else if (assistNode instanceof CompletionOnThisDotExp) {
+					CompletionOnThisDotExp node = (CompletionOnThisDotExp) assistNode;
+					completeThisDotExp(node);
+				} else if (assistNode instanceof CompletionOnSuperDotExp) {
+					CompletionOnSuperDotExp node = (CompletionOnSuperDotExp) assistNode;
+					completeSuperDotExp(node);
 				}
 			}
 			
@@ -333,7 +348,7 @@ public class CompletionEngine extends Engine
 			this.requestor.endReporting();
 		}
 	}
-
+	
 	private CompletionContext buildContext(CompletionParser parser) {
 		// TODO Descent completion context
 		CompletionContext context = new CompletionContext();
@@ -520,23 +535,32 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeVersionCondition(CompletionOnVersionCondition node) {
+		completeVersionDebugCondition(node, CompletionProposal.VERSION_REF, compilerConfig.versionIdentifiers, parser.versions);
+	}
+	
+	private void completeDebugCondition(CompletionOnDebugCondition node) {
+		completeVersionDebugCondition(node, CompletionProposal.DEBUG_REF, compilerConfig.debugIdentifiers, parser.debugs);
+	}
+	
+	private void completeVersionDebugCondition(DVCondition node, int kind, HashtableOfCharArrayAndObject predefs, HashtableOfCharArrayAndObject inSource) {
 		char[] name = node.ident == null ? CharOperation.NO_CHAR : node.ident;
 		this.startPosition = this.actualCompletionPosition - name.length;
 		this.endPosition = this.actualCompletionPosition;
 		
 		// Suggest the versions found in the source file
-		HashtableOfCharArrayAndObject versions = parser.versions;
-		if (versions == null) {
-			versions = new HashtableOfCharArrayAndObject();
+		if (inSource == null) {
+			inSource = new HashtableOfCharArrayAndObject();
 		}
 		
-		// And also the predefined
-		for(char[] predefined : VersionCondition.resevered) {
-			versions.put(predefined, this);
+		// And also the compiler ones
+		for(char[] predefined : predefs.keys()) {
+			if (predefined != null) {
+				inSource.put(predefined, this);
+			}
 		}
 		
-		for(char[] id : versions.keys()) {
-			if (id == null) {
+		for(char[] id : inSource.keys()) {
+			if (id == null || id.length == 0) {
 				continue;
 			}
 			
@@ -545,7 +569,7 @@ public class CompletionEngine extends Engine
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(name, id);
 				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.VERSION_REF, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition);
 				proposal.setName(id);
 				proposal.setCompletion(id);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -669,29 +693,33 @@ public class CompletionEngine extends Engine
 	private void completeTypeIdentifier(CompletionOnTypeIdentifier node) throws JavaModelException {
 		doSemantic(module);
 		
-		currentName = computePrefixAndSourceRange(node.ident);
-		
-		Scope scope = node.scope;
-		
-		completeScope(scope, currentName, INCLUDE_TYPES);
-		
-		// Also suggest packages
-		isCompletingPackage = true;
-		nameEnvironment.findCompilationUnits(currentName, this);
-		
-		// And top level declarations
-		isCompletingTypeIdentifier = true;
-		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
-		
-		// Show constructors and opCalls
-		if (node.ident.resolvedSymbol != null) {
-			IDsymbol sym = node.ident.resolvedSymbol;
-			if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
-				IScopeDsymbol cd = (IScopeDsymbol) sym;
-				if (cd.members() != null && !cd.members().isEmpty()) {
-					suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+		if (node.dot == -1) {
+			currentName = computePrefixAndSourceRange(node.ident);
+			
+			Scope scope = node.scope;
+			
+			completeScope(scope, currentName, INCLUDE_TYPES);
+			
+			// Also suggest packages
+			isCompletingPackage = true;
+			nameEnvironment.findCompilationUnits(currentName, this);
+			
+			// And top level declarations
+			isCompletingTypeIdentifier = true;
+			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			
+			// Show constructors and opCalls
+			if (node.ident.resolvedSymbol != null) {
+				IDsymbol sym = node.ident.resolvedSymbol;
+				if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
+					IScopeDsymbol cd = (IScopeDsymbol) sym;
+					if (cd.members() != null && !cd.members().isEmpty()) {
+						suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+					}
 				}
 			}
+		} else if (node.ident != null) {
+			completeIdentDot(node.ident);
 		}
 	}
 	
@@ -763,26 +791,70 @@ public class CompletionEngine extends Engine
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
 		doSemantic(module);
 		
-		currentName = computePrefixAndSourceRange(node);
-		
-		Scope scope = node.scope;
-		completeScope(scope, currentName, INCLUDE_ALL);
-		
-		// Also suggest packages
-		isCompletingPackage = true;
-		nameEnvironment.findCompilationUnits(currentName, this);
-		
-		// And top level declarations
-		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
-		
-		// Show constructors and opCalls
-		if (node.resolvedSymbol != null) {
-			IDsymbol sym = node.resolvedSymbol;
-			if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
-				IScopeDsymbol cd = (IScopeDsymbol) sym;
-				if (cd.members() != null && !cd.members().isEmpty()) {
-					suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+		if (node.dot == -1) {
+			currentName = computePrefixAndSourceRange(node);
+			
+			Scope scope = node.scope;
+			completeScope(scope, currentName, INCLUDE_ALL);
+			
+			// Also suggest packages
+			isCompletingPackage = true;
+			nameEnvironment.findCompilationUnits(currentName, this);
+			
+			// And top level declarations
+			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			
+			// Show constructors and opCalls
+			if (node.resolvedSymbol != null) {
+				IDsymbol sym = node.resolvedSymbol;
+				if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
+					IScopeDsymbol cd = (IScopeDsymbol) sym;
+					if (cd.members() != null && !cd.members().isEmpty()) {
+						suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+					}
 				}
+			}
+		} else {
+			completeIdentDot(node);
+		}
+	}
+	
+	private void completeSuperDotExp(CompletionOnSuperDotExp node) throws JavaModelException {
+		doSemantic(module);
+		
+		Type type = node.type;
+		completeTypeDot(type);
+	}
+
+	private void completeThisDotExp(CompletionOnThisDotExp node) throws JavaModelException {
+		doSemantic(module);
+		
+		Type type = node.type;
+		completeTypeDot(type);
+	}
+	
+	private void completeTypeDot(Type type) {
+		currentName = CharOperation.NO_CHAR;
+		startPosition = actualCompletionPosition;
+		endPosition = actualCompletionPosition;
+		
+		completeType(type, currentName, false);
+	}
+	
+	private void completeIdentDot(IdentifierExp ident) {
+		currentName = CharOperation.NO_CHAR;
+		startPosition = actualCompletionPosition;
+		endPosition = actualCompletionPosition;
+		
+		IDsymbol sym = ident.resolvedSymbol;
+		if (sym instanceof IVarDeclaration) {
+			IVarDeclaration var = (IVarDeclaration) sym;
+			Type type = var.type();
+			completeType(type, CharOperation.NO_CHAR, false);
+		} else if (sym instanceof IScopeDsymbol) {
+			IScopeDsymbol sd = (IScopeDsymbol) sym;
+			if (sd.members() != null && !sd.members().isEmpty()) {
+				suggestMembers(sd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			}
 		}
 	}
@@ -1072,14 +1144,14 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// First suggest superclass and superinterface members
+		// First suggest my members
+		suggestMembers(decl.members(), name, onlyStatics, funcSignatures, INCLUDE_ALL);
+		
+		// Then suggest superclass and superinterface members
 		BaseClasses baseClasses = decl.baseclasses();
 		for(BaseClass baseClass : baseClasses) {
 			completeTypeClassRecursively((TypeClass) baseClass.base.type(), name, onlyStatics, funcSignatures);
 		}
-		
-		// Then suggest my members
-		suggestMembers(decl.members(), name, onlyStatics, funcSignatures, INCLUDE_ALL);
 	}
 	
 	private void completeTypeStruct(TypeStruct type, char[] name, boolean onlyStatics) {
@@ -1886,12 +1958,12 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		// Skip variables
-		if ((modifiers & (Flags.AccAlias | Flags.AccTypedef)) == 0) {
+		// Skip variables if they are not imported
+		if ((modifiers & (Flags.AccAlias | Flags.AccTypedef)) == 0 && !isImported(packageName)) {
 			return;
 		}
 		
-		// Don't show variables if completing type identifier
+		// Don't show not imported variables if completing type identifier
 		if (isCompletingTypeIdentifier) {
 			if ((modifiers & Flags.AccTypedef) == 0 &&
 					(modifiers & Flags.AccAlias) == 0) {

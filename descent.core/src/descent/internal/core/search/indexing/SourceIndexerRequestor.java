@@ -10,6 +10,8 @@
  *******************************************************************************/
 package descent.internal.core.search.indexing;
 
+import java.util.Stack;
+
 import descent.core.Flags;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
@@ -28,6 +30,8 @@ public class SourceIndexerRequestor implements ISourceElementRequestor, IIndexCo
 	char[][] enclosingTypeNames = new char[5][];
 	int depth = 0;
 	int methodDepth = 0;
+	
+	Stack<Long> initializerModifiersStack = new Stack<Long>();
 	
 public SourceIndexerRequestor(SourceIndexer indexer) {
 	this.indexer = indexer;
@@ -214,6 +218,12 @@ public void enterField(FieldInfo fieldInfo) {
  * @see ISourceElementRequestor#enterInitializer(int, int)
  */
 public void enterInitializer(int declarationSourceStart, long modifiers, char[] displayString) {
+	initializerModifiersStack.push(modifiers);
+	
+	if (!increasesMethodDepth(modifiers)) {
+		return;
+	}
+	
 	this.methodDepth++;
 }
 private void enterInterface(TypeInfo typeInfo) {
@@ -305,6 +315,11 @@ public void exitField(int initializationStart, int declarationEnd, int declarati
  * @see ISourceElementRequestor#exitInitializer(int)
  */
 public void exitInitializer(int declarationEnd) {
+	long modifiers = initializerModifiersStack.pop();
+	if (!increasesMethodDepth(modifiers)) {
+		return;
+	}
+	
 	this.methodDepth--;
 }
 /**
@@ -397,6 +412,16 @@ public void exitConditionalThen(int declarationEnd) {
 public void exitConditionalElse(int declarationEnd) {
 	// TODO Auto-generated method stub
 	
+}
+
+private boolean increasesMethodDepth(long modifiers) {
+	if ((modifiers & 
+			(Flags.AccAlign | Flags.AccExternDeclaration | Flags.AccPragma | Flags.AccThen | Flags.AccElse))
+		!= 0) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
 }

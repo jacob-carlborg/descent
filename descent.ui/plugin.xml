@@ -3158,6 +3158,13 @@
       </view>
       -->
       <view
+            name="%JavaSourceView"
+            icon="$nl$/icons/full/eview16/source.gif"
+            category="descent.ui.java"
+            class="descent.internal.ui.infoviews.SourceView"
+            id="descent.ui.SourceView">
+      </view>
+      <view
             name="%JavadocView"
             icon="$nl$/icons/full/eview16/javadoc.gif"
             category="descent.ui.java"

@@ -11,6 +11,8 @@ import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ContinueStatement;
+import descent.internal.compiler.parser.DebugCondition;
+import descent.internal.compiler.parser.DebugSymbol;
 import descent.internal.compiler.parser.DotIdExp;
 import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.ExpStatement;
@@ -25,9 +27,11 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Statement;
+import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.ThisExp;
+import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
-import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeQualified;
 import descent.internal.compiler.parser.Version;
@@ -49,6 +53,7 @@ public class CompletionParser extends Parser {
 	// Versions found in the source file: useful for suggesting a
 	// version identifier in a CompletionOnVersionCondition
 	public HashtableOfCharArrayAndObject versions;
+	public HashtableOfCharArrayAndObject debugs;
 
 	public CompletionParser(int apiLevel, char[] source, char[] filename) {
 		super(apiLevel, source, 0, source.length, null, null, false, filename);
@@ -161,7 +166,16 @@ public class CompletionParser extends Parser {
 			assistNode = new CompletionOnIdentifierExp(loc, token);
 			return (IdentifierExp) assistNode;
 		} else {
-			return super.newIdentifierExp();	
+			// It may be ident.| someOtherIdent
+			// So let's see if the cursor is right before the next token,
+			// if it's a dot
+			Token next = peek(token);
+			if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
+				assistNode = new CompletionOnIdentifierExp(loc, token, next.ptr + next.sourceLen);
+				return (IdentifierExp) assistNode;
+			} else {
+				return super.newIdentifierExp();	
+			}
 		}
 	}
 	
@@ -171,7 +185,43 @@ public class CompletionParser extends Parser {
 			assistNode = new CompletionOnTypeIdentifier(loc, id);
 			return (TypeQualified) assistNode;
 		} else {
-			return super.newTypeIdentifier(loc, id);
+			// It may be ident.| someOtherIdent
+			// So let's see if the cursor is right before the next token,
+			// if it's a dot (the next token is already consumed)
+			if (token.value == TOK.TOKdot && token.ptr + token.sourceLen == cursorLocation) {
+				assistNode = new CompletionOnTypeIdentifier(loc, id, token.ptr + token.sourceLen);
+				return (TypeQualified) assistNode;
+			} else {
+				return super.newTypeIdentifier(loc, id);
+			}
+		}
+	}
+	
+	@Override
+	protected ThisExp newThisExp(Loc loc) {
+		// It may be this.| someOtherIdent
+		// So let's see if the cursor is right before the next token,
+		// if it's a dot
+		Token next = peek(token);
+		if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
+			assistNode = new CompletionOnThisDotExp(loc);
+			return (ThisExp) assistNode;
+		} else {
+			return super.newThisExp(loc);
+		}
+	}
+	
+	@Override
+	protected SuperExp newSuperExp(Loc loc) {
+		// It may be this.| someOtherIdent
+		// So let's see if the cursor is right before the next token,
+		// if it's a dot
+		Token next = peek(token);
+		if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
+			assistNode = new CompletionOnSuperDotExp(loc);
+			return (SuperExp) assistNode;
+		} else {
+			return super.newSuperExp(loc);
 		}
 	}
 	
@@ -244,6 +294,35 @@ public class CompletionParser extends Parser {
 			versions.put(id.ident, this);
 		}
 		return super.newVersionSymbol(loc, id, version);
+	}
+	
+	@Override
+	protected DebugCondition newDebugCondition(Module module, Loc loc, long level, char[] id) {
+		boolean isId = level == 1 && !(id != null && id.length == 1 && id[0] == '1');
+		if (isId && id != null) {
+			if (debugs == null) {
+				debugs = new HashtableOfCharArrayAndObject();
+			}
+			debugs.put(id, this);
+		}
+		
+		if (inCompletion() && isId) {
+			assistNode = new CompletionOnDebugCondition(module, loc, level, id);
+			return (DebugCondition) assistNode;
+		} else {
+			return super.newDebugCondition(module, loc, level, id);
+		}
+	}
+	
+	@Override
+	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp id, Version version) {
+		if (id != null && id.ident != null) {
+			if (debugs == null) {
+				debugs = new HashtableOfCharArrayAndObject();
+			}
+			debugs.put(id.ident, this);
+		}
+		return super.newDebugSymbol(loc, id, version);
 	}
 	
 	@Override

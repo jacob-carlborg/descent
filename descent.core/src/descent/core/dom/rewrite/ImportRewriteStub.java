@@ -48,9 +48,6 @@ public class ImportRewriteStub {
 
 	public final static int findInImports(CompilationUnit astRoot, final String qualifier, String name, int kind) {
 		// First search in top level imports
-		if (astRoot == null) {
-			System.out.println(1);
-		}
 		
 		for(Declaration decl : astRoot.declarations()) {
 			if (decl.getNodeType() == ASTNode.IMPORT_DECLARATION) {

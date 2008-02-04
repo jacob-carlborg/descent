@@ -14,8 +14,10 @@ import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
@@ -33,6 +35,8 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.ProtDeclaration;
+import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
@@ -100,6 +104,30 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 	}
 	
+	// <<< Speedups
+	
+	@Override
+	public boolean visit(AlignDeclaration node) {
+		return isInRange(node);
+	}
+	
+	@Override
+	public boolean visit(ProtDeclaration node) {
+		return isInRange(node);
+	}
+	
+	@Override
+	public boolean visit(StorageClassDeclaration node) {
+		return isInRange(node);
+	}
+	
+	@Override
+	public boolean visit(ConditionalDeclaration node) {
+		return isInRange(node);
+	}
+	
+	// >>> Speedups
+	
 	@Override
 	public boolean visit(Module node) {
 		// Don't visit template instances in the module scope
@@ -164,7 +192,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			IDsymbol sym = node.aliassym;
 			if (sym != null) {
 				if (sym.getJavaElement() != null) {
-					selectedElements.add(sym.getJavaElement());
+					addJavaElement(sym.getJavaElement());
 				} else {
 					add(sym.getSignature());
 				}
@@ -189,7 +217,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			add(node.getSignature());
 			return false;
 		}
-		return true;
+		return isInRange(node);
 	}
 
 	@Override
@@ -201,7 +229,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (node.resolvedSymbol != null) {
 			IDsymbol sym = node.resolvedSymbol;
 			if (sym.getJavaElement() != null) {
-				selectedElements.add(sym.getJavaElement());
+				addJavaElement(sym.getJavaElement());
 			} else {
 				if (sym instanceof VarDeclaration) {
 					add((VarDeclaration) sym);
@@ -246,7 +274,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			IModule mod = node.mod;
 			if (mod != null) {
 				if (mod.getJavaElement() != null) {
-					selectedElements.add(mod.getJavaElement());
+					addJavaElement(mod.getJavaElement());
 				} else {
 					add(mod.getSignature());
 				}
@@ -284,7 +312,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (isInRange(node.sourceNewtype) && node.member != null) {
 			ICtorDeclaration ctor = node.member;
 			if (ctor.getJavaElement() != null) {
-				selectedElements.add(ctor.getJavaElement());
+				addJavaElement(ctor.getJavaElement());
 			} else {
 				add(ctor.getSignature());
 			}
@@ -307,7 +335,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		} else if (var instanceof VarDeclaration) {
 			add((VarDeclaration) var);
 		} else if (var.getJavaElement() != null) {
-			selectedElements.add(var.getJavaElement());
+			addJavaElement(var.getJavaElement());
 		} else {
 			add(var);
 		}
@@ -316,7 +344,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	private void add(DotVarExp dotVarExp) {
 		IDeclaration decl = dotVarExp.var;
 		if (decl.getJavaElement() != null) {
-			selectedElements.add(decl.getJavaElement());
+			addJavaElement(decl.getJavaElement());
 		} else {
 			add(decl);
 		}
@@ -397,7 +425,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			return;
 		}
 		
-		selectedElements.add(
+		addJavaElement(
 			new LocalVariable(
 				func, 
 				node.ident.toString(),
@@ -415,13 +443,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		
 		if (type.getJavaElement() != null) {
-			selectedElements.add(type.getJavaElement());
+			addJavaElement(type.getJavaElement());
 			return;
 		}
 		
 		IJavaElement result = finder.find(type.getSignature());
 		if (result != null) {
-			selectedElements.add(result);
+			addJavaElement(result);
 		}
 	}
 	
@@ -432,7 +460,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 		
 		IJavaElement result = finder.find(signature);
 		if (result != null) {
-			selectedElements.add(result);
+			addJavaElement(result);
+		}
+	}
+	
+	private void addJavaElement(IJavaElement element) {
+		if (!selectedElements.contains(element)) {
+			selectedElements.add(element);
 		}
 	}
 

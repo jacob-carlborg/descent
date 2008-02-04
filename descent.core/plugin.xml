@@ -22,6 +22,7 @@
 <!-- Extensions                                                                          -->
 <!-- =================================================================================== -->
 
+	<!--
    <extension
          point="org.eclipse.ant.core.antTasks">
       <antTask
@@ -37,6 +38,7 @@
             library="ant_tasks/descent-ant.jar"
             name="descent.ant.tasks.DModuleBuildNumber"/>
    </extension>
+   -->
    <extension
          point="org.eclipse.ant.core.extraClasspathEntries">
       <extraClasspathEntry library="ant_tasks/descent-ant.jar"/>

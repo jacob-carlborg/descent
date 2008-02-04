@@ -422,6 +422,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 				return createJavadocSimpleProposal(proposal);
 			case CompletionProposal.VERSION_REF:
 				return createVersionProposal(proposal);
+			case CompletionProposal.DEBUG_REF:
+				return createDebugProposal(proposal);
 			case CompletionProposal.DDOC_MACRO:
 				return createDdocMacroProposal(proposal);
 			/* TODO JDT UI javadoc
@@ -787,6 +789,17 @@ public class CompletionProposalCollector extends CompletionRequestor {
 		int length= getLength(proposal);
 		String label= fLabelProvider.createSimpleLabel(proposal);
 		Image image= getImage(fLabelProvider.createVersionImageDescriptor(proposal));
+		int relevance= computeRelevance(proposal);
+
+		return new JavaCompletionProposal(completion, start, length, image, label, relevance);
+	}
+	
+	private IJavaCompletionProposal createDebugProposal(CompletionProposal proposal) {
+		String completion= String.valueOf(proposal.getCompletion());
+		int start= proposal.getReplaceStart();
+		int length= getLength(proposal);
+		String label= fLabelProvider.createSimpleLabel(proposal);
+		Image image= getImage(fLabelProvider.createDebugImageDescriptor(proposal));
 		int relevance= computeRelevance(proposal);
 
 		return new JavaCompletionProposal(completion, start, length, image, label, relevance);

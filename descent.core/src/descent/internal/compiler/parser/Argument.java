@@ -123,10 +123,6 @@ public class Argument extends ASTDmdNode {
 		if (args != null) {
 			for(int i = 0; i < size(args); i++) {
 				Argument arg = args.get(i);
-				if (arg == null || arg.type == null) {
-					System.out.println(1);
-				}
-				
 				Type t = arg.type.toBasetype(context);
 
 				if (t.ty == TY.Ttuple) {

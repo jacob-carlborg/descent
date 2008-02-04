@@ -2,7 +2,7 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.4.4.20071104"
+      version="0.5.0.20080203"
       provider-name="Descent">
 
    <description url="http://dsource.org/projects/descent">
@@ -13,7 +13,7 @@ debugging code in the D programming language from Digital Mars.
    <license url="http://opensource.org/licenses/eclipse-1.0.txt">
       The &quot;Artistic License&quot;
 
-				Preamble
+    Preamble
 
 The intent of this document is to state the conditions under which a
 Package may be copied, such that the Copyright Holder maintains some
@@ -24,30 +24,30 @@ reasonable modifications.
 
 Definitions:
 
-	&quot;Package&quot; refers to the collection of files distributed by the
-	Copyright Holder, and derivatives of that collection of files
-	created through textual modification.
+ &quot;Package&quot; refers to the collection of files distributed by the
+ Copyright Holder, and derivatives of that collection of files
+ created through textual modification.
 
-	&quot;Standard Version&quot; refers to such a Package if it has not been
-	modified, or has been modified in accordance with the wishes
-	of the Copyright Holder as specified below.
+ &quot;Standard Version&quot; refers to such a Package if it has not been
+ modified, or has been modified in accordance with the wishes
+ of the Copyright Holder as specified below.
 
-	&quot;Copyright Holder&quot; is whoever is named in the copyright or
-	copyrights for the package.
+ &quot;Copyright Holder&quot; is whoever is named in the copyright or
+ copyrights for the package.
 
-	&quot;You&quot; is you, if you&apos;re thinking about copying or distributing
-	this Package.
+ &quot;You&quot; is you, if you&apos;re thinking about copying or distributing
+ this Package.
 
-	&quot;Reasonable copying fee&quot; is whatever you can justify on the
-	basis of media cost, duplication charges, time of people involved,
-	and so on.  (You will not be required to justify it to the
-	Copyright Holder, but only to the computing community at large
-	as a market that must bear the fee.)
+ &quot;Reasonable copying fee&quot; is whatever you can justify on the
+ basis of media cost, duplication charges, time of people involved,
+ and so on.  (You will not be required to justify it to the
+ Copyright Holder, but only to the computing community at large
+ as a market that must bear the fee.)
 
-	&quot;Freely Available&quot; means that no fee is charged for the item
-	itself, though there may be fees involved in handling the item.
-	It also means that recipients of the item may redistribute it
-	under the same conditions they received it.
+ &quot;Freely Available&quot; means that no fee is charged for the item
+ itself, though there may be fees involved in handling the item.
+ It also means that recipients of the item may redistribute it
+ under the same conditions they received it.
 
 1. You may make and give away verbatim copies of the source form of the
 Standard Version of this Package without restriction, provided that you
@@ -123,7 +123,7 @@ products derived from this software without specific prior written permission.
 IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
 WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-				The End
+    The End
    </license>
 
    <url>

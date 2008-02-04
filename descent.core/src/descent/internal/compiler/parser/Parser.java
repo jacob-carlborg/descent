@@ -1029,10 +1029,11 @@ public class Parser extends Lexer {
 	
 	private DebugCondition parseDebugCondition() {
 		DebugCondition c;
+		long level = 1;
 		char[] id = null;
+		
 		int idTokenStart = -1;
 		int idTokenLength = -1;
-		long level = 1;
 
 		if (token.value == TOKlparen) {
 			nextToken();
@@ -1040,20 +1041,39 @@ public class Parser extends Lexer {
 				id = token.sourceString;
 				idTokenStart = token.ptr;
 				idTokenLength = token.sourceLen;
+				
+				nextToken();			
+				c = newDebugCondition(module, loc(), level, id);			
+				check(TOKrparen);
 			} else if (token.value == TOKint32v) {
 				id = token.sourceString;
 				level = token.intValue.longValue();
 				idTokenStart = token.ptr;
 				idTokenLength = token.sourceLen;
+				
+				nextToken();
+				c = newDebugCondition(module, loc(), level, id);
+				check(TOKrparen);
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
+				
+				c = newDebugCondition(module, loc(), level, id);
+				
+				// For improved syntax error recovery
+				if (token.value != TOKrparen) {
+					nextToken();
+				}
+				nextToken();
 			}
-			nextToken();
-			check(TOKrparen);
-			c = new DebugCondition(module, loc(), level, id);
 		} else {
-			c = new DebugCondition(module, loc(), 1, null);
+			c = newDebugCondition(module, loc(), level, id);
+			
+			parsingErrorInsertToComplete(prevToken, "(condition)", "DebugDeclaration");
 		}
+		
+		// Don't bring the "c = ..." statement here: it needs to be
+		// created after the identifier for completion parser
+		
 		c.startPosition = idTokenStart;
 		c.length = idTokenLength;
 		return c;
@@ -1085,7 +1105,7 @@ public class Parser extends Lexer {
 				
 				nextToken();
 				c = newVersionCondition(module, loc(), level, id);
-				check(TOKrparen);				
+				check(TOKrparen);		
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 				
@@ -5468,13 +5488,13 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKthis:
-		    e = new ThisExp(loc());
+		    e = newThisExp(loc());
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
 		case TOKsuper:
-			e = new SuperExp(loc());
+			e = newSuperExp(loc());
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
@@ -6786,7 +6806,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKint32v) {
 			return new DebugSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new DebugSymbol(loc(), new IdentifierExp(loc(), token.sourceString), newVersionForCurrentToken());
+			return newDebugSymbol(loc(), new IdentifierExp(loc(), token.sourceString), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
@@ -7068,6 +7088,14 @@ public class Parser extends Lexer {
 		return new VersionSymbol(loc, id, version);
 	}
 	
+	protected DebugCondition newDebugCondition(Module module, Loc loc, long level, char[] id) {
+		return new DebugCondition(module, loc, level, id);
+	}
+	
+	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp id, Version version) {
+		return new DebugSymbol(loc, id, version);
+	}
+	
 	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
 		return new CaseStatement(loc, exp, statement);
 	}
@@ -7086,6 +7114,14 @@ public class Parser extends Lexer {
 	
 	protected ExpStatement newExpStatement(Loc loc, Expression exp) {
 		return new ExpStatement(loc, exp);
+	}
+	
+	protected SuperExp newSuperExp(Loc loc) {
+		return new SuperExp(loc);
+	}
+
+	protected ThisExp newThisExp(Loc loc) {
+		return new ThisExp(loc);
 	}
 	
 	/**
