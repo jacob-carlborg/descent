@@ -128,6 +128,7 @@ public class JavaTypeCompletionProcessor extends CUPositionCompletionProcessor {
 			setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, true);
 			setIgnored(CompletionProposal.METHOD_DECLARATION, true);
 			setIgnored(CompletionProposal.METHOD_REF, true);
+			setIgnored(CompletionProposal.FUNCTION_CALL, true);
 			setIgnored(CompletionProposal.VARIABLE_DECLARATION, true);
 			setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, true);
 			setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, true);

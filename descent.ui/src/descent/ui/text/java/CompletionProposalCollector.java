@@ -39,6 +39,7 @@ import descent.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import descent.internal.ui.text.java.AnonymousTypeProposalInfo;
 import descent.internal.ui.text.java.DdocMacroCompletionProposal;
 import descent.internal.ui.text.java.DdocMacroProposalInfo;
+import descent.internal.ui.text.java.ExperimentalFunctionCallProposal;
 import descent.internal.ui.text.java.FieldProposalInfo;
 import descent.internal.ui.text.java.GetterSetterCompletionProposal;
 import descent.internal.ui.text.java.JavaCompletionProposal;
@@ -343,6 +344,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 				return baseRelevance + 3;
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_DECLARATION:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
@@ -401,6 +403,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.JAVADOC_METHOD_REF:
 				return createMethodReferenceProposal(proposal);
+			case CompletionProposal.FUNCTION_CALL:
+				return createFunctionCallProposal(proposal);
 			case CompletionProposal.TEMPLATE_REF:
 			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
 				return createTemplateReferenceProposal(proposal);
@@ -568,6 +572,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.JAVADOC_METHOD_REF:
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
@@ -750,6 +755,12 @@ public class CompletionProposalCollector extends CompletionRequestor {
 
 	private IJavaCompletionProposal createMethodReferenceProposal(CompletionProposal methodProposal) {
 		LazyJavaCompletionProposal proposal= new LazyJavaMethodCompletionProposal(methodProposal, getInvocationContext());
+		adaptLength(proposal, methodProposal);
+		return proposal;
+	}
+	
+	private IJavaCompletionProposal createFunctionCallProposal(CompletionProposal methodProposal) {
+		ExperimentalFunctionCallProposal proposal= new ExperimentalFunctionCallProposal(methodProposal, getInvocationContext());
 		adaptLength(proposal, methodProposal);
 		return proposal;
 	}

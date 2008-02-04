@@ -163,7 +163,6 @@ public class Parser extends Lexer {
 	private ModuleDeclaration md;
 	private int inBrackets;	
 	
-	private int apiLevel;
 	private List<Comment> comments;
 	private List<Pragma> pragmas;
 	private int lastCommentRead = 0;

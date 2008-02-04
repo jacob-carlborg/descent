@@ -33,6 +33,8 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		switch (proposal.getKind()) {
 			case CompletionProposal.METHOD_REF:
 				return createMethodReferenceProposal(proposal);
+			case CompletionProposal.FUNCTION_CALL:
+				return createFunctionCallProposal(proposal);
 			case CompletionProposal.TYPE_REF:
 				return createTypeProposal(proposal);
 			case CompletionProposal.TEMPLATE_REF:
@@ -60,6 +62,17 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 //		else
 			proposal= new LazyJavaMethodCompletionProposal(methodProposal, getInvocationContext());
 		return proposal;
+	}
+	
+	private IJavaCompletionProposal createFunctionCallProposal(CompletionProposal methodProposal) {
+		String completion= String.valueOf(methodProposal.getCompletion());
+		
+		// super class' behavior if this is not a normal completion or has no
+		// parameters
+		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getParameterCount(methodProposal.getSignature()) == 0 || getContext().isInJavadoc())
+			return super.createJavaCompletionProposal(methodProposal);
+
+		return new ExperimentalFunctionCallProposal(methodProposal, getInvocationContext());
 	}
 	
 	private IJavaCompletionProposal createTemplateProposal(CompletionProposal tempProposal) {

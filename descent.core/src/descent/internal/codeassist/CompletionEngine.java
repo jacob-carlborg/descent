@@ -87,6 +87,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeExp;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -99,11 +100,15 @@ import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeDArray;
+import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.TypeTypedef;
+import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -155,6 +160,7 @@ public class CompletionEngine extends Engine
 	CompilerConfiguration compilerConfig;
 	
 	Module module;
+	SemanticContext semanticContext;
 	
 	char[] fileName = null;
 	char[] sourceUnitFqn = null;
@@ -257,9 +263,9 @@ public class CompletionEngine extends Engine
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-//			if (assistNode != null) {
-//				System.out.println(assistNode.getClass());
-//			}
+			if (assistNode != null) {
+				System.out.println(assistNode.getClass());
+			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -357,7 +363,7 @@ public class CompletionEngine extends Engine
 	}
 
 	private void doSemantic(Module module) throws JavaModelException {
-		CompilationUnitResolver.resolve(module, this.javaProject, null);
+		semanticContext = CompilationUnitResolver.resolve(module, this.javaProject, null);
 	}
 
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {
@@ -750,6 +756,8 @@ public class CompletionEngine extends Engine
 				sym = ((TypeStruct) type).sym;
 			} else if (type instanceof TypeEnum) {
 				sym = ((TypeEnum) type).sym;
+			} else if (type instanceof TypeTypedef) {
+				sym = ((TypeTypedef) type).sym;
 			} else {
 				return;
 			}
@@ -758,7 +766,22 @@ public class CompletionEngine extends Engine
 				return;
 			}
 			
-			currentName = sym.ident().ident;
+			if (node.sourceExp instanceof IdentifierExp) {
+				currentName = ((IdentifierExp) node.sourceExp).ident;
+			} else {
+				currentName = sym.ident().ident;
+			}
+			
+			// If it's a typedef declaration, resolve and see if it's a
+			// function pointer or delegate
+			if (sym instanceof ITypedefDeclaration) {
+				Type basetype = sym.type().toBasetype(semanticContext);
+				if (basetype instanceof TypeDelegate) {
+					suggestTypeDelegate((TypeDelegate) basetype, currentName);
+				} else if (basetype instanceof TypePointer) {
+					suggestTypePointer((TypePointer) basetype, currentName);
+				}
+			}
 		} else if (node.exp instanceof CallExp) {
 			CallExp ce = (CallExp) node.exp;
 			if (ce.e1 instanceof IdentifierExp) {
@@ -769,6 +792,15 @@ public class CompletionEngine extends Engine
 			} else {
 				return;
 			}
+		} else if (node.exp instanceof VarExp) {
+			IDeclaration var = ((VarExp) node.exp).var;
+			Type type = var.type();
+			
+			// Need to set correct location of IdentifierExp
+			IdentifierExp ident = new IdentifierExp(var.ident().ident);
+			ident.copySourceRange(node);
+			
+			completeType(type, ident, false);
 		} else {
 			return;
 		}
@@ -812,6 +844,22 @@ public class CompletionEngine extends Engine
 					if (cd.members() != null && !cd.members().isEmpty()) {
 						suggestMembers(cd.members(), currentName, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
 					}
+				} else if (sym instanceof ITypedefDeclaration || sym instanceof IAliasDeclaration) {
+					Type basetype = sym.type().toBasetype(semanticContext);
+					if (basetype instanceof TypeDelegate) {
+						suggestTypeDelegate((TypeDelegate) basetype, currentName);
+					} else if (basetype instanceof TypePointer) {
+						suggestTypePointer((TypePointer) basetype, currentName);
+					}
+				} else if (sym instanceof IVarDeclaration) {
+					IDeclaration var = (IDeclaration) sym;
+					Type type = var.type();
+					
+					// Need to set correct location of IdentifierExp
+					IdentifierExp ident = new IdentifierExp(var.ident().ident);
+					ident.copySourceRange(node);
+					
+					completeType(type, ident, false);
 				}
 			}
 		} else {
@@ -1015,8 +1063,8 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		char[] name = computePrefixAndSourceRange(ident);
-		completeType(type, name, onlyStatics);
+		currentName = computePrefixAndSourceRange(ident);
+		completeType(type, currentName, onlyStatics);
 	}
 	
 	private void completeType(Type type, char[] name, boolean onlyStatics) {
@@ -1045,8 +1093,41 @@ public class CompletionEngine extends Engine
 			break;
 		case ASTDmdNode.TYPE_A_ARRAY:
 			suggestTypeAssociativeArrayProperties((TypeAArray) type, name);
+		case ASTDmdNode.TYPE_POINTER:
+			suggestTypePointer((TypePointer) type, name);
+		case ASTDmdNode.TYPE_DELEGATE:
+			suggestTypeDelegate((TypeDelegate) type, name);
 			break;
 		}
+	}
+	
+	private void suggestTypeDelegate(TypeDelegate type, char[] name) {
+		Type next = type.next;
+		if (next instanceof TypeFunction) {
+			suggestTypeFunction((TypeFunction) next, name);
+		}
+	}
+
+	private void suggestTypePointer(TypePointer type, char[] name) {
+		Type next = type.next;
+		if (next instanceof TypeFunction) {
+			suggestTypeFunction((TypeFunction) next, name);
+		}
+	}
+	
+	private void suggestTypeFunction(TypeFunction type, char[] name) {
+		CompletionProposal proposal = this.createProposal(CompletionProposal.FUNCTION_CALL, this.actualCompletionPosition);
+		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForCaseMatching(currentName, name);
+		relevance += R_FUNCTION_POINTER_CALL;
+		
+		proposal.setName(name);
+		proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+		proposal.setSignature(type.getSignature().toCharArray());
+		proposal.setRelevance(relevance);
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+		CompletionEngine.this.requestor.accept(proposal);
 	}
 
 	private void completeTypeBasicProperties(TypeBasic type, char[] name) {
@@ -1278,7 +1359,18 @@ public class CompletionEngine extends Engine
 					}
 					Type type = alias.type();
 					if (type == null) {
-						return;
+						IDsymbol sym = alias.toAlias(semanticContext);
+						if (sym != null) {
+							type = sym.type();
+							if (type instanceof TypeTypedef) {
+								type = ((TypeTypedef) type).toBasetype(semanticContext);
+							}
+							if (type == null) {
+								return;
+							}
+						} else {
+							return;
+						}
 					}
 					String sig = type.getSignature();
 					if (sig == null) {

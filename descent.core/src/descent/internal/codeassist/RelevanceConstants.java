@@ -40,5 +40,6 @@ public interface RelevanceConstants {
 	int R_INLINE_TAG = 31;
 	int R_VALUE_TAG = 31;
 	int R_CONSTRUCTOR = 10;
+	int R_FUNCTION_POINTER_CALL = 40;
 
 }

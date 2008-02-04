@@ -117,6 +117,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		}
 		
 		char[][] parameterNames= fProposal.findParameterNames(null);
+		if (parameterNames == null) {
+			return replacement + "()"; //$NON-NLS-1$
+		}
+		
 		int count= parameterNames.length;
 		fArgumentOffsets= new int[count];
 		fArgumentLengths= new int[count];

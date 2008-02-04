@@ -67,6 +67,7 @@ public class CompletionProposalLabelProvider {
 	 */
 	public String createParameterList(CompletionProposal methodProposal) {
 		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.FUNCTION_CALL ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATE_REF ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_AGGREGATE_REF ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF);
@@ -545,6 +546,7 @@ public class CompletionProposalLabelProvider {
 		switch (proposal.getKind()) {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				if (fContext != null && fContext.isInJavadoc())
 					return createJavadocMethodProposalLabel(proposal);
@@ -603,6 +605,7 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.METHOD_DECLARATION:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.TEMPLATED_FUNCTION_REF:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:

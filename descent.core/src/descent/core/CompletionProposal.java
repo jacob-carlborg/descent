@@ -678,6 +678,14 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @since 3.2
 	 */
 	public static final int DEBUG_REF = 26;
+	
+	/**
+	 * Completion is a debug identifier.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int FUNCTION_CALL = 27;
 
 	/**
 	 * First valid completion kind.
@@ -691,7 +699,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = DEBUG_REF;
+	protected static final int LAST_KIND = FUNCTION_CALL;
 	
 	/**
 	 * Kind of completion request.
