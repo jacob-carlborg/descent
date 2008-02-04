@@ -2322,7 +2322,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(SymOffExp node) {
 		appendStartCompilerNode();
 		this.buffer.append("SymOffExp: ");
-		if (node.var.ident() != null) {
+		if (node.var.ident() != null && node.var.ident().ident != null) {
 			this.buffer.append(node.var.ident().ident);
 		}
 		this.buffer.append(", ");

@@ -98,7 +98,7 @@ public class SemanticContext {
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.signatureToTypeCache = new HashMap<String, Type>();
 		
-		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals(JavaCore.DISABLED)) {
+		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
 			muteProblems++;
 		}
 		
@@ -248,6 +248,26 @@ public class SemanticContext {
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
 			for (IDsymbol symbol : m.members()) {
 				checkObjectMember(symbol);
+			}
+			
+			// Prevent any of this null to blow up the semantic analysis later
+			if (ClassDeclaration_object == null ||
+				ClassDeclaration_classinfo == null ||
+				Type_typeinfo == null ||
+				Type_typeinfoarray == null ||
+				Type_typeinfoassociativearray == null ||
+				Type_typeinfoclass == null ||
+				Type_typeinfodelegate == null ||
+				Type_typeinfoenum == null ||
+				Type_typeinfofunction == null ||
+				Type_typeinfointerface == null ||
+				Type_typeinfopointer == null ||
+				Type_typeinfostaticarray == null ||
+				Type_typeinfostruct == null ||
+				Type_typeinfotypedef == null ||
+				Type_typeinfotypelist == null
+				) {
+				fatalWasSignaled = true;
 			}
 		}
 		

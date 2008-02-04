@@ -186,6 +186,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 		group.setLayoutData(new GridData(GridData.BEGINNING, GridData.END, true, false));
 		group.setLayout(layout);
 		
+		addComboBox(group, "Show semantic errors", PREF_SHOW_SEMANTIC_ERRORS, new String[] { "0", "1", "2" }, new String[] { "No", "Some", "All" }, 0);
 		addCheckBox(group, "Show semantic errors", PREF_SHOW_SEMANTIC_ERRORS, trueFalse, 0);
 		addCheckBox(group, "Enable warnings", PREF_ENABLE_WARNINGS, trueFalse, 0);
 		addCheckBox(group, "Allow deprecated features", PREF_ALLOW_DEPRECATED, trueFalse, 0);

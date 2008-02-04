@@ -179,14 +179,14 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 				int offset, length;
 				
 				// If there's no else, disable everything
-				if (enabledDeclarations == null || enabledDeclarations.size() == 0) {
-					offset = node.getStartPosition();
-					length = node.getLength();
-				} else {
+//				if (enabledDeclarations == null || enabledDeclarations.size() == 0) {
+//					offset = node.getStartPosition();
+//					length = node.getLength();
+//				} else {
 					CompilationUnit root = (CompilationUnit) node.getRoot();
 					offset = root.getExtendedStartPosition(first);
 					length = root.getExtendedStartPosition(last) + root.getExtendedLength(last) - offset;
-				}
+//				}
 				addPosition(offset, length, fDisabledHighlighting);
 			}
 			
@@ -256,14 +256,14 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 						addPosition(offset, length, fDisabledHighlighting);
 					}
 				} else {
-					if (enabledStatement == null) {
-						offset = node.getStartPosition();
-						length = node.getLength();
-					} else {
+//					if (enabledStatement == null) {
+//						offset = node.getStartPosition();
+//						length = node.getLength();
+//					} else {
 						CompilationUnit root = (CompilationUnit) node.getRoot();
 						offset = root.getExtendedStartPosition(disabledStatement);
 						length = root.getExtendedLength(disabledStatement);
-					}
+//					}
 					addPosition(offset, length, fDisabledHighlighting);
 				}
 			}

@@ -207,7 +207,8 @@ public interface IProblem {
 	/** Category for optional problems related to access restrictions */
 	int CAT_RESTRICTION = 150;
 	
-	/* Problems during lexing, parsing, and semantic analysis, generated automatically */
+	/* Problems during lexing, parsing, and semantic analysis, generated automatically,
+	   55 is the first semantic error in the list. */
 	int UnterminatedBlockComment = 1;
 	int UnterminatedPlusBlockComment = 2;
 	int IncorrectNumberOfHexDigitsInEscapeSequence = 3;
@@ -647,8 +648,5 @@ public interface IProblem {
 	int Utf16LowValueOutOfRange = 437;
 	int UnpairedUtf16Value = 438;
 	int IllegalUtf16Value = 439;
-	
-	// Extra for Descent: warn about '== null' comparisons 
-	int UseIsNull = 10001;
 
 }

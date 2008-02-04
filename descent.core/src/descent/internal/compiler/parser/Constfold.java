@@ -1453,6 +1453,11 @@ public class Constfold {
 				if (v == null) {
 					throw new IllegalStateException("assert(v);");
 				}
+				
+				// SEMANTIC
+				if (v.isConst()) {
+					continue;
+				}
 
 				Expression exp = new IntegerExp(0);
 				exp = Cast(v.type(), v.type(), exp, context);

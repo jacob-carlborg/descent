@@ -76,11 +76,6 @@ public class EqualExp extends BinExp {
 		}
 
 		super.semanticp(sc, context);
-		
-		// Descent: warn about '== null' comparisons
-		if (e2 instanceof NullExp) {
-			context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.UseIsNull, this));
-		}
 
 		/* Before checking for operator overloading, check to see if we're
 		 * comparing the addresses of two statics. If so, we can just see

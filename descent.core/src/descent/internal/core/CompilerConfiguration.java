@@ -6,6 +6,8 @@ import descent.internal.core.util.Util;
 
 public class CompilerConfiguration {
 	
+	// 0: no, 1: some, 2: full
+	public int semanticAnalysisLevel;
 	public long versionLevel;
 	public HashtableOfCharArrayAndObject versionIdentifiers;
 	public long debugLevel;
@@ -14,6 +16,8 @@ public class CompilerConfiguration {
 	public boolean warnings;
 	
 	public CompilerConfiguration() {
+		semanticAnalysisLevel = (int) getLevel(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+		
 		debugLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
 		debugIdentifiers = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS);
 		

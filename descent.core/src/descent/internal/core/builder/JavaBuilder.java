@@ -26,6 +26,7 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.core.JavaElement;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.util.Util;
 
@@ -53,6 +54,17 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
 		// Reindex everything, since compiler options also affect libraries
 		JavaModelManager.getJavaModelManager().getIndexManager().indexAll(project);
+		
+		// Rebuild libraries
+		IJavaProject javaProject = JavaCore.create(project);
+		if (javaProject != null) {
+			IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
+			for(IPackageFragmentRoot root : roots) {
+				if (root.isArchive() || root.isExternal()) {
+					JavaModelManager.getJavaModelManager().removeInfoAndChildren((JavaElement) root);
+				}
+			}
+		}
 		
 		IResource[] members = project.members();
 		build(members, monitor);
@@ -133,7 +145,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			Module module = parser.parseModuleObj();
 			module.moduleName = unit.getFullyQualifiedName();
 			
-			if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals(JavaCore.ENABLED)) {
+			if (!JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
 				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
 			}
 			

@@ -207,7 +207,8 @@ public interface IProblem {
 	/** Category for optional problems related to access restrictions */
 	int CAT_RESTRICTION = 150;
 	
-	/* Problems during lexing, parsing, and semantic analysis, generated automatically */
+	/* Problems during lexing, parsing, and semantic analysis, generated automatically,
+	   55 is the first semantic error in the list. */
 	/* EVAL-ONCE
 	 * 
 	 * my $i = 1;

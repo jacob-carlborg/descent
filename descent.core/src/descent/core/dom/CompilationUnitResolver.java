@@ -168,19 +168,148 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner) 
 		throws JavaModelException {
 		
-		// Add the package fragment roots as an import path
-		Global global = prepareForSemantic(project);
-		return resolve(module, project, global, owner);
+		CompilerConfiguration config = new CompilerConfiguration();
+		
+		Global global = prepareForSemantic(project, config);
+		return resolve(module, project, global, owner, config);
 	}
 	
 	private static SemanticContext resolve(
 			final Module module, 
 			final IJavaProject project,
 			final Global global,
-			final WorkingCopyOwner owner) throws JavaModelException {
+			final WorkingCopyOwner owner,
+			final CompilerConfiguration config) throws JavaModelException {
+		
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
-				module.problems.add(problem);
+				if (config.semanticAnalysisLevel == 2) {
+					module.problems.add(problem);
+				} else if (config.semanticAnalysisLevel == 1) {
+					// For now, leave out some errors that probably have bugs, but
+					// leave some others which are common and useful.
+					switch(problem.getID()) {
+					case IProblem.SymbolConflictsWithSymbolAtLocation:
+//					case IProblem.SymbolAtLocationConflictsWithSymbolAtLocation:
+					case IProblem.PropertyCanNotBeRedefined:
+					case IProblem.CircularDefinition:
+					case IProblem.EnumValueOverflow:
+					case IProblem.EnumMustHaveAtLeastOneMember:
+					case IProblem.EnumBaseTypeMustBeOfIntegralType:
+					case IProblem.ThisNotInClassOrStruct:
+					case IProblem.ThisOnlyAllowedInNonStaticMemberFunctions:
+					case IProblem.SuperOnlyAllowedInNonStaticMemberFunctions:
+					case IProblem.SuperNotInClass:
+					case IProblem.ClassHasNoSuper:
+					case IProblem.MemberIsPrivate:
+					case IProblem.ExternSymbolsCannotHaveInitializers:
+					case IProblem.DuplicatedInterfaceInheritance:
+					case IProblem.FieldsNotAllowedInInterfaces:
+					case IProblem.UndefinedIdentifier:
+					case IProblem.NewAllocatorsOnlyForClassOrStruct:
+					case IProblem.DeleteDeallocatorsOnlyForClassOrStruct:
+					case IProblem.ConstructorsOnlyForClass:
+					case IProblem.DestructorsOnlyForClass:
+					case IProblem.InvariantsOnlyForClassStructUnion:
+					case IProblem.CannotOverrideFinalFunctions:
+					case IProblem.OverrideOnlyForClassMemberFunctions:
+					case IProblem.FunctionMustReturnAResultOfType:
+					case IProblem.MoreThanOneInvariant:
+					case IProblem.ParameterMultiplyDefined:
+					case IProblem.SymbolNotFound:
+//					case IProblem.StatementIsNotReachable:
+					case IProblem.VoidFunctionsHaveNoResult:
+					case IProblem.ReturnStatementsCannotBeInContracts:
+					case IProblem.NotAnAggregateType:
+						// case IProblem.UnrecognizedPragma:
+					case IProblem.AnonCanOnlyBePartOfAnAggregate:
+					case IProblem.PragmaIsMissingClosingSemicolon:
+					case IProblem.UndefinedType:
+					case IProblem.FunctionsCannotBeConstOrAuto:
+					case IProblem.NonVirtualFunctionsCannotBeAbstract:
+					case IProblem.ModifierCannotBeAppliedToVariables:
+					case IProblem.StructsCannotBeAbstract:
+					case IProblem.UnionsCannotBeAbstract:
+					case IProblem.AliasCannotBeConst:
+					case IProblem.IllegalMainParameters:
+					case IProblem.MustReturnIntOrVoidFromMainFunction:
+					case IProblem.AtLeastOneArgumentOfTypeExpected:
+					case IProblem.FirstArgumentMustBeOfType:
+					case IProblem.StringExpectedForPragmaMsg:
+					case IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString:
+					case IProblem.StringExpectedForPragmaLib:
+					case IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray:
+					case IProblem.FunctionsCannotReturnStaticArrays:
+					case IProblem.UnrecongnizedTrait:
+//					case IProblem.UndefinedProperty:
+					case IProblem.DeprecatedProperty:
+					case IProblem.FileNameMustBeString:
+					case IProblem.FileImportsMustBeSpecified:
+					case IProblem.VersionIdentifierReserved:
+					case IProblem.CannotPutCatchStatementInsideFinallyBlock:
+					case IProblem.BreakIsNotInsideALoopOrSwitch:
+					case IProblem.CaseIsNotInSwitch:
+					case IProblem.VersionDeclarationMustBeAtModuleLevel:
+					case IProblem.DebugDeclarationMustBeAtModuleLevel:
+					case IProblem.GotoCaseNotInSwitch:
+					case IProblem.GotoDefaultNotInSwitch:
+					case IProblem.LazyVariablesCannotBeLvalues:
+					case IProblem.DivisionByZero:
+					case IProblem.DefaultNotInSwitch:
+					case IProblem.SwitchAlreadyHasDefault:
+					case IProblem.ContinueNotInLoop:
+					case IProblem.ForeachIndexCannotBeRef:
+					case IProblem.IncompatibleParameterStorageClass:
+					case IProblem.OutCannotBeFinal:
+					case IProblem.ScopeCannotBeRefOrOut:
+					case IProblem.SymbolNotDefined:
+					case IProblem.SymbolNotATemplate:
+					case IProblem.CannotDeleteType:
+					case IProblem.CannotAssignToStaticArray:
+					case IProblem.CannotChangeReferenceToStaticArray:
+					case IProblem.CannotModifyParameterInContract:
+					case IProblem.TooManyInitializers:
+					case IProblem.CannotHaveArrayOfType:
+					case IProblem.DeclarationIsAlreadyDefined:
+					case IProblem.DeclarationIsAlreadyDefinedInAnotherScope:
+					case IProblem.VersionDefinedAfterUse:
+					case IProblem.DebugDefinedAfterUse:
+//					case IProblem.MemberIsNotAccessible:
+//					case IProblem.SymbolIsNotAccessible:
+					case IProblem.EnclosingLabelForBreakNotFound:
+					case IProblem.EnclosingLabelForContinueNotFound:
+					case IProblem.DeleteAAKeyDeprecated:
+					case IProblem.SymbolIsDeprecated:
+					case IProblem.ShadowingDeclarationIsDeprecated:
+					case IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies:
+					case IProblem.CannotReturnExpressionFromConstructor:
+					case IProblem.CaseNotFound:
+					case IProblem.ImportCannotBeResolved:
+					case IProblem.FunctionsCannotReturnAFunction:
+					case IProblem.FunctionsCannotReturnATuple:
+					case IProblem.FunctionsCannotReturnAuto:
+					case IProblem.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter:
+//					case IProblem.DuplicateCaseInSwitchStatement:
+					case IProblem.SpecialMemberFunctionsNotAllowedForSymbol:
+					case IProblem.SpecialFunctionsNotAllowedInInterface:
+					case IProblem.StaticIfConditionalCannotBeAtGlobalScope:
+					case IProblem.CannotBreakOutOfFinallyBlock:
+					case IProblem.LabelHasNoBreak:
+					case IProblem.CannotGotoInOrOutOfFinallyBlock:
+					case IProblem.ForeachKeyTypeMustBeIntOrUint:
+					case IProblem.ForeachKeyCannotBeOutOrRef:
+					case IProblem.MissingOrCurruptObjectDotD:
+					case IProblem.CannotContinueOutOfFinallyBlock:
+					case IProblem.NoReturnAtEndOfFunction:
+					case IProblem.NoCaseStatementFollowingGoto:
+					case IProblem.SwitchStatementHasNoDefault:
+					case IProblem.ThrowStatementsCannotBeInContracts:
+					case IProblem.ImportNotFound:
+					case IProblem.LabelIsAlreadyDefined:
+						module.problems.add(problem);
+						break;
+					}
+				}
 			}
 			public void beginReporting() {
 			}
@@ -208,7 +337,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 //			return context;
 //		}
 		
-		module.semantic(context);
+		try {
+			module.semantic(context);
+		} catch (Throwable t) {
+			Util.log(t);
+		}
 		
 		if (SYSOUT) {
 			System.out.println(module);
@@ -217,7 +350,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return context;
 	}
 	
-	public static Global prepareForSemantic(IJavaProject project) {
+	private static Global prepareForSemantic(IJavaProject project, CompilerConfiguration config) {
 		Global global = new Global();
 		try {
 			for(IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
@@ -230,8 +363,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
-		
-		CompilerConfiguration config = new CompilerConfiguration();
 		
 		global.params.versionlevel = config.versionLevel;
 		global.params.debuglevel = config.debugLevel;

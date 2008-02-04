@@ -660,6 +660,10 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
             { sc.offset };
             alignmember(structalign, thissize, p_sc_offset);
             sc.offset = p_sc_offset[0];
+            // SEMANTIC
+            if (b.offset != 0) {
+            	continue;
+            }
             Assert.isTrue(b.offset == 0);
             b.offset = sc.offset; // Take care of single inheritance offsets
             while (b.baseInterfaces.size() > 0)

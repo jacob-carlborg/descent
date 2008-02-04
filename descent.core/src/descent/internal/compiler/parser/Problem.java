@@ -1005,8 +1005,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.UnpairedUtf16Value);
 		case IllegalUtf16Value:
 			return String.format(ProblemMessages.IllegalUtf16Value);
-		case UseIsNull:
-			return String.format(ProblemMessages.UseIsNull);
+//		case UseIsNull:
+//			return String.format(ProblemMessages.UseIsNull);
 		default:
 			return "";
 		}

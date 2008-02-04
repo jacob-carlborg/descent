@@ -13,6 +13,7 @@ import descent.core.IMethod;
 import descent.core.IPackageDeclaration;
 import descent.core.IPackageFragment;
 import descent.core.IParent;
+import descent.core.ISourceRange;
 import descent.core.ISourceReference;
 import descent.core.IType;
 import descent.core.JavaModelException;
@@ -665,9 +666,12 @@ public class JavaElementFinder {
 					continue;
 				}
 				
-				int start = ((ISourceReference) child).getSourceRange().getOffset();
-				if (start == startPosition) {
-					return child;
+				ISourceRange range = ((ISourceReference) child).getSourceRange();
+				if (range != null) {
+					int start = range.getOffset();
+					if (start == startPosition) {
+						return child;
+					}
 				}
 			}
 		} catch (JavaModelException e) {

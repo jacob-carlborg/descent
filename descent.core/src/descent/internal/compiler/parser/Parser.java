@@ -1067,8 +1067,6 @@ public class Parser extends Lexer {
 			}
 		} else {
 			c = newDebugCondition(module, loc(), level, id);
-			
-			parsingErrorInsertToComplete(prevToken, "(condition)", "DebugDeclaration");
 		}
 		
 		// Don't bring the "c = ..." statement here: it needs to be
