@@ -605,11 +605,13 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.METHOD_DECLARATION:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_REF:
-			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.TEMPLATED_FUNCTION_REF:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				descriptor= JavaElementImageProvider.getMethodImageDescriptor(false, flags);
+				break;
+			case CompletionProposal.FUNCTION_CALL:
+				descriptor= JavaElementImageProvider.getFunctionCallImageDescriptor();
 				break;
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 			case CompletionProposal.TYPE_REF:

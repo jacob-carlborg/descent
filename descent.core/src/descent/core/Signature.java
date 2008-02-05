@@ -1364,6 +1364,15 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 		stack.pop();
 		stack.push(signature);
 	}
+	
+	@Override
+	public void acceptPosition(int localPosition) {
+		// Clear everything recorded, it's a function inside a function
+		functionTypeCount = 0;
+		templateInstanceCount = 0;
+		stack.clear();
+		modifiers.clear();
+	}
 
 	public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 		if (functionTypeCount != 1 || templateInstanceCount != 0) {

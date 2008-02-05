@@ -151,6 +151,11 @@ public class TypeStruct extends Type {
 				s = sym.search(e.loc, ident, 0, context);
 			}
 		} else {
+			// Ident may be null if completing (Foo*).|
+			if (ident == null) {
+				return e;
+			}
+			
 			s = sym.search(e.loc, ident, 0, context);
 		}
 		

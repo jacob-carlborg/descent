@@ -112,7 +112,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				localPosition = -1;
 				
 				// If a symbol does not come next, don't process further
-				if (i < signature.length() && !isSymbol(signature.charAt(i))) {
+				if (i < signature.length() && !isSymbol(signature.charAt(i)) ) {
 					return i;
 				} else {
 					continue;
@@ -318,6 +318,7 @@ public class SignatureProcessor implements ISignatureConstants {
 					c = signature.charAt(i);
 				}
 				localPosition = n;
+				requestor.acceptPosition(localPosition);
 				continue;
 			default:
 				// If it's a digit, it may be a template value parameter
@@ -357,6 +358,7 @@ public class SignatureProcessor implements ISignatureConstants {
 		case TEMPLATED_UNION:
 		case TEMPLATED_INTERFACE:
 		case TEMPLATED_FUNCTION:
+		case POSITION:
 			return true;
 		default:
 			return false;

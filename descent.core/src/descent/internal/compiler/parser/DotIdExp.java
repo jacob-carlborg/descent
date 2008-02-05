@@ -42,7 +42,9 @@ public class DotIdExp extends UnaExp {
 		
 		// Descent: for binding resolution
 		resolvedExpression = e;
-		ident.resolvedExpression = resolvedExpression;
+		if (ident != null) {
+			ident.resolvedExpression = resolvedExpression;
+		}
 		
 		return e;
 	}
@@ -235,6 +237,10 @@ public class DotIdExp extends UnaExp {
 			e.type = e1.type.next;
 			return e.type.dotExp(sc, e, ident, context);
 		} else {
+			// Ident may be null if completing (Foo).|
+			if (ident == null) {
+				return e1;
+			}
 			e = e1.type.dotExp(sc, e1, ident, context);
 			e = e.semantic(sc, context);
 			return e;

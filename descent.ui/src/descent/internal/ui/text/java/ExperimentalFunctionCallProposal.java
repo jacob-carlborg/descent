@@ -157,6 +157,16 @@ public final class ExperimentalFunctionCallProposal extends JavaMethodCompletion
 
 		return new Point(fSelectedRegion.getOffset(), fSelectedRegion.getLength());
 	}
+	
+	@Override
+	protected boolean computeIsSetter() throws IllegalArgumentException {
+		return false;
+	}
+	
+	@Override
+	protected boolean computeIsGetter() throws IllegalArgumentException {
+		return false;
+	}
 
 	private void openErrorDialog(BadLocationException e) {
 		Shell shell= getTextViewer().getTextWidget().getShell();

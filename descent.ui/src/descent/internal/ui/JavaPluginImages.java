@@ -79,6 +79,8 @@ public class JavaPluginImages {
 	
 	public static final String IMG_TEMPLATE_MIXIN_DEFAULT= NAME_PREFIX + "template_mixin_default_obj.gif"; 		//$NON-NLS-1$
 	public static final String IMG_OBJS_MIXIN= NAME_PREFIX + "mixin_default_obj.gif"; 		//$NON-NLS-1$
+	
+	public static final String IMG_FUNCTION_CALL= NAME_PREFIX + "function_call_obj.gif"; 		//$NON-NLS-1$
 
 	public static final String IMG_ELCL_VIEW_MENU= NAME_PREFIX + T_ELCL + "view_menu.gif"; //$NON-NLS-1$
 	public static final String IMG_DLCL_VIEW_MENU= NAME_PREFIX + T_DLCL + "view_menu.gif"; //$NON-NLS-1$
@@ -248,6 +250,8 @@ public class JavaPluginImages {
 	
 	public static final ImageDescriptor DESC_TEMPLATE_MIXIN_DEFAULT= createManagedFromKey(T_OBJ, IMG_TEMPLATE_MIXIN_DEFAULT);
 	public static final ImageDescriptor DESC_OBJS_MIXIN= createManagedFromKey(T_OBJ, IMG_OBJS_MIXIN);
+	
+	public static final ImageDescriptor DESC_FUNCTION_CALL= createManagedFromKey(T_OBJ, IMG_FUNCTION_CALL);
 	
 	public static final ImageDescriptor DESC_MENU_SHIFT_RIGHT= createUnManaged(T_ETOOL, "shift_r_edit.gif"); 	//$NON-NLS-1$
 	public static final ImageDescriptor DESC_MENU_SHIFT_LEFT= createUnManaged(T_ETOOL, "shift_l_edit.gif"); 	//$NON-NLS-1$

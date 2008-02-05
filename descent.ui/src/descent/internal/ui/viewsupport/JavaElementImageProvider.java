@@ -419,6 +419,10 @@ public class JavaElementImageProvider {
 		
 		return JavaPluginImages.DESC_MISC_PUBLIC;
 	}
+	
+	public static ImageDescriptor getFunctionCallImageDescriptor() {
+		return JavaPluginImages.DESC_FUNCTION_CALL;
+	}
 		
 	public static ImageDescriptor getFieldImageDescriptor(boolean isInInterfaceOrAnnotation, long flags) {
 		if (Flags.isEnum(flags))

@@ -603,7 +603,11 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 		if (offset < getReplacementOffset())
 			return false;
 		
-		boolean validated= isValidPrefix(getPrefix(document, offset));
+		// boolean validated= isValidPrefix(getPrefix(document, offset));
+		
+		// TODO Descent we don't want to validate, because we may suggest aliases
+		// to symbols
+		boolean validated = true;
 
 		if (validated && event != null) {
 			// adapt replacement range to document change

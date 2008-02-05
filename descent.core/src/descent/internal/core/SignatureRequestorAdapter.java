@@ -125,5 +125,9 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	public void exitTemplateInstanceSymbol(String string) {
 		
 	}
+	
+	public void acceptPosition(int localPosition) {
+		
+	}
 
 }

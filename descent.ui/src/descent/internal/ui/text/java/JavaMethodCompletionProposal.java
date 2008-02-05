@@ -134,15 +134,15 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		return fIsGetter;
 	}
 
-	private boolean computeHasParameters() throws IllegalArgumentException {
+	protected boolean computeHasParameters() throws IllegalArgumentException {
 		return Signature.getParameterCount(fProposal.getSignature()) > 0;
 	}
 	
-	private boolean computeIsVariadic() throws IllegalArgumentException {
+	protected boolean computeIsVariadic() throws IllegalArgumentException {
 		return Signature.isVariadic(fProposal.getSignature());
 	}
 	
-	private boolean computeIsSetter() throws IllegalArgumentException {
+	protected boolean computeIsSetter() throws IllegalArgumentException {
 		char[] retType = Signature.getReturnType(fProposal.getSignature());
 		if (retType.length == 1 && retType[0] == 'v') {
 			return Signature.getParameterCount(fProposal.getSignature()) == 1;
@@ -150,7 +150,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		return false;
 	}
 	
-	private boolean computeIsGetter() throws IllegalArgumentException {
+	protected boolean computeIsGetter() throws IllegalArgumentException {
 		char[] retType = Signature.getReturnType(fProposal.getSignature());
 		if (retType.length != 1 || retType[0] != 'v') {
 			return !hasParameters();

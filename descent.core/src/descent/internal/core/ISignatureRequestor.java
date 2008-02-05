@@ -199,4 +199,9 @@ public interface ISignatureRequestor {
 	 */
 	void exitTemplateInstanceSymbol(String string);
 
+	/**
+	 * The processor has found a local position.
+	 */
+	void acceptPosition(int localPosition);
+
 }
