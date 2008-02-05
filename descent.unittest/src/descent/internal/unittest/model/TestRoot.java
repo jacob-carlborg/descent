@@ -10,13 +10,15 @@
  *******************************************************************************/
 package descent.internal.unittest.model;
 
-public class TestRoot extends TestSuiteElement {
-
-	public TestRoot() {
-		super(null, "-1", "TESTROOT", 1); //$NON-NLS-1$//$NON-NLS-2$
+public class TestRoot extends TestSuiteElement
+{
+	public TestRoot()
+	{
+		super(null, "-1", "TESTROOT"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
-	public TestRoot getRoot() {
+	public TestRoot getRoot()
+	{
 		return this;
 	}
 }

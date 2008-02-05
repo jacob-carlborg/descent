@@ -11,39 +11,37 @@
 
 package descent.internal.unittest.model;
 
-import descent.internal.unittest.model.TestElement.Status;
+import descent.unittest.ITestResult;
 
 /**
- * A listener interface for observing the execution of a test session (initial run and reruns).
+ * A listener interface for observing the execution of a test session 
+ * (initial run and reruns).
  */
-public interface ITestSessionListener {
+public interface ITestSessionListener
+{
  	/**
  	 * A test run has started.
  	 */
 	public void sessionStarted();
+	
 	/**
  	 * A test run has ended.
 	 *
 	 * @param elapsedTime the total elapsed time of the test run
 	 */
 	public void sessionEnded(long elapsedTime);
+	
 	/**
 	 * A test run has been stopped prematurely.
 	 *
  	 * @param elapsedTime the time elapsed before the test run was stopped
 	 */
 	public void sessionStopped(long elapsedTime);
-	/**
-	 * The VM instance performing the tests has terminated.
-	 */
-	public void sessionTerminated();
 	
 	/**
-	 * A test has been added to the plan.
-	 * 
-	 * @param testElement the test
+	 * The application instance performing the tests has terminated.
 	 */
-	public void testAdded(TestElement testElement);
+	public void sessionTerminated();
 	
 	/**
 	 * An individual test has started.
@@ -51,35 +49,22 @@ public interface ITestSessionListener {
 	 * @param testCaseElement the test
 	 */
 	public void testStarted(TestCaseElement testCaseElement);
+	
 	/**
 	 * An individual test has ended.
 	 * 
 	 * @param testCaseElement the test
+	 * @param result the result of running the test (Status can be gleamed from
+	 *     this using the TestElement.Status.startusOf(ITestElement) mehod.
 	 */
-	public void testEnded(TestCaseElement testCaseElement);
-	/**
-	 * An individual test has failed with a stack trace.
-	 * 
-	 * @param testElement the test
-	 * @param status the outcome of the test; one of 
-	 * {@link Status#ERROR} or
-	 * {@link Status#FAILURE}
-	 * @param trace the stack trace
-	 * @param expected expected value
-	 * @param actual actual value
-	 */
-	public void testFailed(TestElement testElement, Status status, String trace);
+	public void testEnded(TestCaseElement testCaseElement, ITestResult result);
+	
 	/**
  	 * An individual test has been rerun.
 	 * 
 	 * @param testCaseElement the test
-	 * @param status the outcome of the test that was rerun; one of 
-	 * {@link Status#OK}, {@link Status#ERROR}, or {@link Status#FAILURE}
-	 * @param trace the stack trace in the case of abnormal termination,
-	 * or the empty string if none
-	 * @param expectedResult expected value
-	 * @param actualResult actual value
+	 * @param result the result of running the test (Status can be gleamed from
+	 *     this using the TestElement.Status.startusOf(ITestElement) mehod.
 	 */
-	public void testReran(TestCaseElement testCaseElement, Status status, String trace);
-
+	public void testReran(TestCaseElement testCaseElement, ITestResult result);
 }

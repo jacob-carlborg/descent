@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
 
 import org.eclipse.swt.widgets.Display;
@@ -31,17 +30,16 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 
-import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 
+import descent.unittest.ITestResult;
 import descent.unittest.ITestRunListener;
+import descent.unittest.ITestSpecification;
 
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.launcher.IUnittestLaunchConfigurationAttributes;
-import descent.internal.unittest.launcher.TestSpecification;
-import descent.internal.unittest.model.TestElement.Status;
 import descent.internal.unittest.ui.JUnitPreferencesConstants;
 import descent.internal.unittest.ui.TestRunnerViewPart;
 
@@ -50,143 +48,127 @@ import descent.internal.unittest.ui.TestRunnerViewPart;
  */
 public final class JUnitModel
 {
-	// TODO do we need this?
+	/**
+	 * Notifies test run listeners added via the plugin extension point.
+	 * 
+	 * PERHAPS make the extension point mechanism more useful/robust -- that is,
+	 *         extend the session-based interfaces to the external interface
+	 */
 	private static final class LegacyTestRunSessionListener implements
-			ITestRunSessionListener
+		ITestRunSessionListener
 	{
-		private TestRunSession fActiveTestRunSession;
-		private ITestSessionListener fTestSessionListener;
+	private TestRunSession fActiveTestRunSession;
+	private ITestSessionListener fTestSessionListener;
+	
+	public void sessionAdded(TestRunSession testRunSession)
+	{
+		// Only serve one legacy ITestRunListener at a time, since they cannot distinguish between different concurrent test sessions:
+		if (fActiveTestRunSession != null)
+			return;
 		
-		public void sessionAdded(TestRunSession testRunSession)
+		fTestSessionListener = new ITestSessionListener()
 		{
-			// Only serve one legacy ITestRunListener at a time, since they cannot distinguish between different concurrent test sessions:
-			if (fActiveTestRunSession != null)
-				return;
-			
-			fActiveTestRunSession = testRunSession;
-			
-			fTestSessionListener = new ITestSessionListener()
+			public void sessionStarted()
 			{
-				public void testAdded(TestElement testElement)
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
 				{
-				}
-				
-				public void sessionStarted()
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testRunStarted(fActiveTestRunSession
-								.getTotalCount());
-					}
-				}
-				
-				public void sessionTerminated()
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testRunTerminated();
-					}
-					sessionRemoved(fActiveTestRunSession);
-				}
-				
-				public void sessionStopped(long elapsedTime)
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testRunStopped(elapsedTime);
-					}
-					sessionRemoved(fActiveTestRunSession);
-				}
-				
-				public void sessionEnded(long elapsedTime)
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testRunEnded(elapsedTime);
-					}
-					sessionRemoved(fActiveTestRunSession);
-				}
-				
-				public void testStarted(TestCaseElement testCaseElement)
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testStarted(testCaseElement.getId(),
-								testCaseElement.getTestName());
-					}
-				}
-				
-				public void testFailed(TestElement testElement, Status status,
-						String trace)
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testFailed(status.getOldCode(),
-								testElement.getId(), testElement.getTestName(),
-								trace);
-					}
-				}
-				
-				public void testEnded(TestCaseElement testCaseElement)
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testEnded(testCaseElement.getId(),
-								testCaseElement.getTestName());
-					}
-				}
-				
-				public void testReran(TestCaseElement testCaseElement,
-						Status status, String trace)
-				{
-					ITestRunListener[] testRunListeners = DescentUnittestPlugin
-							.getDefault().getTestRunListeners();
-					for (int i = 0; i < testRunListeners.length; i++)
-					{
-						ITestRunListener testRunListener = testRunListeners[i];
-						testRunListener.testReran(testCaseElement.getId(),
-								testCaseElement.getTestMethodName(), status
-										.getOldCode(), trace);
-					}
-				}
-			};
-			
-			fActiveTestRunSession.addTestSessionListener(fTestSessionListener);
-		}
-		
-		public void sessionRemoved(TestRunSession testRunSession)
-		{
-			if (fActiveTestRunSession == testRunSession)
-			{
-				fActiveTestRunSession
-						.removeTestSessionListener(fTestSessionListener);
-				fTestSessionListener = null;
-				fActiveTestRunSession = null;
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testRunStarted(fActiveTestRunSession
+							.getTests());
+				}	
 			}
-		}
+			
+			public void sessionTerminated()
+			{
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
+				{
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testRunTerminated();
+				}
+				sessionRemoved(fActiveTestRunSession);
+			}
+			
+			public void sessionStopped(long elapsedTime)
+			{
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
+				{
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testRunStopped(elapsedTime);
+				}
+				sessionRemoved(fActiveTestRunSession);
+			}
+			
+			public void sessionEnded(long elapsedTime)
+			{
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
+				{
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testRunEnded(elapsedTime);
+				}
+				sessionRemoved(fActiveTestRunSession);
+			}
+			
+			public void testStarted(TestCaseElement testCaseElement)
+			{
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
+				{
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testStarted(testCaseElement.getTestSpecification());
+				}
+			}
+			
+			public void testEnded(TestCaseElement testCaseElement,
+					ITestResult result)
+			{
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
+				{
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testEnded(testCaseElement.getTestSpecification(),
+							testCaseElement.getResult());
+				}	
+			}
+
+			public void testReran(TestCaseElement testCaseElement,
+					ITestResult result)
+			{
+				ITestRunListener[] testRunListeners = DescentUnittestPlugin
+						.getDefault().getTestRunListeners();
+				for (int i = 0; i < testRunListeners.length; i++)
+				{
+					ITestRunListener testRunListener = testRunListeners[i];
+					testRunListener.testReran(testCaseElement.getTestSpecification(),
+							testCaseElement.getResult());
+				}
+			}
+		};
+		
+		fActiveTestRunSession = testRunSession;
+		fActiveTestRunSession.addTestSessionListener(fTestSessionListener);
 	}
 	
+	public void sessionRemoved(TestRunSession testRunSession)
+	{
+		if (fActiveTestRunSession == testRunSession)
+		{
+			fActiveTestRunSession
+					.removeTestSessionListener(fTestSessionListener);
+			fTestSessionListener = null;
+			fActiveTestRunSession = null;
+		}
+	}
+}
 	//--------------------------------------------------------------------------
 	// Test run activation
 	
@@ -209,7 +191,7 @@ public final class JUnitModel
 	 * state).
 	 */
 	public void notifyLaunch(final ILaunch launch, 
-			final List<TestSpecification> tests)
+			final List<ITestSpecification> tests)
 	{
 		ILaunchConfiguration config = launch.getLaunchConfiguration();
 		if (config == null)
@@ -252,7 +234,7 @@ public final class JUnitModel
 	}
 	
 	private void connectTestRunner(ILaunch launch, IJavaProject project,
-			int port, List<TestSpecification> tests)
+			int port, List<ITestSpecification> tests)
 	{
 		showTestRunnerViewPartInActivePage(findTestRunnerViewPartInActivePage());
 
@@ -344,7 +326,7 @@ public final class JUnitModel
 	 */
 	public void start()
 	{
-		addTestRunSessionListener(new LegacyTestRunSessionListener());
+		fTestRunSessionListeners.add(new LegacyTestRunSessionListener());
 	}
 	
 	/**

@@ -38,18 +38,18 @@ public class FailureTableDisplay implements ITraceDisplay {
 		});
 	}
 
-	public void addTraceLine(int lineType, String label) {
+	public void addTraceLine(LineType lineType, String label) {
 		TableItem tableItem = newTableItem();
 		switch (lineType) {
-		case TextualTrace.LINE_TYPE_EXCEPTION:
-			tableItem.setImage(fExceptionIcon);
-			break;
-		case TextualTrace.LINE_TYPE_STACKFRAME:
-			tableItem.setImage(fStackIcon);
-			break;
-		case TextualTrace.LINE_TYPE_NORMAL:
-		default:
-			break;
+			case EXCEPTION:
+				tableItem.setImage(fExceptionIcon);
+				break;
+			case STACK_FRAME:
+				tableItem.setImage(fStackIcon);
+				break;
+			case NORMAL:
+			default:
+				break;
 		}
 		tableItem.setText(label);
 	}

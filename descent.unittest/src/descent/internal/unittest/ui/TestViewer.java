@@ -215,7 +215,7 @@ public class TestViewer {
 		if (! selection.isEmpty()) {
 			TestElement testElement= (TestElement) selection.getFirstElement();
 			
-			String testLabel= testElement.getTestName();
+			String testLabel= testElement.getName();
 			String className= testElement.getClassName();
 			if (testElement instanceof TestSuiteElement) {	
 				manager.add(new OpenTestAction(fTestRunnerPart, testLabel));
@@ -282,7 +282,7 @@ public class TestViewer {
 
 		OpenTestAction action;
 		if (testElement instanceof TestSuiteElement) {
-			action= new OpenTestAction(fTestRunnerPart, testElement.getTestName());
+			action= new OpenTestAction(fTestRunnerPart, testElement.getName());
 		} else if (testElement instanceof TestCaseElement){
 			TestCaseElement testCase= (TestCaseElement) testElement;
 			action= new OpenTestAction(fTestRunnerPart, testCase.getClassName(), testCase.getTestMethodName());

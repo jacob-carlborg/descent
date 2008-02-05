@@ -56,12 +56,12 @@ public class JUnitCopyAction extends SelectionListenerAction {
 	 * @see IAction#run()
 	 */
 	public void run() {
-		String trace= fView.getTrace();
+		String trace= fView.getTraceAsString();
 		String source= null;
 		if (trace != null) {
 			source= convertLineTerminators(trace);
 		} else if (fTestElement != null) {
-			source= fTestElement.getTestName();
+			source= fTestElement.getName();
 		}
 		if (source == null || source.length() == 0)
 			return;

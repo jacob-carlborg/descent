@@ -24,6 +24,7 @@ import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
+import descent.unittest.ITestSpecification;
 
 public class DUnittestFinder
 {
@@ -40,12 +41,12 @@ public class DUnittestFinder
 	 * @param elements The elements to search
 	 * @return         An array of modules containing unit tests
 	 */
-	public static List<TestSpecification> findTests(
+	public static List<ITestSpecification> findTests(
 			IRunnableContext context, final Object[] elements)
 			throws InvocationTargetException, InterruptedException
 	{
-		final List<TestSpecification> result = 
-			new ArrayList<TestSpecification>(LIST_PREALLOC);
+		final List<ITestSpecification> result = 
+			new ArrayList<ITestSpecification>(LIST_PREALLOC);
 
 		if (elements.length > 0) {
 			IRunnableWithProgress runnable = new IRunnableWithProgress()
@@ -67,11 +68,11 @@ public class DUnittestFinder
 	 * @param elements The elements to search
 	 * @return         An array of modules containing unit tests
 	 */
-	public static List<TestSpecification> findTests(final Object[] elements) 
+	public static List<ITestSpecification> findTests(final Object[] elements) 
 			throws InvocationTargetException, InterruptedException
 	{
-		final List<TestSpecification> result = 
-			new ArrayList<TestSpecification>(LIST_PREALLOC);
+		final List<ITestSpecification> result = 
+			new ArrayList<ITestSpecification>(LIST_PREALLOC);
 
 		if (elements.length > 0)
 		{
@@ -88,7 +89,7 @@ public class DUnittestFinder
 	}
 	
 	public static void findTestsInContainer(Object[] elements,
-			List<TestSpecification> result, IProgressMonitor pm)
+			List<ITestSpecification> result, IProgressMonitor pm)
 	{
 		try {
 			for (int i= 0; i < elements.length; i++) {
@@ -116,7 +117,7 @@ public class DUnittestFinder
 	}
 	
 	private static void findTestsInProject(IJavaProject project,
-			List<TestSpecification> result,
+			List<ITestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		IPackageFragmentRoot[] roots= project.getPackageFragmentRoots();
 		pm.beginTask("Finding unit tests", 100 * roots.length);
@@ -129,7 +130,7 @@ public class DUnittestFinder
 	}
 
 	private static void findTestsInPackageFragmentRoot(IPackageFragmentRoot root, 
-			List<TestSpecification> result,
+			List<ITestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		IJavaElement[] children= root.getChildren();
 		pm.beginTask("Finding unit tests", 100 * children.length);
@@ -142,7 +143,7 @@ public class DUnittestFinder
 	}
 
 	private static void findTestsInPackageFragment(IPackageFragment fragment,
-			List<TestSpecification> result,
+			List<ITestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		ICompilationUnit[] compilationUnits= fragment.getCompilationUnits();
 		pm.beginTask("Finding unit tests", compilationUnits.length);
@@ -155,12 +156,12 @@ public class DUnittestFinder
 	}
 	
 	private static void findTestsInCompilationUnit(ICompilationUnit module,
-			List<TestSpecification> result) throws JavaModelException
+			List<ITestSpecification> result) throws JavaModelException
 	{
 		testSearch(result, module.getFullyQualifiedName(), module);
 	}
 	
-	private static void testSearch(List<TestSpecification> result, String prefix,
+	private static void testSearch(List<ITestSpecification> result, String prefix,
 			IParent node) throws JavaModelException
 	{
 		short count = 0;

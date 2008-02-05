@@ -8,10 +8,7 @@
 package descent.internal.unittest.model;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
@@ -19,8 +16,9 @@ import org.eclipse.core.runtime.SafeRunner;
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.flute.FluteApplicationInstance;
 import descent.internal.unittest.flute.FluteTestResult;
-import descent.internal.unittest.launcher.TestSpecification;
+import descent.unittest.ITestResult;
 import descent.unittest.ITestRunListener;
+import descent.unittest.ITestSpecification;
 
 /**
  * Interfaces with the FluteApplicationInstance to translate Flute-happy
@@ -28,7 +26,7 @@ import descent.unittest.ITestRunListener;
  */
 public class RemoteTestRunnerClient implements Runnable
 {
-	private final List<TestSpecification> tests;
+	private final List<ITestSpecification> tests;
 	private final List<ITestRunListener> listeners;
 	private final int port;
 	private boolean stopped = true;
@@ -36,12 +34,17 @@ public class RemoteTestRunnerClient implements Runnable
 	
 	private FluteApplicationInstance app;
 	
-	public RemoteTestRunnerClient(int $port, List<TestSpecification> $tests,
+	public RemoteTestRunnerClient(int $port, List<ITestSpecification> $tests,
 			List<ITestRunListener> $listeners)
 	{
 		port = $port;
 		tests = $tests;
 		listeners = $listeners;
+	}
+	
+	public List<ITestSpecification> getTests()
+	{
+		return tests;
 	}
 	
 	public synchronized boolean isRunning()
@@ -83,11 +86,11 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 		
 		startTime = System.currentTimeMillis();
-		notifyTestRunStarted(tests.size());
+		notifyTestRunStarted(tests);
 		
 		try
 		{
-			for(TestSpecification test : tests)
+			for(ITestSpecification test : tests)
 			{
 				if(stopped)
 					break;
@@ -148,7 +151,7 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 	}
 	
-	public void rerunTest(TestSpecification test)
+	public void rerunTest(ITestSpecification test)
 	{
 		if(isRunning() && stopped)
 		{
@@ -191,51 +194,21 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 	}
 	
-	private void runTest(TestSpecification test, boolean rerun) 
+	private void runTest(ITestSpecification test, boolean rerun) 
 		throws IOException
 	{
 		System.out.println("Running " + test);
 		
 		if(!rerun)
-			notifyTestStarted(test.getId(), test.getName());
+			notifyTestStarted(test);
 		
 		//TODO FluteTestResult result = app.runTest(test.getId());
 		FluteTestResult result = FluteTestResult.passed();
 		
-		int statusCode;
-		switch(result.getResultType())
-		{
-			case PASSED:
-				statusCode = ITestRunListener.STATUS_OK;
-				break;
-			case FAILED:
-				statusCode = ITestRunListener.STATUS_FAILURE;
-				break;
-			case ERROR:
-				statusCode = ITestRunListener.STATUS_ERROR;
-				break;
-			default:
-				throw new IllegalStateException();
-		}
-		
-		String trace = null;
-		if(statusCode != ITestRunListener.STATUS_OK)
-		{
-			// TODO create trace string
-			trace  = "";
-		}
-		
 		if(!rerun)
-		{
-			if(statusCode == ITestRunListener.STATUS_OK)
-				notifyTestEnded(test.getId(), test.getName());
-			else
-				notifyTestFailed(statusCode, test.getId(), test.getName(), trace);
-		}
+			notifyTestEnded(test, result);
 		else
-		{
-			notifyTestReran(test.getId(), test.getName(), statusCode, trace);
-		}
+			notifyTestReran(test, result);
 	}
 	
 	//--------------------------------------------------------------------------
@@ -294,7 +267,7 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 	}
 	
-	private void notifyTestRunStarted(final int testCount)
+	private void notifyTestRunStarted(final List<ITestSpecification> tests)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -302,13 +275,13 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testRunStarted(testCount);
+					listener.testRunStarted(tests);
 				}
 			});
 		}
 	}
 	
-	private void notifyTestStarted(final String testId, final String testName)
+	private void notifyTestStarted(final ITestSpecification test)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -316,13 +289,14 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testStarted(testId, testName);
+					listener.testStarted(test);
 				}
 			});
 		}
 	}
 	
-	private void notifyTestEnded(final String testId, final String testName)
+	private void notifyTestEnded(final ITestSpecification test, 
+			final ITestResult result)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -330,14 +304,14 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testEnded(testId, testName);
+					listener.testEnded(test, result);
 				}
 			});
 		}
 	}
 	
-	private void notifyTestFailed(final int status, final String testId,
-			final String testName, final String trace)
+	private void notifyTestReran(final ITestSpecification test,
+			final ITestResult result)
 	{
 		for(final ITestRunListener listener : listeners)
 		{
@@ -345,22 +319,7 @@ public class RemoteTestRunnerClient implements Runnable
 			{
 				public void run()
 				{
-					listener.testFailed(status, testId, testName, trace);
-				}
-			});
-		}
-	}
-	
-	private void notifyTestReran(final String testId, final String testName,
-			final int status, final String trace)
-	{
-		for(final ITestRunListener listener : listeners)
-		{
-			SafeRunner.run(new ListenerSafeRunnable()
-			{
-				public void run()
-				{
-					listener.testReran(testId, testName, status, trace);
+					listener.testReran(test, result);
 				}
 			});
 		}

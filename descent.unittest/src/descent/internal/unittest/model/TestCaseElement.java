@@ -11,33 +11,52 @@
 
 package descent.internal.unittest.model;
 
-import org.eclipse.jface.util.Assert;
+import descent.unittest.ITestResult;
+import descent.unittest.ITestSpecification;
 
 
-public class TestCaseElement extends TestElement {
-
+public class TestCaseElement extends TestElement
+{
+	private final ITestSpecification fTest;
 	private boolean fIgnored;
-
-	public TestCaseElement(TestSuiteElement parent, String id, String testName) {
-		super(parent, id, testName);
-		Assert.isNotNull(parent);
+	private ITestResult fResult;
+	
+	
+	public TestCaseElement(TestSuiteElement parent, ITestSpecification test)
+	{
+		super(parent, test.getId(), test.getName());
+		fTest = test;
 	}
 	
-	public String getTestMethodName() {
-		int index= getTestName().indexOf('(');
-		if (index > 0)
-			return getTestName().substring(0, index);
-		index= getTestName().indexOf('@');
-		if(index > 0)
-			return getTestName().substring(0, index);
-		return getTestName();
+	public ITestResult getResult()
+	{
+		return fResult;
+	}
+	
+	public void setResult(ITestResult result)
+	{
+		fResult = result;
+		setStatus(Status.statusOf(result));
+	}
+	
+	public ITestSpecification getTestSpecification()
+	{
+		return fTest;
+	}
+	
+	public String getTestMethodName()
+	{
+		// TODO
+		return "getTestMethodName (" + getName() + ")";
 	}
 
-	public void setIgnored(boolean ignored) {
+	public void setIgnored(boolean ignored)
+	{
 		fIgnored= ignored;
 	}
 	
-	public boolean isIgnored() {
+	public boolean isIgnored()
+	{
 		return fIgnored;
 	}
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 
 package descent.unittest;
+
+import java.util.List;
   
 /**
  * A listener interface for observing the execution of a test run.
@@ -18,92 +20,58 @@ package descent.unittest;
  * <code>descent.unittest.testRunListener</code>
  * extension point implement this interface.
  * </p>
- * 
- * @since 2.1
  */
- public interface ITestRunListener {
-	/**
-   	 * Status constant indicating that a test passed (constant value 0).
- 	 * 
-     * @see #testFailed(int, String, String, String)
- 	 */
- 	public static final int STATUS_OK= 0;
- 	/**
-	 * Status constant indicating that a test had an error an unanticipated
-	 * exception (constant value 1).
- 	 * 
-	 * @see #testFailed(int, String, String, String)
- 	 */
- 	public static final int STATUS_ERROR= 1;
- 	/**
-	 * Status constant indicating that a test failed an assertion
-	 * (constant value 2).
- 	 * 
- 	 * @see #testFailed(int, String, String, String)
-	 */
- 	public static final int STATUS_FAILURE= 2;
+ public interface ITestRunListener
+ {
  	/**
  	 * A test run has started.
  	 * 
- 	 * @param testCount the number of individual tests that will be run
+ 	 * @param tests a list of all tetss that will be run
  	 */
-	public void testRunStarted(int testCount);
+	public void testRunStarted(List<ITestSpecification> tests);
+	
 	/**
  	 * A test run has ended.
 	 *
 	 * @param elapsedTime the total elapsed time of the test run
 	 */
 	public void testRunEnded(long elapsedTime);
+	
 	/**
 	 * A test run has been stopped prematurely.
 	 *
  	 * @param elapsedTime the time elapsed before the test run was stopped
 	 */
 	public void testRunStopped(long elapsedTime);
+	
 	/**
 	 * An individual test has started.
 	 * 
-	 * @param testId a unique Id identifying the test
-	 * @param testName the name of the test that started
+	 * @param test the test that started
 	 */
-	public void testStarted(String testId, String testName);
+	public void testStarted(ITestSpecification test);
+	
 	/**
 	 * An individual test has ended.
 	 * 
-	 * @param testId a unique Id identifying the test
-	 * @param testName the name of the test that ended
+	 * @param test the test that was run
+	 * @param result the result of running the test
 	 */
-	public void testEnded(String testId, String testName);
-	/**
-	 * An individual test has failed with a stack trace.
-	 * 
-	 * @param status the outcome of the test; one of 
-	 * {@link #STATUS_ERROR STATUS_ERROR} or
-	 * {@link #STATUS_FAILURE STATUS_FAILURE}
-	 * @param testId a unique Id identifying the test
- 	 * @param testName the name of the test that failed
-	 * @param trace the stack trace
-	 */
-	public void testFailed(int status, String testId, String testName, String trace);	
+	public void testEnded(ITestSpecification test, ITestResult result);
 			
 	/**
-	 * The VM instance performing the tests has terminated.
+	 * The application instance performing the tests has terminated.
 	 */
 	public void testRunTerminated();
 	
 	/**
- 	 * An individual test has been rerun.
+ 	 * An individual test has been rerun. This is generally a user-initiated
+ 	 * action which occurs after a test run has ended.
 	 * 
-	 * @param testId a unique Id identifying the test
-	 * @param testClass the name of the test class that was rerun
-	 * @param testName the name of the test that was rerun
-	 * @param status the outcome of the test that was rerun; one of 
-	 * {@link #STATUS_OK STATUS_OK}, {@link #STATUS_ERROR STATUS_ERROR},
-	 * or {@link #STATUS_FAILURE STATUS_FAILURE}
-	 * @param trace the stack trace in the case of abnormal termination,
-	 * or the empty string if none
+	 * @param test the test that was rerun
+	 * @param result the result of re-running the test
 	 */
-	public void testReran(String testId, String testName, int status, String trace);
+	public void testReran(ITestSpecification test, ITestResult result);
 }
 
 

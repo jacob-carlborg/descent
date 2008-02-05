@@ -31,6 +31,7 @@ import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.model.JUnitModel;
+import descent.unittest.ITestSpecification;
 
 /**
  * Launch configuration delegate for a plain JUnit test.
@@ -64,7 +65,7 @@ public class UnittestLaunchConfiguration extends
 			
 			// Find the tests (this takes up most of the monitor because
 			// for a large project, this can take a long time)
-			List<TestSpecification> tests = findTests(config, new SubProgressMonitor(monitor, 65));
+			List<ITestSpecification> tests = findTests(config, new SubProgressMonitor(monitor, 65));
 			
 			// Transfer the launch config attributes to the launch
 			launch.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, getProjectName(config));
@@ -80,13 +81,13 @@ public class UnittestLaunchConfiguration extends
 		}
 	}
 	
-	List<TestSpecification> findTests(ILaunchConfiguration config, IProgressMonitor monitor) 
+	List<ITestSpecification> findTests(ILaunchConfiguration config, IProgressMonitor monitor) 
 		throws CoreException
 	{
 		IJavaProject project = getJavaProject(config);
 		Object[] elements = new Object[] { project };
-		final List<TestSpecification> result = 
-			new ArrayList<TestSpecification>(DUnittestFinder.LIST_PREALLOC);
+		final List<ITestSpecification> result = 
+			new ArrayList<ITestSpecification>(DUnittestFinder.LIST_PREALLOC);
 		DUnittestFinder.findTestsInContainer(elements, result, monitor);
 		return result;
 	}

@@ -11,79 +11,75 @@
 
 package descent.internal.unittest.model;
 
-import org.eclipse.jface.util.Assert;
+import descent.unittest.ITestResult;
+import descent.unittest.ITestResult.ResultType;
 
-import descent.unittest.ITestRunListener;
-
-
-public abstract class TestElement {
-	public final static class Status {
-		public static final Status RUNNING_ERROR= new Status("RUNNING_ERROR", 5); //$NON-NLS-1$
-		public static final Status RUNNING_FAILURE= new Status("RUNNING_FAILURE", 6); //$NON-NLS-1$
-		public static final Status RUNNING= new Status("RUNNING", 3); //$NON-NLS-1$
+/**
+ * Represents a test element in a "tree" of tests, which can either be a single
+ * test or a suite of tests (the latter represented by a {@link TestSuiteElement}
+ */
+public abstract class TestElement
+{
+	public enum Status
+	{
+		NOT_RUN,         // The test case hasn't been run yet
 		
-		public static final Status ERROR=   new Status("ERROR",   /*1*/ITestRunListener.STATUS_ERROR); //$NON-NLS-1$
-		public static final Status FAILURE= new Status("FAILURE", /*2*/ITestRunListener.STATUS_FAILURE); //$NON-NLS-1$
-		public static final Status OK=      new Status("OK",      /*0*/ITestRunListener.STATUS_OK); //$NON-NLS-1$
-		public static final Status NOT_RUN= new Status("NOT_RUN", 4); //$NON-NLS-1$
+		ERROR,           // There was an error running a test
+		FAILURE,         // There was a failure running a test
+		OK,              // The tests (or all the tests in the group) ran fine
 		
-		private static final Status[] OLD_CODE= { OK, ERROR, FAILURE};
-		
-		private final String fName;
-		private final int fOldCode;
-		
-		private Status(String name, int oldCode) {
-			fName= name;
-			fOldCode= oldCode;
-		}
-		
-		public int getOldCode() {
-			return fOldCode;
-		}
-		
-		public String toString() {
-			return fName;
-		}
+		RUNNING_ERROR,   // Tests in the group are running, but at least one errored
+		RUNNING_FAILURE, // Tetss in the group are running, but at least one failed
+		RUNNING;         // Tests in the group are running, and all is well so far
 
 		/* error state predicates */
 		
-		public boolean isOK() {
+		public boolean isOK()
+		{
 			return this == OK || this == RUNNING || this == NOT_RUN;
 		}
 		
-		public boolean isFailure() {
+		public boolean isFailure()
+		{
 			return this == FAILURE || this == RUNNING_FAILURE;
 		}
 		
-		public boolean isError() {
+		public boolean isError()
+		{
 			return this == ERROR || this == RUNNING_ERROR;
 		}
 		
-		public boolean isErrorOrFailure() {
+		public boolean isErrorOrFailure()
+		{
 			return isError() || isFailure();
 		}
 		
 		/* progress state predicates */
 		
-		public boolean isNotRun() {
+		public boolean isNotRun()
+		{
 			return this == NOT_RUN;
 		}
 		
-		public boolean isRunning() {
+		public boolean isRunning()
+		{
 			return this == RUNNING || this == RUNNING_FAILURE || this == RUNNING_ERROR;
 		}
 		
-		public boolean isDone() {
+		public boolean isDone()
+		{
 			return this == OK || this == FAILURE || this == ERROR;
 		}
 
-		public static Status combineStatus(Status one, Status two) {
+		public static Status combineStatus(Status one, Status two)
+		{
 			Status progress= combineProgress(one, two);
 			Status error= combineError(one, two);
 			return combineProgressAndErrorStatus(progress, error);
 		}
 
-		private static Status combineProgress(Status one, Status two) {
+		private static Status combineProgress(Status one, Status two)
+		{
 			if (one.isNotRun() && two.isNotRun())
 				return NOT_RUN;
 			else if (one.isDone() && two.isDone())
@@ -94,7 +90,8 @@ public abstract class TestElement {
 				return RUNNING;
 		}
 		
-		private static Status combineError(Status one, Status two) {
+		private static Status combineError(Status one, Status two)
+		{
 			if (one.isError() || two.isError())
 				return ERROR;
 			else if (one.isFailure() || two.isFailure())
@@ -103,8 +100,11 @@ public abstract class TestElement {
 				return OK;
 		}
 		
-		private static Status combineProgressAndErrorStatus(Status progress, Status error) {
-			if (progress.isDone()) {
+		private static Status combineProgressAndErrorStatus
+				(Status progress, Status error)
+		{
+			if (progress.isDone())
+			{
 				if (error.isError())
 					return ERROR;
 				if (error.isFailure())
@@ -112,49 +112,57 @@ public abstract class TestElement {
 				return OK;
 			}
 			
-			if (progress.isNotRun()) {
-//				Assert.isTrue(!error.isErrorOrFailure());
+			if (progress.isNotRun())
+			{
+				assert(!error.isErrorOrFailure());
 				return NOT_RUN;
 			}
 			
-//			Assert.isTrue(progress.isRunning());
+			assert(progress.isRunning());
 			if (error.isError())
 				return RUNNING_ERROR;
 			if (error.isFailure())
 				return RUNNING_FAILURE;
-//			Assert.isTrue(error.isOK());
+			assert(error.isOK());
 			return RUNNING;
 		}
 		
-		/**
-		 * @param oldStatus one of {@link ITestRunListener}'s STATUS_* constants
-		 * @return the Status
-		 */
-		public static Status convert(int oldStatus) {
-			return OLD_CODE[oldStatus];
+		public static Status statusOf(ITestResult result)
+		{
+			ResultType type = result.getResultType();
+			
+			switch(type)
+			{
+				case ERROR:
+					/* I know I don't have to qualify this, but having
+					 * case ERROR: return ERROR; where ERROR refers to two
+					 * different symbols is confusing.
+					 */
+					return Status.ERROR;
+				case FAILED:
+					return Status.FAILURE;
+				case PASSED:
+					return Status.OK;
+				default:
+					throw new IllegalStateException();
+			}
 		}
 	}
 	
 	private final TestSuiteElement fParent;
+	private final String fName;
 	private final String fId;
-	private String fTestName;
-
-	private Status fStatus;
-	private String fTrace;
-	private String fExpected;
-	private String fActual;
 	
-	/**
-	 * @param parent the parent, can be <code>null</code>
-	 * @param id the test id
-	 * @param testName the test name
-	 */
-	public TestElement(TestSuiteElement parent, String id, String testName) {
-		Assert.isNotNull(id);
-		Assert.isNotNull(testName);
+	private Status fStatus;
+	
+	public TestElement(TestSuiteElement parent, String id, String name)
+	{
+		assert(null != id);
+		assert(null != name);
+		
 		fParent= parent;
-		fId= id;
-		fTestName= testName;
+		fId = id;
+		fName = name;
 		fStatus= Status.NOT_RUN;
 		if (parent != null)
 			parent.addChild(this);
@@ -163,77 +171,50 @@ public abstract class TestElement {
 	/**
 	 * @return the parent suite, or <code>null</code> for the root
 	 */
-	public TestSuiteElement getParent() {
+	public TestSuiteElement getParent()
+	{
 		return fParent;
 	}
 	
-	public String getId() {
+	public String getId()
+	{
 		return fId;
 	}
 	
-	public String getTestName() {
-		return fTestName;
+	public String getName()
+	{
+		return fName;
 	}
 	
-	public void setName(String name) {
-		fTestName= name;
-	}
-	
-	public void setStatus(Status status) {
+	public void setStatus(Status status)
+	{
 		//JTODO: notify about change?
 		//JTODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
 		fStatus= status;
-		TestSuiteElement parent= getParent();
+		TestSuiteElement parent = getParent();
 		if (parent != null)
 			parent.childChangedStatus(this, status);
 	}
 	
-	public void setStatus(Status status, String trace) {
-		//JTODO: notify about change?
-		//JTODO: multiple errors/failures per test https://bugs.eclipse.org/bugs/show_bug.cgi?id=125296
-		fTrace= trace;
-		setStatus(status);
-	}
-
-	public Status getStatus() {
+	public Status getStatus()
+	{
 		return fStatus;
 	}
 	
-	public String getTrace() {
-		return fTrace;
-	}		
-	
-	public String getExpected() {
-		return fExpected;
-	}		
-	
-	public String getActual() {
-		return fActual;
-	}		
-	
-	public boolean isComparisonFailure() {
-		return fExpected != null && fActual != null;
+	public TestRoot getRoot()
+	{
+		return fParent !=  null ? fParent.getRoot() : null;
 	}
 	
-	// JTODO: Format of testName is highly underspecified. See RemoteTestRunner#getTestName(Test).
-	
-	public String getClassName() {
-		return extractClassName(getTestName());
+	@Override
+	public String toString()
+	{
+		return getName() + ": " + getStatus(); //$NON-NLS-1$
 	}
 	
-	private String extractClassName(String testNameString) {
-		int index= testNameString.indexOf('(');
-		if (index < 0) 
-			return testNameString;
-		testNameString= testNameString.substring(index + 1);
-		return testNameString.substring(0, testNameString.indexOf(')'));
-	}
-	
-	public TestRoot getRoot() {
-		return getParent().getRoot();
-	}
-	
-	public String toString() {
-		return getTestName() + ": " + getStatus(); //$NON-NLS-1$
+	public String getClassName()
+	{
+		// TODO
+		return "getClassName (" + getName() + ")";
 	}
 }

@@ -104,7 +104,11 @@ import descent.internal.unittest.model.ITestRunSessionListener;
 import descent.internal.unittest.model.ITestSessionListener;
 import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
+import descent.internal.unittest.model.TestRoot;
 import descent.internal.unittest.model.TestRunSession;
+import descent.internal.unittest.model.TestSuiteElement;
+import descent.unittest.ITestResult;
+import descent.unittest.ITestResult.ResultType;
 
 /** 
  * A ViewPart that shows the results of a test run.
@@ -383,8 +387,12 @@ public class TestRunnerViewPart extends ViewPart {
 		}
 	}
 	
-	private class TestSessionListener implements ITestSessionListener {
-		public void sessionStarted(){
+	private class TestSessionListener implements ITestSessionListener
+	{
+		public void sessionStarted()
+		{
+			System.out.println("sessionStarted()");
+			
 			fTestViewer.registerViewersRefresh();
 			fShowOnErrorOnly= getShowOnErrorOnly();
 			
@@ -393,8 +401,11 @@ public class TestRunnerViewPart extends ViewPart {
 			fStopAction.setEnabled(true);
 			fRerunLastTestAction.setEnabled(true);
 		}
-
-		public void sessionEnded(long elapsedTime){
+		
+		public void sessionEnded(long elapsedTime)
+		{
+			System.out.println("sessionEnded(" + elapsedTime + ")");
+			
 			fTestViewer.registerAutoScrollTarget(null);
 			
 			String[] keys= {elapsedTimeAsString(elapsedTime)};
@@ -424,21 +435,30 @@ public class TestRunnerViewPart extends ViewPart {
 			stopUpdateJobs();
 		}
 
-		public void sessionStopped(final long elapsedTime) {
+		public void sessionStopped(long elapsedTime)
+		{
+			System.out.println("sessionStopped(" + elapsedTime + ")");
+			
 			fTestViewer.registerAutoScrollTarget(null);
 
 			registerInfoMessage(JUnitMessages.TestRunnerViewPart_message_stopped);
 			handleStopped();
 		}
 
-		public void sessionTerminated() {
+		public void sessionTerminated()
+		{
+			System.out.println("sessionTerminated()");
+			
 			fTestViewer.registerAutoScrollTarget(null);
 
 			registerInfoMessage(JUnitMessages.TestRunnerViewPart_message_terminated);
 			handleStopped(); 
 		}
-
-		public void testStarted(TestCaseElement testCaseElement) {
+		
+		public void testStarted(TestCaseElement testCaseElement)
+		{
+			System.out.println("testStarted(" + testCaseElement + ")");
+			
 			fTestViewer.registerAutoScrollTarget(testCaseElement);
 			fTestViewer.registerViewerUpdate(testCaseElement);
 
@@ -450,38 +470,56 @@ public class TestRunnerViewPart extends ViewPart {
 			String status= Messages.format(JUnitMessages.TestRunnerViewPart_message_started, new String[] { className, method }); 
 			registerInfoMessage(status); 
 		}
-
-		public void testFailed(TestElement testElement, TestElement.Status status, String trace) {
-			if (isAutoScroll()) {
-				fTestViewer.registerFailedForAutoScroll(testElement);
-			}
-			fTestViewer.registerViewerUpdate(testElement);
-
-		    // show the view on the first error only
-		    if (fShowOnErrorOnly && (getErrorsPlusFailures() == 1)) 
-		        postShowTestResultsView();
-		    
-		    // [Bug 35590] JUnit window doesn't report errors from unittest.extensions.TestSetup [JUnit]
-		    // when a failure occurs in test setup then no test is running
-		    // to update the views we artificially signal the end of a test run
-//		    if (!fTestIsRunning) {
-//				fTestIsRunning= false;
-//				testEnded(testCaseElement);
-//			}
-		}
 		
-		public void testEnded(TestCaseElement testCaseElement){
+		public void testEnded(TestCaseElement testCaseElement,
+				ITestResult result)
+		{
+			System.out.println("testEnded(" + testCaseElement + ", " +
+					result + ")");
+			
 			fTestViewer.registerViewerUpdate(testCaseElement);
+			
+			if(isErrorOrFailure(result))
+			{
+				if (isAutoScroll() && isErrorOrFailure(result)) {
+					fTestViewer.registerFailedForAutoScroll(testCaseElement);
+				}
+
+			    // show the view on the first error only
+			    if (fShowOnErrorOnly && (getErrorsPlusFailures() == 1)) 
+			        postShowTestResultsView();
+			}
 		}
 
-		public void testReran(TestCaseElement testCaseElement, TestElement.Status status, String trace) {
+		public void testReran(TestCaseElement testCaseElement,
+				ITestResult result)
+		{
+			System.out.println("testReran(" + testCaseElement + ", " +
+					result + ")");
+			
 			fTestViewer.registerViewerUpdate(testCaseElement);
 			postSyncProcessChanges();
 			showFailure(testCaseElement);
 		}
 		
-		public void testAdded(TestElement testElement) {
+		private void addTest(TestElement testElement)
+		{
+			// TODO -- add the tests --
+			
 			fTestViewer.registerTestAdded(testElement);
+			
+			if(testElement instanceof TestSuiteElement)
+			{
+				TestSuiteElement testSuiteElement = (TestSuiteElement) testElement;
+				for(TestElement child : testSuiteElement.getChildren())
+					addTest(child);
+			}
+		}
+		
+		private boolean isErrorOrFailure(ITestResult result)
+		{
+			ResultType type = result.getResultType();
+			return type == ResultType.ERROR || type == ResultType.FAILED;
 		}
 	}
 	
@@ -922,7 +960,7 @@ public class TestRunnerViewPart extends ViewPart {
 				bw= new BufferedWriter(new FileWriter(file));
 				for (int i= 0; i < failures.length; i++) {
 					TestElement testElement= failures[i];
-					bw.write(testElement.getTestName());
+					bw.write(testElement.getName());
 					bw.newLine();
 				}
 			} finally {
@@ -1094,8 +1132,7 @@ action enablement
 	}
 
 	private void updateRerunFailedFirstAction() {
-		/* WTF boolean state= isJUnit3() && hasErrorsOrFailures();
-	    fRerunLastFailedFirstAction.setEnabled(state); */
+	    fRerunLastFailedFirstAction.setEnabled(hasErrorsOrFailures());
 	}
     
 	private void setTitleToolTip() {

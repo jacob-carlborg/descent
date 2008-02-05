@@ -14,39 +14,34 @@ package descent.internal.unittest.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
 
-import org.eclipse.jface.util.Assert;
-
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
-
-//import descent.launching.IJavaLaunchConfigurationConstants;
-
-import descent.unittest.ITestRunListener;
-
-import descent.internal.unittest.DescentUnittestPlugin;
-import descent.internal.unittest.Messages;
-//import descent.internal.unittest.launcher.JUnitBaseLaunchConfiguration;
-import descent.internal.unittest.launcher.TestSpecification;
 import descent.internal.unittest.model.TestElement.Status;
-import descent.internal.unittest.ui.JUnitMessages;
 
-/**
- * 
- */
-public class TestRunSession {
+import descent.unittest.ITestResult;
+import descent.unittest.ITestRunListener;
+import descent.unittest.ITestSpecification;
 
+public class TestRunSession
+{
 	private final IJavaProject fProject;
 	private final ILaunch fLaunch;
 	private final String fLaunchConfigName;
 	
+	/** The client is used to connect to the tested application and run stuff
+	 * (this client implementation actually just forwards the work to the
+	 * FluteApplicationInstance class, but it's easier this way than a major
+	 * refactor to remove the class).
+	 */
 	private final RemoteTestRunnerClient fTestRunnerClient;
 	
 	private final ListenerList/*<ITestSessionListener>*/ fSessionListeners;
@@ -57,35 +52,37 @@ public class TestRunSession {
 	private final TestRoot fTestRoot;
 	
 	/**
-	 * Map from testId to testElement.
+	 * Map from testId to testElement. Can't map ITestSpecification to
+	 * TestElement, sicne this includes test suites
 	 */
-	private final HashMap/*<String, TestElement>*/ fIdToTest;
-	
-	/**
-	 * The TestSuites for which additional children are expected. 
-	 */
-	private List/*<IncompleteTestSuite>*/ fIncompleteTestSuites;
+	private final HashMap<String, TestElement> fIdToTest;
 	
  	/**
  	 * Number of tests started during this test run.
  	 */
-	volatile int fStartedCount;
+	volatile int fStartedCount = 0;
+	
 	/**
 	 * Number of tests ignored during this test run.
 	 */
-	volatile int fIgnoredCount;
+	// TODO ignored tests (they're totally unsupported)
+	volatile int fIgnoredCount = 0; 
+	
 	/**
 	 * Number of errors during this test run.
 	 */
-	volatile int fErrorCount;
+	volatile int fErrorCount = 0;
+	
 	/**
 	 * Number of failures during this test run.
 	 */
-	volatile int fFailureCount;
+	volatile int fFailureCount = 0;
+	
 	/**
 	 * Total number of tests to run.
 	 */
-	volatile int fTotalCount;
+	volatile int fTotalCount = 0;
+	
 	/**
 	 * Start time in millis.
 	 */
@@ -96,13 +93,14 @@ public class TestRunSession {
 	
 
 	public TestRunSession(IJavaProject testedProject, int port, ILaunch launch,
-			List<TestSpecification> tests)
+			final List<ITestSpecification> tests)
 	{
-		Assert.isNotNull(testedProject);
-		Assert.isNotNull(launch);
+		assert(null != testedProject);
+		assert(null != launch);
 		
 		fProject= testedProject;
 		fLaunch= launch;
+		
 		ILaunchConfiguration launchConfiguration= launch.getLaunchConfiguration();
 		if (launchConfiguration != null)
 		 	fLaunchConfigName= launchConfiguration.getName();
@@ -110,7 +108,9 @@ public class TestRunSession {
 		 	fLaunchConfigName= testedProject.getElementName();
 		
 		fTestRoot= new TestRoot();
-		fIdToTest= new HashMap();
+		fIdToTest= new HashMap<String, TestElement>();
+		fIdToTest.put(fTestRoot.getId(), fTestRoot);
+		fTotalCount = 0;
 		
 		// Add the run listener that translates tuff to the session listeners
 		List<ITestRunListener> listeners = new ArrayList<ITestRunListener>();
@@ -124,11 +124,17 @@ public class TestRunSession {
 			{
 				public void run()
 				{
+					createTestTree(tests);
 					fTestRunnerClient.init();
 					fTestRunnerClient.run();
 				}
 			}
 		).run();
+	}
+	
+	public List<ITestSpecification> getTests()
+	{
+		return fTestRunnerClient.getTests();
 	}
 	
 	public TestRoot getTestRoot() {
@@ -207,6 +213,33 @@ public class TestRunSession {
 	}
 	
 	/**
+	 * @return an array of all failed test elments, including test cases and
+	 *         test suites.
+	 */
+	public TestElement[] getAllFailedTestElements()
+	{
+		ArrayList<TestElement> failures = new ArrayList<TestElement>();
+		addFailures(failures, getTestRoot());
+		return (TestElement[]) failures.toArray(new TestElement[failures.size()]);
+	}
+	
+	// Helper method to recursively add failed tests to the list
+	private void addFailures(ArrayList<TestElement> failures,
+			TestElement testElement)
+	{
+		if (testElement.getStatus().isErrorOrFailure())
+			failures.add(testElement);
+		
+		if (testElement instanceof TestSuiteElement)
+		{
+			TestSuiteElement testSuiteElement= (TestSuiteElement) testElement;
+			TestElement[] children= testSuiteElement.getChildren();
+			for (int i= 0; i < children.length; i++)
+				addFailures(failures, children[i]);
+		}
+	}
+	
+	/**
 	 * @param testId 
 	 * @param className 
 	 * @param testName 
@@ -252,93 +285,62 @@ public class TestRunSession {
 		return false;
 	}
 	
-	public TestElement getTestElement(String id) {
+	public TestElement getTestElement(String id)
+	{
 		return (TestElement) fIdToTest.get(id);
 	}
-
-	private TestElement addTreeEntry(String treeEntry) {
-		// format: testId","testName","isSuite","testcount
-		int index0= treeEntry.indexOf(',');
-		String id= treeEntry.substring(0, index0);
+	
+	//--------------------------------------------------------------------------
+	// Test tree management (internal)
+	private void createTestTree(List<ITestSpecification> tests)
+	{
+		// PERHAPS a more structured (package-based) approach?
 		
-		StringBuffer testNameBuffer= new StringBuffer(100);
-		int index1= scanTestName(treeEntry, index0 + 1, testNameBuffer);
-		String testName= testNameBuffer.toString().trim();
+		Map<ICompilationUnit, TestSuiteElement> nodes = 
+				new HashMap<ICompilationUnit, TestSuiteElement>();
 		
-		int index2= treeEntry.indexOf(',', index1 + 1);
-		boolean isSuite= treeEntry.substring(index1 + 1, index2).equals("true"); //$NON-NLS-1$
-		
-		int testCount= Integer.parseInt(treeEntry.substring(index2 + 1));
-		
-		if (fIncompleteTestSuites.isEmpty()) {
-			return createTestElement(fTestRoot, id, testName, isSuite, testCount);
-		} else {
-			int suiteIndex= fIncompleteTestSuites.size() - 1;
-			IncompleteTestSuite openSuite= (IncompleteTestSuite) fIncompleteTestSuites.get(suiteIndex);
-			openSuite.fOutstandingChildren--;
-			if (openSuite.fOutstandingChildren <= 0)
-				fIncompleteTestSuites.remove(suiteIndex);
-			return createTestElement(openSuite.fTestSuiteElement, id, testName, isSuite, testCount);
+		for(ITestSpecification test : tests)
+		{
+			ICompilationUnit module = test.getDeclaration().getCompilationUnit();
+			
+			TestSuiteElement parent;
+			if(!nodes.keySet().contains(module))
+			{
+				parent = new TestSuiteElement(fTestRoot, 
+						module.getFullyQualifiedName(),
+						module.getFullyQualifiedName());
+				fTestRoot.addChild(parent);
+				nodes.put(module, parent);
+				fIdToTest.put(parent.getId(), parent);
+			}
+			else
+			{
+				parent = nodes.get(module);
+			}
+			
+			TestCaseElement node = new TestCaseElement(parent, test);
+			parent.addChild(node);
+			fIdToTest.put(test.getId(), node);
 		}
-	}
-
-	private TestElement createTestElement(TestSuiteElement parent, String id, String testName, boolean isSuite, int testCount) {
-		TestElement testElement;
-		if (isSuite) {
-			TestSuiteElement testSuiteElement= new TestSuiteElement(parent, id, testName, testCount);
-			testElement= testSuiteElement;
-			if (testCount > 0)
-				fIncompleteTestSuites.add(new IncompleteTestSuite(testSuiteElement, testCount));
-		} else {
-			testElement= new TestCaseElement(parent, id, testName);
-		}
-		fIdToTest.put(id, testElement);
-		return testElement;
 	}
 	
+	//--------------------------------------------------------------------------
+	// Notification framework (man, are there a LOT of listeners in this...)
+	
 	/**
-	 * Append the test name from <code>s</code> to <code>testName</code>.
-	 *  
-	 * @param s the string to scan
-	 * @param start the offset of the first character in <code>s</code> 
-	 * @param testName the result
-	 * 
-	 * @return the index of the next ','
-	 */
-	private int scanTestName(String s, int start, StringBuffer testName) {
-		boolean inQuote= false;
-		int i= start;
-		for (; i < s.length(); i++) {
-			char c= s.charAt(i);
-			if (c == '\\' && !inQuote) {
-				inQuote= true;
-				continue;
-			} else if (inQuote) {
-				inQuote= false;
-				testName.append(c);
-			} else if (c == ',')
-				break;
-			else
-				testName.append(c);
-		}
-		return i;
-	}
-
-	/**
-	 * An {@link ITestRunListener2} that listens to events from the
+	 * An {@link ITestRunListener} that listens to events from the
 	 * {@link RemoteTestRunnerClient} and translates them into high-level model
 	 * events (broadcasted to {@link ITestSessionListener}s).
 	 */
-	private class TestSessionNotifier implements ITestRunListener {
-		
-		public void testRunStarted(int testCount) {
-			fIncompleteTestSuites= new ArrayList();
-			
+	private class TestSessionNotifier implements ITestRunListener
+	{
+		public void testRunStarted(List<ITestSpecification> tests)
+		{
 			fStartedCount= 0;
 			fIgnoredCount= 0;
 			fFailureCount= 0;
 			fErrorCount= 0;
-			fTotalCount= testCount;
+			fTotalCount= tests.size();
 			
 			fStartTime= System.currentTimeMillis();
 			fIsRunning= true;
@@ -348,8 +350,9 @@ public class TestRunSession {
 				((ITestSessionListener) listeners[i]).sessionStarted();
 			}
 		}
-	
-		public void testRunEnded(long elapsedTime) {
+		
+		public void testRunEnded(long elapsedTime)
+		{
 			fIsRunning= false;
 			
 			Object[] listeners= fSessionListeners.getListeners();
@@ -357,8 +360,9 @@ public class TestRunSession {
 				((ITestSessionListener) listeners[i]).sessionEnded(elapsedTime);
 			}
 		}
-	
-		public void testRunStopped(long elapsedTime) {
+		
+		public void testRunStopped(long elapsedTime)
+		{
 			fIsRunning= false;
 			fIsStopped= true;
 			
@@ -367,8 +371,9 @@ public class TestRunSession {
 				((ITestSessionListener) listeners[i]).sessionStopped(elapsedTime);
 			}
 		}
-	
-		public void testRunTerminated() {
+		
+		public void testRunTerminated()
+		{
 			fIsRunning= false;
 			fIsStopped= true;
 			
@@ -377,27 +382,12 @@ public class TestRunSession {
 				((ITestSessionListener) listeners[i]).sessionTerminated();
 			}
 		}
-	
-		/* (non-Javadoc)
-		 * @see descent.internal.unittest.model.ITestRunListener2#testTreeEntry(java.lang.String)
-		 */
-		public void testTreeEntry(String description) {
-			TestElement testElement= addTreeEntry(description);
-			
-			Object[] listeners= fSessionListeners.getListeners();
-			for (int i= 0; i < listeners.length; ++i) {
-				((ITestSessionListener) listeners[i]).testAdded(testElement);
-			}
-		}
-	
-		public void testStarted(String testId, String testName) {
-			TestElement testElement= getTestElement(testId);
-			if (! (testElement instanceof TestCaseElement)) {
-				logUnexpectedTest(testId, testElement);
-				return;
-			}
-			TestCaseElement testCaseElement= (TestCaseElement) testElement;
-			setStatus(testCaseElement, Status.RUNNING);
+		
+		public void testStarted(ITestSpecification test)
+		{
+			TestElement testElement = fIdToTest.get(test.getId());
+			TestCaseElement testCaseElement = (TestCaseElement) testElement;
+			testCaseElement.setStatus(Status.RUNNING);
 			
 			fStartedCount++;
 			
@@ -406,126 +396,42 @@ public class TestRunSession {
 				((ITestSessionListener) listeners[i]).testStarted(testCaseElement);
 			}
 		}
-	
-		public void testEnded(String testId, String testName) {
-			TestElement testElement= getTestElement(testId);
-			if (! (testElement instanceof TestCaseElement)) {
-				logUnexpectedTest(testId, testElement);
-				return;
-			}
-			TestCaseElement testCaseElement= (TestCaseElement) testElement;
-			if (testName.startsWith("@Ignore: ")) { //$NON-NLS-1$
-				testCaseElement.setIgnored(true);
-				fIgnoredCount++;
-			}
-
-			if (testCaseElement.getStatus() == Status.RUNNING)
-				setStatus(testCaseElement, Status.OK);
-			
-			Object[] listeners= fSessionListeners.getListeners();
-			for (int i= 0; i < listeners.length; ++i) {
-				((ITestSessionListener) listeners[i]).testEnded(testCaseElement);
-			}
-		}
 		
-		/* (non-Javadoc)
-		 * @see descent.internal.unittest.model.ITestRunListener2#testFailed(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-		 */
-		public void testFailed(int statusCode, String testId, String testName, String trace) {
-			TestElement testElement= getTestElement(testId);
-			if (testElement == null) {
-				logUnexpectedTest(testId, testElement);
-				return;
-			}
+		public void testEnded(ITestSpecification test, ITestResult result)
+		{
+			TestElement testElement = fIdToTest.get(test.getId());
+			TestCaseElement testCaseElement = (TestCaseElement) testElement;
 
-			Status status= Status.convert(statusCode);
-			setStatus(testElement, status, trace);
+			Status status = Status.statusOf(result);
+			testCaseElement.setResult(result);
 			
-			if (statusCode == ITestRunListener.STATUS_ERROR) {
+			if (status.isError())
 				fErrorCount++;
-			} else {
+			else if(status.isFailure())
 				fFailureCount++;
-			}
 			
 			Object[] listeners= fSessionListeners.getListeners();
 			for (int i= 0; i < listeners.length; ++i) {
-				((ITestSessionListener) listeners[i]).testFailed(testElement, status, trace);
+				((ITestSessionListener) listeners[i]).testEnded(testCaseElement, result);
 			}
 		}
 
-		private String nullifyEmpty(String string) {
-			int length= string.length();
-			if (length == 0)
-				return null;
-			else if (string.charAt(length - 1) == '\n')
-				return string.substring(0, length - 1);
-			else
-				return string;
-		}
-		
-		/* (non-Javadoc)
-		 * @see descent.internal.unittest.model.ITestRunListener2#testReran(java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
-		 */
-		public void testReran(String testId, String testName, int statusCode, String trace) {
-			TestElement testElement= getTestElement(testId);
-			if (! (testElement instanceof TestCaseElement)) {
-				logUnexpectedTest(testId, testElement); //JTODO: rerun suites?
-				return;
-			}
-			TestCaseElement testCaseElement= (TestCaseElement) testElement;
+		public void testReran(ITestSpecification test, ITestResult result)
+		{
+			TestElement testElement = fIdToTest.get(test.getId());
+			TestCaseElement testCaseElement = (TestCaseElement) testElement;
+
+			Status status = Status.statusOf(result);
+			testCaseElement.setResult(result);
 			
-			Status status= Status.convert(statusCode);
-			if (status == Status.ERROR)
+			if (status.isError())
 				fErrorCount++;
-			else if (status == Status.FAILURE)
+			else if(status.isFailure())
 				fFailureCount++;
-			testCaseElement.setStatus(status, trace);
 			
 			Object[] listeners= fSessionListeners.getListeners();
 			for (int i= 0; i < listeners.length; ++i) {
-				//JTODO: post old & new status?
-				((ITestSessionListener) listeners[i]).testReran(testCaseElement, status, trace);
-			}
-		}
-	
-		private void setStatus(TestElement testElement, Status status) {
-			testElement.setStatus(status);
-		}
-		
-		private void setStatus(TestElement testElement, Status status, String trace) {
-			testElement.setStatus(status, trace);
-		}
-		
-		private void logUnexpectedTest(String testId, TestElement testElement) {
-			DescentUnittestPlugin.log(new Exception("Unexpected TestElement type for testId '" + testId + "': " + testElement)); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
-
-	private static class IncompleteTestSuite {
-		public TestSuiteElement fTestSuiteElement;
-		public int fOutstandingChildren;
-		
-		public IncompleteTestSuite(TestSuiteElement testSuiteElement, int outstandingChildren) {
-			fTestSuiteElement= testSuiteElement;
-			fOutstandingChildren= outstandingChildren;
-		}
-	}
-
-	public TestElement[] getAllFailedTestElements() {
-		ArrayList failures= new ArrayList();
-		addFailures(failures, getTestRoot());
-		return (TestElement[]) failures.toArray(new TestElement[failures.size()]);
-	}
-
-	private void addFailures(ArrayList failures, TestElement testElement) {
-		if (testElement.getStatus().isErrorOrFailure()) {
-			failures.add(testElement);
-		}
-		if (testElement instanceof TestSuiteElement) {
-			TestSuiteElement testSuiteElement= (TestSuiteElement) testElement;
-			TestElement[] children= testSuiteElement.getChildren();
-			for (int i= 0; i < children.length; i++) {
-				addFailures(failures, children[i]);
+				((ITestSessionListener) listeners[i]).testReran(testCaseElement, result);
 			}
 		}
 	}

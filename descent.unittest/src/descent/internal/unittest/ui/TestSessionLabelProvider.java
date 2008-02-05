@@ -45,7 +45,7 @@ public class TestSessionLabelProvider extends LabelProvider {
 			
 		} else if (element instanceof TestElement) {
 			TestElement testElement= (TestElement) element;
-			String testName= testElement.getTestName();
+			String testName= testElement.getName();
 			return getElementLabel(testName, testElement);
 		} else {
 			throw new IllegalArgumentException(String.valueOf(element));

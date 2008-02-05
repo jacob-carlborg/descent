@@ -12,6 +12,10 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,35 +31,75 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.util.IOpenEventListener;
 import org.eclipse.jface.util.OpenStrategy;
 
+import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
+import descent.internal.unittest.ui.ITraceDisplay.LineType;
+import descent.unittest.IStackTraceElement;
+import descent.unittest.ITestResult;
+import descent.unittest.ITestResult.ResultType;
 
 /**
  * A pane that shows a stack trace of a failed test.
  */
-public class FailureTrace implements IMenuListener {
-    private static final int MAX_LABEL_LENGTH = 256;
+public class FailureTrace implements IMenuListener
+{	
+	/**
+	 * Was TextualTrace, but considering that there's no text involved and this
+	 * is quite a bit simpler, I thought an inner class would be fine.
+	 */
+	private static class TraceDisplayHandler
+	{
+		private static final int MAX_LABEL_LENGTH = 256;
+		
+		final ITestResult result;
+		
+		TraceDisplayHandler(ITestResult result)
+		{
+			this.result = result;
+		}
+		
+		public void display(ITraceDisplay table)
+		{
+			// TODO
+			
+		}
+		
+		private void displayWrappedLine(ITraceDisplay display, String line,
+				LineType type) {
+			final int labelLength = line.length();
+			if (labelLength < MAX_LABEL_LENGTH) {
+				display.addTraceLine(type, line);
+			} else {
+				// workaround for bug 74647: JUnit view truncates
+				// failure message
+				display.addTraceLine(type, line.substring(0, MAX_LABEL_LENGTH));
+				int offset = MAX_LABEL_LENGTH;
+				while (offset < labelLength) {
+					int nextOffset = Math.min(labelLength, offset + MAX_LABEL_LENGTH);
+					display.addTraceLine(LineType.NORMAL, line.substring(offset,
+							nextOffset));
+					offset = nextOffset;
+				}
+			}
+		}
+	}
     
     static final String FRAME_PREFIX= "at "; //$NON-NLS-1$
 	private Table fTable;
 	private TestRunnerViewPart fTestRunner;
-	private String fInputTrace;
+	private ITestResult fInputResult;
 	private final Clipboard fClipboard;
     private TestElement fFailure;
-    private CompareResultsAction fCompareAction;
 	private final FailureTableDisplay fFailureTableDisplay;
 
 	public FailureTrace(Composite parent, Clipboard clipboard, TestRunnerViewPart testRunner, ToolBar toolBar) {
-		Assert.isNotNull(clipboard);
+		assert(null != clipboard);
 		
 		// fill the failure trace viewer toolbar
-		ToolBarManager failureToolBarmanager= new ToolBarManager(toolBar);
-		fCompareAction = new CompareResultsAction(this);
-		fCompareAction.setEnabled(false);
-        failureToolBarmanager.add(fCompareAction);			
+		ToolBarManager failureToolBarmanager= new ToolBarManager(toolBar);		
 		failureToolBarmanager.update(true);
 		
 		fTable= new Table(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -65,9 +109,6 @@ public class FailureTrace implements IMenuListener {
 		OpenStrategy handler = new OpenStrategy(fTable);
 		handler.addOpenListener(new IOpenEventListener() {
 			public void handleOpen(SelectionEvent e) {
-				if (fTable.getSelectionIndex() == 0 && fFailure.isComparisonFailure()) {
-					(new CompareResultsAction(FailureTrace.this)).run();
-				}
 				if (fTable.getSelection().length != 0) {
 					Action a = createOpenEditorAction(getSelectedText());
 					if (a != null)
@@ -96,13 +137,10 @@ public class FailureTrace implements IMenuListener {
 				manager.add(a);		
 			manager.add(new JUnitCopyAction(FailureTrace.this, fClipboard));
 		}
-		// fix for bug 68058
-		if (fFailure != null && fFailure.isComparisonFailure()) 
-			manager.add(new CompareResultsAction(FailureTrace.this));
 	}
 
-	public String getTrace() {
-		return fInputTrace;
+	public ITestResult getTestResult() {
+		return fInputResult;
 	}
 	
 	private String getSelectedText() {
@@ -144,39 +182,41 @@ public class FailureTrace implements IMenuListener {
 	 * Refresh the table from the trace.
 	 */
 	public void refresh() {
-		updateTable(fInputTrace);
+		updateTable(fInputResult);
 	}
 	
 	/**
 	 * Shows a TestFailure
 	 * @param test the failed test
 	 */
-	public void showFailure(TestElement test) {	
-	    fFailure= test;
-	    String trace= ""; //$NON-NLS-1$
-	    updateEnablement(test);
-	    if (test != null) 
-	        trace= test.getTrace();
-		if (fInputTrace == trace)
+	public void showFailure(TestElement test)
+	{	
+	    fFailure = test;
+	    ITestResult result = null;
+	    
+	    if (test != null && test instanceof TestCaseElement) 
+	    {
+	    	TestCaseElement tce = (TestCaseElement) test;
+	    	if(tce.getStatus().isErrorOrFailure())
+	    		result = tce.getResult();
+	    }
+	    
+		if (fInputResult == result)
 			return;
-		fInputTrace= trace;
-		updateTable(trace);
+		
+		fInputResult = result;
+		updateTable(result);
 	}
 
-	public void updateEnablement(TestElement test) {
-		fCompareAction.setEnabled(test != null && test.isComparisonFailure());
-	}
-
-	private void updateTable(String trace) {
-		if(trace == null || trace.trim().equals("")) { //$NON-NLS-1$
+	private void updateTable(ITestResult result) {
+		if(result == null) { //$NON-NLS-1$
 			clear();
 			return;
 		}
-		trace= trace.trim();
+		
 		fTable.setRedraw(false);
 		fTable.removeAll();
-		new TextualTrace(trace).display(
-				fFailureTableDisplay, MAX_LABEL_LENGTH);
+		(new TraceDisplayHandler(result)).display(fFailureTableDisplay);
 		fTable.setRedraw(true);
 	}
 
@@ -195,13 +235,18 @@ public class FailureTrace implements IMenuListener {
 	 */
 	public void clear() {
 		fTable.removeAll();
-		fInputTrace= null;
+		fInputResult = null;
 	}
 
     public TestElement getFailedTest() {
         return fFailure;
     }
-
+    
+    public String getTraceAsString()
+	{
+		return ""; // TODO
+	}
+    
     public Shell getShell() {
         return fTable.getShell();
     }

@@ -17,12 +17,12 @@ import java.util.List;
 
 public class TestSuiteElement extends TestElement {
 	
-	private List/*<TestElement>*/ fChildren;
+	private List<TestElement> fChildren;
 	private Status fChildrenStatus;
 	
-	public TestSuiteElement(TestSuiteElement parent, String id, String testName, int childrenCount) {
+	public TestSuiteElement(TestSuiteElement parent, String id, String testName) {
 		super(parent, id, testName);
-		fChildren= new ArrayList(childrenCount);
+		fChildren= new ArrayList<TestElement>();
 	}
 
 	public void addChild(TestElement child) {

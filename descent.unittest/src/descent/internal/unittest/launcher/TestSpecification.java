@@ -1,12 +1,6 @@
 package descent.internal.unittest.launcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import descent.core.ICompilationUnit;
 import descent.core.IInitializer;
-import descent.core.IJavaProject;
-import descent.core.IType;
 import descent.unittest.ITestSpecification;
 
 public final class TestSpecification implements ITestSpecification
@@ -35,28 +29,6 @@ public final class TestSpecification implements ITestSpecification
 	public IInitializer getDeclaration()
 	{
 		return declaration;
-	}
-	
-	public IType[] getEnclosingTypes()
-	{
-		List<IType> types = new ArrayList<IType>(4);
-		IType type = declaration.getDeclaringType();
-		while(null != type)
-		{
-			types.add(type);
-			type = type.getDeclaringType();
-		}
-		return types.toArray(new IType[types.size()]);
-	}
-	
-	public ICompilationUnit getModule()
-	{
-		return declaration.getCompilationUnit();
-	}
-	
-	public IJavaProject getProject()
-	{
-		return declaration.getJavaProject();
 	}
 	
 	@Override

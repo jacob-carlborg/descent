@@ -10,6 +10,14 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
-public interface ITraceDisplay {
-	public abstract void addTraceLine(int lineType, String label);
+public interface ITraceDisplay
+{
+	public enum LineType
+	{
+		EXCEPTION,
+		STACK_FRAME,
+		NORMAL;
+	}
+	
+	public abstract void addTraceLine(LineType lineType, String label);
 }
