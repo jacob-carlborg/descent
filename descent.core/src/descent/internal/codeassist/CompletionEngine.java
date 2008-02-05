@@ -94,6 +94,7 @@ import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SwitchStatement;
+import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.ThisExp;
@@ -1585,6 +1586,14 @@ public class CompletionEngine extends Engine
 					}
 					relevance += R_METHOD;
 					
+					Type type = func.type();
+					if (type instanceof TypeFunction) {
+						Type retType = type.next;
+						if (retType != null) {
+							relevance += computeRelevanceForExpectedType(retType.getSignature().toCharArray());
+						}
+					}
+					
 					CompletionProposal proposal = this.createProposal(
 							opCall ? 
 									CompletionProposal.OP_CALL : 
@@ -2045,6 +2054,9 @@ public class CompletionEngine extends Engine
 	private void findKeywords(char[] keyword, char[][] choices, boolean canCompleteEmptyToken) {
 		if(choices == null || choices.length == 0) return;
 		
+		boolean isExpectingBool = expectedType != null && expectedType.length == 1 &&
+			expectedType[0] == TY.Tbool.mangleChar;
+		
 		int length = keyword.length;
 		if (canCompleteEmptyToken || length > 0)
 			for (int i = 0; i < choices.length; i++)
@@ -2054,13 +2066,14 @@ public class CompletionEngine extends Engine
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(keyword, choices[i]);
-//					relevance += computeRelevanceForRestrictions(IAccessRule.K_ACCESSIBLE); // no access restriction for keywors
 					
-//					if(CharOperation.equals(choices[i], Keywords.TRUE) || CharOperation.equals(choices[i], Keywords.FALSE)) {
-//						relevance += computeRelevanceForExpectingType(TypeBinding.BOOLEAN);
-//						relevance += computeRelevanceForQualification(false);
-//					}
-//					this.noProposal = false;
+					if (isExpectingBool && (
+							CharOperation.equals(choices[i], TOK.TOKtrue.charArrayValue) ||
+							CharOperation.equals(choices[i], TOK.TOKfalse.charArrayValue))) {
+						relevance += R_EXACT_EXPECTED_TYPE;
+						relevance += R_TRUE_OR_FALSE;
+					}
+					
 					if(!this.requestor.isIgnored(CompletionProposal.KEYWORD)) {
 						if (knownKeywords.containsKey(choices[i])) {
 							continue;

@@ -6589,11 +6589,11 @@ public class Parser extends Lexer {
 			e1 = parseExpression();
 			check(TOKcolon);
 			e2 = parseCondExp();
-			e = new CondExp(loc(), e, e1, e2);
+			e = newCondExp(loc(), e, e1, e2);
 		}
 		return e;
 	}
-	
+
 	private Expression parseAssignExp()
 	{   Expression e;
 	    Expression e2;
@@ -7170,6 +7170,10 @@ public class Parser extends Lexer {
 
 	protected Expression newCatAssignExp(Loc loc, Expression e, Expression e2) {
 		return new CatAssignExp(loc, e, e2);
+	}
+	
+	protected Expression newCondExp(Loc loc, Expression e, Expression e1, Expression e2) {
+		return new CondExp(loc, e, e1, e2);
 	}
 	
 	/**

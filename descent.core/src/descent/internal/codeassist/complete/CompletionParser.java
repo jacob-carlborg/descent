@@ -11,6 +11,7 @@ import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.CondExp;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DebugCondition;
 import descent.internal.compiler.parser.DebugSymbol;
@@ -385,10 +386,104 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected Expression newAssignExp(Loc loc, Expression e, Expression e2) {
-		if (e2 == assistNode) {
-			expectedTypeNode = e;
-		}
+		analyzeBinExp(e, e2);
 		return super.newAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newAddAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newAddAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newAndAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newAndAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newCatAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newCatAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newDivAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newDivAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newMinAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newMinAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newModAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newModAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newMulAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newMulAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newOrAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newOrAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newShlAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newShlAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newShrAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newShrAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newUshrAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newUshrAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newXorAssignExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newXorAssignExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newCondExp(Loc loc, Expression e, Expression e1, Expression e2) {
+		return super.newCondExp(loc, e, e1, e2);
+	}
+	
+	private void analyzeBinExp(Expression e, Expression e2) {
+		if (e2 == assistNode ||
+				(e2 != null && e.start + e.length <= cursorLocation && cursorLocation <= e2.start)) {
+			expectedTypeNode = e;
+			return;
+		}
+		
+		// If it's for:
+		// x = one ? two : |
+		// the expected type is the type of x
+		if (e2 instanceof CondExp) {
+			CondExp cond = (CondExp) e2;
+			if (cond.e1.start + cond.e1.length <= cursorLocation && 
+					cursorLocation <= cond.e2.start + cond.e2.length) {
+				expectedTypeNode = e;
+			}
+		}
 	}
 	
 	private boolean inCompletion() {

@@ -36,7 +36,7 @@ public interface RelevanceConstants {
 	int R_NAME_LESS_NEW_CHARACTERS = 15;
 	int R_METHOD_OVERIDE = 3;
 	int R_NON_RESTRICTED = 3;
-	int R_TRUE_OR_FALSE = 1;
+	int R_TRUE_OR_FALSE = 40;
 	int R_INLINE_TAG = 31;
 	int R_VALUE_TAG = 31;
 	int R_CONSTRUCTOR = 10;
