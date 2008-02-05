@@ -93,10 +93,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	
 	protected final String getSimpleTypeName() {
 		if (fSimpleName == null) {
-			fSimpleName= new String(fProposal.getCompletion());
-			if (fSimpleName.endsWith("()")) { //$NON-NLS-1$
-				fSimpleName = fSimpleName.substring(0, fSimpleName.length() - 2);
-			}
+			fSimpleName= new String(fProposal.getName());
 		}
 		return fSimpleName;
 	}

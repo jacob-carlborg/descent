@@ -56,6 +56,7 @@ public class CompletionParser extends Parser {
 	// version identifier in a CompletionOnVersionCondition
 	public HashtableOfCharArrayAndObject versions;
 	public HashtableOfCharArrayAndObject debugs;
+	public ASTDmdNode expectedTypeNode;
 
 	public CompletionParser(int apiLevel, char[] source, char[] filename) {
 		super(apiLevel, source, 0, source.length, null, null, false, filename);
@@ -380,6 +381,14 @@ public class CompletionParser extends Parser {
 		} else {
 			return super.newBlock(statements, start, length);
 		}
+	}
+	
+	@Override
+	protected Expression newAssignExp(Loc loc, Expression e, Expression e2) {
+		if (e2 == assistNode) {
+			expectedTypeNode = e;
+		}
+		return super.newAssignExp(loc, e, e2);
 	}
 	
 	private boolean inCompletion() {

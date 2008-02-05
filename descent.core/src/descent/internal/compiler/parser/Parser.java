@@ -6603,19 +6603,19 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = new AssignExp(loc(), e, e2); continue;
-		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = new AddAssignExp(loc(), e, e2); continue;
-		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = new MinAssignExp(loc(), e, e2); continue;
-		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = new MulAssignExp(loc(), e, e2); continue;
-		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = new DivAssignExp(loc(), e, e2); continue;
-		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = new ModAssignExp(loc(), e, e2); continue;
-		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = new AndAssignExp(loc(), e, e2); continue;
-		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = new OrAssignExp(loc(), e, e2); continue;
-		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = new XorAssignExp(loc(), e, e2); continue;
-		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = new ShlAssignExp(loc(), e, e2); continue;
-		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = new ShrAssignExp(loc(), e, e2); continue;
-		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = new UshrAssignExp(loc(), e, e2); continue;
-		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = new CatAssignExp(loc(), e, e2); continue;
+		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = newAssignExp(loc(), e, e2); continue;
+		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = newAddAssignExp(loc(), e, e2); continue;
+		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = newMinAssignExp(loc(), e, e2); continue;
+		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = newMulAssignExp(loc(), e, e2); continue;
+		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = newDivAssignExp(loc(), e, e2); continue;
+		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = newModAssignExp(loc(), e, e2); continue;
+		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = newAndAssignExp(loc(), e, e2); continue;
+		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = newOrAssignExp(loc(), e, e2); continue;
+		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = newXorAssignExp(loc(), e, e2); continue;
+		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = newShlAssignExp(loc(), e, e2); continue;
+		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = newShrAssignExp(loc(), e, e2); continue;
+		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = newUshrAssignExp(loc(), e, e2); continue;
+		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = newCatAssignExp(loc(), e, e2); continue;
 	    default:
 			break;
 		}
@@ -6623,7 +6623,7 @@ public class Parser extends Lexer {
 	    }
 	    return e;
 	}
-	
+
 	public Expression parseExpression() {
 		if (token.value == null) nextToken();
 		
@@ -7118,6 +7118,58 @@ public class Parser extends Lexer {
 
 	protected ThisExp newThisExp(Loc loc) {
 		return new ThisExp(loc);
+	}
+	
+	protected Expression newAssignExp(Loc loc, Expression e, Expression e2) {
+		return new AssignExp(loc, e, e2);
+	}
+
+	protected Expression newAddAssignExp(Loc loc, Expression e, Expression e2) {
+		return new AddAssignExp(loc, e, e2);
+	}
+
+	protected Expression newMinAssignExp(Loc loc, Expression e, Expression e2) {
+		return new MinAssignExp(loc, e, e2);
+	}
+
+	protected Expression newMulAssignExp(Loc loc, Expression e, Expression e2) {
+		return new MulAssignExp(loc, e, e2);
+	}
+
+	protected Expression newDivAssignExp(Loc loc, Expression e, Expression e2) {
+		return new DivAssignExp(loc, e, e2);
+	}
+
+	protected Expression newModAssignExp(Loc loc, Expression e, Expression e2) {
+		return new ModAssignExp(loc, e, e2);
+	}
+
+	protected Expression newAndAssignExp(Loc loc, Expression e, Expression e2) {
+		return new AndAssignExp(loc, e, e2);
+	}
+
+	protected Expression newOrAssignExp(Loc loc, Expression e, Expression e2) {
+		return new OrAssignExp(loc, e, e2);
+	}
+
+	protected Expression newXorAssignExp(Loc loc, Expression e, Expression e2) {
+		return new XorAssignExp(loc, e, e2);
+	}
+
+	protected Expression newShlAssignExp(Loc loc, Expression e, Expression e2) {
+		return new ShlAssignExp(loc, e, e2);
+	}
+
+	protected Expression newShrAssignExp(Loc loc, Expression e, Expression e2) {
+		return new ShrAssignExp(loc, e, e2);
+	}
+
+	protected Expression newUshrAssignExp(Loc loc, Expression e, Expression e2) {
+		return new UshrAssignExp(loc, e, e2);
+	}
+
+	protected Expression newCatAssignExp(Loc loc, Expression e, Expression e2) {
+		return new CatAssignExp(loc, e, e2);
 	}
 	
 	/**

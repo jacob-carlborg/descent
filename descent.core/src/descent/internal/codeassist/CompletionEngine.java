@@ -11,6 +11,7 @@ import descent.core.CompletionRequestor;
 import descent.core.Flags;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
+import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.ddoc.Ddoc;
 import descent.core.ddoc.DdocMacros;
@@ -161,12 +162,15 @@ public class CompletionEngine extends Engine
 	
 	char[] source;
 	char[] currentName;
+	char[] expectedType;
 	
 	HashtableOfObject typeCache;
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	HashtableOfObject knownKeywords = new HashtableOfObject(10);
 	HashtableOfObject knownDeclarations = new HashtableOfObject(10);
+	
+	boolean semanticRun = false;
 	
 	boolean isCompletingPackage;
 	boolean isCompletingTypeIdentifier;
@@ -265,6 +269,12 @@ public class CompletionEngine extends Engine
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
+			// If there's an expected type, doSemantic to find it out
+			if (parser.expectedTypeNode != null) {
+				doSemantic();
+				computeExpectedType();
+			}
+			
 			// First the assist node
 			if (assistNode != null) {
 				if (assistNode instanceof CompletionOnModuleDeclaration && 
@@ -354,6 +364,21 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	private void computeExpectedType() {
+		if (parser.expectedTypeNode instanceof Expression) {
+			Expression exp = (Expression) parser.expectedTypeNode;
+			Type type = exp.type;
+			if (type == null) {
+				if (exp.resolvedExpression != null) {
+					type = exp.resolvedExpression.type;
+				}
+			}
+			if (type != null) {
+				expectedType = type.getSignature().toCharArray();
+			}
+		}
+	}
+
 	private void completeCompoundStatement(CompletionOnCompoundStatement node) throws JavaModelException {
 		doSemantic();
 		
@@ -375,6 +400,11 @@ public class CompletionEngine extends Engine
 	}
 
 	private void doSemantic() throws JavaModelException {
+		if (semanticRun) {
+			return;
+		}
+		
+		semanticRun = true;
 		semanticContext = CompilationUnitResolver.resolve(module, this.javaProject, null);
 	}
 
@@ -1302,6 +1332,12 @@ public class CompletionEngine extends Engine
 	 * Suggest a member with it's name.
 	 */
 	private void suggestMember(IDsymbol member, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		if (member instanceof AttribDeclaration) {
+			AttribDeclaration attrib = (AttribDeclaration) member;
+			suggestMembers(attrib.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+			return;
+		}
+		
 		if (member.ident() == null || member.ident().ident == null) {
 			return;
 		}
@@ -1313,13 +1349,6 @@ public class CompletionEngine extends Engine
 	 * Suggest a member with another name (for aliases).
 	 */
 	private void suggestMember(IDsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
-		// TODO Descent don't allow all of the attrib declarations to enter
-		if (member instanceof AttribDeclaration) {
-			AttribDeclaration attrib = (AttribDeclaration) member;
-			suggestMembers(attrib.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
-			return;
-		}
-		
 		if (!isVisible(member)) {
 			return;
 		}
@@ -1355,9 +1384,13 @@ public class CompletionEngine extends Engine
 			IVarDeclaration var = member.isVarDeclaration();
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
+					char[] sig = var.getSignature().toCharArray();
+					char[] typeName = var.type().getSignature().toCharArray();
+					
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
+					relevance += computeRelevanceForExpectedType(typeName);
 					
 					boolean isLocal = var.parent() instanceof IFuncDeclaration;
 					
@@ -1367,12 +1400,11 @@ public class CompletionEngine extends Engine
 						relevance += R_VAR;	
 					}
 					
-					char[] sig = var.getSignature().toCharArray();
-					
 					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					proposal.setTypeName(var.type().getSignature().toCharArray());
+					
+					proposal.setTypeName(typeName);
 					proposal.setSignature(sig);
 					proposal.setFlags(flags | var.getFlags());
 					proposal.setRelevance(relevance);
@@ -1422,7 +1454,10 @@ public class CompletionEngine extends Engine
 						return;
 					}
 					
-					proposal.setTypeName(sig.toCharArray());
+					char[] sigChars = sig.toCharArray();
+					relevance += computeRelevanceForExpectedType(sigChars);
+					
+					proposal.setTypeName(sigChars);
 					proposal.setFlags(flags | alias.getFlags() | Flags.AccAlias);
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1435,9 +1470,12 @@ public class CompletionEngine extends Engine
 			ITypedefDeclaration typedef = member.isTypedefDeclaration();
 			if (typedef != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
+					char[] sigChars = typedef.getSignature().toCharArray();
+					
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
+					relevance += computeRelevanceForExpectedType(sigChars);
 					relevance += R_TYPEDEF;
 					
 					boolean isLocal = typedef.parent() instanceof IFuncDeclaration;
@@ -1445,7 +1483,7 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					proposal.setSignature(typedef.getSignature().toCharArray());
+					proposal.setSignature(sigChars);
 					proposal.setTypeName(typedef.basetype().getSignature().toCharArray());
 					proposal.setFlags(flags | typedef.getFlags() | Flags.AccTypedef);
 					proposal.setRelevance(relevance);
@@ -1455,17 +1493,21 @@ public class CompletionEngine extends Engine
 				return;
 			}
 			
+			
 			if (isType) {
 				if (currentName.length == 0 || match(currentName, ident)) {
+					char[] sigChars = member.getSignature().toCharArray();
+					
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
+					relevance += computeRelevanceForExpectedType(sigChars);
 					relevance += R_CLASS;
 					
 					CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					proposal.setSignature(member.getSignature().toCharArray());
+					proposal.setSignature(sigChars);
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1700,6 +1742,8 @@ public class CompletionEngine extends Engine
 			char[] property = properties[i];
 			char[] type = types[i];
 			if (currentName.length == 0 || match(currentName, property)) {
+				relevance += computeRelevanceForExpectedType(type);
+				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 				proposal.setName(property);
 				proposal.setCompletion(property);
@@ -2122,10 +2166,21 @@ public class CompletionEngine extends Engine
 		}
 		knownDeclarations.put(fullName, this);
 		
+		StringBuilder sig = new StringBuilder();
+		sig.append(MODULE);
+		sig.append(packageName.length);
+		sig.append(packageName);
+		sig.append(CLASS);
+		sig.append(typeName.length);
+		sig.append(typeName);
+		
+		char[] sigChar = sig.toString().toCharArray();
+		
 		CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForCaseMatching(currentName, typeName);
+		relevance += computeRelevanceForExpectedType(sigChar);
 		relevance += R_CLASS;
 		
 		if (isImported(packageName)) {
@@ -2137,15 +2192,7 @@ public class CompletionEngine extends Engine
 		
 		proposal.setName(typeName);
 		
-		StringBuilder sig = new StringBuilder();
-		sig.append(MODULE);
-		sig.append(packageName.length);
-		sig.append(packageName);
-		sig.append(CLASS);
-		sig.append(typeName.length);
-		sig.append(typeName);
-		
-		proposal.setSignature(sig.toString().toCharArray());
+		proposal.setSignature(sigChar);
 		proposal.setFlags(modifiers);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2184,6 +2231,7 @@ public class CompletionEngine extends Engine
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForCaseMatching(currentName, name);
+		relevance += computeRelevanceForExpectedType(typeName);
 		relevance += R_VAR;
 		
 		if (isImported(packageName)) {
@@ -2264,6 +2312,7 @@ public class CompletionEngine extends Engine
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForCaseMatching(currentName, name);
+		relevance += computeRelevanceForExpectedType(Signature.getReturnType(signature));
 		relevance += R_METHOD;
 		
 		if (isImported(packageName)) {
@@ -2281,6 +2330,44 @@ public class CompletionEngine extends Engine
 		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
+	private int computeRelevanceForExpectedType(char[] signature) {
+		if (expectedType == null) {
+			return 0;
+		}
+		
+		if (CharOperation.equals(expectedType, signature)) {
+			return R_EXACT_EXPECTED_TYPE;
+		} 
+		
+		// It may be that the signature is unresolved, so... use
+		// an heuristic here
+		int i = CharOperation.indexOf('?', signature);
+		if (i != -1) {
+			i++;
+			int start = i;
+			char c = signature[start];
+			
+			// Read number to see what's the type name
+			int n = 0;
+			while(Character.isDigit(c)) {
+				n = 10 * n + (c - '0');
+				i++;
+				if (i >= signature.length) {
+					return 0;
+				}
+				c = signature[i];
+			}
+			i += n;
+			
+			char[] name = CharOperation.subarray(signature, start + 1, i);
+			if (CharOperation.indexOf(name, expectedType, true, 0) != -1) {
+				return R_EXPECTED_TYPE;
+			}
+		}
+		
+		return 0;
+	}
+
 	private boolean isImported(char[] fullyQualifiedName) {
 		if (module.aimports != null) {
 			for(Object sym : module.aimports) {
