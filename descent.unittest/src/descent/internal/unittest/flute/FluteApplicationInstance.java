@@ -75,20 +75,20 @@ public class FluteApplicationInstance
 	{
 		assert(fState instanceof StartingUp);
 		assert(null == fConn);
-		try
-		{	
-			beforeWaitStateReturn();
-			
-			// Make the connection (interpretation will begin automatically)
-			fConn = new SocketConnection(fPort);
-			
-			waitStateReturn();
-			assert(((StartingUp) fState).hasCorrectVersion);
-		}
-		finally
-		{
-			setState(fWaitingState);
-		}
+		
+		beforeWaitStateReturn();
+		
+		// Make the connection (interpretation will begin automatically)
+		fConn = new SocketConnection(fPort);
+		
+		waitStateReturn();
+		assert(((StartingUp) fState).hasCorrectVersion);
+		setState(fWaitingState);
+	}
+	
+	public boolean isConnected()
+	{
+		return !(fState instanceof StartingUp);
 	}
 	
 	/**

@@ -118,6 +118,17 @@ public class TestRunSession {
 		
 		fTestRunnerClient= new RemoteTestRunnerClient(port, tests, listeners);
 		fSessionListeners= new ListenerList();
+		
+		// TODO error handling might be nice...
+		(new Runnable()
+			{
+				public void run()
+				{
+					fTestRunnerClient.init();
+					fTestRunnerClient.run();
+				}
+			}
+		).run();
 	}
 	
 	public TestRoot getTestRoot() {

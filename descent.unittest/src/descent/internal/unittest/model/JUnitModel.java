@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
 
 import org.eclipse.swt.widgets.Display;
@@ -211,27 +214,41 @@ public final class JUnitModel
 		ILaunchConfiguration config = launch.getLaunchConfiguration();
 		if (config == null)
 			return;
-
+		
 		// test whether the launch defines the JUnit attributes
 		String portStr = launch.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR);
 		String projectStr = launch.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME);
 		if (portStr == null || projectStr == null)
 			return;
-
-		IJavaElement element = JavaCore.create(projectStr);
-		if (!(element instanceof IJavaProject))
-			return;
-
+		
 		final int port = Integer.parseInt(portStr);
-		final IJavaProject launchedProject = (IJavaProject) element;
+		final IJavaProject launchedProject = getJavaProject(projectStr);
+		
+		if(launchedProject == null)
+			return;
+		
 		getDisplay().asyncExec(new Runnable()
 		{
 			public void run()
 			{
-				System.out.println("Here!");
-				// connectTestRunner(launch, launchedProject, port, tests);
+				connectTestRunner(launch, launchedProject, port, tests);
 			}
 		});
+	}
+	
+	public static IJavaProject getJavaProject(String projectName)
+	{
+		if (projectName != null) {
+			projectName = projectName.trim();
+			if (projectName.length() > 0) {
+				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+				IJavaProject javaProject = JavaCore.create(project);
+				if (javaProject != null && javaProject.exists()) {
+					return javaProject;
+				}
+			}
+		}
+		return null;
 	}
 	
 	private void connectTestRunner(ILaunch launch, IJavaProject project,

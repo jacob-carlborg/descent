@@ -5,9 +5,11 @@ import java.util.List;
 
 import descent.core.ICompilationUnit;
 import descent.core.IInitializer;
+import descent.core.IJavaProject;
 import descent.core.IType;
+import descent.unittest.ITestSpecification;
 
-public final class TestSpecification
+public final class TestSpecification implements ITestSpecification
 {
 	private final String id;
 	private final String name;
@@ -50,5 +52,35 @@ public final class TestSpecification
 	public ICompilationUnit getModule()
 	{
 		return declaration.getCompilationUnit();
+	}
+	
+	public IJavaProject getProject()
+	{
+		return declaration.getJavaProject();
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		if(super.equals(other))
+			return true;
+		
+		if(!(other instanceof TestSpecification))
+			return false;
+		
+		TestSpecification ts = (TestSpecification) other;
+		return getId().equals(ts.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return getId().hashCode();
+	}
+
+	@Override
+	public String toString()
+	{
+		return id;
 	}
 }

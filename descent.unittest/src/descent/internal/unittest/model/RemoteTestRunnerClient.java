@@ -46,12 +46,17 @@ public class RemoteTestRunnerClient implements Runnable
 	
 	public synchronized boolean isRunning()
 	{
-		return app != null;
+		return true; //TODO app != null;
+	}
+	
+	public synchronized boolean isConnected()
+	{
+		return true; //TODO app.isConnected();
 	}
 	
 	public void init()
 	{		
-		if(isRunning())
+		/* TODO if(isRunning())
 			return;
 		
 		try
@@ -64,7 +69,7 @@ public class RemoteTestRunnerClient implements Runnable
 		}
 		catch(IOException e)
 		{
-		}
+		} */
 	}
 	
 	public void run()
@@ -126,10 +131,13 @@ public class RemoteTestRunnerClient implements Runnable
 		{
 			try
 			{
-				app.terminate();
+				// TODO app.terminate();
 				notifyTestRunTerminated();
 			}
-			catch(IOException e)
+			/* catch(IOException e)
+			{
+			} */
+			finally
 			{
 			}
 			
@@ -172,23 +180,27 @@ public class RemoteTestRunnerClient implements Runnable
 		{
 			try
 			{
-				app.terminate();
+				// TODO app.terminate();
 			}
-			catch(IOException e)
+			/* catch(IOException e)
+			{
+			} */
+			finally
 			{
 			}
 		}
 	}
 	
-	private void runTest(TestSpecification test, boolean rerun) throws IOException
+	private void runTest(TestSpecification test, boolean rerun) 
+		throws IOException
 	{
+		System.out.println("Running " + test);
+		
 		if(!rerun)
 			notifyTestStarted(test.getId(), test.getName());
 		
-		FluteTestResult result = app.runTest(test.getId());
-		System.out.println("-------------");
-		System.out.println(result);
-		System.out.println("-------------");
+		//TODO FluteTestResult result = app.runTest(test.getId());
+		FluteTestResult result = FluteTestResult.passed();
 		
 		int statusCode;
 		switch(result.getResultType())
@@ -351,93 +363,6 @@ public class RemoteTestRunnerClient implements Runnable
 					listener.testReran(testId, testName, status, trace);
 				}
 			});
-		}
-	}
-	
-	//--------------------------------------------------------------------------
-	// Note: this is just for ad-hoc internal testing & should be removed
-	// from the final version
-	public static void main(String[] args) throws Exception
-	{
-		List<TestSpecification> tests = new ArrayList<TestSpecification>();
-		tests.add(new TestSpecification("sample.module1.0", "test1", null));
-		tests.add(new TestSpecification("sample.module1.1", "test2", null));
-		tests.add(new TestSpecification("sample.module1.2", "test3", null));
-		tests.add(new TestSpecification("sample.module1.Bar.0", "test4", null));
-		
-		List<ITestRunListener> listeners = 
-			new ArrayList<ITestRunListener>(1);
-		listeners.add(new ITestRunListener()
-		{
-			public void testEnded(String testId, String testName )
-			{
-				//System.out.println("testEnded(" + testId + ", " + testName + ");");
-			}
-
-			public void testFailed(int status, String testId, String testName,  String trace)
-			{
-				//System.out.println("testFailed(" + status + ", " + testId
-				//		+ ", " + testName + ", " + trace + ");");
-			}
-
-			public void testReran(String testId, String testName, int status, String trace)
-			{
-				//System.out.println("testReran(" + testId + ", " + testName + ", " +
-				//		+ status + ", " + trace + ");");
-			}
-
-			public void testRunEnded(long elapsedTime)
-			{
-				//System.out.println("testRunEnded();");
-			}
-
-			public void testRunStarted(int testCount)
-			{
-				//System.out.println("testRunStarted();");
-			}
-
-			public void testRunStopped(long elapsedTime)
-			{
-				//System.out.println("testRunStopped();");
-			}
-
-			public void testRunTerminated()
-			{
-				//System.out.println("testRunTerminated();");
-			}
-
-			public void testStarted(String testId, String testName)
-			{
-				//System.out.println("testStarted(" + testId + ", " + testName + ");");
-			}
-		});
-		
-		Process proc = (new ProcessBuilder(new String[] {
-				"C:/Users/xycos/workspace/descent.unittest/testdata/" +
-					"src/test.exe"
-			})).start();
-		
-		try
-		{
-			RemoteTestRunnerClient client = new RemoteTestRunnerClient(
-					30587, tests, listeners);
-			client.init();
-			client.run();
-			client.terminate();
-		}
-		finally
-		{
-			Thread.sleep(1000); // Let it finish up whatever it's doing
-			try
-			{
-				System.out.println("App finished with exit code: " +
-						proc.exitValue());
-			}
-			catch(IllegalThreadStateException e)
-			{
-				System.out.println("Had to manually kill the process");
-				proc.destroy();
-			}
 		}
 	}
 }
