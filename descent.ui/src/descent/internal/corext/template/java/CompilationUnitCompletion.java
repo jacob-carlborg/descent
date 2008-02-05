@@ -621,6 +621,7 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		setIgnored(CompletionProposal.METHOD_DECLARATION, true);
 		setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, true);
 		setIgnored(CompletionProposal.METHOD_REF, true);
+		setIgnored(CompletionProposal.OP_CALL, true);
 		setIgnored(CompletionProposal.FUNCTION_CALL, true);
 		setIgnored(CompletionProposal.PACKAGE_REF, true);
 		setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, true);

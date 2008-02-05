@@ -231,6 +231,8 @@ public class ParameterGuesser {
 			setIgnored(CompletionProposal.METHOD_DECLARATION, true);
 			setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, true);
 			setIgnored(CompletionProposal.METHOD_REF, false);
+			setIgnored(CompletionProposal.OP_CALL, false);
+			setIgnored(CompletionProposal.FUNCTION_CALL, false);
 			setIgnored(CompletionProposal.PACKAGE_REF, true);
 			setIgnored(CompletionProposal.VERSION_REF, true);
 			setIgnored(CompletionProposal.DEBUG_REF, true);
@@ -380,6 +382,8 @@ public class ParameterGuesser {
 							proposal.getFlags());
 					return;
 				case CompletionProposal.METHOD_REF:
+				case CompletionProposal.OP_CALL:
+				case CompletionProposal.FUNCTION_CALL:
 					if (Signature.getParameterCount(proposal.getSignature()) == 0)
 						acceptMethod(
 								Signature.getSignatureSimpleName(proposal.getDeclarationSignature()),

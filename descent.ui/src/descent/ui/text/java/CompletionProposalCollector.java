@@ -344,6 +344,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 				return baseRelevance + 3;
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.OP_CALL:
 			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_DECLARATION:
@@ -400,6 +401,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.JAVADOC_VALUE_REF:
 				return createFieldProposal(proposal);
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.OP_CALL:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.JAVADOC_METHOD_REF:
 				return createMethodReferenceProposal(proposal);
@@ -448,7 +450,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	 * @return the context information for <code>methodProposal</code>
 	 */
 	protected final IContextInformation createMethodContextInformation(CompletionProposal methodProposal) {
-		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF);
+		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.OP_CALL);
 		return new ProposalContextInformation(methodProposal);
 	}
 
@@ -572,6 +575,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.JAVADOC_METHOD_REF:
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.OP_CALL:
 			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:

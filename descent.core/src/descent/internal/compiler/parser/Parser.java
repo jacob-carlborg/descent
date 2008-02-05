@@ -3714,8 +3714,7 @@ public class Parser extends Lexer {
 				}
 			}
 			
-			s = newBlock(statements);
-			s.setSourceRange(start, token.ptr + token.sourceLen - start);
+			s = newBlock(statements, start, token.ptr + token.sourceLen - start);
 			
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
 				s = new ScopeStatement(loc(), s);
@@ -4219,8 +4218,7 @@ public class Parser extends Lexer {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
 			
-			s = newBlock(statements);
-			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+			s = newBlock(statements, start, prevToken.ptr + prevToken.sourceLen - start);
 			
 			s = new ScopeStatement(loc(), s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -4247,8 +4245,7 @@ public class Parser extends Lexer {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
 			
-			s = newBlock(statements);
-			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+			s = newBlock(statements, start, prevToken.ptr + prevToken.sourceLen - start);
 			
 			s = new ScopeStatement(loc(), s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -6789,8 +6786,10 @@ public class Parser extends Lexer {
 	    return associativeArray;
 	}
 	
-	private CompoundStatement newBlock(Statements statements) {
-		return new CompoundStatement(loc(), statements);
+	protected CompoundStatement newBlock(Statements statements, int start, int length) {
+		CompoundStatement cs = new CompoundStatement(loc(), statements);
+		cs.setSourceRange(start, length);
+		return cs;
 	}
 	
 	private CompoundStatement newManyVarsBlock(Statements statements) {

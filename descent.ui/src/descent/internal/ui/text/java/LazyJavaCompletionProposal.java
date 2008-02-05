@@ -394,6 +394,7 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 				return baseRelevance + 3;
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.OP_CALL:
 			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_DECLARATION:

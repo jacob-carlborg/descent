@@ -21,6 +21,7 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
+import descent.internal.codeassist.complete.CompletionOnCompoundStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnDebugCondition;
 import descent.internal.codeassist.complete.CompletionOnDotIdExp;
@@ -169,6 +170,8 @@ public class CompletionEngine extends Engine
 	
 	boolean isCompletingPackage;
 	boolean isCompletingTypeIdentifier;
+	boolean isWithScopeSymbol;
+	boolean wantConstructorsAndOpCall = true;
 	
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
@@ -314,6 +317,9 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnSuperDotExp) {
 					CompletionOnSuperDotExp node = (CompletionOnSuperDotExp) assistNode;
 					completeSuperDotExp(node);
+				} else if (assistNode instanceof CompletionOnCompoundStatement) {
+					CompletionOnCompoundStatement node = (CompletionOnCompoundStatement) assistNode;
+					completeCompoundStatement(node);
 				}
 			}
 			
@@ -348,6 +354,19 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	private void completeCompoundStatement(CompletionOnCompoundStatement node) throws JavaModelException {
+		doSemantic();
+		
+		Scope scope = node.scope;
+		
+		currentName = CharOperation.NO_CHAR;
+		startPosition = actualCompletionPosition;
+		endPosition = actualCompletionPosition;
+		
+		wantConstructorsAndOpCall = false;
+		completeScope(scope, INCLUDE_ALL);
+	}
+
 	private CompletionContext buildContext(CompletionParser parser) {
 		// TODO Descent completion context
 		CompletionContext context = new CompletionContext();
@@ -355,7 +374,7 @@ public class CompletionEngine extends Engine
 		return context;
 	}
 
-	private void doSemantic(Module module) throws JavaModelException {
+	private void doSemantic() throws JavaModelException {
 		semanticContext = CompilationUnitResolver.resolve(module, this.javaProject, null);
 	}
 
@@ -579,7 +598,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeCaseStatement(CompletionOnCaseStatement node) throws JavaModelException {
-		doSemantic(module);
+		doSemantic();
 		
 		// Check to see if the condition is an enum, and suggest
 		// the members of it
@@ -672,7 +691,7 @@ public class CompletionEngine extends Engine
 		} else {
 			// else, do semantic, then see what the type is
 			// it's typeof(exp)
-			doSemantic(module);
+			doSemantic();
 			
 			completeType(node.resolvedType, node.ident, true /* only statics */);
 		}
@@ -683,7 +702,7 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		doSemantic(module);
+		doSemantic();
 
 		completeExpression(node.e1, node.ident);
 	}
@@ -691,7 +710,7 @@ public class CompletionEngine extends Engine
 	private void completeTypeIdentifier(CompletionOnTypeIdentifier node) throws JavaModelException {
 		isCompletingTypeIdentifier = true;
 		
-		doSemantic(module);
+		doSemantic();
 		
 		if (node.dot == -1) {
 			currentName = computePrefixAndSourceRange(node.ident);
@@ -717,6 +736,10 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestConstructorsAndOpCall(IDsymbol sym) {
+		if (!wantConstructorsAndOpCall) {
+			return;
+		}
+		
 		if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
 			IScopeDsymbol cd = (IScopeDsymbol) sym;
 			if (cd.members() != null && !cd.members().isEmpty()) {
@@ -726,7 +749,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
-		doSemantic(module);
+		doSemantic();
 		
 		startPosition = node.start;
 		endPosition = node.start + node.length;
@@ -767,6 +790,8 @@ public class CompletionEngine extends Engine
 			} else {
 				currentName = sym.ident().ident;
 			}
+			
+			trySuggestCall(type, currentName, CharOperation.NO_CHAR);
 		} else if (node.exp instanceof CallExp) {
 			CallExp ce = (CallExp) node.exp;
 			if (ce.e1 instanceof IdentifierExp) {
@@ -806,7 +831,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
-		doSemantic(module);
+		doSemantic();
 		
 		if (node.dot == -1) {
 			currentName = computePrefixAndSourceRange(node);
@@ -831,14 +856,14 @@ public class CompletionEngine extends Engine
 	}
 
 	private void completeSuperDotExp(CompletionOnSuperDotExp node) throws JavaModelException {
-		doSemantic(module);
+		doSemantic();
 		
 		Type type = node.type;
 		completeTypeDot(type);
 	}
 
 	private void completeThisDotExp(CompletionOnThisDotExp node) throws JavaModelException {
-		doSemantic(module);
+		doSemantic();
 		
 		Type type = node.type;
 		completeTypeDot(type);
@@ -888,7 +913,9 @@ public class CompletionEngine extends Engine
 		if (wsc != null) {
 			VarDeclaration var = wsc.withstate.wthis;
 			if (var != null) {
+				isWithScopeSymbol = true;
 				completeType(var.type, false /* not only statics */);
+				isWithScopeSymbol = false;
 			}
 		} else {
 			if (sym instanceof IScopeDsymbol && ((IScopeDsymbol) sym).members() != null) {
@@ -1285,7 +1312,7 @@ public class CompletionEngine extends Engine
 	/*
 	 * Suggest a member with another name (for aliases).
 	 */
-	private void suggestMember(IDsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {	
+	private void suggestMember(IDsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		// TODO Descent don't allow all of the attrib declarations to enter
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
@@ -1316,7 +1343,9 @@ public class CompletionEngine extends Engine
 		if (alias != null) {
 			IDsymbol sym = alias.toAlias(semanticContext);
 			if (sym != null) {
-				suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes);
+				if (sym != alias) {
+					suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes);
+				}
 				return;
 			}
 		}
@@ -1476,7 +1505,8 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
-		if ((includes & (INCLUDE_FUNCTIONS | INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL)) != 0) {
+		if ((includes & INCLUDE_FUNCTIONS) != 0 || 
+				((includes & (INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL)) != 0 && wantConstructorsAndOpCall)) {
 			// See if it's a function
 			IFuncDeclaration func = member.isFuncDeclaration();
 			if (func != null) {
@@ -1499,9 +1529,10 @@ public class CompletionEngine extends Engine
 				
 				boolean constructor = (includes & INCLUDE_CONSTRUCTORS) != 0;
 				boolean opCall = (includes & INCLUDE_OPCALL) != 0;
+				boolean funcNameIsOpCall = CharOperation.equals(funcName, Id.call);
 				if (currentName.length == 0 || match(currentName, ident)
 						|| (constructor && CharOperation.equals(funcName, Id.ctor)) 
-						|| (opCall && CharOperation.equals(funcName, Id.call))) {
+						|| (opCall && funcNameIsOpCall)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					if (constructor || opCall) {
@@ -1512,7 +1543,11 @@ public class CompletionEngine extends Engine
 					}
 					relevance += R_METHOD;
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(
+							opCall ? 
+									CompletionProposal.OP_CALL : 
+									CompletionProposal.METHOD_REF, 
+								this.actualCompletionPosition);
 					
 					if (constructor || opCall) {
 						proposal.setName(currentName);
@@ -1545,7 +1580,7 @@ public class CompletionEngine extends Engine
 	 */
 	private void trySuggestCall(Type type, char[] ident, char[] signature) {
 		// We are completing a type, don't suggest a call
-		if (isCompletingTypeIdentifier) {
+		if (isCompletingTypeIdentifier || !wantConstructorsAndOpCall) {
 			return;
 		}
 		
@@ -1999,7 +2034,11 @@ public class CompletionEngine extends Engine
 	}
 	
 	int computeBaseRelevance(){
-		return R_DEFAULT;
+		int relevance = R_DEFAULT;
+		if (isWithScopeSymbol) {
+			relevance += R_WITH;
+		}
+		return relevance;
 	}
 	
 	int computeRelevanceForInterestingProposal(){

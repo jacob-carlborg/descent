@@ -93,10 +93,9 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	
 	protected final String getSimpleTypeName() {
 		if (fSimpleName == null) {
-			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
-			int indexOfParen = fSimpleName.indexOf('(');
-			if (indexOfParen != -1) {
-				fSimpleName = fSimpleName.substring(0, indexOfParen);
+			fSimpleName= new String(fProposal.getCompletion());
+			if (fSimpleName.endsWith("()")) { //$NON-NLS-1$
+				fSimpleName = fSimpleName.substring(0, fSimpleName.length() - 2);
 			}
 		}
 		return fSimpleName;
@@ -135,6 +134,8 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			buffer.append(ASSIGN);
 			if (prefs.afterAssignmentOperator)
 				buffer.append(SPACE);
+			
+			setCursorPosition(buffer.length());
 			
 			fArgumentOffsets[0]= buffer.length();
 			buffer.append(parameterNames[0]);
@@ -434,7 +435,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	protected boolean isValidPrefix(String prefix) {
 		String simple = getSimpleTypeName();
 		return isPrefix(prefix, simple) || isPrefix(prefix, getQualifiedTypeName()) 
-			|| simple.equals("_ctor") || simple.equals("opCall");
+			|| simple.equals("_ctor") || simple.equals("opCall"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -470,7 +471,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		if (fCompilationUnit != null) {
 			IJavaProject project= fCompilationUnit.getJavaProject();
 			if (project != null)
-				return new TypeProposalInfo(project, fProposal);
+				return new MethodProposalInfo(project, fProposal);
 		}
 		return super.computeProposalInfo();
 	}
@@ -619,7 +620,9 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	protected IContextInformation computeContextInformation() {
 		// no context information for METHOD_NAME_REF proposals (e.g. for static imports)
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=94654
-		if (fProposal.getKind() == CompletionProposal.METHOD_REF &&  hasParameters() && (getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0)) {
+		if ((fProposal.getKind() == CompletionProposal.METHOD_REF || fProposal.getKind() == CompletionProposal.OP_CALL) &&  hasParameters() && 
+				(getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0
+						|| isSetter())) {
 			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal);
 			if (fContextInformationPosition != 0 && fProposal.getCompletion().length == 0)
 				contextInformation.setContextInformationPosition(fContextInformationPosition);

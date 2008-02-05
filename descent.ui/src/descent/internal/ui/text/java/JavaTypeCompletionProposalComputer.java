@@ -36,6 +36,7 @@ public class JavaTypeCompletionProposalComputer extends JavaCompletionProposalCo
 		collector.setIgnored(CompletionProposal.METHOD_DECLARATION, true);
 		collector.setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, true);
 		collector.setIgnored(CompletionProposal.METHOD_REF, true);
+		collector.setIgnored(CompletionProposal.OP_CALL, true);
 		collector.setIgnored(CompletionProposal.FUNCTION_CALL, true);
 		collector.setIgnored(CompletionProposal.PACKAGE_REF, true);
 		collector.setIgnored(CompletionProposal.VERSION_REF, true);

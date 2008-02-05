@@ -32,6 +32,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 	protected IJavaCompletionProposal createJavaCompletionProposal(CompletionProposal proposal) {
 		switch (proposal.getKind()) {
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.OP_CALL:
 				return createMethodReferenceProposal(proposal);
 			case CompletionProposal.FUNCTION_CALL:
 				return createFunctionCallProposal(proposal);

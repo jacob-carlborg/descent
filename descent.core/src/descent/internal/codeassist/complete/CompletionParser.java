@@ -10,6 +10,7 @@ import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
+import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DebugCondition;
 import descent.internal.compiler.parser.DebugSymbol;
@@ -27,6 +28,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Statement;
+import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.ThisExp;
@@ -367,6 +369,17 @@ public class CompletionParser extends Parser {
 			assistNode = typeBasic;
 		}
 		return typeBasic;
+	}
+	
+	@Override
+	protected CompoundStatement newBlock(Statements statements, int start, int length) {
+		if (assistNode == null && start <= cursorLocation && cursorLocation <= start + length) {
+			CompoundStatement cs = new CompletionOnCompoundStatement(loc, statements);
+			cs.setSourceRange(start, length);
+			return (CompoundStatement) (assistNode = cs);
+		} else {
+			return super.newBlock(statements, start, length);
+		}
 	}
 	
 	private boolean inCompletion() {

@@ -67,6 +67,7 @@ public class CompletionProposalLabelProvider {
 	 */
 	public String createParameterList(CompletionProposal methodProposal) {
 		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.OP_CALL ||
 				methodProposal.getKind() == CompletionProposal.FUNCTION_CALL ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATE_REF ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_AGGREGATE_REF ||
@@ -546,6 +547,7 @@ public class CompletionProposalLabelProvider {
 		switch (proposal.getKind()) {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.OP_CALL:
 			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				if (fContext != null && fContext.isInJavadoc())
@@ -611,6 +613,7 @@ public class CompletionProposalLabelProvider {
 				descriptor= JavaElementImageProvider.getMethodImageDescriptor(false, flags);
 				break;
 			case CompletionProposal.FUNCTION_CALL:
+			case CompletionProposal.OP_CALL:
 				descriptor= JavaElementImageProvider.getFunctionCallImageDescriptor();
 				break;
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
@@ -754,7 +757,7 @@ public class CompletionProposalLabelProvider {
 		if (Flags.isDeprecated(flags))
 			adornments |= JavaElementImageDescriptor.DEPRECATED;
 
-		if (kind == CompletionProposal.FIELD_REF || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF)
+		if (kind == CompletionProposal.FIELD_REF || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF || kind == CompletionProposal.OP_CALL)
 			if (Flags.isStatic(flags))
 				adornments |= JavaElementImageDescriptor.STATIC;
 

@@ -42,5 +42,6 @@ public interface RelevanceConstants {
 	int R_CONSTRUCTOR = 10;
 	int R_FUNCTION_POINTER_CALL = 20;
 	int R_FUNCTION_POINTER_CALL_WANT = 20;
+	int R_WITH = 20;
 
 }
