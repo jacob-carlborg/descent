@@ -120,7 +120,7 @@ public class TestRunSession
 		fSessionListeners= new ListenerList();
 		
 		// TODO error handling might be nice...
-		(new Runnable()
+		(new Thread(new Runnable()
 			{
 				public void run()
 				{
@@ -129,7 +129,7 @@ public class TestRunSession
 					fTestRunnerClient.run();
 				}
 			}
-		).run();
+		)).start();
 	}
 	
 	public List<ITestSpecification> getTests()
@@ -309,7 +309,6 @@ public class TestRunSession
 				parent = new TestSuiteElement(fTestRoot, 
 						module.getFullyQualifiedName(),
 						module.getFullyQualifiedName());
-				fTestRoot.addChild(parent);
 				nodes.put(module, parent);
 				fIdToTest.put(parent.getId(), parent);
 			}
@@ -319,7 +318,6 @@ public class TestRunSession
 			}
 			
 			TestCaseElement node = new TestCaseElement(parent, test);
-			parent.addChild(node);
 			fIdToTest.put(test.getId(), node);
 		}
 	}
@@ -335,7 +333,7 @@ public class TestRunSession
 	private class TestSessionNotifier implements ITestRunListener
 	{
 		public void testRunStarted(List<ITestSpecification> tests)
-		{
+		{	
 			fStartedCount= 0;
 			fIgnoredCount= 0;
 			fFailureCount= 0;

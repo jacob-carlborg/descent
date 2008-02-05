@@ -391,8 +391,6 @@ public class TestRunnerViewPart extends ViewPart {
 	{
 		public void sessionStarted()
 		{
-			System.out.println("sessionStarted()");
-			
 			fTestViewer.registerViewersRefresh();
 			fShowOnErrorOnly= getShowOnErrorOnly();
 			
@@ -404,8 +402,6 @@ public class TestRunnerViewPart extends ViewPart {
 		
 		public void sessionEnded(long elapsedTime)
 		{
-			System.out.println("sessionEnded(" + elapsedTime + ")");
-			
 			fTestViewer.registerAutoScrollTarget(null);
 			
 			String[] keys= {elapsedTimeAsString(elapsedTime)};
@@ -437,8 +433,6 @@ public class TestRunnerViewPart extends ViewPart {
 
 		public void sessionStopped(long elapsedTime)
 		{
-			System.out.println("sessionStopped(" + elapsedTime + ")");
-			
 			fTestViewer.registerAutoScrollTarget(null);
 
 			registerInfoMessage(JUnitMessages.TestRunnerViewPart_message_stopped);
@@ -447,8 +441,6 @@ public class TestRunnerViewPart extends ViewPart {
 
 		public void sessionTerminated()
 		{
-			System.out.println("sessionTerminated()");
-			
 			fTestViewer.registerAutoScrollTarget(null);
 
 			registerInfoMessage(JUnitMessages.TestRunnerViewPart_message_terminated);
@@ -457,8 +449,6 @@ public class TestRunnerViewPart extends ViewPart {
 		
 		public void testStarted(TestCaseElement testCaseElement)
 		{
-			System.out.println("testStarted(" + testCaseElement + ")");
-			
 			fTestViewer.registerAutoScrollTarget(testCaseElement);
 			fTestViewer.registerViewerUpdate(testCaseElement);
 
@@ -473,10 +463,7 @@ public class TestRunnerViewPart extends ViewPart {
 		
 		public void testEnded(TestCaseElement testCaseElement,
 				ITestResult result)
-		{
-			System.out.println("testEnded(" + testCaseElement + ", " +
-					result + ")");
-			
+		{	
 			fTestViewer.registerViewerUpdate(testCaseElement);
 			
 			if(isErrorOrFailure(result))
@@ -494,26 +481,9 @@ public class TestRunnerViewPart extends ViewPart {
 		public void testReran(TestCaseElement testCaseElement,
 				ITestResult result)
 		{
-			System.out.println("testReran(" + testCaseElement + ", " +
-					result + ")");
-			
 			fTestViewer.registerViewerUpdate(testCaseElement);
 			postSyncProcessChanges();
 			showFailure(testCaseElement);
-		}
-		
-		private void addTest(TestElement testElement)
-		{
-			// TODO -- add the tests --
-			
-			fTestViewer.registerTestAdded(testElement);
-			
-			if(testElement instanceof TestSuiteElement)
-			{
-				TestSuiteElement testSuiteElement = (TestSuiteElement) testElement;
-				for(TestElement child : testSuiteElement.getChildren())
-					addTest(child);
-			}
 		}
 		
 		private boolean isErrorOrFailure(ITestResult result)

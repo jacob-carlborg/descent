@@ -24,7 +24,7 @@ import descent.unittest.ITestSpecification;
  * Interfaces with the FluteApplicationInstance to translate Flute-happy
  * data to data readable by the outside world.
  */
-public class RemoteTestRunnerClient implements Runnable
+public class RemoteTestRunnerClient
 {
 	private final List<ITestSpecification> tests;
 	private final List<ITestRunListener> listeners;
@@ -197,7 +197,9 @@ public class RemoteTestRunnerClient implements Runnable
 	private void runTest(ITestSpecification test, boolean rerun) 
 		throws IOException
 	{
-		System.out.println("Running " + test);
+		try {
+			Thread.sleep(100);
+		} catch(InterruptedException e) {}
 		
 		if(!rerun)
 			notifyTestStarted(test);
