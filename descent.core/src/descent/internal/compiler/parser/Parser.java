@@ -3899,7 +3899,7 @@ public class Parser extends Lexer {
 				s = new ForeachStatement(loc(), op, arguments, aggr, body);
 			} else {
 			    if (token.value == TOKslice && arguments.size() == 1) {
-					Argument a = (Argument) arguments.get(0);
+					Argument a = arguments.get(0);
 					nextToken();
 					Expression upr = parseExpression();
 					check(TOKrparen);
@@ -6271,9 +6271,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = new MulExp(loc(), e, e2); continue;
-		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = new DivExp(loc(), e, e2); continue;
-		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = new ModExp(loc(), e, e2); continue;
+		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = newMulExp(loc(), e, e2); continue;
+		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = newDivExp(loc(), e, e2); continue;
+		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = newModExp(loc(), e, e2); continue;
 
 		    default:
 			break;
@@ -6282,7 +6282,7 @@ public class Parser extends Lexer {
 	    }
 	    return e;
 	}
-	
+
 	private Expression parseAddExp()
 	{   Expression e;
 	    Expression e2;
@@ -6292,9 +6292,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = new AddExp(loc(), e, e2); continue;
-		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = new MinExp(loc(), e, e2); continue;
-		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = new CatExp(loc(), e, e2); continue;
+		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = newAddExp(loc(), e, e2); continue;
+		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = newMinExp(loc(), e, e2); continue;
+		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = newCatExp(loc(), e, e2); continue;
 
 		    default:
 			break;
@@ -6303,7 +6303,7 @@ public class Parser extends Lexer {
 	    }
 	    return e;
 	}
-	
+
 	private Expression parseShiftExp()
 	{   Expression e;
 	    Expression e2;
@@ -6313,9 +6313,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = new ShlExp(loc(), e, e2);  continue;
-		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = new ShrExp(loc(), e, e2);  continue;
-		    case TOKushr: nextToken(); e2 = parseAddExp(); e = new UshrExp(loc(), e, e2); continue;
+		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = newShlExp(loc(), e, e2);  continue;
+		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = newShrExp(loc(), e, e2);  continue;
+		    case TOKushr: nextToken(); e2 = parseAddExp(); e = newUshrExp(loc(), e, e2); continue;
 
 		    default:
 			break;
@@ -6324,7 +6324,7 @@ public class Parser extends Lexer {
 	    }
 	    return e;
 	}
-	
+
 	private Expression parseRelExp()
 	{   Expression e;
 	    Expression e2;
@@ -6350,11 +6350,11 @@ public class Parser extends Lexer {
 		    	op = token.value;
 		    	nextToken(); 
 		    	e2 = parseShiftExp();
-		    	e = new CmpExp(loc(), op, e, e2); continue;
+		    	e = newCmpExp(loc(), op, e, e2); continue;
 		    case TOKin: 
 		    	nextToken(); 
 		    	e2 = parseShiftExp(); 
-		    	e = new InExp(loc(), e, e2); 
+		    	e = newInExp(loc(), e, e2); 
 		    	continue;
 
 		    default:
@@ -6380,7 +6380,7 @@ public class Parser extends Lexer {
 		    case TOKnotequal:
 		    	nextToken();
 				e2 = parseRelExp();
-				e = new EqualExp(loc(), value, e, e2);
+				e = newEqualExp(loc(), value, e, e2);
 				continue;
 
 		    case TOKidentity:
@@ -6389,7 +6389,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(loc(), value, e, e2);
 			continue;
 
 		    case TOKnotidentity:
@@ -6398,7 +6398,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(loc(), value, e, e2);
 			continue;
 
 		    case TOKis:
@@ -6406,7 +6406,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(loc(), value, e, e2);
 			continue;
 
 		    case TOKnot:
@@ -6419,7 +6419,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(loc(), value, e, e2);
 			continue;
 
 		    // L1:
@@ -6436,7 +6436,7 @@ public class Parser extends Lexer {
 	    return e;
 	}
 	
-	Expression parseCmpExp()
+	private Expression parseCmpExp()
 	{   Expression e;
 	    Expression e2;
 	    Token t;
@@ -6450,14 +6450,14 @@ public class Parser extends Lexer {
 		case TOKnotequal:
 			 nextToken();
 			    e2 = parseShiftExp();
-			    e = new EqualExp(loc(), op, e, e2);
+			    e = newEqualExp(loc(), op, e, e2);
 			    break;
 
 		case TOKis:
 		    //op = TOKidentity;
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = new IdentityExp(loc(), op, e, e2);
+		    e = newIdentityExp(loc(), op, e, e2);
 		    break;
 
 		case TOKnot:
@@ -6469,7 +6469,7 @@ public class Parser extends Lexer {
 		    op = TOKnotis;
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = new IdentityExp(loc(), op, e, e2);
+		    e = newIdentityExp(loc(), op, e, e2);
 		    break;
 		    
 		case TOKlt:
@@ -6486,13 +6486,13 @@ public class Parser extends Lexer {
 	    case TOKue:
 	    	nextToken(); 
 	    	e2 = parseShiftExp(); 
-	    	e = new CmpExp(loc(), op, e, e2); 
+	    	e = newCmpExp(loc(), op, e, e2); 
 	    	break;
 
 		case TOKin:
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = new InExp(loc(), e, e2);
+		    e = newInExp(loc(), e, e2);
 		    break;
 
 		default:
@@ -6501,7 +6501,6 @@ public class Parser extends Lexer {
 	    return e;
 	}
 
-	
 	private Expression parseAndExp() {
 		Expression e;
 		Expression e2;
@@ -6511,7 +6510,7 @@ public class Parser extends Lexer {
 			while (token.value == TOKand) {
 				nextToken();
 				e2 = parseEqualExp();
-				e = new AndExp(loc(), e, e2);
+				e = newAndExp(loc(), e, e2);
 			}
 		} else {
 			e = parseCmpExp();
@@ -6519,13 +6518,13 @@ public class Parser extends Lexer {
 			{
 			    nextToken();
 			    e2 = parseCmpExp();
-			    e = new AndExp(loc(), e, e2);
+			    e = newAndExp(loc(), e, e2);
 			}
 
 		}
 		return e;
 	}
-	
+
 	private Expression parseXorExp() {
 		Expression e;
 		Expression e2;
@@ -6534,11 +6533,11 @@ public class Parser extends Lexer {
 		while (token.value == TOKxor) {
 			nextToken();
 			e2 = parseAndExp();
-			e = new XorExp(loc(), e, e2);
+			e = newXorExp(loc(), e, e2);
 		}
 		return e;
 	}
-	
+
 	private Expression parseOrExp() {
 		Expression e;
 		Expression e2;
@@ -6547,11 +6546,11 @@ public class Parser extends Lexer {
 		while (token.value == TOKor) {
 			nextToken();
 			e2 = parseXorExp();
-			e = new OrExp(loc(), e, e2);
+			e = newOrExp(loc(), e, e2);
 		}
 		return e;
 	}
-	
+
 	private Expression parseAndAndExp() {
 		Expression e;
 		Expression e2;
@@ -6560,11 +6559,11 @@ public class Parser extends Lexer {
 		while (token.value == TOKandand) {
 			nextToken();
 			e2 = parseOrExp();
-			e = new AndAndExp(loc(), e, e2);
+			e = newAndAndExp(loc(), e, e2);
 		}
 		return e;
 	}
-	
+
 	private Expression parseOrOrExp() {
 		Expression e;
 		Expression e2;
@@ -6573,7 +6572,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKoror) {
 			nextToken();
 			e2 = parseAndAndExp();
-			e = new OrOrExp(loc(), e, e2);
+			e = newOrOrExp(loc(), e, e2);
 		}
 		return e;
 	}
@@ -6727,7 +6726,7 @@ public class Parser extends Lexer {
 		t = parseBasicType2(t);
 		if (t != null) {
 			if (t.ty == Taarray) {
-				Type index = (Type) ((TypeAArray) t).index;
+				Type index = ((TypeAArray) t).index;
 				
 				Expression e2 = index.toExpression();
 				if (e2 != null) {
@@ -6879,7 +6878,7 @@ public class Parser extends Lexer {
 		LinkedList<Comment> toReturn = new LinkedList<Comment>();
 		for(int i = comments.size() - 1; i >= lastCommentRead; i--) {
 			Comment comment = comments.get(i);
-			toReturn.addFirst((Comment) comment);
+			toReturn.addFirst(comment);
 		}
 		
 		lastCommentRead = comments.size();		
@@ -7033,7 +7032,7 @@ public class Parser extends Lexer {
 		if (prevToken.leadingComment == null) {
 			lastCommentRead = comments.size();	
 		}
-		prevToken.leadingComment = (Comment) comment;		
+		prevToken.leadingComment = comment;		
 	}
 	
 	private void discardLastComments() {
@@ -7174,6 +7173,78 @@ public class Parser extends Lexer {
 	
 	protected Expression newCondExp(Loc loc, Expression e, Expression e1, Expression e2) {
 		return new CondExp(loc, e, e1, e2);
+	}
+	
+	protected Expression newOrOrExp(Loc loc, Expression e, Expression e2) {
+		return new OrOrExp(loc, e, e2);
+	}
+	
+	protected Expression newAndExp(Loc loc, Expression e, Expression e2) {
+		return new AndExp(loc(), e, e2);
+	}
+	
+	protected Expression newOrExp(Loc loc, Expression e, Expression e2) {
+		return new OrExp(loc(), e, e2);
+	}
+	
+	protected Expression newAndAndExp(Loc loc, Expression e, Expression e2) {
+		return new AndAndExp(loc(), e, e2);
+	}
+	
+	protected Expression newXorExp(Loc loc, Expression e, Expression e2) {
+		return new XorExp(loc(), e, e2);
+	}
+	
+	protected Expression newEqualExp(Loc loc, TOK op, Expression e, Expression e2) {
+		return new EqualExp(loc(), op, e, e2);
+	}
+	
+	protected Expression newIdentityExp(Loc loc, TOK op, Expression e, Expression e2) {
+		return new IdentityExp(loc(), op, e, e2);
+	}
+	
+	protected Expression newCmpExp(Loc loc, TOK op, Expression e, Expression e2) {
+		return new CmpExp(loc(), op, e, e2);
+	}
+	
+	protected Expression newInExp(Loc loc, Expression e, Expression e2) {
+		return new InExp(loc(), e, e2);
+	}
+	
+	protected Expression newShlExp(Loc loc, Expression e, Expression e2) {
+		return new ShlExp(loc, e, e2);
+	}
+
+	protected Expression newShrExp(Loc loc, Expression e, Expression e2) {
+		return new ShrExp(loc, e, e2);
+	}
+
+	protected Expression newUshrExp(Loc loc, Expression e, Expression e2) {
+		return new UshrExp(loc, e, e2);
+	}
+	
+	protected Expression newAddExp(Loc loc, Expression e, Expression e2) {
+		return new AddExp(loc, e, e2);
+	}
+
+	protected Expression newMinExp(Loc loc, Expression e, Expression e2) {
+		return new MinExp(loc, e, e2);
+	}
+
+	protected Expression newCatExp(Loc loc, Expression e, Expression e2) {
+		return new CatExp(loc, e, e2);
+	}
+	
+	protected Expression newModExp(Loc loc, Expression e, Expression e2) {
+		return new ModExp(loc, e, e2);
+	}
+
+	protected Expression newDivExp(Loc loc, Expression e, Expression e2) {
+		return new DivExp(loc, e, e2);
+	}
+
+	protected Expression newMulExp(Loc loc, Expression e, Expression e2) {
+		return new MulExp(loc, e, e2);
 	}
 	
 	/**
