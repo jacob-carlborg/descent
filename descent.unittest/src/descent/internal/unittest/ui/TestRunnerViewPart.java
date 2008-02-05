@@ -455,9 +455,7 @@ public class TestRunnerViewPart extends ViewPart {
 			if (!fShowOnErrorOnly && fTestRunSession.getStartedCount() == 1) 
 				postShowTestResultsView();
 				
-			String className= testCaseElement.getClassName();
-			String method= testCaseElement.getTestMethodName();		
-			String status= Messages.format(JUnitMessages.TestRunnerViewPart_message_started, new String[] { className, method }); 
+			String status = " " + testCaseElement.getName();
 			registerInfoMessage(status); 
 		}
 		
@@ -1524,10 +1522,10 @@ action enablement
 		return fCounterPanel != null;
 	}
 
-	public void rerunTest(String testId, String className, String testName, String launchMode) {
+	public void rerunTest(String testId, String launchMode) {
 		DebugUITools.saveAndBuildBeforeLaunch();
 		try {
-			boolean couldLaunch= fTestRunSession.rerunTest(testId, className, testName, launchMode);
+			boolean couldLaunch= fTestRunSession.rerunTest(testId, launchMode);
 			if (! couldLaunch) {
 				MessageDialog.openInformation(getSite().getShell(),
 						JUnitMessages.TestRunnerViewPart_cannotrerun_title,

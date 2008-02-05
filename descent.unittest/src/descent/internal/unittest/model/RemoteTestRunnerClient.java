@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.SafeRunner;
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.flute.FluteApplicationInstance;
 import descent.internal.unittest.flute.FluteTestResult;
+import descent.unittest.IStackTraceElement;
 import descent.unittest.ITestResult;
 import descent.unittest.ITestRunListener;
 import descent.unittest.ITestSpecification;
@@ -49,17 +50,17 @@ public class RemoteTestRunnerClient
 	
 	public synchronized boolean isRunning()
 	{
-		return true; //TODO app != null;
+		return app != null;
 	}
 	
 	public synchronized boolean isConnected()
 	{
-		return true; //TODO app.isConnected();
+		return app.isConnected();
 	}
 	
 	public void init()
 	{		
-		/* TODO if(isRunning())
+		if(isRunning())
 			return;
 		
 		try
@@ -72,7 +73,7 @@ public class RemoteTestRunnerClient
 		}
 		catch(IOException e)
 		{
-		} */
+		}
 	}
 	
 	public void run()
@@ -130,17 +131,15 @@ public class RemoteTestRunnerClient
 	
 	public void terminate()
 	{
+		System.out.println("Is Wayne Brady gonna have to choke a process?");
 		if(isRunning())
 		{
 			try
 			{
-				// TODO app.terminate();
+				app.terminate();
 				notifyTestRunTerminated();
 			}
-			/* catch(IOException e)
-			{
-			} */
-			finally
+			catch(IOException e)
 			{
 			}
 			
@@ -179,16 +178,14 @@ public class RemoteTestRunnerClient
 	
 	public void finalize()
 	{
+		// Never good to leave those processes open...
 		if(isRunning())
 		{
 			try
 			{
-				// TODO app.terminate();
+				app.terminate();
 			}
-			/* catch(IOException e)
-			{
-			} */
-			finally
+			catch(IOException e)
 			{
 			}
 		}
@@ -196,16 +193,11 @@ public class RemoteTestRunnerClient
 	
 	private void runTest(ITestSpecification test, boolean rerun) 
 		throws IOException
-	{
-		try {
-			Thread.sleep(100);
-		} catch(InterruptedException e) {}
-		
+	{	
 		if(!rerun)
 			notifyTestStarted(test);
 		
-		//TODO FluteTestResult result = app.runTest(test.getId());
-		FluteTestResult result = FluteTestResult.passed();
+		ITestResult result = app.runTest(test.getId());
 		
 		if(!rerun)
 			notifyTestEnded(test, result);

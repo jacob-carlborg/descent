@@ -482,7 +482,7 @@ else
 	else
 	{
 		import std.socket : Socket, TcpSocket, AddressFamily, InternetAddress,
-			SocketShutdown;
+			SocketShutdown, SocketException;
 		import std.socketstream : SocketStream;
 		import std.stream : Stream;
 	}
@@ -499,11 +499,20 @@ else
 			{ } // Nothing to do
 		else
 		{
-			serv = new TcpSocket(AddressFamily.INET);
-			serv.bind(new InternetAddress("127.0.0.1", PORT));
-			serv.listen(0);
-			Socket conn = serv.accept();
-			stream = new SocketStream(conn);
+			try
+			{
+				serv = new TcpSocket(AddressFamily.INET);
+				serv.bind(new InternetAddress("127.0.0.1", PORT));
+				serv.listen(0);
+				Socket conn = serv.accept();
+				stream = new SocketStream(conn);
+			}
+			catch(SocketException se)
+			{
+				std.stdio.writefln("Couldn't create socket; error code " ~
+					itoa(se.errorCode));
+				exit(se.errorCode);
+			}
 		}
 	}
 	

@@ -46,7 +46,7 @@ import descent.internal.unittest.ui.TestRunnerViewPart;
 /**
  * Central registry for JUnit test runs.
  */
-public final class JUnitModel
+public final class DescentUnittestModel
 {
 	/**
 	 * Notifies test run listeners added via the plugin extension point.

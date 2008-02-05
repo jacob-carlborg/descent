@@ -75,7 +75,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				
 				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
 				monitor.worked(5);
-				Process process = exec(commandArray, getEnvironment(config), wd);
+				Process process = exec(commandArray, getNullableEnvironment(config), wd);
 				monitor.worked(3);
 				
 				// Launch the process but wait until the first end communication string
@@ -114,7 +114,23 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				command.addAll(Arrays.asList(arguments));
 				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
 				monitor.worked(5);
-				Process process = exec(commandArray, getEnvironment(config), wd);
+				
+				/*
+				 * An empty environment works differently than a null environment
+				 * when passed to java.lang.Runtime#exec(String[]). Since
+				 * getEnvironment() will return an empty environment instead of
+				 * a null one if no nvironment is returned by the launch
+				 * manager, the launch manager's getEnvironment must be invoked
+				 * directly.
+				 * 
+				 * TODO what if som environt vars are specified? Does this mean
+				 * the default environment vars of the target will be shadowed?
+				 * 
+				 * PS This bug took me about 3 hours to track down. So here's to that
+				 * sweet taste of victory!
+				 */
+				//Process process = exec(commandArray, getEnvironment(config), wd);
+				Process process = exec(commandArray, getNullableEnvironment(config), wd);
 				monitor.worked(3);
 				DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[0]));
 			}
@@ -175,5 +191,4 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 	protected String getPluginID() {
 		return DescentDebugPlugin.PLUGIN_ID;
 	}
-
 }

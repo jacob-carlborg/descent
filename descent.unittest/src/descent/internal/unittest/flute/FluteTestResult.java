@@ -10,7 +10,7 @@ public final class FluteTestResult implements ITestResult
 	private final int line;
 	private final String message;
 	private final String exceptionType;
-	private final StackTraceElement[] stackTrace;
+	private final IStackTraceElement[] stackTrace;
 	
 	public static final class StackTraceElement implements IStackTraceElement
 	{
@@ -100,7 +100,7 @@ public final class FluteTestResult implements ITestResult
 	}
 	
 	public static FluteTestResult failed(String file, int line, String
-			message, StackTraceElement[] stackTrace)
+			message, IStackTraceElement[] stackTrace)
 	{	
 		return new FluteTestResult(
 				ResultType.FAILED, // resultType
@@ -112,7 +112,7 @@ public final class FluteTestResult implements ITestResult
 	}
 	
 	public static FluteTestResult error(String message, 
-			String exceptionType, StackTraceElement[] stackTrace)
+			String exceptionType, IStackTraceElement[] stackTrace)
 	{
 		return new FluteTestResult(
 				ResultType.ERROR,  // resultType
@@ -125,7 +125,7 @@ public final class FluteTestResult implements ITestResult
 
 	private FluteTestResult(ResultType resultType, String file, int line,
 			String message, String exceptionType, 
-			StackTraceElement[] stackTrace)
+			IStackTraceElement[] stackTrace)
 	{
 		this.resultType = resultType;
 		this.file = file;
@@ -147,7 +147,7 @@ public final class FluteTestResult implements ITestResult
 		if(stackTrace != null)
 		{
 			buf.append("stackTrace: [\n");
-			for(StackTraceElement ste: stackTrace)
+			for(IStackTraceElement ste: stackTrace)
 				buf.append("   " + ste.toString() + "\n");
 			buf.append("]");
 		}
@@ -182,7 +182,7 @@ public final class FluteTestResult implements ITestResult
 		return exceptionType;
 	}
 
-	public final StackTraceElement[] getStackTrace()
+	public final IStackTraceElement[] getStackTrace()
 	{
 		return stackTrace;
 	}

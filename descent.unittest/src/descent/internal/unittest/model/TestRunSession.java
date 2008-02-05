@@ -65,7 +65,7 @@ public class TestRunSession
 	/**
 	 * Number of tests ignored during this test run.
 	 */
-	// TODO ignored tests (they're totally unsupported)
+	// PERHAPS ignored tests (they're totally unsupported)
 	volatile int fIgnoredCount = 0; 
 	
 	/**
@@ -119,14 +119,15 @@ public class TestRunSession
 		fTestRunnerClient= new RemoteTestRunnerClient(port, tests, listeners);
 		fSessionListeners= new ListenerList();
 		
-		// TODO error handling might be nice...
+		// PERHAPS error handling might be nice...
 		(new Thread(new Runnable()
 			{
 				public void run()
 				{
 					createTestTree(tests);
 					fTestRunnerClient.init();
-					fTestRunnerClient.run();
+					if(fTestRunnerClient.isConnected())
+						fTestRunnerClient.run();
 				}
 			}
 		)).start();
@@ -241,24 +242,38 @@ public class TestRunSession
 	
 	/**
 	 * @param testId 
-	 * @param className 
-	 * @param testName 
 	 * @param launchMode 
 	 * @return <code>false</code> iff the rerun could not be started
 	 * @throws CoreException 
 	 */
-	public boolean rerunTest(String testId, String className, String testName, String launchMode) throws CoreException {
-		/* TODO if (isKeptAlive()) {
+	public boolean rerunTest(String testId, String launchMode) 
+			throws CoreException
+	{
+		// TODO reruns, keeeping in mind the testId could refer to a
+		// TestSuiteElement instead of just a TestcaseElement
+		
+		/*TestElement testElement = fIdToTest.get(testId);
+		
+		if(null == testElement)
+			return false;
+		
+		TestCaseElement testCaseElement = (TestCaseElement) testElement;
+		ITestSpecification test = testCaseElement.getTestSpecification();
+		
+		if (isKeptAlive())
+		{
 			Status status= ((TestCaseElement) getTestElement(testId)).getStatus();
 			if (status == Status.ERROR) {
 				fErrorCount--;
 			} else if (status == Status.FAILURE) {
 				fFailureCount--;
 			}
-			fTestRunnerClient.rerunTest(testId, className, testName);
+			fTestRunnerClient.rerunTest(test);
 			return true;
 			
-		} else if (getLaunch() != null) {
+		}
+		else if (getLaunch() != null)
+		{
 			// run the selected test using the previous launch configuration
 			ILaunchConfiguration launchConfiguration= getLaunch().getLaunchConfiguration();
 			if (launchConfiguration != null) {

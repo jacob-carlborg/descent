@@ -216,25 +216,23 @@ public class TestViewer {
 			TestElement testElement= (TestElement) selection.getFirstElement();
 			
 			String testLabel= testElement.getName();
-			String className= testElement.getClassName();
 			if (testElement instanceof TestSuiteElement) {	
 				manager.add(new OpenTestAction(fTestRunnerPart, testLabel));
 				manager.add(new Separator());
-				if (testClassExists(className) && !fTestRunnerPart.lastLaunchIsKeptAlive()) {
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), className, null, ILaunchManager.RUN_MODE));
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), className, null, ILaunchManager.DEBUG_MODE));
+				if (!fTestRunnerPart.lastLaunchIsKeptAlive()) {
+					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
+					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.DEBUG_MODE));
 				}
 			} else {
 				TestCaseElement testCaseElement= (TestCaseElement) testElement;
-				String testMethodName= testCaseElement.getTestMethodName();
-				manager.add(new OpenTestAction(fTestRunnerPart, className, testMethodName));
+				//TODO manager.add(new OpenTestAction(fTestRunnerPart, testCaseElement.getTestSpecification()));
 				manager.add(new Separator());
 				if (fTestRunnerPart.lastLaunchIsKeptAlive()) {
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), className, testMethodName, ILaunchManager.RUN_MODE));
+					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
 					
 				} else {
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), className, testMethodName, ILaunchManager.RUN_MODE));
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), className, testMethodName, ILaunchManager.DEBUG_MODE));
+					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
+					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.DEBUG_MODE));
 				} 
 			}
 			if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL) {
@@ -277,7 +275,8 @@ public class TestViewer {
 		IStructuredSelection selection= (IStructuredSelection) fSelectionProvider.getSelection();
 		if (selection.size() != 1)
 			return;
-
+		
+		/* TODO 
 		TestElement testElement= (TestElement) selection.getFirstElement();
 
 		OpenTestAction action;
@@ -285,13 +284,14 @@ public class TestViewer {
 			action= new OpenTestAction(fTestRunnerPart, testElement.getName());
 		} else if (testElement instanceof TestCaseElement){
 			TestCaseElement testCase= (TestCaseElement) testElement;
-			action= new OpenTestAction(fTestRunnerPart, testCase.getClassName(), testCase.getTestMethodName());
+			action= new OpenTestAction(fTestRunnerPart, testCase.getTestSpecification());
 		} else {
 			throw new IllegalStateException(String.valueOf(testElement));
 		}
 
 		if (action.isEnabled())
 			action.run();
+		*/
 	}
 	
 	private void handleSelected() {

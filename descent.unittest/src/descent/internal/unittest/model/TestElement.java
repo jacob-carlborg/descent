@@ -211,10 +211,4 @@ public abstract class TestElement
 	{
 		return getName() + ": " + getStatus(); //$NON-NLS-1$
 	}
-	
-	public String getClassName()
-	{
-		// TODO
-		return "getClassName (" + getName() + ")";
-	}
 }

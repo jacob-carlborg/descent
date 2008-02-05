@@ -387,9 +387,13 @@ public class UnittestLaunchConfigurationTab extends
 	// Application
 
 	public void performApply(ILaunchConfigurationWorkingCopy config)
-	{
+	{	
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
+		
+		// WAITING_ON_CORE get the fluted program executable
+		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
+				"C:/Users/xycos/workspace/descent.unittest/testdata/src/test.exe");
 	}
 
 	//--------------------------------------------------------------------------

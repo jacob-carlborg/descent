@@ -20,15 +20,13 @@ import org.eclipse.jface.action.Action;
  */
 public class RerunAction extends Action {
 	private String fTestId;
-	private String fClassName;
-	private String fTestName;
 	private TestRunnerViewPart fTestRunner;
 	private String fLaunchMode;
 	
 	/**
 	 * Constructor for RerunAction.
 	 */
-	public RerunAction(TestRunnerViewPart runner, String testId, String className, String testName, String launchMode) {
+	public RerunAction(TestRunnerViewPart runner, String testId, String launchMode) {
 		super(); 
 		if (launchMode.equals(ILaunchManager.RUN_MODE))
 			setText(JUnitMessages.RerunAction_label_run); 
@@ -37,8 +35,6 @@ public class RerunAction extends Action {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IJUnitHelpContextIds.RERUN_ACTION);
 		fTestRunner= runner;
 		fTestId= testId;
-		fClassName= className;
-		fTestName= testName;
 		fLaunchMode= launchMode;
 	}
 
@@ -46,6 +42,6 @@ public class RerunAction extends Action {
 	 * @see IAction#run()
 	 */
 	public void run() {
-		fTestRunner.rerunTest(fTestId, fClassName, fTestName, fLaunchMode);
+		fTestRunner.rerunTest(fTestId, fLaunchMode);
 	}
 }

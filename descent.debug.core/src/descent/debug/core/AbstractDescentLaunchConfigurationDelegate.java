@@ -490,11 +490,20 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 	 * @throws CoreException
 	 */
 	protected String[] getEnvironment(ILaunchConfiguration config) throws CoreException {
-		String[] array = DebugPlugin.getDefault().getLaunchManager().getEnvironment(config);
+		String[] array = getNullableEnvironment(config);
 		if (array == null) {
 			return new String[0];
 		}
 		return array;
+	}
+	
+	/**
+	 * Gets the environment variables in the configuration, or null (for using
+	 * the default environment variables of the target).
+	 */
+	protected String[] getNullableEnvironment(ILaunchConfiguration config) throws CoreException
+	{
+		return DebugPlugin.getDefault().getLaunchManager().getEnvironment(config);
 	}
 
 }

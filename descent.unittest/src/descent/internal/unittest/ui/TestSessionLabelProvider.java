@@ -33,27 +33,12 @@ public class TestSessionLabelProvider extends LabelProvider {
 	}
 
 	public String getText(Object element) {
-		if (element instanceof TestCaseElement) {
-			TestCaseElement testCaseElement= (TestCaseElement) element;
-			String testMethodName= testCaseElement.getTestMethodName();
-			if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL) {
-				return getElementLabel(testMethodName, testCaseElement);
-			} else {
-				String className= testCaseElement.getClassName();
-				return Messages.format(JUnitMessages.TestSessionLabelProvider_testMethodName_className, new Object[] { testMethodName, className });
-			}
-			
-		} else if (element instanceof TestElement) {
+		if (element instanceof TestElement) {
 			TestElement testElement= (TestElement) element;
-			String testName= testElement.getName();
-			return getElementLabel(testName, testElement);
+			return testElement.getName();
 		} else {
 			throw new IllegalArgumentException(String.valueOf(element));
 		}
-	}
-
-	private String getElementLabel(String name, TestElement testElement) {
-		return name;
 	}
 
 	public Image getImage(Object element) {

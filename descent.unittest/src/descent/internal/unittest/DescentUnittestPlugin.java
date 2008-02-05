@@ -48,7 +48,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 
-import descent.internal.unittest.model.JUnitModel;
+import descent.internal.unittest.model.DescentUnittestModel;
 import descent.unittest.ITestRunListener;
 
 /**
@@ -85,7 +85,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 
 	private static final IPath ICONS_PATH= new Path("$nl$/icons/full"); //$NON-NLS-1$
 	
-	private final JUnitModel fJUnitModel= new JUnitModel();
+	private final DescentUnittestModel fJUnitModel= new DescentUnittestModel();
 	
 
 	/**
@@ -235,7 +235,7 @@ public class DescentUnittestPlugin extends AbstractUIPlugin {
 		fBundleContext= null;
 	}
 	
-	public static JUnitModel getModel() {
+	public static DescentUnittestModel getModel() {
 		return getDefault().fJUnitModel;
 	}
 

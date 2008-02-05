@@ -43,12 +43,6 @@ public class TestCaseElement extends TestElement
 	{
 		return fTest;
 	}
-	
-	public String getTestMethodName()
-	{
-		// TODO
-		return "getTestMethodName (" + getName() + ")";
-	}
 
 	public void setIgnored(boolean ignored)
 	{

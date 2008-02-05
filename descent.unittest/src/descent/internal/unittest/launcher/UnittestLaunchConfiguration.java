@@ -30,7 +30,7 @@ import descent.core.IJavaProject;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;
-import descent.internal.unittest.model.JUnitModel;
+import descent.internal.unittest.model.DescentUnittestModel;
 import descent.unittest.ITestSpecification;
 
 /**
@@ -60,8 +60,7 @@ public class UnittestLaunchConfiguration extends
 				return;
 			
 			// Launch the applicataion
-			//super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
-			monitor.worked(30);
+			super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
 			
 			// Find the tests (this takes up most of the monitor because
 			// for a large project, this can take a long time)
