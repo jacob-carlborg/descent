@@ -2526,13 +2526,13 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 		String prev = stack.pop();
 		if (type == ISignatureConstants.FUNCTION && !stack.isEmpty()) {
 			String one = stack.pop();
-			if (fullyQualifyTypeNames) {
+			if (fullyQualifyTypeNames && functionTypeCount == 0) {
 				stack.push(one + "." + String.valueOf(name) + stripFunctionOrDelegate(prev));
 			} else {
 				stack.push(String.valueOf(name));
 			}
 		} else {
-			if (fullyQualifyTypeNames) {
+			if (fullyQualifyTypeNames && functionTypeCount == 0) {
 				stack.push(prev + "." + String.valueOf(name));
 			} else {
 				stack.push(String.valueOf(name));
