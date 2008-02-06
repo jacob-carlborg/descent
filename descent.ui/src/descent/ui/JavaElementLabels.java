@@ -503,9 +503,20 @@ public class JavaElementLabels {
 			}
 			
 			// qualification
-			if (getFlag(flags, M_FULLY_QUALIFIED) && method.getDeclaringType() != null) {
-				getTypeLabel(method.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
-				buf.append('.');
+			if (getFlag(flags, M_FULLY_QUALIFIED)) {
+				if (method.getDeclaringType() != null) {
+					getTypeLabel(method.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
+					buf.append('.');
+				} else {
+					ICompilationUnit unit = (ICompilationUnit) method.getAncestor(IJavaElement.COMPILATION_UNIT);
+					if (unit == null) {
+						unit = (ICompilationUnit) method.getAncestor(IJavaElement.CLASS_FILE);
+					}
+					if (unit != null) {
+						buf.append(unit.getFullyQualifiedName());
+						buf.append('.');
+					}
+				}
 			}
 			
 			if (method.isMethod()) {

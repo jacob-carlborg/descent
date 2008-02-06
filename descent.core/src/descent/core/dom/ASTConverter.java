@@ -3454,13 +3454,21 @@ public class ASTConverter {
 
 	public void convertExpressions(List<descent.core.dom.Expression> destination, List<Expression> source) {
 		if (source == null || source.isEmpty()) return;
-		for(Expression exp : source) destination.add(convert(exp));
+		for(Expression exp : source) {
+			descent.core.dom.Expression convertedExp = convert(exp);
+			if (convertedExp != null) {
+				destination.add(convertedExp);
+			}
+		}
 	}
 	
 	public void convertStatements(List<descent.core.dom.Statement> destination, List<Statement> source) {
 		if (source == null || source.isEmpty()) return;
 		for(Statement stm : source) {
-			destination.add(convert(stm));
+			descent.core.dom.Statement convertStm = convert(stm);
+			if (convertStm != null) {
+				destination.add(convertStm);
+			}
 		}
 	}
 	

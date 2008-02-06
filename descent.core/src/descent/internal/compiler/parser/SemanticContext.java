@@ -82,6 +82,12 @@ public class SemanticContext {
 	public Map<String, Type> signatureToTypeCache;
 	
 	public JavaElementFinder finder;
+	
+	/*
+	 * This is for autocompletion, for suggesting overloads of
+	 * aliased symbols.
+	 */
+	public boolean allowOvernextBySignature = false;
 
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 

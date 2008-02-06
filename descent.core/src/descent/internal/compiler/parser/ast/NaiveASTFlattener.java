@@ -1810,7 +1810,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		}
 		this.buffer.append("new ");
 		visitList(node.newargs, ", ", "(", ") ");
-		node.newtype.accept(this);
+		if (node.newtype != null) {
+			node.newtype.accept(this);
+		}
 		visitList(node.arguments, ", ", "(", ")");
 		return false;
 	}

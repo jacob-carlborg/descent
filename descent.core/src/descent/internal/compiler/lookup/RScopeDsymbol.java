@@ -179,8 +179,9 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	private void listMembers(Dsymbols members, HashtableOfCharArrayAndObject ov, IParent parent) {
 		try {
 			for(IJavaElement child : parent.getChildren()) {
-				if (child.getElementType() == IJavaElement.IMPORT_CONTAINER) {
-					listMembers(members, ov, ((IImportContainer) child)); 
+				IParent next = getFinder().mustSearchInChildren(child);
+				if (next != null) {
+					listMembers(members, ov, next);
 					continue;
 				}
 				

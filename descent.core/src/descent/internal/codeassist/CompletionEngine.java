@@ -21,6 +21,7 @@ import descent.core.ddoc.DdocSection.Parameter;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
+import descent.internal.codeassist.complete.CompletionOnCallExp;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
 import descent.internal.codeassist.complete.CompletionOnCompoundStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
@@ -85,8 +86,11 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LabelStatement;
+import descent.internal.compiler.parser.MATCH;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Package;
+import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeExp;
 import descent.internal.compiler.parser.SemanticContext;
@@ -122,6 +126,8 @@ import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
 import descent.internal.core.SearchableEnvironment;
+import descent.internal.core.SignatureProcessor;
+import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
 
 /**
@@ -132,8 +138,8 @@ import descent.internal.core.util.Util;
 public class CompletionEngine extends Engine 
 	implements RelevanceConstants, ISearchRequestor, ISignatureConstants {
 	
-	public final static char[] sigInt = new char[] { TY.Tint32.mangleChar };
-	public final static char[] sigCharArray = new char[] { TY.Tarray.mangleChar, TY.Tchar.mangleChar };
+	public final static Type typeInt = TypeBasic.tint32;
+	public final static Type typeCharArray = new TypeDArray(TypeBasic.tchar);
 	
 	public static boolean DEBUG = false;
 	public static boolean PERF = false;
@@ -159,17 +165,22 @@ public class CompletionEngine extends Engine
 	
 	char[] fileName = null;
 	char[] sourceUnitFqn = null;
-	int startPosition, actualCompletionPosition, endPosition, offset;
+	int actualCompletionPosition;
+	int startPosition;
+	int endPosition;
+	int offset;
 	
 	char[] source;
 	char[] currentName;
-	char[] expectedType;
+	char[] expectedTypeSignature;
+	Type expectedType;
 	
 	HashtableOfObject typeCache;
 	
 	HashtableOfObject knownCompilationUnits = new HashtableOfObject(10);
 	HashtableOfObject knownKeywords = new HashtableOfObject(10);
 	HashtableOfObject knownDeclarations = new HashtableOfObject(10);
+	HashtableOfObject suggestedModules = new HashtableOfObject(10);
 	
 	boolean semanticRun = false;
 	
@@ -177,6 +188,7 @@ public class CompletionEngine extends Engine
 	boolean isCompletingTypeIdentifier;
 	boolean isWithScopeSymbol;
 	boolean wantConstructorsAndOpCall = true;
+	boolean wantProperties = true;
 	
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
@@ -256,6 +268,8 @@ public class CompletionEngine extends Engine
 			}
 			CharOperation.replace(sourceUnitFqn, '/', '.');
 			
+			suggestedModules.put(sourceUnitFqn, this);
+			
 			parser = new CompletionParser(Util.getApiLevel(this.compilerOptions.getMap()), source, this.fileName);
 			parser.cursorLocation = completionPosition;
 			parser.nextToken();
@@ -331,7 +345,15 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnCompoundStatement) {
 					CompletionOnCompoundStatement node = (CompletionOnCompoundStatement) assistNode;
 					completeCompoundStatement(node);
+				} else if (assistNode instanceof CompletionOnCallExp) {
+					CompletionOnCallExp node = (CompletionOnCallExp) assistNode;
+					completeCallExp(node);
 				}
+			}
+			
+			// For new |, don't suggest keywords or ddoc
+			if (parser.inNewExp) {
+				return;
 			}
 			
 			// Then the keywords
@@ -364,8 +386,63 @@ public class CompletionEngine extends Engine
 			this.requestor.endReporting();
 		}
 	}
-	
+
 	private void computeExpectedType() {
+		if (parser.expectedTypeNode instanceof CallExp) {
+			CallExp callExp = (CallExp) parser.expectedTypeNode;
+			if (callExp.e1 == null) {
+				return;
+			}
+				
+			Type type = callExp.e1.type;
+			if (type == null) {
+				return;
+			}
+			
+			if (type instanceof TypeFunction) {
+				computeExpectedTypeForTypeFunction((TypeFunction) type, 0);
+			}
+			return;
+		}
+		
+		if (parser.expectedTypeNode instanceof NewExp) {
+			NewExp newExp = (NewExp) parser.expectedTypeNode;
+			
+			boolean hasAllocator = newExp.allocator != null && (newExp.sourceNewargs != null && newExp.sourceNewargs.size() > 0);
+			if (hasAllocator) {
+				Type type = newExp.allocator.type();
+				if (type == null) {
+					return;
+				}
+				
+				if (type instanceof TypeFunction) {
+					computeExpectedTypeForTypeFunction((TypeFunction) type, -1);
+					if (expectedTypeSignature != null) {
+						return;
+					}
+				}
+			}
+			
+			
+			if (newExp.member == null) {
+				return;
+			}
+				
+			Type type = newExp.member.type();
+			if (type == null) {
+				return;
+			}
+			
+			if (type instanceof TypeFunction) {
+				if (hasAllocator) {
+					computeExpectedTypeForTypeFunction((TypeFunction) type, newExp.newargs == null ? -1 : newExp.newargs.size() - 1);
+				} else {
+					computeExpectedTypeForTypeFunction((TypeFunction) type, 0);
+				}
+			}
+			return;
+		}
+		
 		if (parser.expectedTypeNode instanceof Expression) {
 			Expression exp = (Expression) parser.expectedTypeNode;
 			Type type = exp.type;
@@ -375,8 +452,46 @@ public class CompletionEngine extends Engine
 				}
 			}
 			if (type != null) {
-				expectedType = type.getSignature().toCharArray();
+				expectedType = type;
+				expectedTypeSignature = expectedType.getSignature().toCharArray();				
 			}
+			return;
+		}
+		
+		if (parser.expectedTypeNode instanceof Type) {
+			expectedType = (Type) parser.expectedTypeNode;
+			expectedTypeSignature = expectedType.getSignature().toCharArray();
+			return;
+		}
+		
+		if (parser.expectedTypeNode instanceof VarDeclaration) {
+			expectedType = ((VarDeclaration) parser.expectedTypeNode).type;
+			if (expectedType != null) {
+				expectedTypeSignature = expectedType.getSignature().toCharArray();
+			}
+			return;
+		}
+		
+		if (parser.expectedTypeNode instanceof ReturnStatement) {
+			ReturnStatement stm = (ReturnStatement) parser.expectedTypeNode;
+			if (stm.exp != null && stm.exp.type != null) {
+				expectedType = stm.exp.type;
+				expectedTypeSignature = expectedType.getSignature().toCharArray();
+			}
+		}
+			
+	}
+	
+	private void computeExpectedTypeForTypeFunction(TypeFunction typeFunc, int decrease) {
+		if (typeFunc.parameters == null || parser.expectedArgumentIndex - decrease >= typeFunc.parameters.size()) {
+			return;
+		}
+		
+		Argument arg = typeFunc.parameters.get(parser.expectedArgumentIndex - decrease);
+		Type type = arg.type;
+		if (type != null) {
+			expectedType = type;
+			expectedTypeSignature = expectedType.getSignature().toCharArray();
 		}
 	}
 
@@ -734,7 +849,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		doSemantic();
-
+		
 		completeExpression(node.e1, node.ident);
 	}
 	
@@ -774,7 +889,7 @@ public class CompletionEngine extends Engine
 		if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
 			IScopeDsymbol cd = (IScopeDsymbol) sym;
 			if (cd.members() != null && !cd.members().isEmpty()) {
-				suggestMembers(cd.members(), true, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
+				suggestMembers(cd.members(), false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
 			}
 		}
 	}
@@ -789,13 +904,22 @@ public class CompletionEngine extends Engine
 			ScopeExp se = (ScopeExp) node.exp;
 			if (se.sds instanceof IModule) {
 				currentName = computePrefixAndSourceRange(((IModule) se.sds).ident());
+				// Need to do this again because the ident of the module has other source range
+				startPosition = node.start;
+				endPosition = node.start + node.length;
 			} else if (se.sds instanceof Package) {
 				currentName = computePrefixAndSourceRange(((Package) se.sds).ident());
+				// Need to do this again because the ident of the package has other source range
+				startPosition = node.start;
+				endPosition = node.start + node.length;
 			} else {
 				return;
 			}
 		} else if (node.exp instanceof IdentifierExp) {
 			currentName = computePrefixAndSourceRange((IdentifierExp) node.exp);
+			// Need to do this again because the ident may have other source range
+			startPosition = node.start;
+			endPosition = node.start + node.length;
 		} else if (node.exp instanceof TypeExp) {
 			TypeExp te = (TypeExp) node.exp;
 			Type type = te.type;
@@ -885,6 +1009,20 @@ public class CompletionEngine extends Engine
 			completeIdentDot(node);
 		}
 	}
+	
+	private void completeCallExp(CallExp node) throws JavaModelException {
+		doSemantic();
+		
+		if (node.e1 != null && node.e1.type != null) {
+			currentName = CharOperation.NO_CHAR;
+			startPosition = actualCompletionPosition;
+			endPosition = actualCompletionPosition;
+			
+			trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR);
+		} else if (node.e1 instanceof CallExp && node.e1 != node) {
+			completeCallExp((CallExp) node.e1);
+		}
+	}
 
 	private void completeSuperDotExp(CompletionOnSuperDotExp node) throws JavaModelException {
 		doSemantic();
@@ -924,14 +1062,21 @@ public class CompletionEngine extends Engine
 			completeScopeDsymbol((IScopeDsymbol) sym, true /* only statics */);
 		}
 	}
-
+	
 	private void completeScope(Scope scope, int includes) {
+		// No current scope properties
+		wantProperties = false;
+		completeScope0(scope, includes);
+		wantProperties = true;
+	}
+
+	private void completeScope0(Scope scope, int includes) {
 		if (scope == null) {
 			return;
 		}
 		
 		if (scope.enclosing != null) {
-			completeScope(scope.enclosing, includes);
+			completeScope0(scope.enclosing, includes);
 		}
 		
 		IDsymbol sym = getScopeSymbol(scope);
@@ -992,7 +1137,7 @@ public class CompletionEngine extends Engine
 		if (dsymbol instanceof Import) {
 //			IModule mod = ((Import) dsymbol).mod;
 //			if (mod != null) {
-//				suggestMembers(mod.members(), name, false, new HashtableOfCharArrayAndObject(0), includes);
+//				suggestMembers(mod.members(), false, new HashtableOfCharArrayAndObject(0), includes);
 //			}
 		} else {
 			suggestMember(dsymbol, false, 0, new HashtableOfCharArrayAndObject(0), includes);
@@ -1001,6 +1146,17 @@ public class CompletionEngine extends Engine
 
 
 	private void completeExpression(Expression e1, IdentifierExp ident) throws JavaModelException {
+		if (ident.resolvedSymbol != null) {
+			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR);
+			
+			currentName = ident.ident;
+			startPosition = ident.start;
+			endPosition = ident.start + ident.length;
+			
+			suggestDsymbol(ident.resolvedSymbol, INCLUDE_ALL);
+			return;
+		}
+		
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
 			IDeclaration decl = var.var;
@@ -1183,74 +1339,68 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		char[] sigType = type.getSignature().toCharArray();
-		
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 		
 		if (type.isintegral()) {
 			suggestIntegralProperties();
 		}
 		
 		if (type.isfloating()) {
-			suggestFloatingProperties(sigType);
+			suggestFloatingProperties(type);
 		}
 	}
 	
 	public final static char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
-	private void suggestAllTypesProperties(char[] sigType) {
+	private void suggestAllTypesProperties(Type type) {
 		suggestProperties(
 				allTypesProperties, 
-				new char[][] { sigType, sigInt, sigInt, sigCharArray, sigCharArray }, 
-				R_DEFAULT);
+				new Type[] { type, typeInt, typeInt, typeCharArray, typeCharArray }, 
+				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] integralTypesProperties = { Id.max, Id.min };
 	private void suggestIntegralProperties() {
 		suggestProperties(
 				integralTypesProperties, 
-				new char[][] { sigInt, sigInt },
-				R_DEFAULT);
+				new Type[] { typeInt, typeInt },
+				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
-	private void suggestFloatingProperties(char[] sigType) {
+	private void suggestFloatingProperties(Type type) {
 		suggestProperties(
 				floatingPointTypesProperties, 
-				new char[][] { sigType, sigType, sigInt, sigType, sigInt, sigInt, sigInt, sigInt, sigInt, sigType, sigType },
+				new Type[] { type, type, typeInt, type, typeInt, typeInt, typeInt, typeInt, typeInt, type, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };
 
 	private void suggestTypeStaticArrayProperties(TypeSArray type) {
-		char[] sigType = type.getSignature().toCharArray();
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 		suggestProperties(
 				staticAndDynamicArrayProperties, 
-				new char[][] { sigType, sigType, sigInt, sigInt, sigType },
+				new Type[] { type, type, typeInt, typeInt, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	private void suggestTypeDynamicArrayProperties(TypeDArray type) {
-		char[] sigType = type.getSignature().toCharArray();		
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 		suggestProperties(
 				staticAndDynamicArrayProperties,
-				new char[][] { sigType, sigType, sigInt, sigInt, sigType },
+				new Type[] { type, type, typeInt, typeInt, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] associativeArrayProperties = { Id.length, Id.keys, Id.values, Id.rehash };
 	private void suggestTypeAssociativeArrayProperties(TypeAArray type) {
-		char[] sigType = type.getSignature().toCharArray();		
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 		suggestProperties(
 				associativeArrayProperties,
-				new char[][] { sigInt, 
-					// These are arrays of the respective types
-					("A" + type.index.getSignature()).toCharArray(), 
-					("A" + type.next.getSignature()).toCharArray(),
-					sigType },
+				new Type[] { typeInt, 
+					new TypeDArray(type.index), 
+					new TypeDArray(type.next),
+					type },
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
@@ -1262,8 +1412,7 @@ public class CompletionEngine extends Engine
 		completeTypeClassRecursively(type, onlyStatics, funcSignatures);
 		
 		// And also all type's properties
-		char[] sigType = type.getSignature().toCharArray();		
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
@@ -1292,8 +1441,7 @@ public class CompletionEngine extends Engine
 		suggestMembers(decl.members(), onlyStatics, null, INCLUDE_ALL);
 		
 		// And also all type's properties
-		char[] sigType = type.getSignature().toCharArray();		
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 	}
 	
 	private void completeTypeEnum(TypeEnum type) {
@@ -1306,8 +1454,7 @@ public class CompletionEngine extends Engine
 		completeEnumMembers(enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
 		
 		// And also all type's properties
-		char[] sigType = type.getSignature().toCharArray();		
-		suggestAllTypesProperties(sigType);
+		suggestAllTypesProperties(type);
 		
 		// If the base type of the enum is integral, also suggest integer properties
 		if (enumDeclaration.memtype().isintegral()) {
@@ -1350,6 +1497,19 @@ public class CompletionEngine extends Engine
 	 * Suggest a member with another name (for aliases).
 	 */
 	private void suggestMember(IDsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		if (member instanceof Import && member.getModule() == module) {
+			IModule mod = ((Import) member).mod;
+			if (mod != null) {
+				char[] fqn = mod.getFullyQualifiedName().toCharArray();
+				if (!suggestedModules.containsKey(fqn)) {
+					suggestedModules.put(fqn, this);
+					
+					suggestMembers(mod.members(), false, funcSignatures, includes);
+				}
+			}
+			return;
+		}
+		
 		if (!isVisible(member)) {
 			return;
 		}
@@ -1372,16 +1532,26 @@ public class CompletionEngine extends Engine
 		IAliasDeclaration alias = member.isAliasDeclaration();
 		if (alias != null) {
 			IDsymbol sym = alias.toAlias(semanticContext);
-			if (sym != null) {
-				if (sym != alias) {
-					suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes);
+			if (sym != null && sym != alias) {
+				suggestMember(sym, ident, false /* not only statics, check passed */, flags, funcSignatures, includes);
+				
+				// Find overloads! :-)
+				while(sym instanceof IFuncDeclaration) {
+					IFuncDeclaration func = (IFuncDeclaration) sym;
+					
+					semanticContext.allowOvernextBySignature = true;				
+					IDeclaration funcDecl = func.overnext();
+					if (funcDecl != null && funcDecl != sym) {
+						suggestMember(funcDecl, ident, onlyStatics, flags, funcSignatures, includes);
+					}
+					sym = funcDecl;
 				}
 				return;
 			}
 		}
 		
 		// See if it's a variable
-		if ((includes & INCLUDE_VARIABLES) != 0 && !isCompletingTypeIdentifier) {
+		if ((includes & INCLUDE_VARIABLES) != 0 && !isCompletingTypeIdentifier && !parser.inNewExp) {
 			IVarDeclaration var = member.isVarDeclaration();
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
@@ -1391,7 +1561,7 @@ public class CompletionEngine extends Engine
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
-					relevance += computeRelevanceForExpectedType(typeName);
+					relevance += computeRelevanceForExpectedType(var.type());
 					
 					boolean isLocal = var.parent() instanceof IFuncDeclaration;
 					
@@ -1404,7 +1574,6 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					
 					proposal.setTypeName(typeName);
 					proposal.setSignature(sig);
 					proposal.setFlags(flags | var.getFlags());
@@ -1450,13 +1619,31 @@ public class CompletionEngine extends Engine
 							return;
 						}
 					}
+					
+					if (parser.inNewExp) {
+						if (type instanceof TypeClass) {
+							IClassDeclaration cd = ((TypeClass) type).sym;
+							if (cd.isClassDeclaration() != null && cd.isInterfaceDeclaration() == null) {
+								// If it's abstract, skip
+								if ((cd.getFlags() & Flags.AccAbstract) != 0) {
+									return;
+								}
+								relevance += R_NEW;
+							} else {
+								return;
+							}
+						} else {
+							return;
+						}
+					}
+					
 					String sig = type.getSignature();
 					if (sig == null) {
 						return;
 					}
 					
 					char[] sigChars = sig.toCharArray();
-					relevance += computeRelevanceForExpectedType(sigChars);
+					relevance += computeRelevanceForExpectedType(type);
 					
 					proposal.setTypeName(sigChars);
 					proposal.setFlags(flags | alias.getFlags() | Flags.AccAlias);
@@ -1502,7 +1689,18 @@ public class CompletionEngine extends Engine
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
-					relevance += computeRelevanceForExpectedType(sigChars);
+					relevance += computeRelevanceForExpectedType(member.type());
+					if (parser.inNewExp) {
+						if (member.isClassDeclaration() != null && member.isInterfaceDeclaration() == null) {
+							// If it's abstract, skip
+							if ((member.getFlags() & Flags.AccAbstract) != 0) {
+								return;
+							}
+							relevance += R_NEW;
+						} else {
+							return;
+						}
+					}
 					relevance += R_CLASS;
 					
 					CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
@@ -1513,6 +1711,8 @@ public class CompletionEngine extends Engine
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					CompletionEngine.this.requestor.accept(proposal);
+					
+					trySuggestCall(member.type(), ident, sigChars);
 				}
 			}
 			
@@ -1548,7 +1748,7 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
-		if ((includes & INCLUDE_FUNCTIONS) != 0 || 
+		if (!parser.inNewExp && (includes & INCLUDE_FUNCTIONS) != 0 || 
 				((includes & (INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL)) != 0 && wantConstructorsAndOpCall)) {
 			// See if it's a function
 			IFuncDeclaration func = member.isFuncDeclaration();
@@ -1573,7 +1773,7 @@ public class CompletionEngine extends Engine
 				boolean constructor = (includes & INCLUDE_CONSTRUCTORS) != 0;
 				boolean opCall = (includes & INCLUDE_OPCALL) != 0;
 				boolean funcNameIsOpCall = CharOperation.equals(funcName, Id.call);
-				if (currentName.length == 0 || match(currentName, ident)
+				if ((!constructor && !opCall && (currentName.length == 0 || match(currentName, ident)))
 						|| (constructor && CharOperation.equals(funcName, Id.ctor)) 
 						|| (opCall && funcNameIsOpCall)) {
 					int relevance = computeBaseRelevance();
@@ -1588,10 +1788,7 @@ public class CompletionEngine extends Engine
 					
 					Type type = func.type();
 					if (type instanceof TypeFunction) {
-						Type retType = type.next;
-						if (retType != null) {
-							relevance += computeRelevanceForExpectedType(retType.getSignature().toCharArray());
-						}
+						relevance += computeRelevanceForExpectedType(type);
 					}
 					
 					CompletionProposal proposal = this.createProposal(
@@ -1646,6 +1843,7 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
+		char[] currentNameSave = currentName;
 		
 		switch(type.getNodeType()) {
 		
@@ -1670,6 +1868,8 @@ public class CompletionEngine extends Engine
 			break;
 		}
 		}
+		
+		currentName = currentNameSave;
 	}
 
 	private boolean isVisible(IDsymbol member) {
@@ -1745,18 +1945,24 @@ public class CompletionEngine extends Engine
 
 	private void suggestProperties( 
 			char[][] properties,
-			char[][] types,
+			Type[] types,
 			int relevance) {
+		
+		if (!wantProperties) {
+			return;
+		}
+		
 		for (int i = 0; i < properties.length; i++) {
 			char[] property = properties[i];
-			char[] type = types[i];
+			Type type = types[i];
 			if (currentName.length == 0 || match(currentName, property)) {
 				relevance += computeRelevanceForExpectedType(type);
 				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+				proposal.setRelevance(relevance);
 				proposal.setName(property);
 				proposal.setCompletion(property);
-				proposal.setTypeName(type);
+				proposal.setTypeName(type.getSignature().toCharArray());
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}
@@ -2054,8 +2260,8 @@ public class CompletionEngine extends Engine
 	private void findKeywords(char[] keyword, char[][] choices, boolean canCompleteEmptyToken) {
 		if(choices == null || choices.length == 0) return;
 		
-		boolean isExpectingBool = expectedType != null && expectedType.length == 1 &&
-			expectedType[0] == TY.Tbool.mangleChar;
+		boolean isExpectingBool = expectedTypeSignature != null && expectedTypeSignature.length == 1 &&
+			expectedTypeSignature[0] == TY.Tbool.mangleChar;
 		
 		int length = keyword.length;
 		if (canCompleteEmptyToken || length > 0)
@@ -2169,6 +2375,10 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		if (isImported(packageName)) {
+			return;
+		}
+		
 		if (!isVisible(modifiers, packageName)) {
 			return;
 		}
@@ -2194,14 +2404,21 @@ public class CompletionEngine extends Engine
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForCaseMatching(currentName, typeName);
 		relevance += computeRelevanceForExpectedType(sigChar);
+		if (parser.inNewExp) {
+			if ((modifiers & (Flags.AccStruct | Flags.AccUnion | Flags.AccInterface | Flags.AccTemplate | Flags.AccEnum)) == 0) {
+				// Don't suggest abstract classes
+				if ((modifiers & Flags.AccAbstract) != 0) {
+					return;
+				}
+				
+				relevance += R_NEW;
+			} else {
+				return;
+			}
+		}
 		relevance += R_CLASS;
 		
-		if (isImported(packageName)) {
-			relevance += computeRelevanceForInterestingProposal();
-			proposal.setCompletion(typeName);
-		} else {
-			proposal.setCompletion(fullName);
-		}
+		proposal.setCompletion(fullName);
 		
 		proposal.setName(typeName);
 		
@@ -2214,6 +2431,14 @@ public class CompletionEngine extends Engine
 	
 	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
 		if (packageName == null || packageName.length == 0) {
+			return;
+		}
+		
+		if (isImported(packageName)) {
+			return;
+		}
+		
+		if (parser.inNewExp) {
 			return;
 		}
 		
@@ -2247,12 +2472,7 @@ public class CompletionEngine extends Engine
 		relevance += computeRelevanceForExpectedType(typeName);
 		relevance += R_VAR;
 		
-		if (isImported(packageName)) {
-			relevance += computeRelevanceForInterestingProposal();
-			proposal.setCompletion(name);
-		} else {
-			proposal.setCompletion(fullName);
-		}
+		proposal.setCompletion(fullName);
 		
 		proposal.setName(name);
 		
@@ -2292,8 +2512,16 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		if (isImported(packageName)) {
+			return;
+		}
+		
 		// Don't show methods for type identifier completions
 		if (isCompletingTypeIdentifier) {
+			return;
+		}
+		
+		if (parser.inNewExp) {
 			return;
 		}
 		
@@ -2325,15 +2553,10 @@ public class CompletionEngine extends Engine
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForCaseMatching(currentName, name);
-		relevance += computeRelevanceForExpectedType(Signature.getReturnType(signature));
+		relevance += computeRelevanceForExpectedType(signature);
 		relevance += R_METHOD;
 		
-		if (isImported(packageName)) {
-			relevance += computeRelevanceForInterestingProposal();
-			proposal.setCompletion(CharOperation.concat(name, "()".toCharArray()));
-		} else {
-			proposal.setCompletion(CharOperation.concat(fullName, "".toCharArray()));
-		}
+		proposal.setCompletion(CharOperation.concat(fullName, "".toCharArray()));
 		
 		proposal.setName(name);
 		proposal.setSignature(sigChars);
@@ -2343,14 +2566,87 @@ public class CompletionEngine extends Engine
 		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
-	private int computeRelevanceForExpectedType(char[] signature) {
-		if (expectedType == null) {
+	private int computeRelevanceForExpectedType(Type type) {
+		if (expectedTypeSignature == null || expectedType == null || type == null) {
 			return 0;
 		}
 		
-		if (CharOperation.equals(expectedType, signature)) {
+		// If it's an in expression, match associative arrays whose
+		// keys are the expected type
+		if (parser.isInExp) {
+			if (type instanceof TypeAArray) {
+				TypeAArray ta = (TypeAArray) type;
+				if (ta.index != null) {
+					// Need to see if the type we have (expectedType) can be converted
+					// to the key, so it's like inverting roles here
+					parser.isInExp = false;					
+					Type expectedTypeSave = expectedType;
+					expectedType = ta.index;
+					expectedTypeSignature = expectedType.getSignature().toCharArray();
+					
+					int relevance = computeRelevanceForExpectedType(expectedTypeSave);
+					
+					expectedType = expectedTypeSave;
+					expectedTypeSignature = expectedType.getSignature().toCharArray();
+					parser.isInExp = true;
+					return relevance;
+				}
+			}
+			return 0;
+		}
+		
+		if (type instanceof TypeFunction && type.next != null) {
+			// If the expected type is a function pointer, and the type to suggest
+			// is a function, suggest it, if it matches
+			if (expectedType instanceof TypePointer && expectedType.next instanceof TypeFunction) {
+				Type expectedTypeSave = expectedType;
+				expectedType = expectedType.next;
+				expectedTypeSignature = expectedType.getSignature().toCharArray();
+				
+				int relevance = computeRelevanceForExpectedType(type);
+				
+				expectedType = expectedTypeSave;
+				expectedTypeSignature = expectedType.getSignature().toCharArray();				
+				return relevance;
+			} else if (expectedType instanceof TypeFunction) {
+				if (type.covariant(expectedType, semanticContext) == 1) {
+					return R_EXPECTED_TYPE;
+				}
+			}
+			
+			return computeRelevanceForExpectedType(type.next);
+		}
+		
+		MATCH match = type.implicitConvTo(expectedType, semanticContext);
+		if (match == MATCH.MATCHexact) {
 			return R_EXACT_EXPECTED_TYPE;
-		} 
+		}
+		if (match == MATCH.MATCHconvert) {
+			return R_EXPECTED_TYPE;
+		}
+		
+		if (expectedType.isBaseOf(type, null, semanticContext)) {
+			return R_EXPECTED_TYPE;
+		}
+		
+		return computeRelevanceForExpectedType(type.getSignature().toCharArray());
+	}
+	
+	private int computeRelevanceForExpectedType(char[] signature) {
+		if (expectedTypeSignature == null || signature == null) {
+			return 0;
+		}
+		
+		if (signature.length > 0 && 
+				(signature[0] == LINK_D || signature[0] == LINK_C ||
+						signature[0] == LINK_CPP || signature[0] == LINK_PASCAL ||
+						signature[0] == LINK_WINDOWS)) {
+			return computeRelevanceForExpectedType(Signature.getReturnType(signature));
+		}
+		
+		if (CharOperation.equals(expectedTypeSignature, signature)) {
+			return R_EXACT_EXPECTED_TYPE;
+		}
 		
 		// It may be that the signature is unresolved, so... use
 		// an heuristic here
@@ -2373,7 +2669,7 @@ public class CompletionEngine extends Engine
 			i += n;
 			
 			char[] name = CharOperation.subarray(signature, start + 1, i);
-			if (CharOperation.indexOf(name, expectedType, true, 0) != -1) {
+			if (CharOperation.indexOf(name, expectedTypeSignature, true, 0) != -1) {
 				return R_EXPECTED_TYPE;
 			}
 		}

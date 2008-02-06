@@ -41,7 +41,7 @@ public class SignatureProcessor implements ISignatureConstants {
 		process0(signature, 0, requestor);
 	}
 
-	private static int process0(String signature, int i, ISignatureRequestor requestor) {
+	public static int process0(String signature, int i, ISignatureRequestor requestor) {
 		if (signature == null || signature.length() == 0) {
 			throw new IllegalArgumentException("Invalid signature: " + signature);
 		}

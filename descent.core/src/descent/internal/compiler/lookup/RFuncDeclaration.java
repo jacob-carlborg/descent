@@ -122,16 +122,38 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 	public IDeclaration overnext() {
 		boolean foundMe = false;
 		
+		String mySig = null;
+//		String mySig = getSignature();
+		
 		IScopeDsymbol parentS = (IScopeDsymbol) parent;
 		for(IDsymbol s : parentS.members()) {
-			if (s == this) {
+			if (s == null) {
+				continue;
+			}
+			
+			if (!foundMe && s == this) {
 				foundMe = true;
-			} else if (foundMe && 
-					(s.isFuncDeclaration() != null || s.isAliasDeclaration() != null) &&
-					CharOperation.equals(s.ident().ident, ident().ident)) {
-				IDeclaration d = s.isDeclaration();
-				if (d != null) {
-					return d;
+			} else {
+				if (!foundMe) {
+					if (context.allowOvernextBySignature) {
+						if (mySig == null) {
+							mySig = getSignature();
+						}
+						String sSig = s.getSignature();
+						if (mySig != null && sSig != null && mySig.equals(sSig)) {
+							foundMe = true;
+							continue;
+						}
+					}
+				}
+				
+				if (foundMe && 
+						(s.isFuncDeclaration() != null || s.isAliasDeclaration() != null) &&
+						CharOperation.equals(s.ident().ident, ident().ident)) {
+					IDeclaration d = s.isDeclaration();
+					if (d != null) {
+						return d;
+					}
 				}
 			}
 		}

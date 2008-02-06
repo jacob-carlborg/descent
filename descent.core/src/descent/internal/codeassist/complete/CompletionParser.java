@@ -11,23 +11,26 @@ import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.CompoundStatement;
-import descent.internal.compiler.parser.CondExp;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DebugCondition;
 import descent.internal.compiler.parser.DebugSymbol;
 import descent.internal.compiler.parser.DotIdExp;
 import descent.internal.compiler.parser.ErrorExp;
+import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.SuperExp;
@@ -37,6 +40,7 @@ import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeQualified;
+import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
@@ -57,7 +61,18 @@ public class CompletionParser extends Parser {
 	// version identifier in a CompletionOnVersionCondition
 	public HashtableOfCharArrayAndObject versions;
 	public HashtableOfCharArrayAndObject debugs;
+	
+	/*
+	 * The node to use for computing the expected type, and
+	 * the index of the argument being completed in a call.
+	 */
 	public ASTDmdNode expectedTypeNode;
+	public int expectedArgumentIndex;
+	
+	private ASTDmdNode targetNew;
+	
+	public boolean inNewExp;
+	public boolean isInExp;
 
 	public CompletionParser(int apiLevel, char[] source, char[] filename) {
 		super(apiLevel, source, 0, source.length, null, null, false, filename);
@@ -463,27 +478,224 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
+	protected Expression newAddExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newAddExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newAndAndExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newAndAndExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newAndExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newAndExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newCatExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newCatExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newCmpExp(Loc loc, TOK op, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newCmpExp(loc, op, e, e2);
+	}
+	
+	@Override
+	protected Expression newDivExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newDivExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newEqualExp(Loc loc, TOK op, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newEqualExp(loc, op, e, e2);
+	}
+	
+	@Override
+	protected Expression newIdentityExp(Loc loc, TOK op, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newIdentityExp(loc, op, e, e2);
+	}
+	
+	@Override
+	protected Expression newInExp(Loc loc, Expression e, Expression e2) {
+		boolean match = analyzeBinExp(e, e2);
+		if (match) {
+			isInExp = true;
+		}
+		
+		return super.newInExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newMinExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newMinExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newModExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newModExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newMulExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newMulExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newOrExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newOrExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newOrOrExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newOrOrExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newShlExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newShlExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newShrExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newShrExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newUshrExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newUshrExp(loc, e, e2);
+	}
+	
+	@Override
+	protected Expression newXorExp(Loc loc, Expression e, Expression e2) {
+		analyzeBinExp(e, e2);
+		return super.newXorExp(loc, e, e2);
+	}
+	
+	@Override
 	protected Expression newCondExp(Loc loc, Expression e, Expression e1, Expression e2) {
+		if (e1.start + e1.length <= cursorLocation && 
+				cursorLocation <= e2.start + e2.length) {
+			expectedTypeNode = e1;
+		}
 		return super.newCondExp(loc, e, e1, e2);
 	}
 	
-	private void analyzeBinExp(Expression e, Expression e2) {
-		if (e2 == assistNode ||
-				(e2 != null && e.start + e.length <= cursorLocation && cursorLocation <= e2.start)) {
-			expectedTypeNode = e;
-			return;
-		}
-		
-		// If it's for:
-		// x = one ? two : |
-		// the expected type is the type of x
-		if (e2 instanceof CondExp) {
-			CondExp cond = (CondExp) e2;
-			if (cond.e1.start + cond.e1.length <= cursorLocation && 
-					cursorLocation <= cond.e2.start + cond.e2.length) {
-				expectedTypeNode = e;
+	@Override
+	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer init) {
+		VarDeclaration var = super.newVarDeclaration(loc, type, ident, init);
+		if (init instanceof ExpInitializer) {
+			Expression exp = ((ExpInitializer) init).exp;
+			if (isMatch(ident, exp)) {
+				expectedTypeNode = var;
 			}
 		}
+		return var;
+	}
+	
+	@Override
+	protected Expression newCallExp(Loc loc, Expression e, Expressions expressions) {
+		Expression callExp = super.newCallExp(loc, e, expressions);
+		
+		if (expressions != null) {
+			for (int i = 0; i < expressions.size(); i++) {
+				Expression exp = expressions.get(i);
+				if (isMatch(exp)) {
+					expectedTypeNode = callExp;
+					expectedArgumentIndex = i;
+				}
+			}
+		}
+		
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
+			assistNode = new CompletionOnCallExp(loc, e, expressions);
+			return (Expression) assistNode;
+		}
+		
+		return callExp;
+	}
+	
+	@Override
+	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments) {
+		Expression newExp = super.newNewExp(loc, thisexp, newargs, t, arguments);
+		
+		if ((t != null && isMatch(t)) || (thisexp != null && isMatch(thisexp))
+			|| prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
+			inNewExp = true;
+			targetNew = newExp;
+		}
+		
+		int newArgsSize = newargs == null ? 0 : newargs.size();
+		if (newargs != null) {
+			for (int i = 0; i < newArgsSize; i++) {
+				Expression exp = newargs.get(i);
+				if (isMatch(exp)) {
+					expectedTypeNode = newExp;
+					expectedArgumentIndex = i;
+				}
+			}
+		}
+		
+		if (arguments != null) {
+			for (int i = 0; i < arguments.size(); i++) {
+				Expression exp = arguments.get(i);
+				if (isMatch(exp)) {
+					expectedTypeNode = newExp;
+					expectedArgumentIndex = i + newArgsSize;
+				}
+			}
+		}
+		
+		return newExp;
+	}
+	
+	@Override
+	protected Statement newReturnStatement(Loc loc, Expression exp) {
+		Statement ret = super.newReturnStatement(loc, exp);
+		if (isMatch(exp) || cursorLocation - prevToken.ptr <= 3) {
+			expectedTypeNode = ret;
+		}
+		return ret;
+	}
+	
+	private boolean analyzeBinExp(Expression e, Expression e2) {
+		if (isMatch(e, e2)) {
+			expectedTypeNode = e;
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isMatch(ASTDmdNode second) {
+		return isMatch(null, second);
+	}
+	
+	private boolean isMatch(ASTDmdNode first, ASTDmdNode second) {
+		if (second == assistNode ||
+				(second.start <= cursorLocation && cursorLocation <= second.start + second.length) ||
+				(first != null && second != null && first.start + first.length <= cursorLocation && cursorLocation <= second.start) ||
+				second == targetNew) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private boolean inCompletion() {

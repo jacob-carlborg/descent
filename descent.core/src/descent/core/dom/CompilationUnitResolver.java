@@ -242,7 +242,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 					case IProblem.FunctionsCannotReturnStaticArrays:
 					case IProblem.UnrecongnizedTrait:
 //					case IProblem.UndefinedProperty:
-					case IProblem.DeprecatedProperty:
+//					case IProblem.DeprecatedProperty:
 					case IProblem.FileNameMustBeString:
 					case IProblem.FileImportsMustBeSpecified:
 					case IProblem.VersionIdentifierReserved:

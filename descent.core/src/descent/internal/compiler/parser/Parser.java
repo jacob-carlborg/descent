@@ -867,7 +867,7 @@ public class Parser extends Lexer {
 			    nextToken();
 			    nextToken();
 			    Initializer init = parseInitializer();
-			    VarDeclaration v = new VarDeclaration(loc(), null, ident, init);
+			    VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
 			    v.first = first;
 			    first = false;
 			    
@@ -921,7 +921,7 @@ public class Parser extends Lexer {
 		
 		return s;
 	}
-	
+
 	private Dsymbols parseBlock() {
 		return parseBlock(null);
 	}
@@ -2958,7 +2958,7 @@ public class Parser extends Lexer {
 			nextToken();
 			Initializer init = parseInitializer();
 
-			VarDeclaration v = new VarDeclaration(loc(), null, ident, init);
+			VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
 			v.first = first;
 			first = false;
 			
@@ -3162,7 +3162,7 @@ public class Parser extends Lexer {
 					init = parseInitializer();
 				}
 				
-				v = new VarDeclaration(loc(), t, ident, init);
+				v = newVarDeclaration(loc(), t, ident, init);
 				v.first = first;
 				first = false;
 				
@@ -4263,9 +4263,9 @@ public class Parser extends Lexer {
 			} else {
 				exp = parseExpression();
 			}
-			check(TOKsemicolon);
+			s = newReturnStatement(loc(), exp);
 			
-			s = new ReturnStatement(loc(), exp);
+			check(TOKsemicolon);
 			break;
 		}
 
@@ -4547,7 +4547,7 @@ public class Parser extends Lexer {
 		}
 		
 		return s;
-	}
+	}	
 
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
 		List a;
@@ -5946,7 +5946,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKlparen:
-				e = new CallExp(loc(), e, parseArguments());
+				e = newCallExp(loc(), e, parseArguments());
 				e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				continue;
 
@@ -6761,10 +6761,10 @@ public class Parser extends Lexer {
 		 * t = new TypeDArray(t); } else if (token.value == TOKlparen) arguments =
 		 * parseArguments(); #endif
 		 */
-		e = new NewExp(loc(), thisexp, newargs, t, arguments);
+		e = newNewExp(loc(), thisexp, newargs, t, arguments);
 		return e;
 	}
-	
+
 	private StringExp newStringExpForCurrentToken() {
 		StringExp string = new StringExp(loc(), token.ustring, token.len, (char) token.postfix);
 		string.sourceString = token.sourceString;
@@ -7245,6 +7245,22 @@ public class Parser extends Lexer {
 
 	protected Expression newMulExp(Loc loc, Expression e, Expression e2) {
 		return new MulExp(loc, e, e2);
+	}
+	
+	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer init) {
+		return new VarDeclaration(loc, type, ident, init);
+	}
+	
+	protected Expression newCallExp(Loc loc, Expression e, Expressions expressions) {
+		return new CallExp(loc, e, expressions);
+	}
+	
+	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments) {
+		return new NewExp(loc, thisexp, newargs, t, arguments);
+	}
+	
+	protected Statement newReturnStatement(Loc loc, Expression exp) {
+		return new ReturnStatement(loc, exp);
 	}
 	
 	/**
