@@ -421,7 +421,7 @@ public class TypeSArray extends TypeArray {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		if (signature == null) {
 			StringBuilder sb = new StringBuilder();
 			appendSignature(sb);
@@ -431,7 +431,7 @@ public class TypeSArray extends TypeArray {
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append('G');
 		if (dim instanceof IntegerExp) {
 			sb.append(((IntegerExp) dim).value);

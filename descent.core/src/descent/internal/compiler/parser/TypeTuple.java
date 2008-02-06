@@ -177,13 +177,13 @@ public class TypeTuple extends Type {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		// TODO Descent signature
 		return null;
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		// TODO Descent signature		
 	}
 

@@ -74,6 +74,10 @@ public class TypeIdentifier extends TypeQualified {
 		ident.resolvedSymbol = s;
 		
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
+		
+		if (pt != null && pt.length > 0 && pt[0] != null) {
+			pt[0].resolved = s;
+		}
 	}
 
 	@Override
@@ -190,14 +194,14 @@ public class TypeIdentifier extends TypeQualified {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		StringBuilder sb = new StringBuilder();
 		appendSignature(sb);
 		return sb.toString();
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.IDENTIFIER);
 		sb.append(ident.ident.length);
 		sb.append(ident.ident);

@@ -116,7 +116,7 @@ public class TypeTypeof extends TypeQualified {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		if (exp.type != null) {
 			return exp.type.getSignature();
 		}
@@ -124,7 +124,7 @@ public class TypeTypeof extends TypeQualified {
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append(getSignature());
 	}
 

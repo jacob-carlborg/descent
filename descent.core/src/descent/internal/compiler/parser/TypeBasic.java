@@ -796,12 +796,12 @@ public class TypeBasic extends Type {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		return deco;
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append(deco);
 	}
 

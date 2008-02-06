@@ -116,7 +116,7 @@ public class TypeDelegate extends Type {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		if (signature == null) {
 			StringBuilder sb = new StringBuilder();
 			appendSignature(sb);
@@ -126,7 +126,7 @@ public class TypeDelegate extends Type {
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append('D');
 		next.appendSignature(sb);
 	}

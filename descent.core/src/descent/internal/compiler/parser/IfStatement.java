@@ -212,6 +212,8 @@ public class IfStatement extends Statement {
 
 			Type t = arg.type != null ? arg.type : condition.type;
 			match = new VarDeclaration(loc, t, arg.ident, null);
+			arg.var = match;
+			
 			match.noauto = true;
 			match.semantic(scd, context);
 			if (scd.insert(match) == null) {

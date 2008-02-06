@@ -407,6 +407,19 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 	}
 	
+	private char[] getSignature0(Type t) {
+		if (t == null) {
+			return null;
+		}
+		
+		String s = t.getSignature0();
+		if (s == null) {
+			return null;
+		} else {
+			return s.toCharArray();
+		}
+	}
+	
 	public boolean visit(ClassDeclaration node) {
 		if (node.templated) {
 			return true;
@@ -673,7 +686,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		if (node.type != null) {
-			info.type = getSignature(node.type);
+			info.type = getSignature0(node.type);
 		} else if (node.aliassym != null) {
 			info.type = node.aliassym.getSignature().toCharArray();
 		} else {

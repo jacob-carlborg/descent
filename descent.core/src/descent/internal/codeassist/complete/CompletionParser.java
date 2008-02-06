@@ -669,7 +669,7 @@ public class CompletionParser extends Parser {
 	@Override
 	protected Statement newReturnStatement(Loc loc, Expression exp) {
 		Statement ret = super.newReturnStatement(loc, exp);
-		if (isMatch(exp) || cursorLocation - prevToken.ptr <= 3) {
+		if (isMatch(exp) || 0 <= cursorLocation - prevToken.ptr && cursorLocation - prevToken.ptr <= 3) {
 			expectedTypeNode = ret;
 		}
 		return ret;

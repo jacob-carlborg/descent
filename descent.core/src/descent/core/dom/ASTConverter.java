@@ -1417,7 +1417,11 @@ public class ASTConverter {
 			}
 		}
 		if (a.init == null) {
-			b.setSourceRange(a.ident.start, a.ident.length);
+			if (a.ident != null) {
+				b.setSourceRange(a.ident.start, a.ident.length);
+			} else {
+				b.setSourceRange(a.start, a.length);
+			}
 		} else {
 			descent.core.dom.Initializer init = convert(a.init);
 			if (init != null) {

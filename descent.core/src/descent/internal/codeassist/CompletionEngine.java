@@ -946,7 +946,9 @@ public class CompletionEngine extends Engine
 				currentName = sym.ident().ident;
 			}
 			
+			isCompletingTypeIdentifier = true;
 			trySuggestCall(type, currentName, CharOperation.NO_CHAR);
+			isCompletingTypeIdentifier = false;
 		} else if (node.exp instanceof CallExp) {
 			CallExp ce = (CallExp) node.exp;
 			if (ce.e1 instanceof IdentifierExp) {
@@ -1850,6 +1852,7 @@ public class CompletionEngine extends Engine
 		// function pointer and delegate call
 		case ASTDmdNode.TYPE_POINTER:
 			suggestTypePointer((TypePointer) type, ident, signature);
+			break;
 		case ASTDmdNode.TYPE_DELEGATE:
 			suggestTypeDelegate((TypeDelegate) type, ident, signature);
 			break;

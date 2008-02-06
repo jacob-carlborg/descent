@@ -562,11 +562,11 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		}
 
 		@Override
-		protected void appendSignature(StringBuilder sb) {
+		protected void appendSignature0(StringBuilder sb) {
 		}
 
 		@Override
-		public String getSignature() {
+		public String getSignature0() {
 			if (symbol instanceof IFuncDeclaration) {
 				return ((IFuncDeclaration) symbol).getSignature();
 			}
@@ -1050,6 +1050,8 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				t = dt.symbol.type();
 				if (t == null) {
 					t = dt.symbol.getType();
+				} else {
+					t.resolved = dt.symbol;
 				}
 				return t;
 			} else {

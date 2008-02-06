@@ -233,7 +233,7 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		if (signature == null) {
 			StringBuilder sb = new StringBuilder();
 			appendSignature(sb);
@@ -243,7 +243,7 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append('H');
 		index.appendSignature(sb);
 		next.appendSignature(sb);

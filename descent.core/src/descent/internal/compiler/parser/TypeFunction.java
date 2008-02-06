@@ -584,7 +584,7 @@ public class TypeFunction extends Type {
 	private static final GotoL1 GOTO_L1 = new GotoL1();
 	
 	@Override
-	public String getSignature() {
+	public String getSignature0() {
 		if (signature == null) {
 			StringBuilder sb = new StringBuilder();
 			appendSignature(sb);
@@ -594,7 +594,7 @@ public class TypeFunction extends Type {
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb) {
 		sb.append(linkageChar == 0 ? 'F' : linkageChar);
 		if (parameters != null) {
 			for(Argument arg : parameters) {

@@ -497,6 +497,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
 	
+	/*
+	 * Descent: resolved type, if TypeIdentifier semantic was called 
+	 */
+	public IDsymbol resolved;
+	
 	// This field is kept in SemanticContext
 	// public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
 
@@ -1195,9 +1200,24 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 	
-	public abstract String getSignature();
+	public final String getSignature() {
+		if (resolved != null) {
+			return resolved.getSignature();
+		}
+		return getSignature0();
+	}
 	
-	protected abstract void appendSignature(StringBuilder sb);
+	public abstract String getSignature0();
+	
+	protected final void appendSignature(StringBuilder sb) {
+		if (resolved != null) {
+			resolved.appendSignature(sb);
+		} else {
+			appendSignature0(sb);
+		}
+	}
+	
+	protected abstract void appendSignature0(StringBuilder sb);
 	
 	/**
 	 * Returns the java element associated with this type, if any,
