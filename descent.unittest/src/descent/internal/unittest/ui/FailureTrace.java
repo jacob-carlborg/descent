@@ -12,6 +12,9 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.events.SelectionEvent;
@@ -32,110 +35,23 @@ import org.eclipse.jface.util.OpenStrategy;
 
 import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
-import descent.internal.unittest.ui.ITraceDisplay.LineType;
-import descent.unittest.IStackTraceElement;
 import descent.unittest.ITestResult;
 
 /**
  * A pane that shows a stack trace of a failed test.
  */
 public class FailureTrace implements IMenuListener
-{	
-	/**
-	 * Was TextualTrace, but considering that there's no text involved and this
-	 * is quite a bit simpler, I thought an inner class would be fine.
-	 */
-	private static class TraceDisplayHandler
-	{
-		private static final int MAX_LABEL_LENGTH = 256;
-		
-		final ITestResult result;
-		
-		TraceDisplayHandler(ITestResult result)
-		{
-			this.result = result;
-		}
-		
-		public void display(ITraceDisplay table)
-		{
-			String message = result.getMessage();
-			switch(result.getResultType())
-			{
-				case PASSED:
-					// I'm guesing this won't ever happen, but just in case
-					return;
-				case FAILED:
-					displayWrappedLine(table, String.format(
-							"%1$s[%2$s:%3$d]",
-							message != null ? message + " " : "",
-							result.getFile(),
-							result.getLine()),
-							LineType.EXCEPTION);
-					break;
-				case ERROR:
-					displayWrappedLine(table, String.format(
-							"%1$s%2$s",
-							result.getExceptionType(),
-							message != null ? ": " + message : ""),
-							LineType.EXCEPTION);
-			}
-			IStackTraceElement[] stackTrace = result.getStackTrace();
-			if(null != stackTrace && stackTrace.length > 0)
-				displayStackTrace(table, stackTrace);
-		}
-		
-		private static void displayStackTrace(ITraceDisplay table,
-				IStackTraceElement[] stackTrace)
-		{
-			for(IStackTraceElement ste : stackTrace)
-			{
-				if(ste.lineInfoFound())
-				{
-					displayWrappedLine(table, String.format(
-							"%1$s [%2$s:%3$d]",
-							ste.getFunction(),
-							ste.getFile(),
-							ste.getLine()),
-							LineType.STACK_FRAME);
-				}
-				else
-				{
-					displayWrappedLine(table, String.format(
-							"%1$s [0x%2$x]",
-							ste.getFunction(),
-							ste.getAddress()),
-							LineType.STACK_FRAME);
-				}
-			}
-		}
-		
-		private static void displayWrappedLine(ITraceDisplay table, String line,
-				LineType type) {
-			final int labelLength = line.length();
-			if (labelLength < MAX_LABEL_LENGTH) {
-				table.addTraceLine(type, line);
-			} else {
-				// workaround for bug 74647: JUnit view truncates
-				// failure message
-				table.addTraceLine(type, line.substring(0, MAX_LABEL_LENGTH));
-				int offset = MAX_LABEL_LENGTH;
-				while (offset < labelLength) {
-					int nextOffset = Math.min(labelLength, offset + MAX_LABEL_LENGTH);
-					table.addTraceLine(LineType.NORMAL, line.substring(offset,
-							nextOffset));
-					offset = nextOffset;
-				}
-			}
-		}
-	}
+{
+	private static final Pattern TRACE_LINE_PATTERN = Pattern.compile(
+			"in ([^\\<]*)\\<([^\\:]*):(\\d*)>");
     
-    static final String FRAME_PREFIX= "at "; //$NON-NLS-1$
 	private Table fTable;
 	private TestRunnerViewPart fTestRunner;
 	private ITestResult fInputResult;
 	private final Clipboard fClipboard;
     private TestElement fFailure;
 	private final FailureTableDisplay fFailureTableDisplay;
+	private final TableTraceWriter fTableTraceWriter;
 
 	public FailureTrace(Composite parent, Clipboard clipboard, TestRunnerViewPart testRunner, ToolBar toolBar) {
 		assert(null != clipboard);
@@ -162,6 +78,7 @@ public class FailureTrace implements IMenuListener
 		initMenu();
 		
 		fFailureTableDisplay = new FailureTableDisplay(fTable);
+		fTableTraceWriter = new TableTraceWriter(fFailureTableDisplay);
 	}
 	
 	private void initMenu() {
@@ -190,8 +107,20 @@ public class FailureTrace implements IMenuListener
 	}				
 
 	private Action createOpenEditorAction(String traceLine)
-	{
-		// TODO
+	{	
+		Matcher m = TRACE_LINE_PATTERN.matcher(traceLine);
+		if(m.find())
+		{
+			try
+			{
+				// TODO
+			}
+			
+			// If any of these exceptions are thrown, fall through & return null
+			catch(IndexOutOfBoundsException e) { }
+			catch(NumberFormatException e) { }
+		}
+		
 		return null;
 	}
 	
@@ -241,7 +170,7 @@ public class FailureTrace implements IMenuListener
 		
 		fTable.setRedraw(false);
 		fTable.removeAll();
-		(new TraceDisplayHandler(result)).display(fFailureTableDisplay);
+		TraceWriterUtil.writeTrace(result, fTableTraceWriter);
 		fTable.setRedraw(true);
 	}
 
@@ -266,11 +195,6 @@ public class FailureTrace implements IMenuListener
     public TestElement getFailedTest() {
         return fFailure;
     }
-    
-    public String getTraceAsString()
-	{
-		return ""; // TODO
-	}
     
     public Shell getShell() {
         return fTable.getShell();

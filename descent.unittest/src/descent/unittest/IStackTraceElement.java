@@ -8,9 +8,8 @@ package descent.unittest;
 public interface IStackTraceElement
 {
 	/** 
-	 * Gets the name and signature of the executing function.
-	 * 
-	 * TODO specify format
+	 * Gets the name and signature of the executing function. The format is
+	 * undefined.
 	 * 
 	 * @return the name of the function that was executing.
 	 */

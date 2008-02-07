@@ -1,1 +1,1 @@
-dmd -g -unittest -of..\bin\test sample\module1.d C:\dmd\src\phobos\cn\kuehne\flectioned.d ..\..\flute\src\org\dsource\descent\unittests\flute.d -IC:\dmd\src\phobos C:\dmd\lib\WS2_32.lib 
+dmd -g -unittest -of..\bin\test sample\module1.d sample\module2.d C:\dmd\src\phobos\cn\kuehne\flectioned.d ..\..\flute\src\org\dsource\descent\unittests\flute.d -IC:\dmd\src\phobos C:\dmd\lib\WS2_32.lib 

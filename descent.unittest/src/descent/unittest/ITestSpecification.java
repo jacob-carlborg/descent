@@ -9,8 +9,6 @@ import descent.core.IInitializer;
  * will have the same hash code and evaluate to equal via {@link #equals(Object)}
  * even if they are in separete projects. Thus, for correct behavior ensure all
  * equality comparisons are done within the same project!
- * 
- * TODO -- is there a way to comapre two projects for equality?
  */
 public interface ITestSpecification
 {

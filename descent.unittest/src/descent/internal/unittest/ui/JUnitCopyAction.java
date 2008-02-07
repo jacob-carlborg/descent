@@ -24,19 +24,19 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.SelectionListenerAction;
 
+import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
+import descent.unittest.ITestResult;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.util.Assert;
 
 /**
  * Copies a test failure stack trace to the clipboard.
  */
-public class JUnitCopyAction extends SelectionListenerAction {
-	private FailureTrace fView;
-	
+public class JUnitCopyAction extends SelectionListenerAction
+{
+	private final FailureTrace fView;	
 	private final Clipboard fClipboard;
-
 	private TestElement fTestElement;
 
 	/**
@@ -46,7 +46,7 @@ public class JUnitCopyAction extends SelectionListenerAction {
 	 */
 	public JUnitCopyAction(FailureTrace view, Clipboard clipboard) {
 		super(JUnitMessages.CopyTrace_action_label);  
-		Assert.isNotNull(clipboard);
+		assert(null != clipboard);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IJUnitHelpContextIds.COPYTRACE_ACTION);
 		fView= view;
 		fClipboard= clipboard;
@@ -55,16 +55,14 @@ public class JUnitCopyAction extends SelectionListenerAction {
 	/*
 	 * @see IAction#run()
 	 */
-	public void run() {
-		String trace= fView.getTraceAsString();
-		String source= null;
-		if (trace != null) {
-			source= convertLineTerminators(trace);
-		} else if (fTestElement != null) {
-			source= fTestElement.getName();
-		}
-		if (source == null || source.length() == 0)
+	public void run()
+	{
+		if(null == fTestElement || !(fTestElement instanceof TestCaseElement))
 			return;
+		
+		TestCaseElement testCaseElement = (TestCaseElement) fTestElement;
+		ITestResult result = testCaseElement.getResult();
+		String source = TraceWriterUtil.getTraceAsString(result);
 		
 		TextTransfer plainTextTransfer = TextTransfer.getInstance();
 		try{

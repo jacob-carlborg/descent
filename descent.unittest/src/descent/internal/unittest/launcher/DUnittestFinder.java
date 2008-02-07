@@ -180,7 +180,7 @@ public class DUnittestFinder
 				if(init.isUnitTest())
 				{
 					String id = prefix + "." + count;
-					String name = id; // TODO
+					String name = id; // NEXTVERSION real names
 					result.add(new TestSpecification(id, name, init));
 					count++;
 				}

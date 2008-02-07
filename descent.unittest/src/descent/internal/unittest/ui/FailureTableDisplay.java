@@ -20,7 +20,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public class FailureTableDisplay implements ITraceDisplay {
+public class FailureTableDisplay
+{
+	public enum LineType
+	{
+		EXCEPTION,
+		STACK_FRAME,
+		NORMAL;
+	}
+	
 	private final Table fTable;
 
 	private final Image fExceptionIcon = TestRunnerViewPart

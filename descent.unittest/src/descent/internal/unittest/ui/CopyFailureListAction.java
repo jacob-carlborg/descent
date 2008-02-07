@@ -23,7 +23,9 @@ import org.eclipse.ui.PlatformUI;
 
 import descent.internal.ui.JavaPlugin;
 
+import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
+import descent.unittest.ITestResult;
 
 /**
  * Copies the names of the methods that failed and their traces to the clipboard.
@@ -63,10 +65,17 @@ public class CopyFailureListAction extends Action {
 		TestElement[] failures= fRunner.getAllFailures();
 		
 		String lineDelim= System.getProperty("line.separator", "\n");  //$NON-NLS-1$//$NON-NLS-2$
-		for (int i= 0; i < failures.length; i++) {
+		for (int i= 0; i < failures.length; i++)
+		{
 			TestElement failure= failures[i];
+			if(null == failure || !(failure instanceof TestCaseElement))
+				continue;
+			
+			TestCaseElement testCaseElement = (TestCaseElement) failure;
+			ITestResult result = testCaseElement.getResult();
+			String failureTrace = TraceWriterUtil.getTraceAsString(result);
+			
 			buf.append(failure.getName()).append(lineDelim);
-			String failureTrace= null;// TODO failure.getTrace();
 			if (failureTrace != null) {
 				int start= 0;
 				while (start < failureTrace.length()) {
