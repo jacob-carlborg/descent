@@ -884,6 +884,8 @@ private class TestResult
 					write("Exception " ~ e.classinfo.name ~ ": " ~ e.toUtf8()
 						~ "\r\n");
 				goto LprintStackTrace;
+			default:
+				assert(false);
 		}
 		
 		LprintStackTrace:
@@ -1253,6 +1255,8 @@ private class TestRegistry
 				assert(result);
 				result.print();
 				return result;
+			default:
+				assert(false);
 		}
 	}
 	

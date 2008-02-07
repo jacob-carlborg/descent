@@ -12,10 +12,6 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,7 +35,6 @@ import descent.internal.unittest.model.TestElement;
 import descent.internal.unittest.ui.ITraceDisplay.LineType;
 import descent.unittest.IStackTraceElement;
 import descent.unittest.ITestResult;
-import descent.unittest.ITestResult.ResultType;
 
 /**
  * A pane that shows a stack trace of a failed test.
@@ -63,23 +58,70 @@ public class FailureTrace implements IMenuListener
 		
 		public void display(ITraceDisplay table)
 		{
-			// TODO
-			
+			String message = result.getMessage();
+			switch(result.getResultType())
+			{
+				case PASSED:
+					// I'm guesing this won't ever happen, but just in case
+					return;
+				case FAILED:
+					displayWrappedLine(table, String.format(
+							"%1$s[%2$s:%3$d]",
+							message != null ? message + " " : "",
+							result.getFile(),
+							result.getLine()),
+							LineType.EXCEPTION);
+					break;
+				case ERROR:
+					displayWrappedLine(table, String.format(
+							"%1$s%2$s",
+							result.getExceptionType(),
+							message != null ? ": " + message : ""),
+							LineType.EXCEPTION);
+			}
+			IStackTraceElement[] stackTrace = result.getStackTrace();
+			if(null != stackTrace && stackTrace.length > 0)
+				displayStackTrace(table, stackTrace);
 		}
 		
-		private void displayWrappedLine(ITraceDisplay display, String line,
+		private static void displayStackTrace(ITraceDisplay table,
+				IStackTraceElement[] stackTrace)
+		{
+			for(IStackTraceElement ste : stackTrace)
+			{
+				if(ste.lineInfoFound())
+				{
+					displayWrappedLine(table, String.format(
+							"%1$s [%2$s:%3$d]",
+							ste.getFunction(),
+							ste.getFile(),
+							ste.getLine()),
+							LineType.STACK_FRAME);
+				}
+				else
+				{
+					displayWrappedLine(table, String.format(
+							"%1$s [0x%2$x]",
+							ste.getFunction(),
+							ste.getAddress()),
+							LineType.STACK_FRAME);
+				}
+			}
+		}
+		
+		private static void displayWrappedLine(ITraceDisplay table, String line,
 				LineType type) {
 			final int labelLength = line.length();
 			if (labelLength < MAX_LABEL_LENGTH) {
-				display.addTraceLine(type, line);
+				table.addTraceLine(type, line);
 			} else {
 				// workaround for bug 74647: JUnit view truncates
 				// failure message
-				display.addTraceLine(type, line.substring(0, MAX_LABEL_LENGTH));
+				table.addTraceLine(type, line.substring(0, MAX_LABEL_LENGTH));
 				int offset = MAX_LABEL_LENGTH;
 				while (offset < labelLength) {
 					int nextOffset = Math.min(labelLength, offset + MAX_LABEL_LENGTH);
-					display.addTraceLine(LineType.NORMAL, line.substring(offset,
+					table.addTraceLine(LineType.NORMAL, line.substring(offset,
 							nextOffset));
 					offset = nextOffset;
 				}
@@ -147,26 +189,9 @@ public class FailureTrace implements IMenuListener
 		return fTable.getSelection()[0].getText();
 	}				
 
-	private Action createOpenEditorAction(String traceLine) {
-		try { 
-			String testName= traceLine;
-			testName= testName.substring(testName.indexOf(FRAME_PREFIX)); 
-			testName= testName.substring(FRAME_PREFIX.length(), testName.lastIndexOf('(')).trim();
-			testName= testName.substring(0, testName.lastIndexOf('.'));
-			int innerSeparatorIndex= testName.indexOf('$');
-			if (innerSeparatorIndex != -1)
-				testName= testName.substring(0, innerSeparatorIndex);
-			
-			String lineNumber= traceLine;
-			lineNumber= lineNumber.substring(lineNumber.indexOf(':') + 1, lineNumber.lastIndexOf(')'));
-			int line= Integer.valueOf(lineNumber).intValue();
-			//fix for bug 37333	
-			String cuName= traceLine.substring(traceLine.lastIndexOf('(') + 1, traceLine.lastIndexOf(':'));
-			return new OpenEditorAtLineAction(fTestRunner, cuName, testName, line);
-		} catch(NumberFormatException e) {
-		}
-		catch(IndexOutOfBoundsException e) {	
-		}	
+	private Action createOpenEditorAction(String traceLine)
+	{
+		// TODO
 		return null;
 	}
 	

@@ -53,10 +53,6 @@ import org.eclipse.ui.part.PageBook;
 
 import org.eclipse.debug.core.ILaunchManager;
 
-import descent.core.IJavaProject;
-import descent.core.IType;
-import descent.core.JavaModelException;
-
 import descent.internal.ui.viewsupport.SelectionProviderMediator;
 
 import descent.internal.unittest.model.TestCaseElement;
@@ -215,9 +211,8 @@ public class TestViewer {
 		if (! selection.isEmpty()) {
 			TestElement testElement= (TestElement) selection.getFirstElement();
 			
-			String testLabel= testElement.getName();
 			if (testElement instanceof TestSuiteElement) {	
-				manager.add(new OpenTestAction(fTestRunnerPart, testLabel));
+				manager.add(new OpenModuleAction(fTestRunnerPart, testElement.getId()));
 				manager.add(new Separator());
 				if (!fTestRunnerPart.lastLaunchIsKeptAlive()) {
 					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
@@ -225,7 +220,8 @@ public class TestViewer {
 				}
 			} else {
 				TestCaseElement testCaseElement= (TestCaseElement) testElement;
-				//TODO manager.add(new OpenTestAction(fTestRunnerPart, testCaseElement.getTestSpecification()));
+				manager.add(new OpenTestAction(fTestRunnerPart, 
+						testCaseElement.getTestSpecification().getDeclaration()));
 				manager.add(new Separator());
 				if (fTestRunnerPart.lastLaunchIsKeptAlive()) {
 					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
@@ -249,17 +245,6 @@ public class TestViewer {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS + "-end")); //$NON-NLS-1$
 	}
-	
-	private boolean testClassExists(String className) {
-		IJavaProject project= fTestRunnerPart.getLaunchedProject();
-		try {
-			IType type= project.findType(className);
-			return type != null;
-		} catch (JavaModelException e) {
-			// fall through
-		}
-		return false;
-	}
 
 	public Control getTestViewerControl() {
 		return fViewerbook;
@@ -276,22 +261,22 @@ public class TestViewer {
 		if (selection.size() != 1)
 			return;
 		
-		/* TODO 
+		 
 		TestElement testElement= (TestElement) selection.getFirstElement();
 
-		OpenTestAction action;
+		OpenEditorAction action;
 		if (testElement instanceof TestSuiteElement) {
-			action= new OpenTestAction(fTestRunnerPart, testElement.getName());
+			action= new OpenModuleAction(fTestRunnerPart, testElement.getId());
 		} else if (testElement instanceof TestCaseElement){
 			TestCaseElement testCase= (TestCaseElement) testElement;
-			action= new OpenTestAction(fTestRunnerPart, testCase.getTestSpecification());
+			action= new OpenTestAction(fTestRunnerPart,
+					testCase.getTestSpecification().getDeclaration());
 		} else {
 			throw new IllegalStateException(String.valueOf(testElement));
 		}
 
 		if (action.isEnabled())
 			action.run();
-		*/
 	}
 	
 	private void handleSelected() {

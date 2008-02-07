@@ -27,6 +27,7 @@ public interface IJUnitHelpContextIds {
 	public static final String RERUN_ACTION= PREFIX + "rerun_test_action_context"; //$NON-NLS-1$
 	public static final String GOTO_REFERENCED_TEST_ACTION_CONTEXT= PREFIX + "goto_referenced_test_action_context"; //$NON-NLS-1$
 	public static final String OUTPUT_SCROLL_LOCK_ACTION= PREFIX + "scroll_lock"; //$NON-NLS-1$
+	public static final String OPENMODULE_ACTION= PREFIX + "open_module_action_context"; //$NON-NLS-1$
 	
 	// view parts
 	public static final String RESULTS_VIEW= PREFIX + "results_view_context"; //$NON-NLS-1$

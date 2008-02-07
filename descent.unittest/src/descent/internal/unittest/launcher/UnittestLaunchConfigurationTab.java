@@ -391,9 +391,9 @@ public class UnittestLaunchConfigurationTab extends
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
 		
-		// WAITING_ON_CORE get the fluted program executable
+		// TODO get the fluted program executable
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
-				"C:/Users/xycos/workspace/descent.unittest/testdata/src/test.exe");
+				"C:/Users/xycos/workspace/descent.unittest/testdata/bin/test.exe");
 	}
 
 	//--------------------------------------------------------------------------

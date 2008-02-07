@@ -10,17 +10,11 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
-import java.util.HashSet;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.IJavaElement;
-import descent.core.IJavaModel;
 import descent.core.IJavaProject;
-import descent.core.IType;
-import descent.core.JavaModelException;
 
 import org.eclipse.swt.widgets.Shell;
 
@@ -28,6 +22,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.internal.ui.javaeditor.EditorUtility;
@@ -35,35 +30,30 @@ import descent.internal.ui.javaeditor.EditorUtility;
 /**
  * Abstract Action for opening a Java editor.
  */
-public abstract class OpenEditorAction extends Action {
-	protected String fClassName;
-	protected TestRunnerViewPart fTestRunner;
-	private final boolean fActivate;
+public abstract class OpenEditorAction extends Action
+{
+	private final TestRunnerViewPart fTestRunner;
 	
-	protected OpenEditorAction(TestRunnerViewPart testRunner, String testClassName) {
-		this(testRunner, testClassName, true);
-	}
-
-	public OpenEditorAction(TestRunnerViewPart testRunner, String className, boolean activate) {
+	protected OpenEditorAction(TestRunnerViewPart testRunner)
+	{
 		super(JUnitMessages.OpenEditorAction_action_label); 
-		fClassName= className;
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, getHelpContextId());
 		fTestRunner= testRunner;
-		fActivate= activate;
 	}
-
+	
 	/*
 	 * @see IAction#run()
 	 */
-	public void run() {
+	public final void run() {
 		ITextEditor textEditor= null;
 		try {
-			IJavaElement element= findElement(getLaunchedProject(), fClassName);
+			IJavaElement element= findElement();
 			if (element == null) {
 				MessageDialog.openError(getShell(), 
 					JUnitMessages.OpenEditorAction_error_cannotopen_title, JUnitMessages.OpenEditorAction_error_cannotopen_message); 
 				return;
 			} 
-			textEditor= (ITextEditor)EditorUtility.openInEditor(element, fActivate);			
+			textEditor= (ITextEditor)EditorUtility.openInEditor(element, true /* always activate */);			
 		} catch (CoreException e) {
 			ErrorDialog.openError(getShell(), JUnitMessages.OpenEditorAction_error_dialog_title, JUnitMessages.OpenEditorAction_error_dialog_message, e.getStatus()); 
 			return;
@@ -74,48 +64,35 @@ public abstract class OpenEditorAction extends Action {
 		}
 		reveal(textEditor);
 	}
-	
-	protected Shell getShell() {
-		return fTestRunner.getSite().getShell();
-	}
 
-	protected IJavaProject getLaunchedProject() {
+	protected final IJavaProject getLaunchedProject()
+	{
 		return fTestRunner.getLaunchedProject();
 	}
 	
-	protected String getClassName() {
-		return fClassName;
-	}
-
-	protected abstract IJavaElement findElement(IJavaProject project, String className) throws CoreException;
+	/**
+	 * Finds the {@link IJavaElement} to be opened in the editor.
+	 * 
+	 * @return the element to open or null if the element could not
+	 *         be found
+	 */
+	protected abstract IJavaElement findElement() throws CoreException;
 	
+	/**
+	 * Given an open editor, reveal the relevant data (for example
+	 * 
+	 * @param editor the editor to reveal the data on, showing the element
+	 *               returned by {@link #findElement()}.
+	 */
 	protected abstract void reveal(ITextEditor editor);
-
-	protected IType findType(IJavaProject project, String className) throws JavaModelException {
-		return internalFindType(project, className, new HashSet());
-	}
-
-	private IType internalFindType(IJavaProject project, String className, Set/*<IJavaProject>*/ visitedProjects) throws JavaModelException {
-		if (visitedProjects.contains(project))
-			return null;
-		
-		IType type= project.findType(className, (IProgressMonitor) null);
-		if (type != null)
-			return type;
-		
-		//fix for bug 87492: visit required projects explicitly to also find not exported types
-		visitedProjects.add(project);
-		IJavaModel javaModel= project.getJavaModel();
-		String[] requiredProjectNames= project.getRequiredProjectNames();
-		for (int i= 0; i < requiredProjectNames.length; i++) {
-			IJavaProject requiredProject= javaModel.getJavaProject(requiredProjectNames[i]);
-			if (requiredProject.exists()) {
-				type= internalFindType(requiredProject, className, visitedProjects);
-				if (type != null)
-					return type;
-			}
-		}
-		return null;
-	}
 	
+	/**
+	 * Gets the help contxt ID for this action
+	 */
+	protected abstract String getHelpContextId();
+	
+	private final Shell getShell()
+	{
+		return fTestRunner.getSite().getShell();
+	}
 }

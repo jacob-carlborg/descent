@@ -26,6 +26,8 @@ class RunningOneTest implements IState
 	private static final Pattern STACK_TRACE_ELEMENT = Pattern.compile(
 			"\\<\\<ST\\>\\> (.*) \\((?:(?:([^\\:]*)\\:(.*))|(?:0x(\\w*)))\\)");
 	
+	private static final StackTraceElement[] NO_STACK_TRACE =
+		new StackTraceElement[] {};
 	
 	private final FluteApplicationInstance cli;
 	
@@ -180,7 +182,12 @@ class RunningOneTest implements IState
 	FluteTestResult getResult()
 	{
 		if(resultType == null)
-			return null;
+		{
+			return FluteTestResult.error(
+					"Internal error running test",
+					"",
+					NO_STACK_TRACE);
+		}
 		
 		switch(resultType)
 		{
