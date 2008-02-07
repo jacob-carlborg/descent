@@ -353,6 +353,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				return baseRelevance + 4 /* + 99 */;
 			case CompletionProposal.FIELD_REF:
+			case CompletionProposal.ENUM_MEMBER:
 				return baseRelevance + 5;
 			case CompletionProposal.LOCAL_VARIABLE_REF:
 			case CompletionProposal.VARIABLE_DECLARATION:
@@ -400,6 +401,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.JAVADOC_FIELD_REF:
 			case CompletionProposal.JAVADOC_VALUE_REF:
 				return createFieldProposal(proposal);
+			case CompletionProposal.ENUM_MEMBER:
+				return createEnumProposal(proposal);
 			case CompletionProposal.METHOD_REF:
 			case CompletionProposal.OP_CALL:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
@@ -581,6 +584,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 			case CompletionProposal.FIELD_REF:
+			case CompletionProposal.ENUM_MEMBER:
 			case CompletionProposal.JAVADOC_FIELD_REF:
 			case CompletionProposal.JAVADOC_VALUE_REF:
 				char[] declaration= proposal.getDeclarationSignature();
@@ -663,6 +667,23 @@ public class CompletionProposalCollector extends CompletionRequestor {
 //		int relevance= computeRelevance(proposal);
 
 		LazyJavaFieldCompletionProposal javaProposal= new LazyJavaFieldCompletionProposal(proposal, getInvocationContext());
+		if (fJavaProject != null)
+			javaProposal.setProposalInfo(new FieldProposalInfo(fJavaProject, proposal));
+
+		javaProposal.setTriggerCharacters(VAR_TRIGGER);
+
+		return javaProposal;
+	}
+	
+	private IJavaCompletionProposal createEnumProposal(CompletionProposal proposal) {
+		String completion= String.valueOf(proposal.getCompletion());
+		int start= proposal.getReplaceStart();
+		int length= getLength(proposal);
+		String label= completion;
+		Image image= getImage(fLabelProvider.createFieldImageDescriptor(proposal));
+		int relevance= computeRelevance(proposal);
+
+		JavaCompletionProposal javaProposal= new JavaCompletionProposal(completion, start, length, image, label, relevance);
 		if (fJavaProject != null)
 			javaProposal.setProposalInfo(new FieldProposalInfo(fJavaProject, proposal));
 

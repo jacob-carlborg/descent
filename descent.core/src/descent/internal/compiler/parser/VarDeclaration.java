@@ -532,7 +532,8 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	private void semantic20(Scope sc, SemanticContext context) {
-		if (init != null && toParent().isFuncDeclaration() == null) {
+		IDsymbol top = toParent();
+		if (init != null && top != null && top.isFuncDeclaration() == null) {
 			inuse++;
 			init = init.semantic(sc, type, context);
 			inuse--;

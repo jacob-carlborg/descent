@@ -5,8 +5,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class TypeDelegate extends Type {
-	
-	private String signature; // Descent signature
 
 	public TypeDelegate(Type next) {
 		super(TY.Tdelegate, next);
@@ -113,16 +111,6 @@ public class TypeDelegate extends Type {
 			buf.writestring(ident.toChars());
 		}
 		next.next.toCBuffer2(buf, null, hgs, context);
-	}
-	
-	@Override
-	public String getSignature0() {
-		if (signature == null) {
-			StringBuilder sb = new StringBuilder();
-			appendSignature(sb);
-			signature = sb.toString();
-		}
-		return signature;
 	}
 	
 	@Override

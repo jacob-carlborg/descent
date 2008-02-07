@@ -75,7 +75,18 @@ public class TypeIdentifier extends TypeQualified {
 		
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
 		
-		if (pt != null && pt.length > 0 && pt[0] != null) {
+		if (pt != null && pt.length > 0 && pt[0] != null && 
+				s != null &&
+				!(pt[0] instanceof TypeClass) &&
+				!(pt[0] instanceof TypeStruct) &&
+				!(pt[0] instanceof TypeEnum) &&
+				!(pt[0] instanceof TypeTypedef)) {
+//			System.out.println(pt[0] + " --> " + s);
+			
+			if (pt[0] instanceof TypeBasic) {
+				pt[0] = new TypeBasic(pt[0]);
+			}
+			
 			pt[0].resolved = s;
 		}
 	}
@@ -191,13 +202,6 @@ public class TypeIdentifier extends TypeQualified {
 			}
 		}
 		return e;
-	}
-	
-	@Override
-	public String getSignature0() {
-		StringBuilder sb = new StringBuilder();
-		appendSignature(sb);
-		return sb.toString();
 	}
 	
 	@Override

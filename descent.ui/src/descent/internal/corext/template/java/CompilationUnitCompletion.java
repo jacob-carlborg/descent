@@ -616,6 +616,7 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		reset(unit);
 		setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, true);
 		setIgnored(CompletionProposal.FIELD_REF, true);
+		setIgnored(CompletionProposal.ENUM_MEMBER, true);
 		setIgnored(CompletionProposal.KEYWORD, true);
 		setIgnored(CompletionProposal.LABEL_REF, true);
 		setIgnored(CompletionProposal.METHOD_DECLARATION, true);

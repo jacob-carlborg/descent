@@ -26,8 +26,6 @@ public class TypeFunction extends Type {
 	public LINK linkage; // calling convention
 	public Arguments parameters, sourceParameters;
 	public int varargs;
-	
-	private String signature; // Descent signature
 	public char linkageChar;
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
@@ -582,16 +580,6 @@ public class TypeFunction extends Type {
 	}
 
 	private static final GotoL1 GOTO_L1 = new GotoL1();
-	
-	@Override
-	public String getSignature0() {
-		if (signature == null) {
-			StringBuilder sb = new StringBuilder();
-			appendSignature(sb);
-			signature = sb.toString();
-		}
-		return signature;
-	}
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {

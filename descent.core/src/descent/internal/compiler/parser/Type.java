@@ -501,6 +501,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	 * Descent: resolved type, if TypeIdentifier semantic was called 
 	 */
 	public IDsymbol resolved;
+	private String signature;
 	
 	// This field is kept in SemanticContext
 	// public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
@@ -1207,7 +1208,14 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return getSignature0();
 	}
 	
-	public abstract String getSignature0();
+	public String getSignature0() {
+		if (signature == null) {
+			StringBuilder sb = new StringBuilder();
+			appendSignature0(sb);
+			signature = sb.toString();
+		}
+		return signature;
+	}
 	
 	protected final void appendSignature(StringBuilder sb) {
 		if (resolved != null) {

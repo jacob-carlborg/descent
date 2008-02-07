@@ -124,6 +124,7 @@ public class JavaTypeCompletionProcessor extends CUPositionCompletionProcessor {
 			fEnableVoid= enableVoid;
 			setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, true);
 			setIgnored(CompletionProposal.FIELD_REF, true);
+			setIgnored(CompletionProposal.ENUM_MEMBER, true);
 			setIgnored(CompletionProposal.LABEL_REF, true);
 			setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, true);
 			setIgnored(CompletionProposal.METHOD_DECLARATION, true);

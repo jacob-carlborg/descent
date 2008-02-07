@@ -22,7 +22,7 @@ import descent.internal.formatter.DefaultCodeFormatterOptions.BracePosition;
  */
 public class CodeFormatterVisitor extends ASTVisitor
 {
-	public final static boolean	        DEBUG = true;
+	public final static boolean	        DEBUG = false;
 	
 	public DefaultCodeFormatterOptions	prefs;
 	public Scribe						scribe;

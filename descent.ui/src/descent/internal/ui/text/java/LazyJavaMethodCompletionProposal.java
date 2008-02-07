@@ -134,9 +134,11 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			
 			setCursorPosition(buffer.length());
 			
-			fArgumentOffsets[0]= buffer.length();
-			buffer.append(parameterNames[0]);
-			fArgumentLengths[0]= parameterNames[0].length;			
+			if (fArgumentLengths.length > 0) {
+				fArgumentOffsets[0]= buffer.length();
+				buffer.append(parameterNames[0]);
+				fArgumentLengths[0]= parameterNames[0].length;
+			}
 		} else if (isGetter()) {
 			setCursorPosition(buffer.length());
 		} else {

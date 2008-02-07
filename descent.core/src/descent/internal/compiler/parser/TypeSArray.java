@@ -27,8 +27,6 @@ import static descent.internal.compiler.parser.TY.Twchar;
 public class TypeSArray extends TypeArray {
 
 	public Expression dim, sourceDim;
-	
-	private String signature; // Descent signature
 
 	public TypeSArray(Type next, Expression dim) {
 		super(TY.Tsarray, next);
@@ -418,16 +416,6 @@ public class TypeSArray extends TypeArray {
 		buf.writeByte(ty.mangleChar);
 		if (null != next)
 			next.toTypeInfoBuffer(buf, context);
-	}
-	
-	@Override
-	public String getSignature0() {
-		if (signature == null) {
-			StringBuilder sb = new StringBuilder();
-			appendSignature(sb);
-			signature = sb.toString();
-		}
-		return signature;
 	}
 	
 	@Override

@@ -616,12 +616,22 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 					DsymbolType dt = (DsymbolType) t;
 					IDsymbol sym = dt.symbol;
 					if (sym instanceof IEnumDeclaration) {
-						return sym.getType();
+						t = sym.getType();
+						if (t instanceof TypeBasic) {
+							t = new TypeBasic(t);
+						}
+						t.resolved = sym;
+						return t;
 					} else if (sym instanceof IFuncDeclaration) {
 						// if it's a function, then probably RAliasDeclaration.toAlias was invoked
 						return dt;
 					} else {
-						return sym.type();
+						t = sym.type();
+						if (t instanceof TypeBasic) {
+							t = new TypeBasic(t);
+						}
+						t.resolved = sym;
+						return t;
 					}
 				} else {
 					return t;
@@ -1050,7 +1060,11 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				t = dt.symbol.type();
 				if (t == null) {
 					t = dt.symbol.getType();
-				} else {
+				}
+				else {
+					if (t instanceof TypeBasic) {
+						t = new TypeBasic(t);
+					}
 					t.resolved = dt.symbol;
 				}
 				return t;

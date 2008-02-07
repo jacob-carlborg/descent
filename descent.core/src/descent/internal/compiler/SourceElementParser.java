@@ -284,7 +284,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		for(int i = 0; i < arguments.size(); i++) {
 			Argument argument = arguments.get(i);
 			String signature = argument.getSignature();
-			if (signature == null) {
+			if (signature == null || "".equals(signature)) {
 				types[i] = new char[] { TY.Tint32.mangleChar }; // in order to avoid exceptions
 			} else {
 				types[i] = signature.toCharArray();

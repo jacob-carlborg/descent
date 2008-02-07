@@ -21,6 +21,7 @@ public class JavadocCompletionProposalComputer extends JavaCompletionProposalCom
 		collector.setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, true);
 		collector.setIgnored(CompletionProposal.DDOC_MACRO, false);
 		collector.setIgnored(CompletionProposal.FIELD_REF, false);
+		collector.setIgnored(CompletionProposal.ENUM_MEMBER, false);
 		collector.setIgnored(CompletionProposal.KEYWORD, false);
 		collector.setIgnored(CompletionProposal.LABEL_REF, true);
 		collector.setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, true);

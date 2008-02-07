@@ -694,6 +694,14 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @since 3.2
 	 */
 	public static final int OP_CALL = 28;
+	
+	/**
+	 * Completion is a debug identifier.
+	 * 
+	 * @see #getKind()
+	 * @since 3.2
+	 */
+	public static final int ENUM_MEMBER = 29;
 
 	/**
 	 * First valid completion kind.
@@ -707,7 +715,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = OP_CALL;
+	protected static final int LAST_KIND = ENUM_MEMBER;
 	
 	/**
 	 * Kind of completion request.

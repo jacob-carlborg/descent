@@ -710,6 +710,11 @@ public abstract class ASTDmdNode extends ASTNode implements INode {
 
 	public static void expToCBuffer(OutBuffer buf, HdrGenState hgs,
 			Expression e, int pr, SemanticContext context) {
+		// SEMANTIC
+		if (e == null || e.op == null) {
+			return;
+		}
+		
 		if (e.op.precedence.ordinal() < pr) {
 			buf.writeByte('(');
 			e.toCBuffer(buf, hgs, context);

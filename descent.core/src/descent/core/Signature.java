@@ -2382,7 +2382,7 @@ public static char[] toCharArray(char[] methodSignature, char[] methodName, char
 	
 	if (!requestor.stack.isEmpty()) {
 		Stack<String> stack = requestor.stack.pop();
-		Stack<String> modifiers = requestor.modifiers.pop();
+		Stack<String> modifiers = requestor.modifiers.isEmpty() ? null : requestor.modifiers.pop();
 		if (!stack.isEmpty()) {
 			StringBuilder sb = new StringBuilder();		
 			appendFunction(stack, modifiers, sb, methodName, parameterNames, includeReturnType);
@@ -2481,7 +2481,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 
 	public void acceptModule(char[][] compoundName, String signature) {
 		Stack<String> stack;
-		if (forFunction) {
+		if (forFunction || functionTypeCount > 0) {
 			if (this.stack.isEmpty()) {
 				return;
 			}
@@ -2632,7 +2632,7 @@ private static void appendFunction(Stack<String> stack, Stack<String> modifiers,
 			sb.append(' ');
 		}
 		
-		String modifier = modifiers.pop();
+		String modifier = modifiers == null || modifiers.isEmpty() ? "in" : modifiers.pop();
 		if (!modifier.equals("in")) {
 			sb.append(modifier);
 			sb.append(' ');

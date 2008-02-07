@@ -688,6 +688,10 @@ public class CompletionParser extends Parser {
 	}
 	
 	private boolean isMatch(ASTDmdNode first, ASTDmdNode second) {
+		if (expectedTypeNode != null) {
+			return false;
+		}
+		
 		if (second == assistNode ||
 				(second.start <= cursorLocation && cursorLocation <= second.start + second.length) ||
 				(first != null && second != null && first.start + first.length <= cursorLocation && cursorLocation <= second.start) ||

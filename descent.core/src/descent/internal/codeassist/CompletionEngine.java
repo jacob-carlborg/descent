@@ -278,9 +278,9 @@ public class CompletionEngine extends Engine
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-			if (assistNode != null) {
-				System.out.println(assistNode.getClass());
-			}
+//			if (assistNode != null) {
+//				System.out.println(assistNode.getClass());
+//			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -452,6 +452,15 @@ public class CompletionEngine extends Engine
 				}
 			}
 			if (type != null) {
+				// For setters
+				if (type instanceof TypeFunction) {
+					if (isSetter((TypeFunction) type)) {
+						type = ((TypeFunction) type).parameters.get(0).type;
+						if (type == null) {
+							return;
+						}
+					}
+				}
 				expectedType = type;
 				expectedTypeSignature = expectedType.getSignature().toCharArray();				
 			}
@@ -482,6 +491,11 @@ public class CompletionEngine extends Engine
 			
 	}
 	
+	private boolean isSetter(TypeFunction type) {
+		return type != null && type.next == Type.tvoid
+			&& type.parameters != null && type.parameters.size() == 1;
+	}
+
 	private void computeExpectedTypeForTypeFunction(TypeFunction typeFunc, int decrease) {
 		if (typeFunc.parameters == null || parser.expectedArgumentIndex - decrease >= typeFunc.parameters.size()) {
 			return;
@@ -967,7 +981,9 @@ public class CompletionEngine extends Engine
 			IdentifierExp ident = new IdentifierExp(var.ident().ident);
 			ident.copySourceRange(node);
 			
-			completeType(type, ident, false);
+			currentName = computePrefixAndSourceRange(ident);
+			
+//			completeType(type, ident, false);
 		} else {
 			return;
 		}
@@ -1004,9 +1020,9 @@ public class CompletionEngine extends Engine
 			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 			
 			// Show constructors and opCalls
-			if (node.resolvedSymbol != null) {
-				suggestConstructorsAndOpCall(node.resolvedSymbol);
-			}
+//			if (node.resolvedSymbol != null) {
+//				suggestConstructorsAndOpCall(node.resolvedSymbol);
+//			}
 		} else {
 			completeIdentDot(node);
 		}
@@ -1020,7 +1036,11 @@ public class CompletionEngine extends Engine
 			startPosition = actualCompletionPosition;
 			endPosition = actualCompletionPosition;
 			
-			trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR);
+			if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
+				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR);
+			} else {
+				trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR);
+			}
 		} else if (node.e1 instanceof CallExp && node.e1 != node) {
 			completeCallExp((CallExp) node.e1);
 		}
@@ -1715,6 +1735,13 @@ public class CompletionEngine extends Engine
 					CompletionEngine.this.requestor.accept(proposal);
 					
 					trySuggestCall(member.type(), ident, sigChars);
+					
+					// If we are expecting an enum, suggest it's members! :-)
+					if (expectedType != null && expectedType instanceof TypeEnum 
+							&& member instanceof IEnumDeclaration &&
+							expectedType.same(member.getType())) {
+						completeEnumMembers((IEnumDeclaration) member, new HashtableOfCharArrayAndObject(), true);
+					}
 				}
 			}
 			
@@ -1778,6 +1805,9 @@ public class CompletionEngine extends Engine
 				if ((!constructor && !opCall && (currentName.length == 0 || match(currentName, ident)))
 						|| (constructor && CharOperation.equals(funcName, Id.ctor)) 
 						|| (opCall && funcNameIsOpCall)) {
+					
+//					System.out.println(new String(aliasedSignature));
+					
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					if (constructor || opCall) {
@@ -1794,7 +1824,7 @@ public class CompletionEngine extends Engine
 					}
 					
 					CompletionProposal proposal = this.createProposal(
-							opCall ? 
+							(opCall && funcNameIsOpCall) ? 
 									CompletionProposal.OP_CALL : 
 									CompletionProposal.METHOD_REF, 
 								this.actualCompletionPosition);
@@ -1817,7 +1847,7 @@ public class CompletionEngine extends Engine
 					CompletionEngine.this.requestor.accept(proposal);
 					
 					if (funcSignatures != null) {
-						funcSignatures.put(signature, proposal);
+						funcSignatures.put(aliasedSignature, proposal);
 					}
 				}
 				return;
@@ -1994,8 +2024,9 @@ public class CompletionEngine extends Engine
 				int relevance = computeBaseRelevance();
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(currentName, member.ident().ident);
+				relevance += R_ENUM_CONSTANT;
 				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(CompletionProposal.ENUM_MEMBER, this.actualCompletionPosition);
 				proposal.setName(member.ident().ident);
 				proposal.setCompletion(proposition);
 				proposal.setSignature(member.getSignature().toCharArray());

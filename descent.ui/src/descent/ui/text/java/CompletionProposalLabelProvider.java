@@ -578,6 +578,7 @@ public class CompletionProposalLabelProvider {
 				return createPackageProposalLabel(proposal);
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.FIELD_REF:
+			case CompletionProposal.ENUM_MEMBER:
 				return createLabelWithTypeAndDeclaration(proposal);
 			case CompletionProposal.LOCAL_VARIABLE_REF:
 			case CompletionProposal.VARIABLE_DECLARATION:
@@ -663,6 +664,7 @@ public class CompletionProposalLabelProvider {
 				}
 				break;
 			case CompletionProposal.FIELD_REF:
+			case CompletionProposal.ENUM_MEMBER:
 				if ((flags & Flags.AccAlias) != 0) {
 					descriptor= JavaElementImageProvider.getAliasImageDescriptor(flags);
 				} else if ((flags & Flags.AccTypedef) != 0) {

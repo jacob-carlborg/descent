@@ -403,6 +403,7 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				return baseRelevance + 4 /* + 99 */;
 			case CompletionProposal.FIELD_REF:
+			case CompletionProposal.ENUM_MEMBER:
 				return baseRelevance + 5;
 			case CompletionProposal.LOCAL_VARIABLE_REF:
 			case CompletionProposal.VARIABLE_DECLARATION:
