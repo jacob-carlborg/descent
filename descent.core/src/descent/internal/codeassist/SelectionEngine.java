@@ -1,5 +1,12 @@
 package descent.internal.codeassist;
 
+import static descent.internal.compiler.parser.TOK.TOKblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
+import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
+import static descent.internal.compiler.parser.TOK.TOKlinecomment;
+import static descent.internal.compiler.parser.TOK.TOKpluscomment;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,13 +16,16 @@ import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.CharOperation;
 import descent.core.dom.CompilationUnitResolver;
+import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.Declaration;
@@ -38,7 +48,9 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -48,7 +60,9 @@ import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
+import descent.internal.core.JavaProject;
 import descent.internal.core.LocalVariable;
+import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 
 /*
@@ -69,6 +83,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	List<IJavaElement> selectedElements;
 	
 	JavaElementFinder finder;
+	InternalSignature internalSignature;
 
 	public SelectionEngine(
 			Map settings,
@@ -79,24 +94,78 @@ public class SelectionEngine extends AstVisitorAdapter {
 		this.settings = settings;
 		this.compilerOptions = new CompilerOptions(settings);
 		this.finder = new JavaElementFinder(javaProject, owner);
+		this.internalSignature = new InternalSignature(javaProject);
 	}
 	
-	public IJavaElement[] select(ICompilationUnit sourceUnit, int offset, int length) {
+	public IJavaElement[] select(ICompilationUnit sourceUnit, final int offset, final int length) {
 		this.offset = offset;
 		this.length = length;
 		this.selectedElements = new ArrayList<IJavaElement>();
 		
 		try {
 			char[] contents = sourceUnit.getContents();
-			Parser parser = new Parser(contents, 0, contents.length, false, false, false, false, javaProject.getApiLevel(), null, null, false, sourceUnit.getFileName());
+			
+			final Token[] docToken = { null };
+			
+			// Custom parser to see if we are selecting a token in a comment
+			Parser parser = new Parser(contents, 0, contents.length, true /* tokenize comments */, false, false, false, javaProject.getApiLevel(), null, null, false, sourceUnit.getFileName()) {
+				@Override
+				public TOK nextToken() {
+					TOK tok = Lexer_nextToken();
+					
+					while((tok == TOKlinecomment || tok == TOKdoclinecomment ||
+						  tok == TOKblockcomment || tok == TOKdocblockcomment ||
+						  tok == TOKpluscomment || tok == TOKdocpluscomment)) {
+						if (token.ptr <= offset && offset <= token.ptr + token.sourceLen) {
+							docToken[0] = new Token(token);
+						}
+						
+						tok = Lexer_nextToken();
+					}
+					
+					return tok;
+				}
+			};
 			parser.nextToken();
 			
 			Module module = parser.parseModuleObj();
-			module.moduleName = sourceUnit.getFullyQualifiedName();
 			
-			CompilationUnitResolver.resolve(module, javaProject, owner);
-			
-			module.accept(this);
+			if (docToken[0] != null) {
+				char[] tok = extractToken(docToken[0], offset);
+				if (tok == null) {
+					return NO_ELEMENTS;
+				}
+				
+				SearchableEnvironment environment = ((JavaProject) javaProject).newSearchableNameEnvironment(owner);
+				environment.findDeclarations(tok, new ISearchRequestor() {
+					public void acceptCompilationUnit(char[] fullyQualifiedName) {
+					}
+					public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
+						IJavaElement element = internalSignature.findField(packageName, name);
+						if (element != null) {
+							addJavaElement(element);
+						}
+					}
+					public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, AccessRestriction accessRestriction) {
+						IJavaElement element = internalSignature.findMethod(packageName, name, signature);
+						if (element != null) {
+							addJavaElement(element);
+						}
+					}
+					public void acceptPackage(char[] packageName) {
+					}
+					public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
+						IJavaElement element = internalSignature.findField(packageName, typeName);
+						if (element != null) {
+							addJavaElement(element);
+						}
+					}
+				});
+			} else {
+				module.moduleName = sourceUnit.getFullyQualifiedName();
+				CompilationUnitResolver.resolve(module, javaProject, owner);
+				module.accept(this);
+			}
 			return selectedElements.toArray(new IJavaElement[selectedElements.size()]);
 		} catch (JavaModelException e) {
 			Util.log(e);
@@ -104,8 +173,28 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 	}
 	
-	// <<< Speedups
+	private char[] extractToken(Token token, int offset) {
+		char[] sourceString = token.sourceString;
+		
+		int start = offset - token.ptr;
+		while(start >= 0 && Chars.isidchar(sourceString[start])) {
+			start--;
+		}
+		start++;
+		if(start < sourceString.length && !Chars.isidstart(sourceString[start])) {
+			return null;
+		}
+		
+		int end = offset - token.ptr;
+		while(end < sourceString.length && Chars.isidchar(sourceString[end])) {
+			end++;
+		}
+		
+		return CharOperation.subarray(sourceString, start, end);
+	}
 	
+	// <<< Speedups
+
 	@Override
 	public boolean visit(AlignDeclaration node) {
 		return isInRange(node);

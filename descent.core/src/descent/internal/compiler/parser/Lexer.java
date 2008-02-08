@@ -330,6 +330,10 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	public TOK nextToken() {
+		return Lexer_nextToken();
+	}
+	
+	protected TOK Lexer_nextToken() {
 		Token t;
 
 		if (token != null
