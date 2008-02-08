@@ -11,6 +11,7 @@ import descent.core.IJavaElement;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
+import descent.internal.compiler.parser.ISignatureConstants;
 
 public class OpenModuleAction extends OpenEditorAction
 {
@@ -31,7 +32,8 @@ public class OpenModuleAction extends OpenEditorAction
 	@Override
 	protected IJavaElement findElement() throws CoreException
 	{
-		return findModule(getLaunchedProject(), fModuleName, 
+		return findModule(getLaunchedProject(), 
+				TraceUtil.getModuleSignature(fModuleName), 
 				new HashSet<IJavaProject>());
 	}
 
@@ -47,16 +49,19 @@ public class OpenModuleAction extends OpenEditorAction
 	}
 
 	private static ICompilationUnit findModule(IJavaProject project,
-			String moduleName, Set<IJavaProject> visitedProjects)
+			String moduleSignature, Set<IJavaProject> visitedProjects)
 			throws JavaModelException
 	{
 		if (visitedProjects.contains(project))
 			return null;
 		
 		ICompilationUnit module;
-		IJavaElement javaElement = null; // TODO project.findBySignature(signature)
-		if(javaElement != null && javaElement instanceof ICompilationUnit)
+		IJavaElement javaElement = project.findBySignature(moduleSignature);
+		if(javaElement != null && javaElement instanceof ICompilationUnit
+			&& javaElement.exists())
 		{
+			// Note: existance must be tested since an IcompilationUnit may
+			// be returned for non-existant modules
 			module = (ICompilationUnit) javaElement;
 			return module;
 		}
@@ -65,10 +70,12 @@ public class OpenModuleAction extends OpenEditorAction
 		visitedProjects.add(project);
 		IJavaModel javaModel= project.getJavaModel();
 		String[] requiredProjectNames= project.getRequiredProjectNames();
-		for (int i= 0; i < requiredProjectNames.length; i++) {
+		for (int i= 0; i < requiredProjectNames.length; i++)
+		{
 			IJavaProject requiredProject= javaModel.getJavaProject(requiredProjectNames[i]);
-			if (requiredProject.exists()) {
-				module = findModule(requiredProject, moduleName, visitedProjects);
+			if (requiredProject.exists())
+			{
+				module = findModule(requiredProject, moduleSignature, visitedProjects);
 				if (module != null)
 					return module;
 			}

@@ -28,12 +28,12 @@ public interface IStackTraceElement
 	public boolean lineInfoFound();
 	
 	/** 
-	 * Gets the name of the file on which the executing function is defined.
+	 * Gets the name of module file in which the executing function is defined.
 	 * 
-	 * @return the file the function is defined in, or null if only the
+	 * @return the module the function is defined in, or null if only the
 	 *         address was found.
 	 */
-	public String getFile();
+	public String getModule();
 	
 	/** 
 	 * Gets the line that is executing in this stack frame.

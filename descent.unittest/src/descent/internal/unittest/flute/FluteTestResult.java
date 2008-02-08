@@ -15,34 +15,35 @@ public final class FluteTestResult implements ITestResult
 	public static final class StackTraceElement implements IStackTraceElement
 	{
 		public final String function;
-		public final String file;
+		public final String module;
 		public final int line;
 		public final long addr;
 		
-		private StackTraceElement(String function, String file,
+		private StackTraceElement(String function, String module,
 				int line, long addr)
 		{
 			this.function = function;
-			this.file = file;
+			this.module = module;
 			this.line = line;
 			this.addr = addr;
 		}
 		
-		public static StackTraceElement line(String function, String file,
+		public static StackTraceElement line(String function, String module,
 				int line)
 		{
 			return new StackTraceElement(
 					function, // function
-					file,     // file
+					module,   // module
 					line,     // line
 					-1);      // addr
 		}
 		
-		public static StackTraceElement address(String function, long addr)
+		public static StackTraceElement address(String function,
+				long addr)
 		{
 			return new StackTraceElement(
 					function, // function
-					null,     // file
+					null,     // module
 					-1,       // line
 					addr);    // addr
 		}
@@ -54,9 +55,9 @@ public final class FluteTestResult implements ITestResult
 			buf.append(function);
 			buf.append(" (");
 			if(addr >= 0)
-				buf.append(String.format("0x%1$x", addr));
+				buf.append(String.format("%1$s:0x%2$x", module, addr));
 			else
-				buf.append(file + ":" + line);
+				buf.append(String.format("%1$s:%2$d", module, line));
 			buf.append(")");
 			
 			return buf.toString();
@@ -67,9 +68,9 @@ public final class FluteTestResult implements ITestResult
 			return function;
 		}
 
-		public final String getFile()
+		public final String getModule()
 		{
-			return file;
+			return module;
 		}
 
 		public final int getLine()

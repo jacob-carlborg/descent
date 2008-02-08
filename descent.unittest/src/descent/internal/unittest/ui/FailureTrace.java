@@ -43,7 +43,7 @@ import descent.unittest.ITestResult;
 public class FailureTrace implements IMenuListener
 {
 	private static final Pattern TRACE_LINE_PATTERN = Pattern.compile(
-			"in ([^\\<]*)\\<([^\\:]*):(\\d*)>");
+			"^<([^\\:]*):(\\d*)>");
     
 	private Table fTable;
 	private TestRunnerViewPart fTestRunner;
@@ -113,7 +113,10 @@ public class FailureTrace implements IMenuListener
 		{
 			try
 			{
-				// TODO
+				String module = m.group(1);
+				int line = Integer.valueOf(m.group(2));
+				
+				return new OpenEditorAtLineAction(fTestRunner, module, line);
 			}
 			
 			// If any of these exceptions are thrown, fall through & return null
@@ -170,7 +173,7 @@ public class FailureTrace implements IMenuListener
 		
 		fTable.setRedraw(false);
 		fTable.removeAll();
-		TraceWriterUtil.writeTrace(result, fTableTraceWriter);
+		TraceUtil.writeTrace(result, fTableTraceWriter);
 		fTable.setRedraw(true);
 	}
 

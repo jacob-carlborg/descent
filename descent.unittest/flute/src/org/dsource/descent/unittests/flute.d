@@ -329,12 +329,10 @@ module org.dsource.descent.unittests.flute;
  * 
  * Params:
  *     addr = the execution address to look up
- * Returns: If the lookup is succesful, returns "[file]:[line]", where [file]
- *    is the filename where the code is located and [line] is th line of code
- *    the address refers to. On failure returns "0x[address]", where [address]
- *    is the hexadecimal representation of addr.
+ * Returns: If the lookup is succesful, returns the line that was executing at the
+ *     specified code. Otherwise returns -1.
  */
-//private static char[] getDebugInfo(void* addr)
+//private static int getLine(void* addr)
 
 import cn.kuehne.flectioned;
 
@@ -703,30 +701,8 @@ version(Windows)
 		}
 	}
 	
-	private char[] getDebugInfo(void* addr)
-	{
-		char[] toHex(size_t val)
-		{
-			const int percision = (void*).sizeof * 2;
-			
-			version(inPhobos)
-				return format("%#0.*x", percision, val);
-			else
-				{ } // TANGO
-		}
-		
-		char[] getSimpleFilename(char[] filename)
-		{
-			char[] simple = "";
-			foreach_reverse(c; filename)
-			{
-				if(c == '\\' || c == '/')
-					break;
-				simple = c ~ simple;
-			}
-			return simple;
-		}
-		
+	private int getLine(void* addr)
+	{	
 		if(!debugInfo || !addr)
 			goto Lunknown;
 		
@@ -737,11 +713,10 @@ version(Windows)
 		if(!SymGetLineFromAddr(proc, cast(DWORD) addr, &displacement, &lineInfo))
 			goto Lunknown;
 		
-		return getSimpleFilename(lineInfo.FileName[0 .. strlen(lineInfo.FileName)])
-			~ ":" ~ itoa(lineInfo.LineNumber);
+		return lineInfo.LineNumber;
 		
 		Lunknown:
-			return toHex(cast(size_t) addr);
+			return -1;
 	}
 }
 else
@@ -907,12 +882,39 @@ private class TestResult
 				
 			foreach(ste; *trace)
 			{
+				char[] toHex(size_t val)
+				{
+					const int percision = (void*).sizeof * 2;
+					
+					version(inPhobos)
+						return format("%#0.*x", percision, val);
+					else
+						{ } // TANGO
+				}
+				
+				char[] getModuleFromSymbol(char[] mangledName)
+				{
+					// TODO
+					return "std.socket";
+				}
+				
 				char[] buf = "   <<ST>> ";
 				if(ste.symbol)
-					buf ~= ste.symbol.name ~ "";
+					buf ~= ste.symbol.name;
 				else
 					buf ~= "?";
-				buf ~= " (" ~ getDebugInfo(ste.code) ~ ")\r\n";
+				
+				buf ~= " (";
+				int line = getLine(ste.code);
+				if(line > 0)
+				{
+					buf ~= getModuleFromSymbol(ste.symbol.mangledName) ~ ":" ~ itoa(line);
+				}
+				else
+				{
+					buf ~= toHex(cast(size_t) ste.code);
+				}
+				buf ~= ")\r\n";
 				write(buf);
 			}
 	}

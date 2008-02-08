@@ -73,7 +73,7 @@ public class CopyFailureListAction extends Action {
 			
 			TestCaseElement testCaseElement = (TestCaseElement) failure;
 			ITestResult result = testCaseElement.getResult();
-			String failureTrace = TraceWriterUtil.getTraceAsString(result);
+			String failureTrace = TraceUtil.getTraceAsString(result);
 			
 			buf.append(failure.getName()).append(lineDelim);
 			if (failureTrace != null) {

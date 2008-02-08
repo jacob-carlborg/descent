@@ -80,6 +80,9 @@ class RunningOneTest implements IState
 		Matcher m = STACK_TRACE_ELEMENT.matcher(text);
 		if(m.find())
 		{
+			System.out.println("----------------");
+			System.out.println("Stack trace: " + text);
+			
 			// If we've gotten to the stack trace, we're done with
 			// processing error messages.
 			isAppending = false;
@@ -88,11 +91,16 @@ class RunningOneTest implements IState
 				stackTrace = new ArrayList<StackTraceElement>(16);
 			
 			String function = m.group(1);
-			String file = m.group(2);
+			String module = m.group(2);
 			String lineStr = m.group(3);
 			String addrStr = m.group(4);
 			
-			if(file != null)
+			System.out.println("function: " + function);
+			System.out.println("module: " + module);
+			System.out.println("lineStr: " + lineStr);
+			System.out.println("addrStr: " + addrStr);
+			
+			if(module != null)
 			{
 				int line;
 				try
@@ -103,7 +111,7 @@ class RunningOneTest implements IState
 				{
 					line = -1;
 				}
-				stackTrace.add(StackTraceElement.line(function, file, line));
+				stackTrace.add(StackTraceElement.line(function, module, line));
 			}
 			else
 			{
@@ -119,6 +127,7 @@ class RunningOneTest implements IState
 				stackTrace.add(StackTraceElement.address(function, addr));
 			}
 			
+			System.out.println("----------------");
 			return;
 		}
 		

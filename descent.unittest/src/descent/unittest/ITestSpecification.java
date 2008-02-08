@@ -8,7 +8,10 @@ import descent.core.IInitializer;
  * within the scope of a single project, and if two tests have the same ID, they
  * will have the same hash code and evaluate to equal via {@link #equals(Object)}
  * even if they are in separete projects. Thus, for correct behavior ensure all
- * equality comparisons are done within the same project!
+ * equality comparisons are done within the same project (all tests in a test
+ * run session are in the same project).
+ * 
+ * Not intended to be implemented by clients.
  */
 public interface ITestSpecification
 {

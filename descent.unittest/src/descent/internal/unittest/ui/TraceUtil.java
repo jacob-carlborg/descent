@@ -1,15 +1,32 @@
 package descent.internal.unittest.ui;
 
+import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.unittest.ui.FailureTableDisplay.LineType;
 import descent.unittest.IStackTraceElement;
 import descent.unittest.ITestResult;
 
-public class TraceWriterUtil
-{
+public class TraceUtil
+{	
+	public static String getModuleSignature(String moduleName)
+	{
+		StringBuffer sig = new StringBuffer();
+		sig.append(ISignatureConstants.MODULE);
+		
+		// Split takes a regex, so String.split(".") doesn't work
+		String[] fragments = moduleName.split("\\.");
+		for(String fragment : fragments)
+		{
+			sig.append(String.valueOf(fragment.length()));
+			sig.append(fragment);
+		}
+		
+		return sig.toString();
+	}
+	
 	public static String getTraceAsString(ITestResult result)
 	{
 		StringTraceWriter writer = new StringTraceWriter();
-		TraceWriterUtil.writeTrace(result, writer);
+		TraceUtil.writeTrace(result, writer);
 		return writer.toString();
 	}
 	
@@ -23,10 +40,10 @@ public class TraceWriterUtil
 				return;
 			case FAILED:
 				writer.writeLine(String.format(
-						"%1$s<%2$s:%3$d>",
-						message != null ? message + " " : "",
+						"<%1$s:%2$d> %3$s",
 						result.getFile(),
-						result.getLine()),
+						result.getLine(),
+						message != null ? message : ""),
 						LineType.EXCEPTION);
 				break;
 			case ERROR:
@@ -49,18 +66,18 @@ public class TraceWriterUtil
 			if(ste.lineInfoFound())
 			{
 				writer.writeLine(String.format(
-						" in %1$s <%2$s:%3$d>",
-						ste.getFunction(),
-						ste.getFile(),
-						ste.getLine()),
+						"<%1$s:%2$d> %3$s",
+						ste.getModule(),
+						ste.getLine(),
+						ste.getFunction()),
 						LineType.STACK_FRAME);
 			}
 			else
 			{
 				writer.writeLine(String.format(
-						" in %1$s <0x%2$x>",
-						ste.getFunction(),
-						ste.getAddress()),
+						"<0x%1$x> %2$s",
+						ste.getAddress(),
+						ste.getFunction()),
 						LineType.STACK_FRAME);
 			}
 		}

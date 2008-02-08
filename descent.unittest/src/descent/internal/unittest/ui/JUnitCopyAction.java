@@ -62,7 +62,7 @@ public class JUnitCopyAction extends SelectionListenerAction
 		
 		TestCaseElement testCaseElement = (TestCaseElement) fTestElement;
 		ITestResult result = testCaseElement.getResult();
-		String source = TraceWriterUtil.getTraceAsString(result);
+		String source = TraceUtil.getTraceAsString(result);
 		
 		TextTransfer plainTextTransfer = TextTransfer.getInstance();
 		try{
