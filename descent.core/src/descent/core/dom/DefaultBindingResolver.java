@@ -150,8 +150,8 @@ class DefaultBindingResolver extends BindingResolver {
 		int c = ((ConditionalDeclaration) old).condition.inc;
 		switch(c) {
 		case 0: return null;
-		case 1: return true;
-		case 2: return false;
+		case 1: return Boolean.TRUE;
+		case 2: return Boolean.FALSE;
 		}
 		
 		return null;
@@ -167,8 +167,8 @@ class DefaultBindingResolver extends BindingResolver {
 		int c = ((ConditionalStatement) old).condition.inc;
 		switch(c) {
 		case 0: return null;
-		case 1: return true;
-		case 2: return false;
+		case 1: return Boolean.TRUE;
+		case 2: return Boolean.FALSE;
 		}
 		
 		return null;

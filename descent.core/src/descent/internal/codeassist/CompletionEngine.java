@@ -90,6 +90,7 @@ import descent.internal.compiler.parser.MATCH;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Package;
+import descent.internal.compiler.parser.PtrExp;
 import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeExp;
@@ -98,6 +99,7 @@ import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SwitchStatement;
+import descent.internal.compiler.parser.SymOffExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
@@ -278,9 +280,9 @@ public class CompletionEngine extends Engine
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
-//			if (assistNode != null) {
-//				System.out.println(assistNode.getClass());
-//			}
+			if (assistNode != null) {
+				System.out.println(assistNode.getClass());
+			}
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
@@ -1221,6 +1223,14 @@ public class CompletionEngine extends Engine
 		} else if (e1 instanceof ThisExp) {
 			ThisExp thisExp = (ThisExp) e1;
 			Type type = thisExp.type;
+			completeType(type, ident, false);
+		} else if (e1 instanceof PtrExp) {
+			PtrExp ptr = (PtrExp) e1;
+			Type type = ptr.type;
+			completeType(type, ident, false);
+		} else if (e1 instanceof SymOffExp) {
+			SymOffExp symoff = (SymOffExp) e1;
+			Type type = symoff.type;
 			completeType(type, ident, false);
 		}
 	}

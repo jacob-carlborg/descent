@@ -304,7 +304,7 @@ public void enterInitializer(
 		this.handleStack.push(handle);
 }
 
-public void enterConditional(int declarationSourceStart, long modifiers, char[] displayString) {
+public void enterConditional(int declarationSourceStart, long modifiers, char[] displayString, int evaluation) {
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	Conditional handle = null;
@@ -325,6 +325,7 @@ public void enterConditional(int declarationSourceStart, long modifiers, char[] 
 	ConditionalElementInfo info = new ConditionalElementInfo();
 	info.setSourceRangeStart(declarationSourceStart);
 	info.setFlags(modifiers);
+	info.setEvaluationResult(evaluation);
 
 	addToChildren(parentInfo, handle);
 	this.newElements.put(handle, info);

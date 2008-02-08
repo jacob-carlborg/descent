@@ -143,7 +143,13 @@ public interface ISourceElementRequestor {
 
 	void enterCompilationUnit();
 	
-	void enterConditional(int declarationStart, long modifiers, char[] displayString);
+	/*
+	 * Evaluation:
+	 * 0: unknown
+	 * 1: true ("then" wins)
+	 * 2: false ("else" wins)
+	 */
+	void enterConditional(int declarationStart, long modifiers, char[] displayString, int evaluation);
 	
 	void enterConditionalThen(int declarationStart);
 	

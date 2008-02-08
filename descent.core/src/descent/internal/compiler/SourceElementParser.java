@@ -898,7 +898,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			break;
 		}
 		}
-		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString);
+		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString, node.condition.inc);
 		
 		Dsymbols thenDeclarations = node.decl;
 		Dsymbols elseDeclarations = node.elsedecl;

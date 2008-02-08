@@ -34,7 +34,6 @@ public class JavaElementFinder {
 	
 	private final JavaProject javaProject;
 	private final INameEnvironment environment;
-	private final CompilerConfiguration config;
 	
 	/*
 	 * Cache results for speedup, and also for not loading multiple
@@ -44,7 +43,6 @@ public class JavaElementFinder {
 
 	public JavaElementFinder(IJavaProject project, WorkingCopyOwner owner) {
 		this.javaProject = (JavaProject) project;
-		this.config = new CompilerConfiguration();
 		try {
 			this.environment = new SearchableEnvironment(javaProject, owner);
 		} catch (JavaModelException e) {
@@ -711,58 +709,15 @@ public class JavaElementFinder {
 				break;
 			case IJavaElement.CONDITIONAL:
 				IConditional conditional = (IConditional) element;
-				if (conditional.isVersionDeclaration()) {
-					IJavaElement[] children = conditional.getChildren();
-					String version = conditional.getElementName();
-					if (version.length() > 0 && Character.isDigit(version.charAt(0))) {
-						try {
-							long level = Long.parseLong(version);
-							if (level >= config.versionLevel) {
-								return conditionalThen(conditional, children);
-							} else {
-								return conditionalElse(conditional, children);
-							}
-						} catch (NumberFormatException e) {
-							if (config.versionIdentifiers.containsKey(version.toCharArray())) {
-								return conditionalThen(conditional, children);
-							} else {
-								return conditionalElse(conditional, children);
-							}
-						}
-					} else {
-						if (config.versionIdentifiers.containsKey(version.toCharArray())) {
-							return conditionalThen(conditional, children);
-						} else {
-							return conditionalElse(conditional, children);
-						}
-					}
-				} else if (conditional.isDebugDeclaration()) {
-					IJavaElement[] children = conditional.getChildren();
-					String version = conditional.getElementName();
-					if (version.length() > 0 && Character.isDigit(version.charAt(0))) {
-						try {
-							long level = Long.parseLong(version);
-							if (level >= config.debugLevel) {
-								return conditionalThen(conditional, children);
-							} else {
-								return conditionalElse(conditional, children);
-							}
-						} catch (NumberFormatException e) {
-							if (config.debugIdentifiers.containsKey(version.toCharArray())) {
-								return conditionalThen(conditional, children);
-							} else {
-								return conditionalElse(conditional, children);
-							}
-						}
-					} else {
-						if (config.debugIdentifiers.containsKey(version.toCharArray())) {
-							return conditionalThen(conditional, children);
-						} else {
-							return conditionalElse(conditional, children);
-						}
-					}
+				IJavaElement[] children = conditional.getChildren();
+				Boolean active = conditional.isActive();
+				if (active == null) {
+					return null;
+				} else if (active) {
+					return conditionalThen(conditional, children);
+				} else {
+					return conditionalElse(conditional, children);
 				}
-				break;
 			case IJavaElement.TYPE:
 				IType type = (IType) element;
 				if (type.isAnonymous()) {

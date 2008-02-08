@@ -108,7 +108,7 @@ public class IndexingParser extends SourceElementParser {
 	}
 	
 	private boolean visitTrue(ConditionalDeclaration node, long flags, char[] displayString) {
-		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString);
+		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString, 0);
 		
 		Dsymbols thenDeclarations = node.decl;
 		Dsymbols elseDeclarations = node.elsedecl;
@@ -131,7 +131,7 @@ public class IndexingParser extends SourceElementParser {
 	}
 
 	private boolean visitFalse(ConditionalDeclaration node, long flags, char[] displayString) {
-		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString);
+		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString, 0);
 		
 		Dsymbols thenDeclarations = node.decl;
 		Dsymbols elseDeclarations = node.elsedecl;

@@ -385,7 +385,7 @@ public void pushTypeName(char[] typeName) {
 }
 
 // TODO JDT check if this must be implemented
-public void enterConditional(int declarationStart, long modifiers, char[] displayString) {
+public void enterConditional(int declarationStart, long modifiers, char[] displayString, int evaluation) {
 	
 }
 
