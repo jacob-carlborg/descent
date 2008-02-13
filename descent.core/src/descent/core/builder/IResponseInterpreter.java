@@ -7,8 +7,8 @@ package descent.core.builder;
  * 
  * The builder will create a single response interpreter per execution of the
  * compiler or linker, which should process each line rcieved in its 
- * {@link #interpret(String)} method. Any subinterface methods to get output
- * are garunteed to be called after all interpret calls.
+ * {@link #interpret(String)} method. {@link #getResponse()} should be used
+ * to get the response, and is garunteed to be called after all input is sent.
  * 
  * @author Robert Fraser
  */
@@ -28,4 +28,8 @@ public interface IResponseInterpreter
 	 */
 	public void interpretError(String line);
 	
+	/**
+	 * Gets the result of the build command
+	 */
+	public IBuildResponse getResponse();
 }

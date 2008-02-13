@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 
 import descent.core.builder.IExecutableCommand;
 import descent.core.builder.IResponseInterpreter;
+import descent.internal.core.util.Util;
 
 /**
  * Starts & monitors the execution of a process (compiler or linker) and passes
@@ -75,7 +76,7 @@ public class ExecutionMonitor implements Runnable
 				}
 				catch (IOException e)
 				{
-					System.out.println(e); // TODO log
+					// This generally just means the end of the stream, so break
 					break;
 				}
 
@@ -101,7 +102,7 @@ public class ExecutionMonitor implements Runnable
 			}
 			catch (IOException e)
 			{
-				System.out.println(e); // TODO log
+				Util.log(e);
 			}
 		}
 	}
@@ -165,8 +166,7 @@ public class ExecutionMonitor implements Runnable
 				}
 			}
 			
-			// TODO log/handle
-			e.printStackTrace();
+			Util.log(e);
 		}
 	}
 	

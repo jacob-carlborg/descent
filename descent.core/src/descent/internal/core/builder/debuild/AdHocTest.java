@@ -3,10 +3,10 @@ package descent.internal.core.builder.debuild;
 import java.io.File;
 
 import descent.core.builder.DmdCompilerInterface;
+import descent.core.builder.IBuildResponse;
 import descent.core.builder.ICompileCommand;
-import descent.core.builder.ICompileResponse;
-import descent.core.builder.ICompileResponseInterpreter;
 import descent.core.builder.ICompilerInterface;
+import descent.core.builder.IResponseInterpreter;
 
 /**
  * Ad-hoc tetsing environment to remove when builder is integrated into
@@ -33,12 +33,12 @@ public class AdHocTest
 		compileCmd.addImportPath(new File(IMPORT_PATH));
 		compileCmd.setOutputFilename(new File(OUTPUT_FILENAME));
 		
-		ICompileResponseInterpreter interpreter = 
+		IResponseInterpreter interpreter = 
 			compiler.createCompileResponseInterpreter();
 		ExecutionMonitor monitor = new ExecutionMonitor(compileCmd,
 				interpreter, null, WORKING_DIRECTORY);
 		monitor.run();
 		
-		ICompileResponse response = interpreter.getCompileResponse();
+		IBuildResponse response = interpreter.getResponse();
 	}
 }

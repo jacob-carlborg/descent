@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.builder.IExecutableTarget;
 import descent.core.dom.AST;
 
 /**
@@ -1057,4 +1058,24 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 */
 	IJavaElement findBySignature(String signature);
 	
+	/**
+	 * Links the specified target, recursively compiling dependencies if
+	 * necessary. This may not actually link if the target already has been
+	 * linked and there were no updates, it will simply return the executable
+	 * path. Conversely, if this target relies on external resources which have
+	 * not been compiled, this will compile those. THus, this method will take
+	 * an indefinite ammount of time, which should be considered fairly long for
+	 * progress monitoring purposes.
+	 * 
+	 * Returns the system-specific absolute path of the excutable file (that is,
+	 * ready for a <code>Runtime.exec()</code>) if and only if the link was
+	 * succesful. If there were build errors, will return null, in which case
+	 * whatever launch was in progress (if there was one) should be terminated.
+	 * 
+	 * @param target the target to link
+	 * @param pm     a progress monitor to monitor the link progress
+	 * @return       the path of the executable target or null if the link
+	 *               failed
+	 */
+	String getExecutableTarget(IExecutableTarget target, IProgressMonitor pm);
 }

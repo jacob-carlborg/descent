@@ -25,14 +25,14 @@ public interface ICompilerInterface
 	public ILinkCommand createLinkCommand();
 	
 	/**
-	 * Creates a new compiler response interpreter of the correct type for
+	 * Creates a new response interpreter of the correct type for
 	 * this compiler.
 	 */
-	public ICompileResponseInterpreter createCompileResponseInterpreter();
+	public IResponseInterpreter createCompileResponseInterpreter();
 	
 	/**
-	 * Creates a new linker response interpreter of the correct type for this
-	 * compiler.
+	 * Creates a new response interpreter of the correct type for this
+	 * linker.
 	 */
-	public ILinkResponseInterpreter createLinkResponseInterpreter();
+	public IResponseInterpreter createLinkResponseInterpreter();
 }

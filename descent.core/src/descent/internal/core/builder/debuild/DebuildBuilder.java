@@ -20,11 +20,12 @@ public class DebuildBuilder
 	 * 
 	 * @param req the build request to initiate building on
 	 * @param pm  a monitor to track the progress of the build
+	 * @return    true if the build was succesful, false otherwise
 	 */
-	public static void build(BuildRequest req, IProgressMonitor pm)
+	public static boolean build(BuildRequest req, IProgressMonitor pm)
 	{
 		DebuildBuilder builder = new DebuildBuilder(req);
-		builder.build(pm);
+		return builder.build(pm);
 	}
 	
 	/* package */ static final boolean DEBUG = true;
@@ -36,31 +37,34 @@ public class DebuildBuilder
 		this.request = request;
 	}
 	
-	private void build(IProgressMonitor pm)
+	private boolean build(IProgressMonitor pm)
 	{
 		if(null == pm)
 			pm = new NullProgressMonitor();
 		
+		boolean success;
 		switch(request.getRequestType())
 		{
 			case COMPILE:
-				compile((CompileRequest) request, pm);
+				success = compile((CompileRequest) request, pm);
 				break;
 			case LINK:
-				link((LinkRequest) request, pm);
+				success = link((LinkRequest) request, pm);
 				break;
 			default:
 				throw new IllegalArgumentException();
 		}
+		
+		return success;
 	}
 	
-	private void compile(CompileRequest req, IProgressMonitor pm)
+	private boolean compile(CompileRequest req, IProgressMonitor pm)
 	{
-		
+		return false;
 	}
 	
-	private void link(LinkRequest req, IProgressMonitor pm)
+	private boolean link(LinkRequest req, IProgressMonitor pm)
 	{
-		
+		return false;
 	}
 }

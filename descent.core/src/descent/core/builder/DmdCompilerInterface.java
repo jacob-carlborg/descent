@@ -1,6 +1,8 @@
 package descent.core.builder;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DmdCompilerInterface implements ICompilerInterface
 {
@@ -180,55 +182,89 @@ public class DmdCompilerInterface implements ICompilerInterface
 	
 	//--------------------------------------------------------------------------
 	// Response interpreter
-	protected static class DmdResponseInterpreter
-		implements ICompileResponseInterpreter, ILinkResponseInterpreter
+	protected static class DmdResponseInterpreter implements IResponseInterpreter
 	{
+		private SimpleBuildResponse resp = new SimpleBuildResponse();
+		
+		private static final Pattern ERROR_WITH_FILENAME = Pattern.compile(
+				"([^\\(\\:]*)" +          // Filename
+				"(?:\\((\\d*)\\))?" +     // Line number
+				"\\:\\s(.*)$"             // Message
+			);
+		
+		/* (non-Javadoc)
+		 * @see descent.core.builder.IResponseInterpreter#interpret(java.lang.String)
+		 */
 		public void interpret(String line)
 		{
+			// TODO finish & test
+			
 			if(DEBUG)
 				System.out.println("=> " + line);
+			
+			Matcher m = ERROR_WITH_FILENAME.matcher(line);
+			if(m.find())
+			{
+				String file = m.group(1);
+				String lineStr = m.group(2);
+				String message = m.group(3);
+				int lineNum = null != lineStr ? Integer.parseInt(lineStr) : -1;
+				resp.addError(new SimpleBuildError(message, file, lineNum));
+				return;
+			}
 		}
 		
+		/* (non-Javadoc)
+		 * @see descent.core.builder.IResponseInterpreter#interpretError(java.lang.String)
+		 */
 		public void interpretError(String line)
 		{
 			// Keep all the interpretation in one method
 			interpret(line);
 		}
 
-		public ICompileResponse getCompileResponse()
+		/* (non-Javadoc)
+		 * @see descent.core.builder.ICompileResponseInterpreter#getCompileResponse()
+		 */
+		public IBuildResponse getResponse()
 		{
-			SimpleCompileResponse response = new SimpleCompileResponse();
+			resp.succesful = resp.errors.isEmpty();
 			
-			return response;
-		}
-
-		public ILinkResponse getLinkResponse()
-		{
-			SimpleLinkResponse response = new SimpleLinkResponse();
-			
-			return response;
+			return resp;
 		}
 	}
 	
 	//--------------------------------------------------------------------------
 	// Interface implementation
 	
+	/* (non-Javadoc)
+	 * @see descent.core.builder.ICompilerInterface#createCompileCommand()
+	 */
 	public ICompileCommand createCompileCommand()
 	{
 		return new DmdCompileCommand();
 	}
 
+	/* (non-Javadoc)
+	 * @see descent.core.builder.ICompilerInterface#createLinkCommand()
+	 */
 	public ILinkCommand createLinkCommand()
 	{
 		return new DmdLinkCommand();
 	}
 	
-	public ICompileResponseInterpreter createCompileResponseInterpreter()
+	/* (non-Javadoc)
+	 * @see descent.core.builder.ICompilerInterface#createCompileResponseInterpreter()
+	 */
+	public IResponseInterpreter createCompileResponseInterpreter()
 	{
 		return new DmdResponseInterpreter();
 	}
 
-	public ILinkResponseInterpreter createLinkResponseInterpreter()
+	/* (non-Javadoc)
+	 * @see descent.core.builder.ICompilerInterface#createLinkResponseInterpreter()
+	 */
+	public IResponseInterpreter createLinkResponseInterpreter()
 	{
 		return new DmdResponseInterpreter();
 	}
