@@ -329,10 +329,11 @@ module org.dsource.descent.unittests.flute;
  * 
  * Params:
  *     addr = the execution address to look up
- * Returns: If the lookup is succesful, returns the line that was executing at the
- *     specified code. Otherwise returns -1.
+ *     line = the line thatn was executing
+ *     file = the file that was executing, as reported by the debug info
+ * Returns: true if and only if the lookup was succesful, false otherwise.
  */
-//private static int getLine(void* addr)
+//private static bool getDebugInfo(void* addr, out int line, out char[] file)
 
 import cn.kuehne.flectioned;
 
@@ -701,7 +702,7 @@ version(Windows)
 		}
 	}
 	
-	private int getLine(void* addr)
+	private bool getDebugInfo(void* addr, out int line, out char[] file)
 	{	
 		if(!debugInfo || !addr)
 			goto Lunknown;
@@ -713,10 +714,12 @@ version(Windows)
 		if(!SymGetLineFromAddr(proc, cast(DWORD) addr, &displacement, &lineInfo))
 			goto Lunknown;
 		
-		return lineInfo.LineNumber;
+		line = lineInfo.LineNumber;
+		file = lineInfo.FileName[0 .. strlen(lineInfo.FileName)];
+		return true;
 		
 		Lunknown:
-			return -1;
+			return false;
 	}
 }
 else
@@ -892,12 +895,6 @@ private class TestResult
 						{ } // TANGO
 				}
 				
-				char[] getModuleFromSymbol(char[] mangledName)
-				{
-					// TODO
-					return "std.socket";
-				}
-				
 				char[] buf = "   <<ST>> ";
 				if(ste.symbol)
 					buf ~= ste.symbol.name;
@@ -905,10 +902,12 @@ private class TestResult
 					buf ~= "?";
 				
 				buf ~= " (";
-				int line = getLine(ste.code);
-				if(line > 0)
+				
+				int line;
+				char[] file;
+				if(getDebugInfo(ste.code, line, file))
 				{
-					buf ~= getModuleFromSymbol(ste.symbol.mangledName) ~ ":" ~ itoa(line);
+					buf ~= file ~ ":" ~ itoa(line);
 				}
 				else
 				{
