@@ -3,6 +3,7 @@
  */
 package descent.core.builder;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -17,20 +18,20 @@ public interface ICompileCommand extends IBuildCommand
 	public void setCompileOnly(boolean compileOnly);
 	
 	// Output directory ("-od" in DMD)
-	public String getOutputDir();
-	public void setOutputDir(String outputDir);
+	public File getOutputDirectory();
+	public void setOutputDirectory(File outputDirectory);
 	
 	// Output filename ("-of" in DMD)
-	public String getOutputFilename();
-	public void setOutputFilename(String outputFilename);
+	public File getOutputFilename();
+	public void setOutputFilename(File outputFilename);
 	
 	// Paths to search for imports ("-I" in DMD)
-	public List<String> getImportPaths();
-	public void addImportPath(String importPath);
+	public List<File> getImportPaths();
+	public void addImportPath(File importPath);
 	
 	// Paths to search for import expression files ("-J" in DMD)
-	public List<String> getImportExpPaths();
-	public void addImportExpPath(String importExpPath);
+	public List<File> getImportExpPaths();
+	public void addImportExpPath(File importExpPath);
 	
 	// Allow deprectaed features ("-d" in DMD)
 	public boolean getAllowDeprecated();

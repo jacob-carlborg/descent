@@ -1,11 +1,10 @@
 package descent.internal.core.builder.debuild;
 
+import java.io.BufferedReader;
 import java.io.File;
-
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IStreamListener;
-import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.core.model.IStreamMonitor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import descent.core.builder.IExecutableCommand;
 import descent.core.builder.IResponseInterpreter;
@@ -18,56 +17,92 @@ import descent.core.builder.IResponseInterpreter;
  */
 public class ExecutionMonitor implements Runnable
 {	
-	private class ResponseStreamListener implements IStreamListener
+	/**
+	 * Non-blocking mechanism for reading stream input line-by-line
+	 * and forwarding calls to the interpret() method
+	 * 
+	 * @author Robert Fraser
+	 */
+	private class LineByLineReader
 	{
-		private final StringBuilder fStreamBuffer;
-		private boolean fIsError;
-		
-		public ResponseStreamListener(boolean isError)
+		private Thread thread;
+		private BufferedReader reader;
+		private long lastSleep;
+		private final boolean isError;
+
+		LineByLineReader(InputStream stream, boolean isError)
 		{
-			fIsError = isError;
-			fStreamBuffer = new StringBuilder();
+			reader = new BufferedReader(new InputStreamReader(stream));
+			this.isError = isError;
 		}
-		
-		public void streamAppended(String text, IStreamMonitor monitor)
+
+		void start()
 		{
-			fStreamBuffer.append(text);
-			readLines();
-		}
-		
-		public void flush()
-		{
-			readLines();
-			
-			String text = fStreamBuffer.toString();
-			interpreter.interpretError(text);
-			fStreamBuffer.setLength(0);
-		}
-		
-		private void readLines()
-		{
-			int indexOfLine = fStreamBuffer.indexOf("\n"); //$NON-NLS-1$
-			if (indexOfLine == -1) return;
-			
-			int lastIndexOfLine = 0;
-			
-			while(indexOfLine != -1)
+			if (thread == null)
 			{
-				String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
-				if (fIsError)
+				thread = new Thread(new Runnable()
 				{
-					interpreter.interpretError(line);
-				}
-				else
-				{
-					interpreter.interpret(line);
-				}
-				
-				lastIndexOfLine = indexOfLine + 1;
-				indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine); //$NON-NLS-1$
+					public void run()
+					{
+						read();
+					}
+				});
+
+				thread.setDaemon(true);
+				thread.setPriority(Thread.MIN_PRIORITY);
+				thread.start();
 			}
-			
-			fStreamBuffer.delete(0, lastIndexOfLine);
+		}
+
+		void read()
+		{
+			lastSleep = System.currentTimeMillis();
+			long currentTime = lastSleep;
+			while (true)
+			{
+				try
+				{
+					String text = reader.readLine();
+					if (null == text)
+						break;
+					else
+					{
+						if(isError)
+							interpreter.interpretError(text);
+						else
+							interpreter.interpret(text);
+					}
+				}
+				catch (IOException e)
+				{
+					System.out.println(e); // TODO log
+					break;
+				}
+
+				// Give up some CPU time to maintain UI responsiveness
+				currentTime = System.currentTimeMillis();
+				if (currentTime - lastSleep > 1000)
+				{
+					lastSleep = currentTime;
+					try
+					{
+						Thread.sleep(1);
+					}
+					catch (InterruptedException e)
+					{
+						// Do nothing
+					}
+				}
+			}
+
+			try
+			{
+				reader.close();
+			}
+			catch (IOException e)
+			{
+				System.out.println(e); // TODO log
+			}
 		}
 	}
 	
@@ -76,7 +111,6 @@ public class ExecutionMonitor implements Runnable
 	private final String[] environment;
 	private final String workingDir;
 	
-	private IProcess process;
 	private boolean finished = false;
 	
 	public ExecutionMonitor(IExecutableCommand command,
@@ -94,19 +128,24 @@ public class ExecutionMonitor implements Runnable
 	
 	public void run()
 	{	
-		if(finished || null != process)
+		if(finished)
 			return;
 		Process proc = null;
 		
 		try
 		{
-			proc = Runtime.getRuntime().exec(command.getCommand(),
+			String cmd = command.getCommand();
+			if(DebuildBuilder.DEBUG)
+				System.out.println(cmd);
+			
+			proc = Runtime.getRuntime().exec(cmd,
 					environment, new File(workingDir));
-			process = DebugPlugin.newProcess(null, proc, null);
-			process.getStreamsProxy().getOutputStreamMonitor().addListener(
-					new ResponseStreamListener(false));
-			process.getStreamsProxy().getErrorStreamMonitor().addListener(
-					new ResponseStreamListener(true));
+			LineByLineReader stdoutReader = 
+				new LineByLineReader(proc.getInputStream(), false);
+			LineByLineReader stderrReader = 
+				new LineByLineReader(proc.getErrorStream(), true);
+			stdoutReader.start();
+			stderrReader.start();
 			
 			proc.waitFor();  // PERHAPS timeout in case of hangs?
 			finished = true;

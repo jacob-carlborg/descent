@@ -1,7 +1,9 @@
 package descent.internal.core.builder.debuild;
 
 import descent.core.IJavaProject;
+import descent.core.builder.DmdCompilerInterface;
 import descent.core.builder.ICompilerInterface;
+import descent.core.builder.IExecutableTarget;
 
 /**
  * Represents a request for a debuild build. This class serves two purposes.
@@ -14,8 +16,14 @@ import descent.core.builder.ICompilerInterface;
  * 
  * @author Robert Fraser
  */
-public class BuildRequest
+public abstract class BuildRequest
 {
+	public enum RequestType
+	{
+		COMPILE,
+		LINK
+	}
+	
 	/**
 	 * The project being built.
 	 */
@@ -27,7 +35,7 @@ public class BuildRequest
 	 */
 	public boolean reportErrors;
 	
-	public BuildRequest()
+	protected BuildRequest()
 	{
 		setDefaults();
 	}
@@ -42,4 +50,6 @@ public class BuildRequest
 	{
 		return DmdCompilerInterface.getInstance();
 	}
+	
+	abstract public RequestType getRequestType();
 }

@@ -1,12 +1,13 @@
 package descent.core.builder;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBuildCommand extends AbstractExecutableCommand 
 	implements IBuildCommand
 {
-	protected final List<String> files = new ArrayList<String>();
+	protected final List<File> files = new ArrayList<File>();
 	
 	@Override
 	public void setDefaults()
@@ -24,12 +25,12 @@ public abstract class AbstractBuildCommand extends AbstractExecutableCommand
 		return super.isValid();
 	}
 	
-	public final List<String> getFiles()
+	public final List<File> getFiles()
 	{
 		return files;
 	}
 	
-	public void addFile(String file)
+	public void addFile(File file)
 	{
 		if(!files.contains(file))
 			files.add(file);

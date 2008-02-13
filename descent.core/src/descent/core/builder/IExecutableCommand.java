@@ -1,5 +1,7 @@
 package descent.core.builder;
 
+import java.io.File;
+
 /**
  * An object representing an executable command factory. Options are set by
  * using methods in this interface and subinterfaces, then {@link #getCommand()}
@@ -37,6 +39,6 @@ public interface IExecutableCommand
 	public boolean isValid();
 	
 	// The path of the executable file to run
-	public String getExecutableFile();
-	public void setExecutableFile(String executableFile);
+	public File getExecutableFile();
+	public void setExecutableFile(File executableFile);
 }

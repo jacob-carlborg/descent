@@ -1,9 +1,11 @@
 package descent.core.builder;
 
+import java.io.File;
+
 public abstract class AbstractLinkCommand extends AbstractBuildCommand 
 	implements ILinkCommand
 {
-	protected String outputFilename;
+	protected File outputFilename;
 
 	@Override
 	public void setDefaults()
@@ -24,14 +26,14 @@ public abstract class AbstractLinkCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ILinkCommand#getOutputFilename()
 	 */
-	public String getOutputFilename()
+	public File getOutputFilename()
 	{
 		return outputFilename;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ILinkCommand#setOutputFilename(java.lang.String)
 	 */
-	public void setOutputFilename(String outputFilename)
+	public void setOutputFilename(File outputFilename)
 	{
 		this.outputFilename = outputFilename;
 	}

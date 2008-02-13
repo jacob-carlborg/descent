@@ -27,16 +27,40 @@ public class DebuildBuilder
 		builder.build(pm);
 	}
 	
-	private final BuildRequest req;
+	/* package */ static final boolean DEBUG = true;
 	
-	private DebuildBuilder(BuildRequest req)
+	private final BuildRequest request;
+	
+	private DebuildBuilder(BuildRequest request)
 	{
-		this.req = req;
+		this.request = request;
 	}
 	
 	private void build(IProgressMonitor pm)
 	{
 		if(null == pm)
 			pm = new NullProgressMonitor();
+		
+		switch(request.getRequestType())
+		{
+			case COMPILE:
+				compile((CompileRequest) request, pm);
+				break;
+			case LINK:
+				link((LinkRequest) request, pm);
+				break;
+			default:
+				throw new IllegalArgumentException();
+		}
+	}
+	
+	private void compile(CompileRequest req, IProgressMonitor pm)
+	{
+		
+	}
+	
+	private void link(LinkRequest req, IProgressMonitor pm)
+	{
+		
 	}
 }

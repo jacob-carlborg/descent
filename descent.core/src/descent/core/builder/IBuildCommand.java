@@ -1,5 +1,6 @@
 package descent.core.builder;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -10,6 +11,6 @@ import java.util.List;
  */
 public interface IBuildCommand extends IExecutableCommand
 {
-	public List<String> getFiles();
-	public void addFile(String file);
+	public List<File> getFiles();
+	public void addFile(File file);
 }

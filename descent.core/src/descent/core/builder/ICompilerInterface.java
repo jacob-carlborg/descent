@@ -7,6 +7,9 @@ package descent.core.builder;
  * implementations of this will be a singleton, since only one compiler of a
  * given type exists.
  * 
+ * TODO make this an extension point once its relationship to descent.launching
+ * has been established.
+ * 
  * @author Robert Fraser
  */
 public interface ICompilerInterface

@@ -1,5 +1,7 @@
 package descent.core.builder;
 
+import java.io.File;
+
 /**
  * Represents a D linker command
  * 
@@ -8,8 +10,8 @@ package descent.core.builder;
 public interface ILinkCommand extends IBuildCommand
 {
 	// The name of the resulting output file
-	public String getOutputFilename();
-	public void setOutputFilename(String outputFilename);
+	public File getOutputFilename();
+	public void setOutputFilename(File outputFilename);
 	
 	// TODO more interesting stuff
 }

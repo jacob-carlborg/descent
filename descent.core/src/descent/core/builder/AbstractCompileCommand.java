@@ -1,5 +1,6 @@
 package descent.core.builder;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,11 +8,11 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	implements ICompileCommand
 {
 	protected boolean            compileOnly;
-	protected String             outputDir;
-	protected String             outputFilename;
+	protected File               outputDirectory;
+	protected File               outputFilename;
 	
-	protected final List<String> importPaths = new ArrayList<String>();
-	protected final List<String> importExpPaths = new ArrayList<String>();
+	protected final List<File>  importPaths = new ArrayList<File>();
+	protected final List<File>  importExpPaths = new ArrayList<File>();
 	
 	protected boolean            allowDeprecated;
 	protected boolean            showWarnings;
@@ -43,7 +44,7 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 		// Just clear the lists & nullify stuff
 		compileOnly = true;
 		
-		outputDir = null;
+		outputDirectory = null;
 		outputFilename = null;
 		
 		importPaths.clear();
@@ -78,7 +79,7 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	@Override
 	public boolean isValid()
 	{
-		if(null == outputDir && null == outputFilename)
+		if(null == outputDirectory && null == outputFilename)
 			return false;
 		if(verbose && quiet)
 			return false;
@@ -103,42 +104,42 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#getOutputDir()
 	 */
-	public String getOutputDir()
+	public File getOutputDirectory()
 	{
-		return outputDir;
+		return outputDirectory;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#setOutputDir(java.lang.String)
 	 */
-	public void setOutputDir(String outputDir)
+	public void setOutputDirectory(File outputDirectory)
 	{
-		this.outputDir = outputDir;
+		this.outputDirectory = outputDirectory;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#getOutputFilename()
 	 */
-	public String getOutputFilename()
+	public File getOutputFilename()
 	{
 		return outputFilename;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#setOutputFilename(java.lang.String)
 	 */
-	public void setOutputFilename(String outputFilename)
+	public void setOutputFilename(File outputFilename)
 	{
 		this.outputFilename = outputFilename;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#getImportPaths()
 	 */
-	public List<String> getImportPaths()
+	public List<File> getImportPaths()
 	{
 		return importPaths;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#setImportPaths(java.util.List)
 	 */
-	public void addImportPath(String importPath)
+	public void addImportPath(File importPath)
 	{
 		if(!importPaths.contains(importPath))
 			importPaths.add(importPath);
@@ -146,14 +147,14 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#getImportExpPaths()
 	 */
-	public List<String> getImportExpPaths()
+	public List<File> getImportExpPaths()
 	{
 		return importExpPaths;
 	}
 	/* (non-Javadoc)
 	 * @see descent.core.builder.ICompileCommand#setImportExpPaths(java.util.List)
 	 */
-	public void addImportExpPath(String importExpPath)
+	public void addImportExpPath(File importExpPath)
 	{
 		if(!importExpPaths.contains(importExpPath))
 			importExpPaths.add(importExpPath);

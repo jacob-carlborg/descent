@@ -1,22 +1,14 @@
-package descent.internal.core.builder.debuild;
+package descent.core.builder;
 
-import descent.core.builder.AbstractCompileCommand;
-import descent.core.builder.AbstractLinkCommand;
-import descent.core.builder.ICompileCommand;
-import descent.core.builder.ICompileResponse;
-import descent.core.builder.ICompileResponseInterpreter;
-import descent.core.builder.ILinkResponse;
-import descent.core.builder.ILinkResponseInterpreter;
-import descent.core.builder.ICompilerInterface;
-import descent.core.builder.ILinkCommand;
-import descent.core.builder.SimpleCompileResponse;
-import descent.core.builder.SimpleLinkResponse;
+import java.io.File;
 
 public class DmdCompilerInterface implements ICompilerInterface
 {
+	protected static final boolean DEBUG = true;
+	
 	//--------------------------------------------------------------------------
 	// Compile Command
-	private static class DmdCompileCommand extends AbstractCompileCommand
+	protected static class DmdCompileCommand extends AbstractCompileCommand
 	{
 		DmdCompileCommand()
 		{
@@ -31,7 +23,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 			StringBuffer buf = new StringBuffer();
 
 			// Add the compler executable
-			buf.append(CompilerUtil.denormalizePath(executableFile));
+			buf.append(executableFile.getPath());
 			buf.append(" ");
 			
 			// Set options
@@ -39,35 +31,29 @@ public class DmdCompilerInterface implements ICompilerInterface
 			{
 				buf.append("-c ");
 			}
-			if(null != outputDir)
+			if(null != outputDirectory)
 			{
 				buf.append("-od");
-				buf.append(CompilerUtil.denormalizePath(outputDir));
+				buf.append(outputDirectory.getPath());
 				buf.append(" ");
 			}
 			if(null != outputFilename)
 			{
 				buf.append("-of");
-				buf.append(CompilerUtil.denormalizePath(outputFilename));
+				buf.append(outputFilename.getPath());
 				buf.append(" ");
 			}
-			if(importPaths.size() > 0)
+			for(File path : importPaths)
 			{
-				for(String path : importPaths)
-				{
-					buf.append("-I");
-					buf.append(CompilerUtil.denormalizePath(path));
-					buf.append(" ");
-				}
+				buf.append("-I");
+				buf.append(path.getPath());
+				buf.append(" ");
 			}
-			if(importExpPaths.size() > 0)
+			for(File path : importExpPaths)
 			{
-				for(String path : importExpPaths)
-				{
-					buf.append("-J");
-					buf.append(CompilerUtil.denormalizePath(path));
-					buf.append(" ");
-				}
+				buf.append("-J");
+				buf.append(path.getPath());
+				buf.append(" ");
 			}
 			if(allowDeprecated)
 			{
@@ -99,14 +85,11 @@ public class DmdCompilerInterface implements ICompilerInterface
 				buf.append(debugLevel.toString());
 				buf.append(" ");
 			}
-			if(debugIdents.size() > 0)
+			for(String ident : debugIdents)
 			{
-				for(String ident : debugIdents)
-				{
-					buf.append("-debug=");
-					buf.append(ident);
-					buf.append(" ");
-				}
+				buf.append("-debug=");
+				buf.append(ident);
+				buf.append(" ");
 			}
 			if(null != versionLevel)
 			{
@@ -114,14 +97,11 @@ public class DmdCompilerInterface implements ICompilerInterface
 				buf.append(versionLevel.toString());
 				buf.append(" ");
 			}
-			if(versionIdents.size() > 0)
+			for(String ident : versionIdents)
 			{
-				for(String ident : versionIdents)
-				{
-					buf.append("-version=");
-					buf.append(ident);
-					buf.append(" ");
-				}
+				buf.append("-version=");
+				buf.append(ident);
+				buf.append(" ");
 			}
 			if(inlineFunctions)
 			{
@@ -149,9 +129,9 @@ public class DmdCompilerInterface implements ICompilerInterface
 			}
 			
 			// Add the files to compile
-			for(String path : files)
+			for(File path : files)
 			{
-				buf.append(CompilerUtil.denormalizePath(path));
+				buf.append(path.getPath());
 				buf.append(" ");
 			}
 			
@@ -161,8 +141,13 @@ public class DmdCompilerInterface implements ICompilerInterface
 	
 	//--------------------------------------------------------------------------
 	// Link Command
-	private static class DmdLinkCommand extends AbstractLinkCommand
+	protected static class DmdLinkCommand extends AbstractLinkCommand
 	{
+		DmdLinkCommand()
+		{
+			setDefaults();
+		}
+		
 		/* (non-Javadoc)
 		 * @see descent.core.builder.IExecutableCommand#getCommand()
 		 */
@@ -171,21 +156,21 @@ public class DmdCompilerInterface implements ICompilerInterface
 			StringBuffer buf = new StringBuffer();
 
 			// Add the compler executable
-			buf.append(CompilerUtil.denormalizePath(executableFile));
+			buf.append(executableFile.getPath());
 			buf.append(" ");
 			
 			// Add the output file
 			if(null != outputFilename)
 			{
 				buf.append("-of");
-				buf.append(CompilerUtil.denormalizePath(outputFilename));
+				buf.append(outputFilename.getPath());
 				buf.append(" ");
 			}
 			
 			// Add the files to link
-			for(String path : files)
+			for(File path : files)
 			{
-				buf.append(CompilerUtil.denormalizePath(path));
+				buf.append(path.getPath());
 				buf.append(" ");
 			}
 			
@@ -195,40 +180,33 @@ public class DmdCompilerInterface implements ICompilerInterface
 	
 	//--------------------------------------------------------------------------
 	// Response interpreter
-	private static final class DmdResponseInterpreter
+	protected static class DmdResponseInterpreter
 		implements ICompileResponseInterpreter, ILinkResponseInterpreter
-	{	
-		/* (non-Javadoc)
-		 * @see descent.core.builder.IResponseInterpreter#interpret(java.lang.String)
-		 */
+	{
 		public void interpret(String line)
 		{
-			System.out.println(line);
+			if(DEBUG)
+				System.out.println("=> " + line);
 		}
 		
-		/* (non-Javadoc)
-		 * @see descent.core.builder.IResponseInterpreter#interpretError(java.lang.String)
-		 */
 		public void interpretError(String line)
 		{
 			// Keep all the interpretation in one method
 			interpret(line);
 		}
 
-		/* (non-Javadoc)
-		 * @see descent.core.builder.ICompileResponseInterpreter#getCompileResponse()
-		 */
 		public ICompileResponse getCompileResponse()
 		{
-			return new SimpleCompileResponse();
+			SimpleCompileResponse response = new SimpleCompileResponse();
+			
+			return response;
 		}
 
-		/* (non-Javadoc)
-		 * @see descent.core.builder.ILinkResponseInterpreter#getLinkResponse()
-		 */
 		public ILinkResponse getLinkResponse()
 		{
-			return new SimpleLinkResponse();
+			SimpleLinkResponse response = new SimpleLinkResponse();
+			
+			return response;
 		}
 	}
 	
