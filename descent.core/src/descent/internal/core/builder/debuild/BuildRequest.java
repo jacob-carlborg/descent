@@ -6,50 +6,34 @@ import descent.core.builder.ICompilerInterface;
 import descent.core.builder.IExecutableTarget;
 
 /**
- * Represents a request for a debuild build. This class serves two purposes.
- * First, it serves as an aggregation of all the different peices of data
- * debuild needs to know before it can perform a build. Second, it serves
- * as a convience wrapper around project/environment information. Most of the
- * fields are public because this calss assumes, since this is an internal class,
- * that you know what you're doing when you create it. It also doesn't validate
- * a correct request. So be careful!
- * 
+ * Wrapper for information about a build request. Exactly one object
+ * of this type will exist per DebuildBuilder, and this object should
+ * generally simply serve as a wrapper for abstracting getting information
+ * that the build needs. 
+ *
  * @author Robert Fraser
  */
-public abstract class BuildRequest
-{
-	public enum RequestType
-	{
-		COMPILE,
-		LINK
-	}
-	
+public class BuildRequest
+{	
 	/**
 	 * The project being built.
 	 */
-	public IJavaProject project;
+	private final IJavaProject project;
 	
 	/**
-	 * Should error markers be added to the project if errors are found?
-	 * (default true)
+	 * Information about the executable target to be built (is it debug?
+	 * should we optimize? Add unit tests? etc., etc.)
 	 */
-	public boolean reportErrors;
+	private final IExecutableTarget target; 
 	
-	protected BuildRequest()
+	public BuildRequest(IJavaProject project, IExecutableTarget target)
 	{
-		setDefaults();
-	}
-	
-	public void setDefaults()
-	{
-		project = null;
-		reportErrors = true;
+		this.project = project;
+		this.target = target;
 	}
 	
 	public ICompilerInterface getCompilerInterface()
 	{
 		return DmdCompilerInterface.getInstance();
 	}
-	
-	abstract public RequestType getRequestType();
 }

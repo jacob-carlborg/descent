@@ -1062,8 +1062,8 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * Links the specified target, recursively compiling dependencies if
 	 * necessary. This may not actually link if the target already has been
 	 * linked and there were no updates, it will simply return the executable
-	 * path. Conversely, if this target relies on external resources which have
-	 * not been compiled, this will compile those. THus, this method will take
+	 * path. Conversely, if this target relies on resources which have
+	 * not been compiled, this will compile those. Thus, this method will take
 	 * an indefinite ammount of time, which should be considered fairly long for
 	 * progress monitoring purposes.
 	 * 

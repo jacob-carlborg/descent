@@ -27,6 +27,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.core.builder.IExecutableTarget;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;
@@ -34,7 +35,7 @@ import descent.internal.unittest.model.DescentUnittestModel;
 import descent.unittest.ITestSpecification;
 
 /**
- * Launch configuration delegate for a plain JUnit test.
+ * Launch configuration delegate for a set of D unit tests
  */
 public class UnittestLaunchConfiguration extends 
 	DescentLaunchConfigurationDelegate 
@@ -91,6 +92,13 @@ public class UnittestLaunchConfiguration extends
 		return result;
 	}
 	
+	@Override
+	protected IExecutableTarget getExecutableTarget(
+			ILaunchConfiguration config, String mode)
+	{
+		return new UnittestExecutableTarget();
+	}
+
 	@Override
 	protected String getPluginID()
 	{

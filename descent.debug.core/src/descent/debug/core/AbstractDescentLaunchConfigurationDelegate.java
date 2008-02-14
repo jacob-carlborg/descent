@@ -32,6 +32,7 @@ import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.core.builder.IExecutableTarget;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.utils.ArgumentUtils;
 
@@ -505,5 +506,14 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 	{
 		return DebugPlugin.getDefault().getLaunchManager().getEnvironment(config);
 	}
-
+	
+	/**
+	 * Gets the executable target request for this launch. Intended to be
+	 * overriden by subclasses who use different executable targets.
+	 */
+	protected IExecutableTarget getExecutableTarget(ILaunchConfiguration config,
+			String mode)
+	{
+		return new DebugExecutableTarget();
+	}
 }
