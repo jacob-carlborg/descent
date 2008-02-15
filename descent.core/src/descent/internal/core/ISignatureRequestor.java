@@ -32,10 +32,10 @@ public interface ISignatureRequestor {
 	
 	/**
 	 * The processor has found an identifier.
-	 * @param name the identifier name
+	 * @param compoundName the identifier compound name
 	 * @param signature the signature of the identifier
 	 */
-	void acceptIdentifier(char[] name, String signature);
+	void acceptIdentifier(char[][] compoundName, String signature);
 
 	/**
 	 * The processor has found a delegate.
@@ -63,7 +63,7 @@ public interface ISignatureRequestor {
 	 * @param signature the signature from which the static array originated
 	 * @signature the signature of the static array
 	 */
-	void acceptStaticArray(int dimension, String signature);
+	void acceptStaticArray(Expression dimension, String signature);
 
 	/**
 	 * The processor has found an associative array.
@@ -203,5 +203,15 @@ public interface ISignatureRequestor {
 	 * The processor has found a local position.
 	 */
 	void acceptPosition(int localPosition);
+
+	/**
+	 * The processor has found a typeof type.
+	 */
+	void acceptTypeof(Expression expression, String signature);
+
+	/**
+	 * The processor has found a slice type.
+	 */
+	void acceptTypeSlice(Expression lwr, Expression upr, String signature);
 
 }

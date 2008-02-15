@@ -87,7 +87,7 @@ public class TypeIdentifier extends TypeQualified {
 				pt[0] = new TypeBasic(pt[0]);
 			}
 			
-			pt[0].resolved = s;
+			pt[0].alias = s;
 		}
 	}
 
@@ -207,6 +207,17 @@ public class TypeIdentifier extends TypeQualified {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.IDENTIFIER);
+		if (idents != null) {
+			for(IdentifierExp ident : idents) {
+				if (ident == null || ident.ident == null) {
+					sb.append(0);
+				} else {
+					sb.append(ident.ident.length);
+					sb.append(ident.ident);
+				}
+			}
+		}
+		
 		sb.append(ident.ident.length);
 		sb.append(ident.ident);
 	}

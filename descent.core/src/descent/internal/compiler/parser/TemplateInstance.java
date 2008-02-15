@@ -188,7 +188,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			 * figure out which TemplateDeclaration foo refers to.
 			 */
 			IDsymbol s;
-			IDsymbol[] scopesym = new Dsymbol[] { null };
+			IDsymbol[] scopesym = new IDsymbol[] { null };
 			IdentifierExp id;
 			//int i;
 
@@ -470,15 +470,16 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (context.global.errors > 0) {
-			if (0 == context.global.gag) {
-				/* Trying to soldier on rarely generates useful messages
-				 * at this point.
-				 */
-				fatal(context);
-			}
-			return;
-		}
+		// Comment in Descent, we want template instances resolved when possible
+//		if (context.global.errors > 0) {
+//			if (0 == context.global.gag) {
+//				/* Trying to soldier on rarely generates useful messages
+//				 * at this point.
+//				 */
+//				fatal(context);
+//			}
+//			return;
+//		}
 
 		if (null != inst) // if semantic() was already run
 		{
@@ -515,7 +516,8 @@ public class TemplateInstance extends ScopeDsymbol {
 			
 			name.resolvedSymbol = tempdecl;
 			
-			if (null == tempdecl || context.global.errors > 0) {
+			// Comment in Descent, we want template instances resolved when possible
+			if (null == tempdecl /* || context.global.errors > 0 */) {
 				inst = this;
 				return; // error recovery
 			}
@@ -579,6 +581,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				a = sc.scopesym.members();
 			} else {
 				IModule m = sc.module.importedFrom();
+				
 				a = m.members();
 				if (m.semanticdone() >= 3) {
 					dosemantic3 = 1;
@@ -626,10 +629,13 @@ public class TemplateInstance extends ScopeDsymbol {
 		 * If so, this template instance becomes an alias for that member.
 		 */
 		if (members.size() > 0) {
-			Dsymbol[] s = new Dsymbol[] { null };
+			IDsymbol[] s = new IDsymbol[] { null };
 			if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
-				if (null != s[0].ident && s[0].ident.equals(tempdecl.ident())) {
-					aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
+				if (null != s[0].ident() && s[0].ident().equals(tempdecl.ident())) {
+					aliasdecl = new AliasDeclaration(loc, s[0].ident(), s[0]);
+					
+					// Descent
+					aliasdecl.isTemplateParameter = true;
 				}
 			}
 		}
@@ -907,7 +913,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				ta.appendSignature(sb);
 			} else if (ea != null) {
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
-				char[] exp = ASTNodeEncoder.encodeExpression(ea);
+				char[] exp = new ASTNodeEncoder().encodeExpression(ea);
 				sb.append(exp.length);
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
 				sb.append(exp);

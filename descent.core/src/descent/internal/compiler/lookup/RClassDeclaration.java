@@ -54,7 +54,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 				if (sig == null) { // May be the case of Object
 					return null;
 				}
-				Type supertype = getTypeFromSignature(sig);
+				Type supertype = getTypeFromSignature(sig, true);
 				if (supertype instanceof TypeClass) {
 					TypeClass tc = (TypeClass) supertype;
 					baseClass = tc.sym;
@@ -116,7 +116,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 			try {
 				String[] supersignatures = type.getSuperInterfaceTypeSignatures();
 				for(String sig : supersignatures) {
-					Type t = getTypeFromSignature(sig);
+					Type t = getTypeFromSignature(sig, true);
 					BaseClass bc = getBaseClass(t);
 					if (bc != null) {
 						interfaces.add(bc);
@@ -248,7 +248,7 @@ public class RClassDeclaration extends RAggregateDeclaration implements
 	public Type type() {
 		if (type == null) {
 			type = new TypeClass(this);
-			type = type.merge(context);
+			merge(type);
 		}
 		return type;
 	}

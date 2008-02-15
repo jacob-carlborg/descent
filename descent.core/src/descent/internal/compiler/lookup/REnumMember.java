@@ -29,7 +29,7 @@ public class REnumMember extends RDsymbol implements IEnumMember {
 				SourceFieldElementInfo info = (SourceFieldElementInfo) f.getElementInfo();
 				char[] encodedValue = info.getInitializationSource();
 				if (encodedValue != null) {
-					value = ASTNodeEncoder.decodeExpression(encodedValue);
+					value = new ASTNodeEncoder().decodeExpression(encodedValue);
 					// The expression's type must be my enum's type 
 					if (parent.isEnumDeclaration() != null) {
 						value.type = parent.getType();

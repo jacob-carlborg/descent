@@ -31,7 +31,7 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 	public Type getType() {
 		if (type == null) {
 			type = new TypeEnum(this);
-			type = type.merge(context);
+			merge(type);
 		}
 		return type;
 	}
@@ -53,7 +53,7 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 			IType t = (IType) element;
 			try {
 				String signature = t.getSuperclassTypeSignature();
-				memtype = getTypeFromSignature(signature);
+				memtype = getTypeFromSignature(signature, true);
 			} catch (JavaModelException e) {
 				Util.log(e);
 				memtype = Type.tint32;

@@ -250,7 +250,7 @@ public final class ParameterGuessingProposal extends JavaMethodCompletionProposa
 	}
 
 	private String[][] getParameterSignatures() {
-		char[] signature= SignatureUtil.fix83600(fProposal.getSignature());
+		char[] signature= SignatureUtil.fix83600(fProposal.getTypeName());
 		char[][] types= Signature.getParameterTypes(signature);
 		String[][] ret= new String[types.length][2];
 

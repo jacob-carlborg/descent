@@ -26,7 +26,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 	
-	public void acceptIdentifier(char[] name, String signature) {
+	public void acceptIdentifier(char[][] compoundName, String signature) {
 		
 	}
 
@@ -42,7 +42,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 
-	public void acceptStaticArray(int dimension, String signature) {
+	public void acceptStaticArray(Expression dimension, String signature) {
 		
 	}
 
@@ -127,6 +127,14 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	}
 	
 	public void acceptPosition(int localPosition) {
+		
+	}
+	
+	public void acceptTypeof(Expression expression, String signature) {
+		
+	}
+	
+	public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
 		
 	}
 

@@ -1,25 +1,32 @@
 package descent.internal.compiler.parser;
 
-
 /**
- * Encodes constant expressions and initializers into char arrays, and viceversa.
+ * Encodes ASTNodes into char arrays and viceversa.
+ * 
+ * <p>This class is not thread safe.</p>
  */
 public class ASTNodeEncoder {
 	
-	// TODO: don't use a parser: create a more compact and faster way to encode expressions
+	// TODO don't use a parser when possible, optimize for typical cases
+	// like numbers.
+	// TODO don't use toString() if the node is simple.
 	
-	private static Parser parser;
-	private static Parser initParser(char[] source) {
+	private Parser parser;
+	private Parser initParser(char[] source) {
 		if (parser == null) {
 			parser = new Parser(Parser.DEFAULT_LEVEL, source);
 		} else {
 			parser.reset(source, 0, source.length, false, false, false, false);
-			parser.nextToken();
 		}
+		parser.nextToken();
 		return parser;
 	}
 	
-	public static char[] encodeExpression(Expression value) {
+	public ASTNodeEncoder() {
+		
+	}
+	
+	public char[] encodeExpression(Expression value) {
 		if (value == null) {
 			return null;
 		}
@@ -27,14 +34,14 @@ public class ASTNodeEncoder {
 		return value.toString().toCharArray();
 	}
 	
-	public static Expression decodeExpression(char[] value) {
+	public Expression decodeExpression(char[] value) {
 		if (value == null || value.length == 0) {
 			return null;
 		}
 		return initParser(value).parseExpression();
 	}
 	
-	public static char[] encodeInitializer(IInitializer init) {
+	public char[] encodeInitializer(IInitializer init) {
 		if (init == null) {
 			return null;
 		}
@@ -42,7 +49,7 @@ public class ASTNodeEncoder {
 		return init.toString().toCharArray();
 	}
 	
-	public static Initializer decodeInitializer(char[] value) {
+	public Initializer decodeInitializer(char[] value) {
 		if (value == null || value.length == 0) {
 			return null;
 		}

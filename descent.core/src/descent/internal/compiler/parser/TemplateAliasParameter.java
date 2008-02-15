@@ -38,6 +38,10 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public void declareParameter(Scope sc, SemanticContext context) {
 		TypeIdentifier ti = new TypeIdentifier(loc, ident);
 		sparam = new AliasDeclaration(loc, ident, ti);
+		
+		// Descent
+		((AliasDeclaration) sparam).isTemplateParameter = true;
+		
 		if (sc.insert(sparam) == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
 		}
@@ -136,6 +140,10 @@ public class TemplateAliasParameter extends TemplateParameter {
 		dedtypes.set(i, sa);
 
 		psparam[0] = new AliasDeclaration(loc, ident, sa);
+		
+		// Descent
+		((AliasDeclaration) psparam[0]).isTemplateParameter = true;
+		
 		return MATCHexact;
 	}
 

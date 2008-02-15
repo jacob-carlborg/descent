@@ -78,8 +78,14 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 
 		if (targ != null) {
 			s = new AliasDeclaration(Loc.ZERO, tp.ident, targ);
+			
+			// Descent
+			((AliasDeclaration) s).isTemplateParameter = true;
 		} else if (sa != null) {
 			s = new AliasDeclaration(Loc.ZERO, tp.ident, sa);
+			
+			// Descent
+			((AliasDeclaration) s).isTemplateParameter = true;
 		} else if (ea != null) {
 			// tdtypes.data[i] always matches ea here
 			Initializer init = new ExpInitializer(loc, ea);

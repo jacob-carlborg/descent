@@ -82,7 +82,7 @@ void rehash() {
  * or for secondary types
  *		key = typeName / packageName / enclosingTypeName / modifiers / 'S'
  */
-public static char[] createIndexKey(long modifiers, char[] typeName, char[] packageName, char[][] enclosingTypeNames, boolean secondary) { //, char typeSuffix) {
+public static char[] createIndexKey(long modifiers, char[] typeName, char[] packageName, char[][] enclosingTypeNames) { //, char typeSuffix) {
 	int typeNameLength = typeName == null ? 0 : typeName.length;
 	int packageLength = packageName == null ? 0 : packageName.length;
 	int enclosingNamesLength = 0;
@@ -95,7 +95,7 @@ public static char[] createIndexKey(long modifiers, char[] typeName, char[] pack
 	}
 
 	int resultLength = typeNameLength + packageLength + enclosingNamesLength + 5;
-	if (secondary) resultLength += 2;
+//	if (secondary) resultLength += 2;
 	char[] result = new char[resultLength];
 	int pos = 0;
 	if (typeNameLength > 0) {
@@ -121,10 +121,10 @@ public static char[] createIndexKey(long modifiers, char[] typeName, char[] pack
 	result[pos++] = SEPARATOR;
 	result[pos++] = (char) modifiers;
 	result[pos] = (char) (modifiers>>16);
-	if (secondary) {
-		result[++pos] = SEPARATOR;
-		result[++pos] = 'S';
-	}
+//	if (secondary) {
+//		result[++pos] = SEPARATOR;
+//		result[++pos] = 'S';
+//	}
 	return result;
 }
 

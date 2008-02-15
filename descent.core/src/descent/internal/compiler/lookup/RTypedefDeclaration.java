@@ -19,7 +19,7 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	
 	public Type basetype() {
 		if (basetype == null) {
-			basetype = getTypeFromField();
+			basetype = getTypeFromField(true);
 		}
 		return basetype;
 	}
@@ -52,7 +52,7 @@ public class RTypedefDeclaration extends RDeclaration implements ITypedefDeclara
 	public Type type() {
 		if (type == null) {
 			type = new TypeTypedef(this);
-			type.merge(context);
+			merge(type);
 		}
 		return type;
 	}

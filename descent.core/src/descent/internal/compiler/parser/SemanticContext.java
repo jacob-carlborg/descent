@@ -76,11 +76,6 @@ public class SemanticContext {
 	 */
 	public boolean fatalWasSignaled;
 	
-	/*
-	 * A cache to retrieve faster a type from it's signature
-	 */
-	public Map<String, Type> signatureToTypeCache;
-	
 	public JavaElementFinder finder;
 	
 	/*
@@ -102,7 +97,6 @@ public class SemanticContext {
 		this.moduleFinder = moduleFinder;
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
-		this.signatureToTypeCache = new HashMap<String, Type>();
 		
 		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
 			muteProblems++;
@@ -287,49 +281,34 @@ public class SemanticContext {
 		
 		if (ASTDmdNode.equals(s.ident(), Id.Object)) {
 			ClassDeclaration_object = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.ClassInfo)) {
 			ClassDeclaration_classinfo = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo)) {
 			Type_typeinfo = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Class)) {
 			Type_typeinfoclass = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Interface)) {
 			Type_typeinfointerface = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Struct)) {
 			Type_typeinfostruct = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Typedef)) {
 			Type_typeinfotypedef = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Pointer)) {
 			Type_typeinfopointer = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Array)) {
 			Type_typeinfoarray = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_StaticArray)) {
 			Type_typeinfostaticarray = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_AssociativeArray)) {
 			Type_typeinfoassociativearray = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Enum)) {
 			Type_typeinfoenum = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Function)) {
 			Type_typeinfofunction = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Delegate)) {
 			Type_typeinfodelegate = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Tuple)) {
 			Type_typeinfotypelist = (IClassDeclaration) s;
-			signatureToTypeCache.put(s.getSignature(), s.type());
 		}
 	}
 

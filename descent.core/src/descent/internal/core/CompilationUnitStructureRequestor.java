@@ -260,7 +260,7 @@ public void enterField(FieldInfo fieldInfo) {
 		info.setTypeName(typeName);
 	}
 	
-	this.unitInfo.addAnnotationPositions(handle, fieldInfo.annotationPositions);
+//	this.unitInfo.addAnnotationPositions(handle, fieldInfo.annotationPositions);
 
 	addToChildren(parentInfo, handle);
 	//parentInfo.addCategories(handle, fieldInfo.categories);
@@ -382,9 +382,9 @@ public void enterMethod(MethodInfo methodInfo) {
 	if (methodInfo.parameterNames == null) {
 		methodInfo.parameterNames= CharOperation.NO_CHAR_CHAR;
 	}
-	if (methodInfo.exceptionTypes == null) {
-		methodInfo.exceptionTypes= CharOperation.NO_CHAR_CHAR;
-	}
+//	if (methodInfo.exceptionTypes == null) {
+//		methodInfo.exceptionTypes= CharOperation.NO_CHAR_CHAR;
+//	}
 	
 	String[] parameterTypeSigs = convertTypeNamesToSigs(methodInfo.parameterTypes);
 	//if (parentHandle.getElementType() == IJavaElement.TYPE) {
@@ -418,12 +418,12 @@ public void enterMethod(MethodInfo methodInfo) {
 	info.setArgumentNames(parameterNames);
 	char[] returnType = methodInfo.returnType == null ? new char[]{'v', 'o','i', 'd'} : methodInfo.returnType;
 	info.setReturnType(manager.intern(returnType));
-	char[][] exceptionTypes = methodInfo.exceptionTypes;
-	info.setExceptionTypeNames(exceptionTypes);
-	for (int i = 0, length = exceptionTypes.length; i < length; i++)
-		exceptionTypes[i] = manager.intern(exceptionTypes[i]);
-	info.setDefaultValuesCount(methodInfo.defaultValuesCount);
-	this.unitInfo.addAnnotationPositions(handle, methodInfo.annotationPositions);
+//	char[][] exceptionTypes = methodInfo.exceptionTypes;
+//	info.setExceptionTypeNames(exceptionTypes);
+//	for (int i = 0, length = exceptionTypes.length; i < length; i++)
+//		exceptionTypes[i] = manager.intern(exceptionTypes[i]);
+//	info.setDefaultValuesCount(methodInfo.defaultValuesCount);
+//	this.unitInfo.addAnnotationPositions(handle, methodInfo.annotationPositions);
 	addToChildren(parentInfo, handle);
 	//parentInfo.addCategories(handle, methodInfo.categories);
 	this.newElements.put(handle, info);
@@ -459,24 +459,24 @@ public void enterType(TypeInfo typeInfo) {
 		info.setNameSourceStart(typeInfo.nameSourceStart);
 		info.setNameSourceEnd(typeInfo.nameSourceEnd);
 	}
-	// Added to allow storing default, min and max values of enums
-	info.setEnumValues(typeInfo.enumValues);
-	// Added to allow storing of sizeof and alignof
-	info.setAlignof(typeInfo.alignof);
-	info.setSizeof(typeInfo.sizeof);
+//	// Added to allow storing default, min and max values of enums
+//	info.setEnumValues(typeInfo.enumValues);
+//	// Added to allow storing of sizeof and alignof
+//	info.setAlignof(typeInfo.alignof);
+//	info.setSizeof(typeInfo.sizeof);
 	
 	JavaModelManager manager = JavaModelManager.getJavaModelManager();
-	char[] superclass = typeInfo.superclass;
-	info.setSuperclassName(superclass == null ? null : manager.intern(superclass));
+//	char[] superclass = typeInfo.superclass;
+//	info.setSuperclassName(superclass == null ? null : manager.intern(superclass));
 	char[][] superinterfaces = typeInfo.superinterfaces;
 	for (int i = 0, length = superinterfaces == null ? 0 : superinterfaces.length; i < length; i++)
 		superinterfaces[i] = manager.intern(superinterfaces[i]);
 	info.setSuperInterfaceNames(superinterfaces);
-	info.addCategories(handle, typeInfo.categories);
-	if (parentHandle.getElementType() == IJavaElement.TYPE)
-		((SourceTypeElementInfo) parentInfo).addCategories(handle, typeInfo.categories);
+//	info.addCategories(handle, typeInfo.categories);
+//	if (parentHandle.getElementType() == IJavaElement.TYPE)
+//		((SourceTypeElementInfo) parentInfo).addCategories(handle, typeInfo.categories);
 	addToChildren(parentInfo, handle);
-	this.unitInfo.addAnnotationPositions(handle, typeInfo.annotationPositions);
+//	this.unitInfo.addAnnotationPositions(handle, typeInfo.annotationPositions);
 	this.newElements.put(handle, info);
 	this.infoStack.push(info);
 	this.handleStack.push(handle);
@@ -500,7 +500,7 @@ protected void enterTypeParameter(TypeParameterInfo typeParameterInfo) {
 	info.setSourceRangeStart(typeParameterInfo.declarationStart);
 	info.nameStart = typeParameterInfo.nameSourceStart;
 	info.nameEnd = typeParameterInfo.nameSourceEnd;
-	info.bounds = typeParameterInfo.bounds;
+//	info.bounds = typeParameterInfo.bounds;
 	info.signature = typeParameterInfo.signature;
 	if (parentInfo instanceof SourceTypeElementInfo) {
 		SourceTypeElementInfo elementInfo = (SourceTypeElementInfo) parentInfo;
@@ -517,7 +517,7 @@ protected void enterTypeParameter(TypeParameterInfo typeParameterInfo) {
 		typeParameters[length] = handle;
 		elementInfo.typeParameters = typeParameters;
 	}
-	this.unitInfo.addAnnotationPositions(handle, typeParameterInfo.annotationPositions);
+//	this.unitInfo.addAnnotationPositions(handle, typeParameterInfo.annotationPositions);
 	this.newElements.put(handle, info);
 	this.infoStack.push(info);
 	this.handleStack.push(handle);

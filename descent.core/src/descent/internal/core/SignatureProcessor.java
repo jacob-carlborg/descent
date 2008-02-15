@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
@@ -56,7 +57,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				int[] end = { 0 };
 				char[][] compoundName = splitSignature(signature, i + 1, end);
 				i = end[0];
-				requestor.acceptModule(compoundName, signature.substring(start, i));				
+				requestor.acceptModule(compoundName, signature.substring(start, i));
 				continue;
 			}
 			case CLASS:
@@ -78,7 +79,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				char c = signature.charAt(i);
 				if (!Character.isDigit(c)) {
-					throw new IllegalStateException("Invalid signature: " + signature);
+					throw new IllegalArgumentException("Invalid signature: " + signature);
 				}
 				int n = 0;
 				while(Character.isDigit(c)) {
@@ -138,17 +139,22 @@ public class SignatureProcessor implements ISignatureConstants {
 				return i;
 			}
 			case STATIC_ARRAY: { // static array
-				int dimension = 0;
 				i++;
-				for(; i < signature.length(); i++) {
+				c = signature.charAt(i);
+				
+				n = 0;
+				
+				while(c != STATIC_ARRAY) {
+					n = 10 * n + (c - '0');
+					i++;
 					c = signature.charAt(i);
-					while(Character.isDigit(c)) {
-						dimension = 10 * dimension + (c - '0');
-						i++;
-						c = signature.charAt(i);
-					}
-					break;
 				}
+				i++;
+				
+				Expression dimension = new ASTNodeEncoder().decodeExpression(
+						signature.substring(i, i + n).toCharArray());
+				
+				i += n;
 				
 				i = process0(signature, i, requestor);
 				requestor.acceptStaticArray(dimension, signature.substring(start, i));
@@ -233,13 +239,70 @@ public class SignatureProcessor implements ISignatureConstants {
 					i++;
 					
 					requestor.acceptTemplateValueParameterSpecificValue(
-							ASTNodeEncoder.decodeExpression(
+							new ASTNodeEncoder().decodeExpression(
 									signature.substring(i, i + n).toCharArray()));
 					
 					i += n;
 				}
 				
 				requestor.exitTemplateValueParameter(signature.substring(start, i));
+				return i;
+			case TYPEOF:
+				i++;
+				c = signature.charAt(i);
+				
+				n = 0;
+				
+				while(c != TYPEOF) {
+					n = 10 * n + (c - '0');
+					i++;
+					c = signature.charAt(i);
+				}
+				i++;
+				
+				requestor.acceptTypeof(
+						new ASTNodeEncoder().decodeExpression(
+								signature.substring(i, i + n).toCharArray()),
+								signature.substring(start, i + n));
+				
+				i += n;
+				
+				return i;
+			case SLICE:
+				i = process0(signature, i + 1, requestor);
+				
+				c = signature.charAt(i);
+				
+				n = 0;
+				
+				while(c != SLICE) {
+					n = 10 * n + (c - '0');
+					i++;
+					c = signature.charAt(i);
+				}
+				i++;
+				
+				Expression lwr = new ASTNodeEncoder().decodeExpression(
+						signature.substring(i, i + n).toCharArray());
+				
+				i += n;
+				
+				n = 0;
+				
+				while(c != SLICE) {
+					n = 10 * n + (c - '0');
+					i++;
+					c = signature.charAt(i);
+				}
+				i++;
+				
+				Expression upr = new ASTNodeEncoder().decodeExpression(
+						signature.substring(i, i + n).toCharArray());
+				
+				requestor.acceptTypeSlice(lwr, upr, signature.substring(start, i + n));
+				
+				i += n;
+				
 				return i;
 			case MODIFIER_OUT:
 			case MODIFIER_REF: 
@@ -282,7 +345,7 @@ public class SignatureProcessor implements ISignatureConstants {
 					i++;
 					
 					requestor.acceptTemplateInstanceValue(
-							ASTNodeEncoder.decodeExpression(
+							new ASTNodeEncoder().decodeExpression(
 									signature.substring(i, i + n).toCharArray()), signature.substring(start, i + n));
 					
 					i += n;
@@ -295,19 +358,17 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.exitTemplateInstanceSymbol(signature.substring(start, i));
 				return i;
 			case IDENTIFIER:
-				n = 0;
-				i++;
-				c = signature.charAt(i);
-				while(Character.isDigit(c)) {
-					n = 10 * n + (c - '0');
-					i++;
-					c = signature.charAt(i);
+				int[] end = { 0 };
+				char[][] compoundName = splitSignature(signature, i + 1, end);
+				i = end[0];
+				requestor.acceptIdentifier(compoundName, signature.substring(start, i));
+				
+				// A template instance may follow an identifier
+				if (i < signature.length() && signature.charAt(i) == TEMPLATE_INSTANCE) {
+					continue;
+				} else {
+					return i;
 				}
-				
-				requestor.acceptIdentifier(signature.substring(i, i + n).toCharArray(), signature.substring(start, i + n));
-				
-				i += n;
-				return i;
 			case POSITION:
 				n = 0;
 				i++;
@@ -358,6 +419,7 @@ public class SignatureProcessor implements ISignatureConstants {
 		case TEMPLATED_UNION:
 		case TEMPLATED_INTERFACE:
 		case TEMPLATED_FUNCTION:
+		case TEMPLATE_INSTANCE:
 		case POSITION:
 			return true;
 		default:

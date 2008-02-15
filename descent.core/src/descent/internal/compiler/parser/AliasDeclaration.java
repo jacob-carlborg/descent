@@ -20,6 +20,13 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	public IDsymbol aliassym;
 	public Dsymbol overnext; // next in overload list
 	public int inSemantic;
+	
+	/*
+	 * Descent: true if this alias is just for a template parameter. This
+	 * is useful to not use these aliases when showing nice stuff.
+	 * See Type#alias
+	 */
+	public boolean isTemplateParameter;
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, IDsymbol s) {
 		super(id);

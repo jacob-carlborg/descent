@@ -21,10 +21,12 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
@@ -39,10 +41,12 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeExp;
+import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.core.JavaElement;
@@ -66,8 +70,14 @@ class DefaultBindingResolver extends BindingResolver {
 		 */
 		Map<String, IBinding> bindingKeysToBindings;
 		
+		/**
+		 * This map is used to get a binding from an old node.
+		 */
+		Map<IDsymbol, IBinding> symbolToBindings;
+		
 		BindingTables() {
 			this.bindingKeysToBindings = new HashMap<String, IBinding>();
+			this.symbolToBindings = new HashMap<IDsymbol, IBinding>();
 		}
 	
 	}
@@ -182,8 +192,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		AggregateDeclaration agg = (AggregateDeclaration) old;
-		String key = agg.type().getSignature();
-		IBinding binding =  resolveBinding(type, key);
+		IBinding binding = resolveLazy(agg, type);
 		if (binding instanceof ITypeBinding) {
 			return (ITypeBinding) binding;
 		} else {
@@ -199,8 +208,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		TemplateDeclaration temp = (TemplateDeclaration) old;
-		String key = temp.getSignature();
-		IBinding binding = resolveBinding(type, key);
+		IBinding binding = resolveLazy(temp, type);
 		if (binding instanceof ITypeBinding) {
 			return (ITypeBinding) binding;
 		} else {
@@ -216,8 +224,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		EnumDeclaration e = (EnumDeclaration) old;
-		String key = e.type.getSignature();
-		IBinding binding = resolveBinding(type, key);
+		IBinding binding = resolveLazy(e, type);
 		if (binding instanceof ITypeBinding) {
 			return (ITypeBinding) binding;
 		} else {
@@ -237,8 +244,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		VarDeclaration v = (VarDeclaration) old;
-		String key = v.type.getSignature();
-		return resolveBinding(variable, key);
+		return resolveLazy(v, variable);
 	}
 	
 	@Override
@@ -248,7 +254,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		IBinding binding = resolveVar((VarDeclaration) old, variable);
+		IBinding binding = resolveLazy((VarDeclaration) old, variable);
 		if (binding instanceof IVariableBinding) {
 			return (IVariableBinding) binding;
 		}
@@ -282,7 +288,7 @@ class DefaultBindingResolver extends BindingResolver {
 				return binding;
 			}
 		} else {
-			return resolveBinding(signature);
+			return resolveLazy(a, alias);
 		}
 		
 		return null;
@@ -295,7 +301,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		IBinding binding = resolveAlias((descent.internal.compiler.parser.AliasDeclaration) old, variable);
+		IBinding binding = resolveLazy((descent.internal.compiler.parser.AliasDeclaration) old, variable);
 		if (binding instanceof IVariableBinding) {
 			return (IVariableBinding) binding;
 		}
@@ -325,7 +331,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		IBinding binding = resolveTypedef((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
+		IBinding binding = resolveLazy((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
 		if (binding instanceof IVariableBinding) {
 			return (IVariableBinding) binding;
 		}
@@ -515,9 +521,9 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		if (ctor.getJavaElement() != null) {
-			binding = new MethodBinding(this, (IMethod) ctor.getJavaElement(), signature);
+			binding = new MethodBinding(this, (IMethod) ctor.getJavaElement(), null, signature);
 		} else {
-			binding = resolveBinding(signature);
+			binding = resolveLazy((Dsymbol) ctor, null);
 		}
 		
 		if (binding instanceof IMethodBinding) {
@@ -562,7 +568,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		if (sym.getJavaElement() != null) {
-			binding = new MethodBinding(this, (IMethod) sym.getJavaElement(), signature);
+			binding = new MethodBinding(this, (IMethod) sym.getJavaElement(), null, signature);
 		} else {
 			binding = resolveBinding(signature);
 		}
@@ -594,17 +600,17 @@ class DefaultBindingResolver extends BindingResolver {
 					return binding;
 				}
 			} else if (sym instanceof VarDeclaration) {
-				IBinding binding = resolveVar((VarDeclaration) sym, node);
+				IBinding binding = resolveLazy((VarDeclaration) sym, node);
 				if (binding != null) {
 					return binding;
 				}
 			} else if (sym instanceof descent.internal.compiler.parser.AliasDeclaration) {
-				IBinding binding = resolveAlias((descent.internal.compiler.parser.AliasDeclaration) sym, node);
+				IBinding binding = resolveLazy((descent.internal.compiler.parser.AliasDeclaration) sym, node);
 				if (binding != null) {
 					return binding;
 				}
 			} else if (sym instanceof descent.internal.compiler.parser.TypedefDeclaration) {
-				IBinding binding = resolveTypedef((descent.internal.compiler.parser.TypedefDeclaration) sym, node);
+				IBinding binding = resolveLazy((descent.internal.compiler.parser.TypedefDeclaration) sym, node);
 				if (binding != null) {
 					return binding;
 				}
@@ -651,16 +657,16 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		switch(elem.getElementType()) {
 		case IJavaElement.COMPILATION_UNIT:
-			binding = new PackageBinding(this, (ICompilationUnit) elem, signature);
+			binding = new PackageBinding(this, (ICompilationUnit) elem, null, signature);
 			break;
 		case IJavaElement.TYPE:
-			binding = new TypeBinding(this, (IType) elem, signature);
+			binding = new TypeBinding(this, (IType) elem, null, signature);
 			break;
 		case IJavaElement.METHOD:
-			binding = new MethodBinding(this, (IMethod) elem, signature);
+			binding = new MethodBinding(this, (IMethod) elem, null, signature);
 			break;
 		case IJavaElement.FIELD:
-			binding = new VariableBinding(this, (IField) elem, false /* not a parameter */, signature);
+			binding = new VariableBinding(this, (IField) elem, null, false /* not a parameter */, signature);
 			break;
 		}
 		
@@ -681,83 +687,8 @@ class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 	
-	private IBinding resolveVar(VarDeclaration var, ASTNode node) {
-		if (isLocal(var)) {
-			return resolveLocalVar(var, node);
-		} else {
-			String key = var.getSignature();
-			return resolveBinding(node, key);
-		}
-	}
-	
-	private IBinding resolveAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
-		if (isLocal(var)) {
-			return resolveLocalAlias(var, node);
-		} else {
-			String key = var.getSignature();
-			return resolveBinding(node, key);
-		}
-	}
-	
-	private IBinding resolveTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
-		if (isLocal(var)) {
-			return resolveLocalTypedef(var, node);
-		} else {
-			String key = var.getSignature();
-			return resolveBinding(node, key);
-		}
-	}
-	
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
 		return node.effectiveParent() instanceof FuncDeclaration;
-	}
-	
-	private IBinding resolveLocalVar(VarDeclaration var, ASTNode node) {
-		return resolveLocal(node, var, Flags.AccDefault);
-	}
-	
-	private IBinding resolveLocalAlias(descent.internal.compiler.parser.AliasDeclaration var, ASTNode node) {
-		return resolveLocal(node, var, Flags.AccAlias);
-	}
-	
-	private IBinding resolveLocalTypedef(descent.internal.compiler.parser.TypedefDeclaration var, ASTNode node) {
-		return resolveLocal(node, var, Flags.AccTypedef);
-	}
-	
-	private IBinding resolveLocal(ASTNode node, Declaration var, long modifiers) {
-		String signature = var.getSignature();
-		
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null && binding instanceof IVariableBinding) {
-			return (IVariableBinding) binding;
-		}
-		
-		if (var.type == null || var.ident() == null) {
-			return null;
-		}
-		
-		try {
-			FuncDeclaration parent = (FuncDeclaration) var.effectiveParent();
-			JavaElement func = (JavaElement) finder.find(parent.getSignature());
-			
-			IJavaElement element = new LocalVariable(
-					func, 
-					var.ident.toString(),
-					var.start,
-					var.start + var.length - 1,
-					var.ident.start,
-					var.ident.start + var.ident.length - 1,
-					var.type.getSignature(),
-					modifiers);
-			
-			binding = new VariableBinding(this, element, var.isParameter(), var.getSignature());
-			bindingTables.bindingKeysToBindings.put(signature, binding);
-			bindingsToAstNodes.put(binding, node);
-			return binding;
-		} catch (Exception e) {
-			Util.log(e);
-			return null;
-		}
 	}
 	
 	@Override
@@ -788,7 +719,7 @@ class DefaultBindingResolver extends BindingResolver {
 		if (t.getJavaElement() != null) {
 			IJavaElement elem = t.getJavaElement();
 			if (elem.getElementType() == IJavaElement.TYPE) {
-				binding = new TypeBinding(this, (IType) elem, signature);
+				binding = new TypeBinding(this, (IType) elem, null, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 				bindingsToAstNodes.put(binding, node);
 				return binding;
@@ -807,8 +738,11 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		descent.internal.compiler.parser.EnumMember em = (EnumMember) old;
-		String key = em.getSignature();
-		return (IVariableBinding) resolveBinding(member, key);
+		IBinding binding = resolveLazy(em, member);
+		if (binding instanceof IVariableBinding) {
+			return (IVariableBinding) binding;
+		}
+		return null;
 	}
 	
 	@Override
@@ -833,7 +767,7 @@ class DefaultBindingResolver extends BindingResolver {
 		if (mod.getJavaElement() != null) {
 			IJavaElement elem = mod.getJavaElement();
 			if (elem instanceof ICompilationUnit) {
-				binding = new PackageBinding(this, (ICompilationUnit) elem, signature);
+				binding = new PackageBinding(this, (ICompilationUnit) elem, null, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 				bindingsToAstNodes.put(binding, imp);
 				return (IPackageBinding) binding;
@@ -852,7 +786,7 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		FuncDeclaration func = (FuncDeclaration) old;
 		
-		IBinding binding = resolveBinding(method, func.getSignature());
+		IBinding binding = resolveLazy(func, method);
 		if (binding instanceof IMethodBinding) {
 			return (IMethodBinding) binding;
 		}
@@ -870,7 +804,7 @@ class DefaultBindingResolver extends BindingResolver {
 		descent.internal.compiler.parser.Argument arg = (Argument) old;
 		if (arg.var != null) {
 			if (arg.var instanceof VarDeclaration) {
-				IBinding binding = resolveVar((VarDeclaration) arg.var, argument);
+				IBinding binding = resolveLazy((VarDeclaration) arg.var, argument);
 				if (binding instanceof IVariableBinding) {
 					return (IVariableBinding) binding;
 				}
@@ -926,7 +860,7 @@ class DefaultBindingResolver extends BindingResolver {
 	private class InitializerBinding extends JavaElementBasedBinding {
 
 		public InitializerBinding(IJavaElement element) {
-			super(element);
+			super(DefaultBindingResolver.this, element, null);
 		}
 
 		public String getKey() {
@@ -966,7 +900,7 @@ class DefaultBindingResolver extends BindingResolver {
 				if (unit == null) {
 					return;
 				}
-				binding = new PackageBinding(DefaultBindingResolver.this, unit, signature);
+				binding = new PackageBinding(DefaultBindingResolver.this, unit, null, signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
 			stack.push(binding);
@@ -998,13 +932,13 @@ class DefaultBindingResolver extends BindingResolver {
 					element =  finder.findChild(element, startPosition);
 					
 					if (element instanceof IType) {
-						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
 					} else if (element instanceof IField) {
-						binding = new VariableBinding(DefaultBindingResolver.this, element, false, signature);
+						binding = new VariableBinding(DefaultBindingResolver.this, element, null, false, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
 					} else if (element instanceof IMethod) {
-						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
+						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, null, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
 					} else if (element instanceof IInitializer) {
 						binding = new InitializerBinding(element);
@@ -1054,7 +988,7 @@ class DefaultBindingResolver extends BindingResolver {
 							element = finder.findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramsTypes);
 						}
 						
-						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, signature);
+						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, null, signature);
 						bindingTables.bindingKeysToBindings.put(signature, binding);
 					} else if (type == ISignatureConstants.TEMPLATE
 							|| type == ISignatureConstants.TEMPLATED_CLASS
@@ -1083,7 +1017,7 @@ class DefaultBindingResolver extends BindingResolver {
 						}
 						
 						if (element instanceof IType) {
-							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
 							bindingTables.bindingKeysToBindings.put(signature, binding);
 						}
 					} else {
@@ -1098,10 +1032,10 @@ class DefaultBindingResolver extends BindingResolver {
 						}
 						
 						if (element instanceof IType) {
-							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, signature);
+							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
 							bindingTables.bindingKeysToBindings.put(signature, binding);
 						} else if (element instanceof IField) {
-							binding = new VariableBinding(DefaultBindingResolver.this, element, false, signature);
+							binding = new VariableBinding(DefaultBindingResolver.this, element, null, false, signature);
 							bindingTables.bindingKeysToBindings.put(signature, binding);
 						} else {
 							return;
@@ -1215,7 +1149,7 @@ class DefaultBindingResolver extends BindingResolver {
 			stack.push(binding);
 		}
 
-		public void acceptStaticArray(int dimension, String signature) {
+		public void acceptStaticArray(Expression dimension, String signature) {
 			Stack<IBinding> stack = this.stack.peek();
 			
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -1227,7 +1161,8 @@ class DefaultBindingResolver extends BindingResolver {
 				binding = new TypeSArrayBinding(
 					DefaultBindingResolver.this,
 					(ITypeBinding) stack.pop(),
-					dimension,
+					// TODO static array dimension
+					0,
 					signature);
 				bindingTables.bindingKeysToBindings.put(signature, binding);
 			}
@@ -1297,6 +1232,173 @@ class DefaultBindingResolver extends BindingResolver {
 			templateStack.push(signature);
 		}
 		
+	}
+	
+	IJavaElement getJavaElement(IDsymbol node) {
+		if (node instanceof IModule) {
+			char[] compoundName = ((IModule) node).getFullyQualifiedName().toCharArray();
+			char[][] compoundName2 = CharOperation.splitOn('.', compoundName);
+			return finder.findCompilationUnit(compoundName2);
+		} else {
+			IBinding parent = resolveLazy((Dsymbol) node.parent(), null);
+			if (parent == null) {
+				return null;
+			}
+			
+			if (node instanceof VarDeclaration ||
+				node instanceof descent.internal.compiler.parser.AliasDeclaration ||
+				node instanceof descent.internal.compiler.parser.TypedefDeclaration ||
+				node instanceof EnumMember) {
+				
+				if (node instanceof Declaration && isLocal((Declaration) node)) {
+					long modifiers = 0;
+					if (node instanceof descent.internal.compiler.parser.AliasDeclaration) {
+						modifiers |= Flags.AccAlias;
+					} else if (node instanceof descent.internal.compiler.parser.TypedefDeclaration) {
+						modifiers |= Flags.AccTypedef;
+					}
+					
+					return new LocalVariable(
+							(JavaElement) parent.getJavaElement(), 
+							node.ident().toString(),
+							node.getStart(),
+							node.getStart() + node.getLength() - 1,
+							node.ident().start,
+							node.ident().start + node.ident().length - 1,
+							node.type().getSignature(),
+							modifiers);
+				} else {
+					return finder.findChild(parent.getJavaElement(), new String(node.ident().ident));
+				}
+			} else if (node instanceof ClassDeclaration ||
+					node instanceof StructDeclaration ||
+					node instanceof EnumDeclaration) {
+				return finder.findChild(parent.getJavaElement(), new String(node.ident().ident));
+			} else if (node instanceof TemplateDeclaration) {
+				TemplateDeclaration temp = (TemplateDeclaration) node;
+				
+				String[] paramTypes = new String[temp.parameters == null ? 0 : temp.parameters.size()];
+				if (temp.parameters != null) {
+					for (int i = 0; i < temp.parameters.size(); i++) {
+						paramTypes[i] = temp.parameters.get(i).getSignature();
+					}
+				}
+				
+				if (temp.wrapper && temp.members != null && temp.members.size() > 0) {
+					Dsymbol first = (Dsymbol) temp.members.get(0);
+					if (first instanceof AggregateDeclaration) {
+						return finder.findTemplatedAggregate((IParent) parent.getJavaElement(), new String(node.ident().ident), paramTypes);
+					} else if (first instanceof FuncDeclaration) {
+						FuncDeclaration func = (FuncDeclaration) first;
+						String[] paramsAndRetTypes = getParamsAndRetType(func);
+						
+						return finder.findTemplatedFunction((IParent) parent.getJavaElement(), new String(node.ident().ident), paramsAndRetTypes, paramTypes);
+					}
+				} else {
+					return finder.findTemplate((IParent) parent.getJavaElement(), new String(node.ident().ident), paramTypes);
+				}
+			} else if (node instanceof FuncDeclaration) {
+				FuncDeclaration func = (FuncDeclaration) node;
+				String[] paramsAndRetTypes = getParamsAndRetType(func);
+				
+				return finder.findFunction((IParent) parent.getJavaElement(), new String(func.ident.ident), paramsAndRetTypes);
+			}
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * Creates a binding for the node, which will lazily initialize
+	 * the java element and try to use the node information whenever
+	 * possible instead of querying the java element. This makes
+	 * things go *faster*.
+	 */
+	IBinding resolveLazy(IDsymbol node, ASTNode astNode) {
+		if (node == null) {
+			return null;
+		}
+		
+		IBinding binding = bindingTables.symbolToBindings.get(node);
+		
+		if (binding == null) {
+			String signature = node.getSignature();
+			
+			if (node instanceof IModule) {
+				binding = new PackageBinding(this, null, (IModule) node, signature);
+			} else {
+				IBinding parent = resolveLazy((IDsymbol) node.parent(), null);	
+				if (parent != null) {
+					if (node instanceof VarDeclaration ||
+						node instanceof descent.internal.compiler.parser.AliasDeclaration ||
+						node instanceof descent.internal.compiler.parser.TypedefDeclaration ||
+						node instanceof EnumMember) {
+						
+						if (node instanceof Declaration && isLocal((Declaration) node)) {
+							long modifiers = 0;
+							if (node instanceof descent.internal.compiler.parser.AliasDeclaration) {
+								modifiers |= Flags.AccAlias;
+							} else if (node instanceof descent.internal.compiler.parser.TypedefDeclaration) {
+								modifiers |= Flags.AccTypedef;
+							}
+							binding = new VariableBinding(this, null, node, true, signature);
+						} else {
+							binding = new VariableBinding(this, null, node, false, signature);
+						}
+					} else if (node instanceof ClassDeclaration ||
+							node instanceof StructDeclaration ||
+							node instanceof EnumDeclaration) {
+						binding = new TypeBinding(this, null, node, signature);
+					} else if (node instanceof TemplateDeclaration) {
+						TemplateDeclaration temp = (TemplateDeclaration) node;
+						
+						String[] paramTypes = new String[temp.parameters == null ? 0 : temp.parameters.size()];
+						if (temp.parameters != null) {
+							for (int i = 0; i < temp.parameters.size(); i++) {
+								paramTypes[i] = temp.parameters.get(i).getSignature();
+							}
+						}
+						
+						if (temp.wrapper && temp.members != null && temp.members.size() > 0) {
+							Dsymbol first = (Dsymbol) temp.members.get(0);
+							if (first instanceof AggregateDeclaration) {
+								binding = new TypeBinding(this, null, node, signature);
+							} else if (first instanceof FuncDeclaration) {
+								binding = new MethodBinding(this, null, node, signature);
+							}
+						} else {
+							binding = new TypeBinding(this, null, node, signature);
+						}
+					} else if (node instanceof FuncDeclaration) {
+						binding = new MethodBinding(this, null, node, signature);
+					}
+				}
+			}
+			
+			if (binding != null) {
+				bindingTables.symbolToBindings.put(node, binding);
+				bindingTables.bindingKeysToBindings.put(signature, binding);
+				if (astNode != null) {
+					bindingsToAstNodes.put(binding, astNode);
+				}
+			}
+		}
+		
+		return binding;
+	}
+	
+	private String[] getParamsAndRetType(FuncDeclaration func) {
+		TypeFunction ty = (TypeFunction) func.type;
+		
+		String[] paramsAndRetTypes = new String[1 + (ty.parameters == null ? 0 : ty.parameters.size())];
+		if (ty.parameters != null) {
+			for (int i = 0; i < ty.parameters.size(); i++) {
+				paramsAndRetTypes[i] = ty.parameters.get(i).getSignature();
+			}
+		}
+		paramsAndRetTypes[paramsAndRetTypes.length - 1] = ty.next.getSignature();
+		
+		return paramsAndRetTypes;
 	}
 	
 	IBinding resolveBinding(String signature) {

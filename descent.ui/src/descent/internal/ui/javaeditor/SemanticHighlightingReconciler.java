@@ -401,8 +401,12 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 			
 			startReconcilingPositions();
 			
-			if (!fJobPresenter.isCanceled())
+			if (!fJobPresenter.isCanceled()) {
+				long time = System.currentTimeMillis();
 				reconcilePositions(subtrees);
+				time = System.currentTimeMillis() - time;
+				System.out.println("Semantic highlighting took " + time + " milliseconds to complete.");
+			}
 			
 			TextPresentation textPresentation= null;
 			if (!fJobPresenter.isCanceled())

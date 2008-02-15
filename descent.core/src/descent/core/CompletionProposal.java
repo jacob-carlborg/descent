@@ -1562,6 +1562,10 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @param signature the signature, or <code>null</code> if none
 	 */
 	public void setSignature(char[] signature) {
+		if ("@6objectC6Object[6toHashFZ".equals(new String(signature))) {
+			System.out.println(1);
+		}
+		
 		this.signature = signature;
 	}
 	

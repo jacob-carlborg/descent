@@ -175,13 +175,24 @@ public class TypeSlice extends Type {
 	
 	@Override
 	public String getSignature0() {
-		// TODO Descent signature
-		return null;
+		StringBuilder sb = new StringBuilder();
+		appendSignature0(sb);
+		return sb.toString();
 	}
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		// TODO Descent signature		
+		sb.append(ISignatureConstants.SLICE);
+		
+		char[] expc = new ASTNodeEncoder().encodeExpression(lwr);
+		sb.append(expc.length);
+		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(expc);
+		
+		expc = new ASTNodeEncoder().encodeExpression(upr);
+		sb.append(expc.length);
+		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(expc);
 	}
 	
 }

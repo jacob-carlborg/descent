@@ -498,9 +498,19 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type arrayof; // array of this type
 	
 	/*
-	 * Descent: resolved type, if TypeIdentifier semantic was called 
+	 * Descent: when a TypeIdentifier referres to an alias, for example:
+	 * 
+	 * alias int foo;
+	 * 
+	 * then foo will be resolved to int. Now, in autocompletion and stuff
+	 * we don't want to show int, but foo, so when a TypeIdentifier is
+	 * resolved we keep a reference in the type to this alias.
 	 */
-	public IDsymbol resolved;
+	public IDsymbol alias;
+	
+	/*
+	 * Descent: custom signature.
+	 */
 	private String signature;
 	
 	// This field is kept in SemanticContext
@@ -1202,10 +1212,14 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 	
 	public final String getSignature() {
-		if (resolved != null) {
-			return resolved.getSignature();
+		String sig = null;
+		if (alias != null) {
+			sig = alias.getSignature();
 		}
-		return getSignature0();
+		if (sig == null) {
+			sig = getSignature0();
+		}
+		return sig;
 	}
 	
 	public String getSignature0() {
@@ -1218,11 +1232,16 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 	
 	protected final void appendSignature(StringBuilder sb) {
-		if (resolved != null) {
-			resolved.appendSignature(sb);
-		} else {
-			appendSignature0(sb);
+		if (alias != null && !(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter)) {
+			StringBuilder sb2 = new StringBuilder();
+			alias.appendSignature(sb2);
+			if (sb2.length() > 0) {
+				sb.append(sb2);
+				return;
+			}
 		}
+		
+		appendSignature0(sb);
 	}
 	
 	protected abstract void appendSignature0(StringBuilder sb);

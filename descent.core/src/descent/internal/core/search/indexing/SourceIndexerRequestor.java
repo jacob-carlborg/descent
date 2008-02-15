@@ -129,26 +129,26 @@ public char[][] enclosingTypeNames(){
 	System.arraycopy(this.enclosingTypeNames, 0, qualification, 0, this.depth);
 	return qualification;
 }
-private void enterAnnotationType(TypeInfo typeInfo) {
-	char[][] typeNames;
-	if (this.methodDepth > 0) {
-		typeNames = ONE_ZERO_CHAR;
-	} else {
-		typeNames = this.enclosingTypeNames();
-	}
-	this.indexer.addAnnotationTypeDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.secondary);
-	this.pushTypeName(typeInfo.name);	
-}
+//private void enterAnnotationType(TypeInfo typeInfo) {
+//	char[][] typeNames;
+//	if (this.methodDepth > 0) {
+//		typeNames = ONE_ZERO_CHAR;
+//	} else {
+//		typeNames = this.enclosingTypeNames();
+//	}
+//	this.indexer.addAnnotationTypeDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.secondary);
+//	this.pushTypeName(typeInfo.name);	
+//}
 
 private void enterClass(TypeInfo typeInfo) {
 
 	// eliminate possible qualifications, given they need to be fully resolved again
-	if (typeInfo.superclass != null) {
-		typeInfo.superclass = getSimpleName(typeInfo.superclass);
-		
-		// add implicit constructor reference to default constructor
-		this.indexer.addConstructorReference(typeInfo.superclass, 0);
-	}
+//	if (typeInfo.superclass != null) {
+//		typeInfo.superclass = getSimpleName(typeInfo.superclass);
+//		
+//		// add implicit constructor reference to default constructor
+//		this.indexer.addConstructorReference(typeInfo.superclass, 0);
+//	}
 	if (typeInfo.superinterfaces != null){
 		for (int i = 0, length = typeInfo.superinterfaces.length; i < length; i++) {
 			typeInfo.superinterfaces[i] = getSimpleName(typeInfo.superinterfaces[i]);
@@ -166,10 +166,10 @@ private void enterClass(TypeInfo typeInfo) {
 		typeParameterSignatures = new char[typeParametersLength][];
 		for (int i = 0; i < typeParametersLength; i++) {
 			ISourceElementRequestor.TypeParameterInfo typeParameterInfo = typeInfo.typeParameters[i];
-			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, typeParameterInfo.bounds == null ? CharOperation.NO_CHAR_CHAR : typeParameterInfo.bounds);
+			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
 		}
 	}
-	this.indexer.addClassDeclaration(typeInfo.modifiers, this.packageName, typeInfo.name, typeNames, typeInfo.superclass, typeInfo.superinterfaces, typeParameterSignatures, typeInfo.secondary);
+	this.indexer.addClassDeclaration(typeInfo.modifiers, this.packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures);
 	this.pushTypeName(typeInfo.name);
 }
 /**
@@ -182,7 +182,7 @@ public void enterCompilationUnit() {
  * @see ISourceElementRequestor#enterConstructor(MethodInfo)
  */
 public void enterConstructor(MethodInfo methodInfo) {
-	this.indexer.addConstructorDeclaration(methodInfo.name, methodInfo.parameterTypes, methodInfo.exceptionTypes);
+	this.indexer.addConstructorDeclaration(methodInfo.name, methodInfo.parameterTypes);
 	this.methodDepth++;
 }
 private void enterEnum(TypeInfo typeInfo) {
@@ -198,7 +198,7 @@ private void enterEnum(TypeInfo typeInfo) {
 	} else {
 		typeNames = this.enclosingTypeNames();
 	}
-	this.indexer.addEnumDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeInfo.secondary);
+	this.indexer.addEnumDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces);
 	this.pushTypeName(typeInfo.name);	
 }
 /**
@@ -245,10 +245,10 @@ private void enterInterface(TypeInfo typeInfo) {
 		typeParameterSignatures = new char[typeParametersLength][];
 		for (int i = 0; i < typeParametersLength; i++) {
 			ISourceElementRequestor.TypeParameterInfo typeParameterInfo = typeInfo.typeParameters[i];
-			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, typeParameterInfo.bounds);
+			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
 		}
 	}
-	this.indexer.addInterfaceDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures, typeInfo.secondary);
+	this.indexer.addInterfaceDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures);
 	this.pushTypeName(typeInfo.name);	
 }
 /**
@@ -261,7 +261,7 @@ public void enterMethod(MethodInfo methodInfo) {
 	} else {
 		typeNames = this.enclosingTypeNames();
 	}
-	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, methodInfo.returnType, methodInfo.exceptionTypes, methodInfo.signature);
+	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, methodInfo.signature);
 	this.methodDepth++;
 }
 /**

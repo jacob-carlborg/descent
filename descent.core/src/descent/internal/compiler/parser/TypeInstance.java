@@ -174,13 +174,29 @@ public class TypeInstance extends TypeQualified {
 	
 	@Override
 	public String getSignature0() {
-		// TODO Descent signature
-		return null;
+		StringBuilder sb = new StringBuilder();
+		appendSignature(sb);
+		return sb.toString();
 	}
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		// TODO Descent signature		
+		sb.append(ISignatureConstants.IDENTIFIER);
+		if (idents != null) {
+			for(IdentifierExp ident : idents) {
+				if (ident == null || ident.ident == null) {
+					sb.append(0);
+				} else {
+					sb.append(ident.ident.length);
+					sb.append(ident.ident);
+				}
+			}
+		}
+		
+		sb.append(tempinst.name.length);
+		sb.append(tempinst.name.ident);
+		
+		tempinst.appendSignature(sb);
 	}
 
 }

@@ -51,7 +51,6 @@ class Conditional extends Member implements IConditional {
 		Object info = getElementInfo();
 		if (info instanceof ConditionalElementInfo) {
 			int c = ((ConditionalElementInfo) info).getEvaluationResult();
-			System.out.println(c);
 			switch(c) {
 			case 0: return null;
 			case 1: return Boolean.TRUE;
@@ -59,7 +58,6 @@ class Conditional extends Member implements IConditional {
 			}
 			return null;
 		} else {
-			System.out.println("Boo");
 			return Boolean.TRUE;
 		}
 	}

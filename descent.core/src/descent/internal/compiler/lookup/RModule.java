@@ -11,6 +11,7 @@ import descent.core.IParent;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Array;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IDsymbol;
@@ -38,18 +39,19 @@ public class RModule extends RPackage implements IModule {
 	private IModuleDeclaration md;
 	private boolean mdCalculated;
 	private String signature;
-	private Scope scope;
 	private boolean semanticRun = false;
 	public boolean insearch;
 	public char[] searchCacheIdent;
 	public int searchCacheFlags;
 	public IDsymbol searchCacheSymbol;
 	public JavaElementFinder finder;
+	public ASTNodeEncoder encoder;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
 		
 		this.finder = new JavaElementFinder(unit.getJavaProject(), unit.getOwner());
+		this.encoder = new ASTNodeEncoder();
 	}
 	
 	@Override
@@ -169,6 +171,8 @@ public class RModule extends RPackage implements IModule {
 					} else {
 						mod = context.load(compoundName);
 						if (mod != null) {
+							mod.importedFrom(this);
+							
 							context.muteProblems++;
 							mod.semantic(null, context);
 							context.muteProblems--;
@@ -266,13 +270,6 @@ public class RModule extends RPackage implements IModule {
 	public void aimports(Array aimports) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public Scope getScope() {
-		if (scope == null) {
-			scope = Scope.createGlobal(this, context);
-		}
-		return scope;
 	}
 	
 	/**

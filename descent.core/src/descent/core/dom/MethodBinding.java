@@ -1,19 +1,16 @@
 package descent.core.dom;
 
-import descent.core.IMember;
 import descent.core.IMethod;
-import descent.core.IType;
 import descent.core.JavaModelException;
+import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.core.util.Util;
 
 public class MethodBinding extends JavaElementBasedBinding implements IMethodBinding {
 	
-	private final DefaultBindingResolver bindingResolver;
 	private final String signature;
 
-	public MethodBinding(DefaultBindingResolver bindingResolver, IMethod element, String signature) {
-		super(element);
-		this.bindingResolver = bindingResolver;
+	public MethodBinding(DefaultBindingResolver bindingResolver, IMethod element, IDsymbol node, String signature) {
+		super(bindingResolver, element, node);
 		this.signature = signature;		
 	}
 
@@ -38,7 +35,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	}
 
 	public ITypeBinding[] getParameterTypes() {
-		String[] parameterTypes = ((IMethod) element).getParameterTypes();
+		String[] parameterTypes = ((IMethod) getJavaElement()).getParameterTypes();
 		ITypeBinding[] typeBindings = new ITypeBinding[parameterTypes.length];
 		for(int i = 0; i < parameterTypes.length; i++) {
 			typeBindings[i] = (ITypeBinding) bindingResolver.resolveBinding(parameterTypes[i]);
@@ -48,7 +45,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 
 	public ITypeBinding getReturnType() {
 		try {
-			String signature = ((IMethod) element).getReturnType();
+			String signature = ((IMethod) getJavaElement()).getReturnType();
 			return (ITypeBinding) bindingResolver.resolveBinding(signature);
 		} catch (JavaModelException e) {
 			Util.log(e);
@@ -73,7 +70,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 
 	public boolean isConstructor() {
 		try {
-			return ((IMethod) element).isConstructor();
+			return ((IMethod) getJavaElement()).isConstructor();
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
@@ -107,7 +104,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	
 	public boolean isTemplate() {
 		try {
-			return ((IMethod) element).isTemplate();
+			return ((IMethod) getJavaElement()).isTemplate();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -116,7 +113,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 
 	public boolean isVarargs() {
 		try {
-			return ((IMethod) element).isVarargs();
+			return ((IMethod) getJavaElement()).isVarargs();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;

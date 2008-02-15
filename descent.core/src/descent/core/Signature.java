@@ -12,9 +12,11 @@
 package descent.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
@@ -1292,14 +1294,30 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 	
 	@Override
-	public void acceptIdentifier(char[] name, String signature) {
+	public void acceptIdentifier(char[][] compoundName, String signature) {
 		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
 		
-//		if (!stack.isEmpty()) {
-//			stack.pop();
-//		}
+		stack.push(signature);
+	}
+	
+	@Override
+	public void acceptTypeof(Expression expression, String signature) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
+			return;
+		}
+		
+		stack.push(signature);
+	}
+	
+	@Override
+	public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
+		if (functionTypeCount != 1 || templateInstanceCount != 0) {
+			return;
+		}
+		
+		stack.pop();
 		stack.push(signature);
 	}
 
@@ -1356,7 +1374,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 		stack.push(type.deco);
 	}
 
-	public void acceptStaticArray(int dimension, String signature) {
+	public void acceptStaticArray(Expression dimension, String signature) {
 		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
@@ -2402,6 +2420,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	
 	private Stack<Stack<String>> stack = new Stack<Stack<String>>();
 	private Stack<Stack<String>> modifiers = new Stack<Stack<String>>();
+	private Stack<List<String>> instances = new Stack<List<String>>();
 	private int functionTypeCount;
 	private boolean fullyQualifyTypeNames;
 	
@@ -2441,10 +2460,10 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	}
 	
 	@Override
-	public void acceptIdentifier(char[] name, String signature) {
+	public void acceptIdentifier(char[][] name, String signature) {
 		if (this.stack.isEmpty()) {
 			Stack<String> stack = new Stack<String>();
-			stack.push(new String(name));
+			stack.push(new String(name[name.length - 1]));
 			
 			this.stack.push(stack);
 		} else {
@@ -2453,7 +2472,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 				stack.pop();
 			}
 			
-			stack.push(new String(name));
+			stack.push(new String(name[name.length - 1]));
 		}
 	}
 
@@ -2493,6 +2512,41 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 		}
 		stack.push(CharOperation.toString(compoundName));
 	}
+	
+	@Override
+	public void acceptTypeof(Expression expression, String signature) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("typeof(");
+		sb.append(expression);
+		sb.append(')');
+		
+		if (this.stack.isEmpty()) {
+			Stack<String> stack = new Stack<String>();
+			stack.push(sb.toString());
+			
+			this.stack.push(stack);
+		} else {
+			Stack<String> stack = this.stack.peek();
+			if (!stack.isEmpty()) {
+				stack.pop();
+			}
+			
+			stack.push(sb.toString());
+		}
+	}
+	
+	@Override
+	public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.stack.peek().pop());
+		sb.append('[');
+		sb.append(lwr);
+		sb.append(" .. ");
+		sb.append(upr);
+		sb.append(']');
+		
+		this.stack.peek().push(sb.toString());
+	}
 
 	public void acceptPointer(String signature) {
 		Stack<String> stack = this.stack.peek();
@@ -2510,7 +2564,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 		stack.push(type.ty.name);
 	}
 
-	public void acceptStaticArray(int dimension, String signature) {
+	public void acceptStaticArray(Expression dimension, String signature) {
 		Stack<String> stack = this.stack.peek();
 		stack.push(stack.pop() + "[" + dimension + "]");
 	}
@@ -2598,6 +2652,63 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 			}
 		}
 		functionTypeCount--;
+	}
+	
+	@Override
+	public void enterTemplateInstance() {
+		stack.push(new Stack<String>());
+		modifiers.push(new Stack<String>());
+		instances.push(new ArrayList<String>());
+	}
+	
+	@Override
+	public void exitTemplateInstanceSymbol(String string) {
+		// TODO signature to char array
+	}
+	
+	@Override
+	public void exitTemplateInstanceTypeParameter(String signature) {
+		if (this.stack.isEmpty()) {
+			return;
+		}
+		
+		Stack<String> stack = this.stack.peek();
+		if (stack.isEmpty()) {
+			return;
+		}
+		instances.peek().add(stack.pop());
+	}
+	
+	@Override
+	public void acceptTemplateInstanceValue(Expression exp, String signature) {
+		instances.peek().add(exp.toString());
+	}
+	
+	@Override
+	public void exitTemplateInstance(String signature) {
+		stack.pop();
+		modifiers.pop();
+		List<String> instances = this.instances.pop();
+		
+		if (stack.isEmpty()) {
+			return;
+		}
+		
+		String old = stack.peek().pop();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(old);
+		sb.append('!');
+		sb.append('(');
+		for (int i = 0; i < instances.size(); i++) {
+			if (i != 0) {
+				sb.append(", ");
+			}
+			sb.append(instances.get(i));
+		}
+		sb.append(')');
+		
+		stack.peek().push(sb.toString());
 	}
 	
 }

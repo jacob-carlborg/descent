@@ -160,7 +160,7 @@ public class SemanticMixin {
 	}
 	
 	public static boolean isBaseOf(IInterfaceDeclaration aThis, BaseClass bc, int[] poffset) {
-		for (int j = 0; j < bc.baseInterfaces.size(); j++) {
+		for (int j = 0; j < ASTDmdNode.size(bc.baseInterfaces); j++) {
 			BaseClass b = bc.baseInterfaces.get(j);
 
 			if (equals(aThis, b.base)) {

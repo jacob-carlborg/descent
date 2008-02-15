@@ -137,23 +137,23 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	}
 
 	protected boolean computeHasParameters() throws IllegalArgumentException {
-		return Signature.getParameterCount(fProposal.getSignature()) > 0;
+		return Signature.getParameterCount(fProposal.getTypeName()) > 0;
 	}
 	
 	protected boolean computeIsVariadic() throws IllegalArgumentException {
-		return Signature.isVariadic(fProposal.getSignature());
+		return Signature.isVariadic(fProposal.getTypeName());
 	}
 	
 	protected boolean computeIsSetter() throws IllegalArgumentException {
-		char[] retType = Signature.getReturnType(fProposal.getSignature());
+		char[] retType = Signature.getReturnType(fProposal.getTypeName());
 		if (retType.length == 1 && retType[0] == 'v') {
-			return Signature.getParameterCount(fProposal.getSignature()) == 1;
+			return Signature.getParameterCount(fProposal.getTypeName()) == 1;
 		}
 		return false;
 	}
 	
 	protected boolean computeIsGetter() throws IllegalArgumentException {
-		char[] retType = Signature.getReturnType(fProposal.getSignature());
+		char[] retType = Signature.getReturnType(fProposal.getTypeName());
 		if (retType.length != 1 || retType[0] != 'v') {
 			return !hasParameters();
 		}
@@ -267,7 +267,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		 * 4) by parameter type names
 		 */
 		char[] name= fProposal.getName();
-		char[] parameterList= Signature.toCharArray(fProposal.getSignature(), null, null, false, false);
+		char[] parameterList= Signature.toCharArray(fProposal.getTypeName(), null, null, false, false);
 		int parameterCount= Signature.getParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters
 		StringBuffer buf= new StringBuffer(name.length + 2 + parameterList.length);
 		

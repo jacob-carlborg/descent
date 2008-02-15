@@ -43,7 +43,7 @@ import descent.internal.core.util.Util;
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	private final static boolean RESOLVE = true;
-	private final static boolean SYSOUT = false;
+	private final static boolean STATS = true;
 	
 	public static class ParseResult {
 		public Module module;
@@ -180,6 +180,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final Global global,
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config) throws JavaModelException {
+		
+		long time = System.currentTimeMillis();
 		
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
@@ -343,8 +345,9 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			Util.log(t);
 		}
 		
-		if (SYSOUT) {
-			System.out.println(module);
+		if (STATS) {
+			time = System.currentTimeMillis() - time;
+			System.out.println("Resolve of " + module.moduleName + " took " + time + " miliseconds to complete.");
 		}
 		
 		return context;

@@ -2,16 +2,21 @@ package descent.core.dom;
 
 import descent.core.IType;
 import descent.core.JavaModelException;
+import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.InterfaceDeclaration;
+import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.core.util.Util;
 
 public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding {
 	
-	private final DefaultBindingResolver bindingResolver;
 	private final String key;
 	
-	public TypeBinding(DefaultBindingResolver resolver, IType element, String key) {
-		super(element);
-		this.bindingResolver = resolver;
+	public TypeBinding(DefaultBindingResolver resolver, IType element, IDsymbol node, String key) {
+		super(resolver, element, node);
 		this.key = key;
 	}
 	
@@ -80,7 +85,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public String getQualifiedName() {
-		return ((IType) element).getFullyQualifiedName();
+		return ((IType) getJavaElement()).getFullyQualifiedName();
 	}
 
 	public ITypeBinding getReturnType() {
@@ -116,8 +121,13 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isClass() {
+		if (node != null) {
+			return node instanceof ClassDeclaration &&
+				!(node instanceof InterfaceDeclaration);
+		}
+		
 		try {
-			return ((IType) element).isClass();
+			return ((IType) getJavaElement()).isClass();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -133,8 +143,12 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isEnum() {
+		if (node != null) {
+			return node instanceof EnumDeclaration;
+		}
+		
 		try {
-			return ((IType) element).isEnum();
+			return ((IType) getJavaElement()).isEnum();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -160,8 +174,12 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isInterface() {
+		if (node != null) {
+			return node instanceof InterfaceDeclaration;
+		}
+		
 		try {
-			return ((IType) element).isInterface();
+			return ((IType) getJavaElement()).isInterface();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -205,8 +223,13 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isStruct() {
+		if (node != null) {
+			return node instanceof StructDeclaration &&
+				!(node instanceof UnionDeclaration);
+		}
+		
 		try {
-			return ((IType) element).isStruct();
+			return ((IType) getJavaElement()).isStruct();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -224,8 +247,12 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public boolean isTemplate() {
+		if (node != null) {
+			return node instanceof TemplateDeclaration;
+		}
+		
 		try {
-			return ((IType) element).isTemplate();
+			return ((IType) getJavaElement()).isTemplate();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -238,8 +265,12 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isUnion() {
+		if (node != null) {
+			return node instanceof UnionDeclaration;
+		}
+		
 		try {
-			return ((IType) element).isUnion();
+			return ((IType) getJavaElement()).isUnion();
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return false;
@@ -248,7 +279,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	
 	@Override
 	public String toString() {
-		return element.toString();
+		return getJavaElement().toString();
 	}
 
 }

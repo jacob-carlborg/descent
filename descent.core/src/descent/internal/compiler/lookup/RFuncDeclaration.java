@@ -193,7 +193,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 					// type of its class
 					retType = parent().type();
 				} else {
-					retType = getTypeFromSignature(retTypeSig);
+					retType = getTypeFromSignature(retTypeSig, true);
 				}
 				
 				Arguments args = new Arguments();
@@ -202,7 +202,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				String[] paramTypesSig = method.getParameterTypes();
 				
 				for(int i = 0; i < paramNames.length; i++) {
-					Type argType = getTypeFromSignature(paramTypesSig[i]);
+					Type argType = getTypeFromSignature(paramTypesSig[i], true);
 					// TODO storage class and default value
 					// Observation: the default value doesn't matter. It only
 					// matters if it's null or not.
@@ -217,7 +217,7 @@ public class RFuncDeclaration extends RDeclaration implements IFuncDeclaration {
 				// TODO link
 				type = new TypeFunction(args, retType, (getFlags() & Flags.AccVarargs) == 0 ? 0 : 1, LINK.LINKd);
 				((TypeFunction) type).linkageChar = 'F';
-				type = type.merge(context);
+				merge(type);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

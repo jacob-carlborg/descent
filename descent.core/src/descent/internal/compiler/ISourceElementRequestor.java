@@ -11,7 +11,6 @@
 package descent.internal.compiler;
 
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.integer_t;
 
 /*
  * Part of the source element parser responsible for building the output. It
@@ -45,15 +44,15 @@ public interface ISourceElementRequestor {
 		public char[] name;
 		public int nameSourceStart;
 		public int nameSourceEnd;
-		public char[] superclass;
+//		public char[] superclass;
 		public char[][] superinterfaces;
 		public TypeParameterInfo[] typeParameters;
-		public long[] annotationPositions;
-		public char[][] categories;
-		public boolean secondary;
-		public integer_t[] enumValues; // default, min, max
-		public int sizeof;
-		public int alignof;
+//		public long[] annotationPositions;
+//		public char[][] categories;
+//		public boolean secondary;
+//		public integer_t[] enumValues; // default, min, max
+//		public int sizeof;
+//		public int alignof;
 	}
 	
 	public static class TypeParameterInfo {
@@ -63,8 +62,8 @@ public interface ISourceElementRequestor {
 		public char[] signature;
 		public int nameSourceStart;
 		public int nameSourceEnd;
-		public char[][] bounds;
-		public long[] annotationPositions;
+//		public char[][] bounds;
+//		public long[] annotationPositions;
 	}
 	
 	public static class MethodInfo {
@@ -76,11 +75,11 @@ public interface ISourceElementRequestor {
 		public int nameSourceEnd;
 		public char[][] parameterTypes;
 		public char[][] parameterNames;
-		public char[][] exceptionTypes;
+//		public char[][] exceptionTypes;
 		public TypeParameterInfo[] typeParameters;
-		public long[] annotationPositions;
-		public char[][] categories;
-		public int defaultValuesCount;
+//		public long[] annotationPositions;
+//		public char[][] categories;
+//		public int defaultValuesCount;
 		public char[] signature;
 	}
 	
@@ -91,8 +90,8 @@ public interface ISourceElementRequestor {
 		public char[] name;
 		public int nameSourceStart; 
 		public int nameSourceEnd;
-		public long[] annotationPositions;
-		public char[][] categories;
+//		public long[] annotationPositions;
+//		public char[][] categories;
 		public char[] initializationSource;
 	}
 	

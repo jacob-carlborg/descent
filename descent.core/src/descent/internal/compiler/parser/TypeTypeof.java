@@ -117,15 +117,24 @@ public class TypeTypeof extends TypeQualified {
 	
 	@Override
 	public String getSignature0() {
-		if (exp.type != null) {
-			return exp.type.getSignature();
-		}
-		return null;
+		StringBuilder sb = new StringBuilder();
+		appendSignature0(sb);
+		return sb.toString();
 	}
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(getSignature());
+		// Use resolved information when possible
+		if (exp.type != null) {
+			exp.type.appendSignature(sb);
+			return;
+		}
+		
+		sb.append(ISignatureConstants.TYPEOF);
+		char[] expc = new ASTNodeEncoder().encodeExpression(exp);
+		sb.append(expc.length);
+		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(expc);
 	}
 
 }

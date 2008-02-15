@@ -62,11 +62,11 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 				SourceFieldElementInfo info = (SourceFieldElementInfo) f.getElementInfo();
 				char[] encodedValue = info.getInitializationSource();
 				if (encodedValue != null) {
-					init = ASTNodeEncoder.decodeInitializer(encodedValue);
+					init = new ASTNodeEncoder().decodeInitializer(encodedValue);
 					// Run semantic in order to compute type
 					if (init != null) {
 						context.muteProblems++;
-						init.semantic(null, type(), context);
+						init.semantic(getScope(), type(), context);
 						context.muteProblems--;
 					}
 				}
@@ -110,7 +110,7 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 	@Override
 	public Type type() {
 		if (type == null) {
-			type = getTypeFromField();
+			type = getTypeFromField(true);
 		}
 		return type;
 	}

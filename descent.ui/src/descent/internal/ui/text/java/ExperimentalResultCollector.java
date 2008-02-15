@@ -53,7 +53,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		
 		// super class' behavior if this is not a normal completion or has no
 		// parameters
-		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getParameterCount(methodProposal.getSignature()) == 0 || getContext().isInJavadoc())
+		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getParameterCount(methodProposal.getTypeName()) == 0 || getContext().isInJavadoc())
 			return super.createJavaCompletionProposal(methodProposal);
 
 		LazyJavaCompletionProposal proposal;
@@ -70,7 +70,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		
 		// super class' behavior if this is not a normal completion or has no
 		// parameters
-		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getParameterCount(methodProposal.getSignature()) == 0 || getContext().isInJavadoc())
+		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || Signature.getParameterCount(methodProposal.getTypeName()) == 0 || getContext().isInJavadoc())
 			return super.createJavaCompletionProposal(methodProposal);
 
 		return new ExperimentalFunctionCallProposal(methodProposal, getInvocationContext());
@@ -100,7 +100,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		// parameters
 		if ((completion.length() == 0) || ((completion.length() == 1) && completion.charAt(0) == ')') || 
 				Signature.getTemplateParameterCount(tempProposal.getSignature()) == 0 || 
-				Signature.getParameterCount(tempProposal.getSignature()) == 0 ||
+				Signature.getParameterCount(tempProposal.getTypeName()) == 0 ||
 				getContext().isInJavadoc())
 			return super.createJavaCompletionProposal(tempProposal);
 

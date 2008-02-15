@@ -102,7 +102,7 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 		if (sym instanceof Import) {
 			Import imp = (Import) sym;
 			if (imp.pkg == null) {
-				imp.load(((RModule) getModule()).getScope(), context);
+				imp.load(getScope(), context);
 			}
 		}
 		return sym;

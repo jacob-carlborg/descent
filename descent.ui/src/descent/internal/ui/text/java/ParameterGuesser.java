@@ -384,11 +384,11 @@ public class ParameterGuesser {
 				case CompletionProposal.METHOD_REF:
 				case CompletionProposal.OP_CALL:
 				case CompletionProposal.FUNCTION_CALL:
-					if (Signature.getParameterCount(proposal.getSignature()) == 0)
+					if (Signature.getParameterCount(proposal.getTypeName()) == 0)
 						acceptMethod(
 								Signature.getSignatureSimpleName(proposal.getDeclarationSignature()),
-								Signature.getSignatureQualifier(Signature.getReturnType(proposal.getSignature())),
-								Signature.getSignatureSimpleName(Signature.getReturnType(proposal.getSignature())),
+								Signature.getSignatureQualifier(Signature.getReturnType(proposal.getTypeName())),
+								Signature.getSignatureSimpleName(Signature.getReturnType(proposal.getTypeName())),
 								proposal.getCompletion(),
 								proposal.getFlags());
 

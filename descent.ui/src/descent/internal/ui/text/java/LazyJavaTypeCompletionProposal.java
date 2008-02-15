@@ -66,7 +66,7 @@ public class LazyJavaTypeCompletionProposal extends LazyJavaCompletionProposal {
 	
 	public final String getQualifiedTypeName() {
 		if (fQualifiedName == null)
-			fQualifiedName= String.valueOf(Signature.toCharArray(Signature.getTypeErasure(fProposal.getSignature())));
+			fQualifiedName= String.valueOf(Signature.toCharArray(fProposal.getSignature()));
 		return fQualifiedName;
 	}
 	

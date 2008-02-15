@@ -26,6 +26,10 @@ public class TemplateTupleParameter extends TemplateParameter {
 	public void declareParameter(Scope sc, SemanticContext context) {
 		TypeIdentifier ti = new TypeIdentifier(loc, ident);
 		sparam = new AliasDeclaration(loc, ident, ti);
+		
+		// Descent
+		((AliasDeclaration) sparam).isTemplateParameter = true;
+		
 		if (null == sc.insert(sparam)) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
 		}

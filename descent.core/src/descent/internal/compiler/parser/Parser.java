@@ -2357,7 +2357,7 @@ public class Parser extends Lexer {
 		return null;
 	}
 	
-	private Type parseType() {
+	public Type parseType() {
 		return parseType(null, null);
 	}
 	
@@ -3294,8 +3294,6 @@ public class Parser extends Lexer {
 	}
 	
 	public Initializer parseInitializer() {
-		if (token.value == null) nextToken();
-		
 		StructInitializer is;
 		ArrayInitializer ia;
 		ExpInitializer ie;
@@ -6624,8 +6622,6 @@ public class Parser extends Lexer {
 	}
 
 	public Expression parseExpression() {
-		if (token.value == null) nextToken();
-		
 		Expression e;
 		Expression e2;
 

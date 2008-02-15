@@ -1,26 +1,31 @@
 package descent.core.dom;
 
 import descent.core.ICompilationUnit;
-import descent.core.IJavaElement;
+import descent.internal.compiler.parser.IModule;
 
 public class PackageBinding implements IPackageBinding {
 
-	private final DefaultBindingResolver bindingResolver;
-	private final ICompilationUnit element;
+	private ICompilationUnit element;
+	private final IModule node;
 	private final String signature;
+	private final DefaultBindingResolver bindingResolver;
 
-	public PackageBinding(DefaultBindingResolver bindingResolver, ICompilationUnit element, String signature) {
+	public PackageBinding(DefaultBindingResolver bindingResolver, ICompilationUnit element, IModule node, String signature) {
 		this.bindingResolver = bindingResolver;
 		this.element = element;
+		this.node = node;
 		this.signature = signature;
 	}
 
 	public String getName() {
-		return element.getFullyQualifiedName();
+		if (node != null && node.getFullyQualifiedName() != null) {
+			return node.getFullyQualifiedName();
+		}
+		return getJavaElement().getFullyQualifiedName();
 	}
 
 	public String[] getNameComponents() {
-		return element.getFullyQualifiedName().split("\\.");
+		return getName().split("\\.");
 	}
 
 	public boolean isUnnamed() {
@@ -28,7 +33,10 @@ public class PackageBinding implements IPackageBinding {
 		return false;
 	}
 
-	public IJavaElement getJavaElement() {
+	public ICompilationUnit getJavaElement() {
+		if (element == null) {
+			element = (ICompilationUnit) bindingResolver.getJavaElement(node);
+		}
 		return element;
 	}
 

@@ -102,11 +102,14 @@ public class CompletionProposalLabelProvider {
 		// TODO remove once https://bugs.eclipse.org/bugs/show_bug.cgi?id=85293
 		// gets fixed.
 		//char[] signature= SignatureUtil.fix83600(methodProposal.getSignature());
-		char[] signature= methodProposal.getSignature();
+		char[] signature= methodProposal.getTypeName();
+		if (signature == null) {
+			return buffer;
+		}
 		char[][] parameterNames= methodProposal.findParameterNames(null);
 		char[][] parameterTypes= Signature.getParameterTypes(signature);
 		for (int i= 0; i < parameterTypes.length; i++) {
-			parameterTypes[i]= createTypeDisplayName(SignatureUtil.getLowerBound(parameterTypes[i]));
+			parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
 		}
 		return appendParameterSignature(buffer, parameterTypes, parameterNames);
 	}
@@ -246,7 +249,7 @@ public class CompletionProposalLabelProvider {
 		nameBuffer.append('(');
 		appendUnboundedParameterList(nameBuffer, methodProposal);
 		
-		if (Signature.isVariadic(methodProposal.getSignature())) {
+		if (Signature.isVariadic(methodProposal.getTypeName())) {
 			if (nameBuffer.charAt(nameBuffer.length() - 1) != '(') {
 				nameBuffer.append(',');
 			}
@@ -260,7 +263,7 @@ public class CompletionProposalLabelProvider {
 		// return type
 		if (!methodProposal.isConstructor()) {
 			// TODO remove SignatureUtil.fix83600 call when bugs are fixed
-			char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getSignature()))));
+			char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeName()))));
 			nameBuffer.append("  "); //$NON-NLS-1$
 			nameBuffer.append(returnType);
 		}
@@ -372,7 +375,7 @@ public class CompletionProposalLabelProvider {
 
 		// return type
 		// TODO remove SignatureUtil.fix83600 call when bugs are fixed
-		char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getSignature()))));
+		char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeName()))));
 		nameBuffer.append(returnType);
 
 		// declaring type
@@ -420,7 +423,7 @@ public class CompletionProposalLabelProvider {
 	String createTypeProposalLabel(CompletionProposal typeProposal) {
 		char[] signature;
 		if (fContext != null && fContext.isInJavadoc())
-			signature= Signature.getTypeErasure(typeProposal.getSignature());
+			signature= typeProposal.getSignature();
 		else
 			signature= typeProposal.getSignature();
 		char[] fullName= Signature.toCharArray(signature);

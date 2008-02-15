@@ -10,13 +10,10 @@
  *******************************************************************************/
 package descent.internal.compiler;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 import descent.core.Flags;
-import descent.core.ICompilationUnit;
-import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
@@ -30,8 +27,6 @@ import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.NaiveASTFlattener;
-import descent.internal.core.search.indexing.IndexingParser;
-import descent.internal.core.util.Util;
 
 /**
  * A source element parser extracts structural and reference information
@@ -53,14 +48,12 @@ import descent.internal.core.util.Util;
  */
 public class SourceElementParser extends AstVisitorAdapter {
 	
-	private final static long[] NO_LONG = new long[0];
-	
 	public ISourceElementRequestor requestor;
 	protected Module module;
-	private boolean foundType = false;
 	private CompilerOptions options;
 	private NaiveASTFlattener flattener;
 	private Stack< Stack<AttribDeclaration> > attribDeclarationStack;
+	private ASTNodeEncoder astNodeEncoder;
 
 	/**
 	 * @param surfaceDeclarations instruct the parser to ignore statements
@@ -75,6 +68,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		this.flattener = new NaiveASTFlattener();
 		this.attribDeclarationStack = new Stack< Stack<AttribDeclaration> >();
 		this.attribDeclarationStack.push(new Stack<AttribDeclaration>());
+		this.astNodeEncoder = new ASTNodeEncoder();
 	}
 	
 	protected int getASTlevel() {
@@ -94,18 +88,20 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
 		module = CompilationUnitResolver.parse(getASTlevel(), (descent.internal.compiler.env.ICompilationUnit) unit, options.getMap(), true).module;
+		module.moduleName = unit.getFullyQualifiedName();
 		
-		// If the target is an ICompilationUnit, we need to solve all the
-		// compile-time stuff to know the *real* structure of the module
-		if (unit instanceof ICompilationUnit) {
-			ICompilationUnit cunit = (ICompilationUnit) unit;
-			try {
-				module.moduleName = cunit.getFullyQualifiedName();
-				CompilationUnitResolver.resolve(module, cunit.getJavaProject(), cunit.getOwner());
-			} catch (JavaModelException e) {
-				Util.log(e);
-			}
-		}
+		// Don't do semantic analysis here
+//		// If the target is an ICompilationUnit, we need to solve all the
+//		// compile-time stuff to know the *real* structure of the module
+//		if (unit instanceof ICompilationUnit) {
+//			ICompilationUnit cunit = (ICompilationUnit) unit;
+//			try {
+//				module.moduleName = cunit.getFullyQualifiedName();
+//				CompilationUnitResolver.resolve(module, cunit.getJavaProject(), cunit.getOwner());
+//			} catch (JavaModelException e) {
+//				Util.log(e);
+//			}
+//		}
 	
 		requestor.enterCompilationUnit();
 		module.accept(this);
@@ -234,11 +230,13 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	private char[][] getTokens(BaseClasses baseClasses) {
-		if (baseClasses == null || baseClasses.size() == 0) return CharOperation.NO_CHAR_CHAR;
+		if (baseClasses == null || baseClasses.size() == 0) {
+			return CharOperation.NO_CHAR_CHAR;
+		}
 		
 		char[][] tokens = new char[baseClasses.size()][];
 		for(int i = 0; i < baseClasses.size(); i++) {
-			tokens[i] = baseClasses.get(i).type.toCharArray();
+			tokens[i] = getSignature(baseClasses.get(i).type);
 		}
 		return tokens;
 	}	
@@ -249,8 +247,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 			TemplateParameter param = parameters.get(i);
 			
 			TypeParameterInfo info = new TypeParameterInfo();
-			info.annotationPositions = NO_LONG;
-			info.bounds = CharOperation.NO_CHAR_CHAR;
 			info.declarationStart = startOfDeclaration(param);
 			info.declarationEnd = endOf(param);			
 			info.name = param.ident.ident;
@@ -282,28 +278,22 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		char[][] types = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
-			Argument argument = arguments.get(i);
-			String signature = argument.getSignature();
-			if (signature == null || "".equals(signature)) {
-				types[i] = new char[] { TY.Tint32.mangleChar }; // in order to avoid exceptions
-			} else {
-				types[i] = signature.toCharArray();
-			}
+			types[i] = arguments.get(i).getSignature().toCharArray();
 		}
 		return types;
 	}
 	
-	private int getDefaultValuesCount(Arguments parameters) {
-		if (parameters == null) {
-			return 0;
+	private char[] toCharArray(ASTDmdNode node) {
+		return node == null ? CharOperation.NO_CHAR : node.toCharArray();
+	}
+	
+	private char[] getSignature(Type node) {
+		if (node == null) {
+			return CharOperation.NO_CHAR;
+		} else {
+			String sig = node.getSignature();
+			return sig.toCharArray();
 		}
-		int count = 0;
-		for(Argument arg : parameters) {
-			if (arg.defaultArg != null) {
-				count++;
-			}
-		}
-		return count;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -330,12 +320,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	private void visit(AggregateDeclaration node, int flags, BaseClasses baseClasses, TemplateDeclaration templateDeclaration) {
-		// TODO Java -> D
-		// Also, since the base class notation in D dosen't distinguis between
-		// classes and interfaces, let's assume they are all interfaces for the moment
 		TypeInfo info = new TypeInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		if (templateDeclaration != null) {
 			info.declarationStart = startOfDeclaration(templateDeclaration);
 		} else {
@@ -357,67 +342,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		//info.secondary = !foundType;
 		
-		if (node instanceof IClassDeclaration) {
-			IClassDeclaration c = (IClassDeclaration) node;
-			IClassDeclaration b = c.baseClass();
-			info.superclass = getTypeSignature(b);
-			
-			List<char[]> superinterfaces = new ArrayList<char[]>();
-			BaseClasses interfaces = c.interfaces();
-			if (interfaces != null) {
-				for(BaseClass baseClass : interfaces) {
-					superinterfaces.add(getTypeSignature(baseClass.base));
-				}
-			}
-			
-			info.superinterfaces = (char[][]) superinterfaces.toArray(new char[superinterfaces.size()][]);
-		} else {
-			info.superclass = CharOperation.NO_CHAR;
-			info.superinterfaces = getTokens(baseClasses);
-		}
+		info.superinterfaces = getTokens(baseClasses);
 		if (templateDeclaration != null) {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
-		info.alignof = node.alignsize;
-		info.sizeof = node.structsize;
-		
-		foundType = true;		
 		requestor.enterType(info);
-	}
-	
-	private char[] getTypeSignature(IClassDeclaration b) {
-		if (b != null) { // May be null if c is actually Object
-			return b.getSignature().toCharArray();
-		} else {
-			return CharOperation.NO_CHAR;
-		}
-	}
-	
-	private char[] getSignature(Type t) {
-		if (t == null) {
-			return null;
-		}
-		
-		String s = t.getSignature();
-		if (s == null) {
-			return null;
-		} else {
-			return s.toCharArray();
-		}
-	}
-	
-	private char[] getSignature0(Type t) {
-		if (t == null) {
-			return null;
-		}
-		
-		String s = t.getSignature0();
-		if (s == null) {
-			return null;
-		} else {
-			return s.toCharArray();
-		}
 	}
 	
 	public boolean visit(ClassDeclaration node) {
@@ -441,10 +371,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(ModuleDeclaration node) {
-		flattener.reset();
-		flattener.visitModuleDeclarationName(node);
-		
-		requestor.acceptPackage(startOfDeclaration(node), endOfDeclaration(node), flattener.getResult().toCharArray());
+		requestor.acceptPackage(startOfDeclaration(node), endOfDeclaration(node), node.getFQN());
 		pushLevelInAttribDeclarationStack();
 		return false;
 	}
@@ -483,8 +410,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		TypeInfo info = new TypeInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
 		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccTemplate;
@@ -495,11 +420,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		info.secondary = !foundType;
-		info.superclass = CharOperation.NO_CHAR;
 		info.typeParameters = getTypeParameters(node.parameters);
-		
-		foundType = true;
 		
 		requestor.enterType(info);
 		
@@ -511,14 +432,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 		TypeFunction ty = (TypeFunction) node.type;
 		
 		MethodInfo info = new MethodInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		if (templateDeclaration != null) {
 			info.declarationStart = startOfDeclaration(templateDeclaration);
 		} else {
 			info.declarationStart = startOfDeclaration(node);
 		}
-		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
 		info.modifiers = getFlags(node, node.modifiers);
 		if (templateDeclaration != null) {
 			info.modifiers |= Flags.AccTemplate;
@@ -542,8 +460,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
-		info.defaultValuesCount = getDefaultValuesCount(ty.parameters);
-		
 		requestor.enterMethod(info);
 	}
 
@@ -557,10 +473,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	private boolean visit(FuncDeclaration node, int flags, Arguments arguments, char[] name) {
 		MethodInfo info = new MethodInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
-		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
 		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= flags;
 		info.name = name;
@@ -575,7 +488,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 				info.modifiers |= Flags.AccVarargs;
 			}
 			info.returnType = getSignature(ty.next);
-			info.defaultValuesCount = getDefaultValuesCount(ty.parameters);
 			info.signature = getSignature(ty);
 		}
 		info.typeParameters = new TypeParameterInfo[0];
@@ -639,8 +551,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		FieldInfo info = new FieldInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(last);
 		info.modifiers = getFlags(node, node.modifiers);
 		if (node.ident != null) {
@@ -650,16 +560,9 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.type != null) {
-			info.type = getSignature(node.type);
-		} else if (node.aliassym != null) {
-			info.type = node.aliassym.getSignature().toCharArray();
-		} else {
-			info.type = CharOperation.NO_CHAR;
-		}
-		if (node.isConst()) {
-			info.initializationSource = ASTNodeEncoder.encodeInitializer(node.init);
-		}
+		
+		info.type = getSignature(node.type);
+		info.initializationSource = astNodeEncoder.encodeInitializer(node.init);
 		
 		requestor.enterField(info);
 		
@@ -673,8 +576,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		FieldInfo info = new FieldInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(last);
 		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccAlias;
@@ -685,13 +586,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.type != null) {
-			info.type = getSignature0(node.type);
-		} else if (node.aliassym != null) {
-			info.type = node.aliassym.getSignature().toCharArray();
-		} else {
-			info.type = CharOperation.NO_CHAR;
-		}
+		
+		info.type = getSignature(node.type);
 		
 		requestor.enterField(info);
 		
@@ -705,8 +601,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		FieldInfo info = new FieldInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(last);
 		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccTypedef;
@@ -717,11 +611,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		if (node.type != null) {
-			info.type = getSignature(((TypeTypedef) node.type).sym.basetype());
-		} else {
-			info.type = CharOperation.NO_CHAR;
-		}
+		
+		info.type = getSignature(node.basetype);
 		
 		requestor.enterField(info);
 		
@@ -729,7 +620,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, node.exp.toCharArray());
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, astNodeEncoder.encodeExpression(node.exp));
 		return false;
 	}
 	
@@ -786,8 +677,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		// Also, since the base class notation in D dosen't distinguis between
 		// classes and interfaces, let's assume they are all interfaces for the moment
 		TypeInfo info = new TypeInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
 		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccEnum;
@@ -798,15 +687,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		info.secondary = !foundType;
-		info.superclass = getSignature(node.memtype);
-		if (node.memtype != null) {
-			info.superinterfaces = new char[][] { node.memtype.toCharArray() };
-		}
-		
-		info.enumValues = new integer_t[] { node.defaultval, node.minval, node.maxval };
-		
-		foundType = true;
+		info.superinterfaces = new char[][] { getSignature(node.memtype) };
 		
 		requestor.enterType(info);
 		
@@ -816,8 +697,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	public boolean visit(EnumMember node) {
 		FieldInfo info = new FieldInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
 		info.modifiers = Flags.AccEnum;
 		if (node.ident != null) {
@@ -828,13 +707,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		
-		info.initializationSource = ASTNodeEncoder.encodeExpression(node.value);
-		if (node.value != null) {
-			info.type = getSignature(node.value.type);
-		} else {
-			// anynoymous enums don't have type
-			info.type = CharOperation.NO_CHAR;
-		}
+		info.initializationSource = astNodeEncoder.encodeExpression(node.value);
 		
 		requestor.enterField(info);
 		
@@ -843,8 +716,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	public boolean visit(TemplateMixin node) {
 		FieldInfo info = new FieldInfo();
-		info.annotationPositions = NO_LONG;
-		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOfDeclaration(node);
 		info.modifiers = getFlags(node, node.modifiers);
 		info.modifiers |= Flags.AccTemplateMixin;
@@ -866,7 +737,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public boolean visit(CompileDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, String.valueOf(node.sourceExp.toString()).toCharArray());
+		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, astNodeEncoder.encodeExpression(node.exp));
 		return false;
 	}
 	
@@ -886,7 +757,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		case Condition.STATIC_IF: {
 			StaticIfCondition cond = (StaticIfCondition) node.condition;
 			if (cond.exp != null) {
-				displayString = cond.exp.toCharArray();
+				displayString = astNodeEncoder.encodeExpression(cond.exp);
 			}
 			flags = Flags.AccStaticIfDeclaration;
 			break;

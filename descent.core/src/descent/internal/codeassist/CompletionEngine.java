@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.eclipse.swt.widgets.Shell;
+
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.CompletionRequestor;
@@ -128,8 +130,6 @@ import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
 import descent.internal.core.SearchableEnvironment;
-import descent.internal.core.SignatureProcessor;
-import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
 
 /**
@@ -252,6 +252,9 @@ public class CompletionEngine extends Engine
 			System.out.println("COMPLETION - Source :"); //$NON-NLS-1$
 			System.out.println(sourceUnit.getContents());
 		}
+		
+		long time = System.currentTimeMillis();
+		
 		this.requestor.beginReporting();
 		try {
 			this.source = sourceUnit.getContents();	
@@ -355,6 +358,17 @@ public class CompletionEngine extends Engine
 			
 			// For new |, don't suggest keywords or ddoc
 			if (parser.inNewExp) {
+				
+				// Suggest the expected type if the user didn't type anything, and
+				// it's not in the current imports (and it's not abstract)
+				if (currentName.length == 0 && expectedType instanceof TypeClass) {
+					IClassDeclaration classDeclaration = ((TypeClass) expectedType).sym;					
+					if (!isImported(classDeclaration.getModule().getFullyQualifiedName().toCharArray()) &&
+							!classDeclaration.isAbstract()) {						
+						suggestDsymbol(classDeclaration, INCLUDE_TYPES);
+					}
+				}
+				
 				return;
 			}
 			
@@ -386,6 +400,9 @@ public class CompletionEngine extends Engine
 			Util.log(e);
 		} finally {
 			this.requestor.endReporting();
+			
+			time = System.currentTimeMillis() - time;
+			System.out.println("Completion took " + time + " milliseconds to complete.");
 		}
 	}
 
@@ -1360,6 +1377,7 @@ public class CompletionEngine extends Engine
 		proposal.setName(name);
 		proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
 		proposal.setSignature(signature);
+		proposal.setTypeName(signature);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		CompletionEngine.this.requestor.accept(proposal);
@@ -1437,6 +1455,8 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeClass(TypeClass type, boolean onlyStatics) {
+		long time = System.currentTimeMillis();
+		
 		// Keep a hashtable of already used signatures, in order to avoid
 		// suggesting overriden functions
 		HashtableOfCharArrayAndObject funcSignatures = new HashtableOfCharArrayAndObject();
@@ -1445,6 +1465,9 @@ public class CompletionEngine extends Engine
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
+		
+		time = System.currentTimeMillis() - time;
+		System.out.println("Complete type class took " + time + " milliseconds");
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
@@ -1458,8 +1481,16 @@ public class CompletionEngine extends Engine
 		
 		// Then suggest superclass and superinterface members
 		BaseClasses baseClasses = decl.baseclasses();
-		for(BaseClass baseClass : baseClasses) {
-			completeTypeClassRecursively((TypeClass) baseClass.base.type(), onlyStatics, funcSignatures);
+		if (baseClasses.isEmpty()) {
+			// Suggest Object if no base classes are present and this is not object
+			if (semanticContext.ClassDeclaration_object != null && 
+				type != semanticContext.ClassDeclaration_object.type()) {
+				completeTypeClassRecursively((TypeClass) semanticContext.ClassDeclaration_object.type(), onlyStatics, funcSignatures);
+			}
+		} else {
+			for(BaseClass baseClass : baseClasses) {
+				completeTypeClassRecursively((TypeClass) baseClass.base.type(), onlyStatics, funcSignatures);
+			}
 		}
 	}
 	
@@ -1503,8 +1534,9 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		for(IDsymbol member : members) {
-			suggestMember(member, onlyStatics, flags, funcSignatures, includes);
+		int length = members.size();
+		for(int i = 0; i < length; i++) {
+			suggestMember(members.get(i), onlyStatics, flags, funcSignatures, includes);
 		}
 	}
 	
@@ -1816,8 +1848,6 @@ public class CompletionEngine extends Engine
 						|| (constructor && CharOperation.equals(funcName, Id.ctor)) 
 						|| (opCall && funcNameIsOpCall)) {
 					
-//					System.out.println(new String(aliasedSignature));
-					
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					if (constructor || opCall) {
@@ -1851,6 +1881,7 @@ public class CompletionEngine extends Engine
 					if (sig != null) {
 						proposal.setSignature(sig.toCharArray());
 					}
+					proposal.setTypeName(type.getSignature().toCharArray());
 					proposal.setFlags(flags | func.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2434,9 +2465,7 @@ public class CompletionEngine extends Engine
 		knownDeclarations.put(fullName, this);
 		
 		StringBuilder sig = new StringBuilder();
-		sig.append(MODULE);
-		sig.append(packageName.length);
-		sig.append(packageName);
+		InternalSignature.appendPackageName(packageName, sig);
 		sig.append(CLASS);
 		sig.append(typeName.length);
 		sig.append(typeName);
@@ -2521,9 +2550,7 @@ public class CompletionEngine extends Engine
 		proposal.setName(name);
 		
 		StringBuilder sig = new StringBuilder();
-		sig.append(MODULE);
-		sig.append(packageName.length);
-		sig.append(packageName);
+		InternalSignature.appendPackageName(packageName, sig);
 		sig.append(VARIABLE);
 		sig.append(name.length);
 		sig.append(name);
@@ -2578,9 +2605,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		StringBuilder sig = new StringBuilder();
-		sig.append(MODULE);
-		sig.append(packageName.length);
-		sig.append(packageName);
+		InternalSignature.appendPackageName(packageName, sig);
 		sig.append(FUNCTION);
 		sig.append(name.length);
 		sig.append(name);
@@ -2604,6 +2629,7 @@ public class CompletionEngine extends Engine
 		
 		proposal.setName(name);
 		proposal.setSignature(sigChars);
+		proposal.setTypeName(signature);
 		proposal.setFlags(modifiers);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);

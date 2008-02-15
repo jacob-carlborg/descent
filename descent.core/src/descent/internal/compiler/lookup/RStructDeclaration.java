@@ -39,7 +39,7 @@ public class RStructDeclaration extends RAggregateDeclaration implements IStruct
 	public Type type() {
 		if (type == null) {
 			type = new TypeStruct(this);
-			type = type.merge(context);
+			merge(type);
 		}
 		return type;
 	}

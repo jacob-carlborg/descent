@@ -52,19 +52,19 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	}
 
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
-		// Reindex everything, since compiler options also affect libraries
-		JavaModelManager.getJavaModelManager().getIndexManager().indexAll(project);
-		
-		// Rebuild libraries
-		IJavaProject javaProject = JavaCore.create(project);
-		if (javaProject != null) {
-			IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
-			for(IPackageFragmentRoot root : roots) {
-				if (root.isArchive() || root.isExternal()) {
-					JavaModelManager.getJavaModelManager().removeInfoAndChildren((JavaElement) root);
-				}
-			}
-		}
+//		// Reindex everything, since compiler options also affect libraries
+//		JavaModelManager.getJavaModelManager().getIndexManager().indexAll(project);
+//		
+//		// Rebuild libraries
+//		IJavaProject javaProject = JavaCore.create(project);
+//		if (javaProject != null) {
+//			IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
+//			for(IPackageFragmentRoot root : roots) {
+//				if (root.isArchive() || root.isExternal()) {
+//					JavaModelManager.getJavaModelManager().removeInfoAndChildren((JavaElement) root);
+//				}
+//			}
+//		}
 		
 		IResource[] members = project.members();
 		build(members, monitor);

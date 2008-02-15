@@ -20,6 +20,7 @@ import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
@@ -150,7 +151,7 @@ public class JavaElementFinder {
 		}
 		
 		@Override
-		public void acceptIdentifier(char[] name, String signature) {
+		public void acceptIdentifier(char[][] compoundName, String signature) {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
@@ -280,7 +281,7 @@ public class JavaElementFinder {
 			stack.push(type.deco);
 		}
 
-		public void acceptStaticArray(int dimension, String signature) {
+		public void acceptStaticArray(Expression dimension, String signature) {
 			if (templateInstanceCounter > 0) {
 				return;
 			}
@@ -462,6 +463,11 @@ public class JavaElementFinder {
 			String name, 
 			String[] paramsAndRetTypes, 
 			String[] paramTypes) {
+		
+		// Candidate in case no match is found will be the one where
+		// template parameters count match
+		IJavaElement candidate = null;
+		
 		try {
 		loop:
 			for(IJavaElement child : parent.getChildren()) {
@@ -492,11 +498,17 @@ public class JavaElementFinder {
 							}
 						}
 					} else {
+						mParamTypes = method.getTypeParameterSignatures();
+						if (mParamTypes.length == paramTypes.length) {
+							candidate = method;
+						}
 						continue;
 					}
 					
 					mParamTypes = method.getTypeParameterSignatures();
 					if (mParamTypes.length == paramTypes.length) {
+						candidate = method;
+						
 						for(int i = 0; i < mParamTypes.length; i++) {
 							if (!mParamTypes[i].equals(paramTypes[i])) {
 								continue loop;
@@ -512,7 +524,12 @@ public class JavaElementFinder {
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
-		return null;
+		
+		if (candidate != null) {
+			System.out.println("Using candidate: " + candidate);
+		}
+		
+		return candidate;
 	}
 	
 	/**
@@ -531,6 +548,11 @@ public class JavaElementFinder {
 	 */
 	public IJavaElement findTemplate(IParent parent, 
 			String name, String[] paramTypes) {
+		
+		// Candidate in case no match is found will be the one where
+		// template parameters count match
+		IJavaElement candidate = null;
+		
 		try {
 		loop:
 			for(IJavaElement child : parent.getChildren()) {
@@ -551,6 +573,8 @@ public class JavaElementFinder {
 					}
 					String[] mParamTypes = type.getTypeParameterSignatures();
 					if (mParamTypes.length == paramTypes.length) {
+						candidate = type;
+						
 						for(int i = 0; i < mParamTypes.length; i++) {
 							if (!mParamTypes[i].equals(paramTypes[i])) {
 								continue loop;
@@ -566,7 +590,12 @@ public class JavaElementFinder {
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
-		return null;
+		
+		if (candidate != null) {
+			System.out.println("Using candidate: " + candidate);
+		}
+		
+		return candidate;
 	}
 
 	public IJavaElement findChild(IJavaElement current, String name) {

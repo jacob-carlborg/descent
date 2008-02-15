@@ -4,17 +4,19 @@ import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.ILocalVariable;
 import descent.core.JavaModelException;
+import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.util.Util;
 
 public class VariableBinding extends JavaElementBasedBinding implements IVariableBinding {
 	
-	private final DefaultBindingResolver bindingResolver;
 	private final String signature;
 	private final boolean isParameter;
+	
 
-	public VariableBinding(DefaultBindingResolver bindingResolver, IJavaElement element, boolean isParameter, String signature) {
-		super(element);
-		this.bindingResolver = bindingResolver;
+	public VariableBinding(DefaultBindingResolver bindingResolver, IJavaElement element, IDsymbol node, boolean isParameter, String signature) {
+		super(bindingResolver, element, node);
 		this.isParameter = isParameter;
 		this.signature = signature;
 	}
@@ -37,10 +39,10 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	public IBinding getType() {
 		String signature;
 		try {
-			if (element instanceof IField) {
-				signature = ((IField) element).getTypeSignature();
-			} else if (element instanceof ILocalVariable) {
-				signature = ((ILocalVariable) element).getTypeSignature();
+			if (getJavaElement() instanceof IField) {
+				signature = ((IField) getJavaElement()).getTypeSignature();
+			} else if (getJavaElement() instanceof ILocalVariable) {
+				signature = ((ILocalVariable) getJavaElement()).getTypeSignature();
 			} else {
 				throw new IllegalStateException("element must be IField or ILocalVariable");
 			}
@@ -63,7 +65,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 
 	public boolean isEnumConstant() {
 		try {
-			return element instanceof IField && ((IField) element).isEnumConstant();
+			return getJavaElement() instanceof IField && ((IField) getJavaElement()).isEnumConstant();
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
@@ -71,11 +73,15 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 
 	public boolean isVariable() {
+		if (node != null) {
+			return node instanceof VarDeclaration;
+		}
+		
 		try {
-			if (element instanceof IField) {
-				return ((IField) element).isVariable();
+			if (getJavaElement() instanceof IField) {
+				return ((IField) getJavaElement()).isVariable();
 			} else {
-				return ((ILocalVariable) element).isVariable();
+				return ((ILocalVariable) getJavaElement()).isVariable();
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);
@@ -84,11 +90,15 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 	
 	public boolean isAlias() {
+		if (node != null) {
+			return node instanceof descent.internal.compiler.parser.AliasDeclaration;
+		}
+		
 		try {
-			if (element instanceof IField) {
-				return ((IField) element).isAlias();
+			if (getJavaElement() instanceof IField) {
+				return ((IField) getJavaElement()).isAlias();
 			} else {
-				return ((ILocalVariable) element).isAlias();
+				return ((ILocalVariable) getJavaElement()).isAlias();
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);
@@ -97,16 +107,24 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 	
 	public boolean isLocal() {
-		return element instanceof ILocalVariable &&
+		if (node != null) {
+			return node.effectiveParent() instanceof FuncDeclaration;
+		}
+		
+		return getJavaElement() instanceof ILocalVariable &&
 			!isParameter();
 	}
 	
 	public boolean isTypedef() {
+		if (node != null) {
+			return node instanceof descent.internal.compiler.parser.TypedefDeclaration;
+		}
+		
 		try {
-			if (element instanceof IField) {
-				return ((IField) element).isTypedef();
+			if (getJavaElement() instanceof IField) {
+				return ((IField) getJavaElement()).isTypedef();
 			} else {
-				return ((ILocalVariable) element).isTypedef();
+				return ((ILocalVariable) getJavaElement()).isTypedef();
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);

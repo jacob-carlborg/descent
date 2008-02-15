@@ -245,7 +245,7 @@ public class TypeSArray extends TypeArray {
 		Expression e = null;
 		Dsymbol s = null;
 		next.resolve(loc, sc, new Expression[] { e }, new Type[] { t },
-				new Dsymbol[] { s }, context);
+				new IDsymbol[] { s }, context);
 		if (null != dim && null != s && null != s.isTupleDeclaration()) {
 			TupleDeclaration sd = s.isTupleDeclaration();
 
@@ -421,11 +421,12 @@ public class TypeSArray extends TypeArray {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append('G');
-		if (dim instanceof IntegerExp) {
-			sb.append(((IntegerExp) dim).value);
-		} else {
-			sb.append(dim);
-		}
+		
+		char[] expc = new ASTNodeEncoder().encodeExpression(dim);
+		sb.append(expc.length);
+		sb.append('G');
+		sb.append(expc);
+		
 		next.appendSignature(sb);
 	}
 

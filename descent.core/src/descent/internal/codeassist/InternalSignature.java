@@ -38,7 +38,7 @@ public class InternalSignature implements ISignatureConstants {
 		return javaProject.findBySignature(sb.toString());
 	}
 	
-	private static void appendPackageName(char[] packageName, StringBuilder sb) {
+	public static void appendPackageName(char[] packageName, StringBuilder sb) {
 		sb.append(MODULE);
 		
 		char[][] pieces = CharOperation.splitOn('.', packageName);
@@ -47,7 +47,7 @@ public class InternalSignature implements ISignatureConstants {
 		}
 	}
 	
-	private static void appendName(char[] name, StringBuilder sb) {
+	public static void appendName(char[] name, StringBuilder sb) {
 		sb.append(name.length);
 		sb.append(name);
 	}

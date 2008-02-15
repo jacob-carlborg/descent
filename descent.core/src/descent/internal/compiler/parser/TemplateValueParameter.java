@@ -261,7 +261,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
 		valType.appendSignature(sb);
 		if (specValue != null) {
-			char[] exp = ASTNodeEncoder.encodeExpression(specValue);
+			char[] exp = new ASTNodeEncoder().encodeExpression(specValue);
 			sb.append(exp.length);
 			sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
 			sb.append(exp);
