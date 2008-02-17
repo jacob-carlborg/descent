@@ -13,7 +13,7 @@ This document explains the signature of types and symbols in Descent.
      - For aliases, the symbol = is used: =3Foo
      - For typedefs, the letter T is used: T3Foo
      - For functions, the symbol [ is used, followed by the TypeFunction
-       signature: [3fooFZv
+       signature: [3fooFZv.
      - For an identifier, the symbol ? is used, and then like a module
        ?4some2Id
      - For a typeof, the symbol > is used, and then comes the length

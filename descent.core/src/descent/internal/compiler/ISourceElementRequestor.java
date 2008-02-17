@@ -44,15 +44,8 @@ public interface ISourceElementRequestor {
 		public char[] name;
 		public int nameSourceStart;
 		public int nameSourceEnd;
-//		public char[] superclass;
 		public char[][] superinterfaces;
 		public TypeParameterInfo[] typeParameters;
-//		public long[] annotationPositions;
-//		public char[][] categories;
-//		public boolean secondary;
-//		public integer_t[] enumValues; // default, min, max
-//		public int sizeof;
-//		public int alignof;
 	}
 	
 	public static class TypeParameterInfo {
@@ -62,8 +55,6 @@ public interface ISourceElementRequestor {
 		public char[] signature;
 		public int nameSourceStart;
 		public int nameSourceEnd;
-//		public char[][] bounds;
-//		public long[] annotationPositions;
 	}
 	
 	public static class MethodInfo {
@@ -75,11 +66,7 @@ public interface ISourceElementRequestor {
 		public int nameSourceEnd;
 		public char[][] parameterTypes;
 		public char[][] parameterNames;
-//		public char[][] exceptionTypes;
 		public TypeParameterInfo[] typeParameters;
-//		public long[] annotationPositions;
-//		public char[][] categories;
-//		public int defaultValuesCount;
 		public char[] signature;
 	}
 	
@@ -90,8 +77,6 @@ public interface ISourceElementRequestor {
 		public char[] name;
 		public int nameSourceStart; 
 		public int nameSourceEnd;
-//		public long[] annotationPositions;
-//		public char[][] categories;
 		public char[] initializationSource;
 	}
 	
@@ -113,8 +98,6 @@ public interface ISourceElementRequestor {
 	 * @param modifiers
 	 *                   can be set to static from 1.5 on.
 	 */
-	//void acceptImport(int declarationStart, int declarationEnd, char[][] tokens, boolean onDemand, int modifiers);
-	
 	void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, long modifiers);
 
 	/*
@@ -142,13 +125,7 @@ public interface ISourceElementRequestor {
 
 	void enterCompilationUnit();
 	
-	/*
-	 * Evaluation:
-	 * 0: unknown
-	 * 1: true ("then" wins)
-	 * 2: false ("else" wins)
-	 */
-	void enterConditional(int declarationStart, long modifiers, char[] displayString, int evaluation);
+	void enterConditional(int declarationStart, long modifiers, char[] displayString);
 	
 	void enterConditionalThen(int declarationStart);
 	

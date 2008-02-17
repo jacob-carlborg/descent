@@ -61,7 +61,6 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		this.owner = owner;
 		this.settings = settings;
 		this.compilerOptions = new CompilerOptions(settings);
-		this.finder = new JavaElementFinder(javaProject, owner);
 	}
 	
 	public IEvaluationResult evaluate(ICompilationUnit sourceUnit, int offset) {
@@ -71,6 +70,8 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			ParseResult parseResult = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, true, null);
 			
 			context = parseResult.context;
+			
+			this.finder = new JavaElementFinder(javaProject, context, owner);
 			
 			Module module = parseResult.module;
 			module.accept(this);

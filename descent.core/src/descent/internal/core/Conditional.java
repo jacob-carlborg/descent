@@ -47,20 +47,6 @@ class Conditional extends Member implements IConditional {
 	public boolean isVersionDeclaration() throws JavaModelException {
 		return Flags.isVersionDeclaration(getFlags());
 	}
-	public Boolean isActive() throws JavaModelException {
-		Object info = getElementInfo();
-		if (info instanceof ConditionalElementInfo) {
-			int c = ((ConditionalElementInfo) info).getEvaluationResult();
-			switch(c) {
-			case 0: return null;
-			case 1: return Boolean.TRUE;
-			case 2: return Boolean.FALSE;
-			}
-			return null;
-		} else {
-			return Boolean.TRUE;
-		}
-	}
 
 	public int getElementType() {
 		return CONDITIONAL;

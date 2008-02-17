@@ -1303,7 +1303,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 	
 	@Override
-	public void acceptTypeof(Expression expression, String signature) {
+	public void acceptTypeof(char[] expression, String signature) {
 		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
@@ -1312,7 +1312,7 @@ private static class ParameterTypesSignatureRequestor extends SignatureRequestor
 	}
 	
 	@Override
-	public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
+	public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
 		if (functionTypeCount != 1 || templateInstanceCount != 0) {
 			return;
 		}
@@ -2514,7 +2514,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	}
 	
 	@Override
-	public void acceptTypeof(Expression expression, String signature) {
+	public void acceptTypeof(char[] expression, String signature) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("typeof(");
 		sb.append(expression);
@@ -2536,7 +2536,7 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	}
 	
 	@Override
-	public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
+	public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.stack.peek().pop());
 		sb.append('[');
@@ -2680,8 +2680,8 @@ private static class ToCharArraySignatureRequestor extends SignatureRequestorAda
 	}
 	
 	@Override
-	public void acceptTemplateInstanceValue(Expression exp, String signature) {
-		instances.peek().add(exp.toString());
+	public void acceptTemplateInstanceValue(char[] exp, String signature) {
+		instances.peek().add(new String(exp));
 	}
 	
 	@Override

@@ -6,7 +6,6 @@ import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IImportDeclaration;
-import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
@@ -14,7 +13,6 @@ import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
-import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.AttribDeclaration;
@@ -81,7 +79,6 @@ import descent.internal.compiler.parser.TypeSlice;
 import descent.internal.compiler.parser.TypeTypeof;
 import descent.internal.compiler.parser.WithScopeSymbol;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import descent.internal.core.JavaElementFinder;
 import descent.internal.core.SignatureProcessor;
 import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
@@ -526,7 +523,6 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				}
 				break;
 			case IJavaElement.INITIALIZER:
-				IInitializer init = (IInitializer) element;
 				return null;
 			case IJavaElement.IMPORT_DECLARATION:
 				IImportDeclaration imp = (IImportDeclaration) element;
@@ -693,7 +689,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			
 			if (startPosition >= 0) {
 				IJavaElement element = parent.getJavaElement();
-				element = getFinder().findChild(element, startPosition);
+				element = context.finder.findChild(element, startPosition);
 				if (element == null) {
 					return;
 				}
@@ -722,7 +718,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 					paramsAndRetTypes[paramsAndRetTypes.length - 1] = tf.next.getSignature();
 					
 					if (kind == ISignatureConstants.FUNCTION) {
-						element = getFinder().findFunction((IParent) element, new String(name), paramsAndRetTypes);
+						element = context.finder.findFunction((IParent) element, new String(name), paramsAndRetTypes);
 					} else {
 						String[] paramsTypes = new String[templateStack.size()];
 						int i = paramsTypes.length - 1;
@@ -731,7 +727,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 							i--;
 						}
 						
-						element = getFinder().findTemplatedFunction((IParent) element, new String(name), paramsAndRetTypes, paramsTypes);
+						element = context.finder.findTemplatedFunction((IParent) element, new String(name), paramsAndRetTypes, paramsTypes);
 					}
 					if (element != null) {
 						IDsymbol symbol = toDsymbol(element);
@@ -755,9 +751,9 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 						
 						IJavaElement element = parent.getJavaElement();
 						if (kind == ISignatureConstants.TEMPLATE) {
-							element = getFinder().findTemplate((IParent) element, new String(name), paramsTypes);
+							element = context.finder.findTemplate((IParent) element, new String(name), paramsTypes);
 						} else {
-							element = getFinder().findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
+							element = context.finder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
 						}
 						if (element != null) {
 							symbol = toDsymbol(element);
@@ -778,19 +774,19 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		}
 		
 		@Override
-		public void acceptTypeof(Expression expression, String signature) {
+		public void acceptTypeof(char[] expression, String signature) {
 			if (typesStack.isEmpty()) {
 				return;
 			}
 			
-			Type type = new TypeTypeof(Loc.ZERO, expression);
+			Type type = new TypeTypeof(Loc.ZERO, context.encoder.decodeExpression(expression));
 			
 			Stack<Type> stack = typesStack.peek();
 			stack.push(type);
 		}
 		
 		@Override
-		public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
+		public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
 			if (typesStack.isEmpty()) {
 				return;
 			}
@@ -800,7 +796,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				return;
 			}
 			
-			Type type = new TypeSlice(stack.pop(), lwr, upr);
+			Type type = new TypeSlice(stack.pop(), context.encoder.decodeExpression(lwr), context.encoder.decodeExpression(upr));
 			
 			stack.push(type);
 		}
@@ -871,27 +867,28 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 				return;
 			}
 			
+			// TODO default value
 			// TODO varargs
-			type = new TypeFunction(arguments, retType, 0, link);
-			while(!typesStack.peek().isEmpty()) {
-				Type argType = getPreviousType();
-				if (argType == null) {
-					return;
+			try {
+				type = new TypeFunction(arguments, retType, 0, link);
+				while(!typesStack.peek().isEmpty()) {
+					Type argType = getPreviousType();
+					if (argType == null) {
+						return;
+					}
+					
+					if (modifiersStack.peek().isEmpty()) {
+						return;
+					}
+					
+					arguments.add(0, new Argument(modifiersStack.peek().pop(), argType, IdentifierExp.EMPTY, null));
 				}
-				
-				if (modifiersStack.peek().isEmpty()) {
-					return;
-				}
-				
-				// TODO default value
-				arguments.add(0, new Argument(modifiersStack.peek().pop(), argType, IdentifierExp.EMPTY, null));
+				merge(type);
+			} finally {
+				typesStack.pop();
+				typesStack.peek().push(type);
+				modifiersStack.pop();
 			}
-			merge(type);
-			
-			// TODO varargs
-			typesStack.pop();
-			typesStack.peek().push(type);
-			modifiersStack.pop();
 		}
 
 		public void acceptPointer(String signature) {
@@ -995,8 +992,8 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		}
 		
 		@Override
-		public void acceptTemplateInstanceValue(Expression exp, String signature) {
-			instanceStack.peek().add(exp);
+		public void acceptTemplateInstanceValue(char[] exp, String signature) {
+			instanceStack.peek().add(context.encoder.decodeExpression(exp));
 		}
 		
 		@Override
@@ -1095,14 +1092,6 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			}
 		}
 		
-	}
-	
-	protected JavaElementFinder getFinder() {
-		return ((RModule) getModule()).finder;
-	}
-	
-	protected ASTNodeEncoder getEncoder() {
-		return ((RModule) getModule()).encoder;
 	}
 	
 	protected Type getTypeFromSignature(String signature, boolean doSemantic) {

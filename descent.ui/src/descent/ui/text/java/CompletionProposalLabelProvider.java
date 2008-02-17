@@ -173,25 +173,7 @@ public class CompletionProposalLabelProvider {
 		if (prefix != null) {
 			displayName = CharOperation.concat(prefix, displayName, ' ');
 		}
-
-		// XXX see https://bugs.eclipse.org/bugs/show_bug.cgi?id=84675
-		boolean useShortGenerics= false;
-		if (useShortGenerics) {
-			StringBuffer buf= new StringBuffer();
-			buf.append(displayName);
-			int pos;
-			do {
-				pos= buf.indexOf("? extends "); //$NON-NLS-1$
-				if (pos >= 0) {
-					buf.replace(pos, pos + 10, "+"); //$NON-NLS-1$
-				} else {
-					pos= buf.indexOf("? super "); //$NON-NLS-1$
-					if (pos >= 0)
-						buf.replace(pos, pos + 8, "-"); //$NON-NLS-1$
-				}
-			} while (pos >= 0);
-			return buf.toString().toCharArray();
-		}
+		
 		return displayName;
 	}
 

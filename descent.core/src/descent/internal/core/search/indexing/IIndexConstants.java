@@ -23,6 +23,8 @@ public interface IIndexConstants {
 	char[] METHOD_DECL= "methodDecl".toCharArray(); //$NON-NLS-1$
 	char[] CONSTRUCTOR_DECL= "constructorDecl".toCharArray(); //$NON-NLS-1$
 	char[] FIELD_DECL= "fieldDecl".toCharArray(); //$NON-NLS-1$
+	char[] VERSION= "version".toCharArray(); //$NON-NLS-1$
+	char[] DEBUG= "debug".toCharArray(); //$NON-NLS-1$
 	char[] OBJECT = "Object".toCharArray(); //$NON-NLS-1$
 	char[][] COUNTS= 
 		new char[][] { new char[] {'/', '0'}, new char[] {'/', '1'}, new char[] {'/', '2'}, new char[] {'/', '3'}, new char[] {'/', '4'},

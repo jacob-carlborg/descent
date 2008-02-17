@@ -46,6 +46,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TOK;
@@ -93,7 +94,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 		this.owner = owner;
 		this.settings = settings;
 		this.compilerOptions = new CompilerOptions(settings);
-		this.finder = new JavaElementFinder(javaProject, owner);
 		this.internalSignature = new InternalSignature(javaProject);
 	}
 	
@@ -163,7 +163,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 				});
 			} else {
 				module.moduleName = sourceUnit.getFullyQualifiedName();
-				CompilationUnitResolver.resolve(module, javaProject, owner);
+				
+				SemanticContext context = CompilationUnitResolver.resolve(module, javaProject, owner);
+				this.finder = new JavaElementFinder(javaProject, context, owner);
+				
 				module.accept(this);
 			}
 			return selectedElements.toArray(new IJavaElement[selectedElements.size()]);

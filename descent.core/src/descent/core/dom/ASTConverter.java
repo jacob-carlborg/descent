@@ -92,9 +92,9 @@ public class ASTConverter {
 	/*
 	 * Must be called after setAST in order for binding resolution to work.
 	 */
-	public void init(IJavaProject project, WorkingCopyOwner owner) {
+	public void init(IJavaProject project, SemanticContext context, WorkingCopyOwner owner) {
 		BindingTables tables = new BindingTables();
-		ast.setBindingResolver(new DefaultBindingResolver(project, owner, tables));
+		ast.setBindingResolver(new DefaultBindingResolver(project, context, owner, tables));
 	}
 	
 	public CompilationUnit convert(Module module, ICompilationUnit cu) {
@@ -1587,12 +1587,16 @@ public class ASTConverter {
 	public descent.core.dom.Expression convert(FuncExp a) {
 		descent.core.dom.FunctionLiteralDeclarationExpression b = new descent.core.dom.FunctionLiteralDeclarationExpression(ast);
 		
-		if (a.fd.tok == TOK.TOKdelegate) {
-			b.setSyntax(Syntax.DELEGATE);
-		} else if (a.fd.tok == TOK.TOKfunction) {
-			b.setSyntax(Syntax.FUNCTION);
-		} else {
+		if (a.isEmptySyntax) {
 			b.setSyntax(Syntax.EMPTY);
+		} else {
+			if (a.fd.tok == TOK.TOKdelegate) {
+				b.setSyntax(Syntax.DELEGATE);
+			} else if (a.fd.tok == TOK.TOKfunction) {
+				b.setSyntax(Syntax.FUNCTION);
+			} else {
+				b.setSyntax(Syntax.EMPTY);
+			}
 		}
 		TypeFunction ty = (TypeFunction) a.fd.sourceType;
 		if (ty.sourceNext != null) {
@@ -3318,7 +3322,7 @@ public class ASTConverter {
 	public void convertDeclarations(List<Declaration> destination, List<IDsymbol> source) {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
-			Dsymbol symbol = (Dsymbol) source.get(i); // SEMANTIC
+			Dsymbol symbol = (Dsymbol) source.get(i);
 			switch(symbol.getNodeType()) {
 			case ASTDmdNode.IMPORT:
 				Import import1 = (Import) symbol;

@@ -3,7 +3,6 @@ package descent.internal.compiler.lookup;
 import java.util.List;
 
 import descent.core.ICompilationUnit;
-import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
 import descent.core.IParent;
@@ -146,7 +145,7 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 		try {
 			IJavaElement[] children = parent.getChildren();
 			for(IJavaElement child : children) {
-				IParent searchInChildren = getFinder().mustSearchInChildren(child);
+				IParent searchInChildren = context.finder.mustSearchInChildren(child);
 				if (searchInChildren != null) {
 					IDsymbol result = searchInChildren(searchInChildren, ident, sident);
 					if (result != null) {
@@ -179,7 +178,7 @@ public abstract class RScopeDsymbol extends RDsymbol implements IScopeDsymbol {
 	private void listMembers(Dsymbols members, HashtableOfCharArrayAndObject ov, IParent parent) {
 		try {
 			for(IJavaElement child : parent.getChildren()) {
-				IParent next = getFinder().mustSearchInChildren(child);
+				IParent next = context.finder.mustSearchInChildren(child);
 				if (next != null) {
 					listMembers(members, ov, next);
 					continue;

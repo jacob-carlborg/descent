@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import java.math.BigInteger;
+
+import descent.core.compiler.CharOperation;
+
 /**
  * Encodes ASTNodes into char arrays and viceversa.
  * 
@@ -7,9 +11,8 @@ package descent.internal.compiler.parser;
  */
 public class ASTNodeEncoder {
 	
-	// TODO don't use a parser when possible, optimize for typical cases
-	// like numbers.
-	// TODO don't use toString() if the node is simple.
+	private final static char INTEGER_EXP = '=';
+	private final static char IDENTIFIER_EXP = '?';
 	
 	private Parser parser;
 	private Parser initParser(char[] source) {
@@ -31,13 +34,34 @@ public class ASTNodeEncoder {
 			return null;
 		}
 		
-		return value.toString().toCharArray();
+		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
+		if (value instanceof IntegerExp) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(INTEGER_EXP);
+			sb.append(((IntegerExp) value).value.toString());
+			return sb.toString().toCharArray();
+		} else if (value instanceof IdentifierExp) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(IDENTIFIER_EXP);
+			sb.append(((IdentifierExp) value).ident);
+			return sb.toString().toCharArray();
+		} else {
+			return value.toString().toCharArray();
+		}
 	}
 	
 	public Expression decodeExpression(char[] value) {
 		if (value == null || value.length == 0) {
 			return null;
 		}
+		
+		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
+		if (value[0] == INTEGER_EXP) {
+			return new IntegerExp(Loc.ZERO, new integer_t(new BigInteger(new String(value, 1, value.length - 1))));
+		} else if (value[0] == IDENTIFIER_EXP) {
+			return new IdentifierExp(CharOperation.subarray(value, 1, value.length));
+		}
+		
 		return initParser(value).parseExpression();
 	}
 	
@@ -46,12 +70,21 @@ public class ASTNodeEncoder {
 			return null;
 		}
 		
+		if (init instanceof ExpInitializer) {
+			return encodeExpression(((ExpInitializer) init).exp);
+		}
+		
 		return init.toString().toCharArray();
 	}
 	
 	public Initializer decodeInitializer(char[] value) {
 		if (value == null || value.length == 0) {
 			return null;
+		}
+		
+		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
+		if (value[0] == INTEGER_EXP || value[0] == IDENTIFIER_EXP) {
+			return new ExpInitializer(Loc.ZERO, decodeExpression(value));
 		}
 
 		return initParser(value).parseInitializer();

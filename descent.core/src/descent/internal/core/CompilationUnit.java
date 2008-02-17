@@ -63,6 +63,7 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
@@ -176,10 +177,13 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	
 	// compute other problems if needed
 	// CompilationUnit compilationUnitDeclaration = null;
+	
+	SemanticContext context = null;
+	
 	try {
 		if (computeProblems) {
 			
-			CompilationUnitResolver.resolve(module, this.getJavaProject(), this.owner);
+			context = CompilationUnitResolver.resolve(module, this.getJavaProject(), this.owner);
 			
 			if (problems == null) {
 				// report problems to the problem requestor
@@ -216,7 +220,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 			// TODO check if need to resolve bindings here
 			ASTConverter converter = new ASTConverter(true, pm);
 			converter.setAST(AST.newAST(AST.D2));
-			converter.init(getJavaProject(), getOwner());
+			converter.init(getJavaProject(), context, getOwner());
 			((ASTHolderCUInfo) info).ast = converter.convert(module, this);
 		}
 	} finally {

@@ -442,7 +442,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_MEMBERS_OF_TEMPLATE_DECLARATION_EXPECTED() {
-		IProblem p = getProblems(" template T() int", 2)[0];
+		IProblem p = getProblems(" template T() int", 3)[0];
 		assertError(p, IProblem.ParsingErrorInsertToComplete, 12, 1);
 	}
 
@@ -457,7 +457,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_INVALID_IFTYPE_SYNTAX() {
-		IProblem p = getProblems(" iftype int", 2, AST.D0)[0];
+		IProblem p = getProblems(" iftype int", 3, AST.D0)[0];
 		assertError(p, IProblem.ParsingErrorInsertToComplete, 1, 6);
 	}
 

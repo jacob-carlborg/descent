@@ -63,7 +63,7 @@ public interface ISignatureRequestor {
 	 * @param signature the signature from which the static array originated
 	 * @signature the signature of the static array
 	 */
-	void acceptStaticArray(Expression dimension, String signature);
+	void acceptStaticArray(char[] dimension, String signature);
 
 	/**
 	 * The processor has found an associative array.
@@ -153,7 +153,7 @@ public interface ISignatureRequestor {
 	 * The processor is reporting the specific value of a
 	 * template value parameter.
 	 */
-	void acceptTemplateValueParameterSpecificValue(Expression exp);
+	void acceptTemplateValueParameterSpecificValue(char[] exp);
 
 	/**
 	 * The processor has finished processing a template value parameter
@@ -185,7 +185,7 @@ public interface ISignatureRequestor {
 	/**
 	 * The processor has found a template instance value.
 	 */
-	void acceptTemplateInstanceValue(Expression exp, String signature);
+	void acceptTemplateInstanceValue(char[] exp, String signature);
 
 	/**
 	 * The processos has found a template instance symbol parameter
@@ -207,11 +207,11 @@ public interface ISignatureRequestor {
 	/**
 	 * The processor has found a typeof type.
 	 */
-	void acceptTypeof(Expression expression, String signature);
+	void acceptTypeof(char[] expression, String signature);
 
 	/**
 	 * The processor has found a slice type.
 	 */
-	void acceptTypeSlice(Expression lwr, Expression upr, String signature);
+	void acceptTypeSlice(char[] lwr, char[] upr, String signature);
 
 }

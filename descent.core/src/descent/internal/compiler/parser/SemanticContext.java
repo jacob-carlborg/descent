@@ -77,6 +77,7 @@ public class SemanticContext {
 	public boolean fatalWasSignaled;
 	
 	public JavaElementFinder finder;
+	public ASTNodeEncoder encoder;
 	
 	/*
 	 * This is for autocompletion, for suggesting overloads of
@@ -95,8 +96,10 @@ public class SemanticContext {
 		this.global = global;
 		this.project = project;
 		this.moduleFinder = moduleFinder;
+		this.finder = new JavaElementFinder(project, this, null);
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
+		this.encoder = new ASTNodeEncoder();
 		
 		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
 			muteProblems++;

@@ -224,6 +224,10 @@ public void enterInitializer(int declarationSourceStart, long modifiers, char[] 
 		return;
 	}
 	
+	if ((modifiers & Flags.AccVersionAssignment) != 0) {
+		this.indexer.addVersion(displayString);
+	}
+	
 	this.methodDepth++;
 }
 private void enterInterface(TypeInfo typeInfo) {
@@ -385,7 +389,7 @@ public void pushTypeName(char[] typeName) {
 }
 
 // TODO JDT check if this must be implemented
-public void enterConditional(int declarationStart, long modifiers, char[] displayString, int evaluation) {
+public void enterConditional(int declarationStart, long modifiers, char[] displayString) {
 	
 }
 

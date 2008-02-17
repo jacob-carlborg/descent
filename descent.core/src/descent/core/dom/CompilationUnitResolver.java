@@ -393,7 +393,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		converter.setAST(ast);
 		if (project != null) {
 			BindingTables tables = new BindingTables();
-			converter.ast.setBindingResolver(new DefaultBindingResolver(project, owner, tables));
+			converter.ast.setBindingResolver(new DefaultBindingResolver(project, parseResult.context, owner, tables));
 		} else {
 			converter.ast.setBindingResolver(new BindingResolver());
 		}

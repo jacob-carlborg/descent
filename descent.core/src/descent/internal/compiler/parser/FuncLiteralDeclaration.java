@@ -18,7 +18,7 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	private final static IdentifierExp iddel = new IdentifierExp(new char[] {
 			'd', 'e', 'l', 'e', 'g', 'a', 't', 'e' });
 
-	public TOK tok; // TOKfunction or TOKdelegate
+	public TOK tok; // TOKfunction or TOKdelegate	
 
 	public FuncLiteralDeclaration(Loc loc, Type type, TOK tok,
 			ForeachStatement fes) {

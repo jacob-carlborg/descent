@@ -158,5 +158,11 @@ public abstract class AbstractIndexer implements IIndexConstants {
 		
 		addNameReference(CharOperation.lastSegment(typeName, '.'));
 	}
+	public void addVersion(char[] displayString) {
+		// TODO source indexer
+	}
+	public void addDebug(char[] displayString) {
+		// TODO source indexer
+	}
 	public abstract void indexDocument();
 }

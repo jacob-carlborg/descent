@@ -25,6 +25,7 @@ import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.core.util.Util;
 
@@ -35,6 +36,8 @@ public class JavaElementFinder {
 	
 	private final JavaProject javaProject;
 	private final INameEnvironment environment;
+	private final SemanticContext context;
+	private final CompilerConfiguration compilerConfig;
 	
 	/*
 	 * Cache results for speedup, and also for not loading multiple
@@ -42,8 +45,10 @@ public class JavaElementFinder {
 	 */
 	private final HashtableOfCharArrayAndObject cache = new HashtableOfCharArrayAndObject();
 
-	public JavaElementFinder(IJavaProject project, WorkingCopyOwner owner) {
+	public JavaElementFinder(IJavaProject project, SemanticContext context, WorkingCopyOwner owner) {
 		this.javaProject = (JavaProject) project;
+		this.context = context;
+		this.compilerConfig = new CompilerConfiguration();
 		try {
 			this.environment = new SearchableEnvironment(javaProject, owner);
 		} catch (JavaModelException e) {
@@ -738,15 +743,28 @@ public class JavaElementFinder {
 				break;
 			case IJavaElement.CONDITIONAL:
 				IConditional conditional = (IConditional) element;
-				IJavaElement[] children = conditional.getChildren();
-				Boolean active = conditional.isActive();
-				if (active == null) {
-					return null;
-				} else if (active) {
-					return conditionalThen(conditional, children);
-				} else {
-					return conditionalElse(conditional, children);
+				if (conditional.isVersionDeclaration()) {
+					String name = conditional.getElementName();
+					try {
+						long level = Long.parseLong(name);
+						return conditionalOn(conditional, level >= compilerConfig.versionLevel);
+					} catch (NumberFormatException e) {
+						return conditionalOn(conditional, compilerConfig.versionIdentifiers.containsKey(name.toCharArray()));
+					}
+				} else if (conditional.isDebugDeclaration()) {
+					String name = conditional.getElementName();
+					try {
+						long level = Long.parseLong(name);
+						return conditionalOn(conditional, level >= compilerConfig.debugLevel);
+					} catch (NumberFormatException e) {
+						return conditionalOn(conditional, compilerConfig.debugIdentifiers.containsKey(name.toCharArray()));
+					}
+				} else if (conditional.isStaticIfDeclaration()) {
+					String name = conditional.getElementName();
+					Expression exp = context.encoder.decodeExpression(name.toCharArray());
+					System.out.println("Expression: " + exp);
 				}
+				break;
 			case IJavaElement.TYPE:
 				IType type = (IType) element;
 				if (type.isAnonymous()) {
@@ -763,7 +781,16 @@ public class JavaElementFinder {
 		return null;
 	}
 	
-	private static IParent conditionalThen(IConditional conditional, IJavaElement[] children) throws JavaModelException {
+	private static IParent conditionalOn(IConditional conditional, boolean evaluation) throws JavaModelException {
+		if (evaluation) {
+			return conditionalThen(conditional);
+		} else {
+			return conditionalElse(conditional);
+		}
+	}
+	
+	private static IParent conditionalThen(IConditional conditional) throws JavaModelException {
+		IJavaElement[] children = conditional.getChildren();
 		if (children.length == 2 && 
 			children[0].getElementType() == IJavaElement.INITIALIZER &&
 			((IInitializer) children[0]).isThen()) {
@@ -773,13 +800,14 @@ public class JavaElementFinder {
 		}
 	}
 	
-	private static IParent conditionalElse(IConditional conditional, IJavaElement[] children) throws JavaModelException {
+	private static IParent conditionalElse(IConditional conditional) throws JavaModelException {
+		IJavaElement[] children = conditional.getChildren();
 		if (children.length == 2 && 
 				children[1].getElementType() == IJavaElement.INITIALIZER &&
 				((IInitializer) children[1]).isElse()) {
 			return (IParent) children[1];
 		} else {
-			return conditional;
+			return null;
 		}
 	}
 	

@@ -3214,7 +3214,8 @@ public class JavaProject
 	}
 	
 	public IJavaElement findBySignature(String signature) {
-		JavaElementFinder finder = new JavaElementFinder(this, null);
+		// TODO Descent build a semantic context here
+		JavaElementFinder finder = new JavaElementFinder(this, null, null);
 		return finder.find(signature);
 	}
 

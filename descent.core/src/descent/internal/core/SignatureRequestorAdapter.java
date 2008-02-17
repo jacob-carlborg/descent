@@ -1,6 +1,5 @@
 package descent.internal.core;
 
-import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.TypeBasic;
 
@@ -42,7 +41,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 
-	public void acceptStaticArray(Expression dimension, String signature) {
+	public void acceptStaticArray(char[] dimension, String signature) {
 		
 	}
 
@@ -62,7 +61,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 	
-	public void acceptTemplateValueParameterSpecificValue(Expression exp) {
+	public void acceptTemplateValueParameterSpecificValue(char[] exp) {
 		
 	}
 	
@@ -114,7 +113,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 	
-	public void acceptTemplateInstanceValue(Expression exp, String signature) {
+	public void acceptTemplateInstanceValue(char[] exp, String signature) {
 		
 	}
 	
@@ -130,11 +129,11 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 	
-	public void acceptTypeof(Expression expression, String signature) {
+	public void acceptTypeof(char[] expression, String signature) {
 		
 	}
 	
-	public void acceptTypeSlice(Expression lwr, Expression upr, String signature) {
+	public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
 		
 	}
 

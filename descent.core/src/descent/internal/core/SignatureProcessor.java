@@ -151,8 +151,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 				i++;
 				
-				Expression dimension = new ASTNodeEncoder().decodeExpression(
-						signature.substring(i, i + n).toCharArray());
+				char[] dimension = signature.substring(i, i + n).toCharArray();
 				
 				i += n;
 				
@@ -188,6 +187,9 @@ public class SignatureProcessor implements ISignatureConstants {
 						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_VARIADIC && 
 						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK) {
 					i = argumentModifier(signature, i, requestor);
+					
+					int argStart = i;
+					
 					i = process0(signature, i, requestor);
 				}
 				
@@ -238,9 +240,7 @@ public class SignatureProcessor implements ISignatureConstants {
 					}
 					i++;
 					
-					requestor.acceptTemplateValueParameterSpecificValue(
-							new ASTNodeEncoder().decodeExpression(
-									signature.substring(i, i + n).toCharArray()));
+					requestor.acceptTemplateValueParameterSpecificValue(signature.substring(i, i + n).toCharArray());
 					
 					i += n;
 				}
@@ -260,9 +260,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 				i++;
 				
-				requestor.acceptTypeof(
-						new ASTNodeEncoder().decodeExpression(
-								signature.substring(i, i + n).toCharArray()),
+				requestor.acceptTypeof(signature.substring(i, i + n).toCharArray(),
 								signature.substring(start, i + n));
 				
 				i += n;
@@ -282,8 +280,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 				i++;
 				
-				Expression lwr = new ASTNodeEncoder().decodeExpression(
-						signature.substring(i, i + n).toCharArray());
+				char[] lwr = signature.substring(i, i + n).toCharArray();
 				
 				i += n;
 				
@@ -296,8 +293,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 				i++;
 				
-				Expression upr = new ASTNodeEncoder().decodeExpression(
-						signature.substring(i, i + n).toCharArray());
+				char[] upr = signature.substring(i, i + n).toCharArray();
 				
 				requestor.acceptTypeSlice(lwr, upr, signature.substring(start, i + n));
 				
@@ -344,9 +340,7 @@ public class SignatureProcessor implements ISignatureConstants {
 					}
 					i++;
 					
-					requestor.acceptTemplateInstanceValue(
-							new ASTNodeEncoder().decodeExpression(
-									signature.substring(i, i + n).toCharArray()), signature.substring(start, i + n));
+					requestor.acceptTemplateInstanceValue(signature.substring(i, i + n).toCharArray(), signature.substring(start, i + n));
 					
 					i += n;
 				}

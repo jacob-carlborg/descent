@@ -283,10 +283,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return types;
 	}
 	
-	private char[] toCharArray(ASTDmdNode node) {
-		return node == null ? CharOperation.NO_CHAR : node.toCharArray();
-	}
-	
 	private char[] getSignature(Type node) {
 		if (node == null) {
 			return CharOperation.NO_CHAR;
@@ -769,7 +765,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			break;
 		}
 		}
-		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString, node.condition.inc);
+		requestor.enterConditional(startOf(node), getFlags(node, node.modifiers) | flags, displayString);
 		
 		Dsymbols thenDeclarations = node.decl;
 		Dsymbols elseDeclarations = node.elsedecl;

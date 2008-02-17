@@ -7,6 +7,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class FuncExp extends Expression {
 
 	public FuncLiteralDeclaration fd, sourceFd;
+	
+	// Descent: in case neither function nor delegate was present in the source file
+	public boolean isEmptySyntax; 
 
 	public FuncExp(Loc loc, FuncLiteralDeclaration fd) {
 		super(loc, TOK.TOKfunction);

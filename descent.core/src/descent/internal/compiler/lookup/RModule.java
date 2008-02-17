@@ -11,7 +11,6 @@ import descent.core.IParent;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Array;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IDsymbol;
@@ -29,7 +28,6 @@ import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.SemanticMixin;
 import descent.internal.compiler.parser.StorageClassDeclaration;
-import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
@@ -44,14 +42,9 @@ public class RModule extends RPackage implements IModule {
 	public char[] searchCacheIdent;
 	public int searchCacheFlags;
 	public IDsymbol searchCacheSymbol;
-	public JavaElementFinder finder;
-	public ASTNodeEncoder encoder;
 
 	public RModule(ICompilationUnit unit, SemanticContext context) {
 		super(unit, context);
-		
-		this.finder = new JavaElementFinder(unit.getJavaProject(), unit.getOwner());
-		this.encoder = new ASTNodeEncoder();
 	}
 	
 	@Override
@@ -150,7 +143,7 @@ public class RModule extends RPackage implements IModule {
 	
 	private void loadImportedModules(IParent element, Scope sc) throws JavaModelException {
 		for(IJavaElement child : element.getChildren()) {
-			IParent parent = finder.mustSearchInChildren(child);
+			IParent parent = context.finder.mustSearchInChildren(child);
 			if (parent != null) {
 				loadImportedModules(parent, sc);
 			} else if (child.getElementType() == IJavaElement.IMPORT_DECLARATION) {

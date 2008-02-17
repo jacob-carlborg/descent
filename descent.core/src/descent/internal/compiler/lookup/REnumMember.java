@@ -2,10 +2,14 @@ package descent.internal.compiler.lookup;
 
 import descent.core.IField;
 import descent.core.JavaModelException;
-import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.Dsymbols;
+import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.IEnumMember;
+import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.ISignatureConstants;
+import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.core.SourceField;
@@ -29,17 +33,42 @@ public class REnumMember extends RDsymbol implements IEnumMember {
 				SourceFieldElementInfo info = (SourceFieldElementInfo) f.getElementInfo();
 				char[] encodedValue = info.getInitializationSource();
 				if (encodedValue != null) {
-					value = new ASTNodeEncoder().decodeExpression(encodedValue);
-					// The expression's type must be my enum's type 
-					if (parent.isEnumDeclaration() != null) {
-						value.type = parent.getType();
-					} else {
-						value.type = TypeBasic.tint32;
+					value = context.encoder.decodeExpression(encodedValue);
+					if (value != null) {
+						value.semantic(getScope(), context);
+						
+						// The expression's type must be my enum's type 
+						if (parent.isEnumDeclaration() != null) {
+							value.type = parent.getType();
+						} else {
+							value.type = TypeBasic.tint32;
+						}
 					}
 				}
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}
+			
+			if (value == null) {
+				IDsymbol parent = parent();
+				if (parent != null && parent instanceof IScopeDsymbol) {
+					Dsymbols children = ((IScopeDsymbol) parent).members();
+					for(int i = 0; i < children.size(); i++) {
+						if (children.get(i) == this) {
+							value = new IntegerExp(i);
+							value.semantic(getScope(), context);
+							
+							if (parent.isEnumDeclaration() != null) {
+								value.type = parent.getType();
+							} else {
+								value.type = TypeBasic.tint32;
+							}
+							break;
+						}
+					}
+				}
+			}
+			
 			valueComputed = true;
 		}
 		return value;

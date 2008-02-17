@@ -21,7 +21,7 @@ public class TemplateMixin extends TemplateInstance {
 		this.ident = ident;
 		this.tqual = tqual;
 		this.idents = idents;
-		this.tiargs = tiargs != null ? tiargs : new Objects(0);
+		this.tiargs(tiargs != null ? tiargs : new Objects(0));
 	}
 
 	@Override

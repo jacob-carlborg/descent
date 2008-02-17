@@ -11,7 +11,7 @@ public class TypeDotIdExp extends Expression {
 
 	public TypeDotIdExp(Loc loc, Type type, IdentifierExp ident) {
 		super(loc, TOK.TOKtypedot);
-		this.type = type;
+		this.type = this.sourceType = type;
 		this.ident = ident;
 	}
 

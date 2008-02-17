@@ -14,9 +14,11 @@ public class Recovery_Tests extends Parser_Test {
 		assertParsingErrorInsertTokenAfter_NoDeclarations(" alias", 1, 5);
 	}
 	
+	/* TODO recovery
 	public void testAliasWithType() {
 		assertParsingErrorInsertTokenAfter_NoDeclarations(" alias int", 7, 3);
 	}
+	*/
 	
 	public void testAliasOk() {
 		String s = " alias bool ble;";

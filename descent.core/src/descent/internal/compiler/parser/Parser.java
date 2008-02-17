@@ -256,7 +256,7 @@ public class Parser extends Lexer {
 		if (comments != null) {
 			module.comments = comments.toArray(new Comment[comments.size()]);
 		}
-		if (module.pragmas != null) {
+		if (pragmas != null) {
 			module.pragmas = pragmas.toArray(new Pragma[pragmas.size()]);
 		}
 		module.lineEnds = getLineEnds();
@@ -5802,7 +5802,7 @@ public class Parser extends Lexer {
 				// goto case_delegate;
 				{
 				Expression[] pe = { e };
-				parsePrimaryExp_case_delegate(pe, save);
+				parsePrimaryExp_case_delegate(pe, save, true /* empty syntax */);
 				e = pe[0];
 				}
 				break;
@@ -5869,7 +5869,7 @@ public class Parser extends Lexer {
 			// goto case_delegate;
 			{
 			Expression[] pe = { e };
-			parsePrimaryExp_case_delegate(pe, save);
+			parsePrimaryExp_case_delegate(pe, save, true /* empty syntax */);
 			e = pe[0];
 			}
 			break;
@@ -5881,7 +5881,7 @@ public class Parser extends Lexer {
 			// case_delegate:
 			{
 				Expression[] pe = { e };
-				parsePrimaryExp_case_delegate(pe, save);
+				parsePrimaryExp_case_delegate(pe, save, false /* not empty syntax */);
 				e = pe[0];
 				break;
 			}
@@ -6231,7 +6231,7 @@ public class Parser extends Lexer {
 		return e;
 	}
 
-	private void parsePrimaryExp_case_delegate(Expression[] e, TOK save) {
+	private void parsePrimaryExp_case_delegate(Expression[] e, TOK save, boolean isEmptySyntax) {
 		Arguments arguments;
 		int varargs = 0;
 		FuncLiteralDeclaration fd;
@@ -6256,8 +6256,11 @@ public class Parser extends Lexer {
 		
 		t = new TypeFunction(arguments, t, varargs, linkage);
 		fd = new FuncLiteralDeclaration(loc(), t, save, null);
+		
+		
 		parseContracts(fd);
 		e[0] = new FuncExp(loc(), fd);
+		((FuncExp) e[0]).isEmptySyntax = isEmptySyntax;
 	}
 	
 	private Expression parseMulExp()

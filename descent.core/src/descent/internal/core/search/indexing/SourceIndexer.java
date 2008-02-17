@@ -82,4 +82,5 @@ public class SourceIndexer extends AbstractIndexer implements SuffixConstants {
 		relativePath = relativePath.replace('/', '.');
 		return relativePath;
 	}
+	
 }

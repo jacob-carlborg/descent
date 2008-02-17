@@ -41,6 +41,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
@@ -121,13 +122,13 @@ class DefaultBindingResolver extends BindingResolver {
 	/**
 	 * Constructor for DefaultBindingResolver.
 	 */
-	DefaultBindingResolver(IJavaProject project, WorkingCopyOwner workingCopyOwner, BindingTables bindingTables) {
+	DefaultBindingResolver(IJavaProject project, SemanticContext context, WorkingCopyOwner workingCopyOwner, BindingTables bindingTables) {
 		this.javaProject = project;
 		this.bindingsToAstNodes = new HashMap();
 		this.bindingTables = bindingTables;
 		this.workingCopyOwner = workingCopyOwner;
 		this.newAstToOldAst = new HashMap();
-		this.finder = new JavaElementFinder(javaProject, workingCopyOwner);
+		this.finder = new JavaElementFinder(javaProject, context, workingCopyOwner);
 		try {
 			this.environment = new SearchableEnvironment((JavaProject) javaProject, workingCopyOwner);
 		} catch (JavaModelException e) {

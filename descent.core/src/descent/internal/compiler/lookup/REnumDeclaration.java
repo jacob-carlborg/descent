@@ -54,10 +54,14 @@ public class REnumDeclaration extends RScopeDsymbol implements IEnumDeclaration 
 			try {
 				String signature = t.getSuperclassTypeSignature();
 				memtype = getTypeFromSignature(signature, true);
+				
+				if (memtype == null) {
+					memtype = Type.tint32;
+				}
 			} catch (JavaModelException e) {
 				Util.log(e);
 				memtype = Type.tint32;
-			}	
+			}
 		}
 		return memtype;
 	}	

@@ -44,7 +44,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 			} else if (getJavaElement() instanceof ILocalVariable) {
 				signature = ((ILocalVariable) getJavaElement()).getTypeSignature();
 			} else {
-				throw new IllegalStateException("element must be IField or ILocalVariable");
+				return null;
 			}
 			return bindingResolver.resolveBinding(signature);
 		} catch (JavaModelException e) {
@@ -80,7 +80,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		try {
 			if (getJavaElement() instanceof IField) {
 				return ((IField) getJavaElement()).isVariable();
-			} else {
+			} else if (getJavaElement() instanceof ILocalVariable) {
 				return ((ILocalVariable) getJavaElement()).isVariable();
 			}
 		} catch (JavaModelException e) {
@@ -97,7 +97,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		try {
 			if (getJavaElement() instanceof IField) {
 				return ((IField) getJavaElement()).isAlias();
-			} else {
+			} else if (getJavaElement() instanceof ILocalVariable) {
 				return ((ILocalVariable) getJavaElement()).isAlias();
 			}
 		} catch (JavaModelException e) {
@@ -123,7 +123,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		try {
 			if (getJavaElement() instanceof IField) {
 				return ((IField) getJavaElement()).isTypedef();
-			} else {
+			} else if (getJavaElement() instanceof ILocalVariable) {
 				return ((ILocalVariable) getJavaElement()).isTypedef();
 			}
 		} catch (JavaModelException e) {

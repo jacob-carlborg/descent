@@ -62,7 +62,7 @@ public class RVarDeclaration extends RDeclaration implements IVarDeclaration {
 				SourceFieldElementInfo info = (SourceFieldElementInfo) f.getElementInfo();
 				char[] encodedValue = info.getInitializationSource();
 				if (encodedValue != null) {
-					init = new ASTNodeEncoder().decodeInitializer(encodedValue);
+					init = context.encoder.decodeInitializer(encodedValue);
 					// Run semantic in order to compute type
 					if (init != null) {
 						context.muteProblems++;
