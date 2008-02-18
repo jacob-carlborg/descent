@@ -6,7 +6,6 @@ import org.jmock.Sequence;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
 import descent.internal.compiler.parser.ISignatureConstants;
-import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Type;
@@ -65,7 +64,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		
 		checking(new Expectations() {{
 			one(requestor).acceptPrimitive(Type.tint32); inSequence(s);
-			one(requestor).acceptStaticArray(3, "G3i"); inSequence(s);
+			one(requestor).acceptStaticArray(new char[] { '3' }, "G3i"); inSequence(s);
 		}});
 		
 		SignatureProcessor.process("G3i", requestor);
@@ -487,7 +486,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateParameters(); inSequence(s);
 			one(requestor).enterTemplateValueParameter(); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
-			one(requestor).acceptTemplateValueParameterSpecificValue(with(any(IntegerExp.class))); inSequence(s);
+			one(requestor).acceptTemplateValueParameterSpecificValue("123".toCharArray()); inSequence(s);
 			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i3" + TEMPLATE_VALUE_PARAMETER + "123"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
@@ -538,7 +537,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		
 		checking(new Expectations() {{
 			one(requestor).enterTemplateInstance(); inSequence(s);
-			one(requestor).acceptTemplateInstanceValue(with(any(IntegerExp.class)), with(any(String.class))); inSequence(s);
+			one(requestor).acceptTemplateInstanceValue("123".toCharArray(), with(any(String.class))); inSequence(s);
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		

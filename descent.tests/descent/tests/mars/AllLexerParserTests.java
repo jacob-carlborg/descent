@@ -1,6 +1,5 @@
 package descent.tests.mars;
 
-import descent.tests.scanner.ScannerTests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

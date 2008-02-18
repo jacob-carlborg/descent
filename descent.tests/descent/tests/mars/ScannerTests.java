@@ -1,4 +1,4 @@
-package descent.tests.scanner;
+package descent.tests.mars;
 
 import junit.framework.TestCase;
 import descent.core.ToolFactory;

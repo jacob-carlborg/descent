@@ -4,7 +4,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.tests.model.AbstractModelTest;
 
-public class CodeSelecTemplate_Test extends AbstractModelTest {
+public class CodeSelectTemplate_Test extends AbstractModelTest {
 	
 	public void testSelectTemplate() throws Exception {
 		ICompilationUnit unit = createCompilationUnit("test.d", 

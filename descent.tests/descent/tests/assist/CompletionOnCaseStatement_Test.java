@@ -2,7 +2,7 @@ package descent.tests.assist;
 
 import descent.core.CompletionProposal;
 
-public class CompletionOnCaseStatement extends AbstractCompletionTest {
+public class CompletionOnCaseStatement_Test extends AbstractCompletionTest {
 	
 	public void testEmpty() throws Exception {
 		String s = "enum Foo { a, b, c } void foo() { Foo f = Foo.a; switch(f) { case ";

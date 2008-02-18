@@ -10,24 +10,24 @@ public class AllRewriteTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(RewriteAggregateDeclarationTest.class);
 		suite.addTestSuite(RewriteAliasDeclarationTest.class);
-		suite.addTestSuite(RewriteTemplateParameterTest.class);
-		suite.addTestSuite(RewriteAlignDeclarationTest.class);		
+		suite.addTestSuite(RewriteAlignDeclarationTest.class);
 		suite.addTestSuite(RewriteArgumentTest.class);
-		suite.addTestSuite(RewriteInitializerTest.class);
-		suite.addTestSuite(RewriteStatementTest.class);
-		suite.addTestSuite(RewriteExpressionTest.class);
-		suite.addTestSuite(RewriteTypeTest.class);
 		suite.addTestSuite(RewriteBaseClassTest.class);
 		suite.addTestSuite(RewriteDDocCommentTest.class);
 		suite.addTestSuite(RewriteDebugAssignmentTest.class);		
 		suite.addTestSuite(RewriteDebugDeclarationTest.class);
 		suite.addTestSuite(RewriteEnumDeclarationTest.class);
+		suite.addTestSuite(RewriteExpressionTest.class);
 		suite.addTestSuite(RewriteExternDeclarationTest.class);
-		suite.addTestSuite(RewriteModuleDeclarationTest.class);
-		suite.addTestSuite(RewriteStaticIfDeclarationTest.class);
-		suite.addTestSuite(RewriteMixinDeclarationTest.class);
-		suite.addTestSuite(RewriteImportDeclarationTest.class);
 		suite.addTestSuite(RewriteFunctionDeclarationTest.class);
+		suite.addTestSuite(RewriteImportDeclarationTest.class);
+		suite.addTestSuite(RewriteInitializerTest.class);
+		suite.addTestSuite(RewriteMixinDeclarationTest.class);
+		suite.addTestSuite(RewriteModuleDeclarationTest.class);
+		suite.addTestSuite(RewriteStatementTest.class);
+		suite.addTestSuite(RewriteStaticIfDeclarationTest.class);		
+		suite.addTestSuite(RewriteTemplateParameterTest.class);
+		suite.addTestSuite(RewriteTypeTest.class);
 		//$JUnit-END$
 		return suite;
 	}
