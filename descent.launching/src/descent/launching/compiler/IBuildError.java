@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 /**
  * Represents an error encountered while building a project. 

@@ -15,4 +15,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: descent.internal.launching,
  descent.internal.launching.dmd,
- descent.launching
+ descent.launching,
+ descent.launching.compiler,
+ descent.launching.environments

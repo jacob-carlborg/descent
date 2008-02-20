@@ -1,6 +1,6 @@
 package descent.internal.unittest.launcher;
 
-import descent.core.builder.IExecutableTarget;
+import descent.launching.compiler.IExecutableTarget;
 
 public class UnittestExecutableTarget implements IExecutableTarget
 {

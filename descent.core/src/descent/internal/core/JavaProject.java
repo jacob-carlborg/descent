@@ -74,12 +74,10 @@ import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
-import descent.core.builder.IExecutableTarget;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.util.ObjectVector;
 import descent.internal.compiler.util.SuffixConstants;
-import descent.internal.core.builder.debuild.DebuildBuilder;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
@@ -3248,14 +3246,5 @@ public class JavaProject
 	  */
 	 public boolean isCompileTimeGenerated() throws JavaModelException {
 		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see descent.core.IJavaProject#getExecutableTarget(descent.core.builder.IExecutableTarget, org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public String getExecutableTarget(IExecutableTarget target,
-			IProgressMonitor pm)
-	{
-		return DebuildBuilder.build(this, target, pm);
 	}
 }

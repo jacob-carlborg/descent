@@ -1,10 +1,10 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IJavaProject;
-import descent.core.builder.ICompileCommand;
+import descent.launching.compiler.ICompileCommand;
 
 public class ObjectFile extends AbstractBinaryFile
 {
@@ -133,7 +133,9 @@ public class ObjectFile extends AbstractBinaryFile
 	private static String hashInfo(List<String> idents, Integer level)
 	{
 		// PERHAPS this hash function isn't great. if I have the time, i'd
-		// love to go through & fix it (figure out the relations, etc.)
+		// love to go through & fix it (figure out the relations, etc.) Also,
+		// there can be hash collisions (of course) which can really screw
+		// things up.
 		int result = null != level ? level.intValue() * 3001 : 0;
 		for(String ident : idents)
 		{
@@ -155,11 +157,10 @@ public class ObjectFile extends AbstractBinaryFile
 		// does not use placeholders (= is used for that purpose in the MIME
 		// stanard, = replaces / in this encoding).
 		StringBuffer result = new StringBuffer();
-		val = Math.abs(val); // It's too late at night to care about the lost bit
-		while(val > 0)
+		while(val != 0)
 		{
 			result.append(BASE_64_CHARS[val & 63]);
-			val >>= 6;
+			val >>>= 6;
 		}
 		return result.toString();
 	}

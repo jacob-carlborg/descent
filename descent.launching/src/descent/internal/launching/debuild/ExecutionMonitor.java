@@ -1,4 +1,4 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import descent.core.builder.IExecutableCommand;
-import descent.core.builder.IResponseInterpreter;
-import descent.internal.core.util.Util;
+import descent.internal.launching.LaunchingPlugin;
+import descent.launching.compiler.IExecutableCommand;
+import descent.launching.compiler.IResponseInterpreter;
 
 /**
  * Starts & monitors the execution of a process (compiler or linker) and passes
@@ -102,7 +102,7 @@ public class ExecutionMonitor implements Runnable
 			}
 			catch (IOException e)
 			{
-				Util.log(e);
+				LaunchingPlugin.log(e);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public class ExecutionMonitor implements Runnable
 				}
 			}
 			
-			Util.log(e);
+			LaunchingPlugin.log(e);
 		}
 	}
 	

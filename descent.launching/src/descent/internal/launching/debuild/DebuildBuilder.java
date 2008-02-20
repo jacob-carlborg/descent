@@ -1,10 +1,10 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import descent.core.IJavaProject;
-import descent.core.builder.IExecutableTarget;
+import descent.launching.compiler.IExecutableTarget;
 
 /**
  * The main engine of the descent remote builder. Given an executable target

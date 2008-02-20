@@ -27,7 +27,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
-import descent.core.builder.IExecutableTarget;
+import descent.launching.compiler.IExecutableTarget;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;

@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 import java.io.File;
 
@@ -24,14 +24,14 @@ public abstract class AbstractLinkCommand extends AbstractBuildCommand
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.ILinkCommand#getOutputFilename()
+	 * @see descent.launching.compiler.ILinkCommand#getOutputFilename()
 	 */
 	public File getOutputFilename()
 	{
 		return outputFilename;
 	}
 	/* (non-Javadoc)
-	 * @see descent.core.builder.ILinkCommand#setOutputFilename(java.lang.String)
+	 * @see descent.launching.compiler.ILinkCommand#setOutputFilename(java.lang.String)
 	 */
 	public void setOutputFilename(File outputFilename)
 	{

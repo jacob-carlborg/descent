@@ -1,8 +1,18 @@
-package descent.core.builder;
+package descent.internal.launching.dmd;
 
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import descent.launching.compiler.AbstractCompileCommand;
+import descent.launching.compiler.AbstractLinkCommand;
+import descent.launching.compiler.IBuildResponse;
+import descent.launching.compiler.ICompileCommand;
+import descent.launching.compiler.ICompilerInterface;
+import descent.launching.compiler.ILinkCommand;
+import descent.launching.compiler.IResponseInterpreter;
+import descent.launching.compiler.SimpleBuildError;
+import descent.launching.compiler.SimpleBuildResponse;
 
 public class DmdCompilerInterface implements ICompilerInterface
 {
@@ -18,7 +28,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 		}
 		
 		/* (non-Javadoc)
-		 * @see descent.core.builder.IExecutableCommand#getCommand()
+		 * @see descent.launching.compiler.IExecutableCommand#getCommand()
 		 */
 		public final String getCommand()
 		{
@@ -151,7 +161,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 		}
 		
 		/* (non-Javadoc)
-		 * @see descent.core.builder.IExecutableCommand#getCommand()
+		 * @see descent.launching.compiler.IExecutableCommand#getCommand()
 		 */
 		public String getCommand()
 		{
@@ -193,7 +203,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 			);
 		
 		/* (non-Javadoc)
-		 * @see descent.core.builder.IResponseInterpreter#interpret(java.lang.String)
+		 * @see descent.launching.compiler.IResponseInterpreter#interpret(java.lang.String)
 		 */
 		public void interpret(String line)
 		{
@@ -215,7 +225,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 		}
 		
 		/* (non-Javadoc)
-		 * @see descent.core.builder.IResponseInterpreter#interpretError(java.lang.String)
+		 * @see descent.launching.compiler.IResponseInterpreter#interpretError(java.lang.String)
 		 */
 		public void interpretError(String line)
 		{
@@ -224,7 +234,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 		}
 
 		/* (non-Javadoc)
-		 * @see descent.core.builder.ICompileResponseInterpreter#getCompileResponse()
+		 * @see descent.launching.compiler.ICompileResponseInterpreter#getCompileResponse()
 		 */
 		public IBuildResponse getResponse()
 		{
@@ -238,7 +248,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	// Interface implementation
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.ICompilerInterface#createCompileCommand()
+	 * @see descent.launching.compiler.ICompilerInterface#createCompileCommand()
 	 */
 	public ICompileCommand createCompileCommand()
 	{
@@ -246,7 +256,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	}
 
 	/* (non-Javadoc)
-	 * @see descent.core.builder.ICompilerInterface#createLinkCommand()
+	 * @see descent.launching.compiler.ICompilerInterface#createLinkCommand()
 	 */
 	public ILinkCommand createLinkCommand()
 	{
@@ -254,7 +264,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.ICompilerInterface#createCompileResponseInterpreter()
+	 * @see descent.launching.compiler.ICompilerInterface#createCompileResponseInterpreter()
 	 */
 	public IResponseInterpreter createCompileResponseInterpreter()
 	{
@@ -262,7 +272,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	}
 
 	/* (non-Javadoc)
-	 * @see descent.core.builder.ICompilerInterface#createLinkResponseInterpreter()
+	 * @see descent.launching.compiler.ICompilerInterface#createLinkResponseInterpreter()
 	 */
 	public IResponseInterpreter createLinkResponseInterpreter()
 	{

@@ -1,4 +1,4 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import descent.core.IJavaProject;
 

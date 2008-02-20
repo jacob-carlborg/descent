@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class SimpleBuildResponse implements IBuildResponse
 	public final List<IBuildError> errors = new ArrayList<IBuildError>();
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IBuildResponse#wasSuccessful()
+	 * @see descent.launching.compiler.IBuildResponse#wasSuccessful()
 	 */
 	public boolean wasSuccessful()
 	{
@@ -17,7 +17,7 @@ public class SimpleBuildResponse implements IBuildResponse
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IBuildResponse#getBuildErrors()
+	 * @see descent.launching.compiler.IBuildResponse#getBuildErrors()
 	 */
 	public List<IBuildError> getBuildErrors()
 	{

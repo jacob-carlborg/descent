@@ -1,12 +1,12 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import java.io.File;
 
-import descent.core.builder.DmdCompilerInterface;
-import descent.core.builder.IBuildResponse;
-import descent.core.builder.ICompileCommand;
-import descent.core.builder.ICompilerInterface;
-import descent.core.builder.IResponseInterpreter;
+import descent.launching.compiler.DmdCompilerInterface;
+import descent.launching.compiler.IBuildResponse;
+import descent.launching.compiler.ICompileCommand;
+import descent.launching.compiler.ICompilerInterface;
+import descent.launching.compiler.IResponseInterpreter;
 
 /**
  * Ad-hoc tetsing environment to remove when builder is integrated into

@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 /**
  * A class that accepts incoming compiler messages line-by-line after the

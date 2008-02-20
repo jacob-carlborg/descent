@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ public abstract class AbstractExecutableCommand implements IExecutableCommand
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IExecutableCommand#getExecutableName()
+	 * @see descent.launching.compiler.IExecutableCommand#getExecutableName()
 	 */
 	public File getExecutableFile()
 	{
@@ -25,7 +25,7 @@ public abstract class AbstractExecutableCommand implements IExecutableCommand
 	}
 
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IExecutableCommand#setExecutableName(java.lang.String)
+	 * @see descent.launching.compiler.IExecutableCommand#setExecutableName(java.lang.String)
 	 */
 	public void setExecutableFile(File executableFile)
 	{

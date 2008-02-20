@@ -1,9 +1,9 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import descent.core.IJavaProject;
-import descent.core.builder.DmdCompilerInterface;
-import descent.core.builder.ICompilerInterface;
-import descent.core.builder.IExecutableTarget;
+import descent.launching.compiler.DmdCompilerInterface;
+import descent.launching.compiler.ICompilerInterface;
+import descent.launching.compiler.IExecutableTarget;
 
 /**
  * Wrapper for information about a build request. Exactly one object

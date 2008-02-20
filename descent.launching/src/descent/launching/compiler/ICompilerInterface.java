@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 /**
  * Gets information about a compiler (or a compiler suite/tool chain) used in

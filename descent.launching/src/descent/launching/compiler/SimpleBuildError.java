@@ -1,4 +1,4 @@
-package descent.core.builder;
+package descent.launching.compiler;
 
 public class SimpleBuildError implements IBuildError
 {
@@ -24,7 +24,7 @@ public class SimpleBuildError implements IBuildError
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IBuildError#getMessage()
+	 * @see descent.launching.compiler.IBuildError#getMessage()
 	 */
 	public String getMessage()
 	{
@@ -32,7 +32,7 @@ public class SimpleBuildError implements IBuildError
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IBuildError#getFile()
+	 * @see descent.launching.compiler.IBuildError#getFile()
 	 */
 	public String getFile()
 	{
@@ -40,7 +40,7 @@ public class SimpleBuildError implements IBuildError
 	}
 	
 	/* (non-Javadoc)
-	 * @see descent.core.builder.IBuildError#getLine()
+	 * @see descent.launching.compiler.IBuildError#getLine()
 	 */
 	public int getLine()
 	{

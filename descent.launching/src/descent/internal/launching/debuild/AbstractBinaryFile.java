@@ -1,4 +1,4 @@
-package descent.internal.core.builder.debuild;
+package descent.internal.launching.debuild;
 
 import java.io.File;
 
@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.IPath;
 
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
-import descent.internal.core.util.Util;
+import descent.internal.launching.LaunchingPlugin;
 
 public abstract class AbstractBinaryFile implements IBinaryFile
 {
@@ -35,7 +35,7 @@ public abstract class AbstractBinaryFile implements IBinaryFile
 		}
 		catch(JavaModelException e)
 		{
-			Util.log(e);
+			LaunchingPlugin.log(e);
 			return null;
 		}
 	}
