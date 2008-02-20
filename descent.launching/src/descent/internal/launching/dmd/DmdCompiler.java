@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 
 import descent.launching.AbstractVMInstall;
 import descent.launching.IVMInstallType;
+import descent.launching.compiler.ICompilerInterface;
 
 public class DmdCompiler extends AbstractVMInstall {
 
@@ -59,4 +60,8 @@ public class DmdCompiler extends AbstractVMInstall {
 		return new File(getInstallLocation(), "bin/dmd");
 	}
 
+	public ICompilerInterface getCompilerInterface()
+	{
+		return DmdCompilerInterface.getInstance();
+	}
 }

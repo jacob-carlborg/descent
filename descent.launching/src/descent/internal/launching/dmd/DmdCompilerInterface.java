@@ -6,13 +6,12 @@ import java.util.regex.Pattern;
 
 import descent.launching.compiler.AbstractCompileCommand;
 import descent.launching.compiler.AbstractLinkCommand;
-import descent.launching.compiler.IBuildResponse;
 import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
 import descent.launching.compiler.ILinkCommand;
 import descent.launching.compiler.IResponseInterpreter;
-import descent.launching.compiler.SimpleBuildError;
-import descent.launching.compiler.SimpleBuildResponse;
+import descent.launching.compiler.BuildError;
+import descent.launching.compiler.BuildResponse;
 
 public class DmdCompilerInterface implements ICompilerInterface
 {
@@ -194,7 +193,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	// Response interpreter
 	protected static class DmdResponseInterpreter implements IResponseInterpreter
 	{
-		private SimpleBuildResponse resp = new SimpleBuildResponse();
+		private BuildResponse resp = new BuildResponse();
 		
 		private static final Pattern ERROR_WITH_FILENAME = Pattern.compile(
 				"([^\\(\\:]*)" +          // Filename
@@ -219,7 +218,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 				String lineStr = m.group(2);
 				String message = m.group(3);
 				int lineNum = null != lineStr ? Integer.parseInt(lineStr) : -1;
-				resp.addError(new SimpleBuildError(message, file, lineNum));
+				resp.addError(new BuildError(message, file, lineNum));
 				return;
 			}
 		}
@@ -236,10 +235,8 @@ public class DmdCompilerInterface implements ICompilerInterface
 		/* (non-Javadoc)
 		 * @see descent.launching.compiler.ICompileResponseInterpreter#getCompileResponse()
 		 */
-		public IBuildResponse getResponse()
-		{
-			resp.succesful = resp.errors.isEmpty();
-			
+		public BuildResponse getResponse()
+		{	
 			return resp;
 		}
 	}

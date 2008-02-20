@@ -1,22 +1,22 @@
 package descent.launching.compiler;
 
-public class SimpleBuildError implements IBuildError
+public final class BuildError
 {
 	public final String message;
 	public final String file;
 	public final int line;
 	
-	public SimpleBuildError(String message)
+	public BuildError(String message)
 	{
 		this(message, null);
 	}
 	
-	public SimpleBuildError(String message, String file)
+	public BuildError(String message, String file)
 	{
 		this(message, file, -1);
 	}
 	
-	public SimpleBuildError(String message, String file, int line)
+	public BuildError(String message, String file, int line)
 	{
 		this.message = message;
 		this.file = file;

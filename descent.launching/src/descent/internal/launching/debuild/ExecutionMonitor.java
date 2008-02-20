@@ -39,7 +39,7 @@ public class ExecutionMonitor implements Runnable
 
 		void start()
 		{
-			if (thread == null)
+			if (null == thread)
 			{
 				thread = new Thread(new Runnable()
 				{
@@ -107,7 +107,7 @@ public class ExecutionMonitor implements Runnable
 		}
 	}
 	
-	private final IExecutableCommand command;
+	private final String command;
 	private final IResponseInterpreter interpreter;
 	private final String[] environment;
 	private final String workingDir;
@@ -121,7 +121,7 @@ public class ExecutionMonitor implements Runnable
 		if(!command.isValid())
 			throw new IllegalArgumentException("Invalid command");
 		
-		this.command = command;
+		this.command = command.getCommand();
 		this.interpreter = interpreter;
 		this.environment = environment;
 		this.workingDir = workingDir;
@@ -135,11 +135,10 @@ public class ExecutionMonitor implements Runnable
 		
 		try
 		{
-			String cmd = command.getCommand();
 			if(DebuildBuilder.DEBUG)
-				System.out.println(cmd);
+				System.out.println(command);
 			
-			proc = Runtime.getRuntime().exec(cmd,
+			proc = Runtime.getRuntime().exec(command,
 					environment, new File(workingDir));
 			LineByLineReader stdoutReader = 
 				new LineByLineReader(proc.getInputStream(), false);

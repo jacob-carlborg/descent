@@ -31,5 +31,5 @@ public interface IResponseInterpreter
 	/**
 	 * Gets the result of the build command
 	 */
-	public IBuildResponse getResponse();
+	public BuildResponse getResponse();
 }

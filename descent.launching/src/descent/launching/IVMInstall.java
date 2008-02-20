@@ -3,6 +3,8 @@ package descent.launching;
 import java.io.File;
 import java.net.URL;
 
+import descent.launching.compiler.ICompilerInterface;
+
 /**
  * Represents a particular instalation of a D compiler.
  */
@@ -100,5 +102,16 @@ public interface IVMInstall {
 	 * @return the d version of this compiler
 	 */
 	String getJavaVersion();
-
+	
+	/**
+	 * Gets the class used to interface with this compiler type.
+	 * 
+	 * Note: This is in this class instead of in {@link IVMInstallType} since
+	 * different versions of D compilers may have slightly different features
+	 * or interfaces. Generally, though, compilers of the same type will have
+	 * the same interface.
+	 * 
+	 * @return a definition of the command-line interface of this compiler type
+	 */
+	ICompilerInterface getCompilerInterface();
 }

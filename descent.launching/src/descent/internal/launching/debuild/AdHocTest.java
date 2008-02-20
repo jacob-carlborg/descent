@@ -3,7 +3,7 @@ package descent.internal.launching.debuild;
 import java.io.File;
 
 import descent.internal.launching.dmd.DmdCompilerInterface;
-import descent.launching.compiler.IBuildResponse;
+import descent.launching.compiler.BuildResponse;
 import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
 import descent.launching.compiler.IResponseInterpreter;
@@ -39,6 +39,6 @@ public class AdHocTest
 				interpreter, null, WORKING_DIRECTORY);
 		monitor.run();
 		
-		IBuildResponse response = interpreter.getResponse();
+		BuildResponse response = interpreter.getResponse();
 	}
 }

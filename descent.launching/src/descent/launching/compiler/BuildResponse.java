@@ -3,28 +3,27 @@ package descent.launching.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleBuildResponse implements IBuildResponse
+public final class BuildResponse
 {
-	public boolean succesful;
-	public final List<IBuildError> errors = new ArrayList<IBuildError>();
+	public final List<BuildError> errors = new ArrayList<BuildError>();
 	
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.IBuildResponse#wasSuccessful()
 	 */
 	public boolean wasSuccessful()
 	{
-		return succesful;
+		return errors.size() == 0;
 	}
 	
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.IBuildResponse#getBuildErrors()
 	 */
-	public List<IBuildError> getBuildErrors()
+	public List<BuildError> getBuildErrors()
 	{
 		return errors;
 	}
 	
-	public void addError(IBuildError error)
+	public void addError(BuildError error)
 	{
 		errors.add(error);
 	}

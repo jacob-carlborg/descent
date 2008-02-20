@@ -1,5 +1,7 @@
 package descent.launching.compiler;
 
+import descent.launching.IVMInstall;
+
 /**
  * Gets information about a compiler (or a compiler suite/tool chain) used in
  * building. For example, gets info about how the commands are constructed
@@ -7,8 +9,8 @@ package descent.launching.compiler;
  * implementations of this will be a singleton, since only one compiler of a
  * given type exists.
  * 
- * TODO make this an extension point once its relationship to descent.launching
- * has been established.
+ * Clients may discovr the compiler interface for a given compilr by calling
+ * {@link IVMInstall#getCompilerInterface()}
  * 
  * @author Robert Fraser
  */
