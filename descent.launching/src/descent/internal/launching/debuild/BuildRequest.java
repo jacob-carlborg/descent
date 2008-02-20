@@ -1,7 +1,6 @@
 package descent.internal.launching.debuild;
 
 import descent.core.IJavaProject;
-import descent.launching.compiler.DmdCompilerInterface;
 import descent.launching.compiler.ICompilerInterface;
 import descent.launching.compiler.IExecutableTarget;
 
@@ -34,6 +33,7 @@ public class BuildRequest
 	
 	public ICompilerInterface getCompilerInterface()
 	{
-		return DmdCompilerInterface.getInstance();
+		// TODO
+		return null;
 	}
 }

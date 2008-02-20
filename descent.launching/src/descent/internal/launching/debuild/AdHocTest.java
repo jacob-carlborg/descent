@@ -2,7 +2,7 @@ package descent.internal.launching.debuild;
 
 import java.io.File;
 
-import descent.launching.compiler.DmdCompilerInterface;
+import descent.internal.launching.dmd.DmdCompilerInterface;
 import descent.launching.compiler.IBuildResponse;
 import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
