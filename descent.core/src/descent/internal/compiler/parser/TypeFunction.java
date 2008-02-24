@@ -315,23 +315,15 @@ public class TypeFunction extends Type {
 		inuse++;
 		switch (linkage) {
 		case LINKd:
-			mc = 'F';
-			break;
 		case LINKc:
-			mc = 'U';
-			break;
 		case LINKwindows:
-			mc = 'W';
-			break;
 		case LINKpascal:
-			mc = 'V';
-			break;
 		case LINKcpp:
-			mc = 'R';
+			mc = linkage.mangleChar;
 			break;
 		// Added for Descent
 		case LINKsystem:
-			mc = context._WIN32 ? 'W' : 'U';
+			mc = context._WIN32 ? LINK.LINKwindows.mangleChar : LINK.LINKc.mangleChar;
 			break;
 		default:
 			throw new IllegalStateException("assert(0);");
@@ -583,7 +575,7 @@ public class TypeFunction extends Type {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(linkageChar == 0 ? 'F' : linkageChar);
+		sb.append(linkageChar == 0 ? LINK.LINKd.mangleChar : linkageChar);
 		if (parameters != null) {
 			for(Argument arg : parameters) {
 				arg.appendSignature(sb);

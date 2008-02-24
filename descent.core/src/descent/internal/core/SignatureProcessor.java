@@ -3,8 +3,6 @@ package descent.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.internal.compiler.parser.ASTNodeEncoder;
-import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
@@ -29,11 +27,6 @@ public class SignatureProcessor implements ISignatureConstants {
 	 * <p>Nested elements are notified in a top-down fashion. For example,
 	 * if the signature is for a function A inside a function B, A will be
 	 * notified before B.</p>
-	 * 
-	 * <p>Compound names for objects in object.d will be sent correctly, but
-	 * the signature will remain the original. For example, if the signature
-	 * is C6Object, the class { "object", "Object" } with signature C6Object
-	 * will be notified.</p>
 	 * 
 	 * @param signature the signature to process
 	 * @param requestor the signature processor requestor 
@@ -187,9 +180,6 @@ public class SignatureProcessor implements ISignatureConstants {
 						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_VARIADIC && 
 						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK) {
 					i = argumentModifier(signature, i, requestor);
-					
-					int argStart = i;
-					
 					i = process0(signature, i, requestor);
 				}
 				
@@ -197,7 +187,6 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				
 				i = process0(signature, i, requestor);
-				// TODO varargs
 				requestor.exitFunctionType(link, signature.substring(start, i));
 				return i;
 			}
@@ -270,7 +259,6 @@ public class SignatureProcessor implements ISignatureConstants {
 				i = process0(signature, i + 1, requestor);
 				
 				c = signature.charAt(i);
-				
 				n = 0;
 				
 				while(c != SLICE) {
@@ -284,6 +272,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				i += n;
 				
+				c = signature.charAt(i);
 				n = 0;
 				
 				while(c != SLICE) {

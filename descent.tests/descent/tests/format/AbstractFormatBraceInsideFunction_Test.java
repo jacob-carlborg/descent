@@ -13,12 +13,24 @@ public abstract class AbstractFormatBraceInsideFunction_Test extends AbstractFor
 	
 	protected abstract String getBracePositionOptionName();
 	
+	protected boolean needsSemicolon() {
+		return false;
+	}
+	
+	protected boolean ignoreWithComments() {
+		return false;
+	}
+	
+	private String sc() {
+		 return needsSemicolon() ? ";" : "";
+	}
+	
 	public void testBracesAtEndOfLine() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + " {\r\n" +
-				"}", 
+				"}" + sc(), 
 				
-				getUnformattedPrefixForBrace() + " {    }"
+				getUnformattedPrefixForBrace() + " {    }" + sc()
 			);
 	}
 	
@@ -28,9 +40,9 @@ public abstract class AbstractFormatBraceInsideFunction_Test extends AbstractFor
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 				"{\r\n" +
-				"}", 
+				"}" + sc(), 
 				
-				getUnformattedPrefixForBrace() + "  {    }",
+				getUnformattedPrefixForBrace() + "  {    }" + sc(),
 				
 				options
 			);
@@ -42,28 +54,32 @@ public abstract class AbstractFormatBraceInsideFunction_Test extends AbstractFor
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\t{\r\n" +
-					"\t}", 
+					"\t}" + sc(), 
 				
-				getUnformattedPrefixForBrace() + "  {    }",
+				getUnformattedPrefixForBrace() + "  {    }" + sc(),
 				
 				options
 			);
 	}
 	
 	public void testWithComments() throws Exception {
+		if (ignoreWithComments()) {
+			return;
+		}
+		
 		assertFormat(
 				"/*\r\n" +
 				" * Some\r\n" +
 				" * comment\r\n" +
 				" */\r\n" +
 				getFormattedPrefixForBrace() + " { // comment\r\n" +
-				"}", 
+				"}" + sc(),
 				
 				"/*\r\n" +
 				" * Some\r\n" +
 				" * comment\r\n" +
 				" */\r\n" +
-				getUnformattedPrefixForBrace() +  "  { // comment\r\n   }"
+				getUnformattedPrefixForBrace() +  "  { // comment\r\n   }" + sc()
 			);
 	}
 	
@@ -74,9 +90,9 @@ public abstract class AbstractFormatBraceInsideFunction_Test extends AbstractFor
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\t{\r\n" +
 					"\t\tint x;\r\n" +
-					"\t}", 
+					"\t}" + sc(), 
 				
-				getUnformattedPrefixForBrace() +  " {  int x;  }",
+				getUnformattedPrefixForBrace() +  " {  int x;  }" + sc(),
 				
 				options
 			);

@@ -16,7 +16,6 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
-import descent.core.dom.AST;
 import descent.core.dom.CompilationUnit;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.ScannerHelper;
@@ -854,6 +853,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 							space();
 						} 
 						hasWhitespace = false;
+						
 						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						hasLineComment = true;		

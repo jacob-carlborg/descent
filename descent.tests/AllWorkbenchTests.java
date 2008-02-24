@@ -37,26 +37,38 @@ import descent.tests.select.CodeSelectVariable_Test;
 
 /*
  * Here are listed all tests that require a workbench and run relatively
- * slow. You can control which tests to run by modifying the final static
- * fields of this class.
+ * slow.
  * 
  * Right click on this file and select: Run as... -> JUnit Plug-in test
  */
 public class AllWorkbenchTests {
 	
-	private final static boolean BINDING = true;
-	private final static boolean CODE_COMPLETE = true;
-	private final static boolean CODE_EVALUATE = true;
-	private final static boolean CODE_SELECT = true;
-	private final static boolean LOOKUP = true;
-	private final static boolean MODEL = true;
-	private final static boolean SIGNATURE = true;
+	private final static int BINDING = 1;
+	private final static int CODE_COMPLETE = 2;
+	private final static int CODE_EVALUATE = 4;
+	private final static int CODE_SELECT = 8;
+	private final static int LOOKUP = 16;
+	private final static int MODEL = 32;
+	private final static int SIGNATURE = 64;
+	
+	/*
+	 * Comment a line to disable testing a particular feature.
+	 */
+	private final static int enabled = 0
+					| BINDING 
+					| CODE_COMPLETE 
+					| CODE_EVALUATE 
+					| CODE_SELECT 
+					| LOOKUP 
+					| MODEL 
+					| SIGNATURE
+					;
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(
 				"Test which require a workbench");
 		
-		if (BINDING) {
+		if (isEnabled(BINDING)) {
 			suite.addTestSuite(BindingEnum_Test.class);
 			suite.addTestSuite(BindingExpression_Test.class);
 			suite.addTestSuite(BindingFunction_Test.class);
@@ -68,7 +80,7 @@ public class AllWorkbenchTests {
 			suite.addTestSuite(BindingVar_Test.class);
 		}
 		
-		if (CODE_COMPLETE) {
+		if (isEnabled(CODE_COMPLETE)) {
 			suite.addTestSuite(CompletionOnBreakStatement_Test.class);
 			suite.addTestSuite(CompletionOnCaseStatement_Test.class);
 			suite.addTestSuite(CompletionOnContinueStatement_Test.class);
@@ -81,11 +93,11 @@ public class AllWorkbenchTests {
 			suite.addTestSuite(CompletionOnTypeDotIdExp_Test.class);
 		}
 		
-		if (CODE_EVALUATE) {
+		if (isEnabled(CODE_EVALUATE)) {
 			suite.addTestSuite(Evaluate_Test.class);
 		}
 		
-		if (CODE_SELECT) {
+		if (isEnabled(CODE_SELECT)) {
 			suite.addTestSuite(CodeSelectEnum_Test.class);
 			suite.addTestSuite(CodeSelectFunction_Test.class);
 			suite.addTestSuite(CodeSelectLocalSymbol_Test.class);
@@ -96,22 +108,26 @@ public class AllWorkbenchTests {
 			suite.addTestSuite(CodeSelecType_Test.class);
 		}
 		
-		if (LOOKUP) {
+		if (isEnabled(LOOKUP)) {
 			suite.addTestSuite(Lookup_Test.class);
 			suite.addTestSuite(LookupPhobos_Test.class);
 			suite.addTestSuite(LookupTemplate_Test.class);
 		}
 		
-		if (MODEL) {
+		if (isEnabled(MODEL)) {
 			suite.addTestSuite(CreationTest.class);
 			suite.addTestSuite(HierarchyTest.class);
 		}
 		
-		if (SIGNATURE) {
+		if (isEnabled(SIGNATURE)) {
 			suite.addTestSuite(CustomSignature_Test.class);
 		}
 		
 		return suite;
+	}
+	
+	private static boolean isEnabled(int num) {
+		return (enabled & num) != 0;
 	}
 
 }

@@ -271,8 +271,8 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS2() throws Exception {
 		assertFormat(
 				"new(x) class {\r\n" +
-				"}",
-				"new (x) class { }"
+				"};",
+				"new (x) class { };"
 				);
 	}
 	
@@ -281,8 +281,8 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"new (x) class {\r\n" +
-				"}",
-				"new (x) class { }",
+				"};",
+				"new (x) class { };",
 				options
 				);
 	}
@@ -302,8 +302,8 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_NEW_ARGUMENTS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"new( x) class {\r\n" +
-				"}",
-				"new (x) class { }",
+				"};",
+				"new (x) class { };",
 				options
 				);
 	}

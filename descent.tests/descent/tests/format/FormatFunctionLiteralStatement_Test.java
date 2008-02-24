@@ -14,6 +14,17 @@ public class FormatFunctionLiteralStatement_Test extends AbstractFormatBraceInsi
 	}
 	
 	@Override
+	protected boolean needsSemicolon() {
+		return true;
+	}
+	
+	// TODO Descent tests return false and fix
+	@Override
+	protected boolean ignoreWithComments() {
+		return true;
+	}
+	
+	@Override
 	protected String getBracePositionOptionName() {
 		return DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_LITERAL;
 	}

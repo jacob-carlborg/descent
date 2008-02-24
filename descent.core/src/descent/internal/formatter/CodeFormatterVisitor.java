@@ -873,7 +873,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		else
 		{
 			formatOpeningBrace(prefs.brace_position_for_enum_declaration, prefs.indent_enum_members_compare_to_enum_header);
-			scribe.printNewLine();
+			
 			for(EnumMember member : node.enumMembers())
 			{
 				member.accept(this);
@@ -1106,6 +1106,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		
 		formatFunction(node, prefs.brace_position_for_function_literal);
+		
+		scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
 		return false;
 	}
 	
@@ -1502,6 +1504,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 					prefs.alignment_for_base_class_lists);
 		}
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_anonymous_type, true);
+		
+		scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
 		return false;
 	}
 	
@@ -2647,7 +2651,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(isNextToken(TOK.TOKlcurly))
 		{
 			formatOpeningBrace(bracePosition, indent);
-			scribe.printNewLine();
 			formatDeclarations(declarations);
 			scribe.printNewLine();
 			formatClosingBrace(bracePosition, indent);
@@ -3012,7 +3015,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(statement instanceof Block)
 		{
 			formatOpeningBrace(bracePosition, indent);
-			scribe.printNewLine();
 			formatStatements(((Block) statement).statements(), true, false);
 			formatClosingBrace(bracePosition, indent);
 		}		
@@ -3035,7 +3037,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(newLineAtEnd) {
 			scribe.printNewLine();
 		} else {
-			scribe.space();
+			// Need this check for function literal declarations and
+			// annonymous classes
+			if (isNextToken(TOK.TOKsemicolon)) {
+				if (prefs.insert_space_before_semicolon) {
+					scribe.space();
+				}
+			} else {
+				scribe.space();
+			}
 		}
 		
 		return simple;
@@ -3055,10 +3065,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		}
 		scribe.printNextToken(TOK.TOKlcurly);
+		scribe.printTrailingComment();
 		if (indent) {
 			scribe.indent();
 		}
-		scribe.printTrailingComment();
+		scribe.printNewLine();
 	}
 	
 	private void formatClosingBrace(BracePosition bracePosition, boolean indent)

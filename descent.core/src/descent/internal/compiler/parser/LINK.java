@@ -6,12 +6,22 @@ import descent.core.dom.ExternDeclaration.Linkage;
 public enum LINK {
 	
     LINKdefault,
-    LINKd,
-    LINKc,
-    LINKcpp,
-    LINKwindows,
-    LINKpascal,
+    LINKd('F'),
+    LINKc('U'),
+    LINKcpp('R'),
+    LINKwindows('W'),
+    LINKpascal('V'),
     LINKsystem;
+    
+    public char mangleChar;
+    
+    private LINK() {
+    	
+    }
+    
+    private LINK(char mangleChar) {
+    	this.mangleChar = mangleChar;
+    }
     
     public Linkage getLinkage() {
     	switch(this) {

@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Timer;
 
 import descent.internal.core.trace.Fan;
 import descent.internal.core.trace.Trace;

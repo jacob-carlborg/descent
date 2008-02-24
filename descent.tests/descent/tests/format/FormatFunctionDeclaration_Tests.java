@@ -145,6 +145,18 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		}
 	}
 	
+	public void testBodyTrailingComment() throws Exception {
+		for(String prefix : prefixes) {
+			assertFormat(
+					prefix + "() { // comment\r\n" +
+					"}", 
+					
+					prefix + "()  {   // comment\r\n" +
+					"}"
+				);
+		}
+	}
+	
 	public void testBracesNextLine() throws Exception {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE);

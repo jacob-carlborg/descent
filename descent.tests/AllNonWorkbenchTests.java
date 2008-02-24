@@ -37,8 +37,9 @@ import descent.tests.format.FormatWhitespaceDeclarations_Test;
 import descent.tests.format.FormatWhitespaceStatements_Test;
 import descent.tests.format.FormatWithStatement_Test;
 import descent.tests.mangling.Demangler_Test;
+import descent.tests.mangling.SignatureParameterCount_Test;
 import descent.tests.mangling.SignatureProcessor_Test;
-import descent.tests.mangling.Signature_Test;
+import descent.tests.mangling.SignatureToCharArray_Test;
 import descent.tests.mars.ASTConvertion_Test;
 import descent.tests.mars.Alias_Test;
 import descent.tests.mars.Align_Test;
@@ -97,34 +98,46 @@ import descent.tests.trace.Trace_Test;
 
 /*
  * Here are listed all tests that doesn't require a workbench and run relatively
- * fast. You can control which tests to run by modifying the final static
- * fields of this class.
+ * fast.
  * 
  * Right click on this file and select: Run as... -> JUnit test
  */
 public class AllNonWorkbenchTests {
 	
-	private final static boolean DDOC = true;
-	private final static boolean DEBUGGER = true;
-	private final static boolean FORMATTER = true;
-	private final static boolean LEXER_PARSER = true;
-	private final static boolean SIGNATURE = true;
-	private final static boolean REWRITE = true;
-	private final static boolean TRACE = true;
+	private final static int DDOC = 1;
+	private final static int DEBUGGER = 2;
+	private final static int FORMATTER = 4;
+	private final static int LEXER_PARSER = 8;
+	private final static int SIGNATURE = 16;
+	private final static int REWRITE = 32;
+	private final static int TRACE = 64;
+	
+	/*
+	 * Comment a line to disable testing a particular feature.
+	 */
+	private final static int enabled = 0
+//					| DDOC 
+//					| DEBUGGER 
+//					| FORMATTER 
+//					| LEXER_PARSER 
+					| SIGNATURE 
+//					| REWRITE 
+//					| TRACE
+					;
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(
 				"Test which doesn't require a workbench");
 		
-		if (DDOC) {
+		if (isEnabled(DDOC)) {
 			suite.addTestSuite(DdocParserTests.class);
 		}
 		
-		if (DEBUGGER) {
+		if (isEnabled(DEBUGGER)) {
 			suite.addTestSuite(DdbgDebuggerTests.class);
 		}
 		
-		if (FORMATTER) {
+		if (isEnabled(FORMATTER)) {
 			suite.addTestSuite(FormatAliasDeclaration_Test.class);
 			suite.addTestSuite(FormatAlignDeclaration_Test.class);
 			suite.addTestSuite(FormatClassDeclaration_Test.class);
@@ -162,7 +175,7 @@ public class AllNonWorkbenchTests {
 			suite.addTestSuite(FormatWithStatement_Test.class);
 		}
 		
-		if (LEXER_PARSER) {
+		if (isEnabled(LEXER_PARSER)) {
 			suite.addTestSuite(Alias_Test.class);
 			suite.addTestSuite(Align_Test.class);
 			suite.addTestSuite(ASTConvertion_Test.class);
@@ -200,13 +213,14 @@ public class AllNonWorkbenchTests {
 			suite.addTestSuite(VariableDeclaration_Test.class);
 		}
 		
-		if (SIGNATURE) {
+		if (isEnabled(SIGNATURE)) {
 			suite.addTestSuite(Demangler_Test.class);
-			suite.addTestSuite(Signature_Test.class);
-			suite.addTestSuite(SignatureProcessor_Test.class);
+			suite.addTestSuite(SignatureParameterCount_Test.class);
+			suite.addTestSuite(SignatureToCharArray_Test.class);
+//			suite.addTestSuite(SignatureProcessor_Test.class);
 		}
 		
-		if (REWRITE) {
+		if (isEnabled(REWRITE)) {
 			suite.addTestSuite(RewriteAggregateDeclarationTest.class);
 			suite.addTestSuite(RewriteAliasDeclarationTest.class);
 			suite.addTestSuite(RewriteAlignDeclarationTest.class);
@@ -229,11 +243,15 @@ public class AllNonWorkbenchTests {
 			suite.addTestSuite(RewriteTypeTest.class);
 		}
 		
-		if (TRACE) {
+		if (isEnabled(TRACE)) {
 			suite.addTestSuite(Trace_Test.class);
 		}
 		
 		return suite;
+	}
+
+	private static boolean isEnabled(int num) {
+		return (enabled & num) != 0;
 	}
 
 }

@@ -495,7 +495,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private boolean isInRange(ASTDmdNode node) {
-		return node.start <= offset && offset + length <= node.start + node.length;
+		return node != null && node.start <= offset && offset + length <= node.start + node.length;
 	}
 	
 	private void addLocalVar(VarDeclaration node) {

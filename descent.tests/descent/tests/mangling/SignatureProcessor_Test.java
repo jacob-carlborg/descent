@@ -64,10 +64,10 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		
 		checking(new Expectations() {{
 			one(requestor).acceptPrimitive(Type.tint32); inSequence(s);
-			one(requestor).acceptStaticArray(new char[] { '3' }, "G3i"); inSequence(s);
+			one(requestor).acceptStaticArray(new char[] { '3' }, "G1G3i"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("G3i", requestor);
+		SignatureProcessor.process("G1G3i", requestor);
 		
 		mockery.assertIsSatisfied();
 	}

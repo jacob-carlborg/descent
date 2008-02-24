@@ -1,6 +1,5 @@
 package descent.internal.core;
 
-import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.TypeBasic;
