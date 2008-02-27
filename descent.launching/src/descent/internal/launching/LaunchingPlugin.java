@@ -70,7 +70,9 @@ import descent.launching.environments.IExecutionEnvironmentsManager;
  * The activator class controls the plug-in life cycle
  */
 public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChangeListener, IVMInstallChangedListener, IResourceChangeListener {
-
+	
+	// TODO add the rebuildEventListener extension point
+	
 	// The plug-in ID
 	public static final String PLUGIN_ID = "descent.launching"; //$NON-NLS-1$
 	public static final String ID_PLUGIN = PLUGIN_ID;

@@ -1,8 +1,8 @@
 package descent.debug.core;
 
-import descent.launching.target.IExecutableTarget;
+import descent.launching.AbstractExecutableTarget;
 
-public class DebugExecutableTarget implements IExecutableTarget
+public class DebugExecutableTarget extends AbstractExecutableTarget
 {
 
 }

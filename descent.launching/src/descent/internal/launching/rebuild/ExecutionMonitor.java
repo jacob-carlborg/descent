@@ -1,4 +1,4 @@
-package descent.internal.launching.debuild;
+package descent.internal.launching.rebuild;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import descent.internal.launching.LaunchingPlugin;
-import descent.launching.compiler.IExecutableCommand;
 import descent.launching.compiler.IResponseInterpreter;
 
 /**
@@ -114,14 +113,12 @@ public class ExecutionMonitor implements Runnable
 	
 	private boolean finished = false;
 	
-	public ExecutionMonitor(IExecutableCommand command,
-			IResponseInterpreter interpreter, String[] environment,
+	public ExecutionMonitor(String command,
+			IResponseInterpreter interpreter,
+			String[] environment,
 			String workingDir)
-	{
-		if(!command.isValid())
-			throw new IllegalArgumentException("Invalid command");
-		
-		this.command = command.getCommand();
+	{	
+		this.command = command;
 		this.interpreter = interpreter;
 		this.environment = environment;
 		this.workingDir = workingDir;
@@ -135,7 +132,7 @@ public class ExecutionMonitor implements Runnable
 		
 		try
 		{
-			if(DebuildBuilder.DEBUG)
+			if(RebuildBuilder.DEBUG)
 				System.out.println(command);
 			
 			proc = Runtime.getRuntime().exec(command,

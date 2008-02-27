@@ -1,7 +1,8 @@
-package descent.internal.launching.debuild;
+package descent.internal.launching.rebuild;
 
+import descent.core.IJavaProject;
+import descent.launching.IExecutableTarget;
 import descent.launching.compiler.ICompilerInterface;
-import descent.launching.target.IExecutableTarget;
 
 /**
  * Wrapper for information about a build request. Exactly one object
@@ -25,9 +26,20 @@ public class BuildRequest
 		this.target = target;
 	}
 	
+	/**
+	 * Gets the class to interface with the compiler
+	 */
 	public ICompilerInterface getCompilerInterface()
 	{
 		// TODO
 		return null;
+	}
+	
+	/**
+	 * Gets the project being built
+	 */
+	public IJavaProject getProject()
+	{
+		return target.getProject();
 	}
 }

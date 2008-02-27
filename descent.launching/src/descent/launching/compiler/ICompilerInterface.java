@@ -15,26 +15,10 @@ import descent.launching.IVMInstall;
  * @author Robert Fraser
  */
 public interface ICompilerInterface
-{
+{	
 	/**
-	 * Creates a new compile command of the correct type for this compiler.
+	 * Creates an interpreter that will interpret the command-line results
+	 * of calling Rebuild.
 	 */
-	public ICompileCommand createCompileCommand();
-	
-	/**
-	 * Creates a new link command of the correct type for this compiler.
-	 */
-	public ILinkCommand createLinkCommand();
-	
-	/**
-	 * Creates a new response interpreter of the correct type for
-	 * this compiler.
-	 */
-	public IResponseInterpreter createCompileResponseInterpreter();
-	
-	/**
-	 * Creates a new response interpreter of the correct type for this
-	 * linker.
-	 */
-	public IResponseInterpreter createLinkResponseInterpreter();
+	public IResponseInterpreter createRebuildResponseInterpreter();
 }

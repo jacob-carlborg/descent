@@ -32,7 +32,7 @@ import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
-import descent.launching.target.IExecutableTarget;
+import descent.launching.IExecutableTarget;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.utils.ArgumentUtils;
 

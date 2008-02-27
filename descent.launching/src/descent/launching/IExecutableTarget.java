@@ -1,4 +1,6 @@
-package descent.launching.target;
+package descent.launching;
+
+import descent.core.IJavaProject;
 
 /**
  * Interface for providing information about a requested compile. The way the
@@ -16,5 +18,8 @@ package descent.launching.target;
  */
 public interface IExecutableTarget
 {
-	
+	/**
+	 * Gets the project currently being built.
+	 */
+	public IJavaProject getProject();
 }
