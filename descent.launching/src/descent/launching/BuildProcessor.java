@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 
 import descent.internal.launching.LaunchingPlugin;
-import descent.internal.launching.rebuild.RebuildBuilder;
+import descent.internal.launching.debuild.DebuildBuilder;
 
 public class BuildProcessor
 {
@@ -49,7 +49,7 @@ public class BuildProcessor
 	{
 		try
 		{
-			String executableFilePath = RebuildBuilder.build(target, pm);
+			String executableFilePath = DebuildBuilder.build(target, pm);
 			Assert.isTrue(null != executableFilePath);
 			notifyBuildSucceeded(target, executableFilePath);
 			return executableFilePath;
@@ -82,7 +82,7 @@ public class BuildProcessor
 		{
 			public void run() throws Exception
 			{
-				for(IRebuildEventListener listener : listeners)
+				for(IDebuildEventListener listener : listeners)
 				{
 					listener.buildStarted(build);
 				}
@@ -96,7 +96,7 @@ public class BuildProcessor
 		{
 			public void run() throws Exception
 			{
-				for(IRebuildEventListener listener : listeners)
+				for(IDebuildEventListener listener : listeners)
 				{
 					listener.buildFailed(build);
 				}
@@ -110,7 +110,7 @@ public class BuildProcessor
 		{
 			public void run() throws Exception
 			{
-				for(IRebuildEventListener listener : listeners)
+				for(IDebuildEventListener listener : listeners)
 				{
 					listener.buildCancelled(build);
 				}
@@ -125,7 +125,7 @@ public class BuildProcessor
 		{
 			public void run() throws Exception
 			{
-				for(IRebuildEventListener listener : listeners)
+				for(IDebuildEventListener listener : listeners)
 				{
 					listener.buildSucceeded(build, executableFilePath);
 				}
@@ -136,16 +136,16 @@ public class BuildProcessor
 	//--------------------------------------------------------------------------
 	// Listener management
 	
-	private final List<IRebuildEventListener> listeners = 
-		new ArrayList<IRebuildEventListener>();
+	private final List<IDebuildEventListener> listeners = 
+		new ArrayList<IDebuildEventListener>();
 	
-	public void addListener(IRebuildEventListener listener)
+	public void addListener(IDebuildEventListener listener)
 	{
 		if(!listeners.contains(listener))
 			listeners.add(listener);
 	}
 	
-	public void removeListener(IRebuildEventListener listener)
+	public void removeListener(IDebuildEventListener listener)
 	{
 		listeners.remove(listener);
 	}

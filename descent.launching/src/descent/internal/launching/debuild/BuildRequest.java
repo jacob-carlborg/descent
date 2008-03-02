@@ -1,5 +1,6 @@
-package descent.internal.launching.rebuild;
+package descent.internal.launching.debuild;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.launching.IExecutableTarget;
 import descent.launching.compiler.ICompilerInterface;
@@ -27,7 +28,7 @@ public class BuildRequest
 	}
 	
 	/**
-	 * Gets the class to interface with the compiler
+	 * Gets the compiler interface for the compiler for this project
 	 */
 	public ICompilerInterface getCompilerInterface()
 	{
@@ -36,10 +37,19 @@ public class BuildRequest
 	}
 	
 	/**
-	 * Gets the project being built
+	 * Gets the Java project being built
 	 */
 	public IJavaProject getProject()
 	{
 		return target.getProject();
+	}
+	
+	/**
+	 * Gets all the compilation units that must be built for this target
+	 */
+	public ICompilationUnit[] getCompilationUnits()
+	{
+		// TODO
+		return null;
 	}
 }

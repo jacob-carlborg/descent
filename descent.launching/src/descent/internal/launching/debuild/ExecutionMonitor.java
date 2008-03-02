@@ -1,4 +1,4 @@
-package descent.internal.launching.rebuild;
+package descent.internal.launching.debuild;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -132,7 +132,7 @@ public class ExecutionMonitor implements Runnable
 		
 		try
 		{
-			if(RebuildBuilder.DEBUG)
+			if(DebuildBuilder.DEBUG)
 				System.out.println(command);
 			
 			proc = Runtime.getRuntime().exec(command,

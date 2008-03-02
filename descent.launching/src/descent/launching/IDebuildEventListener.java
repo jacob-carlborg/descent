@@ -6,7 +6,7 @@ package descent.launching;
  *
  * @author Robert Fraser
  */
-public interface IRebuildEventListener
+public interface IDebuildEventListener
 {
 	/**
 	 * Called when a new build is started.

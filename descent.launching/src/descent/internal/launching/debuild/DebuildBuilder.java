@@ -1,43 +1,43 @@
-package descent.internal.launching.rebuild;
+package descent.internal.launching.debuild;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import descent.core.ICompilationUnit;
 import descent.launching.IExecutableTarget;
 import descent.launching.BuildProcessor.BuildCancelledException;
 import descent.launching.BuildProcessor.BuildFailedException;
 
 /**
- * Main builder class for building an executable target. Uses Gregor Richards'
- * Rebuild to perform the actual build (since otherwise Descent would have to
- * load and pase library files -- using Rebuild helps separate library
- * requirements from project requirements).
+ * The main engine of the descent remote builder. Given an executable target
+ * (info on what type of executable is needed) and a project, performs the
+ * build. The publuc interface of this class can be accessed via the
+ * {@link #build(IExecutableTarget, IProgressMonitor)} method,
+ * which will initiat a build.
  * 
- * This class should only be accessed by 
- * {@link descent.launching.BuildProcessor} via the static
- * {@link #build(IExecutableTarget, IProgressMonitor)} method.
- *
  * @author Robert Fraser
  */
-public class RebuildBuilder
+public class DebuildBuilder
 {
 	/**
 	 * Public interface to the debuild builder, which initiates a new build
 	 * based on the given executable target. The target
 	 * should contain information on what is to be built. Returns the path to
 	 * the executable file if one is built (or already exists in the project).
-	 * Throws an exception of either {@link BuildFailedException} or
-	 * {@link BuildCancelledException} if the build was unable to complete.
-	 * Will never return null.
+	 * Will always return non-null, and will throw either a BuildFailedException
+	 * or a BuildCancelledException if the buikd does not succeed.
 	 * 
 	 * @param target information about the target executable to be built
 	 * @param pm     a monitor to track the progress of the build
-	 * @return       the path to the executable file
+	 * @return       the path to the executable file,
 	 */
 	public static String build(IExecutableTarget target, IProgressMonitor pm)
 	{
-		RebuildBuilder builder = new RebuildBuilder(new BuildRequest(target));
-		return builder.build(pm);
+		DebuildBuilder builder = new DebuildBuilder(new BuildRequest(target));
+		String exe = builder.build(pm);
+		Assert.isTrue(null != exe);
+		return exe;
 	}
 	
 	/* package */ static final boolean DEBUG = true;
@@ -45,7 +45,7 @@ public class RebuildBuilder
 	private final BuildRequest req;
 	private final ErrorReporter err;
 	
-	private RebuildBuilder(BuildRequest req)
+	private DebuildBuilder(BuildRequest req)
 	{
 		this.req = req;
 		this.err = new ErrorReporter(req.getProject());
@@ -59,6 +59,19 @@ public class RebuildBuilder
 		if(pm.isCanceled())
 			throw new BuildCancelledException();
 		
-		throw new BuildFailedException();
+		try
+		{
+			pm.beginTask("Building D application", 1000);
+			
+			// Collect dependancies for each file that must be built
+			ICompilationUnit[] compilationUnits = req.getCompilationUnits();
+			
+			// TODO
+			throw new BuildFailedException();
+		}
+		finally
+		{
+			pm.done();
+		}
 	}
 }
