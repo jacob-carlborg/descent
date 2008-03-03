@@ -18,7 +18,7 @@ import descent.launching.compiler.ICompileCommand;
 public class ObjectFile extends AbstractBinaryFile
 {
 	public static final int MAX_FILENAME_LENGTH      = 127;
-	public static final int PREFIX_LENGTH            = 16;
+	public static final int PREFIX_LENGTH            = 15;
 	
 	public static final int SYMBOLIC_DEBUG           = 0x01;
 	public static final int UNITTEST                 = 0x02;
@@ -34,9 +34,9 @@ public class ObjectFile extends AbstractBinaryFile
 	public static final char   PACKAGE_SEPARATOR     = '-';
 	
 	private static final char[] BASE_64_CHARS = 
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+$"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+="
 		.toCharArray();
-	private static final char BASE_64_PLACEHOLDER = '=';
+	private static final char BASE_64_PLACEHOLDER = '_';
 	
 	private static final Comparator<File> NEWEST_FIRST_COMPARATOR =
 		new Comparator<File>()
@@ -47,7 +47,7 @@ public class ObjectFile extends AbstractBinaryFile
 			}
 		};
 	
-	public final String moduleName;
+	public String moduleName;
 	
 	public boolean addDebugInfo;
 	public boolean addUnittests;
@@ -63,10 +63,9 @@ public class ObjectFile extends AbstractBinaryFile
 	public Integer debugLevel;   // Or null if no debug level
 	public Integer versionLevel; // Or null if no version level
 	
-	public ObjectFile(String moduleName, IJavaProject proj)
+	public ObjectFile(IJavaProject proj)
 	{
 		super(proj);
-		this.moduleName = moduleName;
 		setDefaults();
 	}
 	
@@ -127,6 +126,7 @@ public class ObjectFile extends AbstractBinaryFile
 	
 	private void setDefaults()
 	{
+		moduleName = null;
 		addDebugInfo = true;
 		addUnittests = false;
 		addAssertsAndContracts = true;
@@ -172,7 +172,7 @@ public class ObjectFile extends AbstractBinaryFile
 		 * must be exactly {@link PREFIX_LENGTH}.
 		 */
 		buf.append(FILETYPE_PREFIX);
-		buf.append(base64Encode(opts, 3));
+		buf.append(base64Encode(opts, 2));
 		buf.append(base64Encode(hashInfo(versionIdents, versionLevel), 6));
 		buf.append(base64Encode(hashInfo(debugIdents, debugLevel), 6));
 		Assert.isTrue(buf.length() == PREFIX_LENGTH);

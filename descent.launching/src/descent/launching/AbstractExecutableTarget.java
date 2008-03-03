@@ -1,5 +1,9 @@
 package descent.launching;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 
 /**
@@ -13,10 +17,14 @@ import descent.core.IJavaProject;
 public abstract class AbstractExecutableTarget implements IExecutableTarget
 {
 	private IJavaProject project;
+	private final Set<ICompilationUnit> compilationUnits = new HashSet<ICompilationUnit>();
 	
 	protected AbstractExecutableTarget()
 	{
-		
+		ICompilationUnit[] defaultCompilationUnits = getDefaultCompilationUnits();
+		if(null != defaultCompilationUnits)
+			for(ICompilationUnit cu : defaultCompilationUnits)
+				compilationUnits.add(cu);
 	}
 	
 	public IJavaProject getProject()
@@ -27,5 +35,25 @@ public abstract class AbstractExecutableTarget implements IExecutableTarget
 	public void setProject(IJavaProject project)
 	{
 		this.project = project;
+	}
+	
+	public void addCompilationUnit(ICompilationUnit cu)
+	{
+		compilationUnits.add(cu);
+	}
+	
+	public void removeCompilationUnit(ICompilationUnit cu)
+	{
+		compilationUnits.remove(cu);
+	}
+	
+	public Set<ICompilationUnit> getCompilationUnits()
+	{
+		return compilationUnits;
+	}
+	
+	protected ICompilationUnit[] getDefaultCompilationUnits()
+	{
+		return null;
 	}
 }

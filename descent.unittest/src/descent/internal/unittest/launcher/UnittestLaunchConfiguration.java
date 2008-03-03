@@ -12,11 +12,7 @@
 package descent.internal.unittest.launcher;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,20 +21,17 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
-import descent.launching.IExecutableTarget;
+import descent.debug.core.AbstractDescentLaunchConfigurationDelegate;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
-import descent.internal.debug.core.DescentLaunchConfigurationDelegate;
 import descent.internal.unittest.DescentUnittestPlugin;
-import descent.internal.unittest.model.DescentUnittestModel;
 import descent.unittest.ITestSpecification;
 
 /**
  * Launch configuration delegate for a set of D unit tests
  */
 public class UnittestLaunchConfiguration extends 
-	DescentLaunchConfigurationDelegate 
+	AbstractDescentLaunchConfigurationDelegate 
 {
 	/**
 	 * The file to load as the list of tests to prioritize (maybe I should
@@ -60,12 +53,22 @@ public class UnittestLaunchConfiguration extends
 			if (monitor.isCanceled())
 				return;
 			
-			// Launch the applicataion
-			super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
+			//Find the tests
+			IJavaProject project = verifyJavaProject(config);
+			List<ITestSpecification> tests = findTests(project,
+					new SubProgressMonitor(monitor, 15));
 			
-			// Find the tests (this takes up most of the monitor because
-			// for a large project, this can take a long time)
-			List<ITestSpecification> tests = findTests(config, new SubProgressMonitor(monitor, 65));
+			// Create the executale target
+			UnittestExecutableTarget target = new UnittestExecutableTarget();
+			target.setProject(project);
+			for(ITestSpecification test : tests)
+				target.addCompilationUnit(test.getDeclaration().getCompilationUnit());
+			
+			// Build and launch the applicataion
+			boolean launched = launchExecutableTarget(config, target, mode, launch, 
+					new SubProgressMonitor(monitor, 80));
+			if(!launched)
+				return;
 			
 			// Transfer the launch config attributes to the launch
 			launch.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, getProjectName(config));
@@ -81,22 +84,15 @@ public class UnittestLaunchConfiguration extends
 		}
 	}
 	
-	List<ITestSpecification> findTests(ILaunchConfiguration config, IProgressMonitor monitor) 
+	private static List<ITestSpecification> findTests(IJavaProject project, 
+			IProgressMonitor monitor) 
 		throws CoreException
 	{
-		IJavaProject project = getJavaProject(config);
 		Object[] elements = new Object[] { project };
 		final List<ITestSpecification> result = 
 			new ArrayList<ITestSpecification>(DUnittestFinder.LIST_PREALLOC);
 		DUnittestFinder.findTestsInContainer(elements, result, monitor);
 		return result;
-	}
-	
-	@Override
-	protected IExecutableTarget getExecutableTarget(
-			ILaunchConfiguration config, String mode)
-	{
-		return new UnittestExecutableTarget();
 	}
 
 	@Override

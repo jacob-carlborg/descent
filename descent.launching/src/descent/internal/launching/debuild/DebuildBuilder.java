@@ -35,9 +35,7 @@ public class DebuildBuilder
 	public static String build(IExecutableTarget target, IProgressMonitor pm)
 	{
 		DebuildBuilder builder = new DebuildBuilder(new BuildRequest(target));
-		String exe = builder.build(pm);
-		Assert.isTrue(null != exe);
-		return exe;
+		return builder.build(pm);
 	}
 	
 	/* package */ static final boolean DEBUG = true;
@@ -63,8 +61,10 @@ public class DebuildBuilder
 		{
 			pm.beginTask("Building D application", 1000);
 			
-			// Collect dependancies for each file that must be built
-			ICompilationUnit[] compilationUnits = req.getCompilationUnits();
+			System.out.println("Okay, we buildin'!");
+			
+			for(ICompilationUnit cu : req.getCompilationUnits())
+				System.out.println(cu.getFullyQualifiedName());
 			
 			// TODO
 			throw new BuildFailedException();

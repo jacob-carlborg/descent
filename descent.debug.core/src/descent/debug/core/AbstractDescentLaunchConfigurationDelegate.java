@@ -2,6 +2,7 @@ package descent.debug.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -22,21 +25,34 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStatusHandler;
+import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.internal.debug.core.model.DescentDebugTarget;
+import descent.launching.BuildProcessor;
 import descent.launching.IExecutableTarget;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.utils.ArgumentUtils;
+import descent.debug.core.utils.ProcessFactory;
 
 public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
+	
+	private static final boolean USE_NEW_BUILDER = true;
 	
 	/**
 	 * The project containing the programs file being launched
@@ -507,13 +523,176 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 		return DebugPlugin.getDefault().getLaunchManager().getEnvironment(config);
 	}
 	
-	/**
-	 * Gets the executable target request for this launch. Intended to be
-	 * overriden by subclasses who use different executable targets.
-	 */
-	protected IExecutableTarget getExecutableTarget(ILaunchConfiguration config,
-			String mode)
+	public boolean launchExecutableTarget(
+			ILaunchConfiguration config,
+			IExecutableTarget target,
+			String mode, ILaunch launch,
+			IProgressMonitor monitor) throws CoreException
 	{
-		return new DebugExecutableTarget();
+		if (monitor == null) {
+			monitor = new NullProgressMonitor();
+		}
+		monitor.beginTask("Launching Local D Application", 100); //$NON-NLS-1$
+		// check for cancellation
+		if (monitor.isCanceled()) {
+			return false;
+		}
+		try {
+			monitor.worked(1);
+			
+			String exePath;
+			if(USE_NEW_BUILDER)
+			{
+				exePath = BuildProcessor.getInstance().build(target, new SubProgressMonitor(monitor, 90));
+				if(null == exePath)
+					return false;
+			}
+			else
+			{
+				exePath = verifyProgramPath(config).toOSString();
+			}
+			
+			verifyJavaProject(config);
+			
+			String[] arguments = getProgramArgumentsArray(config);
+
+			// set the default source locator if required
+			// setDefaultSourceLocator(launch, config);
+			
+			File wd = getWorkingDirectory(config);
+			if (wd == null) {
+				wd = new File(System.getProperty("user.home", ".")); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			
+			if (mode.equals(ILaunchManager.DEBUG_MODE)) {
+				final IDebugger debugger = verifyDebugger();
+				
+				String debuggerPath = verifyDebuggerPath();
+				
+				ArrayList command = new ArrayList(1);
+				command.add(debuggerPath);
+				command.add(ArgumentUtils.toStringArgument(exePath));
+				
+				command.addAll(debugger.getDebuggerCommandLineArguments());
+				
+				if (arguments.length > 0) {
+					command.addAll(debugger.getDebugeeCommandLineArguments(arguments));
+				}
+				
+				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
+				monitor.worked(5);
+				Process process = exec(commandArray, getNullableEnvironment(config), wd);
+				monitor.worked(3);
+				
+				// Launch the process but wait until the first end communication string
+				// to proceed with the real launching
+				final IPreferenceStore preferenceStore = DescentDebugPlugin.getDefault().getPreferenceStore();
+				final int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DEBUGGER_TIMEOUT);
+
+				final Semaphore sem = new Semaphore(0);
+				
+				final IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
+				iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
+
+					public void streamAppended(String text, IStreamMonitor monitor) {
+						if (text.trim().equals(debugger.getEndCommunicationString())) {
+							iprocess.getStreamsProxy().getOutputStreamMonitor().removeListener(this);
+							sem.release();
+						}
+					}
+					
+				});
+
+			
+				try {
+					boolean acquired = sem.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				DescentDebugTarget dbgTarget = new DescentDebugTarget(launch, iprocess, debugger);		
+				launch.addDebugTarget(dbgTarget);
+				
+				dbgTarget.started();
+			} else {
+				ArrayList command = new ArrayList(1 + arguments.length);
+				command.add(exePath);
+				command.addAll(Arrays.asList(arguments));
+				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
+				monitor.worked(5);
+				
+				/*
+				 * An empty environment works differently than a null environment
+				 * when passed to java.lang.Runtime#exec(String[]). Since
+				 * getEnvironment() will return an empty environment instead of
+				 * a null one if no nvironment is returned by the launch
+				 * manager, the launch manager's getEnvironment must be invoked
+				 * directly.
+				 * 
+				 * TODO what if som environt vars are specified? Does this mean
+				 * the default environment vars of the target will be shadowed?
+				 * 
+				 * PS This bug took me about 3 hours to track down. So here's to that
+				 * sweet taste of victory!
+				 */
+				//Process process = exec(commandArray, getEnvironment(config), wd);
+				Process process = exec(commandArray, getNullableEnvironment(config), wd);
+				monitor.worked(3);
+				DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[0]));
+			}
+			
+			return true;
+		} finally {
+			monitor.done();
+		}
+	}
+	
+	/**
+	 * Performs a runtime exec on the given command line in the context of the
+	 * specified working directory, and returns the resulting process. If the
+	 * current runtime does not support the specification of a working
+	 * directory, the status handler for error code
+	 * <code>ERR_WORKING_DIRECTORY_NOT_SUPPORTED</code> is queried to see if
+	 * the exec should be re-executed without specifying a working directory.
+	 * 
+	 * @param cmdLine
+	 *            the command line
+	 * @param workingDirectory
+	 *            the working directory, or <code>null</code>
+	 * @return the resulting process or <code>null</code> if the exec is
+	 *         cancelled
+	 * @see Runtime
+	 */
+	protected Process exec(String[] cmdLine, String[] environ, File workingDirectory) throws CoreException {
+		Process p = null;
+		try {
+			if (workingDirectory == null) {
+				p = ProcessFactory.getFactory().exec(cmdLine, environ);
+			} else {
+				p = ProcessFactory.getFactory().exec(cmdLine, environ, workingDirectory);
+			}
+		} catch (IOException e) {
+			if (p != null) {
+				p.destroy();
+			}
+			abort("Error starting process", e, //$NON-NLS-1$
+					IDescentLaunchConfigurationConstants.ERR_INTERNAL_ERROR);
+		} catch (NoSuchMethodError e) {
+			//attempting launches on 1.2.* - no ability to set working
+			// directory
+
+			IStatus status = new Status(IStatus.ERROR, getPluginID(),
+					IDescentLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_NOT_SUPPORTED, "Eclipse runtime does not support working directory", //$NON-NLS-1$
+					e);
+			IStatusHandler handler = DebugPlugin.getDefault().getStatusHandler(status);
+
+			if (handler != null) {
+				Object result = handler.handleStatus(status, this);
+				if (result instanceof Boolean && ((Boolean) result).booleanValue()) {
+					p = exec(cmdLine, environ, null);
+				}
+			}
+		}
+		return p;
 	}
 }

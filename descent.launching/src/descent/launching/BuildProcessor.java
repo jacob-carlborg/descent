@@ -160,7 +160,7 @@ public class BuildProcessor
 		
 	}
 	
-	public BuildProcessor getInstance()
+	public static BuildProcessor getInstance()
 	{
 		return instance;
 	}
