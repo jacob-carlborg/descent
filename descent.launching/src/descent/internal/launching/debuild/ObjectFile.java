@@ -2,7 +2,6 @@ package descent.internal.launching.debuild;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -10,15 +9,20 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
-import descent.launching.compiler.ICompileCommand;
+import descent.core.JavaModelException;
+import descent.internal.launching.LaunchingPlugin;
 
-public class ObjectFile extends AbstractBinaryFile
+public class ObjectFile
 {
-	public static final int MAX_FILENAME_LENGTH      = 127;
+	public static final int MAX_FILENAME_LENGTH      = 160;
 	public static final int PREFIX_LENGTH            = 15;
+	public static final int MAX_MODULE_LENGTH        = MAX_FILENAME_LENGTH - PREFIX_LENGTH;
 	
 	public static final int SYMBOLIC_DEBUG           = 0x01;
 	public static final int UNITTEST                 = 0x02;
@@ -47,93 +51,69 @@ public class ObjectFile extends AbstractBinaryFile
 			}
 		};
 	
-	public String moduleName;
+	private final IJavaProject project;
+	private final File inputFile;
+	private final String moduleName;
+	private CompileOptions opts;
 	
-	public boolean addDebugInfo;
-	public boolean addUnittests;
-	public boolean addAssertsAndContracts;
-	public boolean insertDebugCode;
-	public boolean inlineFunctions;
-	public boolean optimizeCode;
-	public boolean instrumentForCoverage;
-	public boolean instrumentForProfile;
-	
-	public final List<String> debugIdents = new ArrayList<String>();
-	public final List<String> versionIdents = new ArrayList<String>();
-	public Integer debugLevel;   // Or null if no debug level
-	public Integer versionLevel; // Or null if no version level
-	
-	public ObjectFile(IJavaProject proj)
+	public ObjectFile(IJavaProject project, File inputFile, String moduleName)
 	{
-		super(proj);
-		setDefaults();
-	}
-	
-	@Override
-	public boolean isValid()
-	{
-		if(!super.isValid())
-			return false;
-		
-		return moduleName != null;
-	}
-	
-	@Override
-	public String getFilename()
-	{
-		return getMangledName() + "." + getExtension();
+		this.project = project;
+		this.inputFile = inputFile;
+		this.moduleName = moduleName;
 	}
 	
 	/**
-	 * Sets the options on the command to match the options in this file. Will
-	 * not clear existing debug and version idents, if any have been added to
-	 * the command, and will not change any of the command's options not
-	 * covered by the scope of this class. The options it will set are:
-	 *     - addDebugInfo
-	 *     - addUnittests
-	 *     - addAssertsAndContracts
-	 *     - insertDebugCode
-	 *     - inlineFunctions
-	 *     - optimizeCode
-	 *     - instrumentForCoverage
-	 *     - instrumentForProfile
-	 *     - versionLevel
-	 *     - versionIdents
-	 *     - debugLevel
-	 *     - debugIdents
+	 * Checks whether this file needs to be built. Generally, will check if
+	 * the module it represents has any modifications since this object file
+	 * was last built.
 	 * 
-	 * @param cmd the command to set the options for
+	 * @return        true if and only if this object file needs to be rebuilt
 	 */
-	public void setCompileCommandOptions(ICompileCommand cmd)
+	public boolean shouldBuild()
 	{
-		cmd.setAddDebugInfo(addDebugInfo);
-		cmd.setAddUnittests(addUnittests);
-		cmd.setAddAssertsAndContracts(addAssertsAndContracts);
-		cmd.setInsertDebugCode(insertDebugCode);
-		cmd.setInlineFunctions(inlineFunctions);
-		cmd.setOptimizeCode(optimizeCode);
-		cmd.setInstrumentForCoverage(instrumentForCoverage);
-		cmd.setInstrumentForProfile(instrumentForProfile);
+		// PERHAPS should getModificationStamp be used instead? Then we have to track
+		// modifications somehow...
+		File ouputFile = getOutputFile();
+		long date = inputFile.lastModified();
+		Assert.isTrue(date != IResource.NULL_STAMP);
 		
-		cmd.setVersionLevel(versionLevel);
-		for(String versionIdent : versionIdents)
-			cmd.addVersionIdent(versionIdent);
+		if(!ouputFile.exists())
+			return true;
 		
-		cmd.setDebugLevel(debugLevel);
-		for(String debugIdent : debugIdents)
-			cmd.addVersionIdent(debugIdent);
+		if(ouputFile.lastModified() < date)
+			return true;
+		
+		return false;
 	}
 	
-	private void setDefaults()
+	/**
+	 * Gets the handle to the file, which may or may not exist. File will be
+	 * be an absolute path generally in the project's "bin" directory.
+	 *
+	 * @return     the handle to the file
+	 */
+	public File getOutputFile()
 	{
-		moduleName = null;
-		addDebugInfo = true;
-		addUnittests = false;
-		addAssertsAndContracts = true;
-		inlineFunctions = false;
-		optimizeCode = false;
-		instrumentForCoverage = false;
-		instrumentForProfile = false;
+		try
+		{
+			IPath outputLocation = project.getOutputLocation();
+			StringBuffer path = new StringBuffer();
+			path.append(outputLocation.makeAbsolute().toPortableString());
+			path.append(IPath.SEPARATOR);
+			path.append(getFilename());
+			return new File(path.toString());
+		}
+		catch(JavaModelException e)
+		{
+			LaunchingPlugin.log(e);
+			return null;
+		}
+	}
+	
+	private String getFilename()
+	{
+		return getMangledName() + "." + getExtension();
 	}
 	
 	private String getMangledName()
@@ -158,28 +138,27 @@ public class ObjectFile extends AbstractBinaryFile
 		
 		StringBuffer buf = new StringBuffer();
 		
-		int opts = 0;
-		if(addDebugInfo)           opts |= SYMBOLIC_DEBUG;
-		if(addUnittests)           opts |= UNITTEST;
-		if(addAssertsAndContracts) opts |= ASSERTS_AND_CONTRACTS;
-		if(insertDebugCode)        opts |= ADD_DEBUG_CODE;
-		if(inlineFunctions)        opts |= INLINE_FUNCTIONS;
-		if(optimizeCode)           opts |= OPTIMIZE_CODE;
-		if(instrumentForCoverage)  opts |= INSTRUMENT_FOR_COVERAGE;
-		if(instrumentForProfile)   opts |= INSTRUMENT_FOR_PROFILE;
+		int flags = 0;
+		if(opts.addDebugInfo)           flags |= SYMBOLIC_DEBUG;
+		if(opts.addUnittests)           flags |= UNITTEST;
+		if(opts.addAssertsAndContracts) flags |= ASSERTS_AND_CONTRACTS;
+		if(opts.insertDebugCode)        flags |= ADD_DEBUG_CODE;
+		if(opts.inlineFunctions)        flags |= INLINE_FUNCTIONS;
+		if(opts.optimizeCode)           flags |= OPTIMIZE_CODE;
+		if(opts.instrumentForCoverage)  flags |= INSTRUMENT_FOR_COVERAGE;
+		if(opts.instrumentForProfile)   flags |= INSTRUMENT_FOR_PROFILE;
 		
 		/* Note: To facuiltate cleanup of the output directory, the prefix
 		 * must be exactly {@link PREFIX_LENGTH}.
 		 */
 		buf.append(FILETYPE_PREFIX);
-		buf.append(base64Encode(opts, 2));
-		buf.append(base64Encode(hashInfo(versionIdents, versionLevel), 6));
-		buf.append(base64Encode(hashInfo(debugIdents, debugLevel), 6));
+		buf.append(base64Encode(flags, 2));
+		buf.append(base64Encode(hashInfo(opts.versionIdents, opts.versionLevel), 6));
+		buf.append(base64Encode(hashInfo(opts.debugIdents, opts.debugLevel), 6));
 		Assert.isTrue(buf.length() == PREFIX_LENGTH);
 		
-		int remaining = MAX_FILENAME_LENGTH - PREFIX_LENGTH;
 		String module = moduleName.replace('.', PACKAGE_SEPARATOR);
-		if(module.length() <= remaining)
+		if(module.length() <= MAX_MODULE_LENGTH)
 		{
 			buf.append(module);
 		}
@@ -195,7 +174,7 @@ public class ObjectFile extends AbstractBinaryFile
 			 * at maximum length 6 (thus, the 7 there, since that's the length
 			 * of hash string + 1 for the separator)
 			 */
-			int modulePartLength = remaining - 7;
+			int modulePartLength = MAX_MODULE_LENGTH - 7;
 			int start = module.length() - modulePartLength;
 			String modulePrefix = module.substring(0, start);
 			String modulePostfix = module.substring(start);
@@ -334,5 +313,57 @@ public class ObjectFile extends AbstractBinaryFile
 				files[i].delete();
 			}
 		}
+	}
+	
+	public CompileOptions getOptions()
+	{
+		return opts;
+	}
+	
+	public void setOptions(CompileOptions opts)
+	{
+		this.opts = opts;
+	}
+	
+	public boolean isValid()
+	{
+		return null != opts;
+	}
+	
+	public String getModuleName()
+	{
+		return moduleName;
+	}
+	
+	public File getInputFile()
+	{
+		return inputFile;
+	}
+	
+	@Override
+	public String toString()
+	{
+		if(null != opts)
+			return String.format("Object file: %1$s", getMangledName());
+		else
+			return String.format("Object file: %1$s", getModuleName());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return moduleName.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object other)
+	{
+		if(null == other)
+			return false;
+		
+		if(!(other instanceof ObjectFile))
+			return false;
+		
+		return moduleName.equals(((ObjectFile) other).moduleName);
 	}
 }

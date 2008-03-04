@@ -30,5 +30,5 @@ public interface IExecutableTarget
 	 * Gets the list of compilation units that must be built into this project. The set should
 	 * not be modified after a call to this method has been made
 	 */
-	public Set<ICompilationUnit> getCompilationUnits();
+	public ICompilationUnit[] getCompilationUnits();
 }

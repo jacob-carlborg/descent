@@ -47,9 +47,9 @@ public abstract class AbstractExecutableTarget implements IExecutableTarget
 		compilationUnits.remove(cu);
 	}
 	
-	public Set<ICompilationUnit> getCompilationUnits()
+	public ICompilationUnit[] getCompilationUnits()
 	{
-		return compilationUnits;
+		return compilationUnits.toArray(new ICompilationUnit[compilationUnits.size()]);
 	}
 	
 	protected ICompilationUnit[] getDefaultCompilationUnits()

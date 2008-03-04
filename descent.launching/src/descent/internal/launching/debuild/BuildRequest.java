@@ -53,7 +53,7 @@ public class BuildRequest
 	/**
 	 * Gets all the compilation units that must be built for this target
 	 */
-	public Set<ICompilationUnit> getCompilationUnits()
+	public ICompilationUnit[] getCompilationUnits()
 	{
 		return target.getCompilationUnits();
 	}

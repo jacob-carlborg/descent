@@ -36,15 +36,22 @@ public class ErrorReporter
 		String path = error.getFile();
 		int line = error.getLine();
 		if(null == path)
-			projectError(msg);
+			return projectError(msg);
 		
 		// Get the corresponding file resource
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(path));
 		if(null == file || !file.exists())
-			projectError(msg);
+		{
+			if(line <= 0)
+				return projectError(String.format("%1$s: %2$s", file, msg));
+			else
+				return projectError(String.format("%1$s (%2$d): %3$s", file, line, msg));
+		}
 		
-		// Check whether the file is a D compilation unit
-		// TODO
-		return resourceError(msg, file);
+		// PERHAPS should we check if the file is a D compilation unit?
+		IMarker marker = resourceError(msg, file);
+		
+		// TODO attach the line here
+		return marker;
 	}
 }

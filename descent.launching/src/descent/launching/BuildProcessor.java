@@ -26,6 +26,11 @@ public class BuildProcessor
 		{
 			super(message);
 		}
+		
+		public BuildFailedException(Exception e)
+		{
+			super(e);
+		}
 	}
 	
 	@SuppressWarnings("serial")
