@@ -1,13 +1,12 @@
 package descent.internal.launching.debuild;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.launching.compiler.ICompileCommand;
-
 /**
- * Groups multiple object files together in a single compile command that can be executed.
+ * Groups multiple object files together to be executed as a single compilation
+ * command (note that they're not actually object files, instead source files
+ * :-)).
  * 
  * @author Robert Fraser
  */

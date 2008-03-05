@@ -1507,3 +1507,7 @@ private void initRegistry()
 	foreach(test; foundTests.values)
 		registry.add(test);
 }
+
+unittest
+{
+}

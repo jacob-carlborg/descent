@@ -62,6 +62,9 @@ public class DebuildBuilder
 		{
 			pm.beginTask("Building D application", 100);
 			
+			if(DEBUG)
+				System.out.println("Build started");
+			
 			// Usually, a little work has been done by now. Move the progress bar to keep the
 			// user in a pleasent and productive mood
 			pm.worked(5);
@@ -69,11 +72,35 @@ public class DebuildBuilder
 			// First, create the import path from the project properties, etc.
 			importPath = createImportPath(new SubProgressMonitor(pm, 5));
 			
+			if(DEBUG)
+			{
+				System.out.println("--------------------");
+				System.out.println("Import paths:");
+				for(String path : importPath)
+					System.out.format("    %1$s\n", path);
+			}
+			
+			if(pm.isCanceled())
+				throw new BuildCancelledException();
+			
 			// Then, recursively collect dependancies for all the object files
 			objectFiles = RecursiveDependancyCollector.getObjectFiles(
 					req.getProject(),
-					req.getCompilationUnits(),
+					req.getModules(),
 					new SubProgressMonitor(pm, 40));
+			
+			if(DEBUG)
+			{
+				System.out.println("--------------------");
+				System.out.println("Object files:");
+				for(ObjectFile obj : objectFiles)
+					System.out.format("    %1$s%2$s\n", 
+							obj.isLibraryFile() ? "(L) " : "",
+							obj.getModuleName());
+			}
+			
+			if(pm.isCanceled())
+				throw new BuildCancelledException();
 			
 			// TODO
 			throw new BuildFailedException();

@@ -1,8 +1,5 @@
 package descent.internal.launching.debuild;
 
-import java.util.Set;
-
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.launching.IExecutableTarget;
 import descent.launching.compiler.ICompilerInterface;
@@ -51,10 +48,10 @@ public class BuildRequest
 	}
 	
 	/**
-	 * Gets all the compilation units that must be built for this target
+	 * Gets all the modules that must be built for this target
 	 */
-	public ICompilationUnit[] getCompilationUnits()
+	public String[] getModules()
 	{
-		return target.getCompilationUnits();
+		return target.getModules();
 	}
 }

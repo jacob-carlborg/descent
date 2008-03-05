@@ -1,7 +1,6 @@
 package descent.internal.launching.debuild;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +12,22 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.internal.launching.LaunchingPlugin;
 
+/**
+ * Represents a compilable D module together with compilation options. This class is
+ * initially constructed with information about a particular input module, which allows
+ * it limited functionality to simply hold that information. When given compile options,
+ * it is able to deduce the output filename/path of a file compiled with those options.
+ * 
+ * This class also holds an important utility method,
+ * {@link #cleanupOutputDirectory(File, int, int)}, which should be used to clean the
+ * output directory of old object files.
+ * 
+ * @author Robert Fraser
+ */
 public class ObjectFile
 {
 	public static final int MAX_FILENAME_LENGTH      = 160;
@@ -54,13 +64,38 @@ public class ObjectFile
 	private final IJavaProject project;
 	private final File inputFile;
 	private final String moduleName;
+	private final boolean isLibraryFile;
 	private CompileOptions opts;
 	
-	public ObjectFile(IJavaProject project, File inputFile, String moduleName)
+	/**
+	 * Crates a new instance of an object file container
+	 * 
+	 * @param project    the project whose output folder the output file should be
+	 *                   placed in
+	 * @param inputFile  the input file for this resource
+	 * @param moduleName the name of the module
+	 */
+	public ObjectFile(IJavaProject project, File inputFile, String moduleName,
+			boolean isLibraryFile)
 	{
 		this.project = project;
 		this.inputFile = inputFile;
 		this.moduleName = moduleName;
+		this.isLibraryFile = isLibraryFile;
+		
+		if(DebuildBuilder.DEBUG)
+		{
+			Assert.isTrue(null != project);
+			Assert.isTrue(null != moduleName);
+			Assert.isTrue(null != inputFile);
+			
+			Assert.isTrue(project.exists());
+			Assert.isTrue(project.isOpen());
+			Assert.isTrue(!project.isReadOnly());
+			
+			Assert.isTrue(inputFile.exists());
+			Assert.isTrue(inputFile.canRead());
+		}
 	}
 	
 	/**
@@ -88,13 +123,26 @@ public class ObjectFile
 	}
 	
 	/**
+	 * Gets the handle to the input file (which should exist unless the filesystem is
+	 * going crazy during the build).
+	 */
+	public File getInputFile()
+	{
+		return inputFile;
+	}
+	
+	/**
 	 * Gets the handle to the file, which may or may not exist. File will be
 	 * be an absolute path generally in the project's "bin" directory.
 	 *
-	 * @return     the handle to the file
+	 * @return                       the handle to the file
+	 * @throws IllegalStateException if the compile options haven't been set yet
 	 */
 	public File getOutputFile()
 	{
+		if(null == opts)
+			throw new IllegalStateException("Compile options not set yet!");
+		
 		try
 		{
 			IPath outputLocation = project.getOutputLocation();
@@ -109,6 +157,45 @@ public class ObjectFile
 			LaunchingPlugin.log(e);
 			return null;
 		}
+	}
+	
+	/**
+	 * Gets the compile options this file should be compiled with, or null if
+	 * they have not beens set yet or have been unset for whatever reason.
+	 */
+	public CompileOptions getOptions()
+	{
+		return opts;
+	}
+	
+	/**
+	 * Sets the compile options this file should be compiled with. Must be
+	 * called with a non-null value before any of the followng methods are
+	 * called:
+	 *     <ul>
+	 *         <li>{@link #getOutputFile()}</li>
+	 *         <li>{@link #shouldBuild()}</li>
+	 *     </ul>
+	 */
+	public void setOptions(CompileOptions opts)
+	{
+		this.opts = opts;
+	}
+	
+	/**
+	 * Gets the name of this module
+	 */
+	public String getModuleName()
+	{
+		return moduleName;
+	}
+	
+	/**
+	 * Checks whether the input file represents a library file
+	 */
+	public boolean isLibraryFile()
+	{
+		return isLibraryFile;
 	}
 	
 	private String getFilename()
@@ -313,31 +400,6 @@ public class ObjectFile
 				files[i].delete();
 			}
 		}
-	}
-	
-	public CompileOptions getOptions()
-	{
-		return opts;
-	}
-	
-	public void setOptions(CompileOptions opts)
-	{
-		this.opts = opts;
-	}
-	
-	public boolean isValid()
-	{
-		return null != opts;
-	}
-	
-	public String getModuleName()
-	{
-		return moduleName;
-	}
-	
-	public File getInputFile()
-	{
-		return inputFile;
 	}
 	
 	@Override

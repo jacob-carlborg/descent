@@ -1,14 +1,13 @@
 package descent.internal.unittest.launcher;
 
-import descent.core.ICompilationUnit;
 import descent.launching.AbstractExecutableTarget;
 
 public class UnittestExecutableTarget extends AbstractExecutableTarget
 {
 	@Override
-	protected ICompilationUnit[] getDefaultCompilationUnits()
+	protected String[] getDefaultModules()
 	{
-		// TODO FLUTE!!!
+		// TODO return new String[] { "org.dsource.descent.flute" };
 		return null;
 	}
 }

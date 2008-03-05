@@ -3,7 +3,6 @@ package descent.launching;
 import java.util.HashSet;
 import java.util.Set;
 
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 
 /**
@@ -17,14 +16,14 @@ import descent.core.IJavaProject;
 public abstract class AbstractExecutableTarget implements IExecutableTarget
 {
 	private IJavaProject project;
-	private final Set<ICompilationUnit> compilationUnits = new HashSet<ICompilationUnit>();
+	private final Set<String> modules = new HashSet<String>();
 	
 	protected AbstractExecutableTarget()
 	{
-		ICompilationUnit[] defaultCompilationUnits = getDefaultCompilationUnits();
-		if(null != defaultCompilationUnits)
-			for(ICompilationUnit cu : defaultCompilationUnits)
-				compilationUnits.add(cu);
+		String[] defaultModules = getDefaultModules();
+		if(null != defaultModules)
+			for(String moduleName : defaultModules)
+				modules.add(moduleName);
 	}
 	
 	public IJavaProject getProject()
@@ -37,22 +36,22 @@ public abstract class AbstractExecutableTarget implements IExecutableTarget
 		this.project = project;
 	}
 	
-	public void addCompilationUnit(ICompilationUnit cu)
+	public void addModule(String moduleName)
 	{
-		compilationUnits.add(cu);
+		modules.add(moduleName);
 	}
 	
-	public void removeCompilationUnit(ICompilationUnit cu)
+	public void removeModule(String moduleName)
 	{
-		compilationUnits.remove(cu);
+		modules.remove(moduleName);
 	}
 	
-	public ICompilationUnit[] getCompilationUnits()
+	public String[] getModules()
 	{
-		return compilationUnits.toArray(new ICompilationUnit[compilationUnits.size()]);
+		return modules.toArray(new String[modules.size()]);
 	}
 	
-	protected ICompilationUnit[] getDefaultCompilationUnits()
+	protected String[] getDefaultModules()
 	{
 		return null;
 	}

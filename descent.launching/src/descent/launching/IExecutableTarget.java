@@ -1,8 +1,5 @@
 package descent.launching;
 
-import java.util.Set;
-
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 
 /**
@@ -30,5 +27,5 @@ public interface IExecutableTarget
 	 * Gets the list of compilation units that must be built into this project. The set should
 	 * not be modified after a call to this method has been made
 	 */
-	public ICompilationUnit[] getCompilationUnits();
+	public String[] getModules();
 }
