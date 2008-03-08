@@ -118,11 +118,12 @@ public class JavaSearchPattern extends SearchPattern {
 				if (parameters != null) {
 					int length = parameters.length;
 					if (length > 0) {
-						char[][] arguments = new char[length][];
-						for (int i=0; i<length; i++) {
-							arguments[i] = Signature.createTypeSignature(parameters[i].getElementName(), false).toCharArray();
-						}
-						return arguments;
+						// TODO JDT signature
+//						char[][] arguments = new char[length][];
+//						for (int i=0; i<length; i++) {
+//							arguments[i] = Signature.createTypeSignature(parameters[i].getElementName(), false).toCharArray();
+//						}
+//						return arguments;
 					}
 				}
 			}
@@ -259,13 +260,14 @@ public class JavaSearchPattern extends SearchPattern {
 					IType parentType = (IType) parent;
 					parameters = parentType.getTypeParameters();
 					if (parameters !=null) {
-						int length = parameters.length;
-						if (length > 0) {
-							hasParameters = true;
-							typeParameters[ptr] = new char[length][];
-							for (int i=0; i<length; i++)
-								typeParameters[ptr][i] = Signature.createTypeSignature(parameters[i].getElementName(), false).toCharArray();
-						}
+						// TODO JDT signature
+//						int length = parameters.length;
+//						if (length > 0) {
+//							hasParameters = true;
+//							typeParameters[ptr] = new char[length][];
+//							for (int i=0; i<length; i++)
+//								typeParameters[ptr][i] = Signature.createTypeSignature(parameters[i].getElementName(), false).toCharArray();
+//						}
 					}
 					parent = parent.getParent();
 				}

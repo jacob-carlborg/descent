@@ -7,7 +7,9 @@ import junit.framework.TestCase;
 public class AbstractSignatureTest extends TestCase implements ISignatureConstants {
 	
 	protected String F = String.valueOf(LINK_D);	
-	protected String Z = String.valueOf(FUNCTION_PARAMETERS_BREAK);	
+	protected String Z = String.valueOf(FUNCTION_PARAMETERS_BREAK);
+	protected String Y = String.valueOf(FUNCTION_PARAMETERS_BREAK_VARIADIC);
+	protected String X = String.valueOf(FUNCTION_PARAMETERS_BREAK_VARIADIC2);
 	protected String i = String.valueOf(TY.Tint32.mangleChar);
 	protected String a = String.valueOf(TY.Tchar.mangleChar);
 	protected String v = String.valueOf(TY.Tvoid.mangleChar);
@@ -21,8 +23,8 @@ public class AbstractSignatureTest extends TestCase implements ISignatureConstan
 		return String.valueOf(POINTER) + type;
 	}
 	
-	protected String G(String dim, String type) {
-		return String.valueOf(String.valueOf(STATIC_ARRAY) + string(dim, STATIC_ARRAY) + type);
+	protected String G(String type, String dim) {
+		return String.valueOf(STATIC_ARRAY + type + string(dim, STATIC_ARRAY));
 	}
 	
 	protected String H(String key, String value) {

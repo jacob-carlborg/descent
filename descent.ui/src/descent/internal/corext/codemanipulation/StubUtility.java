@@ -296,8 +296,10 @@ public class StubUtility {
 		}
 		CodeTemplateContext context= new CodeTemplateContext(template.getContextTypeId(), cu.getJavaProject(), lineDelim);
 		context.setCompilationUnitVariables(cu);
-		context.setVariable(CodeTemplateContextType.ENCLOSING_TYPE, Signature.getQualifier(typeQualifiedName));
-		context.setVariable(CodeTemplateContextType.TYPENAME, Signature.getSimpleName(typeQualifiedName));
+		
+		// TODO JDT signature
+//		context.setVariable(CodeTemplateContextType.ENCLOSING_TYPE, Signature.getQualifier(typeQualifiedName));
+//		context.setVariable(CodeTemplateContextType.TYPENAME, Signature.getSimpleName(typeQualifiedName));
 
 		TemplateBuffer buffer;
 		try {
@@ -472,7 +474,8 @@ public class StubUtility {
 		String[] paramTypes= overridden.getParameterTypes();
 		String[] paramTypeNames= new String[paramTypes.length];
 		for (int i= 0; i < paramTypes.length; i++) {
-			paramTypeNames[i]= Signature.toString(Signature.getTypeErasure(paramTypes[i]));
+			// TODO JDT signature
+//			paramTypeNames[i]= Signature.toString(Signature.getTypeErasure(paramTypes[i]));
 		}
 		return paramTypeNames;
 	}

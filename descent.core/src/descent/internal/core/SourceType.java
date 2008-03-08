@@ -304,11 +304,12 @@ public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento,
 						if (!memento.hasMoreTokens()) return this;
 						String param = memento.nextToken();
 						StringBuffer buffer = new StringBuffer();
-						while (param.length() == 1 && Signature.C_ARRAY == param.charAt(0)) { // backward compatible with 3.0 mementos
-							buffer.append(Signature.C_ARRAY);
-							if (!memento.hasMoreTokens()) return this;
-							param = memento.nextToken();
-						}
+						// TODO JDT signature
+//						while (param.length() == 1 && Signature.C_ARRAY == param.charAt(0)) { // backward compatible with 3.0 mementos
+//							buffer.append(Signature.C_ARRAY);
+//							if (!memento.hasMoreTokens()) return this;
+//							param = memento.nextToken();
+//						}
 						params.add(buffer.toString() + param);
 						break;
 					default:

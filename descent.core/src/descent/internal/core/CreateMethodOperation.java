@@ -68,7 +68,8 @@ protected String[] convertASTMethodTypesToSignatures() {
 				int extraDimensions = 0; // parameter.getExtraDimensions();
 				if (methodDeclaration.isVariadic() && i == size-1)
 					extraDimensions++;
-				this.parameterTypes[i] = Signature.createArraySignature(typeSig, extraDimensions);
+				// TODO JDT signature
+//				this.parameterTypes[i] = Signature.createArraySignature(typeSig, extraDimensions);
 			}
 		}
 	}

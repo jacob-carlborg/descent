@@ -218,8 +218,10 @@ public String getRawReturnType() throws JavaModelException {
  * @see IMethod
  */
 public String getSignature() throws JavaModelException {
-	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
-	return Signature.createMethodSignature(this.parameterTypes, Signature.createTypeSignature(info.getReturnTypeName(), false));
+	// TODO JDT signature
+//	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
+//	return Signature.createMethodSignature(this.parameterTypes, Signature.createTypeSignature(info.getReturnTypeName(), false));
+	return null;
 }
 /**
  * @see descent.internal.core.JavaElement#hashCode()

@@ -603,7 +603,9 @@ public final class ImportRewrite {
 	}
 	
 	private boolean containsNestedCapture(String signature) {
-		return signature.length() > 1 && signature.indexOf(Signature.C_CAPTURE, 1) != -1;
+		// TODO JDT Signature
+//		return signature.length() > 1 && signature.indexOf(Signature.C_CAPTURE, 1) != -1;
+		return false;
 	}
 
 	private static ITypeBinding normalizeTypeBinding(ITypeBinding binding) {

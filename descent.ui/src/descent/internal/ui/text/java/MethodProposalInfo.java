@@ -111,21 +111,23 @@ public final class MethodProposalInfo extends MemberProposalInfo {
 	 */
 	private Map computeTypeVariables(IType type) throws JavaModelException {
 		Map map= new HashMap();
-		char[] declarationSignature= fProposal.getDeclarationSignature();
-		if (declarationSignature == null) // array methods don't contain a declaration signature
-			return map;
-		char[][] concreteParameters= Signature.getTypeArguments(declarationSignature);
-
-		ITypeParameter[] typeParameters= type.getTypeParameters();
-		for (int i= 0; i < typeParameters.length; i++) {
-			String variable= typeParameters[i].getElementName();
-			if (concreteParameters.length > i)
-				// use lower bound since method equality is only parameter based
-				map.put(variable, SignatureUtil.getLowerBound(concreteParameters[i]));
-			else
-				// fProposal.getDeclarationSignature() is a raw type - use Object
-				map.put(variable, "Ljava.lang.Object;".toCharArray()); //$NON-NLS-1$
-		}
+		
+		// TODO JDT signature
+//		char[] declarationSignature= fProposal.getDeclarationSignature();
+//		if (declarationSignature == null) // array methods don't contain a declaration signature
+//			return map;
+//		char[][] concreteParameters= Signature.getTypeArguments(declarationSignature);
+//
+//		ITypeParameter[] typeParameters= type.getTypeParameters();
+//		for (int i= 0; i < typeParameters.length; i++) {
+//			String variable= typeParameters[i].getElementName();
+//			if (concreteParameters.length > i)
+//				// use lower bound since method equality is only parameter based
+//				map.put(variable, SignatureUtil.getLowerBound(concreteParameters[i]));
+//			else
+//				// fProposal.getDeclarationSignature() is a raw type - use Object
+//				map.put(variable, "Ljava.lang.Object;".toCharArray()); //$NON-NLS-1$
+//		}
 
 		return map;
 	}
@@ -202,12 +204,14 @@ public final class MethodProposalInfo extends MemberProposalInfo {
 	 */
 	private String computeSimpleTypeName(String signature, Map typeVariables) {
 		// method equality uses erased types
-		String erasure= Signature.getTypeErasure(signature);
-		erasure= erasure.replaceAll("/", ".");  //$NON-NLS-1$//$NON-NLS-2$
-		String simpleName= Signature.getSimpleName(Signature.toString(erasure));
-		char[] typeVar= (char[]) typeVariables.get(simpleName);
-		if (typeVar != null)
-			simpleName= String.valueOf(Signature.getSignatureSimpleName(typeVar));
-		return simpleName;
+		// TODO JDT signature
+//		String erasure= Signature.getTypeErasure(signature);
+//		erasure= erasure.replaceAll("/", ".");  //$NON-NLS-1$//$NON-NLS-2$
+//		String simpleName= Signature.getSimpleName(Signature.toString(erasure));
+//		char[] typeVar= (char[]) typeVariables.get(simpleName);
+//		if (typeVar != null)
+//			simpleName= String.valueOf(Signature.getSignatureSimpleName(typeVar));
+//		return simpleName;
+		return null;
 	}
 }

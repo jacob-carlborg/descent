@@ -57,9 +57,9 @@ public class JavaElementReferenceConverter extends AbstractParameterValueConvert
 
 	private static final char TYPE_END_CHAR= '#';
 
-	private static final char PARAM_START_CHAR= Signature.C_PARAM_START;
+	private static final char PARAM_START_CHAR= '(';
 
-	private static final char PARAM_END_CHAR= Signature.C_PARAM_END;
+	private static final char PARAM_END_CHAR= ')';
 
 	public Object convertToObject(String parameterValue) throws ParameterValueConversionException {
 

@@ -86,10 +86,12 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		 *         <code>false</code> if not
 		 */
 		public boolean isArray() {
-			if (fType == UNKNOWN && (fChecked & ARRAY) == 0 && Signature.getTypeSignatureKind(signature) == Signature.ARRAY_TYPE_SIGNATURE)
-				fType= ARRAY;
-			fChecked |= ARRAY;
-			return fType == ARRAY;
+			// TODO JDT signature
+//			if (fType == UNKNOWN && (fChecked & ARRAY) == 0 && Signature.getTypeSignatureKind(signature) == Signature.ARRAY_TYPE_SIGNATURE)
+//				fType= ARRAY;
+//			fChecked |= ARRAY;
+//			return fType == ARRAY;
+			return false;
 		}
 
 		/**
@@ -181,21 +183,23 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		 * @return the signatures of all member type bounds
 		 */
 		public String[] getMemberTypeSignatures() {
-			if (isArray()) {
-				return new String[] {Signature.createArraySignature(Signature.getElementType(signature), Signature.getArrayCount(signature) - 1)};
-			} else if (fType == ITERABLE || fType == COLLECTION) {
-				if (fMemberTypes == null) {
-					try {
-						TypeParameterResolver util= new TypeParameterResolver(this);
-						fMemberTypes= util.computeBinding("java.lang.Iterable", 0); //$NON-NLS-1$
-					} catch (JavaModelException e) {
-						fMemberTypes= new String[0];
-					}
-				}
-				if (fMemberTypes.length > 0)
-					return fMemberTypes;
-			}
-			return new String[] {Signature.createTypeSignature("java.lang.Object", true)}; //$NON-NLS-1$
+			// TODO JDT signature
+//			if (isArray()) {
+//				return new String[] {Signature.createArraySignature(Signature.getElementType(signature), Signature.getArrayCount(signature) - 1)};
+//			} else if (fType == ITERABLE || fType == COLLECTION) {
+//				if (fMemberTypes == null) {
+//					try {
+//						TypeParameterResolver util= new TypeParameterResolver(this);
+//						fMemberTypes= util.computeBinding("java.lang.Iterable", 0); //$NON-NLS-1$
+//					} catch (JavaModelException e) {
+//						fMemberTypes= new String[0];
+//					}
+//				}
+//				if (fMemberTypes.length > 0)
+//					return fMemberTypes;
+//			}
+//			return new String[] {Signature.createTypeSignature("java.lang.Object", true)}; //$NON-NLS-1$
+			return new String[0];
 		}
 		
 		/**
@@ -205,25 +209,27 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		 * @return type names of all member type bounds
 		 */
 		public String[] getMemberTypeNames() {
-			String[] signatures= getMemberTypeSignatures();
-			String[] names= new String[signatures.length];
-			
-			for (int i= 0; i < signatures.length; i++) {
-				String sig= signatures[i];
-				String local= (String) fLocalTypes.get(Signature.getElementType(sig));
-				int dim= Signature.getArrayCount(sig);
-				if (local != null && dim > 0) {
-					StringBuffer array= new StringBuffer(local);
-					for (int j= 0; j < dim; j++)
-						array.append("[]"); //$NON-NLS-1$
-					local= array.toString();
-				}
-				if (local != null)
-					names[i]= local;
-				else
-					names[i]= Signature.getSimpleName(Signature.getSignatureSimpleName(sig));
-			}
-			return names;
+			// TODO JDT signature
+//			String[] signatures= getMemberTypeSignatures();
+//			String[] names= new String[signatures.length];
+//			
+//			for (int i= 0; i < signatures.length; i++) {
+//				String sig= signatures[i];
+//				String local= (String) fLocalTypes.get(Signature.getElementType(sig));
+//				int dim= Signature.getArrayCount(sig);
+//				if (local != null && dim > 0) {
+//					StringBuffer array= new StringBuffer(local);
+//					for (int j= 0; j < dim; j++)
+//						array.append("[]"); //$NON-NLS-1$
+//					local= array.toString();
+//				}
+//				if (local != null)
+//					names[i]= local;
+//				else
+//					names[i]= Signature.getSimpleName(Signature.getSignatureSimpleName(sig));
+//			}
+//			return names;
+			return new String[0];
 		}
 		
 		/*
@@ -424,15 +430,17 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		 *         <code>index</code> in <code>signature</code>
 		 */
 		private String findMatchingTypeArgument(String signature, int index, IType context) {
-			String[] typeArguments= Signature.getTypeArguments(signature);
-			Assert.isTrue(typeArguments.length == 0 || typeArguments.length > index);
-			if (typeArguments.length == 0) {
-				// raw binding - bound to Object
-				return OBJECT_SIGNATURE;
-			} else {
-				String bound= SignatureUtil.getUpperBound(typeArguments[index]);
-				return SignatureUtil.qualifySignature(bound, context);
-			}
+			// TODO JDT signature
+//			String[] typeArguments= Signature.getTypeArguments(signature);
+//			Assert.isTrue(typeArguments.length == 0 || typeArguments.length > index);
+//			if (typeArguments.length == 0) {
+//				// raw binding - bound to Object
+//				return OBJECT_SIGNATURE;
+//			} else {
+//				String bound= SignatureUtil.getUpperBound(typeArguments[index]);
+//				return SignatureUtil.qualifySignature(bound, context);
+//			}
+			return OBJECT_SIGNATURE;
 		}
 
 		/**
@@ -587,16 +595,18 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		 * @throws JavaModelException if finding the type fails
 		 */
 		private boolean isConcreteType(String signature, IType context) throws JavaModelException {
-			// Inexpensive check for the variable type first
-			if (Signature.TYPE_VARIABLE_SIGNATURE == Signature.getTypeSignatureKind(signature))
-				return false;
-			
-			// try and resolve otherwise
-			if (context.isBinary()) {
-				return fUnit.getJavaProject().findType(SignatureUtil.stripSignatureToFQN(signature)) != null;
-			} else {
-				return context.resolveType(SignatureUtil.stripSignatureToFQN(signature)) != null;
-			}
+			// TODO JDT signature
+//			// Inexpensive check for the variable type first
+//			if (Signature.TYPE_VARIABLE_SIGNATURE == Signature.getTypeSignatureKind(signature))
+//				return false;
+//			
+//			// try and resolve otherwise
+//			if (context.isBinary()) {
+//				return fUnit.getJavaProject().findType(SignatureUtil.stripSignatureToFQN(signature)) != null;
+//			} else {
+//				return context.resolveType(SignatureUtil.stripSignatureToFQN(signature)) != null;
+//			}
+			return true;
 		}
 	}
 	
@@ -643,16 +653,17 @@ final class CompilationUnitCompletion extends CompletionRequestor {
 		fLocalVariables.clear();
 		fLocalTypes.clear();
 		if (fUnit != null) {
-			try {
-				IType[] cuTypes= fUnit.getAllTypes();
-				for (int i= 0; i < cuTypes.length; i++) {
-					String fqn= cuTypes[i].getFullyQualifiedName();
-					String sig= Signature.createTypeSignature(fqn, true);
-					fLocalTypes.put(sig, cuTypes[i].getElementName());
-				}
-			} catch (JavaModelException e) {
-				// ignore
-			}
+			// TODO JDT signature
+//			try {
+//				IType[] cuTypes= fUnit.getAllTypes();
+//				for (int i= 0; i < cuTypes.length; i++) {
+//					String fqn= cuTypes[i].getFullyQualifiedName();
+//					String sig= Signature.createTypeSignature(fqn, true);
+//					fLocalTypes.put(sig, cuTypes[i].getElementName());
+//				}
+//			} catch (JavaModelException e) {
+//				// ignore
+//			}
 		}
 		fError= false;
 	}

@@ -53,14 +53,15 @@ protected static boolean areSimilarMethods(
 		int params1Length = params1.length;
 		if (params1Length == params2.length) {
 			for (int i = 0; i < params1Length; i++) {
-				String simpleName1 = 
-					simpleNames1 == null ? 
-						Signature.getSimpleName(Signature.toString(Signature.getTypeErasure(params1[i]))) :
-						simpleNames1[i];
-				String simpleName2 = Signature.getSimpleName(Signature.toString(Signature.getTypeErasure(params2[i])));
-				if (!simpleName1.equals(simpleName2)) {
-					return false;
-				}
+				// TODO JDT signature
+//				String simpleName1 = 
+//					simpleNames1 == null ? 
+//						Signature.getSimpleName(Signature.toString(Signature.getTypeErasure(params1[i]))) :
+//						simpleNames1[i];
+//				String simpleName2 = Signature.getSimpleName(Signature.toString(Signature.getTypeErasure(params2[i])));
+//				if (!simpleName1.equals(simpleName2)) {
+//					return false;
+//				}
 			}
 			return true;
 		}
@@ -111,8 +112,9 @@ public static IMethod[] findMethods(IMethod method, IMethod[] methods) {
 	int paramLength = parameters.length;
 	String[] simpleNames = new String[paramLength];
 	for (int i = 0; i < paramLength; i++) {
-		String erasure = Signature.getTypeErasure(parameters[i]);
-		simpleNames[i] = Signature.getSimpleName(Signature.toString(erasure));
+		// TODO JDT signature
+//		String erasure = Signature.getTypeErasure(parameters[i]);
+//		simpleNames[i] = Signature.getSimpleName(Signature.toString(erasure));
 	}
 	ArrayList list = new ArrayList();
 	for (int i = 0, length = methods.length; i < length; i++) {
@@ -363,8 +365,9 @@ protected boolean isMainMethod(IMethod method) throws JavaModelException {
 		if (Flags.isStatic(flags) && Flags.isPublic(flags)) {
 			String[] paramTypes= method.getParameterTypes();
 			if (paramTypes.length == 1) {
-				String typeSignature=  Signature.toString(paramTypes[0]);
-				return "String[]".equals(Signature.getSimpleName(typeSignature)); //$NON-NLS-1$
+				// TODO JDT signature
+//				String typeSignature=  Signature.toString(paramTypes[0]);
+//				return "String[]".equals(Signature.getSimpleName(typeSignature)); //$NON-NLS-1$
 			}
 		}
 		return true;

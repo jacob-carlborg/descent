@@ -809,8 +809,9 @@ public final class RewriteEventStore {
 	
 	private void validateHasChildProperty(ASTNode parent, StructuralPropertyDescriptor property) {
 		if (!parent.structuralPropertiesForType().contains(property)) {
-			String message= Signature.getSimpleName(parent.getClass().getName()) + " has no property " + property.getId(); //$NON-NLS-1$
-			throw new IllegalArgumentException(message);
+			// TODO JDT signature
+//			String message= Signature.getSimpleName(parent.getClass().getName()) + " has no property " + property.getId(); //$NON-NLS-1$
+//			throw new IllegalArgumentException(message);
 		}
 	}
 	

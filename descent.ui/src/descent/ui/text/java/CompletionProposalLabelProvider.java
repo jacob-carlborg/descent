@@ -169,12 +169,15 @@ public class CompletionProposalLabelProvider {
 			}
 		}
 		
-		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature));
-		if (prefix != null) {
-			displayName = CharOperation.concat(prefix, displayName, ' ');
-		}
+		// TODO JDT signature
+//		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature));
+//		if (prefix != null) {
+//			displayName = CharOperation.concat(prefix, displayName, ' ');
+//		}
+//		
+//		return displayName;
 		
-		return displayName;
+		return null;
 	}
 
 	/**
@@ -254,7 +257,8 @@ public class CompletionProposalLabelProvider {
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
 		if (declaringType != null) {
 			nameBuffer.append(" - "); //$NON-NLS-1$
-			declaringType= Signature.getSimpleName(declaringType);
+			// TODO JDT signature
+//			declaringType= Signature.getSimpleName(declaringType);
 			nameBuffer.append(declaringType);
 		} else {
 			// module name
@@ -338,7 +342,8 @@ public class CompletionProposalLabelProvider {
 		// declaring type
 		nameBuffer.append(" - "); //$NON-NLS-1$
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
-		declaringType= Signature.getSimpleName(declaringType);
+		// TODO JDT signature
+//		declaringType= Signature.getSimpleName(declaringType);
 		nameBuffer.append(declaringType);
 		
 		return nameBuffer.toString();
@@ -364,7 +369,9 @@ public class CompletionProposalLabelProvider {
 		nameBuffer.append(" - "); //$NON-NLS-1$
 
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
-		declaringType= Signature.getSimpleName(declaringType);
+		
+		// TODO JDT signature
+//		declaringType= Signature.getSimpleName(declaringType);
 		nameBuffer.append(Messages.format(JavaTextMessages.ResultCollector_overridingmethod, new String(declaringType)));
 
 		return nameBuffer.toString();
@@ -467,35 +474,38 @@ public class CompletionProposalLabelProvider {
 	String createSimpleLabelWithType(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getCompletion());
-		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
-		if (typeName.length > 0) {
-			buf.append("    "); //$NON-NLS-1$
-			buf.append(typeName);
-		}
+		// TODO JDT signature
+//		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
+//		if (typeName.length > 0) {
+//			buf.append("    "); //$NON-NLS-1$
+//			buf.append(typeName);
+//		}
 		return buf.toString();
 	}
 
 	String createLabelWithTypeAndDeclaration(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getName());
-		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
-		if (typeName.length > 0) {
-			buf.append("    "); //$NON-NLS-1$
-			buf.append(typeName);
-		}
 		
-		if (proposal.getSignature() != null) {
-			char[] fullName= Signature.toCharArray(proposal.getSignature());
-			
-			// only display innermost type name as type name, using any
-			// enclosing types as qualification
-			int qIndex= findSimpleNameStart(fullName);
-			if (qIndex > 0) {
-				buf.append(JavaElementLabels.CONCAT_STRING);
-				buf.append(fullName, 0, qIndex - 1);
-			}
-			return buf.toString();
-		}
+		// TODO JDT signature
+//		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
+//		if (typeName.length > 0) {
+//			buf.append("    "); //$NON-NLS-1$
+//			buf.append(typeName);
+//		}
+//		
+//		if (proposal.getSignature() != null) {
+//			char[] fullName= Signature.toCharArray(proposal.getSignature());
+//			
+//			// only display innermost type name as type name, using any
+//			// enclosing types as qualification
+//			int qIndex= findSimpleNameStart(fullName);
+//			if (qIndex > 0) {
+//				buf.append(JavaElementLabels.CONCAT_STRING);
+//				buf.append(fullName, 0, qIndex - 1);
+//			}
+//			return buf.toString();
+//		}
 		return buf.toString();
 	}
 
@@ -512,7 +522,9 @@ public class CompletionProposalLabelProvider {
 		char[] declaringTypeSignature= proposal.getDeclarationSignature();
 
 		StringBuffer buffer= new StringBuffer();
-		buffer.append(Signature.getSignatureSimpleName(declaringTypeSignature));
+		
+		// TODO JDT signature
+//		buffer.append(Signature.getSignatureSimpleName(declaringTypeSignature));
 		buffer.append('(');
 		appendUnboundedParameterList(buffer, proposal);
 		buffer.append(')');
@@ -604,49 +616,53 @@ public class CompletionProposalLabelProvider {
 				break;
 			case CompletionProposal.ANONYMOUS_CLASS_DECLARATION:
 			case CompletionProposal.TYPE_REF:
-				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
-					case Signature.CLASS_TYPE_SIGNATURE:
-						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
-						break;
-					case Signature.INTERFACE_TYPE_SIGNATURE:
-						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccInterface, false);
-						break;
-					case Signature.STRUCT_TYPE_SIGNATURE:
-						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccStruct, false);
-						break;
-					case Signature.UNION_TYPE_SIGNATURE:
-						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccUnion, false);
-						break;
-					case Signature.ENUM_TYPE_SIGNATURE:
-						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccEnum, false);
-						break;
-					case Signature.TYPE_VARIABLE_SIGNATURE:
-						descriptor= JavaPluginImages.DESC_OBJS_TYPEVARIABLE;
-						break;
-					default:
-						descriptor= null;
-				}
+				// TODO JDT signature
+//				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
+//					case Signature.CLASS_TYPE_SIGNATURE:
+//						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
+//						break;
+//					case Signature.INTERFACE_TYPE_SIGNATURE:
+//						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccInterface, false);
+//						break;
+//					case Signature.STRUCT_TYPE_SIGNATURE:
+//						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccStruct, false);
+//						break;
+//					case Signature.UNION_TYPE_SIGNATURE:
+//						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccUnion, false);
+//						break;
+//					case Signature.ENUM_TYPE_SIGNATURE:
+//						descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccEnum, false);
+//						break;
+//					case Signature.TYPE_VARIABLE_SIGNATURE:
+//						descriptor= JavaPluginImages.DESC_OBJS_TYPEVARIABLE;
+//						break;
+//					default:
+//						descriptor= null;
+//				}
+				descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
 				break;
 			case CompletionProposal.TEMPLATE_REF:
 				descriptor = JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccTemplate, false);
 				break;
 			case CompletionProposal.TEMPLATED_AGGREGATE_REF:
-				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
-				case Signature.TEMPLATED_CLASS_TYPE_SIGNATURE:
-					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
-					break;
-				case Signature.TEMPLATED_INTERFACE_TYPE_SIGNATURE:
-					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccInterface, false);
-					break;
-				case Signature.TEMPLATED_STRUCT_TYPE_SIGNATURE:
-					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccStruct, false);
-					break;
-				case Signature.TEMPLATED_UNION_TYPE_SIGNATURE:
-					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccUnion, false);
-					break;
-				default:
-					descriptor= null;
-				}
+				// TODO JDT signature
+//				switch (Signature.getTypeSignatureKind(proposal.getSignature())) {
+//				case Signature.TEMPLATED_CLASS_TYPE_SIGNATURE:
+//					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
+//					break;
+//				case Signature.TEMPLATED_INTERFACE_TYPE_SIGNATURE:
+//					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccInterface, false);
+//					break;
+//				case Signature.TEMPLATED_STRUCT_TYPE_SIGNATURE:
+//					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccStruct, false);
+//					break;
+//				case Signature.TEMPLATED_UNION_TYPE_SIGNATURE:
+//					descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags | Flags.AccUnion, false);
+//					break;
+//				default:
+//					descriptor= null;
+//				}
+				descriptor= JavaElementImageProvider.getTypeImageDescriptor(false, false, flags, false);
 				break;
 			case CompletionProposal.FIELD_REF:
 			case CompletionProposal.ENUM_MEMBER:

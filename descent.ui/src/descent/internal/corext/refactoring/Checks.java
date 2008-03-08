@@ -517,11 +517,12 @@ public class Checks {
 		if (paramTypes1.length == paramTypes2.length) {
 			int i= 0;
 			while (i < paramTypes1.length) {
-				String t1= Signature.getSimpleName(Signature.toString(paramTypes1[i]));
-				String t2= Signature.getSimpleName(Signature.toString(paramTypes2[i]));
-				if (!t1.equals(t2)) {
-					return false;
-				}
+				// TODO JDT signature
+//				String t1= Signature.getSimpleName(Signature.toString(paramTypes1[i]));
+//				String t2= Signature.getSimpleName(Signature.toString(paramTypes2[i]));
+//				if (!t1.equals(t2)) {
+//					return false;
+//				}
 				i++;
 			}
 			return true;

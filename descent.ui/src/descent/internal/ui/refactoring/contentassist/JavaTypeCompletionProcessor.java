@@ -152,28 +152,29 @@ public class JavaTypeCompletionProcessor extends CUPositionCompletionProcessor {
 					return;
 					
 				case CompletionProposal.TYPE_REF :
-					char[] fullName= Signature.toCharArray(proposal.getSignature());
-					if (TypeFilter.isFiltered(fullName))
-						return;
-					StringBuffer buf= new StringBuffer();
-					buf.append(Signature.getSimpleName(fullName));
-					if (buf.length() == 0)
-						return; // this is the dummy class, whose $ have been converted to dots
-					char[] typeQualifier= Signature.getQualifier(fullName);
-					if (typeQualifier.length > 0) {
-						buf.append(" - "); //$NON-NLS-1$
-						buf.append(typeQualifier);
-					}
-					String name= buf.toString();
-					
-					addAdjustedTypeCompletion(
-							name,
-							new String(proposal.getCompletion()),
-							proposal.getReplaceStart(),
-							proposal.getReplaceEnd(),
-							proposal.getRelevance(),
-							JavaElementImageProvider.getTypeImageDescriptor(false, false, proposal.getFlags(), false),
-							fFullyQualify ? new String(fullName) : null);
+					// TODO JDT signature
+//					char[] fullName= Signature.toCharArray(proposal.getSignature());
+//					if (TypeFilter.isFiltered(fullName))
+//						return;
+//					StringBuffer buf= new StringBuffer();
+//					buf.append(Signature.getSimpleName(fullName));
+//					if (buf.length() == 0)
+//						return; // this is the dummy class, whose $ have been converted to dots
+//					char[] typeQualifier= Signature.getQualifier(fullName);
+//					if (typeQualifier.length > 0) {
+//						buf.append(" - "); //$NON-NLS-1$
+//						buf.append(typeQualifier);
+//					}
+//					String name= buf.toString();
+//					
+//					addAdjustedTypeCompletion(
+//							name,
+//							new String(proposal.getCompletion()),
+//							proposal.getReplaceStart(),
+//							proposal.getReplaceEnd(),
+//							proposal.getRelevance(),
+//							JavaElementImageProvider.getTypeImageDescriptor(false, false, proposal.getFlags(), false),
+//							fFullyQualify ? new String(fullName) : null);
 					return;
 					
 				case CompletionProposal.KEYWORD:

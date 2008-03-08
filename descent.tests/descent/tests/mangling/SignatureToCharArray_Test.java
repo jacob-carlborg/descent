@@ -21,7 +21,7 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testStaticArray() {
-		tca("int[3]", G("3", i));
+		tca("int[3]", G(i, "3"));
 	}
 	
 	public void testAssociativeArray() {
@@ -34,6 +34,10 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	
 	public void testSlice() {
 		tca("int[0 .. 3]", slice(i, "0", "3"));
+	}
+	
+	public void testSlice2() {
+		tca("int[1 .. 3]", slice(i, "1", "3"));
 	}
 	
 	public void testClass() {

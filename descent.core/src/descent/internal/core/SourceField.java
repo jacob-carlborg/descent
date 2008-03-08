@@ -74,7 +74,7 @@ public Object getConstant() throws JavaModelException {
 			constant = new Short(constantSource);
 		} else if (signature.equals(Signature.SIG_BYTE)) {
 			constant = new Byte(constantSource);
-		} else if (signature.equals(Signature.SIG_BOOLEAN)) {
+		} else if (signature.equals(Signature.SIG_BOOL)) {
 			constant = Boolean.valueOf(constantSource);
 		} else if (signature.equals(Signature.SIG_CHAR)) {
 			if (constantSourceChars.length != 3) {

@@ -83,16 +83,18 @@ public final class BindingKey {
 	 * @return a new parameterized type binding key
 	 */
 	public static String createParameterizedTypeBindingKey(String genericTypeKey, String[] argumentTypeKeys) {
-		// Note this implementation is heavily dependent on ParameterizedTypeBinding#computeUniqueKey() and its subclasses
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(Signature.getTypeErasure(genericTypeKey));
-		buffer.insert(buffer.length()-1, '<');
-		for (int i = 0, length = argumentTypeKeys.length; i < length; i++) {
-			String argumentTypeKey = argumentTypeKeys[i];
-			buffer.insert(buffer.length()-1, argumentTypeKey);
-		}
-		buffer.insert(buffer.length()-1, '>');
-		return buffer.toString();
+		// TODO JDT signature
+//		// Note this implementation is heavily dependent on ParameterizedTypeBinding#computeUniqueKey() and its subclasses
+//		StringBuffer buffer = new StringBuffer();
+//		buffer.append(Signature.getTypeErasure(genericTypeKey));
+//		buffer.insert(buffer.length()-1, '<');
+//		for (int i = 0, length = argumentTypeKeys.length; i < length; i++) {
+//			String argumentTypeKey = argumentTypeKeys[i];
+//			buffer.insert(buffer.length()-1, argumentTypeKey);
+//		}
+//		buffer.insert(buffer.length()-1, '>');
+//		return buffer.toString();
+		return genericTypeKey;
 	}
 	
 	/**
@@ -115,8 +117,10 @@ public final class BindingKey {
 	 * @return a new type binding key
 	 */
 	public static String createTypeBindingKey(String typeName) {
-		// Note this implementation is heavily dependent on TypeBinding#computeUniqueKey() and its subclasses
-		return Signature.createTypeSignature(typeName.replace('.', '/'), true/*resolved*/);
+		// TODO JDT signature
+//		// Note this implementation is heavily dependent on TypeBinding#computeUniqueKey() and its subclasses
+//		return Signature.createTypeSignature(typeName.replace('.', '/'), true/*resolved*/);
+		return typeName;
 	}
 	
 	/**
@@ -171,15 +175,17 @@ public final class BindingKey {
 	 * @return a new wildcard type binding key
 	 */
 	public static String createWilcardTypeBindingKey(String typeKey, char kind) {
-		// Note this implementation is heavily dependent on WildcardBinding#computeUniqueKey() 
-		switch (kind) {
-			case Signature.C_STAR:
-				return "*"; //$NON-NLS-1$
-			case Signature.C_SUPER:
-				return '-' + typeKey;
-			case Signature.C_EXTENDS:
-				return '+' + typeKey;
-		}
+		// TODO JDT signature
+//		// Note this implementation is heavily dependent on WildcardBinding#computeUniqueKey() 
+//		switch (kind) {
+//			case Signature.C_STAR:
+//				return "*"; //$NON-NLS-1$
+//			case Signature.C_SUPER:
+//				return '-' + typeKey;
+//			case Signature.C_EXTENDS:
+//				return '+' + typeKey;
+//		}
+//		return null;
 		return null;
 	}
 	

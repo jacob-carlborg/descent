@@ -62,9 +62,10 @@ public abstract class AbstractIndexer implements IIndexConstants {
 		}
 	}
 	private char[] erasure(char[] typeName) {
-		int genericStart = CharOperation.indexOf(Signature.C_GENERIC_START, typeName);
-		if (genericStart > -1) 
-			typeName = CharOperation.subarray(typeName, 0, genericStart);
+		// TODO JDT signature
+//		int genericStart = CharOperation.indexOf(Signature.C_GENERIC_START, typeName);
+//		if (genericStart > -1) 
+//			typeName = CharOperation.subarray(typeName, 0, genericStart);
 		return typeName;
 	}
 	public void addConstructorDeclaration(char[] typeName, char[][] parameterTypes) {

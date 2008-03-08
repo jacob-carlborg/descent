@@ -266,16 +266,18 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		 * 3) by parameter count
 		 * 4) by parameter type names
 		 */
-		char[] name= fProposal.getName();
-		char[] parameterList= Signature.toCharArray(fProposal.getTypeName(), null, null, false, false);
-		int parameterCount= Signature.getParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters
-		StringBuffer buf= new StringBuffer(name.length + 2 + parameterList.length);
-		
-		buf.append(name);
-		buf.append('\0'); // separator
-		buf.append(parameterCount);
-		buf.append(parameterList);
-		return buf.toString();
+		// TODO JDT signature
+//		char[] name= fProposal.getName();
+//		char[] parameterList= Signature.toCharArray(fProposal.getTypeName(), null, null, false, false);
+//		int parameterCount= Signature.getParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters
+//		StringBuffer buf= new StringBuffer(name.length + 2 + parameterList.length);
+//		
+//		buf.append(name);
+//		buf.append('\0'); // separator
+//		buf.append(parameterCount);
+//		buf.append(parameterList);
+//		return buf.toString();
+		return null;
 	}
 	
 	/*

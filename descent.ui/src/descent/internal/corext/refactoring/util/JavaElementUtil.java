@@ -47,11 +47,12 @@ public class JavaElementUtil {
 	}
 	
 	public static String createMethodSignature(IMethod method){
-		try {
-			return Signature.toString(method.getSignature(), method.getElementName(), method.getParameterNames(), false, ! method.isConstructor());
-		} catch(JavaModelException e) {
+		// TODO JDT signature
+//		try {
+//			return Signature.toString(method.getSignature(), method.getElementName(), method.getParameterNames(), false, ! method.isConstructor());
+//		} catch(JavaModelException e) {
 			return method.getElementName(); //fallback
-		}
+//		}
 	}
 	
 	public static String createFieldSignature(IField field){

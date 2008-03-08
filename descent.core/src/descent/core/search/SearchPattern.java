@@ -731,7 +731,8 @@ private static SearchPattern createMethodOrConstructorPattern(String patternStri
 						argCount--;
 						if (argCount == 0) {
 							String pseudoType = "Type"+typeArgumentsString; //$NON-NLS-1$
-							typeArguments = Signature.getTypeArguments(Signature.createTypeSignature(pseudoType, false).toCharArray());
+							// TODO JDT signature
+//							typeArguments = Signature.getTypeArguments(Signature.createTypeSignature(pseudoType, false).toCharArray());
 							mode = InsideSelector;
 						}
 						break;
@@ -866,12 +867,13 @@ private static SearchPattern createMethodOrConstructorPattern(String patternStri
 		// get declaring type part and signature
 		char[] declaringTypePart = null;
 		try {
-			declaringTypeSignature = Signature.createTypeSignature(declaringType, false);
-			if (declaringTypeSignature.indexOf(Signature.C_GENERIC_START) < 0) {
-				declaringTypePart = declaringType.toCharArray();
-			} else {
-				declaringTypePart = Signature.toCharArray(Signature.getTypeErasure(declaringTypeSignature.toCharArray()));
-			}
+			// TODO JDT signature
+//			declaringTypeSignature = Signature.createTypeSignature(declaringType, false);
+//			if (declaringTypeSignature.indexOf(Signature.C_GENERIC_START) < 0) {
+//				declaringTypePart = declaringType.toCharArray();
+//			} else {
+//				declaringTypePart = Signature.toCharArray(Signature.getTypeErasure(declaringTypeSignature.toCharArray()));
+//			}
 		}
 		catch (IllegalArgumentException iae) {
 			// declaring type is invalid
@@ -899,12 +901,13 @@ private static SearchPattern createMethodOrConstructorPattern(String patternStri
 			char[] parameterTypePart = null;
 			try {
 				if (parameterTypes != null) {
-					parameterTypeSignatures[i] = Signature.createTypeSignature(parameterTypes[i], false);
-					if (parameterTypeSignatures[i].indexOf(Signature.C_GENERIC_START) < 0) {
-						parameterTypePart = parameterTypes[i].toCharArray();
-					} else {
-						parameterTypePart = Signature.toCharArray(Signature.getTypeErasure(parameterTypeSignatures[i].toCharArray()));
-					}
+					// TODO JDT signature
+//					parameterTypeSignatures[i] = Signature.createTypeSignature(parameterTypes[i], false);
+//					if (parameterTypeSignatures[i].indexOf(Signature.C_GENERIC_START) < 0) {
+//						parameterTypePart = parameterTypes[i].toCharArray();
+//					} else {
+//						parameterTypePart = Signature.toCharArray(Signature.getTypeErasure(parameterTypeSignatures[i].toCharArray()));
+//					}
 				}
 			}
 			catch (IllegalArgumentException iae) {
@@ -934,12 +937,13 @@ private static SearchPattern createMethodOrConstructorPattern(String patternStri
 		// get return type part and signature
 		char[] returnTypePart = null;
 		try {
-			returnTypeSignature = Signature.createTypeSignature(returnType, false);
-			if (returnTypeSignature.indexOf(Signature.C_GENERIC_START) < 0) {
-				returnTypePart = returnType.toCharArray();
-			} else {
-				returnTypePart = Signature.toCharArray(Signature.getTypeErasure(returnTypeSignature.toCharArray()));
-			}
+			// TODO JDT signature
+//			returnTypeSignature = Signature.createTypeSignature(returnType, false);
+//			if (returnTypeSignature.indexOf(Signature.C_GENERIC_START) < 0) {
+//				returnTypePart = returnType.toCharArray();
+//			} else {
+//				returnTypePart = Signature.toCharArray(Signature.getTypeErasure(returnTypeSignature.toCharArray()));
+//			}
 		}
 		catch (IllegalArgumentException iae) {
 			// declaring type is invalid
@@ -1258,24 +1262,25 @@ public static SearchPattern createPattern(IJavaElement element, int limitTo, int
 			char[] typeQualification = null;
 			String typeSignature = null;
 			if (!ignoreReturnType) {
-				try {
-					typeSignature = field.getTypeSignature();
-					char[] signature = typeSignature.toCharArray();
-					char[] typeErasure = Signature.toCharArray(Signature.getTypeErasure(signature));
-					CharOperation.replace(typeErasure, '$', '.');
-					if ((lastDot = CharOperation.lastIndexOf('.', typeErasure)) == -1) {
-						typeSimpleName = typeErasure;
-					} else {
-						typeSimpleName = CharOperation.subarray(typeErasure, lastDot + 1, typeErasure.length);
-						typeQualification = CharOperation.subarray(typeErasure, 0, lastDot);
-						if (!field.isBinary()) {
-							// prefix with a '*' as the full qualification could be bigger (because of an import)
-							typeQualification = CharOperation.concat(IIndexConstants.ONE_STAR, typeQualification);
-						}
-					}
-				} catch (JavaModelException e) {
-					return null;
-				}
+				// TODO JDT signature
+//				try {
+//					typeSignature = field.getTypeSignature();
+//					char[] signature = typeSignature.toCharArray();
+//					char[] typeErasure = Signature.toCharArray(Signature.getTypeErasure(signature));
+//					CharOperation.replace(typeErasure, '$', '.');
+//					if ((lastDot = CharOperation.lastIndexOf('.', typeErasure)) == -1) {
+//						typeSimpleName = typeErasure;
+//					} else {
+//						typeSimpleName = CharOperation.subarray(typeErasure, lastDot + 1, typeErasure.length);
+//						typeQualification = CharOperation.subarray(typeErasure, 0, lastDot);
+//						if (!field.isBinary()) {
+//							// prefix with a '*' as the full qualification could be bigger (because of an import)
+//							typeQualification = CharOperation.concat(IIndexConstants.ONE_STAR, typeQualification);
+//						}
+//					}
+//				} catch (JavaModelException e) {
+//					return null;
+//				}
 			}
 			// Create field pattern
 			boolean findDeclarations = false;
@@ -1411,19 +1416,20 @@ public static SearchPattern createPattern(IJavaElement element, int limitTo, int
 			if (!ignoreReturnType) {
 				try {
 					returnSignature = method.getReturnType();
-					char[] signature = returnSignature.toCharArray();
-					char[] returnErasure = Signature.toCharArray(Signature.getTypeErasure(signature));
-					CharOperation.replace(returnErasure, '$', '.');
-					if ((lastDot = CharOperation.lastIndexOf('.', returnErasure)) == -1) {
-						returnSimpleName = returnErasure;
-					} else {
-						returnSimpleName = CharOperation.subarray(returnErasure, lastDot + 1, returnErasure.length);
-						returnQualification = CharOperation.subarray(returnErasure, 0, lastDot);
-						if (!method.isBinary()) {
-							// prefix with a '*' as the full qualification could be bigger (because of an import)
-							CharOperation.concat(IIndexConstants.ONE_STAR, returnQualification);
-						}
-					}
+					// TODO JDT signature
+//					char[] signature = returnSignature.toCharArray();
+//					char[] returnErasure = Signature.toCharArray(Signature.getTypeErasure(signature));
+//					CharOperation.replace(returnErasure, '$', '.');
+//					if ((lastDot = CharOperation.lastIndexOf('.', returnErasure)) == -1) {
+//						returnSimpleName = returnErasure;
+//					} else {
+//						returnSimpleName = CharOperation.subarray(returnErasure, lastDot + 1, returnErasure.length);
+//						returnQualification = CharOperation.subarray(returnErasure, 0, lastDot);
+//						if (!method.isBinary()) {
+//							// prefix with a '*' as the full qualification could be bigger (because of an import)
+//							CharOperation.concat(IIndexConstants.ONE_STAR, returnQualification);
+//						}
+//					}
 				} catch (JavaModelException e) {
 					return null;
 				}
@@ -1436,19 +1442,20 @@ public static SearchPattern createPattern(IJavaElement element, int limitTo, int
 			for (int i = 0; i < paramCount; i++) {
 				parameterSignatures[i] = parameterTypes[i];
 				char[] signature = parameterSignatures[i].toCharArray();
-				char[] paramErasure = Signature.toCharArray(Signature.getTypeErasure(signature));
-				CharOperation.replace(paramErasure, '$', '.');
-				if ((lastDot = CharOperation.lastIndexOf('.', paramErasure)) == -1) {
-					parameterSimpleNames[i] = paramErasure;
-					parameterQualifications[i] = null;
-				} else {
-					parameterSimpleNames[i] = CharOperation.subarray(paramErasure, lastDot + 1, paramErasure.length);
-					parameterQualifications[i] = CharOperation.subarray(paramErasure, 0, lastDot);
-					if (!method.isBinary()) {
-						// prefix with a '*' as the full qualification could be bigger (because of an import)
-						CharOperation.concat(IIndexConstants.ONE_STAR, parameterQualifications[i]);
-					}
-				}
+				// TODO JDT signature
+//				char[] paramErasure = Signature.toCharArray(Signature.getTypeErasure(signature));
+//				CharOperation.replace(paramErasure, '$', '.');
+//				if ((lastDot = CharOperation.lastIndexOf('.', paramErasure)) == -1) {
+//					parameterSimpleNames[i] = paramErasure;
+//					parameterQualifications[i] = null;
+//				} else {
+//					parameterSimpleNames[i] = CharOperation.subarray(paramErasure, lastDot + 1, paramErasure.length);
+//					parameterQualifications[i] = CharOperation.subarray(paramErasure, 0, lastDot);
+//					if (!method.isBinary()) {
+//						// prefix with a '*' as the full qualification could be bigger (because of an import)
+//						CharOperation.concat(IIndexConstants.ONE_STAR, parameterQualifications[i]);
+//					}
+//				}
 			}
 
 			// Create method/constructor pattern
@@ -1632,12 +1639,13 @@ private static SearchPattern createTypePattern(String patternString, int limitTo
 	// get type part and signature
 	char[] typePart = null;
 	try {
-		typeSignature = Signature.createTypeSignature(type, false);
-		if (typeSignature.indexOf(Signature.C_GENERIC_START) < 0) {
-			typePart = type.toCharArray();
-		} else {
-			typePart = Signature.toCharArray(Signature.getTypeErasure(typeSignature.toCharArray()));
-		}
+		// TODO JDT signature
+//		typeSignature = Signature.createTypeSignature(type, false);
+//		if (typeSignature.indexOf(Signature.C_GENERIC_START) < 0) {
+//			typePart = type.toCharArray();
+//		} else {
+//			typePart = Signature.toCharArray(Signature.getTypeErasure(typeSignature.toCharArray()));
+//		}
 	}
 	catch (IllegalArgumentException iae) {
 		// string is not a valid type syntax

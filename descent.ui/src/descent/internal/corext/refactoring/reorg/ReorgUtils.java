@@ -194,8 +194,9 @@ public class ReorgUtils {
 				IType type= (IType)element;
 				String name= type.getElementName();
 				if (name.length() == 0 && type.isAnonymous()) {
-					String superclassName= Signature.getSimpleName(type.getSuperclassName());
-					return new String[]{Messages.format(RefactoringCoreMessages.ReorgUtils_19, superclassName)}; 
+					// TODO JDT signature
+//					String superclassName= Signature.getSimpleName(type.getSuperclassName());
+//					return new String[]{Messages.format(RefactoringCoreMessages.ReorgUtils_19, superclassName)}; 
 				}
 				return new String[]{element.getElementName()};
 			default:

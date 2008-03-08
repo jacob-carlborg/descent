@@ -421,13 +421,12 @@ public class TypeSArray extends TypeArray {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append('G');
+		next.appendSignature(sb);
 		
 		char[] expc = new ASTNodeEncoder().encodeExpression(dim);
 		sb.append(expc.length);
 		sb.append('G');
 		sb.append(expc);
-		
-		next.appendSignature(sb);
 	}
 
 	// PERHAPS type *toCtype();

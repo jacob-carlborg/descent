@@ -422,11 +422,13 @@ public class Util {
 	 * Returns a trimmed version the simples names returned by Signature.
 	 */
 	public static String[] getTrimmedSimpleNames(String name) {
-		String[] result = Signature.getSimpleNames(name);
-		for (int i = 0, length = result.length; i < length; i++) {
-			result[i] = result[i].trim();
-		}
-		return result;
+		// TODO JDT signature
+//		String[] result = Signature.getSimpleNames(name);
+//		for (int i = 0, length = result.length; i < length; i++) {
+//			result[i] = result[i].trim();
+//		}
+//		return result;
+		return new String[0];
 	}
 	
 	/**
@@ -446,38 +448,40 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not a type signature
 	 */
 	public static int scanTypeSignature(char[] string, int start) {
-		// need a minimum 1 char
-		if (start >= string.length) {
-			throw new IllegalArgumentException();
-		}
-		char c = string[start];
-		switch (c) {
-			case Signature.C_ARRAY :
-				return scanArrayTypeSignature(string, start);
-			case Signature.C_RESOLVED :
-			case Signature.C_UNRESOLVED :
-				return scanClassTypeSignature(string, start);
-			case Signature.C_TYPE_VARIABLE :
-				return scanTypeVariableSignature(string, start);
-			case Signature.C_BOOLEAN :
-			case Signature.C_BYTE :
-			case Signature.C_CHAR :
-			case Signature.C_DOUBLE :
-			case Signature.C_FLOAT :
-			case Signature.C_INT :
-			case Signature.C_LONG :
-			case Signature.C_SHORT :
-			case Signature.C_VOID :
-				return scanBaseTypeSignature(string, start);
-			case Signature.C_CAPTURE :
-				return scanCaptureTypeSignature(string, start);
-			case Signature.C_EXTENDS:
-			case Signature.C_SUPER:
-			case Signature.C_STAR:
-				return scanTypeBoundSignature(string, start);
-			default :
-				throw new IllegalArgumentException();
-		}
+		// TODO JDT signature
+//		// need a minimum 1 char
+//		if (start >= string.length) {
+//			throw new IllegalArgumentException();
+//		}
+//		char c = string[start];
+//		switch (c) {
+//			case Signature.C_ARRAY :
+//				return scanArrayTypeSignature(string, start);
+//			case Signature.C_RESOLVED :
+//			case Signature.C_UNRESOLVED :
+//				return scanClassTypeSignature(string, start);
+//			case Signature.C_TYPE_VARIABLE :
+//				return scanTypeVariableSignature(string, start);
+//			case Signature.C_BOOL :
+//			case Signature.C_BYTE :
+//			case Signature.C_CHAR :
+//			case Signature.C_DOUBLE :
+//			case Signature.C_FLOAT :
+//			case Signature.C_INT :
+//			case Signature.C_LONG :
+//			case Signature.C_SHORT :
+//			case Signature.C_VOID :
+//				return scanBaseTypeSignature(string, start);
+//			case Signature.C_CAPTURE :
+//				return scanCaptureTypeSignature(string, start);
+//			case Signature.C_EXTENDS:
+//			case Signature.C_SUPER:
+//			case Signature.C_STAR:
+//				return scanTypeBoundSignature(string, start);
+//			default :
+//				throw new IllegalArgumentException();
+//		}
+		return -1;
 	}
 	
 	/**
@@ -494,15 +498,17 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not a capture type signature
 	 */
 	public static int scanCaptureTypeSignature(char[] string, int start) {
-		// need a minimum 2 char
-		if (start >= string.length - 1) {
-			throw new IllegalArgumentException();
-		}
-		char c = string[start];
-		if (c != Signature.C_CAPTURE) {
-			throw new IllegalArgumentException();
-		}
-		return scanTypeBoundSignature(string, start + 1);
+		// TODO JDT signature
+//		// need a minimum 2 char
+//		if (start >= string.length - 1) {
+//			throw new IllegalArgumentException();
+//		}
+//		char c = string[start];
+//		if (c != Signature.C_CAPTURE) {
+//			throw new IllegalArgumentException();
+//		}
+//		return scanTypeBoundSignature(string, start + 1);
+		return -1;
 	}
 	
 	/**
@@ -520,45 +526,47 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not a type variable signature
 	 */
 	public static int scanTypeBoundSignature(char[] string, int start) {
-		// need a minimum 1 char for wildcard
-		if (start >= string.length) {
-			throw new IllegalArgumentException();
-		}
-		char c = string[start];
-		switch (c) {
-			case Signature.C_STAR :
-				return start;
-			case Signature.C_SUPER :
-			case Signature.C_EXTENDS :
-				// need a minimum 3 chars "+[I"
-				if (start >= string.length - 2) {
-					throw new IllegalArgumentException();
-				}
-				break;
-			default :
-				// must start in "+/-"
-					throw new IllegalArgumentException();
-				
-		}
-		c = string[++start];
-		switch (c) {
-			case Signature.C_CAPTURE :
-				return scanCaptureTypeSignature(string, start);
-			case Signature.C_SUPER :
-			case Signature.C_EXTENDS :
-				return scanTypeBoundSignature(string, start);
-			case Signature.C_RESOLVED :
-			case Signature.C_UNRESOLVED :
-				return scanClassTypeSignature(string, start);
-			case Signature.C_TYPE_VARIABLE :
-				return scanTypeVariableSignature(string, start);
-			case Signature.C_ARRAY :
-				return scanArrayTypeSignature(string, start);
-			case Signature.C_STAR:
-				return start;
-			default:
-				throw new IllegalArgumentException();
-		}
+		// TODO JDT signature
+//		// need a minimum 1 char for wildcard
+//		if (start >= string.length) {
+//			throw new IllegalArgumentException();
+//		}
+//		char c = string[start];
+//		switch (c) {
+//			case Signature.C_STAR :
+//				return start;
+//			case Signature.C_SUPER :
+//			case Signature.C_EXTENDS :
+//				// need a minimum 3 chars "+[I"
+//				if (start >= string.length - 2) {
+//					throw new IllegalArgumentException();
+//				}
+//				break;
+//			default :
+//				// must start in "+/-"
+//					throw new IllegalArgumentException();
+//				
+//		}
+//		c = string[++start];
+//		switch (c) {
+//			case Signature.C_CAPTURE :
+//				return scanCaptureTypeSignature(string, start);
+//			case Signature.C_SUPER :
+//			case Signature.C_EXTENDS :
+//				return scanTypeBoundSignature(string, start);
+//			case Signature.C_RESOLVED :
+//			case Signature.C_UNRESOLVED :
+//				return scanClassTypeSignature(string, start);
+//			case Signature.C_TYPE_VARIABLE :
+//				return scanTypeVariableSignature(string, start);
+//			case Signature.C_ARRAY :
+//				return scanArrayTypeSignature(string, start);
+//			case Signature.C_STAR:
+//				return start;
+//			default:
+//				throw new IllegalArgumentException();
+//		}
+		return -1;
 	}
 	
 	/**
@@ -575,25 +583,27 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not an array type signature
 	 */
 	public static int scanArrayTypeSignature(char[] string, int start) {
-		int length = string.length;
-		// need a minimum 2 char
-		if (start >= length - 1) {
-			throw new IllegalArgumentException();
-		}
-		char c = string[start];
-		if (c != Signature.C_ARRAY) {
-			throw new IllegalArgumentException();
-		}
-		
-		c = string[++start];
-		while(c == Signature.C_ARRAY) {
-			// need a minimum 2 char
-			if (start >= length - 1) {
-				throw new IllegalArgumentException();
-			}
-			c = string[++start];
-		}
-		return scanTypeSignature(string, start);
+		// TODO JDT signature
+//		int length = string.length;
+//		// need a minimum 2 char
+//		if (start >= length - 1) {
+//			throw new IllegalArgumentException();
+//		}
+//		char c = string[start];
+//		if (c != Signature.C_ARRAY) {
+//			throw new IllegalArgumentException();
+//		}
+//		
+//		c = string[++start];
+//		while(c == Signature.C_ARRAY) {
+//			// need a minimum 2 char
+//			if (start >= length - 1) {
+//				throw new IllegalArgumentException();
+//			}
+//			c = string[++start];
+//		}
+//		return scanTypeSignature(string, start);
+		return -1;
 	}
 	
 	/**
@@ -610,22 +620,24 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not a type variable signature
 	 */
 	public static int scanTypeVariableSignature(char[] string, int start) {
-		// need a minimum 3 chars "Tx;"
-		if (start >= string.length - 2) { 
-			throw new IllegalArgumentException();
-		}
-		// must start in "T"
-		char c = string[start];
-		if (c != Signature.C_TYPE_VARIABLE) {
-			throw new IllegalArgumentException();
-		}
-		int id = scanIdentifier(string, start + 1);
-		c = string[id + 1];
-		if (c == Signature.C_SEMICOLON) {
-			return id + 1;
-		} else {
-			throw new IllegalArgumentException();
-		}
+		// TODO JDT signature
+//		// need a minimum 3 chars "Tx;"
+//		if (start >= string.length - 2) { 
+//			throw new IllegalArgumentException();
+//		}
+//		// must start in "T"
+//		char c = string[start];
+//		if (c != Signature.C_TYPE_VARIABLE) {
+//			throw new IllegalArgumentException();
+//		}
+//		int id = scanIdentifier(string, start + 1);
+//		c = string[id + 1];
+//		if (c == Signature.C_SEMICOLON) {
+//			return id + 1;
+//		} else {
+//			throw new IllegalArgumentException();
+//		}
+		return -1;
 	}
 	
 	/**
@@ -647,33 +659,35 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not a class type signature
 	 */
 	public static int scanClassTypeSignature(char[] string, int start) {
-		// need a minimum 3 chars "Lx;"
-		if (start >= string.length - 2) { 
-			throw new IllegalArgumentException();
-		}
-		// must start in "L" or "Q"
-		char c = string[start];
-		if (c != Signature.C_RESOLVED && c != Signature.C_UNRESOLVED) {
-			return -1;
-		}
-		int p = start + 1;
-		while (true) {
-			if (p >= string.length) {
-				throw new IllegalArgumentException();
-			}
-			c = string[p];
-			if (c == Signature.C_SEMICOLON) {
-				// all done
-				return p;
-			} else if (c == Signature.C_GENERIC_START) {
-				int e = scanTypeArgumentSignatures(string, p);
-				p = e;
-			} else if (c == Signature.C_DOT || c == '/') {
-				int id = scanIdentifier(string, p + 1);
-				p = id;
-			}
-			p++;
-		}
+		// TODO JDT signature
+//		// need a minimum 3 chars "Lx;"
+//		if (start >= string.length - 2) { 
+//			throw new IllegalArgumentException();
+//		}
+//		// must start in "L" or "Q"
+//		char c = string[start];
+//		if (c != Signature.C_RESOLVED && c != Signature.C_UNRESOLVED) {
+//			return -1;
+//		}
+//		int p = start + 1;
+//		while (true) {
+//			if (p >= string.length) {
+//				throw new IllegalArgumentException();
+//			}
+//			c = string[p];
+//			if (c == Signature.C_SEMICOLON) {
+//				// all done
+//				return p;
+//			} else if (c == Signature.C_GENERIC_START) {
+//				int e = scanTypeArgumentSignatures(string, p);
+//				p = e;
+//			} else if (c == Signature.C_DOT || c == '/') {
+//				int id = scanIdentifier(string, p + 1);
+//				p = id;
+//			}
+//			p++;
+//		}
+		return -1;
 	}
 	
 	/**
@@ -752,26 +766,28 @@ public class Util {
 	 * signatures
 	 */
 	public static int scanTypeArgumentSignatures(char[] string, int start) {
-		// need a minimum 2 char "<>"
-		if (start >= string.length - 1) {
-			throw new IllegalArgumentException();
-		}
-		char c = string[start];
-		if (c != Signature.C_GENERIC_START) {
-			throw new IllegalArgumentException();
-		}
-		int p = start + 1;
-		while (true) {
-			if (p >= string.length) {
-				throw new IllegalArgumentException();
-			}
-			c = string[p];
-			if (c == Signature.C_GENERIC_END) {
-				return p;
-			}
-			int e = scanTypeArgumentSignature(string, p);
-			p = e + 1;
-		}
+		// TODO JDT signature
+//		// need a minimum 2 char "<>"
+//		if (start >= string.length - 1) {
+//			throw new IllegalArgumentException();
+//		}
+//		char c = string[start];
+//		if (c != Signature.C_GENERIC_START) {
+//			throw new IllegalArgumentException();
+//		}
+//		int p = start + 1;
+//		while (true) {
+//			if (p >= string.length) {
+//				throw new IllegalArgumentException();
+//			}
+//			c = string[p];
+//			if (c == Signature.C_GENERIC_END) {
+//				return p;
+//			}
+//			int e = scanTypeArgumentSignature(string, p);
+//			p = e + 1;
+//		}
+		return -1;
 	}
 
 	/**
@@ -793,20 +809,22 @@ public class Util {
 	 * @exception IllegalArgumentException if this is not a type argument signature
 	 */
 	public static int scanTypeArgumentSignature(char[] string, int start) {
-		// need a minimum 1 char
-		if (start >= string.length) {
-			throw new IllegalArgumentException();
-		}
-		char c = string[start];
-		switch (c) {
-			case Signature.C_STAR :
-				return start;
-			case Signature.C_EXTENDS :
-			case Signature.C_SUPER :
-				return scanTypeBoundSignature(string, start);
-			default :
-				return scanTypeSignature(string, start);
-		}
+		// TODO JDT signature
+//		// need a minimum 1 char
+//		if (start >= string.length) {
+//			throw new IllegalArgumentException();
+//		}
+//		char c = string[start];
+//		switch (c) {
+//			case Signature.C_STAR :
+//				return start;
+//			case Signature.C_EXTENDS :
+//			case Signature.C_SUPER :
+//				return scanTypeBoundSignature(string, start);
+//			default :
+//				return scanTypeSignature(string, start);
+//		}
+		return -1;
 	}
 	
 	/**
@@ -1688,9 +1706,11 @@ public class Util {
 	 * Returns the signature of the given type.
 	 */
 	public static String getSignature(Type type) {
-		StringBuffer buffer = new StringBuffer();
-		getFullyQualifiedName(type, buffer);
-		return Signature.createTypeSignature(buffer.toString(), false/*not resolved in source*/);
+		// TODO JDT signature
+//		StringBuffer buffer = new StringBuffer();
+//		getFullyQualifiedName(type, buffer);
+//		return Signature.createTypeSignature(buffer.toString(), false/*not resolved in source*/);
+		return "i";
 	}
 	
 	/*
@@ -1777,63 +1797,65 @@ public class Util {
 	 * @return char[][] Array of signatures for each level of given unique key
 	 */
 	public final static char[][] splitTypeLevelsSignature(String typeSignature) {
-		// In case of IJavaElement signature, replace '$' by '.'
-		char[] source = Signature.removeCapture(typeSignature.toCharArray());
-		CharOperation.replace(source, '$', '.');
-
-		// Init counters and arrays
-		char[][] signatures = new char[10][];
-		int signaturesCount = 0;
-//		int[] lengthes = new int [10];
-		int typeArgsCount = 0;
-		int paramOpening = 0;
-		
-		// Scan each signature character
-		for (int idx=0, ln = source.length; idx < ln; idx++) {
-			switch (source[idx]) {
-				case '>':
-					paramOpening--;
-					if (paramOpening == 0)  {
-						if (signaturesCount == signatures.length) {
-							System.arraycopy(signatures, 0, signatures = new char[signaturesCount+10][], 0, signaturesCount);
-						}
-						typeArgsCount = 0;
-					}
-					break;
-				case '<':
-					paramOpening++;
-					if (paramOpening == 1) {
-						typeArgsCount = 1;
-					}
-					break;
-				case '*':
-				case ';':
-					if (paramOpening == 1) typeArgsCount++;
-					break;
-				case '.':
-					if (paramOpening == 0)  {
-						if (signaturesCount == signatures.length) {
-							System.arraycopy(signatures, 0, signatures = new char[signaturesCount+10][], 0, signaturesCount);
-						}
-						signatures[signaturesCount] = new char[idx+1];
-						System.arraycopy(source, 0, signatures[signaturesCount], 0, idx);
-						signatures[signaturesCount][idx] = Signature.C_SEMICOLON;
-						signaturesCount++;
-					}
-					break;
-				case '/':
-					source[idx] = '.';
-					break;
-			}
-		}
-
-		// Resize signatures array
-		char[][] typeSignatures = new char[signaturesCount+1][];
-		typeSignatures[0] = source;
-		for (int i=1, j=signaturesCount-1; i<=signaturesCount; i++, j--){
-			typeSignatures[i] = signatures[j];
-		}
-		return typeSignatures;
+		// TODO JDT signature
+//		// In case of IJavaElement signature, replace '$' by '.'
+//		char[] source = Signature.removeCapture(typeSignature.toCharArray());
+//		CharOperation.replace(source, '$', '.');
+//
+//		// Init counters and arrays
+//		char[][] signatures = new char[10][];
+//		int signaturesCount = 0;
+////		int[] lengthes = new int [10];
+//		int typeArgsCount = 0;
+//		int paramOpening = 0;
+//		
+//		// Scan each signature character
+//		for (int idx=0, ln = source.length; idx < ln; idx++) {
+//			switch (source[idx]) {
+//				case '>':
+//					paramOpening--;
+//					if (paramOpening == 0)  {
+//						if (signaturesCount == signatures.length) {
+//							System.arraycopy(signatures, 0, signatures = new char[signaturesCount+10][], 0, signaturesCount);
+//						}
+//						typeArgsCount = 0;
+//					}
+//					break;
+//				case '<':
+//					paramOpening++;
+//					if (paramOpening == 1) {
+//						typeArgsCount = 1;
+//					}
+//					break;
+//				case '*':
+//				case ';':
+//					if (paramOpening == 1) typeArgsCount++;
+//					break;
+//				case '.':
+//					if (paramOpening == 0)  {
+//						if (signaturesCount == signatures.length) {
+//							System.arraycopy(signatures, 0, signatures = new char[signaturesCount+10][], 0, signaturesCount);
+//						}
+//						signatures[signaturesCount] = new char[idx+1];
+//						System.arraycopy(source, 0, signatures[signaturesCount], 0, idx);
+//						signatures[signaturesCount][idx] = Signature.C_SEMICOLON;
+//						signaturesCount++;
+//					}
+//					break;
+//				case '/':
+//					source[idx] = '.';
+//					break;
+//			}
+//		}
+//
+//		// Resize signatures array
+//		char[][] typeSignatures = new char[signaturesCount+1][];
+//		typeSignatures[0] = source;
+//		for (int i=1, j=signaturesCount-1; i<=signaturesCount; i++, j--){
+//			typeSignatures[i] = signatures[j];
+//		}
+//		return typeSignatures;
+		return CharOperation.NO_CHAR_CHAR;
 	}
 	
 	/**
@@ -1863,13 +1885,15 @@ public class Util {
 	 * @return char[][][] Array of type arguments for each signature
 	 */
 	public final static char[][][] getAllTypeArguments(char[][] typeSignatures) {
-		if (typeSignatures == null) return null;
-		int length = typeSignatures.length;
-		char[][][] typeArguments = new char[length][][];
-		for (int i=0; i<length; i++){
-			typeArguments[i] = Signature.getTypeArguments(typeSignatures[i]);
-		}
-		return typeArguments;
+		// TODO JDT signature
+//		if (typeSignatures == null) return null;
+//		int length = typeSignatures.length;
+//		char[][][] typeArguments = new char[length][][];
+//		for (int i=0; i<length; i++){
+//			typeArguments[i] = Signature.getTypeArguments(typeSignatures[i]);
+//		}
+//		return typeArguments;
+		return null;
 	}
 	
 	/**

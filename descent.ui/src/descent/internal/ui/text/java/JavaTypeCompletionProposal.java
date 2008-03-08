@@ -55,7 +55,10 @@ public class JavaTypeCompletionProposal extends JavaCompletionProposal {
 		super(replacementString, replacementOffset, replacementLength, image, displayString, relevance);
 		fCompilationUnit= cu;
 		fFullyQualifiedTypeName= fullyQualifiedTypeName;
-		fUnqualifiedTypeName= fullyQualifiedTypeName != null ? Signature.getSimpleName(fullyQualifiedTypeName) : null;
+		
+		// TODO JDT signature
+//		fUnqualifiedTypeName= fullyQualifiedTypeName != null ? Signature.getSimpleName(fullyQualifiedTypeName) : null;
+		fUnqualifiedTypeName = null;
 	}
 
 	protected boolean updateReplacementString(IDocument document, char trigger, int offset, ImportRewrite impRewrite) throws CoreException, BadLocationException {

@@ -322,9 +322,11 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 		String[] bounds= parameter.getBounds();
 		String elementName= parameter.getElementName();
 		String displayName= computeTypeParameterDisplayName(parameter, bounds);
-		if (bounds.length == 1 && !"java.lang.Object".equals(bounds[0])) //$NON-NLS-1$
-			return new TypeArgumentProposal(Signature.getSimpleName(bounds[0]), true, displayName);
-		else
+		
+		// TODO JDT signature
+//		if (bounds.length == 1 && !"java.lang.Object".equals(bounds[0])) //$NON-NLS-1$
+//			return new TypeArgumentProposal(Signature.getSimpleName(bounds[0]), true, displayName);
+//		else
 			return new TypeArgumentProposal(elementName, true, displayName);
 	}
 
@@ -334,7 +336,8 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 		StringBuffer buf= new StringBuffer(parameter.getElementName());
 		buf.append(" extends "); //$NON-NLS-1$
 		for (int i= 0; i < bounds.length; i++) {
-			buf.append(Signature.getSimpleName(bounds[i]));
+			// TODO JDT signature
+//			buf.append(Signature.getSimpleName(bounds[i]));
 			if (i < bounds.length - 1)
 				buf.append(" & "); //$NON-NLS-1$
 		}
@@ -520,11 +523,12 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 	 * @return the index of the given type argument, or -1 if there is none
 	 */
 	private int findMatchingTypeArgumentIndex(String signature, String argument) {
-		String[] typeArguments= Signature.getTypeArguments(signature);
-		for (int i= 0; i < typeArguments.length; i++) {
-			if (Signature.getSignatureSimpleName(typeArguments[i]).equals(argument))
-				return i;
-		}
+		// TODO JDT signature
+//		String[] typeArguments= Signature.getTypeArguments(signature);
+//		for (int i= 0; i < typeArguments.length; i++) {
+//			if (Signature.getSignatureSimpleName(typeArguments[i]).equals(argument))
+//				return i;
+//		}
 		return -1;
 	}
 

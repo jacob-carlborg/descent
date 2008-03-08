@@ -506,12 +506,13 @@ public class JavaDocLocations {
 				IImportDeclaration decl= (IImportDeclaration) element;
 
 				if (decl.isOnDemand()) {
-					IJavaElement cont= JavaModelUtil.findTypeContainer(element.getJavaProject(), Signature.getQualifier(decl.getElementName()));
-					if (cont instanceof IType) {
-						appendTypePath((IType) cont, pathBuffer);
-					} else if (cont instanceof IPackageFragment) {
-						appendPackageSummaryPath((IPackageFragment) cont, pathBuffer);
-					}
+					// TODO JDT signature
+//					IJavaElement cont= JavaModelUtil.findTypeContainer(element.getJavaProject(), Signature.getQualifier(decl.getElementName()));
+//					if (cont instanceof IType) {
+//						appendTypePath((IType) cont, pathBuffer);
+//					} else if (cont instanceof IPackageFragment) {
+//						appendPackageSummaryPath((IPackageFragment) cont, pathBuffer);
+//					}
 				} else {
 					IType imp= element.getJavaProject().findType(decl.getElementName());
 					appendTypePath(imp, pathBuffer);

@@ -133,6 +133,9 @@ public class SignatureProcessor implements ISignatureConstants {
 			}
 			case STATIC_ARRAY: { // static array
 				i++;
+				
+				i = process0(signature, i, requestor);
+				
 				c = signature.charAt(i);
 				
 				n = 0;
@@ -148,7 +151,6 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				i += n;
 				
-				i = process0(signature, i, requestor);
 				requestor.acceptStaticArray(dimension, signature.substring(start, i));
 				return i;
 			}
@@ -365,11 +367,6 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.acceptPosition(localPosition);
 				continue;
 			default:
-				// If it's a digit, it may be a template value parameter
-				if (Character.isDigit(first)) {
-					return i;
-				}
-				
 				// Try with type basic
 				TypeBasic type = TypeBasic.fromSignature(first);
 				if (type != null) {

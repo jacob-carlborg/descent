@@ -755,8 +755,9 @@ public class JavaSearchPage extends DialogPage implements ISearchPage, IJavaSear
 				case IJavaElement.IMPORT_DECLARATION: {
 					IImportDeclaration declaration= (IImportDeclaration) element;
 					if (declaration.isOnDemand()) {
-						String name= Signature.getQualifier(declaration.getElementName());
-						return new SearchPatternData(PACKAGE, DECLARATIONS, true, name, element, true);
+						// TODO JDT signature
+//						String name= Signature.getQualifier(declaration.getElementName());
+//						return new SearchPatternData(PACKAGE, DECLARATIONS, true, name, element, true);
 					}
 					return new SearchPatternData(TYPE, DECLARATIONS, true, element.getElementName(), element, true);
 				}

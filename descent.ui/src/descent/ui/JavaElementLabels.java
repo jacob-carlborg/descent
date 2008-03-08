@@ -479,11 +479,12 @@ public class JavaElementLabels {
 							buf.append(' ');
 						}
 					} else {
-						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
-						if (typeParameterSigs.length > 0) {
-							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
-							buf.append(' ');
-						}
+						// TODO JDT signature
+//						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
+//						if (typeParameterSigs.length > 0) {
+//							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
+//							buf.append(' ');
+//						}
 					}
 				} else 
 				if (method.exists()) {
@@ -541,11 +542,12 @@ public class JavaElementLabels {
 							getTypeArgumentSignaturesLabel(typeArgRefs, flags, buf);
 						}
 					} else {
-						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
-						if (typeParameterSigs.length > 0) {
-							buf.append(' ');
-							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
-						}
+						// TODO JDT signature
+//						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
+//						if (typeParameterSigs.length > 0) {
+//							buf.append(' ');
+//							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
+//						}
 					}
 				} else
 				if (method.exists()) {
@@ -595,12 +597,13 @@ public class JavaElementLabels {
 					if (types != null) {
 						String paramSig= types[i];
 						if (renderVarargs && (i == nParams - 1)) {
-							int newDim= Signature.getArrayCount(paramSig) - 1;
-							getTypeSignatureLabel(Signature.getElementType(paramSig), flags, buf);
-							for (int k= 0; k < newDim; k++) {
-								buf.append('[').append(']');
-							}
-							buf.append(ELLIPSIS_STRING);
+							// TODO JDT signature
+//							int newDim= Signature.getArrayCount(paramSig) - 1;
+//							getTypeSignatureLabel(Signature.getElementType(paramSig), flags, buf);
+//							for (int k= 0; k < newDim; k++) {
+//								buf.append('[').append(']');
+//							}
+//							buf.append(ELLIPSIS_STRING);
 						} else {
 							getTypeSignatureLabel(paramSig, flags, buf);
 						}
@@ -619,23 +622,24 @@ public class JavaElementLabels {
 			}
 			buf.append(')');
 					
-			if (getFlag(flags, M_EXCEPTIONS)) {
-				String[] types;
-				if (resolvedSig != null) {
-					types= Signature.getThrownExceptionTypes(resolvedSig);
-				} else {
-					types= method.exists() ? method.getExceptionTypes() : new String[0];
-				}
-				if (types.length > 0) {
-					buf.append(" throws "); //$NON-NLS-1$
-					for (int i= 0; i < types.length; i++) {
-						if (i > 0) {
-							buf.append(COMMA_STRING);
-						}
-						getTypeSignatureLabel(types[i], flags, buf);
-					}
-				}
-			}
+			// TODO JDT signature
+//			if (getFlag(flags, M_EXCEPTIONS)) {
+//				String[] types;
+//				if (resolvedSig != null) {
+//					types= Signature.getThrownExceptionTypes(resolvedSig);
+//				} else {
+//					types= method.exists() ? method.getExceptionTypes() : new String[0];
+//				}
+//				if (types.length > 0) {
+//					buf.append(" throws "); //$NON-NLS-1$
+//					for (int i= 0; i < types.length; i++) {
+//						if (i > 0) {
+//							buf.append(COMMA_STRING);
+//						}
+//						getTypeSignatureLabel(types[i], flags, buf);
+//					}
+//				}
+//			}
 			
 			if (getFlag(flags, M_APP_RETURNTYPE) && method.exists() && !method.isConstructor()) {
 				buf.append(DECL_STRING);
@@ -870,11 +874,12 @@ public class JavaElementLabels {
 		}
 		
 		String toString = Signature.toString(typeSig);
-		if (toString.indexOf("function") == -1 && toString.indexOf("delegate") == -1) {
-			buf.append(Signature.getSimpleName(toString));	
-		} else {
+		// TODO JDT signature
+//		if (toString.indexOf("function") == -1 && toString.indexOf("delegate") == -1) {
+//			buf.append(Signature.getSimpleName(toString));	
+//		} else {
 			buf.append(toString);
-		}
+//		}
 		
 		/* TODO implement correctly, flags are not taken into account
 		int sigKind= Signature.getTypeSignatureKind(typeSig);
@@ -933,20 +938,6 @@ public class JavaElementLabels {
 			buf.append('>');
 		}
 	}
-	
-	private static void getTypeParameterSignaturesLabel(String[] typeParamSigs, long flags, StringBuffer buf) {
-		if (typeParamSigs.length > 0) {
-			buf.append('<');
-			for (int i = 0; i < typeParamSigs.length; i++) {
-				if (i > 0) {
-					buf.append(COMMA_STRING);
-				}
-				buf.append(Signature.getTypeVariable(typeParamSigs[i]));
-			}
-			buf.append('>');
-		}
-	}
-	
 
 	/**
 	 * Appends the label for a type to a {@link StringBuffer}. Considers the T_* flags.
@@ -986,14 +977,15 @@ public class JavaElementLabels {
 				if (type.getParent() instanceof IField && type.isEnum()) {
 					typeName= '{' + ELLIPSIS_STRING + '}'; 
 				} else {
-					String supertypeName;
-					String[] superInterfaceNames= type.getSuperInterfaceNames();
-					if (superInterfaceNames.length > 0) {
-						supertypeName= Signature.getSimpleName(superInterfaceNames[0]);
-					} else {
-						supertypeName= Signature.getSimpleName(type.getSuperclassName());
-					}
-					typeName= Messages.format(JavaUIMessages.JavaElementLabels_anonym_type , supertypeName); 
+					// TODO JDT signature
+//					String supertypeName;
+//					String[] superInterfaceNames= type.getSuperInterfaceNames();					
+//					if (superInterfaceNames.length > 0) {
+//						supertypeName= Signature.getSimpleName(superInterfaceNames[0]);
+//					} else {
+//						supertypeName= Signature.getSimpleName(type.getSuperclassName());
+//					}
+//					typeName= Messages.format(JavaUIMessages.JavaElementLabels_anonym_type , supertypeName); 
 				}
 			} catch (JavaModelException e) {
 				//ignore

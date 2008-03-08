@@ -114,7 +114,9 @@ public class JavaTypeCompletionProposalComputer extends JavaCompletionProposalCo
 		proposal.setFlags(type.getFlags());
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(context.getInvocationOffset(), context.getInvocationOffset());
-		proposal.setSignature(Signature.createTypeSignature(fullyQualifiedType, true).toCharArray());
+		
+		// TODO JDT signature
+//		proposal.setSignature(Signature.createTypeSignature(fullyQualifiedType, true).toCharArray());
 
 		if (shouldProposeGenerics(context.getProject()))
 			return new GenericJavaTypeProposal(proposal, context);

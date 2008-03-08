@@ -443,21 +443,23 @@ public final class JavaModelUtil {
 	 * @return Returns <code>true</code> if the method has the given name and parameter types and constructor state.
 	 */
 	public static boolean isSameMethodSignature(String name, String[] paramTypes, boolean isConstructor, IMethod curr) throws JavaModelException {
-		if (isConstructor || name.equals(curr.getElementName())) {
-			if (isConstructor == curr.isConstructor()) {
-				String[] currParamTypes= curr.getParameterTypes();
-				if (paramTypes.length == currParamTypes.length) {
-					for (int i= 0; i < paramTypes.length; i++) {
-						String t1= Signature.getSimpleName(Signature.toString(paramTypes[i]));
-						String t2= Signature.getSimpleName(Signature.toString(currParamTypes[i]));
-						if (!t1.equals(t2)) {
-							return false;
-						}
-					}
-					return true;
-				}
-			}
-		}
+		// TODO JDT signature
+//		if (isConstructor || name.equals(curr.getElementName())) {
+//			if (isConstructor == curr.isConstructor()) {
+//				String[] currParamTypes= curr.getParameterTypes();
+//				if (paramTypes.length == currParamTypes.length) {
+//					for (int i= 0; i < paramTypes.length; i++) {
+//						String t1= Signature.getSimpleName(Signature.toString(paramTypes[i]));
+//						String t2= Signature.getSimpleName(Signature.toString(currParamTypes[i]));
+//						if (!t1.equals(t2)) {
+//							return false;
+//						}
+//					}
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
 		return false;
 	}
 
@@ -486,7 +488,7 @@ public final class JavaModelUtil {
 	 * Checks if the field is boolean.
 	 */
 	public static boolean isBoolean(IField field) throws JavaModelException{
-		return field.getTypeSignature().equals(Signature.SIG_BOOLEAN);
+		return field.getTypeSignature().equals(Signature.SIG_BOOL);
 	}
 	
 	/**
@@ -505,28 +507,30 @@ public final class JavaModelUtil {
 	 * @return returns the fully qualified type name or build-in-type name. if a unresolved type couldn't be resolved null is returned
 	 */
 	public static String getResolvedTypeName(String refTypeSig, IType declaringType) throws JavaModelException {
-		int arrayCount= Signature.getArrayCount(refTypeSig);
-		char type= refTypeSig.charAt(arrayCount);
-		if (type == Signature.C_UNRESOLVED) {
-			String name= ""; //$NON-NLS-1$
-			int bracket= refTypeSig.indexOf(Signature.C_GENERIC_START, arrayCount + 1);
-			if (bracket > 0)
-				name= refTypeSig.substring(arrayCount + 1, bracket);
-			else {
-				int semi= refTypeSig.indexOf(Signature.C_SEMICOLON, arrayCount + 1);
-				if (semi == -1) {
-					throw new IllegalArgumentException();
-				}
-				name= refTypeSig.substring(arrayCount + 1, semi);
-			}
-			String[][] resolvedNames= declaringType.resolveType(name);
-			if (resolvedNames != null && resolvedNames.length > 0) {
-				return JavaModelUtil.concatenateName(resolvedNames[0][0], resolvedNames[0][1]);
-			}
-			return null;
-		} else {
-			return Signature.toString(refTypeSig.substring(arrayCount));
-		}
+		// TODO JDT signature
+//		int arrayCount= Signature.getArrayCount(refTypeSig);
+//		char type= refTypeSig.charAt(arrayCount);
+//		if (type == Signature.C_UNRESOLVED) {
+//			String name= ""; //$NON-NLS-1$
+//			int bracket= refTypeSig.indexOf(Signature.C_GENERIC_START, arrayCount + 1);
+//			if (bracket > 0)
+//				name= refTypeSig.substring(arrayCount + 1, bracket);
+//			else {
+//				int semi= refTypeSig.indexOf(Signature.C_SEMICOLON, arrayCount + 1);
+//				if (semi == -1) {
+//					throw new IllegalArgumentException();
+//				}
+//				name= refTypeSig.substring(arrayCount + 1, semi);
+//			}
+//			String[][] resolvedNames= declaringType.resolveType(name);
+//			if (resolvedNames != null && resolvedNames.length > 0) {
+//				return JavaModelUtil.concatenateName(resolvedNames[0][0], resolvedNames[0][1]);
+//			}
+//			return null;
+//		} else {
+//			return Signature.toString(refTypeSig.substring(arrayCount));
+//		}
+		return refTypeSig;
 	}
 	
 	/**
@@ -538,54 +542,54 @@ public final class JavaModelUtil {
 		return (resource.exists() && !resource.getResourceAttributes().isReadOnly());
 	}
 
-	/**
-	 * Returns the original if the given member. If the member is already
-	 * an original the input is returned. The returned member might not exist
-	 * 
-	 * @deprecated Replace by IMember#getPrimaryElement() if <code>member</code> is not part
-	 * of a shared working copy owner. Also have a look at http://bugs.eclipse.org/bugs/show_bug.cgi?id=18568
-	 */
-	public static IMember toOriginal(IMember member) {
-		if (member instanceof IMethod)
-			return toOriginalMethod((IMethod)member);
-
-		// TODO: remove toOriginalMethod(IMethod)
-
-		return (IMember) member.getPrimaryElement();
-		/*ICompilationUnit cu= member.getCompilationUnit();
-		if (cu != null && cu.isWorkingCopy())
-			return (IMember)cu.getOriginal(member);
-		return member;*/
-	}
-	
-	/*
-	 * TODO remove if toOriginal(IMember) can be removed
-	 * XXX workaround for bug 18568
-	 * http://bugs.eclipse.org/bugs/show_bug.cgi?id=18568
-	 * to be removed once the bug is fixed
-	 */
-	private static IMethod toOriginalMethod(IMethod method) {
-		ICompilationUnit cu= method.getCompilationUnit();
-		if (cu == null || isPrimary(cu)) {
-			return method;
-		}
-		try{
-			//use the workaround only if needed	
-			if (! method.getElementName().equals(method.getDeclaringType().getElementName()))
-				return (IMethod) method.getPrimaryElement();
-			
-			IType originalType = (IType) toOriginal(method.getDeclaringType());
-			IMethod[] methods = originalType.findMethods(method);
-			boolean isConstructor = method.isConstructor();
-			for (int i=0; i < methods.length; i++) {
-			  if (methods[i].isConstructor() == isConstructor) 
-				return methods[i];
-			}
-			return null;
-		} catch (JavaModelException e){
-			return null;
-		}	
-	}
+//	/**
+//	 * Returns the original if the given member. If the member is already
+//	 * an original the input is returned. The returned member might not exist
+//	 * 
+//	 * @deprecated Replace by IMember#getPrimaryElement() if <code>member</code> is not part
+//	 * of a shared working copy owner. Also have a look at http://bugs.eclipse.org/bugs/show_bug.cgi?id=18568
+//	 */
+//	public static IMember toOriginal(IMember member) {
+//		if (member instanceof IMethod)
+//			return toOriginalMethod((IMethod)member);
+//
+//		// TODO: remove toOriginalMethod(IMethod)
+//
+//		return (IMember) member.getPrimaryElement();
+//		/*ICompilationUnit cu= member.getCompilationUnit();
+//		if (cu != null && cu.isWorkingCopy())
+//			return (IMember)cu.getOriginal(member);
+//		return member;*/
+//	}
+//	
+//	/*
+//	 * TODO remove if toOriginal(IMember) can be removed
+//	 * XXX workaround for bug 18568
+//	 * http://bugs.eclipse.org/bugs/show_bug.cgi?id=18568
+//	 * to be removed once the bug is fixed
+//	 */
+//	private static IMethod toOriginalMethod(IMethod method) {
+//		ICompilationUnit cu= method.getCompilationUnit();
+//		if (cu == null || isPrimary(cu)) {
+//			return method;
+//		}
+//		try{
+//			//use the workaround only if needed	
+//			if (! method.getElementName().equals(method.getDeclaringType().getElementName()))
+//				return (IMethod) method.getPrimaryElement();
+//			
+//			IType originalType = (IType) toOriginal(method.getDeclaringType());
+//			IMethod[] methods = originalType.findMethods(method);
+//			boolean isConstructor = method.isConstructor();
+//			for (int i=0; i < methods.length; i++) {
+//			  if (methods[i].isConstructor() == isConstructor) 
+//				return methods[i];
+//			}
+//			return null;
+//		} catch (JavaModelException e){
+//			return null;
+//		}	
+//	}
 
 	/**
 	 * Returns true if a cu is a primary cu (original or shared working copy)

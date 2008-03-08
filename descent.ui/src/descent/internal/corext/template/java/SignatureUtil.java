@@ -85,42 +85,43 @@ public final class SignatureUtil {
 	 * @return the upper bound signature of <code>signature</code>
 	 */
 	public static char[] getUpperBound(char[] signature) {
-		if (signature.length < 1)
-			return signature;
-		
-		if (signature[0] == Signature.C_STAR)
-			return OBJECT_SIGNATURE_ARRAY;
-		
-		int superIndex= indexOf(signature, Signature.C_SUPER);
-		if (superIndex == 0)
-			return OBJECT_SIGNATURE_ARRAY;
-		
-		if (superIndex != -1) {
-			char afterSuper= signature[superIndex + 1];
-			if (afterSuper == Signature.C_STAR) {
-				char[] type= new char[signature.length - 1];
-				System.arraycopy(signature, 0, type, 0, superIndex);
-				type[superIndex]= Signature.C_STAR;
-				System.arraycopy(signature, superIndex + 2, type, superIndex + 1, signature.length - superIndex - 2);
-				return getUpperBound(type);
-			}
-				
-			if (afterSuper == Signature.C_EXTENDS) {
-				int typeEnd= typeEnd(signature, superIndex + 1);
-				char[] type= new char[signature.length - (typeEnd - superIndex - 1)];
-				System.arraycopy(signature, 0, type, 0, superIndex);
-				type[superIndex]= Signature.C_STAR;
-				System.arraycopy(signature, typeEnd, type, superIndex + 1, signature.length - typeEnd);
-				return getUpperBound(type);
-			}
-				
-		}
-		
-		if (signature[0] == Signature.C_EXTENDS) {
-			char[] type= new char[signature.length - 1];
-			System.arraycopy(signature, 1, type, 0, signature.length - 1);
-			return type;
-		}
+		// TODO JDT signature
+//		if (signature.length < 1)
+//			return signature;
+//		
+//		if (signature[0] == Signature.C_STAR)
+//			return OBJECT_SIGNATURE_ARRAY;
+//		
+//		int superIndex= indexOf(signature, Signature.C_SUPER);
+//		if (superIndex == 0)
+//			return OBJECT_SIGNATURE_ARRAY;
+//		
+//		if (superIndex != -1) {
+//			char afterSuper= signature[superIndex + 1];
+//			if (afterSuper == Signature.C_STAR) {
+//				char[] type= new char[signature.length - 1];
+//				System.arraycopy(signature, 0, type, 0, superIndex);
+//				type[superIndex]= Signature.C_STAR;
+//				System.arraycopy(signature, superIndex + 2, type, superIndex + 1, signature.length - superIndex - 2);
+//				return getUpperBound(type);
+//			}
+//				
+//			if (afterSuper == Signature.C_EXTENDS) {
+//				int typeEnd= typeEnd(signature, superIndex + 1);
+//				char[] type= new char[signature.length - (typeEnd - superIndex - 1)];
+//				System.arraycopy(signature, 0, type, 0, superIndex);
+//				type[superIndex]= Signature.C_STAR;
+//				System.arraycopy(signature, typeEnd, type, superIndex + 1, signature.length - typeEnd);
+//				return getUpperBound(type);
+//			}
+//				
+//		}
+//		
+//		if (signature[0] == Signature.C_EXTENDS) {
+//			char[] type= new char[signature.length - 1];
+//			System.arraycopy(signature, 1, type, 0, signature.length - 1);
+//			return type;
+//		}
 		
 		return signature;
 	}
@@ -148,33 +149,34 @@ public final class SignatureUtil {
 	 * @return the lower bound signature of <code>signature</code>
 	 */
 	public static char[] getLowerBound(char[] signature) {
-		if (signature.length < 1)
-			return signature;
-		
-		if (signature[0] == Signature.C_STAR)
-			return NULL_TYPE_SIGNATURE_ARRAY;
-		
-		int superIndex= indexOf(signature, Signature.C_EXTENDS);
-		if (superIndex == 0)
-			return NULL_TYPE_SIGNATURE_ARRAY;
-		
-		if (superIndex != -1) {
-			char afterSuper= signature[superIndex + 1];
-			if (afterSuper == Signature.C_STAR || afterSuper == Signature.C_EXTENDS)
-				// impossible captured type
-				return NULL_TYPE_SIGNATURE_ARRAY;
-		}
-		
-		char[][] typeArguments= Signature.getTypeArguments(signature);
-		for (int i= 0; i < typeArguments.length; i++)
-			if (Arrays.equals(typeArguments[i], NULL_TYPE_SIGNATURE_ARRAY))
-				return NULL_TYPE_SIGNATURE_ARRAY;
-		
-		if (signature[0] == Signature.C_SUPER) {
-			char[] type= new char[signature.length - 1];
-			System.arraycopy(signature, 1, type, 0, signature.length - 1);
-			return type;
-		}
+		// TODO JDT signature
+//		if (signature.length < 1)
+//			return signature;
+//		
+//		if (signature[0] == Signature.C_STAR)
+//			return NULL_TYPE_SIGNATURE_ARRAY;
+//		
+//		int superIndex= indexOf(signature, Signature.C_EXTENDS);
+//		if (superIndex == 0)
+//			return NULL_TYPE_SIGNATURE_ARRAY;
+//		
+//		if (superIndex != -1) {
+//			char afterSuper= signature[superIndex + 1];
+//			if (afterSuper == Signature.C_STAR || afterSuper == Signature.C_EXTENDS)
+//				// impossible captured type
+//				return NULL_TYPE_SIGNATURE_ARRAY;
+//		}
+//		
+//		char[][] typeArguments= Signature.getTypeArguments(signature);
+//		for (int i= 0; i < typeArguments.length; i++)
+//			if (Arrays.equals(typeArguments[i], NULL_TYPE_SIGNATURE_ARRAY))
+//				return NULL_TYPE_SIGNATURE_ARRAY;
+//		
+//		if (signature[0] == Signature.C_SUPER) {
+//			char[] type= new char[signature.length - 1];
+//			System.arraycopy(signature, 1, type, 0, signature.length - 1);
+//			return type;
+//		}
 		
 		return signature;
 	}
@@ -195,8 +197,9 @@ public final class SignatureUtil {
 	 * @return the fully qualified type name of the signature
 	 */
 	public static String stripSignatureToFQN(String signature) throws IllegalArgumentException {
-		signature= Signature.getTypeErasure(signature);
-		signature= Signature.getElementType(signature);
+		// TODO JDT signature
+//		signature= Signature.getTypeErasure(signature);
+//		signature= Signature.getElementType(signature);
 		return Signature.toString(signature);
 	}
 	
@@ -211,36 +214,38 @@ public final class SignatureUtil {
 	 * @return the qualified signature
 	 */
 	public static String qualifySignature(final String signature, final IType context) {
-		if (context == null)
-			return signature;
-		
-		String qualifier= Signature.getSignatureQualifier(signature);
-		if (qualifier.length() > 0)
-			return signature;
-
-		String elementType= Signature.getElementType(signature);
-		String erasure= Signature.getTypeErasure(elementType);
-		String simpleName= Signature.getSignatureSimpleName(erasure);
-		String genericSimpleName= Signature.getSignatureSimpleName(elementType);
-		
-		int dim= Signature.getArrayCount(signature);
-		
-		try {
-			String[][] strings= context.resolveType(simpleName);
-			if (strings != null && strings.length > 0)
-				qualifier= strings[0][0];
-		} catch (JavaModelException e) {
-			// ignore - not found
-		}
-		
-		if (qualifier.length() == 0)
-			return signature;
-		
-		String qualifiedType= Signature.toQualifiedName(new String[] {qualifier, genericSimpleName});
-		String qualifiedSignature= Signature.createTypeSignature(qualifiedType, true);
-		String newSignature= Signature.createArraySignature(qualifiedSignature, dim);
-		
-		return newSignature;
+		// TODO JDT signature
+//		if (context == null)
+//			return signature;
+//		
+//		String qualifier= Signature.getSignatureQualifier(signature);
+//		if (qualifier.length() > 0)
+//			return signature;
+//
+//		String elementType= Signature.getElementType(signature);
+//		String erasure= Signature.getTypeErasure(elementType);
+//		String simpleName= Signature.getSignatureSimpleName(erasure);
+//		String genericSimpleName= Signature.getSignatureSimpleName(elementType);
+//		
+//		int dim= Signature.getArrayCount(signature);
+//		
+//		try {
+//			String[][] strings= context.resolveType(simpleName);
+//			if (strings != null && strings.length > 0)
+//				qualifier= strings[0][0];
+//		} catch (JavaModelException e) {
+//			// ignore - not found
+//		}
+//		
+//		if (qualifier.length() == 0)
+//			return signature;
+//		
+//		String qualifiedType= Signature.toQualifiedName(new String[] {qualifier, genericSimpleName});
+//		String qualifiedSignature= Signature.createTypeSignature(qualifiedType, true);
+//		String newSignature= Signature.createArraySignature(qualifiedSignature, dim);
+//		
+//		return newSignature;
+		return signature;
 	}
 	
 	/**
@@ -289,29 +294,32 @@ public final class SignatureUtil {
 	 * @return the fixed signature
 	 */
 	public static char[] fix83600(char[] signature) {
-		if (signature == null || signature.length < 2)
-			return signature;
-		
-		return Signature.removeCapture(signature);
+		// TODO JDT signature
+//		if (signature == null || signature.length < 2)
+//			return signature;
+//		
+//		return Signature.removeCapture(signature);
+		return signature;
 	}
 
 	private static int typeEnd(char[] signature, int pos) {
-		int depth= 0;
-		while (pos < signature.length) {
-			switch (signature[pos]) {
-				case Signature.C_GENERIC_START:
-					depth++;
-					break;
-				case Signature.C_GENERIC_END:
-					depth--;
-					break;
-				case Signature.C_SEMICOLON:
-					if (depth == 0)
-						return pos + 1;
-					break;
-			}
-			pos++;
-		}
+		// TODO JDT signature
+//		int depth= 0;
+//		while (pos < signature.length) {
+//			switch (signature[pos]) {
+//				case Signature.C_GENERIC_START:
+//					depth++;
+//					break;
+//				case Signature.C_GENERIC_END:
+//					depth--;
+//					break;
+//				case Signature.C_SEMICOLON:
+//					if (depth == 0)
+//						return pos + 1;
+//					break;
+//			}
+//			pos++;
+//		}
 		return pos + 1;
 	}
 }

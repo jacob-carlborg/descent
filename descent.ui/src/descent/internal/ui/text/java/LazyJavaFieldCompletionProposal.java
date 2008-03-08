@@ -67,8 +67,9 @@ public class LazyJavaFieldCompletionProposal extends LazyJavaCompletionProposal 
 	}
 	
 	protected final String getSimpleTypeName() {
-		if (fSimpleName == null)
-			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
+		// TODO JDT signature
+//		if (fSimpleName == null)
+//			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
 		return fSimpleName;
 	}
 
@@ -124,9 +125,10 @@ public class LazyJavaFieldCompletionProposal extends LazyJavaCompletionProposal 
 		// fall back for the case we don't have an import rewrite (see allowAddingImports)
 		
 		/* No imports for implicit imports. */
-		if (fCompilationUnit != null && JavaModelUtil.isImplicitImport(Signature.getQualifier(qualifiedTypeName), fCompilationUnit)) {
-			return Signature.getSimpleName(qualifiedTypeName);
-		}
+		// TODO JDT signature
+//		if (fCompilationUnit != null && JavaModelUtil.isImplicitImport(Signature.getQualifier(qualifiedTypeName), fCompilationUnit)) {
+//			return Signature.getSimpleName(qualifiedTypeName);
+//		}
 		
 		/* Default: use the fully qualified type name. */
 		return qualifiedTypeName;

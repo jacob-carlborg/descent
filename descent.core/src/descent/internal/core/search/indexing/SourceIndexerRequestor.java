@@ -40,9 +40,10 @@ public SourceIndexerRequestor(SourceIndexer indexer) {
  * @see ISourceElementRequestor#acceptConstructorReference(char[], int, int)
  */
 public void acceptConstructorReference(char[] typeName, int argCount, int sourcePosition) {
-	if (CharOperation.indexOf(Signature.C_GENERIC_START, typeName) > 0) {
-		typeName = Signature.toCharArray(Signature.getTypeErasure(Signature.createTypeSignature(typeName, false)).toCharArray());
-	}
+	// TODO JDT signature
+//	if (CharOperation.indexOf(Signature.C_GENERIC_START, typeName) > 0) {
+//		typeName = Signature.toCharArray(Signature.getTypeErasure(Signature.createTypeSignature(typeName, false)).toCharArray());
+//	}
 	this.indexer.addConstructorReference(typeName, argCount);
 	int lastDot = CharOperation.lastIndexOf('.', typeName);
 	if (lastDot != -1) {
@@ -166,7 +167,8 @@ private void enterClass(TypeInfo typeInfo) {
 		typeParameterSignatures = new char[typeParametersLength][];
 		for (int i = 0; i < typeParametersLength; i++) {
 			ISourceElementRequestor.TypeParameterInfo typeParameterInfo = typeInfo.typeParameters[i];
-			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
+//			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
+			typeParameterSignatures[i] = typeParameterInfo.signature;
 		}
 	}
 	this.indexer.addClassDeclaration(typeInfo.modifiers, this.packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures);
@@ -249,7 +251,8 @@ private void enterInterface(TypeInfo typeInfo) {
 		typeParameterSignatures = new char[typeParametersLength][];
 		for (int i = 0; i < typeParametersLength; i++) {
 			ISourceElementRequestor.TypeParameterInfo typeParameterInfo = typeInfo.typeParameters[i];
-			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
+//			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
+			typeParameterSignatures[i] = typeParameterInfo.signature;
 		}
 	}
 	this.indexer.addInterfaceDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures);

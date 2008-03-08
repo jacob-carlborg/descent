@@ -222,14 +222,16 @@ public class SearchUtil {
 	}
 
 	private static boolean isPrimitiveOrString(IField field) {
-		String fieldType;
-		try {
-			fieldType= field.getTypeSignature();
-		} catch (JavaModelException ex) {
-			return false;
-		}
-		char first= fieldType.charAt(0);
-		return (first != Signature.C_RESOLVED && first != Signature.C_UNRESOLVED && first != Signature.C_ARRAY)
-			|| (first == Signature.C_RESOLVED && fieldType.substring(1, fieldType.length() - 1).equals(String.class.getName()));
+		// TODO JDT signature
+//		String fieldType;
+//		try {
+//			fieldType= field.getTypeSignature();
+//		} catch (JavaModelException ex) {
+//			return false;
+//		}
+//		char first= fieldType.charAt(0);
+//		return (first != Signature.C_RESOLVED && first != Signature.C_UNRESOLVED && first != Signature.C_ARRAY)
+//			|| (first == Signature.C_RESOLVED && fieldType.substring(1, fieldType.length() - 1).equals(String.class.getName()));
+		return false;
 	}
 }

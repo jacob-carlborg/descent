@@ -23,7 +23,17 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		requestor = mock(ISignatureRequestor.class);
 	}
 	
-	public void testPrimitiveType() {
+	public void testVoid() {
+		checking(new Expectations() {{
+			one(requestor).acceptPrimitive(Type.tvoid);
+		}});
+		
+		SignatureProcessor.process("v", requestor);
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testInt() {
 		checking(new Expectations() {{
 			one(requestor).acceptPrimitive(Type.tint32);
 		}});
@@ -64,10 +74,10 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		
 		checking(new Expectations() {{
 			one(requestor).acceptPrimitive(Type.tint32); inSequence(s);
-			one(requestor).acceptStaticArray(new char[] { '3' }, "G1G3i"); inSequence(s);
+			one(requestor).acceptStaticArray(new char[] { '3' }, "Gi1G3"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("G1G3i", requestor);
+		SignatureProcessor.process("Gi1G3", requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -93,12 +103,14 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType(); inSequence(s);
 			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
+			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
+			one(requestor).acceptPrimitive(TypeBasic.tchar); inSequence(s);
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tchar); inSequence(s);
-			one(requestor).exitFunctionType(LINK.LINKd, "FiZa"); inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, "FiaZa"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("FiZa", requestor);
+		SignatureProcessor.process("FiaZa", requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -336,7 +348,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER + "i'";
+		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -345,7 +357,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateParameters(); inSequence(s);
 			one(requestor).enterTemplateAliasParameter(); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
-			one(requestor).exitTemplateAliasParameter(String.valueOf(TEMPLATE_ALIAS_PARAMETER) + TEMPLATE_ALIAS_PARAMETER + "i"); inSequence(s);
+			one(requestor).exitTemplateAliasParameter(String.valueOf(TEMPLATE_ALIAS_PARAMETER) + TEMPLATE_ALIAS_PARAMETER2 + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
@@ -381,7 +393,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER + "i'";
+		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -390,7 +402,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateParameters(); inSequence(s);
 			one(requestor).enterTemplateTypeParameter(); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
-			one(requestor).exitTemplateTypeParameter(String.valueOf(TEMPLATE_TYPE_PARAMETER) + TEMPLATE_TYPE_PARAMETER + "i"); inSequence(s);
+			one(requestor).exitTemplateTypeParameter(String.valueOf(TEMPLATE_TYPE_PARAMETER) + TEMPLATE_TYPE_PARAMETER2 + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
@@ -537,7 +549,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		
 		checking(new Expectations() {{
 			one(requestor).enterTemplateInstance(); inSequence(s);
-			one(requestor).acceptTemplateInstanceValue("123".toCharArray(), with(any(String.class))); inSequence(s);
+			one(requestor).acceptTemplateInstanceValue("123".toCharArray(), TEMPLATE_INSTANCE_VALUE + "3" + TEMPLATE_INSTANCE_VALUE + "123"); inSequence(s);
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		

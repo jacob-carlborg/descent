@@ -905,18 +905,21 @@ public class Bindings {
 	}
 
 	private static boolean sameParameter(ITypeBinding type, String candidate, IType scope) throws JavaModelException {
-		if (type.getDimension() != Signature.getArrayCount(candidate))
-			return false;
+		// TODO JDT signature
+//		if (type.getDimension() != Signature.getArrayCount(candidate))
+//			return false;
 			
 		// Normalizes types
 		// TODO JDT Bindings
 //		if (type.isArray())
 //			type= type.getElementType();
-		candidate= Signature.getElementType(candidate);
 		
-		if ((Signature.getTypeSignatureKind(candidate) == Signature.BASE_TYPE_SIGNATURE) != type.isPrimitive()) {
-			return false;
-		}
+		// TODO JDT signature
+//		candidate= Signature.getElementType(candidate);
+//		
+//		if ((Signature.getTypeSignatureKind(candidate) == Signature.BASE_TYPE_SIGNATURE) != type.isPrimitive()) {
+//			return false;
+//		}
 			
 		// TODO JDT Bindings
 //		if (type.isPrimitive() || type.isTypeVariable()) {

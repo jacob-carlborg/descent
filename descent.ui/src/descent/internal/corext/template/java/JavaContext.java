@@ -439,18 +439,20 @@ public class JavaContext extends CompilationUnitContext {
 	}
 
 	private String[] suggestVariableName(LocalVariable iterable, String[] excludes) throws IllegalArgumentException {
-		IJavaProject project= getCompilationUnit().getJavaProject();
-		String memberTypeSig= iterable.getMemberTypeSignature();
-		int memberDimensions= Signature.getArrayCount(memberTypeSig);
-		String elementTypeSig= Signature.getElementType(memberTypeSig);
-		
-		String erasure= Signature.getTypeErasure(elementTypeSig);
-		String fullName= Signature.toString(erasure);
-		String memberPackage= Signature.getQualifier(fullName);
-		String memberTypeName= Signature.getSimpleName(fullName);
-
-		String[] proposals= NamingConventions.suggestLocalVariableNames(project, memberPackage, memberTypeName, memberDimensions, excludes);
-		return proposals;
+		// TODO JDT signature
+//		IJavaProject project= getCompilationUnit().getJavaProject();
+//		String memberTypeSig= iterable.getMemberTypeSignature();
+//		int memberDimensions= Signature.getArrayCount(memberTypeSig);
+//		String elementTypeSig= Signature.getElementType(memberTypeSig);
+//		
+//		String erasure= Signature.getTypeErasure(elementTypeSig);
+//		String fullName= Signature.toString(erasure);
+//		String memberPackage= Signature.getQualifier(fullName);
+//		String memberTypeName= Signature.getSimpleName(fullName);
+//
+//		String[] proposals= NamingConventions.suggestLocalVariableNames(project, memberPackage, memberTypeName, memberDimensions, excludes);
+//		return proposals;
+		return new String[0];
 	}
 
 	/**
