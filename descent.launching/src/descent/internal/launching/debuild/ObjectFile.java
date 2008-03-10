@@ -78,24 +78,24 @@ public class ObjectFile
 	public ObjectFile(IJavaProject project, File inputFile, String moduleName,
 			boolean isLibraryFile)
 	{
+        if(DebuildBuilder.DEBUG)
+        {   
+            Assert.isTrue(null != project);
+            Assert.isTrue(null != moduleName);
+            Assert.isTrue(null != inputFile);
+            
+            Assert.isTrue(project.exists());
+            Assert.isTrue(project.isOpen());
+            Assert.isTrue(!project.isReadOnly());
+            
+            Assert.isTrue(inputFile.exists());
+            Assert.isTrue(inputFile.canRead());
+        }
+        
 		this.project = project;
 		this.inputFile = inputFile;
 		this.moduleName = moduleName;
 		this.isLibraryFile = isLibraryFile;
-		
-		if(DebuildBuilder.DEBUG)
-		{
-			Assert.isTrue(null != project);
-			Assert.isTrue(null != moduleName);
-			Assert.isTrue(null != inputFile);
-			
-			Assert.isTrue(project.exists());
-			Assert.isTrue(project.isOpen());
-			Assert.isTrue(!project.isReadOnly());
-			
-			Assert.isTrue(inputFile.exists());
-			Assert.isTrue(inputFile.canRead());
-		}
 	}
 	
 	/**
@@ -296,7 +296,7 @@ public class ObjectFile
 		 */
 		char[] result = new char[length];
 		
-		int i = length;
+		int i = length - 1;
 		while(val != 0)
 		{
 			result[i] = BASE_64_CHARS[val & 63];
@@ -304,7 +304,7 @@ public class ObjectFile
 			i--;
 		}
 		
-		for(; i >= 0; i++)
+		for(; i >= 0; i--)
 			result[i] = BASE_64_PLACEHOLDER;
 		
 		return new String(result);

@@ -29,9 +29,9 @@ import descent.unittest.ITestSpecification;
 public class DUnittestFinder
 {
 	/**
-	 * Expectd number of unit tests.
+	 * Expected number of unit tests.
 	 */
-	static final int LIST_PREALLOC = 100;
+	static final int LIST_PREALLOC = 10;
 	
 	/**
 	 * Finds unit tests in a separate runnable. Safe to be called from the

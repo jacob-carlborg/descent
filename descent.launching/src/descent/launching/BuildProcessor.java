@@ -3,7 +3,6 @@ package descent.launching;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
@@ -12,41 +11,7 @@ import descent.internal.launching.LaunchingPlugin;
 import descent.internal.launching.debuild.DebuildBuilder;
 
 public class BuildProcessor
-{
-	//--------------------------------------------------------------------------
-	@SuppressWarnings("serial")
-	public static class BuildFailedException extends RuntimeException
-	{
-		public BuildFailedException()
-		{
-			
-		}
-		
-		public BuildFailedException(String message)
-		{
-			super(message);
-		}
-		
-		public BuildFailedException(Exception e)
-		{
-			super(e);
-		}
-	}
-	
-	@SuppressWarnings("serial")
-	public static class BuildCancelledException extends RuntimeException
-	{
-		public BuildCancelledException()
-		{
-			
-		}
-		
-		public BuildCancelledException(String message)
-		{
-			super(message);
-		}
-	}
-	
+{	
 	//--------------------------------------------------------------------------
 	// Build request processor
 	
@@ -54,21 +19,21 @@ public class BuildProcessor
 	{
 		try
 		{
+            notifyBuildStarted(target);
 			String executableFilePath = DebuildBuilder.build(target, pm);
-			Assert.isTrue(null != executableFilePath);
 			notifyBuildSucceeded(target, executableFilePath);
 			return executableFilePath;
 		}
-		catch(BuildFailedException failed)
-		{
-			notifyBuildFailed(target);
-			return null;
-		}
-		catch(BuildCancelledException cancelled)
+		catch(BuildCancelledException e)
 		{
 			notifyBuildCancelled(target);
 			return null;
 		}
+        catch(RuntimeException e)
+        {
+            notifyBuildFailed(target, e);
+            throw e; // Rethrow
+        }
 	}
 	
 	//--------------------------------------------------------------------------
@@ -95,7 +60,8 @@ public class BuildProcessor
 		});
 	}
 	
-	private void notifyBuildFailed(final IExecutableTarget build)
+	private void notifyBuildFailed(final IExecutableTarget build,
+            final Exception e)
 	{
 		SafeRunner.run(new ListenerSafeRunnable()
 		{
@@ -103,7 +69,7 @@ public class BuildProcessor
 			{
 				for(IDebuildEventListener listener : listeners)
 				{
-					listener.buildFailed(build);
+					listener.buildFailed(build, e);
 				}
 			}
 		});
