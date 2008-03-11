@@ -88,12 +88,4 @@ public interface ICompileCommand extends IBuildCommand
 	// Instrument for profiling ("-profile" in DMD)
 	public boolean getInstrumentForProfile();
 	public void setInstrumentForProfile(boolean instrumentForProfile);
-	
-	// Verbose compiler output ("-v" in DMD)
-	public boolean getVerbose();
-	public void setVerbose(boolean verbose);
-	
-	// Quiet compiler output ("-quiet" in DMD)
-	public boolean getQuiet();
-	public void setQuiet(boolean quiet);
 }

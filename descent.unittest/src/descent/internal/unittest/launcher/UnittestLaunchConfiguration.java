@@ -61,9 +61,10 @@ public class UnittestLaunchConfiguration extends
 			// Create the executale target
 			UnittestExecutableTarget target = new UnittestExecutableTarget();
 			target.setProject(project);
-			for(ITestSpecification test : tests)
+			/* for(ITestSpecification test : tests)
 				target.addModule(test.getDeclaration().getCompilationUnit().
-						getFullyQualifiedName());
+						getFullyQualifiedName()); */
+            target.addModule("sss.main");
 			
 			// Build and launch the applicataion
 			boolean launched = launchExecutableTarget(config, target, mode, launch, 

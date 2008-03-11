@@ -6,7 +6,9 @@ import java.util.List;
 import descent.launching.compiler.ICompileCommand;
 
 /**
- * Tiny public wrapper class for compile options.
+ * Tiny public wrapper class for compile options. This only includes options
+ * that affect the object code generated (so options like show warnings,
+ * allow deprecated, verbose/quiet, etc. are not icnluded in this class).
  * 
  * @author Robert Fraser
  */

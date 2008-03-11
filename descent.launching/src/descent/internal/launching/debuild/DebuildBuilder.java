@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -24,6 +23,7 @@ import descent.launching.compiler.BuildError;
 import descent.launching.compiler.BuildResponse;
 import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
+import descent.launching.compiler.ILinkCommand;
 import descent.launching.compiler.IResponseInterpreter;
 
 /**
@@ -46,15 +46,16 @@ public class DebuildBuilder
 	 * 
 	 * @param target information about the target executable to be built
 	 * @param pm     a monitor to track the progress of the build
-	 * @return       the path to the executable file,
+	 * @return       the path to the executable file or null if one could not
+     *               be built due to an error
 	 */
 	public static String build(IExecutableTarget target, IProgressMonitor pm)
 	{
 		DebuildBuilder builder = new DebuildBuilder(new BuildRequest(target));
-        String executableFilePath = builder.build(pm);
-        Assert.isTrue(null != executableFilePath);
-        return executableFilePath;
+        return builder.build(pm);
     }
+    
+    /* package */ static final boolean DEBUG = true;
 	
     /**
      * Gets the absolute OS path for the given Eclipse path (with portable
@@ -63,7 +64,7 @@ public class DebuildBuilder
      * @param path
      * @return
      */
-    public static String getAbsolutePath(IPath path)
+    /* package */ static String getAbsolutePath(IPath path)
     {
         IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
         if(null != res)
@@ -71,8 +72,6 @@ public class DebuildBuilder
         
         return path.toPortableString();
     }
-    
-    /* package */ static final boolean DEBUG = true;
     
 	private final BuildRequest req;
 	private final ErrorReporter err;
@@ -107,7 +106,6 @@ public class DebuildBuilder
             IJavaProject project = req.getProject();
             
 			// First, create the import path from the project properties, etc.
-            System.out.println("Creating import path");
 			createImportPath();
             pm.worked(10); // 15
             
@@ -115,7 +113,6 @@ public class DebuildBuilder
 				throw new BuildCancelledException();
 			
 			// Then, recursively collect dependancies for all the object files
-            System.out.println("Finding dependancies");
 			objectFiles = RecursiveDependancyCollector.getObjectFiles(
 					project,
 					req.getModules(),
@@ -127,28 +124,27 @@ public class DebuildBuilder
 			
             // Then, get the compile options we should use and apply them to
             // all the object files
-            System.out.println("Getting compile options");
             opts = req.getCompileOptions();
             for(ObjectFile obj : objectFiles)
                 obj.setOptions(opts);
             pm.worked(5); // 45
             
+            if(pm.isCanceled())
+                throw new BuildCancelledException();
+            
             // Create a set of grouped compiles for each compile group we need
-            System.out.println("Creating compile groups");
             createCompileGroups();
             pm.worked(5); // 50
             
+            if(pm.isCanceled())
+                throw new BuildCancelledException();
             
             // Perform each compile operation
-            System.out.println("Executing compiler application");
-            if(!performCompile(new SubProgressMonitor(pm, 30))) // 80
-                return null;
-            
-			// TODO link
-			throw new DebuildException();
+            return runCompile(new SubProgressMonitor(pm, 50)); // 100
 		}
         catch(DebuildException e)
         {
+            err.projectError(e.getMessage());
             return null;
         }
         catch(Exception e)
@@ -171,10 +167,12 @@ public class DebuildBuilder
         {
             importPath = new ArrayList<File>();
             addClasspath(req.getProject(), new HashSet<IJavaProject>());
+            for(String entry : req.getDefaultImportPath())
+                importPath.add(new File(entry));
         }
         catch(JavaModelException e)
         {
-            throw new RuntimeException(e);
+            throw new DebuildException(e.getMessage());
         }
 	}
     
@@ -204,7 +202,8 @@ public class DebuildBuilder
                         addClasspath(requiredProject, visitedProjects);
                     break;
                 default:
-                    throw new RuntimeException("Invalid resolved classpath entry type");
+                    throw new RuntimeException("Unexpected resolved classpath entry: "
+                            + entry);
             }
         }
     }
@@ -215,17 +214,16 @@ public class DebuildBuilder
         groupedCompiles = new ArrayList<GroupedCompile>(objectFiles.length);
         for(ObjectFile obj : objectFiles)
         {
-            GroupedCompile gc = new GroupedCompile();
-            gc.addObjectFile(obj);
-            groupedCompiles.add(gc);
+            if(obj.shouldBuild())
+                groupedCompiles.add(new SingleFileCompile(obj));
         }
     }
     
-    private boolean performCompile(IProgressMonitor pm)
+    private String runCompile(IProgressMonitor pm)
     {
         try
         {
-            pm.beginTask("Invoking compiler", groupedCompiles.size() * 10);
+            pm.beginTask("Invoking compiler", (groupedCompiles.size() * 20) + 20);
             
             boolean wasSuccesful = true;
             ICompilerInterface compilerInterface = req.getCompilerInterface();
@@ -233,40 +231,93 @@ public class DebuildBuilder
             String workingDirectory = getAbsolutePath(project.getOutputLocation());
             File outputDirectory = new File(workingDirectory);
             
+            // Compile the output files
             for(GroupedCompile gc : groupedCompiles)
             {
+                if(pm.isCanceled())
+                    throw new BuildCancelledException();
+                
+                // Get & setup a new compile command
                 ICompileCommand cmd = req.getCompileCommand();
                 cmd.setOutputDirectory(outputDirectory);
+                opts.prepareCompileCommand(cmd);
                 
+                // Add the import path to the compile command
                 for(File entry : importPath)
                     cmd.addImportPath(entry);
-                pm.worked(2);
+                pm.worked(2); // 2
                 
-                for(ObjectFile obj : gc.getObjectFiles())
+                // Add the input files to the compile command
+                for(ObjectFile obj : gc)
                     cmd.addFile(obj.getInputFile());
-                pm.worked(2);
+                pm.worked(2); // 4
                 
+                // Execute the application
                 IResponseInterpreter responseInterpreter = 
                     compilerInterface.createCompileResponseInterpreter();
-                /* ExecutionMonitor executor = new ExecutionMonitor(cmd.getCommand(),
+                ExecutionMonitor executor = new ExecutionMonitor(cmd.getCommand(),
                         responseInterpreter,
                         null,
                         workingDirectory);
-                executor.run(); */
-                System.out.println(cmd.getCommand()); // TODO
-                pm.worked(4);
+                executor.run();
+                pm.worked(12); // 16
                 
+                // Add error markers if problems were found
                 BuildResponse response = responseInterpreter.getResponse();
                 for(BuildError error : response.getBuildErrors())
-                {
                     err.buildError(error);
-                }
                 if(!response.wasSuccessful())
                     wasSuccesful = false;
-                pm.worked(2);
+                pm.worked(2); // 18
+                
+                // Rename the output files
+                if(response.wasSuccessful())
+                {
+                    for(ObjectFile obj : gc)
+                        obj.renameOutputFile();
+                }
+                pm.worked(2); // 20
             }
-            return wasSuccesful;
+            
+            // If there were compile errors, return here
+            if(!wasSuccesful)
+                return null;
+            
+            if(pm.isCanceled())
+                throw new BuildCancelledException();
+            
+            // Create the linker command
+            ILinkCommand cmd = req.getLinkCommand();
+            cmd.setOutputFilename(new File(workingDirectory + "/" 
+                    + getExecutableName()));
+            for(ObjectFile obj : objectFiles)
+                cmd.addFile(obj.getOutputFile());
+            // TODO binary libraries
+            pm.worked(2); // 2
+            
+            // Run the linker application proper
+            IResponseInterpreter responseInterpreter = 
+                compilerInterface.createLinkResponseInterpreter();
+            ExecutionMonitor executor = new ExecutionMonitor(cmd.getCommand(),
+                    responseInterpreter,
+                    null,
+                    workingDirectory);
+            executor.run();
+            pm.worked(16); // 18
+            // TODO should all the excess output (i.e. map files) be cleaned?
+            
+            // Check for errors
+            BuildResponse response = responseInterpreter.getResponse();
+            for(BuildError error : response.getBuildErrors())
+                err.buildError(error);
+            if(!response.wasSuccessful())
+                wasSuccesful = false;
+            pm.worked(2); // 20
+            
+            // TODO return wasSuccesful ? outputFile : null;
+            return null;
         }
+        
         catch(JavaModelException e)
         {
             throw new RuntimeException(e);
@@ -275,5 +326,11 @@ public class DebuildBuilder
         {
             pm.done();
         }
+    }
+    
+    private String getExecutableName()
+    {
+        // TODO
+        return System.currentTimeMillis() + ".exe";
     }
 }

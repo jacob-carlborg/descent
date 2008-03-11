@@ -28,7 +28,7 @@ import descent.internal.launching.LaunchingPlugin;
  * 
  * @author Robert Fraser
  */
-public class ObjectFile
+/* package */ class ObjectFile
 {
 	public static final int MAX_FILENAME_LENGTH      = 160;
 	public static final int PREFIX_LENGTH            = 15;
@@ -143,20 +143,7 @@ public class ObjectFile
 		if(null == opts)
 			throw new IllegalStateException("Compile options not set yet!");
 		
-		try
-		{
-			IPath outputLocation = project.getOutputLocation();
-			StringBuffer path = new StringBuffer();
-			path.append(outputLocation.makeAbsolute().toPortableString());
-			path.append(IPath.SEPARATOR);
-			path.append(getFilename());
-			return new File(path.toString());
-		}
-		catch(JavaModelException e)
-		{
-			LaunchingPlugin.log(e);
-			return null;
-		}
+		return new File(getOutputPath() + "/" + getFilename());
 	}
 	
 	/**
@@ -197,10 +184,44 @@ public class ObjectFile
 	{
 		return isLibraryFile;
 	}
+    
+    /**
+     * Renames the initally-output module from the compiler to the mangled name
+     * 
+     * TODO figure out how to make this compiler-ambivilent
+     */
+    public void renameOutputFile()
+    {
+        int index = moduleName.lastIndexOf('.');
+        String modulePart = index > 0 ? moduleName.substring(index + 1) : moduleName;
+        File original = new File(getOutputPath() + "/" + modulePart + getExtension());
+        File target = getOutputFile();
+        
+        if(!inputFile.exists())
+        {
+            throw new DebuildException("Could not find expected compiler output file " +
+                    original.getAbsolutePath());
+        }
+        
+        if(target.exists())
+        {
+            if(!target.delete())
+            {
+                throw new DebuildException("Could not delete file " + 
+                        original.getAbsolutePath());
+            }
+        }
+        
+        if(!original.renameTo(target))
+        {
+            throw new DebuildException("Could not rename file " + 
+                    original.getAbsolutePath());
+        }
+    }
 	
 	private String getFilename()
 	{
-		return getMangledName() + "." + getExtension();
+		return getMangledName() + getExtension();
 	}
 	
 	private String getMangledName()
@@ -313,8 +334,21 @@ public class ObjectFile
 	private String getExtension()
 	{
 		// TODO
-		return "obj";
+		return ".obj";
 	}
+    
+    private String getOutputPath()
+    {
+        try
+        {
+            return DebuildBuilder.getAbsolutePath(project.getOutputLocation());
+        }
+        catch(JavaModelException e)
+        {
+            LaunchingPlugin.log(e);
+            return null;
+        }
+    }
 	
 	/**
 	 * Cleans up the output directory, so unused object files (i.e. compiled

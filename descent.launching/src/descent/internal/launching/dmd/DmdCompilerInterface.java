@@ -1,7 +1,6 @@
 package descent.internal.launching.dmd;
 
 import java.io.File;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import descent.launching.compiler.AbstractCompileCommand;
@@ -10,7 +9,6 @@ import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
 import descent.launching.compiler.ILinkCommand;
 import descent.launching.compiler.IResponseInterpreter;
-import descent.launching.compiler.BuildError;
 import descent.launching.compiler.BuildResponse;
 
 public class DmdCompilerInterface implements ICompilerInterface
@@ -30,7 +28,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 		 * @see descent.launching.compiler.IExecutableCommand#getCommand()
 		 */
 		public final String getCommand()
-		{
+		{   
 			StringBuffer buf = new StringBuffer();
 
 			// Add the compler executable
@@ -130,14 +128,6 @@ public class DmdCompilerInterface implements ICompilerInterface
 			{
 				buf.append("-profile ");
 			}
-			if(verbose)
-			{
-				buf.append("-v ");
-			}
-			if(quiet)
-			{
-				buf.append("-quiet ");
-			}
 			
 			// Add the files to compile
 			for(File path : files)
@@ -146,6 +136,8 @@ public class DmdCompilerInterface implements ICompilerInterface
 				buf.append(" ");
 			}
 			
+            // TODO if the buffer is over a certain length, use a response file
+            // instead
 			return buf.toString().trim();
 		}
 	}
@@ -209,8 +201,9 @@ public class DmdCompilerInterface implements ICompilerInterface
 			// TODO finish & test
 			
 			if(DEBUG)
-				System.out.println("=> " + line);
+				System.out.println("OUT => " + line);
 			
+            /*
 			Matcher m = ERROR_WITH_FILENAME.matcher(line);
 			if(m.find())
 			{
@@ -221,6 +214,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 				resp.addError(new BuildError(message, file, lineNum));
 				return;
 			}
+            */
 		}
 		
 		/* (non-Javadoc)
@@ -228,6 +222,9 @@ public class DmdCompilerInterface implements ICompilerInterface
 		 */
 		public void interpretError(String line)
 		{
+            if(DEBUG)
+                System.out.println("ERR => " + line);
+            
 			// Keep all the interpretation in one method
 			interpret(line);
 		}

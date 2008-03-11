@@ -7,6 +7,7 @@ import descent.internal.launching.dmd.DmdCompilerInterface;
 import descent.launching.IExecutableTarget;
 import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
+import descent.launching.compiler.ILinkCommand;
 
 /**
  * Wrapper for information about a build request. Exactly one object
@@ -20,7 +21,7 @@ import descent.launching.compiler.ICompilerInterface;
  *
  * @author Robert Fraser
  */
-public class BuildRequest
+/* package */ class BuildRequest
 {	
 	
 	/**
@@ -49,6 +50,14 @@ public class BuildRequest
 	{
 		return target.getModules();
 	}
+    
+    /**
+     * Gets the default include path
+     */
+    public String[] getDefaultImportPath()
+    {
+        return target.getDefaultImportPath();
+    }
 	
 	/**
 	 * Gets the list of modules that should be ignored for this build.
@@ -63,31 +72,57 @@ public class BuildRequest
 		return phobosIgnored;
 	}
     
+    /**
+     * Gets the compile options that affect the generated object code.
+     */
     public CompileOptions getCompileOptions()
     {
-        // TODO
         CompileOptions opts = new CompileOptions();
-        opts.addDebugInfo = true;
-        opts.addUnittests = true;
-        opts.addAssertsAndContracts = true;
+        
+        // Set the executable-target-specific options
+        opts.addDebugInfo = target.getAddDebugInfo();
+        opts.addUnittests = target.getAddUnittests();
+        opts.addAssertsAndContracts = target.getAddAssertsAndContracts();
+        opts.inlineFunctions = target.getInlineFunctions();
+        opts.optimizeCode = target.getOptimizeCode();
+        opts.instrumentForCoverage = target.getInstrumentForCoverage();
+        opts.instrumentForProfile = target.getInstrumentForProfile();
+        for(String ident : target.getDefaultVersionIdents())
+            opts.debugIdents.add(ident);
+        for(String ident : target.getDefaultDebugIdents())
+            opts.debugIdents.add(ident);
+        
+        // Set the project-specific options
         opts.insertDebugCode = true;
-        opts.inlineFunctions = false;
-        opts.optimizeCode = false;
-        opts.instrumentForCoverage = false;
-        opts.instrumentForProfile = false;
+        // TODO project debug & version idents, levels
+        
         return opts;
     }
     
+    /**
+     * Gets a new compile command with request-sepcific defaults set for options
+     * that don't affect code generation (that is, will warnings be shown? will
+     * deprecaated features be allowed? etc.). Also sets the compiler executable
+     * path. Other options (such as the import path and code generation options)
+     * must be set elsewhere. These options may be overriden, of course.
+     */
     public ICompileCommand getCompileCommand()
     {
         ICompileCommand cmd = getCompilerInterface().createCompileCommand();
         
         // TODO
-        cmd.setExecutableFile(new File("C:\\dmd\\bin\\dmd.exe"));
-        cmd.setShowWarnings(true);
-        cmd.setAllowDeprecated(false);
-        cmd.setVerbose(false);
-        cmd.setQuiet(true);
+        cmd.setExecutableFile(new File("C:\\d\\dmd\\bin\\dmd.exe"));
+        cmd.setShowWarnings(false);
+        cmd.setAllowDeprecated(true);
+        
+        return cmd;
+    }
+    
+    public ILinkCommand getLinkCommand()
+    {
+        ILinkCommand cmd = getCompilerInterface().createLinkCommand();
+        
+        cmd.setExecutableFile(new File("C:\\d\\dmd\\bin\\dmd.exe"));
         
         return cmd;
     }
@@ -109,7 +144,7 @@ public class BuildRequest
 	        "crc32",
             "gcc.",
             "gcstats",
-            //TODO uncomment "std.",
+            "std.",
 	    };
         
         tangoIgnored = new String[]

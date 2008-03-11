@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.ICompilationUnit;
@@ -35,7 +32,7 @@ import descent.launching.BuildCancelledException;
  * 
  * @author Robert Fraser
  */
-public class RecursiveDependancyCollector
+/* package */ class RecursiveDependancyCollector
 {
 	/**
 	 * Gets new {@link ObjectFile}s for all the compilation units given and any
@@ -132,7 +129,7 @@ public class RecursiveDependancyCollector
         boolean[] isLibraryFile = new boolean[1];
         ICompilationUnit module = findModule(moduleName, isLibraryFile);
 		if(null == module || !module.exists())
-			throw new DebuildException("Could not find module %$1s");
+			throw new RuntimeException("Could not find module " + moduleName);
 		
         // Add the new object file to the set
 		objectFiles.put(moduleName, createObjectFile(module, isLibraryFile[0]));

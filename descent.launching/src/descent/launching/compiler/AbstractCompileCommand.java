@@ -34,9 +34,6 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	protected boolean            inlineFunctions;
 	protected boolean            optimizeCode;
 	
-	protected boolean            verbose;
-	protected boolean            quiet;
-	
 	@Override
 	public void setDefaults()
 	{
@@ -69,10 +66,7 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 		
 		inlineFunctions = false;
 		optimizeCode = false;
-		
-		verbose = false;
-		quiet = false;
-
+        
 		super.setDefaults();
 	}
 	
@@ -80,8 +74,6 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	public boolean isValid()
 	{
 		if(null == outputDirectory && null == outputFilename)
-			return false;
-		if(verbose && quiet)
 			return false;
 		
 		return super.isValid();
@@ -356,33 +348,5 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	public void setInstrumentForProfile(boolean instrumentForProfile)
 	{
 		this.instrumentForProfile = instrumentForProfile;
-	}
-	/* (non-Javadoc)
-	 * @see descent.launching.compiler.ICompileCommand#getVerbose()
-	 */
-	public boolean getVerbose()
-	{
-		return verbose;
-	}
-	/* (non-Javadoc)
-	 * @see descent.launching.compiler.ICompileCommand#setVerbose(boolean)
-	 */
-	public void setVerbose(boolean verbose)
-	{
-		this.verbose = verbose;
-	}
-	/* (non-Javadoc)
-	 * @see descent.launching.compiler.ICompileCommand#getQuiet()
-	 */
-	public boolean getQuiet()
-	{
-		return quiet;
-	}
-	/* (non-Javadoc)
-	 * @see descent.launching.compiler.ICompileCommand#setQuiet(boolean)
-	 */
-	public void setQuiet(boolean quiet)
-	{
-		this.quiet = quiet;
 	}
 }

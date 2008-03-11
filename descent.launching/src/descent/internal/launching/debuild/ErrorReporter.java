@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.Path;
 import descent.core.IJavaProject;
 import descent.launching.compiler.BuildError;
 
-public class ErrorReporter
+/* package */ class ErrorReporter
 {
 	private final IJavaProject project;
 	
@@ -25,7 +25,8 @@ public class ErrorReporter
 	
 	public IMarker resourceError(String msg, IResource resource)
 	{
-		// TODO error atttachment
+        // TODO
+        System.out.println(msg);
 		return null;
 	}
 	

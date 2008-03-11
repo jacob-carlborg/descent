@@ -15,7 +15,7 @@ import descent.launching.compiler.IResponseInterpreter;
  *
  * @author Robert Fraser
  */
-public class ExecutionMonitor implements Runnable
+/* package */ class ExecutionMonitor implements Runnable
 {	
 	/**
 	 * Non-blocking mechanism for reading stream input line-by-line
@@ -125,16 +125,16 @@ public class ExecutionMonitor implements Runnable
 	}
 	
 	public void run()
-	{	
+	{   
 		if(finished)
 			return;
 		Process proc = null;
 		
 		try
 		{
-			if(DebuildBuilder.DEBUG)
-				System.out.println(command);
-			
+            if(DebuildBuilder.DEBUG)
+                System.out.println(command);
+            
 			proc = Runtime.getRuntime().exec(command,
 					environment, new File(workingDir));
 			LineByLineReader stdoutReader = 

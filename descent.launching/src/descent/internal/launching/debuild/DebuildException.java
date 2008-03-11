@@ -7,13 +7,8 @@ package descent.internal.launching.debuild;
  * @author Robert Fraser
  */
 @SuppressWarnings("serial")
-public class DebuildException extends RuntimeException
-{
-    public DebuildException()
-    {
-        super();
-    }
-    
+/* package */ class DebuildException extends RuntimeException
+{    
     public DebuildException(String msg)
     {
         super(msg);
