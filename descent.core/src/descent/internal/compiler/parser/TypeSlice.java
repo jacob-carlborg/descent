@@ -183,15 +183,16 @@ public class TypeSlice extends Type {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.SLICE);
+		next.appendSignature(sb);
 		
 		char[] expc = new ASTNodeEncoder().encodeExpression(lwr);
 		sb.append(expc.length);
-		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(ISignatureConstants.SLICE);
 		sb.append(expc);
 		
 		expc = new ASTNodeEncoder().encodeExpression(upr);
 		sb.append(expc.length);
-		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(ISignatureConstants.SLICE);
 		sb.append(expc);
 	}
 	

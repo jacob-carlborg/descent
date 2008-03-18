@@ -169,15 +169,12 @@ public class CompletionProposalLabelProvider {
 			}
 		}
 		
-		// TODO JDT signature
-//		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature));
-//		if (prefix != null) {
-//			displayName = CharOperation.concat(prefix, displayName, ' ');
-//		}
-//		
-//		return displayName;
+		char[] displayName= Signature.toCharArray(typeSignature);
+		if (prefix != null) {
+			displayName = CharOperation.concat(prefix, displayName, ' ');
+		}
 		
-		return null;
+		return displayName;
 	}
 
 	/**

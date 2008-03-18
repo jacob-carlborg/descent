@@ -11,8 +11,8 @@ import descent.core.compiler.CharOperation;
  */
 public class ASTNodeEncoder {
 	
-	private final static char INTEGER_EXP = '=';
-	private final static char IDENTIFIER_EXP = '?';
+//	private final static char INTEGER_EXP = '=';
+//	private final static char IDENTIFIER_EXP = '?';
 	
 	private Parser parser;
 	private Parser initParser(char[] source) {
@@ -35,19 +35,19 @@ public class ASTNodeEncoder {
 		}
 		
 		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
-		if (value instanceof IntegerExp) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(INTEGER_EXP);
-			sb.append(((IntegerExp) value).value.toString());
-			return sb.toString().toCharArray();
-		} else if (value instanceof IdentifierExp) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(IDENTIFIER_EXP);
-			sb.append(((IdentifierExp) value).ident);
-			return sb.toString().toCharArray();
-		} else {
+//		if (value instanceof IntegerExp) {
+//			StringBuilder sb = new StringBuilder();
+//			sb.append(INTEGER_EXP);
+//			sb.append(((IntegerExp) value).value.toString());
+//			return sb.toString().toCharArray();
+//		} else if (value instanceof IdentifierExp) {
+//			StringBuilder sb = new StringBuilder();
+//			sb.append(IDENTIFIER_EXP);
+//			sb.append(((IdentifierExp) value).ident);
+//			return sb.toString().toCharArray();
+//		} else {
 			return value.toString().toCharArray();
-		}
+//		}
 	}
 	
 	public Expression decodeExpression(char[] value) {
@@ -56,11 +56,11 @@ public class ASTNodeEncoder {
 		}
 		
 		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
-		if (value[0] == INTEGER_EXP) {
-			return new IntegerExp(Loc.ZERO, new integer_t(new BigInteger(new String(value, 1, value.length - 1))));
-		} else if (value[0] == IDENTIFIER_EXP) {
-			return new IdentifierExp(CharOperation.subarray(value, 1, value.length));
-		}
+//		if (value[0] == INTEGER_EXP) {
+//			return new IntegerExp(Loc.ZERO, new integer_t(new BigInteger(new String(value, 1, value.length - 1))));
+//		} else if (value[0] == IDENTIFIER_EXP) {
+//			return new IdentifierExp(CharOperation.subarray(value, 1, value.length));
+//		}
 		
 		return initParser(value).parseExpression();
 	}
@@ -83,9 +83,9 @@ public class ASTNodeEncoder {
 		}
 		
 		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
-		if (value[0] == INTEGER_EXP || value[0] == IDENTIFIER_EXP) {
-			return new ExpInitializer(Loc.ZERO, decodeExpression(value));
-		}
+//		if (value[0] == INTEGER_EXP || value[0] == IDENTIFIER_EXP) {
+//			return new ExpInitializer(Loc.ZERO, decodeExpression(value));
+//		}
 
 		return initParser(value).parseInitializer();
 	}

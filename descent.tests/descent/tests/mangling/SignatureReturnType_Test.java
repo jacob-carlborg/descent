@@ -56,6 +56,10 @@ public class SignatureReturnType_Test extends AbstractSignatureTest {
 		rt(MODULE + "3Bar" + CLASS + "3Foo", F + Z + MODULE + "3Bar" + CLASS + "3Foo");
 	}
 	
+	public void testSymbol2() {
+		rt(MODULE + "3Bar" + CLASS + "3Foo" + STRUCT + "4Test", F + Z + MODULE + "3Bar" + CLASS + "3Foo" + STRUCT + "4Test");
+	}
+	
 	public void testTemplate() {
 		rt(MODULE + "3Bar" + TEMPLATE + "3Foo" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_PARAMETERS_BREAK, F + Z + MODULE + "3Bar" + TEMPLATE + "3Foo" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
 	}

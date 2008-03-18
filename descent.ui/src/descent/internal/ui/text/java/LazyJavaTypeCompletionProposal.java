@@ -71,9 +71,8 @@ public class LazyJavaTypeCompletionProposal extends LazyJavaCompletionProposal {
 	}
 	
 	protected final String getSimpleTypeName() {
-		// TODO JDT signature
-//		if (fSimpleName == null)
-//			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
+		if (fSimpleName == null)
+			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
 		return fSimpleName;
 	}
 

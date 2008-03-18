@@ -11,6 +11,8 @@
  *******************************************************************************/
 package descent.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import descent.core.compiler.CharOperation;
@@ -41,7 +43,9 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   | PointerTypeSignature   
  *   | DynamicArrayTypeSignature
  *   | StaticArrayTypeSignature
- *   | AssociativeArrayTypeSignature   
+ *   | AssociativeArrayTypeSignature
+ *   | TypeofTypeSignature
+ *   | SliceTypeSignature
  *   | FunctionTypeSignature
  *   | DelegateTypeSignature
  *   | IdentifierTypeSignature
@@ -82,6 +86,14 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   
  * AssociativeArrayTypeSignature ::=
  *   "H" TypeSignature TypeSignature  // key value
+ *   
+ * TypeofTypeSignature ::=
+ *   ">" Number ">" Chars // Number == Chars.length
+ *   
+ * SliceTypeSignature ::=
+ *   "¬" TypeSignature
+ *   Number "¬" Chars // Number == Chars.length --> lower
+ *   Number "¬" Chars // Number == Chars.length --> upper
  *   
  * FunctionTypeSignature ::=
  *   ( "F"  // D linkage
@@ -357,6 +369,18 @@ public final class Signature {
 	 * Value is <code>'H'</code>.
 	 */
 	public static final char C_ASSOCIATIVE_ARRAY						= 'H';
+	
+	/**
+	 * Character constant indicating a typeof type in a signature.
+	 * Value is <code>'>'</code>.
+	 */
+	public static final char C_TYPEOF									= '>';
+	
+	/**
+	 * Character constant indicating a slice type in a signature.
+	 * Value is <code>'¬'</code>.
+	 */
+	public static final char C_SLICE									= '¬';
 	
 	/**
 	 * Character constant indicating a D linkage in a function signature.
@@ -685,6 +709,200 @@ public final class Signature {
 private Signature() {
 	// Not instantiable
 }
+
+/**
+ * Creates a signature for a pointer that points to the given type.
+ * @param type the type pointed by the pointer
+ * @return the pointer signature
+ */
+public static String createPointerSignature(String type) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(C_POINTER);
+	sb.append(type);
+	return sb.toString();
+}
+
+/**
+ * Creates a signature for a pointer that points to the given type.
+ * @param type the type pointed by the pointer
+ * @return the pointer signature
+ */
+public static char[] createPointerSignature(char[] type) {
+	char[] ret = new char[1 + type.length];
+	ret[0] = C_POINTER;
+	System.arraycopy(type, 0, ret, 1, type.length);
+	return ret;
+}
+
+/**
+ * Creates a static array signature with the given type and dimension.
+ * @param type the type of the static array
+ * @param dimension the dimension of the static array
+ * @return the static array signature
+ */
+public static String createStaticArraySignature(String type, String dimension) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(C_STATIC_ARRAY);
+	sb.append(type);
+	sb.append(dimension.length());
+	sb.append(C_STATIC_ARRAY);
+	sb.append(dimension);
+	return sb.toString();
+}
+
+/**
+ * Creates a static array signature with the given type and dimension.
+ * @param type the type of the static array
+ * @param dimension the dimension of the static array
+ * @return the static array signature
+ */
+public static char[] createStaticArraySignature(char[] type, char[] dimension) {
+	int dimensionLength = dimension.length;
+	int dimensionLengthStringLength = lenghtOfLengthToString(dimension);
+	
+	char[] ret = new char[2 + type.length + dimensionLengthStringLength + dimensionLength];
+	ret[0] = C_STATIC_ARRAY;
+	System.arraycopy(type, 0, ret, 1, type.length);
+	copyNumber(dimensionLength, dimensionLengthStringLength, ret, 1 + type.length);
+	ret[1 + type.length + dimensionLengthStringLength] = C_STATIC_ARRAY;
+	System.arraycopy(dimension, 0, ret, 2 + type.length + dimensionLengthStringLength, dimensionLength);
+	return ret;
+}
+
+/**
+ * Creates a dynamic array signature with the given type.
+ * @param type the type of the dynamic array
+ * @return the dynamic array signature
+ */
+public static String createDynamicArraySignature(String type) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(C_DYNAMIC_ARRAY);
+	sb.append(type);
+	return sb.toString();
+}
+
+/**
+ * Creates a dynamic array signature with the given type.
+ * @param type the type of the dynamic array
+ * @return the dynamic array signature
+ */
+public static char[] createDynamicArraySignature(char[] type) {
+	char[] ret = new char[1 + type.length];
+	ret[0] = C_DYNAMIC_ARRAY;
+	System.arraycopy(type, 0, ret, 1, type.length);
+	return ret;
+}
+
+/**
+ * Creates an associative array signature with the given key and value
+ * signatures.
+ * @param key the key signature
+ * @param value the value signature
+ * @return the associative array signature
+ */
+public static String createAssociativeArraySignature(String key, String value) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(C_ASSOCIATIVE_ARRAY);
+	sb.append(value);
+	sb.append(key);
+	return sb.toString();
+}
+
+/**
+ * Creates an associative array signature with the given key and value
+ * signatures.
+ * @param key the key signature
+ * @param value the value signature
+ * @return the associative array signature
+ */
+public static char[] createAssociativeArraySignature(char[] key, char[] value) {
+	char[] ret = new char[1 + key.length + value.length];
+	ret[0] = C_ASSOCIATIVE_ARRAY;
+	System.arraycopy(value, 0, ret, 1, value.length);
+	System.arraycopy(key, 0, ret, 1 + value.length, key.length);
+	return ret;
+}
+
+/**
+ * Creates a typeof signature for the given expression.
+ * @param expression an expression
+ * @return the typeof signature
+ */
+public static String createTypeofSignature(String expression) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(C_TYPEOF);
+	sb.append(expression.length());
+	sb.append(C_TYPEOF);
+	sb.append(expression);
+	return sb.toString();
+}
+
+/**
+ * Creates a typeof signature for the given expression.
+ * @param expression an expression
+ * @return the typeof signature
+ */
+public static char[] createTypeofSignature(char[] expression) {
+	int expressionLength = expression.length;
+	int expressionLengthStringLength = lenghtOfLengthToString(expression);
+	
+	char[] ret = new char[2 + expressionLengthStringLength + expressionLength];
+	ret[0] = C_TYPEOF;
+	copyNumber(expressionLength, expressionLengthStringLength, ret, 1);
+	ret[1 + expressionLengthStringLength] = C_TYPEOF;
+	System.arraycopy(expression, 0, ret, 2 + expressionLengthStringLength, expressionLength);
+	return ret;
+}
+
+/**
+ * Creates a slice type signature for the given type, lower and upper bounds.
+ * @param type the slice type
+ * @param lower the lower bound
+ * @param upper the upper bound
+ * @return the slice signature
+ */
+public static String createSliceSignature(String type, String lower, String upper) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(C_SLICE);
+	sb.append(type);
+	sb.append(lower.length());
+	sb.append(C_SLICE);
+	sb.append(lower);
+	sb.append(upper.length());
+	sb.append(C_SLICE);
+	sb.append(upper);
+	return sb.toString();
+}
+
+/**
+ * Creates a slice type signature for the given type, lower and upper bounds.
+ * @param type the slice type
+ * @param lower the lower bound
+ * @param upper the upper bound
+ * @return the slice signature
+ */
+public static char[] createSliceSignature(char[] type, char[] lower, char[] upper) {
+	int lowerLength = lower.length;
+	int lowerLengthStringLength = lenghtOfLengthToString(lower);
+	
+	int upperLength = upper.length;
+	int upperLengthStringLength = lenghtOfLengthToString(upper);
+	
+	char[] ret = new char[3 + type.length + lowerLengthStringLength + lowerLength + upperLengthStringLength + upperLength];
+	ret[0] = C_SLICE;
+	System.arraycopy(type, 0, ret, 1, type.length);
+	
+	copyNumber(lowerLength, lowerLengthStringLength, ret, 1 + type.length);
+	ret[1 + lowerLengthStringLength + type.length] = C_SLICE;
+	System.arraycopy(lower, 0, ret, 2 + lowerLengthStringLength + type.length, lowerLength);
+	
+	copyNumber(upperLength, upperLengthStringLength, ret, 2 + type.length + lowerLength + lowerLengthStringLength);
+	ret[3 + type.length + lowerLength + lowerLengthStringLength] = C_SLICE;
+	System.arraycopy(upper, 0, ret, 4 + type.length + lowerLength + lowerLengthStringLength, upperLength);
+	
+	return ret;
+}
+
 /**
  * Returns the number of parameter types in the given signature. The 
  * signature may include the full name qualification. If the signature is not
@@ -730,7 +948,7 @@ public static int getParameterCount(String signature) throws IllegalArgumentExce
  */
 public static int getParameterCount(char[] signature) throws IllegalArgumentException {
 	if (signature == null) {
-		return 0;
+		throw new IllegalArgumentException();
 	}
 	return getParameterCount(new String(signature));
 }
@@ -826,7 +1044,107 @@ public static char[][] getParameterTypes(char[] methodSignature) throws IllegalA
  *   incorrect
  */
 public static String[] getParameterTypes(String methodSignature) throws IllegalArgumentException {
-	return null;
+	final List<String> parameters = new ArrayList<String>();
+	final boolean[] valid = { false };
+	
+	SignatureProcessor.process(methodSignature, new SignatureRequestorAdapter() {
+		int functionCount = 0;
+		int argumentsCount = 0;
+		int templateInstanceCount = 0;
+		boolean foundArgumentBreak = false;
+		@Override
+		public void acceptArgumentModifier(int stc) {
+			if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+				argumentsCount++;
+			}
+		}
+		@Override
+		public void acceptPrimitive(TypeBasic type) {
+			add(type.deco);
+		}
+		@Override
+		public void acceptPointer(String signature) {
+			replace(signature);
+		}
+		@Override
+		public void acceptStaticArray(char[] dimension, String signature) {
+			replace(signature);
+		}
+		@Override
+		public void acceptDynamicArray(String signature) {
+			replace(signature);
+		}
+		@Override
+		public void acceptAssociativeArray(String signature) {
+			parameters.remove(parameters.size() - 1);
+			replace(signature);
+		}
+		@Override
+		public void acceptTypeof(char[] expression, String signature) {
+			add(signature);
+		}
+		@Override
+		public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
+			replace(signature);
+		}
+		@Override
+		public void acceptArgumentBreak(char c) {
+			if (functionCount == 1) {
+				foundArgumentBreak = true;
+			}
+		}
+		@Override
+		public void acceptDelegate(String signature) {
+			replace(signature);
+		}
+		@Override
+		public void acceptIdentifier(char[][] compoundName, String signature) {
+			add(signature);
+		}
+		@Override
+		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+			if (parameters.size() == argumentsCount - 1) {
+				add(signature);
+			} else {
+				replace(signature);
+			}
+		}
+		@Override
+		public void enterTemplateInstance() {
+			templateInstanceCount++;
+		}
+		@Override
+		public void exitTemplateInstance(String signature) {
+			templateInstanceCount--;
+			replace(signature);
+		}
+		@Override
+		public void enterFunctionType() {
+			functionCount++;
+			valid[0] = true;
+		}
+		@Override
+		public void exitFunctionType(LINK link, String signature) {
+			functionCount--;
+			add(signature);
+		}
+		private void add(String sig) {
+			if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+				parameters.add(sig);
+			}
+		}
+		private void replace(String sig) {
+			if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+				parameters.set(parameters.size() - 1, sig);
+			}
+		}
+	});
+	
+	if (!valid[0]) {
+		throw new IllegalArgumentException();
+	}
+	
+	return parameters.toArray(new String[parameters.size()]);
 }
 /**
  * Extracts the return type from the given method signature. The method signature is 
@@ -1373,6 +1691,121 @@ public static boolean isVariadic(String signature) throws IllegalArgumentExcepti
 	}
 	
 	return variadic[0];
+}
+
+/**
+ * Returns the last segment of a fully qualified name. Segments
+ * are divided by dots.
+ * 
+ * <p>
+ * For example:
+ * <pre>
+ * getSimpleName("int") -> "int"
+ * getSimpleName("foo.test.Bar") -> "Bar"
+ * getSimpleName("foo.test.Bar!(int)") -> "Bar!(int)"
+ * getSimpleName("foo.test.metdhod(int, float)") -> "method(int, float)"
+ * </pre>
+ * </p> * 
+ * 
+ * @param qualifiedName a fully qualified name
+ * @return the last segment of the fully qualified name
+ */
+public static String getSimpleName(String qualifiedName) {
+	int dot = 0;
+	int parenCount = 0;
+	for (int i = 0; i < qualifiedName.length(); i++) {
+		char c = qualifiedName.charAt(i);
+		switch(c) {
+		case '(':
+			parenCount++;
+			break;
+		case ')':
+			parenCount--;
+			break;
+		case '.':
+			if (parenCount == 0) {
+				dot = i + 1;
+			}
+			break;
+		}
+	}
+	if (dot == 0) {
+		return qualifiedName;
+	} else {
+		return qualifiedName.substring(dot);
+	}
+}
+
+/**
+ * Returns the last segment of a fully qualified name. Segments
+ * are divided by dots.
+ * 
+ * <p>
+ * For example:
+ * <pre>
+ * getSimpleName("int") -> "int"
+ * getSimpleName("foo.test.Bar") -> "Bar"
+ * getSimpleName("foo.test.Bar!(int)") -> "Bar!(int)"
+ * getSimpleName("foo.test.metdhod(int, float)") -> "method(int, float)"
+ * </pre>
+ * </p> * 
+ * 
+ * @param qualifiedName a fully qualified name
+ * @return the last segment of the fully qualified name
+ */
+public static char[] getSimpleName(char[] qualifiedName) {
+	int dot = 0;
+	int parenCount = 0;
+	for (int i = 0; i < qualifiedName.length; i++) {
+		char c = qualifiedName[i];
+		switch(c) {
+		case '(':
+			parenCount++;
+			break;
+		case ')':
+			parenCount--;
+			break;
+		case '.':
+			if (parenCount == 0) {
+				dot = i + 1;
+			}
+			break;
+		}
+	}
+	if (dot == 0) {
+		return qualifiedName;
+	} else {
+		return CharOperation.subarray(qualifiedName, dot, qualifiedName.length);
+	}
+}
+
+/*
+ * Given a string, this method gets it's length, and, seen as a string,
+ * returns it's length.
+ */
+private static int lenghtOfLengthToString(char[] string) {
+	int length = string.length;
+	int count = 0;
+	while(length != 0) {
+		length /= 10;
+		count++;
+	}
+	return count;
+}
+
+/*
+ * Copies a number into the given char array.
+ * @param dimension the dimension to copy
+ * @param dimensionStringLength the length of the dimension, seen as a string
+ * @param ret where to copy
+ * @param position where to start copying
+ */
+private static void copyNumber(int dimension, int dimensionStringLength, char[] ret, int position) {
+	while(dimension != 0) {
+		ret[position + dimensionStringLength - 1] = (char) ((dimension % 10) + '0');
+		dimension /= 10;
+		position--;
+	}
 }
 
 }

@@ -124,12 +124,6 @@ public class TypeTypeof extends TypeQualified {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		// Use resolved information when possible
-		if (exp.type != null) {
-			exp.type.appendSignature(sb);
-			return;
-		}
-		
 		sb.append(ISignatureConstants.TYPEOF);
 		char[] expc = new ASTNodeEncoder().encodeExpression(exp);
 		sb.append(expc.length);
