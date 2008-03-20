@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -66,6 +67,7 @@ import descent.internal.launching.LaunchingPlugin;
 	private final String moduleName;
 	private final boolean isLibraryFile;
 	private CompileOptions opts;
+    private File cachedOutputFile;
 	
 	/**
 	 * Crates a new instance of an object file container
@@ -143,7 +145,9 @@ import descent.internal.launching.LaunchingPlugin;
 		if(null == opts)
 			throw new IllegalStateException("Compile options not set yet!");
 		
-		return new File(getOutputPath() + "/" + getFilename());
+        if(null == cachedOutputFile)
+            cachedOutputFile = new File(getOutputPath() + "/" + getFilename());
+		return cachedOutputFile;
 	}
 	
 	/**
@@ -215,13 +219,13 @@ import descent.internal.launching.LaunchingPlugin;
         if(!original.renameTo(target))
         {
             throw new DebuildException("Could not rename file " + 
-                    original.getAbsolutePath());
+                    original.getAbsolutePath() + " to " + target.getAbsolutePath());
         }
     }
 	
 	private String getFilename()
 	{
-		return getMangledName() + getExtension();
+        return getMangledName() + getExtension();
 	}
 	
 	private String getMangledName()
@@ -240,7 +244,7 @@ import descent.internal.launching.LaunchingPlugin;
 		 * a lot of hashing (the hashes are all base64 encoded to help with
 		 * reducing filename length). This means collisions *are* possible (in
 		 * other words, this method is fundamentally broken). So here's a big
-		 * TODO: fix the builder so it uses a separate file or something
+		 * PERHAPS: fix the builder so it uses a separate file or something
 		 * instead of filenames full of hashes.
 		 */
 		
@@ -333,15 +337,20 @@ import descent.internal.launching.LaunchingPlugin;
 	
 	private String getExtension()
 	{
-		// TODO
-		return ".obj";
-	}
+        return Util.isWindows() ? ".obj" : ".o";
+    }
+    
+    public static void main(String[] args)
+    {
+        for(Entry<Object, Object> prop : System.getProperties().entrySet())
+            System.out.format("%1$s = %2$s\n", prop.getKey(), prop.getValue());
+    }
     
     private String getOutputPath()
     {
         try
         {
-            return DebuildBuilder.getAbsolutePath(project.getOutputLocation());
+            return Util.getAbsolutePath(project.getOutputLocation());
         }
         catch(JavaModelException e)
         {

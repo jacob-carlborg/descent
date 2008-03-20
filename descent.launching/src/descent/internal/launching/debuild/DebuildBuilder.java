@@ -56,22 +56,10 @@ public class DebuildBuilder
     }
     
     /* package */ static final boolean DEBUG = true;
-	
-    /**
-     * Gets the absolute OS path for the given Eclipse path (with portable
-     * separarators, etc.).
-     * 
-     * @param path
-     * @return
-     */
-    /* package */ static String getAbsolutePath(IPath path)
-    {
-        IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-        if(null != res)
-            path = res.getLocation();
-        
-        return path.toPortableString();
-    }
+    
+    /* package */ static final String EXECUTABLE_FILE_PREFIX = "-";
+    
+    //--------------------------------------------------------------------------
     
 	private final BuildRequest req;
 	private final ErrorReporter err;
@@ -193,7 +181,7 @@ public class DebuildBuilder
             {
                 case IClasspathEntry.CPE_SOURCE:
                 case IClasspathEntry.CPE_LIBRARY:
-                    importPath.add(new File(getAbsolutePath(entry.getPath())));
+                    importPath.add(new File(Util.getAbsolutePath(entry.getPath())));
                     break;
                 case IClasspathEntry.CPE_PROJECT:
                     String projectName = entry.getPath().lastSegment();
@@ -228,7 +216,7 @@ public class DebuildBuilder
             boolean wasSuccesful = true;
             ICompilerInterface compilerInterface = req.getCompilerInterface();
             IJavaProject project = req.getProject();
-            String workingDirectory = getAbsolutePath(project.getOutputLocation());
+            String workingDirectory = Util.getAbsolutePath(project.getOutputLocation());
             File outputDirectory = new File(workingDirectory);
             
             // Compile the output files
@@ -288,8 +276,8 @@ public class DebuildBuilder
             
             // Create the linker command
             ILinkCommand cmd = req.getLinkCommand();
-            cmd.setOutputFilename(new File(workingDirectory + "/" 
-                    + getExecutableName()));
+            File outputFile = new File(workingDirectory + "/" + getExecutableName());
+            cmd.setOutputFilename(outputFile);
             for(ObjectFile obj : objectFiles)
                 cmd.addFile(obj.getOutputFile());
             // TODO binary libraries
@@ -304,7 +292,6 @@ public class DebuildBuilder
                     workingDirectory);
             executor.run();
             pm.worked(16); // 18
-            // TODO should all the excess output (i.e. map files) be cleaned?
             
             // Check for errors
             BuildResponse response = responseInterpreter.getResponse();
@@ -314,8 +301,9 @@ public class DebuildBuilder
                 wasSuccesful = false;
             pm.worked(2); // 20
             
-            // TODO return wasSuccesful ? outputFile : null;
-            return null;
+            return wasSuccesful && outputFile.exists() ? 
+                    outputFile.getAbsolutePath() :
+                    null;
         }
         
         catch(JavaModelException e)
@@ -330,7 +318,10 @@ public class DebuildBuilder
     
     private String getExecutableName()
     {
-        // TODO
-        return System.currentTimeMillis() + ".exe";
+        return EXECUTABLE_FILE_PREFIX +
+            System.currentTimeMillis() +
+            (Util.isWindows() ?
+                ".exe" :
+                "");
     }
 }

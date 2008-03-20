@@ -15,7 +15,7 @@ import descent.core.IJavaProject;
  */
 public abstract class AbstractExecutableTarget implements IExecutableTarget
 {
-    private static final String[] NO_DEFAULTS = new String[] { };
+    protected static final String[] NO_DEFAULTS = new String[] { };
     
     public static final boolean defaultAddDebugInfo           = true;
     public static final boolean defaultAddUnittests           = false;
@@ -39,9 +39,8 @@ public abstract class AbstractExecutableTarget implements IExecutableTarget
 	protected AbstractExecutableTarget()
 	{
 		String[] defaultModules = getDefaultModules();
-		if(null != defaultModules)
-			for(String moduleName : defaultModules)
-				modules.add(moduleName);
+		for(String moduleName : defaultModules)
+			modules.add(moduleName);
 	}
 	
     //--------------------------------------------------------------------------
@@ -222,11 +221,11 @@ public abstract class AbstractExecutableTarget implements IExecutableTarget
     //--------------------------------------------------------------------------
     // Protected methods intended to be overriden by clients if needed
     /**
-     * Gets the list of modules that should be added before any others, or null
-     * if there is no such list.
+     * Gets the list of modules that should be added before any others, or the empty
+     * list if there is no such list. SHould not return null.
      */
 	protected String[] getDefaultModules()
 	{
-		return null;
+		return NO_DEFAULTS;
 	}
 }

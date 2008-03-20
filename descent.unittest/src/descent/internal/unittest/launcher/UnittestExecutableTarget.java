@@ -4,12 +4,32 @@ import descent.launching.AbstractExecutableTarget;
 
 public class UnittestExecutableTarget extends AbstractExecutableTarget
 {
+    // TODO
+    private static final String FLUTE_MODULE_NAME = "org.dsource.descent.flute";
+    private static final String FLUTE_IMPORT_PATH = "C:\\workspace\\descent.unittest\\flute\\src";
+    
+    private static final String[] DEFAULT_MODULES = new String[]
+    {
+        //TODO FLUTE_MODULE_NAME,
+    };
+    private static final String[] DEFAULT_IMPORT_PATH = new String[]
+    {
+        FLUTE_IMPORT_PATH,
+    };
+    
 	@Override
 	protected String[] getDefaultModules()
 	{
-		// TODO return new String[] { "org.dsource.descent.flute" };
-		return null;
+		return DEFAULT_MODULES;
 	}
+    
+    @Override
+    public String[] getDefaultImportPath()
+    {
+        return DEFAULT_IMPORT_PATH;
+    }
+
+
 
     @Override
     public boolean getAddAssertsAndContracts()

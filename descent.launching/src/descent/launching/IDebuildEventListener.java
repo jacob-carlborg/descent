@@ -21,7 +21,7 @@ public interface IDebuildEventListener
 	 * @param build the build that failed
      * @param e     the exception that caused the build to fail
 	 */
-	public void buildFailed(IExecutableTarget build, Exception e);
+	public void buildFailed(IExecutableTarget build);
 	
 	/**
 	 * Called when a build is cancelled by the user.

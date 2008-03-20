@@ -21,8 +21,18 @@ public class BuildProcessor
 		{
             notifyBuildStarted(target);
 			String executableFilePath = DebuildBuilder.build(target, pm);
-			notifyBuildSucceeded(target, executableFilePath);
-			return executableFilePath;
+            if(null != executableFilePath)
+            {
+                notifyBuildSucceeded(target, executableFilePath);
+                System.out.format("Succesfully built executable: %1$s\n",
+                        executableFilePath);
+                return null; // FIXME
+            }
+            else
+            {
+                notifyBuildFailed(target);
+                return null;
+            }
 		}
 		catch(BuildCancelledException e)
 		{
@@ -31,7 +41,7 @@ public class BuildProcessor
 		}
         catch(RuntimeException e)
         {
-            notifyBuildFailed(target, e);
+            notifyBuildFailed(target);
             throw e; // Rethrow
         }
 	}
@@ -60,8 +70,7 @@ public class BuildProcessor
 		});
 	}
 	
-	private void notifyBuildFailed(final IExecutableTarget build,
-            final Exception e)
+	private void notifyBuildFailed(final IExecutableTarget build)
 	{
 		SafeRunner.run(new ListenerSafeRunnable()
 		{
@@ -69,7 +78,7 @@ public class BuildProcessor
 			{
 				for(IDebuildEventListener listener : listeners)
 				{
-					listener.buildFailed(build, e);
+					listener.buildFailed(build);
 				}
 			}
 		});

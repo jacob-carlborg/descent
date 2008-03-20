@@ -143,7 +143,7 @@ import descent.launching.BuildCancelledException;
             boolean isLibraryFile)
 	{
 		return new ObjectFile(project,
-                new File(DebuildBuilder.getAbsolutePath(cu.getPath())),
+                new File(Util.getAbsolutePath(cu.getPath())),
                 cu.getFullyQualifiedName(),
 				isLibraryFile);
 	}

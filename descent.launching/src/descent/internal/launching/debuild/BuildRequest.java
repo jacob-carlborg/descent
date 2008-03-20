@@ -3,6 +3,7 @@ package descent.internal.launching.debuild;
 import java.io.File;
 
 import descent.core.IJavaProject;
+import descent.core.JavaCore;
 import descent.internal.launching.dmd.DmdCompilerInterface;
 import descent.launching.IExecutableTarget;
 import descent.launching.compiler.ICompileCommand;
@@ -28,11 +29,13 @@ import descent.launching.compiler.ILinkCommand;
 	 * Information about the executable target to be built (is it debug?
 	 * should we optimize? Add unit tests? etc., etc.)
 	 */
-	private final IExecutableTarget target; 
+	private final IExecutableTarget target;
+    private final IJavaProject project;
 	
 	public BuildRequest(IExecutableTarget target)
 	{
 		this.target = target;
+        this.project = target.getProject();
 	}
 	
 	/**
@@ -40,7 +43,7 @@ import descent.launching.compiler.ILinkCommand;
 	 */
 	public IJavaProject getProject()
 	{
-		return target.getProject();
+		return project;
 	}
 	
 	/**
@@ -93,8 +96,13 @@ import descent.launching.compiler.ILinkCommand;
             opts.debugIdents.add(ident);
         
         // Set the project-specific options
-        opts.insertDebugCode = true;
-        // TODO project debug & version idents, levels
+        opts.insertDebugCode = true; // WAITING_ON_CORE
+        opts.versionLevel = getLevel(JavaCore.COMPILER_VERSION_LEVEL);
+        opts.debugLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
+        for(String ident : getIdentifiers(JavaCore.COMPILER_VERSION_IDENTIFIERS))
+            opts.versionIdents.add(ident);
+        for(String ident : getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS))
+            opts.debugIdents.add(ident);
         
         return opts;
     }
@@ -131,6 +139,27 @@ import descent.launching.compiler.ILinkCommand;
     {
         // TODO
         return DmdCompilerInterface.getInstance();
+    }
+    
+    private Integer getLevel(String preference)
+    {
+        String level = project.getOption(preference, true);
+        if(null == level || "" == level)
+            return null;
+        
+        try
+        {
+            return new Integer(level);
+        }
+        catch(NumberFormatException e)
+        {
+            return null;
+        }
+    }
+    
+    private String[] getIdentifiers(String preference)
+    {
+        return project.getOption(preference, true).split(",");
     }
     
 	// PERHAPS this shouldn't be hardcoded

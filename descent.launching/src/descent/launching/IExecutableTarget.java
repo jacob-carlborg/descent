@@ -56,14 +56,16 @@ public interface IExecutableTarget
     
     /**
      * Returns true if and only if symbolic debug info should be compiled in
-     * (i.e. the "-g" switch should be used with the compiler).
+     * (i.e. the "-g" switch should be used with the compiler). Will be
+     * silently ignored if the compiler being used does not support this.
      */
     public boolean getAddDebugInfo();
     
     /**
      * Returns true if and only if unit tests should be compiled in (i.e. the
      * "-unittest" switch should be used with the compiler). The builder will throw
-     * an exception if the compiler being used does not support this.
+     * an exception if the compiler being used does not support this but this method
+     * returns true.
      */
     public boolean getAddUnittests();
     
@@ -82,7 +84,7 @@ public interface IExecutableTarget
     
     /**
      * Returns true if and only if the compiler should be asked to optimize code.
-     * The builder will be silently ignored if the compiler being used does not 
+     * Will be silently ignored if the compiler being used does not 
      * support this.
      */
     public boolean getOptimizeCode();
@@ -90,17 +92,18 @@ public interface IExecutableTarget
     /**
      * Returns true if and only if the compiler should instrument the output for
      * code coverage analysis. The builder will throw an exception if the compiler
-     * being used does not support this. 
+     * being used does not support this but this method returns true. 
      * 
-     * Note: AFAIK, this is only supported by DMD, so you better be damn sure the
-     * compiler works with this before returning "true" from here.
+     * Note: AFAIK, this is only supported by DMD, so you better be sure the
+     * compiler works with this before returning "true" from here. This can be
+     * done by checking the compiler type.
      */
     public boolean getInstrumentForCoverage();
     
     /**
      * Returns true if and only if the compiler should instrument the output for
      * code profiling. The builder will throw an exception if the compiler
-     * being used does not support this.
+     * being used does not support this but this method returns true.
      */
     public boolean getInstrumentForProfile();
 }
