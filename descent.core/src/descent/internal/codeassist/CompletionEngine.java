@@ -129,6 +129,7 @@ import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
+import descent.internal.core.InternalSignature;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 

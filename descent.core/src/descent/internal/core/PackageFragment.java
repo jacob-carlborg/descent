@@ -22,8 +22,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
@@ -32,8 +30,8 @@ import descent.core.IPackageFragmentRoot;
 import descent.core.IParent;
 import descent.core.ISourceManipulation;
 import descent.core.JavaModelException;
+import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
-import descent.internal.core.CompilationUnit;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
@@ -450,10 +448,15 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 }
 /*
  * (non-Javadoc)
- * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
  */
-public boolean isCompileTimeGenerated() throws JavaModelException {
-	return false;
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	sb.append(Signature.C_MODULE);
+	for(String name : names) {
+		sb.append(name.length());
+		sb.append(name);
+	}
 }
 /*
  * @see IJavaElement#getAttachedJavadoc(IProgressMonitor)

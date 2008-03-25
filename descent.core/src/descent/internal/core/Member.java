@@ -407,11 +407,4 @@ protected void updateNameRange(int nameStart, int nameEnd) {
 		return;
 	}
 }
-/*
- * (non-Javadoc)
- * @see descent.core.IJavaElement#isCompileTimeGenerated()
- */
-public boolean isCompileTimeGenerated() throws JavaModelException {
-	return (getFlags() & Flags.AccCompileTimeGenerated) != 0;
-}
 }

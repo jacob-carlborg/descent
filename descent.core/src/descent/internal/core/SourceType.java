@@ -985,4 +985,38 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		}
 	}
 }
+/*
+ * (non-Javadoc)
+ * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
+ */
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	parent.appendElementSignature(sb);
+	
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	long flags = info.getModifiers();	
+	boolean isTemplate = Flags.isTemplate(flags);	
+	if (Flags.isClass(flags)) {
+		sb.append(isTemplate ? Signature.C_TEMPLATED_CLASS : Signature.C_CLASS);
+	} else if (Flags.isEnum(flags)) {
+		sb.append(Signature.C_ENUM);
+	} else if (Flags.isStruct(flags)) {
+		sb.append(isTemplate ? Signature.C_TEMPLATED_STRUCT : Signature.C_STRUCT);
+	} else if (Flags.isUnion(flags)) {
+		sb.append(isTemplate ? Signature.C_TEMPLATED_UNION : Signature.C_UNION);
+	} else if (Flags.isInterface(flags)) {
+		sb.append(isTemplate ? Signature.C_TEMPLATED_INTERFACE : Signature.C_INTERFACE);
+	} else {
+		throw new IllegalStateException();
+	}
+	sb.append(this.name.length());
+	sb.append(this.name);
+	
+	if (isTemplate) {
+		for(ITypeParameter param : getTypeParameters()) {
+			((TypeParameter) param).appendElementSignature(sb);
+		}
+		sb.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
+	}
+}
 }

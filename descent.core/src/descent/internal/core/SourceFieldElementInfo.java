@@ -48,7 +48,7 @@ public char[] getTypeName() {
  */
 protected String getTypeSignature() {
 	if (this.typeName != null) {
-	//return Signature.createTypeSignature(this.typeName, false);
+//		return Signature.createTypeSignature(this.typeName, false);
 		return new String(this.typeName);
 	}
 	return null;

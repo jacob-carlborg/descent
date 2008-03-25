@@ -181,4 +181,12 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		}
 	}
 }
+/*
+ * (non-Javadoc)
+ * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
+ */
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	// Nothing
+}
 }

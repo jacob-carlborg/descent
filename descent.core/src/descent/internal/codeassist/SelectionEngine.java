@@ -59,6 +59,7 @@ import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
+import descent.internal.core.InternalSignature;
 import descent.internal.core.JavaElement;
 import descent.internal.core.JavaElementFinder;
 import descent.internal.core.JavaProject;

@@ -424,4 +424,38 @@ protected void toStringName(StringBuffer buffer, long flags) {
 		buffer.append(this.occurrenceCount);
 	}
 }
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	parent.appendElementSignature(sb);
+	
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	long flags = info.getModifiers();	
+	boolean isTemplate = Flags.isTemplate(flags);
+	// TODO Signature linkage
+	sb.append(isTemplate ? Signature.C_TEMPLATED_FUNCTION : Signature.C_D_LINKAGE);
+	for(String parameterType : parameterTypes) {
+		sb.append(parameterType);
+	}
+	// TODO Signature varargs
+	if (Flags.isVarargs(flags)) {
+		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK_1);	
+	} else {
+		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK_2);
+	}
+	
+	// Return type is null for constructors
+	String returnType = getReturnType();
+	if (returnType != null) {
+		sb.append(returnType);
+	} else {
+		((JavaElement) getParent()).appendElementSignature(sb);
+	}
+	
+	if (isTemplate) {
+		for(ITypeParameter param : getTypeParameters()) {
+			((TypeParameter) param).appendElementSignature(sb);
+		}
+		sb.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
+	}
+}
 }

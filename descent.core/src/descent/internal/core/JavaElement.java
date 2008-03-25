@@ -483,20 +483,6 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 			return true;
 		}
 	}
-	public boolean hasNonCompileTimeGeneratedChildren() throws JavaModelException {
-		Object elementInfo = JavaModelManager.getJavaModelManager().getInfo(this);
-		if (elementInfo instanceof JavaElementInfo) {
-			IJavaElement[] children = ((JavaElementInfo)elementInfo).getChildren();
-			for (IJavaElement child : children) {
-				if (!child.isCompileTimeGenerated()) {
-					return true;
-				}
-			}
-			return false;
-		} else {
-			return true;
-		}
-	}
 
 	/**
 	 * Returns the hash code for this Java element. By default,
@@ -856,4 +842,28 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 		}
 		return null;
 	}
+	/*
+	 * (non-Javadoc)
+	 * @see descent.core.IJavaElement#getElementSignature()
+	 */
+	public final String getElementSignature() throws JavaModelException {
+		switch(getElementType()) {
+		case JAVA_MODEL:
+		case JAVA_PROJECT:
+		case PACKAGE_FRAGMENT:
+		case PACKAGE_FRAGMENT_ROOT:
+		case CONDITIONAL:
+		case PACKAGE_DECLARATION:
+		case IMPORT_CONTAINER:
+		case IMPORT_DECLARATION:
+		case INITIALIZER:
+			return null;
+		default:
+			StringBuilder sb = new StringBuilder();
+			appendElementSignature(sb);
+			return sb.toString();
+		}
+	}
+	
+	protected abstract void appendElementSignature(StringBuilder sb) throws JavaModelException;
 }

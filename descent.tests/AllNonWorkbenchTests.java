@@ -43,6 +43,7 @@ import descent.tests.mangling.SignatureProcessor_Test;
 import descent.tests.mangling.SignatureReturnType_Test;
 import descent.tests.mangling.SignatureTemplateParameterCount_Test;
 import descent.tests.mangling.SignatureToCharArray_Test;
+import descent.tests.mangling.SignatureToType_Test;
 import descent.tests.mangling.Signature_Test;
 import descent.tests.mars.ASTConvertion_Test;
 import descent.tests.mars.Alias_Test;
@@ -226,6 +227,7 @@ public class AllNonWorkbenchTests {
 			suite.addTestSuite(SignatureReturnType_Test.class);
 			suite.addTestSuite(SignatureParameterTypes_Test.class);
 			suite.addTestSuite(SignatureProcessor_Test.class);
+			suite.addTestSuite(SignatureToType_Test.class);
 		}
 		
 		if (isEnabled(REWRITE)) {

@@ -369,11 +369,12 @@ public interface IJavaElement extends IAdaptable {
 	boolean isStructureKnown() throws JavaModelException;
 	
 	/**
-	 * Returns whether this element was generated at compile-time, in constrast
-	 * with an element that is declared in the source code.
-	 * @return <code>true</code> if this element was generated at compile-time,
-	 * <code>false</code> otherwise
+	 * Returns the signature of this element, or <code>null</code> if this
+	 * element cannot have a signature. 
+	 * For example, Object will return "@6objectC6Object".
+	 * @return the signature of this element
+	 * @see Signature
 	 */
-	boolean isCompileTimeGenerated() throws JavaModelException;
+	String getElementSignature() throws JavaModelException;
 	
 }

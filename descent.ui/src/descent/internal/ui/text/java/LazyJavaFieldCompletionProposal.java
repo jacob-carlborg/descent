@@ -26,7 +26,6 @@ import descent.core.dom.CompilationUnit;
 import descent.core.dom.rewrite.ImportRewrite;
 import descent.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import descent.internal.corext.codemanipulation.StubUtility;
-import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.ui.PreferenceConstants;
@@ -67,9 +66,8 @@ public class LazyJavaFieldCompletionProposal extends LazyJavaCompletionProposal 
 	}
 	
 	protected final String getSimpleTypeName() {
-		// TODO JDT signature
-//		if (fSimpleName == null)
-//			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
+		if (fSimpleName == null)
+			fSimpleName= Signature.getSimpleName(getQualifiedTypeName());
 		return fSimpleName;
 	}
 

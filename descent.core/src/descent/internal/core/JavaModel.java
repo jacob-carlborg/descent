@@ -412,9 +412,10 @@ public static synchronized File getDirectory(Object target) {
 }
 /*
  * (non-Javadoc)
- * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
  */
-public boolean isCompileTimeGenerated() throws JavaModelException {
-	return false;
+@Override
+protected void appendElementSignature(StringBuilder sb) {
+	// Nothing
 }
 }

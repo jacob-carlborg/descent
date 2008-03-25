@@ -11,12 +11,6 @@
 package descent.internal.core;
 
 import descent.core.*;
-import descent.core.IImportContainer;
-import descent.core.IImportDeclaration;
-import descent.core.IJavaElement;
-import descent.core.ISourceRange;
-import descent.core.ISourceReference;
-import descent.core.JavaModelException;
 import descent.internal.core.util.MementoTokenizer;
 
 /**
@@ -85,27 +79,10 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 public ISourceRange getSourceRange() throws JavaModelException {
 	IJavaElement[] imports= getChildren();
 	
-	ISourceRange firstRange = null;
-	ISourceRange lastRange = null;
+	ISourceRange firstRange = ((ISourceReference) imports[0]).getSourceRange();
+	ISourceRange lastRange = ((ISourceReference) imports[imports.length - 1]).getSourceRange();
 	
-	// Skip compile-time generated imports
-	for(int i = 0; i < imports.length; i++) {
-		if (!imports[i].isCompileTimeGenerated()) {
-			firstRange = ((ISourceReference) imports[i]).getSourceRange();
-		}
-	}
-	for(int i = imports.length - 1; i >= 0; i--) {
-		if (!imports[i].isCompileTimeGenerated()) {
-			lastRange = ((ISourceReference) imports[i]).getSourceRange();
-		}
-	}
-	
-	if (firstRange != null && lastRange != null) {
-		SourceRange range= new SourceRange(firstRange.getOffset(), lastRange.getOffset() + lastRange.getLength() - firstRange.getOffset());
-		return range;
-	} else {
-		return null;
-	}
+	return new SourceRange(firstRange.getOffset(), lastRange.getOffset() + lastRange.getLength() - firstRange.getOffset());
 }
 /**
  */
@@ -135,18 +112,8 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		buffer.append(" (not open)"); //$NON-NLS-1$
 	}
 }
-/*
- * (non-Javadoc)
- * @see descent.core.IJavaElement#isCompileTimeGenerated()
- */
-public boolean isCompileTimeGenerated() throws JavaModelException {
-	// true, if all of my children are compile time generated
-	IJavaElement[] imports= getChildren();
-	for(IJavaElement element : imports) {
-		if (!element.isCompileTimeGenerated()) {
-			return false;
-		}
-	}
-	return true;
+@Override
+protected void appendElementSignature(StringBuilder sb) {
+	
 }
 }

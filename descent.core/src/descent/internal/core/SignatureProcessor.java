@@ -286,7 +286,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				char[] upr = signature.substring(i, i + n).toCharArray();
 				
-				requestor.acceptTypeSlice(lwr, upr, signature.substring(start, i + n));
+				requestor.acceptSlice(lwr, upr, signature.substring(start, i + n));
 				
 				i += n;
 				

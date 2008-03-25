@@ -110,9 +110,10 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 }
 /*
  * (non-Javadoc)
- * @see descent.core.IJavaElement#isCompileTimeGenerated()
+ * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
  */
-public boolean isCompileTimeGenerated() throws JavaModelException {
-	return (getFlags() & Flags.AccCompileTimeGenerated) != 0;
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	// Nothing
 }
 }

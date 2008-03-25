@@ -25,7 +25,6 @@ import descent.core.Signature;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.internal.compiler.parser.Comment;
-import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Module;
@@ -143,6 +142,12 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
  * @see IField
  */
 public String getTypeSignature() throws JavaModelException {
+	// Descent: if I'm an enum constant, my type is my parent's type
+	if (this.isEnumConstant()) {
+		return getParent().getElementSignature();
+	}
+	
+	// Else, return my signature
 	SourceFieldElementInfo info = (SourceFieldElementInfo) getElementInfo();
 	return info.getTypeSignature();
 }
@@ -278,5 +283,24 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		return super.getJavadocRanges();
 	}
 }
-
+/*
+ * (non-Javadoc)
+ * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
+ */
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	parent.appendElementSignature(sb);
+	
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	long flags = info.getModifiers();
+	if (Flags.isAlias(flags)) {
+		sb.append(Signature.C_ALIAS);
+	} else if (Flags.isTypedef(flags)) {
+		sb.append(Signature.C_TYPEDEF);
+	} else {
+		sb.append(Signature.C_VARIABLE);
+	}
+	sb.append(name.length());
+	sb.append(name);
+}
 }

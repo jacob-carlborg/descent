@@ -5,7 +5,6 @@ import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
-import descent.internal.compiler.parser.ISignatureConstants;
 
 public class BindingEnum_Test extends AbstractBinding_Test {
 	

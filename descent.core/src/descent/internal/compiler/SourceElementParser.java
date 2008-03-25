@@ -184,9 +184,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	protected int getFlags(ASTDmdNode node, List<Modifier> modifiers) {
 		int flags = 0;
-		if (node.synthetic) {
-			flags |= Flags.AccCompileTimeGenerated;
-		}
 		if (modifiers != null) {
 			for(Modifier modifier : modifiers) {
 				flags |= modifier.getFlags();	

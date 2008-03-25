@@ -211,6 +211,6 @@ public interface ISignatureRequestor {
 	/**
 	 * The processor has found a slice type.
 	 */
-	void acceptTypeSlice(char[] lwr, char[] upr, String signature);
+	void acceptSlice(char[] lwr, char[] upr, String signature);
 
 }

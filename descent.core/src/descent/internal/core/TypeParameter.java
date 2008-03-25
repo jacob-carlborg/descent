@@ -14,9 +14,6 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import descent.core.*;
-import descent.core.IMember;
-import descent.core.ITypeParameter;
-import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 
 public class TypeParameter extends SourceRefElement implements ITypeParameter {
@@ -129,12 +126,8 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 		buffer.append(getElementName());
 		buffer.append('>');
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see descent.core.IJavaElement#isCompileTimeGenerated()
-	 */
-	public boolean isCompileTimeGenerated() throws JavaModelException {
-		return false;
+	@Override
+	protected void appendElementSignature(StringBuilder sb) {
+		// TODO Descent signature
 	}
 }

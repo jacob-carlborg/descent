@@ -122,6 +122,10 @@ import descent.internal.core.SignatureRequestorAdapter;
  *     | "S"  // struct
  *     | "&"  // union
  *     | "|"  // interface
+ *     | "E"  // enum
+ *     | "/"  // variable
+ *     | "="  // alias
+ *     | "T"  // typedef
  *     )
  *     Identifier ( TemplateInstance )?
  *   |
@@ -465,6 +469,30 @@ public final class Signature {
 	 * Value is <code>'|'</code>.
 	 */
 	public static final char C_INTERFACE								= '|';
+	
+	/**
+	 * Character constant indicating an enum type in a signature.
+	 * Value is <code>'E'</code>.
+	 */
+	public static final char C_ENUM										= 'E';
+	
+	/**
+	 * Character constant indicating a variable in a signature.
+	 * Value is <code>'/'</code>.
+	 */
+	public static final char C_VARIABLE									= '/';
+	
+	/**
+	 * Character constant indicating an alias type in a signature.
+	 * Value is <code>'='</code>.
+	 */
+	public static final char C_ALIAS									= '=';
+	
+	/**
+	 * Character constant indicating a typedef type in a signature.
+	 * Value is <code>'T'</code>.
+	 */
+	public static final char C_TYPEDEF									= 'T';
 	
 	/**
 	 * Character constant indicating a template type in a signature.
@@ -1084,7 +1112,7 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 			add(signature);
 		}
 		@Override
-		public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
+		public void acceptSlice(char[] lwr, char[] upr, String signature) {
 			replace(signature);
 		}
 		@Override
@@ -1230,7 +1258,7 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			copy(signature);
 		}
 		@Override
-		public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
+		public void acceptSlice(char[] lwr, char[] upr, String signature) {
 			copy(signature);
 		}
 		@Override
@@ -1368,7 +1396,7 @@ public static String toString(String signature) throws IllegalArgumentException 
 			st.push(sb);
 		}
 		@Override
-		public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
+		public void acceptSlice(char[] lwr, char[] upr, String signature) {
 			Stack<StringBuilder> st = stack.peek();
 			
 			StringBuilder type = st.pop();

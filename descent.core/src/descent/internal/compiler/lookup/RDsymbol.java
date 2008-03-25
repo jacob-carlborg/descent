@@ -786,7 +786,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 		}
 		
 		@Override
-		public void acceptTypeSlice(char[] lwr, char[] upr, String signature) {
+		public void acceptSlice(char[] lwr, char[] upr, String signature) {
 			if (typesStack.isEmpty()) {
 				return;
 			}

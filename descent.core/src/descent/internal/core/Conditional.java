@@ -91,5 +91,8 @@ class Conditional extends Member implements IConditional {
 	public String getElementName() {
 		return displayString;
 	}
-
+	@Override
+	protected void appendElementSignature(StringBuilder sb) {
+		
+	}
 }

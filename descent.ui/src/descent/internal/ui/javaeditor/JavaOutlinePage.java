@@ -233,13 +233,6 @@ public class JavaOutlinePage extends Page implements IContentOutlinePage, IAdapt
 				private ElementChangedListener fListener;
 
 				protected boolean matches(IJavaElement element) {
-					try {
-						if (element.isCompileTimeGenerated()) {
-							return true;
-						}
-					} catch (JavaModelException e) {
-						e.printStackTrace();
-					}
 					if (element.getElementType() == IJavaElement.METHOD) {
 						String name= element.getElementName();
 						return (name != null && name.indexOf('<') >= 0);

@@ -38,10 +38,4 @@ IJavaElement[] getChildren() throws JavaModelException;
  */
 boolean hasChildren() throws JavaModelException;
 
-/**
- * Returns whether this element has one or more non compile-time generated
- * immediate children.
- */
-boolean hasNonCompileTimeGeneratedChildren() throws JavaModelException;
-
 }

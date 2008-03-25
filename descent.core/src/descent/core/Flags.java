@@ -319,11 +319,6 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccVersionDeclaration = 0x00040000;
-	
-	/**
-	 * The element was compile-time generated.
-	 */
-	public static final int AccCompileTimeGenerated = 0x10000000;
 
 	/**
 	 * Not instantiable.

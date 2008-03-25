@@ -16,9 +16,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import descent.core.*;
-import descent.core.IJavaElement;
-import descent.core.JavaModelException;
-import descent.core.WorkingCopyOwner;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Util;
 
@@ -203,8 +200,12 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 		}
 		toStringName(buffer);
 	}
-	public boolean isCompileTimeGenerated() throws JavaModelException {
-		// TODO Descent Auto-generated method stub
-		return false;
+	/*
+	 * (non-Javadoc)
+	 * @see descent.internal.core.JavaElement#appendElementSignature(java.lang.StringBuilder)
+	 */
+	@Override
+	protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+		// TODO Descent signature
 	}
 }

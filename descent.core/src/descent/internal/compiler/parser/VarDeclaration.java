@@ -299,16 +299,22 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		if (isConst()) {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
-			context
-					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ModifierCannotBeAppliedToVariables, ident,
-							new String[] { "synchronized" }));
+			if (ident != null) {
+				context
+						.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ModifierCannotBeAppliedToVariables, ident,
+								new String[] { "synchronized" }));
+			}
 		} else if (isOverride()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
+			if (ident != null) {
+				context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "override" }));
+			}
 		} else if (isAbstract()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "abstract" }));
+			if (ident != null) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "abstract" }));
+			}
 		} else if ((storage_class & STCtemplateparameter) != 0) {
 		} else {
 			IAggregateDeclaration aad = sc.anonAgg;

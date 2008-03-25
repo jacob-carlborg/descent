@@ -1200,12 +1200,13 @@ protected void updateTimeStamp(CompilationUnit original) throws JavaModelExcepti
 	}
 	((CompilationUnitElementInfo) getElementInfo()).timestamp = timeStamp;
 }
-/*
- * (non-Javadoc)
- * @see descent.core.IJavaElement#isCompileTimeGenerated()
- */
-public boolean isCompileTimeGenerated() {
-	return false;
+@Override
+protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
+	parent.appendElementSignature(sb);
+	
+	String moduleName = this.getModuleName();
+	sb.append(moduleName.length());
+	sb.append(moduleName);
 }
 
 }
