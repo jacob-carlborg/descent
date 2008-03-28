@@ -19,17 +19,18 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
+		IVariableBinding varBinding2 = fragment.resolveBinding();
+		assertEquals("x", varBinding2.getName());
+		assertTrue(varBinding2.isVariable());
+		assertFalse(varBinding2.isParameter());
+		assertTrue(varBinding2.isLocal());
 		
-		assertSame(varBinding, fragment.getName().resolveBinding());
+		assertSame(varBinding2, fragment.getName().resolveBinding());
 	}
 	
 	public void testLocalVarBinding2() throws Exception {
@@ -39,17 +40,18 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
+		IVariableBinding varBinding2 = fragment.resolveBinding();
+		assertEquals("x", varBinding2.getName());
+		assertTrue(varBinding2.isVariable());
+		assertFalse(varBinding2.isParameter());
+		assertTrue(varBinding2.isLocal());
 		
-		assertSame(varBinding, fragment.getName().resolveBinding());
+		assertSame(varBinding2, fragment.getName().resolveBinding());
 	}
 	
 	public void testLocalVarBinding3() throws Exception {
@@ -63,17 +65,18 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
+		IVariableBinding varBinding2 = fragment.resolveBinding();
+		assertEquals("x", varBinding2.getName());
+		assertTrue(varBinding2.isVariable());
+		assertFalse(varBinding2.isParameter());
+		assertTrue(varBinding2.isLocal());
 		
-		assertSame(varBinding, fragment.getName().resolveBinding());
+		assertSame(varBinding2, fragment.getName().resolveBinding());
 	}
 	
 	public void testLocalVarBinding4() throws Exception {
@@ -92,17 +95,18 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block2.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
+		IVariableBinding varBinding2 = fragment.resolveBinding();
+		assertEquals("x", varBinding2.getName());
+		assertTrue(varBinding2.isVariable());
+		assertFalse(varBinding2.isParameter());
+		assertTrue(varBinding2.isLocal());
 		
-		assertSame(varBinding, fragment.getName().resolveBinding());
+		assertSame(varBinding2, fragment.getName().resolveBinding());
 	}
 	
 	public void testLocalVarBindingInForeach() throws Exception {
@@ -162,17 +166,18 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(2);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
+		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
-		IVariableBinding varBinding = fragment.resolveBinding();
-		assertEquals("x", varBinding.getName());
-		assertTrue(varBinding.isVariable());
-		assertFalse(varBinding.isParameter());
-		assertTrue(varBinding.isLocal());
+		IVariableBinding varBinding2 = fragment.resolveBinding();
+		assertEquals("x", varBinding2.getName());
+		assertTrue(varBinding2.isVariable());
+		assertFalse(varBinding2.isParameter());
+		assertTrue(varBinding2.isLocal());
 		
-		assertSame(varBinding, fragment.getName().resolveBinding());
+		assertSame(varBinding2, fragment.getName().resolveBinding());
 	}
 	
 	public void testParameter() throws Exception {
@@ -185,7 +190,7 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		assertEquals("i", varBinding.getType().getKey());
 		assertTrue(varBinding.isVariable());
 		assertTrue(varBinding.isParameter());
-		assertFalse(varBinding.isLocal());
+		assertTrue(varBinding.isLocal());
 		
 		assertSame(varBinding, argument.getName().resolveBinding());
 	}

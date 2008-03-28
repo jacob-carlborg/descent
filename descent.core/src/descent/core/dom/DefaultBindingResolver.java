@@ -1150,7 +1150,7 @@ class DefaultBindingResolver extends BindingResolver {
 			stack.push(binding);
 		}
 
-		public void acceptStaticArray(Expression dimension, String signature) {
+		public void acceptStaticArray(char[] dimension, String signature) {
 			Stack<IBinding> stack = this.stack.peek();
 			
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -1174,7 +1174,7 @@ class DefaultBindingResolver extends BindingResolver {
 			stack.push(new Stack<IBinding>());
 		}
 
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			Stack<IBinding> stack = this.stack.peek();
 			
 			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -1342,7 +1342,7 @@ class DefaultBindingResolver extends BindingResolver {
 							} else if (node instanceof descent.internal.compiler.parser.TypedefDeclaration) {
 								modifiers |= Flags.AccTypedef;
 							}
-							binding = new VariableBinding(this, null, node, true, signature);
+							binding = new VariableBinding(this, null, node, ((Declaration) node).isParameter(), signature);
 						} else {
 							binding = new VariableBinding(this, null, node, false, signature);
 						}

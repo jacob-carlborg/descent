@@ -102,7 +102,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   | "V"  // Pascal linkage
  *   | "R"  // C++ linkage
  *   )
- *   ( TypeSignature )*  // parameter types
+ *   ( ( Modifier )? TypeSignature )*  // parameter types
  *   ( "X"
  *   | "Y"
  *   | "Z"
@@ -111,6 +111,11 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   
  * DelegateTypeSignature ::=
  *   "D" FunctionTypeSignature
+ *   
+ * Modifier ::=
+ *      "J"  // out
+ *    | "K"  // ref
+ *    | "L"  // lazy
  *   
  * IdentifierTypeSignature ::=
  *   "?" ( Identifier )+ ( TemplateInstance )?
@@ -145,7 +150,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   "@" ( Identifier )*
  *   
  * TemplateParameters ::=
- *   ( TemplateParameter )* "\"
+ *   ( TemplateParameter )* "'"
  *   
  * TemplateParameter ::=
  *     TemplateTupleParameter
@@ -173,7 +178,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   "!" TemplateInstanceParameters
  *   
  * TemplateInstanceParameters ::=
- *   ( TemplateInstanceParameter )* "\"
+ *   ( TemplateInstanceParameter )* "'"
  *   
  * TemplateInstanceParameter ::=
  *     TemplateInstanceTypeParameter
@@ -538,9 +543,9 @@ public final class Signature {
 	
 	/**
 	 * Character constant indicating a template parameters break in a signature.
-	 * Value is <code>'\'</code>.
+	 * Value is <code>'\''</code>.
 	 */
-	public static final char C_TEMPLATE_PARAMETERS_BREAK				= '\\';
+	public static final char C_TEMPLATE_PARAMETERS_BREAK				= '\'';
 	
 	/**
 	 * Character constant indicating a template tuple parameter in a signature.
@@ -601,6 +606,24 @@ public final class Signature {
 	 * Value is <code>'*'</code>.
 	 */
 	public static final char C_TEMPLATE_INSTANCE_SYMBOL_PARAMETER		= '*';
+	
+	/**
+	 * Character constant indicating an out function parameter modifier.
+	 * Value is <code>'J'</code>.
+	 */
+	public static final char C_MODIFIER_OUT								= 'J';
+	
+	/**
+	 * Character constant indicating a ref function parameter modifier.
+	 * Value is <code>'K'</code>.
+	 */
+	public static final char C_MODIFIER_REF								= 'K';
+	
+	/**
+	 * Character constant indicating a lazy function parameter modifier.
+	 * Value is <code>'L'</code>.
+	 */
+	public static final char C_MODIFIER_LAZY							= 'L';
 	
 	/**
 	 * String constant for the signature of the primitive type void.
@@ -957,7 +980,7 @@ public static int getParameterCount(String signature) throws IllegalArgumentExce
 			functionTypeCount++;
 		}
 
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			functionTypeCount--;
 		}
 		
@@ -1152,7 +1175,7 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 			valid[0] = true;
 		}
 		@Override
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			functionCount--;
 			add(signature);
 		}
@@ -1209,7 +1232,7 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			functionCount++;
 		}
 		@Override
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			functionCount--;
 			if (functionCount != 0) {
 				copy(signature);
@@ -1509,7 +1532,7 @@ public static String toString(String signature) throws IllegalArgumentException 
 			}
 		}
 		@Override
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			Stack<StringBuilder> st = stack.pop();
 			
 			StringBuilder sb = new StringBuilder();
@@ -1709,7 +1732,7 @@ public static boolean isVariadic(String signature) throws IllegalArgumentExcepti
 			valid[0] = true;
 		}
 		@Override
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			functionCount--;
 		}
 	});

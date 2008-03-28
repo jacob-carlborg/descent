@@ -53,7 +53,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 
-	public void exitFunctionType(LINK link, String signature) {
+	public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 		
 	}
 	

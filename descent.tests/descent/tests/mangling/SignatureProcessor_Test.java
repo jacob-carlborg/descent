@@ -107,7 +107,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tchar); inSequence(s);
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tchar); inSequence(s);
-			one(requestor).exitFunctionType(LINK.LINKd, "FiaZa"); inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "FiaZa"); inSequence(s);
 		}});
 		
 		SignatureProcessor.process("FiaZa", requestor);
@@ -132,7 +132,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptModule(expectedModule, "@6object");
 			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
-			one(requestor).exitFunctionType(LINK.LINKd, "F@6objectC6Object@6objectC6ObjectZ@6objectC6Object"); inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "F@6objectC6Object@6objectC6ObjectZ@6objectC6Object"); inSequence(s);
 		}});
 		
 		SignatureProcessor.process("F@6objectC6Object@6objectC6ObjectZ@6objectC6Object", requestor);
@@ -182,7 +182,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType(); inSequence(s);
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid); inSequence(s);
-			one(requestor).exitFunctionType(LINK.LINKd, "FZv"); inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "FZv"); inSequence(s);
 			one(requestor).acceptSymbol(type, expected, -1, type + "4testFZv"); inSequence(s);
 		}});
 		
@@ -243,7 +243,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType(); inSequence(s);
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid); inSequence(s);
-			one(requestor).exitFunctionType(LINK.LINKd, "FZv"); inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "FZv"); inSequence(s);
 			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction); inSequence(s);
 		}});
 		
@@ -272,7 +272,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
 			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass); inSequence(s);
-			one(requestor).exitFunctionType(LINK.LINKd, sigFunctionType); inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, 'Z', sigFunctionType); inSequence(s);
 			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction); inSequence(s);
 		}});
 		
@@ -471,7 +471,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType();inSequence(s);
 			one(requestor).acceptArgumentBreak('Z');inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid);inSequence(s);
-			one(requestor).exitFunctionType(LINK.LINKd, "FZv");inSequence(s);
+			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "FZv");inSequence(s);
 			one(requestor).enterTemplateParameters(); inSequence(s);
 			one(requestor).enterTemplateValueParameter(); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);

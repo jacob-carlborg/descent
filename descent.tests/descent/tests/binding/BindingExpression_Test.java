@@ -47,11 +47,11 @@ public class BindingExpression_Test extends AbstractBinding_Test {
 	}
 	
 	public void testString() throws Exception {
-		testExpression("\"hey\"", "G3a");
+		testExpression("\"hey\"", "Ga1G3");
 	}
 	
 	public void testStrings() throws Exception {
-		testExpression("\"hey\" \"you\"", "G6a");
+		testExpression("\"hey\" \"you\"", "Ga1G6");
 	}
 	
 	public void testParenthesis() throws Exception {

@@ -185,11 +185,12 @@ public class SignatureProcessor implements ISignatureConstants {
 					i = process0(signature, i, requestor);
 				}
 				
-				requestor.acceptArgumentBreak(signature.charAt(i));
+				char argumentBreak = signature.charAt(i);
+				requestor.acceptArgumentBreak(argumentBreak);
 				i++;
 				
 				i = process0(signature, i, requestor);
-				requestor.exitFunctionType(link, signature.substring(start, i));
+				requestor.exitFunctionType(link, argumentBreak, signature.substring(start, i));
 				return i;
 			}
 			case TEMPLATE_TUPLE_PARAMETER:

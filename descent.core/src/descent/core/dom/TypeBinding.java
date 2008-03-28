@@ -248,7 +248,9 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	
 	public boolean isTemplate() {
 		if (node != null) {
-			return node instanceof TemplateDeclaration;
+			return node instanceof TemplateDeclaration ||
+				((node instanceof descent.internal.compiler.parser.AggregateDeclaration) && 
+						((descent.internal.compiler.parser.AggregateDeclaration) node).templated);
 		}
 		
 		try {

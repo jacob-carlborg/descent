@@ -424,11 +424,11 @@ public class Util {
 	public static String[] getTrimmedSimpleNames(String name) {
 		// TODO JDT signature
 //		String[] result = Signature.getSimpleNames(name);
-//		for (int i = 0, length = result.length; i < length; i++) {
-//			result[i] = result[i].trim();
-//		}
-//		return result;
-		return new String[0];
+		String[] result = name.split("\\.");
+		for (int i = 0, length = result.length; i < length; i++) {
+			result[i] = result[i].trim();
+		}
+		return result;
 	}
 	
 	/**

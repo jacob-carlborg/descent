@@ -271,7 +271,7 @@ public class VariableDeclaration extends Declaration {
 	}
 	
 	/**
-	 * Resolves and returns the binding for the type declared in this variable
+	 * Resolves and returns the binding for the variable declared in this variable
 	 * declaration.
 	 * <p>
 	 * Note that bindings are generally unavailable unless requested when the

@@ -6,7 +6,7 @@ import descent.core.dom.DeclarationStatement;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ITypeBinding;
-import descent.core.dom.Statement;
+import descent.core.dom.IVariableBinding;
 import descent.core.dom.VariableDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 
@@ -84,7 +84,9 @@ public class BindingType_Test extends AbstractBinding_Test {
 		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(1);
 		DeclarationStatement stm = (DeclarationStatement) func.getBody().statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
-		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
+		
+		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding(); 
+		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
 		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 	}
 

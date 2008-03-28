@@ -7,6 +7,7 @@ import descent.core.dom.ExpressionStatement;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
+import descent.core.dom.IVariableBinding;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateType;
@@ -57,7 +58,9 @@ public class BindingTemplate_Test extends AbstractBinding_Test {
 	public void testTypeBindingForTemplatedClassReference() throws Exception {
 		CompilationUnit unit = createCU("test.d", "class Foo() { } Foo!() x;");
 		VariableDeclaration decl = (VariableDeclaration) unit.declarations().get(1);
-		ITypeBinding binding = (ITypeBinding) decl.resolveBinding();
+		
+		IVariableBinding varBinding = (IVariableBinding) decl.resolveBinding();
+		ITypeBinding binding = (ITypeBinding) varBinding.getType();
 		assertTrue(binding.isClass());
 		assertTrue(binding.isTemplate());
 		

@@ -853,7 +853,7 @@ public abstract class RDsymbol extends RNode implements IDsymbol {
 			modifiersStack.push(new Stack<Integer>());
 		}
 
-		public void exitFunctionType(LINK link, String signature) {
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 			Type type = null;
 			
 			if (typesStack.isEmpty()) {

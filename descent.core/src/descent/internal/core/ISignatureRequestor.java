@@ -79,9 +79,10 @@ public interface ISignatureRequestor {
 	/**
 	 * The processor has found a function type.
 	 * @param link the linkage of the function
+	 * @param argumentBreak the argument break character
 	 * @param signature the signature of the function type
 	 */
-	void exitFunctionType(LINK link, String signature);
+	void exitFunctionType(LINK link, char argumentBreak, String signature);
 
 	/**
 	 * The processor has found a primitve type.

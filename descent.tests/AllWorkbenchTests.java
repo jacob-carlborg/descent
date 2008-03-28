@@ -56,12 +56,12 @@ public class AllWorkbenchTests {
 	 */
 	private final static int enabled = 0
 					| BINDING 
-					| CODE_COMPLETE 
-					| CODE_EVALUATE 
-					| CODE_SELECT 
-					| LOOKUP 
-					| MODEL 
-					| SIGNATURE
+//					| CODE_COMPLETE 
+//					| CODE_EVALUATE 
+//					| CODE_SELECT 
+//					| LOOKUP 
+//					| MODEL 
+//					| SIGNATURE
 					;
 	
 	public static Test suite() {
