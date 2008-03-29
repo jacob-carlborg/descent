@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -8,11 +9,11 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
+public class ScopeDsymbol extends Dsymbol {
 
 	public Dsymbols members, sourceMembers;
-	public IDsymbolTable symtab;
-	public List<IScopeDsymbol> imports; // imported ScopeDsymbol's
+	public DsymbolTable symtab;
+	public List<ScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import
 	
 	public ScopeDsymbol() {
@@ -41,8 +42,8 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 			for(char[] key : symtab.keys()) {
 				if (key == null) continue;
 				
-				IDsymbol s = symtab.lookup(key);
-				if (s.synthetic() && (members == null || !members.contains(s))) {
+				Dsymbol s = symtab.lookup(key);
+				if (s.synthetic && (members == null || !members.contains(s))) {
 					s.accept(visitor);
 				}
 			}
@@ -54,12 +55,12 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 	}
 
 	@Override
-	public void defineRef(IDsymbol s) {
-		IScopeDsymbol ss;
+	public void defineRef(Dsymbol s) {
+		ScopeDsymbol ss;
 
 		ss = s.isScopeDsymbol();
-		members = ss.members();
-		ss.members(null);
+		members = ss.members;
+		ss.members = null;
 	}
 
 	@Override
@@ -67,8 +68,33 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 		return SCOPE_DSYMBOL;
 	}
 
-	public void importScope(IScopeDsymbol s, PROT protection) {
-		SemanticMixin.importScope(this, s, protection);
+	public void importScope(ScopeDsymbol s, PROT protection) {
+		if (s != this) {
+			if (this.imports == null) {
+				this.imports = new ArrayList<ScopeDsymbol>();
+			} else {
+				for (int i = 0; i < this.imports.size(); i++) {
+					ScopeDsymbol ss;
+
+					ss = this.imports.get(i);
+					if (ss == s) {
+						if (protection.ordinal() > this.prots.get(i).ordinal()) {
+							this.prots.set(i, protection); // upgrade access
+						}
+						return;
+					}
+				}
+			}
+			this.imports.add(s);
+			// TODO semantic check this translation
+			// prots = (unsigned char *)mem.realloc(prots, imports.dim *
+			// sizeof(prots[0]));
+			// prots[imports.dim - 1] = protection;
+			if (this.prots == null) {
+				this.prots = new Array<PROT>();
+			}
+			this.prots.set(ASTDmdNode.size(this.imports) - 1, protection);
+		}
 	}
 
 	@Override
@@ -86,7 +112,7 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 		return "ScopeDsymbol";
 	}
 	
-	public static void multiplyDefined(Loc loc, IDsymbol s1, IDsymbol s2, SemanticContext context) {
+	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
 		if (loc != null && loc.filename != null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
@@ -100,8 +126,8 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 		}		
 	}
 
-	public IDsymbol nameCollision(Dsymbol s, SemanticContext context) {
-		IDsymbol sprev;
+	public Dsymbol nameCollision(Dsymbol s, SemanticContext context) {
+		Dsymbol sprev;
 
 		// Look to see if we are defining a forward referenced symbol
 
@@ -124,12 +150,63 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 	}
 
 	@Override
-	public IDsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		return SemanticMixin.search(this, loc, ident, flags, context);
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		Dsymbol s;
+		int i;
+
+		// Look in symbols declared in this module
+		s = symtab != null ? symtab.lookup(ident) : null;
+		if (s != null) {
+		} else if (imports != null && !imports.isEmpty()) {
+			// Look in imported modules
+			i = -1;
+			for (ScopeDsymbol ss : imports) {
+				i++;
+				Dsymbol s2;
+
+				// If private import, don't search it
+				if ((flags & 1) != 0 && this.prots.get(i) == PROT.PROTprivate) {
+					continue;
+				}
+
+				s2 = ss.search(loc, ident, ss.isModule() != null ? 1 : 0, context);
+				if (s == null) {
+					s = s2;
+				} else if (s2 != null && s != s2) {
+					if (s.toAlias(context) == s2.toAlias(context)) {
+						if (s.isDeprecated()) {
+							s = s2;
+						}
+					} else {
+						/*
+						 * Two imports of the same module should be regarded as
+						 * the same.
+						 */
+						Import i1 = s.isImport();
+						Import i2 = s2.isImport();
+						if (!(i1 != null && i2 != null && (i1.mod == i2.mod || (i1.parent
+								.isImport() == null
+								&& i2.parent.isImport() == null && ASTDmdNode.equals(i1.ident, i2.ident))))) {
+							ScopeDsymbol.multiplyDefined(loc, s, s2, context);
+							break;
+						}
+					}
+				}
+			}
+			if (s != null) {
+				Declaration d = s.isDeclaration();
+				if (d != null && d.protection == PROT.PROTprivate
+						&& d.parent.isTemplateMixin() == null) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.MemberIsPrivate, d, new String[] { new String(d.ident.ident) }));
+				}
+			}
+		}
+		return s;
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ScopeDsymbol sd;
 		if (s != null) {
 			sd = (ScopeDsymbol) s;
@@ -138,38 +215,6 @@ public class ScopeDsymbol extends Dsymbol implements IScopeDsymbol {
 		}
 		sd.members = arraySyntaxCopy(members, context);
 		return sd;
-	}
-	
-	public IDsymbolTable symtab() {
-		return symtab;
-	}
-	
-	public void symtab(IDsymbolTable symtab) {
-		this.symtab = symtab;
-	}
-	
-	public Dsymbols members() {
-		return members;
-	}
-	
-	public void members(Dsymbols members) {
-		this.members = members;
-	}
-	
-	public List<IScopeDsymbol> imports() {
-		return imports;
-	}
-	
-	public void imports(List<IScopeDsymbol> imports) {
-		this.imports = imports;
-	}
-	
-	public List<PROT> prots() {
-		return prots;
-	}
-	
-	public void prots(List<PROT> prots) {
-		this.prots = prots;
 	}
 
 }

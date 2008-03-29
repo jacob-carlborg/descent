@@ -1,8 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
-import descent.core.compiler.CharOperation;
 
 /**
  * Encodes ASTNodes into char arrays and viceversa.
@@ -65,7 +62,7 @@ public class ASTNodeEncoder {
 		return initParser(value).parseExpression();
 	}
 	
-	public char[] encodeInitializer(IInitializer init) {
+	public char[] encodeInitializer(Initializer init) {
 		if (init == null) {
 			return null;
 		}

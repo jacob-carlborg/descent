@@ -95,7 +95,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	/*
 	 * Same as resolved expression, but holds an IDsymbol.
 	 */
-	public IDsymbol resolvedSymbol;
+	public Dsymbol resolvedSymbol;
 
 	public Expression(Loc loc, TOK op) {
 		this.loc = loc;
@@ -155,7 +155,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		}
 	}
 
-	public void checkDeprecated(Scope sc, IDsymbol s, SemanticContext context) {
+	public void checkDeprecated(Scope sc, Dsymbol s, SemanticContext context) {
 		s.checkDeprecated(sc, context, this);
 	}
 
@@ -498,7 +498,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		loc.linnum = lineNumber;
 	}
 	
-	public void setResolvedSymbol(IDsymbol symbol) {
+	public void setResolvedSymbol(Dsymbol symbol) {
 		
 	}
 	
@@ -510,7 +510,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		
 	}
 	
-	public IDsymbol getResolvedSymbol() {
+	public Dsymbol getResolvedSymbol() {
 		return null;
 	}
 

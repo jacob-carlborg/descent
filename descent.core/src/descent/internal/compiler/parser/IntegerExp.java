@@ -292,7 +292,7 @@ public class IntegerExp extends Expression {
 					buf.writestring("cast(");
 					buf.writestring(te.sym.toChars(context));
 					buf.writestring(")");
-					t = te.sym.memtype();
+					t = te.sym.memtype;
 					// goto L1;
 					loop = true;
 					continue;
@@ -303,7 +303,7 @@ public class IntegerExp extends Expression {
 					buf.writestring("cast(");
 					buf.writestring(tt.sym.toChars(context));
 					buf.writestring(")");
-					t = tt.sym.basetype();
+					t = tt.sym.basetype;
 					// goto L1;
 					loop = true;
 					continue;
@@ -469,13 +469,13 @@ public class IntegerExp extends Expression {
 
 			case Tenum: {
 				TypeEnum te = (TypeEnum) t;
-				t = te.sym.memtype();
+				t = te.sym.memtype;
 				continue;
 			}
 
 			case Ttypedef: {
 				TypeTypedef tt = (TypeTypedef) t;
-				t = tt.sym.basetype();
+				t = tt.sym.basetype;
 				continue;
 			}
 

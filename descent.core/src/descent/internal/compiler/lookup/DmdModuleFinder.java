@@ -7,8 +7,6 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Global;
-import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
-import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
@@ -25,12 +23,8 @@ public class DmdModuleFinder implements IModuleFinder {
 	public DmdModuleFinder(Global global) {
 		this.global = global;
 	}
-	
-	public boolean isLoaded(char[][] compoundName) {
-		return false;
-	}
 
-	public IModule findModule(char[][] compoundName, SemanticContext context) {
+	public Module findModule(char[][] compoundName, SemanticContext context) {
 		Module m;
 		String filename = new String(CharOperation.concatWith(compoundName, '\\'));
 		IdentifierExp ident = new IdentifierExp(compoundName[compoundName.length - 1]);
@@ -84,10 +78,6 @@ public class DmdModuleFinder implements IModuleFinder {
 		parser.parseModuleObj(m);
 
 		return m;
-	}
-	
-	public HashtableOfCharArrayAndObject getHints(char[] ident) {
-		return null;
 	}
 	
 	private static char[] getContents(File file) {

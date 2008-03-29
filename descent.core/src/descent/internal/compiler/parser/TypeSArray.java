@@ -179,7 +179,7 @@ public class TypeSArray extends TypeArray {
 
 	@Override
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
-			IDsymbol[] ps, SemanticContext context) {
+			Dsymbol[] ps, SemanticContext context) {
 		// printf("TypeSArray.resolve() %s\n", toChars());
 		next.resolve(loc, sc, pe, pt, ps, context);
 		// printf("s = %p, e = %p, t = %p\n", ps, pe, pt);
@@ -188,7 +188,7 @@ public class TypeSArray extends TypeArray {
 			e = new IndexExp(loc, pe[0], dim);
 			pe[0] = e;
 		} else if (null != ps[0]) {
-			IDsymbol s = ps[0];
+			Dsymbol s = ps[0];
 			TupleDeclaration td = s.isTupleDeclaration();
 			if (null != td) {
 				ScopeDsymbol sym = new ArrayScopeSymbol(td);
@@ -245,7 +245,7 @@ public class TypeSArray extends TypeArray {
 		Expression e = null;
 		Dsymbol s = null;
 		next.resolve(loc, sc, new Expression[] { e }, new Type[] { t },
-				new IDsymbol[] { s }, context);
+				new Dsymbol[] { s }, context);
 		if (null != dim && null != s && null != s.isTupleDeclaration()) {
 			TupleDeclaration sd = s.isTupleDeclaration();
 

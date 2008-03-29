@@ -148,7 +148,7 @@ public class TraitsExp extends Expression {
 				public boolean check(Type t)
 				{
 					return t.toBasetype(context).ty == TY.Tclass && 
-							((((TypeClass) t.toBasetype(context)).sym.storage_class()
+							((((TypeClass) t.toBasetype(context)).sym.storage_class
 							& STC.STCfinal) != 0);
 				}
 	    	});
@@ -205,7 +205,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			INode o = args.get(0);
+			ASTDmdNode o = args.get(0);
 			Expression e = isExpression((ASTDmdNode) args.get(1));
 			if(null == e)
 			{ 
@@ -281,7 +281,7 @@ public class TraitsExp extends Expression {
 			     */
 			    //e.dump(0);
 			    Expressions exps = new Expressions();
-			    IFuncDeclaration f;
+			    FuncDeclaration f;
 			    if (e.op == TOK.TOKvar)
 			    {
 			    	VarExp ve = (VarExp) e;
@@ -321,8 +321,8 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			INode o = args.get(0);
-			IDsymbol s = getDsymbol(o, context);
+			ASTDmdNode o = args.get(0);
+			Dsymbol s = getDsymbol(o, context);
 			if(null == s)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -330,14 +330,14 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			IClassDeclaration cd = s.isClassDeclaration();
+			ClassDeclaration cd = s.isClassDeclaration();
 			if (null == cd)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.FirstArgumentIsNotAClass, this));
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
-			return new IntegerExp(loc, cd.structsize(), Type.tsize_t);
+			return new IntegerExp(loc, cd.structsize, Type.tsize_t);
 	    }
 	    
 	    else if (equals(ident, Id.allMembers)
@@ -351,8 +351,8 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			INode o = args.get(0);
-			IDsymbol s = getDsymbol(o, context);
+			ASTDmdNode o = args.get(0);
+			Dsymbol s = getDsymbol(o, context);
 			if (null == s)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -360,7 +360,7 @@ public class TraitsExp extends Expression {
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			IScopeDsymbol sd = s.isScopeDsymbol();
+			ScopeDsymbol sd = s.isScopeDsymbol();
 			if(null == sd)
 			{
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -371,9 +371,9 @@ public class TraitsExp extends Expression {
 			Expressions exps = new Expressions();
 			Louter: while(true)
 			{
-			    Linner: for(int i = 0; i < sd.members().size(); i++)
+			    Linner: for(int i = 0; i < sd.members.size(); i++)
 			    {
-					Dsymbol sm = (Dsymbol) sd.members().get(i);
+					Dsymbol sm = (Dsymbol) sd.members.get(i);
 					if(null != sm.ident)
 					{
 					    char[] str = sm.ident.ident;
@@ -391,11 +391,11 @@ public class TraitsExp extends Expression {
 					    exps.add(se);
 					}
 			    }
-			    IClassDeclaration cd = sd.isClassDeclaration();
+			    ClassDeclaration cd = sd.isClassDeclaration();
 			    if (null != cd &&
-			    		null != cd.baseClass() &&
+			    		null != cd.baseClass &&
 			    		equals(ident, Id.allMembers))
-			    	sd = cd.baseClass();	// do again with base class
+			    	sd = cd.baseClass;	// do again with base class
 			    else
 			    	break Louter;
 			}

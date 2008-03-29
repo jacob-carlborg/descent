@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser.ast;
 
 import melnorme.miscutil.tree.IVisitable;
-import descent.internal.compiler.parser.INode;
 
 /** 
  * An abstract visitor that visits nodes in a homogeneous way, 
@@ -14,21 +13,21 @@ public abstract class ASTHomoVisitor extends ASTUpTreeVisitor {
 		elem.accept(this);
 	}
 	
-	public void preVisit(INode elem) {
+	public void preVisit(ASTNode elem) {
 	}
 
-	public void postVisit(INode elem) {
+	public void postVisit(ASTNode elem) {
 	}
 	
-	abstract boolean enterNode(INode elem);
-	abstract void leaveNode(INode elem);
+	abstract boolean enterNode(ASTNode elem);
+	abstract void leaveNode(ASTNode elem);
 
 
-	public final boolean visit(INode elem) {
+	public final boolean visit(ASTNode elem) {
 		return enterNode(elem);
 	}
 
-	public final void endVisit(INode elem) {
+	public final void endVisit(ASTNode elem) {
 		leaveNode(elem);
 	}
 

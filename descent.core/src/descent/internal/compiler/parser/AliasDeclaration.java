@@ -4,20 +4,21 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IField;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 
 // DMD 1.020
-public class AliasDeclaration extends Declaration implements IAliasDeclaration {
+public class AliasDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi
 	public AliasDeclaration next;
 
 	public Type htype;
-	public IDsymbol haliassym;
-	public IDsymbol aliassym;
+	public Dsymbol haliassym;
+	public Dsymbol aliassym;
 	public Dsymbol overnext; // next in overload list
 	public int inSemantic;
 	
@@ -27,8 +28,10 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * See Type#alias
 	 */
 	public boolean isTemplateParameter;
+	
+	private IField javaElement;
 
-	public AliasDeclaration(Loc loc, IdentifierExp id, IDsymbol s) {
+	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
 		super(id);
 
 		Assert.isTrue(s != this);
@@ -127,7 +130,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		// type. If it is a symbol, then aliassym is set and type is NULL -
 		// toAlias() will return aliasssym.
 
-		IDsymbol[] s = { null };
+		Dsymbol[] s = { null };
 		Type[] t = { null };
 		Expression[] e = { null };
 
@@ -183,20 +186,20 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		return;
 	}
 
-	public void semantic_L2(Scope sc, SemanticContext context, IDsymbol s) {
+	public void semantic_L2(Scope sc, SemanticContext context, Dsymbol s) {
 		Type tempType = type;
 		type = null;
-		IVarDeclaration v = s.isVarDeclaration();
-		if (v != null && v.linkage() == LINK.LINKdefault) {
+		VarDeclaration v = s.isVarDeclaration();
+		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ForwardReferenceOfSymbol, tempType, new String[] { tempType.toString() }));
 			context
 					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReferenceOfSymbol, v.ident(), new String[] { new String(
-									v.ident().ident) }));
+							IProblem.ForwardReferenceOfSymbol, v.ident, new String[] { new String(
+									v.ident.ident) }));
 			s = null;
 		} else {
-			IFuncDeclaration f = s.toAlias(context).isFuncDeclaration();
+			FuncDeclaration f = s.toAlias(context).isFuncDeclaration();
 			if (f != null) {
 				if (overnext != null) {
 					FuncAliasDeclaration fa = new FuncAliasDeclaration(loc, f);
@@ -205,7 +208,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 					}
 					overnext = null;
 					s = fa;
-					s.parent(sc.parent);
+					s.parent = sc.parent;
 				}
 			}
 			if (overnext != null) {
@@ -220,7 +223,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Assert.isTrue(s == null);
 		AliasDeclaration sa;
 		if (type != null) {
@@ -252,13 +255,13 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	@Override
-	public IDsymbol toAlias(SemanticContext context) {
+	public Dsymbol toAlias(SemanticContext context) {
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
 		}
-		IDsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
 	}
 
@@ -279,6 +282,15 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	
 	public char getSignaturePrefix() {
 		return ISignatureConstants.ALIAS;
+	}
+	
+	public void setJavaElement(IField field) {
+		this.javaElement = field;
+	}
+	
+	@Override
+	public IField getJavaElement() {
+		return javaElement;
 	}
 
 }

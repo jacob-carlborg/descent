@@ -5,9 +5,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class DotTypeExp extends UnaExp {
 
-	public IDsymbol sym;
+	public Dsymbol sym;
 
-	public DotTypeExp(Loc loc, Expression e, IDsymbol s) {
+	public DotTypeExp(Loc loc, Expression e, Dsymbol s) {
 		super(loc, TOK.TOKdottype, e);
 		this.sym = s;
 		this.type = s.getType();

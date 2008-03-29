@@ -13,21 +13,21 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class SymOffExp extends Expression {
 
-	public IDeclaration var;
+	public Declaration var;
 	public integer_t offset;
 	
-	public SymOffExp(Loc loc, IDeclaration var, integer_t offset, SemanticContext context) {
+	public SymOffExp(Loc loc, Declaration var, integer_t offset, SemanticContext context) {
 		super(loc, TOK.TOKsymoff);
 		Assert.isNotNull(var);
 		this.var = var;
 		this.offset = offset;
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if (v != null && v.needThis()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedThisForAddressOfSymbol, this, new String[] { v.toChars(context) }));
 		}
 	}
 
-	public SymOffExp(Loc loc, IDeclaration var, int offset, SemanticContext context) {
+	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
 		this(loc, var, new integer_t(offset), context);
 	}
 	
@@ -49,7 +49,7 @@ public class SymOffExp extends Expression {
 		if (!same(tb, type, context)) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
-			IFuncDeclaration f;
+			FuncDeclaration f;
 
 			if (type.ty == Tpointer && type.next.ty == Tfunction
 					&& tb.ty == Tpointer && tb.next.ty == Tfunction) {
@@ -71,7 +71,7 @@ public class SymOffExp extends Expression {
 
 	@Override
 	public void checkEscape(SemanticContext context) {
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (!v.isDataseg(context)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -93,7 +93,7 @@ public class SymOffExp extends Expression {
 
 		if (result == MATCHnomatch) {
 			// Look for pointers to functions where the functions are overloaded.
-			IFuncDeclaration f;
+			FuncDeclaration f;
 
 			t = t.toBasetype(context);
 			if (type.ty == Tpointer && type.next.ty == Tfunction
@@ -115,9 +115,9 @@ public class SymOffExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
-			type = var.type().pointerTo(context);
+			type = var.type.pointerTo(context);
 		}
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			v.checkNestedReference(sc, loc, context);
 		}

@@ -1,12 +1,5 @@
 package descent.internal.codeassist;
 
-import static descent.internal.compiler.parser.TOK.TOKblockcomment;
-import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
-import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
-import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
-import static descent.internal.compiler.parser.TOK.TOKlinecomment;
-import static descent.internal.compiler.parser.TOK.TOKpluscomment;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +21,7 @@ import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.ConditionalDeclaration;
+import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
@@ -35,10 +29,6 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.ICtorDeclaration;
-import descent.internal.compiler.parser.IDeclaration;
-import descent.internal.compiler.parser.IDsymbol;
-import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
@@ -66,6 +56,12 @@ import descent.internal.core.JavaProject;
 import descent.internal.core.LocalVariable;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
+import static descent.internal.compiler.parser.TOK.TOKblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
+import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
+import static descent.internal.compiler.parser.TOK.TOKlinecomment;
+import static descent.internal.compiler.parser.TOK.TOKpluscomment;
 
 /*
  * For now, don't take the JDT approach: let's parse, visit and see where
@@ -224,7 +220,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(Module node) {
 		// Don't visit template instances in the module scope
-		for(IDsymbol symbol : node.members) {
+		for(Dsymbol symbol : node.members) {
 			Dsymbol dsymbol = (Dsymbol) symbol;
 			if (null == dsymbol.isTemplateInstance()) {
 				dsymbol.accept(this);
@@ -282,7 +278,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			add(node);
 			return false;
 		} else if (isInRange(node.sourceType)) {
-			IDsymbol sym = node.aliassym;
+			Dsymbol sym = node.aliassym;
 			if (sym != null) {
 				if (sym.getJavaElement() != null) {
 					addJavaElement(sym.getJavaElement());
@@ -320,7 +316,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		
 		if (node.resolvedSymbol != null) {
-			IDsymbol sym = node.resolvedSymbol;
+			Dsymbol sym = node.resolvedSymbol;
 			if (sym.getJavaElement() != null) {
 				addJavaElement(sym.getJavaElement());
 			} else {
@@ -364,7 +360,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(Import node) {
 		if (isInRange(node.id)) {
-			IModule mod = node.mod;
+			Module mod = node.mod;
 			if (mod != null) {
 				if (mod.getJavaElement() != null) {
 					addJavaElement(mod.getJavaElement());
@@ -403,7 +399,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(NewExp node) {
 		if (isInRange(node.sourceNewtype) && node.member != null) {
-			ICtorDeclaration ctor = node.member;
+			CtorDeclaration ctor = node.member;
 			if (ctor.getJavaElement() != null) {
 				addJavaElement(ctor.getJavaElement());
 			} else {
@@ -422,7 +418,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void add(VarExp varExp) {
-		IDeclaration var = varExp.var;
+		Declaration var = varExp.var;
 		if (var instanceof FuncDeclaration) {
 			add(((FuncDeclaration) var).getSignature());
 		} else if (var instanceof VarDeclaration) {
@@ -435,7 +431,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void add(DotVarExp dotVarExp) {
-		IDeclaration decl = dotVarExp.var;
+		Declaration decl = dotVarExp.var;
 		if (decl.getJavaElement() != null) {
 			addJavaElement(decl.getJavaElement());
 		} else {
@@ -443,7 +439,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 	}
 	
-	private void add(IDsymbol sym) {
+	private void add(Dsymbol sym) {
 		if (sym instanceof TemplateDeclaration) {
 			TemplateDeclaration decl = (TemplateDeclaration) sym;
 			if (decl.wrapper) {

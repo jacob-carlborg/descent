@@ -3,8 +3,8 @@ package descent.core.dom;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
-import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
@@ -15,7 +15,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	
 	private final String key;
 	
-	public TypeBinding(DefaultBindingResolver resolver, IType element, IDsymbol node, String key) {
+	public TypeBinding(DefaultBindingResolver resolver, IType element, Dsymbol node, String key) {
 		super(resolver, element, node);
 		this.key = key;
 	}

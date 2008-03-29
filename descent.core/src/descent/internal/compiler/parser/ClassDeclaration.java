@@ -7,6 +7,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import static descent.internal.compiler.parser.PROT.PROTnone;
+
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -20,16 +22,16 @@ import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.TY.Tclass;
 
 // DMD 1.020
-public class ClassDeclaration extends AggregateDeclaration implements IClassDeclaration {
+public class ClassDeclaration extends AggregateDeclaration {
 
 	public final static int OFFSET_RUNTIME = 0x76543210;
 	
 	public BaseClasses sourceBaseclasses;
 	public BaseClasses baseclasses;
 	
-	public IClassDeclaration baseClass; // null only if this is Object
-	public ICtorDeclaration ctor;
-	public ICtorDeclaration defaultCtor; // default constructor
+	public ClassDeclaration baseClass; // null only if this is Object
+	public CtorDeclaration ctor;
+	public CtorDeclaration defaultCtor; // default constructor
 	public FuncDeclarations dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
@@ -39,7 +41,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	// their own vtbl[]
 	public PROT protection;
 	public boolean isnested; // !=0 if is nested
-	public IVarDeclaration vthis; // 'this' parameter if this class is nested
+	public VarDeclaration vthis; // 'this' parameter if this class is nested
 
 	public ClassInfoDeclaration vclassinfo; // the ClassInfo object for this ClassDeclaration
 	public boolean com; // !=0 if this is a COM class
@@ -95,31 +97,77 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		aclasses.add(this);
 	}
 
-	public IFuncDeclaration findFunc(IdentifierExp id, TypeFunction tf,
+	public FuncDeclaration findFunc(IdentifierExp id, TypeFunction tf,
 			SemanticContext context) {
-		IClassDeclaration cd = this;
-		List vtbl = cd.vtbl();
+		ClassDeclaration cd = this;
+		List vtbl = cd.vtbl;
 		while (true) {
 			for (int i = 0; i < vtbl.size(); i++) {
-				IFuncDeclaration fd = (IFuncDeclaration) vtbl.get(i);
+				FuncDeclaration fd = (FuncDeclaration) vtbl.get(i);
 
-				if (equals(ident, fd.ident()) && fd.type().covariant(tf, context) == 1) {
+				if (equals(ident, fd.ident) && fd.type.covariant(tf, context) == 1) {
 					return fd;
 				}
 			}
 			if (cd == null) {
 				break;
 			}
-			vtbl = cd.vtblFinal();
-			cd = cd.baseClass();
+			vtbl = cd.vtblFinal;
+			cd = cd.baseClass;
 		}
 
 		return null;
 	}
 
 	@Override
-	public PROT getAccess(IDsymbol smember) {
-		return SemanticMixin.getAccess(this, smember);
+	public PROT getAccess(Dsymbol smember) {
+		PROT access_ret = PROTnone;
+
+		Dsymbol p = smember.toParent();
+		if (p != null && p.isAggregateDeclaration() != null && SemanticMixin.equals(p.isAggregateDeclaration(), this)) {
+			access_ret = smember.prot();
+		} else {
+			PROT access;
+			int i;
+
+			if (smember.isDeclaration().isStatic()) {
+				access_ret = smember.prot();
+			}
+
+			for (i = 0; i < this.baseclasses.size(); i++) {
+				BaseClass b = this.baseclasses.get(i);
+
+				access = b.base.getAccess(smember);
+				switch (access) {
+				case PROTnone:
+					break;
+
+				case PROTprivate:
+					access = PROTnone; // private members of base class not
+					// accessible
+					break;
+
+				case PROTpackage:
+				case PROTprotected:
+				case PROTpublic:
+				case PROTexport:
+					// If access is to be tightened
+					if (b.protection.level < access.level) {
+						access = b.protection;
+					}
+
+					// Pick path with loosest access
+					if (access.level > access_ret.level) {
+						access_ret = access;
+					}
+					break;
+
+				default:
+					Assert.isTrue(false);
+				}
+			}
+		}
+		return access_ret;
 	}
 
 	@Override
@@ -151,7 +199,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			return true;
 		}
 		for (int i = 1; i < vtbl.size(); i++) {
-			IFuncDeclaration fd = ((IDsymbol) vtbl.get(i)).isFuncDeclaration();
+			FuncDeclaration fd = ((Dsymbol) vtbl.get(i)).isFuncDeclaration();
 
 			if (fd == null || fd.isAbstract()) {
 				isabstract |= true;
@@ -161,36 +209,36 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		return false;
 	}
 
-	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
 			SemanticContext context) {
 		if (poffset != null) {
 			poffset[0] = 0;
 		}
 		while (cd != null) {
-			if (this == cd.baseClass()) {
+			if (this == cd.baseClass) {
 				return true;
 			}
 
 			/*
 			 * cd.baseClass might not be set if cd is forward referenced.
 			 */
-			if (cd.baseClass() == null && cd.baseclasses().size() > 0
+			if (cd.baseClass == null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.BaseClassIsForwardReferenced, this, new String[] { toChars(context) }));
 			}
 
-			cd = cd.baseClass();
+			cd = cd.baseClass;
 		}
 		return false;
 	}
 
-	public boolean isBaseOf2(IClassDeclaration cd) {
+	public boolean isBaseOf2(ClassDeclaration cd) {
 		if (cd == null) {
 			return false;
 		}
-		for (int i = 0; i < cd.baseclasses().size(); i++) {
-			BaseClass b = cd.baseclasses().get(i);
+		for (int i = 0; i < cd.baseclasses.size(); i++) {
+			BaseClass b = cd.baseclasses.get(i);
 
 			if (b.base == this || isBaseOf2(b.base)) {
 				return true;
@@ -218,9 +266,9 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	}
 
 	@Override
-	public IDsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
-		IDsymbol s;
+		Dsymbol s;
 
 		if (scope != null) {
 			semantic(scope, context);
@@ -244,9 +292,9 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 				BaseClass b = baseclasses.get(i);
 
 				if (b.base != null) {
-					if (b.base.symtab() == null) {
+					if (b.base.symtab == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.BaseIsForwardReferenced, this, new String[] { b.base.ident()
+								IProblem.BaseIsForwardReferenced, this, new String[] { b.base.ident
 										.toChars() }));
 					} else {
 						s = b.base.search(loc, ident, flags, context);
@@ -344,7 +392,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 					;
 				} else {
 					boolean gotoL7 = false;
-					for (IClassDeclaration cdb = tc.sym; cdb != null; cdb = cdb.baseClass()) {
+					for (ClassDeclaration cdb = tc.sym; cdb != null; cdb = cdb.baseClass) {
 						if (SemanticMixin.equals(cdb, this)) {
 							BaseClass firstBaseClass = this.baseclasses.get(0);
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -356,8 +404,8 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 						}
 					}
 					if (!gotoL7) {
-						if (tc.sym.symtab() == null || tc.sym.scope() != null
-								|| tc.sym.sizeok() == 0) {
+						if (tc.sym.symtab == null || tc.sym.scope != null
+								|| tc.sym.sizeok == 0) {
 							// error("forward reference of base class %s",
 							// baseClass.toChars());
 							// Forward reference of base class, try again later
@@ -414,7 +462,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 				}
 
 				b.base = tc.sym;
-				if (b.base.symtab() == null || b.base.scope() != null) {
+				if (b.base.symtab == null || b.base.scope != null) {
 					// error("forward reference of base class %s",
 					// baseClass.toChars());
 					// Forward reference of base, try again later
@@ -466,7 +514,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		interfaces.addAll(baseclasses);
 
 		if (baseClass != null) {
-			if ((baseClass.storage_class() & STCfinal) != 0) {
+			if ((baseClass.storage_class & STCfinal) != 0) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotInheritFromFinalClass, this, new String[] { baseClass
 								.toString() }));
@@ -475,15 +523,15 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 			interfaces.remove(0);
 
 			// Copy vtbl[] from base class
-			if (baseClass.vtbl() != null) {
-				vtbl = new ArrayList(baseClass.vtbl().size());
-				vtbl.addAll(baseClass.vtbl());
+			if (baseClass.vtbl != null) {
+				vtbl = new ArrayList(baseClass.vtbl.size());
+				vtbl.addAll(baseClass.vtbl);
 			}
 
 			// Inherit properties from base class
 			com = baseClass.isCOMclass();
-			isauto = baseClass.isauto();
-			vthis = baseClass.vthis();
+			isauto = baseClass.isauto;
+			vthis = baseClass.vthis;
 		} else {
 			// No base class, so this is the root of the class hierarchy
 			vtbl = new ArrayList(1);
@@ -496,7 +544,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		if (sizeok == 0) {
 			interfaceSemantic(sc, context);
 
-			for (IDsymbol s : members) {
+			for (Dsymbol s : members) {
 				s.addMember(sc, this, 1, context);
 			}
 
@@ -518,20 +566,20 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 											context) }));
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
-				IDsymbol s = toParent2();
+				Dsymbol s = toParent2();
 				if (s != null) {
-					IClassDeclaration cd = s.isClassDeclaration();
-					IFuncDeclaration fd = s.isFuncDeclaration();
+					ClassDeclaration cd = s.isClassDeclaration();
+					FuncDeclaration fd = s.isFuncDeclaration();
 
 					if (cd != null || fd != null) {
 						isnested = true;
 						Type t = null;
 						if (cd != null) {
-							t = cd.type();
+							t = cd.type;
 						} else if (fd != null) {
-							IAggregateDeclaration ad = fd.isMember2();
+							AggregateDeclaration ad = fd.isMember2();
 							if (ad != null) {
-								t = ad.handle();
+								t = ad.handle;
 							} else {
 								t = new TypePointer(Type.tvoid);
 								t = t.semantic(loc, sc, context);
@@ -571,8 +619,8 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		sc.structalign = 8;
 		structalign = sc.structalign;
 		if (baseClass != null) {
-			sc.offset = baseClass.structsize();
-			alignsize = baseClass.alignsize();
+			sc.offset = baseClass.structsize;
+			alignsize = baseClass.alignsize;
 			// if (isnested)
 			// sc.offset += PTRSIZE; // room for uplevel context pointer
 		} else {
@@ -584,7 +632,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		int members_dim = members.size();
 		sizeok = 0;
 		for (i = 0; i < members_dim; i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
 		}
 
@@ -615,7 +663,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		 * Look for special member functions. They must be in this class, not in
 		 * a base class.
 		 */
-		ctor = (ICtorDeclaration) search(loc, Id.ctor, 0, context);
+		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
 		if (ctor != null && ctor.toParent() != this) {
 			ctor = null;
 		}
@@ -635,7 +683,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		// If this class has no constructor, but base class does, create
 		// a constructor:
 		// this() { }
-		if (ctor == null && baseClass != null && baseClass.ctor() != null) {
+		if (ctor == null && baseClass != null && baseClass.ctor != null) {
 			// toChars());
 			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
 			ctor.synthetic = true;
@@ -686,7 +734,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ClassDeclaration cd;
 
 		if (s != null) {
@@ -733,7 +781,7 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 		buf.writeByte('{');
 		buf.writenl();
 		for (int i = 0; i < members.size(); i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 
 			buf.writestring("    ");
 			s.toCBuffer(buf, hgs, context);
@@ -748,67 +796,33 @@ public class ClassDeclaration extends AggregateDeclaration implements IClassDecl
 
 	@Override
 	public String mangle(SemanticContext context) {
-		return SemanticMixin.mangle(this, context);
-	}
-	
-	public IClassDeclaration baseClass() {
-		return baseClass;
-	}
-	
-	public BaseClasses interfaces() {
-		return interfaces;
-	}
-	
-	public BaseClasses baseclasses() {
-		return baseclasses;
-	}
-	
-	public void isabstract(boolean isabstract) {
-		this.isabstract = isabstract;
-	}
-	
-	public List vtbl() {
-		return vtbl;
-	}
-	
-	public List vtblFinal() {
-		return vtblFinal;
-	}
-	
-	public ICtorDeclaration ctor() {
-		return ctor;
-	}
-	
-	public void defaultCtor(CtorDeclaration defaultCtor) {
-		this.defaultCtor = defaultCtor;
-	}
-	
-	public FuncDeclarations dtors() {
-		return dtors;
-	}
-	
-	public void dtors(FuncDeclarations dtors) {
-		this.dtors = dtors;
-	}
-	
-	public Scope scope() {
-		return scope;
-	}
-	
-	public boolean isauto() {
-		return isauto;
-	}
-	
-	public IVarDeclaration vthis() {
-		return vthis;
-	}
-	
-	public ClassInfoDeclaration vclassinfo() {
-		return vclassinfo;
-	}
-	
-	public void vclassinfo(ClassInfoDeclaration vclassinfo) {
-		this.vclassinfo = vclassinfo;
+		Dsymbol parentsave = this.parent;
+
+		/* These are reserved to the compiler, so keep simple
+		 * names for them.
+		 */
+		if (ASTDmdNode.equals(this.ident, Id.Exception)) {
+			if (this.parent.ident != null
+					&& ASTDmdNode.equals(this.parent.ident, Id.object)) {
+				this.parent = null;
+			}
+		} else if (ASTDmdNode.equals(this.ident, Id.TypeInfo)
+				||
+				//		CharOperation.equals(ident.ident, Id.Exception) ||
+				ASTDmdNode.equals(this.ident, Id.TypeInfo_Struct)
+				|| ASTDmdNode.equals(this.ident, Id.TypeInfo_Class)
+				|| ASTDmdNode.equals(this.ident, Id.TypeInfo_Typedef)
+				|| ASTDmdNode.equals(this.ident, Id.TypeInfo_Tuple)
+				|| this == context.ClassDeclaration_object 
+				|| this == context.ClassDeclaration_classinfo
+				|| this == context.Module_moduleinfo
+				|| this.ident.toChars().startsWith("TypeInfo_")) {
+			this.parent = null;
+		}
+
+		String id = Dsymbol_mangle(context);
+		this.parent = parentsave;
+		return id;
 	}
 	
 	public char getSignaturePrefix() {

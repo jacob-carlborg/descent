@@ -8,7 +8,7 @@ public class TypeInfoDeclaration extends VarDeclaration {
 	public Type tinfo;
 	
 	public TypeInfoDeclaration(Type tinfo, int internal, SemanticContext context) {
-		super(Loc.ZERO, context.Type_typeinfo.type(), tinfo.getTypeInfoIdent(internal), null);
+		super(Loc.ZERO, context.Type_typeinfo.type, tinfo.getTypeInfoIdent(internal), null);
 		this.tinfo = tinfo;
 		this.storage_class = STC.STCstatic;
 		this.protection = PROT.PROTpublic;
@@ -29,7 +29,7 @@ public class TypeInfoDeclaration extends VarDeclaration {
 	}
 	
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		throw new IllegalStateException("assert(0);"); // should never be produced by syntax
 	}
 

@@ -16,7 +16,7 @@ public class ThisDeclaration extends VarDeclaration {
 	}
 	
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 

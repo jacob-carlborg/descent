@@ -27,7 +27,7 @@ public abstract class TypeArray extends Type {
 		if (equals(ident, Id.reverse)
 				&& (n.ty == Tchar || n.ty == Twchar)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 			char[] nm;
 
@@ -42,7 +42,7 @@ public abstract class TypeArray extends Type {
 		} else if (equals(ident, Id.sort)
 				&& (n.ty == Tchar || n.ty == Twchar)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 			char[] nm;
 
@@ -57,7 +57,7 @@ public abstract class TypeArray extends Type {
 		} else if (equals(ident, Id.reverse)
 				|| equals(ident, Id.dup)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 			int size = next.size(e.loc, context);
 			boolean dup;
@@ -82,7 +82,7 @@ public abstract class TypeArray extends Type {
 			e.type = next.arrayOf(context);
 		} else if (equals(ident, Id.sort)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 
 			fd = context.genCfunc(tint32.arrayOf(context),

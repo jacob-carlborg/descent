@@ -19,7 +19,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 public class TemplateInstance extends ScopeDsymbol {
 
 	public Objects tiargs, sourceTiargs;
-	public ITemplateDeclaration tempdecl; // referenced by foo.bar.abc
+	public TemplateDeclaration tempdecl; // referenced by foo.bar.abc
 	public TemplateInstance inst; // refer to existing instance
 	public AliasDeclaration aliasdecl; // != null if instance is an alias for its
 	public int semanticdone; // has semantic() been done?
@@ -28,7 +28,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public ScopeDsymbol argsym; // argument symbol table
 	public Objects tdtypes = new Objects(); // Array of Types/Expressions corresponding
 	public int havetempdecl; // 1 if used second constructor
-	public IDsymbol isnested; // if referencing local symbols, this is the context
+	public Dsymbol isnested; // if referencing local symbols, this is the context
 	public boolean nest; // For recursion detection
 	public int errors; // 1 if compiled with errors
 
@@ -41,10 +41,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		this.name = id;
 	}
 
-	public TemplateInstance(Loc loc, ITemplateDeclaration td, Objects tiargs) {
+	public TemplateInstance(Loc loc, TemplateDeclaration td, Objects tiargs) {
 		super(null);
 		this.loc = loc;
-		this.name = td.ident();
+		this.name = td.ident;
 		tiargs(tiargs);
 		this.tempdecl = td;
 		this.havetempdecl = 1;
@@ -85,22 +85,22 @@ public class TemplateInstance extends ScopeDsymbol {
 		for (int i = 0; i < size(tdtypes); i++) {
 			TemplateParameter tp = tempdecl.parameters()
 					.get(i);
-			INode o = tdtypes.get(i);
+			ASTDmdNode o = tdtypes.get(i);
 
 			tempdecl.declareParameter(scope, tp, o, context);
 		}
 	}
 
-	public ITemplateDeclaration findBestMatch(Scope sc, SemanticContext context) {
+	public TemplateDeclaration findBestMatch(Scope sc, SemanticContext context) {
 		/* Since there can be multiple TemplateDeclaration's with the same
 		 * name, look for the best match.
 		 */
-		ITemplateDeclaration td_ambig = null;
-		ITemplateDeclaration td_best = null;
+		TemplateDeclaration td_ambig = null;
+		TemplateDeclaration td_best = null;
 		MATCH m_best = MATCHnomatch;
 		Objects dedtypes = new Objects();
 
-		for (ITemplateDeclaration td = tempdecl; td != null; td = td.overnext()) {
+		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext()) {
 			MATCH m;
 
 			// If more arguments than parameters,
@@ -180,15 +180,15 @@ public class TemplateInstance extends ScopeDsymbol {
 		return tempdecl;
 	}
 
-	public ITemplateDeclaration findTemplateDeclaration(Scope sc,
+	public TemplateDeclaration findTemplateDeclaration(Scope sc,
 			SemanticContext context) {
 		if (null == tempdecl) {
 			/* Given:
 			 *    foo!( ... )
 			 * figure out which TemplateDeclaration foo refers to.
 			 */
-			IDsymbol s;
-			IDsymbol[] scopesym = new IDsymbol[] { null };
+			Dsymbol s;
+			Dsymbol[] scopesym = new Dsymbol[] { null };
 			IdentifierExp id;
 			//int i;
 
@@ -205,9 +205,9 @@ public class TemplateInstance extends ScopeDsymbol {
 			 * we really want the template.
 			 */
 			TemplateInstance ti;
-			if (null != s.parent()
-					&& null != (ti = s.parent().isTemplateInstance())) {
-				if ((equals(ti.name, id) || equals(ti.toAlias(context).ident(), id))
+			if (null != s.parent
+					&& null != (ti = s.parent.isTemplateInstance())) {
+				if ((equals(ti.name, id) || equals(ti.toAlias(context).ident, id))
 						&& null != ti.tempdecl) {
 					/* This is so that one can refer to the enclosing
 					 * template, even if it has the same name as a member
@@ -227,11 +227,11 @@ public class TemplateInstance extends ScopeDsymbol {
 			 */
 			tempdecl = s.isTemplateDeclaration();
 			if (null == tempdecl) {
-				if (null == s.parent() && context.global.errors > 0) {
+				if (null == s.parent && context.global.errors > 0) {
 					return null;
 				}
-				if (null == s.parent() && null != s.getType()) {
-					IDsymbol s2 = s.getType().toDsymbol(sc, context);
+				if (null == s.parent && null != s.getType()) {
+					Dsymbol s2 = s.getType().toDsymbol(sc, context);
 					if (null == s2) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.SymbolNotATemplateItIs, id, new String[] { id.toChars(),
@@ -241,10 +241,10 @@ public class TemplateInstance extends ScopeDsymbol {
 					s = s2;
 				}
 				//assert(s.parent);
-				TemplateInstance $ti = null != s.parent() ? s.parent()
+				TemplateInstance $ti = null != s.parent ? s.parent
 						.isTemplateInstance() : null;
 				if (null != $ti
-						&& (equals($ti.name, id) || equals($ti.toAlias(context).ident(), id)) && null != $ti.tempdecl) {
+						&& (equals($ti.name, id) || equals($ti.toAlias(context).ident, id)) && null != $ti.tempdecl) {
 					/* This is so that one can refer to the enclosing
 					 * template, even if it has the same name as a member
 					 * of the template, if it has a !(arguments)
@@ -272,14 +272,14 @@ public class TemplateInstance extends ScopeDsymbol {
 		String id;
 		Objects args;
 
-		id = tempdecl.ident().toChars(context);
+		id = tempdecl.ident.toChars(context);
 		buf.data.append("__T").append(id.length()).append(id);
 		args = tiargs;
 		for (int i = 0; i < size(args); i++) {
-			INode o = args.get(i);
+			ASTDmdNode o = args.get(i);
 			Type ta = isType(o);
 			Expression ea = isExpression(o);
-			IDsymbol sa = isDsymbol(o);
+			Dsymbol sa = isDsymbol(o);
 			Tuple va = isTuple(o);
 			
 			boolean gotoLsa = false;
@@ -304,8 +304,8 @@ public class TemplateInstance extends ScopeDsymbol {
 					// goto Lsa;
 					gotoLsa = true;
 					buf.writeByte('S');
-					IDeclaration d = sa.isDeclaration();
-					if (d != null && null == d.type().deco) {
+					Declaration d = sa.isDeclaration();
+					if (d != null && null == d.type.deco) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 					} else {
@@ -320,8 +320,8 @@ public class TemplateInstance extends ScopeDsymbol {
 						// goto Lsa;
 						gotoLsa = true;
 						buf.writeByte('S');
-						IDeclaration d = sa.isDeclaration();
-						if (d != null && null == d.type().deco) {
+						Declaration d = sa.isDeclaration();
+						if (d != null && null == d.type.deco) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 						} else {
@@ -343,8 +343,8 @@ public class TemplateInstance extends ScopeDsymbol {
 			} else if (sa != null) {
 				// Lsa: 
 				buf.writeByte('S');
-				IDeclaration d = sa.isDeclaration();
-				if (d != null && null == d.type().deco) {
+				Declaration d = sa.isDeclaration();
+				if (d != null && null == d.type.deco) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 				} else {
@@ -382,9 +382,9 @@ public class TemplateInstance extends ScopeDsymbol {
 		 * symbol that is on the stack.
 		 */
 		for (int i = 0; i < args.size(); i++) {
-			INode o = args.get(i);
+			ASTDmdNode o = args.get(i);
 			Expression ea = isExpression(o);
-			IDsymbol sa = isDsymbol(o);
+			Dsymbol sa = isDsymbol(o);
 			Tuple va = isTuple(o);
 			if (null != ea || null != sa) {
 				// if(ea) was the first condition in DMD's code, so we check
@@ -405,7 +405,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 				// else if(null != sa)
 				if (gotoLsa) {
-					IDeclaration d = sa.isDeclaration();
+					Declaration d = sa.isDeclaration();
 					if (null != d
 							&& !d.isDataseg(context)
 							&& (null == d.isFuncDeclaration() || d
@@ -449,8 +449,8 @@ public class TemplateInstance extends ScopeDsymbol {
 		String id;
 
 		id = ident != null ? ident.toChars() : toChars(context);
-		if (tempdecl != null && tempdecl.parent() != null) {
-			String p = tempdecl.parent().mangle(context);
+		if (tempdecl != null && tempdecl.parent != null) {
+			String p = tempdecl.parent.mangle(context);
 			if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
 				p += 2;
 			}
@@ -463,7 +463,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	@Override
-	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		ps[0] = null;
 		return true;
 	}
@@ -538,8 +538,8 @@ public class TemplateInstance extends ScopeDsymbol {
 				continue;
 			}
 			for (int j = 0; j < tdtypes.size(); j++) {
-				INode o1 = tdtypes.get(j);
-				INode o2 = ti.tdtypes.get(j);
+				ASTDmdNode o1 = tdtypes.get(j);
+				ASTDmdNode o2 = ti.tdtypes.get(j);
 				if (!match(o1, o2, tempdecl, sc, context)) {
 					continue L1; // goto L1;
 				}
@@ -560,7 +560,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		inst = this;
 		int tempdecl_instance_idx = tempdecl.instances().size();
 		tempdecl.instances().add(this);
-		parent = tempdecl.parent();
+		parent = tempdecl.parent;
 
 		ident = genIdent(context); // need an identifier for name mangling purposes.
 
@@ -576,14 +576,14 @@ public class TemplateInstance extends ScopeDsymbol {
 			List a = new ArrayList();
 			int i;
 
-			if (null != sc.scopesym && null != sc.scopesym.members()
+			if (null != sc.scopesym && null != sc.scopesym.members
 					&& null == sc.scopesym.isTemplateMixin()) {
-				a = sc.scopesym.members();
+				a = sc.scopesym.members;
 			} else {
-				IModule m = sc.module.importedFrom();
+				Module m = sc.module.importedFrom;
 				
-				a = m.members();
-				if (m.semanticdone() >= 3) {
+				a = m.members;
+				if (m.semanticdone >= 3) {
 					dosemantic3 = 1;
 				}
 			}
@@ -599,7 +599,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 
 		// Copy the syntax trees from the TemplateDeclaration
-		members = Dsymbol.arraySyntaxCopy(tempdecl.members(), context);
+		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
 
 		// Create our own scope for the template parameters
 		Scope scope = tempdecl.scope();
@@ -620,7 +620,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		symtab = new DsymbolTable();
 		int memnum = 0;
 		for (int i = 0; i < members.size(); i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 			memnum |= s.addMember(scope, this, memnum, context);
 		}
 
@@ -629,10 +629,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		 * If so, this template instance becomes an alias for that member.
 		 */
 		if (members.size() > 0) {
-			IDsymbol[] s = new IDsymbol[] { null };
+			Dsymbol[] s = new Dsymbol[] { null };
 			if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
-				if (null != s[0].ident() && s[0].ident().equals(tempdecl.ident())) {
-					aliasdecl = new AliasDeclaration(loc, s[0].ident(), s[0]);
+				if (null != s[0].ident && s[0].ident.equals(tempdecl.ident)) {
+					aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
 					
 					// Descent
 					aliasdecl.isTemplateParameter = true;
@@ -646,7 +646,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		sc2.parent = /*isnested ? sc.parent :*/this;
 
 		for (int i = 0; i < members.size(); i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 			s.semantic(sc2, context);
 			sc2.module.runDeferredSemantic(context);
 		}
@@ -711,7 +711,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			sc = sc.push(argsym);
 			sc = sc.push(this);
 			for (i = 0; i < members.size(); i++) {
-				IDsymbol s = members.get(i);
+				Dsymbol s = members.get(i);
 				s.semantic2(sc, context);
 			}
 			sc = sc.pop();
@@ -733,7 +733,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			sc = sc.push(argsym);
 			sc = sc.push(this);
 			for (i = 0; i < members.size(); i++) {
-				IDsymbol s = members.get(i);
+				Dsymbol s = members.get(i);
 				s.semantic3(sc, context);
 			}
 			sc = sc.pop();
@@ -746,7 +746,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateInstance ti;
 		// int i;
 
@@ -763,7 +763,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	@Override
-	public IDsymbol toAlias(SemanticContext context) {
+	public Dsymbol toAlias(SemanticContext context) {
 		if (inst == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CannotResolveForwardReference, this));
@@ -798,7 +798,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				if (i > 0) {
 					buf.writeByte(',');
 				}
-				INode oarg = args.get(i);
+				ASTDmdNode oarg = args.get(i);
 				ObjectToCBuffer(buf, hgs, oarg, context);
 			}
 			nest = false;
@@ -823,10 +823,10 @@ public class TemplateInstance extends ScopeDsymbol {
 			return;
 		}
 		for (int j = 0; j < size(tiargs); j++) {
-			INode o = tiargs.get(j);
+			ASTDmdNode o = tiargs.get(j);
 			Type[] ta = { isType(o) };
 			Expression[] ea = { isExpression(o) };
-			IDsymbol[] sa = { isDsymbol(o) };
+			Dsymbol[] sa = { isDsymbol(o) };
 
 			if (ta[0] != null) {
 				// It might really be an Expression or an Alias
@@ -903,10 +903,10 @@ public class TemplateInstance extends ScopeDsymbol {
 	public void appendSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.TEMPLATE_INSTANCE);
 		for (int j = 0; j < size(tiargs); j++) {
-			INode o = tiargs.get(j);
+			ASTDmdNode o = tiargs.get(j);
 			Type ta = isType(o);
 			Expression ea = isExpression(o);
-			IDsymbol sa = isDsymbol(o);
+			Dsymbol sa = isDsymbol(o);
 			
 			if (ta != null) {
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_TYPE);

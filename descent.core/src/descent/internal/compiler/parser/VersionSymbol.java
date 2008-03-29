@@ -34,9 +34,9 @@ public class VersionSymbol extends Dsymbol {
 	}
 
 	@Override
-	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
-		IModule m;
+		Module m;
 
 		// Do not add the member to the symbol table,
 		// just make sure subsequent debug declarations work.
@@ -46,19 +46,19 @@ public class VersionSymbol extends Dsymbol {
 			if (m == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
 			} else {
-				if (findCondition(m.versionidsNot(), ident)) {
+				if (findCondition(m.versionidsNot, ident)) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDefinedAfterUse, this, new String[] { ident.toString() } ));
 				}
-				if (null == m.versionids()) {
-					m.versionids(new ArrayList<char[]>());
+				if (null == m.versionids) {
+					m.versionids = new ArrayList<char[]>();
 				}
-				m.versionids().add(ident.ident);
+				m.versionids.add(ident.ident);
 			}
 		} else {
 			if (m == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
 			} else {
-				m.versionlevel(level);
+				m.versionlevel = level;
 			}
 		}
 		return 0;
@@ -80,7 +80,7 @@ public class VersionSymbol extends Dsymbol {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s)");
 		}

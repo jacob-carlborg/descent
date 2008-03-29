@@ -4,8 +4,8 @@ import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.ILocalVariable;
 import descent.core.JavaModelException;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.IDsymbol;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.util.Util;
 
@@ -15,7 +15,7 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	private final boolean isParameter;
 	
 
-	public VariableBinding(DefaultBindingResolver bindingResolver, IJavaElement element, IDsymbol node, boolean isParameter, String signature) {
+	public VariableBinding(DefaultBindingResolver bindingResolver, IJavaElement element, Dsymbol node, boolean isParameter, String signature) {
 		super(bindingResolver, element, node);
 		this.isParameter = isParameter;
 		this.signature = signature;

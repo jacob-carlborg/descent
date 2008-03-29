@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 // DMD 1.020
-public class Objects extends Array<INode> {
+public class Objects extends Array<ASTDmdNode> {
 
 	private static final long serialVersionUID = 1L;
 

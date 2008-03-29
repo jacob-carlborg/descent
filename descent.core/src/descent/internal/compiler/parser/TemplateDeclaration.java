@@ -19,7 +19,7 @@ import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 // DMD 1.020
-public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclaration {
+public class TemplateDeclaration extends ScopeDsymbol {
 
 	public static TemplateTupleParameter isVariadic(
 			TemplateParameters parameters) {
@@ -67,11 +67,11 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		visitor.endVisit(this);
 	}
 
-	public void declareParameter(Scope sc, TemplateParameter tp, INode o,
+	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o,
 			SemanticContext context) {
 		Type targ = isType(o);
 		Expression ea = isExpression(o);
-		IDsymbol sa = isDsymbol(o);
+		Dsymbol sa = isDsymbol(o);
 		Tuple va = isTuple(o);
 
 		Dsymbol s;
@@ -111,14 +111,14 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		s.semantic(sc, context);
 	}
 
-	public IFuncDeclaration deduce(Scope sc, Loc loc, Objects targsi, Expressions fargs, SemanticContext context) {
+	public FuncDeclaration deduce(Scope sc, Loc loc, Objects targsi, Expressions fargs, SemanticContext context) {
 
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
 		TemplateDeclaration td_best = null;
 		Objects tdargs = new Objects();
 		TemplateInstance ti;
-		IFuncDeclaration fd;
+		FuncDeclaration fd;
 
 		for (TemplateDeclaration td = this; null != td; td = td.overnext) {
 			if (null == td.scope) {
@@ -224,7 +224,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		int nfargs;
 		int nargsi;
 		MATCH match = MATCHexact;
-		IFuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
+		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
 		TypeFunction fdtype;
 		TemplateTupleParameter tp;
 		Objects dedtypes = new Objects(); // for T:T*, the dedargs is the T*,
@@ -273,8 +273,8 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 			}
 		}
 
-		assert (fd.type().ty == Tfunction);
-		fdtype = (TypeFunction) fd.type();
+		assert (fd.type.ty == Tfunction);
+		fdtype = (TypeFunction) fd.type;
 
 		nfparams = Argument.dim(fdtype.parameters, context); // number of
 		// function
@@ -444,7 +444,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		for (int i = nargsi; i < dedargs.size(); i++) {
 			TemplateParameter tp = (TemplateParameter) parameters.get(i);
 			ASTDmdNode oarg = (ASTDmdNode) dedargs.get(i);
-			INode o = (INode) dedtypes.get(i);
+			ASTDmdNode o = (ASTDmdNode) dedtypes.get(i);
 			// printf("1dedargs[%d] = %p, dedtypes[%d] = %p\n", i, oarg, i, o);
 			if (null == oarg) {
 				if (null != o) {
@@ -504,7 +504,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 				: "template";
 	}
 
-	public int leastAsSpecialized(ITemplateDeclaration td2, SemanticContext context) {
+	public int leastAsSpecialized(TemplateDeclaration td2, SemanticContext context) {
 		/*
 		 * This works by taking the template parameters to this template
 		 * declaration and feeding them to td2 as if it were a template
@@ -528,7 +528,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		for (int i = 0; i < size(ti.tiargs); i++) {
 			TemplateParameter tp = parameters.get(i);
 
-			INode p = tp.dummyArg(context);
+			ASTDmdNode p = tp.dummyArg(context);
 			if (p != null) {
 				ti.tiargs.set(i, p);
 			} else {
@@ -772,7 +772,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateDeclaration td;
 		TemplateParameters p;
 		Dsymbols d;
@@ -813,7 +813,7 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 			buf.writebyte('{');
 			buf.writenl();
 			for (int i = 0; i < members.size(); i++) {
-				IDsymbol s = members.get(i);
+				Dsymbol s = members.get(i);
 				s.toCBuffer(buf, hgs, context);
 			}
 			buf.writebyte('}');
@@ -841,15 +841,15 @@ public class TemplateDeclaration extends ScopeDsymbol implements ITemplateDeclar
 		return buf.extractData();
 	}
 	
-	public ITemplateDeclaration overroot() {
+	public TemplateDeclaration overroot() {
 		return overroot;
 	}
 	
-	public IDsymbol onemember() {
+	public Dsymbol onemember() {
 		return onemember;
 	}
 	
-	public ITemplateDeclaration overnext() {
+	public TemplateDeclaration overnext() {
 		return overnext;
 	}
 	

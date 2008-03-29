@@ -17,9 +17,9 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 // DMD 1.020
 public class TypeStruct extends Type {
 
-	public IStructDeclaration sym;
+	public StructDeclaration sym;
 
-	public TypeStruct(IStructDeclaration sym) {
+	public TypeStruct(StructDeclaration sym) {
 		super(TY.Tstruct, null);
 		this.sym = sym;
 	}
@@ -35,9 +35,9 @@ public class TypeStruct extends Type {
 		int sz;
 
 		sym.size(context); // give error for forward references
-		sz = sym.alignsize();
-		if (sz > sym.structalign())
-			sz = sym.structalign();
+		sz = sym.alignsize;
+		if (sz > sym.structalign)
+			sz = sym.structalign;
 		return sz;
 	}
 
@@ -55,7 +55,7 @@ public class TypeStruct extends Type {
 		 * it against a template instance, convert the struct type
 		 * to a template instance, too, and try again.
 		 */
-		TemplateInstance ti = sym.parent().isTemplateInstance();
+		TemplateInstance ti = sym.parent.isTemplateInstance();
 
 		if (null != tparam && tparam.ty == Tinstance) {
 			if (null != ti && ti.toAlias(context) == sym) {
@@ -70,8 +70,8 @@ public class TypeStruct extends Type {
 			if (tpi.idents.size() > 0) {
 				IdentifierExp id = (IdentifierExp) tpi.idents.get(tpi.idents
 						.size() - 1);
-				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident().equals(id)) {
-					Type tparent = sym.parent().getType();
+				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id)) {
+					Type tparent = sym.parent.getType();
 					if (null != tparent) {
 						/* Slice off the .foo in S!(T).foo
 						 */
@@ -103,9 +103,9 @@ public class TypeStruct extends Type {
 		 Declaration d;
 
 		 s = sym.toInitializer();
-		 d = new SymbolDeclaration(sym.loc(), s, sym);
+		 d = new SymbolDeclaration(sym.loc, s, sym);
 		 d.type = this;
-		 return new VarExp(sym.loc(), d);
+		 return new VarExp(sym.loc, d);
 	}
 
 	@Override
@@ -114,12 +114,12 @@ public class TypeStruct extends Type {
 		// int offset;
 
 		Expression b;
-		IVarDeclaration v;
-		IDsymbol s;
+		VarDeclaration v;
+		Dsymbol s;
 		DotVarExp de;
-		IDeclaration d;
+		Declaration d;
 
-		if (null == sym.members()) {
+		if (null == sym.members) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.StructIsForwardReferenced, this, new String[] { sym.toChars(context) }));
 			return new IntegerExp(e.loc, 0, Type.tint32);
@@ -128,8 +128,8 @@ public class TypeStruct extends Type {
 		if (equals(ident, Id.tupleof)) {
 			/* Create a TupleExp
 			 */
-			Expressions exps = new Expressions(sym.fields().size());
-			for (IVarDeclaration v_ : sym.fields()) {
+			Expressions exps = new Expressions(sym.fields.size());
+			for (VarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
 			}
@@ -171,7 +171,7 @@ public class TypeStruct extends Type {
 
 		v = s.isVarDeclaration();
 		if (null != v && v.isConst()) {
-			IExpInitializer ei = v.getExpInitializer(context);
+			ExpInitializer ei = v.getExpInitializer(context);
 
 			if (null != ei) {
 				e = ei.exp().copy(); // need to copy it if it's a StringExp
@@ -185,7 +185,7 @@ public class TypeStruct extends Type {
 			return new TypeExp(e.loc, s.getType());
 		}
 
-		IEnumMember em = s.isEnumMember();
+		EnumMember em = s.isEnumMember();
 		if (null != em) {
 			assert (null != em.value());
 			return em.value().copy();
@@ -200,7 +200,7 @@ public class TypeStruct extends Type {
 			return de_;
 		}
 
-		ITemplateDeclaration td = s.isTemplateDeclaration();
+		TemplateDeclaration td = s.isTemplateDeclaration();
 		if (null != td) {
 			e = new DotTemplateExp(e.loc, e, td);
 			e.semantic(sc, context);
@@ -236,7 +236,7 @@ public class TypeStruct extends Type {
 			accessCheck(sc, e, d, context);
 			ve = new VarExp(e.loc, d);
 			e = new CommaExp(e.loc, e, ve);
-			e.type = d.type();
+			e.type = d.type;
 			return e;
 		}
 
@@ -252,9 +252,9 @@ public class TypeStruct extends Type {
 			b.type = e.type.pointerTo(context);
 			b = new AddExp(e.loc, b, new IntegerExp(e.loc, v.offset(),
 					Type.tint32));
-			b.type = v.type().pointerTo(context);
+			b.type = v.type.pointerTo(context);
 			e = new PtrExp(e.loc, b);
-			e.type = v.type();
+			e.type = v.type;
 			return e;
 		}
 
@@ -274,12 +274,12 @@ public class TypeStruct extends Type {
 
 	@Override
 	public boolean hasPointers(SemanticContext context) {
-		IStructDeclaration s = sym;
+		StructDeclaration s = sym;
 
 		sym.size(context); // give error for forward references
-		if (null != s.members()) {
-			for (int i = 0; i < s.members().size(); i++) {
-				IDsymbol sm = s.members().get(i);
+		if (null != s.members) {
+			for (int i = 0; i < s.members.size(); i++) {
+				Dsymbol sm = s.members.get(i);
 				if (sm.hasPointers(context))
 					return true;
 			}
@@ -289,13 +289,13 @@ public class TypeStruct extends Type {
 
 	@Override
 	public boolean isZeroInit(SemanticContext context) {
-		return sym.zeroInit();
+		return sym.zeroInit;
 	}
 
 	@Override
 	public int memalign(int salign, SemanticContext context) {
 		sym.size(context); // give error for forward references
-		return sym.structalign();
+		return sym.structalign;
 	}
 
 	@Override
@@ -319,7 +319,7 @@ public class TypeStruct extends Type {
 
 	@Override
 	public String toChars(SemanticContext context) {
-		TemplateInstance ti = sym.parent().isTemplateInstance();
+		TemplateInstance ti = sym.parent.isTemplateInstance();
 		if (ti != null && ti.toAlias(context) == sym) {
 			return ti.toChars(context);
 		}
@@ -333,7 +333,7 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
 

@@ -26,8 +26,6 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
-import descent.internal.core.JavaElement;
-import descent.internal.core.JavaModelManager;
 import descent.internal.core.util.Util;
 
 /**

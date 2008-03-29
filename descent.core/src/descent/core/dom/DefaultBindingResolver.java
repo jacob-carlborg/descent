@@ -31,15 +31,14 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.ICtorDeclaration;
-import descent.internal.compiler.parser.IDsymbol;
-import descent.internal.compiler.parser.IFuncDeclaration;
-import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.CtorDeclaration;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -74,11 +73,11 @@ class DefaultBindingResolver extends BindingResolver {
 		/**
 		 * This map is used to get a binding from an old node.
 		 */
-		Map<IDsymbol, IBinding> symbolToBindings;
+		Map<Dsymbol, IBinding> symbolToBindings;
 		
 		BindingTables() {
 			this.bindingKeysToBindings = new HashMap<String, IBinding>();
-			this.symbolToBindings = new HashMap<IDsymbol, IBinding>();
+			this.symbolToBindings = new HashMap<Dsymbol, IBinding>();
 		}
 	
 	}
@@ -275,7 +274,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		descent.internal.compiler.parser.AliasDeclaration a = (descent.internal.compiler.parser.AliasDeclaration) old;
-		IDsymbol elem = a.aliassym;
+		Dsymbol elem = a.aliassym;
 		if (elem == null) {
 			return null;
 		}
@@ -509,7 +508,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		NewExp exp = (NewExp) old;
-		ICtorDeclaration ctor = exp.member;
+		CtorDeclaration ctor = exp.member;
 		if (ctor == null) {
 			return null;
 		}
@@ -543,23 +542,23 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		IFuncDeclaration sym;
+		FuncDeclaration sym;
 		
 		CallExp exp = (CallExp) old;
 		if (exp.sourceE1.getResolvedSymbol() == null ||
-				!(exp.sourceE1.getResolvedSymbol() instanceof IFuncDeclaration)) {
+				!(exp.sourceE1.getResolvedSymbol() instanceof FuncDeclaration)) {
 			if (exp.sourceE1.resolvedExpression == null ||
 					!(exp.sourceE1.resolvedExpression instanceof VarExp)) {
 				return null;
 			}
 			
 			VarExp varExp = (VarExp) exp.sourceE1.resolvedExpression;
-			if (!(varExp.var instanceof IFuncDeclaration)) {
+			if (!(varExp.var instanceof FuncDeclaration)) {
 				return null;
 			}
-			sym = (IFuncDeclaration) varExp.var;
+			sym = (FuncDeclaration) varExp.var;
 		} else {
-			sym = (IFuncDeclaration) exp.sourceE1.getResolvedSymbol();
+			sym = (FuncDeclaration) exp.sourceE1.getResolvedSymbol();
 		}
 		String signature = sym.getSignature();
 		
@@ -586,11 +585,11 @@ class DefaultBindingResolver extends BindingResolver {
 
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {
 		if (id.resolvedSymbol != null) {
-			IDsymbol sym = id.resolvedSymbol;
+			Dsymbol sym = id.resolvedSymbol;
 			sym = eraseTemplate(sym);
 			
 			// If it resolves to an opCall, use the parent
-			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident().ident, Id.call)) {
+			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident.ident, Id.call)) {
 				sym = sym.effectiveParent();
 			}
 			
@@ -640,7 +639,7 @@ class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 	
-	private IDsymbol eraseTemplate(IDsymbol sym) {
+	private Dsymbol eraseTemplate(Dsymbol sym) {
 		if (sym instanceof TemplateDeclaration) {
 			TemplateDeclaration temp = (TemplateDeclaration) sym;
 			if (temp.wrapper) {
@@ -754,7 +753,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		descent.internal.compiler.parser.Import i = (Import) old;
-		IModule mod = i.mod;
+		Module mod = i.mod;
 		if (mod == null) {
 			return null;
 		}
@@ -1235,13 +1234,13 @@ class DefaultBindingResolver extends BindingResolver {
 		
 	}
 	
-	IJavaElement getJavaElement(IDsymbol node) {
-		if (node instanceof IModule) {
-			char[] compoundName = ((IModule) node).getFullyQualifiedName().toCharArray();
+	IJavaElement getJavaElement(Dsymbol node) {
+		if (node instanceof Module) {
+			char[] compoundName = ((Module) node).getFullyQualifiedName().toCharArray();
 			char[][] compoundName2 = CharOperation.splitOn('.', compoundName);
 			return finder.findCompilationUnit(compoundName2);
 		} else {
-			IBinding parent = resolveLazy((Dsymbol) node.parent(), null);
+			IBinding parent = resolveLazy((Dsymbol) node.parent, null);
 			if (parent == null) {
 				return null;
 			}
@@ -1261,20 +1260,20 @@ class DefaultBindingResolver extends BindingResolver {
 					
 					return new LocalVariable(
 							(JavaElement) parent.getJavaElement(), 
-							node.ident().toString(),
+							node.ident.toString(),
 							node.getStart(),
 							node.getStart() + node.getLength() - 1,
-							node.ident().start,
-							node.ident().start + node.ident().length - 1,
+							node.ident.start,
+							node.ident.start + node.ident.length - 1,
 							node.type().getSignature(),
 							modifiers);
 				} else {
-					return finder.findChild(parent.getJavaElement(), new String(node.ident().ident));
+					return finder.findChild(parent.getJavaElement(), new String(node.ident.ident));
 				}
 			} else if (node instanceof ClassDeclaration ||
 					node instanceof StructDeclaration ||
 					node instanceof EnumDeclaration) {
-				return finder.findChild(parent.getJavaElement(), new String(node.ident().ident));
+				return finder.findChild(parent.getJavaElement(), new String(node.ident.ident));
 			} else if (node instanceof TemplateDeclaration) {
 				TemplateDeclaration temp = (TemplateDeclaration) node;
 				
@@ -1288,15 +1287,15 @@ class DefaultBindingResolver extends BindingResolver {
 				if (temp.wrapper && temp.members != null && temp.members.size() > 0) {
 					Dsymbol first = (Dsymbol) temp.members.get(0);
 					if (first instanceof AggregateDeclaration) {
-						return finder.findTemplatedAggregate((IParent) parent.getJavaElement(), new String(node.ident().ident), paramTypes);
+						return finder.findTemplatedAggregate((IParent) parent.getJavaElement(), new String(node.ident.ident), paramTypes);
 					} else if (first instanceof FuncDeclaration) {
 						FuncDeclaration func = (FuncDeclaration) first;
 						String[] paramsAndRetTypes = getParamsAndRetType(func);
 						
-						return finder.findTemplatedFunction((IParent) parent.getJavaElement(), new String(node.ident().ident), paramsAndRetTypes, paramTypes);
+						return finder.findTemplatedFunction((IParent) parent.getJavaElement(), new String(node.ident.ident), paramsAndRetTypes, paramTypes);
 					}
 				} else {
-					return finder.findTemplate((IParent) parent.getJavaElement(), new String(node.ident().ident), paramTypes);
+					return finder.findTemplate((IParent) parent.getJavaElement(), new String(node.ident.ident), paramTypes);
 				}
 			} else if (node instanceof FuncDeclaration) {
 				FuncDeclaration func = (FuncDeclaration) node;
@@ -1315,7 +1314,7 @@ class DefaultBindingResolver extends BindingResolver {
 	 * possible instead of querying the java element. This makes
 	 * things go *faster*.
 	 */
-	IBinding resolveLazy(IDsymbol node, ASTNode astNode) {
+	IBinding resolveLazy(Dsymbol node, ASTNode astNode) {
 		if (node == null) {
 			return null;
 		}
@@ -1325,10 +1324,10 @@ class DefaultBindingResolver extends BindingResolver {
 		if (binding == null) {
 			String signature = node.getSignature();
 			
-			if (node instanceof IModule) {
-				binding = new PackageBinding(this, null, (IModule) node, signature);
+			if (node instanceof Module) {
+				binding = new PackageBinding(this, null, (Module) node, signature);
 			} else {
-				IBinding parent = resolveLazy((IDsymbol) node.parent(), null);	
+				IBinding parent = resolveLazy(node.parent, null);	
 				if (parent != null) {
 					if (node instanceof VarDeclaration ||
 						node instanceof descent.internal.compiler.parser.AliasDeclaration ||

@@ -60,7 +60,7 @@ public class SynchronizedStatement extends Statement {
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		if (exp != null) {
-			IClassDeclaration cd;
+			ClassDeclaration cd;
 
 			exp = exp.semantic(sc, context);
 			exp = resolveProperties(sc, exp, context);

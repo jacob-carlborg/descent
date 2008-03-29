@@ -1,16 +1,16 @@
 package descent.core.dom;
 
 import descent.core.ICompilationUnit;
-import descent.internal.compiler.parser.IModule;
+import descent.internal.compiler.parser.Module;
 
 public class PackageBinding implements IPackageBinding {
 
 	private ICompilationUnit element;
-	private final IModule node;
+	private final Module node;
 	private final String signature;
 	private final DefaultBindingResolver bindingResolver;
 
-	public PackageBinding(DefaultBindingResolver bindingResolver, ICompilationUnit element, IModule node, String signature) {
+	public PackageBinding(DefaultBindingResolver bindingResolver, ICompilationUnit element, Module node, String signature) {
 		this.bindingResolver = bindingResolver;
 		this.element = element;
 		this.node = node;

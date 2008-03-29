@@ -3,11 +3,12 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.IType;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
+public class EnumDeclaration extends ScopeDsymbol {
 
 	private final static int N_2 = 2;
 	private final static int N_128 = 128;
@@ -23,6 +24,8 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 	public integer_t maxval;
 	public integer_t minval;
 	public integer_t defaultval; // default initializer
+	
+	private IType javaElement;
 
 	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
 		super(id);
@@ -69,7 +72,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 	}
 
 	@Override
-	public boolean oneMember(IDsymbol[] ps, SemanticContext context) {
+	public boolean oneMember(Dsymbol[] ps, SemanticContext context) {
 		if (isAnonymous()) {
 			return super.oneMembers(members, ps, context);
 		}
@@ -127,8 +130,8 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 		}
 
 		boolean first = true;
-		for (IDsymbol sym : members) {
-			IEnumMember em = sym.isEnumMember();
+		for (Dsymbol sym : members) {
+			EnumMember em = sym.isEnumMember();
 			Expression e;
 
 			if (em == null) {
@@ -216,7 +219,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 						throw new IllegalStateException();
 					}
 				}
-				e = new IntegerExp(em.loc(), number, t);
+				e = new IntegerExp(em.loc, number, t);
 			}
 			em.value(e);
 
@@ -224,8 +227,8 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 			if (isAnonymous()) {
 				for (Scope scx = sce.enclosing; scx != null; scx = scx.enclosing) {
 					if (scx.scopesym != null) {
-						if (scx.scopesym.symtab() == null) {
-							scx.scopesym.symtab(new DsymbolTable());
+						if (scx.scopesym.symtab == null) {
+							scx.scopesym.symtab = new DsymbolTable();
 						}
 						em.addMember(sce, scx.scopesym, 1, context);
 						break;
@@ -267,7 +270,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Type t = null;
 		if (memtype != null) {
 			t = memtype.syntaxCopy(context);
@@ -307,7 +310,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 		buf.writeByte('{');
 		buf.writenl();
 		for (i = 0; i < members.size(); i++) {
-			IEnumMember em = (members.get(i)).isEnumMember();
+			EnumMember em = (members.get(i)).isEnumMember();
 			if (em == null) {
 				continue;
 			}
@@ -319,7 +322,7 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 		buf.writenl();
 	}
 	
-	private final void enumValueOverflow(IEnumMember em, SemanticContext context) {
+	private final void enumValueOverflow(EnumMember em, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 				IProblem.EnumValueOverflow, em));
 	}
@@ -342,25 +345,18 @@ public class EnumDeclaration extends ScopeDsymbol implements IEnumDeclaration {
 		}
 	}
 	
-	public Type memtype() {
-		return memtype;
-	}
-
-	public integer_t defaultval() {
-		return defaultval;
-	}
-
-	public integer_t maxval() {
-		return maxval;
-	}
-
-	public integer_t minval() {
-		return minval;
-	}
-	
 	@Override
 	public char getSignaturePrefix() {
 		return ISignatureConstants.ENUM;
+	}
+	
+	public void setJavaElement(IType javaElement) {
+		this.javaElement = javaElement;
+	}
+	
+	@Override
+	public IType getJavaElement() {
+		return javaElement;
 	}
 
 }

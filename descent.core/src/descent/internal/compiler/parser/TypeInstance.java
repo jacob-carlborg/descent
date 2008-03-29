@@ -45,8 +45,8 @@ public class TypeInstance extends TypeQualified {
 			}
 
 			for (int i = 0; i < tempinst.tiargs.size(); i++) {
-				INode o1 = tempinst.tiargs.get(i);
-				INode o2 = tp.tempinst.tiargs.get(i);
+				ASTDmdNode o1 = tempinst.tiargs.get(i);
+				ASTDmdNode o2 = tp.tempinst.tiargs.get(i);
 
 				Type t1 = isType(o1);
 				Type t2 = isType(o2);
@@ -103,7 +103,7 @@ public class TypeInstance extends TypeQualified {
 
 	@Override
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
-			IDsymbol[] ps, SemanticContext context) {
+			Dsymbol[] ps, SemanticContext context) {
 		// Note close similarity to TypeIdentifier::resolve()
 
 		Dsymbol s;

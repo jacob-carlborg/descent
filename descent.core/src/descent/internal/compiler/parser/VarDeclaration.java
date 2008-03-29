@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IField;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTexport;
@@ -31,16 +32,16 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TY.Taarray;
 
 // DMD 1.020
-public class VarDeclaration extends Declaration implements IVarDeclaration {
+public class VarDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi
 	public VarDeclaration next;
 
 	// declaration?
-	public IInitializer init, sourceInit;
+	public Initializer init, sourceInit;
 	public Dsymbol aliassym; // if redone as alias to another symbol
 	public Type htype;
-	public IInitializer hinit;;
+	public Initializer hinit;;
 	public int inuse;
 	public int offset;
 	public boolean noauto; // no auto semantics
@@ -53,12 +54,14 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 							// (NULL if value not determinable)
 	public Object csym;
 	public Object isym;
+	
+	private IField javaElement;
 
-	public VarDeclaration(Loc loc, Type type, char[] ident, IInitializer init) {
+	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
 	}
 
-	public VarDeclaration(Loc loc, Type type, IdentifierExp id, IInitializer init) {
+	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
 		super(id);
 
 		Assert.isTrue(type != null || init != null);
@@ -96,12 +99,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		Expression e = null;
 
 		if ((storage_class & (STCauto | STCscope)) != 0 && !noauto) {
-			for (IClassDeclaration cd = type.isClassHandle(); cd != null; cd = cd.baseClass()) {
+			for (ClassDeclaration cd = type.isClassHandle(); cd != null; cd = cd.baseClass) {
 				/*
 				 * We can do better if there's a way with onstack classes to
 				 * determine if there's no way the monitor could be set.
 				 */
-				if (true || onstack != 0 || cd.dtors().size() > 0) // if any
+				if (true || onstack != 0 || cd.dtors.size() > 0) // if any
 				// destructors
 				{
 					// delete this;
@@ -126,11 +129,33 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
-		SemanticMixin.checkNestedReference(this, sc, loc, context);
+		if (!this.isDataseg(context) && this.parent != sc.parent && this.parent != null) {
+			FuncDeclaration fdv = this.toParent().isFuncDeclaration();
+			FuncDeclaration fdthis = (FuncDeclaration) sc.parent.isFuncDeclaration();
+
+			if (fdv != null && fdthis != null) {
+				if (loc != null && loc.filename != null)
+					fdthis.getLevel(loc, fdv, context);
+				this.nestedref(1);
+				fdv.nestedFrameRef(true);
+			}
+		}
 	}
 
-	public IExpInitializer getExpInitializer(SemanticContext context) {
-		return SemanticMixin.getExpInitializer(this, context);
+	public ExpInitializer getExpInitializer(SemanticContext context) {
+		ExpInitializer ei;
+
+		if (this.init != null) {
+			ei = this.init().isExpInitializer();
+		} else {
+			Expression e = this.type.defaultInit(context);
+			if (e != null) {
+				ei = new ExpInitializer(this.loc, e);
+			} else {
+				ei = null;
+			}
+		}
+		return ei;
 	}
 
 	@Override
@@ -145,7 +170,15 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 
 	@Override
 	public boolean isDataseg(SemanticContext context) {
-		return SemanticMixin.isDataseg(this, context);
+		Dsymbol parent = this.toParent();
+		if (parent == null && (this.storage_class & (STCstatic | STCconst)) == 0) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotResolveForwardReference, this));
+			this.type = Type.terror;
+			return false;
+		}
+		return ((this.storage_class & (STCstatic | STCconst)) != 0
+				|| parent.isModule() != null || parent.isTemplateInstance() != null);
 	}
 
 	@Override
@@ -228,8 +261,8 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		this.parent = sc.parent;
 		protection = sc.protection;
 
-		IDsymbol parent = toParent();
-		IFuncDeclaration fd = parent.isFuncDeclaration();
+		Dsymbol parent = toParent();
+		FuncDeclaration fd = parent.isFuncDeclaration();
 
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STClazy) == 0) {
@@ -246,11 +279,11 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		if (tb.ty == TY.Tstruct) {
 			TypeStruct ts = (TypeStruct) tb;
 
-			if (ts.sym.members() == null) {
+			if (ts.sym.members == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						// "No definition of struct " + ts.sym.ident,
 						IProblem.NoDefinition, sourceType, new String[] { new String(
-								ts.sym.ident().ident) }));
+								ts.sym.ident.ident) }));
 			}
 		}
 
@@ -277,8 +310,8 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				v.semantic(sc, context);
 
 				if (sc.scopesym != null) {
-					if (sc.scopesym.members() != null) {
-						sc.scopesym.members().add(v);
+					if (sc.scopesym.members != null) {
+						sc.scopesym.members.add(v);
 					}
 				}
 
@@ -317,7 +350,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 			}
 		} else if ((storage_class & STCtemplateparameter) != 0) {
 		} else {
-			IAggregateDeclaration aad = sc.anonAgg;
+			AggregateDeclaration aad = sc.anonAgg;
 			if (aad == null) {
 				aad = parent.isAggregateDeclaration();
 			}
@@ -325,7 +358,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				aad.addField(sc, this, context);
 			}
 
-			IInterfaceDeclaration id = parent.isInterfaceDeclaration();
+			InterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.FieldsNotAllowedInInterfaces, this));
@@ -335,7 +368,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 			if (ti != null) {
 				// Take care of nested templates
 				while (true) {
-					TemplateInstance ti2 = ti.tempdecl.parent().isTemplateInstance();
+					TemplateInstance ti2 = ti.tempdecl.parent.isTemplateInstance();
 					if (ti2 == null) {
 						break;
 					}
@@ -343,7 +376,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				}
 
 				// If it's a member template
-				IAggregateDeclaration ad = ti.tempdecl.isMember();
+				AggregateDeclaration ad = ti.tempdecl.isMember();
 				if (ad != null && storage_class != STCundefined) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotUseTemplateToAddFieldToAggregate, this, new String[] { ad.toChars(context) }));
@@ -371,7 +404,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				&& fd != null
 				&& (storage_class & (STCfield | STCin | STCforeach)) == 0) {
 			// Provide a default initializer
-			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit()) {
+			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
 				Expression e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 				Expression e1;
 				e1 = new VarExp(loc, this);
@@ -381,9 +414,9 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
-				if (td.sym.init() != null) {
-					init = td.sym.init();
-					IExpInitializer ie = init.isExpInitializer();
+				if (td.sym.init != null) {
+					init = td.sym.init;
+					ExpInitializer ie = init.isExpInitializer();
 					if (ie != null) {
 						// Make copy so we can modify it
 						init = new ExpInitializer(ie.loc(), ie.exp());
@@ -397,12 +430,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		}
 
 		if (init != null) {
-			IArrayInitializer ai = init.isArrayInitializer();
+			ArrayInitializer ai = init.isArrayInitializer();
 			if (ai != null && type.toBasetype(context).ty == Taarray) {
 				init = ai.toAssocArrayInitializer(context);
 			}
 
-			IExpInitializer ei = init.isExpInitializer();
+			ExpInitializer ei = init.isExpInitializer();
 
 			// See if we can allocate on the stack
 			if (ei != null && isScope() && ei.exp().op == TOK.TOKnew) {
@@ -538,7 +571,7 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	private void semantic20(Scope sc, SemanticContext context) {
-		IDsymbol top = toParent();
+		Dsymbol top = toParent();
 		if (init != null && top != null && top.isFuncDeclaration() == null) {
 			inuse++;
 			init = init.semantic(sc, type, context);
@@ -547,12 +580,12 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		VarDeclaration sv;
 		if (s != null) {
 			sv = (VarDeclaration) s;
 		} else {
-			IInitializer init = null;
+			Initializer init = null;
 			if (this.init != null) {
 				init = this.init.syntaxCopy(context);
 				// init.isExpInitializer().exp.print();
@@ -587,9 +620,9 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	}
 
 	@Override
-	public IDsymbol toAlias(SemanticContext context) {
+	public Dsymbol toAlias(SemanticContext context) {
 		Assert.isTrue(this != aliassym);
-		IDsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
 	}
 
@@ -628,11 +661,11 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 		return inuse;
 	}
 	
-	public IInitializer init() {
+	public Initializer init() {
 		return init;
 	}
 	
-	public void init(IInitializer init) {
+	public void init(Initializer init) {
 		this.init = init;
 	}
 	
@@ -678,6 +711,15 @@ public class VarDeclaration extends Declaration implements IVarDeclaration {
 	
 	public char getSignaturePrefix() {
 		return ISignatureConstants.VARIABLE;
+	}
+
+	public void setJavaElement(IField field) {
+		this.javaElement = field;
+	}
+	
+	@Override
+	public IField getJavaElement() {
+		return javaElement;
 	}
 
     // PERHAPS Symbol *toSymbol();

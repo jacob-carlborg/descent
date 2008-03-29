@@ -62,17 +62,17 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 		super.semantic(sc, context);
 
 		// We're going to need ModuleInfo
-		IModule m = getModule();
+		Module m = getModule();
 		if (m == null) {
 			m = sc.module;
 		}
 		if (m != null) {
-			m.needmoduleinfo(true);
+			m.needmoduleinfo = true;
 		}
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}

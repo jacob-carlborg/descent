@@ -86,8 +86,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 	}
 	
-	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
-		module = CompilationUnitResolver.parse(getASTlevel(), (descent.internal.compiler.env.ICompilationUnit) unit, options.getMap(), true).module;
+	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit) {
+		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true).module;
 		module.moduleName = unit.getFullyQualifiedName();
 		
 		// Don't do semantic analysis here
@@ -117,7 +117,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	protected int endOf(ASTDmdNode node) {
 		if (node == null) return 0;
-		return startOf(node) + node.length - 1;
+		int end = startOf(node) + node.length - 1;
+		if (end <= 0) {
+			return 0;
+		} else{
+			return end;
+		}
 	}
 	
 	private int startOfDeclaration(ASTDmdNode node) {
@@ -680,7 +685,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			info.name = CharOperation.NO_CHAR;
 		}
-		info.superinterfaces = new char[][] { getSignature(node.memtype) };
+		
+		info.superinterfaces = node.memtype == null ? CharOperation.NO_CHAR_CHAR : new char[][] { getSignature(node.memtype) };
 		
 		requestor.enterType(info);
 		
@@ -771,7 +777,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			if (elseDeclarations != null && !elseDeclarations.isEmpty()) {
 				requestor.enterConditionalThen(startOf((Dsymbol) thenDeclarations.get(0))); // SEMANTIC
 			}
-			for(IDsymbol ideclaration : thenDeclarations) {
+			for(Dsymbol ideclaration : thenDeclarations) {
 				Dsymbol declaration = (Dsymbol) ideclaration; // SEMANTIC
 				declaration.accept(this);
 			}
@@ -783,8 +789,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
 			requestor.enterConditionalElse(startOf((Dsymbol) elseDeclarations.get(0))); // SEMANTIC
-			for(IDsymbol ideclaration : elseDeclarations) {
-				Dsymbol declaration = (Dsymbol) ideclaration; // SEMANTIC
+			for(Dsymbol ideclaration : elseDeclarations) {
+				Dsymbol declaration = (Dsymbol) ideclaration;
 				declaration.accept(this);
 			}
 			requestor.exitConditionalElse(endOf((Dsymbol) elseDeclarations.get(elseDeclarations.size() - 1))); // SEMANTIC
@@ -1471,7 +1477,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		// Don't visit template instances in the module scope
-		for(IDsymbol symbol : node.members) {
+		for(Dsymbol symbol : node.members) {
 			Dsymbol dsymbol = (Dsymbol) symbol;
 			if (null == dsymbol.isTemplateInstance()) {
 				dsymbol.accept(this);
@@ -1479,7 +1485,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 				// Report members created by template mixins
 				TemplateMixin mixin = dsymbol.isTemplateMixin();
 				if (mixin != null) {
-					for(IDsymbol member : mixin.members) {
+					for(Dsymbol member : mixin.members) {
 						member.accept(this);
 					}
 				}

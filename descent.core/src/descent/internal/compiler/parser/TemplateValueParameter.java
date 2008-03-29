@@ -98,7 +98,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		Declaration sparam;
 		MATCH m = MATCHexact;
 		Expression ei;
-		INode oarg;
+		ASTDmdNode oarg;
 
 		if (i < tiargs.size()) {
 			oarg = tiargs.get(i);

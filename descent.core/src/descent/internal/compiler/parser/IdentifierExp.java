@@ -89,8 +89,8 @@ public class IdentifierExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		IDsymbol s;
-		IDsymbol[] scopesym = { null };
+		Dsymbol s;
+		Dsymbol[] scopesym = { null };
 
 		s = sc.search(loc, this, scopesym, context);
 		
@@ -118,7 +118,7 @@ public class IdentifierExp extends Expression {
 					e = new TypeDotIdExp(loc, t, this);
 				}
 			} else {
-				if (s.parent() == null
+				if (s.parent == null
 						&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
 					// to
 					// run
@@ -129,17 +129,17 @@ public class IdentifierExp extends Expression {
 					s.semantic(sc, context);
 				}
 				// Look to see if f is really a function template
-				IFuncDeclaration f = s.isFuncDeclaration();
-				if (f != null && f.parent() != null) {
-					TemplateInstance ti = f.parent().isTemplateInstance();
+				FuncDeclaration f = s.isFuncDeclaration();
+				if (f != null && f.parent != null) {
+					TemplateInstance ti = f.parent.isTemplateInstance();
 
 					if (ti != null
 							&& ti.isTemplateMixin() == null
-							&& (equals(ti.name, f.ident()) || 
-									equals(ti.toAlias(context).ident(), f.ident()))
+							&& (equals(ti.name, f.ident) || 
+									equals(ti.toAlias(context).ident, f.ident))
 							&& ti.tempdecl != null
 							&& ti.tempdecl.onemember() != null) {
-						ITemplateDeclaration tempdecl = ti.tempdecl;
+						TemplateDeclaration tempdecl = ti.tempdecl;
 						if (tempdecl.overroot() != null) { // if not start of
 							// overloaded list of
 							// TemplateDeclaration's
@@ -245,7 +245,7 @@ public class IdentifierExp extends Expression {
 	}
 	
 	@Override
-	public void setResolvedSymbol(IDsymbol symbol) {
+	public void setResolvedSymbol(Dsymbol symbol) {
 		resolvedSymbol = symbol;
 	}
 	
@@ -264,7 +264,7 @@ public class IdentifierExp extends Expression {
 	}
 	
 	@Override
-	public IDsymbol getResolvedSymbol() {
+	public Dsymbol getResolvedSymbol() {
 		return resolvedSymbol;
 	}
 

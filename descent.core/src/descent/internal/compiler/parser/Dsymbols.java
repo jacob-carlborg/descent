@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 // DMD 1.020
-public class Dsymbols extends Array<IDsymbol> {
+public class Dsymbols extends Array<Dsymbol> {
 
 	private static final long serialVersionUID = 1L;
 	

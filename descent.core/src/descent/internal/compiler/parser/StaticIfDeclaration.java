@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.Assert;
 // DMD 1.020
 public class StaticIfDeclaration extends ConditionalDeclaration {
 
-	public IScopeDsymbol sd;
+	public ScopeDsymbol sd;
 	public boolean addisdone;
 
 	public StaticIfDeclaration(Condition condition, Dsymbols decl,
@@ -14,7 +14,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 	}
 
 	@Override
-	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		/* This is deferred until semantic(), so that
 		 * expressions in the condition can refer to declarations
@@ -52,14 +52,14 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 				addisdone = true;
 			}
 
-			for (IDsymbol s : d) {
+			for (Dsymbol s : d) {
 				s.semantic(sc, context);
 			}
 		}
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StaticIfDeclaration dd;
 
 		Assert.isTrue(s == null);

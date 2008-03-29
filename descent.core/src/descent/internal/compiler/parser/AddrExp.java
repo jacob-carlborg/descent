@@ -44,7 +44,7 @@ public class AddrExp extends UnaExp {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			VarExp ve;
-			IFuncDeclaration f;
+			FuncDeclaration f;
 
 			if (type.ty == Tpointer && type.next.ty == Tfunction
 					&& tb.ty == Tpointer && tb.next.ty == Tfunction
@@ -55,7 +55,7 @@ public class AddrExp extends UnaExp {
 					f = f.overloadExactMatch(tb.next, context);
 					if (f != null) {
 						e = new VarExp(loc, f);
-						e.type = f.type();
+						e.type = f.type;
 						e = new AddrExp(loc, e);
 						e.type = t;
 						return e;
@@ -83,7 +83,7 @@ public class AddrExp extends UnaExp {
 			// Look for pointers to functions where the functions are
 			// overloaded.
 			VarExp ve;
-			IFuncDeclaration f;
+			FuncDeclaration f;
 
 			t = t.toBasetype(context);
 			if (type.ty == Tpointer && type.next.ty == Tfunction
@@ -172,7 +172,7 @@ public class AddrExp extends UnaExp {
 			// See if this should really be a delegate
 			if (e1.op == TOKdotvar) {
 				DotVarExp dve = (DotVarExp) e1;
-				IFuncDeclaration f = dve.var.isFuncDeclaration();
+				FuncDeclaration f = dve.var.isFuncDeclaration();
 
 				if (f != null) {
 					Expression e;
@@ -183,7 +183,7 @@ public class AddrExp extends UnaExp {
 				}
 			} else if (e1.op == TOKvar) {
 				VarExp dve = (VarExp) e1;
-				IFuncDeclaration f = dve.var.isFuncDeclaration();
+				FuncDeclaration f = dve.var.isFuncDeclaration();
 
 				if (f != null && f.isNested()) {
 					Expression e;

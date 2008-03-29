@@ -37,7 +37,7 @@ public class IndexExp extends BinExp {
 
 		if (lengthVar != null) {
 			VarDeclaration vd = lengthVar;
-			IExpInitializer ie;
+			ExpInitializer ie;
 			ExpInitializer ieto;
 			VarDeclaration vto;
 

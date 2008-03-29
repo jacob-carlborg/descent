@@ -15,8 +15,8 @@ public class StructInitializer extends Initializer {
 	public Identifiers field, sourceField;
 	public Initializers value, sourceValue;
 
-	public Array<IVarDeclaration> vars; // parallel array of VarDeclaration *'s
-	public IAggregateDeclaration ad; // which aggregate this is for
+	public Array<VarDeclaration> vars; // parallel array of VarDeclaration *'s
+	public AggregateDeclaration ad; // which aggregate this is for
 
 	public StructInitializer(Loc loc) {
 		super(loc);
@@ -65,15 +65,15 @@ public class StructInitializer extends Initializer {
 			for (i = 0; i < size(field); i++) {
 				IdentifierExp id = field.get(i);
 				Initializer val = value.get(i);
-				IDsymbol s;
-				IVarDeclaration v;
+				Dsymbol s;
+				VarDeclaration v;
 
 				if (id == null) {
-					if (fieldi >= ad.fields().size()) {
+					if (fieldi >= ad.fields.size()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.TooManyInitializers, this, new String[] { ad.toChars(context) }));
 						continue;
 					} else {
-						s = ad.fields().get(fieldi);
+						s = ad.fields.get(fieldi);
 					}
 				} else {
 					//s = ad.symtab.lookup(id);
@@ -86,21 +86,21 @@ public class StructInitializer extends Initializer {
 
 					// Find out which field index it is
 					for (fieldi = 0; true; fieldi++) {
-						if (fieldi >= ad.fields().size()) {
+						if (fieldi >= ad.fields.size()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.SymbolIsNotAPreInstanceInitializableField, s, new String[] { s.toChars(context) }));
 							break;
 						}
-						if (s == ad.fields().get(fieldi)) {
+						if (s == ad.fields.get(fieldi)) {
 							break;
 						}
 					}
 				}
 				if (s != null && (v = s.isVarDeclaration()) != null) {
-					val = val.semantic(sc, v.type(), context);
+					val = val.semantic(sc, v.type, context);
 					value.set(i, val);
 					if (vars == null) {
-						vars = new Array<IVarDeclaration>();
+						vars = new Array<VarDeclaration>();
 					}
 					vars.set(i, v);
 				} else {

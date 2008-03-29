@@ -133,7 +133,7 @@ public class ASTConverter {
 		return result;
 	}
 	
-	public descent.core.dom.ASTNode convert(INode symbol) {
+	public descent.core.dom.ASTNode convert(ASTDmdNode symbol) {
 		if (symbol == null) {
 			return null;
 		}
@@ -484,7 +484,7 @@ public class ASTConverter {
 			b.setName(name);
 		}
 		if (a.args != null) {
-			for(INode node : a.args) {
+			for(ASTDmdNode node : a.args) {
 				ASTNode arg = convert(node);
 				if (arg != null) {
 					b.arguments().add(arg);
@@ -565,7 +565,7 @@ public class ASTConverter {
 		
 		if (a.colon && a.decl != null && a.decl.size() > 0) {
 			for(int i = 0; i < a.decl.size(); i++) {
-				Dsymbol dsymbol = (Dsymbol) a.decl.get(i); // SEMANTIC
+				Dsymbol dsymbol = (Dsymbol) a.decl.get(i);
 				if (
 					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
 						|| 
@@ -1017,7 +1017,7 @@ public class ASTConverter {
 			tt.setName((SimpleName) convert(tempinst.name));
 		}
 		if (tempinst.sourceTiargs != null) {
-			for(INode node : tempinst.sourceTiargs) {
+			for(ASTDmdNode node : tempinst.sourceTiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					tt.arguments().add(convertedNode);
@@ -1035,7 +1035,7 @@ public class ASTConverter {
 			b.setName((SimpleName) convert(a.name));
 		}
 		if (a.sourceTiargs != null) {
-			for(INode node : a.sourceTiargs) {
+			for(ASTDmdNode node : a.sourceTiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					b.arguments().add(convertedNode);
@@ -1810,7 +1810,7 @@ public class ASTConverter {
 			b.setBaseType(convert(a.sourceMemtype));
 		}
 		if (a.members != null) {
-			for(IDsymbol isymbol : a.members) {
+			for(Dsymbol isymbol : a.members) {
 				Dsymbol symbol = (Dsymbol) isymbol; // SEMANTIC
 				descent.core.dom.EnumMember convertedMember = convert((EnumMember) symbol);
 				if (convertedMember != null) {
@@ -3110,7 +3110,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.tempinst.sourceTiargs != null) {
-			for(INode node : a.tempinst.sourceTiargs) {
+			for(ASTDmdNode node : a.tempinst.sourceTiargs) {
 				ASTNode convertedNode = convert(node);
 				if (convertedNode != null) {
 					b.arguments().add(convertedNode);
@@ -3319,7 +3319,7 @@ public class ASTConverter {
 		}
 	}
 	
-	public void convertDeclarations(List<Declaration> destination, List<IDsymbol> source) {
+	public void convertDeclarations(List<Declaration> destination, List<Dsymbol> source) {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = (Dsymbol) source.get(i);
@@ -3617,7 +3617,7 @@ public class ASTConverter {
 				} else {
 					TemplateType type = new TemplateType(ast);
 					type.setName((SimpleName) convert(id));
-					for(INode node : tiargs) {
+					for(ASTDmdNode node : tiargs) {
 						type.arguments().add(convert(node));
 					}
 					second = type;

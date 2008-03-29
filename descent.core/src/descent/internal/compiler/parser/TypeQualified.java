@@ -20,10 +20,10 @@ public abstract class TypeQualified extends Type {
 		idents.add(ident);
 	}
 
-	public void resolveHelper(Loc loc, Scope sc, IDsymbol s,
-			IDsymbol scopesym, Expression[] pe, Type[] pt, IDsymbol[] ps, SemanticContext context) {
-		IVarDeclaration v;
-		IEnumMember em;
+	public void resolveHelper(Loc loc, Scope sc, Dsymbol s,
+			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+		VarDeclaration v;
+		EnumMember em;
 		// TupleDeclaration td;
 		Type t = null;
 		Expression e = null;
@@ -36,11 +36,11 @@ public abstract class TypeQualified extends Type {
 
 			if (idents != null) {
 				for (IdentifierExp id : idents) {
-					IDsymbol sm;
+					Dsymbol sm;
 
 					if (id.dyncast() != DYNCAST.DYNCAST_IDENTIFIER) {
 						// It's a template instance
-						ITemplateDeclaration td;
+						TemplateDeclaration td;
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 						id = ti.name;
 						sm = s.search(loc, id, 0, context);
@@ -95,7 +95,7 @@ public abstract class TypeQualified extends Type {
 						t = s.getType();
 						
 						if (t == null && s.isDeclaration() != null) {
-							t = s.isDeclaration().type();
+							t = s.isDeclaration().type;
 						}
 						if (t != null) {
 							sm = t.toDsymbol(sc, context);
@@ -127,7 +127,7 @@ public abstract class TypeQualified extends Type {
 			if (v != null) {
 				// It's not a type, it's an expression
 				if (v.isConst() && v.getExpInitializer(context) != null) {
-					IExpInitializer ei = v.getExpInitializer(context);
+					ExpInitializer ei = v.getExpInitializer(context);
 					Assert.isNotNull(ei);
 					pe[0] = ei.exp().copy(); // make copy so we can change loc
 				} else {
@@ -153,8 +153,8 @@ public abstract class TypeQualified extends Type {
 		}
 	}
 
-	public void resolveHelper_L1_plus_end(Scope sc, IDsymbol s,
-			IDsymbol scopesym, Expression[] pe, Type[] pt, IDsymbol[] ps,
+	public void resolveHelper_L1_plus_end(Scope sc, Dsymbol s,
+			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps,
 			Expression e, Type t, SemanticContext context) {
 		t = s.getType();
 		if (t == null) {
@@ -163,7 +163,7 @@ public abstract class TypeQualified extends Type {
 
 			si = s.isImport();
 			if (si != null) {
-				s = si.search(loc, s.ident(), 0, context);
+				s = si.search(loc, s.ident, 0, context);
 				if (s != null && s != si) {
 					// goto L1
 					resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e,

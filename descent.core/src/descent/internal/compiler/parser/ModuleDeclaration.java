@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ModuleDeclaration extends ASTDmdNode implements IModuleDeclaration {
+public class ModuleDeclaration extends ASTDmdNode {
 
 	public IdentifierExp id;
 	public Identifiers packages;
@@ -31,7 +31,16 @@ public class ModuleDeclaration extends ASTDmdNode implements IModuleDeclaration 
 
 	@Override
 	public String toChars(SemanticContext context) {
-		return SemanticMixin.toChars(this, context);
+		OutBuffer buf = new OutBuffer();
+		if (this.packages() != null && this.packages().size() > 0) {
+			for (int i = 0; i < this.packages().size(); i++) {
+				IdentifierExp pid = this.packages().get(i);
+				buf.writestring(pid.toChars());
+				buf.writeByte('.');
+			}
+		}
+		buf.writestring(this.id().toChars());
+		return buf.extractData();
 	}
 	
 	public char[] getFQN() {

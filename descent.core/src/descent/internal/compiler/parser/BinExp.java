@@ -401,8 +401,8 @@ public abstract class BinExp extends Expression {
 			} else if (t2n.ty == Tvoid) {
 				;
 			} else if (t1n.ty == Tclass && t2n.ty == Tclass) {
-				IClassDeclaration cd1 = t1n.isClassHandle();
-				IClassDeclaration cd2 = t2n.isClassHandle();
+				ClassDeclaration cd1 = t1n.isClassHandle();
+				ClassDeclaration cd2 = t2n.isClassHandle();
 				int offset[] = { 0 };
 
 				if (cd1.isBaseOf(cd2, offset, context)) {
@@ -625,7 +625,7 @@ public abstract class BinExp extends Expression {
 		 */
 		if (e1.op == TOKvar) {
 			VarExp ve = (VarExp) e1;
-			IVarDeclaration v = ve.var.isVarDeclaration();
+			VarDeclaration v = ve.var.isVarDeclaration();
 			if (null != v && !v.isDataseg(context)) {
 				/* Chase down rebinding of out and ref
 				 */
@@ -642,9 +642,9 @@ public abstract class BinExp extends Expression {
 					return e;
 				}
 				if (null != fp)
-					e2 = fp.call(v.type(), ev, e2, context);
+					e2 = fp.call(v.type, ev, e2, context);
 				else
-					e2 = Constfold.Cast(v.type(), v.type(), e2, context);
+					e2 = Constfold.Cast(v.type, v.type, e2, context);
 				if (e2 != EXP_CANT_INTERPRET) {
 					if (!v.isParameter()) {
 						for (int i = 0; true; i++) {
@@ -669,7 +669,7 @@ public abstract class BinExp extends Expression {
 		 */
 		else if (e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff) {
 			SymOffExp soe = (SymOffExp) ((PtrExp) e1).e1;
-			IVarDeclaration v = soe.var.isVarDeclaration();
+			VarDeclaration v = soe.var.isVarDeclaration();
 
 			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
@@ -724,7 +724,7 @@ public abstract class BinExp extends Expression {
 		else if (e1.op == TOKindex && ((IndexExp) e1).e1.op == TOKvar) {
 			IndexExp ie = (IndexExp) e1;
 			VarExp ve = (VarExp) ie.e1;
-			IVarDeclaration v = ve.var.isVarDeclaration();
+			VarDeclaration v = ve.var.isVarDeclaration();
 
 			if (null == v || v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
@@ -735,7 +735,7 @@ public abstract class BinExp extends Expression {
 					return e;
 				}
 
-				Type t = v.type().toBasetype(context);
+				Type t = v.type.toBasetype(context);
 				if (t.ty == Tsarray) {
 					/* This array was void initialized. Create a
 					 * default initializer for it.
@@ -744,14 +744,14 @@ public abstract class BinExp extends Expression {
 					 * But we're too lazy at the moment to do it, as that
 					 * involves redoing Index() and whoever calls it.
 					 */
-					Expression ev = v.type().defaultInit(context);
+					Expression ev = v.type.defaultInit(context);
 					int dim = ((TypeSArray) t).dim.toInteger(context)
 							.intValue();
 					Expressions elements = new Expressions();
 					for (int i = 0; i < dim; i++)
 						elements.add(ev);
 					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
-					ae.type = v.type();
+					ae.type = v.type;
 					v.value(ae);
 				} else
 					return EXP_CANT_INTERPRET;
@@ -897,7 +897,7 @@ public abstract class BinExp extends Expression {
 		Expressions args2 = new Expressions(1);
 		int argsset = 0;
 
-		IAggregateDeclaration ad1;
+		AggregateDeclaration ad1;
 		if (t1.ty == Tclass)
 			ad1 = ((TypeClass) t1).sym;
 		else if (t1.ty == Tstruct)
@@ -905,7 +905,7 @@ public abstract class BinExp extends Expression {
 		else
 			ad1 = null;
 
-		IAggregateDeclaration ad2;
+		AggregateDeclaration ad2;
 		if (t2.ty == Tclass)
 			ad2 = ((TypeClass) t2).sym;
 		else if (t2.ty == Tstruct)
@@ -913,10 +913,10 @@ public abstract class BinExp extends Expression {
 		else
 			ad2 = null;
 
-		IDsymbol s = null;
-		IDsymbol s_r = null;
-		IFuncDeclaration fd = null;
-		ITemplateDeclaration td = null;
+		Dsymbol s = null;
+		Dsymbol s_r = null;
+		FuncDeclaration fd = null;
+		TemplateDeclaration td = null;
 		if (ad1 != null && id != null) {
 			s = search_function(ad1, id, context);
 		}
@@ -931,7 +931,7 @@ public abstract class BinExp extends Expression {
 			 * and see which is better.
 			 */
 			Expression e;
-			IFuncDeclaration lastf;
+			FuncDeclaration lastf;
 
 			args1.setDim(1);
 			args1.set(0, e1);
@@ -966,7 +966,7 @@ public abstract class BinExp extends Expression {
 
 			if (m.count > 1) {
 				// Error, ambiguous
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type().toChars(context), m.nextf.type()
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type
 								.toChars(context), m.lastf.toChars(context) }));
 			} else if (m.last == MATCHnomatch) {
 				m.lastf = m.anyf;
@@ -1005,7 +1005,7 @@ public abstract class BinExp extends Expression {
 				 * and see which is better.
 				 */
 				Expression e;
-				IFuncDeclaration lastf;
+				FuncDeclaration lastf;
 
 				if (0 == argsset) {
 					args1.setDim(1);
@@ -1041,7 +1041,7 @@ public abstract class BinExp extends Expression {
 				if (m.count > 1) {
 					// Error, ambiguous
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type().toChars(context), m.nextf.type().toChars(context), m.lastf.toChars(context) }));
+							IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
 				} else if (m.last == MATCHnomatch) {
 					m.lastf = m.anyf;
 				}

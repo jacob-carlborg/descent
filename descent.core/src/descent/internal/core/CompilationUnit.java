@@ -165,7 +165,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	requestor.source = contents;
 	//requestor.parser = parser;
 	
-	Module module = parser.parseCompilationUnit(this, resolveBindings);
+	Module module = parser.parseCompilationUnit(this);
 	
 	// update timestamp (might be IResource.NULL_STAMP if original does not exist)
 	if (underlyingResource == null) {

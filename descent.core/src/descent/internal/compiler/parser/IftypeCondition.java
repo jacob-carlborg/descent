@@ -55,7 +55,7 @@ public class IftypeCondition extends Condition {
 	}
 
 	@Override
-	public boolean include(Scope sc, IScopeDsymbol sd, SemanticContext context) {
+	public boolean include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
 		if (inc == 0) {
 			if (null == sc) {
 				context.acceptProblem(Problem.newSemanticTypeError(

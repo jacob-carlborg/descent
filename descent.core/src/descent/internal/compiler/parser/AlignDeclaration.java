@@ -36,7 +36,7 @@ public class AlignDeclaration extends AttribDeclaration {
 			int salign_save = sc.structalign;
 
 			sc.structalign = salign;
-			for (IDsymbol s : decl) {
+			for (Dsymbol s : decl) {
 				s.semantic(sc, context);
 			}
 			sc.structalign = salign_save;
@@ -46,7 +46,7 @@ public class AlignDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		AlignDeclaration ad;
 
 		Assert.isTrue(s == null);

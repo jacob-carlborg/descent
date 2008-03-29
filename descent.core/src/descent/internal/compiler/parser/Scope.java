@@ -19,22 +19,22 @@ public class Scope {
 	public final static int SCOPEctor = 0x0001; // constructor type
 	public final static int SCOPEstaticif = 0x0002; // inside static if
 
-	public static Scope createGlobal(IModule module, SemanticContext context) {
+	public static Scope createGlobal(Module module, SemanticContext context) {
 		Scope sc;
 
 		sc = new Scope(context);
 		sc.module = module;
 		sc.scopesym = new ScopeDsymbol();
-		sc.scopesym.symtab(new DsymbolTable());
+		sc.scopesym.symtab = new DsymbolTable();
 
 		// Add top level package as member of this global scope
-		IDsymbol m = module;
-		while (m.parent() != null) {
-			m = m.parent();
+		Dsymbol m = module;
+		while (m.parent != null) {
+			m = m.parent;
 		}
 
 		m.addMember(null, sc.scopesym, 1, context);
-		m.parent(null); // got changed by addMember()
+		m.parent = null; // got changed by addMember()
 
 		// Create the module scope underneath the global scope
 		sc = sc.push(module);
@@ -42,11 +42,11 @@ public class Scope {
 		return sc;
 	}
 	public Scope enclosing; // enclosing Scope
-	public IModule module; // Root module
-	public IScopeDsymbol scopesym; // current symbol
-	public IScopeDsymbol sd; // if in static if, and declaring new symbols,
+	public Module module; // Root module
+	public ScopeDsymbol scopesym; // current symbol
+	public ScopeDsymbol sd; // if in static if, and declaring new symbols,
 	public FuncDeclaration func; // function we are in
-	public IDsymbol parent; // parent to use
+	public Dsymbol parent; // parent to use
 	public LabelStatement slabel; // enclosing labelled statement
 	public SwitchStatement sw; // enclosing switch statement
 	public TryFinallyStatement tf; // enclosing try finally statement
@@ -150,11 +150,11 @@ public class Scope {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
-	public IClassDeclaration getClassScope() {
+	public ClassDeclaration getClassScope() {
 		Scope sc;
 
 		for (sc = this; sc != null; sc = sc.enclosing) {
-			IClassDeclaration cd;
+			ClassDeclaration cd;
 
 			if (sc.scopesym != null) {
 				cd = sc.scopesym.isClassDeclaration();
@@ -166,11 +166,11 @@ public class Scope {
 		return null;
 	}
 
-	public IAggregateDeclaration getStructClassScope() {
+	public AggregateDeclaration getStructClassScope() {
 		Scope sc;
 
 		for (sc = this; sc != null; sc = sc.enclosing) {
-			IAggregateDeclaration ad;
+			AggregateDeclaration ad;
 
 			if (sc.scopesym != null) {
 				ad = sc.scopesym.isClassDeclaration();
@@ -187,15 +187,15 @@ public class Scope {
 		return null;
 	}
 
-	public IDsymbol insert(IDsymbol s) {
+	public Dsymbol insert(Dsymbol s) {
 		Scope sc;
 
 		for (sc = this; sc != null; sc = sc.enclosing) {
 			if (sc.scopesym != null) {
-				if (sc.scopesym.symtab() == null) {
-					sc.scopesym.symtab(new DsymbolTable());
+				if (sc.scopesym.symtab == null) {
+					sc.scopesym.symtab = new DsymbolTable();
 				}
-				return sc.scopesym.symtab().insert(s);
+				return sc.scopesym.symtab.insert(s);
 			}
 		}
 		Assert.isTrue(false);
@@ -244,15 +244,15 @@ public class Scope {
 		return s;
 	}
 
-	public Scope push(IScopeDsymbol ss) {
+	public Scope push(ScopeDsymbol ss) {
 		Scope s = push();
 		s.scopesym = ss;
 		return s;
 	}
 
-	public IDsymbol search(Loc loc, IdentifierExp ident, IDsymbol[] pscopesym,
+	public Dsymbol search(Loc loc, IdentifierExp ident, Dsymbol[] pscopesym,
 			SemanticContext context) {
-		IDsymbol s;
+		Dsymbol s;
 		Scope sc;
 
 		if (ASTDmdNode.equals(ident, Id.empty)) {

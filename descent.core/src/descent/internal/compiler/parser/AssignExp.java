@@ -54,7 +54,7 @@ public class AssignExp extends BinExp {
 		if (e1.op == TOK.TOKarray) {
 			Type t1;
 			ArrayExp ae = (ArrayExp) e1;
-			IAggregateDeclaration ad;
+			AggregateDeclaration ad;
 			char[] id = Id.index;
 
 			ae.e1 = ae.e1.semantic(sc, context);
@@ -102,7 +102,7 @@ public class AssignExp extends BinExp {
 		if (e1.op == TOK.TOKslice) {
 			Type t1;
 			SliceExp ae = (SliceExp) e1;
-			IAggregateDeclaration ad;
+			AggregateDeclaration ad;
 
 			ae.e1 = ae.e1.semantic(sc, context);
 			ae.e1 = resolveProperties(sc, ae.e1, context);

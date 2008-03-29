@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.Package;
 
 public class AstVisitorAdapter implements IASTVisitor {
 
-	public void endVisit(INode node) {
+	public void endVisit(ASTNode node) {
 	}
 
 	public void endVisit(AddAssignExp node) {
@@ -692,13 +692,13 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(XorExp node) {
 	}
 
-	public void postVisit(INode node) {
+	public void postVisit(ASTNode node) {
 	}
 
-	public void preVisit(INode node) {
+	public void preVisit(ASTNode node) {
 	}
 
-	public boolean visit(INode node) {
+	public boolean visit(ASTNode node) {
 		return true;
 	}
 

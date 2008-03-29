@@ -64,9 +64,9 @@ public class TypeIdentifier extends TypeQualified {
 
 	@Override
 	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
-			IDsymbol[] ps, SemanticContext context) {
-		IDsymbol s;
-		IDsymbol[] scopesym = { null };
+			Dsymbol[] ps, SemanticContext context) {
+		Dsymbol s;
+		Dsymbol[] scopesym = { null };
 
 		s = sc.search(loc, ident, scopesym, context);
 		
@@ -95,7 +95,7 @@ public class TypeIdentifier extends TypeQualified {
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		Type[] t = { null };
 		Expression[] e = { null };
-		IDsymbol[] s = { null };
+		Dsymbol[] s = { null };
 
 		resolve(loc, sc, e, t, s, context);
 		
@@ -103,9 +103,9 @@ public class TypeIdentifier extends TypeQualified {
 			if (t[0].ty == TY.Ttypedef) {
 				TypeTypedef tt = (TypeTypedef) t[0];
 
-				if (tt.sym.sem() == 1) {
+				if (tt.sym.sem == 1) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CircularReferenceOfTypedef, tt.sym.ident(), new String[] { tt.sym.ident().toString() }));
+							IProblem.CircularReferenceOfTypedef, tt.sym.ident, new String[] { tt.sym.ident.toString() }));
 				}
 			}
 		} else {
@@ -164,13 +164,13 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		if (null == sc) {
 			return null;
 		}
 
-		IDsymbol[] scopesym = { null };
-		IDsymbol s = sc.search(loc, ident, scopesym, context);
+		Dsymbol[] scopesym = { null };
+		Dsymbol s = sc.search(loc, ident, scopesym, context);
 		
 		// Descent: for binding resolution
 		ident.resolvedSymbol = s;

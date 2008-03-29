@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class UnionDeclaration extends StructDeclaration implements IUnionDeclaration {
+public class UnionDeclaration extends StructDeclaration {
 
 	public UnionDeclaration(Loc loc, IdentifierExp id) {
 		super(loc, id);
@@ -39,7 +39,7 @@ public class UnionDeclaration extends StructDeclaration implements IUnionDeclara
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		UnionDeclaration ud;
 
 		if (s != null) {

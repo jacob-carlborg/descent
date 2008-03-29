@@ -12,7 +12,7 @@ import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Ttuple;
 
 // DMD 1.020
-public class InterfaceDeclaration extends ClassDeclaration implements IInterfaceDeclaration {
+public class InterfaceDeclaration extends ClassDeclaration {
 
 	public InterfaceDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {
@@ -45,17 +45,33 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 	}
 
 	public boolean isBaseOf(BaseClass bc, int[] poffset) {
-		return SemanticMixin.isBaseOf(this, bc, poffset);
+		for (int j = 0; j < ASTDmdNode.size(bc.baseInterfaces); j++) {
+			BaseClass b = bc.baseInterfaces.get(j);
+
+			if (SemanticMixin.equals(this, b.base)) {
+				if (poffset != null) {
+					poffset[0] = b.offset;
+				}
+				return true;
+			}
+			if (this.isBaseOf(b, poffset)) {
+				return true;
+			}
+		}
+		if (poffset != null) {
+			poffset[0] = 0;
+		}
+		return false;
 	}
 
 	@Override
-	public boolean isBaseOf(IClassDeclaration cd, int[] poffset,
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
 			SemanticContext context) {
 		int j;
 
 		Assert.isTrue(baseClass == null);
-		for (j = 0; j < cd.interfaces().size(); j++) {
-			BaseClass b = cd.interfaces().get(j);
+		for (j = 0; j < cd.interfaces.size(); j++) {
+			BaseClass b = cd.interfaces.get(j);
 
 			if (SemanticMixin.equals(this, b.base)) {
 				if (poffset != null) {
@@ -75,7 +91,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 			}
 		}
 
-		if (cd.baseClass() != null && isBaseOf(cd.baseClass(), poffset, context)) {
+		if (cd.baseClass != null && isBaseOf(cd.baseClass, poffset, context)) {
 			return true;
 		}
 
@@ -179,7 +195,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 					baseclasses.remove(i);
 					continue;
 				}
-				if (b.base.symtab() == null || b.base.scope() != null) {
+				if (b.base.symtab == null || b.base.scope != null) {
 					// Forward reference of base, try again later
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
@@ -212,20 +228,20 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 
 			// Copy vtbl[] from base class
 			if (b.base.vtblOffset() != 0) {
-				int d = b.base.vtbl().size();
+				int d = b.base.vtbl.size();
 				if (d > 1) {
 					for (int j = 1; j < d; j++) {
-						vtbl.add(b.base.vtbl().get(j));
+						vtbl.add(b.base.vtbl.get(j));
 					}
 				}
 			} else {
-				vtbl.add(b.base.vtbl());
+				vtbl.add(b.base.vtbl);
 			}
 
 			// Lcontinue: ;
 		}
 
-		for (IDsymbol s : members) {
+		for (Dsymbol s : members) {
 			s.addMember(sc, this, 1, context);
 		}
 
@@ -245,7 +261,7 @@ public class InterfaceDeclaration extends ClassDeclaration implements IInterface
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		InterfaceDeclaration id;
 
 		if (s != null) {

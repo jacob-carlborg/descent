@@ -4,11 +4,12 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IField;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class TypedefDeclaration extends Declaration implements ITypedefDeclaration {
+public class TypedefDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi
 	public TypedefDeclaration next;
@@ -23,6 +24,8 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	// 2: semantic() has been run
 	// 3: semantic2() has been run
 	public boolean inuse;
+	
+	private IField javaElement;
 
 	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype,
 			Initializer init) {
@@ -110,7 +113,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	}
 
 	@Override
-	public Dsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Type basetype = this.basetype.syntaxCopy(context);
 
 		Initializer init = null;
@@ -161,32 +164,17 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		return SemanticMixin.getSignature(this);
 	}
 	
-	public Type basetype() {
-		return basetype;
-	}
-	
-	public IInitializer init() {
-		return init;
-	}
-	
-	public boolean inuse() {
-		return inuse;
-	}
-	
-	public void inuse(boolean inuse) {
-		this.inuse = inuse;
-	}
-	
-	public void basetype(Type basetype) {
-		this.basetype = basetype;
-	}
-	
-	public int sem() {
-		return sem;
-	}
-	
 	public char getSignaturePrefix() {
 		return ISignatureConstants.TYPEDEF;
+	}
+	
+	public void setJavaElement(IField field) {
+		this.javaElement = field;
+	}
+	
+	@Override
+	public IField getJavaElement() {
+		return javaElement;
 	}
 
 }

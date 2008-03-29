@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 public class CompileDeclaration extends AttribDeclaration {
 
 	public Expression exp, sourceExp;
-	public IScopeDsymbol sd;
+	public ScopeDsymbol sd;
 
 	public CompileDeclaration(Loc loc, Expression exp) {
 		super(null);
@@ -30,7 +30,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		this.sd = sd;
 		return memnum;
@@ -56,8 +56,8 @@ public class CompileDeclaration extends AttribDeclaration {
 		// p.nextToken();
 		p.loc = loc;
 		decl = p.parseModule();
-		for(IDsymbol s : decl) {
-			s.synthetic(true);
+		for(Dsymbol s : decl) {
+			s.synthetic = true;
 			s.setStart(getStart() + 1);
 			s.setLength(getLength());
 			s.setLineNumber(getLineNumber());
@@ -84,7 +84,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		CompileDeclaration sc = new CompileDeclaration(loc, exp.syntaxCopy(context));
 		return sc;
 	}
@@ -96,12 +96,6 @@ public class CompileDeclaration extends AttribDeclaration {
 		exp.toCBuffer(buf, hgs, context);
 		buf.writestring(");");
 		buf.writenl();
-	}
-	
-	@Override
-	public String getSignature() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

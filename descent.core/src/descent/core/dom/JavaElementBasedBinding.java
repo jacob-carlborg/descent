@@ -3,7 +3,7 @@ package descent.core.dom;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.JavaModelException;
-import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.Dsymbol;
 
 /**
  * A binding based on a java element.
@@ -12,9 +12,9 @@ public abstract class JavaElementBasedBinding implements IBinding {
 	
 	protected final DefaultBindingResolver bindingResolver;
 	private IJavaElement element;
-	protected final IDsymbol node;
+	protected final Dsymbol node;
 
-	public JavaElementBasedBinding(DefaultBindingResolver resolver, IJavaElement element, IDsymbol node) {
+	public JavaElementBasedBinding(DefaultBindingResolver resolver, IJavaElement element, Dsymbol node) {
 		this.bindingResolver = resolver;
 		this.element = element;
 		this.node = node;

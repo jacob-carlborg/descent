@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.STC.STCin;
 
 // DMD 1.020
-public abstract class Declaration extends Dsymbol implements IDeclaration {
+public abstract class Declaration extends Dsymbol {
 
 	public Type type;
 	public Type sourceType;
@@ -67,31 +67,31 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	}
 
 	public boolean isCtorinit() {
-		return SemanticMixin.isCtorinit(this);
+		return (this.storage_class & STC.STCctorinit) != 0;
 	}
 
 	public boolean isFinal() {
-		return SemanticMixin.isFinal(this);
+		return (this.storage_class & STC.STCfinal) != 0;
 	}
 
 	public boolean isAbstract() {
-		return SemanticMixin.isAbstract(this);
+		return (this.storage_class & STC.STCabstract) != 0;
 	}
 
 	public boolean isConst() {
-		return SemanticMixin.isConst(this);
+		return (this.storage_class & STC.STCconst) != 0;
 	}
 
 	public boolean isAuto() {
-		return SemanticMixin.isAuto(this);
+		return (this.storage_class & STC.STCauto) != 0;
 	}
 
 	public boolean isScope() {
-		return SemanticMixin.isScope(this);
+		return (this.storage_class & (STC.STCscope | STC.STCauto)) != 0;
 	}
 
 	public boolean isStatic() {
-		return SemanticMixin.isStatic(this);
+		return (this.storage_class & (STC.STCstatic)) != 0;
 	}
 
 	public boolean isSynchronized() {
@@ -99,7 +99,7 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	}
 
 	public boolean isParameter() {
-		return SemanticMixin.isParameter(this);
+		return (this.storage_class & (STC.STCparameter)) != 0;
 	}
 
 	@Override
@@ -116,11 +116,11 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	}
 
 	public boolean isOut() {
-		return SemanticMixin.isOut(this);
+		return (this.storage_class & (STC.STCout)) != 0;
 	}
 
 	public boolean isRef() {
-		return SemanticMixin.isRef(this);
+		return (this.storage_class & (STC.STCref)) != 0;
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 				throw new IllegalStateException("assert(0);");
 			}
 		}
-		String p = mangle(this);
+		String p = mangle(context);
 		OutBuffer buf = new OutBuffer();
 		buf.writestring("_D");
 		buf.writestring(p);
@@ -158,34 +158,6 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	
 	public Type type() {
 		return type;
-	}
-	
-	public void type(Type type) {
-		this.type = type;
-	}
-	
-	public int storage_class() {
-		return storage_class;
-	}
-	
-	public void storage_class(int storage_class) {
-		this.storage_class = storage_class;
-	}
-	
-	public LINK linkage() {
-		return linkage;
-	}
-	
-	public void linkage(LINK linkage) {
-		this.linkage = linkage;
-	}
-	
-	public PROT protection() {
-		return protection;
-	}
-	
-	public void protection(PROT protection) {
-		this.protection = protection;
 	}
 
 }

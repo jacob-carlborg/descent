@@ -41,9 +41,9 @@ public class DotTemplateInstanceExp extends UnaExp {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		IDsymbol s;
-		IDsymbol s2;
-		ITemplateDeclaration td;
+		Dsymbol s;
+		Dsymbol s2;
+		TemplateDeclaration td;
 		Expression e;
 		char[] id;
 		Type t1;
@@ -107,7 +107,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(((TemplateInstance) s).name.ident) }));
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident().ident) }));
+						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident.ident) }));
 			}
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
@@ -129,7 +129,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		ti.tempdecl = td;
 
 		if (eleft != null) {
-			IDeclaration v;
+			Declaration v;
 
 			ti.semantic(sc, context);
 			s = ti.inst.toAlias(context);

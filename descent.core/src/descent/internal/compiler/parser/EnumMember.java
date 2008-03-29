@@ -1,12 +1,15 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.IField;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class EnumMember extends Dsymbol implements IEnumMember {
+public class EnumMember extends Dsymbol {
 
 	public Expression value, sourceValue;
+	
+	private IField javaElement;
 
 	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
 		super(id);
@@ -48,7 +51,7 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		Expression e = null;
 		if (value != null) {
 			e = value.syntaxCopy(context);
@@ -85,6 +88,15 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 	@Override
 	public char getSignaturePrefix() {
 		return ISignatureConstants.ENUM_MEMBER;
+	}
+	
+	public void setJavaElement(IField field) {
+		this.javaElement = field;
+	}
+	
+	@Override
+	public IField getJavaElement() {
+		return javaElement;
 	}
 
 }

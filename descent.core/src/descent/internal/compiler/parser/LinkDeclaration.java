@@ -37,7 +37,7 @@ public class LinkDeclaration extends AttribDeclaration {
 			LINK linkage_save = sc.linkage;
 
 			sc.linkage = linkage;
-			for (IDsymbol s : decl) {
+			for (Dsymbol s : decl) {
 				s.semantic(sc, context);
 			}
 			sc.linkage = linkage_save;
@@ -52,7 +52,7 @@ public class LinkDeclaration extends AttribDeclaration {
 			LINK linkage_save = sc.linkage;
 
 			sc.linkage = linkage;
-			for (IDsymbol s : decl) {
+			for (Dsymbol s : decl) {
 				s.semantic3(sc, context);
 			}
 			sc.linkage = linkage_save;
@@ -62,7 +62,7 @@ public class LinkDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		LinkDeclaration ld;
 
 		Assert.isNotNull(s);

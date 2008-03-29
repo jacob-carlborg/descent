@@ -163,7 +163,7 @@ public class ReturnStatement extends Statement {
 
 			if (fd.nrvo_can != 0 && exp.op == TOKvar) {
 				VarExp ve = (VarExp) exp;
-				IVarDeclaration v = ve.var.isVarDeclaration();
+				VarDeclaration v = ve.var.isVarDeclaration();
 
 				if (v == null || v.isOut() || v.isRef()) {
 					fd.nrvo_can = 0;

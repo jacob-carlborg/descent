@@ -18,8 +18,8 @@ public class Import extends Dsymbol {
 
 	public Identifiers names;
 	public Identifiers aliases;
-	public IModule mod;
-	public IPackage pkg;
+	public Module mod;
+	public Package pkg;
 	public boolean isstatic;
 
 	public int firstStart;
@@ -66,7 +66,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public int addMember(Scope sc, IScopeDsymbol sd, int memnum,
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		int result = 0;
 
@@ -115,18 +115,18 @@ public class Import extends Dsymbol {
 	}
 
 	public void load(Scope sc, SemanticContext context) {
-		IDsymbolTable dst;
-		IDsymbol s;
+		DsymbolTable dst;
+		Dsymbol s;
 
 		// See if existing module
-		IPackage[] ppkg = { pkg };
+		Package[] ppkg = { pkg };
 		dst = Package.resolve(packages, null, ppkg, context);
 		pkg = ppkg[0];
 
 		s = dst.lookup(id);
 		if (null != s) {
 			if (null != s.isModule()) {
-				mod = (IModule) s;
+				mod = (Module) s;
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.PackageAndModuleHaveTheSameName, this));
@@ -146,9 +146,9 @@ public class Import extends Dsymbol {
 			dst.insert(id, mod); // id may be different from mod->ident,
 			// if so then insert alias
 
-			if (null == mod.importedFrom()) {
-				mod.importedFrom(null != sc ? sc.module.importedFrom()
-						: context.Module_rootModule);
+			if (null == mod.importedFrom) {
+				mod.importedFrom = null != sc ? sc.module.importedFrom
+						: context.Module_rootModule;
 			}
 		}
 
@@ -168,7 +168,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public IDsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
 		if (null == pkg) {
 			load(null, context);
@@ -195,13 +195,13 @@ public class Import extends Dsymbol {
 			}
 
 			// Modules need a list of each imported module
-			if (sc.module.aimports() == null) {
-				sc.module.aimports(new Array());
+			if (sc.module.aimports == null) {
+				sc.module.aimports = new Array();
 			}
-			sc.module.aimports().add(mod);
+			sc.module.aimports.add(mod);
 
-			if (mod.needmoduleinfo()) {
-				sc.module.needmoduleinfo(true);
+			if (mod.needmoduleinfo) {
+				sc.module.needmoduleinfo = true;
 			}
 
 			sc = sc.push(mod);
@@ -228,13 +228,13 @@ public class Import extends Dsymbol {
 		}
 		
 		mod.semantic2(sc, context);
-		if (mod.needmoduleinfo()) {
-			sc.module.needmoduleinfo(true);
+		if (mod.needmoduleinfo) {
+			sc.module.needmoduleinfo = true;
 		}
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		assert (null == s);
 
 		Import si;
@@ -248,7 +248,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public IDsymbol toAlias(SemanticContext context) {
+	public Dsymbol toAlias(SemanticContext context) {
 		if (aliasId != null) {
 			return mod;
 		}
@@ -285,7 +285,7 @@ public class Import extends Dsymbol {
 	
 	@Override
 	public String getSignature() {
-		if (mod != null && equals(mod.ident(), ident)) {
+		if (mod != null && equals(mod.ident, ident)) {
 			return mod.getSignature();
 		}
 		return null;
@@ -293,7 +293,7 @@ public class Import extends Dsymbol {
 	
 	@Override
 	public IJavaElement getJavaElement() {
-		if (mod != null && equals(mod.ident(), ident)) {
+		if (mod != null && equals(mod.ident, ident)) {
 			return mod.getJavaElement();
 		}
 		return null;

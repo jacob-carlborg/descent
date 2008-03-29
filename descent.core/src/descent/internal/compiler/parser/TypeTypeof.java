@@ -46,7 +46,7 @@ public class TypeTypeof extends TypeQualified {
 		}
 
 		if (idents != null && idents.size() != 0) {
-			IDsymbol s = t.toDsymbol(sc, context);
+			Dsymbol s = t.toDsymbol(sc, context);
 			for (int i = 0; i < idents.size(); i++) {
 				if (null == s) {
 					break;
@@ -107,7 +107,7 @@ public class TypeTypeof extends TypeQualified {
 	}
 
 	@Override
-	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		Type t = semantic(Loc.ZERO, sc, context);
 		if (same(t, this, context)) {
 			return null;

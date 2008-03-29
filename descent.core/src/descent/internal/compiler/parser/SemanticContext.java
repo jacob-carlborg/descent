@@ -31,26 +31,26 @@ public class SemanticContext {
 	// TODO file imports should be selectable in a dialog or something
 	public Map<String, File> fileImports = new HashMap<String, File>();
 	
-	public IClassDeclaration ClassDeclaration_object;
-	public IClassDeclaration ClassDeclaration_classinfo;
-	public IClassDeclaration Type_typeinfo;
-	public IClassDeclaration Type_typeinfoclass;
-	public IClassDeclaration Type_typeinfointerface;
-	public IClassDeclaration Type_typeinfostruct;
-	public IClassDeclaration Type_typeinfotypedef;
-	public IClassDeclaration Type_typeinfopointer;
-	public IClassDeclaration Type_typeinfoarray;
-	public IClassDeclaration Type_typeinfostaticarray;
-	public IClassDeclaration Type_typeinfoassociativearray;
-	public IClassDeclaration Type_typeinfoenum;
-	public IClassDeclaration Type_typeinfofunction;
-	public IClassDeclaration Type_typeinfodelegate;
-	public IClassDeclaration Type_typeinfotypelist;
+	public ClassDeclaration ClassDeclaration_object;
+	public ClassDeclaration ClassDeclaration_classinfo;
+	public ClassDeclaration Type_typeinfo;
+	public ClassDeclaration Type_typeinfoclass;
+	public ClassDeclaration Type_typeinfointerface;
+	public ClassDeclaration Type_typeinfostruct;
+	public ClassDeclaration Type_typeinfotypedef;
+	public ClassDeclaration Type_typeinfopointer;
+	public ClassDeclaration Type_typeinfoarray;
+	public ClassDeclaration Type_typeinfostaticarray;
+	public ClassDeclaration Type_typeinfoassociativearray;
+	public ClassDeclaration Type_typeinfoenum;
+	public ClassDeclaration Type_typeinfofunction;
+	public ClassDeclaration Type_typeinfodelegate;
+	public ClassDeclaration Type_typeinfotypelist;
 
 	public Type Type_tvoidptr;
 	
 	public Module Module_rootModule;
-	public IDsymbolTable Module_modules;
+	public DsymbolTable Module_modules;
 	public Array Module_amodules;
 	public Dsymbols Module_deferred;
 	public int Module_dprogress;
@@ -64,7 +64,7 @@ public class SemanticContext {
 	
 	public StringTable stringTable;
 
-	public IDsymbolTable st;
+	public DsymbolTable st;
 	
 	/*
 	 * If != 0, problems are not reported.
@@ -120,30 +120,30 @@ public class SemanticContext {
 	/*
 	 * This code is invoked by DMD after parsing a module.
 	 */
-	public void afterParse(IModule module) {
-		IDsymbolTable dst;
+	public void afterParse(Module module) {
+		DsymbolTable dst;
 
-		if (module.md() != null) {
-			module.ident(module.md().id());
-			IDsymbol[] pparent = { module.parent() };
-			dst = Package.resolve(module.md().packages(), pparent, null, this);
-			module.parent(pparent[0]);
+		if (module.md != null) {
+			module.ident = module.md.id();
+			Dsymbol[] pparent = { module.parent };
+			dst = Package.resolve(module.md.packages(), pparent, null, this);
+			module.parent = pparent[0];
 		} else {
 			dst = Module_modules;
 		}
 
 		// Update global list of modules
 		if (null == dst.insert(module)) {
-			if (module.md() != null) {
+			if (module.md != null) {
 				acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ModuleIsInMultiplePackages, module.md(), new String[] { module.md().toChars(this) }));
+						IProblem.ModuleIsInMultiplePackages, module.md, new String[] { module.md.toChars(this) }));
 			} else {
-				if (module.md() == null) {
+				if (module.md == null) {
 					acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ModuleIsInMultipleDefined, 0, 0, 1));
 				} else {
 					acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ModuleIsInMultipleDefined, module.md()));
+							IProblem.ModuleIsInMultipleDefined, module.md));
 				}
 			}
 		} else {
@@ -177,10 +177,10 @@ public class SemanticContext {
 		return new IdentifierExp(Loc.ZERO, id);
 	}
 
-	public IFuncDeclaration genCfunc(Type treturn, char[] id) {
-		IFuncDeclaration fd;
+	public FuncDeclaration genCfunc(Type treturn, char[] id) {
+		FuncDeclaration fd;
 		TypeFunction tf;
-		IDsymbol s;
+		Dsymbol s;
 
 		// See if already in table
 		if (st == null)
@@ -189,20 +189,20 @@ public class SemanticContext {
 		if (s != null) {
 			fd = s.isFuncDeclaration();
 			Assert.isNotNull(fd);
-			Assert.isTrue(fd.type().nextOf().equals(treturn));
+			Assert.isTrue(fd.type.nextOf().equals(treturn));
 		} else {
 			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
 			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(id),
 					STC.STCstatic, tf);
-			fd.protection(PROT.PROTpublic);
-			fd.linkage(LINK.LINKc);
+			fd.protection = PROT.PROTpublic;
+			fd.linkage = LINK.LINKc;
 
 			st.insert(fd);
 		}
 		return fd;
 	}
 	
-	public IModule load(Loc loc, Identifiers packages,
+	public Module load(Loc loc, Identifiers packages,
 			IdentifierExp ident) {
 		
 		// Build the compound module name
@@ -214,9 +214,7 @@ public class SemanticContext {
 		}
 		compoundName[compoundName.length - 1] = ident.ident;
 		
-		boolean wasLoaded = moduleFinder.isLoaded(compoundName);
-		
-		IModule m = moduleFinder.findModule(compoundName, this);
+		Module m = moduleFinder.findModule(compoundName, this);
 		if (m == null){
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
 			int length = ident.start + ident.length - start;
@@ -225,22 +223,20 @@ public class SemanticContext {
 			return null;
 		}
 
-		if (!wasLoaded) {
-			afterParse(m);
-			
-			// If we're in object.d, assign the well known class declarations
-			if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
-				for (IDsymbol symbol : m.members()) {
-					checkObjectMember(symbol);
-				}
+		afterParse(m);
+		
+		// If we're in object.d, assign the well known class declarations
+		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
+			for (Dsymbol symbol : m.members) {
+				checkObjectMember(symbol);
 			}
 		}
 		
 		return m;
 	}
 	
-	public IModule load(char[][] compoundName) {
-		IModule m = moduleFinder.findModule(compoundName, this);
+	public Module load(char[][] compoundName) {
+		Module m = moduleFinder.findModule(compoundName, this);
 		if (m == null){
 			return null;
 		}
@@ -249,7 +245,7 @@ public class SemanticContext {
 		
 		// If we're in object.d, assign the well known class declarations
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
-			for (IDsymbol symbol : m.members()) {
+			for (Dsymbol symbol : m.members) {
 				checkObjectMember(symbol);
 			}
 			
@@ -277,41 +273,41 @@ public class SemanticContext {
 		return m;
 	}
 	
-	public void checkObjectMember(IDsymbol s) {
-		if (s.ident() == null || s.ident().ident == null) {
+	public void checkObjectMember(Dsymbol s) {
+		if (s.ident == null || s.ident.ident == null) {
 			return;
 		}
 		
-		if (ASTDmdNode.equals(s.ident(), Id.Object)) {
-			ClassDeclaration_object = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.ClassInfo)) {
-			ClassDeclaration_classinfo = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo)) {
-			Type_typeinfo = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Class)) {
-			Type_typeinfoclass = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Interface)) {
-			Type_typeinfointerface = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Struct)) {
-			Type_typeinfostruct = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Typedef)) {
-			Type_typeinfotypedef = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Pointer)) {
-			Type_typeinfopointer = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Array)) {
-			Type_typeinfoarray = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_StaticArray)) {
-			Type_typeinfostaticarray = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_AssociativeArray)) {
-			Type_typeinfoassociativearray = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Enum)) {
-			Type_typeinfoenum = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Function)) {
-			Type_typeinfofunction = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Delegate)) {
-			Type_typeinfodelegate = (IClassDeclaration) s;
-		} else if (ASTDmdNode.equals(s.ident(), Id.TypeInfo_Tuple)) {
-			Type_typeinfotypelist = (IClassDeclaration) s;
+		if (ASTDmdNode.equals(s.ident, Id.Object)) {
+			ClassDeclaration_object = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.ClassInfo)) {
+			ClassDeclaration_classinfo = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo)) {
+			Type_typeinfo = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Class)) {
+			Type_typeinfoclass = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Interface)) {
+			Type_typeinfointerface = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Struct)) {
+			Type_typeinfostruct = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Typedef)) {
+			Type_typeinfotypedef = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Pointer)) {
+			Type_typeinfopointer = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Array)) {
+			Type_typeinfoarray = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_StaticArray)) {
+			Type_typeinfostaticarray = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_AssociativeArray)) {
+			Type_typeinfoassociativearray = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Enum)) {
+			Type_typeinfoenum = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Function)) {
+			Type_typeinfofunction = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Delegate)) {
+			Type_typeinfodelegate = (ClassDeclaration) s;
+		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Tuple)) {
+			Type_typeinfotypelist = (ClassDeclaration) s;
 		}
 	}
 

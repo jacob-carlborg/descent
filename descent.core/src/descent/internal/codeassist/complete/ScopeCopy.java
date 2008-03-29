@@ -26,13 +26,13 @@ public class ScopeCopy {
 		if (b.scopesym != null) {
 			Dsymbols dsymbols = new Dsymbols();
 			dsymbols.add(a.scopesym);
-			b.scopesym.members(dsymbols);
+			b.scopesym.members = dsymbols;
 		}
 		
-		if (a.scopesym != null && a.scopesym.symtab() != null) {
-			b.scopesym.symtab(new DsymbolTable(a.scopesym.symtab()));
+		if (a.scopesym != null && a.scopesym.symtab != null) {
+			b.scopesym.symtab = new DsymbolTable(a.scopesym.symtab);
 		} else {
-			b.scopesym.symtab(new DsymbolTable());
+			b.scopesym.symtab = new DsymbolTable();
 		}
 		if (a.enclosing != null) {
 			b.enclosing = copy(a.enclosing, context);

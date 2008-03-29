@@ -1441,15 +1441,15 @@ public class Constfold {
 		} else if (tb.ty == Tvoid) {
 			e = EXP_CANT_INTERPRET;
 		} else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
-			IStructDeclaration sd = tb.toDsymbol(null, context)
+			StructDeclaration sd = tb.toDsymbol(null, context)
 					.isStructDeclaration();
 			if (sd == null) {
 				throw new IllegalStateException("assert(sd);");
 			}
 			Expressions elements = new Expressions();
-			for (int i = 0; i < sd.fields().size(); i++) {
-				IDsymbol s = sd.fields().get(i);
-				IVarDeclaration v = s.isVarDeclaration();
+			for (int i = 0; i < sd.fields.size(); i++) {
+				Dsymbol s = sd.fields.get(i);
+				VarDeclaration v = s.isVarDeclaration();
 				if (v == null) {
 					throw new IllegalStateException("assert(v);");
 				}
@@ -1460,7 +1460,7 @@ public class Constfold {
 				}
 
 				Expression exp = new IntegerExp(0);
-				exp = Cast(v.type(), v.type(), exp, context);
+				exp = Cast(v.type, v.type, exp, context);
 				if (exp == EXP_CANT_INTERPRET) {
 					return exp;
 				}

@@ -14,10 +14,10 @@ import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
+import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
-import descent.internal.compiler.parser.IEnumDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.IntegerExp;
@@ -192,8 +192,8 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			break;
 		case Tenum:
 			TypeEnum te = (TypeEnum) type;
-			IEnumDeclaration e = te.sym;
-			evalInt(value, e.memtype());
+			EnumDeclaration e = te.sym;
+			evalInt(value, e.memtype);
 			break;
 		}
 	}

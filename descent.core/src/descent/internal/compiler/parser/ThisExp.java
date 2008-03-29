@@ -63,9 +63,9 @@ public class ThisExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		IFuncDeclaration fd;
+		FuncDeclaration fd;
 		@SuppressWarnings("unused")
-		IFuncDeclaration fdthis;
+		FuncDeclaration fdthis;
 		@SuppressWarnings("unused")
 		int nested = 0;
 
@@ -79,9 +79,9 @@ public class ThisExp extends Expression {
 		 */
 		if (sc.intypeof != 0) {
 			// Find enclosing struct or class
-			for (IDsymbol s = sc.parent; true; s = s.parent()) {
-				IClassDeclaration cd;
-				IStructDeclaration sd;
+			for (Dsymbol s = sc.parent; true; s = s.parent) {
+				ClassDeclaration cd;
+				StructDeclaration sd;
 
 				if (s == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -91,12 +91,12 @@ public class ThisExp extends Expression {
 				}
 				cd = s.isClassDeclaration();
 				if (cd != null) {
-					type = cd.type();
+					type = cd.type;
 					return this;
 				}
 				sd = s.isStructDeclaration();
 				if (sd != null) {
-					type = sd.type().pointerTo(context);
+					type = sd.type.pointerTo(context);
 					return this;
 				}
 			}

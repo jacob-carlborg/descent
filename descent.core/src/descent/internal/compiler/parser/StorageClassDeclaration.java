@@ -54,6 +54,8 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public int stc;
 	public Modifier modifier;
 	public boolean colon;
+	
+	public Long flags;
 
 	public StorageClassDeclaration(int stc, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {
@@ -90,18 +92,18 @@ public class StorageClassDeclaration extends AttribDeclaration {
 
 			sc.stc |= stc;
 
-			for (IDsymbol s : decl) {
+			for (Dsymbol s : decl) {
 				// Send extra modifiers to out children, so that they can report better problems
-				s.extraModifiers(modifiers);
-				if (s.extraModifiers() == null) {
-					s.extraModifiers(new ArrayList<Modifier>());
+				s.extraModifiers = modifiers;
+				if (s.extraModifiers == null) {
+					s.extraModifiers = new ArrayList<Modifier>();
 				}
 				if (extraModifiers != null) {
-					s.extraModifiers().addAll(extraModifiers);
+					s.extraModifiers.addAll(extraModifiers);
 				}
-				s.extraModifiers().add(modifier);
+				s.extraModifiers.add(modifier);
 				s.semantic(sc, context);
-				s.extraModifiers(null);
+				s.extraModifiers = null;
 			}
 
 			sc.stc = stc_save;
@@ -111,7 +113,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StorageClassDeclaration scd;
 
 		if (s != null) {
@@ -146,6 +148,9 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	
 	@Override
 	public long getFlags() {
+		if (flags != null) {
+			return flags;
+		}
 		return modifier.getFlags() | super.getFlags();
 	}
 

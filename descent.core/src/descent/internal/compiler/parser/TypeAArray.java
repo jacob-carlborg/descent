@@ -65,7 +65,7 @@ public class TypeAArray extends TypeArray {
 			SemanticContext context) {
 		if (equals(ident, Id.length)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 
 			fd = context.genCfunc(Type.tsize_t, Id.aaLen);
@@ -73,10 +73,10 @@ public class TypeAArray extends TypeArray {
 			arguments = new Expressions();
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
-			e.type = fd.type().next;
+			e.type = fd.type.next;
 		} else if (equals(ident, Id.keys)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 			int size = key.size(e.loc, context);
 
@@ -92,7 +92,7 @@ public class TypeAArray extends TypeArray {
 			e.type = index.arrayOf(context);
 		} else if (equals(ident, Id.values)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 
 			fd = context.genCfunc(Type.tindex, Id.aaValues);
@@ -108,7 +108,7 @@ public class TypeAArray extends TypeArray {
 			e.type = next.arrayOf(context);
 		} else if (equals(ident, Id.rehash)) {
 			Expression ec;
-			IFuncDeclaration fd;
+			FuncDeclaration fd;
 			Expressions arguments;
 
 			fd = context.genCfunc(Type.tint64, Id.aaRehash);

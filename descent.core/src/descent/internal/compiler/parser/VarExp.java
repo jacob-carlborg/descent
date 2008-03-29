@@ -16,12 +16,12 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class VarExp extends Expression {
 
-	public IDeclaration var;
+	public Declaration var;
 
-	public VarExp(Loc loc, IDeclaration var) {
+	public VarExp(Loc loc, Declaration var) {
 		super(loc, TOK.TOKvar);
 		this.var = var;
-		this.type = var.type();
+		this.type = var.type;
 	}
 
 	@Override
@@ -32,15 +32,15 @@ public class VarExp extends Expression {
 
 	@Override
 	public void checkEscape(SemanticContext context) {
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
-			Type tb = v.type().toBasetype(context);
+			Type tb = v.type.toBasetype(context);
 			// if reference type
 			if (tb.ty == Tarray || tb.ty == Tsarray || tb.ty == Tclass) {
 				if ((v.isAuto() || v.isScope()) && !v.noauto()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.EscapingReferenceToAutoLocal, this, new String[] { v.toChars(context) }));
-				} else if ((v.storage_class() & STCvariadic) != 0) {
+				} else if ((v.storage_class & STCvariadic) != 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.EscapingReferenceToVariadicParameter, this, new String[] { v.toChars(context) }));
 				}
@@ -89,7 +89,7 @@ public class VarExp extends Expression {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotChangeReferenceToStaticArray, this, new String[] { var.toChars(context) }));
 		}
 
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if (v != null
 				&& v.canassign() == 0
 				&& (var.isConst() || (context.global.params.Dversion > 1 && var
@@ -99,17 +99,17 @@ public class VarExp extends Expression {
 		}
 
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
-			IDsymbol s = sc.func;
+			Dsymbol s = sc.func;
 			while (true) {
-				IFuncDeclaration fd = null;
+				FuncDeclaration fd = null;
 				if (s != null) {
 					fd = s.isFuncDeclaration();
 				}
 				if (fd != null
-						&& ((fd.isCtorDeclaration() != null && (var.storage_class() & STCfield) != 0) || (fd
-								.isStaticCtorDeclaration() != null && (var.storage_class() & STCfield) == 0))
+						&& ((fd.isCtorDeclaration() != null && (var.storage_class & STCfield) != 0) || (fd
+								.isStaticCtorDeclaration() != null && (var.storage_class & STCfield) == 0))
 						&& fd.toParent() == var.toParent()) {
-					IVarDeclaration v2 = var.isVarDeclaration();
+					VarDeclaration v2 = var.isVarDeclaration();
 					Assert.isNotNull(v2);
 					v2.ctorinit(true);
 				} else {
@@ -146,7 +146,7 @@ public class VarExp extends Expression {
 	public void scanForNestedRef(Scope sc, SemanticContext context)
 	{
 		//printf("VarExp.scanForNestedRef(%s)\n", toChars());
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if(null != v)
 			v.checkNestedReference(sc, Loc.ZERO, context);
 	}
@@ -154,14 +154,14 @@ public class VarExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
-			type = var.type();
+			type = var.type;
 		}
 
-		IVarDeclaration v = var.isVarDeclaration();
+		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (v.isConst() && type.toBasetype(context).ty != TY.Tsarray
 					&& v.init() != null) {
-				IExpInitializer ei = v.init().isExpInitializer();
+				ExpInitializer ei = v.init().isExpInitializer();
 				if (ei != null) {
 					return ei.exp().implicitCastTo(sc, type, context);
 				}
@@ -184,7 +184,7 @@ public class VarExp extends Expression {
 
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
-		if ((var.storage_class() & STClazy) != 0) {
+		if ((var.storage_class & STClazy) != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.LazyVariablesCannotBeLvalues, this));
 		}
 		return this;

@@ -6,9 +6,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class ScopeExp extends Expression {
 
-	public IScopeDsymbol sds, sourceSds;
+	public ScopeDsymbol sds, sourceSds;
 
-	public ScopeExp(Loc loc, IScopeDsymbol pkg) {
+	public ScopeExp(Loc loc, ScopeDsymbol pkg) {
 		super(loc, TOK.TOKimport);
 		this.sds = this.sourceSds = pkg;
 	}
@@ -35,14 +35,14 @@ public class ScopeExp extends Expression {
 		}
 		
 		TemplateInstance ti;
-		IScopeDsymbol sds2;
+		ScopeDsymbol sds2;
 
 		boolean loop = true;
 		Lagain: while (loop) {
 			loop = false;
 			ti = sds.isTemplateInstance();
 			if (ti != null && context.global.errors == 0) {
-				IDsymbol s;
+				Dsymbol s;
 				if (0 == ti.semanticdone) {
 					ti.semantic(sc, context);
 				}

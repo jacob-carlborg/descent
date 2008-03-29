@@ -104,6 +104,18 @@ public Object getConstant() throws JavaModelException {
 	}
 	return constant;
 }
+/*
+ * (non-Javadoc)
+ * @see descent.core.IField#getInitializationSource()
+ */
+public String getInitializerSource() throws JavaModelException {
+	SourceFieldElementInfo info = (SourceFieldElementInfo) getElementInfo();
+	char[] constantSourceChars = info.initializationSource;
+	if (constantSourceChars == null) {
+		return null;
+	}
+	return new String(constantSourceChars);
+}
 /**
  * @see IJavaElement
  */

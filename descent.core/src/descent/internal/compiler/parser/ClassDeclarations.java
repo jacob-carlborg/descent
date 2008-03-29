@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 // DMD 1.020
-public class ClassDeclarations extends Array<IClassDeclaration> {
+public class ClassDeclarations extends Array<ClassDeclaration> {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -13,9 +13,9 @@ import static descent.internal.compiler.parser.TY.Tenum;
 // DMD 1.020
 public class TypeEnum extends Type {
 
-	public IEnumDeclaration sym;
+	public EnumDeclaration sym;
 
-	public TypeEnum(IEnumDeclaration sym) {
+	public TypeEnum(EnumDeclaration sym) {
 		super(TY.Tenum, null);
 		this.sym = sym;
 	}
@@ -28,12 +28,12 @@ public class TypeEnum extends Type {
 
 	@Override
 	public int alignsize(SemanticContext context) {
-		if (null == sym.memtype()) {
+		if (null == sym.memtype) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
 			return 4;
 		}
-		return sym.memtype().alignsize(context);
+		return sym.memtype.alignsize(context);
 	}
 
 	@Override
@@ -55,18 +55,18 @@ public class TypeEnum extends Type {
 	public Expression defaultInit(SemanticContext context) {
 		// Initialize to first member of enum
 		Expression e;
-		e = new IntegerExp(Loc.ZERO, sym.defaultval(), this);
+		e = new IntegerExp(Loc.ZERO, sym.defaultval, this);
 		return e;
 	}
 
 	@Override
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
-		IEnumMember m;
-		IDsymbol s;
+		EnumMember m;
+		Dsymbol s;
 		Expression em;
 
-		s = sym.symtab().lookup(ident);
+		s = sym.symtab.lookup(ident);
 		
 		// Descent: for binding resolution
 		ident.resolvedSymbol = s;
@@ -91,29 +91,29 @@ public class TypeEnum extends Type {
 		Expression e;
 
 		if (equals(ident, Id.max)) {
-			if (null == sym.symtab()) {
+			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = new IntegerExp(Loc.ZERO, sym.maxval(), this);
+			e = new IntegerExp(Loc.ZERO, sym.maxval, this);
 		} else if (equals(ident, Id.min)) {
-			if (null == sym.symtab()) {
+			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = new IntegerExp(Loc.ZERO, sym.minval(), this);
+			e = new IntegerExp(Loc.ZERO, sym.minval, this);
 		} else if (equals(ident, Id.init)) {
-			if (null == sym.symtab()) {
+			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
 			e = defaultInit(context);
 		} else {
-			if (null == sym.memtype()) {
+			if (null == sym.memtype) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = sym.memtype().getProperty(loc, ident, lineNumber, start, length, context);
+			e = sym.memtype.getProperty(loc, ident, lineNumber, start, length, context);
 		}
 		return e;
 	}
@@ -142,7 +142,7 @@ public class TypeEnum extends Type {
 
 		if (this.equals(to)) {
 			m = MATCHexact; // exact match
-		} else if (sym.memtype().implicitConvTo(to, context) != MATCHnomatch) {
+		} else if (sym.memtype.implicitConvTo(to, context) != MATCHnomatch) {
 			m = MATCHconvert; // match with conversions
 		} else {
 			m = MATCHnomatch; // no match
@@ -167,12 +167,12 @@ public class TypeEnum extends Type {
 
 	@Override
 	public boolean isunsigned() {
-		return sym.memtype().isunsigned();
+		return sym.memtype.isunsigned();
 	}
 
 	@Override
 	public boolean isZeroInit(SemanticContext context) {
-		return (sym.defaultval().equals(0));
+		return (sym.defaultval.equals(0));
 	}
 
 	@Override
@@ -183,22 +183,22 @@ public class TypeEnum extends Type {
 
 	@Override
 	public int size(Loc loc, SemanticContext context) {
-		if (null == sym.memtype()) {
+		if (null == sym.memtype) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
 			return 4;
 		}
-		return sym.memtype().size(loc, context);
+		return sym.memtype.size(loc, context);
 	}
 
 	@Override
 	public Type toBasetype(SemanticContext context) {
-		if (sym.memtype() == null) {
+		if (sym.memtype == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.EnumIsForwardReference, sym));
 			return tint32;
 		}
-		return sym.memtype().toBasetype(context);
+		return sym.memtype.toBasetype(context);
 	}
 
 	@Override
@@ -224,7 +224,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public IDsymbol toDsymbol(Scope sc, SemanticContext context) {
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
 

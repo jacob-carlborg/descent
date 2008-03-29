@@ -53,11 +53,11 @@ public class SuperExp extends ThisExp {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		IFuncDeclaration fd;
+		FuncDeclaration fd;
 		@SuppressWarnings("unused")
-		IFuncDeclaration fdthis;
-		IClassDeclaration cd;
-		IDsymbol s;
+		FuncDeclaration fdthis;
+		ClassDeclaration cd;
+		Dsymbol s;
 
 		if (type != null) {
 			return this;
@@ -69,8 +69,8 @@ public class SuperExp extends ThisExp {
 		 */
 		if (sc.intypeof != 0) {
 			// Find enclosing class
-			for (IDsymbol s2 = sc.parent; true; s2 = s2.parent()) {
-				IClassDeclaration cd2;
+			for (Dsymbol s2 = sc.parent; true; s2 = s2.parent) {
+				ClassDeclaration cd2;
 
 				if (s2 == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -80,15 +80,15 @@ public class SuperExp extends ThisExp {
 				}
 				cd2 = s2.isClassDeclaration();
 				if (cd2 != null) {
-					cd2 = cd2.baseClass();
+					cd2 = cd2.baseClass;
 					if (cd2 == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ClassHasNoSuper, this,
-								new String[] { new String(s2.ident().ident) }));
+								new String[] { new String(s2.ident.ident) }));
 						// goto Lerr;
 						return semantic_Lerr(sc, context);
 					}
-					type = cd2.type();
+					type = cd2.type;
 					return this;
 				}
 			}
@@ -115,13 +115,13 @@ public class SuperExp extends ThisExp {
 			// goto Lerr;
 			return semantic_Lerr(sc, context);
 		}
-		if (cd.baseClass() == null) {
+		if (cd.baseClass == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ClassHasNoSuper, this,
-					new String[] { new String(cd.ident().ident) }));
+					new String[] { new String(cd.ident.ident) }));
 			type = fd.vthis().type;
 		} else {
-			type = cd.baseClass().type();
+			type = cd.baseClass.type;
 		}
 
 		var.isVarDeclaration().checkNestedReference(sc, loc, context);

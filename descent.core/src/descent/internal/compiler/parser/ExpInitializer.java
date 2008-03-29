@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class ExpInitializer extends Initializer implements IExpInitializer {
+public class ExpInitializer extends Initializer {
 
 	public Expression exp;
 	public Expression sourceExp;

@@ -6,13 +6,15 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import static descent.internal.compiler.parser.PROT.PROTnone;
+
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.STC.STCin;
 
 // DMD 1.020
-public class StructDeclaration extends AggregateDeclaration implements IStructDeclaration {
+public class StructDeclaration extends AggregateDeclaration {
 
 	public boolean zeroInit; // !=0 if initialize with 0 fill
 
@@ -35,8 +37,16 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 	}
 
 	@Override
-	public PROT getAccess(IDsymbol smember) {
-		return SemanticMixin.getAccess(this, smember);
+	public PROT getAccess(Dsymbol smember) {
+		PROT access_ret = PROTnone;
+
+		Dsymbol p = smember.toParent();
+		if (p != null && p.isAggregateDeclaration() != null && SemanticMixin.equals(p.isAggregateDeclaration(), this)) {
+			access_ret = smember.prot();
+		} else if (smember.isDeclaration().isStatic()) {
+			access_ret = smember.prot();
+		}
+		return access_ret;
 	}
 
 	@Override
@@ -99,7 +109,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 		}
 
 		if (sizeok == 0) { // if not already done the addMember step
-			for (IDsymbol s : members) {
+			for (Dsymbol s : members) {
 				s.addMember(sc, this, 1, context);
 			}
 		}
@@ -116,7 +126,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 
 		int members_dim = members.size();
 		for (int i = 0; i < members_dim; i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 			s.semantic(sc2, context);
 			if (isUnionDeclaration() != null) {
 				sc2.offset = 0;
@@ -153,15 +163,15 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 
 		char[] id = Id.eq;
 		for (int j = 0; j < 2; j++) {
-			IDsymbol s = ASTDmdNode.search_function(this, id, context);
-			IFuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
+			Dsymbol s = ASTDmdNode.search_function(this, id, context);
+			FuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
 			if (fdx != null) {
-				IFuncDeclaration fd = fdx.overloadExactMatch(tfeqptr, context);
+				FuncDeclaration fd = fdx.overloadExactMatch(tfeqptr, context);
 				if (fd == null) {
 					fd = fdx.overloadExactMatch(tfeq, context);
 					if (fd != null) { // Create the thunk, fdptr
 						FuncDeclaration fdptr = new FuncDeclaration(loc, 
-								fdx.ident(), STC.STCundefined, tfeqptr);
+								fdx.ident, STC.STCundefined, tfeqptr);
 						Expression e = new IdentifierExp(loc, Id.p);
 						e = new PtrExp(loc, e);
 						Expressions args = new Expressions();
@@ -169,9 +179,9 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 						e = new IdentifierExp(loc, id);
 						e = new CallExp(loc, e, args);
 						fdptr.fbody = new ReturnStatement(loc, e);
-						IScopeDsymbol s2 = fdx.parent().isScopeDsymbol();
+						ScopeDsymbol s2 = fdx.parent.isScopeDsymbol();
 						Assert.isNotNull(s2);
-						s2.members().add(fdptr);
+						s2.members.add(fdptr);
 						fdptr.addMember(sc, s2, 1, context);
 						fdptr.semantic(sc2, context);
 					}
@@ -185,7 +195,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 
 		if (sizeok == 2) { // semantic() failed because of forward references.
 			// Unwind what we did, and defer it for later
-			fields = new ArrayList<IVarDeclaration>(0);
+			fields = new ArrayList<VarDeclaration>(0);
 			structsize = 0;
 			alignsize = 0;
 			structalign = 0;
@@ -212,7 +222,23 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 		context.Module_dprogress++;
 
 		// Determine if struct is all zeros or not
-		zeroInit = SemanticMixin.isZeroInit(this, context);
+		zeroInit = true;
+		for (int j = 0; j < this.fields.size(); j++) {
+			Dsymbol s = this.fields.get(j);
+			VarDeclaration vd = s.isVarDeclaration();
+			if (vd != null && !vd.isDataseg(context)) {
+				if (vd.init() != null) {
+					// Should examine init to see if it is really all 0's
+					zeroInit = true;
+					break;
+				} else {
+					if (!vd.type.isZeroInit(context)) {
+						zeroInit = false;
+						break;
+					}
+				}
+			}
+		}
 
 		/* Look for special member functions.
 		 */
@@ -227,7 +253,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		StructDeclaration sd;
 
 		if (s != null) {
@@ -257,7 +283,7 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 		buf.writeByte('{');
 		buf.writenl();
 		for (i = 0; i < members.size(); i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 
 			buf.writestring("    ");
 			s.toCBuffer(buf, hgs, context);
@@ -280,10 +306,6 @@ public class StructDeclaration extends AggregateDeclaration implements IStructDe
 			return ident.length;
 		}
 		return 6; // "struct".length()
-	}
-	
-	public boolean zeroInit() {
-		return zeroInit;
 	}
 	
 	public char getSignaturePrefix() {

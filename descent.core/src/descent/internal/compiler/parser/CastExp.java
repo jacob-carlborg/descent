@@ -54,7 +54,7 @@ public class CastExp extends UnaExp {
 		if (tb.ty == Tarray && e1.op == TOKvar
 				&& e1.type.toBasetype(context).ty == Tsarray) {
 			VarExp ve = (VarExp) e1;
-			IVarDeclaration v = ve.var.isVarDeclaration();
+			VarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null) {
 				if (!v.isDataseg(context) && !v.isParameter()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -133,8 +133,8 @@ public class CastExp extends UnaExp {
 		if ((result & WANTflags) != 0 && type.ty == Tclass
 				&& e1.type.ty == Tclass) {
 			// See if we can remove an unnecessary cast
-			IClassDeclaration cdfrom;
-			IClassDeclaration cdto;
+			ClassDeclaration cdfrom;
+			ClassDeclaration cdto;
 			int[] offset = { 0 };
 
 			cdfrom = e1.type.isClassHandle();

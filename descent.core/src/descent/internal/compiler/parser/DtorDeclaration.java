@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class DtorDeclaration extends FuncDeclaration implements IDtorDeclaration {
+public class DtorDeclaration extends FuncDeclaration {
 
 	public int thisStart;
 
@@ -64,19 +64,19 @@ public class DtorDeclaration extends FuncDeclaration implements IDtorDeclaration
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		IClassDeclaration cd;
+		ClassDeclaration cd;
 
 		parent = sc.parent;
-		IDsymbol parent = toParent();
+		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.DestructorsOnlyForClass, this));
 		} else {
-			if (cd.dtors() == null) {
-				cd.dtors(new FuncDeclarations());
+			if (cd.dtors == null) {
+				cd.dtors = new FuncDeclarations();
 			}
-			cd.dtors().add(this);
+			cd.dtors.add(this);
 		}
 		type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 
@@ -90,7 +90,7 @@ public class DtorDeclaration extends FuncDeclaration implements IDtorDeclaration
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}

@@ -11,9 +11,9 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 // DMD 1.020
 public class DelegateExp extends UnaExp {
 
-	public IFuncDeclaration func;
+	public FuncDeclaration func;
 
-	public DelegateExp(Loc loc, Expression e, IFuncDeclaration f) {
+	public DelegateExp(Loc loc, Expression e, FuncDeclaration f) {
 		super(loc, TOK.TOKdelegate, e);
 		this.func = f;
 	}
@@ -34,7 +34,7 @@ public class DelegateExp extends UnaExp {
 		if (!same(tb, type, context)) {
 			// Look for delegates to functions where the functions are
 			// overloaded.
-			IFuncDeclaration f;
+			FuncDeclaration f;
 
 			if (type.ty == Tdelegate && type.next.ty == Tfunction
 					&& tb.ty == Tdelegate && tb.next.ty == Tfunction) {
@@ -43,7 +43,7 @@ public class DelegateExp extends UnaExp {
 					if (f != null) {
 						int[] offset = { 0 };
 						if (f.tintro() != null
-								&& f.tintro().next.isBaseOf(f.type().next, offset,
+								&& f.tintro().next.isBaseOf(f.type.next, offset,
 										context) && offset[0] != 0) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CannotFormDelegateDueToCovariantReturnType, this));
@@ -63,7 +63,7 @@ public class DelegateExp extends UnaExp {
 			int[] offset = { 0 };
 
 			if (func.tintro() != null
-					&& func.tintro().next.isBaseOf(func.type().next, offset,
+					&& func.tintro().next.isBaseOf(func.type.next, offset,
 							context) && offset[0] != 0) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotFormDelegateDueToCovariantReturnType, this));
@@ -109,7 +109,7 @@ public class DelegateExp extends UnaExp {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			e1 = e1.semantic(sc, context);
-			type = new TypeDelegate(func.type());
+			type = new TypeDelegate(func.type);
 			type = type.semantic(loc, sc, context);
 			//	-----------------
 			/* For func, we need to get the
@@ -118,7 +118,7 @@ public class DelegateExp extends UnaExp {
 			 * This code is analogous to that used for variables
 			 * in DotVarExp::semantic().
 			 */
-			IAggregateDeclaration ad = func.toParent().isAggregateDeclaration();
+			AggregateDeclaration ad = func.toParent().isAggregateDeclaration();
 
 			boolean loop = true;
 			L10: while (loop) {
@@ -128,14 +128,14 @@ public class DelegateExp extends UnaExp {
 						&& ad != null
 						&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
 						&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
-					IClassDeclaration cd = ad.isClassDeclaration();
-					IClassDeclaration tcd = t.isClassHandle();
+					ClassDeclaration cd = ad.isClassDeclaration();
+					ClassDeclaration tcd = t.isClassHandle();
 
 					if (cd == null || tcd == null
 							|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
 						if (tcd != null && tcd.isNested()) { // Try again with outer scope
 
-							e1 = new DotVarExp(loc, e1, tcd.vthis());
+							e1 = new DotVarExp(loc, e1, tcd.vthis);
 							e1 = e1.semantic(sc, context);
 							// goto L10;
 							loop = true;

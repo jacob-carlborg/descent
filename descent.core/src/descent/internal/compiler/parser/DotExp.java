@@ -27,7 +27,7 @@ public class DotExp extends BinExp {
 
 		if (e2.op == TOK.TOKimport) {
 			ScopeExp se = (ScopeExp) e2;
-			ITemplateDeclaration td = se.sds.isTemplateDeclaration();
+			TemplateDeclaration td = se.sds.isTemplateDeclaration();
 			if (null != td) {
 				Expression e = new DotTemplateExp(loc, e1, td);
 				e = e.semantic(sc, context);

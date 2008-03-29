@@ -4,12 +4,13 @@ import java.io.File;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.ICompilationUnit;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class Module extends Package implements IModule {
+public class Module extends Package {
 
 	public int apiLevel;
 	public ModuleDeclaration md;
@@ -20,13 +21,13 @@ public class Module extends Package implements IModule {
 	public int semanticstarted; // has semantic() been started?
 	public int semanticdone; // has semantic() been done?
 	public boolean needmoduleinfo;
-	public IModule importedFrom;
+	public Module importedFrom;
 
 	public boolean insearch;
 
 	public char[] searchCacheIdent;
 	public int searchCacheFlags;
-	public IDsymbol searchCacheSymbol;
+	public Dsymbol searchCacheSymbol;
 
 	public long debuglevel; // debug level
 	public List<char[]> debugids; // debug identifiers
@@ -45,6 +46,7 @@ public class Module extends Package implements IModule {
 	// if signatures are to be requested
 	public String moduleName; // foo.bar 
 	private String signature; // Descent signature
+	private ICompilationUnit javaElement;
 
 	public Module(String filename, IdentifierExp ident) {
 		super(ident);
@@ -134,21 +136,21 @@ public class Module extends Package implements IModule {
 		// (this only happens the first time object is parsed
 		if (imObject) {
 			for (int i = 0; i < size(members); i++) {
-				IDsymbol s = members.get(i);
+				Dsymbol s = members.get(i);
 				context.checkObjectMember(s);
 				s.addMember(null, sc.scopesym, 1, context);
 			}
 		} else {
 			// Add all symbols into module's symbol table
 			for (int i = 0; i < size(members); i++) {
-				IDsymbol s = members.get(i);
+				Dsymbol s = members.get(i);
 				s.addMember(null, sc.scopesym, 1, context);
 			}
 		}
 
 		// Pass 1 semantic routines: do public side of the definition
 		for (int i = 0; i < size(members); i++) {
-			IDsymbol s = members.get(i);
+			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
 			runDeferredSemantic(context);
 		}		
@@ -163,7 +165,7 @@ public class Module extends Package implements IModule {
 	public void semantic2(Scope scope, SemanticContext context) {
 		if (context.Module_deferred != null
 				&& context.Module_deferred.size() > 0) {
-			for (IDsymbol sd : context.Module_deferred) {
+			for (Dsymbol sd : context.Module_deferred) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotResolveForwardReference, sd));
 			}
@@ -186,7 +188,7 @@ public class Module extends Package implements IModule {
 		// Pass 2 semantic routines: do initializers and function bodies
 		if (members != null) {
 			for (int i = 0; i < members.size(); i++) {
-				IDsymbol s;
+				Dsymbol s;
 				s = members.get(i);
 				s.semantic2(sc, context);
 			}
@@ -218,7 +220,7 @@ public class Module extends Package implements IModule {
 		// Pass 3 semantic routines: do initializers and function bodies
 		if (members != null) {
 			for (int i = 0; i < members.size(); i++) {
-				IDsymbol s;
+				Dsymbol s;
 				s = members.get(i);
 				s.semantic3(sc, context);
 			}
@@ -236,7 +238,7 @@ public class Module extends Package implements IModule {
 
 		// Don't add it if it is already there
 		for (int i = 0; i < context.Module_deferred.size(); i++) {
-			IDsymbol sd = context.Module_deferred.get(i);
+			Dsymbol sd = context.Module_deferred.get(i);
 
 			if (sd == s) {
 				return;
@@ -269,14 +271,14 @@ public class Module extends Package implements IModule {
 				break;
 			}
 
-			IDsymbol[] todo = new Dsymbol[size(context.Module_deferred)];
+			Dsymbol[] todo = new Dsymbol[size(context.Module_deferred)];
 			for (int i = 0; i < size(context.Module_deferred); i++) {
 				todo[i] = context.Module_deferred.get(i);
 			}
 			context.Module_deferred.clear();
 
 			for (int i = 0; i < len; i++) {
-				IDsymbol s = todo[i];
+				Dsymbol s = todo[i];
 
 				s.semantic(null, context);
 			}
@@ -300,96 +302,36 @@ public class Module extends Package implements IModule {
 	}
 
 	@Override
-	public IDsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
-		return SemanticMixin.search(this, loc, ident, flags, context);
+		/* Since modules can be circularly referenced,
+		 * need to stop infinite recursive searches.
+		 */
+
+		Dsymbol s;
+		if (insearch) {
+			s = null;
+		} else if (ASTDmdNode.equals(this.searchCacheIdent, ident)
+				&& this.searchCacheFlags == flags) {
+			s = this.searchCacheSymbol;
+		} else {
+			this.insearch = true;
+			s = super.search(loc, ident, flags, context);
+			this.insearch = false;
+
+			this.searchCacheIdent = ident;
+			this.searchCacheSymbol = s;
+			this.searchCacheFlags = flags;
+		}
+		
+		return s;
 	}
 
-	public boolean needmoduleinfo() {
-		return needmoduleinfo /* global.params.cov */;
-	}
-
-	public static IModule load(Loc loc, Identifiers packages,
+	public static Module load(Loc loc, Identifiers packages,
 			IdentifierExp ident, SemanticContext context) {
 		
 		// Delegate to SemanticContext in order to start resolving the Descent way
 		return context.load(loc, packages, ident);
-	}
-	
-	public void importedFrom(IModule module) {
-		this.importedFrom = module;
-	}
-	
-	public IModule importedFrom() {
-		return this.importedFrom;
-	}
-	
-	public void needmoduleinfo(boolean value) {
-		this.needmoduleinfo = value;
-	}
-	
-	public int semanticdone() {
-		return semanticdone;
-	}
-	
-	public List<char[]> debugids() {
-		return debugids;
-	}
-	
-	public void debugids(List<char[]> debugids) {
-		this.debugids = debugids;
-	}
-	
-	public List<char[]> debugidsNot() {
-		return debugidsNot;
-	}
-	
-	public void debugidsNot(List<char[]> debugidsNot) {
-		this.debugidsNot = debugidsNot;
-	}
-	
-	public long debuglevel() {
-		return debuglevel;
-	}
-	
-	public void debuglevel(long debuglevel) {
-		this.debuglevel = debuglevel;
-	}
-	
-	public List<char[]> versionids() {
-		return versionids;
-	}
-	
-	public void versionids(List<char[]> versionids) {
-		this.versionids = versionids;
-	}
-	
-	public List<char[]> versionidsNot() {
-		return versionidsNot;
-	}
-	
-	public void versionidsNot(List<char[]> versionidsNot) {
-		this.versionidsNot = versionidsNot;
-	}
-	
-	public long versionlevel() {
-		return versionlevel;
-	}
-	
-	public void versionlevel(long versionlevel) {
-		this.versionlevel = versionlevel;
-	}
-	
-	public IModuleDeclaration md() {
-		return md;
-	}
-	
-	public Array aimports() {
-		return aimports;
-	}
-	
-	public void aimports(Array aimports) {
-		this.aimports = aimports;
 	}
 	
 	@Override
@@ -414,41 +356,14 @@ public class Module extends Package implements IModule {
 	public String getFullyQualifiedName() {
 		return moduleName;
 	}
-	
-	public boolean insearch() {
-		return insearch;
+
+	public void setJavaElement(ICompilationUnit unit) {
+		this.javaElement = unit;
 	}
 	
-	public void insearch(boolean insearch) {
-		this.insearch = insearch;
-	}
-	
-	public int searchCacheFlags() {
-		return searchCacheFlags;
-	}
-	
-	public void searchCacheFlags(int searchCacheFlags) {
-		this.searchCacheFlags = searchCacheFlags;
-	}
-	
-	public char[] searchCacheIdent() {
-		return searchCacheIdent;
-	}
-	
-	public void searchCacheIdent(char[] searchCacheIdent) {
-		this.searchCacheIdent = searchCacheIdent;
-	}
-	
-	public IDsymbol searchCacheSymbol() {
-		return searchCacheSymbol;
-	}
-	
-	public void searchCacheSymbol(IDsymbol searchCacheSymbol) {
-		this.searchCacheSymbol = searchCacheSymbol;
-	}
-	
-	public IDsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		return super.search(loc, ident, flags, context);
+	@Override
+	public ICompilationUnit getJavaElement() {
+		return javaElement;
 	}
 
 	// PERHAPS void inlineScan();

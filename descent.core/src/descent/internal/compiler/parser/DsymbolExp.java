@@ -9,9 +9,9 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 // DMD 1.020
 public class DsymbolExp extends Expression {
 
-	public IDsymbol s;
+	public Dsymbol s;
 
-	public DsymbolExp(Loc loc, IDsymbol s) {
+	public DsymbolExp(Loc loc, Dsymbol s) {
 		super(loc, TOK.TOKdsymbol);
 		this.s = s;
 	}
@@ -30,16 +30,16 @@ public class DsymbolExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		// Lagain:
-		IEnumMember em;
+		EnumMember em;
 		Expression e;
-		IVarDeclaration v;
-		IFuncDeclaration f;
+		VarDeclaration v;
+		FuncDeclaration f;
 		FuncLiteralDeclaration fld;
 		// Declaration d;
-		IClassDeclaration cd;
-		IClassDeclaration thiscd = null;
+		ClassDeclaration cd;
+		ClassDeclaration thiscd = null;
 		Import imp;
-		IPackage pkg;
+		Package pkg;
 		Type t;
 
 		boolean loop = true;
@@ -83,8 +83,8 @@ public class DsymbolExp extends Expression {
 			v = s.isVarDeclaration();
 			if (v != null) {
 				if (type == null) {
-					type = v.type();
-					if (v.type() == null) {
+					type = v.type;
+					if (v.type == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, this,
 								new String[] { v.toString() }));
@@ -98,7 +98,7 @@ public class DsymbolExp extends Expression {
 							type = Type.tint32;
 							return this;
 						}
-						IExpInitializer ei = v.init().isExpInitializer();
+						ExpInitializer ei = v.init().isExpInitializer();
 						if (ei != null) {
 							e = ei.exp().copy(); // make copy so we can change loc
 							if (e.op == TOKstring || e.type == null) {
@@ -156,7 +156,7 @@ public class DsymbolExp extends Expression {
 				ie.copySourceRange(this);
 				return ie.semantic(sc, context);
 			}
-			IModule mod = s.isModule();
+			Module mod = s.isModule();
 			if (mod != null) {
 				ScopeExp ie;
 
@@ -174,7 +174,7 @@ public class DsymbolExp extends Expression {
 				Expressions exps = new Expressions(tup.objects
 						.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
-					INode o = tup.objects.get(i);
+					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
 						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
 					} else {
@@ -204,7 +204,7 @@ public class DsymbolExp extends Expression {
 				return e;
 			}
 
-			ITemplateDeclaration td = s.isTemplateDeclaration();
+			TemplateDeclaration td = s.isTemplateDeclaration();
 			if (td != null) {
 				e = new TemplateExp(loc, td);
 				e = e.semantic(sc, context);

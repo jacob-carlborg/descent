@@ -2,14 +2,14 @@ package descent.core.dom;
 
 import descent.core.IMethod;
 import descent.core.JavaModelException;
-import descent.internal.compiler.parser.IDsymbol;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.core.util.Util;
 
 public class MethodBinding extends JavaElementBasedBinding implements IMethodBinding {
 	
 	private final String signature;
 
-	public MethodBinding(DefaultBindingResolver bindingResolver, IMethod element, IDsymbol node, String signature) {
+	public MethodBinding(DefaultBindingResolver bindingResolver, IMethod element, Dsymbol node, String signature) {
 		super(bindingResolver, element, node);
 		this.signature = signature;		
 	}

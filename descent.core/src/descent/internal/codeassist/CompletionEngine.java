@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.eclipse.swt.widgets.Shell;
-
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.CompletionRequestor;
@@ -46,6 +44,8 @@ import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.AggregateDeclaration;
+import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.BaseClass;
@@ -57,31 +57,19 @@ import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.DVCondition;
+import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
-import descent.internal.compiler.parser.IAggregateDeclaration;
-import descent.internal.compiler.parser.IAliasDeclaration;
-import descent.internal.compiler.parser.IClassDeclaration;
-import descent.internal.compiler.parser.IDeclaration;
-import descent.internal.compiler.parser.IDsymbol;
-import descent.internal.compiler.parser.IDsymbolTable;
-import descent.internal.compiler.parser.IEnumDeclaration;
-import descent.internal.compiler.parser.IEnumMember;
-import descent.internal.compiler.parser.IFuncDeclaration;
-import descent.internal.compiler.parser.IModule;
-import descent.internal.compiler.parser.IScopeDsymbol;
 import descent.internal.compiler.parser.ISignatureConstants;
-import descent.internal.compiler.parser.IStructDeclaration;
-import descent.internal.compiler.parser.ITemplateDeclaration;
-import descent.internal.compiler.parser.ITypedefDeclaration;
-import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
@@ -95,6 +83,7 @@ import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.PtrExp;
 import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.ScopeExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
@@ -119,6 +108,7 @@ import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.TypeTypedef;
+import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -363,7 +353,7 @@ public class CompletionEngine extends Engine
 				// Suggest the expected type if the user didn't type anything, and
 				// it's not in the current imports (and it's not abstract)
 				if (currentName.length == 0 && expectedType instanceof TypeClass) {
-					IClassDeclaration classDeclaration = ((TypeClass) expectedType).sym;					
+					ClassDeclaration classDeclaration = ((TypeClass) expectedType).sym;					
 					if (!isImported(classDeclaration.getModule().getFullyQualifiedName().toCharArray()) &&
 							!classDeclaration.isAbstract()) {						
 						suggestDsymbol(classDeclaration, INCLUDE_TYPES);
@@ -821,12 +811,12 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		IEnumDeclaration enumDeclaration = typeEnum.sym;
+		EnumDeclaration enumDeclaration = typeEnum.sym;
 		if (enumDeclaration == null) {
 			return;
 		}
 		
-		if (enumDeclaration.members() == null) {
+		if (enumDeclaration.members == null) {
 			return;
 		}
 		
@@ -915,15 +905,15 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void suggestConstructorsAndOpCall(IDsymbol sym) {
+	private void suggestConstructorsAndOpCall(Dsymbol sym) {
 		if (!wantConstructorsAndOpCall) {
 			return;
 		}
 		
-		if (sym instanceof IClassDeclaration || sym instanceof IStructDeclaration) {
-			IScopeDsymbol cd = (IScopeDsymbol) sym;
-			if (cd.members() != null && !cd.members().isEmpty()) {
-				suggestMembers(cd.members(), false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
+		if (sym instanceof ClassDeclaration || sym instanceof StructDeclaration) {
+			ScopeDsymbol cd = (ScopeDsymbol) sym;
+			if (cd.members != null && !cd.members.isEmpty()) {
+				suggestMembers(cd.members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
 			}
 		}
 	}
@@ -936,13 +926,13 @@ public class CompletionEngine extends Engine
 		
 		if (node.exp instanceof ScopeExp) {
 			ScopeExp se = (ScopeExp) node.exp;
-			if (se.sds instanceof IModule) {
-				currentName = computePrefixAndSourceRange(((IModule) se.sds).ident());
+			if (se.sds instanceof Module) {
+				currentName = computePrefixAndSourceRange(((Module) se.sds).ident);
 				// Need to do this again because the ident of the module has other source range
 				startPosition = node.start;
 				endPosition = node.start + node.length;
 			} else if (se.sds instanceof Package) {
-				currentName = computePrefixAndSourceRange(((Package) se.sds).ident());
+				currentName = computePrefixAndSourceRange(((Package) se.sds).ident);
 				// Need to do this again because the ident of the package has other source range
 				startPosition = node.start;
 				endPosition = node.start + node.length;
@@ -957,7 +947,7 @@ public class CompletionEngine extends Engine
 		} else if (node.exp instanceof TypeExp) {
 			TypeExp te = (TypeExp) node.exp;
 			Type type = te.type;
-			IDsymbol sym = null;
+			Dsymbol sym = null;
 			if (type instanceof TypeClass) {
 				sym = ((TypeClass) type).sym;
 			} else if (type instanceof TypeStruct) {
@@ -977,7 +967,7 @@ public class CompletionEngine extends Engine
 			if (node.sourceExp instanceof IdentifierExp) {
 				currentName = ((IdentifierExp) node.sourceExp).ident;
 			} else {
-				currentName = sym.ident().ident;
+				currentName = sym.ident.ident;
 			}
 			
 			isCompletingTypeIdentifier = true;
@@ -988,17 +978,17 @@ public class CompletionEngine extends Engine
 			if (ce.e1 instanceof IdentifierExp) {
 				currentName = computePrefixAndSourceRange((IdentifierExp) ce.e1);
 			} else if (ce.e1 instanceof VarExp) {
-				IDeclaration var = ((VarExp) ce.e1).var;
-				currentName = var.ident().ident;
+				Declaration var = ((VarExp) ce.e1).var;
+				currentName = var.ident.ident;
 			} else {
 				return;
 			}
 		} else if (node.exp instanceof VarExp) {
-			IDeclaration var = ((VarExp) node.exp).var;
+			Declaration var = ((VarExp) node.exp).var;
 			Type type = var.type();
 			
 			// Need to set correct location of IdentifierExp
-			IdentifierExp ident = new IdentifierExp(var.ident().ident);
+			IdentifierExp ident = new IdentifierExp(var.ident.ident);
 			ident.copySourceRange(node);
 			
 			currentName = computePrefixAndSourceRange(ident);
@@ -1093,15 +1083,15 @@ public class CompletionEngine extends Engine
 		startPosition = actualCompletionPosition;
 		endPosition = actualCompletionPosition;
 		
-		IDsymbol sym = ident.resolvedSymbol;
-		if (sym instanceof IVarDeclaration) {
-			IVarDeclaration var = (IVarDeclaration) sym;
+		Dsymbol sym = ident.resolvedSymbol;
+		if (sym instanceof VarDeclaration) {
+			VarDeclaration var = (VarDeclaration) sym;
 			Type type = var.type();
 			
 			currentName = CharOperation.NO_CHAR;
 			completeType(type, false /* not only statics */);
-		} else if (sym instanceof IScopeDsymbol) {
-			completeScopeDsymbol((IScopeDsymbol) sym, true /* only statics */);
+		} else if (sym instanceof ScopeDsymbol) {
+			completeScopeDsymbol((ScopeDsymbol) sym, true /* only statics */);
 		}
 	}
 	
@@ -1121,7 +1111,7 @@ public class CompletionEngine extends Engine
 			completeScope0(scope.enclosing, includes);
 		}
 		
-		IDsymbol sym = getScopeSymbol(scope);
+		Dsymbol sym = getScopeSymbol(scope);
 		if (sym ==  null) {
 			return;
 		}
@@ -1136,10 +1126,10 @@ public class CompletionEngine extends Engine
 				isWithScopeSymbol = false;
 			}
 		} else {
-			if (sym instanceof IScopeDsymbol && ((IScopeDsymbol) sym).members() != null) {
-				completeScopeDsymbol((IScopeDsymbol) sym, false /* not only statics */);
+			if (sym instanceof ScopeDsymbol && ((ScopeDsymbol) sym).members != null) {
+				completeScopeDsymbol((ScopeDsymbol) sym, false /* not only statics */);
 			} else {
-				IDsymbolTable table = scope.scopesym.symtab();
+				DsymbolTable table = scope.scopesym.symtab;
 				if (table == null) {
 					return;
 				}
@@ -1149,7 +1139,7 @@ public class CompletionEngine extends Engine
 						continue;
 					}
 					
-					IDsymbol dsymbol = table.lookup(key);
+					Dsymbol dsymbol = table.lookup(key);
 					if (dsymbol != null) {
 						suggestDsymbol(dsymbol, includes);
 					}
@@ -1158,24 +1148,24 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void completeScopeDsymbol(IScopeDsymbol sd, boolean onlyStatics) {
-		if (sd instanceof IClassDeclaration) {
+	private void completeScopeDsymbol(ScopeDsymbol sd, boolean onlyStatics) {
+		if (sd instanceof ClassDeclaration) {
 			completeTypeClass((TypeClass) sd.type(), onlyStatics);
-		} else if (sd.members() != null && !sd.members().isEmpty()) {
-			suggestMembers(sd.members(), onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+		} else if (sd.members != null && !sd.members.isEmpty()) {
+			suggestMembers(sd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 		}
 	}
 	
-	private IDsymbol getScopeSymbol(Scope scope) {
-		if (scope.scopesym == null || scope.scopesym.members() == null
-				|| scope.scopesym.members().isEmpty()) {
+	private Dsymbol getScopeSymbol(Scope scope) {
+		if (scope.scopesym == null || scope.scopesym.members == null
+				|| scope.scopesym.members.isEmpty()) {
 			return null;
 		} else {
-		 return scope.scopesym.members().get(0);
+		 return scope.scopesym.members.get(0);
 		}
 	}
 
-	private void suggestDsymbol(IDsymbol dsymbol, int includes) {
+	private void suggestDsymbol(Dsymbol dsymbol, int includes) {
 		if (dsymbol instanceof Import) {
 //			IModule mod = ((Import) dsymbol).mod;
 //			if (mod != null) {
@@ -1201,7 +1191,7 @@ public class CompletionEngine extends Engine
 		
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
-			IDeclaration decl = var.var;
+			Declaration decl = var.var;
 			if (decl == null) {
 				return;
 			}
@@ -1210,7 +1200,7 @@ public class CompletionEngine extends Engine
 			completeType(type, ident, false /* not only statics */);
 		} else if (e1 instanceof DotVarExp) {
 			DotVarExp var = (DotVarExp) e1;
-			IDeclaration decl = var.var;
+			Declaration decl = var.var;
 			if (decl == null) {
 				return;
 			}
@@ -1228,9 +1218,9 @@ public class CompletionEngine extends Engine
 			completeType(type, ident, true /* only statics */);
 		} else if (e1 instanceof ScopeExp) {
 			ScopeExp se = (ScopeExp) e1;
-			if (se.sds instanceof IModule) {
+			if (se.sds instanceof Module) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers(((IModule) se.sds).members(), false /* not only statics */, 
+				suggestMembers(((Module) se.sds).members, false /* not only statics */, 
 						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof Package) {
 				char[] name = ident.ident;
@@ -1472,44 +1462,44 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
-		IClassDeclaration decl = type.sym;
+		ClassDeclaration decl = type.sym;
 		if (decl == null) {
 			return;
 		}
 		
 		// First suggest my members
-		suggestMembers(decl.members(), onlyStatics, funcSignatures, INCLUDE_ALL);
+		suggestMembers(decl.members, onlyStatics, funcSignatures, INCLUDE_ALL);
 		
 		// Then suggest superclass and superinterface members
-		BaseClasses baseClasses = decl.baseclasses();
+		BaseClasses baseClasses = decl.baseclasses;
 		if (baseClasses.isEmpty()) {
 			// Suggest Object if no base classes are present and this is not object
 			if (semanticContext.ClassDeclaration_object != null && 
-				type != semanticContext.ClassDeclaration_object.type()) {
-				completeTypeClassRecursively((TypeClass) semanticContext.ClassDeclaration_object.type(), onlyStatics, funcSignatures);
+				type != semanticContext.ClassDeclaration_object.type) {
+				completeTypeClassRecursively((TypeClass) semanticContext.ClassDeclaration_object.type, onlyStatics, funcSignatures);
 			}
 		} else {
 			for(BaseClass baseClass : baseClasses) {
-				completeTypeClassRecursively((TypeClass) baseClass.base.type(), onlyStatics, funcSignatures);
+				completeTypeClassRecursively((TypeClass) baseClass.base.type, onlyStatics, funcSignatures);
 			}
 		}
 	}
 	
 	private void completeTypeStruct(TypeStruct type, boolean onlyStatics) {
-		IStructDeclaration decl = type.sym;
+		StructDeclaration decl = type.sym;
 		if (decl == null) {
 			return;
 		}
 		
 		// Suggest members
-		suggestMembers(decl.members(), onlyStatics, null, INCLUDE_ALL);
+		suggestMembers(decl.members, onlyStatics, null, INCLUDE_ALL);
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
 	}
 	
 	private void completeTypeEnum(TypeEnum type) {
-		IEnumDeclaration enumDeclaration = type.sym;
+		EnumDeclaration enumDeclaration = type.sym;
 		if (enumDeclaration == null) {
 			return;
 		}
@@ -1521,7 +1511,7 @@ public class CompletionEngine extends Engine
 		suggestAllTypesProperties(type);
 		
 		// If the base type of the enum is integral, also suggest integer properties
-		if (enumDeclaration.memtype().isintegral()) {
+		if (enumDeclaration.memtype.isintegral()) {
 			suggestIntegralProperties();
 		}
 	}
@@ -1544,32 +1534,32 @@ public class CompletionEngine extends Engine
 	/*
 	 * Suggest a member with it's name.
 	 */
-	private void suggestMember(IDsymbol member, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+	private void suggestMember(Dsymbol member, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
 			suggestMembers(attrib.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
 			return;
 		}
 		
-		if (member.ident() == null || member.ident().ident == null) {
+		if (member.ident == null || member.ident.ident == null) {
 			return;
 		}
 		
-		suggestMember(member, member.ident().ident, onlyStatics, flags, funcSignatures, includes);
+		suggestMember(member, member.ident.ident, onlyStatics, flags, funcSignatures, includes);
 	}		
 		
 	/*
 	 * Suggest a member with another name (for aliases).
 	 */
-	private void suggestMember(IDsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (member instanceof Import && member.getModule() == module) {
-			IModule mod = ((Import) member).mod;
+			Module mod = ((Import) member).mod;
 			if (mod != null) {
 				char[] fqn = mod.getFullyQualifiedName().toCharArray();
 				if (!suggestedModules.containsKey(fqn)) {
 					suggestedModules.put(fqn, this);
 					
-					suggestMembers(mod.members(), false, funcSignatures, includes);
+					suggestMembers(mod.members, false, funcSignatures, includes);
 				}
 			}
 			return;
@@ -1580,32 +1570,32 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Types act like statics
-		boolean isType = member instanceof IClassDeclaration || 
-						member instanceof IStructDeclaration ||
-						member instanceof IEnumDeclaration;
+		boolean isType = member instanceof ClassDeclaration || 
+						member instanceof StructDeclaration ||
+						member instanceof EnumDeclaration;
 		
 		// Filter statics if only statics were requested
-		IDeclaration decl = member.isDeclaration();
+		Declaration decl = member.isDeclaration();
 		if (decl != null) {
 			if (!isType && !decl.isStatic() && !decl.isConst() && onlyStatics && 
-					!(member instanceof IAliasDeclaration) && !(member instanceof ITypedefDeclaration)) {
+					!(member instanceof AliasDeclaration) && !(member instanceof TypedefDeclaration)) {
 				return;
 			}
 		}
 		
 		// If it's an alias to a symbol, suggest it and return
-		IAliasDeclaration alias = member.isAliasDeclaration();
+		AliasDeclaration alias = member.isAliasDeclaration();
 		if (alias != null) {
-			IDsymbol sym = alias.toAlias(semanticContext);
+			Dsymbol sym = alias.toAlias(semanticContext);
 			if (sym != null && sym != alias) {
 				suggestMember(sym, ident, false /* not only statics, check passed */, flags, funcSignatures, includes);
 				
 				// Find overloads! :-)
-				while(sym instanceof IFuncDeclaration) {
-					IFuncDeclaration func = (IFuncDeclaration) sym;
+				while(sym instanceof FuncDeclaration) {
+					FuncDeclaration func = (FuncDeclaration) sym;
 					
 					semanticContext.allowOvernextBySignature = true;				
-					IDeclaration funcDecl = func.overnext();
+					Declaration funcDecl = func.overnext();
 					if (funcDecl != null && funcDecl != sym) {
 						suggestMember(funcDecl, ident, onlyStatics, flags, funcSignatures, includes);
 					}
@@ -1617,7 +1607,7 @@ public class CompletionEngine extends Engine
 		
 		// See if it's a variable
 		if ((includes & INCLUDE_VARIABLES) != 0 && !isCompletingTypeIdentifier && !parser.inNewExp) {
-			IVarDeclaration var = member.isVarDeclaration();
+			VarDeclaration var = member.isVarDeclaration();
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					char[] sig = var.getSignature().toCharArray();
@@ -1628,7 +1618,7 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
 					relevance += computeRelevanceForExpectedType(var.type());
 					
-					boolean isLocal = var.parent() instanceof IFuncDeclaration;
+					boolean isLocal = var.parent instanceof FuncDeclaration;
 					
 					if (isLocal) {
 						relevance += R_LOCAL_VAR;
@@ -1660,7 +1650,7 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
 					relevance += R_ALIAS;
 					
-					boolean isLocal = alias.parent() instanceof IFuncDeclaration;
+					boolean isLocal = alias.parent instanceof FuncDeclaration;
 					
 					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(ident);
@@ -1671,7 +1661,7 @@ public class CompletionEngine extends Engine
 					}
 					Type type = alias.type();
 					if (type == null) {
-						IDsymbol sym = alias.toAlias(semanticContext);
+						Dsymbol sym = alias.toAlias(semanticContext);
 						if (sym != null) {
 							type = sym.type();
 							if (type instanceof TypeTypedef) {
@@ -1687,7 +1677,7 @@ public class CompletionEngine extends Engine
 					
 					if (parser.inNewExp) {
 						if (type instanceof TypeClass) {
-							IClassDeclaration cd = ((TypeClass) type).sym;
+							ClassDeclaration cd = ((TypeClass) type).sym;
 							if (cd.isClassDeclaration() != null && cd.isInterfaceDeclaration() == null) {
 								// If it's abstract, skip
 								if ((cd.getFlags() & Flags.AccAbstract) != 0) {
@@ -1720,7 +1710,7 @@ public class CompletionEngine extends Engine
 			}
 			
 			// See if it's a typedef
-			ITypedefDeclaration typedef = member.isTypedefDeclaration();
+			TypedefDeclaration typedef = member.isTypedefDeclaration();
 			if (typedef != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					char[] sigChars = typedef.getSignature().toCharArray();
@@ -1731,13 +1721,13 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForExpectedType(sigChars);
 					relevance += R_TYPEDEF;
 					
-					boolean isLocal = typedef.parent() instanceof IFuncDeclaration;
+					boolean isLocal = typedef.parent instanceof FuncDeclaration;
 					
 					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
-					proposal.setTypeName(typedef.basetype().getSignature().toCharArray());
+					proposal.setTypeName(typedef.basetype.getSignature().toCharArray());
 					proposal.setFlags(flags | typedef.getFlags() | Flags.AccTypedef);
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1781,14 +1771,14 @@ public class CompletionEngine extends Engine
 					
 					// If we are expecting an enum, suggest it's members! :-)
 					if (expectedType != null && expectedType instanceof TypeEnum 
-							&& member instanceof IEnumDeclaration &&
+							&& member instanceof EnumDeclaration &&
 							expectedType.same(member.getType())) {
-						completeEnumMembers((IEnumDeclaration) member, new HashtableOfCharArrayAndObject(), true);
+						completeEnumMembers((EnumDeclaration) member, new HashtableOfCharArrayAndObject(), true);
 					}
 				}
 			}
 			
-			if (member instanceof ITemplateDeclaration) {
+			if (member instanceof TemplateDeclaration) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
@@ -1800,9 +1790,9 @@ public class CompletionEngine extends Engine
 						TemplateDeclaration temp = (TemplateDeclaration) member;
 						if (temp.wrapper) {
 							Dsymbol first = (Dsymbol) temp.members.get(0);
-							if (first instanceof IFuncDeclaration) {
+							if (first instanceof FuncDeclaration) {
 								kind = CompletionProposal.TEMPLATED_FUNCTION_REF;
-							} else if (first instanceof IAggregateDeclaration) {
+							} else if (first instanceof AggregateDeclaration) {
 								kind = CompletionProposal.TEMPLATED_AGGREGATE_REF;
 							}
 						}
@@ -1823,7 +1813,7 @@ public class CompletionEngine extends Engine
 		if (!parser.inNewExp && (includes & INCLUDE_FUNCTIONS) != 0 || 
 				((includes & (INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL)) != 0 && wantConstructorsAndOpCall)) {
 			// See if it's a function
-			IFuncDeclaration func = member.isFuncDeclaration();
+			FuncDeclaration func = member.isFuncDeclaration();
 			if (func != null) {
 				char[] funcName = ident;
 				
@@ -1931,15 +1921,15 @@ public class CompletionEngine extends Engine
 			
 		// opCall
 		case ASTDmdNode.TYPE_STRUCT: {
-			IStructDeclaration sym = ((TypeStruct) type).sym;
+			StructDeclaration sym = ((TypeStruct) type).sym;
 			currentName = ident;
-			suggestMembers(sym.members(), false, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(sym.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		case ASTDmdNode.TYPE_CLASS: {			
-			IClassDeclaration sym = ((TypeClass) type).sym;
+			ClassDeclaration sym = ((TypeClass) type).sym;
 			currentName = ident;
-			suggestMembers(sym.members(), false, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(sym.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		}
@@ -1947,7 +1937,7 @@ public class CompletionEngine extends Engine
 		currentName = currentNameSave;
 	}
 
-	private boolean isVisible(IDsymbol member) {
+	private boolean isVisible(Dsymbol member) {
 		if (options.checkVisibility && member.getModule() != this.module) {
 			// private and protected excluded
 			
@@ -1956,8 +1946,8 @@ public class CompletionEngine extends Engine
 				return false;
 			} else if ((member.getFlags() & Flags.AccPackage) != 0) {
 				// package only if in same package
-				IDsymbol myParent = module.parent();
-				IDsymbol hisParent = member.getModule().parent();
+				Dsymbol myParent = module.parent;
+				Dsymbol hisParent = member.getModule().parent;
 				
 				while(myParent != null && hisParent != null && 
 					myParent instanceof Package && hisParent instanceof Package) {
@@ -1968,8 +1958,8 @@ public class CompletionEngine extends Engine
 						return false;
 					}
 					
-					myParent = myParent.parent();
-					hisParent = hisParent.parent();
+					myParent = myParent.parent;
+					hisParent = hisParent.parent;
 				}
 				
 				return myParent == null && hisParent == null;
@@ -2044,32 +2034,32 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void completeEnumMembers(IEnumDeclaration enumDeclaration, HashtableOfCharArrayAndObject excludedNames, boolean useQualifiedName) {
-		for(IDsymbol symbol : enumDeclaration.members()) {
-			IEnumMember member = symbol.isEnumMember();
+	private void completeEnumMembers(EnumDeclaration enumDeclaration, HashtableOfCharArrayAndObject excludedNames, boolean useQualifiedName) {
+		for(Dsymbol symbol : enumDeclaration.members) {
+			EnumMember member = symbol.isEnumMember();
 			if (member == null) {
 				continue;
 			}
 			
 			char[] proposition;
 			if (useQualifiedName) {
-				proposition = CharOperation.concat(enumDeclaration.ident().ident, member.ident().ident, '.');
+				proposition = CharOperation.concat(enumDeclaration.ident.ident, member.ident.ident, '.');
 			} else {
-				proposition = member.ident().ident;
+				proposition = member.ident.ident;
 			}
 			if (!excludedNames.containsKey(proposition) && (
 					currentName.length == 0 || 
 					match(currentName, proposition) || 
-					match(currentName, member.ident().ident)
+					match(currentName, member.ident.ident)
 					)) {
 				
 				int relevance = computeBaseRelevance();
 				relevance += computeRelevanceForInterestingProposal();
-				relevance += computeRelevanceForCaseMatching(currentName, member.ident().ident);
+				relevance += computeRelevanceForCaseMatching(currentName, member.ident.ident);
 				relevance += R_ENUM_CONSTANT;
 				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.ENUM_MEMBER, this.actualCompletionPosition);
-				proposal.setName(member.ident().ident);
+				proposal.setName(member.ident.ident);
 				proposal.setCompletion(proposition);
 				proposal.setSignature(member.getSignature().toCharArray());
 				proposal.setFlags(member.getFlags());		
@@ -2751,8 +2741,8 @@ public class CompletionEngine extends Engine
 	private boolean isImported(char[] fullyQualifiedName) {
 		if (module.aimports != null) {
 			for(Object sym : module.aimports) {
-				if (sym instanceof IModule) {
-					IModule mod = (IModule) sym;
+				if (sym instanceof Module) {
+					Module mod = (Module) sym;
 					char[] fqn = mod.getFullyQualifiedName().toCharArray();
 					if (CharOperation.equals(fqn, fullyQualifiedName)) {
 						return true;

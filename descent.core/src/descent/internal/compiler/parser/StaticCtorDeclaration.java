@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class StaticCtorDeclaration extends FuncDeclaration implements IStaticCtorDeclaration {
+public class StaticCtorDeclaration extends FuncDeclaration {
 	
 	public int thisStart; // where the "this" keyword starts
 
@@ -70,17 +70,17 @@ public class StaticCtorDeclaration extends FuncDeclaration implements IStaticCto
 		super.semantic(sc, context);
 
 		// We're going to need ModuleInfo
-		IModule m = getModule();
+		Module m = getModule();
 		if (m == null) {
 			m = sc.module;
 		}
 		if (m != null) {
-			m.needmoduleinfo(true);
+			m.needmoduleinfo = true;
 		}
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}

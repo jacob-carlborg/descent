@@ -57,7 +57,7 @@ public class WithStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		IScopeDsymbol sym;
+		ScopeDsymbol sym;
 		Initializer init;
 
 		exp = exp.semantic(sc, context);
@@ -89,14 +89,14 @@ public class WithStatement extends Statement {
 				wthis.semantic(sc, context);
 
 				sym = new WithScopeSymbol(this);
-				sym.parent(sc.scopesym);
+				sym.parent = sc.scopesym;
 			} else if (t.ty == Tstruct) {
 				Expression e = exp.addressOf(sc, context);
 				init = new ExpInitializer(loc, e);
 				wthis = new VarDeclaration(loc, e.type, Id.withSym, init);
 				wthis.semantic(sc, context);
 				sym = new WithScopeSymbol(this);
-				sym.parent(sc.scopesym);
+				sym.parent = sc.scopesym;
 			} else {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.WithExpressionsMustBeClassObject, sourceExp, new String[] { exp.type.toChars(context) }));
 				return null;

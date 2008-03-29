@@ -1,13 +1,36 @@
 package descent.tests.lookup;
 
-
 /*
  * Tests to check that the implementation of the resolved part of the
  * semantic analysis is working as expected.
  */
 public class Lookup_Test extends AbstractLookupTest {
 	
-	public void testDefinedNotOk() throws Exception {
+	public void testFieldDefinedNotOk() throws Exception {
+		one("");
+		two("void foo() { field = 2; }");
+		assertErrors();
+	}
+	
+	public void testFieldDefinedOk() throws Exception {
+		one("int field;");
+		two("void foo() { field = 2; }");
+		assertNoErrors();
+	}
+	
+	public void testAliasDefinedOk() throws Exception {
+		one("int field; alias field someAlias;");
+		two("void foo() { someAlias = 2; }");
+		assertNoErrors();
+	}
+	
+	public void testTypedefDefinedOk() throws Exception {
+		one("typedef int someTypedef;");
+		two("void foo(someTypedef foo) { foo = 2; }");
+		assertNoErrors();
+	}
+	
+	public void testClassDefinedNotOk() throws Exception {
 		one("");
 		two("Bar b;");
 		assertErrors();

@@ -70,6 +70,7 @@ import descent.tests.mars.Pragma_Test;
 import descent.tests.mars.Problems_Test;
 import descent.tests.mars.Recovery_Tests;
 import descent.tests.mars.ScannerTests;
+import descent.tests.mars.SourceElementParserTest;
 import descent.tests.mars.Statement_Test;
 import descent.tests.mars.Struct_Test;
 import descent.tests.mars.Template_Test;
@@ -124,8 +125,8 @@ public class AllNonWorkbenchTests {
 //					| DDOC 
 //					| DEBUGGER 
 //					| FORMATTER 
-//					| LEXER_PARSER 
-					| SIGNATURE 
+					| LEXER_PARSER 
+//					| SIGNATURE 
 //					| REWRITE 
 //					| TRACE
 					;
@@ -208,6 +209,7 @@ public class AllNonWorkbenchTests {
 			suite.addTestSuite(Recovery_Tests.class);
 			suite.addTestSuite(ScannerTests.class);
 //			suite.addTestSuite(Semantic1_Test.class);
+			suite.addTestSuite(SourceElementParserTest.class);
 			suite.addTestSuite(Statement_Test.class);
 			suite.addTestSuite(Struct_Test.class);
 			suite.addTestSuite(Template_Test.class);

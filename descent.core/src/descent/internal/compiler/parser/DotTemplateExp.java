@@ -5,9 +5,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 // DMD 1.020
 public class DotTemplateExp extends UnaExp {
 
-	public ITemplateDeclaration td;
+	public TemplateDeclaration td;
 
-	public DotTemplateExp(Loc loc, Expression e1, ITemplateDeclaration td) {
+	public DotTemplateExp(Loc loc, Expression e1, TemplateDeclaration td) {
 		super(loc, TOK.TOKdottd, e1);
 		this.td = td;
 	}

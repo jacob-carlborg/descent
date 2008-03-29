@@ -23,7 +23,7 @@ public class TupleExp extends Expression {
 		type = null;
 
 		for (int i = 0; i < tup.objects.size(); i++) {
-			INode o = tup.objects.get(i);
+			ASTDmdNode o = tup.objects.get(i);
 			if (o.dyncast() == DYNCAST_EXPRESSION) {
 				Expression e = (Expression) o;
 				e = e.syntaxCopy(context);

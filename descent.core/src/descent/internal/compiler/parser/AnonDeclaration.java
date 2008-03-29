@@ -59,8 +59,8 @@ public class AnonDeclaration extends AttribDeclaration {
 
 		Assert.isNotNull(sc.parent);
 
-		IDsymbol parent = sc.parent.pastMixin();
-		IAggregateDeclaration ad = parent.isAggregateDeclaration();
+		Dsymbol parent = sc.parent.pastMixin();
+		AggregateDeclaration ad = parent.isAggregateDeclaration();
 
 		if (ad == null
 				|| (ad.isStructDeclaration() == null && ad.isClassDeclaration() == null)) {
@@ -90,7 +90,7 @@ public class AnonDeclaration extends AttribDeclaration {
 			aad.parent = ad;
 
 			for (int i = 0; i < decl.size(); i++) {
-				IDsymbol s = decl.get(i);
+				Dsymbol s = decl.get(i);
 
 				s.semantic(sc, context);
 				if (isunion) {
@@ -104,7 +104,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 			// If failed due to forward references, unwind and try again later
 			if (aad.sizeok == 2) {
-				ad.sizeok(2);
+				ad.sizeok = 2;
 				if (sc.anonAgg == null) {
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
@@ -133,25 +133,25 @@ public class AnonDeclaration extends AttribDeclaration {
 
 			// Add members of aad to ad
 			for (int i = 0; i < aad.fields.size(); i++) {
-				IVarDeclaration v = aad.fields.get(i);
+				VarDeclaration v = aad.fields.get(i);
 
 				v.offset(v.offset() + sc.offset);
-				ad.fields().add(v);
+				ad.fields.add(v);
 			}
 
 			// Add size of aad to ad
 			if (adisunion) {
-				if (aad.structsize > ad.structsize()) {
-					ad.structsize(aad.structsize);
+				if (aad.structsize > ad.structsize) {
+					ad.structsize = aad.structsize;
 				}
 				sc.offset = 0;
 			} else {
-				ad.structsize(sc.offset + aad.structsize);
-				sc.offset = ad.structsize();
+				ad.structsize = sc.offset + aad.structsize;
+				sc.offset = ad.structsize;
 			}
 
-			if (ad.alignsize() < aad.alignsize) {
-				ad.alignsize(aad.alignsize);
+			if (ad.alignsize < aad.alignsize) {
+				ad.alignsize = aad.alignsize;
 			}
 
 			sc.anonAgg = aad;
@@ -159,7 +159,7 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		AnonDeclaration ad;
 
 		Assert.isTrue(s == null);
@@ -173,7 +173,7 @@ public class AnonDeclaration extends AttribDeclaration {
 		buf.writestring(isunion ? "union" : "struct");
 		buf.writestring("\n{\n");
 		if (decl != null) {
-			for (IDsymbol s : decl) {
+			for (Dsymbol s : decl) {
 				s.toCBuffer(buf, hgs, context);
 			}
 		}

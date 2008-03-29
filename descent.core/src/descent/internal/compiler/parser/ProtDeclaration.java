@@ -15,6 +15,8 @@ public class ProtDeclaration extends AttribDeclaration {
 	public boolean single;
 	public PROT protection;
 	public boolean colon;
+	
+	public Long flags;
 
 	public ProtDeclaration(PROT p, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {
@@ -49,17 +51,17 @@ public class ProtDeclaration extends AttribDeclaration {
 			sc.protection = protection;
 			sc.explicitProtection = 1;
 
-			for (IDsymbol s : decl) {
-				s.extraModifiers(modifiers);
-				if (s.extraModifiers() == null) {
-					s.extraModifiers(new ArrayList<Modifier>());
+			for (Dsymbol s : decl) {
+				s.extraModifiers = modifiers;
+				if (s.extraModifiers == null) {
+					s.extraModifiers = new ArrayList<Modifier>();
 				}
 				if (extraModifiers != null) {
-					s.extraModifiers().addAll(extraModifiers);
+					s.extraModifiers.addAll(extraModifiers);
 				}
-				s.extraModifiers().add(modifier);
+				s.extraModifiers.add(modifier);
 				s.semantic(sc, context);
-				s.extraModifiers(null);
+				s.extraModifiers = null;
 			}
 
 			sc.protection = protection_save;
@@ -71,7 +73,7 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public IDsymbol syntaxCopy(IDsymbol s, SemanticContext context) {
+	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		ProtDeclaration pd;
 
 		if (s != null) {
@@ -118,6 +120,9 @@ public class ProtDeclaration extends AttribDeclaration {
 	
 	@Override
 	public long getFlags() {
+		if (flags != null) {
+			return flags;
+		}
 		return modifier.getFlags() | super.getFlags();
 	}
 

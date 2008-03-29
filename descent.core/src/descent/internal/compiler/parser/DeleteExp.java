@@ -55,7 +55,7 @@ public class DeleteExp extends UnaExp {
 		switch (tb.ty) {
 		case Tclass: {
 			TypeClass tc = (TypeClass) tb;
-			IClassDeclaration cd = tc.sym;
+			ClassDeclaration cd = tc.sym;
 
 			if (cd.isInterfaceDeclaration() != null && cd.isCOMclass()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -67,8 +67,8 @@ public class DeleteExp extends UnaExp {
 			tb = tb.next.toBasetype(context);
 			if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
-				IStructDeclaration sd = ts.sym;
-				IFuncDeclaration f = sd.aggDelete();
+				StructDeclaration sd = ts.sym;
+				FuncDeclaration f = sd.aggDelete;
 
 				if (f != null) {
 					Expression e;

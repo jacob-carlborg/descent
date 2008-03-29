@@ -5,12 +5,11 @@ import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.tree.IElement;
 import melnorme.miscutil.tree.IVisitable;
 import descent.internal.compiler.parser.ASTDmdNode;
-import descent.internal.compiler.parser.INode;
 
 public abstract class ASTNode 
-	implements INode, IASTNode, IElement, IVisitable<IASTVisitor> {
+	implements IASTNode, IElement, IVisitable<IASTVisitor> {
 	
-	public static final INode[] NO_ELEMENTS = new INode[0]; 
+	public static final ASTDmdNode[] NO_ELEMENTS = new ASTDmdNode[0]; 
 	
 	/** AST node parent, null if the node is the tree root. */
 	public ASTNode parentBruno = null;

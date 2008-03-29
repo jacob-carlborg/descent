@@ -3,17 +3,15 @@ package descent.tests.mangling;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.AssignExp;
+import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.IClassDeclaration;
-import descent.internal.compiler.parser.IEnumDeclaration;
-import descent.internal.compiler.parser.IModule;
 import descent.internal.compiler.parser.ISignatureConstants;
-import descent.internal.compiler.parser.IStructDeclaration;
-import descent.internal.compiler.parser.ITemplateDeclaration;
-import descent.internal.compiler.parser.IVarDeclaration;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeBasic;
@@ -34,8 +32,8 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeClass type = (TypeClass) var.type;
-		IClassDeclaration cd = type.sym;
-		assertEquals("Foo", new String(cd.ident().ident));
+		ClassDeclaration cd = type.sym;
+		assertEquals("Foo", new String(cd.ident.ident));
 		
 		assertEquals(one.getAllTypes()[0], cd.getJavaElement());
 		assertEquals(one.getAllTypes()[0], type.getJavaElement());
@@ -50,8 +48,8 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeClass type = (TypeClass) var.type;
-		IClassDeclaration cd = type.sym;
-		assertEquals("Foo", new String(cd.ident().ident));
+		ClassDeclaration cd = type.sym;
+		assertEquals("Foo", new String(cd.ident.ident));
 		
 		assertEquals(one.getAllTypes()[0], cd.getJavaElement());
 		assertEquals(one.getAllTypes()[0], type.getJavaElement());
@@ -66,8 +64,8 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeStruct type = (TypeStruct) var.type;
-		IStructDeclaration cd = type.sym;
-		assertEquals("Foo", new String(cd.ident().ident));
+		StructDeclaration cd = type.sym;
+		assertEquals("Foo", new String(cd.ident.ident));
 		
 		assertEquals(one.getAllTypes()[0], cd.getJavaElement());
 		assertEquals(one.getAllTypes()[0], type.getJavaElement());
@@ -82,8 +80,8 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeStruct type = (TypeStruct) var.type;
-		IStructDeclaration cd = type.sym;
-		assertEquals("Foo", new String(cd.ident().ident));
+		StructDeclaration cd = type.sym;
+		assertEquals("Foo", new String(cd.ident.ident));
 		
 		assertEquals(one.getAllTypes()[0], cd.getJavaElement());
 		assertEquals(one.getAllTypes()[0], type.getJavaElement());
@@ -98,8 +96,8 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 				(ICompilationUnit) two, javaProject, null, null, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeEnum type = (TypeEnum) var.type;
-		IEnumDeclaration cd = type.sym;
-		assertEquals("Foo", new String(cd.ident().ident));
+		EnumDeclaration cd = type.sym;
+		assertEquals("Foo", new String(cd.ident.ident));
 		
 		assertEquals(one.getAllTypes()[0], cd.getJavaElement());
 		assertEquals(one.getAllTypes()[0], type.getJavaElement());
@@ -139,14 +137,14 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		ExpStatement ex = (ExpStatement) cs.statements.get(0);
 		AssignExp ae = (AssignExp) ex.exp;
 		VarExp ve = (VarExp) ae.e1;
-		IVarDeclaration var = (IVarDeclaration) ve.var;
-		TypeClass type = (TypeClass) var.type();
-		IClassDeclaration cd = type.sym;
-		TemplateInstance ti = (TemplateInstance) cd.parent();
+		VarDeclaration var = (VarDeclaration) ve.var;
+		TypeClass type = (TypeClass) var.type;
+		ClassDeclaration cd = type.sym;
+		TemplateInstance ti = (TemplateInstance) cd.parent;
 		assertEquals(1, ti.tiargs.size());
 		assertSame(TypeBasic.tint32, ti.tiargs.get(0));
-		ITemplateDeclaration tempdecl = ti.tempdecl;
-		IModule imodule = (IModule) tempdecl.parent();
+		TemplateDeclaration tempdecl = ti.tempdecl;
+		Module imodule = (Module) tempdecl.parent;
 		assertNotNull(imodule);
 	}
 	
@@ -161,14 +159,14 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		ExpStatement ex = (ExpStatement) cs.statements.get(0);
 		AssignExp ae = (AssignExp) ex.exp;
 		VarExp ve = (VarExp) ae.e1;
-		IVarDeclaration var = (IVarDeclaration) ve.var;
-		TypeClass type = (TypeClass) var.type();
-		IClassDeclaration cd = type.sym;
-		TemplateInstance ti = (TemplateInstance) cd.parent();
+		VarDeclaration var = (VarDeclaration) ve.var;
+		TypeClass type = (TypeClass) var.type;
+		ClassDeclaration cd = type.sym;
+		TemplateInstance ti = (TemplateInstance) cd.parent;
 		assertEquals(1, ti.tiargs.size());
 		assertSame(TypeBasic.tint32, ti.tiargs.get(0));
-		ITemplateDeclaration tempdecl = ti.tempdecl;
-		IModule imodule = (IModule) tempdecl.parent();
+		TemplateDeclaration tempdecl = ti.tempdecl;
+		Module imodule = (Module) tempdecl.parent;
 		assertNotNull(imodule);
 	}
 
