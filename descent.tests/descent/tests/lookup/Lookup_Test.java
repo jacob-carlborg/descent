@@ -448,6 +448,8 @@ public class Lookup_Test extends AbstractLookupTest {
 	}
 	
 	public void testProblemMultipleDefined() throws Exception {
+		createCompilationUnit("std", "stdio.d", "");
+		createCompilationUnit("std.c", "stdio.d", "");
 		one("");
 		two("import std.stdio; import std.c.stdio;");
 		assertNoErrors();

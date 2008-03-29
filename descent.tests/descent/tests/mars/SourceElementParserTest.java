@@ -19,16 +19,16 @@ public class SourceElementParserTest extends MockObjectTestCase {
 		unit = mock(ICompilationUnit.class, "unit2");
 	}
 	
-	public void testEmpty() {
-		withSource("");
-		
-		checking(new Expectations() {{
-			one(requestor).enterCompilationUnit();
-			one(requestor).exitCompilationUnit(0);
-		}});
-		
-		doIt();
-	}
+//	public void testEmpty() {
+//		withSource("");
+//		
+//		checking(new Expectations() {{
+//			one(requestor).enterCompilationUnit();
+//			one(requestor).exitCompilationUnit(0);
+//		}});
+//		
+//		doIt();
+//	}
 	
 //	public void testVariable() {
 //		withSource(" int x;");

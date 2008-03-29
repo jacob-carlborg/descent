@@ -17,7 +17,7 @@ package descent.core;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IMethod extends IMember {
+public interface IMethod extends IMember, ITemplated {
 /**
  * Returns the simple name of this method.
  * For a constructor, this returns the simple name of the declaring type.
@@ -50,34 +50,6 @@ String getElementName();
  * @see Signature
  */
 String[] getExceptionTypes() throws JavaModelException;
-
-/**
- * Returns the formal type parameter signatures for this method.
- * Returns an empty array if this method has no formal type parameters.
- * <p>
- * The formal type parameter signatures may be either unresolved (for source
- * types) or resolved (for binary types). See {@link Signature} for details.
- * </p>
- *
- * @exception JavaModelException if this element does not exist or if an
- *      exception occurs while accessing its corresponding resource.
- * @return the formal type parameter signatures of this method,
- * in the order declared in the source, an empty array if none
- * @see Signature
- * @since 3.0
- */
-String[] getTypeParameterSignatures() throws JavaModelException;
-/**
- * Returns the formal type parameters for this method.
- * Returns an empty array if this method has no formal type parameters.
- *
- * @exception JavaModelException if this element does not exist or if an
- *      exception occurs while accessing its corresponding resource.
- * @return the formal type parameters of this method,
- * in the order declared in the source, an empty array if none
- * @since 3.1
- */
-ITypeParameter[] getTypeParameters() throws JavaModelException;
 /**
  * Returns the number of parameters of this method.
  * This is a handle-only method.
@@ -187,15 +159,6 @@ String getReturnType() throws JavaModelException;
  */
 String getSignature() throws JavaModelException;
 /**
- * Returns the type parameter declared in this method with the given name.
- * This is a handle-only method. The type parameter may or may not exist.
- * 
- * @param name the given simple name
- * @return the type parameter declared in this method with the given name
- * @since 3.1
- */
-ITypeParameter getTypeParameter(String name);
-/**
  * Returns whether this method is a method.
  *
  * @exception JavaModelException if this element does not exist or if an
@@ -240,16 +203,6 @@ boolean isNew() throws JavaModelException;
  * @return true if this method is a delete (dellocator), false otherwise
  */
 boolean isDelete() throws JavaModelException;
-
-/**
- * Returns whether this method is a template.
- *
- * @exception JavaModelException if this element does not exist or if an
- *      exception occurs while accessing its corresponding resource.
- * 
- * @return true if this method is a template, false otherwise
- */
-boolean isTemplate() throws JavaModelException;
 
 /**
  * Returns whether this method is a main method.

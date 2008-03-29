@@ -10,7 +10,9 @@ import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
+import descent.core.ITemplated;
 import descent.core.IType;
+import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.env.INameEnvironment;
@@ -52,6 +54,9 @@ import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateParameter;
+import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -155,28 +160,28 @@ public class DescentModuleFinder implements IModuleFinder {
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren());
 					
-					members.add(wrap(member, type));
+					members.add(wrapWithTemplate(member, type));
 				} else if (type.isInterface()) {
 					InterfaceDeclaration member = new InterfaceDeclaration(Loc.ZERO, getIdent(type), getBaseClasses(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren());
 					
-					members.add(wrap(member, type));
+					members.add(wrapWithTemplate(member, type));
 				} else if (type.isStruct()) {
 					StructDeclaration member = new StructDeclaration(Loc.ZERO, getIdent(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren());
 					
-					members.add(wrap(member, type));
+					members.add(wrapWithTemplate(member, type));
 				} else if (type.isUnion()) {
 					UnionDeclaration member = new UnionDeclaration(Loc.ZERO, getIdent(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren());
 					
-					members.add(wrap(member, type));
+					members.add(wrapWithTemplate(member, type));
 				} else if (type.isEnum()) {
 					BaseClasses baseClasses = getBaseClasses(type);
 					EnumDeclaration member = new EnumDeclaration(Loc.ZERO, getIdent(type), baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
@@ -190,6 +195,12 @@ public class DescentModuleFinder implements IModuleFinder {
 						member.members.add(enumMember);
 					}
 					
+					members.add(wrap(member, type));
+				} else if (type.isTemplate()) {
+					Dsymbols symbols = new Dsymbols();
+					fill(module, symbols, type.getChildren());
+					
+					TemplateDeclaration member = new TemplateDeclaration(Loc.ZERO, getIdent(type), getTemplateParameters(type), symbols);
 					members.add(wrap(member, type));
 				}
 				break;
@@ -217,7 +228,7 @@ public class DescentModuleFinder implements IModuleFinder {
 				} else { 
 					FuncDeclaration member = new FuncDeclaration(Loc.ZERO, getIdent(method), getStorageClass(method), getType(method));
 					member.setJavaElement(method);
-					members.add(wrap(member, method));
+					members.add(wrapWithTemplate(member, method));
 				}
 				break;
 			}
@@ -301,6 +312,30 @@ public class DescentModuleFinder implements IModuleFinder {
 			}
 		}
 	}
+	
+	private Dsymbol wrapWithTemplate(Dsymbol symbol, ITemplated templated) throws JavaModelException {
+		if (templated.isTemplate()) {
+			TemplateDeclaration temp = new TemplateDeclaration(Loc.ZERO, getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
+			return wrap(temp, (IMember) templated);
+		} else {
+			return wrap(symbol, (IMember) templated);
+		} 
+	}
+	
+	private TemplateParameters getTemplateParameters(ITemplated templated) throws JavaModelException {
+		TemplateParameters params = new TemplateParameters();
+		
+		for(ITypeParameter typeParameter : templated.getTypeParameters()) {
+			params.add(getTemplateParameter(typeParameter.getSignature(), typeParameter.getElementName()));
+		}
+		return params;
+	}
+
+	private TemplateParameter getTemplateParameter(String signature, String name) {
+		TemplateParameter param = InternalSignature.toTemplateParameter(signature);
+		param.ident = new IdentifierExp(name.toCharArray());
+		return param;
+	}
 
 	private Initializer getInitializer(IField field) throws JavaModelException {
 		String source = field.getInitializerSource();
@@ -321,7 +356,12 @@ public class DescentModuleFinder implements IModuleFinder {
 	}
 
 	private IdentifierExp getIdent(IJavaElement element) {
-		return new IdentifierExp(element.getElementName().toCharArray());
+		String name = element.getElementName();
+		if (name.length() == 0) {
+			return null;
+		} else {
+			return new IdentifierExp(name.toCharArray());
+		}
 	}
 	
 	private BaseClasses getBaseClasses(IType type) throws JavaModelException {
@@ -400,7 +440,8 @@ public class DescentModuleFinder implements IModuleFinder {
 			symbol = sc;
 		}
 		PROT prot = getProtection(flags);
-		if (prot != PROT.PROTpublic) {
+		if ((symbol instanceof Import && prot != PROT.PROTprivate)
+				|| (!(symbol instanceof Import) && prot != PROT.PROTpublic)) {
 			ProtDeclaration pd = new ProtDeclaration(prot, toDsymbols(symbol), null, false, false);
 			pd.flags = flags;
 			symbol = pd;

@@ -221,20 +221,22 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				i = process0(signature, i + 1, requestor);
 				
-				c = signature.charAt(i);
-				if (i < signature.length() && Character.isDigit(c)) {
-					n = 0;
-					
-					while(c != TEMPLATE_VALUE_PARAMETER) {
-						n = 10 * n + (c - '0');
+				if (i < signature.length()) {
+					c = signature.charAt(i);
+					if (Character.isDigit(c)) {
+						n = 0;
+						
+						while(c != TEMPLATE_VALUE_PARAMETER) {
+							n = 10 * n + (c - '0');
+							i++;
+							c = signature.charAt(i);
+						}
 						i++;
-						c = signature.charAt(i);
+						
+						requestor.acceptTemplateValueParameterSpecificValue(signature.substring(i, i + n).toCharArray());
+						
+						i += n;
 					}
-					i++;
-					
-					requestor.acceptTemplateValueParameterSpecificValue(signature.substring(i, i + n).toCharArray());
-					
-					i += n;
 				}
 				
 				requestor.exitTemplateValueParameter(signature.substring(start, i));

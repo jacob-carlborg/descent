@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IType extends IMember {
+public interface IType extends IMember, ITemplated {
 	/**
 	 * Do code completion inside a code snippet in the context of the current type.
 	 * 
@@ -608,35 +608,6 @@ public interface IType extends IMember {
 	 * an empty collection if none
 	 */
 	String[] getSuperInterfaceNames() throws JavaModelException;
-	
-	/**
-	 * Returns the formal type parameter signatures for this type.
-	 * Returns an empty array if this type has no formal type parameters.
-	 * <p>
-	 * The formal type parameter signatures may be either unresolved (for source
-	 * types) or resolved (for binary types). See {@link Signature} for details.
-	 * </p>
-	 *
-	 * @exception JavaModelException if this element does not exist or if an
-	 *      exception occurs while accessing its corresponding resource.
-	 * @return the formal type parameter signatures of this type,
-	 * in the order declared in the source, an empty array if none
-	 * @see Signature
-	 * @since 3.0
-	 */
-	String[] getTypeParameterSignatures() throws JavaModelException;
-	
-	/**
-	 * Returns the formal type parameters for this type.
-	 * Returns an empty array if this type has no formal type parameters.
-	 *
-	 * @exception JavaModelException if this element does not exist or if an
-	 *      exception occurs while accessing its corresponding resource.
-	 * @return the formal type parameters of this type,
-	 * in the order declared in the source, an empty array if none
-	 * @since 3.1
-	 */
-	ITypeParameter[] getTypeParameters() throws JavaModelException;
 
 	/**
 	 * Returns the member type declared in this type with the given simple name.
@@ -646,16 +617,6 @@ public interface IType extends IMember {
 	 * @return the member type declared in this type with the given simple name
 	 */
 	IType getType(String name);
-	
-	/**
-	 * Returns the type parameter declared in this type with the given name.
-	 * This is a handle-only method. The type parameter may or may not exist.
-	 * 
-	 * @param name the given simple name
-	 * @return the type parameter declared in this type with the given name
-	 * @since 3.1
-	 */
-	ITypeParameter getTypeParameter(String name);
 	
 	/**
 	 * Returns the type-qualified name of this type, 
@@ -795,17 +756,6 @@ public interface IType extends IMember {
 	 * @since 3.0
 	 */
 	boolean isUnion() throws JavaModelException;
-	
-	/**
-	 * Returns whether this type represents a template.
-	 *
-	 * @exception JavaModelException if this element does not exist or if an
-	 *		exception occurs while accessing its corresponding resource.
-	 * @return true if this type represents an annotation type,
-	 * false otherwise
-	 * @since 3.0
-	 */
-	boolean isTemplate() throws JavaModelException;
 
 	/**
 	 * Returns whether this type represents a local type.
