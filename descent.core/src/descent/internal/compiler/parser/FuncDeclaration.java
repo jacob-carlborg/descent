@@ -6,8 +6,11 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IMethod;
+import descent.core.JavaModelException;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import descent.internal.core.util.Util;
 import static descent.internal.compiler.parser.ILS.ILSno;
 import static descent.internal.compiler.parser.ILS.ILSuninitialized;
 import static descent.internal.compiler.parser.ILS.ILSyes;
@@ -97,6 +100,9 @@ public class FuncDeclaration extends Declaration {
 	
 	// Wether this function is actually a templated function
 	public boolean templated;
+	
+	private IMethod javaElement;
+	private FuncDeclaration materialized; // in case the body is yet unknown
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
 			Type type) {
@@ -474,6 +480,34 @@ public class FuncDeclaration extends Declaration {
 		if (context.global.errors != 0) {
 			return null;
 		}
+		
+		// If no body is avaiable (this FuncDeclaration was created from
+		// an IMethod) materialize the body and interpret
+		if (javaElement != null) {
+			if (scope == null) {
+				return null;
+			}
+			if (materialized == null) {
+				try {
+					String source = javaElement.getSource();
+					// TODO api level
+					Parser parser = new Parser(source.toCharArray(), 0, source.length(), false, false, false, false, Parser.D1, null, null, false, null);
+					parser.nextToken();
+					
+					Module module = parser.parseModuleObj();
+					FuncDeclaration func = (FuncDeclaration) module.members.get(0);
+					func.semantic(scope.enclosing, context);
+					func.semantic2(scope.enclosing, context);
+					func.semantic3(scope.enclosing, context);
+					materialized = func;
+				} catch (JavaModelException e1) {
+					Util.log(e1);
+					return null;
+				}
+			}
+			return materialized.interpret(istate, arguments, context);
+		}
+		
 		if (equals(ident, Id.aaLen)) {
 			return interpret_aaLen(istate, arguments, context);
 		} else if (equals(ident, Id.aaKeys)) {
@@ -2008,6 +2042,15 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public boolean templated() {
 		return templated;
+	}
+	
+	public void setJavaElement(IMethod javaElement) {
+		this.javaElement = javaElement;
+	}
+	
+	@Override
+	public IMethod getJavaElement() {
+		return javaElement;
 	}
 
 }

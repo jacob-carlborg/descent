@@ -110,7 +110,7 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 	this.newElements = newElements;
 } 
 
-public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, long modifiers) {
+public void acceptImport(int declarationStart, int declarationEnd, String name, String alias, String[] selectiveImportsNames,  String[] selectiveImportsAliases, long modifiers) {
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
 		ICompilationUnit parentCU= (ICompilationUnit)parentHandle;
@@ -123,8 +123,8 @@ public void acceptImport(int declarationStart, int declarationEnd, String displa
 			this.newElements.put(importContainer, this.importContainerInfo);
 		}
 		
-		String elementName = JavaModelManager.getJavaModelManager().intern(displayString);
-		ImportDeclaration handle = new ImportDeclaration(importContainer, elementName, onDemand);
+		String elementName = JavaModelManager.getJavaModelManager().intern(name);
+		ImportDeclaration handle = new ImportDeclaration(importContainer, elementName, alias, selectiveImportsNames, selectiveImportsAliases);
 		resolveDuplicates(handle);
 		
 		ImportDeclarationElementInfo info = new ImportDeclarationElementInfo();
@@ -137,8 +137,8 @@ public void acceptImport(int declarationStart, int declarationEnd, String displa
 	} else {
 		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 		
-		String elementName = JavaModelManager.getJavaModelManager().intern(displayString);
-		ImportDeclaration handle = new ImportDeclaration(parentHandle, elementName, onDemand);
+		String elementName = JavaModelManager.getJavaModelManager().intern(name);
+		ImportDeclaration handle = new ImportDeclaration(parentHandle, elementName, alias, selectiveImportsNames, selectiveImportsAliases);
 		resolveDuplicates(handle);
 		
 		ImportDeclarationElementInfo info = new ImportDeclarationElementInfo();

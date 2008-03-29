@@ -2,6 +2,10 @@ package descent.core;
 
 public interface IConditional extends IMember {
 	
+	IJavaElement[] getThenChildren() throws JavaModelException;
+	
+	IJavaElement[] getElseChildren() throws JavaModelException;
+	
 	boolean isDebugDeclaration() throws JavaModelException;
 	
 	boolean isVersionDeclaration() throws JavaModelException;

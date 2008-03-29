@@ -2,7 +2,11 @@ package descent.internal.compiler.lookup;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
+import descent.core.IConditional;
 import descent.core.IField;
+import descent.core.IImportContainer;
+import descent.core.IImportDeclaration;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
@@ -12,12 +16,17 @@ import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.CompileDeclaration;
+import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.CtorDeclaration;
+import descent.internal.compiler.parser.DebugCondition;
+import descent.internal.compiler.parser.DebugSymbol;
 import descent.internal.compiler.parser.DeleteDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Dsymbols;
@@ -27,6 +36,8 @@ import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Identifiers;
+import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.LINK;
@@ -37,6 +48,8 @@ import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.StaticIfCondition;
+import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.Type;
@@ -44,6 +57,9 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.Version;
+import descent.internal.compiler.parser.VersionCondition;
+import descent.internal.compiler.parser.VersionSymbol;
 import descent.internal.core.InternalSignature;
 import descent.internal.core.util.Util;
 
@@ -65,7 +81,7 @@ public class DescentModuleFinder implements IModuleFinder {
 			module.members = new Dsymbols();
 			
 			try {
-				fill(module.members, unit.getChildren());
+				fill(module, module.members, unit.getChildren());
 			} catch (JavaModelException e) {
 				e.printStackTrace();
 				Util.log(e);
@@ -77,9 +93,43 @@ public class DescentModuleFinder implements IModuleFinder {
 		return null;
 	}
 	
-	private void fill(Dsymbols members, IJavaElement[] elements) throws JavaModelException {
+	private void fill(Module module, Dsymbols members, IJavaElement[] elements) throws JavaModelException {
 		for(IJavaElement elem : elements) {
 			switch(elem.getElementType()) {
+			case IJavaElement.IMPORT_CONTAINER: {
+				IImportContainer container = (IImportContainer) elem;
+				fill(module, members, container.getChildren());
+				break;
+			}
+			case IJavaElement.IMPORT_DECLARATION: {
+				IImportDeclaration impDecl = ((IImportDeclaration) elem);
+				String elementName = impDecl.getElementName();
+				String[] pieces = elementName.split("\\.");
+				Identifiers packages = new Identifiers();
+				for (int i = 0; i < pieces.length - 1; i++) {
+					packages.add(new IdentifierExp(pieces[0].toCharArray()));
+				}
+				IdentifierExp name = new IdentifierExp(pieces[pieces.length - 1].toCharArray());
+				IdentifierExp alias = impDecl.getAlias() == null ? null : new IdentifierExp(impDecl.getAlias().toCharArray());
+				
+				long flags = impDecl.getFlags();
+				
+				Import imp = new Import(Loc.ZERO, packages, name, alias, (flags & Flags.AccStatic) != 0);
+				
+				String[] names = impDecl.getSelectiveImportsNames();
+				String[] aliases = impDecl.getSelectiveImportsAliases();
+				if (names != null) {
+					for (int i = 0; i < names.length; i++) {
+						imp.names.add(new IdentifierExp(names[i].toCharArray()));
+						if (aliases[i] != null) {
+							imp.aliases.add(new IdentifierExp(aliases[i].toCharArray()));
+						}
+					}
+				}
+				
+				members.add(wrap(imp, flags));
+				break;
+			}
 			case IJavaElement.FIELD: {
 				IField field = (IField) elem;
 				if (field.isVariable()) {
@@ -103,28 +153,28 @@ public class DescentModuleFinder implements IModuleFinder {
 					ClassDeclaration member = new ClassDeclaration(Loc.ZERO, getIdent(type), getBaseClasses(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
-					fill(member.members, type.getChildren());
+					fill(module, member.members, type.getChildren());
 					
 					members.add(wrap(member, type));
 				} else if (type.isInterface()) {
 					InterfaceDeclaration member = new InterfaceDeclaration(Loc.ZERO, getIdent(type), getBaseClasses(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
-					fill(member.members, type.getChildren());
+					fill(module, member.members, type.getChildren());
 					
 					members.add(wrap(member, type));
 				} else if (type.isStruct()) {
 					StructDeclaration member = new StructDeclaration(Loc.ZERO, getIdent(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
-					fill(member.members, type.getChildren());
+					fill(module, member.members, type.getChildren());
 					
 					members.add(wrap(member, type));
 				} else if (type.isUnion()) {
 					UnionDeclaration member = new UnionDeclaration(Loc.ZERO, getIdent(type));
 					member.setJavaElement(type);
 					member.members = new Dsymbols();
-					fill(member.members, type.getChildren());
+					fill(module, member.members, type.getChildren());
 					
 					members.add(wrap(member, type));
 				} else if (type.isEnum()) {
@@ -149,21 +199,103 @@ public class DescentModuleFinder implements IModuleFinder {
 				if (method.isConstructor()) {
 					// TODO varargs
 					CtorDeclaration member = new CtorDeclaration(Loc.ZERO, getArguments(method), 0);
+					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				} else if (method.isDestructor()) {
 					DtorDeclaration member = new DtorDeclaration(Loc.ZERO);
+					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				} else if (method.isNew()) {
 					// TODO varargs
 					NewDeclaration member = new NewDeclaration(Loc.ZERO, getArguments(method), 0);
+					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				} else if (method.isDelete()) {
 					DeleteDeclaration member = new DeleteDeclaration(Loc.ZERO, getArguments(method));
+					member.setJavaElement(method);
 					members.add(wrap(member, method));	
 				} else { 
 					FuncDeclaration member = new FuncDeclaration(Loc.ZERO, getIdent(method), getStorageClass(method), getType(method));
+					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				}
+				break;
+			}
+			case IJavaElement.INITIALIZER:
+				IInitializer init = (IInitializer) elem;
+				if (init.isAlign()) {
+					Dsymbols sub = new Dsymbols();
+					fill(module, sub, init.getChildren());
+					
+					AlignDeclaration member = new AlignDeclaration(Integer.parseInt(init.getElementName()), sub);
+					members.add(member);
+				} else if (init.isDebugAssignment()) {
+					char[] versionIdent = init.getElementName().toCharArray();
+					Version version = new Version(Loc.ZERO, versionIdent);
+					try {
+						long level = Long.parseLong(init.getElementName());
+						DebugSymbol member = new DebugSymbol(Loc.ZERO, level, version);
+						members.add(member);
+					} catch(NumberFormatException e) {
+						DebugSymbol member = new DebugSymbol(Loc.ZERO, new IdentifierExp(versionIdent), version);
+						members.add(member);
+					}
+				} else if (init.isVersionAssignment()) {
+					char[] versionIdent = init.getElementName().toCharArray();
+					Version version = new Version(Loc.ZERO, versionIdent);
+					try {
+						long level = Long.parseLong(init.getElementName());
+						VersionSymbol member = new VersionSymbol(Loc.ZERO, level, version);
+						members.add(member);
+					} catch(NumberFormatException e) {
+						VersionSymbol member = new VersionSymbol(Loc.ZERO, new IdentifierExp(versionIdent), version);
+						members.add(member);
+					}
+				} else if (init.isMixin()) {
+					Expression exp = encoder.decodeExpression(init.getElementName().toCharArray());
+					CompileDeclaration member = new CompileDeclaration(Loc.ZERO, exp);
+					members.add(member);
+				}
+				break;
+			case IJavaElement.CONDITIONAL: {
+				IConditional cond = (IConditional) elem;
+				
+				Dsymbols thenDecls = new Dsymbols();
+				fill(module, thenDecls, cond.getThenChildren());
+				
+				Dsymbols elseDecls = new Dsymbols();
+				fill(module, elseDecls, cond.getElseChildren());
+				
+				if (cond.isStaticIfDeclaration()) {
+					Expression exp = encoder.decodeExpression(cond.getElementName().toCharArray());
+					StaticIfCondition condition = new StaticIfCondition(Loc.ZERO, exp);
+					
+					StaticIfDeclaration member = new StaticIfDeclaration(condition, thenDecls, elseDecls);
+					members.add(member);
+				} else if (cond.isVersionDeclaration()) {
+					String name = cond.getElementName();
+					VersionCondition condition;
+					try {
+						long value = Long.parseLong(name);
+						condition = new VersionCondition(module, Loc.ZERO, value, null);
+					} catch(NumberFormatException e) {
+						condition = new VersionCondition(module, Loc.ZERO, 1, name.toCharArray());
+					}
+					ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
+					members.add(member);
+				} else if (cond.isDebugDeclaration()) {
+					String name = cond.getElementName();
+					DebugCondition condition;
+					try {
+						long value = Long.parseLong(name);
+						condition = new DebugCondition(module, Loc.ZERO, value, null);
+					} catch(NumberFormatException e) {
+						condition = new DebugCondition(module, Loc.ZERO, 1, name.toCharArray());
+					}
+					ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
+					members.add(member);
+				}
+				// TODO iftype
 				break;
 			}
 			}
@@ -254,15 +386,20 @@ public class DescentModuleFinder implements IModuleFinder {
 		return new Argument(stc, getType(signature), null, null);
 	}
 	
+	
+	
 	private Dsymbol wrap(Dsymbol symbol, IMember member) throws JavaModelException {
-		long flags = member.getFlags();
-		int stc = getStorageClass(member);
+		return wrap(symbol, member.getFlags());
+	}
+	
+	private Dsymbol wrap(Dsymbol symbol, long flags) throws JavaModelException {
+		int stc = getStorageClass(flags);
 		if (stc != 0) {
 			StorageClassDeclaration sc = new StorageClassDeclaration(stc, toDsymbols(symbol), null, false, false);
 			sc.flags = flags;
 			symbol = sc;
 		}
-		PROT prot = getProtection(member);
+		PROT prot = getProtection(flags);
 		if (prot != PROT.PROTpublic) {
 			ProtDeclaration pd = new ProtDeclaration(prot, toDsymbols(symbol), null, false, false);
 			pd.flags = flags;
@@ -278,7 +415,10 @@ public class DescentModuleFinder implements IModuleFinder {
 	}
 
 	private int getStorageClass(IMember member) throws JavaModelException {
-		long flags = member.getFlags();
+		return getStorageClass(member.getFlags());
+	}
+		
+	private int getStorageClass(long flags) throws JavaModelException {
 		int storage_class = 0;
 		
 		if ((flags & Flags.AccAbstract) != 0) storage_class |= STC.STCabstract;
@@ -308,8 +448,7 @@ public class DescentModuleFinder implements IModuleFinder {
 		return storage_class;
 	}
 	
-	private PROT getProtection(IMember member) throws JavaModelException {
-		long flags = member.getFlags();
+	private PROT getProtection(long flags) throws JavaModelException {
 		if ((flags & Flags.AccPublic) != 0) {
 			return PROT.PROTpublic;
 		} else if ((flags & Flags.AccProtected) != 0) {

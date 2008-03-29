@@ -754,11 +754,11 @@ public class JavaSearchPage extends DialogPage implements ISearchPage, IJavaSear
 					return new SearchPatternData(PACKAGE, REFERENCES, true, element.getElementName(), element, isInsideJRE);
 				case IJavaElement.IMPORT_DECLARATION: {
 					IImportDeclaration declaration= (IImportDeclaration) element;
-					if (declaration.isOnDemand()) {
+//					if (declaration.isOnDemand()) {
 						// TODO JDT signature
 //						String name= Signature.getQualifier(declaration.getElementName());
 //						return new SearchPatternData(PACKAGE, DECLARATIONS, true, name, element, true);
-					}
+//					}
 					return new SearchPatternData(TYPE, DECLARATIONS, true, element.getElementName(), element, true);
 				}
 				case IJavaElement.TYPE:

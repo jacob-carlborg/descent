@@ -505,7 +505,7 @@ public class JavaDocLocations {
 			case IJavaElement.IMPORT_DECLARATION :
 				IImportDeclaration decl= (IImportDeclaration) element;
 
-				if (decl.isOnDemand()) {
+//				if (decl.isOnDemand()) {
 					// TODO JDT signature
 //					IJavaElement cont= JavaModelUtil.findTypeContainer(element.getJavaProject(), Signature.getQualifier(decl.getElementName()));
 //					if (cont instanceof IType) {
@@ -513,10 +513,10 @@ public class JavaDocLocations {
 //					} else if (cont instanceof IPackageFragment) {
 //						appendPackageSummaryPath((IPackageFragment) cont, pathBuffer);
 //					}
-				} else {
+//				} else {
 					IType imp= element.getJavaProject().findType(decl.getElementName());
 					appendTypePath(imp, pathBuffer);
-				}
+//				}
 				break;
 			case IJavaElement.PACKAGE_DECLARATION :
 				IJavaElement pack= element.getAncestor(IJavaElement.PACKAGE_FRAGMENT);

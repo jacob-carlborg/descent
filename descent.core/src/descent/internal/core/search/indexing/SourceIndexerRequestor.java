@@ -13,7 +13,6 @@ package descent.internal.core.search.indexing;
 import java.util.Stack;
 
 import descent.core.Flags;
-import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.ISourceElementRequestor;
@@ -59,7 +58,7 @@ public void acceptConstructorReference(char[] typeName, int argCount, int source
 public void acceptFieldReference(char[] fieldName, int sourcePosition) {
 	this.indexer.addFieldReference(fieldName);
 }
-public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, long modifiers) {
+public void acceptImport(int declarationStart, int declarationEnd, String name, String alias, String[] selectiveImportsNames,  String[] selectiveImportsAliases, long modifiers) {
 //	 imports have already been reported while creating the ImportRef node (see SourceElementParser#comsume*ImportDeclarationName() methods)
 }
 /**

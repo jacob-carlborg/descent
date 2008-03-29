@@ -19,16 +19,30 @@ package descent.core;
  */
 public interface IImportDeclaration extends IJavaElement, ISourceReference, ISourceManipulation {
 /**
- * Returns the name that has been imported. 
- * For an on-demand import, this includes the trailing <code>".*"</code>.
- * For example, for the statement <code>"import java.util.*"</code>,
- * this returns <code>"java.util.*"</code>.
- * For the statement <code>"import java.util.Hashtable"</code>,
- * this returns <code>"java.util.Hashtable"</code>.
+ * Returns the fully qualified name that has been imported.
  * 
- * @return the name that has been imported
+ * @return the fully qualified name that has been imported
  */
 String getElementName();
+/**
+ * Returns the alias to use for this import, if any, ir <code>null</code>.
+ * @return the alias to use for this import, if any, ir <code>null</code>
+ */
+String getAlias();
+/**
+ * Returns the names of the selective imports. Each element return is not 
+ * <code>null</code>.
+ * The returned array is never <code>null</code>.  
+ * @return the names of the selective imports
+ */
+String[] getSelectiveImportsNames();
+/**
+ * Returns the aliases of the selective imports. Some elements may be
+ * <code>null</code> if no alias exists for a particular selective import.
+ * The returned array is never <code>null</code>. 
+ * @return the aliases of the selective imports
+ */
+String[] getSelectiveImportsAliases();
 /**
  * Returns the modifier flags for this import. The flags can be examined using class
  * <code>Flags</code>. Only the static flag is meaningful for import declarations.
@@ -40,11 +54,4 @@ String getElementName();
  * @since 3.0
  */
 long getFlags() throws JavaModelException;
-
-/**
- * Returns whether the import is on-demand. An import is on-demand if it ends
- * with <code>".*"</code>.
- * @return true if the import is on-demand, false otherwise
- */
-boolean isOnDemand();
 }

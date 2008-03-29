@@ -1323,10 +1323,10 @@ public static SearchPattern createPattern(IJavaElement element, int limitTo, int
 			String elementName = element.getElementName();
 			lastDot = elementName.lastIndexOf('.');
 			if (lastDot == -1) return null; // invalid import declaration
-			IImportDeclaration importDecl = (IImportDeclaration)element;
-			if (importDecl.isOnDemand()) {
-				searchPattern = createPackagePattern(elementName.substring(0, lastDot), maskedLimitTo, matchRule);
-			} else {
+//			IImportDeclaration importDecl = (IImportDeclaration)element;
+//			if (importDecl.isOnDemand()) {
+//				searchPattern = createPackagePattern(elementName.substring(0, lastDot), maskedLimitTo, matchRule);
+//			} else {
 				searchPattern = 
 					createTypePattern(
 						elementName.substring(lastDot+1).toCharArray(),
@@ -1336,7 +1336,7 @@ public static SearchPattern createPattern(IJavaElement element, int limitTo, int
 						null,
 						maskedLimitTo,
 						matchRule);
-			}
+//			}
 			break;
 		case IJavaElement.LOCAL_VARIABLE :
 			LocalVariable localVar = (LocalVariable) element;

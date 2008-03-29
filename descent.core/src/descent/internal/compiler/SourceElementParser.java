@@ -54,6 +54,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private NaiveASTFlattener flattener;
 	private Stack< Stack<AttribDeclaration> > attribDeclarationStack;
 	private ASTNodeEncoder astNodeEncoder;
+	private char[] source;
 
 	/**
 	 * @param surfaceDeclarations instruct the parser to ignore statements
@@ -87,6 +88,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit) {
+		source = unit.getContents();
+		
 		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true).module;
 		module.moduleName = unit.getFullyQualifiedName();
 		
@@ -755,8 +758,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		case Condition.STATIC_IF: {
 			StaticIfCondition cond = (StaticIfCondition) node.condition;
-			if (cond.exp != null) {
-				displayString = astNodeEncoder.encodeExpression(cond.exp);
+			if (cond.sourceExp != null) {
+				displayString = CharOperation.subarray(source, cond.sourceExp.start, cond.sourceExp.start + cond.sourceExp.length);
 			}
 			flags = Flags.AccStaticIfDeclaration;
 			break;
@@ -775,25 +778,24 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		if (thenDeclarations != null && !thenDeclarations.isEmpty()) {
 			if (elseDeclarations != null && !elseDeclarations.isEmpty()) {
-				requestor.enterConditionalThen(startOf((Dsymbol) thenDeclarations.get(0))); // SEMANTIC
+				requestor.enterConditionalThen(startOf(thenDeclarations.get(0)));
 			}
 			for(Dsymbol ideclaration : thenDeclarations) {
-				Dsymbol declaration = (Dsymbol) ideclaration; // SEMANTIC
+				Dsymbol declaration = ideclaration;
 				declaration.accept(this);
 			}
 			if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
-				requestor.exitConditionalThen(endOf((Dsymbol) thenDeclarations.get(thenDeclarations.size() - 1))); // SEMANTIC
+				requestor.exitConditionalThen(endOf(thenDeclarations.get(thenDeclarations.size() - 1)));
 			}
 		}
 		
-		
 		if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
-			requestor.enterConditionalElse(startOf((Dsymbol) elseDeclarations.get(0))); // SEMANTIC
+			requestor.enterConditionalElse(startOf(elseDeclarations.get(0)));
 			for(Dsymbol ideclaration : elseDeclarations) {
-				Dsymbol declaration = (Dsymbol) ideclaration;
+				Dsymbol declaration = ideclaration;
 				declaration.accept(this);
 			}
-			requestor.exitConditionalElse(endOf((Dsymbol) elseDeclarations.get(elseDeclarations.size() - 1))); // SEMANTIC
+			requestor.exitConditionalElse(endOf(elseDeclarations.get(elseDeclarations.size() - 1)));
 		}
 		
 		pushLevelInAttribDeclarationStack();
@@ -825,12 +827,64 @@ public class SourceElementParser extends AstVisitorAdapter {
 			int flags = node.isstatic ? Flags.AccStatic : 0;
 			flags |= getFlags(node, node.modifiers);
 			
-			requestor.acceptImport(start, end, node.toString(), false, flags);
+			requestor.acceptImport(start, end, getName(node), getAlias(node), getSelectiveImportsNames(node), getSelectiveImportsAliases(node), flags);
 			
 			node = node.next;
 		}
 		pushLevelInAttribDeclarationStack();
 		return false;
+	}
+
+	private String[] getSelectiveImportsAliases(Import node) {
+		if (node.aliases == null || node.aliases.size() == 0) {
+			return null;
+		}
+		
+		String[] ret = new String[node.aliases.size()];
+		for (int i = 0; i < node.aliases.size(); i++) {
+			IdentifierExp ident = node.aliases.get(i);
+			if (ident != null && ident.ident != null) {
+				ret[i] = new String(ident.ident);
+			}
+		}
+		return ret;
+	}
+
+	private String[] getSelectiveImportsNames(Import node) {
+		if (node.names == null || node.names.size() == 0) {
+			return null;
+		}
+		
+		String[] ret = new String[node.names.size()];
+		for (int i = 0; i < node.names.size(); i++) {
+			IdentifierExp ident = node.names.get(i);
+			if (ident != null && ident.ident != null) {
+				ret[i] = new String(ident.ident);
+			}
+		}
+		return ret;
+	}
+
+	private String getAlias(Import node) {
+		if (node.aliasId != null) {
+			return new String(node.aliasId.ident);
+		}
+		return null;
+	}
+
+	private String getName(Import node) {
+		StringBuilder sb = new StringBuilder();
+		if (node.packages != null && !node.packages.isEmpty()) {
+			for (int i = 0; i < node.packages.size(); i++) {
+				if (i != 0) {
+					sb.append('.');
+				}
+				sb.append(node.packages.get(i).ident);
+			}
+			sb.append('.');
+		}
+		sb.append(node.ident.ident);
+		return sb.toString();
 	}
 
 	public boolean visit(ProtDeclaration node) {
@@ -1484,7 +1538,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			} else {
 				// Report members created by template mixins
 				TemplateMixin mixin = dsymbol.isTemplateMixin();
-				if (mixin != null) {
+				if (mixin != null && mixin.members != null) {
 					for(Dsymbol member : mixin.members) {
 						member.accept(this);
 					}

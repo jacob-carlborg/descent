@@ -50,20 +50,6 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	}
 
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
-//		// Reindex everything, since compiler options also affect libraries
-//		JavaModelManager.getJavaModelManager().getIndexManager().indexAll(project);
-//		
-//		// Rebuild libraries
-//		IJavaProject javaProject = JavaCore.create(project);
-//		if (javaProject != null) {
-//			IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
-//			for(IPackageFragmentRoot root : roots) {
-//				if (root.isArchive() || root.isExternal()) {
-//					JavaModelManager.getJavaModelManager().removeInfoAndChildren((JavaElement) root);
-//				}
-//			}
-//		}
-		
 		IResource[] members = project.members();
 		build(members, monitor);
 	}
@@ -116,7 +102,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	public static void build(IFile file) throws CoreException {
 		IJavaElement element = JavaCore.create(file);
 		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
-//			long time = System.currentTimeMillis();
+			long time = System.currentTimeMillis();
 			
 			removeTasks(file);
 			removeProblems(file);
@@ -150,8 +136,8 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			associateTaskTags(file, parser);
 			associateProblems(file, module);
 			
-//			time = System.currentTimeMillis() - time;
-//			System.out.println(time);
+			time = System.currentTimeMillis() - time;
+			System.out.println("Build time for " + module.moduleName + ": " + time);
 		}
 	}
 

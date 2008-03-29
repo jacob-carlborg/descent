@@ -345,9 +345,75 @@ public class Lookup_Test extends AbstractLookupTest {
 		assertNoErrors();
 	}
 	
+	public void testStaticIfHides() throws Exception {
+		one("static if(false) { class Foo { } }");
+		two("Foo foo;");
+		assertErrors();
+	}
+	
+	public void testStaticIfShows() throws Exception {
+		one("static if(true) { class Foo { } }");
+		two("Foo foo;");
+		assertNoErrors();
+	}
+	
+	public void testStaticIfElseHides() throws Exception {
+		one("static if(true) { } else { class Foo { } }");
+		two("Foo foo;");
+		assertErrors();
+	}
+	
+	public void testStaticIfElseShows() throws Exception {
+		one("static if(false) { } else { class Foo { } }");
+		two("Foo foo;");
+		assertNoErrors();
+	}
+	
+	public void testVersionHides() throws Exception {
+		one("version(Linux) { class Foo { } }");
+		two("Foo foo;");
+		assertErrors();
+	}
+	
+	public void testVersionShows() throws Exception {
+		one("version(Windows) { class Foo { } }");
+		two("Foo foo;");
+		assertNoErrors();
+	}
+	
+	public void testVersionElseHides() throws Exception {
+		one("version(Windows) { } else { class Foo { } }");
+		two("Foo foo;");
+		assertErrors();
+	}
+	
+	public void testVersionElseShows() throws Exception {
+		one("version(Linux) { } else { class Foo { } }");
+		two("Foo foo;");
+		assertNoErrors();
+	}
+	
+	public void testDebugHides() throws Exception {
+		one("debug { class Foo { } }");
+		two("Foo foo;");
+		assertErrors();
+	}
+	
+	public void testDebugElseShows() throws Exception {
+		one("debug { } else { class Foo { } }");
+		two("Foo foo;");
+		assertNoErrors();
+	}
+	
 	public void testTemplate() throws Exception {
 		one("template Temp() { const int Temp = 3; }");
 		two("mixin Temp!();");
+		assertNoErrors();
+	}
+	
+	public void testMixin() throws Exception {
+		one("mixin(\"class Bar { }\")");
+		two("Bar bar;");
 		assertNoErrors();
 	}
 	
@@ -362,7 +428,6 @@ public class Lookup_Test extends AbstractLookupTest {
 		two("Bar!(int) x;");
 		assertNoErrors();
 	}
-	
 
 	public void testTemplatedClass2() throws Exception {
 		one("class Bar(int T) { } class Bar(float T) { }");

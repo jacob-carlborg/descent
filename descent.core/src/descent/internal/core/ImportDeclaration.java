@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import org.eclipse.core.runtime.Assert;
 import descent.core.*;
+import descent.core.compiler.CharOperation;
 
 /**
  * Handle for an import declaration. Info object is a ImportDeclarationElementInfo.
@@ -21,28 +22,42 @@ import descent.core.*;
 public class ImportDeclaration extends SourceRefElement implements IImportDeclaration {
 
 	protected String name;
-	protected boolean isOnDemand;
+	protected String alias;
+	protected String[] selectiveImportsNames;
+	protected String[] selectiveImportsAliases;
 	
 /**
  * Constructs an ImportDeclaration in the given import container
  * with the given name.
  */
-protected ImportDeclaration(JavaElement parent, String name, boolean isOnDemand) {
+protected ImportDeclaration(JavaElement parent, String name, String alias, String[] selectiveImportsNames, String[] selectiveImportsAliases) {
 	super(parent);
 	this.name = name;
-	this.isOnDemand = isOnDemand;
+	this.alias = alias;
+	this.selectiveImportsNames = selectiveImportsNames;
+	this.selectiveImportsAliases = selectiveImportsAliases;
 }
 public boolean equals(Object o) {
 	if (!(o instanceof ImportDeclaration)) return false;
 	return super.equals(o);
 }
 public String getElementName() {
-	if (this.isOnDemand)
-		return this.name + ".*"; //$NON-NLS-1$
 	return this.name;
 }
-public String getNameWithoutStar() {
-	return this.name;
+public String getAlias() {
+	return alias;
+}
+public String[] getSelectiveImportsAliases() {
+	if (selectiveImportsAliases == null) {
+		return CharOperation.NO_STRINGS;
+	}
+	return selectiveImportsAliases;
+}
+public String[] getSelectiveImportsNames() {
+	if (selectiveImportsNames == null) {
+		return CharOperation.NO_STRINGS;
+	}
+	return selectiveImportsNames;
 }
 /**
  * @see IJavaElement
@@ -84,12 +99,6 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 	CompilationUnit cu = (CompilationUnit)this.parent.getParent();
 	if (checkOwner && cu.isPrimary()) return this;
 	return cu.getImport(getElementName());
-}
-/**
- * Returns true if the import is on-demand (ends with ".*")
- */
-public boolean isOnDemand() {
-	return this.isOnDemand;
 }
 /**
  */
