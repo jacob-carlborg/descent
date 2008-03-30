@@ -31,5 +31,10 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 	public int getNodeType() {
 		return TEMPLATE_INSTANCE_WRAPPER;
 	}
+	
+	@Override
+	protected void appendSignature(StringBuilder sb) {
+		tempinst.appendSignature(sb);
+	}
 
 }

@@ -50,10 +50,7 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.InternalSignature;
-import descent.internal.core.JavaElement;
-import descent.internal.core.JavaElementFinder;
 import descent.internal.core.JavaProject;
-import descent.internal.core.LocalVariable;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 import static descent.internal.compiler.parser.TOK.TOKblockcomment;
@@ -80,7 +77,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 	int length;
 	List<IJavaElement> selectedElements;
 	
-	JavaElementFinder finder;
 	InternalSignature internalSignature;
 
 	public SelectionEngine(
@@ -162,7 +158,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 				module.moduleName = sourceUnit.getFullyQualifiedName();
 				
 				SemanticContext context = CompilationUnitResolver.resolve(module, javaProject, owner);
-				this.finder = new JavaElementFinder(javaProject, context, owner);
 				
 				module.accept(this);
 			}
@@ -508,22 +503,22 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 	
 	private void addLocal(Declaration node, long modifiers) {
-		FuncDeclaration parent = (FuncDeclaration) node.effectiveParent();
-		JavaElement func = (JavaElement) finder.find(parent.getSignature());
-		if (func == null) {
-			return;
-		}
-		
-		addJavaElement(
-			new LocalVariable(
-				func, 
-				node.ident.toString(),
-				node.start,
-				node.start + node.length - 1,
-				node.ident.start,
-				node.ident.start + node.ident.length - 1,
-				node.type.getSignature(),
-				modifiers));
+//		FuncDeclaration parent = (FuncDeclaration) node.effectiveParent();
+//		JavaElement func = (JavaElement) finder.find(parent.getSignature());
+//		if (func == null) {
+//			return;
+//		}
+//		
+//		addJavaElement(
+//			new LocalVariable(
+//				func, 
+//				node.ident.toString(),
+//				node.start,
+//				node.start + node.length - 1,
+//				node.ident.start,
+//				node.ident.start + node.ident.length - 1,
+//				node.type.getSignature(),
+//				modifiers));
 	}
 	
 	private void add(Type type) {
@@ -536,10 +531,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 			return;
 		}
 		
-		IJavaElement result = finder.find(type.getSignature());
-		if (result != null) {
-			addJavaElement(result);
-		}
+//		IJavaElement result = finder.find(type.getSignature());
+//		if (result != null) {
+//			addJavaElement(result);
+//		}
 	}
 	
 	private void add(String signature) {
@@ -547,10 +542,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 			return;
 		}
 		
-		IJavaElement result = finder.find(signature);
-		if (result != null) {
-			addJavaElement(result);
-		}
+//		IJavaElement result = finder.find(signature);
+//		if (result != null) {
+//			addJavaElement(result);
+//		}
 	}
 	
 	private void addJavaElement(IJavaElement element) {

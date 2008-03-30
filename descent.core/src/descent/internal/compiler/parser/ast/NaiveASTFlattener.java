@@ -1924,30 +1924,36 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			return false;
 		}
 		
-		if (node.colon && node.decl != null && node.decl.size() > 0) { 
-			for(int i = 0; i < node.decl.size(); i++) {
-				Dsymbol dsymbol = node.decl.get(i);
-				if (
-					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
-						|| 
-					(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
-					node.modifier.accept(this);
-					this.buffer.append(":\n");
-					this.indent++;
-					visitList(node.decl.subList(0, i), "");
-					this.indent--;
-					this.buffer.append(LINE_END);
-					node.decl.get(i).accept(this);
-					return false;
+		if (node.modifier != null) {
+			if (node.colon && node.decl != null && node.decl.size() > 0) { 
+				for(int i = 0; i < node.decl.size(); i++) {
+					Dsymbol dsymbol = node.decl.get(i);
+					if (
+						(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
+							|| 
+						(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
+						node.modifier.accept(this);
+						this.buffer.append(":\n");
+						this.indent++;
+						visitList(node.decl.subList(0, i), "");
+						this.indent--;
+						this.buffer.append(LINE_END);
+						node.decl.get(i).accept(this);
+						return false;
+					}
 				}
 			}
+		
+			node.modifier.accept(this);
+			this.buffer.append(":\n");
+			this.indent++;
 		}
 		
-		node.modifier.accept(this);
-		this.buffer.append(":\n");
-		this.indent++;
 		visitList(node.decl, LINE_END);
-		this.indent--;
+		
+		if (node.modifier != null) {
+			this.indent--;
+		}
 		return false;
 	}
 
@@ -2188,34 +2194,38 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			return false;
 		}
 		
-		if (node.colon && node.decl != null && node.decl.size() > 0) { 
-			for(int i = 0; i < node.decl.size(); i++) {
-				Dsymbol dsymbol = node.decl.get(i);
-				if (
-					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
-						|| 
-					(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
-					if (node.modifier != null) {
-						node.modifier.accept(this);
+		if (node.modifier != null) {
+			if (node.colon && node.decl != null && node.decl.size() > 0) { 
+				for(int i = 0; i < node.decl.size(); i++) {
+					Dsymbol dsymbol = node.decl.get(i);
+					if (
+						(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
+							|| 
+						(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
+						if (node.modifier != null) {
+							node.modifier.accept(this);
+						}
+						this.buffer.append(":\n");
+						this.indent++;
+						visitList(node.decl.subList(0, i), "");
+						this.indent--;
+						this.buffer.append(LINE_END);
+						node.decl.get(i).accept(this);
+						return false;
 					}
-					this.buffer.append(":\n");
-					this.indent++;
-					visitList(node.decl.subList(0, i), "");
-					this.indent--;
-					this.buffer.append(LINE_END);
-					node.decl.get(i).accept(this);
-					return false;
 				}
-			}
+			}		
+			node.modifier.accept(this);
+			
+			this.buffer.append(":\n");
+			this.indent++;
 		}
 		
-		if (node.modifier != null) {
-			node.modifier.accept(this);
-		}
-		this.buffer.append(":\n");
-		this.indent++;
 		visitList(node.decl, LINE_END);
-		this.indent--;
+		
+		if (node.modifier != null) {
+			this.indent--;
+		}
 		return false;
 	}
 
@@ -2882,7 +2892,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		if (!CharOperation.equals(id.ident, Id.empty)) {
 			id.accept(this);
 		}
-		visitList(node.tempinst.tiargs, ", ", "!(", ")");
+		this.buffer.append("!(");
+		visitList(node.tempinst.tiargs, ", ", "", "");
+		this.buffer.append(")");
 		if (node.idents != null && node.idents.size() > 0) {
 			visitQualifiedType(node);
 		}

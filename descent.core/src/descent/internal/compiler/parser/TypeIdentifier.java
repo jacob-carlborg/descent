@@ -207,19 +207,22 @@ public class TypeIdentifier extends TypeQualified {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.IDENTIFIER);
+		ident.appendSignature(sb);
+		
 		if (idents != null) {
-			for(IdentifierExp ident : idents) {
-				if (ident == null || ident.ident == null) {
+			for (int i = 0; i < idents.size(); i++) {
+				IdentifierExp ident = idents.get(i);
+				if (ident == null) {
 					sb.append(0);
 				} else {
-					sb.append(ident.ident.length);
-					sb.append(ident.ident);
+					ident.appendSignature(sb);
+				}
+				
+				if (ident instanceof TemplateInstanceWrapper && i != idents.size() - 1) {
+					sb.append(ISignatureConstants.IDENTIFIER);
 				}
 			}
 		}
-		
-		sb.append(ident.ident.length);
-		sb.append(ident.ident);
 	}
 
 }

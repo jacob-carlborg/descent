@@ -267,5 +267,10 @@ public class IdentifierExp extends Expression {
 	public Dsymbol getResolvedSymbol() {
 		return resolvedSymbol;
 	}
+	
+	protected void appendSignature(StringBuilder sb) {
+		sb.append(ident.length);
+		sb.append(ident);
+	}
 
 }

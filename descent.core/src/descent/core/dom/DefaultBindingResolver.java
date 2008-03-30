@@ -2,16 +2,13 @@ package descent.core.dom;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
-import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMethod;
-import descent.core.IParent;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -24,6 +21,7 @@ import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
+import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
@@ -31,31 +29,22 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.CtorDeclaration;
-import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
-import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
-import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
-import descent.internal.core.JavaElement;
-import descent.internal.core.JavaElementFinder;
 import descent.internal.core.JavaProject;
-import descent.internal.core.LocalVariable;
 import descent.internal.core.SearchableEnvironment;
-import descent.internal.core.SignatureProcessor;
-import descent.internal.core.SignatureRequestorAdapter;
 import descent.internal.core.util.Util;
 
 class DefaultBindingResolver extends BindingResolver {
@@ -109,11 +98,6 @@ class DefaultBindingResolver extends BindingResolver {
 	IJavaProject javaProject;
 	
 	/**
-	 * The finder to lookup inside elements.
-	 */
-	JavaElementFinder finder;
-	
-	/**
 	 * The name environment to search for compilation units.
 	 */
 	INameEnvironment environment;
@@ -127,7 +111,6 @@ class DefaultBindingResolver extends BindingResolver {
 		this.bindingTables = bindingTables;
 		this.workingCopyOwner = workingCopyOwner;
 		this.newAstToOldAst = new HashMap();
-		this.finder = new JavaElementFinder(javaProject, context, workingCopyOwner);
 		try {
 			this.environment = new SearchableEnvironment((JavaProject) javaProject, workingCopyOwner);
 		} catch (JavaModelException e) {
@@ -882,431 +865,431 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	// TODO Descent templates!
-	private class SignatureSolver extends SignatureRequestorAdapter {
-		
-		private Stack<Stack<IBinding>> stack = new Stack<Stack<IBinding>>();
-		private Stack<String> templateStack = new Stack<String>();
-		
-		public SignatureSolver() {
-			stack.push(new Stack<IBinding>());
-		}
-		
-		public void acceptModule(char[][] compoundName, String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				ICompilationUnit unit = finder.findCompilationUnit(compoundName);
-				if (unit == null) {
-					return;
-				}
-				binding = new PackageBinding(DefaultBindingResolver.this, unit, null, signature);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			}
-			stack.push(binding);
-		}
-		
-		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				if (stack.isEmpty()) {
-					return;
-				}
-				
-				if (startPosition >= 0) {
-					if (type == ISignatureConstants.FUNCTION ||
-							type == ISignatureConstants.TEMPLATED_FUNCTION) {
-						this.stack.pop();
-						stack = this.stack.peek();
-						
-						if (stack.isEmpty()) {
-							return;
-						}
-					}
-					
-					binding = stack.pop();
-					
-					IJavaElement element = binding.getJavaElement();
-					element =  finder.findChild(element, startPosition);
-					
-					if (element instanceof IType) {
-						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
-						bindingTables.bindingKeysToBindings.put(signature, binding);
-					} else if (element instanceof IField) {
-						binding = new VariableBinding(DefaultBindingResolver.this, element, null, false, signature);
-						bindingTables.bindingKeysToBindings.put(signature, binding);
-					} else if (element instanceof IMethod) {
-						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, null, signature);
-						bindingTables.bindingKeysToBindings.put(signature, binding);
-					} else if (element instanceof IInitializer) {
-						binding = new InitializerBinding(element);
-						bindingTables.bindingKeysToBindings.put(signature, binding);
-					} else {
-						return;
-					}
-					
-				} else {
-					binding = stack.pop();
-					
-					if (type == ISignatureConstants.FUNCTION ||
-							type == ISignatureConstants.TEMPLATED_FUNCTION) {
-						ITypeBinding func = (ITypeBinding) binding;
-						
-						String[] paramsAndReturnTypes = new String[func.getParametersTypes().length + 1];
-						for(int i = 0; i < func.getParametersTypes().length; i++) {
-							paramsAndReturnTypes[i] = func.getParametersTypes()[i].getKey();
-						}
-						paramsAndReturnTypes[paramsAndReturnTypes.length - 1] = func.getReturnType().getKey();
-						
-						this.stack.pop();
-						stack = this.stack.peek();
-						
-						if (stack.isEmpty()) {
-							return;
-						}
-						
-						IJavaElement element = stack.pop().getJavaElement();
-						if (element == null) {
-							return;
-						}
-						
-						if (type == ISignatureConstants.FUNCTION) {
-							element = finder.findFunction((IParent) element, new String(name), paramsAndReturnTypes);
-							if (element == null) {
-								return;
-							}
-						} else {
-							String[] paramsTypes = new String[templateStack.size()];
-							int i = paramsTypes.length - 1;
-							while(!templateStack.isEmpty()) {
-								paramsTypes[i] = templateStack.pop();
-								i--;
-							}
-							
-							element = finder.findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramsTypes);
-						}
-						
-						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, null, signature);
-						bindingTables.bindingKeysToBindings.put(signature, binding);
-					} else if (type == ISignatureConstants.TEMPLATE
-							|| type == ISignatureConstants.TEMPLATED_CLASS
-							|| type == ISignatureConstants.TEMPLATED_STRUCT
-							|| type == ISignatureConstants.TEMPLATED_INTERFACE
-							|| type == ISignatureConstants.TEMPLATED_UNION) {
-						IJavaElement element = binding.getJavaElement(); 
-						if (element == null) {
-							return;
-						}
-						
-						String[] paramsTypes = new String[templateStack.size()];
-						int i = paramsTypes.length - 1;
-						while(!templateStack.isEmpty()) {
-							paramsTypes[i] = templateStack.pop();
-							i--;
-						}
-						
-						if (type == ISignatureConstants.TEMPLATE) {
-							element = finder.findTemplate((IParent) element, new String(name), paramsTypes);
-						} else {
-							element = finder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
-						}
-						if (element == null) {
-							return;
-						}
-						
-						if (element instanceof IType) {
-							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
-							bindingTables.bindingKeysToBindings.put(signature, binding);
-						}
-					} else {
-						IJavaElement element = binding.getJavaElement(); 
-						if (element == null) {
-							return;
-						}
-						
-						element = finder.findChild(element, new String(name));
-						if (element == null) {
-							return;
-						}
-						
-						if (element instanceof IType) {
-							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
-							bindingTables.bindingKeysToBindings.put(signature, binding);
-						} else if (element instanceof IField) {
-							binding = new VariableBinding(DefaultBindingResolver.this, element, null, false, signature);
-							bindingTables.bindingKeysToBindings.put(signature, binding);
-						} else {
-							return;
-						}
-					}
-				}
-			} else {
-				if (type == ISignatureConstants.FUNCTION) {
-					this.stack.pop();
-					stack = this.stack.peek();
-					
-					if (stack.isEmpty()) {
-						return;
-					}
-					stack.pop();
-				} else {
-					stack.pop();
-				}
-			}
-			stack.push(binding);
-		}
-
-		public void acceptArgumentModifier(int stc) {
-			// TODO Descent binding argument modifier
-		}		
-
-		public void acceptAssociativeArray(String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				IBinding pop1 = stack.pop();
-				IBinding pop2 = stack.pop();
-				if (!(pop1 instanceof ITypeBinding && pop2 instanceof ITypeBinding)) {
-					return;
-				}
-				
-				binding = new TypeAArrayBinding(
-						DefaultBindingResolver.this, 
-						(ITypeBinding) pop1, 
-						(ITypeBinding) pop2, 
-						signature);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			}
-			stack.push(binding);
-		}
-		
-		public void acceptDelegate(String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) stack.pop();
-				next.isFunction = false;
-				next.signature = signature;
-				binding = next;
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			}
-			stack.push(binding);
-		}
-
-		public void acceptDynamicArray(String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			if (stack.isEmpty()) {
-				return;
-			}
-			
-			IBinding prev = stack.pop();
-			if (!(prev instanceof ITypeBinding)) {
-				return;
-			}
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				binding = new TypeDArrayBinding(
-						DefaultBindingResolver.this,
-						(ITypeBinding) prev,
-						signature);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			}
-			stack.push(binding);
-		}
-
-		public void acceptPointer(String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				if (stack.isEmpty() || !(stack.peek() instanceof ITypeBinding)) {
-					return;
-				}
-				
-				binding = new TypePointerBinding(
-						DefaultBindingResolver.this,
-						(ITypeBinding) stack.pop(),
-						signature);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			}
-			stack.push(binding);
-		}
-
-		public void acceptPrimitive(TypeBasic type) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(type.deco);
-			if (binding == null) {
-				binding = new TypeBasicBinding(DefaultBindingResolver.this, type);
-				bindingTables.bindingKeysToBindings.put(type.deco, binding);
-			}
-			stack.push(binding);
-		}
-
-		public void acceptStaticArray(char[] dimension, String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				if (stack.isEmpty() || !(stack.peek() instanceof ITypeBinding)) {
-					return;
-				}
-				
-				binding = new TypeSArrayBinding(
-					DefaultBindingResolver.this,
-					(ITypeBinding) stack.pop(),
-					// TODO static array dimension
-					0,
-					signature);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			}
-			stack.push(binding);
-		}
-
-		public void enterFunctionType() {
-			stack.push(new Stack<IBinding>());
-		}
-
-		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-			Stack<IBinding> stack = this.stack.peek();
-			
-			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-			if (binding == null) {
-				if (stack.isEmpty()) {
-					return;
-				}
-				
-				IBinding[] parameterTypes = new IBinding[stack.size() - 1];
-				
-				IBinding returnType = stack.pop();
-				
-				int i = stack.size() - 1;
-				while(!stack.isEmpty()) {
-					parameterTypes[i] = stack.pop();
-					i--;
-				}
-				
-				binding = new TypeFunctionOrDelegateBinding(
-						DefaultBindingResolver.this,
-						parameterTypes,
-						returnType,
-						false, // TODO varargs
-						link,
-						signature,
-						true /* is function */);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-			} else {
-				stack.clear();
-			}
-			
-			stack.push(binding);
-		}
-		
-		@Override
-		public void acceptTemplateTupleParameter() {
-			templateStack.push(String.valueOf(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER));
-		}
-		
-		@Override
-		public void exitTemplateAliasParameter(String signature) {
-			templateStack.push(signature);
-		}
-		
-		@Override
-		public void exitTemplateTypeParameter(String signature) {
-			templateStack.push(signature);
-		}
-		
-		@Override
-		public void exitTemplateValueParameter(String signature) {
-			// Discard the binding of the template value type
-			Stack<IBinding> stack = this.stack.peek();
-			stack.pop();
-			
-			templateStack.push(signature);
-		}
-		
-	}
+//	private class SignatureSolver extends SignatureRequestorAdapter {
+//		
+//		private Stack<Stack<IBinding>> stack = new Stack<Stack<IBinding>>();
+//		private Stack<String> templateStack = new Stack<String>();
+//		
+//		public SignatureSolver() {
+//			stack.push(new Stack<IBinding>());
+//		}
+//		
+//		public void acceptModule(char[][] compoundName, String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				ICompilationUnit unit = finder.findCompilationUnit(compoundName);
+//				if (unit == null) {
+//					return;
+//				}
+//				binding = new PackageBinding(DefaultBindingResolver.this, unit, null, signature);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			}
+//			stack.push(binding);
+//		}
+//		
+//		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				if (stack.isEmpty()) {
+//					return;
+//				}
+//				
+//				if (startPosition >= 0) {
+//					if (type == ISignatureConstants.FUNCTION ||
+//							type == ISignatureConstants.TEMPLATED_FUNCTION) {
+//						this.stack.pop();
+//						stack = this.stack.peek();
+//						
+//						if (stack.isEmpty()) {
+//							return;
+//						}
+//					}
+//					
+//					binding = stack.pop();
+//					
+//					IJavaElement element = binding.getJavaElement();
+//					element =  finder.findChild(element, startPosition);
+//					
+//					if (element instanceof IType) {
+//						binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
+//						bindingTables.bindingKeysToBindings.put(signature, binding);
+//					} else if (element instanceof IField) {
+//						binding = new VariableBinding(DefaultBindingResolver.this, element, null, false, signature);
+//						bindingTables.bindingKeysToBindings.put(signature, binding);
+//					} else if (element instanceof IMethod) {
+//						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, null, signature);
+//						bindingTables.bindingKeysToBindings.put(signature, binding);
+//					} else if (element instanceof IInitializer) {
+//						binding = new InitializerBinding(element);
+//						bindingTables.bindingKeysToBindings.put(signature, binding);
+//					} else {
+//						return;
+//					}
+//					
+//				} else {
+//					binding = stack.pop();
+//					
+//					if (type == ISignatureConstants.FUNCTION ||
+//							type == ISignatureConstants.TEMPLATED_FUNCTION) {
+//						ITypeBinding func = (ITypeBinding) binding;
+//						
+//						String[] paramsAndReturnTypes = new String[func.getParametersTypes().length + 1];
+//						for(int i = 0; i < func.getParametersTypes().length; i++) {
+//							paramsAndReturnTypes[i] = func.getParametersTypes()[i].getKey();
+//						}
+//						paramsAndReturnTypes[paramsAndReturnTypes.length - 1] = func.getReturnType().getKey();
+//						
+//						this.stack.pop();
+//						stack = this.stack.peek();
+//						
+//						if (stack.isEmpty()) {
+//							return;
+//						}
+//						
+//						IJavaElement element = stack.pop().getJavaElement();
+//						if (element == null) {
+//							return;
+//						}
+//						
+//						if (type == ISignatureConstants.FUNCTION) {
+//							element = finder.findFunction((IParent) element, new String(name), paramsAndReturnTypes);
+//							if (element == null) {
+//								return;
+//							}
+//						} else {
+//							String[] paramsTypes = new String[templateStack.size()];
+//							int i = paramsTypes.length - 1;
+//							while(!templateStack.isEmpty()) {
+//								paramsTypes[i] = templateStack.pop();
+//								i--;
+//							}
+//							
+//							element = finder.findTemplatedFunction((IParent) element, new String(name), paramsAndReturnTypes, paramsTypes);
+//						}
+//						
+//						binding = new MethodBinding(DefaultBindingResolver.this, (IMethod) element, null, signature);
+//						bindingTables.bindingKeysToBindings.put(signature, binding);
+//					} else if (type == ISignatureConstants.TEMPLATE
+//							|| type == ISignatureConstants.TEMPLATED_CLASS
+//							|| type == ISignatureConstants.TEMPLATED_STRUCT
+//							|| type == ISignatureConstants.TEMPLATED_INTERFACE
+//							|| type == ISignatureConstants.TEMPLATED_UNION) {
+//						IJavaElement element = binding.getJavaElement(); 
+//						if (element == null) {
+//							return;
+//						}
+//						
+//						String[] paramsTypes = new String[templateStack.size()];
+//						int i = paramsTypes.length - 1;
+//						while(!templateStack.isEmpty()) {
+//							paramsTypes[i] = templateStack.pop();
+//							i--;
+//						}
+//						
+//						if (type == ISignatureConstants.TEMPLATE) {
+//							element = finder.findTemplate((IParent) element, new String(name), paramsTypes);
+//						} else {
+//							element = finder.findTemplatedAggregate((IParent) element, new String(name), paramsTypes);
+//						}
+//						if (element == null) {
+//							return;
+//						}
+//						
+//						if (element instanceof IType) {
+//							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
+//							bindingTables.bindingKeysToBindings.put(signature, binding);
+//						}
+//					} else {
+//						IJavaElement element = binding.getJavaElement(); 
+//						if (element == null) {
+//							return;
+//						}
+//						
+//						element = finder.findChild(element, new String(name));
+//						if (element == null) {
+//							return;
+//						}
+//						
+//						if (element instanceof IType) {
+//							binding = new TypeBinding(DefaultBindingResolver.this, (IType) element, null, signature);
+//							bindingTables.bindingKeysToBindings.put(signature, binding);
+//						} else if (element instanceof IField) {
+//							binding = new VariableBinding(DefaultBindingResolver.this, element, null, false, signature);
+//							bindingTables.bindingKeysToBindings.put(signature, binding);
+//						} else {
+//							return;
+//						}
+//					}
+//				}
+//			} else {
+//				if (type == ISignatureConstants.FUNCTION) {
+//					this.stack.pop();
+//					stack = this.stack.peek();
+//					
+//					if (stack.isEmpty()) {
+//						return;
+//					}
+//					stack.pop();
+//				} else {
+//					stack.pop();
+//				}
+//			}
+//			stack.push(binding);
+//		}
+//
+//		public void acceptArgumentModifier(int stc) {
+//			// TODO Descent binding argument modifier
+//		}		
+//
+//		public void acceptAssociativeArray(String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				IBinding pop1 = stack.pop();
+//				IBinding pop2 = stack.pop();
+//				if (!(pop1 instanceof ITypeBinding && pop2 instanceof ITypeBinding)) {
+//					return;
+//				}
+//				
+//				binding = new TypeAArrayBinding(
+//						DefaultBindingResolver.this, 
+//						(ITypeBinding) pop1, 
+//						(ITypeBinding) pop2, 
+//						signature);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			}
+//			stack.push(binding);
+//		}
+//		
+//		public void acceptDelegate(String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				TypeFunctionOrDelegateBinding next = (TypeFunctionOrDelegateBinding) stack.pop();
+//				next.isFunction = false;
+//				next.signature = signature;
+//				binding = next;
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			}
+//			stack.push(binding);
+//		}
+//
+//		public void acceptDynamicArray(String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			if (stack.isEmpty()) {
+//				return;
+//			}
+//			
+//			IBinding prev = stack.pop();
+//			if (!(prev instanceof ITypeBinding)) {
+//				return;
+//			}
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				binding = new TypeDArrayBinding(
+//						DefaultBindingResolver.this,
+//						(ITypeBinding) prev,
+//						signature);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			}
+//			stack.push(binding);
+//		}
+//
+//		public void acceptPointer(String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				if (stack.isEmpty() || !(stack.peek() instanceof ITypeBinding)) {
+//					return;
+//				}
+//				
+//				binding = new TypePointerBinding(
+//						DefaultBindingResolver.this,
+//						(ITypeBinding) stack.pop(),
+//						signature);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			}
+//			stack.push(binding);
+//		}
+//
+//		public void acceptPrimitive(TypeBasic type) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(type.deco);
+//			if (binding == null) {
+//				binding = new TypeBasicBinding(DefaultBindingResolver.this, type);
+//				bindingTables.bindingKeysToBindings.put(type.deco, binding);
+//			}
+//			stack.push(binding);
+//		}
+//
+//		public void acceptStaticArray(char[] dimension, String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				if (stack.isEmpty() || !(stack.peek() instanceof ITypeBinding)) {
+//					return;
+//				}
+//				
+//				binding = new TypeSArrayBinding(
+//					DefaultBindingResolver.this,
+//					(ITypeBinding) stack.pop(),
+//					// TODO static array dimension
+//					0,
+//					signature);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			}
+//			stack.push(binding);
+//		}
+//
+//		public void enterFunctionType() {
+//			stack.push(new Stack<IBinding>());
+//		}
+//
+//		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+//			Stack<IBinding> stack = this.stack.peek();
+//			
+//			IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//			if (binding == null) {
+//				if (stack.isEmpty()) {
+//					return;
+//				}
+//				
+//				IBinding[] parameterTypes = new IBinding[stack.size() - 1];
+//				
+//				IBinding returnType = stack.pop();
+//				
+//				int i = stack.size() - 1;
+//				while(!stack.isEmpty()) {
+//					parameterTypes[i] = stack.pop();
+//					i--;
+//				}
+//				
+//				binding = new TypeFunctionOrDelegateBinding(
+//						DefaultBindingResolver.this,
+//						parameterTypes,
+//						returnType,
+//						false, // TODO varargs
+//						link,
+//						signature,
+//						true /* is function */);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//			} else {
+//				stack.clear();
+//			}
+//			
+//			stack.push(binding);
+//		}
+//		
+//		@Override
+//		public void acceptTemplateTupleParameter() {
+//			templateStack.push(String.valueOf(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER));
+//		}
+//		
+//		@Override
+//		public void exitTemplateAliasParameter(String signature) {
+//			templateStack.push(signature);
+//		}
+//		
+//		@Override
+//		public void exitTemplateTypeParameter(String signature) {
+//			templateStack.push(signature);
+//		}
+//		
+//		@Override
+//		public void exitTemplateValueParameter(String signature) {
+//			// Discard the binding of the template value type
+//			Stack<IBinding> stack = this.stack.peek();
+//			stack.pop();
+//			
+//			templateStack.push(signature);
+//		}
+//		
+//	}
 	
-	IJavaElement getJavaElement(Dsymbol node) {
-		if (node instanceof Module) {
-			char[] compoundName = ((Module) node).getFullyQualifiedName().toCharArray();
-			char[][] compoundName2 = CharOperation.splitOn('.', compoundName);
-			return finder.findCompilationUnit(compoundName2);
-		} else {
-			IBinding parent = resolveLazy((Dsymbol) node.parent, null);
-			if (parent == null) {
-				return null;
-			}
-			
-			if (node instanceof VarDeclaration ||
-				node instanceof descent.internal.compiler.parser.AliasDeclaration ||
-				node instanceof descent.internal.compiler.parser.TypedefDeclaration ||
-				node instanceof EnumMember) {
-				
-				if (node instanceof Declaration && isLocal((Declaration) node)) {
-					long modifiers = 0;
-					if (node instanceof descent.internal.compiler.parser.AliasDeclaration) {
-						modifiers |= Flags.AccAlias;
-					} else if (node instanceof descent.internal.compiler.parser.TypedefDeclaration) {
-						modifiers |= Flags.AccTypedef;
-					}
-					
-					return new LocalVariable(
-							(JavaElement) parent.getJavaElement(), 
-							node.ident.toString(),
-							node.getStart(),
-							node.getStart() + node.getLength() - 1,
-							node.ident.start,
-							node.ident.start + node.ident.length - 1,
-							node.type().getSignature(),
-							modifiers);
-				} else {
-					return finder.findChild(parent.getJavaElement(), new String(node.ident.ident));
-				}
-			} else if (node instanceof ClassDeclaration ||
-					node instanceof StructDeclaration ||
-					node instanceof EnumDeclaration) {
-				return finder.findChild(parent.getJavaElement(), new String(node.ident.ident));
-			} else if (node instanceof TemplateDeclaration) {
-				TemplateDeclaration temp = (TemplateDeclaration) node;
-				
-				String[] paramTypes = new String[temp.parameters == null ? 0 : temp.parameters.size()];
-				if (temp.parameters != null) {
-					for (int i = 0; i < temp.parameters.size(); i++) {
-						paramTypes[i] = temp.parameters.get(i).getSignature();
-					}
-				}
-				
-				if (temp.wrapper && temp.members != null && temp.members.size() > 0) {
-					Dsymbol first = (Dsymbol) temp.members.get(0);
-					if (first instanceof AggregateDeclaration) {
-						return finder.findTemplatedAggregate((IParent) parent.getJavaElement(), new String(node.ident.ident), paramTypes);
-					} else if (first instanceof FuncDeclaration) {
-						FuncDeclaration func = (FuncDeclaration) first;
-						String[] paramsAndRetTypes = getParamsAndRetType(func);
-						
-						return finder.findTemplatedFunction((IParent) parent.getJavaElement(), new String(node.ident.ident), paramsAndRetTypes, paramTypes);
-					}
-				} else {
-					return finder.findTemplate((IParent) parent.getJavaElement(), new String(node.ident.ident), paramTypes);
-				}
-			} else if (node instanceof FuncDeclaration) {
-				FuncDeclaration func = (FuncDeclaration) node;
-				String[] paramsAndRetTypes = getParamsAndRetType(func);
-				
-				return finder.findFunction((IParent) parent.getJavaElement(), new String(func.ident.ident), paramsAndRetTypes);
-			}
-		}
-		
-		return null;
-	}
+//	IJavaElement getJavaElement(Dsymbol node) {
+//		if (node instanceof Module) {
+//			char[] compoundName = ((Module) node).getFullyQualifiedName().toCharArray();
+//			char[][] compoundName2 = CharOperation.splitOn('.', compoundName);
+//			return finder.findCompilationUnit(compoundName2);
+//		} else {
+//			IBinding parent = resolveLazy((Dsymbol) node.parent, null);
+//			if (parent == null) {
+//				return null;
+//			}
+//			
+//			if (node instanceof VarDeclaration ||
+//				node instanceof descent.internal.compiler.parser.AliasDeclaration ||
+//				node instanceof descent.internal.compiler.parser.TypedefDeclaration ||
+//				node instanceof EnumMember) {
+//				
+//				if (node instanceof Declaration && isLocal((Declaration) node)) {
+//					long modifiers = 0;
+//					if (node instanceof descent.internal.compiler.parser.AliasDeclaration) {
+//						modifiers |= Flags.AccAlias;
+//					} else if (node instanceof descent.internal.compiler.parser.TypedefDeclaration) {
+//						modifiers |= Flags.AccTypedef;
+//					}
+//					
+//					return new LocalVariable(
+//							(JavaElement) parent.getJavaElement(), 
+//							node.ident.toString(),
+//							node.getStart(),
+//							node.getStart() + node.getLength() - 1,
+//							node.ident.start,
+//							node.ident.start + node.ident.length - 1,
+//							node.type().getSignature(),
+//							modifiers);
+//				} else {
+//					return finder.findChild(parent.getJavaElement(), new String(node.ident.ident));
+//				}
+//			} else if (node instanceof ClassDeclaration ||
+//					node instanceof StructDeclaration ||
+//					node instanceof EnumDeclaration) {
+//				return finder.findChild(parent.getJavaElement(), new String(node.ident.ident));
+//			} else if (node instanceof TemplateDeclaration) {
+//				TemplateDeclaration temp = (TemplateDeclaration) node;
+//				
+//				String[] paramTypes = new String[temp.parameters == null ? 0 : temp.parameters.size()];
+//				if (temp.parameters != null) {
+//					for (int i = 0; i < temp.parameters.size(); i++) {
+//						paramTypes[i] = temp.parameters.get(i).getSignature();
+//					}
+//				}
+//				
+//				if (temp.wrapper && temp.members != null && temp.members.size() > 0) {
+//					Dsymbol first = (Dsymbol) temp.members.get(0);
+//					if (first instanceof AggregateDeclaration) {
+//						return finder.findTemplatedAggregate((IParent) parent.getJavaElement(), new String(node.ident.ident), paramTypes);
+//					} else if (first instanceof FuncDeclaration) {
+//						FuncDeclaration func = (FuncDeclaration) first;
+//						String[] paramsAndRetTypes = getParamsAndRetType(func);
+//						
+//						return finder.findTemplatedFunction((IParent) parent.getJavaElement(), new String(node.ident.ident), paramsAndRetTypes, paramTypes);
+//					}
+//				} else {
+//					return finder.findTemplate((IParent) parent.getJavaElement(), new String(node.ident.ident), paramTypes);
+//				}
+//			} else if (node instanceof FuncDeclaration) {
+//				FuncDeclaration func = (FuncDeclaration) node;
+//				String[] paramsAndRetTypes = getParamsAndRetType(func);
+//				
+//				return finder.findFunction((IParent) parent.getJavaElement(), new String(func.ident.ident), paramsAndRetTypes);
+//			}
+//		}
+//		
+//		return null;
+//	}
 	
 	/*
 	 * Creates a binding for the node, which will lazily initialize
@@ -1402,38 +1385,39 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	IBinding resolveBinding(String signature) {
-		if (signature == null || signature.length() == 0) {
-			return null;
-		}
-		
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
-			return binding;
-		}
-		
-		SignatureSolver solver = new SignatureSolver();
-		try {
-			SignatureProcessor.process(signature, solver);
-		} catch (Exception e) {
-			Util.log(e, "processing signature: " + signature);
-			return null;
-		}
-		
-		if (solver.stack.isEmpty()) {
-			binding = null;
-		} else {
-			Stack<IBinding> stack = solver.stack.pop();
-			if (stack.isEmpty()) {
-				return null;
-			}
-			binding = stack.pop();
-		}
-		
-		if (binding != null) {
-			bindingTables.bindingKeysToBindings.put(signature, binding);
-		}
-		
-		return binding;
+//		if (signature == null || signature.length() == 0) {
+//			return null;
+//		}
+//		
+//		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//		if (binding != null) {
+//			return binding;
+//		}
+//		
+//		SignatureSolver solver = new SignatureSolver();
+//		try {
+//			SignatureProcessor.process(signature, solver);
+//		} catch (Exception e) {
+//			Util.log(e, "processing signature: " + signature);
+//			return null;
+//		}
+//		
+//		if (solver.stack.isEmpty()) {
+//			binding = null;
+//		} else {
+//			Stack<IBinding> stack = solver.stack.pop();
+//			if (stack.isEmpty()) {
+//				return null;
+//			}
+//			binding = stack.pop();
+//		}
+//		
+//		if (binding != null) {
+//			bindingTables.bindingKeysToBindings.put(signature, binding);
+//		}
+//		
+//		return binding;
+		return null;
 	}
 
 }

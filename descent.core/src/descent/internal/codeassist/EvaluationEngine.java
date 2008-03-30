@@ -32,7 +32,6 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.integer_t;
 import descent.internal.compiler.parser.real_t;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
-import descent.internal.core.JavaElementFinder;
 import descent.internal.core.util.Util;
 
 /*
@@ -50,8 +49,6 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	int offset;
 	int length;
 	IEvaluationResult result;
-	
-	JavaElementFinder finder;
 
 	public EvaluationEngine(
 			Map settings,
@@ -70,8 +67,6 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			ParseResult parseResult = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, true, null);
 			
 			context = parseResult.context;
-			
-			this.finder = new JavaElementFinder(javaProject, context, owner);
 			
 			Module module = parseResult.module;
 			module.accept(this);

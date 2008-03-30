@@ -21,9 +21,9 @@ public abstract class JavaElementBasedBinding implements IBinding {
 	}
 	
 	public final IJavaElement getJavaElement() {
-		if (element == null) {
-			element = bindingResolver.getJavaElement(node);
-		}
+//		if (element == null) {
+//			element = bindingResolver.getJavaElement(node);
+//		}
 		return element;
 	}
 	

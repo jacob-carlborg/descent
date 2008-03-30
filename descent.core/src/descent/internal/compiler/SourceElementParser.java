@@ -900,7 +900,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 			}
 			sb.append('.');
 		}
-		sb.append(node.ident.ident);
+		sb.append(node.id.ident);
+		
 		return sb.toString();
 	}
 

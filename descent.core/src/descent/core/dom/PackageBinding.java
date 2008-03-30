@@ -34,9 +34,9 @@ public class PackageBinding implements IPackageBinding {
 	}
 
 	public ICompilationUnit getJavaElement() {
-		if (element == null) {
-			element = (ICompilationUnit) bindingResolver.getJavaElement(node);
-		}
+//		if (element == null) {
+//			element = (ICompilationUnit) bindingResolver.getJavaElement(node);
+//		}
 		return element;
 	}
 

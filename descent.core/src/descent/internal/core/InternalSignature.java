@@ -16,6 +16,7 @@ import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.TemplateAliasParameter;
 import descent.internal.compiler.parser.TemplateInstance;
+import descent.internal.compiler.parser.TemplateInstanceWrapper;
 import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.TemplateTupleParameter;
 import descent.internal.compiler.parser.TemplateTypeParameter;
@@ -90,8 +91,8 @@ public class InternalSignature implements ISignatureConstants {
 			public void acceptIdentifier(char[][] compoundName, String signature) {
 				Stack<Type> sub = stack.peek();
 				
-				TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[compoundName.length - 1]);
-				for (int i = 0; i < compoundName.length - 1; i++) {
+				TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
+				for (int i = 1; i < compoundName.length; i++) {
 					type.idents.add(new IdentifierExp(compoundName[i]));
 				}
 				
@@ -111,6 +112,9 @@ public class InternalSignature implements ISignatureConstants {
 			}
 			@Override
 			public void acceptArgumentModifier(int stc) {
+				if (modifiers.isEmpty()) {
+					System.out.println(1);
+				}
 				modifiers.peek().push(stc);
 			}
 			@Override
@@ -167,12 +171,33 @@ public class InternalSignature implements ISignatureConstants {
 				Stack<Type> previous = stack.peek();
 				TypeIdentifier typeIdent = (TypeIdentifier) previous.pop();
 				
-				TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident);
-				templInstance.tiargs = tiargs;
-				
-				TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
-				
-				previous.push(typeInstance);
+				if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
+					TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident);
+					templInstance.tiargs = tiargs;
+					
+					if (previous.isEmpty()) {
+						TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+						previous.push(typeInstance);
+					} else {
+						TypeInstance previousInstance = (TypeInstance) previous.peek();
+						previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+					}
+				} else {
+					TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1));
+					templInstance.tiargs = tiargs;
+					
+					typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+					
+					if (previous.isEmpty()) {
+						previous.push(typeIdent);
+					} else {
+						TypeIdentifier previousIdent = (TypeIdentifier) previous.peek();
+						previousIdent.idents.add(typeIdent.ident);
+						for(IdentifierExp ident : typeIdent.idents) {
+							previousIdent.idents.add(ident);
+						}
+					}
+				}
 			}
 		});
 		

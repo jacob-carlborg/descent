@@ -12,7 +12,6 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.core.JavaElementFinder;
 
 public class SemanticContext {
 
@@ -76,7 +75,6 @@ public class SemanticContext {
 	 */
 	public boolean fatalWasSignaled;
 	
-	public JavaElementFinder finder;
 	public ASTNodeEncoder encoder;
 	
 	/*
@@ -96,7 +94,6 @@ public class SemanticContext {
 		this.global = global;
 		this.project = project;
 		this.moduleFinder = moduleFinder;
-		this.finder = new JavaElementFinder(project, this, null);
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.encoder = new ASTNodeEncoder();

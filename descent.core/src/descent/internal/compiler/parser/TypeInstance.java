@@ -182,21 +182,18 @@ public class TypeInstance extends TypeQualified {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.IDENTIFIER);
+		tempinst.appendSignature(sb);
+		
 		if (idents != null) {
 			for(IdentifierExp ident : idents) {
-				if (ident == null || ident.ident == null) {
+				sb.append(ISignatureConstants.IDENTIFIER);
+				if (ident == null) {
 					sb.append(0);
 				} else {
-					sb.append(ident.ident.length);
-					sb.append(ident.ident);
+					ident.appendSignature(sb);
 				}
 			}
 		}
-		
-		sb.append(tempinst.name.length);
-		sb.append(tempinst.name.ident);
-		
-		tempinst.appendSignature(sb);
 	}
 
 }
