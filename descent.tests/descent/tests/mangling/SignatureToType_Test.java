@@ -6,12 +6,14 @@ import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeIdentifier;
+import descent.internal.compiler.parser.TypeInstance;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
@@ -131,12 +133,42 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		assertEquals("Test", new String(actual.idents.get(1).ident));
 	}
 	
-//	public void testInstance() {
-//		TypeInstance instance = (TypeInstance) InternalSignature.toType(Signature.C_IDENTIFIER + "3Foo" + Signature.C_TEMPLATE_INSTANCE + Signature.C_TEMPLATE_INSTANCE_TYPE_PARAMETER + i + Signature.C_TEMPLATE_PARAMETERS_BREAK);
-//		
-//		TypeIdentifier actual = (TypeIdentifier) instance.next;
-//		assertEquals("Foo", new String(actual.ident.ident));
-//		assertEquals(0, actual.idents.size());
-//	}
+	public void testInstance() {
+		TypeInstance typeInstance = (TypeInstance) InternalSignature.toType(Signature.C_IDENTIFIER + "3Foo" + Signature.C_TEMPLATE_INSTANCE + Signature.C_TEMPLATE_PARAMETERS_BREAK);
+		TemplateInstance templInstance = typeInstance.tempinst;
+		
+		assertEquals("Foo", new String(templInstance.name.ident));
+		assertTrue(templInstance.tiargs == null || templInstance.tiargs.isEmpty());
+	}
+	
+	public void testInstanceType() {
+		TypeInstance typeInstance = (TypeInstance) InternalSignature.toType(Signature.C_IDENTIFIER + "3Foo" + Signature.C_TEMPLATE_INSTANCE + Signature.C_TEMPLATE_INSTANCE_TYPE_PARAMETER + i + Signature.C_TEMPLATE_PARAMETERS_BREAK);
+		TemplateInstance templInstance = typeInstance.tempinst;
+		
+		assertEquals("Foo", new String(templInstance.name.ident));
+		assertEquals(1, templInstance.tiargs.size());
+		
+		assertSame(Type.tint32, templInstance.tiargs.get(0));
+	}
+	
+	public void testInstanceSymbol() {
+		TypeInstance typeInstance = (TypeInstance) InternalSignature.toType(Signature.C_IDENTIFIER + "3Foo" + Signature.C_TEMPLATE_INSTANCE + Signature.C_TEMPLATE_INSTANCE_SYMBOL_PARAMETER + i + Signature.C_TEMPLATE_PARAMETERS_BREAK);
+		TemplateInstance templInstance = typeInstance.tempinst;
+		
+		assertEquals("Foo", new String(templInstance.name.ident));
+		assertEquals(1, templInstance.tiargs.size());
+		
+		assertSame(Type.tint32, templInstance.tiargs.get(0));
+	}
+	
+	public void testInstanceValue() {
+		TypeInstance typeInstance = (TypeInstance) InternalSignature.toType(Signature.C_IDENTIFIER + "3Foo" + Signature.C_TEMPLATE_INSTANCE + Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER + "1" + Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER + "3" + Signature.C_TEMPLATE_PARAMETERS_BREAK);
+		TemplateInstance templInstance = typeInstance.tempinst;
+		
+		assertEquals("Foo", new String(templInstance.name.ident));
+		assertEquals(1, templInstance.tiargs.size());
+		
+		assertSame(3, ((IntegerExp) templInstance.tiargs.get(0)).value.intValue());
+	}
 	
 }

@@ -422,6 +422,7 @@ public class TypeSArray extends TypeArray {
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append('G');
 		next.appendSignature(sb);
+		sb.append('G');
 		
 		char[] expc = new ASTNodeEncoder().encodeExpression(dim);
 		sb.append(expc.length);

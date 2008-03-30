@@ -386,6 +386,7 @@ public void enterMethod(MethodInfo methodInfo) {
 //	}
 	
 	String[] parameterTypeSigs = convertTypeNamesToSigs(methodInfo.parameterTypes);
+	
 	//if (parentHandle.getElementType() == IJavaElement.TYPE) {
 		String selector = JavaModelManager.getJavaModelManager().intern(new String(methodInfo.name));
 		handle = new SourceMethod(parentHandle, selector, parameterTypeSigs);
@@ -413,10 +414,10 @@ public void enterMethod(MethodInfo methodInfo) {
 	char[][] parameterNames = methodInfo.parameterNames;
 	for (int i = 0, length = parameterNames.length; i < length; i++)
 		parameterNames[i] = manager.intern(parameterNames[i]);
-	info.setRawParameterTypes(methodInfo.parameterTypes);
 	info.setArgumentNames(parameterNames);
 	char[] returnType = methodInfo.returnType == null ? new char[]{'v', 'o','i', 'd'} : methodInfo.returnType;
 	info.setReturnType(manager.intern(returnType));
+	info.setParameterDefaultValues(methodInfo.parameterDefaultValues);
 //	char[][] exceptionTypes = methodInfo.exceptionTypes;
 //	info.setExceptionTypeNames(exceptionTypes);
 //	for (int i = 0, length = exceptionTypes.length; i < length; i++)

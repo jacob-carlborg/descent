@@ -288,6 +288,22 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return types;
 	}
 	
+	private char[][] getParameterDefaultValues(Arguments arguments) {
+		if (arguments.size() == 0 || arguments.get(arguments.size() - 1).defaultArg == null) {
+			return null;
+		}
+		
+		char[][] values = new char[arguments.size()][];
+		for(int i = 0; i < arguments.size(); i++) {
+			Expression defaultArg = arguments.get(i).defaultArg;
+			if (defaultArg != null) {
+				values[i] = CharOperation.subarray(source, defaultArg.start, defaultArg.start + defaultArg.length);
+			}
+			values[i] = arguments.get(i).getSignature().toCharArray();
+		}
+		return values;
+	}
+	
 	private char[] getSignature(Type node) {
 		if (node == null) {
 			return CharOperation.NO_CHAR;
@@ -455,6 +471,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		info.parameterNames = getParameterNames(ty.parameters);
 		info.parameterTypes = getParameterTypes(ty.parameters);
+		info.parameterDefaultValues = getParameterDefaultValues(ty.parameters);
 		info.returnType = getSignature(ty.next);
 		info.signature = getSignature(ty);
 		if (templateDeclaration != null) {
@@ -1522,29 +1539,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(Modifier node) {
-		return false;
-	}
-
-	public boolean visit(Module node) {
-		if (node.md != null) {
-			node.md.accept(this);
-		}
-		
-		// Don't visit template instances in the module scope
-		for(Dsymbol symbol : node.members) {
-			Dsymbol dsymbol = (Dsymbol) symbol;
-			if (null == dsymbol.isTemplateInstance()) {
-				dsymbol.accept(this);
-			} else {
-				// Report members created by template mixins
-				TemplateMixin mixin = dsymbol.isTemplateMixin();
-				if (mixin != null && mixin.members != null) {
-					for(Dsymbol member : mixin.members) {
-						member.accept(this);
-					}
-				}
-			}
-		}
 		return false;
 	}
 

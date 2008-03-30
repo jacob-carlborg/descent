@@ -119,6 +119,16 @@ String[] getParameterTypes();
  */
 String[] getRawParameterNames() throws JavaModelException;
 /**
+ * Returns the default values of the parameters. Each element in this
+ * array is either <code>null</code>, if no default parameter is declared
+ * for a specific parameter, or a String representing an expression.
+ * <code>null</code> may be returned if there are no default values. 
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * @return the default values of the parameters
+ */
+String[] getParameterDefaultValues() throws JavaModelException;
+/**
  * Returns the type signature of the return value of this method.
  * For constructors, this returns the signature for void.
  * <p>

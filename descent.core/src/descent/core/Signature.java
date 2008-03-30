@@ -82,7 +82,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   "A" TypeSignature
  *     
  * StaticArrayTypeSignature ::=
- *   "G" TypeSignature Number "G" Chars // Number == Chars.length
+ *   "G" TypeSignature "G" Number "G" Chars // Number == Chars.length
  *   
  * AssociativeArrayTypeSignature ::=
  *   "H" TypeSignature TypeSignature  // key value
@@ -795,6 +795,7 @@ public static String createStaticArraySignature(String type, String dimension) {
 	StringBuilder sb = new StringBuilder();
 	sb.append(C_STATIC_ARRAY);
 	sb.append(type);
+	sb.append(C_STATIC_ARRAY);
 	sb.append(dimension.length());
 	sb.append(C_STATIC_ARRAY);
 	sb.append(dimension);
@@ -811,12 +812,13 @@ public static char[] createStaticArraySignature(char[] type, char[] dimension) {
 	int dimensionLength = dimension.length;
 	int dimensionLengthStringLength = lenghtOfLengthToString(dimension);
 	
-	char[] ret = new char[2 + type.length + dimensionLengthStringLength + dimensionLength];
+	char[] ret = new char[3 + type.length + dimensionLengthStringLength + dimensionLength];
 	ret[0] = C_STATIC_ARRAY;
 	System.arraycopy(type, 0, ret, 1, type.length);
-	copyNumber(dimensionLength, dimensionLengthStringLength, ret, 1 + type.length);
-	ret[1 + type.length + dimensionLengthStringLength] = C_STATIC_ARRAY;
-	System.arraycopy(dimension, 0, ret, 2 + type.length + dimensionLengthStringLength, dimensionLength);
+	ret[type.length + 1] = C_STATIC_ARRAY;
+	copyNumber(dimensionLength, dimensionLengthStringLength, ret, 2 + type.length);
+	ret[2 + type.length + dimensionLengthStringLength] = C_STATIC_ARRAY;
+	System.arraycopy(dimension, 0, ret, 3 + type.length + dimensionLengthStringLength, dimensionLength);
 	return ret;
 }
 
@@ -1652,7 +1654,7 @@ public static String toString(String signature) throws IllegalArgumentException 
 			templateInstances.peek().push(new StringBuilder(stack.peek().pop()));
 		}
 		@Override
-		public void exitTemplateInstanceTypeParameter(String signature) {
+		public void exitTemplateInstanceType(String signature) {
 			templateInstances.peek().push(new StringBuilder(stack.peek().pop()));
 		}
 		@Override

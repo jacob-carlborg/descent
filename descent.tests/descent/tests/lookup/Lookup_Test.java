@@ -6,6 +6,18 @@ package descent.tests.lookup;
  */
 public class Lookup_Test extends AbstractLookupTest {
 	
+	public void testExtern() throws Exception {
+		one("extern { class Bar; }");
+		two("Bar bar;");
+		assertNoErrors();
+	}
+	
+	public void testExternCpp() throws Exception {
+		one("extern(C++) { class Bar; }");
+		two("Bar bar;");
+		assertNoErrors();
+	}
+	
 	public void testFieldDefinedNotOk() throws Exception {
 		one("");
 		two("void foo() { field = 2; }");

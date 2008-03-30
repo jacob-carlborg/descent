@@ -135,6 +135,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				
 				i = process0(signature, i, requestor);
+				i++;
 				
 				c = signature.charAt(i);
 				
@@ -319,7 +320,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				requestor.enterTemplateInstanceType();
 				i++;
 				i = process0(signature, i, requestor);
-				requestor.exitTemplateInstanceTypeParameter(signature.substring(start, i));
+				requestor.exitTemplateInstanceType(signature.substring(start, i));
 				return i;
 			case TEMPLATE_INSTANCE_VALUE:
 				i++;

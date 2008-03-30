@@ -180,7 +180,7 @@ public interface ISignatureRequestor {
 	 * The processor has finished reporting a template instance
 	 * type parameter.
 	 */
-	void exitTemplateInstanceTypeParameter(String signature);
+	void exitTemplateInstanceType(String signature);
 
 	/**
 	 * The processor has found a template instance value.

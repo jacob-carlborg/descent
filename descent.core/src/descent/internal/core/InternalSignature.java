@@ -13,7 +13,9 @@ import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Loc;
+import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.TemplateAliasParameter;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.TemplateTupleParameter;
 import descent.internal.compiler.parser.TemplateTypeParameter;
@@ -25,6 +27,7 @@ import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeIdentifier;
+import descent.internal.compiler.parser.TypeInstance;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
@@ -42,7 +45,9 @@ public class InternalSignature implements ISignatureConstants {
 		final Stack<Stack<Type>> stack = new Stack<Stack<Type>>();
 		stack.push(new Stack<Type>());
 		
-		final Stack<Stack<Integer>> modifiers = new Stack<Stack<Integer>>();		
+		final Stack<Stack<Integer>> modifiers = new Stack<Stack<Integer>>();
+		
+		final Stack<Objects> tiargsStack = new Stack<Objects>();
 		
 		final ASTNodeEncoder encoder = new ASTNodeEncoder();
 		SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
@@ -126,6 +131,48 @@ public class InternalSignature implements ISignatureConstants {
 				
 				sub = stack.peek();
 				sub.push(type);
+			}
+			@Override
+			public void enterTemplateInstance() {
+				tiargsStack.add(new Objects());
+			}
+			@Override
+			public void enterTemplateInstanceType() {
+				stack.push(new Stack<Type>());
+			}
+			@Override
+			public void exitTemplateInstanceType(String signature) {
+				Stack<Type> sub = stack.pop();
+				Type type = sub.pop();
+				tiargsStack.peek().add(type);
+			}
+			@Override
+			public void enterTemplateInstanceSymbol() {
+				stack.push(new Stack<Type>());
+			}
+			@Override
+			public void exitTemplateInstanceSymbol(String string) {
+				Stack<Type> sub = stack.pop();
+				Type type = sub.pop();
+				tiargsStack.peek().add(type);
+			}
+			@Override
+			public void acceptTemplateInstanceValue(char[] exp, String signature) {
+				tiargsStack.peek().add(encoder.decodeExpression(exp));
+			}
+			@Override
+			public void exitTemplateInstance(String signature) {
+				Objects tiargs = tiargsStack.pop();
+				
+				Stack<Type> previous = stack.peek();
+				TypeIdentifier typeIdent = (TypeIdentifier) previous.pop();
+				
+				TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident);
+				templInstance.tiargs = tiargs;
+				
+				TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+				
+				previous.push(typeInstance);
 			}
 		});
 		

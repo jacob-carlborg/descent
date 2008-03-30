@@ -86,5 +86,20 @@ public class ASTNodeEncoder {
 
 		return initParser(value).parseInitializer();
 	}
+	
+	public TemplateMixin decodeTemplateMixin(String source, String name) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("mixin ");
+		sb.append(source);
+		if (name != null && name.length() > 0) {
+			sb.append(" ");
+			sb.append(name);
+		}
+		sb.append(";");
+		
+		char[] value = new char[sb.length()];
+		sb.getChars(0, value.length, value, 0);
+		return initParser(value).parseMixin();
+	}
 
 }

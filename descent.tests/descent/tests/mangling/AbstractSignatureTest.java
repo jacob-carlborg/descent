@@ -24,7 +24,7 @@ public class AbstractSignatureTest extends TestCase implements ISignatureConstan
 	}
 	
 	protected String G(String type, String dim) {
-		return String.valueOf(STATIC_ARRAY + type + string(dim, STATIC_ARRAY));
+		return String.valueOf(STATIC_ARRAY + type + STATIC_ARRAY + string(dim, STATIC_ARRAY));
 	}
 	
 	protected String H(String key, String value) {

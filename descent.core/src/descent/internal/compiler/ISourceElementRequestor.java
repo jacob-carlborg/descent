@@ -65,6 +65,7 @@ public interface ISourceElementRequestor {
 		public int nameSourceStart;
 		public int nameSourceEnd;
 		public char[][] parameterTypes;
+		public char[][] parameterDefaultValues;
 		public char[][] parameterNames;
 		public TypeParameterInfo[] typeParameters;
 		public char[] signature;

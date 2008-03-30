@@ -43,6 +43,7 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.LinkDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewDeclaration;
@@ -55,6 +56,7 @@ import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.Type;
@@ -149,6 +151,9 @@ public class DescentModuleFinder implements IModuleFinder {
 					TypedefDeclaration member = new TypedefDeclaration(Loc.ZERO, getIdent(field), getType(field.getTypeSignature()), (Initializer) getInitializer(field));
 					member.setJavaElement(field);
 					members.add(wrap(member, field));
+				} else if (field.isTemplateMixin()) {
+					TemplateMixin member = encoder.decodeTemplateMixin(field.getTypeSignature(), field.getElementName());
+					members.add(wrap(member, field));
 				}
 				break;
 			}
@@ -208,8 +213,7 @@ public class DescentModuleFinder implements IModuleFinder {
 			case IJavaElement.METHOD: {
 				IMethod method = (IMethod) elem;
 				if (method.isConstructor()) {
-					// TODO varargs
-					CtorDeclaration member = new CtorDeclaration(Loc.ZERO, getArguments(method), 0);
+					CtorDeclaration member = new CtorDeclaration(Loc.ZERO, getArguments(method), getVarargs(method));
 					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				} else if (method.isDestructor()) {
@@ -217,8 +221,7 @@ public class DescentModuleFinder implements IModuleFinder {
 					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				} else if (method.isNew()) {
-					// TODO varargs
-					NewDeclaration member = new NewDeclaration(Loc.ZERO, getArguments(method), 0);
+					NewDeclaration member = new NewDeclaration(Loc.ZERO, getArguments(method), getVarargs(method));
 					member.setJavaElement(method);
 					members.add(wrap(member, method));
 				} else if (method.isDelete()) {
@@ -266,6 +269,12 @@ public class DescentModuleFinder implements IModuleFinder {
 					Expression exp = encoder.decodeExpression(init.getElementName().toCharArray());
 					CompileDeclaration member = new CompileDeclaration(Loc.ZERO, exp);
 					members.add(member);
+				} else if (init.isExtern()) {
+					Dsymbols symbols = new Dsymbols();
+					fill(module, symbols, init.getChildren());
+					
+					LinkDeclaration member = new LinkDeclaration(getLink(init), symbols);
+					members.add(wrap(member, init));
 				}
 				break;
 			case IJavaElement.CONDITIONAL: {
@@ -313,6 +322,23 @@ public class DescentModuleFinder implements IModuleFinder {
 		}
 	}
 	
+	private LINK getLink(IInitializer init) {
+		String name = init.getElementName();
+		if ("".equals(name) || "D".equals(name)) {
+			return LINK.LINKd;
+		} else if ("C".equals(name)) {
+			return LINK.LINKc;
+		} else if ("C++".equals(name)) {
+			return LINK.LINKcpp;
+		} else if ("Windows".equals(name)) {
+			return LINK.LINKwindows;
+		} else if ("Pascal".equals(name)) {
+			return LINK.LINKpascal;
+		} else {
+			return LINK.LINKd;
+		}
+	}
+
 	private Dsymbol wrapWithTemplate(Dsymbol symbol, ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
 			TemplateDeclaration temp = new TemplateDeclaration(Loc.ZERO, getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
@@ -396,20 +422,28 @@ public class DescentModuleFinder implements IModuleFinder {
 		Type returnType = getType(method.getReturnType());
 		Arguments args = getArguments(method);
 		
-		// TODO varargs and linkage
-		return new TypeFunction(args, returnType, 0, LINK.LINKd);
+		// TODO linkage
+		return new TypeFunction(args, returnType, 
+				getVarargs(method), 
+				LINK.LINKd);
 	}
 	
-	private Arguments getArguments(IMethod method) {
+	private int getVarargs(IMethod method) throws JavaModelException {
+		return method.isVarargs() ? (method.getNumberOfParameters() == 0 ? 1 : 2) : 0;
+	}
+
+	private Arguments getArguments(IMethod method) throws JavaModelException {
 		Arguments args = new Arguments();
-		String[] parameterTypesSignatures = method.getParameterTypes();
-		for(String parameterTypeSignature : parameterTypesSignatures) {
-			args.add(getArgument(parameterTypeSignature));
+		String[] names = method.getParameterNames();
+		String[] types = method.getParameterTypes();
+		String[] defaultValues = method.getParameterDefaultValues();
+		for (int i = 0; i < types.length; i++) {
+			args.add(getArgument(names[i], types[i], defaultValues == null ? null : defaultValues[i]));
 		}
 		return args;
 	}
 	
-	private Argument getArgument(String signature) {
+	private Argument getArgument(String name, String signature, String defaultValue) {
 		int stc = STC.STCin;
 		if (signature.charAt(0) == 'J') {
 			stc = STC.STCout;
@@ -422,8 +456,11 @@ public class DescentModuleFinder implements IModuleFinder {
 			signature = signature.substring(0);
 		}
 		
-		// TODO name and default arg
-		return new Argument(stc, getType(signature), null, null);
+		return new Argument(stc, 
+				getType(signature), 
+				name == null || name.length() == 0 ? null : new IdentifierExp(name.toCharArray()), 
+				defaultValue == null ? null : 
+					encoder.decodeExpression(defaultValue.toCharArray()));
 	}
 	
 	

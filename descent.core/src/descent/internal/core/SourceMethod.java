@@ -135,14 +135,14 @@ public String[] getParameterNames() throws JavaModelException {
 public String[] getParameterTypes() {
 	return this.parameterTypes;
 }
-/**
- * @see IMethod
- */
-public String[] getRawParameterTypes() throws JavaModelException {
+public String[] getParameterDefaultValues() throws JavaModelException {
 	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
-	return CharOperation.toStrings(info.parameterTypes);
+	char[][] names= info.getParameterDefaultValues();
+	if (names == null) {
+		return null;
+	}
+	return CharOperation.toStrings(names);
 }
-
 public ITypeParameter getTypeParameter(String typeParameterName) {
 	return new TypeParameter(this, typeParameterName);
 }

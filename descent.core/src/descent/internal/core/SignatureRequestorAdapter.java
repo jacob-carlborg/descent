@@ -109,7 +109,7 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 	
-	public void exitTemplateInstanceTypeParameter(String signature) {
+	public void exitTemplateInstanceType(String signature) {
 		
 	}
 	

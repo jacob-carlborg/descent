@@ -2097,7 +2097,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Dsymbol parseMixin() {
+	public TemplateMixin parseMixin() {
 		TemplateMixin tm;
 		IdentifierExp id = null;
 		Type tqual;

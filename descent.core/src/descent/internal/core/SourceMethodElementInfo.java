@@ -39,20 +39,14 @@ public abstract class SourceMethodElementInfo extends MemberElementInfo /* imple
 	protected char[][] exceptionTypes;
 	
 	/**
-	 * TODO JDT documentation missing
-	 * The raw parameter typed for the method.
+	 * Default parameter values of a method.
 	 */
-	protected char[][] parameterTypes;
+	protected char[][] parameterDefaultValues;
 
 	/*
 	 * The type parameters of this source type. Empty if none.
 	 */
 	protected ITypeParameter[] typeParameters = TypeParameter.NO_TYPE_PARAMETERS;
-	
-	/*
-	 * Number of default values. 
-	 */
-	protected int defaultValuesCount;
 	
 public char[][] getArgumentNames() {
 	return this.argumentNames;
@@ -87,18 +81,14 @@ public char[][] getTypeParameterNames() {
 protected void setArgumentNames(char[][] names) {
 	this.argumentNames = names;
 }
-protected void setRawParameterTypes(char[][] types) {
-	this.parameterTypes = types;
-}
 protected void setExceptionTypeNames(char[][] types) {
 	this.exceptionTypes = types;
 }
 protected abstract void setReturnType(char[] type);
-
-public void setDefaultValuesCount(int defaultValuesCount) {
-	this.defaultValuesCount = defaultValuesCount;
+protected void setParameterDefaultValues(char[][] parameterDefaultValues) {
+	this.parameterDefaultValues = parameterDefaultValues;
 }
-public int getDefaultValuesCount() {
-	return defaultValuesCount;
+protected char[][] getParameterDefaultValues() {
+	return parameterDefaultValues;
 }
 }

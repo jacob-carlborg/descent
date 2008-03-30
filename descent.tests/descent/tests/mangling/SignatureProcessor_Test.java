@@ -74,10 +74,10 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		
 		checking(new Expectations() {{
 			one(requestor).acceptPrimitive(Type.tint32); inSequence(s);
-			one(requestor).acceptStaticArray(new char[] { '3' }, "Gi1G3"); inSequence(s);
+			one(requestor).acceptStaticArray(new char[] { '3' }, "GiG1G3"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("Gi1G3", requestor);
+		SignatureProcessor.process("GiG1G3", requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -533,7 +533,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateInstance(); inSequence(s);
 			one(requestor).enterTemplateInstanceType();
 			one(requestor).acceptPrimitive(TypeBasic.tint32);
-			one(requestor).exitTemplateInstanceTypeParameter(TEMPLATE_INSTANCE_TYPE + "i");
+			one(requestor).exitTemplateInstanceType(TEMPLATE_INSTANCE_TYPE + "i");
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		
