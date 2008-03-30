@@ -147,7 +147,7 @@ public abstract class Declaration extends Dsymbol {
 				throw new IllegalStateException("assert(0);");
 			}
 		}
-		String p = mangle(context);
+		String p = mangle(this);
 		OutBuffer buf = new OutBuffer();
 		buf.writestring("_D");
 		buf.writestring(p);

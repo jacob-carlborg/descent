@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.IType;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -17,6 +18,8 @@ public class AnonDeclaration extends AttribDeclaration {
 	public boolean isunion;
 	public Scope scope; // !=NULL means context to use
 	public int sem; // 1 if successful semantic()
+	
+	private IType javaElement;
 
 	public AnonDeclaration(Loc loc, boolean isunion, Dsymbols decl) {
 		super(decl);
@@ -202,6 +205,15 @@ public class AnonDeclaration extends AttribDeclaration {
 	@Override
 	public String getSignature() {
 		return parent.getSignature();
+	}
+	
+	public void setJavaElement(IType javaElement) {
+		this.javaElement = javaElement;
+	}
+	
+	@Override
+	public IType getJavaElement() {
+		return javaElement;
 	}
 
 }

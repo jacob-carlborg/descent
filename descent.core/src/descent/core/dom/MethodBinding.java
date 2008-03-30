@@ -111,12 +111,12 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		}
 	}
 
-	public boolean isVarargs() {
+	public int getVarargs() {
 		try {
-			return ((IMethod) getJavaElement()).isVarargs();
+			return ((IMethod) getJavaElement()).getVarargs();
 		} catch (JavaModelException e) {
 			Util.log(e);
-			return false;
+			return IMethod.VARARGS_NO;
 		}
 	}
 

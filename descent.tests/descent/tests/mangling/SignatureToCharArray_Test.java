@@ -125,7 +125,7 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testTemplateWithValueParameter3() {
-		tca("foo.test.Bar!(int T : 3)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + i + '1' + TEMPLATE_VALUE_PARAMETER + '3' + TEMPLATE_PARAMETERS_BREAK);
+		tca("foo.test.Bar!(int T : 3)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + '1' + TEMPLATE_VALUE_PARAMETER + '3' + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithTypeParameter() {

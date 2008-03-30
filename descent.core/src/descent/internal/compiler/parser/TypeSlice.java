@@ -184,6 +184,7 @@ public class TypeSlice extends Type {
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.SLICE);
 		next.appendSignature(sb);
+		sb.append(ISignatureConstants.SLICE);
 		
 		char[] expc = new ASTNodeEncoder().encodeExpression(lwr);
 		sb.append(expc.length);

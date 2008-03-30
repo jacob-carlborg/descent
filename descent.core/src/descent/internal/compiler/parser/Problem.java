@@ -58,6 +58,7 @@ public class Problem implements IProblem {
 		p.sourceStart = start;
 		p.sourceEnd = start + length - 1;
 		p.arguments = arguments;
+		
 		return p;
 	}
 	

@@ -146,11 +146,13 @@ protected void codeComplete(descent.internal.compiler.env.ICompilationUnit cu, d
 	}
 }
 protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUnit cu, int offset, int length, WorkingCopyOwner owner) throws JavaModelException {
-	// TODO Descent improve performance?
-	JavaProject project = (JavaProject)getJavaProject();
+	return NO_ELEMENTS;
 	
-	SelectionEngine engine = new SelectionEngine(project.getOptions(true), project, owner);
-	return engine.select(cu, offset, length);
+	// TODO Descent improve performance?
+//	JavaProject project = (JavaProject)getJavaProject();
+//	
+//	SelectionEngine engine = new SelectionEngine(project.getOptions(true), project, owner);
+//	return engine.select(cu, offset, length);
 	/* TODO JDT code select
 	PerformanceStats performanceStats = SelectionEngine.PERF
 		? PerformanceStats.getStats(JavaModelManager.SELECTION_PERF, this)
@@ -187,11 +189,13 @@ protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUn
 	*/
 }
 protected IEvaluationResult codeEvaluate(descent.internal.compiler.env.ICompilationUnit cu, int offset, WorkingCopyOwner owner) throws JavaModelException {
-	// TODO Descent improve performance?
-	JavaProject project = (JavaProject)getJavaProject();
+	return null;
 	
-	EvaluationEngine engine = new EvaluationEngine(project.getOptions(true), project, owner);
-	return engine.evaluate(cu, offset);
+	// TODO Descent improve performance?
+//	JavaProject project = (JavaProject)getJavaProject();
+//	
+//	EvaluationEngine engine = new EvaluationEngine(project.getOptions(true), project, owner);
+//	return engine.evaluate(cu, offset);
 }
 /*
  * Returns a new element info for this element.

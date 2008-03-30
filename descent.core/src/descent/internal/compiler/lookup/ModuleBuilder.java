@@ -11,6 +11,7 @@ import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IPackageDeclaration;
+import descent.core.ISourceReference;
 import descent.core.ITemplated;
 import descent.core.IType;
 import descent.core.ITypeParameter;
@@ -18,6 +19,7 @@ import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
+import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.BaseClass;
@@ -82,6 +84,8 @@ public class ModuleBuilder {
 	 * @return the module representing the unit
 	 */
 	public Module build(ICompilationUnit unit) {
+		long time = System.currentTimeMillis();
+		
 		Module module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
 		module.setJavaElement(unit);
 		module.moduleName = unit.getFullyQualifiedName();
@@ -104,6 +108,9 @@ public class ModuleBuilder {
 			return null;
 		}
 		
+		time = System.currentTimeMillis() - time;
+//		System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
+		
 		return module;
 	}
 	
@@ -116,11 +123,11 @@ public class ModuleBuilder {
 				break;
 			case IJavaElement.IMPORT_DECLARATION:
 				IImportDeclaration impDecl = ((IImportDeclaration) elem);
-				fillImportDeclaration(members, impDecl);
+				fillImportDeclaration(module, members, impDecl);
 				break;
 			case IJavaElement.FIELD:
 				IField field = (IField) elem;
-				fillField(members, field);
+				fillField(module, members, field);
 				break;
 			case IJavaElement.TYPE:
 				IType type = (IType) elem;
@@ -128,7 +135,7 @@ public class ModuleBuilder {
 				break;
 			case IJavaElement.METHOD:
 				IMethod method = (IMethod) elem;
-				fillMethod(members, method);
+				fillMethod(module, members, method);
 				break;
 			case IJavaElement.INITIALIZER:
 				IInitializer init = (IInitializer) elem;
@@ -151,7 +158,7 @@ public class ModuleBuilder {
 		
 		if (cond.isStaticIfDeclaration()) {
 			Expression exp = encoder.decodeExpression(cond.getElementName().toCharArray());
-			StaticIfCondition condition = new StaticIfCondition(Loc.ZERO, exp);
+			StaticIfCondition condition = new StaticIfCondition(getLoc(module, cond), exp);
 			
 			StaticIfDeclaration member = new StaticIfDeclaration(condition, thenDecls, elseDecls);
 			members.add(member);
@@ -160,9 +167,9 @@ public class ModuleBuilder {
 			VersionCondition condition;
 			try {
 				long value = Long.parseLong(name);
-				condition = new VersionCondition(module, Loc.ZERO, value, null);
+				condition = new VersionCondition(module, getLoc(module, cond), value, null);
 			} catch(NumberFormatException e) {
-				condition = new VersionCondition(module, Loc.ZERO, 1, name.toCharArray());
+				condition = new VersionCondition(module, getLoc(module, cond), 1, name.toCharArray());
 			}
 			ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
 			members.add(member);
@@ -171,9 +178,9 @@ public class ModuleBuilder {
 			DebugCondition condition;
 			try {
 				long value = Long.parseLong(name);
-				condition = new DebugCondition(module, Loc.ZERO, value, null);
+				condition = new DebugCondition(module, getLoc(module, cond), value, null);
 			} catch(NumberFormatException e) {
-				condition = new DebugCondition(module, Loc.ZERO, 1, name.toCharArray());
+				condition = new DebugCondition(module, getLoc(module, cond), 1, name.toCharArray());
 			}
 			ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
 			members.add(member);
@@ -190,29 +197,29 @@ public class ModuleBuilder {
 			members.add(member);
 		} else if (init.isDebugAssignment()) {
 			char[] versionIdent = init.getElementName().toCharArray();
-			Version version = new Version(Loc.ZERO, versionIdent);
+			Version version = new Version(getLoc(module, init), versionIdent);
 			try {
 				long level = Long.parseLong(init.getElementName());
-				DebugSymbol member = new DebugSymbol(Loc.ZERO, level, version);
+				DebugSymbol member = new DebugSymbol(getLoc(module, init), level, version);
 				members.add(member);
 			} catch(NumberFormatException e) {
-				DebugSymbol member = new DebugSymbol(Loc.ZERO, new IdentifierExp(versionIdent), version);
+				DebugSymbol member = new DebugSymbol(getLoc(module, init), new IdentifierExp(versionIdent), version);
 				members.add(member);
 			}
 		} else if (init.isVersionAssignment()) {
 			char[] versionIdent = init.getElementName().toCharArray();
-			Version version = new Version(Loc.ZERO, versionIdent);
+			Version version = new Version(getLoc(module, init), versionIdent);
 			try {
 				long level = Long.parseLong(init.getElementName());
-				VersionSymbol member = new VersionSymbol(Loc.ZERO, level, version);
+				VersionSymbol member = new VersionSymbol(getLoc(module, init), level, version);
 				members.add(member);
 			} catch(NumberFormatException e) {
-				VersionSymbol member = new VersionSymbol(Loc.ZERO, new IdentifierExp(versionIdent), version);
+				VersionSymbol member = new VersionSymbol(getLoc(module, init), new IdentifierExp(versionIdent), version);
 				members.add(member);
 			}
 		} else if (init.isMixin()) {
 			Expression exp = encoder.decodeExpression(init.getElementName().toCharArray());
-			CompileDeclaration member = new CompileDeclaration(Loc.ZERO, exp);
+			CompileDeclaration member = new CompileDeclaration(getLoc(module, init), exp);
 			members.add(member);
 		} else if (init.isExtern()) {
 			Dsymbols symbols = new Dsymbols();
@@ -223,67 +230,77 @@ public class ModuleBuilder {
 		}
 	}
 
-	private void fillMethod(Dsymbols members, IMethod method) throws JavaModelException {
+	private void fillMethod(Module module, Dsymbols members, IMethod method) throws JavaModelException {
 		if (method.isConstructor()) {
-			CtorDeclaration member = new CtorDeclaration(Loc.ZERO, getArguments(method), getVarargs(method));
+			CtorDeclaration member = new CtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isDestructor()) {
-			DtorDeclaration member = new DtorDeclaration(Loc.ZERO);
+			DtorDeclaration member = new DtorDeclaration(getLoc(module, method));
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isNew()) {
-			NewDeclaration member = new NewDeclaration(Loc.ZERO, getArguments(method), getVarargs(method));
+			NewDeclaration member = new NewDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isDelete()) {
-			DeleteDeclaration member = new DeleteDeclaration(Loc.ZERO, getArguments(method));
+			DeleteDeclaration member = new DeleteDeclaration(getLoc(module, method), getArguments(method));
 			member.setJavaElement(method);
 			members.add(wrap(member, method));	
 		} else { 
-			FuncDeclaration member = new FuncDeclaration(Loc.ZERO, getIdent(method), getStorageClass(method), getType(method));
+			FuncDeclaration member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
 			member.setJavaElement(method);
-			members.add(wrapWithTemplate(member, method));
+			members.add(wrapWithTemplate(module, member, method));
 		}
 	}
 
 	private void fillType(Module module, Dsymbols members, IType type) throws JavaModelException {
 		if (type.isClass()) {
-			ClassDeclaration member = new ClassDeclaration(Loc.ZERO, getIdent(type), getBaseClasses(type));
+			ClassDeclaration member = new ClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
 			member.setJavaElement(type);
 			member.members = new Dsymbols();
 			fill(module, member.members, type.getChildren());
 			
-			members.add(wrapWithTemplate(member, type));
+			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isInterface()) {
-			InterfaceDeclaration member = new InterfaceDeclaration(Loc.ZERO, getIdent(type), getBaseClasses(type));
+			InterfaceDeclaration member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
 			member.setJavaElement(type);
 			member.members = new Dsymbols();
 			fill(module, member.members, type.getChildren());
 			
-			members.add(wrapWithTemplate(member, type));
+			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isStruct()) {
-			StructDeclaration member = new StructDeclaration(Loc.ZERO, getIdent(type));
-			member.setJavaElement(type);
-			member.members = new Dsymbols();
-			fill(module, member.members, type.getChildren());
-			
-			members.add(wrapWithTemplate(member, type));
+			IdentifierExp id = getIdent(type);
+			if (id == null) {
+				fillAnon(module, members, type, false /* is not union, is struct */);
+			} else {
+				StructDeclaration member = new StructDeclaration(getLoc(module, type), id);
+				member.setJavaElement(type);
+				member.members = new Dsymbols();
+				fill(module, member.members, type.getChildren());
+				
+				members.add(wrapWithTemplate(module, member, type));
+			}
 		} else if (type.isUnion()) {
-			UnionDeclaration member = new UnionDeclaration(Loc.ZERO, getIdent(type));
-			member.setJavaElement(type);
-			member.members = new Dsymbols();
-			fill(module, member.members, type.getChildren());
-			
-			members.add(wrapWithTemplate(member, type));
+			IdentifierExp id = getIdent(type);
+			if (id == null) {
+				fillAnon(module, members, type, true /* is union */);
+			} else {
+				UnionDeclaration member = new UnionDeclaration(getLoc(module, type), id);
+				member.setJavaElement(type);
+				member.members = new Dsymbols();
+				fill(module, member.members, type.getChildren());
+				
+				members.add(wrapWithTemplate(module, member, type));
+			}
 		} else if (type.isEnum()) {
 			BaseClasses baseClasses = getBaseClasses(type);
-			EnumDeclaration member = new EnumDeclaration(Loc.ZERO, getIdent(type), baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
+			EnumDeclaration member = new EnumDeclaration(getLoc(module, type), getIdent(type), baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
 			member.setJavaElement(type);
 			member.members = new Dsymbols();
 			for(IJavaElement sub : type.getChildren()) {
 				IField field = (IField) sub;
-				EnumMember enumMember = new EnumMember(Loc.ZERO, getIdent(field), getExpression(field));
+				EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
 				enumMember.setJavaElement(field);
 				
 				member.members.add(enumMember);
@@ -294,31 +311,40 @@ public class ModuleBuilder {
 			Dsymbols symbols = new Dsymbols();
 			fill(module, symbols, type.getChildren());
 			
-			TemplateDeclaration member = new TemplateDeclaration(Loc.ZERO, getIdent(type), getTemplateParameters(type), symbols);
+			TemplateDeclaration member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
 			members.add(wrap(member, type));
 		}
 	}
 
-	private void fillField(Dsymbols members, IField field) throws JavaModelException {
+	private void fillAnon(Module module, Dsymbols members, IType type, boolean isUnion) throws JavaModelException {
+		Dsymbols symbols = new Dsymbols();
+		fill(module, symbols, type.getChildren());
+		AnonDeclaration member = new AnonDeclaration(getLoc(module, type), isUnion, symbols);
+		member.setJavaElement(type);
+		members.add(wrap(member, type));
+	}
+
+	private void fillField(Module module, Dsymbols members, IField field) throws JavaModelException {
 		if (field.isVariable()) {
-			VarDeclaration member = new VarDeclaration(Loc.ZERO, getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
+			VarDeclaration member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
-			AliasDeclaration member = new AliasDeclaration(Loc.ZERO, getIdent(field), getType(field.getTypeSignature()));
+			AliasDeclaration member = new AliasDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTypedef()) {
-			TypedefDeclaration member = new TypedefDeclaration(Loc.ZERO, getIdent(field), getType(field.getTypeSignature()), (Initializer) getInitializer(field));
+			TypedefDeclaration member = new TypedefDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()), (Initializer) getInitializer(field));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTemplateMixin()) {
 			TemplateMixin member = encoder.decodeTemplateMixin(field.getTypeSignature(), field.getElementName());
+			member.loc = getLoc(module, field);
 			members.add(wrap(member, field));
 		}
 	}
 
-	private void fillImportDeclaration(Dsymbols members, IImportDeclaration impDecl) throws JavaModelException {
+	private void fillImportDeclaration(Module module, Dsymbols members, IImportDeclaration impDecl) throws JavaModelException {
 		String elementName = impDecl.getElementName();
 		Identifiers packages = new Identifiers();
 		IdentifierExp name = splitName(elementName, packages);
@@ -326,15 +352,19 @@ public class ModuleBuilder {
 		
 		long flags = impDecl.getFlags();
 		
-		Import imp = new Import(Loc.ZERO, packages, name, alias, (flags & Flags.AccStatic) != 0);
+		Import imp = new Import(getLoc(module, impDecl), packages, name, alias, (flags & Flags.AccStatic) != 0);
 		
 		String[] names = impDecl.getSelectiveImportsNames();
 		String[] aliases = impDecl.getSelectiveImportsAliases();
 		if (names != null) {
+			imp.names = new Identifiers();
+			imp.aliases = new Identifiers();
 			for (int i = 0; i < names.length; i++) {
 				imp.names.add(new IdentifierExp(names[i].toCharArray()));
 				if (aliases[i] != null) {
 					imp.aliases.add(new IdentifierExp(aliases[i].toCharArray()));
+				} else {
+					imp.aliases.add(null);
 				}
 			}
 		}
@@ -372,9 +402,9 @@ public class ModuleBuilder {
 		}
 	}
 
-	private Dsymbol wrapWithTemplate(Dsymbol symbol, ITemplated templated) throws JavaModelException {
+	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
-			TemplateDeclaration temp = new TemplateDeclaration(Loc.ZERO, getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
+			TemplateDeclaration temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
 			return wrap(temp, (IMember) templated);
 		} else {
 			return wrap(symbol, (IMember) templated);
@@ -448,6 +478,9 @@ public class ModuleBuilder {
 	}
 	
 	private Type getType(String signature) {
+		if (signature == null || signature.length() == 0) {
+			return null;
+		}
 		return InternalSignature.toType(signature);
 	}
 	
@@ -462,7 +495,7 @@ public class ModuleBuilder {
 	}
 	
 	private int getVarargs(IMethod method) throws JavaModelException {
-		return method.isVarargs() ? (method.getNumberOfParameters() == 0 ? 1 : 2) : 0;
+		return method.getVarargs();
 	}
 
 	private Arguments getArguments(IMethod method) throws JavaModelException {
@@ -573,6 +606,12 @@ public class ModuleBuilder {
 		} else {
 			return PROT.PROTpublic;
 		}
+	}
+	
+	private Loc getLoc(Module module, ISourceReference source) {
+		// TODO line number
+		Loc loc = new Loc(module.moduleName.toCharArray(), 0);
+		return loc;
 	}
 
 }

@@ -29,6 +29,7 @@ public interface ISignatureConstants {
 	char TEMPLATE_TYPE_PARAMETER = '#';
 	char TEMPLATE_TYPE_PARAMETER2 = '+';
 	char TEMPLATE_VALUE_PARAMETER = ',';
+	char TEMPLATE_VALUE_PARAMETER2 = '\\';
 	char TEMPLATE_PARAMETERS_BREAK = '\'';
 	char DELEGATE = 'D';
 	char POINTER = 'P';

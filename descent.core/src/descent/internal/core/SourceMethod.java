@@ -258,8 +258,15 @@ public boolean isDelete() throws JavaModelException {
 public boolean isTemplate() throws JavaModelException {
 	return Flags.isTemplate(getFlags());
 }
-public boolean isVarargs() throws JavaModelException {
-	return Flags.isVarargs(getFlags());
+public int getVarargs() throws JavaModelException {
+	long flags = getFlags();
+	if (Flags.isVarargs1(flags)) {
+		return VARARGS_UNDEFINED_TYPES;
+	} else if (Flags.isVarargs2(flags)) {
+		return VARARGS_SAME_TYPES;
+	} else {
+		return VARARGS_NO;
+	}
 }
 /**
  * @see IMethod#isMainMethod()
@@ -437,7 +444,7 @@ protected void appendElementSignature(StringBuilder sb) throws JavaModelExceptio
 		sb.append(parameterType);
 	}
 	// TODO Signature varargs
-	if (Flags.isVarargs(flags)) {
+	if (Flags.isVarargs1(flags)) {
 		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK_1);	
 	} else {
 		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK_2);

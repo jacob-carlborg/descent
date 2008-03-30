@@ -495,7 +495,17 @@ public class FuncDeclaration extends Declaration {
 					parser.nextToken();
 					
 					Module module = parser.parseModuleObj();
-					FuncDeclaration func = (FuncDeclaration) module.members.get(0);
+					
+					Dsymbol sym = module.members.get(0);
+					while(sym instanceof StorageClassDeclaration ||
+						  sym instanceof ProtDeclaration) {
+						if (sym instanceof StorageClassDeclaration) {
+							sym = ((StorageClassDeclaration) sym).decl.get(0);
+						} else {
+							sym = ((ProtDeclaration) sym).decl.get(0);
+						}
+					}
+					FuncDeclaration func = (FuncDeclaration) sym;
 					func.semantic(scope.enclosing, context);
 					func.semantic2(scope.enclosing, context);
 					func.semantic3(scope.enclosing, context);

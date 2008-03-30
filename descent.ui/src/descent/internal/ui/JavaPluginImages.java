@@ -144,7 +144,7 @@ public class JavaPluginImages {
 	public static final String IMG_OBJS_STRUCTALT= NAME_PREFIX + "structf_obj.gif"; 			//$NON-NLS-1$	
 	public static final String IMG_OBJS_STRUCT_DEFAULT= NAME_PREFIX + "struct_default_obj.gif"; 		//$NON-NLS-1$
 	
-	public static final String IMG_OBJS_UNION= NAME_PREFIX + "struct_obj.gif"; 			//$NON-NLS-1$
+	public static final String IMG_OBJS_UNION= NAME_PREFIX + "union_obj.gif"; 			//$NON-NLS-1$
 	public static final String IMG_OBJS_UNIONALT= NAME_PREFIX + "unionf_obj.gif"; 			//$NON-NLS-1$	
 	public static final String IMG_OBJS_UNION_DEFAULT= NAME_PREFIX + "union_default_obj.gif"; 		//$NON-NLS-1$
 	

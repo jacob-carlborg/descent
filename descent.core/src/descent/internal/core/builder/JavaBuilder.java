@@ -137,7 +137,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			associateProblems(file, module);
 			
 			time = System.currentTimeMillis() - time;
-			System.out.println("Build time for " + module.moduleName + ": " + time);
+//			System.out.println("Build time for " + module.moduleName + ": " + time);
 		}
 	}
 

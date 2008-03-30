@@ -158,6 +158,7 @@ public class SemanticContext {
 		}
 		
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
+			System.out.println("~~~" + problem);
 			problemRequestor.acceptProblem(problem);
 		}
 		

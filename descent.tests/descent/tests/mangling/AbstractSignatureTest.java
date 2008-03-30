@@ -36,7 +36,7 @@ public class AbstractSignatureTest extends TestCase implements ISignatureConstan
 	}
 	
 	protected String slice(String type, String lwr, String upr) {
-		return String.valueOf(String.valueOf(SLICE) + type + string(lwr, SLICE) + string(upr, SLICE));
+		return String.valueOf(String.valueOf(SLICE) + type + SLICE + string(lwr, SLICE) + string(upr, SLICE));
 	}
 	
 	private String string(String s, char separator) {

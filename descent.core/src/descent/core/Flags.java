@@ -147,7 +147,13 @@ public final class Flags {
 	 * Varargs property flag.
 	 * @since 2.0
 	 */
-	public static final long AccVarargs = 0x80000000L;
+	public static final long AccVarargs1 = 0x40000000L;
+	
+	/**
+	 * Varargs property flag.
+	 * @since 2.0
+	 */
+	public static final long AccVarargs2 = 0x80000000L;
 	
 	// Extensions for types
 	
@@ -673,8 +679,18 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>varargs</code> modifier is included
 	 */
-	public static boolean isVarargs(long flags) {
-		return (flags & AccVarargs) != 0;
+	public static boolean isVarargs1(long flags) {
+		return (flags & AccVarargs1) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>varargs</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>varargs</code> modifier is included
+	 */
+	public static boolean isVarargs2(long flags) {
+		return (flags & AccVarargs2) != 0;
 	}
 	
 	/**

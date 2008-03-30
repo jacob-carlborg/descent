@@ -91,7 +91,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   ">" Number ">" Chars // Number == Chars.length
  *   
  * SliceTypeSignature ::=
- *   "¬" TypeSignature
+ *   "¬" TypeSignature "¬"
  *   Number "¬" Chars // Number == Chars.length --> lower
  *   Number "¬" Chars // Number == Chars.length --> upper
  *   
@@ -172,7 +172,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  * TemplateValueParameter ::=
  *   ","
  *   TypeSignature
- *   ( Number "," Chars )?  // specific value, Number == Chars.length
+ *   ( "\\" Number "," Chars )?  // specific value, Number == Chars.length
  *   
  * TemplateInstance ::=
  *   "!" TemplateInstanceParameters
@@ -584,6 +584,13 @@ public final class Signature {
 	public static final char C_TEMPLATE_VALUE_PARAMETER					= ',';
 	
 	/**
+	 * Character constant indicating a template value parameter specific
+	 * value in a signature.
+	 * Value is <code>'\\'</code>.
+	 */
+	public static final char C_TEMPLATE_VALUE_SPECIFIC_VALUE					= '\\';
+	
+	/**
 	 * Character constant indicating a template instance in a signature.
 	 * Value is <code>'!'</code>.
 	 */
@@ -918,6 +925,7 @@ public static String createSliceSignature(String type, String lower, String uppe
 	StringBuilder sb = new StringBuilder();
 	sb.append(C_SLICE);
 	sb.append(type);
+	sb.append(C_SLICE);
 	sb.append(lower.length());
 	sb.append(C_SLICE);
 	sb.append(lower);
@@ -941,17 +949,18 @@ public static char[] createSliceSignature(char[] type, char[] lower, char[] uppe
 	int upperLength = upper.length;
 	int upperLengthStringLength = lenghtOfLengthToString(upper);
 	
-	char[] ret = new char[3 + type.length + lowerLengthStringLength + lowerLength + upperLengthStringLength + upperLength];
+	char[] ret = new char[4 + type.length + lowerLengthStringLength + lowerLength + upperLengthStringLength + upperLength];
 	ret[0] = C_SLICE;
 	System.arraycopy(type, 0, ret, 1, type.length);
+	ret[type.length + 1] = C_SLICE;
 	
-	copyNumber(lowerLength, lowerLengthStringLength, ret, 1 + type.length);
-	ret[1 + lowerLengthStringLength + type.length] = C_SLICE;
-	System.arraycopy(lower, 0, ret, 2 + lowerLengthStringLength + type.length, lowerLength);
+	copyNumber(lowerLength, lowerLengthStringLength, ret, 2 + type.length);
+	ret[2 + lowerLengthStringLength + type.length] = C_SLICE;
+	System.arraycopy(lower, 0, ret, 3 + lowerLengthStringLength + type.length, lowerLength);
 	
-	copyNumber(upperLength, upperLengthStringLength, ret, 2 + type.length + lowerLength + lowerLengthStringLength);
-	ret[3 + type.length + lowerLength + lowerLengthStringLength] = C_SLICE;
-	System.arraycopy(upper, 0, ret, 4 + type.length + lowerLength + lowerLengthStringLength, upperLength);
+	copyNumber(upperLength, upperLengthStringLength, ret, 3 + type.length + lowerLength + lowerLengthStringLength);
+	ret[4 + type.length + lowerLength + lowerLengthStringLength] = C_SLICE;
+	System.arraycopy(upper, 0, ret, 5 + type.length + lowerLength + lowerLengthStringLength, upperLength);
 	
 	return ret;
 }

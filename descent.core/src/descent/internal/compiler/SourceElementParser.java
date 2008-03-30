@@ -299,7 +299,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 			if (defaultArg != null) {
 				values[i] = CharOperation.subarray(source, defaultArg.start, defaultArg.start + defaultArg.length);
 			}
-			values[i] = arguments.get(i).getSignature().toCharArray();
 		}
 		return values;
 	}
@@ -459,8 +458,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.modifiers |= Flags.AccTemplate;
 		}
 		
-		if (ty.varargs != 0) {
-			info.modifiers |= Flags.AccVarargs;
+		if (ty.varargs == 1) {
+			info.modifiers |= Flags.AccVarargs1;
+		} else if (ty.varargs == 2) {
+			info.modifiers |= Flags.AccVarargs2;
 		}
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -498,12 +499,15 @@ public class SourceElementParser extends AstVisitorAdapter {
 		if (arguments != null) {
 			info.parameterNames = getParameterNames(arguments);
 			info.parameterTypes = getParameterTypes(arguments);
+			info.parameterDefaultValues = getParameterDefaultValues(arguments);
 		}
 		
 		if (node.type != null) {
 			TypeFunction ty = (TypeFunction) node.type;
-			if (ty.varargs != 0) {
-				info.modifiers |= Flags.AccVarargs;
+			if (ty.varargs == 1) {
+				info.modifiers |= Flags.AccVarargs1;
+			} else if (ty.varargs == 2) {
+				info.modifiers |= Flags.AccVarargs2;
 			}
 			info.returnType = getSignature(ty.next);
 			info.signature = getSignature(ty);
@@ -1140,6 +1144,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
+	public void endVisit(AnonDeclaration node) {
+		requestor.exitType(endOfDeclaration(node));
+		popLevelInAttribDeclarationStack();
+	}
+	
 	public void endVisit(Import node) {
 		if (!node.first) {
 			return;
@@ -1204,7 +1214,20 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 
 	public boolean visit(AnonDeclaration node) {
-		return false;
+		TypeInfo info = new TypeInfo();
+		info.declarationStart = startOfDeclaration(node);
+		info.modifiers = getFlags(node, node.modifiers);
+		if (node.isunion) {
+			info.modifiers |= Flags.AccUnion;
+		} else {
+			info.modifiers |= Flags.AccStruct;
+		}
+		
+		info.name = CharOperation.NO_CHAR;
+		requestor.enterType(info);
+		
+		pushLevelInAttribDeclarationStack();
+		return true;
 	}
 
 	public boolean visit(AnonymousAggregateDeclaration node) {

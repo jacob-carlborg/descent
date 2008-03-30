@@ -295,7 +295,7 @@ public interface IMethodBinding extends IBinding {
 	 *    and <code>false</code> otherwise
 	 * @since 3.1
 	 */ 
-	public boolean isVarargs();
+	public int getVarargs();
 	
 	/**
 	 * Returns whether this method is templated.

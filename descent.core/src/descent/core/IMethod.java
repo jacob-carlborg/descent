@@ -18,6 +18,25 @@ package descent.core;
  * </p>
  */
 public interface IMethod extends IMember, ITemplated {
+	
+/**
+ * Constant indicating the method has no varargs.
+ */
+int VARARGS_NO = 0;
+
+/**
+ * Constant indicating the method has varargs of undefined types. For example
+ * like in a method <code>void foo(...)</code> or <code>void foo(int x, ...)<code>.
+ */
+int VARARGS_UNDEFINED_TYPES = 1;
+
+/**
+ * Constant indicating the method has varargs of the same type:
+ * the one of the last argument of this method. For example
+ * like in a method <code>void foo(int ...)</code> or <code>void foo(int x, char[] ...)<code>.
+ */
+int VARARGS_SAME_TYPES = 2;
+
 /**
  * Returns the simple name of this method.
  * For a constructor, this returns the simple name of the declaring type.
@@ -255,12 +274,13 @@ boolean isResolved();
  */
 boolean isSimilar(IMethod method);
 /**
- * Returns whether this method has variadic arguments.
+ * Returns whether this method has variadic arguments, and how. This
+ * is one of the <code>VARARGS_*</code> constants of this interface.
  *
  * @exception JavaModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource.
  * 
- * @return true if this method has variadic arguments, false otherwise
+ * @return one of the <code>VARARGS_*</code> constants of this interface.
  */
-boolean isVarargs() throws JavaModelException;
+int getVarargs() throws JavaModelException;
 }

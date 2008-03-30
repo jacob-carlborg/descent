@@ -873,13 +873,19 @@ public class JavaElementLabels {
 			}
 		}
 		
-		String toString = Signature.toString(typeSig);
-		// TODO JDT signature
-//		if (toString.indexOf("function") == -1 && toString.indexOf("delegate") == -1) {
-//			buf.append(Signature.getSimpleName(toString));	
-//		} else {
-			buf.append(toString);
-//		}
+		// TODO Descent Signature typeSig is not always a signature,
+		// it may be an expression
+		try {
+			String toString = Signature.toString(typeSig);
+			// TODO JDT signature
+	//		if (toString.indexOf("function") == -1 && toString.indexOf("delegate") == -1) {
+	//			buf.append(Signature.getSimpleName(toString));	
+	//		} else {
+				buf.append(toString);
+	//		}
+		} catch (Exception e) {
+			buf.append(typeSig);
+		}
 		
 		/* TODO implement correctly, flags are not taken into account
 		int sigKind= Signature.getTypeSignatureKind(typeSig);

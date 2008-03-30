@@ -120,7 +120,7 @@ public ConstructorPattern(
 
 	// Set flags
 	try {
-		this.varargs = (method.getFlags() & Flags.AccVarargs) != 0;
+		this.varargs = (method.getFlags() & Flags.AccVarargs1) != 0;
 	} catch (JavaModelException e) {
 		// do nothing
 	}

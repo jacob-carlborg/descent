@@ -37,7 +37,7 @@ public class SignatureProcessor implements ISignatureConstants {
 
 	public static int process0(String signature, int i, ISignatureRequestor requestor) {
 		if (signature == null || signature.length() == 0) {
-			throw new IllegalArgumentException("Invalid signature: " + signature);
+			throw new IllegalArgumentException("Invalid signature: <null or empty>");
 		}
 		
 		int localPosition = -1;
@@ -224,7 +224,9 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				if (i < signature.length()) {
 					c = signature.charAt(i);
-					if (Character.isDigit(c)) {
+					if (c == TEMPLATE_VALUE_PARAMETER2) {
+						i++;
+						c = signature.charAt(i);
 						n = 0;
 						
 						while(c != TEMPLATE_VALUE_PARAMETER) {
@@ -263,6 +265,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				return i;
 			case SLICE:
 				i = process0(signature, i + 1, requestor);
+				i++;
 				
 				c = signature.charAt(i);
 				n = 0;
@@ -442,7 +445,12 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				c = signature.charAt(i);
 			}
-			String name = signature.substring(i, i + n);
+			String name = null;
+			try {
+				name = signature.substring(i, i + n);
+			} catch (StringIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
 			piecesList.add(name.toCharArray());
 			i += n - 1;
 		}

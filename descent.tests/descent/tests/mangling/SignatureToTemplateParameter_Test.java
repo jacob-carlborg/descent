@@ -59,7 +59,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testValueSpecific() {
 		TemplateValueParameter param = (TemplateValueParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i + "1" + TEMPLATE_VALUE_PARAMETER + "3");
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + "1" + TEMPLATE_VALUE_PARAMETER + "3");
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.valType);
 		assertEquals(3, ((IntegerExp) param.specValue).value.intValue());
