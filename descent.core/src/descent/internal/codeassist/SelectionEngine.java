@@ -100,6 +100,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 	public IJavaElement[] select(ICompilationUnit sourceUnit, final int offset,
 			final int length) {
+		long time = System.currentTimeMillis();
+		
 		this.offset = offset;
 		this.length = length;
 		this.unit = sourceUnit;
@@ -196,6 +198,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return NO_ELEMENTS;
+		} finally {
+			time = System.currentTimeMillis() - time;
+			System.out.println("Selection time: " + time);
 		}
 	}
 
@@ -248,7 +253,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	public boolean visit(Module node) {
 		// Don't visit template instances in the module scope
 		for (Dsymbol symbol : node.members) {
-			Dsymbol dsymbol = (Dsymbol) symbol;
+			Dsymbol dsymbol = symbol;
 			if (null == dsymbol.isTemplateInstance()) {
 				dsymbol.accept(this);
 			}

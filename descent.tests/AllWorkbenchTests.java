@@ -55,10 +55,10 @@ public class AllWorkbenchTests {
 	 * Comment a line to disable testing a particular feature.
 	 */
 	private final static int enabled = 0
-//					| BINDING 
+					| BINDING 
 //					| CODE_COMPLETE 
 //					| CODE_EVALUATE 
-					| CODE_SELECT 
+//					| CODE_SELECT 
 //					| LOOKUP 
 //					| MODEL 
 //					| SIGNATURE

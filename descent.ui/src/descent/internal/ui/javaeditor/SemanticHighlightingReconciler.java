@@ -68,11 +68,12 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 	private class PositionCollector extends GenericVisitor {
 
 		/** The semantic token */
-		private SemanticToken fToken= new SemanticToken();
+		private final SemanticToken fToken= new SemanticToken();
 
 		/*
 		 * @see descent.internal.corext.dom.GenericVisitor#visitNode(descent.core.dom.ASTNode)
 		 */
+		@Override
 		protected boolean visitNode(ASTNode node) {
 			if ((node.getFlags() & ASTNode.MALFORMED) == ASTNode.MALFORMED) {
 				retainPositions(node.getStartPosition(), node.getLength());
@@ -84,6 +85,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 		/*
 		 * @see descent.core.dom.ASTVisitor#visit(descent.core.dom.BooleanLiteral)
 		 */
+		@Override
 		public boolean visit(BooleanLiteral node) {
 			return visitLiteral(node);
 		}
@@ -91,6 +93,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 		/*
 		 * @see descent.core.dom.ASTVisitor#visit(descent.core.dom.CharacterLiteral)
 		 */
+		@Override
 		public boolean visit(CharacterLiteral node) {
 			return visitLiteral(node);
 		}
@@ -98,6 +101,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 		/*
 		 * @see descent.core.dom.ASTVisitor#visit(descent.core.dom.NumberLiteral)
 		 */
+		@Override
 		public boolean visit(NumberLiteral node) {
 			return visitLiteral(node);
 		}
@@ -121,6 +125,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 		/*
 		 * @see descent.core.dom.ASTVisitor#visit(descent.core.dom.SimpleName)
 		 */
+		@Override
 		public boolean visit(SimpleName node) {
 			fToken.update(node);
 			for (int i= 0, n= fJobSemanticHighlightings.length; i < n; i++) {
@@ -178,15 +183,11 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 				Declaration last = disabledDeclarations.get(disabledDeclarations.size() - 1);
 				int offset, length;
 				
-				// If there's no else, disable everything
-//				if (enabledDeclarations == null || enabledDeclarations.size() == 0) {
-//					offset = node.getStartPosition();
-//					length = node.getLength();
-//				} else {
-					CompilationUnit root = (CompilationUnit) node.getRoot();
-					offset = root.getExtendedStartPosition(first);
-					length = root.getExtendedStartPosition(last) + root.getExtendedLength(last) - offset;
-//				}
+				
+				CompilationUnit root = (CompilationUnit) node.getRoot();
+				offset = root.getExtendedStartPosition(first);
+				length = root.getExtendedStartPosition(last) + root.getExtendedLength(last) - offset;
+				
 				addPosition(offset, length, fDisabledHighlighting);
 			}
 			
@@ -320,7 +321,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 	}
 
 	/** Position collector */
-	private PositionCollector fCollector= new PositionCollector();
+	private final PositionCollector fCollector= new PositionCollector();
 
 	/** The Java editor this semantic highlighting reconciler is installed on */
 	private JavaEditor fEditor;
@@ -334,7 +335,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 	private Highlighting[] fHighlightings;
 
 	/** Background job's added highlighted positions */
-	private List fAddedPositions= new ArrayList();
+	private final List fAddedPositions= new ArrayList();
 	/** Background job's removed highlighted positions */
 	private List fRemovedPositions= new ArrayList();
 	/** Number of removed positions */
@@ -563,6 +564,7 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 			
 			if (element != null) {
 				fJob= new Job(JavaEditorMessages.SemanticHighlighting_job) {
+					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						if (oldJob != null) {
 							try {

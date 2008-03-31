@@ -43,7 +43,7 @@ import descent.internal.core.util.Util;
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	private final static boolean RESOLVE = true;
-	private final static boolean STATS = false;
+	private final static boolean STATS = true;
 	
 	public static class ParseResult {
 		public Module module;

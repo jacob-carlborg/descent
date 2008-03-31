@@ -398,9 +398,10 @@ public class JavaElementLabels {
 	 * @param buf The buffer to append the resulting label to.
 	 */
 	public static void getElementLabel(IJavaElement element, long flags, StringBuffer buf) {
-		int type= element.getElementType();
+
 		IPackageFragmentRoot root= null;
 		
+		int type = element.getElementType();
 		if (type != IJavaElement.JAVA_MODEL && type != IJavaElement.JAVA_PROJECT && type != IJavaElement.PACKAGE_FRAGMENT_ROOT)
 			root= JavaModelUtil.getPackageFragmentRoot(element);
 		if (root != null && getFlag(flags, PREPEND_ROOT_PATH)) {

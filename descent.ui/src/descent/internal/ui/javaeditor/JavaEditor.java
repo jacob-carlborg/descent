@@ -320,10 +320,10 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		}
 
 		/** Listeners on on this adapter */
-		private ListenerList fListeners= new ListenerList(ListenerList.IDENTITY);
+		private final ListenerList fListeners= new ListenerList(ListenerList.IDENTITY);
 
 		/** Listener on the node */
-		private IEclipsePreferences.IPreferenceChangeListener fListener= new PreferenceChangeListener();
+		private final IEclipsePreferences.IPreferenceChangeListener fListener= new PreferenceChangeListener();
 
 		/** wrapped node */
 		private final IScopeContext fContext;
@@ -661,9 +661,9 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 */
 	private static final class InformationProvider implements IInformationProvider, IInformationProviderExtension, IInformationProviderExtension2 {
 		
-		private IRegion fHoverRegion;
-		private Object fHoverInfo;
-		private IInformationControlCreator fControlCreator;
+		private final IRegion fHoverRegion;
+		private final Object fHoverInfo;
+		private final IInformationControlCreator fControlCreator;
 		
 		InformationProvider(IRegion hoverRegion, Object hoverInfo, IInformationControlCreator controlCreator) {
 			fHoverRegion= hoverRegion;
@@ -725,6 +725,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see org.eclipse.jface.action.IAction#run()
 		 */
+		@Override
 		public void run() {
 
 			ISourceViewer sourceViewer= getSourceViewer();
@@ -924,6 +925,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see org.eclipse.ui.texteditor.AbstractTextEditor.LineStartAction#getLineStartPosition(java.lang.String, int, java.lang.String)
 		 */
+		@Override
 		protected int getLineStartPosition(final IDocument document, final String line, final int length, final int offset) {
 
 			String type= IDocument.DEFAULT_CONTENT_TYPE;
@@ -973,6 +975,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see org.eclipse.jface.action.IAction#run()
 		 */
+		@Override
 		public void run() {
 			// Check whether we are in a java code partition and the preference is enabled
 			final IPreferenceStore store= getPreferenceStore();
@@ -1039,6 +1042,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.NextSubWordAction#setCaretPosition(int)
 		 */
+		@Override
 		protected void setCaretPosition(final int position) {
 			getTextWidget().setCaretOffset(modelOffset2WidgetOffset(getSourceViewer(), position));
 		}
@@ -1061,6 +1065,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.NextSubWordAction#setCaretPosition(int)
 		 */
+		@Override
 		protected void setCaretPosition(final int position) {
 			if (!validateEditorInputState())
 				return;
@@ -1086,6 +1091,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.NextSubWordAction#findNextPosition(int)
 		 */
+		@Override
 		protected int findNextPosition(int position) {
 			return fIterator.following(position);
 		}
@@ -1115,6 +1121,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.NextSubWordAction#setCaretPosition(int)
 		 */
+		@Override
 		protected void setCaretPosition(final int position) {
 			final ISourceViewer viewer= getSourceViewer();
 
@@ -1154,6 +1161,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see org.eclipse.jface.action.IAction#run()
 		 */
+		@Override
 		public void run() {
 			// Check whether we are in a java code partition and the preference is enabled
 			final IPreferenceStore store= getPreferenceStore();
@@ -1220,6 +1228,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.PreviousSubWordAction#setCaretPosition(int)
 		 */
+		@Override
 		protected void setCaretPosition(final int position) {
 			getTextWidget().setCaretOffset(modelOffset2WidgetOffset(getSourceViewer(), position));
 		}
@@ -1242,6 +1251,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.PreviousSubWordAction#setCaretPosition(int)
 		 */
+		@Override
 		protected void setCaretPosition(int position) {
 			if (!validateEditorInputState())
 				return;
@@ -1266,6 +1276,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.PreviousSubWordAction#findPreviousPosition(int)
 		 */
+		@Override
 		protected int findPreviousPosition(int position) {
 			return fIterator.preceding(position);
 		}
@@ -1295,6 +1306,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see descent.internal.ui.javaeditor.JavaEditor.PreviousSubWordAction#setCaretPosition(int)
 		 */
+		@Override
 		protected void setCaretPosition(final int position) {
 			final ISourceViewer viewer= getSourceViewer();
 
@@ -1340,6 +1352,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see org.eclipse.jface.action.IAction#run()
 		 */
+		@Override
 		public void run() {
 
 			final JavaSourceViewer viewer= (JavaSourceViewer) getSourceViewer();
@@ -1756,6 +1769,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#initializeKeyBindingScopes()
 	 */
+	@Override
 	protected void initializeKeyBindingScopes() {
 		setKeyBindingScopes(new String[] { "descent.ui.dEditorScope" });  //$NON-NLS-1$
 	}
@@ -1763,6 +1777,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#initializeEditor()
 	 */
+	@Override
 	protected void initializeEditor() {
 		IPreferenceStore store= createCombinedPreferenceStore(null);
 		setPreferenceStore(store);
@@ -1784,6 +1799,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#createSourceViewer(Composite, IVerticalRuler, int)
 	 */
+	@Override
 	protected final ISourceViewer createSourceViewer(Composite parent, IVerticalRuler verticalRuler, int styles) {
 
 		IPreferenceStore store= getPreferenceStore();
@@ -1837,6 +1853,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#affectsTextPresentation(PropertyChangeEvent)
 	 */
+	@Override
 	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
 		return ((JavaSourceViewerConfiguration)getSourceViewerConfiguration()).affectsTextPresentation(event) || super.affectsTextPresentation(event);
 	}
@@ -1885,6 +1902,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#editorContextMenuAboutToShow
 	 */
+	@Override
 	public void editorContextMenuAboutToShow(IMenuManager menu) {
 
 		super.editorContextMenuAboutToShow(menu);
@@ -1963,6 +1981,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * Get the desktop's StatusLineManager
 	 */
+	@Override
 	protected IStatusLineManager getStatusLineManager() {
 		IEditorActionBarContributor contributor= getEditorSite().getActionBarContributor();
 		if (contributor instanceof EditorActionBarContributor) {
@@ -1974,6 +1993,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#getAdapter(Class)
 	 */
+	@Override
 	public Object getAdapter(Class required) {
 
 		if (IContentOutlinePage.class.equals(required)) {
@@ -2220,6 +2240,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#adjustHighlightRange(int, int)
 	 */
+	@Override
 	protected void adjustHighlightRange(int offset, int length) {
 
 		try {
@@ -2281,6 +2302,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see StatusTextEditor#getStatusHeader(IStatus)
 	 */
+	@Override
 	protected String getStatusHeader(IStatus status) {
 		if (fEncodingSupport != null) {
 			String message= fEncodingSupport.getStatusHeader(status);
@@ -2293,6 +2315,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see StatusTextEditor#getStatusBanner(IStatus)
 	 */
+	@Override
 	protected String getStatusBanner(IStatus status) {
 		if (fEncodingSupport != null) {
 			String message= fEncodingSupport.getStatusBanner(status);
@@ -2305,6 +2328,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see StatusTextEditor#getStatusMessage(IStatus)
 	 */
+	@Override
 	protected String getStatusMessage(IStatus status) {
 		if (fEncodingSupport != null) {
 			String message= fEncodingSupport.getStatusMessage(status);
@@ -2317,6 +2341,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#doSetInput
 	 */
+	@Override
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		ISourceViewer sourceViewer= getSourceViewer();
 		if (!(sourceViewer instanceof ISourceViewerExtension2)) {
@@ -2371,6 +2396,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#setPreferenceStore(org.eclipse.jface.preference.IPreferenceStore)
 	 * @since 3.0
 	 */
+	@Override
 	protected void setPreferenceStore(IPreferenceStore store) {
 		super.setPreferenceStore(store);
 		if (getSourceViewerConfiguration() instanceof JavaSourceViewerConfiguration) {
@@ -2384,6 +2410,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see IWorkbenchPart#dispose()
 	 */
+	@Override
 	public void dispose() {
 
 		if (fProjectionModelUpdater != null) {
@@ -2432,6 +2459,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		super.dispose();
 	}
 
+	@Override
 	protected void createActions() {
 		installEncodingSupport();
 		
@@ -2554,6 +2582,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see AbstractTextEditor#handlePreferenceStoreChanged(PropertyChangeEvent)
 	 */
+	@Override
 	protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
 
 		String property= event.getProperty();
@@ -2721,6 +2750,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @param viewer the viewer to be initialized
 	 * @since 3.0
 	 */
+	@Override
 	protected void initializeViewerColors(ISourceViewer viewer) {
 		// is handled by JavaSourceViewer
 	}
@@ -2732,6 +2762,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#updatePropertyDependentActions()
 	 */
+	@Override
 	protected void updatePropertyDependentActions() {
 		super.updatePropertyDependentActions();
 		if (fEncodingSupport != null)
@@ -2781,6 +2812,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#doSetSelection(ISelection)
 	 */
+	@Override
 	protected void doSetSelection(ISelection selection) {
 		super.doSetSelection(selection);
 		synchronizeOutlinePageSelection();
@@ -2794,6 +2826,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.part.WorkbenchPart#getOrientation()
 	 * @since 3.1
 	 */
+	@Override
 	public int getOrientation() {
 		return SWT.LEFT_TO_RIGHT;	//Java editors are always left to right by default
 	}
@@ -2801,6 +2834,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 
@@ -2829,6 +2863,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		PlatformUI.getWorkbench().addWindowListener(fActivationListener);
 	}
 
+	@Override
 	protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
 
 		fBracketMatcher.setSourceVersion(getPreferenceStore().getString(JavaCore.COMPILER_SOURCE));
@@ -2858,6 +2893,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#updateMarkerViews(org.eclipse.jface.text.source.Annotation)
 	 * @since 3.2
 	 */
+	@Override
 	protected void updateMarkerViews(Annotation annotation) {
 		if (annotation instanceof IJavaAnnotation) {
 			Iterator e= ((IJavaAnnotation) annotation).getOverlaidIterator();
@@ -2882,12 +2918,12 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 */
 	class OccurrencesFinderJob extends Job {
 
-		private IDocument fDocument;
-		private ISelection fSelection;
+		private final IDocument fDocument;
+		private final ISelection fSelection;
 		private ISelectionValidator fPostSelectionValidator;
 		private boolean fCanceled= false;
 		private IProgressMonitor fProgressMonitor;
-		private Position[] fPositions;
+		private final Position[] fPositions;
 
 		public OccurrencesFinderJob(IDocument document, Position[] positions, ISelection selection) {
 			super(JavaEditorMessages.JavaEditor_markOccurrences_job_name);
@@ -2914,6 +2950,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		/*
 		 * @see Job#run(org.eclipse.core.runtime.IProgressMonitor)
 		 */
+		@Override
 		public IStatus run(IProgressMonitor progressMonitor) {
 
 			fProgressMonitor= progressMonitor;
@@ -3288,8 +3325,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @since 3.0
 	 */
 	private boolean isSemanticHighlightingEnabled() {
-		return false;
-//		return SemanticHighlightings.isEnabled(getPreferenceStore());
+		return SemanticHighlightings.isEnabled(getPreferenceStore());
 	}
 
 	/**
@@ -3461,6 +3497,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @return the found annotation
 	 * @since 3.2
 	 */
+	@Override
 	protected Annotation findAnnotation(final int offset, final int length, boolean forward, Position annotationPosition) {
 
 		Annotation nextAnnotation= null;
@@ -3553,6 +3590,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#gotoAnnotation(boolean)
 	 * @since 3.2
 	 */
+	@Override
 	public Annotation gotoAnnotation(boolean forward) {
 		fSelectionChangedViaGotoAnnotation= true;
 		return super.gotoAnnotation(forward);
@@ -3626,10 +3664,12 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#createChangeHover()
 	 */
+	@Override
 	protected LineChangeHover createChangeHover() {
 		return new JavaChangeHover(IJavaPartitions.JAVA_PARTITIONING, getOrientation());
 	}
 
+	@Override
 	protected boolean isPrefQuickDiffAlwaysOn() {
 		return false; // never show change ruler for the non-editable java editor. Overridden in subclasses like CompilationUnitEditor
 	}
@@ -3637,6 +3677,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#createNavigationActions()
 	 */
+	@Override
 	protected void createNavigationActions() {
 		super.createNavigationActions();
 
@@ -3675,6 +3716,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#createAnnotationRulerColumn(org.eclipse.jface.text.source.CompositeRuler)
 	 * @since 3.2
 	 */
+	@Override
 	protected IVerticalRulerColumn createAnnotationRulerColumn(CompositeRuler ruler) {
 		if (!getPreferenceStore().getBoolean(PreferenceConstants.EDITOR_ANNOTATION_ROLL_OVER))
 			return super.createAnnotationRulerColumn(ruler);
@@ -3719,6 +3761,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#performRevert()
 	 */
+	@Override
 	protected void performRevert() {
 		ProjectionViewer projectionViewer= (ProjectionViewer) getSourceViewer();
 		projectionViewer.setRedraw(false);
@@ -3747,6 +3790,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#rulerContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */
+	@Override
 	protected void rulerContextMenuAboutToShow(IMenuManager menu) {
 		super.rulerContextMenuAboutToShow(menu);
 		IMenuManager foldingMenu= new MenuManager(JavaEditorMessages.Editor_FoldingMenu_name, "projection"); //$NON-NLS-1$
@@ -3770,6 +3814,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#collectContextMenuPreferencePages()
 	 * @since 3.1
 	 */
+	@Override
 	protected String[] collectContextMenuPreferencePages() {
 		String[] ids= super.collectContextMenuPreferencePages();
 		String[] more= new String[ids.length + 9];
@@ -3790,6 +3835,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see AbstractTextEditor#getUndoRedoOperationApprover(IUndoContext)
 	 * @since 3.1
 	 */
+	@Override
 	protected IOperationApprover getUndoRedoOperationApprover(IUndoContext undoContext) {
 		// since IResource is a more general way to compare java elements, we
 		// use this as the preferred class for comparing objects.

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
-import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMethod;
@@ -16,12 +15,9 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
-import descent.internal.compiler.parser.Argument;
-import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
-import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
@@ -32,14 +28,11 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Module;
-import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Type;
-import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
@@ -169,229 +162,236 @@ class DefaultBindingResolver extends BindingResolver {
 	
 	@Override
 	ITypeBinding resolveAggregate(descent.core.dom.AggregateDeclaration type) {
-		ASTDmdNode old = newAstToOldAst.get(type);
-		if (!(old instanceof AggregateDeclaration)) {
-			return null;
-		}
-		
-		AggregateDeclaration agg = (AggregateDeclaration) old;
-		IBinding binding = resolveLazy(agg, type);
-		if (binding instanceof ITypeBinding) {
-			return (ITypeBinding) binding;
-		} else {
-			return null;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(type);
+//		if (!(old instanceof AggregateDeclaration)) {
+//			return null;
+//		}
+//		
+//		AggregateDeclaration agg = (AggregateDeclaration) old;
+//		IBinding binding = resolveLazy(agg, type);
+//		if (binding instanceof ITypeBinding) {
+//			return (ITypeBinding) binding;
+//		} else {
+//			return null;
+//		}
+		return null;
 	}
 	
 	@Override
 	ITypeBinding resolveTemplate(descent.core.dom.TemplateDeclaration type) {
-		ASTDmdNode old = newAstToOldAst.get(type);
-		if (!(old instanceof TemplateDeclaration)) {
-			return null;
-		}
-		
-		TemplateDeclaration temp = (TemplateDeclaration) old;
-		IBinding binding = resolveLazy(temp, type);
-		if (binding instanceof ITypeBinding) {
-			return (ITypeBinding) binding;
-		} else {
-			return null;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(type);
+//		if (!(old instanceof TemplateDeclaration)) {
+//			return null;
+//		}
+//		
+//		TemplateDeclaration temp = (TemplateDeclaration) old;
+//		IBinding binding = resolveLazy(temp, type);
+//		if (binding instanceof ITypeBinding) {
+//			return (ITypeBinding) binding;
+//		} else {
+//			return null;
+//		}
+		return null;
 	}
 	
 	@Override
 	ITypeBinding resolveEnum(descent.core.dom.EnumDeclaration type) {
-		ASTDmdNode old = newAstToOldAst.get(type);
-		if (!(old instanceof EnumDeclaration)) {
-			return null;
-		}
-		
-		EnumDeclaration e = (EnumDeclaration) old;
-		IBinding binding = resolveLazy(e, type);
-		if (binding instanceof ITypeBinding) {
-			return (ITypeBinding) binding;
-		} else {
-			return null;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(type);
+//		if (!(old instanceof EnumDeclaration)) {
+//			return null;
+//		}
+//		
+//		EnumDeclaration e = (EnumDeclaration) old;
+//		IBinding binding = resolveLazy(e, type);
+//		if (binding instanceof ITypeBinding) {
+//			return (ITypeBinding) binding;
+//		} else {
+//			return null;
+//		}
+		return null;
 	}
 	
 	@Override
 	IBinding resolveVariable(VariableDeclaration variable) {
-		if (variable.fragments().size() == 0) {
-			return null;
-		}
-		
-		ASTDmdNode old = newAstToOldAst.get(variable.fragments().get(0));
-		if (!(old instanceof VarDeclaration)) {
-			return null;
-		}
-		
-		VarDeclaration v = (VarDeclaration) old;
-		return resolveLazy(v, variable);
+//		if (variable.fragments().size() == 0) {
+//			return null;
+//		}
+//		
+//		ASTDmdNode old = newAstToOldAst.get(variable.fragments().get(0));
+//		if (!(old instanceof VarDeclaration)) {
+//			return null;
+//		}
+//		
+//		VarDeclaration v = (VarDeclaration) old;
+//		return resolveLazy(v, variable);
+		return null;
 	}
 	
 	@Override
 	IVariableBinding resolveVariableFragment(VariableDeclarationFragment variable) {
-		ASTDmdNode old = newAstToOldAst.get(variable);
-		if (!(old instanceof VarDeclaration)) {
-			return null;
-		}
-		
-		IBinding binding = resolveLazy((VarDeclaration) old, variable);
-		if (binding instanceof IVariableBinding) {
-			return (IVariableBinding) binding;
-		}
-		
+//		ASTDmdNode old = newAstToOldAst.get(variable);
+//		if (!(old instanceof VarDeclaration)) {
+//			return null;
+//		}
+//		
+//		IBinding binding = resolveLazy((VarDeclaration) old, variable);
+//		if (binding instanceof IVariableBinding) {
+//			return (IVariableBinding) binding;
+//		}
+//		
+//		return null;
 		return null;
 	}
 	
 	@Override
 	IBinding resolveAlias(AliasDeclaration alias) {
-		if (alias.fragments().size() == 0) {
-			return null;
-		}
-		
-		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
-		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
-			return null;
-		}
-		
-		descent.internal.compiler.parser.AliasDeclaration a = (descent.internal.compiler.parser.AliasDeclaration) old;
-		Dsymbol elem = a.aliassym;
-		if (elem == null) {
-			return null;
-		}
-		
-		elem = eraseTemplate(elem);
-		
-		String signature = elem.getSignature();
-		if (elem.getJavaElement() != null) {
-			IBinding binding = resolveBinding(elem.getJavaElement(), signature, alias);
-			if (binding != null) {
-				return binding;
-			}
-		} else {
-			return resolveLazy(a, alias);
-		}
+//		if (alias.fragments().size() == 0) {
+//			return null;
+//		}
+//		
+//		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
+//		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
+//			return null;
+//		}
+//		
+//		descent.internal.compiler.parser.AliasDeclaration a = (descent.internal.compiler.parser.AliasDeclaration) old;
+//		Dsymbol elem = a.aliassym;
+//		if (elem == null) {
+//			return null;
+//		}
+//		
+//		elem = eraseTemplate(elem);
+//		
+//		String signature = elem.getSignature();
+//		if (elem.getJavaElement() != null) {
+//			IBinding binding = resolveBinding(elem.getJavaElement(), signature, alias);
+//			if (binding != null) {
+//				return binding;
+//			}
+//		} else {
+//			return resolveLazy(a, alias);
+//		}
 		
 		return null;
 	}
 	
 	@Override
 	IVariableBinding resolveAliasFragment(AliasDeclarationFragment variable) {
-		ASTDmdNode old = newAstToOldAst.get(variable);
-		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
-			return null;
-		}
-		
-		IBinding binding = resolveLazy((descent.internal.compiler.parser.AliasDeclaration) old, variable);
-		if (binding instanceof IVariableBinding) {
-			return (IVariableBinding) binding;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(variable);
+//		if (!(old instanceof descent.internal.compiler.parser.AliasDeclaration)) {
+//			return null;
+//		}
+//		
+//		IBinding binding = resolveLazy((descent.internal.compiler.parser.AliasDeclaration) old, variable);
+//		if (binding instanceof IVariableBinding) {
+//			return (IVariableBinding) binding;
+//		}
 		
 		return null;
 	}
 	
 	@Override
 	IBinding resolveTypedef(descent.core.dom.TypedefDeclaration alias) {
-		if (alias.fragments().size() == 0) {
-			return null;
-		}
-		
-		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
-		if (!(old instanceof descent.internal.compiler.parser.TypedefDeclaration)) {
-			return null;
-		}
-		
-		descent.internal.compiler.parser.TypedefDeclaration a = (descent.internal.compiler.parser.TypedefDeclaration) old;
-		return resolveType(alias, a.basetype);
+//		if (alias.fragments().size() == 0) {
+//			return null;
+//		}
+//		
+//		ASTDmdNode old = newAstToOldAst.get(alias.fragments().get(0));
+//		if (!(old instanceof descent.internal.compiler.parser.TypedefDeclaration)) {
+//			return null;
+//		}
+//		
+//		descent.internal.compiler.parser.TypedefDeclaration a = (descent.internal.compiler.parser.TypedefDeclaration) old;
+//		return resolveType(alias, a.basetype);
+
+		return null;
 	}
 	
 	@Override
 	IVariableBinding resolveTypedefFragment(TypedefDeclarationFragment variable) {
-		ASTDmdNode old = newAstToOldAst.get(variable);
-		if (!(old instanceof descent.internal.compiler.parser.TypedefDeclaration)) {
-			return null;
-		}
-		
-		IBinding binding = resolveLazy((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
-		if (binding instanceof IVariableBinding) {
-			return (IVariableBinding) binding;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(variable);
+//		if (!(old instanceof descent.internal.compiler.parser.TypedefDeclaration)) {
+//			return null;
+//		}
+//		
+//		IBinding binding = resolveLazy((descent.internal.compiler.parser.TypedefDeclaration) old, variable);
+//		if (binding instanceof IVariableBinding) {
+//			return (IVariableBinding) binding;
+//		}
 		
 		return null;
 	}
 	
 	@Override
 	IBinding resolveName(Name name) {
-		ASTNode parent = name.getParent();
-		if (parent != null) {
-			switch(parent.getNodeType()) {
-			case ASTNode.AGGREGATE_DECLARATION:
-				return resolveAggregate((descent.core.dom.AggregateDeclaration) parent);
-			case ASTNode.ENUM_DECLARATION:
-				return resolveEnum((descent.core.dom.EnumDeclaration) parent);
-			case ASTNode.TEMPLATE_DECLARATION:
-				return resolveTemplate((descent.core.dom.TemplateDeclaration) parent);
-			case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
-				return resolveVariableFragment((VariableDeclarationFragment) parent);
-			case ASTNode.ALIAS_DECLARATION_FRAGMENT:
-				return resolveAliasFragment((AliasDeclarationFragment) parent);
-			case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:
-				return resolveTypedefFragment((TypedefDeclarationFragment) parent);
-			case ASTNode.ENUM_MEMBER:
-				return resolveEnumMember((descent.core.dom.EnumMember) parent);
-			case ASTNode.SIMPLE_TYPE:
-				return resolveType((descent.core.dom.Type) parent);
-			case ASTNode.IMPORT:
-				return resolveImport((descent.core.dom.Import) parent);
-			case ASTNode.QUALIFIED_NAME:
-				QualifiedName qName = (QualifiedName) parent;
-				if (qName.getName() == name) {
-					return resolveName(qName);
-				}
-				break;
-			case ASTNode.FUNCTION_DECLARATION:
-				if (name.getLocationInParent() == FunctionDeclaration.NAME_PROPERTY) {
-					return resolveMethod((FunctionDeclaration) parent);
-				}
-				break;
-			case ASTNode.ARGUMENT:
-				return resolveArgument((descent.core.dom.Argument) parent);
-			default:
-				if (parent instanceof descent.core.dom.Type &&
-						!(parent instanceof TemplateType)) {
-					return resolveType((descent.core.dom.Type) parent);
-				}
-			
-				// See if it's a built-in property
-				if (name.isSimpleName() &&
-						parent instanceof descent.core.dom.DotIdentifierExpression && 
-						name.getLocationInParent().equals(DotIdentifierExpression.NAME_PROPERTY)) {
-					DotIdentifierExpression dotid = (DotIdentifierExpression) parent;
-					descent.core.dom.Expression exp = dotid.getExpression();
-					if (exp != null) {
-						IBinding binding = exp.resolveTypeBinding();
-						if (binding != null && binding instanceof ITypeBinding) {
-							binding = resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
-							if (binding != null) {
-								return binding;
-							}
-						}
-					}
-				}
-			
-				if (name.isSimpleName()) {
-					ASTDmdNode old = newAstToOldAst.get(name);
-					if (!(old instanceof IdentifierExp)) {
-						return null;
-					}
-					
-					IdentifierExp node = (IdentifierExp) old;
-					return resolveIdentifierExp(name, node);
-				}
-			}
-		}
+//		ASTNode parent = name.getParent();
+//		if (parent != null) {
+//			switch(parent.getNodeType()) {
+//			case ASTNode.AGGREGATE_DECLARATION:
+//				return resolveAggregate((descent.core.dom.AggregateDeclaration) parent);
+//			case ASTNode.ENUM_DECLARATION:
+//				return resolveEnum((descent.core.dom.EnumDeclaration) parent);
+//			case ASTNode.TEMPLATE_DECLARATION:
+//				return resolveTemplate((descent.core.dom.TemplateDeclaration) parent);
+//			case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
+//				return resolveVariableFragment((VariableDeclarationFragment) parent);
+//			case ASTNode.ALIAS_DECLARATION_FRAGMENT:
+//				return resolveAliasFragment((AliasDeclarationFragment) parent);
+//			case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:
+//				return resolveTypedefFragment((TypedefDeclarationFragment) parent);
+//			case ASTNode.ENUM_MEMBER:
+//				return resolveEnumMember((descent.core.dom.EnumMember) parent);
+//			case ASTNode.SIMPLE_TYPE:
+//				return resolveType((descent.core.dom.Type) parent);
+//			case ASTNode.IMPORT:
+//				return resolveImport((descent.core.dom.Import) parent);
+//			case ASTNode.QUALIFIED_NAME:
+//				QualifiedName qName = (QualifiedName) parent;
+//				if (qName.getName() == name) {
+//					return resolveName(qName);
+//				}
+//				break;
+//			case ASTNode.FUNCTION_DECLARATION:
+//				if (name.getLocationInParent() == FunctionDeclaration.NAME_PROPERTY) {
+//					return resolveMethod((FunctionDeclaration) parent);
+//				}
+//				break;
+//			case ASTNode.ARGUMENT:
+//				return resolveArgument((descent.core.dom.Argument) parent);
+//			default:
+//				if (parent instanceof descent.core.dom.Type &&
+//						!(parent instanceof TemplateType)) {
+//					return resolveType((descent.core.dom.Type) parent);
+//				}
+//			
+//				// See if it's a built-in property
+//				if (name.isSimpleName() &&
+//						parent instanceof descent.core.dom.DotIdentifierExpression && 
+//						name.getLocationInParent().equals(DotIdentifierExpression.NAME_PROPERTY)) {
+//					DotIdentifierExpression dotid = (DotIdentifierExpression) parent;
+//					descent.core.dom.Expression exp = dotid.getExpression();
+//					if (exp != null) {
+//						IBinding binding = exp.resolveTypeBinding();
+//						if (binding != null && binding instanceof ITypeBinding) {
+//							binding = resolveBuiltinProperty((ITypeBinding) binding, (SimpleName) name);
+//							if (binding != null) {
+//								return binding;
+//							}
+//						}
+//					}
+//				}
+//			
+//				if (name.isSimpleName()) {
+//					ASTDmdNode old = newAstToOldAst.get(name);
+//					if (!(old instanceof IdentifierExp)) {
+//						return null;
+//					}
+//					
+//					IdentifierExp node = (IdentifierExp) old;
+//					return resolveIdentifierExp(name, node);
+//				}
+//			}
+//		}
 		return null;
 	}
 	
@@ -485,139 +485,141 @@ class DefaultBindingResolver extends BindingResolver {
 
 	@Override
 	public IMethodBinding resolveNewExpression(NewExpression expression) {
-		ASTDmdNode old = newAstToOldAst.get(expression);
-		if (!(old instanceof descent.internal.compiler.parser.NewExp)) {
-			return null;
-		}
-		
-		NewExp exp = (NewExp) old;
-		CtorDeclaration ctor = exp.member;
-		if (ctor == null) {
-			return null;
-		}
-		
-		String signature = ctor.getSignature();
-		
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null && binding instanceof IMethodBinding) {
-			return (IMethodBinding) binding;
-		}
-		
-		if (ctor.getJavaElement() != null) {
-			binding = new MethodBinding(this, (IMethod) ctor.getJavaElement(), null, signature);
-		} else {
-			binding = resolveLazy((Dsymbol) ctor, null);
-		}
-		
-		if (binding instanceof IMethodBinding) {
-			bindingTables.bindingKeysToBindings.put(signature, binding);
-			bindingsToAstNodes.put(binding, expression);
-			return (IMethodBinding) binding;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(expression);
+//		if (!(old instanceof descent.internal.compiler.parser.NewExp)) {
+//			return null;
+//		}
+//		
+//		NewExp exp = (NewExp) old;
+//		CtorDeclaration ctor = exp.member;
+//		if (ctor == null) {
+//			return null;
+//		}
+//		
+//		String signature = ctor.getSignature();
+//		
+//		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//		if (binding != null && binding instanceof IMethodBinding) {
+//			return (IMethodBinding) binding;
+//		}
+//		
+//		if (ctor.getJavaElement() != null) {
+//			binding = new MethodBinding(this, ctor.getJavaElement(), null, signature);
+//		} else {
+//			binding = resolveLazy(ctor, null);
+//		}
+//		
+//		if (binding instanceof IMethodBinding) {
+//			bindingTables.bindingKeysToBindings.put(signature, binding);
+//			bindingsToAstNodes.put(binding, expression);
+//			return (IMethodBinding) binding;
+//		}
 		
 		return null;
 	}
 	
 	@Override
 	public IMethodBinding resolveCallExpression(CallExpression expression) {
-		ASTDmdNode old = newAstToOldAst.get(expression);
-		if (!(old instanceof descent.internal.compiler.parser.CallExp)) {
-			return null;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(expression);
+//		if (!(old instanceof descent.internal.compiler.parser.CallExp)) {
+//			return null;
+//		}
+//		
+//		FuncDeclaration sym;
+//		
+//		CallExp exp = (CallExp) old;
+//		if (exp.sourceE1.getResolvedSymbol() == null ||
+//				!(exp.sourceE1.getResolvedSymbol() instanceof FuncDeclaration)) {
+//			if (exp.sourceE1.resolvedExpression == null ||
+//					!(exp.sourceE1.resolvedExpression instanceof VarExp)) {
+//				return null;
+//			}
+//			
+//			VarExp varExp = (VarExp) exp.sourceE1.resolvedExpression;
+//			if (!(varExp.var instanceof FuncDeclaration)) {
+//				return null;
+//			}
+//			sym = (FuncDeclaration) varExp.var;
+//		} else {
+//			sym = (FuncDeclaration) exp.sourceE1.getResolvedSymbol();
+//		}
+//		String signature = sym.getSignature();
+//		
+//		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//		if (binding != null) {
+//			return (IMethodBinding) binding;
+//		}
+//		
+//		if (sym.getJavaElement() != null) {
+//			binding = new MethodBinding(this, sym.getJavaElement(), null, signature);
+//		} else {
+//			binding = resolveBinding(signature);
+//		}
+//		
+//		bindingTables.bindingKeysToBindings.put(signature, binding);
+//		bindingsToAstNodes.put(binding, expression);
+//		
+//		if (binding instanceof IMethodBinding) {
+//			return (IMethodBinding) binding;
+//		} else {
+//			return null;
+//		}
 		
-		FuncDeclaration sym;
-		
-		CallExp exp = (CallExp) old;
-		if (exp.sourceE1.getResolvedSymbol() == null ||
-				!(exp.sourceE1.getResolvedSymbol() instanceof FuncDeclaration)) {
-			if (exp.sourceE1.resolvedExpression == null ||
-					!(exp.sourceE1.resolvedExpression instanceof VarExp)) {
-				return null;
-			}
-			
-			VarExp varExp = (VarExp) exp.sourceE1.resolvedExpression;
-			if (!(varExp.var instanceof FuncDeclaration)) {
-				return null;
-			}
-			sym = (FuncDeclaration) varExp.var;
-		} else {
-			sym = (FuncDeclaration) exp.sourceE1.getResolvedSymbol();
-		}
-		String signature = sym.getSignature();
-		
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
-			return (IMethodBinding) binding;
-		}
-		
-		if (sym.getJavaElement() != null) {
-			binding = new MethodBinding(this, (IMethod) sym.getJavaElement(), null, signature);
-		} else {
-			binding = resolveBinding(signature);
-		}
-		
-		bindingTables.bindingKeysToBindings.put(signature, binding);
-		bindingsToAstNodes.put(binding, expression);
-		
-		if (binding instanceof IMethodBinding) {
-			return (IMethodBinding) binding;
-		} else {
-			return null;
-		}
+		return null;
 	}
 
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {
-		if (id.resolvedSymbol != null) {
-			Dsymbol sym = id.resolvedSymbol;
-			sym = eraseTemplate(sym);
-			
-			// If it resolves to an opCall, use the parent
-			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident.ident, Id.call)) {
-				sym = sym.effectiveParent();
-			}
-			
-			if (sym.getJavaElement() != null) {
-				IJavaElement elem = sym.getJavaElement();
-				IBinding binding = resolveBinding(elem, sym.getSignature(), node);
-				if (binding != null) {
-					return binding;
-				}
-			} else if (sym instanceof VarDeclaration) {
-				IBinding binding = resolveLazy((VarDeclaration) sym, node);
-				if (binding != null) {
-					return binding;
-				}
-			} else if (sym instanceof descent.internal.compiler.parser.AliasDeclaration) {
-				IBinding binding = resolveLazy((descent.internal.compiler.parser.AliasDeclaration) sym, node);
-				if (binding != null) {
-					return binding;
-				}
-			} else if (sym instanceof descent.internal.compiler.parser.TypedefDeclaration) {
-				IBinding binding = resolveLazy((descent.internal.compiler.parser.TypedefDeclaration) sym, node);
-				if (binding != null) {
-					return binding;
-				}
-			} else {
-				IBinding binding = resolveBinding(sym.getSignature());
-				if (binding != null) {
-					return binding;
-				}
-			}
-		}
-		
-		Expression resolved = id.resolvedExpression;
-		if (resolved == null) {
-			return null;
-		}
-		
-		switch(resolved.getNodeType()) {
-		case ASTDmdNode.VAR_EXP:
-			return resolveVarExp((VarExp) resolved);
-		case ASTDmdNode.DOT_VAR_EXP:
-			return resolveDotVarExp((DotVarExp) resolved);
-		case ASTDmdNode.TYPE_EXP:
-			return resolveType(node, ((TypeExp) resolved).type);
-		}
+//		if (id.resolvedSymbol != null) {
+//			Dsymbol sym = id.resolvedSymbol;
+//			sym = eraseTemplate(sym);
+//			
+//			// If it resolves to an opCall, use the parent
+//			if (sym.isFuncDeclaration() != null && CharOperation.equals(sym.ident.ident, Id.call)) {
+//				sym = sym.effectiveParent();
+//			}
+//			
+//			if (sym.getJavaElement() != null) {
+//				IJavaElement elem = sym.getJavaElement();
+//				IBinding binding = resolveBinding(elem, sym.getSignature(), node);
+//				if (binding != null) {
+//					return binding;
+//				}
+//			} else if (sym instanceof VarDeclaration) {
+//				IBinding binding = resolveLazy(sym, node);
+//				if (binding != null) {
+//					return binding;
+//				}
+//			} else if (sym instanceof descent.internal.compiler.parser.AliasDeclaration) {
+//				IBinding binding = resolveLazy(sym, node);
+//				if (binding != null) {
+//					return binding;
+//				}
+//			} else if (sym instanceof descent.internal.compiler.parser.TypedefDeclaration) {
+//				IBinding binding = resolveLazy(sym, node);
+//				if (binding != null) {
+//					return binding;
+//				}
+//			} else {
+//				IBinding binding = resolveBinding(sym.getSignature());
+//				if (binding != null) {
+//					return binding;
+//				}
+//			}
+//		}
+//		
+//		Expression resolved = id.resolvedExpression;
+//		if (resolved == null) {
+//			return null;
+//		}
+//		
+//		switch(resolved.getNodeType()) {
+//		case ASTDmdNode.VAR_EXP:
+//			return resolveVarExp((VarExp) resolved);
+//		case ASTDmdNode.DOT_VAR_EXP:
+//			return resolveDotVarExp((DotVarExp) resolved);
+//		case ASTDmdNode.TYPE_EXP:
+//			return resolveType(node, ((TypeExp) resolved).type);
+//		}
 		
 		return null;
 	}
@@ -649,7 +651,7 @@ class DefaultBindingResolver extends BindingResolver {
 			binding = new MethodBinding(this, (IMethod) elem, null, signature);
 			break;
 		case IJavaElement.FIELD:
-			binding = new VariableBinding(this, (IField) elem, null, false /* not a parameter */, signature);
+			binding = new VariableBinding(this, elem, null, false /* not a parameter */, signature);
 			break;
 		}
 		
@@ -676,14 +678,15 @@ class DefaultBindingResolver extends BindingResolver {
 	
 	@Override
 	IBinding resolveType(descent.core.dom.Type type) {
-		ASTDmdNode old = newAstToOldAst.get(type);
-		if (old instanceof descent.internal.compiler.parser.Type) {
-			return resolveType(type, (Type) old);
-		} else if (old instanceof IdentifierExp) {
-			return resolveIdentifierExp(type, (IdentifierExp) old);
-		} else {
-			return null;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(type);
+//		if (old instanceof descent.internal.compiler.parser.Type) {
+//			return resolveType(type, (Type) old);
+//		} else if (old instanceof IdentifierExp) {
+//			return resolveIdentifierExp(type, (IdentifierExp) old);
+//		} else {
+//			return null;
+//		}
+		return null;
 	}
 	
 	private IBinding resolveType(ASTNode node, Type t) {
@@ -695,7 +698,7 @@ class DefaultBindingResolver extends BindingResolver {
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 		if (binding != null && binding instanceof ITypeBinding) {
-			return (ITypeBinding) binding;
+			return binding;
 		}
 		
 		// First try with the associated java element
@@ -715,84 +718,84 @@ class DefaultBindingResolver extends BindingResolver {
 	
 	@Override
 	IVariableBinding resolveEnumMember(descent.core.dom.EnumMember member) {
-		ASTDmdNode old = newAstToOldAst.get(member);
-		if (!(old instanceof descent.internal.compiler.parser.EnumMember)) {
-			return null;
-		}
-		
-		descent.internal.compiler.parser.EnumMember em = (EnumMember) old;
-		IBinding binding = resolveLazy(em, member);
-		if (binding instanceof IVariableBinding) {
-			return (IVariableBinding) binding;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(member);
+//		if (!(old instanceof descent.internal.compiler.parser.EnumMember)) {
+//			return null;
+//		}
+//		
+//		descent.internal.compiler.parser.EnumMember em = (EnumMember) old;
+//		IBinding binding = resolveLazy(em, member);
+//		if (binding instanceof IVariableBinding) {
+//			return (IVariableBinding) binding;
+//		}
 		return null;
 	}
 	
 	@Override
 	IPackageBinding resolveImport(descent.core.dom.Import imp) {
-		ASTDmdNode old = newAstToOldAst.get(imp);
-		if (!(old instanceof descent.internal.compiler.parser.Import)) {
-			return null;
-		}
-		
-		descent.internal.compiler.parser.Import i = (Import) old;
-		Module mod = i.mod;
-		if (mod == null) {
-			return null;
-		}
-		
-		String signature = mod.getSignature();
-		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
-		if (binding != null) {
-			return (IPackageBinding) binding;
-		}
-		
-		if (mod.getJavaElement() != null) {
-			IJavaElement elem = mod.getJavaElement();
-			if (elem instanceof ICompilationUnit) {
-				binding = new PackageBinding(this, (ICompilationUnit) elem, null, signature);
-				bindingTables.bindingKeysToBindings.put(signature, binding);
-				bindingsToAstNodes.put(binding, imp);
-				return (IPackageBinding) binding;
-			}
-		}
+//		ASTDmdNode old = newAstToOldAst.get(imp);
+//		if (!(old instanceof descent.internal.compiler.parser.Import)) {
+//			return null;
+//		}
+//		
+//		descent.internal.compiler.parser.Import i = (Import) old;
+//		Module mod = i.mod;
+//		if (mod == null) {
+//			return null;
+//		}
+//		
+//		String signature = mod.getSignature();
+//		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
+//		if (binding != null) {
+//			return (IPackageBinding) binding;
+//		}
+//		
+//		if (mod.getJavaElement() != null) {
+//			IJavaElement elem = mod.getJavaElement();
+//			if (elem instanceof ICompilationUnit) {
+//				binding = new PackageBinding(this, (ICompilationUnit) elem, null, signature);
+//				bindingTables.bindingKeysToBindings.put(signature, binding);
+//				bindingsToAstNodes.put(binding, imp);
+//				return (IPackageBinding) binding;
+//			}
+//		}
 		
 		return null;
 	}
 	
 	@Override
 	IMethodBinding resolveMethod(FunctionDeclaration method) {
-		ASTDmdNode old = newAstToOldAst.get(method);
-		if (!(old instanceof FuncDeclaration)) {
-			return null;
-		}
-		
-		FuncDeclaration func = (FuncDeclaration) old;
-		
-		IBinding binding = resolveLazy(func, method);
-		if (binding instanceof IMethodBinding) {
-			return (IMethodBinding) binding;
-		}
+//		ASTDmdNode old = newAstToOldAst.get(method);
+//		if (!(old instanceof FuncDeclaration)) {
+//			return null;
+//		}
+//		
+//		FuncDeclaration func = (FuncDeclaration) old;
+//		
+//		IBinding binding = resolveLazy(func, method);
+//		if (binding instanceof IMethodBinding) {
+//			return (IMethodBinding) binding;
+//		}
 		
 		return null; 
 	}
 	
 	@Override
 	public IVariableBinding resolveArgument(descent.core.dom.Argument argument) {
-		ASTDmdNode old = newAstToOldAst.get(argument);
-		if (!(old instanceof descent.internal.compiler.parser.Argument)) {
-			return null;
-		}
-		
-		descent.internal.compiler.parser.Argument arg = (Argument) old;
-		if (arg.var != null) {
-			if (arg.var instanceof VarDeclaration) {
-				IBinding binding = resolveLazy((VarDeclaration) arg.var, argument);
-				if (binding instanceof IVariableBinding) {
-					return (IVariableBinding) binding;
-				}
-			}
-		}
+//		ASTDmdNode old = newAstToOldAst.get(argument);
+//		if (!(old instanceof descent.internal.compiler.parser.Argument)) {
+//			return null;
+//		}
+//		
+//		descent.internal.compiler.parser.Argument arg = (Argument) old;
+//		if (arg.var != null) {
+//			if (arg.var instanceof VarDeclaration) {
+//				IBinding binding = resolveLazy(arg.var, argument);
+//				if (binding instanceof IVariableBinding) {
+//					return (IVariableBinding) binding;
+//				}
+//			}
+//		}
 		
 		return null;
 	}
@@ -810,7 +813,7 @@ class DefaultBindingResolver extends BindingResolver {
 			IBinding binding = resolveName((Name) expression);
 			if (binding != null) {
 				if (binding instanceof ITypeBinding) {
-					return (ITypeBinding) binding;
+					return binding;
 				} else if (binding instanceof IVariableBinding) {
 					return ((IVariableBinding) binding).getType();
 				}
@@ -1343,7 +1346,7 @@ class DefaultBindingResolver extends BindingResolver {
 						}
 						
 						if (temp.wrapper && temp.members != null && temp.members.size() > 0) {
-							Dsymbol first = (Dsymbol) temp.members.get(0);
+							Dsymbol first = temp.members.get(0);
 							if (first instanceof AggregateDeclaration) {
 								binding = new TypeBinding(this, null, node, signature);
 							} else if (first instanceof FuncDeclaration) {

@@ -775,6 +775,11 @@ public class Parser extends Lexer {
 					attachLeadingComments(s);
 				}
 				decldefs.add(s);
+				
+				// Discard any previous comments
+				if (comments != null) {
+					lastCommentRead = comments.size();
+				}
 			}
 		} while (!once);
 		return decldefs;
