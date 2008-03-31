@@ -64,7 +64,7 @@ public class AliasDeclaration extends Declaration {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
 		}
 		visitor.endVisit(this);
@@ -251,6 +251,8 @@ public class AliasDeclaration extends Declaration {
 		} else {
 			sa.haliassym = haliassym.syntaxCopy(s, context);
 		}
+		sa.copySourceRange(this);
+		sa.javaElement = javaElement;
 		return sa;
 	}
 

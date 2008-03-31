@@ -284,6 +284,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 			ed = new EnumDeclaration(loc, ident, t);
 		}
 		super.syntaxCopy(ed, context);
+		
+		ed.copySourceRange(this);
+		ed.javaElement = javaElement;
+		
 		return ed;
 	}
 

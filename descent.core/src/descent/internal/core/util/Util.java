@@ -424,6 +424,9 @@ public class Util {
 	public static String[] getTrimmedSimpleNames(String name) {
 		// TODO JDT signature
 //		String[] result = Signature.getSimpleNames(name);
+		if (name.trim().length() == 0) {
+			return CharOperation.NO_STRINGS;
+		}
 		String[] result = name.split("\\.");
 		for (int i = 0, length = result.length; i < length; i++) {
 			result[i] = result[i].trim();

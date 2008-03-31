@@ -167,6 +167,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 		Assert.isTrue(s == null);
 		ad = new AnonDeclaration(loc, isunion, Dsymbol.arraySyntaxCopy(decl, context));
+		ad.javaElement = javaElement;
 		return ad;
 	}
 

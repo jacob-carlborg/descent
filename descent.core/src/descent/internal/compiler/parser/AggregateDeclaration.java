@@ -43,7 +43,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	// Wether this aggregate is actually a templated aggregate 
 	public boolean templated;
 	
-	private IType javaElement;
+	protected IType javaElement;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(id);

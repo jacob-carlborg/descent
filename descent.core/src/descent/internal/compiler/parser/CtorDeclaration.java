@@ -126,6 +126,8 @@ public class CtorDeclaration extends FuncDeclaration {
 		}
 
 		f.arguments = arraySyntaxCopy(arguments, context);
+		f.copySourceRange(this);
+		f.javaElement = javaElement;
 		return f;
 	}
 

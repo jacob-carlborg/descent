@@ -48,6 +48,10 @@ public class UnionDeclaration extends StructDeclaration {
 			ud = new UnionDeclaration(loc, ident);
 		}
 		super.syntaxCopy(ud, context);
+		
+		ud.copySourceRange(this);
+		ud.javaElement = javaElement;
+		
 		return ud;
 	}
 	

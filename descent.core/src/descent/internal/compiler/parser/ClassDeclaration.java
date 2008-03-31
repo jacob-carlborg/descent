@@ -756,6 +756,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		super.syntaxCopy(cd, context);
+		
+		cd.copySourceRange(this);
+		cd.javaElement = javaElement;
+		
 		return cd;
 	}
 

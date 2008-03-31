@@ -144,6 +144,8 @@ public class TypedefDeclaration extends Declaration {
 		} else {
 			st.hbasetype = hbasetype.syntaxCopy(context);
 		}
+		st.copySourceRange(this);
+		st.javaElement = javaElement;
 		return st;
 	}
 

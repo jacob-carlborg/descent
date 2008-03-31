@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -42,6 +43,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public TemplateDeclaration overroot; // first in overnext list
 
 	public List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
+	
+	private IJavaElement javaElement;
 
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
@@ -788,6 +791,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		d = Dsymbol.arraySyntaxCopy(members, context);
 		td = new TemplateDeclaration(loc, ident, p, d);
+		td.copySourceRange(this);
+		td.javaElement = javaElement;
 		return td;
 	}
 
@@ -873,6 +878,15 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		} else {
 			return ISignatureConstants.TEMPLATE;
 		}
+	}
+	
+	public void setJavaElement(IJavaElement javaElement) {
+		this.javaElement = javaElement;
+	}
+	
+	@Override
+	public IJavaElement getJavaElement() {
+		return javaElement;
 	}
 
 }

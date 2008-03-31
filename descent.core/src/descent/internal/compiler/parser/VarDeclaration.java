@@ -616,6 +616,8 @@ public class VarDeclaration extends Declaration {
 		} else {
 			sv.hinit = hinit.syntaxCopy(context);
 		}
+		sv.copySourceRange(this);
+		sv.javaElement = javaElement;
 		return sv;
 	}
 

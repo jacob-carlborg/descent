@@ -96,6 +96,8 @@ public class DtorDeclaration extends FuncDeclaration {
 		}
 
 		DtorDeclaration dd = new DtorDeclaration(loc);
+		dd.javaElement = javaElement;
+		dd.copySourceRange(this);
 		return super.syntaxCopy(dd, context);
 	}
 

@@ -271,6 +271,10 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		}
 
 		super.syntaxCopy(id, context);
+		
+		id.copySourceRange(this);
+		id.javaElement = javaElement;
+		
 		return id;
 	}
 

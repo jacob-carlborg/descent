@@ -58,8 +58,8 @@ public class AllWorkbenchTests {
 //					| BINDING 
 //					| CODE_COMPLETE 
 //					| CODE_EVALUATE 
-//					| CODE_SELECT 
-					| LOOKUP 
+					| CODE_SELECT 
+//					| LOOKUP 
 //					| MODEL 
 //					| SIGNATURE
 					;

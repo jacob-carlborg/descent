@@ -262,6 +262,10 @@ public class StructDeclaration extends AggregateDeclaration {
 			sd = new StructDeclaration(loc, ident);
 		}
 		super.syntaxCopy(sd, context);
+		
+		sd.copySourceRange(this);
+		sd.javaElement = javaElement;
+		
 		return sd;
 	}
 	

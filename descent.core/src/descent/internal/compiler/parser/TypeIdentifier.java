@@ -183,6 +183,8 @@ public class TypeIdentifier extends TypeQualified {
 					if (null == s) // failed to find a symbol
 					{
 						break;
+					} else {
+						id.resolvedSymbol = s;
 					}
 				}
 			}

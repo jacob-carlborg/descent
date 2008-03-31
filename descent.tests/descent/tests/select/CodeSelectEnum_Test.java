@@ -33,6 +33,15 @@ public class CodeSelectEnum_Test extends AbstractModelTest {
 		assertEquals(test.getAllTypes()[0], elements[0]);
 	}
 	
+	public void testReferenceToMemberOfEnum3() throws Exception {
+		ICompilationUnit test = createCompilationUnit("test.d", "public enum foo { one, two } void bla() { auto x = foo.one; }");
+		
+		IJavaElement[] elements = test.codeSelect(52, 0);
+		assertEquals(1, elements.length);
+		
+		assertEquals(test.getAllTypes()[0], elements[0]);
+	}
+	
 	public void testMemberOfAnonymousEnum() throws Exception {
 		ICompilationUnit test = createCompilationUnit("test.d", "enum { one, two }");
 		

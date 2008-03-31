@@ -312,6 +312,7 @@ public class ModuleBuilder {
 			fill(module, symbols, type.getChildren());
 			
 			TemplateDeclaration member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
+			member.setJavaElement(type);
 			members.add(wrap(member, type));
 		}
 	}
@@ -405,6 +406,7 @@ public class ModuleBuilder {
 	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
 			TemplateDeclaration temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
+			temp.setJavaElement((IJavaElement) templated);
 			return wrap(temp, (IMember) templated);
 		} else {
 			return wrap(symbol, (IMember) templated);

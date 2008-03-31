@@ -108,6 +108,8 @@ public class DeleteDeclaration extends FuncDeclaration {
 		DeleteDeclaration f = new DeleteDeclaration(loc, null);
 		super.syntaxCopy(f, context);
 		f.arguments = arraySyntaxCopy(arguments, context);
+		f.copySourceRange(this);
+		f.javaElement = javaElement;
 		return f;
 	}
 

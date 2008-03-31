@@ -105,7 +105,8 @@ public class NewDeclaration extends FuncDeclaration {
 		super.syntaxCopy(f, context);
 
 		f.arguments = Argument.arraySyntaxCopy(arguments, context);
-
+		f.copySourceRange(this);
+		f.javaElement = javaElement;
 		return f;
 	}
 

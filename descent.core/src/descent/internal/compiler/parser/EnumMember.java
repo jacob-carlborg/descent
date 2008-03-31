@@ -64,6 +64,10 @@ public class EnumMember extends Dsymbol {
 		} else {
 			em = new EnumMember(loc, ident, e);
 		}
+		
+		em.copySourceRange(this);
+		em.javaElement = javaElement;
+		
 		return em;
 	}
 

@@ -101,7 +101,7 @@ public class FuncDeclaration extends Declaration {
 	// Wether this function is actually a templated function
 	public boolean templated;
 	
-	private IMethod javaElement;
+	protected IMethod javaElement;
 	private FuncDeclaration materialized; // in case the body is yet unknown
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
@@ -2000,6 +2000,8 @@ public class FuncDeclaration extends Declaration {
 		if (fthrows != null) {
 			throw new IllegalStateException("assert(!fthrows);"); // deprecated
 		}
+		f.copySourceRange(this);
+		f.javaElement = javaElement;
 		return f;
 	}
 
