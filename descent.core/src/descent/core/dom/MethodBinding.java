@@ -2,14 +2,15 @@ package descent.core.dom;
 
 import descent.core.IMethod;
 import descent.core.JavaModelException;
-import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.core.util.Util;
 
 public class MethodBinding extends JavaElementBasedBinding implements IMethodBinding {
 	
 	private final String signature;
 
-	public MethodBinding(DefaultBindingResolver bindingResolver, Dsymbol node, String signature) {
+	public MethodBinding(DefaultBindingResolver bindingResolver, FuncDeclaration node, String signature) {
 		super(bindingResolver, node);
 		this.signature = signature;		
 	}
@@ -34,23 +35,20 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		return null;
 	}
 
-	public ITypeBinding[] getParameterTypes() {
-		String[] parameterTypes = ((IMethod) getJavaElement()).getParameterTypes();
-		ITypeBinding[] typeBindings = new ITypeBinding[parameterTypes.length];
-		for(int i = 0; i < parameterTypes.length; i++) {
-			typeBindings[i] = (ITypeBinding) bindingResolver.resolveBinding(parameterTypes[i]);
+	public IBinding[] getParameterTypes() {
+		FuncDeclaration func = ((FuncDeclaration) node);
+		TypeFunction typeFunction = ((TypeFunction) func.type);
+		IBinding[] params = new IBinding[typeFunction.parameters.size()];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = bindingResolver.resolveType(typeFunction.parameters.get(i).type);
 		}
-		return typeBindings;
+		return params;
 	}
 
-	public ITypeBinding getReturnType() {
-		try {
-			String signature = ((IMethod) getJavaElement()).getReturnType();
-			return (ITypeBinding) bindingResolver.resolveBinding(signature);
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return null;
+	public IBinding getReturnType() {
+		FuncDeclaration func = ((FuncDeclaration) node);
+		TypeFunction typeFunction = ((TypeFunction) func.type);
+		return bindingResolver.resolveType(typeFunction.next);
 	}
 
 	public ITypeBinding[] getTypeArguments() {
@@ -103,21 +101,14 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	}
 	
 	public boolean isTemplate() {
-		try {
-			return ((IMethod) getJavaElement()).isTemplate();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		// TODO
+		return false;
 	}
 
 	public int getVarargs() {
-		try {
-			return ((IMethod) getJavaElement()).getVarargs();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return IMethod.VARARGS_NO;
-		}
+		FuncDeclaration func = ((FuncDeclaration) node);
+		TypeFunction typeFunction = ((TypeFunction) func.type);
+		return typeFunction.varargs;
 	}
 
 	public boolean overrides(IMethodBinding method) {

@@ -160,7 +160,7 @@ public class Binding extends ASTAttribute {
 					res.add(new Binding(this, "RETURN TYPE", methodBinding.getReturnType(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "MODIFIERS", Flags.toString(fBinding.getModifiers()), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "PARAMETER TYPES", methodBinding.getParameterTypes(), true)); //$NON-NLS-1$
-					res.add(new BindingProperty(this, "IS VARARGS", methodBinding.isVarargs(), true)); //$NON-NLS-1$
+					res.add(new BindingProperty(this, "IS VARARGS", methodBinding.getVarargs(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "EXCEPTION TYPES", methodBinding.getExceptionTypes(), true)); //$NON-NLS-1$
 					
 					StringBuffer genericsM= new StringBuffer("GENERICS:"); //$NON-NLS-1$
@@ -240,12 +240,12 @@ public class Binding extends ASTAttribute {
 					}
 					buf.append(methodBinding.getName());
 					buf.append('(');
-					ITypeBinding[] parameters= methodBinding.getParameterTypes();
+					IBinding[] parameters= methodBinding.getParameterTypes();
 					for (int i= 0; i < parameters.length; i++) {
 						if (i > 0) {
 							buf.append(", "); //$NON-NLS-1$
 						}
-						ITypeBinding parameter= parameters[i];
+						IBinding parameter= parameters[i];
 						buf.append(parameter.getName());
 					}
 					buf.append(')');

@@ -4,6 +4,7 @@ import descent.core.dom.CallExpression;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.NewExpression;
@@ -18,10 +19,10 @@ public class BindingFunction_Test extends AbstractBinding_Test {
 		assertEquals("foo", binding.getName());
 		assertEquals(getFunction(lastCompilationUnit, 0), binding.getJavaElement());
 		
-		ITypeBinding retType = binding.getReturnType();
+		IBinding retType = binding.getReturnType();
 		assertEquals("i", retType.getKey());
 		
-		ITypeBinding[] params = binding.getParameterTypes();
+		IBinding[] params = binding.getParameterTypes();
 		assertEquals(1, params.length);
 		assertEquals("a", params[0].getKey());
 		

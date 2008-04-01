@@ -131,7 +131,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return a (possibly empty) list of type bindings for the formal
 	 *   parameters of this method or constructor
 	 */
-	public ITypeBinding[] getParameterTypes();
+	public IBinding[] getParameterTypes();
 
 	/**
 	 * Returns the binding for the return type of this method. Returns the
@@ -140,7 +140,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return the binding for the return type of this method, or the
 	 *    <code>void</code> return type for constructors
 	 */
-	public ITypeBinding getReturnType();
+	public IBinding getReturnType();
 
 	/**
 	 * Returns a list of type bindings representing the types of the exceptions thrown

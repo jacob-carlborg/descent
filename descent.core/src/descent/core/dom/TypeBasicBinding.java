@@ -93,4 +93,16 @@ public class TypeBasicBinding extends PrimitiveTypeBinding implements ITypeBindi
 		return false;
 	}
 
+	public int getLowerBound() {
+		return 0;
+	}
+
+	public int getUpperBound() {
+		return 0;
+	}
+
+	public boolean isSlice() {
+		return false;
+	}
+
 }

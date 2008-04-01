@@ -1,56 +1,66 @@
 package descent.core.dom;
 
-import descent.internal.compiler.parser.TypeAArray;
+import descent.internal.compiler.parser.TypeSlice;
 
-public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBinding {
+public class TypeSliceBinding extends PrimitiveTypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final TypeAArray type;
+	private final TypeSlice type;
 
-	public TypeAArrayBinding(DefaultBindingResolver bindingResolver, TypeAArray type, String signature) {
+	public TypeSliceBinding(DefaultBindingResolver bindingResolver, TypeSlice type, String signature) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
 		this.type = type;
 	}
-	
-	public ITypeBinding getComponentType() {
-		return null;
+
+	public IBinding getComponentType() {
+		return bindingResolver.resolveType(type.next);
 	}
-	
+
 	public int getDimension() {
 		return 0;
 	}
-	
+
 	public IBinding getKeyType() {
-		return bindingResolver.resolveType(type.index);
+		return null;
 	}
 	
-	public String getName() {
-		// TODO optimize
-		return getValueType().getName() + "[" + getKeyType().getName() + "]";
+	public int getLowerBound() {
+		descent.internal.compiler.parser.Expression exp = type.lwr;
+		return exp.toInteger(bindingResolver.context).intValue();
+	}
+	
+	public int getUpperBound() {
+		descent.internal.compiler.parser.Expression exp = type.upr;
+		return exp.toInteger(bindingResolver.context).intValue();
 	}
 
-	public ITypeBinding[] getParametersTypes() {
-		return NO_TYPES;
+	public String getName() {
+		// TODO optimize
+		return getComponentType() + "[" + getLowerBound() + " .. " + getUpperBound() + "]";
 	}
-	
-	public ITypeBinding getReturnType() {
+
+	public IBinding[] getParametersTypes() {
+		return null;
+	}
+
+	public IBinding getReturnType() {
 		return null;
 	}
 
 	public IBinding getValueType() {
-		return bindingResolver.resolveType(type.next);
+		return null;
 	}
-	
+
 	public boolean isAssignmentCompatible(ITypeBinding variableType) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	public boolean isAssociativeArray() {
-		return true;
+		return false;
 	}
-	
+
 	public boolean isCastCompatible(ITypeBinding type) {
 		// TODO Auto-generated method stub
 		return false;
@@ -59,20 +69,15 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	public boolean isDelegate() {
 		return false;
 	}
-	
+
 	public boolean isDynamicArray() {
 		return false;
 	}
 
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	public boolean isFunction() {
 		return false;
 	}
-	
+
 	public boolean isNullType() {
 		return false;
 	}
@@ -80,7 +85,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	public boolean isPointer() {
 		return false;
 	}
-	
+
 	public boolean isPrimitive() {
 		return false;
 	}
@@ -88,21 +93,18 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	public boolean isStaticArray() {
 		return false;
 	}
+	
+	public boolean isSlice() {
+		return true;
+	}
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public int getLowerBound() {
-		return 0;
-	}
-
-	public int getUpperBound() {
-		return 0;
-	}
-
-	public boolean isSlice() {
+	public boolean isEqualTo(IBinding binding) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

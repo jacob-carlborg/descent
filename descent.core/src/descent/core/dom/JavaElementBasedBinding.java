@@ -18,6 +18,8 @@ public abstract class JavaElementBasedBinding implements IBinding {
 	}
 	
 	public final IJavaElement getJavaElement() {
+		// TODO for local variables this returns the enclosing function,
+		// which is wrong!
 		if (element == null) {
 			element = node.getJavaElement();
 			if (element == null) {
@@ -28,7 +30,7 @@ public abstract class JavaElementBasedBinding implements IBinding {
 	}
 	
 	public final String getName() {
-		return getJavaElement().getElementName();
+		return new String(node.ident.ident);
 	}
 	
 	public final long getModifiers() {

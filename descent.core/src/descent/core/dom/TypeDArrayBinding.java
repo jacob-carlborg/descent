@@ -1,18 +1,20 @@
 package descent.core.dom;
 
+import descent.internal.compiler.parser.TypeDArray;
+
 public class TypeDArrayBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final ITypeBinding type;
+	private final TypeDArray type;
 
-	public TypeDArrayBinding(DefaultBindingResolver bindingResolver, ITypeBinding type, String signature) {
+	public TypeDArrayBinding(DefaultBindingResolver bindingResolver, TypeDArray type, String signature) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
 		this.type = type;
 	}
 	
-	public ITypeBinding getComponentType() {
-		return type;
+	public IBinding getComponentType() {
+		return bindingResolver.resolveType(type.next);
 	}
 	
 	public int getDimension() {
@@ -24,7 +26,8 @@ public class TypeDArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 	
 	public String getName() {
-		return type.getName() + "[]";
+		// TODO optimize
+		return getComponentType().getName() + "[]";
 	}
 	
 	public ITypeBinding[] getParametersTypes() {
@@ -88,6 +91,18 @@ public class TypeDArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public int getLowerBound() {
+		return 0;
+	}
+
+	public int getUpperBound() {
+		return 0;
+	}
+
+	public boolean isSlice() {
 		return false;
 	}
 

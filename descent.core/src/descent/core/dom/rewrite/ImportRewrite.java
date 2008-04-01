@@ -615,7 +615,7 @@ public final class ImportRewrite {
 				if (baseBindings.length > 0) {
 					return baseBindings[0];
 				}
-				return binding.getSuperclass();
+				return (ITypeBinding) binding.getSuperclass();
 			}
 			// TODO JDT import rewrite
 //			if (binding.isCapture()) {

@@ -1,27 +1,24 @@
 package descent.core.dom;
 
 import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.internal.compiler.parser.Module;
 
 public class PackageBinding implements IPackageBinding {
 
-	private ICompilationUnit element;
-	private final Module node;
+	private IJavaElement element;
+	private final Module module;
 	private final String signature;
 	private final DefaultBindingResolver bindingResolver;
 
-	public PackageBinding(DefaultBindingResolver bindingResolver, ICompilationUnit element, Module node, String signature) {
+	public PackageBinding(DefaultBindingResolver bindingResolver, Module module, String signature) {
 		this.bindingResolver = bindingResolver;
-		this.element = element;
-		this.node = node;
+		this.module = module;
 		this.signature = signature;
 	}
 
 	public String getName() {
-		if (node != null && node.getFullyQualifiedName() != null) {
-			return node.getFullyQualifiedName();
-		}
-		return getJavaElement().getFullyQualifiedName();
+		return module.getFullyQualifiedName();
 	}
 
 	public String[] getNameComponents() {
@@ -34,10 +31,13 @@ public class PackageBinding implements IPackageBinding {
 	}
 
 	public ICompilationUnit getJavaElement() {
-//		if (element == null) {
-//			element = (ICompilationUnit) bindingResolver.getJavaElement(node);
-//		}
-		return element;
+		if (element == null) {
+			element = module.getJavaElement();
+			if (element == null) {
+				element = bindingResolver.getCompilationUnit(module);
+			}
+		}
+		return (ICompilationUnit) element;
 	}
 
 	public String getKey() {

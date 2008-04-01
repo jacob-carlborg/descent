@@ -4,10 +4,17 @@ import java.util.Stack;
 
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragment;
+import descent.core.IPackageFragmentRoot;
+import descent.core.IParent;
+import descent.core.ISourceRange;
+import descent.core.ISourceReference;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -33,6 +40,7 @@ import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
 import descent.internal.compiler.parser.TypeTypeof;
+import descent.internal.core.util.Util;
 
 public class InternalSignature implements ISignatureConstants {
 	
@@ -373,6 +381,101 @@ public class InternalSignature implements ISignatureConstants {
 		});
 		
 		return param[0];
+	}
+	
+	public descent.core.ICompilationUnit getCompilationUnit(String moduleName) {
+		String packages;
+		String filename;
+
+		int indexOfDot = moduleName.lastIndexOf('.');
+		if (indexOfDot == -1) {
+			packages = "";
+			filename = moduleName + ".d";
+		} else {
+			packages = moduleName.substring(0, indexOfDot);
+			filename = moduleName.substring(indexOfDot + 1) + ".d";
+		}
+
+		try {
+			for (IPackageFragmentRoot root : javaProject
+					.getPackageFragmentRoots()) {
+				IPackageFragment pack = root.getPackageFragment(packages);
+				if (pack.exists()) {
+					// found it
+					descent.core.ICompilationUnit unit = pack
+							.getCompilationUnit(filename);
+					if (!unit.exists()) {
+						unit = pack.getClassFile(filename);
+						if (!unit.exists())
+							continue;
+					}
+
+					return unit;
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+
+		return null;
+	}
+
+	public IJavaElement binarySearch(IJavaElement parent, int start, int end)
+			throws JavaModelException {
+		if (!(parent instanceof IParent)) {
+			return null;
+		}
+
+		IJavaElement[] children = ((IParent) parent).getChildren();
+		if (children.length == 0) {
+			return null;
+		}
+		
+		IJavaElement child = binarySearch(children, start, end);
+		if (child == null) {
+			return null;
+		}
+		
+		if (child instanceof IParent) {
+			IParent childAsParent = (IParent) child;
+			if (childAsParent.hasChildren()) {
+				IJavaElement found = binarySearch(child, start, end);
+				if (found != null) {
+					return found;
+				} else {
+					return child;
+				}
+			} else {
+				return child;
+			}
+		} else {
+			return child;
+		}
+	}
+
+	private static IJavaElement binarySearch(IJavaElement[] a, int start, int end) throws JavaModelException {
+		int low = 0;
+		int high = a.length - 1;
+
+		while (low <= high) {
+			int mid = (low + high) >>> 1;
+			ISourceReference midVal = (ISourceReference) a[mid];
+			ISourceRange range = midVal.getSourceRange();
+
+			if (range.getOffset() + range.getLength() < start) {
+				low = mid + 1;
+			} else if (range.getOffset() > end) {
+				high = mid - 1;
+			} else {
+				if (range.getOffset() <= start
+						&& end <= range.getOffset() + range.getLength()) {
+					return a[mid]; // key found	
+				} else {
+					return null;
+				}
+			}
+		}
+		return null; // key not found.
 	}
 
 }

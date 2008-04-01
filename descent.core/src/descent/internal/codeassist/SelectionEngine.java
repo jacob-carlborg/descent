@@ -7,11 +7,6 @@ import java.util.Map;
 import descent.core.Flags;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
-import descent.core.IPackageFragment;
-import descent.core.IPackageFragmentRoot;
-import descent.core.IParent;
-import descent.core.ISourceRange;
-import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
@@ -86,7 +81,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 	Module module;
 	SemanticContext context;
 	List<IJavaElement> selectedElements;
-
 	InternalSignature internalSignature;
 
 	public SelectionEngine(Map settings, IJavaProject javaProject,
@@ -191,7 +185,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 				context = CompilationUnitResolver.resolve(module, javaProject,
 						owner);
 
+				long time2 = System.currentTimeMillis();
 				module.accept(this);
+				time2 = System.currentTimeMillis() - time2;
+				System.out.println("Selection visiting time: " + time2);
 			}
 			return selectedElements.toArray(new IJavaElement[selectedElements
 					.size()]);
@@ -388,7 +385,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 				if (mod.getJavaElement() != null) {
 					addJavaElement(mod.getJavaElement());
 				} else {
-					descent.core.ICompilationUnit unit = getCompilationUnit();
+					descent.core.ICompilationUnit unit = internalSignature.getCompilationUnit(module.moduleName);
 					if (unit != null) {
 						addJavaElement(unit);
 					}
@@ -585,114 +582,21 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 	private boolean addBinarySearch(ASTDmdNode node) {
 		try {
-			descent.core.ICompilationUnit unit = getCompilationUnit();
+			descent.core.ICompilationUnit unit = internalSignature.getCompilationUnit(module.moduleName);
 			if (unit != null) {
-				return addBinarySearch(unit, node.start, node.start
+				IJavaElement element = internalSignature.binarySearch(unit, node.start, node.start
 						+ node.length);
+				if (element != null) {
+					addJavaElement(element);
+					return true;
+				} else {
+					return false;
+				}
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
 		return false;
-	}
-
-	private descent.core.ICompilationUnit getCompilationUnit() {
-		String fqn = unit.getFullyQualifiedName();
-		String packages;
-		String filename;
-
-		int indexOfDot = fqn.lastIndexOf('.');
-		if (indexOfDot == -1) {
-			packages = "";
-			filename = fqn + ".d";
-		} else {
-			packages = fqn.substring(0, indexOfDot);
-			filename = fqn.substring(indexOfDot + 1) + ".d";
-		}
-
-		try {
-			for (IPackageFragmentRoot root : javaProject
-					.getPackageFragmentRoots()) {
-				IPackageFragment pack = root.getPackageFragment(packages);
-				if (pack.exists()) {
-					// found it
-					descent.core.ICompilationUnit unit = pack
-							.getCompilationUnit(filename);
-					if (!unit.exists()) {
-						unit = pack.getClassFile(filename);
-						if (!unit.exists())
-							continue;
-					}
-
-					return unit;
-				}
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-
-		return null;
-	}
-
-	private boolean addBinarySearch(IJavaElement elem, int start, int end)
-			throws JavaModelException {
-		if (!(elem instanceof IParent)) {
-			return false;
-		}
-
-		IJavaElement[] children = ((IParent) elem).getChildren();
-		if (children.length == 0) {
-			return false;
-		}
-		
-		IJavaElement child = binarySearch(children, start, end);
-		if (child == null) {
-			return false;
-		}
-		
-		if (child instanceof IParent) {
-			IParent parent = (IParent) child;
-			if (parent.hasChildren()) {
-				boolean found = addBinarySearch(child, start, end);
-				if (found) {
-					return true;
-				} else {
-					addJavaElement(child);
-					return true;
-				}
-			} else {
-				addJavaElement(child);
-				return true;
-			}
-		} else {
-			addJavaElement(child);
-			return true;
-		}
-	}
-
-	private static IJavaElement binarySearch(IJavaElement[] a, int start, int end) throws JavaModelException {
-		int low = 0;
-		int high = a.length - 1;
-
-		while (low <= high) {
-			int mid = (low + high) >>> 1;
-			ISourceReference midVal = (ISourceReference) a[mid];
-			ISourceRange range = midVal.getSourceRange();
-
-			if (range.getOffset() + range.getLength() < start) {
-				low = mid + 1;
-			} else if (range.getOffset() > end) {
-				high = mid - 1;
-			} else {
-				if (range.getOffset() <= start
-						&& end <= range.getOffset() + range.getLength()) {
-					return a[mid]; // key found	
-				} else {
-					return null;
-				}
-			}
-		}
-		return null; // key not found.
 	}
 
 }

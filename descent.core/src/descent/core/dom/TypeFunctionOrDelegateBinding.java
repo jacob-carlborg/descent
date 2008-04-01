@@ -1,23 +1,17 @@
 package descent.core.dom;
 
-import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.TypeFunction;
 
 public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final IBinding[] args;
-	private final IBinding retType;
-	private final boolean varargs;
-	private final LINK linkage;
-	public boolean isFunction;
+	private final TypeFunction type;
+	private final boolean isFunction;
 
-	public TypeFunctionOrDelegateBinding(DefaultBindingResolver bindingResolver, IBinding[] args, IBinding retType, boolean varargs, LINK linkage, String signature, boolean isFunction) {
+	public TypeFunctionOrDelegateBinding(DefaultBindingResolver bindingResolver, TypeFunction type, boolean isFunction, String signature) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
-		this.args = args;
-		this.retType = retType;
-		this.varargs = varargs;
-		this.linkage = linkage;
+		this.type = type;
 		this.isFunction = isFunction;
 	}
 	
@@ -34,31 +28,20 @@ public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implemen
 	}
 	
 	public String getName() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(retType.getName());
-		sb.append(" ");
-		if (isFunction) {
-			sb.append("function");
-		} else {
-			sb.append("delegate");
-		}
-		sb.append("(");
-		for(int i = 0; i < args.length; i++) {
-			if (i != 0) {
-				sb.append(", ");
-			}
-			sb.append(args[i].getName());
-		}
-		sb.append(")");
-		return sb.toString();
+		// TODO implement
+		return "";
 	}
 	
 	public IBinding[] getParametersTypes() {
-		return args;
+		IBinding[] params = new IBinding[type.parameters.size()];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = bindingResolver.resolveType(type.parameters.get(i).type);
+		}
+		return params;
 	}
 	
 	public IBinding getReturnType() {
-		return retType;
+		return bindingResolver.resolveType(type.next);
 	}
 	
 	public ITypeBinding getValueType() {
@@ -114,6 +97,18 @@ public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implemen
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public int getLowerBound() {
+		return 0;
+	}
+
+	public int getUpperBound() {
+		return 0;
+	}
+
+	public boolean isSlice() {
 		return false;
 	}
 

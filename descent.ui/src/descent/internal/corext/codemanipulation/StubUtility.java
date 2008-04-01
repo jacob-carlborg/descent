@@ -442,16 +442,16 @@ public class StubUtility {
 	 * Returns the parameters type names used in see tags. Currently, these are always fully qualified.
 	 */
 	public static String[] getParameterTypeNamesForSeeTag(IMethodBinding binding) {
-		ITypeBinding[] typeBindings= binding.getParameterTypes();
+		IBinding[] typeBindings= binding.getParameterTypes();
 		String[] result= new String[typeBindings.length];
 		for (int i= 0; i < result.length; i++) {
-			ITypeBinding curr= typeBindings[i];
+			IBinding curr= typeBindings[i];
 			// TODO JDT Bindings
 //			if (curr.isTypeVariable()) {
 //				curr= curr.getErasure(); // in Javadoc only use type variable erasure
 //			}
 //			curr= curr.getTypeDeclaration(); // no parameterized types
-			result[i]= curr.getQualifiedName();
+//			result[i]= curr.getQualifiedName();
 		}
 		return result;
 	}

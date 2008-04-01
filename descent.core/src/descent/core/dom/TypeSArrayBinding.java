@@ -1,25 +1,25 @@
 package descent.core.dom;
 
+import descent.internal.compiler.parser.TypeSArray;
 
 public class TypeSArrayBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final ITypeBinding type;
-	private final int dimension;
+	private final TypeSArray type;
 
-	public TypeSArrayBinding(DefaultBindingResolver bindingResolver, ITypeBinding type, int dimension, String signature) {
+	public TypeSArrayBinding(DefaultBindingResolver bindingResolver, TypeSArray type, String signature) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
 		this.type = type;
-		this.dimension = dimension;
 	}
 	
-	public ITypeBinding getComponentType() {
-		return type;
+	public IBinding getComponentType() {
+		return bindingResolver.resolveType(type.next);
 	}
 	
 	public int getDimension() {
-		return dimension;
+		descent.internal.compiler.parser.Expression exp = type.dim;
+		return exp.toInteger(bindingResolver.context).intValue();
 	}
 	
 	public ITypeBinding getKeyType() {
@@ -27,7 +27,8 @@ public class TypeSArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 	
 	public String getName() {
-		return type.getName() + "[" + dimension + "]";
+		// TODO optimize
+		return getKeyType().getName() + "[" + getDimension() + "]";
 	}
 	
 	public ITypeBinding[] getParametersTypes() {
@@ -91,6 +92,18 @@ public class TypeSArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public int getLowerBound() {
+		return 0;
+	}
+
+	public int getUpperBound() {
+		return 0;
+	}
+
+	public boolean isSlice() {
 		return false;
 	}
 

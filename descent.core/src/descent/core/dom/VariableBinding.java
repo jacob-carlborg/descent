@@ -1,22 +1,17 @@
 package descent.core.dom;
 
-import descent.core.IField;
-import descent.core.ILocalVariable;
-import descent.core.JavaModelException;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
-import descent.internal.core.util.Util;
 
 public class VariableBinding extends JavaElementBasedBinding implements IVariableBinding {
 	
-	private final String signature;
-	private final boolean isParameter;
-	
+	private final String signature;	
 
-	public VariableBinding(DefaultBindingResolver bindingResolver, Dsymbol node, boolean isParameter, String signature) {
+	public VariableBinding(DefaultBindingResolver bindingResolver, Dsymbol node, String signature) {
 		super(bindingResolver, node);
-		this.isParameter = isParameter;
 		this.signature = signature;
 	}
 
@@ -36,19 +31,13 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 
 	public IBinding getType() {
-		String signature;
-		try {
-			if (getJavaElement() instanceof IField) {
-				signature = ((IField) getJavaElement()).getTypeSignature();
-			} else if (getJavaElement() instanceof ILocalVariable) {
-				signature = ((ILocalVariable) getJavaElement()).getTypeSignature();
-			} else {
-				return null;
-			}
-			return bindingResolver.resolveBinding(signature);
-		} catch (JavaModelException e) {
-			Util.log(e);
+		// TODO
+		if (node instanceof VarDeclaration) {
+			return bindingResolver.resolveType(((VarDeclaration) node).type);	
+		} else if (node instanceof EnumMember) {
+			return bindingResolver.resolveType(((EnumDeclaration) ((EnumMember) node).parent).type);
 		}
+		
 		return null;
 	}
 
@@ -63,76 +52,30 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 
 	public boolean isEnumConstant() {
-		try {
-			return getJavaElement() instanceof IField && ((IField) getJavaElement()).isEnumConstant();
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return false;
+		return node instanceof EnumMember;
 	}
 
 	public boolean isVariable() {
-		if (node != null) {
-			return node instanceof VarDeclaration;
-		}
-		
-		try {
-			if (getJavaElement() instanceof IField) {
-				return ((IField) getJavaElement()).isVariable();
-			} else if (getJavaElement() instanceof ILocalVariable) {
-				return ((ILocalVariable) getJavaElement()).isVariable();
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return false;
+		return node instanceof VarDeclaration;
 	}
 	
 	public boolean isAlias() {
-		if (node != null) {
-			return node instanceof descent.internal.compiler.parser.AliasDeclaration;
-		}
-		
-		try {
-			if (getJavaElement() instanceof IField) {
-				return ((IField) getJavaElement()).isAlias();
-			} else if (getJavaElement() instanceof ILocalVariable) {
-				return ((ILocalVariable) getJavaElement()).isAlias();
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return false;
+		return node instanceof descent.internal.compiler.parser.AliasDeclaration;
 	}
 	
 	public boolean isLocal() {
-		if (node != null) {
-			return node.effectiveParent() instanceof FuncDeclaration;
-		}
-		
-		return getJavaElement() instanceof ILocalVariable &&
-			!isParameter();
+		return node.effectiveParent() instanceof FuncDeclaration;
 	}
 	
 	public boolean isTypedef() {
-		if (node != null) {
-			return node instanceof descent.internal.compiler.parser.TypedefDeclaration;
-		}
-		
-		try {
-			if (getJavaElement() instanceof IField) {
-				return ((IField) getJavaElement()).isTypedef();
-			} else if (getJavaElement() instanceof ILocalVariable) {
-				return ((ILocalVariable) getJavaElement()).isTypedef();
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return false;
+		return node instanceof descent.internal.compiler.parser.TypedefDeclaration;
 	}
 
 	public boolean isParameter() {
-		return isParameter;
+		if (node instanceof VarDeclaration) {
+			return ((VarDeclaration) node).isParameter();
+		}
+		return false;
 	}
 
 	public String getKey() {

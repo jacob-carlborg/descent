@@ -27,7 +27,6 @@ import descent.core.IJavaProject;
 import descent.core.IMethod;
 import descent.core.IType;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Assignment;
@@ -127,10 +126,10 @@ public class Bindings {
 		result.append(':');
 		result.append(method.getName());
 		result.append('(');
-		ITypeBinding[] parameters= method.getParameterTypes();
+		IBinding[] parameters= method.getParameterTypes();
 		int lastComma= parameters.length - 1;
 		for (int i= 0; i < parameters.length; i++) {
-			ITypeBinding parameter= parameters[i];
+			IBinding parameter= parameters[i];
 			result.append(parameter.getName());
 			if (i < lastComma)
 				result.append(", "); //$NON-NLS-1$
@@ -286,7 +285,7 @@ public class Bindings {
 		IVariableBinding field= findFieldInType(type, fieldName);
 		if (field != null)
 			return field;
-		ITypeBinding superClass= type.getSuperclass();
+		ITypeBinding superClass= (ITypeBinding) type.getSuperclass();
 		if (superClass != null) {
 			field= findFieldInHierarchy(superClass, fieldName);
 			if (field != null)
@@ -340,7 +339,7 @@ public class Bindings {
 		IMethodBinding method= findMethodInType(type, methodName, parameters);
 		if (method != null)
 			return method;
-		ITypeBinding superClass= type.getSuperclass();
+		ITypeBinding superClass= (ITypeBinding) type.getSuperclass();
 		if (superClass != null) {
 			method= findMethodInHierarchy(superClass, methodName, parameters);
 			if (method != null)
@@ -393,7 +392,7 @@ public class Bindings {
 		IMethodBinding method= findMethodInType(type, methodName, parameters);
 		if (method != null)
 			return method;
-		ITypeBinding superClass= type.getSuperclass();
+		ITypeBinding superClass= (ITypeBinding) type.getSuperclass();
 		if (superClass != null) {
 			method= findMethodInHierarchy(superClass, methodName, parameters);
 			if (method != null)
@@ -436,7 +435,7 @@ public class Bindings {
 		IMethodBinding method= findOverriddenMethodInType(type, binding);
 		if (method != null)
 			return method;
-		ITypeBinding superClass= type.getSuperclass();
+		ITypeBinding superClass= (ITypeBinding) type.getSuperclass();
 		if (superClass != null) {
 			method= findOverriddenMethodInHierarchy(superClass, binding);
 			if (method != null)
@@ -472,7 +471,7 @@ public class Bindings {
 		}
 		
 		if (type.getSuperclass() != null) {
-			IMethodBinding res= findOverriddenMethodInHierarchy(type.getSuperclass(), overriding);
+			IMethodBinding res= findOverriddenMethodInHierarchy((ITypeBinding) type.getSuperclass(), overriding);
 			if (res != null && !Modifier.isPrivate(res.getModifiers())) {
 				if (!testVisibility || isVisibleInHierarchy(res, overriding.getDeclaringClass().getPackage())) {
 					return res;
@@ -519,7 +518,7 @@ public class Bindings {
 			for (int i= 0; i < interfaces.length; i++) {
 				collectSuperTypes(interfaces[i], collection);
 			}
-			ITypeBinding superClass= curr.getSuperclass();
+			ITypeBinding superClass= (ITypeBinding) curr.getSuperclass();
 			if (superClass != null) {
 				collectSuperTypes(superClass, collection);
 			}
@@ -566,7 +565,7 @@ public class Bindings {
 	 * @return <code>false</code> if the visiting got interrupted
 	 */
 	public static boolean visitSuperclasses(ITypeBinding type, TypeBindingVisitor visitor) {
-		while ((type= type.getSuperclass()) != null) {
+		while ((type= (ITypeBinding) type.getSuperclass()) != null) {
 			if (!visitor.visit(type)) {
 				return false;
 			}
@@ -583,7 +582,7 @@ public class Bindings {
 		if (!method.getName().equals(methodName))
 			return false;
 			
-		ITypeBinding[] methodParameters= method.getParameterTypes();
+		IBinding[] methodParameters= method.getParameterTypes();
 		if (methodParameters.length != parameters.length)
 			return false;
 		// TODO JDT Bindings
@@ -622,8 +621,8 @@ public class Bindings {
 		if (!overriding.getName().equals(overridden.getName()))
 			return false;
 			
-		ITypeBinding[] m1Params= overriding.getParameterTypes();
-		ITypeBinding[] m2Params= overridden.getParameterTypes();
+		IBinding[] m1Params= overriding.getParameterTypes();
+		IBinding[] m2Params= overridden.getParameterTypes();
 		if (m1Params.length != m2Params.length)
 			return false;
 		
@@ -650,7 +649,7 @@ public class Bindings {
 			if (equals(m2Params, m1Params))
 				return true;
 			for (int i= 0; i < m1Params.length; i++) {
-				ITypeBinding m1Param= m1Params[i];
+				IBinding m1Param= m1Params[i];
 				// TODO JDT Bindings
 //				if (containsTypeVariables(m1Param))
 //					m1Param= m1Param.getErasure(); // try to achieve effect of "rename type variables"
@@ -666,7 +665,7 @@ public class Bindings {
 			if (equals(m1Params, m2Params))
 				return true;
 			for (int i= 0; i < m1Params.length; i++) {
-				ITypeBinding m1Param= m1Params[i];
+				IBinding m1Param= m1Params[i];
 				// TODO JDT Bindings
 //				if (m1Param.isRawType())
 //					m1Param= m1Param.getTypeDeclaration();
@@ -737,7 +736,7 @@ public class Bindings {
 		if (!method.getName().equals(methodName))
 			return false;
 
-		ITypeBinding[] methodParameters= method.getParameterTypes();
+		IBinding[] methodParameters= method.getParameterTypes();
 		if (methodParameters.length != parameters.length)
 			return false;
 		// TODO JDT Bindings
@@ -773,7 +772,7 @@ public class Bindings {
 		if (fullyQualifiedTypeName.equals(hierarchyType.getQualifiedName())) {
 			return hierarchyType;
 		}
-		ITypeBinding superClass= hierarchyType.getSuperclass();
+		ITypeBinding superClass= (ITypeBinding) hierarchyType.getSuperclass();
 		if (superClass != null) {
 			ITypeBinding res= findTypeInHierarchy(superClass, fullyQualifiedTypeName);
 			if (res != null) {
@@ -830,7 +829,7 @@ public class Bindings {
 		if (Bindings.equals(type, possibleSuperType)) {
 			return true;
 		}
-		ITypeBinding superClass= type.getSuperclass();
+		ITypeBinding superClass= (ITypeBinding) type.getSuperclass();
 		if (superClass != null) {
 			if (isSuperType(possibleSuperType, superClass)) {
 				return true;
@@ -890,13 +889,13 @@ public class Bindings {
 	//---- Helper methods to convert a method ---------------------------------------------
 	
 	private static boolean sameParameters(IMethodBinding method, IMethod candidate) throws JavaModelException {
-		ITypeBinding[] methodParamters= method.getParameterTypes();
+		IBinding[] methodParamters= method.getParameterTypes();
 		String[] candidateParameters= candidate.getParameterTypes();
 		if (methodParamters.length != candidateParameters.length)
 			return false;
 		IType scope= candidate.getDeclaringType();
 		for (int i= 0; i < methodParamters.length; i++) {
-			ITypeBinding methodParameter= methodParamters[i];
+			IBinding methodParameter= methodParamters[i];
 			String candidateParameter= candidateParameters[i];
 			if (!sameParameter(methodParameter, candidateParameter, scope))
 				return false;
@@ -904,7 +903,7 @@ public class Bindings {
 		return true;
 	}
 
-	private static boolean sameParameter(ITypeBinding type, String candidate, IType scope) throws JavaModelException {
+	private static boolean sameParameter(IBinding type, String candidate, IType scope) throws JavaModelException {
 		// TODO JDT signature
 //		if (type.getDimension() != Signature.getArrayCount(candidate))
 //			return false;
@@ -962,7 +961,7 @@ public class Bindings {
 				if (baseBindings.length > 0) {
 					return baseBindings[0];
 				}
-				return binding.getSuperclass();
+				return (ITypeBinding) binding.getSuperclass();
 			}
 			// TODO JDT Bindings
 //			if (binding.isCapture()) {
@@ -1157,8 +1156,8 @@ public class Bindings {
 		if (overridden.getParameterTypes().length != overridable.getParameterTypes().length)
 			return false;
 		
-		ITypeBinding overriddenReturn= overridden.getReturnType();
-		ITypeBinding overridableReturn= overridable.getReturnType();
+		IBinding overriddenReturn= overridden.getReturnType();
+		IBinding overridableReturn= overridable.getReturnType();
 		if (overriddenReturn == null || overridableReturn == null)
 			return false;
 		
@@ -1166,8 +1165,8 @@ public class Bindings {
 //		if (!overriddenReturn.getErasure().isSubTypeCompatible(overridableReturn.getErasure()))
 //			return false;
 		
-		ITypeBinding[] overriddenTypes= overridden.getParameterTypes();
-		ITypeBinding[] overridableTypes= overridable.getParameterTypes();
+		IBinding[] overriddenTypes= overridden.getParameterTypes();
+		IBinding[] overridableTypes= overridable.getParameterTypes();
 		Assert.isTrue(overriddenTypes.length == overridableTypes.length);
 		// TODO JDT Bindings
 //		for (int index= 0; index < overriddenTypes.length; index++) {

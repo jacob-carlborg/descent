@@ -4,14 +4,16 @@ import descent.core.IJavaElement;
 
 public class BuiltinPropertyBinding implements IVariableBinding {
 	
-	private final ITypeBinding typeBinding;
+	private final DefaultBindingResolver bindingResolver;
+	private final descent.internal.compiler.parser.Type type;
 	private final String signature;
 	private final String property;
-	private final ITypeBinding myBinding;
+	private final descent.internal.compiler.parser.Type parentType;
 
-	public BuiltinPropertyBinding(ITypeBinding typeBinding, ITypeBinding myBinding, String property, String signature) {
-		this.typeBinding = typeBinding;
-		this.myBinding = myBinding;
+	public BuiltinPropertyBinding(DefaultBindingResolver bindingResolver, descent.internal.compiler.parser.Type type, descent.internal.compiler.parser.Type parentBinding, String property, String signature) {
+		this.bindingResolver = bindingResolver;
+		this.type = type;
+		this.parentType = parentBinding;
 		this.property = property;
 		this.signature = signature;
 	}
@@ -22,7 +24,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 	}
 
 	public ITypeBinding getDeclaringClass() {
-		return typeBinding;
+		return (ITypeBinding) bindingResolver.resolveType(parentType);
 	}
 
 	public IMethodBinding getDeclaringMethod() {
@@ -34,7 +36,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 	}
 
 	public IBinding getType() {
-		return myBinding;
+		return bindingResolver.resolveType(type);
 	}
 
 	public IVariableBinding getVariableDeclaration() {

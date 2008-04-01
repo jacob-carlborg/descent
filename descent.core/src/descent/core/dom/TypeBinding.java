@@ -228,4 +228,16 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		return getJavaElement().toString();
 	}
 
+	public int getLowerBound() {
+		return 0;
+	}
+
+	public int getUpperBound() {
+		return 0;
+	}
+
+	public boolean isSlice() {
+		return false;
+	}
+
 }

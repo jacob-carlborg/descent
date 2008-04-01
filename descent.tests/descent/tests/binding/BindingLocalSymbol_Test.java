@@ -19,8 +19,7 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
-		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -40,8 +39,7 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
-		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -65,8 +63,7 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
-		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -95,8 +92,7 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) block2.statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
-		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);
@@ -166,8 +162,7 @@ public class BindingLocalSymbol_Test extends AbstractBinding_Test {
 		DeclarationStatement statement = (DeclarationStatement) func.getBody().statements().get(2);
 		VariableDeclaration var = (VariableDeclaration) statement.getDeclaration();
 		
-		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding();
-		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals("i", typeBinding.getKey());
 		
 		VariableDeclarationFragment fragment = var.fragments().get(0);

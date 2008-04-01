@@ -56,7 +56,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the component type binding, or <code>null</code> if this is
 	 *   not a static or dynamic array type, or pointer type
 	 */	
-	public ITypeBinding getComponentType();
+	public IBinding getComponentType();
 	
 	/**
 	 * Returns a list of bindings representing all the fields declared
@@ -181,6 +181,24 @@ public interface ITypeBinding extends IBinding {
 	public int getDimension();
 	
 	/**
+	 * Returns the lower bound of this slice type, 
+	 * or <code>0</code> if this is not a slice type binding.
+	 *
+	 * @return the lower bound of this slice type, 
+	 * or <code>0</code> if this is not a slice type binding
+	 */
+	public int getLowerBound();
+	
+	/**
+	 * Returns the upper bound of this slice type, 
+	 * or <code>0</code> if this is not a slice type binding.
+	 *
+	 * @return the upper bound of this slice type, 
+	 * or <code>0</code> if this is not a slice type binding
+	 */
+	public int getUpperBound();
+	
+	/**
 	 * Returns a list of type bindings representing the direct superinterfaces
 	 * of the class, interface, or enum type represented by this type binding. 
 	 * <p>
@@ -221,7 +239,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the key type binding, or <code>null</code> if this is
 	 *   not an associative array type
 	 */	
-	public ITypeBinding getKeyType();
+	public IBinding getKeyType();
 	
 	/**
 	 * Returns the compiled modifiers for this class, interface, enum,
@@ -408,7 +426,7 @@ public interface ITypeBinding extends IBinding {
 	 *    or <code>null</code> if none
 	 * @see AST#resolveWellKnownType(String)
 	 */
-	public ITypeBinding getSuperclass();
+	public IBinding getSuperclass();
 	
 	/**
 	 * Returns the binding representing the value type of this 
@@ -419,7 +437,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the value type binding, or <code>null</code> if this is
 	 *   not an associative array type
 	 */	
-	public ITypeBinding getValueType();
+	public IBinding getValueType();
 	
 	/**
 	 * Returns whether this type binding represents an anonymous class.
@@ -662,6 +680,17 @@ public interface ITypeBinding extends IBinding {
 	 * @see #getComponentType()
 	 */
 	public boolean isPointer();
+	
+	/**
+	 * Returns whether this type binding represents a slice type.
+	 *
+	 * @return <code>true</code> if this type binding is for a slice type,
+	 *   and <code>false</code> otherwise
+	 * @see #getComponentType()
+	 * @see #getLowerBound()
+	 * @see #getUpperBound()
+	 */
+	public boolean isSlice();
 
 	/**
 	 * Returns whether this type binding represents a struct type.

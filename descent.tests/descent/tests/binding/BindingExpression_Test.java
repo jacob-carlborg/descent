@@ -6,7 +6,6 @@ import descent.core.dom.Expression;
 import descent.core.dom.ExpressionInitializer;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
-import descent.core.dom.IVariableBinding;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 
@@ -31,7 +30,7 @@ public class BindingExpression_Test extends AbstractBinding_Test {
 		IBinding typeBinding = exp.resolveTypeBinding();
 		assertEquals(expectedSignature, typeBinding.getKey());
 		
-		assertSame(typeBinding, ((IVariableBinding) var.resolveBinding()).getType());
+		assertSame(typeBinding, var.resolveBinding());
 	}
 	
 	public void testInt() throws Exception {
@@ -47,11 +46,11 @@ public class BindingExpression_Test extends AbstractBinding_Test {
 	}
 	
 	public void testString() throws Exception {
-		testExpression("\"hey\"", "Ga1G3");
+		testExpression("\"hey\"", "GaG1G3");
 	}
 	
 	public void testStrings() throws Exception {
-		testExpression("\"hey\" \"you\"", "Ga1G6");
+		testExpression("\"hey\" \"you\"", "GaG1G6");
 	}
 	
 	public void testParenthesis() throws Exception {

@@ -1,12 +1,14 @@
 package descent.core.dom;
 
+import descent.internal.compiler.parser.TypePointer;
+
 
 public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBinding {
 	
 	private final DefaultBindingResolver bindingResolver;
-	private final ITypeBinding type;
+	private final TypePointer type;
 
-	public TypePointerBinding(DefaultBindingResolver bindingResolver, ITypeBinding type, String signature) {
+	public TypePointerBinding(DefaultBindingResolver bindingResolver, TypePointer type, String signature) {
 		super(signature);
 		this.bindingResolver = bindingResolver;
 		this.type = type;
@@ -52,8 +54,8 @@ public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBin
 		return false;
 	}
 
-	public ITypeBinding getComponentType() {
-		return type;
+	public IBinding getComponentType() {
+		return bindingResolver.resolveType(type.next);
 	}
 
 	public int getDimension() {
@@ -61,7 +63,8 @@ public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBin
 	}
 
 	public String getName() {
-		return type.getName() + "*";
+		// TODO optimize
+		return getComponentType().getName() + "*";
 	}
 
 	public boolean isAssignmentCompatible(ITypeBinding variableType) {
@@ -89,6 +92,18 @@ public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBin
 
 	public boolean isEqualTo(IBinding binding) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public int getLowerBound() {
+		return 0;
+	}
+
+	public int getUpperBound() {
+		return 0;
+	}
+
+	public boolean isSlice() {
 		return false;
 	}
 

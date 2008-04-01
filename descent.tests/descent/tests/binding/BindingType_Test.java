@@ -85,8 +85,7 @@ public class BindingType_Test extends AbstractBinding_Test {
 		DeclarationStatement stm = (DeclarationStatement) func.getBody().statements().get(0);
 		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
 		
-		IVariableBinding varBinding = (IVariableBinding) var.resolveBinding(); 
-		ITypeBinding typeBinding = (ITypeBinding) varBinding.getType();
+		ITypeBinding typeBinding = (ITypeBinding) var.resolveBinding();
 		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 	}
 

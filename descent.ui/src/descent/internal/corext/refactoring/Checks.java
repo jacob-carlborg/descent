@@ -322,7 +322,7 @@ public class Checks {
 		IMethodBinding method= Bindings.findMethodInHierarchy(type, methodName, parameters);
 		if (method != null) {
 			boolean returnTypeClash= false;
-			ITypeBinding methodReturnType= method.getReturnType();
+			IBinding methodReturnType= method.getReturnType();
 			if (returnType != null && methodReturnType != null) {
 				String returnTypeKey= returnType.getKey();
 				String methodReturnTypeKey= methodReturnType.getKey();
