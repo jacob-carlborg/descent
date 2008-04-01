@@ -162,5 +162,23 @@ public class CodeSelectVariable_Test extends AbstractModelTest {
 		assertEquals(1, elements.length);
 		assertNotNull(elements[0]);
 	}
+	
+	public void testSelectStaticVariable() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "/** some comment */ static real[] one; /** some comment */ static real[] two; /** some comment */ static real[] three;");
+		
+		IJavaElement[] elements;
+		
+		elements = unit.codeSelect(35, 0);
+		assertEquals(1, elements.length);		
+		assertEquals(getVariable(unit, 0), elements[0]);
+		
+		elements = unit.codeSelect(74, 0);
+		assertEquals(1, elements.length);		
+		assertEquals(getVariable(unit, 1), elements[0]);
+		
+		elements = unit.codeSelect(113, 0);
+		assertEquals(1, elements.length);		
+		assertEquals(getVariable(unit, 2), elements[0]);
+	}
 
 }

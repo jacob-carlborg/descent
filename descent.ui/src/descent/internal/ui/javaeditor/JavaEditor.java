@@ -1981,7 +1981,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	/*
 	 * Get the desktop's StatusLineManager
 	 */
-	@Override
 	protected IStatusLineManager getStatusLineManager() {
 		IEditorActionBarContributor contributor= getEditorSite().getActionBarContributor();
 		if (contributor instanceof EditorActionBarContributor) {

@@ -775,11 +775,6 @@ public class Parser extends Lexer {
 					attachLeadingComments(s);
 				}
 				decldefs.add(s);
-				
-				// Discard any previous comments
-				if (comments != null) {
-					lastCommentRead = comments.size();
-				}
 			}
 		} while (!once);
 		return decldefs;
@@ -2978,11 +2973,23 @@ public class Parser extends Lexer {
 			
 			if (token.value == TOKsemicolon) {
 				v.setSourceRange(start, token.ptr + token.sourceLen - start);
+				
+				// Discard any previous comments
+				if (comments != null) {
+					lastCommentRead = comments.size();
+				}
+				
 				nextToken();
 				v.preComments = lastComments;
 				attachLeadingComments(v);
 			} else if (token.value == TOKcomma) {
 				v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				
+				// Discard any previous comments
+				if (comments != null) {
+					lastCommentRead = comments.size();
+				}
+				
 				nextToken();
 				if (!(token.value == TOKidentifier && peek(token).value == TOKassign)) {
 					parsingErrorInsertTokenAfter(prevToken, "identifier");
@@ -3104,17 +3111,33 @@ public class Parser extends Lexer {
 				switch (token.value) {
 				case TOKsemicolon:			
 					v.setSourceRange(nextTypdefOrAliasStart, token.ptr + token.sourceLen - nextTypdefOrAliasStart);
+					
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
 					nextToken();
 					v.preComments = lastComments;
 					attachLeadingComments(v);
 					break;
 
 				case TOKcomma:
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
 					v.setSourceRange(nextTypdefOrAliasStart, prevToken.ptr + prevToken.sourceLen - nextTypdefOrAliasStart);
 					nextToken();
 					continue;
 
 				default:
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
 					v.setSourceRange(nextTypdefOrAliasStart, prevToken.ptr + prevToken.sourceLen - nextTypdefOrAliasStart);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
@@ -3183,6 +3206,12 @@ public class Parser extends Lexer {
 				switch (token.value) {
 				case TOKsemicolon:
 					v.setSourceRange(nextVarStart, token.ptr + token.sourceLen - nextVarStart);
+					
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
 					nextToken();
 					v.preComments = lastComments;
 					attachLeadingComments(v);
@@ -3190,10 +3219,21 @@ public class Parser extends Lexer {
 
 				case TOKcomma:
 					v.setSourceRange(nextVarStart, prevToken.ptr + prevToken.sourceLen - nextVarStart);
+					
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
 					nextToken();
 					continue;
 
 				default:
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
 					v.setSourceRange(nextVarStart, prevToken.ptr + prevToken.sourceLen - nextVarStart);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;

@@ -9,8 +9,8 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	
 	private final String signature;
 
-	public MethodBinding(DefaultBindingResolver bindingResolver, IMethod element, Dsymbol node, String signature) {
-		super(bindingResolver, element, node);
+	public MethodBinding(DefaultBindingResolver bindingResolver, Dsymbol node, String signature) {
+		super(bindingResolver, node);
 		this.signature = signature;		
 	}
 

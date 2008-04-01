@@ -3354,17 +3354,13 @@ public class ASTConverter {
 						end = a.start + a.length;
 					}
 					b.fragments().add(convert(a));
-					if (i == source.size() - 1) {
+					if (i == source.size() - 1 || a.next == null) {
 						start = processPreDdocs(b, a);
 						break;
 					}
 					
-					if (a.next == null) {
-						break;
-					}
-					
 					i++;
-					symbol = (Dsymbol) source.get(i); // SEMANTIC
+					symbol = source.get(i);
 				}
 				b.setSourceRange(start, end - start);
 				destination.add(b);
@@ -3392,12 +3388,8 @@ public class ASTConverter {
 						end = a.start + a.length;
 					}
 					b.fragments().add(convert(a));
-					if (i == source.size() - 1) {
+					if (i == source.size() - 1 || a.next == null) {
 						start = processPreDdocs(b, a);
-						break;
-					}
-					
-					if (a.next == null) {
 						break;
 					}
 					
@@ -3430,12 +3422,8 @@ public class ASTConverter {
 						end = a.start + a.length;
 					}
 					b.fragments().add(convert(a));
-					if (i == source.size() - 1) {
+					if (i == source.size() - 1 || a.next == null) {
 						start = processPreDdocs(b, a);
-						break;
-					}
-					
-					if (a.next == null) {
 						break;
 					}
 					

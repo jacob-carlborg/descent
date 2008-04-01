@@ -10,6 +10,7 @@ import descent.core.dom.Declaration;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.VariableDeclaration;
+import descent.internal.compiler.parser.VarDeclaration;
 
 public class Comment_Test extends Parser_Test {
 	
@@ -112,6 +113,23 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(1, comments.size());
 		
 		assertEquals(0, c.declarations().get(0).preDDocs().size());
+	}
+	
+	public void testDontCarryComments3() {
+		String s = " /** hola */ int x /* foo */; int y;";
+		List<Declaration> declDefs = getDeclarationsNoProblems(s);
+		assertEquals(2, declDefs.size());
+		
+		VariableDeclaration v;
+		List<DDocComment> comments;
+		
+		v = (VariableDeclaration) declDefs.get(0);
+		comments = v.preDDocs();
+		assertEquals(1, comments.size());
+		
+		v = (VariableDeclaration) declDefs.get(1);
+		comments = v.preDDocs();
+		assertEquals(0, comments.size());
 	}
 	
 	public void testLeadingComment() {

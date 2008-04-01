@@ -1,7 +1,6 @@
 package descent.core.dom;
 
 import descent.core.IType;
-import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
@@ -9,14 +8,13 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
-import descent.internal.core.util.Util;
 
 public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding {
 	
 	private final String key;
 	
-	public TypeBinding(DefaultBindingResolver resolver, IType element, Dsymbol node, String key) {
-		super(resolver, element, node);
+	public TypeBinding(DefaultBindingResolver resolver, Dsymbol node, String key) {
+		super(resolver, node);
 		this.key = key;
 	}
 	
@@ -121,17 +119,8 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isClass() {
-		if (node != null) {
-			return node instanceof ClassDeclaration &&
-				!(node instanceof InterfaceDeclaration);
-		}
-		
-		try {
-			return ((IType) getJavaElement()).isClass();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		return node instanceof ClassDeclaration 
+			&& !(node instanceof InterfaceDeclaration);
 	}
 
 	public boolean isDelegate() {
@@ -143,16 +132,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isEnum() {
-		if (node != null) {
-			return node instanceof EnumDeclaration;
-		}
-		
-		try {
-			return ((IType) getJavaElement()).isEnum();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		return node instanceof EnumDeclaration;
 	}
 
 	public boolean isEqualTo(IBinding binding) {
@@ -174,16 +154,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isInterface() {
-		if (node != null) {
-			return node instanceof InterfaceDeclaration;
-		}
-		
-		try {
-			return ((IType) getJavaElement()).isInterface();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		return node instanceof InterfaceDeclaration;
 	}
 
 	public boolean isLocal() {
@@ -223,17 +194,8 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isStruct() {
-		if (node != null) {
-			return node instanceof StructDeclaration &&
-				!(node instanceof UnionDeclaration);
-		}
-		
-		try {
-			return ((IType) getJavaElement()).isStruct();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		return node instanceof StructDeclaration &&
+			!(node instanceof UnionDeclaration);
 	}
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
@@ -247,18 +209,9 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public boolean isTemplate() {
-		if (node != null) {
-			return node instanceof TemplateDeclaration ||
-				((node instanceof descent.internal.compiler.parser.AggregateDeclaration) && 
-						((descent.internal.compiler.parser.AggregateDeclaration) node).templated);
-		}
-		
-		try {
-			return ((IType) getJavaElement()).isTemplate();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		return node instanceof TemplateDeclaration ||
+			((node instanceof descent.internal.compiler.parser.AggregateDeclaration) && 
+					((descent.internal.compiler.parser.AggregateDeclaration) node).templated);
 	}
 
 	public boolean isTopLevel() {
@@ -267,16 +220,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isUnion() {
-		if (node != null) {
-			return node instanceof UnionDeclaration;
-		}
-		
-		try {
-			return ((IType) getJavaElement()).isUnion();
-		} catch (JavaModelException e) {
-			Util.log(e);
-			return false;
-		}
+		return node instanceof UnionDeclaration;
 	}
 	
 	@Override
