@@ -163,7 +163,7 @@ public class VarExp extends Expression {
 					&& v.init() != null) {
 				ExpInitializer ei = v.init().isExpInitializer();
 				if (ei != null) {
-					return ei.exp().implicitCastTo(sc, type, context);
+					return ei.exp.implicitCastTo(sc, type, context);
 				}
 			}
 			v.checkNestedReference(sc, loc, context);

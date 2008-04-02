@@ -1122,7 +1122,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					ExpInitializer ie = vd.init().isExpInitializer();
 
 					if (ie != null) {
-						ie.exp(ie.exp().inlineScan(iss, context));
+						ie.exp = ie.exp.inlineScan(iss, context);
 					}
 				}
 			}

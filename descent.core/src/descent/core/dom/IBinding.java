@@ -23,6 +23,7 @@ import descent.core.IJavaElement;
  * This interface is not intended to be implemented by clients.
  * </p>
  *
+ * @see ICompilationUnitBinding
  * @see IPackageBinding
  * @see ITypeBinding
  * @see IVariableBinding
@@ -66,6 +67,15 @@ public interface IBinding {
 	 * @see IMethodBinding
 	 */
 	public static final int METHOD = 4;
+	
+	/**
+	 * Kind constant (value 5) indicating a compilation unit binding.
+	 * Bindings of this kind can be safely cast to <code>ICompilationUnitBinding</code>.
+	 * 
+	 * @see #getKind()
+	 * @see ICompilationUnitBinding
+	 */
+	public static final int COMPILATION_UNIT = 5;
 
 	/**
 	 * Returns the kind of bindings this is. That is one of the kind constants:

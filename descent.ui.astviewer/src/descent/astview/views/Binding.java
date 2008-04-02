@@ -85,8 +85,7 @@ public class Binding extends ASTAttribute {
 					res.add(new BindingProperty(this, "VARIABLE ID", variableBinding.getVariableId(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "MODIFIERS", Flags.toString(fBinding.getModifiers()), true)); //$NON-NLS-1$
 					res.add(new Binding(this, "TYPE", variableBinding.getType(), true)); //$NON-NLS-1$
-					res.add(new Binding(this, "DECLARING CLASS", variableBinding.getDeclaringClass(), true)); //$NON-NLS-1$
-					res.add(new Binding(this, "DECLARING METHOD", variableBinding.getDeclaringMethod(), true)); //$NON-NLS-1$
+					res.add(new Binding(this, "DECLARING SYMBOL", variableBinding.getDeclaringSymbol(), true)); //$NON-NLS-1$
 					res.add(new Binding(this, "VARIABLE DECLARATION", variableBinding.getVariableDeclaration(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS SYNTHETIC", fBinding.isSynthetic(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS DEPRECATED", fBinding.isDeprecated(), true)); //$NON-NLS-1$
@@ -156,12 +155,11 @@ public class Binding extends ASTAttribute {
 					IMethodBinding methodBinding= (IMethodBinding) fBinding;
 					res.add(new BindingProperty(this, "IS CONSTRUCTOR", methodBinding.isConstructor(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS DEFAULT CONSTRUCTOR", methodBinding.isDefaultConstructor(), true)); //$NON-NLS-1$
-					res.add(new Binding(this, "DECLARING CLASS", methodBinding.getDeclaringClass(), true)); //$NON-NLS-1$
+					res.add(new Binding(this, "DECLARING CLASS", methodBinding.getDeclaringSymbol(), true)); //$NON-NLS-1$
 					res.add(new Binding(this, "RETURN TYPE", methodBinding.getReturnType(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "MODIFIERS", Flags.toString(fBinding.getModifiers()), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "PARAMETER TYPES", methodBinding.getParameterTypes(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS VARARGS", methodBinding.getVarargs(), true)); //$NON-NLS-1$
-					res.add(new BindingProperty(this, "EXCEPTION TYPES", methodBinding.getExceptionTypes(), true)); //$NON-NLS-1$
 					
 					StringBuffer genericsM= new StringBuffer("GENERICS:"); //$NON-NLS-1$
 					if (methodBinding.isRawMethod()) genericsM.append(" isRawMethod"); //$NON-NLS-1$
@@ -174,9 +172,6 @@ public class Binding extends ASTAttribute {
 					res.add(new BindingProperty(this, "TYPE ARGUMENTS", methodBinding.getTypeArguments(), true)); //$NON-NLS-1$			
 					res.add(new BindingProperty(this, "IS SYNTHETIC", fBinding.isSynthetic(), true)); //$NON-NLS-1$
 					res.add(new BindingProperty(this, "IS DEPRECATED", fBinding.isDeprecated(), true)); //$NON-NLS-1$
-					
-					res.add(new BindingProperty(this, "IS ANNOTATION MEMBER", methodBinding.isAnnotationMember(), true)); //$NON-NLS-1$
-					res.add(Binding.createValueAttribute(this, "DEFAULT VALUE", methodBinding.getDefaultValue()));
 					break;
 			}
 			try {
@@ -216,10 +211,10 @@ public class Binding extends ASTAttribute {
 					IVariableBinding variableBinding= (IVariableBinding) fBinding;
 					if (!variableBinding.isVariable()) {
 						buf.append(variableBinding.getName());
-					} else if (variableBinding.getDeclaringClass() == null) {
+					} else if (variableBinding.getDeclaringSymbol() == null) {
 						buf.append("array type"); //$NON-NLS-1$
 					} else {
-						buf.append(variableBinding.getDeclaringClass().getName());
+						buf.append(variableBinding.getDeclaringSymbol().getName());
 						buf.append('.');
 						buf.append(variableBinding.getName());				
 					}
@@ -234,8 +229,8 @@ public class Binding extends ASTAttribute {
 					break;
 				case IBinding.METHOD:
 					IMethodBinding methodBinding= (IMethodBinding) fBinding;
-					if (methodBinding.getDeclaringClass() != null) {
-						buf.append(methodBinding.getDeclaringClass().getName());
+					if (methodBinding.getDeclaringSymbol() != null) {
+						buf.append(methodBinding.getDeclaringSymbol().getName());
 						buf.append('.');
 					}
 					buf.append(methodBinding.getName());

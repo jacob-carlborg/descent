@@ -79,7 +79,7 @@ public abstract class TypeQualified extends Type {
 								&& equals(id, Id.length)) {
 							if (v.isConst()
 									&& v.getExpInitializer(context) != null) {
-								e = v.getExpInitializer(context).exp();
+								e = v.getExpInitializer(context).exp;
 							} else {
 								e = new VarExp(loc, v);
 							}
@@ -129,7 +129,7 @@ public abstract class TypeQualified extends Type {
 				if (v.isConst() && v.getExpInitializer(context) != null) {
 					ExpInitializer ei = v.getExpInitializer(context);
 					Assert.isNotNull(ei);
-					pe[0] = ei.exp().copy(); // make copy so we can change loc
+					pe[0] = ei.exp.copy(); // make copy so we can change loc
 				} else {
 					pe[0] = new VarExp(loc, v);
 				}

@@ -284,7 +284,7 @@ public class Import extends ASTNode {
 	 * @return the binding, or <code>null</code> if the binding cannot be 
 	 *    resolved
 	 */
-	public final IPackageBinding resolveBinding() {
+	public final ICompilationUnitBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveImport(this);
 	}
 

@@ -49,12 +49,12 @@ public interface ITypeBinding extends IBinding {
 
 	/**
 	 * Returns the binding representing the component type of this 
-	 * static or dynamic array type, or pointer type,
+	 * static or dynamic array type, pointer type or slice type,
 	 * or <code>null</code> if this is not a static or dynamic array, 
-	 * or pointer type binding. The component type of an array might be an array type.
+	 * pointer type or slice type binding.
 	 *
 	 * @return the component type binding, or <code>null</code> if this is
-	 *   not a static or dynamic array type, or pointer type
+	 *   not a static or dynamic array type, pointer type or slice type
 	 */	
 	public IBinding getComponentType();
 	

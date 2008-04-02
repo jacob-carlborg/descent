@@ -4,14 +4,14 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.internal.compiler.parser.Module;
 
-public class PackageBinding implements IPackageBinding {
+public class CompilationUnitBinding implements ICompilationUnitBinding {
 
 	private IJavaElement element;
 	private final Module module;
 	private final String signature;
 	private final DefaultBindingResolver bindingResolver;
 
-	public PackageBinding(DefaultBindingResolver bindingResolver, Module module, String signature) {
+	public CompilationUnitBinding(DefaultBindingResolver bindingResolver, Module module, String signature) {
 		this.bindingResolver = bindingResolver;
 		this.module = module;
 		this.signature = signature;
@@ -23,11 +23,6 @@ public class PackageBinding implements IPackageBinding {
 
 	public String[] getNameComponents() {
 		return getName().split("\\.");
-	}
-
-	public boolean isUnnamed() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public ICompilationUnit getJavaElement() {
@@ -45,16 +40,14 @@ public class PackageBinding implements IPackageBinding {
 	}
 
 	public int getKind() {
-		return PACKAGE;
+		return COMPILATION_UNIT;
 	}
 
 	public long getModifiers() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public boolean isDeprecated() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

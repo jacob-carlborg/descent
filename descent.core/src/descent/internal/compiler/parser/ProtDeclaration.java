@@ -117,13 +117,5 @@ public class ProtDeclaration extends AttribDeclaration {
 	public String getSignature() {
 		return parent.getSignature();
 	}
-	
-	@Override
-	public long getFlags() {
-		if (flags != null) {
-			return flags;
-		}
-		return modifier.getFlags() | super.getFlags();
-	}
 
 }

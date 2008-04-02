@@ -178,15 +178,16 @@ public class CodeGeneration {
 	 * @throws CoreException Thrown when the evaluation of the code template fails.
 	 */
 	public static String getMethodComment(ICompilationUnit cu, String declaringTypeName, AbstractFunctionDeclaration decl, IMethodBinding overridden, String lineDelimiter) throws CoreException {
-		if (overridden != null) {
-			overridden= overridden.getMethodDeclaration();
-			String declaringClassQualifiedName= overridden.getDeclaringClass().getQualifiedName();
-			String linkToMethodName= overridden.getName();
-			String[] parameterTypesQualifiedNames= StubUtility.getParameterTypeNamesForSeeTag(overridden);
-			return StubUtility.getMethodComment(cu, declaringTypeName, decl, overridden.isDeprecated(), linkToMethodName, declaringClassQualifiedName, parameterTypesQualifiedNames, false, lineDelimiter);
-		} else {
+		// TODO JDT UI overriden
+//		if (overridden != null) {
+//			overridden= overridden.getMethodDeclaration();
+//			String declaringClassQualifiedName= overridden.getDeclaringSymbol().getQualifiedName();
+//			String linkToMethodName= overridden.getName();
+//			String[] parameterTypesQualifiedNames= StubUtility.getParameterTypeNamesForSeeTag(overridden);
+//			return StubUtility.getMethodComment(cu, declaringTypeName, decl, overridden.isDeprecated(), linkToMethodName, declaringClassQualifiedName, parameterTypesQualifiedNames, false, lineDelimiter);
+//		} else {
 			return StubUtility.getMethodComment(cu, declaringTypeName, decl, false, null, null, null, false, lineDelimiter);
-		}
+//		}
 	}
 
 	/**

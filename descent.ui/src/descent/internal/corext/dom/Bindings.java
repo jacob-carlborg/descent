@@ -109,12 +109,12 @@ public class Bindings {
 	private static String asString(IVariableBinding variableBinding) {
 		if (! variableBinding.isVariable())
 			return variableBinding.toString();
-		if (variableBinding.getDeclaringClass() == null) {
+		if (variableBinding.getDeclaringSymbol() == null) {
 			Assert.isTrue(variableBinding.getName().equals("length"));//$NON-NLS-1$
 			return ARRAY_LENGTH_FIELD_BINDING_STRING;
 		}
 		StringBuffer result= new StringBuffer();
-		result.append(variableBinding.getDeclaringClass().getName());
+		result.append(variableBinding.getDeclaringSymbol().getName());
 		result.append(':');
 		result.append(variableBinding.getName());				
 		return result.toString();		
@@ -122,7 +122,7 @@ public class Bindings {
 
 	private static String asString(IMethodBinding method) {
 		StringBuffer result= new StringBuffer();
-		result.append(method.getDeclaringClass().getName());
+		result.append(method.getDeclaringSymbol().getName());
 		result.append(':');
 		result.append(method.getName());
 		result.append('(');
@@ -176,10 +176,10 @@ public class Bindings {
 			case IBinding.PACKAGE:
 				return binding.getName() + ".*"; //$NON-NLS-1$
 			case IBinding.METHOD:
-				declaring= ((IMethodBinding) binding).getDeclaringClass();
+				declaring= (ITypeBinding) ((IMethodBinding) binding).getDeclaringSymbol();
 				break;
 			case IBinding.VARIABLE:
-				declaring= ((IVariableBinding) binding).getDeclaringClass();
+				declaring= (ITypeBinding) ((IVariableBinding) binding).getDeclaringSymbol();
 				if (declaring == null) {
 					return binding.getName(); // array.length
 				}
@@ -459,39 +459,40 @@ public class Bindings {
 	 * @return the method binding representing the method
 	 */
 	public static IMethodBinding findOverriddenMethod(IMethodBinding overriding, boolean testVisibility) {
-		long modifiers= overriding.getModifiers();
-		if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers) || overriding.isConstructor()) {
-			return null;
-		}
-		
-		ITypeBinding type= overriding.getDeclaringClass();
-		
-		if (type == null) {
-			return null;
-		}
-		
-		if (type.getSuperclass() != null) {
-			IMethodBinding res= findOverriddenMethodInHierarchy((ITypeBinding) type.getSuperclass(), overriding);
-			if (res != null && !Modifier.isPrivate(res.getModifiers())) {
-				if (!testVisibility || isVisibleInHierarchy(res, overriding.getDeclaringClass().getPackage())) {
-					return res;
-				}
-			}
-		}
-		ITypeBinding[] interfaces= type.getInterfaces();
-		for (int i= 0; i < interfaces.length; i++) {
-			IMethodBinding res= findOverriddenMethodInHierarchy(interfaces[i], overriding);
-			if (res != null) {
-				return res; // methods from interfaces are always public and therefore visible
-			}
-		}
+		// TODO JDT UI overriden method
+//		long modifiers= overriding.getModifiers();
+//		if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers) || overriding.isConstructor()) {
+//			return null;
+//		}
+//		
+//		ITypeBinding type= overriding.getDeclaringSymbol();
+//		
+//		if (type == null) {
+//			return null;
+//		}
+//		
+//		if (type.getSuperclass() != null) {
+//			IMethodBinding res= findOverriddenMethodInHierarchy((ITypeBinding) type.getSuperclass(), overriding);
+//			if (res != null && !Modifier.isPrivate(res.getModifiers())) {
+//				if (!testVisibility || isVisibleInHierarchy(res, overriding.getDeclaringSymbol().getPackage())) {
+//					return res;
+//				}
+//			}
+//		}
+//		ITypeBinding[] interfaces= type.getInterfaces();
+//		for (int i= 0; i < interfaces.length; i++) {
+//			IMethodBinding res= findOverriddenMethodInHierarchy(interfaces[i], overriding);
+//			if (res != null) {
+//				return res; // methods from interfaces are always public and therefore visible
+//			}
+//		}
 		return null;
 	}
 	
 	
 	public static boolean isVisibleInHierarchy(IMethodBinding member, IPackageBinding pack) {
 		long otherflags= member.getModifiers();
-		ITypeBinding declaringType= member.getDeclaringClass();
+		ITypeBinding declaringType= (ITypeBinding) member.getDeclaringSymbol();
 		if (Modifier.isPublic(otherflags) || Modifier.isProtected(otherflags) || (declaringType != null && declaringType.isInterface())) {
 			return true;
 		} else if (Modifier.isPrivate(otherflags)) {
@@ -1175,18 +1176,6 @@ public class Bindings {
 //			if (!overridableErasure.isSubTypeCompatible(overriddenErasure) || !overridableErasure.getKey().equals(overriddenErasure.getKey()))
 //				return false;
 //		}
-		ITypeBinding[] overriddenExceptions= overridden.getExceptionTypes();
-		ITypeBinding[] overridableExceptions= overridable.getExceptionTypes();
-		boolean checked= false;
-		for (int index= 0; index < overriddenExceptions.length; index++) {
-			checked= false;
-			for (int offset= 0; offset < overridableExceptions.length; offset++) {
-				if (overriddenExceptions[index].isSubTypeCompatible(overridableExceptions[offset]))
-					checked= true;
-			}
-			if (!checked)
-				return false;
-		}
 		return true;
 	}
 	

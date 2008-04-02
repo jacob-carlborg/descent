@@ -1842,7 +1842,7 @@ public class FuncDeclaration extends Declaration {
 							Assert.isNotNull(v.init);
 							ExpInitializer ie = v.init.isExpInitializer();
 							Assert.isNotNull(ie);
-							ExpStatement es = new ExpStatement(loc, ie.exp());
+							ExpStatement es = new ExpStatement(loc, ie.exp);
 							a.add(es);
 						}
 					}

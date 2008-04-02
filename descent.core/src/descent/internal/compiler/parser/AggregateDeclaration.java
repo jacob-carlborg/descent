@@ -322,4 +322,14 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		return javaElement;
 	}
 	
+	@Override
+	public PROT getProtection() {
+		return protection;
+	}
+	
+	@Override
+	public int getStorageClass() {
+		return storage_class;
+	}
+	
 }

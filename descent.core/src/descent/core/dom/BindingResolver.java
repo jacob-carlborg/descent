@@ -147,12 +147,9 @@ class BindingResolver {
 	 * </p>
 	 * 
 	 * @param importDeclaration the import declaration of interest
-	 * @return the binding for the given package declaration, or 
-	 *         the package binding (for on-demand imports) or type binding
-	 *         (for single-type imports), or <code>null</code> if no binding is
-	 *         available
+	 * @return the binding for the given compilation unit declaration
 	 */
-	IPackageBinding resolveImport(Import imp) {
+	ICompilationUnitBinding resolveImport(Import imp) {
 		return null;
 	}
 	

@@ -332,7 +332,7 @@ public class Checks {
 					returnTypeClash= !returnTypeKey.equals(methodReturnTypeKey);
 				}
 			}
-			ITypeBinding dc= method.getDeclaringClass();
+			ITypeBinding dc= (ITypeBinding) method.getDeclaringSymbol();
 			if (returnTypeClash) {
 				result.addError(Messages.format(RefactoringCoreMessages.Checks_methodName_returnTypeClash, 
 					new Object[] {methodName, dc.getName()}),

@@ -167,7 +167,7 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 					IMethodBinding definingMethod= Bindings.findOverriddenMethod(binding, true);
 					if (definingMethod != null) {
 
-						ITypeBinding definingType= definingMethod.getDeclaringClass();
+						ITypeBinding definingType= (ITypeBinding) definingMethod.getDeclaringSymbol();
 						String qualifiedMethodName= definingType.getQualifiedName() + "." + binding.getName(); //$NON-NLS-1$
 
 						boolean isImplements= JdtFlags.isAbstract(definingMethod);

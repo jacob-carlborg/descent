@@ -200,9 +200,9 @@ public class JdtFlags {
 	private static boolean isInterfaceOrAnnotationMember(IBinding binding) {
 		ITypeBinding declaringType= null;
 		if (binding instanceof IVariableBinding) {
-			declaringType= ((IVariableBinding) binding).getDeclaringClass();
+			declaringType= (ITypeBinding) ((IVariableBinding) binding).getDeclaringSymbol();
 		} else if (binding instanceof IMethodBinding) {
-			declaringType= ((IMethodBinding) binding).getDeclaringClass();
+			declaringType= (ITypeBinding) ((IMethodBinding) binding).getDeclaringSymbol();
 		} else if (binding instanceof ITypeBinding) {
 			declaringType= ((ITypeBinding) binding).getDeclaringType();
 		}

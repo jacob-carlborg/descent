@@ -99,13 +99,5 @@ public class ExpInitializer extends Initializer {
 	public Expression toExpression(SemanticContext context) {
 		return exp;
 	}
-	
-	public Expression exp() {
-		return exp;
-	}
-	
-	public void exp(Expression exp) {
-		this.exp = exp;
-	}
 
 }

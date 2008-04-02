@@ -55,7 +55,7 @@ public class IndexExp extends BinExp {
 				if (ie == null) {
 					throw new IllegalStateException("assert(ie);");
 				}
-				ieto = new ExpInitializer(ie.loc(), ie.exp().doInline(ids));
+				ieto = new ExpInitializer(ie.loc(), ie.exp.doInline(ids));
 				vto.init = ieto;
 			}
 

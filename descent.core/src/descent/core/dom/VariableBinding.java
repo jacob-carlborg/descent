@@ -1,9 +1,11 @@
 package descent.core.dom;
 
+import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 
 public class VariableBinding extends JavaElementBasedBinding implements IVariableBinding {
@@ -20,20 +22,24 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		return null;
 	}
 
-	public ITypeBinding getDeclaringClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public IMethodBinding getDeclaringMethod() {
-		// TODO Auto-generated method stub
-		return null;
+	public IBinding getDeclaringSymbol() {
+		return bindingResolver.resolveDsymbol(node.parent);
 	}
 
 	public IBinding getType() {
-		// TODO
 		if (node instanceof VarDeclaration) {
-			return bindingResolver.resolveType(((VarDeclaration) node).type);	
+			VarDeclaration var = (VarDeclaration) node;
+			return bindingResolver.resolveType(var.type);
+		} else if (node instanceof AliasDeclaration) {
+			AliasDeclaration alias = (AliasDeclaration) node;
+			if (alias.type != null) {
+				return bindingResolver.resolveType(alias.type);
+			} else if (alias.aliassym != null) {
+				return bindingResolver.resolveDsymbol(alias.aliassym);
+			}
+		} else if (node instanceof TypedefDeclaration) {
+			TypedefDeclaration typedef = (TypedefDeclaration) node;
+			return bindingResolver.resolveType(typedef.basetype);
 		} else if (node instanceof EnumMember) {
 			return bindingResolver.resolveType(((EnumDeclaration) ((EnumMember) node).parent).type);
 		}

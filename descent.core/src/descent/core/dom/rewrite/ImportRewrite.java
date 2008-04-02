@@ -818,11 +818,11 @@ public final class ImportRewrite {
 			if (binding instanceof IVariableBinding) {
 				IVariableBinding variableBinding= (IVariableBinding) binding;
 				if (variableBinding.isVariable()) {
-					ITypeBinding declaringType= variableBinding.getDeclaringClass();
+					ITypeBinding declaringType= (ITypeBinding) variableBinding.getDeclaringSymbol();
 					return addStaticImport(getRawQualifiedName(declaringType), binding.getName(), true, context);
 				}
 			} else if (binding instanceof IMethodBinding) {
-				ITypeBinding declaringType= ((IMethodBinding) binding).getDeclaringClass();
+				ITypeBinding declaringType= (ITypeBinding) ((IMethodBinding) binding).getDeclaringSymbol();
 				return addStaticImport(getRawQualifiedName(declaringType), binding.getName(), false, context);
 			}
 		}

@@ -174,7 +174,7 @@ public class TypeStruct extends Type {
 			ExpInitializer ei = v.getExpInitializer(context);
 
 			if (null != ei) {
-				e = ei.exp().copy(); // need to copy it if it's a StringExp
+				e = ei.exp.copy(); // need to copy it if it's a StringExp
 				e = e.semantic(sc, context);
 				return e;
 			}

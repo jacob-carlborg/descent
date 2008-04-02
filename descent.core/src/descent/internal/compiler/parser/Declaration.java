@@ -159,5 +159,15 @@ public abstract class Declaration extends Dsymbol {
 	public Type type() {
 		return type;
 	}
+	
+	@Override
+	public final PROT getProtection() {
+		return protection;
+	}
+	
+	@Override
+	public final int getStorageClass() {
+		return storage_class;
+	}
 
 }

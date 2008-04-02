@@ -87,18 +87,13 @@ public interface IVariableBinding extends IBinding {
 	public String getName();
 	
 	/**
-	 * Returns the type binding representing the class or interface
+	 * Returns the binding representing the symbol
 	 * that declares this field.
-	 * <p>
-	 * The declaring class of a field is the class or interface of which it is
-	 * a member. Local variables have no declaring class. The field length of an 
-	 * array type has no declaring class.
-	 * </p>
 	 * 
-	 * @return the binding of the class or interface that declares this field,
+	 * @return the binding of the symbol that declares this field,
 	 *   or <code>null</code> if none
 	 */
-	public ITypeBinding getDeclaringClass();
+	public IBinding getDeclaringSymbol();
 
 	/**
 	 * Returns the binding for the type of this field, alias, typedef or local variable.
@@ -150,25 +145,6 @@ public interface IVariableBinding extends IBinding {
 	 * @since 3.0
 	 */
 	public Object getConstantValue();
-	
-	/**
-	 * Returns the method binding representing the method containing the scope
-	 * in which this local variable is declared.
-	 * <p>
-	 * The declaring method of a method formal parameter is the method itself.
-	 * For a local variable declared somewhere within the body of a method,
-	 * the declaring method is the enclosing method. When local or anonymous
-	 * classes are involved, the declaring method is the innermost such method.
-	 * There is no declaring method for a field, or for a local variable
-	 * declared in a static or instance initializer; this method returns
-	 * <code>null</code> in those cases.
-	 * </p>
-	 * 
-	 * @return the binding of the method or constructor that declares this
-	 * local variable, or <code>null</code> if none
-	 * @since 3.1
-	 */
-	public IMethodBinding getDeclaringMethod();
 	
 	/**
 	 * Returns the binding for the variable declaration corresponding to this

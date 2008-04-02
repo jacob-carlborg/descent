@@ -419,7 +419,7 @@ public class VarDeclaration extends Declaration {
 					ExpInitializer ie = init.isExpInitializer();
 					if (ie != null) {
 						// Make copy so we can modify it
-						init = new ExpInitializer(ie.loc(), ie.exp());
+						init = new ExpInitializer(ie.loc(), ie.exp);
 					}
 				} else {
 					init = getExpInitializer(context);
@@ -438,8 +438,8 @@ public class VarDeclaration extends Declaration {
 			ExpInitializer ei = init.isExpInitializer();
 
 			// See if we can allocate on the stack
-			if (ei != null && isScope() && ei.exp().op == TOK.TOKnew) {
-				NewExp ne = (NewExp) ei.exp();
+			if (ei != null && isScope() && ei.exp.op == TOK.TOKnew) {
+				NewExp ne = (NewExp) ei.exp;
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
@@ -499,17 +499,17 @@ public class VarDeclaration extends Declaration {
 						}
 						e1 = new SliceExp(loc, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
-						ei.exp(ei.exp().semantic(sc, context));
-						if (ei.exp().implicitConvTo(type, context) == MATCH.MATCHnomatch) {
-							ei.exp(new CastExp(loc, ei.exp(), type));
+						ei.exp = ei.exp.semantic(sc, context);
+						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch) {
+							ei.exp = new CastExp(loc, ei.exp, type);
 						}
 					}
-					ei.exp(new AssignExp(loc, e1, ei.exp()));
-					ei.exp().op = TOKconstruct;
+					ei.exp = new AssignExp(loc, e1, ei.exp);
+					ei.exp.op = TOKconstruct;
 					canassign++;
-					ei.exp(ei.exp().semantic(sc, context));
+					ei.exp = ei.exp.semantic(sc, context);
 					canassign--;
-					ei.exp().optimize(ASTDmdNode.WANTvalue, context);
+					ei.exp.optimize(ASTDmdNode.WANTvalue, context);
 				} else {
 					init = init.semantic(sc, type, context);
 					if (fd != null && isConst() && !isStatic()) { // Make it
@@ -527,14 +527,9 @@ public class VarDeclaration extends Declaration {
 				if (ei != null && 0 == context.global.errors && 0 == inferred) {
 					int errors = context.global.errors;
 					context.global.gag++;
-					Expression e = ei.exp().syntaxCopy(context);
+					Expression e = ei.exp.syntaxCopy(context);
 					inuse++;
 					e = e.semantic(sc, context);
-					
-					// Descent: for binding resolution
-					if (sourceInit instanceof ExpInitializer) {
-						((ExpInitializer) sourceInit).sourceExp.setResolvedExpression(e);
-					}
 					
 					inuse--;
 					e = e.implicitCastTo(sc, type, context);
@@ -546,13 +541,13 @@ public class VarDeclaration extends Declaration {
 					} else {
 						e = e.optimize(WANTvalue | WANTinterpret, context);
 						
-						// Descent: for binding resolution
-						if (sourceInit instanceof ExpInitializer) {
-							((ExpInitializer) sourceInit).sourceExp.setEvaluatedExpression(e);
-						}
+						
 						
 						if (e.op == TOKint64 || e.op == TOKstring) {
-							ei.exp(e); // no errors, keep result
+							// TODO Descent: instead of copying the result, do semantic analysis again,
+							// in order to get binding resolution
+							ei.exp.semantic(sc, context);
+							//ei.exp(e); // no errors, keep result
 						}
 					}
 				}

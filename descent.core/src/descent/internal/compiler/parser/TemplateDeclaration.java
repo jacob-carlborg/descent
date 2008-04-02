@@ -212,10 +212,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 
 	private static class GotoL1 extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 	private static final GotoL1 GOTO_L1 = new GotoL1();
 
 	private static class GotoL2 extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 	private static final GotoL2 GOTO_L2 = new GotoL2();
 

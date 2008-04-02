@@ -100,7 +100,7 @@ public class DsymbolExp extends Expression {
 						}
 						ExpInitializer ei = v.init().isExpInitializer();
 						if (ei != null) {
-							e = ei.exp().copy(); // make copy so we can change loc
+							e = ei.exp.copy(); // make copy so we can change loc
 							if (e.op == TOKstring || e.type == null) {
 								e = e.semantic(sc, context);
 							}

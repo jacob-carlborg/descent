@@ -94,7 +94,7 @@ public class DeclarationExp extends Expression {
 				ExpInitializer ie = vd.init().isExpInitializer();
 
 				if (ie != null) {
-					cost += ie.exp().inlineCost(ics, context);
+					cost += ie.exp.inlineCost(ics, context);
 				}
 			}
 		}
@@ -127,7 +127,7 @@ public class DeclarationExp extends Expression {
 			if (s == v && !v.isStatic() && v.init() != null) {
 				ExpInitializer ie = v.init().isExpInitializer();
 				if (ie != null) {
-					e = ie.exp().interpret(istate, context);
+					e = ie.exp.interpret(istate, context);
 				} else if (v.init().isVoidInitializer() != null) {
 					e = null;
 				}

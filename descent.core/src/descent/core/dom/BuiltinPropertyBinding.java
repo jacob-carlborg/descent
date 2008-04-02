@@ -23,12 +23,8 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 		return null;
 	}
 
-	public ITypeBinding getDeclaringClass() {
-		return (ITypeBinding) bindingResolver.resolveType(parentType);
-	}
-
-	public IMethodBinding getDeclaringMethod() {
-		return null;
+	public IBinding getDeclaringSymbol() {
+		return (IBinding) bindingResolver.resolveType(parentType);
 	}
 
 	public String getName() {
@@ -40,8 +36,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 	}
 
 	public IVariableBinding getVariableDeclaration() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	public int getVariableId() {

@@ -146,8 +146,8 @@ public class DotIdExp extends UnaExp {
 						if (v.init() != null) {
 							ExpInitializer ei = v.init().isExpInitializer();
 							if (ei != null) {
-								if (same(ei.exp().type, type, context)) {
-									e = ei.exp().copy(); // make copy so we can change loc
+								if (same(ei.exp.type, type, context)) {
+									e = ei.exp.copy(); // make copy so we can change loc
 									e.loc = loc;
 									return e;
 								}

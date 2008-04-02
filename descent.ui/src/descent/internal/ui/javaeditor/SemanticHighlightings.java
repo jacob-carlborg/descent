@@ -16,19 +16,14 @@ import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.RGB;
 
+import descent.core.Flags;
 import descent.core.dom.ASTNode;
-import descent.core.dom.ArrayAccess;
-import descent.core.dom.CastExpression;
-import descent.core.dom.ConditionalExpression;
-import descent.core.dom.Expression;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
-import descent.core.dom.InfixExpression;
 import descent.core.dom.Modifier;
-import descent.core.dom.PrefixExpression;
 import descent.core.dom.QualifiedName;
 import descent.core.dom.SimpleName;
 import descent.core.dom.StructuralPropertyDescriptor;
@@ -54,11 +49,21 @@ public class SemanticHighlightings {
 	 * A named preference part that controls the highlighting of static fields.
 	 */
 	public static final String STATIC_FIELD="staticField"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of constants.
+	 */
+	public static final String CONSTANT="constant"; //$NON-NLS-1$
 
 	/**
 	 * A named preference part that controls the highlighting of fields.
 	 */
 	public static final String FIELD="field"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of global variables.
+	 */
+	public static final String GLOBAL_VARIABLE="globalVariable"; //$NON-NLS-1$
 	
 	/**
 	 * A named preference part that controls the highlighting of aliases.
@@ -74,6 +79,11 @@ public class SemanticHighlightings {
 	 * A named preference part that controls the highlighting of method declarations.
 	 */
 	public static final String METHOD_DECLARATION="methodDeclarationName"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of function declarations.
+	 */
+	public static final String FUNCTION_DECLARATION="functionDeclarationName"; //$NON-NLS-1$
 
 	/**
 	 * A named preference part that controls the highlighting of static method invocations.
@@ -129,6 +139,14 @@ public class SemanticHighlightings {
 	 * @since 3.1
 	 */
 	public static final String METHOD="method"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of functions
+	 * (invocations and declarations).
+	 *
+	 * @since 3.1
+	 */
+	public static final String FUNCTION="function"; //$NON-NLS-1$
 
 	/**
 	 * A named preference part that controls the highlighting of auto(un)boxed
@@ -158,6 +176,13 @@ public class SemanticHighlightings {
 	 * @since 3.2
 	 */
 	public static final String ENUM="enum"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of enum members.
+	 *
+	 * @since 3.2
+	 */
+	public static final String ENUM_MEMBER="enumMember"; //$NON-NLS-1$
 	
 	/**
 	 * A named preference part that controls the highlighting of interfaces.
@@ -198,62 +223,6 @@ public class SemanticHighlightings {
 	 * Semantic highlightings
 	 */
 	private static SemanticHighlighting[] fgSemanticHighlightings;
-
-	/**
-	 * Semantic highlighting for static final fields.
-	 */
-	private static final class StaticFinalFieldHighlighting extends SemanticHighlighting {
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
-		 */
-		public String getPreferenceKey() {
-			return STATIC_FINAL_FIELD;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
-		 */
-		public RGB getDefaultTextColor() {
-			return new RGB(0, 0, 0);
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
-		 */
-		public boolean isBoldByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
-		 */
-		public boolean isItalicByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
-		 */
-		public boolean isEnabledByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
-		 */
-		public String getDisplayName() {
-			return JavaEditorMessages.SemanticHighlighting_staticFinalField;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
-		 */
-		public boolean consumes(SemanticToken token) {
-			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isVariable() && (binding.getModifiers() & (Modifier.FINAL | Modifier.STATIC)) == (Modifier.FINAL | Modifier.STATIC);
-		}
-	}
 
 	/**
 	 * Semantic highlighting for static fields.
@@ -307,7 +276,75 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE && ((IVariableBinding)binding).isVariable() && (binding.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
+			if (binding != null && binding.getKind() == IBinding.VARIABLE) {
+				IVariableBinding var = (IVariableBinding) binding;
+				IBinding declaringSymbol = var.getDeclaringSymbol();
+				return var.isVariable() &&
+					!var.isLocal() &&
+					!var.isParameter() &&
+					declaringSymbol != null &&
+					declaringSymbol.getKind() == IBinding.TYPE &&
+					(binding.getModifiers() & Modifier.STATIC) == Modifier.STATIC; 
+			}
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * Semantic highlighting for constants.
+	 */
+	private static final class ConstantHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return CONSTANT;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 96);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return true;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return true;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_constant;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+			IBinding binding= token.getBinding();
+			return binding != null && binding.getKind() == IBinding.VARIABLE &&
+				(((IVariableBinding) binding).getModifiers() & Flags.AccConst) != 0;
 		}
 	}
 
@@ -363,10 +400,81 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE &&
-				((IVariableBinding) binding).isVariable() &&
-				!((IVariableBinding)binding).isLocal() &&
-				!((IVariableBinding)binding).isParameter();
+			if (binding != null && binding.getKind() == IBinding.VARIABLE) {
+				IVariableBinding var = (IVariableBinding) binding;
+				IBinding declaringSymbol = var.getDeclaringSymbol();
+				return var.isVariable() &&
+					!var.isLocal() &&
+					!var.isParameter() &&
+					declaringSymbol != null &&
+					declaringSymbol.getKind() == IBinding.TYPE;
+			}
+			return false;
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for global variables.
+	 */
+	private static final class GlobalVariableHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return GLOBAL_VARIABLE;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 96);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return true;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_global_variable;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+			IBinding binding= token.getBinding();
+			if (binding != null && binding.getKind() == IBinding.VARIABLE) {
+				IVariableBinding var = (IVariableBinding) binding;
+				IBinding declaringSymbol = var.getDeclaringSymbol();
+				return var.isVariable() &&
+					!var.isLocal() &&
+					!var.isParameter() &&
+					declaringSymbol != null &&
+					declaringSymbol.getKind() == IBinding.COMPILATION_UNIT;
+			}
+			return false;
 		}
 	}
 	
@@ -485,105 +593,6 @@ public class SemanticHighlightings {
 	}
 
 	/**
-	 * Semantic highlighting for auto(un)boxed expressions.
-	 */
-	private static final class AutoboxHighlighting extends SemanticHighlighting {
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
-		 */
-		public String getPreferenceKey() {
-			return AUTOBOXING;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
-		 */
-		public RGB getDefaultTextColor() {
-			return new RGB(171, 48, 0);
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
-		 */
-		public boolean isBoldByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
-		 */
-		public boolean isItalicByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
-		 */
-		public boolean isEnabledByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
-		 */
-		public String getDisplayName() {
-			return JavaEditorMessages.SemanticHighlighting_autoboxing;
-		}
-		
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumesLiteral(descent.internal.ui.javaeditor.SemanticToken)
-		 */
-		public boolean consumesLiteral(SemanticToken token) {
-			return isAutoUnBoxing(token.getLiteral());
-		}
-
-		/*
-		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
-		 */
-		public boolean consumes(SemanticToken token) {
-			SimpleName node= token.getNode();
-			if (isAutoUnBoxing(node))
-				return true;
-			if (node != null) {
-				// special cases: the autoboxing conversions happens at a 
-				// location that is not mapped directly to a simple name
-				// or a literal, but can still be mapped somehow
-				// A) expressions
-				StructuralPropertyDescriptor desc= node.getLocationInParent();
-				if (desc == ArrayAccess.ARRAY_PROPERTY 
-						|| desc == InfixExpression.LEFT_OPERAND_PROPERTY 
-						|| desc == InfixExpression.RIGHT_OPERAND_PROPERTY
-						|| desc == ConditionalExpression.THEN_EXPRESSION_PROPERTY
-						|| desc == PrefixExpression.OPERAND_PROPERTY
-						|| desc == CastExpression.EXPRESSION_PROPERTY
-						|| desc == ConditionalExpression.ELSE_EXPRESSION_PROPERTY) {
-					ASTNode parent= node.getParent();
-					if (parent instanceof Expression)
-						return isAutoUnBoxing((Expression) parent);
-				}
-				// B) constructor invocations
-				/* TODO JDT UI semantic highlighting
-				if (desc == SimpleType.NAME_PROPERTY || desc == QualifiedType.NAME_PROPERTY) {
-					ASTNode parent= node.getParent();
-					if (parent != null && parent.getLocationInParent() == ClassInstanceCreation.TYPE_PROPERTY) {
-						parent= parent.getParent();
-						if (parent instanceof Expression)
-							return isAutoUnBoxing((Expression) parent);
-					}
-				}
-				*/
-			}
-			return false;
-		}
-		
-		private boolean isAutoUnBoxing(Expression expression) {
-			// return expression.resolveBoxing() || expression.resolveUnboxing();
-			return false;
-		}
-	}
-
-	/**
 	 * Semantic highlighting for method declarations.
 	 */
 	private static final class MethodDeclarationHighlighting extends SemanticHighlighting {
@@ -635,7 +644,79 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			StructuralPropertyDescriptor location= token.getNode().getLocationInParent();
-			return location == FunctionDeclaration.NAME_PROPERTY;
+			if (location == FunctionDeclaration.NAME_PROPERTY) {
+				IBinding binding = token.getBinding();
+				if (binding != null && binding.getKind() == IBinding.METHOD) {
+					IMethodBinding methodBinding = (IMethodBinding) binding;
+					IBinding declaringSymbol = methodBinding.getDeclaringSymbol();
+					return declaringSymbol != null && declaringSymbol.getKind() == IBinding.TYPE;
+				}
+			}
+			return false;
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for function declarations.
+	 */
+	private static final class FunctionDeclarationHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return FUNCTION_DECLARATION;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 0);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return true;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_functionDeclaration;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#isMatched(descent.core.dom.ASTNode)
+		 */
+		public boolean consumes(SemanticToken token) {
+			StructuralPropertyDescriptor location= token.getNode().getLocationInParent();
+			if (location == FunctionDeclaration.NAME_PROPERTY) {
+				IBinding binding = token.getBinding();
+				if (binding != null && binding.getKind() == IBinding.METHOD) {
+					IMethodBinding methodBinding = (IMethodBinding) binding;
+					IBinding declaringSymbol = methodBinding.getDeclaringSymbol();
+					return declaringSymbol != null && declaringSymbol.getKind() == IBinding.COMPILATION_UNIT;
+				}
+			}
+			return false;
 		}
 	}
 
@@ -696,72 +777,6 @@ public class SemanticHighlightings {
 
 			IBinding binding= token.getBinding();
 			return binding != null && binding.getKind() == IBinding.METHOD && (binding.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
-		}
-	}
-	
-	/**
-	 * Semantic highlighting for annotation element references.
-	 * @since 3.1
-	 */
-	private static final class AnnotationElementReferenceHighlighting extends SemanticHighlighting {
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
-		 */
-		public String getPreferenceKey() {
-			return ANNOTATION_ELEMENT_REFERENCE;
-		}
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
-		 */
-		public RGB getDefaultTextColor() {
-			return new RGB(0, 0, 0);
-		}
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
-		 */
-		public boolean isBoldByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
-		 */
-		public boolean isItalicByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
-		 */
-		public boolean isEnabledByDefault() {
-			return false;
-		}
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
-		 */
-		public String getDisplayName() {
-			return JavaEditorMessages.SemanticHighlighting_annotationElementReference;
-		}
-
-		/*
-		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#isMatched(org.eclipse.jdt.core.dom.ASTNode)
-		 */
-		public boolean consumes(SemanticToken token) {
-			/*
-			SimpleName node= token.getNode();
-			if (node.getParent() instanceof MemberValuePair) {
-				IBinding binding= token.getBinding();
-				boolean isAnnotationElement= binding != null && binding.getKind() == IBinding.METHOD;
-
-				return isAnnotationElement;
-			}
-			*/
-
-			return false;
 		}
 	}
 
@@ -889,7 +904,7 @@ public class SemanticHighlightings {
 				return false;
 
 			ITypeBinding currentType= Bindings.getBindingOfParentType(node);
-			ITypeBinding declaringType= ((IMethodBinding) binding).getDeclaringClass();
+			ITypeBinding declaringType= (ITypeBinding) ((IMethodBinding) binding).getDeclaringSymbol();
 			if (currentType == declaringType || currentType == null)
 				return false;
 
@@ -898,7 +913,7 @@ public class SemanticHighlightings {
 	}
 
 	/**
-	 * Semantic highlighting for inherited method invocations.
+	 * Semantic highlighting for method invocations.
 	 */
 	private static final class MethodHighlighting extends SemanticHighlighting {
 
@@ -949,7 +964,123 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= getMethodBinding(token);
-			return binding != null && binding.getKind() == IBinding.METHOD;
+			if (binding != null && binding.getKind() == IBinding.METHOD) {
+				IMethodBinding methodBinding = (IMethodBinding) binding;
+				IBinding declaringSymbol = methodBinding.getDeclaringSymbol();
+				return declaringSymbol != null && declaringSymbol.getKind() == IBinding.TYPE;
+			}
+			return false;
+		}
+
+		/**
+		 * Extracts the method binding from the token's simple name. The method
+		 * binding is either the token's binding (if the parent of token is a
+		 * method call or declaration) or the constructor binding of a class
+		 * instance creation if the node is the type name of a class instance
+		 * creation.
+		 *
+		 * @param token the token to extract the method binding from
+		 * @return the corresponding method binding, or <code>null</code>
+		 */
+		private IBinding getMethodBinding(SemanticToken token) {
+			IBinding binding= null;
+			// work around: https://bugs.eclipse.org/bugs/show_bug.cgi?id=62605
+			ASTNode node= token.getNode();
+			ASTNode parent= node.getParent();
+			while (isTypePath(node, parent)) {
+				node= parent;
+				parent= parent.getParent();
+			}
+
+			/* TODO JDT UI Java -> D
+			if (parent != null && node.getLocationInParent() == ClassInstanceCreation.TYPE_PROPERTY)
+				binding= ((ClassInstanceCreation) parent).resolveConstructorBinding();
+			else
+			*/
+				binding= token.getBinding();
+			return binding;
+		}
+
+		/**
+		 * Returns <code>true</code> if the given child/parent nodes are valid
+		 * sub nodes of a <code>Type</code> ASTNode.
+		 * @param child the child node
+		 * @param parent the parent node
+		 * @return <code>true</code> if the nodes may be the sub nodes of a type node, false otherwise
+		 */
+		private boolean isTypePath(ASTNode child, ASTNode parent) {
+			if (parent instanceof Type) {
+				/* TODO JDT UI Java -> D
+				StructuralPropertyDescriptor location= child.getLocationInParent();
+				return location == ParameterizedType.TYPE_PROPERTY || location == SimpleType.NAME_PROPERTY;
+				*/
+				return false;
+			} else if (parent instanceof QualifiedName) {
+				StructuralPropertyDescriptor location= child.getLocationInParent();
+				return location == QualifiedName.NAME_PROPERTY;
+			}
+			return false;
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for function invocations.
+	 */
+	private static final class FunctionHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return FUNCTION;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 0);
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_function;
+		}
+
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#isMatched(descent.core.dom.ASTNode)
+		 */
+		public boolean consumes(SemanticToken token) {
+			IBinding binding= getMethodBinding(token);
+			if (binding != null && binding.getKind() == IBinding.METHOD) {
+				IMethodBinding methodBinding = (IMethodBinding) binding;
+				IBinding declaringSymbol = methodBinding.getDeclaringSymbol();
+				return declaringSymbol != null && declaringSymbol.getKind() == IBinding.COMPILATION_UNIT;
+			}
+			return false;
 		}
 
 		/**
@@ -1612,7 +1743,7 @@ public class SemanticHighlightings {
 			SimpleName name= token.getNode();
 			ASTNode node= name.getParent();
 			int nodeType= node.getNodeType();
-			if (nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.QUALIFIED_TYPE && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.ENUM_DECLARATION)
+			if (isNotAggregateContainer(nodeType))
 				return false;
 			while (nodeType == ASTNode.QUALIFIED_NAME) {
 				node= node.getParent();
@@ -1624,6 +1755,65 @@ public class SemanticHighlightings {
 			// 2: match enums
 			IBinding binding= token.getBinding();
 			return binding instanceof ITypeBinding && ((ITypeBinding) binding).isEnum();
+		}
+	}
+	
+	/**
+	 * Semantic highlighting for enum members.
+	 * @since 3.2
+	 */
+	private static final class EnumMemberHighlighting extends SemanticHighlighting {
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return ENUM_MEMBER;
+		}
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 96);
+		}
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return true;
+		}
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return true;
+		}
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_enum_members;
+		}
+		
+		/*
+		 * @see descent.internal.ui.javaeditor.SemanticHighlighting#consumes(descent.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+			IBinding binding =  token.getBinding();
+			return binding != null && 
+				binding.getKind() == IBinding.VARIABLE &&
+				((IVariableBinding) binding).isEnumConstant();
 		}
 	}
 	
@@ -1765,25 +1955,27 @@ public class SemanticHighlightings {
 	/**
 	 * @return The semantic highlightings, the order defines the precedence of matches, the first match wins.
 	 */
-	// TODO JDT UI semantic highlighting
 	public static SemanticHighlighting[] getSemanticHighlightings() {
 		if (fgSemanticHighlightings == null)
 			fgSemanticHighlightings= new SemanticHighlighting[] {
 				new DeprecatedHighlighting(),
-//				new AutoboxHighlighting(),
-//				new StaticFinalFieldHighlighting(),
-//				new StaticFieldHighlighting(),
+				new EnumMemberHighlighting(),
+				new StaticFieldHighlighting(),
+				new ConstantHighlighting(), // before field and global highlighting
 				new FieldHighlighting(),
+				new GlobalVariableHighlighting(),
 				new AliasHighlighting(),
 				new TypedefHighlighting(),
+				new FunctionDeclarationHighlighting(),
 				new MethodDeclarationHighlighting(),
-//				new StaticMethodInvocationHighlighting(),
-//				new AbstractMethodInvocationHighlighting(),
+				new StaticMethodInvocationHighlighting(),
+				new AbstractMethodInvocationHighlighting(),
 //				new AnnotationElementReferenceHighlighting(),
 //				new InheritedMethodInvocationHighlighting(),
 				new ParameterVariableHighlighting(),
 				new LocalVariableDeclarationHighlighting(),
 				new LocalVariableHighlighting(),
+				new FunctionHighlighting(),
 				new MethodHighlighting(), // before types to get ctors
 				new ClassHighlighting(),
 				new StructHighlighting(),

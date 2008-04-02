@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.Flags;
 import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -625,14 +626,69 @@ public class Dsymbol extends ASTDmdNode {
 		return 0;
 	}
 	
-	public long getFlags() {
+	/**
+	 * This method is only intended to be invoked if the module
+	 * is resolved.
+	 */
+	public final long getFlags() {
 		long flags = 0;
-		if (modifiers != null) {
-			for(Modifier modifier : modifiers) {
-				flags |= modifier.getFlags();
+		long storage_class = getStorageClass();
+		PROT protection = getProtection();
+		
+		if ((storage_class & STC.STCabstract) != 0) flags |= Flags.AccAbstract;
+		if ((storage_class & STC.STCauto) != 0) flags |= Flags.AccAuto;
+		// STC.STCcomdat
+		if ((storage_class & STC.STCconst) != 0) flags |= Flags.AccConst;
+		if ((storage_class & STC.STCctorinit) != 0) flags |= Flags.AccConst;
+		if ((storage_class & STC.STCdeprecated) != 0) flags |= Flags.AccDeprecated;
+		if ((storage_class & STC.STCextern) != 0) flags |= Flags.AccExtern;
+		// STC.STCfield
+		if ((storage_class & STC.STCfinal) != 0) flags |= Flags.AccFinal;
+		// STC.STCforeach
+		if ((storage_class & STC.STCin) != 0) flags |= Flags.AccIn;
+		if ((storage_class & STC.STCinvariant) != 0) flags |= Flags.AccInvariant;
+		if ((storage_class & STC.STClazy) != 0) flags |= Flags.AccLazy;
+		if ((storage_class & STC.STCout) != 0) flags |= Flags.AccOut;
+		if ((storage_class & STC.STCoverride) != 0) flags |= Flags.AccOverride;
+		// STC.STCparameter
+		if ((storage_class & STC.STCref) != 0) flags |= Flags.AccRef;
+		if ((storage_class & STC.STCscope) != 0) flags |= Flags.AccScope;
+		if ((storage_class & STC.STCstatic) != 0) flags |= Flags.AccStatic;
+		if ((storage_class & STC.STCsynchronized) != 0) flags |= Flags.AccSynchronized;
+		
+		if (protection == null) {
+			flags |= Flags.AccPublic;
+		} else {
+			switch(protection) {
+			case PROTexport: flags |= Flags.AccExport; break;
+			case PROTnone: flags |= Flags.AccPublic; break;
+			case PROTpackage: flags |= Flags.AccPublic; break;
+			case PROTprivate: flags |= Flags.AccPrivate; break;
+			case PROTprotected: flags |= Flags.AccProtected; break;
+			case PROTpublic: flags |= Flags.AccPublic; break;
+			case PROTundefined: flags |= Flags.AccPublic; break;
 			}
 		}
+		
+		if (isDeprecated()) {
+			flags |= Flags.AccDeprecated;
+		}
+		
 		return flags;
+	}
+	
+	/*
+	 * For Descent, to make it easier to calcualte flags.
+	 */
+	public int getStorageClass() {
+		return 0;
+	}
+	
+	/*
+	 * For Descent, to make it easier to calcualte flags.
+	 */
+	public PROT getProtection() {
+		return PROT.PROTundefined;
 	}
 	
 	public Dsymbol effectiveParent() {

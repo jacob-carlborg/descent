@@ -1,10 +1,8 @@
 package descent.core.dom;
 
-import descent.core.IMethod;
-import descent.core.JavaModelException;
+import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.TypeFunction;
-import descent.internal.core.util.Util;
 
 public class MethodBinding extends JavaElementBasedBinding implements IMethodBinding {
 	
@@ -15,19 +13,8 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		this.signature = signature;		
 	}
 
-	public ITypeBinding getDeclaringClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Object getDefaultValue() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ITypeBinding[] getExceptionTypes() {
-		// TODO Auto-generated method stub
-		return null;
+	public IBinding getDeclaringSymbol() {
+		return bindingResolver.resolveDsymbol(node.parent);
 	}
 
 	public IMethodBinding getMethodDeclaration() {
@@ -61,18 +48,8 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		return null;
 	}
 
-	public boolean isAnnotationMember() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public boolean isConstructor() {
-		try {
-			return ((IMethod) getJavaElement()).isConstructor();
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		return false;
+		return node instanceof CtorDeclaration;
 	}
 
 	public boolean isDefaultConstructor() {

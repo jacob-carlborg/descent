@@ -2,7 +2,7 @@ package descent.tests.binding;
 
 import descent.core.ICompilationUnit;
 import descent.core.dom.CompilationUnit;
-import descent.core.dom.IPackageBinding;
+import descent.core.dom.ICompilationUnitBinding;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
 import descent.core.dom.QualifiedName;
@@ -16,7 +16,7 @@ public class BindingImport_Test extends AbstractBinding_Test {
 		CompilationUnit unit = createCU("test.d", "import imported;");
 		ImportDeclaration importDeclaration = (ImportDeclaration) unit.declarations().get(0);
 		Import imp = importDeclaration.imports().get(0);
-		IPackageBinding binding = imp.resolveBinding();
+		ICompilationUnitBinding binding = imp.resolveBinding();
 		assertNotNull(binding);
 		
 		assertEquals(imported, binding.getJavaElement());
@@ -36,7 +36,7 @@ public class BindingImport_Test extends AbstractBinding_Test {
 		CompilationUnit unit = createCU("test.d", "import pack.imported;");
 		ImportDeclaration importDeclaration = (ImportDeclaration) unit.declarations().get(0);
 		Import imp = importDeclaration.imports().get(0);
-		IPackageBinding binding = imp.resolveBinding();
+		ICompilationUnitBinding binding = imp.resolveBinding();
 		assertNotNull(binding);
 		
 		assertEquals(imported, binding.getJavaElement());
