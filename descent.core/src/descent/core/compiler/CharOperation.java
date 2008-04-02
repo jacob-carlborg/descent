@@ -32,6 +32,12 @@ public final class CharOperation {
 	public static final char[][] NO_CHAR_CHAR = new char[0][];
 	
 	/**
+	 * Constant for an empty String.
+	 * @since 3.1
+	 */
+	public static final String EMPTY_STRING = "";
+	
+	/**
 	 * Constant for an empty String array.
 	 * @since 3.1
 	 */

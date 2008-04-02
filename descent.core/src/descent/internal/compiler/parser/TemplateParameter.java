@@ -66,5 +66,11 @@ public abstract class TemplateParameter extends ASTDmdNode {
 		appendSignature(sb);
 		return sb.toString();
 	}
+	
+	/*
+	 * Descent: returns the default value of this template parameter
+	 * as a char array, or null if there is no default value. 
+	 */
+	public abstract char[] getDefaultValue();
 
 }

@@ -194,7 +194,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		int flags = 0;
 		if (modifiers != null) {
 			for(Modifier modifier : modifiers) {
-				flags |= modifier.getFlags();	
+				flags |= modifier.getFlags();
 			}
 		}
 		
@@ -209,7 +209,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		long lastFlags = -1;
 		
-		for(Stack<AttribDeclaration> sa : attribDeclarationStack) {
+		if (!attribDeclarationStack.isEmpty()) {
+			Stack<AttribDeclaration> sa = attribDeclarationStack.peek();
 			for(AttribDeclaration a : sa) {
 				if (a instanceof ProtDeclaration) {
 					ProtDeclaration p = (ProtDeclaration) a;
@@ -258,6 +259,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.signature = param.getSignature().toCharArray();
 			info.nameSourceStart = startOf(param.ident);
 			info.nameSourceEnd = endOf(param.ident);
+			info.defaultValue = param.getDefaultValue();
 			infos[i] = info;
 		}
 		return infos;

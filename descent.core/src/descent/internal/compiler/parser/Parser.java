@@ -7071,7 +7071,8 @@ public class Parser extends Lexer {
 		if ((!appendLeadingComments || 
 					//!comment.isDDocComment() || 
 					(prevToken.value != TOKsemicolon && 
-						prevToken.value != TOKrcurly))) return;
+						prevToken.value != TOKrcurly &&
+						prevToken.value != TOKcomma))) return;
 		
 		if (prevToken.leadingComment == null) {
 			lastCommentRead = comments.size();	

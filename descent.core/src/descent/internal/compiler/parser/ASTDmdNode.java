@@ -785,77 +785,84 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 
 				if (tf.varargs == 2 && i + 1 == nparams) {
+					boolean gotoL1 = false;
+					
 					if (arg.implicitConvTo(p.type, context) != MATCH.MATCHnomatch) {
 						if (nargs != nparams) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
 						}
+						gotoL1 = true;
 						// goto L1;
 					}
-					// L2:
-					Type tb2 = p.type.toBasetype(context);
-					Type tret = p.isLazyArray(context);
-					switch (tb2.ty) {
-					case Tsarray:
-					case Tarray: { // Create a static array variable v of type
-						// arg.type
-
-						char[] id = ("_arrayArg" + (++context.ASTDmdNode_idn)).toCharArray();
-						Type t = new TypeSArray(tb2.next, new IntegerExp(loc,
-								nargs - i));
-						t = t.semantic(loc, sc, context);
-						VarDeclaration v = new VarDeclaration(loc, t, id,
-								new VoidInitializer(loc));
-						v.semantic(sc, context);
-						v.parent = sc.parent;
-
-						Expression c = new DeclarationExp(loc, v);
-						c.type = v.type;
-
-						for (int u = i; u < nargs; u++) {
-							Expression a = arguments.get(u);
-							if (tret != null && !tb2.next.equals(a.type)) {
-								a = a.toDelegate(sc, tret, context);
+					
+					if (!gotoL1) {
+						// L2:
+						tb = p.type.toBasetype(context);
+						Type tret = p.isLazyArray(context);
+						switch (tb.ty) {
+						case Tsarray:
+						case Tarray: { 
+							// Create a static array variable v of type
+							// arg.type
+	
+							char[] id = ("_arrayArg" + (++context.ASTDmdNode_idn)).toCharArray();
+							Type t = new TypeSArray(tb.next, new IntegerExp(loc,
+									nargs - i));
+							t = t.semantic(loc, sc, context);
+							VarDeclaration v = new VarDeclaration(loc, t, id,
+									new VoidInitializer(loc));
+							v.semantic(sc, context);
+							v.parent = sc.parent;
+	
+							Expression c = new DeclarationExp(loc, v);
+							c.type = v.type;
+	
+							for (int u = i; u < nargs; u++) {
+								Expression a = arguments.get(u);
+								if (tret != null && !tb.next.equals(a.type)) {
+									a = a.toDelegate(sc, tret, context);
+								}
+	
+								Expression e = new VarExp(loc, v);
+								e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
+										- nparams));
+								e = new AssignExp(loc, e, a);
+								if (c != null) {
+									c = new CommaExp(loc, c, e);
+								} else {
+									c = e;
+								}
 							}
-
-							Expression e = new VarExp(loc, v);
-							e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
-									- nparams));
-							e = new AssignExp(loc, e, a);
+							arg = new VarExp(loc, v);
 							if (c != null) {
-								c = new CommaExp(loc, c, e);
-							} else {
-								c = e;
+								arg = new CommaExp(loc, c, arg);
 							}
+							break;
 						}
-						arg = new VarExp(loc, v);
-						if (c != null) {
-							arg = new CommaExp(loc, c, arg);
+						case Tclass: { /*
+						 * Set arg to be: new Tclass(arg0, arg1,
+						 * ..., argn)
+						 */
+							Expressions args = new Expressions();
+							args.setDim(nargs - 1);
+							for (int u = i; u < nargs; u++) {
+								args.set(u - i, arguments.get(u));
+							}
+							arg = new NewExp(loc, null, null, p.type, args);
+							break;
 						}
-						break;
+						default:
+							if (arg == null) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotEnoughArguments, this));
+								return;
+							}
+							break;
+						}
+						arg = arg.semantic(sc, context);
+						arguments.setDim(i + 1);
+						done = 1;
 					}
-					case Tclass: { /*
-					 * Set arg to be: new Tclass(arg0, arg1,
-					 * ..., argn)
-					 */
-						Expressions args = new Expressions();
-						args.setDim(nargs - 1);
-						for (int u = i; u < nargs; u++) {
-							args.set(u - i, arguments.get(u));
-						}
-						arg = new NewExp(loc, null, null, p.type, args);
-						break;
-					}
-					default:
-						if (arg == null) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotEnoughArguments, this));
-							return;
-						}
-						break;
-					}
-					arg = arg.semantic(sc, context);
-					arguments.setDim(i + 1);
-					done = 1;
 				}
 
 				// L1: 

@@ -14,7 +14,6 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
-import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -255,7 +254,7 @@ public class InternalSignature implements ISignatureConstants {
 		sb.append(name);
 	}
 
-	public static TemplateParameter toTemplateParameter(String signature) {
+	public static TemplateParameter toTemplateParameter(String signature, final String defaultValue) {
 		final TemplateParameter[] param = { null };
 		final Stack<Stack<Type>> stack = new Stack<Stack<Type>>();
 		stack.push(new Stack<Type>());
@@ -355,16 +354,18 @@ public class InternalSignature implements ISignatureConstants {
 			@Override
 			public void exitTemplateTypeParameter(String signature) {
 				Stack<Type> types = stack.peek();
-				Type type = types.isEmpty() ? null : types.get(0); 
+				Type type = types.isEmpty() ? null : types.get(0);				
+				Type def = defaultValue == null ? null : toType(defaultValue);
 				
-				param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, null);
+				param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, def);
 			}
 			@Override
 			public void exitTemplateAliasParameter(String signature) {
 				Stack<Type> types = stack.peek();
-				Type type = types.isEmpty() ? null : types.get(0); 
+				Type type = types.isEmpty() ? null : types.get(0);
+				Type def = defaultValue == null ? null : toType(defaultValue);
 				
-				param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, null);
+				param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, def);
 			}
 			@Override
 			public void acceptTemplateValueParameterSpecificValue(char[] exp) {
@@ -373,9 +374,10 @@ public class InternalSignature implements ISignatureConstants {
 			@Override
 			public void exitTemplateValueParameter(String signature) {
 				Stack<Type> types = stack.peek();
-				Type type = types.get(0); 
+				Type type = types.get(0);
+				Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
 				
-				param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], null);
+				param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def);
 			}
 			
 		});

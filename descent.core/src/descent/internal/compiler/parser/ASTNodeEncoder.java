@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
+
 
 /**
  * Encodes ASTNodes into char arrays and viceversa.
@@ -77,6 +79,12 @@ public class ASTNodeEncoder {
 	public Initializer decodeInitializer(char[] value) {
 		if (value == null || value.length == 0) {
 			return null;
+		}
+		
+		// The parser expects "void;", so if there's no semicolon after "void",
+		// it tries to parse an expression. This is why this if is here.
+		if (CharOperation.equals(value, TOK.TOKvoid.charArrayValue)) {
+			return new VoidInitializer(Loc.ZERO);
 		}
 		
 		// Optimize for IntegerExp and IdentifierExp, which are the most common cases

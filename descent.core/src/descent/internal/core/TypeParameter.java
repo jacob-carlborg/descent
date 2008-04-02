@@ -63,7 +63,16 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 		if (info.signature != null) {
 			return new String(info.signature);
 		} else {
-			return CharOperation.NO_STRINGS[0];
+			return CharOperation.EMPTY_STRING;
+		}
+	}
+	
+	public String getDefaultValue() throws JavaModelException {
+		TypeParameterElementInfo info = (TypeParameterElementInfo) getElementInfo();
+		if (info.defaultValue != null) {
+			return new String(info.defaultValue);
+		} else {
+			return null;
 		}
 	}
 

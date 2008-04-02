@@ -522,5 +522,36 @@ public class Lookup_Test extends AbstractLookupTest {
 				"}");
 		assertNoErrors();
 	}
+	
+	public void testAmbigousDefinitionOfMallocBug() throws Exception {
+		one("");
+		two("import std.stdio;\r\n" + 
+			"import std.ctype;\r\n" + 
+			"import std.string;\r\n" + 
+			"import std.c.string;\r\n" + 
+			"import std.c.stdlib;\r\n" + 
+			"\r\n" + 
+			"static void *trace_malloc(size_t nbytes)\r\n" + 
+			"{   void *p;\r\n" + 
+			"\r\n" + 
+			"    p = malloc(nbytes);\r\n" + 
+			"    if (!p)\r\n" + 
+			"	exit(EXIT_FAILURE);\r\n" + 
+			"    return p;\r\n" + 
+			"}");
+		assertNoErrors();
+	}
+	
+	public void testForwardingVariadicArguments() throws Exception {
+		one("");
+		two("void foo(int[] arguments ...) {\r\n" + 
+			"	\r\n" + 
+			"}\r\n" + 
+			"\r\n" + 
+			"void bar(int[] arguments ...){\r\n" + 
+			"	foo(arguments);\r\n" + 
+			"}");
+		assertNoErrors();
+	}
 
 }

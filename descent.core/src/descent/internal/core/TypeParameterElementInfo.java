@@ -33,4 +33,9 @@ public class TypeParameterElementInfo extends SourceRefElementInfo {
 	 * The signature of this type parameter.
 	 */
 	public char[] signature;
+	
+	/*
+	 * The default value of this type parameter.
+	 */
+	public char[] defaultValue;
 }

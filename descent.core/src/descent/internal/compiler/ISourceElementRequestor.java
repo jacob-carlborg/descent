@@ -53,6 +53,7 @@ public interface ISourceElementRequestor {
 		public int declarationEnd;
 		public char[] name;
 		public char[] signature;
+		public char[] defaultValue;
 		public int nameSourceStart;
 		public int nameSourceEnd;
 	}

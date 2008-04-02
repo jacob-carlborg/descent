@@ -217,5 +217,13 @@ public class TemplateTypeParameter extends TemplateParameter {
 			specType.appendSignature(sb);
 		}
 	}
+	
+	@Override
+	public char[] getDefaultValue() {
+		if (defaultType == null) {
+			return null;
+		}
+		return defaultType.getSignature().toCharArray();
+	}
 
 }

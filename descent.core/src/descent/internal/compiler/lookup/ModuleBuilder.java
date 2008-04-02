@@ -231,6 +231,10 @@ public class ModuleBuilder {
 	}
 
 	private void fillMethod(Module module, Dsymbols members, IMethod method) throws JavaModelException {
+		if (method.getElementName().equals("onPaintBackground")) {
+			System.out.println(1);
+		}
+		
 		if (method.isConstructor()) {
 			CtorDeclaration member = new CtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			member.setJavaElement(method);
@@ -417,13 +421,16 @@ public class ModuleBuilder {
 		TemplateParameters params = new TemplateParameters();
 		
 		for(ITypeParameter typeParameter : templated.getTypeParameters()) {
-			params.add(getTemplateParameter(typeParameter.getSignature(), typeParameter.getElementName()));
+			params.add(getTemplateParameter(
+					typeParameter.getElementName(),
+					typeParameter.getSignature(),
+					typeParameter.getDefaultValue()));
 		}
 		return params;
 	}
 
-	private TemplateParameter getTemplateParameter(String signature, String name) {
-		TemplateParameter param = InternalSignature.toTemplateParameter(signature);
+	private TemplateParameter getTemplateParameter(String name, String signature, String defaultValue) {
+		TemplateParameter param = InternalSignature.toTemplateParameter(signature, defaultValue);
 		param.ident = new IdentifierExp(name.toCharArray());
 		return param;
 	}
@@ -541,14 +548,11 @@ public class ModuleBuilder {
 		int stc = getStorageClass(flags);
 		if (stc != 0) {
 			StorageClassDeclaration sc = new StorageClassDeclaration(stc, toDsymbols(symbol), null, false, false);
-			sc.flags = flags;
 			symbol = sc;
 		}
 		PROT prot = getProtection(flags);
-		if ((symbol instanceof Import && prot != PROT.PROTprivate)
-				|| (!(symbol instanceof Import) && prot != PROT.PROTpublic)) {
+		if (prot != PROT.PROTnone) {
 			ProtDeclaration pd = new ProtDeclaration(prot, toDsymbols(symbol), null, false, false);
-			pd.flags = flags;
 			symbol = pd;
 		}
 		return symbol;
@@ -606,7 +610,7 @@ public class ModuleBuilder {
 		} else if ((flags & Flags.AccPrivate) != 0) {
 			return PROT.PROTprivate;
 		} else {
-			return PROT.PROTpublic;
+			return PROT.PROTnone;
 		}
 	}
 	

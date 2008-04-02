@@ -18,23 +18,6 @@ public interface ITemplated {
 	boolean isTemplate() throws JavaModelException;
 	
 	/**
-	 * Returns the formal type parameter signatures for this type.
-	 * Returns an empty array if this type has no formal type parameters.
-	 * <p>
-	 * The formal type parameter signatures may be either unresolved (for source
-	 * types) or resolved (for binary types). See {@link Signature} for details.
-	 * </p>
-	 *
-	 * @exception JavaModelException if this element does not exist or if an
-	 *      exception occurs while accessing its corresponding resource.
-	 * @return the formal type parameter signatures of this type,
-	 * in the order declared in the source, an empty array if none
-	 * @see Signature
-	 * @since 3.0
-	 */
-	String[] getTypeParameterSignatures() throws JavaModelException;
-	
-	/**
 	 * Returns the formal type parameters for this type.
 	 * Returns an empty array if this type has no formal type parameters.
 	 *

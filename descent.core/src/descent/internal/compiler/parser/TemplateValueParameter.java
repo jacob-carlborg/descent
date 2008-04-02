@@ -268,5 +268,13 @@ public class TemplateValueParameter extends TemplateParameter {
 			sb.append(exp);
 		}
 	}
+	
+	@Override
+	public char[] getDefaultValue() {
+		if (defaultValue == null) {
+			return null;
+		}
+		return new ASTNodeEncoder().encodeExpression(defaultValue);
+	}
 
 }

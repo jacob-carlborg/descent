@@ -15,8 +15,6 @@ public class ProtDeclaration extends AttribDeclaration {
 	public boolean single;
 	public PROT protection;
 	public boolean colon;
-	
-	public Long flags;
 
 	public ProtDeclaration(PROT p, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {

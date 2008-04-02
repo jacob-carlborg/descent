@@ -1960,8 +1960,8 @@ public class SemanticHighlightings {
 			fgSemanticHighlightings= new SemanticHighlighting[] {
 				new DeprecatedHighlighting(),
 				new EnumMemberHighlighting(),
-				new StaticFieldHighlighting(),
 				new ConstantHighlighting(), // before field and global highlighting
+				new StaticFieldHighlighting(),
 				new FieldHighlighting(),
 				new GlobalVariableHighlighting(),
 				new AliasHighlighting(),

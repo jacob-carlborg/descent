@@ -54,8 +54,6 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public int stc;
 	public Modifier modifier;
 	public boolean colon;
-	
-	public Long flags;
 
 	public StorageClassDeclaration(int stc, Dsymbols decl,
 			Modifier modifier, boolean single, boolean colon) {

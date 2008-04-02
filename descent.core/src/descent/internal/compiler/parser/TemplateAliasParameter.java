@@ -214,5 +214,13 @@ public class TemplateAliasParameter extends TemplateParameter {
 			specAliasT.appendSignature(sb);
 		}
 	}
+	
+	@Override
+	public char[] getDefaultValue() {
+		if (defaultAlias == null) {
+			return null;
+		}
+		return defaultAlias.getSignature().toCharArray();
+	}
 
 }

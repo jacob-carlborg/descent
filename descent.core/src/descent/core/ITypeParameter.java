@@ -52,6 +52,14 @@ public interface ITypeParameter extends IJavaElement, ISourceReference {
 	String getSignature() throws JavaModelException;
 	
 	/**
+	 * Returns the default value of this type parameter.
+	 * @return the default value of this type parameter
+	 * @throws JavaModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource
+	 */
+	String getDefaultValue() throws JavaModelException;
+	
+	/**
 	 * Returns the declaring member of this type parameter. This can be either an <code>IType</code>
 	 * or an <code>IMethod</code>.
 	 * <p>

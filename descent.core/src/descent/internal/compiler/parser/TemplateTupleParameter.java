@@ -119,5 +119,10 @@ public class TemplateTupleParameter extends TemplateParameter {
 	public void appendSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER);
 	}
+	
+	@Override
+	public char[] getDefaultValue() {
+		return null;
+	}
 
 }

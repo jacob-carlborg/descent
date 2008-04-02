@@ -13,21 +13,29 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testTuple() {
 		TemplateTupleParameter param = (TemplateTupleParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TUPLE_PARAMETER);
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TUPLE_PARAMETER, null);
 		assertNull(param.ident);
 	}
 	
 	public void testAlias() {
 		TemplateAliasParameter param = (TemplateAliasParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER);
+			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, null);
 		assertNull(param.ident);
 		assertNull(param.specAliasT);
 		assertNull(param.defaultAlias);
 	}
 	
+	public void testAliasDefaultValue() {
+		TemplateAliasParameter param = (TemplateAliasParameter) 
+			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, "i");
+		assertNull(param.ident);
+		assertNull(param.specAliasT);
+		assertSame(Type.tint32, param.defaultAlias);
+	}
+	
 	public void testAliasSpecificType() {
 		TemplateAliasParameter param = (TemplateAliasParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + i);
+			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + i, null);
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.specAliasT);
 		assertNull(param.defaultAlias);
@@ -35,7 +43,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testType() {
 		TemplateTypeParameter param = (TemplateTypeParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER);
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER, null);
 		assertNull(param.ident);
 		assertNull(param.specType);
 		assertNull(param.defaultType);
@@ -43,26 +51,45 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testTypeSpecificType() {
 		TemplateTypeParameter param = (TemplateTypeParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + i);
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + i, null);
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.specType);
 		assertNull(param.defaultType);
 	}
 	
+	public void testTypeDefaultValue() {
+		TemplateTypeParameter param = (TemplateTypeParameter) 
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER, "i");
+		assertNull(param.ident);
+		assertNull(param.specType);
+		assertSame(Type.tint32, param.defaultType);
+	}
+	
 	public void testValue() {
 		TemplateValueParameter param = (TemplateValueParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i);
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i, null);
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.valType);
 		assertNull(param.specValue);
+		assertNull(param.defaultValue);
 	}
 	
 	public void testValueSpecific() {
 		TemplateValueParameter param = (TemplateValueParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + "1" + TEMPLATE_VALUE_PARAMETER + "3");
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + "1" + TEMPLATE_VALUE_PARAMETER + "3", null);
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.valType);
 		assertEquals(3, ((IntegerExp) param.specValue).value.intValue());
+		assertNull(param.defaultValue);
+	}
+	
+	public void testValueDefaultValue() {
+		TemplateValueParameter param = (TemplateValueParameter) 
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i, "1");
+		assertNull(param.ident);
+		assertSame(Type.tint32, param.valType);
+		assertNull(param.specValue);
+		assertEquals(1, ((IntegerExp) param.defaultValue).value.intValue()); 
 	}
 	
 }
