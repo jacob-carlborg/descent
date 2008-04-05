@@ -36,6 +36,10 @@ public class SemanticRest {
 		return structureKnown;
 	}
 	
+	public Scope getScope() {
+		return sc;
+	}
+	
 	public void buildStructure() {
 		structureKnown = true;
 		runnable.run();

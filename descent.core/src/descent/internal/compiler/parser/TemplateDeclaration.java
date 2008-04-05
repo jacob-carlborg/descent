@@ -6,6 +6,7 @@ import java.util.List;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
@@ -45,6 +46,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
 	
 	private IJavaElement javaElement;
+	
+	public SemanticRest rest;
 
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
@@ -277,10 +280,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					return Lnomatch(paramscope); // goto Lnomatch;
 			}
 		}
+		
+		// Descent: lazy initialization
+		fd.consumeRestStructure();
+		fd.consumeRest();
 
 		assert (fd.type.ty == Tfunction);
 		fdtype = (TypeFunction) fd.type;
-
+		
 		nfparams = Argument.dim(fdtype.parameters, context); // number of
 		// function
 		// parameters
@@ -495,6 +502,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public TemplateDeclaration isTemplateDeclaration() {
+		consumeRest();
+		
 		return this;
 	}
 
@@ -682,6 +691,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			if (rest.getScope() == null) {
+				rest.setSemanticContext(sc, context);
+			}
+			return;
+		}
+		
 		if (scope != null) {
 			return; // semantic() already run
 		}
@@ -737,47 +753,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					s[0].parent = this;
 				}
 			}
-			
-			// Descent: do semantic of my members without reporting
-			// problems, in order to get code selection, code completion,
-			// code evaluation and bindings.
-			// TODO see if it's worth enabling this
-//			 context.muteProblems++;
-//			 for(IDsymbol member : members) {
-//				 member.semantic(scope, context);
-//			 }
-//			 context.muteProblems--;
 		}
-	}
-	
-	@Override
-	public void semantic2(Scope sc, SemanticContext context) {
-		// Descent: do semantic of my members without reporting
-		// problems, in order to get code selection, code completion,
-		// code evaluation and bindings.
-		// TODO see if it's worth enabling this
-//		 context.muteProblems++;
-//		 for(IDsymbol member : members) {
-//			 member.semantic2(scope, context);
-//		 }
-//		 context.muteProblems--;
-	}
-	
-	@Override
-	public void semantic3(Scope sc, SemanticContext context) {
-		// Descent: do semantic of my members without reporting
-		// problems, in order to get code selection, code completion,
-		// code evaluation and bindings.
-		// TODO see if it's worth enabling this
-//		 context.muteProblems++;
-//		 for(IDsymbol member : members) {
-//			 member.semantic3(scope, context);
-//		 }
-//		 context.muteProblems--;
 	}
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		TemplateDeclaration td;
 		TemplateParameters p;
 		Dsymbols d;
@@ -865,6 +847,18 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	@Override
 	public IJavaElement getJavaElement() {
 		return javaElement;
+	}
+	
+	void consumeRestStructure() {
+		if (rest != null && !rest.isStructureKnown()) {
+			rest.buildStructure();
+		}
+	}
+	
+	void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 
 }

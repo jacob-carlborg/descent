@@ -406,7 +406,9 @@ public class SemanticHighlightingReconciler implements IJavaReconcilingListener,
 				long time = System.currentTimeMillis();
 				reconcilePositions(subtrees);
 				time = System.currentTimeMillis() - time;
-				System.out.println("Semantic highlighting took " + time + " milliseconds to complete.");
+				if (time != 0) {
+					System.out.println("Semantic highlighting took " + time + " milliseconds to complete.");
+				}
 			}
 			
 			TextPresentation textPresentation= null;

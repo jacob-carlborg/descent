@@ -160,6 +160,10 @@ public class SemanticContext {
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
 			System.out.println("~~~" + problem);
 			
+			if (problem.getID() == IProblem.ArrayIndexOutOfBounds
+					|| problem.getID() == IProblem.ArrayIndexOutOfBounds2) {
+				System.out.println(1);
+			}
 			problemRequestor.acceptProblem(problem);
 		}
 		

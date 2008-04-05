@@ -117,7 +117,9 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (rest != null && !rest.isConsumed()) {
-			rest.setSemanticContext(sc, context);
+			if (rest.getScope() == null) {
+				rest.setSemanticContext(sc, context);
+			}
 			return;
 		}
 		

@@ -563,7 +563,7 @@ public class CompletionEngine extends Engine
 		
 		if (fqnBeforeCursor.length == 0 || 
 				match(fqnBeforeCursor, sourceUnitFqn)) {
-			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
+			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition, node);
 			proposal.setCompletion(sourceUnitFqn);
 			proposal.setReplaceRange(this.startPosition, this.endPosition);
 			this.requestor.accept(proposal);
@@ -711,7 +711,7 @@ public class CompletionEngine extends Engine
 						relevance += computeRelevanceForInterestingProposal();
 						relevance += computeRelevanceForCaseMatching(prefix, label);
 						
-						CompletionProposal proposal = this.createProposal(CompletionProposal.LABEL_REF, this.actualCompletionPosition);
+						CompletionProposal proposal = this.createProposal(CompletionProposal.LABEL_REF, this.actualCompletionPosition, null);
 						proposal.setName(label);
 						proposal.setCompletion(label);
 						proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -758,7 +758,7 @@ public class CompletionEngine extends Engine
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(name, id);
 				
-				CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition, null);
 				proposal.setName(id);
 				proposal.setCompletion(id);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1354,7 +1354,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestTypeFunction(char[] signature, char[] name) {
-		CompletionProposal proposal = this.createProposal(CompletionProposal.FUNCTION_CALL, this.actualCompletionPosition);
+		CompletionProposal proposal = this.createProposal(CompletionProposal.FUNCTION_CALL, this.actualCompletionPosition, null);
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForInterestingProposal();
@@ -1651,7 +1651,7 @@ public class CompletionEngine extends Engine
 						relevance += R_VAR;	
 					}
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, var);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setTypeName(typeName);
@@ -1677,7 +1677,7 @@ public class CompletionEngine extends Engine
 					
 					boolean isLocal = alias.parent instanceof FuncDeclaration;
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, alias);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					String signature = alias.getSignature();
@@ -1748,7 +1748,7 @@ public class CompletionEngine extends Engine
 					
 					boolean isLocal = typedef.parent instanceof FuncDeclaration;
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, typedef);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
@@ -1783,7 +1783,7 @@ public class CompletionEngine extends Engine
 					}
 					relevance += R_CLASS;
 					
-					CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition, member);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
@@ -1823,7 +1823,7 @@ public class CompletionEngine extends Engine
 						}
 					}
 					
-					CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition);
+					CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition, member);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(member.getSignature().toCharArray());
@@ -1883,7 +1883,7 @@ public class CompletionEngine extends Engine
 							(opCall && funcNameIsOpCall) ? 
 									CompletionProposal.OP_CALL : 
 									CompletionProposal.METHOD_REF, 
-								this.actualCompletionPosition);
+								this.actualCompletionPosition, func);
 					
 					if (constructor || opCall) {
 						proposal.setName(currentName);
@@ -1901,6 +1901,13 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | func.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					if (func.parent != null) {
+						String parentSignature = func.parent.getSignature();
+						if (parentSignature != null) {
+							proposal.setDeclarationSignature(parentSignature.toCharArray());
+						}
+					}
+					
 					CompletionEngine.this.requestor.accept(proposal);
 					
 					if (funcSignatures != null) {
@@ -2048,7 +2055,7 @@ public class CompletionEngine extends Engine
 			if (currentName.length == 0 || match(currentName, property)) {
 				relevance += computeRelevanceForExpectedType(type);
 				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition, null);
 				proposal.setRelevance(relevance);
 				proposal.setName(property);
 				proposal.setCompletion(property);
@@ -2083,7 +2090,7 @@ public class CompletionEngine extends Engine
 				relevance += computeRelevanceForCaseMatching(currentName, member.ident.ident);
 				relevance += R_ENUM_CONSTANT;
 				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.ENUM_MEMBER, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(CompletionProposal.ENUM_MEMBER, this.actualCompletionPosition, member);
 				proposal.setName(member.ident.ident);
 				proposal.setCompletion(proposition);
 				proposal.setSignature(member.getSignature().toCharArray());
@@ -2191,7 +2198,7 @@ public class CompletionEngine extends Engine
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(prefix, name);
 				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition, null);
 				proposal.setName(nameColon);
 				proposal.setCompletion(nameColon);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2228,7 +2235,7 @@ public class CompletionEngine extends Engine
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(prefix, name);
 				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.DDOC_MACRO, this.actualCompletionPosition);
+				CompletionProposal proposal = this.createProposal(CompletionProposal.DDOC_MACRO, this.actualCompletionPosition, null);
 				proposal.setName(macroValue.toCharArray());
 				proposal.setCompletion(name);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2323,7 +2330,7 @@ public class CompletionEngine extends Engine
 					// accept result
 					//CompletionEngine.this.noProposal = false;
 					if(!CompletionEngine.this.requestor.isIgnored(CompletionProposal.VARIABLE_DECLARATION)) {
-						CompletionProposal proposal = CompletionEngine.this.createProposal(CompletionProposal.VARIABLE_DECLARATION, CompletionEngine.this.actualCompletionPosition);
+						CompletionProposal proposal = CompletionEngine.this.createProposal(CompletionProposal.VARIABLE_DECLARATION, CompletionEngine.this.actualCompletionPosition, null);
 						//proposal.setSignature(getSignature(typeBinding));
 						//proposal.setPackageName(q);
 						//proposal.setTypeName(displayName);
@@ -2377,7 +2384,7 @@ public class CompletionEngine extends Engine
 						}
 						knownKeywords.put(choices[i], this);
 						
-						CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition);
+						CompletionProposal proposal = this.createProposal(CompletionProposal.KEYWORD, this.actualCompletionPosition, null);
 						proposal.setName(choices[i]);
 						proposal.setCompletion(choices[i]);
 						proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2422,8 +2429,9 @@ public class CompletionEngine extends Engine
 		return 0;
 	}
 
-	protected CompletionProposal createProposal(int kind, int completionOffset) {
+	protected CompletionProposal createProposal(int kind, int completionOffset, ASTDmdNode node) {
 		CompletionProposal proposal = CompletionProposal.create(kind, completionOffset - this.offset);
+		proposal.node = node;
 		proposal.javaProject = javaProject;
 		proposal.nameLookup = this.nameEnvironment.nameLookup;
 		proposal.completionEngine = this;
@@ -2450,7 +2458,7 @@ public class CompletionEngine extends Engine
 		relevance += computeRelevanceForInterestingProposal();
 		relevance += R_QUALIFIED + R_COMPILATION_UNIT;
 		
-		CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition);
+		CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition, null);
 		proposal.setCompletion(fullyQualifiedName);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);

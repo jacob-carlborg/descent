@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.IMethod;
 import descent.core.JavaModelException;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.core.util.Util;
 import static descent.internal.compiler.parser.ILS.ILSno;
@@ -103,6 +104,8 @@ public class FuncDeclaration extends Declaration {
 	
 	protected IMethod javaElement;
 	private FuncDeclaration materialized; // in case the body is yet unknown
+	
+	public SemanticRest rest;
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
 			Type type) {
@@ -717,6 +720,8 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public FuncDeclaration isFuncDeclaration() {
+		consumeRest();
+		
 		return this;
 	}
 
@@ -946,6 +951,11 @@ public class FuncDeclaration extends Declaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
 		boolean gotoL1 = false;
 		boolean gotoL2 = false;
 		boolean gotoLmainerr = false;
@@ -1040,6 +1050,12 @@ public class FuncDeclaration extends Declaration {
 			// Find index of existing function in vtbl[] to override
 			if (cd.baseClass != null) {
 				for (vi = 0; vi < cd.baseClass.vtbl.size() && !gotoL1; vi++) {
+					try {
+						cd.vtbl.get(vi);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+					
 					FuncDeclaration fdv = ((Dsymbol) cd.vtbl.get(vi))
 							.isFuncDeclaration();
 
@@ -1342,6 +1358,11 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
 		TypeFunction f;
 		AggregateDeclaration ad;
 		VarDeclaration argptr = null;
@@ -1984,6 +2005,8 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		FuncDeclaration f;
 
 		if (s != null) {
@@ -2066,6 +2089,20 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public IMethod getJavaElement() {
 		return javaElement;
+	}
+	
+	@Override
+	void consumeRestStructure() {
+		if (rest != null && !rest.isStructureKnown()) {
+			rest.buildStructure();
+		}
+	}
+	
+	@Override
+	void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 
 }

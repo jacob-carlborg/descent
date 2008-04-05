@@ -104,6 +104,10 @@ public class DotVarExp extends UnaExp {
 			}
 
 			e1 = e1.semantic(sc, context);
+			
+			// Descent: lazy initialization
+			var.consumeRest();
+			
 			type = var.type;
 			if (type == null && context.global.errors > 0) { // var is goofed up, just return 0
 				return new IntegerExp(loc, 0);

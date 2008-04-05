@@ -560,6 +560,10 @@ public class CallExp extends UnaExp {
 					e1 = e;
 				} else if (e1.op == TOKtemplate) {
 					TemplateExp te = (TemplateExp) e1;
+					
+					// Descent: lazy initialization
+					te.td.consumeRest();
+					
 					f = te.td.deduce(sc, loc, null, arguments, context);
 					if (f == null) {
 						type = Type.terror;

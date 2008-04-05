@@ -14,6 +14,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.codeassist.InternalCompletionProposal;
+import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateParameter;
+import descent.internal.compiler.parser.TypeFunction;
 
 /**
  * Completion proposal.
@@ -1671,20 +1676,25 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		if (!this.parameterNamesComputed) {
 			this.parameterNamesComputed = true;
 			
-			try {
-				IJavaElement element = getJavaElement();
-				if (!(element instanceof IMethod)) {
-					return CharOperation.NO_CHAR_CHAR;
+			if (node != null) {
+				FuncDeclaration func;
+				if (node instanceof FuncDeclaration) {
+					func = (FuncDeclaration) node;
+				} else if (node instanceof TemplateDeclaration) {
+					func = (FuncDeclaration) ((TemplateDeclaration) node).members.get(0);
+				} else {
+					return this.parameterNames;
 				}
 				
-				IMethod method = (IMethod) element;
-				String[] parameterNamesS = method.getParameterNames();
-				this.parameterNames = new char[parameterNamesS.length][];
-				for(int i = 0; i < parameterNamesS.length; i++) {
-					this.parameterNames[i] = parameterNamesS[i].toCharArray();
+				TypeFunction tf = (TypeFunction) func.type; 
+				
+				this.parameterNames = new char[tf.parameters.size()][];
+				for (int i = 0; i < tf.parameters.size(); i++) {
+					IdentifierExp ident = tf.parameters.get(i).ident;
+					this.parameterNames[i] = ident == null || ident.ident == null ? ("arg" + (i + 1)).toCharArray() : ident.ident;
 				}
-			} catch (JavaModelException e) {
-				this.parameterNames = new char[0][];	
+			} else {
+				this.parameterNames = CharOperation.NO_CHAR_CHAR;
 			}
 		}
 		return this.parameterNames;
@@ -1711,32 +1721,20 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		if (!this.templateParameterNamesComputed) {
 			this.templateParameterNamesComputed = true;
 			
-			try {
-				IJavaElement element = getJavaElement();
+			if (node != null && node instanceof TemplateDeclaration) {
+				TemplateDeclaration temp = (TemplateDeclaration) node;
 				
-				ITypeParameter[] typeParameters;
-				
-				if (element instanceof IType) {
-					typeParameters = ((IType) element).getTypeParameters();
-				} else if (element instanceof IMethod) {
-					typeParameters = ((IMethod) element).getTypeParameters();
-				} else {
-					return CharOperation.NO_CHAR_CHAR;
+				this.templateParameterNames = new char[temp.parameters.size()][];
+				for (int i = 0; i < temp.parameters.size(); i++) {
+					IdentifierExp ident = temp.parameters.get(i).ident;
+					this.templateParameterNames[i] = ident == null || ident.ident == null ? ("arg" + (i + 1)).toCharArray() : ident.ident;
 				}
-				
-				this.templateParameterNames = new char[typeParameters.length][];
-				for(int i = 0; i < typeParameters.length; i++) {
-					this.templateParameterNames[i] = typeParameters[i].getElementName().toCharArray();
-				}
-			} catch (JavaModelException e) {
-				this.templateParameterNames = new char[0][];	
+			} else {
+				this.templateParameterNames = CharOperation.NO_CHAR_CHAR;
 			}
+			
 		}
 		return this.templateParameterNames;
-	}
-	
-	private IJavaElement getJavaElement() {
-		return javaProject.findBySignature(new String(getSignature()));
 	}
 
 	/**

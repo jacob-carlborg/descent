@@ -22,6 +22,9 @@ public class VarExp extends Expression {
 		super(loc, TOK.TOKvar);
 		this.var = var;
 		this.type = var.type;
+		
+		this.var.consumeRestStructure();
+		this.var.consumeRest();
 	}
 
 	@Override

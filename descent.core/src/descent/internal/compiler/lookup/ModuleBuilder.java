@@ -80,24 +80,55 @@ import descent.internal.core.util.Util;
 public class ModuleBuilder {
 	
 	/*
+	 * One ring to rule them all. 
+	 */
+	private final static boolean LAZY = false; 
+	
+	/*
 	 * Wether to make surface ClassDeclaration semantic lazy.
 	 */
-	private final static boolean LAZY_CLASSES = true;
+	private final static boolean LAZY_CLASSES = LAZY & true;
 	
 	/*
 	 * Wether to make surface InterfaceDeclaration semantic lazy.
 	 */
-	private final static boolean LAZY_INTERFACES = true;
+	private final static boolean LAZY_INTERFACES = LAZY & true;
 	
 	/*
 	 * Wether to make surface StructDeclaration semantic lazy.
 	 */
-	private final static boolean LAZY_STRUCTS = true;
+	private final static boolean LAZY_STRUCTS = LAZY & true;
+	
+	/*
+	 * Wether to make surface UnionDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_UNIONS = LAZY & true;
 	
 	/*
 	 * Wether to make surface AliasDeclaration semantic lazy.
 	 */
-	private final static boolean LAZY_ALIASES = true;
+	private final static boolean LAZY_ALIASES = LAZY & true;
+	
+	/*
+	 * Wether to make surface EnumDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_ENUMS = LAZY & true;
+	
+	/*
+	 * Wether to make surface TemplateDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_TEMPLATES = LAZY & true;
+	
+	/*
+	 * Wether to make surface FuncDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_FUNCTIONS = LAZY & true;
+	
+	/*
+	 * Wether to make surface VarDeclaration semantic lazy.
+	 * Currently doesn't work.
+	 */
+	private final static boolean LAZY_VARS = LAZY & false;
 	
 	/*
 	 * We want to skip things like:
@@ -172,7 +203,7 @@ public class ModuleBuilder {
 			
 			time = System.currentTimeMillis() - time;
 			if (time != 0) {
-				System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
+//				System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
 			}
 		} catch (JavaModelException e) {
 			e.printStackTrace();
@@ -205,7 +236,7 @@ public class ModuleBuilder {
 				break;
 			case IJavaElement.METHOD:
 				IMethod method = (IMethod) elem;
-				fillMethod(module, members, method);
+				fillMethod(module, members, method, state.surface);
 				break;
 			case IJavaElement.INITIALIZER:
 				IInitializer init = (IInitializer) elem;
@@ -370,7 +401,7 @@ public class ModuleBuilder {
 		state.surface = surface;
 	}
 
-	private void fillMethod(Module module, Dsymbols members, IMethod method) throws JavaModelException {
+	private void fillMethod(Module module, Dsymbols members, final IMethod method, boolean surface) throws JavaModelException {
 		if (method.isConstructor()) {
 			CtorDeclaration member = new CtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			member.setJavaElement(method);
@@ -388,9 +419,24 @@ public class ModuleBuilder {
 			member.setJavaElement(method);
 			members.add(wrap(member, method));	
 		} else { 
-			FuncDeclaration member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
+			final FuncDeclaration member;
+			if (LAZY_FUNCTIONS && surface) {
+				member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), null);
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							member.type = getType(method);
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}
+					}
+				});
+			} else {
+				member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
+			}
+			
 			member.setJavaElement(method);
-			members.add(wrapWithTemplate(module, member, method));
+			members.add(wrapWithTemplate(module, member, method, surface));
 		}
 	}
 
@@ -422,7 +468,7 @@ public class ModuleBuilder {
 			}
 
 			member.setJavaElement(type);
-			members.add(wrapWithTemplate(module, member, type));
+			members.add(wrapWithTemplate(module, member, type, surface));
 		} else if (type.isInterface()) {
 			final InterfaceDeclaration member;
 			
@@ -448,7 +494,7 @@ public class ModuleBuilder {
 			}
 			
 			member.setJavaElement(type);
-			members.add(wrapWithTemplate(module, member, type));
+			members.add(wrapWithTemplate(module, member, type, surface));
 		} else if (type.isStruct()) {
 			IdentifierExp id = getIdent(type);
 			if (id == null) {
@@ -456,7 +502,7 @@ public class ModuleBuilder {
 			} else {
 				final StructDeclaration member;
 				
-				if (LAZY_STRUCTS) {
+				if (LAZY_STRUCTS && surface) {
 					member = new StructDeclaration(getLoc(module, type), id);
 					member.rest = new SemanticRest(new Runnable() {
 						public void run() {
@@ -475,39 +521,103 @@ public class ModuleBuilder {
 				}
 				
 				member.setJavaElement(type);
-				members.add(wrapWithTemplate(module, member, type));
+				members.add(wrapWithTemplate(module, member, type, surface));
 			}
 		} else if (type.isUnion()) {
 			IdentifierExp id = getIdent(type);
 			if (id == null) {
 				fillAnon(module, members, type, true /* is union */, state);
 			} else {
-				UnionDeclaration member = new UnionDeclaration(getLoc(module, type), id);
-				member.setJavaElement(type);
-				member.members = new Dsymbols();
-				fill(module, member.members, type.getChildren(), state);
+				final UnionDeclaration member;
 				
-				members.add(wrapWithTemplate(module, member, type));
+				if (LAZY_UNIONS && surface) {
+					member = new UnionDeclaration(getLoc(module, type), id);
+					member.rest = new SemanticRest(new Runnable() {
+						public void run() {
+							member.members = new Dsymbols();
+							try {
+								fill(module, member.members, type.getChildren(), state);
+							} catch (JavaModelException e) {
+								Util.log(e);
+							}
+						}
+					});
+				} else {
+					member = new UnionDeclaration(getLoc(module, type), id);
+					
+					member.members = new Dsymbols();
+					fill(module, member.members, type.getChildren(), state);
+				}
+				
+				member.setJavaElement(type);
+				members.add(wrapWithTemplate(module, member, type, surface));
 			}
 		} else if (type.isEnum()) {
-			BaseClasses baseClasses = getBaseClasses(type);
-			EnumDeclaration member = new EnumDeclaration(getLoc(module, type), getIdent(type), baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
-			member.setJavaElement(type);
-			member.members = new Dsymbols();
-			for(IJavaElement sub : type.getChildren()) {
-				IField field = (IField) sub;
-				EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
-				enumMember.setJavaElement(field);
+			IdentifierExp ident = getIdent(type);
+			
+			final EnumDeclaration member;
+			
+			// For anonymous enums we can do it lazily 
+			if (LAZY_ENUMS && surface && ident != null) {
+				member = new EnumDeclaration(getLoc(module, type), ident, null);
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							BaseClasses baseClasses = getBaseClasses(type);
+							member.memtype = baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type;
+							
+							member.members = new Dsymbols();
+							for(IJavaElement sub : type.getChildren()) {
+								IField field = (IField) sub;
+								EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
+								enumMember.setJavaElement(field);
+								member.members.add(enumMember);
+							}
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}
+					}
+				});
+			} else {
+				BaseClasses baseClasses = getBaseClasses(type);
+				member = new EnumDeclaration(getLoc(module, type), ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
 				
-				member.members.add(enumMember);
+				member.members = new Dsymbols();
+				for(IJavaElement sub : type.getChildren()) {
+					IField field = (IField) sub;
+					EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
+					enumMember.setJavaElement(field);
+					member.members.add(enumMember);
+				}
 			}
 			
+			member.setJavaElement(type);
 			members.add(wrap(member, type));
 		} else if (type.isTemplate()) {
-			Dsymbols symbols = new Dsymbols();
-			fill(module, symbols, type.getChildren(), state);
+			final TemplateDeclaration member;
 			
-			TemplateDeclaration member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
+			if (LAZY_TEMPLATES && surface) {
+				member = new TemplateDeclaration(getLoc(module, type), getIdent(type), null, null);
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							Dsymbols symbols = new Dsymbols();
+							fill(module, symbols, type.getChildren(), state);
+							
+							member.members = symbols;
+							member.parameters = getTemplateParameters(type);
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}
+					}
+				});
+			} else {
+				Dsymbols symbols = new Dsymbols();
+				fill(module, symbols, type.getChildren(), state);
+				
+				member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
+			}
+			
 			member.setJavaElement(type);
 			members.add(wrap(member, type));
 		}
@@ -526,7 +636,23 @@ public class ModuleBuilder {
 
 	private void fillField(Module module, Dsymbols members, final IField field, State state) throws JavaModelException {
 		if (field.isVariable()) {
-			VarDeclaration member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
+			final VarDeclaration member;
+			if (LAZY_VARS && state.surface) {
+				member = new VarDeclaration(getLoc(module, field), null, getIdent(field), null);
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							member.type = getType(field.getTypeSignature());
+							member.init = getInitializer(field);
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}
+					}
+				});
+			} else {
+				member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
+			}
+			
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
@@ -618,9 +744,25 @@ public class ModuleBuilder {
 		}
 	}
 
-	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, ITemplated templated) throws JavaModelException {
+	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated, boolean surface) throws JavaModelException {
 		if (templated.isTemplate()) {
-			TemplateDeclaration temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
+			final TemplateDeclaration temp;
+			
+			if (LAZY_TEMPLATES && surface) {
+				temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), null, toDsymbols(symbol));
+				temp.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							temp.parameters = getTemplateParameters(templated);
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}
+					}
+				});
+			} else {
+				temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
+			}
+			
 			temp.setJavaElement((IJavaElement) templated);
 			return wrap(temp, (IMember) templated);
 		} else {

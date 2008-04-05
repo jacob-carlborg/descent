@@ -770,6 +770,11 @@ public class Parser extends Lexer {
 			}
 			if (s != null) {
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				if (s instanceof TemplateDeclaration 
+						&& ((TemplateDeclaration) s).wrapper) {
+					((TemplateDeclaration) s).members.get(0).setSourceRange(s.start, s.length);
+				}
+				
 				s.preComments = lastComments;
 				if (attachLeadingComments) {
 					attachLeadingComments(s);

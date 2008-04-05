@@ -164,7 +164,7 @@ public class Module extends Package {
 		
 		time = System.currentTimeMillis() - time;
 		if (time != 0) {
-			System.out.println("Semantic 1 on " + moduleName + " took: " + time + " milliseconds to complete.");
+//			System.out.println("Semantic 1 on " + moduleName + " took: " + time + " milliseconds to complete.");
 		}
 	}
 
@@ -209,7 +209,7 @@ public class Module extends Package {
 		
 		time = System.currentTimeMillis() - time;
 		if (time != 0) {
-			System.out.println("Semantic 2 on " + moduleName + " took: " + time + " milliseconds to complete.");
+//			System.out.println("Semantic 2 on " + moduleName + " took: " + time + " milliseconds to complete.");
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Module extends Package {
 		
 		time = System.currentTimeMillis() - time;
 		if (time != 0) {
-			System.out.println("Semantic 3 on " + moduleName + " took: " + time + " milliseconds to complete.");
+//			System.out.println("Semantic 3 on " + moduleName + " took: " + time + " milliseconds to complete.");
 		}
 	}
 

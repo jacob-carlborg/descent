@@ -65,6 +65,9 @@ public class TypeEnum extends Type {
 		EnumMember m;
 		Dsymbol s;
 		Expression em;
+		
+		// Descent: lazy initialization
+		sym.consumeRest();
 
 		s = sym.symtab.lookup(ident);
 		
@@ -193,6 +196,9 @@ public class TypeEnum extends Type {
 
 	@Override
 	public Type toBasetype(SemanticContext context) {
+		// Descent: lazy initialization
+		sym.consumeRest();
+		
 		if (sym.memtype == null) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.EnumIsForwardReference, sym));

@@ -169,7 +169,7 @@ public class CompletionProposalLabelProvider {
 			}
 		}
 		
-		char[] displayName= Signature.toCharArray(typeSignature);
+		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature));
 		if (prefix != null) {
 			displayName = CharOperation.concat(prefix, displayName, ' ');
 		}
@@ -387,7 +387,9 @@ public class CompletionProposalLabelProvider {
 		// TODO remove when bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
 		if (declaringTypeSignature == null)
 			return null;
-		return SignatureUtil.stripSignatureToFQN(String.valueOf(declaringTypeSignature));
+		
+		return new String(createTypeDisplayName(declaringTypeSignature));
+//		return SignatureUtil.stripSignatureToFQN(String.valueOf(declaringTypeSignature));
 	}
 
 	/**
@@ -471,7 +473,13 @@ public class CompletionProposalLabelProvider {
 	String createSimpleLabelWithType(CompletionProposal proposal) {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getCompletion());
-		// TODO JDT signature
+		
+		char[] typeName = proposal.getTypeName();
+		if (typeName != null && typeName.length != 0) {
+			buf.append("    "); //$NON-NLS-1$
+			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName)));
+		}
+		
 //		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
 //		if (typeName.length > 0) {
 //			buf.append("    "); //$NON-NLS-1$
@@ -484,7 +492,12 @@ public class CompletionProposalLabelProvider {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getName());
 		
-		// TODO JDT signature
+		char[] typeName = proposal.getTypeName();
+		if (typeName != null && typeName.length != 0) {
+			buf.append("    "); //$NON-NLS-1$
+			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName)));
+		}
+		
 //		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
 //		if (typeName.length > 0) {
 //			buf.append("    "); //$NON-NLS-1$

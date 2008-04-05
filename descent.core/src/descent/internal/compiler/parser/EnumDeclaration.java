@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IType;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -26,6 +27,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 	public integer_t defaultval; // default initializer
 	
 	private IType javaElement;
+	
+	public SemanticRest rest;
 
 	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
 		super(id);
@@ -78,9 +81,21 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 		return super.oneMember(ps, context);
 	}
+	
+	@Override
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		consumeRest();
+		
+		return super.search(loc, ident, flags, context);
+	}
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
 		integer_t number;
 		Type t;
 		Scope sce;
@@ -271,6 +286,9 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		// Descent: lazy initialization
+		consumeRestStructure();
+		
 		Type t = null;
 		if (memtype != null) {
 			t = memtype.syntaxCopy(context);
@@ -361,6 +379,18 @@ public class EnumDeclaration extends ScopeDsymbol {
 	@Override
 	public IType getJavaElement() {
 		return javaElement;
+	}
+	
+	void consumeRestStructure() {
+		if (rest != null && !rest.isStructureKnown()) {
+			rest.buildStructure();
+		}
+	}
+	
+	void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 
 }

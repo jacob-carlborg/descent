@@ -13,6 +13,7 @@ package descent.internal.codeassist;
 import descent.core.IAccessRule;
 import descent.core.IJavaProject;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.core.NameLookup;
 
 /**
@@ -48,6 +49,8 @@ public class InternalCompletionProposal {
 	protected int accessibility = IAccessRule.K_ACCESSIBLE;
 	
 	protected boolean isConstructor = false;
+	
+	protected ASTDmdNode node;
 	
 	protected char[][] createDefaultParameterNames(int length) {
 		char[][] parameterNames;

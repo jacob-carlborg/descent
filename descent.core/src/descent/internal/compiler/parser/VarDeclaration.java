@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IField;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTexport;
 
@@ -56,6 +57,8 @@ public class VarDeclaration extends Declaration {
 	public Object isym;
 	
 	private IField javaElement;
+	
+	public SemanticRest rest;
 
 	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
@@ -64,7 +67,7 @@ public class VarDeclaration extends Declaration {
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
 		super(id);
 
-		Assert.isTrue(type != null || init != null);
+//		Assert.isTrue(type != null || init != null);
 
 		this.loc = loc;
 		this.type = type;
@@ -205,6 +208,9 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public VarDeclaration isVarDeclaration() {
+		consumeRestStructure();
+		consumeRest();
+		
 		return this;
 	}
 
@@ -220,6 +226,13 @@ public class VarDeclaration extends Declaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			if (rest.getScope() == null) {
+				rest.setSemanticContext(sc, context);
+			}
+			return;
+		}
+		
 		semantic0(sc, context);
 		
 		// Descent: for code evaluate
@@ -559,6 +572,13 @@ public class VarDeclaration extends Declaration {
 	
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			if (rest.getScope() == null) {
+				rest.setSemanticContext(sc, context);
+			}
+			return;
+		}
+		
 		semantic20(sc, context);
 		
 		// Descent: for code evaluate
@@ -578,6 +598,8 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		VarDeclaration sv;
 		if (s != null) {
 			sv = (VarDeclaration) s;
@@ -719,6 +741,20 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public IField getJavaElement() {
 		return javaElement;
+	}
+	
+	@Override
+	void consumeRestStructure() {
+		if (rest != null && !rest.isStructureKnown()) {
+			rest.buildStructure();
+		}
+	}
+	
+	@Override
+	void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 
     // PERHAPS Symbol *toSymbol();

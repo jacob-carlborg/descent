@@ -100,6 +100,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		Objects dedtypes = new Objects();
 
 		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext) {
+			
+			// Descent: lazy initialization
+			td.consumeRest();
+			
 			MATCH m;
 
 			// If more arguments than parameters,
@@ -512,6 +516,10 @@ public class TemplateInstance extends ScopeDsymbol {
 
 			tempdecl = findTemplateDeclaration(sc, context);
 			if (null != tempdecl) {
+				
+				// Descent: lazy initialization
+				tempdecl.consumeRest();
+				
 				tempdecl = findBestMatch(sc, context);
 			}
 			
@@ -698,7 +706,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		
 		time = System.currentTimeMillis() - time;
 		if (time != 0) {
-			System.out.println("Template instace semantic 1 on " + toString() + " took: " + time + " milliseconds to complete.");
+//			System.out.println("Template instace semantic 1 on " + toString() + " took: " + time + " milliseconds to complete.");
 		}
 	}
 

@@ -78,8 +78,8 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	}
 	
 	public boolean isTemplate() {
-		// TODO
-		return false;
+		return ((node instanceof FuncDeclaration) && 
+				((FuncDeclaration) node).templated);
 	}
 
 	public int getVarargs() {
