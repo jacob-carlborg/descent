@@ -127,6 +127,10 @@ public class NewExp extends Expression {
 
 				TypeClass tc = (TypeClass) (tb);
 				ClassDeclaration cd = tc.sym.isClassDeclaration();
+				
+				// Descent: lazy initialization
+				cd.consumeRest();
+				
 				if (cd.isInterfaceDeclaration() != null) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, sourceNewtype, new String[] { cd.toChars(context) }));
 				} else if (cd.isAbstract()) {

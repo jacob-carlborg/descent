@@ -62,6 +62,10 @@ public class StructInitializer extends Initializer {
 
 			ts = (TypeStruct) t;
 			ad = ts.sym;
+			
+			// Descent: lazy initialization
+			ad.consumeRest();
+			
 			for (i = 0; i < size(field); i++) {
 				IdentifierExp id = field.get(i);
 				Initializer val = value.get(i);

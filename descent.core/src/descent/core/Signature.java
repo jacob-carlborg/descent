@@ -977,25 +977,25 @@ public static char[] createSliceSignature(char[] type, char[] lower, char[] uppe
  */
 public static int getParameterCount(String signature) throws IllegalArgumentException {
 	final int[] count = { 0 };	
-	SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
-		
-		private int functionTypeCount = 0;
-		
-		public void acceptArgumentModifier(int stc) { 
-			if (functionTypeCount == 1) {
-				count[0]++;
+	SignatureProcessor.process(signature, false /* don't want sub-signatures */,
+		new SignatureRequestorAdapter() {		
+			private int functionTypeCount = 0;
+			
+			public void acceptArgumentModifier(int stc) { 
+				if (functionTypeCount == 1) {
+					count[0]++;
+				}
 			}
-		}
-
-		public void enterFunctionType() {
-			functionTypeCount++;
-		}
-
-		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-			functionTypeCount--;
-		}
-		
-	});
+	
+			public void enterFunctionType() {
+				functionTypeCount++;
+			}
+	
+			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+				functionTypeCount--;
+			}
+			
+		});
 	return count[0];
 }
 /**
@@ -1027,42 +1027,43 @@ public static int getParameterCount(char[] signature) throws IllegalArgumentExce
  */
 public static int getTemplateParameterCount(String signature) throws IllegalArgumentException {
 	final int[] count = { 0 };	
-	SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
-		private int templateCount;
-		@Override
-		public void enterTemplateAliasParameter() {
-			if (templateCount == 1) {
-				count[0]++;
+	SignatureProcessor.process(signature, false /* don't want sub-signatures */, 
+		new SignatureRequestorAdapter() {
+			private int templateCount;
+			@Override
+			public void enterTemplateAliasParameter() {
+				if (templateCount == 1) {
+					count[0]++;
+				}
 			}
-		}
-		@Override
-		public void enterTemplateTypeParameter() {
-			if (templateCount == 1) {
-				count[0]++;
+			@Override
+			public void enterTemplateTypeParameter() {
+				if (templateCount == 1) {
+					count[0]++;
+				}
 			}
-		}
-		@Override
-		public void enterTemplateValueParameter() {
-			if (templateCount == 1) {
-				count[0]++;
+			@Override
+			public void enterTemplateValueParameter() {
+				if (templateCount == 1) {
+					count[0]++;
+				}
 			}
-		}
-		@Override
-		public void acceptTemplateTupleParameter() {
-			if (templateCount == 1) {
-				count[0]++;
+			@Override
+			public void acceptTemplateTupleParameter() {
+				if (templateCount == 1) {
+					count[0]++;
+				}
 			}
-		}
-		@Override
-		public void enterTemplateParameters() {
-			templateCount++;
-			count[0] = 0;
-		}	
-		@Override
-		public void exitTemplateParameters() {
-			templateCount--;
-		}
-	});
+			@Override
+			public void enterTemplateParameters() {
+				templateCount++;
+				count[0] = 0;
+			}	
+			@Override
+			public void exitTemplateParameters() {
+				templateCount--;
+			}
+		});
 	return count[0];
 }
 
@@ -1109,98 +1110,99 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 	final List<String> parameters = new ArrayList<String>();
 	final boolean[] valid = { false };
 	
-	SignatureProcessor.process(methodSignature, new SignatureRequestorAdapter() {
-		int functionCount = 0;
-		int argumentsCount = 0;
-		int templateInstanceCount = 0;
-		boolean foundArgumentBreak = false;
-		@Override
-		public void acceptArgumentModifier(int stc) {
-			if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
-				argumentsCount++;
+	SignatureProcessor.process(methodSignature, true /* want sub-signatures */, 
+		new SignatureRequestorAdapter() {
+			int functionCount = 0;
+			int argumentsCount = 0;
+			int templateInstanceCount = 0;
+			boolean foundArgumentBreak = false;
+			@Override
+			public void acceptArgumentModifier(int stc) {
+				if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+					argumentsCount++;
+				}
 			}
-		}
-		@Override
-		public void acceptPrimitive(TypeBasic type) {
-			add(type.deco);
-		}
-		@Override
-		public void acceptPointer(String signature) {
-			replace(signature);
-		}
-		@Override
-		public void acceptStaticArray(char[] dimension, String signature) {
-			replace(signature);
-		}
-		@Override
-		public void acceptDynamicArray(String signature) {
-			replace(signature);
-		}
-		@Override
-		public void acceptAssociativeArray(String signature) {
-			parameters.remove(parameters.size() - 1);
-			replace(signature);
-		}
-		@Override
-		public void acceptTypeof(char[] expression, String signature) {
-			add(signature);
-		}
-		@Override
-		public void acceptSlice(char[] lwr, char[] upr, String signature) {
-			replace(signature);
-		}
-		@Override
-		public void acceptArgumentBreak(char c) {
-			if (functionCount == 1) {
-				foundArgumentBreak = true;
+			@Override
+			public void acceptPrimitive(TypeBasic type) {
+				add(type.deco);
 			}
-		}
-		@Override
-		public void acceptDelegate(String signature) {
-			replace(signature);
-		}
-		@Override
-		public void acceptIdentifier(char[][] compoundName, String signature) {
-			add(signature);
-		}
-		@Override
-		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-			if (parameters.size() == argumentsCount - 1) {
-				add(signature);
-			} else {
+			@Override
+			public void acceptPointer(String signature) {
 				replace(signature);
 			}
-		}
-		@Override
-		public void enterTemplateInstance() {
-			templateInstanceCount++;
-		}
-		@Override
-		public void exitTemplateInstance(String signature) {
-			templateInstanceCount--;
-			replace(signature);
-		}
-		@Override
-		public void enterFunctionType() {
-			functionCount++;
-			valid[0] = true;
-		}
-		@Override
-		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-			functionCount--;
-			add(signature);
-		}
-		private void add(String sig) {
-			if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
-				parameters.add(sig);
+			@Override
+			public void acceptStaticArray(char[] dimension, String signature) {
+				replace(signature);
 			}
-		}
-		private void replace(String sig) {
-			if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
-				parameters.set(parameters.size() - 1, sig);
+			@Override
+			public void acceptDynamicArray(String signature) {
+				replace(signature);
 			}
-		}
-	});
+			@Override
+			public void acceptAssociativeArray(String signature) {
+				parameters.remove(parameters.size() - 1);
+				replace(signature);
+			}
+			@Override
+			public void acceptTypeof(char[] expression, String signature) {
+				add(signature);
+			}
+			@Override
+			public void acceptSlice(char[] lwr, char[] upr, String signature) {
+				replace(signature);
+			}
+			@Override
+			public void acceptArgumentBreak(char c) {
+				if (functionCount == 1) {
+					foundArgumentBreak = true;
+				}
+			}
+			@Override
+			public void acceptDelegate(String signature) {
+				replace(signature);
+			}
+			@Override
+			public void acceptIdentifier(char[][] compoundName, String signature) {
+				add(signature);
+			}
+			@Override
+			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+				if (parameters.size() == argumentsCount - 1) {
+					add(signature);
+				} else {
+					replace(signature);
+				}
+			}
+			@Override
+			public void enterTemplateInstance() {
+				templateInstanceCount++;
+			}
+			@Override
+			public void exitTemplateInstance(String signature) {
+				templateInstanceCount--;
+				replace(signature);
+			}
+			@Override
+			public void enterFunctionType() {
+				functionCount++;
+				valid[0] = true;
+			}
+			@Override
+			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+				functionCount--;
+				add(signature);
+			}
+			private void add(String sig) {
+				if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+					parameters.add(sig);
+				}
+			}
+			private void replace(String sig) {
+				if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+					parameters.set(parameters.size() - 1, sig);
+				}
+			}
+		});
 	
 	if (!valid[0]) {
 		throw new IllegalArgumentException();
@@ -1235,81 +1237,82 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 	final String[] ret = { null };
 	final boolean[] valid = { false };
 	
-	SignatureProcessor.process(methodSignature, new SignatureRequestorAdapter() {
-		int functionCount = 0;
-		int templateInstanceCount = 0;
-		@Override
-		public void enterFunctionType() {
-			functionCount++;
-		}
-		@Override
-		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-			functionCount--;
-			if (functionCount != 0) {
+	SignatureProcessor.process(methodSignature, true /* want sub-signatures */,  
+		new SignatureRequestorAdapter() {
+			int functionCount = 0;
+			int templateInstanceCount = 0;
+			@Override
+			public void enterFunctionType() {
+				functionCount++;
+			}
+			@Override
+			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+				functionCount--;
+				if (functionCount != 0) {
+					copy(signature);
+				} else {
+					valid[0] = true;
+				}
+			}
+			@Override
+			public void acceptPrimitive(TypeBasic type) {
+				copy(type.deco);
+			}
+			@Override
+			public void acceptAssociativeArray(String signature) {
 				copy(signature);
-			} else {
-				valid[0] = true;
 			}
-		}
-		@Override
-		public void acceptPrimitive(TypeBasic type) {
-			copy(type.deco);
-		}
-		@Override
-		public void acceptAssociativeArray(String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptDelegate(String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptDynamicArray(String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptStaticArray(char[] dimension, String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptModule(char[][] compoundName, String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptPointer(String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptIdentifier(char[][] compoundName, String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptTypeof(char[] expression, String signature) {
-			copy(signature);
-		}
-		@Override
-		public void acceptSlice(char[] lwr, char[] upr, String signature) {
-			copy(signature);
-		}
-		@Override
-		public void enterTemplateInstance() {
-			templateInstanceCount++;
-		}
-		@Override
-		public void exitTemplateInstance(String signature) {
-			templateInstanceCount--;
-			copy(signature);
-		}
-		private void copy(String signature) {
-			if (functionCount == 1 && templateInstanceCount == 0) {
-				ret[0] = signature;
+			@Override
+			public void acceptDelegate(String signature) {
+				copy(signature);
 			}
-		}
-	});
+			@Override
+			public void acceptDynamicArray(String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptStaticArray(char[] dimension, String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptModule(char[][] compoundName, String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptPointer(String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptIdentifier(char[][] compoundName, String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptTypeof(char[] expression, String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptSlice(char[] lwr, char[] upr, String signature) {
+				copy(signature);
+			}
+			@Override
+			public void enterTemplateInstance() {
+				templateInstanceCount++;
+			}
+			@Override
+			public void exitTemplateInstance(String signature) {
+				templateInstanceCount--;
+				copy(signature);
+			}
+			private void copy(String signature) {
+				if (functionCount == 1 && templateInstanceCount == 0) {
+					ret[0] = signature;
+				}
+			}
+		});
 	
 	if (!valid[0]) {
 		throw new IllegalArgumentException();
@@ -1370,329 +1373,330 @@ public static String toString(String signature) throws IllegalArgumentException 
 	final Stack<Stack<StringBuilder>> templateParameters = new Stack<Stack<StringBuilder>>();
 	final Stack<Stack<StringBuilder>> templateInstances = new Stack<Stack<StringBuilder>>();
 	
-	SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
-		@Override
-		public void acceptPrimitive(TypeBasic type) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(type.ty.name);
-			
-			st.push(sb);
-		}
-		@Override
-		public void acceptPointer(String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			st.peek().append('*');
-		}
-		@Override
-		public void acceptDynamicArray(String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder sb = st.peek();
-			sb.append('[');
-			sb.append(']');
-		}
-		@Override
-		public void acceptStaticArray(char[] dimension, String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder sb = st.peek();
-			sb.append('[');
-			sb.append(dimension);
-			sb.append(']');
-		}
-		@Override
-		public void acceptAssociativeArray(String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder value = st.pop();
-			StringBuilder key = st.pop();
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(value);
-			sb.append('[');
-			sb.append(key);
-			sb.append(']');
-			
-			st.push(sb);
-		}
-		@Override
-		public void acceptTypeof(char[] expression, String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append("typeof(");
-			sb.append(expression);
-			sb.append(')');
-			
-			st.push(sb);
-		}
-		@Override
-		public void acceptSlice(char[] lwr, char[] upr, String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder type = st.pop();
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(type);
-			sb.append('[');
-			sb.append(lwr);
-			sb.append(" .. ");
-			sb.append(upr);
-			sb.append(']');
-			
-			st.push(sb);
-		}
-		@Override
-		public void acceptModule(char[][] compoundName, String signature) {
-			acceptIdentifier(compoundName, signature);
-		}
-		@Override
-		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-			if (type == ISignatureConstants.FUNCTION ||
-				type == ISignatureConstants.TEMPLATED_FUNCTION) {
+	SignatureProcessor.process(signature, false /* don't want sub-signatures */,  
+		new SignatureRequestorAdapter() {
+			@Override
+			public void acceptPrimitive(TypeBasic type) {
 				Stack<StringBuilder> st = stack.peek();
 				
-				StringBuilder funcType = st.pop();
-				StringBuilder funcName = st.pop();
+				StringBuilder sb = new StringBuilder();
+				sb.append(type.ty.name);
 				
-				if (funcName.length() != 0) {
-					funcName.append('.');
-				}
-				funcName.append(name);
+				st.push(sb);
+			}
+			@Override
+			public void acceptPointer(String signature) {
+				Stack<StringBuilder> st = stack.peek();
 				
-				if (type == ISignatureConstants.TEMPLATED_FUNCTION) {
-					appendTemplateParameters(funcName);
-				}
-				
-				replaceFunctionWith(funcType, funcName.toString());
-				
-				st.push(funcType);
-			} else {
+				st.peek().append('*');
+			}
+			@Override
+			public void acceptDynamicArray(String signature) {
 				Stack<StringBuilder> st = stack.peek();
 				
 				StringBuilder sb = st.peek();
-				if (sb.length() > 0) {
-					sb.append('.');
-				}
-				sb.append(name);
+				sb.append('[');
+				sb.append(']');
+			}
+			@Override
+			public void acceptStaticArray(char[] dimension, String signature) {
+				Stack<StringBuilder> st = stack.peek();
 				
-				if (type == ISignatureConstants.TEMPLATE ||
-					type == ISignatureConstants.TEMPLATED_CLASS ||
-					type == ISignatureConstants.TEMPLATED_STRUCT ||
-					type == ISignatureConstants.TEMPLATED_UNION ||
-					type == ISignatureConstants.TEMPLATED_INTERFACE) {
-					appendTemplateParameters(sb);
-				}
+				StringBuilder sb = st.peek();
+				sb.append('[');
+				sb.append(dimension);
+				sb.append(']');
 			}
-		}
-		
-		private void appendTemplateParameters(StringBuilder sb) {
-			sb.append('!');
-			sb.append('(');
-			
-			Stack<StringBuilder> tps = templateParameters.pop();				
-			for (int i = 0; i < tps.size(); i++) {
-				if (i != 0) {
-					sb.append(',');
-					sb.append(' ');
-				}
-				sb.append(tps.get(i));
+			@Override
+			public void acceptAssociativeArray(String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder value = st.pop();
+				StringBuilder key = st.pop();
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(value);
+				sb.append('[');
+				sb.append(key);
+				sb.append(']');
+				
+				st.push(sb);
 			}
-			
-			sb.append(')');
-		}
-		
-		@Override
-		public void acceptIdentifier(char[][] compoundName, String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			
-			StringBuilder sb = new StringBuilder();
-			
-			for (int i = 0; i < compoundName.length; i++) {
-				if (i != 0) {
-					sb.append('.');
-				}
-				sb.append(compoundName[i]);
+			@Override
+			public void acceptTypeof(char[] expression, String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append("typeof(");
+				sb.append(expression);
+				sb.append(')');
+				
+				st.push(sb);
 			}
-			
-			st.push(sb);
-		}
-		@Override
-		public void enterFunctionType() {
-			stack.push(new Stack<StringBuilder>());
-			modifiers.push(new Stack<char[]>());
-		}
-		@Override
-		public void acceptArgumentModifier(int stc) {
-			switch(stc) {
-			case STC.STCin: 
-				modifiers.peek().push(CharOperation.NO_CHAR);
-				break;
-			case STC.STCout:
-				modifiers.peek().push("out ".toCharArray());
-				break;
-			case STC.STCref:
-				modifiers.peek().push("ref ".toCharArray());
-				break;
-			case STC.STClazy:
-				modifiers.peek().push("lazy ".toCharArray());
-				break;
+			@Override
+			public void acceptSlice(char[] lwr, char[] upr, String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder type = st.pop();
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(type);
+				sb.append('[');
+				sb.append(lwr);
+				sb.append(" .. ");
+				sb.append(upr);
+				sb.append(']');
+				
+				st.push(sb);
 			}
-		}
-		@Override
-		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-			Stack<StringBuilder> st = stack.pop();
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(st.pop());
-			sb.append(" function(");
-			
-			for (int i = 0; i < st.size(); i++) {
-				if (i != 0) {
-					sb.append(',');
-					sb.append(' ');
-				}
-				sb.append(modifiers.peek().get(i));
-				sb.append(st.get(i));
+			@Override
+			public void acceptModule(char[][] compoundName, String signature) {
+				acceptIdentifier(compoundName, signature);
 			}
-			
-			sb.append(')');
-			
-			stack.peek().push(sb);
-			
-			modifiers.pop();
-		}
-		@Override
-		public void acceptDelegate(String signature) {
-			Stack<StringBuilder> st = stack.peek();
-			StringBuilder sb = st.peek();
-			
-			replaceFunctionWith(sb, "delegate");
-		}
-		private void replaceFunctionWith(StringBuilder func, String string) {
-			int parenCount = 0;
-			int funcIndex = -1;
-			for(int i = 0; i < func.length(); i++) {
-				char c = func.charAt(i);
-				switch(c) {
-				case '(':
-					parenCount++;
-					break;
-				case ')':
-					parenCount--;
-					break;
-				case 'f':
-					if (parenCount == 0 && i + 8 < func.length() && func.substring(i, i + 8).equals("function")) {
-						funcIndex = i;
+			@Override
+			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+				if (type == ISignatureConstants.FUNCTION ||
+					type == ISignatureConstants.TEMPLATED_FUNCTION) {
+					Stack<StringBuilder> st = stack.peek();
+					
+					StringBuilder funcType = st.pop();
+					StringBuilder funcName = st.pop();
+					
+					if (funcName.length() != 0) {
+						funcName.append('.');
 					}
+					funcName.append(name);
+					
+					if (type == ISignatureConstants.TEMPLATED_FUNCTION) {
+						appendTemplateParameters(funcName);
+					}
+					
+					replaceFunctionWith(funcType, funcName.toString());
+					
+					st.push(funcType);
+				} else {
+					Stack<StringBuilder> st = stack.peek();
+					
+					StringBuilder sb = st.peek();
+					if (sb.length() > 0) {
+						sb.append('.');
+					}
+					sb.append(name);
+					
+					if (type == ISignatureConstants.TEMPLATE ||
+						type == ISignatureConstants.TEMPLATED_CLASS ||
+						type == ISignatureConstants.TEMPLATED_STRUCT ||
+						type == ISignatureConstants.TEMPLATED_UNION ||
+						type == ISignatureConstants.TEMPLATED_INTERFACE) {
+						appendTemplateParameters(sb);
+					}
+				}
+			}
+			
+			private void appendTemplateParameters(StringBuilder sb) {
+				sb.append('!');
+				sb.append('(');
+				
+				Stack<StringBuilder> tps = templateParameters.pop();				
+				for (int i = 0; i < tps.size(); i++) {
+					if (i != 0) {
+						sb.append(',');
+						sb.append(' ');
+					}
+					sb.append(tps.get(i));
+				}
+				
+				sb.append(')');
+			}
+			
+			@Override
+			public void acceptIdentifier(char[][] compoundName, String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = new StringBuilder();
+				
+				for (int i = 0; i < compoundName.length; i++) {
+					if (i != 0) {
+						sb.append('.');
+					}
+					sb.append(compoundName[i]);
+				}
+				
+				st.push(sb);
+			}
+			@Override
+			public void enterFunctionType() {
+				stack.push(new Stack<StringBuilder>());
+				modifiers.push(new Stack<char[]>());
+			}
+			@Override
+			public void acceptArgumentModifier(int stc) {
+				switch(stc) {
+				case STC.STCin: 
+					modifiers.peek().push(CharOperation.NO_CHAR);
+					break;
+				case STC.STCout:
+					modifiers.peek().push("out ".toCharArray());
+					break;
+				case STC.STCref:
+					modifiers.peek().push("ref ".toCharArray());
+					break;
+				case STC.STClazy:
+					modifiers.peek().push("lazy ".toCharArray());
 					break;
 				}
 			}
-			
-			func.replace(funcIndex, funcIndex + 8, string);
-		}
-		@Override
-		public void enterTemplateParameters() {
-			stack.push(new Stack<StringBuilder>());
-			templateParameters.push(new Stack<StringBuilder>());
-		}
-		@Override
-		public void acceptTemplateTupleParameter() {
-			enterTemplateParameter();
-			templateParameters.peek().peek().append("...");
-		}
-		@Override
-		public void enterTemplateAliasParameter() {
-			enterTemplateParameter();
-			templateParameters.peek().peek().insert(0, "alias ");
-		}
-		@Override
-		public void exitTemplateAliasParameter(String signature) {
-			if (!stack.peek().isEmpty()) {
-				templateParameters.peek().peek().append(' ').append(':').append(' ').append(stack.peek().peek());
-			}
-		}
-		@Override
-		public void enterTemplateTypeParameter() {
-			enterTemplateParameter();
-		}
-		@Override
-		public void exitTemplateTypeParameter(String signature) {
-			if (!stack.peek().isEmpty()) {
-				templateParameters.peek().peek().append(' ').append(':').append(' ').append(stack.peek().peek());
-			}
-		}
-		@Override
-		public void enterTemplateValueParameter() {
-			enterTemplateParameter();
-		}
-		@Override
-		public void exitTemplateValueParameter(String signature) {
-			if (!stack.peek().isEmpty()) {
-				templateParameters.peek().peek().insert(0, stack.peek().peek().append(' '));
-			}
-		}
-		@Override
-		public void acceptTemplateValueParameterSpecificValue(char[] exp) {
-			templateParameters.peek().peek().append(' ').append(':').append(' ').append(exp);
-		}
-		private void enterTemplateParameter() {
-			StringBuilder sb = new StringBuilder(1);
-			sb.append(nextTemplateParameterName());
-			
-			templateParameters.peek().push(sb);
-		}
-		private char nextTemplateParameterName() {
-			// We don't care about crazy templates with more than 8 parameters
-			return (char) ('T' + templateParameters.peek().size());
-		}
-		@Override
-		public void exitTemplateParameters() {
-			stack.pop();
-		}
-		@Override
-		public void enterTemplateInstance() {
-			stack.push(new Stack<StringBuilder>());
-			templateInstances.push(new Stack<StringBuilder>());			
-		}
-		@Override
-		public void exitTemplateInstanceSymbol(String string) {
-			templateInstances.peek().push(new StringBuilder(stack.peek().pop()));
-		}
-		@Override
-		public void exitTemplateInstanceType(String signature) {
-			templateInstances.peek().push(new StringBuilder(stack.peek().pop()));
-		}
-		@Override
-		public void acceptTemplateInstanceValue(char[] exp, String signature) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(exp);
-			
-			templateInstances.peek().push(sb);
-		}
-		@Override
-		public void exitTemplateInstance(String signature) {
-			stack.pop();
-			
-			StringBuilder sb = stack.peek().peek();
-			sb.append('!');
-			sb.append('(');
-			
-			Stack<StringBuilder> tp = templateInstances.pop();
-			for (int i = 0; i < tp.size(); i++) {
-				if (i != 0) {
-					sb.append(',');
-					sb.append(' ');
+			@Override
+			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+				Stack<StringBuilder> st = stack.pop();
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(st.pop());
+				sb.append(" function(");
+				
+				for (int i = 0; i < st.size(); i++) {
+					if (i != 0) {
+						sb.append(',');
+						sb.append(' ');
+					}
+					sb.append(modifiers.peek().get(i));
+					sb.append(st.get(i));
 				}
-				sb.append(tp.get(i));
+				
+				sb.append(')');
+				
+				stack.peek().push(sb);
+				
+				modifiers.pop();
 			}
-			
-			sb.append(')');
-		}
-	});
+			@Override
+			public void acceptDelegate(String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				StringBuilder sb = st.peek();
+				
+				replaceFunctionWith(sb, "delegate");
+			}
+			private void replaceFunctionWith(StringBuilder func, String string) {
+				int parenCount = 0;
+				int funcIndex = -1;
+				for(int i = 0; i < func.length(); i++) {
+					char c = func.charAt(i);
+					switch(c) {
+					case '(':
+						parenCount++;
+						break;
+					case ')':
+						parenCount--;
+						break;
+					case 'f':
+						if (parenCount == 0 && i + 8 < func.length() && func.substring(i, i + 8).equals("function")) {
+							funcIndex = i;
+						}
+						break;
+					}
+				}
+				
+				func.replace(funcIndex, funcIndex + 8, string);
+			}
+			@Override
+			public void enterTemplateParameters() {
+				stack.push(new Stack<StringBuilder>());
+				templateParameters.push(new Stack<StringBuilder>());
+			}
+			@Override
+			public void acceptTemplateTupleParameter() {
+				enterTemplateParameter();
+				templateParameters.peek().peek().append("...");
+			}
+			@Override
+			public void enterTemplateAliasParameter() {
+				enterTemplateParameter();
+				templateParameters.peek().peek().insert(0, "alias ");
+			}
+			@Override
+			public void exitTemplateAliasParameter(String signature) {
+				if (!stack.peek().isEmpty()) {
+					templateParameters.peek().peek().append(' ').append(':').append(' ').append(stack.peek().peek());
+				}
+			}
+			@Override
+			public void enterTemplateTypeParameter() {
+				enterTemplateParameter();
+			}
+			@Override
+			public void exitTemplateTypeParameter(String signature) {
+				if (!stack.peek().isEmpty()) {
+					templateParameters.peek().peek().append(' ').append(':').append(' ').append(stack.peek().peek());
+				}
+			}
+			@Override
+			public void enterTemplateValueParameter() {
+				enterTemplateParameter();
+			}
+			@Override
+			public void exitTemplateValueParameter(String signature) {
+				if (!stack.peek().isEmpty()) {
+					templateParameters.peek().peek().insert(0, stack.peek().peek().append(' '));
+				}
+			}
+			@Override
+			public void acceptTemplateValueParameterSpecificValue(char[] exp) {
+				templateParameters.peek().peek().append(' ').append(':').append(' ').append(exp);
+			}
+			private void enterTemplateParameter() {
+				StringBuilder sb = new StringBuilder(1);
+				sb.append(nextTemplateParameterName());
+				
+				templateParameters.peek().push(sb);
+			}
+			private char nextTemplateParameterName() {
+				// We don't care about crazy templates with more than 8 parameters
+				return (char) ('T' + templateParameters.peek().size());
+			}
+			@Override
+			public void exitTemplateParameters() {
+				stack.pop();
+			}
+			@Override
+			public void enterTemplateInstance() {
+				stack.push(new Stack<StringBuilder>());
+				templateInstances.push(new Stack<StringBuilder>());			
+			}
+			@Override
+			public void exitTemplateInstanceSymbol(String string) {
+				templateInstances.peek().push(new StringBuilder(stack.peek().pop()));
+			}
+			@Override
+			public void exitTemplateInstanceType(String signature) {
+				templateInstances.peek().push(new StringBuilder(stack.peek().pop()));
+			}
+			@Override
+			public void acceptTemplateInstanceValue(char[] exp, String signature) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(exp);
+				
+				templateInstances.peek().push(sb);
+			}
+			@Override
+			public void exitTemplateInstance(String signature) {
+				stack.pop();
+				
+				StringBuilder sb = stack.peek().peek();
+				sb.append('!');
+				sb.append('(');
+				
+				Stack<StringBuilder> tp = templateInstances.pop();
+				for (int i = 0; i < tp.size(); i++) {
+					if (i != 0) {
+						sb.append(',');
+						sb.append(' ');
+					}
+					sb.append(tp.get(i));
+				}
+				
+				sb.append(')');
+			}
+		});
 	
 	return stack.pop().pop().toString();
 }
@@ -1719,34 +1723,35 @@ public static boolean isVariadic(String signature) throws IllegalArgumentExcepti
 	final boolean[] variadic = { false };
 	final boolean[] valid = { false };
 	
-	SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
-		int functionCount = 0;
-		@Override
-		public void acceptArgumentBreak(char c) {
-			if (functionCount == 1) {
-				variadic[0] = 
-					c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC ||
-					c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC2;
+	SignatureProcessor.process(signature, false /* dont't want sub-signatures */, 
+		new SignatureRequestorAdapter() {
+			int functionCount = 0;
+			@Override
+			public void acceptArgumentBreak(char c) {
+				if (functionCount == 1) {
+					variadic[0] = 
+						c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC ||
+						c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC2;
+				}
 			}
-		}
-		@Override
-		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-			if (functionCount == 0) {
-				valid[0] = 
-					type == ISignatureConstants.FUNCTION ||
-					type == ISignatureConstants.TEMPLATED_FUNCTION;
+			@Override
+			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+				if (functionCount == 0) {
+					valid[0] = 
+						type == ISignatureConstants.FUNCTION ||
+						type == ISignatureConstants.TEMPLATED_FUNCTION;
+				}
 			}
-		}
-		@Override
-		public void enterFunctionType() {
-			functionCount++;
-			valid[0] = true;
-		}
-		@Override
-		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-			functionCount--;
-		}
-	});
+			@Override
+			public void enterFunctionType() {
+				functionCount++;
+				valid[0] = true;
+			}
+			@Override
+			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+				functionCount--;
+			}
+		});
 	
 	if (!valid[0]) {
 		throw new IllegalArgumentException();

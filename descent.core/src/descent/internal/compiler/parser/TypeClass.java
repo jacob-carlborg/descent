@@ -62,7 +62,7 @@ public class TypeClass extends Type {
 			TypeInstance tpi = (TypeInstance) tparam;
 			if (tpi.idents.size() != 0) {
 				IdentifierExp id = tpi.idents.get(tpi.idents.size() - 1);
-				if (id.dyncast() == DYNCAST_IDENTIFIER && sym.ident.equals(id)) {
+				if (id.dyncast() == DYNCAST_IDENTIFIER && equals(sym.ident, id)) {
 					Type tparent = sym.parent.getType();
 					if (tparent != null) {
 						/* Slice off the .foo in S!(T).foo

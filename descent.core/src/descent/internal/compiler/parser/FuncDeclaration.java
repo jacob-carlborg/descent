@@ -1016,6 +1016,9 @@ public class FuncDeclaration extends Declaration {
 
 		cd = parent.isClassDeclaration();
 		if (cd != null) {
+			// Descent: lazy initialization
+			cd.consumeRest();
+			
 			int vi;
 
 			if (isCtorDeclaration() != null) {

@@ -1033,7 +1033,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			for (int i = 0; i < parameters.size(); i++) {
 				TemplateParameter tp = (TemplateParameter) parameters.get(i);
 
-				if (tp.ident.equals(id))
+				if (equals(tp.ident, id))
 					return i;
 			}
 		}

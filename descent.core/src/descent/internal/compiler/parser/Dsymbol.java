@@ -163,7 +163,7 @@ public class Dsymbol extends ASTDmdNode {
 		if (ident == null) {
 			return s.ident == null;
 		}
-		return ident.equals(s.ident);
+		return equals(ident, s.ident);
 	}
 
 	public Module getModule() {

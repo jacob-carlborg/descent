@@ -115,5 +115,10 @@ public class ProtDeclaration extends AttribDeclaration {
 	public String getSignature() {
 		return parent.getSignature();
 	}
+	
+	@Override
+	public PROT getProtection() {
+		return protection;
+	}
 
 }

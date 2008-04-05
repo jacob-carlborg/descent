@@ -26,6 +26,7 @@ import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompileDeclaration;
+import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.DebugCondition;
@@ -38,6 +39,7 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
@@ -68,6 +70,7 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
+import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.InternalSignature;
 import descent.internal.core.util.Util;
 
@@ -76,17 +79,76 @@ import descent.internal.core.util.Util;
  */
 public class ModuleBuilder {
 	
-	private ASTNodeEncoder encoder = new ASTNodeEncoder();
+	/*
+	 * Wether to make surface ClassDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_CLASSES = true;
+	
+	/*
+	 * Wether to make surface InterfaceDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_INTERFACES = true;
+	
+	/*
+	 * Wether to make surface StructDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_STRUCTS = true;
+	
+	/*
+	 * Wether to make surface AliasDeclaration semantic lazy.
+	 */
+	private final static boolean LAZY_ALIASES = true;
+	
+	/*
+	 * We want to skip things like:
+	 * 
+	 * ---
+	 * version(Foo) {
+	 *   // ...
+	 * }
+	 * ---
+	 * 
+	 * if Foo is not in the configuration. But... what if it is like this:
+	 * 
+	 * ---
+	 * version = Foo;
+	 * 
+	 * version(Foo) {
+	 * }
+	 * ---
+	 * 
+	 * Then we can just rely on the configuration.
+	 * 
+	 * This state is dummy:
+	 * if it encounters any "version = ..." or "debug = ...", it stores
+	 * it, and any version or debug declaration with that found identifier
+	 * is returned normally, without skipping it.
+	 */
+	class State {
+		HashtableOfCharArrayAndObject versions = new HashtableOfCharArrayAndObject();
+		HashtableOfCharArrayAndObject debugs = new HashtableOfCharArrayAndObject();
+		boolean surface = true;
+	}
+	
+	private ASTNodeEncoder encoder = new ASTNodeEncoder();	
+	private final CompilerConfiguration config;
+	
+	/**
+	 * Creates this module builder with the given configuration.
+	 * Depending on the configuration, some version/debug blocks will not
+	 * be part of the returned module.
+	 */
+	public ModuleBuilder(CompilerConfiguration config) {
+		this.config = config;
+	}
 	
 	/**
 	 * Returns a {@link Module} representing the given {@link ICompilationUnit}.
 	 * @param unit the unit to transform
 	 * @return the module representing the unit
 	 */
-	public Module build(ICompilationUnit unit) {
-		long time = System.currentTimeMillis();
-		
-		Module module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
+	public Module build(final ICompilationUnit unit) {		
+		final Module module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
 		module.setJavaElement(unit);
 		module.moduleName = unit.getFullyQualifiedName();
 		
@@ -95,31 +157,39 @@ public class ModuleBuilder {
 			if (packageDeclarations.length == 1) {
 				String elementName = packageDeclarations[0].getElementName();
 				Identifiers packages = new Identifiers();
-				IdentifierExp name = splitName(elementName, packages);				
+				IdentifierExp name = splitName(elementName, packages);	
 				module.md = new ModuleDeclaration(packages, name);
 			}
 			
-			module.members = new Dsymbols();
+			long time = System.currentTimeMillis();
 			
-			fill(module, module.members, unit.getChildren());
+			State state = new State();
+			
+			module.members = new Dsymbols();
+			fill(module, module.members, unit.getChildren(), state);
+			
+			state.surface = false;
+			
+			time = System.currentTimeMillis() - time;
+			if (time != 0) {
+				System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
+			}
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 			Util.log(e);
 			return null;
 		}
 		
-		time = System.currentTimeMillis() - time;
-//		System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
-		
 		return module;
 	}
 	
-	private void fill(Module module, Dsymbols members, IJavaElement[] elements) throws JavaModelException {
+	private void fill(Module module, Dsymbols members, IJavaElement[] elements, 
+			State state) throws JavaModelException {
 		for(IJavaElement elem : elements) {
 			switch(elem.getElementType()) {
 			case IJavaElement.IMPORT_CONTAINER:
 				IImportContainer container = (IImportContainer) elem;
-				fillImportContainer(module, members, container);
+				fillImportContainer(module, members, container, state);
 				break;
 			case IJavaElement.IMPORT_DECLARATION:
 				IImportDeclaration impDecl = ((IImportDeclaration) elem);
@@ -127,11 +197,11 @@ public class ModuleBuilder {
 				break;
 			case IJavaElement.FIELD:
 				IField field = (IField) elem;
-				fillField(module, members, field);
+				fillField(module, members, field, state);
 				break;
 			case IJavaElement.TYPE:
 				IType type = (IType) elem;
-				fillType(module, members, type);
+				fillType(module, members, type, state);
 				break;
 			case IJavaElement.METHOD:
 				IMethod method = (IMethod) elem;
@@ -139,24 +209,25 @@ public class ModuleBuilder {
 				break;
 			case IJavaElement.INITIALIZER:
 				IInitializer init = (IInitializer) elem;
-				fillInitializer(module, members, init);
+				fillInitializer(module, members, init, state);
 				break;
 			case IJavaElement.CONDITIONAL:
 				IConditional cond = (IConditional) elem;
-				fillConditional(module, members, cond);
+				fillConditional(module, members, cond, state);
 				break;
 			}
 		}
 	}
 
-	private void fillConditional(Module module, Dsymbols members, IConditional cond) throws JavaModelException {
-		Dsymbols thenDecls = new Dsymbols();
-		fill(module, thenDecls, cond.getThenChildren());
-		
-		Dsymbols elseDecls = new Dsymbols();
-		fill(module, elseDecls, cond.getElseChildren());
-		
+	private void fillConditional(Module module, Dsymbols members, IConditional cond,
+			State state) throws JavaModelException {
 		if (cond.isStaticIfDeclaration()) {
+			Dsymbols thenDecls = new Dsymbols();
+			fill(module, thenDecls, cond.getThenChildren(), state);
+			
+			Dsymbols elseDecls = new Dsymbols();
+			fill(module, elseDecls, cond.getElseChildren(), state);
+			
 			Expression exp = encoder.decodeExpression(cond.getElementName().toCharArray());
 			StaticIfCondition condition = new StaticIfCondition(getLoc(module, cond), exp);
 			
@@ -164,57 +235,116 @@ public class ModuleBuilder {
 			members.add(member);
 		} else if (cond.isVersionDeclaration()) {
 			String name = cond.getElementName();
-			VersionCondition condition;
+			char[] nameC = name.toCharArray();
 			try {
 				long value = Long.parseLong(name);
-				condition = new VersionCondition(module, getLoc(module, cond), value, null);
+				
+				if (state.versions.containsKey(nameC)) {
+					buildConditional(module, members, cond, state, nameC, value, false /* not debug */);
+				} else {
+					if (config.isVersionEnabled(value)) {
+						fill(module, members, cond.getThenChildren(), state);
+					} else {
+						fill(module, members, cond.getElseChildren(), state);
+					}
+				}
 			} catch(NumberFormatException e) {
-				condition = new VersionCondition(module, getLoc(module, cond), 1, name.toCharArray());
+				if (state.versions.containsKey(nameC)) {
+					buildConditional(module, members, cond, state, nameC, 0, false /* not debug */);
+				} else {
+					if (config.isVersionEnabled(name.toCharArray())) {
+						fill(module, members, cond.getThenChildren(), state);
+					} else {
+						fill(module, members, cond.getElseChildren(), state);
+					}
+				}
 			}
-			ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
-			members.add(member);
 		} else if (cond.isDebugDeclaration()) {
 			String name = cond.getElementName();
-			DebugCondition condition;
+			char[] nameC = name.toCharArray();
 			try {
 				long value = Long.parseLong(name);
-				condition = new DebugCondition(module, getLoc(module, cond), value, null);
+				if (state.debugs.containsKey(nameC)) {
+					buildConditional(module, members, cond, state, nameC, value, true /* debug */);
+				} else {					
+					if (config.isDebugEnabled(value)) {
+						fill(module, members, cond.getThenChildren(), state);
+					} else {
+						fill(module, members, cond.getElseChildren(), state);
+					}
+				}
 			} catch(NumberFormatException e) {
-				condition = new DebugCondition(module, getLoc(module, cond), 1, name.toCharArray());
+				if (state.debugs.containsKey(nameC)) {
+					buildConditional(module, members, cond, state, nameC, 0, true /* debug */);
+				} else {	
+					if (config.isDebugEnabled(name.toCharArray())) {
+						fill(module, members, cond.getThenChildren(), state);
+					} else {
+						fill(module, members, cond.getElseChildren(), state);
+					}
+				}
 			}
-			ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
-			members.add(member);
 		}
 		// TODO iftype
 	}
+	
+	private void buildConditional(Module module, 
+			Dsymbols members, 
+			IConditional cond, 
+			State state, 
+			char[] idC, 
+			long value,
+			boolean debug) throws JavaModelException {
+		Dsymbols thenDecls = new Dsymbols();
+		fill(module, thenDecls, cond.getThenChildren(), state);
+		
+		Dsymbols elseDecls = new Dsymbols();
+		fill(module, elseDecls, cond.getElseChildren(), state);
+		
+		Condition condition = debug ? 
+				new DebugCondition(module, Loc.ZERO, value, idC) : 
+				new VersionCondition(module, Loc.ZERO, value, idC);
+		ConditionalDeclaration member = new ConditionalDeclaration(condition, thenDecls, elseDecls);
+		members.add(member);
+	}
 
-	private void fillInitializer(Module module, Dsymbols members, IInitializer init) throws JavaModelException {
+	private void fillInitializer(Module module, Dsymbols members, IInitializer init, 
+			State state) throws JavaModelException {
+		boolean surface = state.surface;		
+		state.surface = false;
+		
 		if (init.isAlign()) {
 			Dsymbols sub = new Dsymbols();
-			fill(module, sub, init.getChildren());
+			fill(module, sub, init.getChildren(), state);
 			
 			AlignDeclaration member = new AlignDeclaration(Integer.parseInt(init.getElementName()), sub);
 			members.add(member);
 		} else if (init.isDebugAssignment()) {
-			char[] versionIdent = init.getElementName().toCharArray();
-			Version version = new Version(getLoc(module, init), versionIdent);
+			char[] ident = init.getElementName().toCharArray();
+			
+			state.debugs.put(ident, this);
+			
+			Version version = new Version(getLoc(module, init), ident);
 			try {
 				long level = Long.parseLong(init.getElementName());
 				DebugSymbol member = new DebugSymbol(getLoc(module, init), level, version);
 				members.add(member);
 			} catch(NumberFormatException e) {
-				DebugSymbol member = new DebugSymbol(getLoc(module, init), new IdentifierExp(versionIdent), version);
+				DebugSymbol member = new DebugSymbol(getLoc(module, init), new IdentifierExp(ident), version);
 				members.add(member);
 			}
 		} else if (init.isVersionAssignment()) {
-			char[] versionIdent = init.getElementName().toCharArray();
-			Version version = new Version(getLoc(module, init), versionIdent);
+			char[] ident = init.getElementName().toCharArray();
+			
+			state.versions.put(ident, this);
+			
+			Version version = new Version(getLoc(module, init), ident);
 			try {
 				long level = Long.parseLong(init.getElementName());
 				VersionSymbol member = new VersionSymbol(getLoc(module, init), level, version);
 				members.add(member);
 			} catch(NumberFormatException e) {
-				VersionSymbol member = new VersionSymbol(getLoc(module, init), new IdentifierExp(versionIdent), version);
+				VersionSymbol member = new VersionSymbol(getLoc(module, init), new IdentifierExp(ident), version);
 				members.add(member);
 			}
 		} else if (init.isMixin()) {
@@ -222,19 +352,25 @@ public class ModuleBuilder {
 			CompileDeclaration member = new CompileDeclaration(getLoc(module, init), exp);
 			members.add(member);
 		} else if (init.isExtern()) {
+			// Also try to lazily initialize things inside:
+			// extern(C) {
+			//   // ...
+			// }
+			if (surface) {
+				state.surface = surface;
+			}
+			
 			Dsymbols symbols = new Dsymbols();
-			fill(module, symbols, init.getChildren());
+			fill(module, symbols, init.getChildren(), state);
 			
 			LinkDeclaration member = new LinkDeclaration(getLink(init), symbols);
 			members.add(wrap(member, init));
 		}
+		
+		state.surface = surface;
 	}
 
 	private void fillMethod(Module module, Dsymbols members, IMethod method) throws JavaModelException {
-		if (method.getElementName().equals("onPaintBackground")) {
-			System.out.println(1);
-		}
-		
 		if (method.isConstructor()) {
 			CtorDeclaration member = new CtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			member.setJavaElement(method);
@@ -258,42 +394,98 @@ public class ModuleBuilder {
 		}
 	}
 
-	private void fillType(Module module, Dsymbols members, IType type) throws JavaModelException {
+	private void fillType(final Module module, Dsymbols members, final IType type, 
+			final State state) throws JavaModelException {
+		boolean surface = state.surface;
+		state.surface = false;
+		
 		if (type.isClass()) {
-			ClassDeclaration member = new ClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
-			member.setJavaElement(type);
-			member.members = new Dsymbols();
-			fill(module, member.members, type.getChildren());
+			final ClassDeclaration member;
 			
+			if (LAZY_CLASSES && surface) {
+				member = new ClassDeclaration(getLoc(module, type), getIdent(type));
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							member.baseclasses = getBaseClasses(type);
+							member.members = new Dsymbols();
+							fill(module, member.members, type.getChildren(), state);
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}	
+					};
+				});
+			} else {
+				member = new ClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
+				member.members = new Dsymbols();
+				fill(module, member.members, type.getChildren(), state);
+			}
+
+			member.setJavaElement(type);
 			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isInterface()) {
-			InterfaceDeclaration member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
-			member.setJavaElement(type);
-			member.members = new Dsymbols();
-			fill(module, member.members, type.getChildren());
+			final InterfaceDeclaration member;
 			
+			if (LAZY_INTERFACES && surface) {
+				member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), null);
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							member.baseclasses = getBaseClasses(type);
+							member.members = new Dsymbols();
+							fill(module, member.members, type.getChildren(), state);
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}	
+					};
+				});
+				
+			} else {
+				member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
+				
+				member.members = new Dsymbols();
+				fill(module, member.members, type.getChildren(), state);
+			}
+			
+			member.setJavaElement(type);
 			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isStruct()) {
 			IdentifierExp id = getIdent(type);
 			if (id == null) {
-				fillAnon(module, members, type, false /* is not union, is struct */);
+				fillAnon(module, members, type, false /* is not union, is struct */, state);
 			} else {
-				StructDeclaration member = new StructDeclaration(getLoc(module, type), id);
-				member.setJavaElement(type);
-				member.members = new Dsymbols();
-				fill(module, member.members, type.getChildren());
+				final StructDeclaration member;
 				
+				if (LAZY_STRUCTS) {
+					member = new StructDeclaration(getLoc(module, type), id);
+					member.rest = new SemanticRest(new Runnable() {
+						public void run() {
+							member.members = new Dsymbols();
+							try {
+								fill(module, member.members, type.getChildren(), state);
+							} catch (JavaModelException e) {
+								Util.log(e);
+							}
+						}
+					});
+				} else {
+					member = new StructDeclaration(getLoc(module, type), id);
+					member.members = new Dsymbols();
+					fill(module, member.members, type.getChildren(), state);
+				}
+				
+				member.setJavaElement(type);
 				members.add(wrapWithTemplate(module, member, type));
 			}
 		} else if (type.isUnion()) {
 			IdentifierExp id = getIdent(type);
 			if (id == null) {
-				fillAnon(module, members, type, true /* is union */);
+				fillAnon(module, members, type, true /* is union */, state);
 			} else {
 				UnionDeclaration member = new UnionDeclaration(getLoc(module, type), id);
 				member.setJavaElement(type);
 				member.members = new Dsymbols();
-				fill(module, member.members, type.getChildren());
+				fill(module, member.members, type.getChildren(), state);
 				
 				members.add(wrapWithTemplate(module, member, type));
 			}
@@ -313,29 +505,47 @@ public class ModuleBuilder {
 			members.add(wrap(member, type));
 		} else if (type.isTemplate()) {
 			Dsymbols symbols = new Dsymbols();
-			fill(module, symbols, type.getChildren());
+			fill(module, symbols, type.getChildren(), state);
 			
 			TemplateDeclaration member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
 			member.setJavaElement(type);
 			members.add(wrap(member, type));
 		}
+		
+		state.surface = surface;
 	}
 
-	private void fillAnon(Module module, Dsymbols members, IType type, boolean isUnion) throws JavaModelException {
+	private void fillAnon(Module module, Dsymbols members, IType type, 
+			boolean isUnion, State state) throws JavaModelException {
 		Dsymbols symbols = new Dsymbols();
-		fill(module, symbols, type.getChildren());
+		fill(module, symbols, type.getChildren(), state);
 		AnonDeclaration member = new AnonDeclaration(getLoc(module, type), isUnion, symbols);
 		member.setJavaElement(type);
 		members.add(wrap(member, type));
 	}
 
-	private void fillField(Module module, Dsymbols members, IField field) throws JavaModelException {
+	private void fillField(Module module, Dsymbols members, final IField field, State state) throws JavaModelException {
 		if (field.isVariable()) {
 			VarDeclaration member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
-			AliasDeclaration member = new AliasDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()));
+			final AliasDeclaration member;
+			if (LAZY_ALIASES && state.surface) {
+				member = new AliasDeclaration(getLoc(module, field), getIdent(field), (Type) null);
+				member.rest = new SemanticRest(new Runnable() {
+					public void run() {
+						try {
+							member.type = getType(field.getTypeSignature());
+						} catch (JavaModelException e) {
+							Util.log(e);
+						}
+					}
+				});
+			} else {
+				member = new AliasDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()));
+			}
+			
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTypedef()) {
@@ -386,8 +596,9 @@ public class ModuleBuilder {
 		return new IdentifierExp(pieces[pieces.length - 1].toCharArray());
 	}
 
-	private void fillImportContainer(Module module, Dsymbols members, IImportContainer container) throws JavaModelException {
-		fill(module, members, container.getChildren());
+	private void fillImportContainer(Module module, Dsymbols members, IImportContainer container,
+			State state) throws JavaModelException {
+		fill(module, members, container.getChildren(), state);
 	}
 	
 	private LINK getLink(IInitializer init) {

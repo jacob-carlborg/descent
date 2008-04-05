@@ -12,7 +12,6 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.compiler.lookup.DmdModuleFinder;
 
 public class SemanticContext {
 
@@ -76,7 +75,7 @@ public class SemanticContext {
 	 */
 	public boolean fatalWasSignaled;
 	
-	public ASTNodeEncoder encoder;
+	public final ASTNodeEncoder encoder;
 	
 	/*
 	 * This is for autocompletion, for suggesting overloads of
@@ -160,12 +159,13 @@ public class SemanticContext {
 		
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
 			System.out.println("~~~" + problem);
+			
 			problemRequestor.acceptProblem(problem);
 		}
 		
-		if (muteProblems == 0) {
+//		if (muteProblems == 0) {
 			global.errors++;
-		}
+//		}
 	}
 
 	private int generatedIds;	
@@ -228,44 +228,6 @@ public class SemanticContext {
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
 			for (Dsymbol symbol : m.members) {
 				checkObjectMember(symbol);
-			}
-		}
-		
-		return m;
-	}
-	
-	public Module load(char[][] compoundName) {
-		Module m = moduleFinder.findModule(compoundName, this);
-		if (m == null){
-			return null;
-		}
-		
-		afterParse(m);
-		
-		// If we're in object.d, assign the well known class declarations
-		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
-			for (Dsymbol symbol : m.members) {
-				checkObjectMember(symbol);
-			}
-			
-			// Prevent any of this null to blow up the semantic analysis later
-			if (ClassDeclaration_object == null ||
-				ClassDeclaration_classinfo == null ||
-				Type_typeinfo == null ||
-				Type_typeinfoarray == null ||
-				Type_typeinfoassociativearray == null ||
-				Type_typeinfoclass == null ||
-				Type_typeinfodelegate == null ||
-				Type_typeinfoenum == null ||
-				Type_typeinfofunction == null ||
-				Type_typeinfointerface == null ||
-				Type_typeinfopointer == null ||
-				Type_typeinfostaticarray == null ||
-				Type_typeinfostruct == null ||
-				Type_typeinfotypedef == null ||
-				Type_typeinfotypelist == null
-				) {
-				fatalWasSignaled = true;
 			}
 		}
 		

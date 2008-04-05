@@ -326,7 +326,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				problemRequestor, 
 				module, 
 				project,
-				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null)),
+				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config),
 				global);
 		
 		if (!RESOLVE) return context;
@@ -348,7 +348,9 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		if (STATS) {
 			time = System.currentTimeMillis() - time;
-			System.out.println("Resolve of " + module.moduleName + " took " + time + " miliseconds to complete.");
+			if (time != 0) {
+				System.out.println("Resolve of " + module.moduleName + " took " + time + " miliseconds to complete.");
+			}
 		}
 		
 		return context;

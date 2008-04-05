@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IField;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKvar;
@@ -30,6 +31,8 @@ public class AliasDeclaration extends Declaration {
 	public boolean isTemplateParameter;
 	
 	private IField javaElement;
+	
+	public SemanticRest rest;
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
 		super(id);
@@ -82,6 +85,8 @@ public class AliasDeclaration extends Declaration {
 
 	@Override
 	public AliasDeclaration isAliasDeclaration() {
+		consumeRest();
+		
 		return this;
 	}
 
@@ -107,6 +112,15 @@ public class AliasDeclaration extends Declaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
+		if (sc == null) {
+			System.out.println(1);
+		}
+		
 		if (aliassym != null) {
 			if (aliassym.isTemplateInstance() != null) {
 				aliassym.semantic(sc, context);
@@ -258,6 +272,8 @@ public class AliasDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol toAlias(SemanticContext context) {
+		consumeRest();
+		
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -293,6 +309,12 @@ public class AliasDeclaration extends Declaration {
 	@Override
 	public IField getJavaElement() {
 		return javaElement;
+	}
+
+	void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 
 }

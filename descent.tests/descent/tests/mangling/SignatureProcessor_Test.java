@@ -28,7 +28,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(Type.tvoid);
 		}});
 		
-		SignatureProcessor.process("v", requestor);
+		SignatureProcessor.process("v", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -38,7 +38,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(Type.tint32);
 		}});
 		
-		SignatureProcessor.process("i", requestor);
+		SignatureProcessor.process("i", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -51,7 +51,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPointer("Pi"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("Pi", requestor);
+		SignatureProcessor.process("Pi", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -64,7 +64,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptDynamicArray("Ai"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("Ai", requestor);
+		SignatureProcessor.process("Ai", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -77,7 +77,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptStaticArray(new char[] { '3' }, "GiG1G3"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("GiG1G3", requestor);
+		SignatureProcessor.process("GiG1G3", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -91,7 +91,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptAssociativeArray("Hia"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("Hia", requestor);
+		SignatureProcessor.process("Hia", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -110,7 +110,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "FiaZa"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("FiaZa", requestor);
+		SignatureProcessor.process("FiaZa", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -135,7 +135,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "F@6objectC6Object@6objectC6ObjectZ@6objectC6Object"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process("F@6objectC6Object@6objectC6ObjectZ@6objectC6Object", requestor);
+		SignatureProcessor.process("F@6objectC6Object@6objectC6ObjectZ@6objectC6Object", true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -148,7 +148,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptModule(expected, sig);
 		}});
 		
-		SignatureProcessor.process(sig, requestor);
+		SignatureProcessor.process(sig, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -165,7 +165,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 				one(requestor).acceptSymbol(type, expected, -1, sig);
 			}});
 			
-			SignatureProcessor.process(sig, requestor);
+			SignatureProcessor.process(sig, true, requestor);
 			
 			mockery.assertIsSatisfied();
 		}
@@ -186,7 +186,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(type, expected, -1, type + "4testFZv"); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sig, requestor);
+		SignatureProcessor.process(sig, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -204,7 +204,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigClass, requestor);
+		SignatureProcessor.process(sigClass, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -225,7 +225,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(CLASS, expectedClass2, -1, sigClass2); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigClass2, requestor);
+		SignatureProcessor.process(sigClass2, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -247,7 +247,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigFunction, requestor);
+		SignatureProcessor.process(sigFunction, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -276,7 +276,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigFunction, requestor);
+		SignatureProcessor.process(sigFunction, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -296,7 +296,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -317,7 +317,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -339,7 +339,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -362,7 +362,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -384,7 +384,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -407,7 +407,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -430,7 +430,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -453,7 +453,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATED_CLASS, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -480,7 +480,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATED_FUNCTION, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -504,7 +504,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigTemplate, requestor);
+		SignatureProcessor.process(sigTemplate, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -519,7 +519,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigInstance, requestor);
+		SignatureProcessor.process(sigInstance, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -537,7 +537,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigInstance, requestor);
+		SignatureProcessor.process(sigInstance, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -553,7 +553,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigInstance, requestor);
+		SignatureProcessor.process(sigInstance, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}
@@ -574,7 +574,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});
 		
-		SignatureProcessor.process(sigInstance, requestor);
+		SignatureProcessor.process(sigInstance, true, requestor);
 		
 		mockery.assertIsSatisfied();
 	}

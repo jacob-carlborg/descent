@@ -142,8 +142,8 @@ public class TemplateMixin extends TemplateInstance {
 		if (tempdecl == null) {
 			throw new IllegalStateException("assert(tempdecl);");
 		}
-		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext()) {
-			if (null == td.scope()) {
+		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext) {
+			if (null == td.scope) {
 				/* Cannot handle forward references if mixin is a struct member,
 				 * because addField must happen during struct's semantic, not
 				 * during the mixin semantic.

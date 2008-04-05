@@ -6,10 +6,9 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import static descent.internal.compiler.parser.PROT.PROTnone;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.PROT.PROTnone;
 
 import static descent.internal.compiler.parser.STC.STCin;
 
@@ -71,6 +70,11 @@ public class StructDeclaration extends AggregateDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
 		Scope sc2;
 
 		Assert.isNotNull(type);
@@ -251,9 +255,17 @@ public class StructDeclaration extends AggregateDeclaration {
 			semantic3(sc, context);
 		}
 	}
+	
+	@Override
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		consumeRest();
+		return super.search(loc, ident, flags, context);
+	}
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		StructDeclaration sd;
 
 		if (s != null) {

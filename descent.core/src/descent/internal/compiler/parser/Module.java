@@ -155,7 +155,7 @@ public class Module extends Package {
 			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
 			runDeferredSemantic(context);
-		}		
+		}
 
 		sc = sc.pop();
 		sc.pop();
@@ -163,7 +163,9 @@ public class Module extends Package {
 		semanticdone = semanticstarted;
 		
 		time = System.currentTimeMillis() - time;
-//		System.out.println("Semantic 1 on " + moduleName + " took: " + time + " milliseconds to complete.");
+		if (time != 0) {
+			System.out.println("Semantic 1 on " + moduleName + " took: " + time + " milliseconds to complete.");
+		}
 	}
 
 	@Override
@@ -172,7 +174,7 @@ public class Module extends Package {
 				&& context.Module_deferred.size() > 0) {
 			for (Dsymbol sd : context.Module_deferred) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotResolveForwardReference, sd));
+						IProblem.CannotResolveForwardReference, sd.getLineNumber(), sd.getErrorStart(), sd.getErrorLength()));
 			}
 			return;
 		}
@@ -206,7 +208,9 @@ public class Module extends Package {
 		semanticdone = semanticstarted;
 		
 		time = System.currentTimeMillis() - time;
-//		System.out.println("Semantic 2 on " + moduleName + " took: " + time + " milliseconds to complete.");
+		if (time != 0) {
+			System.out.println("Semantic 2 on " + moduleName + " took: " + time + " milliseconds to complete.");
+		}
 	}
 
 	@Override
@@ -243,7 +247,9 @@ public class Module extends Package {
 		semanticdone = semanticstarted;
 		
 		time = System.currentTimeMillis() - time;
-//		System.out.println("Semantic 3 on " + moduleName + " took: " + time + " milliseconds to complete.");
+		if (time != 0) {
+			System.out.println("Semantic 3 on " + moduleName + " took: " + time + " milliseconds to complete.");
+		}
 	}
 
 	public void addDeferredSemantic(Dsymbol s, SemanticContext context) {

@@ -278,6 +278,8 @@ public class VarDeclaration extends Declaration {
 		}
 		if (tb.ty == TY.Tstruct) {
 			TypeStruct ts = (TypeStruct) tb;
+			
+			ts.sym.consumeRest();
 
 			if (ts.sym.members == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(

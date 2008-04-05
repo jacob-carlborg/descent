@@ -5,6 +5,7 @@ import java.util.List;
 
 import descent.core.IType;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
@@ -44,6 +45,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public boolean templated;
 	
 	protected IType javaElement;
+	
+	public SemanticRest rest;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(id);
@@ -284,6 +287,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public int size(SemanticContext context) {
+		consumeRest();
+		
 		if (null == members) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.UnknownSize, this));
@@ -330,6 +335,18 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public int getStorageClass() {
 		return storage_class;
+	}
+	
+	void consumeRestStructure() {
+		if (rest != null && !rest.isStructureKnown()) {
+			rest.buildStructure();
+		}
+	}
+	
+	void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 	
 }

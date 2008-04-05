@@ -143,5 +143,10 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public String getSignature() {
 		return parent.getSignature();
 	}
+	
+	@Override
+	public int getStorageClass() {
+		return stc;
+	}
 
 }

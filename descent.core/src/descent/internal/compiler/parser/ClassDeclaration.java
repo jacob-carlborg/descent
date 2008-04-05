@@ -7,10 +7,9 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import static descent.internal.compiler.parser.PROT.PROTnone;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.PROT.PROTnone;
 
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
@@ -50,7 +49,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 
-	public ClassDeclaration(Loc loc, char[] id) {
+	public ClassDeclaration(Loc loc, char[] id) { 
+		this(loc, id, null);
+	}
+	
+	public ClassDeclaration(Loc loc, IdentifierExp id) { 
 		this(loc, id, null);
 	}
 
@@ -215,6 +218,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			poffset[0] = 0;
 		}
 		while (cd != null) {
+			cd.consumeRest();
+			
 			if (this == cd.baseClass) {
 				return true;
 			}
@@ -273,6 +278,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (scope != null) {
 			semantic(scope, context);
 		}
+		
+		// Descent: lazy initailization
+		consumeRest();
 
 		if (members == null || symtab == null || scope != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -292,6 +300,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 				BaseClass b = baseclasses.get(i);
 
 				if (b.base != null) {
+					// Descent: lazy initailization
+					b.base.consumeRest();
+					
 					if (b.base.symtab == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.BaseIsForwardReferenced, this, new String[] { b.base.ident
@@ -313,6 +324,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
 		int i;
 		// int offset;
 
@@ -404,6 +420,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 						}
 					}
 					if (!gotoL7) {
+						// Descent: lazy initialization
+						tc.sym.consumeRest();
+						
 						if (tc.sym.symtab == null || tc.sym.scope != null
 								|| tc.sym.sizeok == 0) {
 							// error("forward reference of base class %s",
@@ -460,6 +479,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 										new String(this.ident.ident) }));
 					}
 				}
+				
+				// Descent: lazy instantiation
+				tc.sym.consumeRest();
 
 				b.base = tc.sym;
 				if (b.base.symtab == null || b.base.scope != null) {
@@ -503,6 +525,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			}
 			tc = (TypeClass) (b.type);
 			baseClass = tc.sym;
+			baseClass.consumeRest();
+			
 			if (baseClass.isInterfaceDeclaration() != null) {
 				throw new IllegalStateException(
 						"assert(!baseClass->isInterfaceDeclaration());");
@@ -735,6 +759,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		ClassDeclaration cd;
 
 		if (s != null) {

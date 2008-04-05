@@ -56,6 +56,7 @@ import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.DVCondition;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
@@ -1537,7 +1538,25 @@ public class CompletionEngine extends Engine
 	private void suggestMember(Dsymbol member, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
-			suggestMembers(attrib.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+			switch(attrib.getNodeType()) {
+			case ASTDmdNode.ALIGN_DECLARATION:
+			case ASTDmdNode.ANON_DECLARATION:
+			case ASTDmdNode.COMPILE_DECLARATION:
+			case ASTDmdNode.LINK_DECLARATION:
+			case ASTDmdNode.PRAGMA_DECLARATION:
+			case ASTDmdNode.PROT_DECLARATION:
+			case ASTDmdNode.STORAGE_CLASS_DECLARATION:
+				suggestMembers(attrib.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+				break;
+			case ASTDmdNode.CONDITIONAL_DECLARATION:
+				ConditionalDeclaration conditional = (ConditionalDeclaration) attrib;
+				if (conditional.condition.inc == 1) {
+					suggestMembers(conditional.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+				} else if (conditional.condition.inc == 2) {
+					suggestMembers(conditional.elsedecl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+				}
+				break;
+			}
 			return;
 		}
 		
@@ -1610,7 +1629,13 @@ public class CompletionEngine extends Engine
 			VarDeclaration var = member.isVarDeclaration();
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
-					char[] sig = var.getSignature().toCharArray();
+					String signature = var.getSignature();
+					if (signature == null) {
+						System.out.println(1);
+						return;
+					}
+					
+					char[] sig = signature.toCharArray();
 					char[] typeName = var.type().getSignature().toCharArray();
 					
 					int relevance = computeBaseRelevance();
@@ -2437,194 +2462,194 @@ public class CompletionEngine extends Engine
 	}
 
 	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
-		if (packageName == null || packageName.length == 0) {
-			return;
-		}
-		
-		if (isImported(packageName)) {
-			return;
-		}
-		
-		if (!isVisible(modifiers, packageName)) {
-			return;
-		}
-		
-		char[] fullName = CharOperation.concat(packageName, typeName, '.');
-		if (knownDeclarations.containsKey(fullName)) {
-			return;
-		}
-		knownDeclarations.put(fullName, this);
-		
-		StringBuilder sig = new StringBuilder();
-		InternalSignature.appendPackageName(packageName, sig);
-		sig.append(CLASS);
-		sig.append(typeName.length);
-		sig.append(typeName);
-		
-		char[] sigChar = sig.toString().toCharArray();
-		
-		CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
-		
-		int relevance = computeBaseRelevance();
-		relevance += computeRelevanceForCaseMatching(currentName, typeName);
-		relevance += computeRelevanceForExpectedType(sigChar);
-		if (parser.inNewExp) {
-			if ((modifiers & (Flags.AccStruct | Flags.AccUnion | Flags.AccInterface | Flags.AccTemplate | Flags.AccEnum)) == 0) {
-				// Don't suggest abstract classes
-				if ((modifiers & Flags.AccAbstract) != 0) {
-					return;
-				}
-				
-				relevance += R_NEW;
-			} else {
-				return;
-			}
-		}
-		relevance += R_CLASS;
-		
-		proposal.setCompletion(fullName);
-		
-		proposal.setName(typeName);
-		
-		proposal.setSignature(sigChar);
-		proposal.setFlags(modifiers);
-		proposal.setRelevance(relevance);
-		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-		CompletionEngine.this.requestor.accept(proposal);
+//		if (packageName == null || packageName.length == 0) {
+//			return;
+//		}
+//		
+//		if (isImported(packageName)) {
+//			return;
+//		}
+//		
+//		if (!isVisible(modifiers, packageName)) {
+//			return;
+//		}
+//		
+//		char[] fullName = CharOperation.concat(packageName, typeName, '.');
+//		if (knownDeclarations.containsKey(fullName)) {
+//			return;
+//		}
+//		knownDeclarations.put(fullName, this);
+//		
+//		StringBuilder sig = new StringBuilder();
+//		InternalSignature.appendPackageName(packageName, sig);
+//		sig.append(CLASS);
+//		sig.append(typeName.length);
+//		sig.append(typeName);
+//		
+//		char[] sigChar = sig.toString().toCharArray();
+//		
+//		CompletionProposal proposal = this.createProposal(CompletionProposal.TYPE_REF, this.actualCompletionPosition);
+//		
+//		int relevance = computeBaseRelevance();
+//		relevance += computeRelevanceForCaseMatching(currentName, typeName);
+//		relevance += computeRelevanceForExpectedType(sigChar);
+//		if (parser.inNewExp) {
+//			if ((modifiers & (Flags.AccStruct | Flags.AccUnion | Flags.AccInterface | Flags.AccTemplate | Flags.AccEnum)) == 0) {
+//				// Don't suggest abstract classes
+//				if ((modifiers & Flags.AccAbstract) != 0) {
+//					return;
+//				}
+//				
+//				relevance += R_NEW;
+//			} else {
+//				return;
+//			}
+//		}
+//		relevance += R_CLASS;
+//		
+//		proposal.setCompletion(fullName);
+//		
+//		proposal.setName(typeName);
+//		
+//		proposal.setSignature(sigChar);
+//		proposal.setFlags(modifiers);
+//		proposal.setRelevance(relevance);
+//		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+//		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
 	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
-		if (packageName == null || packageName.length == 0) {
-			return;
-		}
-		
-		if (isImported(packageName)) {
-			return;
-		}
-		
-		if (parser.inNewExp) {
-			return;
-		}
-		
-		// Skip variables if they are not imported
-		if ((modifiers & (Flags.AccAlias | Flags.AccTypedef)) == 0 && !isImported(packageName)) {
-			return;
-		}
-		
-		// Don't show not imported variables if completing type identifier
-		if (isCompletingTypeIdentifier) {
-			if ((modifiers & Flags.AccTypedef) == 0 &&
-					(modifiers & Flags.AccAlias) == 0) {
-				return;
-			}
-		}
-		
-		if (!isVisible(modifiers, packageName)) {
-			return;
-		}
-		
-		char[] fullName = CharOperation.concat(packageName, name, '.');
-		if (knownDeclarations.containsKey(fullName)) {
-			return;
-		}
-		knownDeclarations.put(fullName, this);
-		
-		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
-		
-		int relevance = computeBaseRelevance();
-		relevance += computeRelevanceForCaseMatching(currentName, name);
-		relevance += computeRelevanceForExpectedType(typeName);
-		relevance += R_VAR;
-		
-		proposal.setCompletion(fullName);
-		
-		proposal.setName(name);
-		
-		StringBuilder sig = new StringBuilder();
-		InternalSignature.appendPackageName(packageName, sig);
-		sig.append(VARIABLE);
-		sig.append(name.length);
-		sig.append(name);
-		
-		// If it's a function pointer or delegate, suggest call
-		if (typeName.length >= 2 && 
-				(typeName[0] == POINTER || typeName[0] == DELEGATE) && 
-				typeName[1] == FUNCTION) {
-			StringBuilder sig2 = new StringBuilder();
-			sig2.append(MODULE);
-			sig2.append(packageName.length);
-			sig2.append(packageName);
-			sig2.append(FUNCTION);
-			sig2.append(name.length);
-			sig2.append(name);
-			sig2.append(typeName, 1, typeName.length - 1);
-			suggestTypeFunction(sig2.toString().toCharArray(), name);
-		}
-		
-		proposal.setSignature(sig.toString().toCharArray());
-		proposal.setTypeName(typeName);
-		proposal.setFlags(modifiers);
-		proposal.setRelevance(relevance);
-		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-		CompletionEngine.this.requestor.accept(proposal);
+//		if (packageName == null || packageName.length == 0) {
+//			return;
+//		}
+//		
+//		if (isImported(packageName)) {
+//			return;
+//		}
+//		
+//		if (parser.inNewExp) {
+//			return;
+//		}
+//		
+//		// Skip variables if they are not imported
+//		if ((modifiers & (Flags.AccAlias | Flags.AccTypedef)) == 0 && !isImported(packageName)) {
+//			return;
+//		}
+//		
+//		// Don't show not imported variables if completing type identifier
+//		if (isCompletingTypeIdentifier) {
+//			if ((modifiers & Flags.AccTypedef) == 0 &&
+//					(modifiers & Flags.AccAlias) == 0) {
+//				return;
+//			}
+//		}
+//		
+//		if (!isVisible(modifiers, packageName)) {
+//			return;
+//		}
+//		
+//		char[] fullName = CharOperation.concat(packageName, name, '.');
+//		if (knownDeclarations.containsKey(fullName)) {
+//			return;
+//		}
+//		knownDeclarations.put(fullName, this);
+//		
+//		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
+//		
+//		int relevance = computeBaseRelevance();
+//		relevance += computeRelevanceForCaseMatching(currentName, name);
+//		relevance += computeRelevanceForExpectedType(typeName);
+//		relevance += R_VAR;
+//		
+//		proposal.setCompletion(fullName);
+//		
+//		proposal.setName(name);
+//		
+//		StringBuilder sig = new StringBuilder();
+//		InternalSignature.appendPackageName(packageName, sig);
+//		sig.append(VARIABLE);
+//		sig.append(name.length);
+//		sig.append(name);
+//		
+//		// If it's a function pointer or delegate, suggest call
+//		if (typeName.length >= 2 && 
+//				(typeName[0] == POINTER || typeName[0] == DELEGATE) && 
+//				typeName[1] == FUNCTION) {
+//			StringBuilder sig2 = new StringBuilder();
+//			sig2.append(MODULE);
+//			sig2.append(packageName.length);
+//			sig2.append(packageName);
+//			sig2.append(FUNCTION);
+//			sig2.append(name.length);
+//			sig2.append(name);
+//			sig2.append(typeName, 1, typeName.length - 1);
+//			suggestTypeFunction(sig2.toString().toCharArray(), name);
+//		}
+//		
+//		proposal.setSignature(sig.toString().toCharArray());
+//		proposal.setTypeName(typeName);
+//		proposal.setFlags(modifiers);
+//		proposal.setRelevance(relevance);
+//		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+//		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
 	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, AccessRestriction accessRestriction) {
-		if (packageName == null || packageName.length == 0) {
-			return;
-		}
-		
-		if (isImported(packageName)) {
-			return;
-		}
-		
-		// Don't show methods for type identifier completions
-		if (isCompletingTypeIdentifier) {
-			return;
-		}
-		
-		if (parser.inNewExp) {
-			return;
-		}
-		
-		if (specialFunctions.containsKey(name)) {
-			return;
-		}
-		
-		if (!isVisible(modifiers, packageName)) {
-			return;
-		}
-		
-		StringBuilder sig = new StringBuilder();
-		InternalSignature.appendPackageName(packageName, sig);
-		sig.append(FUNCTION);
-		sig.append(name.length);
-		sig.append(name);
-		sig.append(signature);
-		char[] sigChars = sig.toString().toCharArray();
-		if (knownDeclarations.containsKey(sigChars)) {
-			return;
-		}
-		knownDeclarations.put(sigChars, this);
-		
-		char[] fullName = CharOperation.concat(packageName, name, '.');
-		
-		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
-		
-		int relevance = computeBaseRelevance();
-		relevance += computeRelevanceForCaseMatching(currentName, name);
-		relevance += computeRelevanceForExpectedType(signature);
-		relevance += R_METHOD;
-		
-		proposal.setCompletion(CharOperation.concat(fullName, "".toCharArray()));
-		
-		proposal.setName(name);
-		proposal.setSignature(sigChars);
-		proposal.setTypeName(signature);
-		proposal.setFlags(modifiers);
-		proposal.setRelevance(relevance);
-		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-		CompletionEngine.this.requestor.accept(proposal);
+//		if (packageName == null || packageName.length == 0) {
+//			return;
+//		}
+//		
+//		if (isImported(packageName)) {
+//			return;
+//		}
+//		
+//		// Don't show methods for type identifier completions
+//		if (isCompletingTypeIdentifier) {
+//			return;
+//		}
+//		
+//		if (parser.inNewExp) {
+//			return;
+//		}
+//		
+//		if (specialFunctions.containsKey(name)) {
+//			return;
+//		}
+//		
+//		if (!isVisible(modifiers, packageName)) {
+//			return;
+//		}
+//		
+//		StringBuilder sig = new StringBuilder();
+//		InternalSignature.appendPackageName(packageName, sig);
+//		sig.append(FUNCTION);
+//		sig.append(name.length);
+//		sig.append(name);
+//		sig.append(signature);
+//		char[] sigChars = sig.toString().toCharArray();
+//		if (knownDeclarations.containsKey(sigChars)) {
+//			return;
+//		}
+//		knownDeclarations.put(sigChars, this);
+//		
+//		char[] fullName = CharOperation.concat(packageName, name, '.');
+//		
+//		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition);
+//		
+//		int relevance = computeBaseRelevance();
+//		relevance += computeRelevanceForCaseMatching(currentName, name);
+//		relevance += computeRelevanceForExpectedType(signature);
+//		relevance += R_METHOD;
+//		
+//		proposal.setCompletion(CharOperation.concat(fullName, "".toCharArray()));
+//		
+//		proposal.setName(name);
+//		proposal.setSignature(sigChars);
+//		proposal.setTypeName(signature);
+//		proposal.setFlags(modifiers);
+//		proposal.setRelevance(relevance);
+//		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+//		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
 	private int computeRelevanceForExpectedType(Type type) {

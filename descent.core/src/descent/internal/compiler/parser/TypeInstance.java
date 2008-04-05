@@ -37,7 +37,7 @@ public class TypeInstance extends TypeQualified {
 			TypeInstance tp = (TypeInstance) tparam;
 
 			if (null == tp.tempinst.tempdecl) {
-				if (!tp.tempinst.name.equals(tempinst.name)) {
+				if (!equals(tp.tempinst.name, tempinst.name)) {
 					return MATCHnomatch;
 				}
 			} else if (tempinst.tempdecl != tp.tempinst.tempdecl) {

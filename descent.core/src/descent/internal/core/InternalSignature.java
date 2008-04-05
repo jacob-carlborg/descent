@@ -58,155 +58,153 @@ public class InternalSignature implements ISignatureConstants {
 		final Stack<Objects> tiargsStack = new Stack<Objects>();
 		
 		final ASTNodeEncoder encoder = new ASTNodeEncoder();
-		SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
-			@Override
-			public void acceptPrimitive(TypeBasic type) {
-				Stack<Type> sub = stack.peek();
-				sub.push(type);
-			}
-			@Override
-			public void acceptPointer(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypePointer(sub.pop()));
-			}
-			@Override
-			public void acceptStaticArray(char[] dimension, String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension)));
-			}
-			@Override
-			public void acceptDynamicArray(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeDArray(sub.pop()));
-			}
-			@Override
-			public void acceptAssociativeArray(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeAArray(sub.pop(), sub.pop()));
-			}
-			@Override
-			public void acceptTypeof(char[] expression, String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression)));
-			}
-			@Override
-			public void acceptSlice(char[] lwr, char[] upr, String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr)));
-			}
-			@Override
-			public void acceptIdentifier(char[][] compoundName, String signature) {
-				Stack<Type> sub = stack.peek();
-				
-				TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
-				for (int i = 1; i < compoundName.length; i++) {
-					type.idents.add(new IdentifierExp(compoundName[i]));
+		SignatureProcessor.process(signature, false /* don't want sub-signatures */, 
+			new SignatureRequestorAdapter() {
+				@Override
+				public void acceptPrimitive(TypeBasic type) {
+					Stack<Type> sub = stack.peek();
+					sub.push(type);
 				}
-				
-				sub.push(type);
-			}
-			@Override
-			public void acceptDelegate(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeDelegate(sub.pop()));
-			}
-			@Override
-			public void enterFunctionType() {
-				Stack<Type> sub = new Stack<Type>();
-				stack.push(sub);
-				
-				modifiers.push(new Stack<Integer>());
-			}
-			@Override
-			public void acceptArgumentModifier(int stc) {
-				if (modifiers.isEmpty()) {
-					System.out.println(1);
+				@Override
+				public void acceptPointer(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypePointer(sub.pop()));
 				}
-				modifiers.peek().push(stc);
-			}
-			@Override
-			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-				Stack<Type> sub = stack.pop();
-				Stack<Integer> modifiersSub = modifiers.pop();
-				
-				Type tret = sub.pop();
-				
-				Arguments args = new Arguments(sub.size());
-				for (int i = 0; i < sub.size(); i++) {
-					// TODO signature default arg
-					Argument arg = new Argument(modifiersSub.get(i), sub.get(i), null, null);
-					args.add(arg);
+				@Override
+				public void acceptStaticArray(char[] dimension, String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension)));
 				}
-				
-				TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
-				
-				sub = stack.peek();
-				sub.push(type);
-			}
-			@Override
-			public void enterTemplateInstance() {
-				tiargsStack.add(new Objects());
-			}
-			@Override
-			public void enterTemplateInstanceType() {
-				stack.push(new Stack<Type>());
-			}
-			@Override
-			public void exitTemplateInstanceType(String signature) {
-				Stack<Type> sub = stack.pop();
-				Type type = sub.pop();
-				tiargsStack.peek().add(type);
-			}
-			@Override
-			public void enterTemplateInstanceSymbol() {
-				stack.push(new Stack<Type>());
-			}
-			@Override
-			public void exitTemplateInstanceSymbol(String string) {
-				Stack<Type> sub = stack.pop();
-				Type type = sub.pop();
-				tiargsStack.peek().add(type);
-			}
-			@Override
-			public void acceptTemplateInstanceValue(char[] exp, String signature) {
-				tiargsStack.peek().add(encoder.decodeExpression(exp));
-			}
-			@Override
-			public void exitTemplateInstance(String signature) {
-				Objects tiargs = tiargsStack.pop();
-				
-				Stack<Type> previous = stack.peek();
-				TypeIdentifier typeIdent = (TypeIdentifier) previous.pop();
-				
-				if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
-					TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident);
-					templInstance.tiargs = tiargs;
+				@Override
+				public void acceptDynamicArray(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeDArray(sub.pop()));
+				}
+				@Override
+				public void acceptAssociativeArray(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeAArray(sub.pop(), sub.pop()));
+				}
+				@Override
+				public void acceptTypeof(char[] expression, String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression)));
+				}
+				@Override
+				public void acceptSlice(char[] lwr, char[] upr, String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr)));
+				}
+				@Override
+				public void acceptIdentifier(char[][] compoundName, String signature) {
+					Stack<Type> sub = stack.peek();
 					
-					if (previous.isEmpty()) {
-						TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
-						previous.push(typeInstance);
-					} else {
-						TypeInstance previousInstance = (TypeInstance) previous.peek();
-						previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+					TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
+					for (int i = 1; i < compoundName.length; i++) {
+						type.idents.add(new IdentifierExp(compoundName[i]));
 					}
-				} else {
-					TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1));
-					templInstance.tiargs = tiargs;
 					
-					typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+					sub.push(type);
+				}
+				@Override
+				public void acceptDelegate(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeDelegate(sub.pop()));
+				}
+				@Override
+				public void enterFunctionType() {
+					Stack<Type> sub = new Stack<Type>();
+					stack.push(sub);
 					
-					if (previous.isEmpty()) {
-						previous.push(typeIdent);
+					modifiers.push(new Stack<Integer>());
+				}
+				@Override
+				public void acceptArgumentModifier(int stc) {
+					modifiers.peek().push(stc);
+				}
+				@Override
+				public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+					Stack<Type> sub = stack.pop();
+					Stack<Integer> modifiersSub = modifiers.pop();
+					
+					Type tret = sub.pop();
+					
+					Arguments args = new Arguments(sub.size());
+					for (int i = 0; i < sub.size(); i++) {
+						// TODO signature default arg
+						Argument arg = new Argument(modifiersSub.get(i), sub.get(i), null, null);
+						args.add(arg);
+					}
+					
+					TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
+					
+					sub = stack.peek();
+					sub.push(type);
+				}
+				@Override
+				public void enterTemplateInstance() {
+					tiargsStack.add(new Objects());
+				}
+				@Override
+				public void enterTemplateInstanceType() {
+					stack.push(new Stack<Type>());
+				}
+				@Override
+				public void exitTemplateInstanceType(String signature) {
+					Stack<Type> sub = stack.pop();
+					Type type = sub.pop();
+					tiargsStack.peek().add(type);
+				}
+				@Override
+				public void enterTemplateInstanceSymbol() {
+					stack.push(new Stack<Type>());
+				}
+				@Override
+				public void exitTemplateInstanceSymbol(String string) {
+					Stack<Type> sub = stack.pop();
+					Type type = sub.pop();
+					tiargsStack.peek().add(type);
+				}
+				@Override
+				public void acceptTemplateInstanceValue(char[] exp, String signature) {
+					tiargsStack.peek().add(encoder.decodeExpression(exp));
+				}
+				@Override
+				public void exitTemplateInstance(String signature) {
+					Objects tiargs = tiargsStack.pop();
+					
+					Stack<Type> previous = stack.peek();
+					TypeIdentifier typeIdent = (TypeIdentifier) previous.pop();
+					
+					if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
+						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident);
+						templInstance.tiargs = tiargs;
+						
+						if (previous.isEmpty()) {
+							TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+							previous.push(typeInstance);
+						} else {
+							TypeInstance previousInstance = (TypeInstance) previous.peek();
+							previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+						}
 					} else {
-						TypeIdentifier previousIdent = (TypeIdentifier) previous.peek();
-						previousIdent.idents.add(typeIdent.ident);
-						for(IdentifierExp ident : typeIdent.idents) {
-							previousIdent.idents.add(ident);
+						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1));
+						templInstance.tiargs = tiargs;
+						
+						typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+						
+						if (previous.isEmpty()) {
+							previous.push(typeIdent);
+						} else {
+							TypeIdentifier previousIdent = (TypeIdentifier) previous.peek();
+							previousIdent.idents.add(typeIdent.ident);
+							for(IdentifierExp ident : typeIdent.idents) {
+								previousIdent.idents.add(ident);
+							}
 						}
 					}
 				}
-			}
-		});
+			});
 		
 		return stack.peek().pop();
 	}
@@ -265,122 +263,123 @@ public class InternalSignature implements ISignatureConstants {
 		
 		final Expression[] specValue = { null };
 		
-		SignatureProcessor.process(signature, new SignatureRequestorAdapter() {
-			@Override
-			public void acceptPrimitive(TypeBasic type) {
-				Stack<Type> sub = stack.peek();
-				sub.push(type);
-			}
-			@Override
-			public void acceptPointer(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypePointer(sub.pop()));
-			}
-			@Override
-			public void acceptStaticArray(char[] dimension, String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension)));
-			}
-			@Override
-			public void acceptDynamicArray(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeDArray(sub.pop()));
-			}
-			@Override
-			public void acceptAssociativeArray(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeAArray(sub.pop(), sub.pop()));
-			}
-			@Override
-			public void acceptTypeof(char[] expression, String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression)));
-			}
-			@Override
-			public void acceptSlice(char[] lwr, char[] upr, String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr)));
-			}
-			@Override
-			public void acceptIdentifier(char[][] compoundName, String signature) {
-				Stack<Type> sub = stack.peek();
-				
-				TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[compoundName.length - 1]);
-				for (int i = 0; i < compoundName.length - 1; i++) {
-					type.idents.add(new IdentifierExp(compoundName[i]));
+		SignatureProcessor.process(signature, false /* don't want sub-signatures */,  
+			new SignatureRequestorAdapter() {
+				@Override
+				public void acceptPrimitive(TypeBasic type) {
+					Stack<Type> sub = stack.peek();
+					sub.push(type);
+				}
+				@Override
+				public void acceptPointer(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypePointer(sub.pop()));
+				}
+				@Override
+				public void acceptStaticArray(char[] dimension, String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension)));
+				}
+				@Override
+				public void acceptDynamicArray(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeDArray(sub.pop()));
+				}
+				@Override
+				public void acceptAssociativeArray(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeAArray(sub.pop(), sub.pop()));
+				}
+				@Override
+				public void acceptTypeof(char[] expression, String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression)));
+				}
+				@Override
+				public void acceptSlice(char[] lwr, char[] upr, String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr)));
+				}
+				@Override
+				public void acceptIdentifier(char[][] compoundName, String signature) {
+					Stack<Type> sub = stack.peek();
+					
+					TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[compoundName.length - 1]);
+					for (int i = 0; i < compoundName.length - 1; i++) {
+						type.idents.add(new IdentifierExp(compoundName[i]));
+					}
+					
+					sub.push(type);
+				}
+				@Override
+				public void acceptDelegate(String signature) {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeDelegate(sub.pop()));
+				}
+				@Override
+				public void enterFunctionType() {
+					Stack<Type> sub = new Stack<Type>();
+					stack.push(sub);
+					
+					modifiers.push(new Stack<Integer>());
+				}
+				@Override
+				public void acceptArgumentModifier(int stc) {
+					modifiers.peek().push(stc);
+				}
+				@Override
+				public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+					Stack<Type> sub = stack.pop();
+					Stack<Integer> modifiersSub = modifiers.pop();
+					
+					Type tret = sub.pop();
+					
+					Arguments args = new Arguments(sub.size());
+					for (int i = 0; i < sub.size(); i++) {
+						// TODO signature default arg
+						Argument arg = new Argument(modifiersSub.get(i), sub.get(i), null, null);
+						args.add(arg);
+					}
+					
+					TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
+					
+					sub = stack.peek();
+					sub.push(type);
+				}
+				@Override
+				public void acceptTemplateTupleParameter() {
+					param[0] = new TemplateTupleParameter(Loc.ZERO, null);
+				}
+				@Override
+				public void exitTemplateTypeParameter(String signature) {
+					Stack<Type> types = stack.peek();
+					Type type = types.isEmpty() ? null : types.get(0);				
+					Type def = defaultValue == null ? null : toType(defaultValue);
+					
+					param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, def);
+				}
+				@Override
+				public void exitTemplateAliasParameter(String signature) {
+					Stack<Type> types = stack.peek();
+					Type type = types.isEmpty() ? null : types.get(0);
+					Type def = defaultValue == null ? null : toType(defaultValue);
+					
+					param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, def);
+				}
+				@Override
+				public void acceptTemplateValueParameterSpecificValue(char[] exp) {
+					specValue[0] = encoder.decodeExpression(exp);
+				}
+				@Override
+				public void exitTemplateValueParameter(String signature) {
+					Stack<Type> types = stack.peek();
+					Type type = types.get(0);
+					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
+					
+					param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def);
 				}
 				
-				sub.push(type);
-			}
-			@Override
-			public void acceptDelegate(String signature) {
-				Stack<Type> sub = stack.peek();
-				sub.push(new TypeDelegate(sub.pop()));
-			}
-			@Override
-			public void enterFunctionType() {
-				Stack<Type> sub = new Stack<Type>();
-				stack.push(sub);
-				
-				modifiers.push(new Stack<Integer>());
-			}
-			@Override
-			public void acceptArgumentModifier(int stc) {
-				modifiers.peek().push(stc);
-			}
-			@Override
-			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
-				Stack<Type> sub = stack.pop();
-				Stack<Integer> modifiersSub = modifiers.pop();
-				
-				Type tret = sub.pop();
-				
-				Arguments args = new Arguments(sub.size());
-				for (int i = 0; i < sub.size(); i++) {
-					// TODO signature default arg
-					Argument arg = new Argument(modifiersSub.get(i), sub.get(i), null, null);
-					args.add(arg);
-				}
-				
-				TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
-				
-				sub = stack.peek();
-				sub.push(type);
-			}
-			@Override
-			public void acceptTemplateTupleParameter() {
-				param[0] = new TemplateTupleParameter(Loc.ZERO, null);
-			}
-			@Override
-			public void exitTemplateTypeParameter(String signature) {
-				Stack<Type> types = stack.peek();
-				Type type = types.isEmpty() ? null : types.get(0);				
-				Type def = defaultValue == null ? null : toType(defaultValue);
-				
-				param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, def);
-			}
-			@Override
-			public void exitTemplateAliasParameter(String signature) {
-				Stack<Type> types = stack.peek();
-				Type type = types.isEmpty() ? null : types.get(0);
-				Type def = defaultValue == null ? null : toType(defaultValue);
-				
-				param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, def);
-			}
-			@Override
-			public void acceptTemplateValueParameterSpecificValue(char[] exp) {
-				specValue[0] = encoder.decodeExpression(exp);
-			}
-			@Override
-			public void exitTemplateValueParameter(String signature) {
-				Stack<Type> types = stack.peek();
-				Type type = types.get(0);
-				Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
-				
-				param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def);
-			}
-			
-		});
+			});
 		
 		return param[0];
 	}

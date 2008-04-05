@@ -40,6 +40,8 @@ public class UnionDeclaration extends StructDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		UnionDeclaration ud;
 
 		if (s != null) {

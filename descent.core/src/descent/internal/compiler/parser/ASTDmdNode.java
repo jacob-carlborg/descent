@@ -770,33 +770,41 @@ public abstract class ASTDmdNode extends ASTNode {
 			if (i < nparams) {
 				Argument p = Argument.getNth(tf.parameters, i, context);
 
+				boolean gotoL2 = false;
 				if (arg == null) {
 					if (p.defaultArg == null) {
 						if (tf.varargs == 2 && i + 1 == nparams) {
 							// goto L2;
+							gotoL2 = true;
 						}
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
-						break;
-					}
-					arg = p.defaultArg.copy();
-					arguments.add(arg);
-					nargs++;
-				}
-
-				if (tf.varargs == 2 && i + 1 == nparams) {
-					boolean gotoL1 = false;
-					
-					if (arg.implicitConvTo(p.type, context) != MATCH.MATCHnomatch) {
-						if (nargs != nparams) {
+						if (!gotoL2) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
 						}
-						gotoL1 = true;
-						// goto L1;
+						break;
+					}
+					if (!gotoL2) {
+						arg = p.defaultArg.copy();
+						arguments.add(arg);
+						nargs++;
+					}
+				}
+
+				if ((tf.varargs == 2 && i + 1 == nparams) || gotoL2) {
+					boolean gotoL1 = false;
+					
+					if (!gotoL2) {
+						if (arg.implicitConvTo(p.type, context) != MATCH.MATCHnomatch) {
+							if (nargs != nparams) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
+							}
+							gotoL1 = true;
+							// goto L1;
+						}
 					}
 					
-					if (!gotoL1) {
+					if (!gotoL1 || gotoL2) {
 						// L2:
 						tb = p.type.toBasetype(context);
 						Type tret = p.isLazyArray(context);

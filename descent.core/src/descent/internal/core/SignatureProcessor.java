@@ -29,13 +29,15 @@ public class SignatureProcessor implements ISignatureConstants {
 	 * notified before B.</p>
 	 * 
 	 * @param signature the signature to process
+	 * @param wantSignature whether to report the sub-signatures in the
+	 * requestor methods
 	 * @param requestor the signature processor requestor 
 	 */
-	public static void process(String signature, ISignatureRequestor requestor) {
-		process0(signature, 0, requestor);
+	public static void process(String signature, boolean wantSignature, ISignatureRequestor requestor) {
+		process0(signature, 0, wantSignature, requestor);
 	}
 
-	public static int process0(String signature, int i, ISignatureRequestor requestor) {
+	public static int process0(String signature, int i, boolean wantSignature, ISignatureRequestor requestor) {
 		if (signature == null || signature.length() == 0) {
 			throw new IllegalArgumentException("Invalid signature: <null or empty>");
 		}
@@ -50,7 +52,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				int[] end = { 0 };
 				char[][] compoundName = splitSignature(signature, i + 1, end);
 				i = end[0];
-				requestor.acceptModule(compoundName, signature.substring(start, i));
+				requestor.acceptModule(compoundName, substring(signature, start, i, wantSignature));
 				continue;
 			}
 			case CLASS:
@@ -85,7 +87,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				i += n;
 				
 				if (first == FUNCTION || first == TEMPLATED_FUNCTION) {
-					i = process0(signature, i, requestor);
+					i = process0(signature, i, wantSignature, requestor);
 				}
 				
 				if (first == TEMPLATE || first == TEMPLATED_FUNCTION ||
@@ -94,14 +96,14 @@ public class SignatureProcessor implements ISignatureConstants {
 					requestor.enterTemplateParameters();
 					
 					while(signature.charAt(i) != TEMPLATE_PARAMETERS_BREAK) {
-						i = process0(signature, i, requestor);
+						i = process0(signature, i, wantSignature, requestor);
 					}
 					i++;
 					
 					requestor.exitTemplateParameters();
 				}
 				
-				requestor.acceptSymbol(first, name, localPosition, signature.substring(start, i));
+				requestor.acceptSymbol(first, name, localPosition, substring(signature, start, i, wantSignature));
 				
 				localPosition = -1;
 				
@@ -113,28 +115,28 @@ public class SignatureProcessor implements ISignatureConstants {
 				}
 			case UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR:
 				i++;
-				requestor.acceptSymbol(first, null, localPosition, signature.substring(start, i));
+				requestor.acceptSymbol(first, null, localPosition, substring(signature, start, i, wantSignature));
 				localPosition = -1;
 				continue;
 			case DELEGATE: {
-				i = process0(signature, i + 1, requestor);
-				requestor.acceptDelegate(signature.substring(start, i));
+				i = process0(signature, i + 1, wantSignature, requestor);
+				requestor.acceptDelegate(substring(signature, start, i, wantSignature));
 				return i;
 			}
 			case POINTER: { // pointer
-				i = process0(signature, i + 1, requestor);
-				requestor.acceptPointer(signature.substring(start, i));
+				i = process0(signature, i + 1, wantSignature, requestor);
+				requestor.acceptPointer(substring(signature, start, i, wantSignature));
 				return i;
 			}
 			case DYNAMIC_ARRAY: { // dynamic array
-				i = process0(signature, i + 1, requestor);
-				requestor.acceptDynamicArray(signature.substring(start, i));
+				i = process0(signature, i + 1, wantSignature, requestor);
+				requestor.acceptDynamicArray(substring(signature, start, i, wantSignature));
 				return i;
 			}
 			case STATIC_ARRAY: { // static array
 				i++;
 				
-				i = process0(signature, i, requestor);
+				i = process0(signature, i, wantSignature, requestor);
 				i++;
 				
 				c = signature.charAt(i);
@@ -152,13 +154,13 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				i += n;
 				
-				requestor.acceptStaticArray(dimension, signature.substring(start, i));
+				requestor.acceptStaticArray(dimension, substring(signature, start, i, wantSignature));
 				return i;
 			}
 			case ASSOCIATIVE_ARRAY: {// associative array
-				i = process0(signature, i + 1, requestor);
-				i = process0(signature, i, requestor);
-				requestor.acceptAssociativeArray(signature.substring(start, i));
+				i = process0(signature, i + 1, wantSignature, requestor);
+				i = process0(signature, i, wantSignature, requestor);
+				requestor.acceptAssociativeArray(substring(signature, start, i, wantSignature));
 				return i;
 			}
 			case LINK_D: // Type function
@@ -183,15 +185,15 @@ public class SignatureProcessor implements ISignatureConstants {
 						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK_VARIADIC && 
 						signature.charAt(i) != FUNCTION_PARAMETERS_BREAK) {
 					i = argumentModifier(signature, i, requestor);
-					i = process0(signature, i, requestor);
+					i = process0(signature, i, wantSignature, requestor);
 				}
 				
 				char argumentBreak = signature.charAt(i);
 				requestor.acceptArgumentBreak(argumentBreak);
 				i++;
 				
-				i = process0(signature, i, requestor);
-				requestor.exitFunctionType(link, argumentBreak, signature.substring(start, i));
+				i = process0(signature, i, wantSignature, requestor);
+				requestor.exitFunctionType(link, argumentBreak, substring(signature, start, i, wantSignature));
 				return i;
 			}
 			case TEMPLATE_TUPLE_PARAMETER:
@@ -202,25 +204,25 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				i++;
 				if (i < signature.length() && signature.charAt(i) == TEMPLATE_ALIAS_PARAMETER2) {
-					i = process0(signature, i+1, requestor);
+					i = process0(signature, i+1, wantSignature, requestor);
 				}
 				
-				requestor.exitTemplateAliasParameter(signature.substring(start, i));
+				requestor.exitTemplateAliasParameter(substring(signature, start, i, wantSignature));
 				return i;
 			case TEMPLATE_TYPE_PARAMETER:
 				requestor.enterTemplateTypeParameter();
 				
 				i++;
 				if (i < signature.length() && signature.charAt(i) == TEMPLATE_TYPE_PARAMETER2) {
-					i = process0(signature, i+1, requestor);
+					i = process0(signature, i+1, wantSignature, requestor);
 				}
 				
-				requestor.exitTemplateTypeParameter(signature.substring(start, i));
+				requestor.exitTemplateTypeParameter(substring(signature, start, i, wantSignature));
 				return i;
 			case TEMPLATE_VALUE_PARAMETER:
 				requestor.enterTemplateValueParameter();
 				
-				i = process0(signature, i + 1, requestor);
+				i = process0(signature, i + 1, wantSignature, requestor);
 				
 				if (i < signature.length()) {
 					c = signature.charAt(i);
@@ -242,7 +244,7 @@ public class SignatureProcessor implements ISignatureConstants {
 					}
 				}
 				
-				requestor.exitTemplateValueParameter(signature.substring(start, i));
+				requestor.exitTemplateValueParameter(substring(signature, start, i, wantSignature));
 				return i;
 			case TYPEOF:
 				i++;
@@ -258,13 +260,13 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				
 				requestor.acceptTypeof(signature.substring(i, i + n).toCharArray(),
-								signature.substring(start, i + n));
+								substring(signature, start, i + n, wantSignature));
 				
 				i += n;
 				
 				return i;
 			case SLICE:
-				i = process0(signature, i + 1, requestor);
+				i = process0(signature, i + 1, wantSignature, requestor);
 				i++;
 				
 				c = signature.charAt(i);
@@ -293,7 +295,7 @@ public class SignatureProcessor implements ISignatureConstants {
 				
 				char[] upr = signature.substring(i, i + n).toCharArray();
 				
-				requestor.acceptSlice(lwr, upr, signature.substring(start, i + n));
+				requestor.acceptSlice(lwr, upr, substring(signature, start, i + n, wantSignature));
 				
 				i += n;
 				
@@ -313,17 +315,17 @@ public class SignatureProcessor implements ISignatureConstants {
 
 				i++;
 				while(signature.charAt(i) != TEMPLATE_PARAMETERS_BREAK) {
-					i = process0(signature, i, requestor);
+					i = process0(signature, i, wantSignature, requestor);
 				}
 				i++;
 				
-				requestor.exitTemplateInstance(signature.substring(start, i));
+				requestor.exitTemplateInstance(substring(signature, start, i, wantSignature));
 				continue;
 			case TEMPLATE_INSTANCE_TYPE:
 				requestor.enterTemplateInstanceType();
 				i++;
-				i = process0(signature, i, requestor);
-				requestor.exitTemplateInstanceType(signature.substring(start, i));
+				i = process0(signature, i, wantSignature, requestor);
+				requestor.exitTemplateInstanceType(substring(signature, start, i, wantSignature));
 				return i;
 			case TEMPLATE_INSTANCE_VALUE:
 				i++;
@@ -338,7 +340,7 @@ public class SignatureProcessor implements ISignatureConstants {
 					}
 					i++;
 					
-					requestor.acceptTemplateInstanceValue(signature.substring(i, i + n).toCharArray(), signature.substring(start, i + n));
+					requestor.acceptTemplateInstanceValue(signature.substring(i, i + n).toCharArray(), substring(signature, start, i + n, wantSignature));
 					
 					i += n;
 				}
@@ -346,14 +348,14 @@ public class SignatureProcessor implements ISignatureConstants {
 				return i;
 			case TEMPLATE_INSTANCE_SYMBOL:
 				requestor.enterTemplateInstanceSymbol();
-				i = process0(signature, i + 1, requestor);
-				requestor.exitTemplateInstanceSymbol(signature.substring(start, i));
+				i = process0(signature, i + 1, wantSignature, requestor);
+				requestor.exitTemplateInstanceSymbol(substring(signature, start, i, wantSignature));
 				return i;
 			case IDENTIFIER:
 				int[] end = { 0 };
 				char[][] compoundName = splitSignature(signature, i + 1, end);
 				i = end[0];
-				requestor.acceptIdentifier(compoundName, signature.substring(start, i));
+				requestor.acceptIdentifier(compoundName, substring(signature, start, i, wantSignature));
 				
 				// A template instance may follow an identifier
 				if (i < signature.length() && signature.charAt(i) == TEMPLATE_INSTANCE) {
@@ -386,6 +388,14 @@ public class SignatureProcessor implements ISignatureConstants {
 		}
 		
 		return i;
+	}
+	
+	private static String substring(String s, int start, int end, boolean wantSignature) {
+		if (wantSignature) {
+			return s.substring(start, end);
+		} else {
+			return null;
+		}
 	}
 	
 	private static boolean isSymbol(char c) {

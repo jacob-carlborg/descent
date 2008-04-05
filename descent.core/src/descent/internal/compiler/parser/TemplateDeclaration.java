@@ -317,7 +317,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					}
 					TypeIdentifier tid = (TypeIdentifier) fparam.type;
 
-					if (!tp.ident.equals(tid.ident)
+					if (!equals(tp.ident, tid.ident)
 							|| (tid.idents != null && tid.idents.size() > 0)) {
 						throw GOTO_L1;
 					}
@@ -542,7 +542,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		// Temporary Array to hold deduced types
-		dedtypes.setDim(size(td2.parameters()));
+		dedtypes.setDim(size(td2.parameters));
 
 		// Attempt a type deduction
 		if (td2.matchWithInstance(ti, dedtypes, 1, context) != MATCHnomatch) {
@@ -732,7 +732,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			Dsymbol[] s = { null };
 			if (Dsymbol.oneMembers(members, s, context)) {
 				if (s[0] != null && s[0].ident != null
-						&& s[0].ident.ident.equals(ident.ident)) {
+						&& equals(s[0].ident.ident, ident.ident)) {
 					onemember = s[0];
 					s[0].parent = this;
 				}
@@ -846,30 +846,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		buf.writeByte(')');
 		// buf.writeByte(0);
 		return buf.extractData();
-	}
-	
-	public TemplateDeclaration overroot() {
-		return overroot;
-	}
-	
-	public Dsymbol onemember() {
-		return onemember;
-	}
-	
-	public TemplateDeclaration overnext() {
-		return overnext;
-	}
-	
-	public TemplateParameters parameters() {
-		return parameters;
-	}
-	
-	public Scope scope() {
-		return scope;
-	}
-	
-	public List<TemplateInstance> instances() {
-		return instances;
 	}
 	
 	@Override

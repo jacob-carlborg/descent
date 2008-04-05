@@ -146,54 +146,16 @@ protected void codeComplete(descent.internal.compiler.env.ICompilationUnit cu, d
 	}
 }
 protected IJavaElement[] codeSelect(descent.internal.compiler.env.ICompilationUnit cu, int offset, int length, WorkingCopyOwner owner) throws JavaModelException {
-	// TODO Descent improve performance?
 	JavaProject project = (JavaProject)getJavaProject();
 	
 	SelectionEngine engine = new SelectionEngine(project.getOptions(true), project, owner);
 	return engine.select(cu, offset, length);
-	/* TODO JDT code select
-	PerformanceStats performanceStats = SelectionEngine.PERF
-		? PerformanceStats.getStats(JavaModelManager.SELECTION_PERF, this)
-		: null;
-	if(performanceStats != null) {
-		performanceStats.startRun(new String(cu.getFileName()) + " at [" + offset + "," + length + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	}
-	
-	JavaProject project = (JavaProject)getJavaProject();
-	SearchableEnvironment environment = project.newSearchableNameEnvironment(owner);
-	
-	SelectionRequestor requestor= new SelectionRequestor(environment.nameLookup, this);
-	IBuffer buffer = getBuffer();
-	if (buffer == null) {
-		return requestor.getElements();
-	}
-	int end= buffer.getLength();
-	if (offset < 0 || length < 0 || offset + length > end ) {
-		throw new JavaModelException(new JavaModelStatus(IJavaModelStatusConstants.INDEX_OUT_OF_BOUNDS));
-	}
-
-	// fix for 1FVXGDK
-	SelectionEngine engine = new SelectionEngine(environment, requestor, project.getOptions(true));
-	engine.select(cu, offset, offset + length - 1);
-	
-	if(performanceStats != null) {
-		performanceStats.endRun();
-	}
-	if (NameLookup.VERBOSE) {
-		System.out.println(Thread.currentThread() + " TIME SPENT in NameLoopkup#seekTypesInSourcePackage: " + environment.nameLookup.timeSpentInSeekTypesInSourcePackage + "ms");  //$NON-NLS-1$ //$NON-NLS-2$
-		System.out.println(Thread.currentThread() + " TIME SPENT in NameLoopkup#seekTypesInBinaryPackage: " + environment.nameLookup.timeSpentInSeekTypesInBinaryPackage + "ms");  //$NON-NLS-1$ //$NON-NLS-2$
-	}
-	return requestor.getElements();
-	*/
 }
 protected IEvaluationResult codeEvaluate(descent.internal.compiler.env.ICompilationUnit cu, int offset, WorkingCopyOwner owner) throws JavaModelException {
-	return null;
+	JavaProject project = (JavaProject)getJavaProject();
 	
-	// TODO Descent improve performance?
-//	JavaProject project = (JavaProject)getJavaProject();
-//	
-//	EvaluationEngine engine = new EvaluationEngine(project.getOptions(true), project, owner);
-//	return engine.evaluate(cu, offset);
+	EvaluationEngine engine = new EvaluationEngine(project.getOptions(true), project, owner);
+	return engine.evaluate(cu, offset);
 }
 /*
  * Returns a new element info for this element.

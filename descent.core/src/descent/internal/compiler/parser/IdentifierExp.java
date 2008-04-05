@@ -87,12 +87,17 @@ public class IdentifierExp extends Expression {
 		return IDENTIFIER_EXP;
 	}
 
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
 
+		
+		
 		s = sc.search(loc, this, scopesym, context);
+		
+		
 		
 		// Descent: for binding resolution
 		resolvedSymbol = s;
@@ -138,12 +143,12 @@ public class IdentifierExp extends Expression {
 							&& (equals(ti.name, f.ident) || 
 									equals(ti.toAlias(context).ident, f.ident))
 							&& ti.tempdecl != null
-							&& ti.tempdecl.onemember() != null) {
+							&& ti.tempdecl.onemember != null) {
 						TemplateDeclaration tempdecl = ti.tempdecl;
-						if (tempdecl.overroot() != null) { // if not start of
+						if (tempdecl.overroot != null) { // if not start of
 							// overloaded list of
 							// TemplateDeclaration's
-							tempdecl = tempdecl.overroot(); // then get the
+							tempdecl = tempdecl.overroot; // then get the
 							// start
 						}
 						e = new TemplateExp(loc, tempdecl);

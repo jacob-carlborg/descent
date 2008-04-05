@@ -135,7 +135,7 @@ public class SemanticMixin {
 				appendTemplateInstanceSignature(aThis, sb);
 			} else if (aThis.templated() && aThis.parent instanceof TemplateDeclaration) {
 				TemplateDeclaration tempdecl = (TemplateDeclaration) aThis.parent;
-				for(TemplateParameter param : tempdecl.parameters()) {
+				for(TemplateParameter param : tempdecl.parameters) {
 					param.appendSignature(sb);
 				}
 				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
@@ -164,7 +164,7 @@ public class SemanticMixin {
 	}
 	
 	private static void appendTemplateParameters(TemplateDeclaration tempdecl, StringBuilder sb) {
-		for(TemplateParameter param : tempdecl.parameters()) {
+		for(TemplateParameter param : tempdecl.parameters) {
 			param.appendSignature(sb);
 		}
 		sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);

@@ -107,7 +107,7 @@ public class TypeFunction extends Type {
 								.get(tupi);
 						TemplateTupleParameter tup = t
 								.isTemplateTupleParameter();
-						if (null != tup && tup.ident.equals(tid.ident)) {
+						if (null != tup && equals(tup.ident, tid.ident)) {
 							break;
 						}
 					}

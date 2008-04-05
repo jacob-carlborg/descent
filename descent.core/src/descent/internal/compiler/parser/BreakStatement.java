@@ -82,7 +82,7 @@ public class BreakStatement extends Statement {
 				}
 
 				ls = scx.slabel;
-				if (ls != null && ls.ident.equals(ident)) {
+				if (ls != null && equals(ls.ident, ident)) {
 					Statement s = ls.statement;
 
 					if (!s.hasBreak()) {

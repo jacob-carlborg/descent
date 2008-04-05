@@ -68,8 +68,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
 			SemanticContext context) {
 		int j;
-
+		
 		Assert.isTrue(baseClass == null);
+		
+		cd.consumeRest();
+		
 		for (j = 0; j < cd.interfaces.size(); j++) {
 			BaseClass b = cd.interfaces.get(j);
 
@@ -113,6 +116,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(sc, context);
+			return;
+		}
+		
 		int i;
 
 		if (scope == null) {
@@ -180,6 +188,8 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				baseclasses.remove(i);
 				continue;
 			} else {
+				tc.sym.consumeRest();
+				
 				// Check for duplicate interfaces
 				for (int j = 0; j < i; j++) {
 					BaseClass b2 = baseclasses.get(j);
@@ -262,6 +272,8 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		consumeRestStructure();
+		
 		InterfaceDeclaration id;
 
 		if (s != null) {

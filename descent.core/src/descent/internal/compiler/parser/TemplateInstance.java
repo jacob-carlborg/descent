@@ -83,8 +83,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	public void declareParameters(Scope scope, SemanticContext context) {
 		for (int i = 0; i < size(tdtypes); i++) {
-			TemplateParameter tp = tempdecl.parameters()
-					.get(i);
+			TemplateParameter tp = tempdecl.parameters.get(i);
 			ASTDmdNode o = tdtypes.get(i);
 
 			tempdecl.declareParameter(scope, tp, o, context);
@@ -100,19 +99,19 @@ public class TemplateInstance extends ScopeDsymbol {
 		MATCH m_best = MATCHnomatch;
 		Objects dedtypes = new Objects();
 
-		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext()) {
+		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext) {
 			MATCH m;
 
 			// If more arguments than parameters,
 			// then this is no match.
-			if (size(td.parameters()) < size(tiargs)) {
+			if (size(td.parameters) < size(tiargs)) {
 				if (null == td.isVariadic()) {
 					continue;
 				}
 			}
 
-			dedtypes.setDim(size(td.parameters()));
-			if (null == td.scope()) {
+			dedtypes.setDim(size(td.parameters));
+			if (null == td.scope) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { td.toChars(context) }));
 				return null;
@@ -214,8 +213,8 @@ public class TemplateInstance extends ScopeDsymbol {
 					 * of the template, if it has a !(arguments)
 					 */
 					tempdecl = ti.tempdecl;
-					if (null != tempdecl.overroot()) {
-						tempdecl = tempdecl.overroot(); // then get the start
+					if (null != tempdecl.overroot) {
+						tempdecl = tempdecl.overroot; // then get the start
 					}
 					s = tempdecl;
 				}
@@ -250,8 +249,8 @@ public class TemplateInstance extends ScopeDsymbol {
 					 * of the template, if it has a !(arguments)
 					 */
 					tempdecl = $ti.tempdecl;
-					if (null != tempdecl.overroot()) {
-						tempdecl = tempdecl.overroot(); // then get the start
+					if (null != tempdecl.overroot) {
+						tempdecl = tempdecl.overroot; // then get the start
 					}
 				} else {
 					context
@@ -470,6 +469,8 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		long time = System.currentTimeMillis();
+		
 		// Comment in Descent, we want template instances resolved when possible
 //		if (context.global.errors > 0) {
 //			if (0 == context.global.gag) {
@@ -497,7 +498,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (havetempdecl > 0) {
 			// WTF assert((size_t)tempdecl.scope > 0x10000);
 			// Deduce tdtypes
-			tdtypes.setDim(tempdecl.parameters().size());
+			tdtypes.setDim(tempdecl.parameters.size());
 			if (MATCHnomatch == tempdecl.matchWithInstance(this, tdtypes, 0,
 					context)) {
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -529,8 +530,8 @@ public class TemplateInstance extends ScopeDsymbol {
 		 * implements the typeargs. If so, just refer to that one instead.
 		 */
 
-		L1: for (int i = 0; i < tempdecl.instances().size(); i++) {
-			TemplateInstance ti = tempdecl.instances().get(i);
+		L1: for (int i = 0; i < tempdecl.instances.size(); i++) {
+			TemplateInstance ti = tempdecl.instances.get(i);
 			assert (tdtypes.size() == ti.tdtypes.size());
 
 			// Nesting must match
@@ -558,8 +559,8 @@ public class TemplateInstance extends ScopeDsymbol {
 		 */
 		int errorsave = context.global.errors;
 		inst = this;
-		int tempdecl_instance_idx = tempdecl.instances().size();
-		tempdecl.instances().add(this);
+		int tempdecl_instance_idx = tempdecl.instances.size();
+		tempdecl.instances.add(this);
 		parent = tempdecl.parent;
 
 		ident = genIdent(context); // need an identifier for name mangling purposes.
@@ -602,7 +603,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
 
 		// Create our own scope for the template parameters
-		Scope scope = tempdecl.scope();
+		Scope scope = tempdecl.scope;
 		if (null == scope) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { tempdecl.toChars(context) }));
@@ -631,7 +632,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (members.size() > 0) {
 			Dsymbol[] s = new Dsymbol[] { null };
 			if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
-				if (null != s[0].ident && s[0].ident.equals(tempdecl.ident)) {
+				if (null != s[0].ident && equals(s[0].ident, tempdecl.ident)) {
 					aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
 					
 					// Descent
@@ -691,13 +692,20 @@ public class TemplateInstance extends ScopeDsymbol {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
 			errors = 1;
 			if (context.global.gag > 0) {
-				tempdecl.instances().remove(tempdecl_instance_idx);
+				tempdecl.instances.remove(tempdecl_instance_idx);
 			}
+		}
+		
+		time = System.currentTimeMillis() - time;
+		if (time != 0) {
+			System.out.println("Template instace semantic 1 on " + toString() + " took: " + time + " milliseconds to complete.");
 		}
 	}
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
+		long time = System.currentTimeMillis();
+		
 		int i;
 
 		if (semanticdone >= 2) {
@@ -706,7 +714,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		semanticdone = 2;
 
 		if (errors == 0 && null != members) {
-			sc = tempdecl.scope();
+			sc = tempdecl.scope;
 			assert (null != sc);
 			sc = sc.push(argsym);
 			sc = sc.push(this);
@@ -717,10 +725,17 @@ public class TemplateInstance extends ScopeDsymbol {
 			sc = sc.pop();
 			sc.pop();
 		}
+		
+		time = System.currentTimeMillis() - time;
+		if (time != 0) {
+			System.out.println("Template instace semantic 2 took: " + time + " milliseconds to complete.");
+		}
 	}
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
+		long time = System.currentTimeMillis();
+		
 		int i;
 
 		//if (toChars()[0] == 'D') *(char*)0=0;
@@ -729,7 +744,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 		semanticdone = 3;
 		if (0 == errors && null != members) {
-			sc = tempdecl.scope();
+			sc = tempdecl.scope;
 			sc = sc.push(argsym);
 			sc = sc.push(this);
 			for (i = 0; i < members.size(); i++) {
@@ -738,6 +753,11 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 			sc = sc.pop();
 			sc.pop();
+		}
+		
+		time = System.currentTimeMillis() - time;
+		if (time != 0) {
+			System.out.println("Template instace semantic 1 took: " + time + " milliseconds to complete.");
 		}
 	}
 

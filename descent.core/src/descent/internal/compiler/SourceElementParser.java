@@ -214,19 +214,15 @@ public class SourceElementParser extends AstVisitorAdapter {
 			for(AttribDeclaration a : sa) {
 				if (a instanceof ProtDeclaration) {
 					ProtDeclaration p = (ProtDeclaration) a;
-					if (p.modifier != null) {
-						long pFlags = p.modifier.getFlags();
-						if (lastFlags != -1) {
-							flags &= ~lastFlags;
-						}
-						flags |= pFlags;
-						lastFlags = pFlags;
+					long pFlags = p.getFlags();
+					if (lastFlags != -1) {
+						flags &= ~lastFlags;
 					}
+					flags |= pFlags;
+					lastFlags = pFlags;
 				} else if (a instanceof StorageClassDeclaration) {
 					StorageClassDeclaration p = (StorageClassDeclaration) a;
-					if (p.modifier != null) {
-						flags |= p.modifier.getFlags();
-					}
+					flags |= p.getFlags();
 					lastFlags = -1;
 				}
 			}

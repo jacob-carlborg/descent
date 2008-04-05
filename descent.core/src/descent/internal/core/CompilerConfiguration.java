@@ -28,6 +28,22 @@ public class CompilerConfiguration {
 		warnings = JavaCore.getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
 	}
 	
+	public boolean isVersionEnabled(char[] version) {
+		return versionIdentifiers.containsKey(version);
+	}
+	
+	public boolean isVersionEnabled(long version) {
+		return versionLevel >= version;
+	}
+	
+	public boolean isDebugEnabled(char[] version) {
+		return debugIdentifiers.containsKey(version);
+	}
+	
+	public boolean isDebugEnabled(long version) {
+		return debugLevel >= version;
+	}
+	
 	private static long getLevel(String prefKey) {
 		String Level = JavaCore.getOption(prefKey);
 		try {

@@ -483,6 +483,9 @@ public class CallExp extends UnaExp {
 					type = Type.terror;
 					return this;
 				} else {
+					cd.consumeRest();
+					cd.baseClass.consumeRest();
+					
 					f = cd.baseClass.ctor;
 					if (f == null) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, new String[] { cd.baseClass.toChars(context) }));
@@ -600,8 +603,8 @@ public class CallExp extends UnaExp {
 						 * of the template, if it has a !(arguments)
 						 */
 						TemplateDeclaration tempdecl = ti.tempdecl;
-						if (tempdecl.overroot() != null) {
-							tempdecl = tempdecl.overroot(); // then get the start
+						if (tempdecl.overroot != null) {
+							tempdecl = tempdecl.overroot; // then get the start
 						}
 						e1 = new TemplateExp(loc, tempdecl);
 						istemp = 1;

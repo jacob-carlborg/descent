@@ -73,7 +73,7 @@ public class TypeSArray extends TypeArray {
 							TemplateParameter $tp = (TemplateParameter) parameters
 									.get(i);
 
-							if ($tp.ident.equals(id)) { // Found the corresponding template parameter
+							if (equals($tp.ident, id)) { // Found the corresponding template parameter
 								TemplateValueParameter tvp = $tp
 										.isTemplateValueParameter();
 								if (null == tvp || !tvp.valType.isintegral())
