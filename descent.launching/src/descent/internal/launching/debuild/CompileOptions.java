@@ -1,6 +1,5 @@
 package descent.internal.launching.debuild;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import descent.launching.compiler.ICompileCommand;
@@ -23,8 +22,8 @@ import descent.launching.compiler.ICompileCommand;
 	public boolean instrumentForCoverage;
 	public boolean instrumentForProfile;
 	
-	public List<String> debugIdents = new ArrayList<String>();
-	public List<String> versionIdents = new ArrayList<String>();
+	public List<String> debugIdents;
+	public List<String> versionIdents;
 	public Integer debugLevel;   // Or null if no debug level
 	public Integer versionLevel; // Or null if no version level
 	
@@ -38,5 +37,11 @@ import descent.launching.compiler.ICompileCommand;
 		cmd.setOptimizeCode(optimizeCode);
 		cmd.setInstrumentForCoverage(instrumentForCoverage);
 		cmd.setInstrumentForProfile(instrumentForProfile);
+        
+        // TODO the levels need not, and in fact, often will not, be specified
+        // cmd.setDebugLevel(debugLevel);
+        // cmd.setVersionLevel(versionLevel);
+        cmd.setDebugIdents(debugIdents);
+        cmd.setVersionIdents(versionIdents);
 	}
 }

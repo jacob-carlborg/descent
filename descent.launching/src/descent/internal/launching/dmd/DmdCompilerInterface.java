@@ -52,18 +52,24 @@ public class DmdCompilerInterface implements ICompilerInterface
 				buf.append(outputFilename.getPath());
 				buf.append(" ");
 			}
-			for(File path : importPaths)
-			{
-				buf.append("-I");
-				buf.append(path.getPath());
-				buf.append(" ");
-			}
-			for(File path : importExpPaths)
-			{
-				buf.append("-J");
-				buf.append(path.getPath());
-				buf.append(" ");
-			}
+            if(null != importPaths)
+            {
+    			for(File path : importPaths)
+    			{
+    				buf.append("-I");
+    				buf.append(path.getPath());
+    				buf.append(" ");
+    			}
+            }
+            if(null != importExpPaths)
+            {
+    			for(File path : importExpPaths)
+    			{
+    				buf.append("-J");
+    				buf.append(path.getPath());
+    				buf.append(" ");
+    			}
+            }
 			if(allowDeprecated)
 			{
 				buf.append("-d ");
@@ -94,24 +100,30 @@ public class DmdCompilerInterface implements ICompilerInterface
 				buf.append(debugLevel.toString());
 				buf.append(" ");
 			}
-			for(String ident : debugIdents)
-			{
-				buf.append("-debug=");
-				buf.append(ident);
-				buf.append(" ");
-			}
+            if(null != debugIdents)
+            {
+    			for(String ident : debugIdents)
+    			{
+    				buf.append("-debug=");
+    				buf.append(ident);
+    				buf.append(" ");
+    			}
+            }
 			if(null != versionLevel)
 			{
 				buf.append("-version=");
 				buf.append(versionLevel.toString());
 				buf.append(" ");
 			}
-			for(String ident : versionIdents)
-			{
-				buf.append("-version=");
-				buf.append(ident);
-				buf.append(" ");
-			}
+            if(null != versionIdents)
+            {
+    			for(String ident : versionIdents)
+    			{
+    				buf.append("-version=");
+    				buf.append(ident);
+    				buf.append(" ");
+    			}
+            }
 			if(inlineFunctions)
 			{
 				buf.append("-inline ");

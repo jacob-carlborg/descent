@@ -12,7 +12,10 @@ import java.util.Map.Entry;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.ICompilationUnit;
+import descent.core.IConditional;
+import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
+import descent.core.IJavaElement;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
@@ -231,9 +234,25 @@ import descent.launching.BuildCancelledException;
     private void findImportsInElement(IParent element, List<String> imports)
         throws JavaModelException
     {
-        // TODO
-        // Temporary code, delete when the import containers thing is gone
-        for(IImportDeclaration importDecl : ((ICompilationUnit) element).getImports())
-            imports.add(importDecl.getElementName());
+        for(IJavaElement child : element.getChildren())
+        {
+            if(child instanceof IImportContainer)
+            {
+                findImportsInElement((IImportContainer) child, imports);
+                continue;
+            }
+            
+            if(child instanceof IImportDeclaration)
+            {
+                IImportDeclaration importDecl = (IImportDeclaration) child;
+                imports.add(importDecl.getElementName());
+                continue;
+            }
+            
+            if(child instanceof IConditional)
+            {
+                // TODO recurse through it if it's active
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ public interface IVMInstall {
 	 * 
 	 * @return the compiler identifier. Must not return <code>null</code>.
 	 */
-	String getId();
+	public String getId();
 	
 	/**
 	 * Returns the display name of this compiler.
@@ -24,7 +24,7 @@ public interface IVMInstall {
 	 * 
 	 * @return the display name of this compiler. May return <code>null</code>.
 	 */
-	String getName();
+	public String getName();
 	
 	/**
 	 * Sets the display name of this compiler.
@@ -40,7 +40,7 @@ public interface IVMInstall {
 	 * @return the root directory of this compiler installation. May
 	 * 			return <code>null</code>.
 	 */
-	File getInstallLocation();
+	public File getInstallLocation();
 	
 	/**
 	 * Sets the root directory of the install location of this compiler.
@@ -60,7 +60,7 @@ public interface IVMInstall {
 	 * 			the default library locations associated with this VM's install type.
 	 * @since 2.0
 	 */
-	LibraryLocation[] getLibraryLocations();	
+	public LibraryLocation[] getLibraryLocations();	
 	
 	/**
 	 * Sets the library locations of this IVMInstall.
@@ -95,13 +95,13 @@ public interface IVMInstall {
 	 * 
 	 * @return the compiler type that created this ICompilerInstall instance
 	 */
-	IVMInstallType getVMInstallType();
+	public IVMInstallType getVMInstallType();
 	
 	/**
 	 * Returns the d version of this compiler.
 	 * @return the d version of this compiler
 	 */
-	String getJavaVersion();
+	public String getJavaVersion();
 	
 	/**
 	 * Gets the class used to interface with this compiler type.
@@ -113,5 +113,14 @@ public interface IVMInstall {
 	 * 
 	 * @return a definition of the command-line interface of this compiler type
 	 */
-	ICompilerInterface getCompilerInterface();
+	public ICompilerInterface getCompilerInterface();
+    
+    /**
+     * Gets the location of the compiler binary.
+     * 
+     * PERHAPS split into compiler/linker for larger toolchain?
+     * 
+     * @return a file representing the location of the compiler binary
+     */
+    public File getBinaryLocation();
 }

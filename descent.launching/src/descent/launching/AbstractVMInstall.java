@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Status;
 
 import descent.internal.launching.LaunchingMessages;
 import descent.internal.launching.LaunchingPlugin;
+import descent.launching.compiler.ICompilerInterface;
 /**
  * Abstract implementation of a VM install.
  * <p>
@@ -234,6 +235,16 @@ public abstract class AbstractVMInstall implements IVMInstall {
 	protected void abort(String message, Throwable exception, int code) throws CoreException {
 		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin
 				.getUniqueIdentifier(), code, message, exception));
-	}	
+	}
+
+    public File getBinaryLocation()
+    {
+        // TODO
+        return new File("C:\\d\\dmd\\bin\\dmd.exe");
+    }	
     
+    public ICompilerInterface getCompilerInterface()
+    {
+        return null;
+    }
 }

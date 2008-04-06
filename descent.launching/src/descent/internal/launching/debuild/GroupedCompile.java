@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Assert;
 /* package */ abstract class GroupedCompile implements Iterable<ObjectFile>
 {
     public abstract Iterator<ObjectFile> iterator();
+    public abstract int size();
 }
 
 /**
@@ -40,12 +41,17 @@ import org.eclipse.core.runtime.Assert;
         this.objectFile = objectFile;
     }
     
+    public int size()
+    {
+        return objectFile == null ? 0 : 1;
+    }
+    
     @Override
     public Iterator<ObjectFile> iterator()
     {   
         return new Iterator<ObjectFile>()
         {
-            public boolean hasNext = true;
+            public boolean hasNext = objectFile != null;
             
             public boolean hasNext()
             {
@@ -102,5 +108,10 @@ import org.eclipse.core.runtime.Assert;
     public Iterator<ObjectFile> iterator()
     {
         return objectFiles.iterator();
+    }
+    
+    public int size()
+    {
+        return objectFiles.size();
     }
 }

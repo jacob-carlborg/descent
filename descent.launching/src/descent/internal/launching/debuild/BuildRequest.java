@@ -1,11 +1,17 @@
 package descent.internal.launching.debuild;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.core.runtime.CoreException;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
-import descent.internal.launching.dmd.DmdCompilerInterface;
 import descent.launching.IExecutableTarget;
+import descent.launching.IVMInstall;
+import descent.launching.JavaRuntime;
 import descent.launching.compiler.ICompileCommand;
 import descent.launching.compiler.ICompilerInterface;
 import descent.launching.compiler.ILinkCommand;
@@ -23,19 +29,38 @@ import descent.launching.compiler.ILinkCommand;
  * @author Robert Fraser
  */
 /* package */ class BuildRequest
-{	
-	
+{
 	/**
 	 * Information about the executable target to be built (is it debug?
 	 * should we optimize? Add unit tests? etc., etc.)
 	 */
 	private final IExecutableTarget target;
     private final IJavaProject project;
+    private final IVMInstall compilerType;
 	
 	public BuildRequest(IExecutableTarget target)
 	{
 		this.target = target;
         this.project = target.getProject();
+        
+        IVMInstall compilerType = null;
+        try
+        {
+            compilerType = JavaRuntime.getVMInstall(project);
+        }
+        catch(CoreException e)
+        {
+            // compilerType remains null...
+        }
+        
+        if(null == compilerType)
+        {
+            compilerType = JavaRuntime.getDefaultVMInstall();
+            if(null == compilerType)
+                throw new DebuildException("No compiler has been defined for this project");
+        }
+        
+        this.compilerType = compilerType;
 	}
 	
 	/**
@@ -97,12 +122,10 @@ import descent.launching.compiler.ILinkCommand;
         
         // Set the project-specific options
         opts.insertDebugCode = true; // WAITING_ON_CORE
-        opts.versionLevel = getLevel(JavaCore.COMPILER_VERSION_LEVEL);
-        opts.debugLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
-        for(String ident : getIdentifiers(JavaCore.COMPILER_VERSION_IDENTIFIERS))
-            opts.versionIdents.add(ident);
-        for(String ident : getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS))
-            opts.debugIdents.add(ident);
+        opts.versionLevel = getVersionLevel();
+        opts.debugLevel = getDebugLevel();
+        opts.versionIdents = getVersionIdents();
+        opts.debugIdents = getDebugIdents();
         
         return opts;
     }
@@ -118,8 +141,7 @@ import descent.launching.compiler.ILinkCommand;
     {
         ICompileCommand cmd = getCompilerInterface().createCompileCommand();
         
-        // TODO
-        cmd.setExecutableFile(new File("C:\\d\\dmd\\bin\\dmd.exe"));
+        cmd.setExecutableFile(compilerType.getBinaryLocation());
         cmd.setShowWarnings(false);
         cmd.setAllowDeprecated(true);
         
@@ -130,15 +152,65 @@ import descent.launching.compiler.ILinkCommand;
     {
         ILinkCommand cmd = getCompilerInterface().createLinkCommand();
         
-        cmd.setExecutableFile(new File("C:\\d\\dmd\\bin\\dmd.exe"));
+        cmd.setExecutableFile(compilerType.getBinaryLocation());
         
         return cmd;
     }
 	
     public ICompilerInterface getCompilerInterface()
     {
-        // TODO
-        return DmdCompilerInterface.getInstance();
+        return compilerType.getCompilerInterface();
+    }
+    
+    //--------------------------------------------------------------------------
+    // CACHE MANAGEMENT
+    //--------------------------------------------------------------------------
+    class Level
+    {
+        Integer value;
+    }
+    
+    // Cached information
+    private Level debugLevel;
+    private Integer getDebugLevel()
+    {
+        if(null == debugLevel)
+        {
+            debugLevel = new Level();
+            debugLevel.value = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
+        }
+        return debugLevel.value;
+    }
+    
+    private Level versionLevel;
+    private Integer getVersionLevel()
+    {
+        if(null == versionLevel)
+        {
+            versionLevel = new Level();
+            versionLevel.value = getLevel(JavaCore.COMPILER_VERSION_LEVEL);
+        }
+        return versionLevel.value;
+    }
+    
+    private List<String> debugIdents;
+    private List<String> getDebugIdents()
+    {
+        if(null == debugIdents)
+        {
+            debugIdents = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS, false);
+        }
+        return debugIdents;
+    }
+    
+    private List<String> versionIdents;
+    private List<String> getVersionIdents()
+    {
+        if(null == versionIdents)
+        {
+            versionIdents = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS, true);
+        }
+        return versionIdents;
     }
     
     private Integer getLevel(String preference)
@@ -157,29 +229,72 @@ import descent.launching.compiler.ILinkCommand;
         }
     }
     
-    private String[] getIdentifiers(String preference)
+    private List<String> getIdentifiers(String preference, boolean removePredefined)
     {
-        return project.getOption(preference, true).split(",");
+        String[] option = project.getOption(preference, true).split(",");
+        List<String> idents = new ArrayList<String>();
+        csv: for(String val : option)
+        {
+            val = val.trim();
+            if(removePredefined && predefinedVersions.contains(val))
+                continue csv;
+            if(val.equals(""))
+                continue csv;
+            for(int i = 0; i < val.length(); i++)
+            {
+                char c = val.charAt(i);
+                if(!(
+                    (c >= 'A' && c <= 'Z') ||
+                    (c >= 'a' && c <= 'z') ||
+                    (c >= '0' && c <= '9') ||
+                    (c == '_')
+                ))
+                    continue csv;
+            }
+            idents.add(val);
+        }
+        return idents;
     }
     
-	// PERHAPS this shouldn't be hardcoded
-	private static final String[] phobosIgnored;
-	private static final String[] tangoIgnored;
-	static
-	{
-	    phobosIgnored = new String[]
-	    {
-            "object",
-	        "crc32",
-            "gcc.",
-            "gcstats",
-            "std.",
-	    };
-        
-        tangoIgnored = new String[]
-        {
-            "object",
-            "gcc.",
-        };
-	}
+    //--------------------------------------------------------------------------
+    // CONSTANTS
+    // PERHAPS these shouldn't be hardcoded
+    //--------------------------------------------------------------------------
+    
+    // Ignored modules
+	private static final String[] phobosIgnored = new String[]
+    {
+        "object",
+        "crc32",
+        "gcc.",
+        "gcstats",
+        "std.",
+    };
+	private static final String[] tangoIgnored = new String[]
+    {
+        "object",
+        "gcc.",
+    };
+    
+    // Predefined identifiers
+    private static final HashSet<String> predefinedVersions = new HashSet<String>();
+    
+    static
+    {
+        predefinedVersions.add("DigitalMars");
+        predefinedVersions.add("X86");
+        predefinedVersions.add("X86_64");
+        predefinedVersions.add("Windows");
+        predefinedVersions.add("Win32");
+        predefinedVersions.add("Win64");
+        predefinedVersions.add("linux");
+        predefinedVersions.add("LittleEndian");
+        predefinedVersions.add("BigEndian");
+        predefinedVersions.add("D_Coverage");
+        predefinedVersions.add("D_InlineAsm");
+        predefinedVersions.add("D_InlineAsm_X86");
+        predefinedVersions.add("D_Version2");
+        predefinedVersions.add("none");
+        predefinedVersions.add("all");
+    };
 }

@@ -7,13 +7,13 @@ import java.util.List;
 public abstract class AbstractBuildCommand extends AbstractExecutableCommand 
 	implements IBuildCommand
 {
-	protected final List<File> files = new ArrayList<File>();
+	protected List<File> files;
 	
 	@Override
 	public void setDefaults()
 	{
 		super.setDefaults();
-		files.clear();
+		files = null;
 	}
 	
 	@Override
@@ -30,9 +30,8 @@ public abstract class AbstractBuildCommand extends AbstractExecutableCommand
 		return files;
 	}
 	
-	public void addFile(File file)
+	public void setFiles(List<File> files)
 	{
-		if(!files.contains(file))
-			files.add(file);
+		this.files = files;
 	}
 }

@@ -120,10 +120,4 @@ public class VMStandin extends AbstractVMInstall {
     public String getJavaVersion() {
         return fJavaVersion;
     }
-
-	public ICompilerInterface getCompilerInterface()
-	{
-		LaunchingPlugin.log("getCompilerInterface() called on VM standin");
-		return null;
-	}
 }

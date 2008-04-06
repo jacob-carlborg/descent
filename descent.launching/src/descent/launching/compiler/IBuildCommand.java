@@ -12,5 +12,5 @@ import java.util.List;
 public interface IBuildCommand extends IExecutableCommand
 {
 	public List<File> getFiles();
-	public void addFile(File file);
+	public void setFiles(List<File> files);
 }

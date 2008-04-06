@@ -27,11 +27,11 @@ public interface ICompileCommand extends IBuildCommand
 	
 	// Paths to search for imports ("-I" in DMD)
 	public List<File> getImportPaths();
-	public void addImportPath(File importPath);
+	public void setImportPaths(List<File> importPaths);
 	
 	// Paths to search for import expression files ("-J" in DMD)
 	public List<File> getImportExpPaths();
-	public void addImportExpPath(File importExpPath);
+	public void setImportExpPaths(List<File> importExpPaths);
 	
 	// Allow deprectaed features ("-d" in DMD)
 	public boolean getAllowDeprecated();
@@ -63,7 +63,7 @@ public interface ICompileCommand extends IBuildCommand
 	
 	// Debug identifiers ("-debug=[identifier]" in DMD)
 	public List<String> getDebugIdents();
-	public void addDebugIdent(String debugIdent);
+    public void setDebugIdents(List<String> debugIdents);
 	
 	// Integral version level, or null if not defined ("-version=[number]" in DMD)
 	public Integer getVersionLevel();
@@ -71,7 +71,7 @@ public interface ICompileCommand extends IBuildCommand
 	
 	// Version identifiers ("-version=[identifier]" in DMD)
 	public List<String> getVersionIdents();
-	public void addVersionIdent(String versionIdent);
+    public void setVersionIdents(List<String> versionIdents);
 	
 	// Inline functions ("-inline" in DMD)
 	public boolean getInlineFunctions();

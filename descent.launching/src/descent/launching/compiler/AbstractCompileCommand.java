@@ -11,8 +11,8 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	protected File               outputDirectory;
 	protected File               outputFilename;
 	
-	protected final List<File>  importPaths = new ArrayList<File>();
-	protected final List<File>  importExpPaths = new ArrayList<File>();
+	protected List<File>         importPaths;
+	protected List<File>         importExpPaths;
 	
 	protected boolean            allowDeprecated;
 	protected boolean            showWarnings;
@@ -26,10 +26,10 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	
 	protected boolean            insertDebugCode;
 	protected Integer            debugLevel;
-	protected final List<String> debugIdents = new ArrayList<String>();
+	protected List<String>       debugIdents;
 	
 	protected Integer            versionLevel;
-	protected final List<String> versionIdents = new ArrayList<String>();
+	protected List<String>       versionIdents;
 	
 	protected boolean            inlineFunctions;
 	protected boolean            optimizeCode;
@@ -44,8 +44,8 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 		outputDirectory = null;
 		outputFilename = null;
 		
-		importPaths.clear();
-		importExpPaths.clear();
+		importPaths = null;
+		importExpPaths = null;
 		
 		allowDeprecated = false;
 		showWarnings = true;
@@ -59,10 +59,10 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 		
 		insertDebugCode = true;
 		debugLevel = null;
-		debugIdents.clear();
+		debugIdents = null;
 		
 		versionLevel = null;
-		versionIdents.clear();
+		versionIdents = null;
 		
 		inlineFunctions = false;
 		optimizeCode = false;
@@ -131,10 +131,9 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#setImportPaths(java.util.List)
 	 */
-	public void addImportPath(File importPath)
+	public void setImportPaths(List<File> importPaths)
 	{
-		if(!importPaths.contains(importPath))
-			importPaths.add(importPath);
+		this.importPaths = importPaths;
 	}
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#getImportExpPaths()
@@ -146,10 +145,9 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#setImportExpPaths(java.util.List)
 	 */
-	public void addImportExpPath(File importExpPath)
+	public void setImportExpPaths(List<File> importExpPaths)
 	{
-		if(!importExpPaths.contains(importExpPath))
-			importExpPaths.add(importExpPath);
+		this.importExpPaths = importExpPaths;
 	}
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#getAllowDeprecated()
@@ -259,10 +257,9 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#setDebugIdents(java.util.List)
 	 */
-	public void addDebugIdent(String debugIdent)
+	public void setDebugIdents(List<String> debugIdents)
 	{
-		if(!debugIdents.contains(debugIdent))
-			debugIdents.add(debugIdent);
+		this.debugIdents = debugIdents;
 	}
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#getVersionLevel()
@@ -288,10 +285,9 @@ public abstract class AbstractCompileCommand extends AbstractBuildCommand
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#setVersionIdents(java.util.List)
 	 */
-	public void addVersionIdent(String versionIdent)
+	public void setVersionIdents(List<String> versionIdents)
 	{
-		if(!versionIdents.contains(versionIdent))
-			versionIdents.add(versionIdent);
+		this.versionIdents = versionIdents;
 	}
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompileCommand#getInlineFunctions()

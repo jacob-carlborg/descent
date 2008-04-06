@@ -6,9 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -36,7 +33,7 @@ import descent.launching.compiler.IResponseInterpreter;
  * @author Robert Fraser
  */
 public class DebuildBuilder
-{
+{   
 	/**
 	 * Public interface to the debuild builder, which initiates a new build
 	 * based on the given executable target. The target
@@ -137,7 +134,8 @@ public class DebuildBuilder
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            if(DEBUG && !(e instanceof BuildCancelledException))
+                e.printStackTrace();
             if(e instanceof RuntimeException)
                 throw (RuntimeException) e;
             else
@@ -210,7 +208,7 @@ public class DebuildBuilder
     private String runCompile(IProgressMonitor pm)
     {
         try
-        {
+        {   
             pm.beginTask("Invoking compiler", (groupedCompiles.size() * 20) + 20);
             
             boolean wasSuccesful = true;
@@ -231,13 +229,14 @@ public class DebuildBuilder
                 opts.prepareCompileCommand(cmd);
                 
                 // Add the import path to the compile command
-                for(File entry : importPath)
-                    cmd.addImportPath(entry);
+                cmd.setImportPaths(importPath);
                 pm.worked(2); // 2
                 
                 // Add the input files to the compile command
+                List<File> inputFiles = new ArrayList<File>(gc.size());
                 for(ObjectFile obj : gc)
-                    cmd.addFile(obj.getInputFile());
+                    inputFiles.add(obj.getInputFile());
+                cmd.setFiles(inputFiles);
                 pm.worked(2); // 4
                 
                 // Execute the application
@@ -278,8 +277,10 @@ public class DebuildBuilder
             ILinkCommand cmd = req.getLinkCommand();
             File outputFile = new File(workingDirectory + "/" + getExecutableName());
             cmd.setOutputFilename(outputFile);
+            List<File> inputFiles = new ArrayList<File>(objectFiles.length);
             for(ObjectFile obj : objectFiles)
-                cmd.addFile(obj.getOutputFile());
+                inputFiles.add(obj.getOutputFile());
+            cmd.setFiles(inputFiles);
             // TODO binary libraries
             pm.worked(2); // 2
             
