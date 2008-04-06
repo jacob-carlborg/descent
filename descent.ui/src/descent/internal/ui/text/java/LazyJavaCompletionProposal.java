@@ -381,7 +381,7 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	protected int computeRelevance() {
 		final int baseRelevance= fProposal.getRelevance() * 16;
 		switch (fProposal.getKind()) {
-			case CompletionProposal.PACKAGE_REF:
+			case CompletionProposal.COMPILATION_UNIT_REF:
 				return baseRelevance + 0;
 			case CompletionProposal.LABEL_REF:
 				return baseRelevance + 1;

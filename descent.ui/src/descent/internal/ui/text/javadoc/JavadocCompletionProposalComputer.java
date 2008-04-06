@@ -30,7 +30,7 @@ public class JavadocCompletionProposalComputer extends JavaCompletionProposalCom
 		collector.setIgnored(CompletionProposal.METHOD_REF, false);
 		collector.setIgnored(CompletionProposal.OP_CALL, false);
 		collector.setIgnored(CompletionProposal.FUNCTION_CALL, false);
-		collector.setIgnored(CompletionProposal.PACKAGE_REF, true);
+		collector.setIgnored(CompletionProposal.COMPILATION_UNIT_REF, true);
 		collector.setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, true);
 		collector.setIgnored(CompletionProposal.VARIABLE_DECLARATION, true);
 		collector.setIgnored(CompletionProposal.JAVADOC_TYPE_REF, false);

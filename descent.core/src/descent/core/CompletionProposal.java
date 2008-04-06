@@ -17,7 +17,6 @@ import descent.internal.codeassist.InternalCompletionProposal;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.TemplateDeclaration;
-import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.TypeFunction;
 
 /**
@@ -272,7 +271,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @see #getKind()
 	 */
-	public static final int PACKAGE_REF = 8;
+	public static final int COMPILATION_UNIT_REF = 8;
 
 	/**
 	 * Completion is a reference to a type. Any kind of type
@@ -701,7 +700,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	public static final int OP_CALL = 28;
 	
 	/**
-	 * Completion is a debug identifier.
+	 * Completion is an enum member.
 	 * 
 	 * @see #getKind()
 	 * @since 3.2
@@ -1318,7 +1317,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return this.signature;
 	}
 	
-	public char[] getTypeName() {
+	public char[] getTypeSignature() {
 		return this.typeName;
 	}
 	
@@ -1830,7 +1829,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 					buffer.append("<CONSTRUCTOR>"); //$NON-NLS-1$
 				}
 				break;
-			case CompletionProposal.PACKAGE_REF :
+			case CompletionProposal.COMPILATION_UNIT_REF :
 				buffer.append("PACKAGE_REF"); //$NON-NLS-1$
 				break;
 			case CompletionProposal.TYPE_REF :

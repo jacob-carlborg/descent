@@ -156,7 +156,7 @@ public class InternalCompletionProposal {
 		return this.packageName;
 	}
 	
-	protected char[] getTypeName() {
+	protected char[] getTypeSignature() {
 		return this.typeName;
 	}
 	

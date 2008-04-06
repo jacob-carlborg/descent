@@ -549,23 +549,23 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	}
 	
 	private boolean computeHasParameters() throws IllegalArgumentException {
-		return Signature.getParameterCount(fProposal.getTypeName()) > 0;
+		return Signature.getParameterCount(fProposal.getTypeSignature()) > 0;
 	}
 	
 	private boolean computeIsVariadic() throws IllegalArgumentException {
-		return Signature.isVariadic(fProposal.getTypeName());
+		return Signature.isVariadic(fProposal.getTypeSignature());
 	}
 	
 	private boolean computeIsSetter() throws IllegalArgumentException {
-		char[] retType = Signature.getReturnType(fProposal.getTypeName());
+		char[] retType = Signature.getReturnType(fProposal.getTypeSignature());
 		if (retType.length == 1 && retType[0] == 'v') {
-			return Signature.getParameterCount(fProposal.getTypeName()) == 1;
+			return Signature.getParameterCount(fProposal.getTypeSignature()) == 1;
 		}
 		return false;
 	}
 	
 	private boolean computeIsGetter() throws IllegalArgumentException {
-		char[] retType = Signature.getReturnType(fProposal.getTypeName());
+		char[] retType = Signature.getReturnType(fProposal.getTypeSignature());
 		if (retType.length != 1 || retType[0] != 'v') {
 			return !hasParameters();
 		}

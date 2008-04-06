@@ -102,7 +102,7 @@ public class CompletionProposalLabelProvider {
 		// TODO remove once https://bugs.eclipse.org/bugs/show_bug.cgi?id=85293
 		// gets fixed.
 		//char[] signature= SignatureUtil.fix83600(methodProposal.getSignature());
-		char[] signature= methodProposal.getTypeName();
+		char[] signature= methodProposal.getTypeSignature();
 		if (signature == null) {
 			return buffer;
 		}
@@ -231,7 +231,7 @@ public class CompletionProposalLabelProvider {
 		nameBuffer.append('(');
 		appendUnboundedParameterList(nameBuffer, methodProposal);
 		
-		if (Signature.isVariadic(methodProposal.getTypeName())) {
+		if (Signature.isVariadic(methodProposal.getTypeSignature())) {
 			if (nameBuffer.charAt(nameBuffer.length() - 1) != '(') {
 				nameBuffer.append(',');
 			}
@@ -245,7 +245,7 @@ public class CompletionProposalLabelProvider {
 		// return type
 		if (!methodProposal.isConstructor()) {
 			// TODO remove SignatureUtil.fix83600 call when bugs are fixed
-			char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeName()))));
+			char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeSignature()))));
 			nameBuffer.append("  "); //$NON-NLS-1$
 			nameBuffer.append(returnType);
 		}
@@ -359,7 +359,7 @@ public class CompletionProposalLabelProvider {
 
 		// return type
 		// TODO remove SignatureUtil.fix83600 call when bugs are fixed
-		char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeName()))));
+		char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeSignature()))));
 		nameBuffer.append(returnType);
 
 		// declaring type
@@ -474,7 +474,7 @@ public class CompletionProposalLabelProvider {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getCompletion());
 		
-		char[] typeName = proposal.getTypeName();
+		char[] typeName = proposal.getTypeSignature();
 		if (typeName != null && typeName.length != 0) {
 			buf.append("    "); //$NON-NLS-1$
 			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName)));
@@ -492,7 +492,7 @@ public class CompletionProposalLabelProvider {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getName());
 		
-		char[] typeName = proposal.getTypeName();
+		char[] typeName = proposal.getTypeSignature();
 		if (typeName != null && typeName.length != 0) {
 			buf.append("    "); //$NON-NLS-1$
 			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName)));
@@ -520,7 +520,7 @@ public class CompletionProposalLabelProvider {
 	}
 
 	String createPackageProposalLabel(CompletionProposal proposal) {
-		Assert.isTrue(proposal.getKind() == CompletionProposal.PACKAGE_REF);
+		Assert.isTrue(proposal.getKind() == CompletionProposal.COMPILATION_UNIT_REF);
 		return String.valueOf(proposal.getDeclarationSignature());
 	}
 
@@ -581,7 +581,7 @@ public class CompletionProposalLabelProvider {
 				return createJavadocSimpleProposalLabel(proposal);
 			case CompletionProposal.JAVADOC_METHOD_REF:
 				return createJavadocMethodProposalLabel(proposal);
-			case CompletionProposal.PACKAGE_REF:
+			case CompletionProposal.COMPILATION_UNIT_REF:
 				return createPackageProposalLabel(proposal);
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.FIELD_REF:
@@ -688,7 +688,7 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.VARIABLE_DECLARATION:
 				descriptor= JavaPluginImages.DESC_OBJS_LOCAL_VARIABLE;
 				break;
-			case CompletionProposal.PACKAGE_REF:
+			case CompletionProposal.COMPILATION_UNIT_REF:
 				descriptor= JavaPluginImages.DESC_OBJS_PACKAGE;
 				break;
 			case CompletionProposal.KEYWORD:

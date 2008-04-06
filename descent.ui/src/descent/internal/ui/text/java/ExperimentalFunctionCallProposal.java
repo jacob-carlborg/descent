@@ -90,7 +90,7 @@ public final class ExperimentalFunctionCallProposal extends JavaMethodCompletion
 		if (!hasParameters() || !hasArgumentList())
 			return super.computeReplacementString();
 		
-		char[][] parameterTypes= Signature.getParameterTypes(fProposal.getTypeName());
+		char[][] parameterTypes= Signature.getParameterTypes(fProposal.getTypeSignature());
 		char[][] parameterNames = new char[parameterTypes.length][];
 		for (int i = 0; i < parameterTypes.length; i++) {
 			parameterNames[i] = ("p" + i).toCharArray();

@@ -9,10 +9,18 @@ import descent.core.CompletionRequestor;
 public class CompletionRequestorCollector extends CompletionRequestor {
 	
 	List<CompletionProposal> proposals = new ArrayList<CompletionProposal>();
+	
+	private final int kind;
+	
+	public CompletionRequestorCollector(int kind) {
+		this.kind = kind;		
+	}
 
 	@Override
 	public void accept(CompletionProposal proposal) {
-		proposals.add(proposal);
+		if (proposal.getKind() == kind) {
+			proposals.add(proposal);
+		}
 	}
 
 }

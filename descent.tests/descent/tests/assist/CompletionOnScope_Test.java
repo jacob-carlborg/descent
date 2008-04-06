@@ -5,60 +5,74 @@ import descent.core.CompletionProposal;
 public class CompletionOnScope_Test extends AbstractCompletionTest {
 	
 	public void testObjectOnModuleScope() throws Exception {
-		assertCompletions(null, "test.d", "O", 1, 
-				CompletionProposal.TYPE_REF, "Object", 0, 1,
-				CompletionProposal.TYPE_REF, "OffsetTypeInfo", 0, 1,
-				CompletionProposal.KEYWORD, "override", 0, 1);
+		String s = "O";
+		
+		assertCompletions(null, "test.d", s, 1, CompletionProposal.TYPE_REF, 
+				"Object", 0, 1,
+				"OffsetTypeInfo", 0, 1
+				);
 	}
 	
 	public void testObjectOnModuleScopeDontSuggestFunction() throws Exception {
-		assertCompletions(null, "test.d", "void Oops() { } O", 17, 
-				CompletionProposal.TYPE_REF, "Object", 16, 17,
-				CompletionProposal.TYPE_REF, "OffsetTypeInfo", 16, 17,
-				CompletionProposal.KEYWORD, "override", 16, 17);
+		String s = "void Oops() { } O";
+		
+		assertCompletions(null, "test.d", s, 17, CompletionProposal.TYPE_REF, 
+				"Object", 16, 17,
+				"OffsetTypeInfo", 16, 17
+				);
 	}
 	
 	public void testObjectOnFunctionScope() throws Exception {
-		assertCompletions(null, "test.d", "void foo() { O }", 14, 
-				CompletionProposal.TYPE_REF, "Object", 13, 14,
-				CompletionProposal.TYPE_REF, "OffsetTypeInfo", 13, 14);
+		String s = "void foo() { O }";
+		
+		assertCompletions(null, "test.d", s, 14, CompletionProposal.TYPE_REF, 
+				"Object", 13, 14,
+				"OffsetTypeInfo", 13, 14);
 	}
 	
 	public void testFunctionOnFunctionScope() throws Exception {
-		assertCompletions(null, "test.d", "void foo() { f }", 14, 
-				CompletionProposal.KEYWORD, "false", 13, 14,
-				CompletionProposal.KEYWORD, "float", 13, 14,
-				CompletionProposal.METHOD_REF, "foo()", 13, 14,
-				CompletionProposal.KEYWORD, "for", 13, 14,
-				CompletionProposal.KEYWORD, "foreach", 13, 14,
-				CompletionProposal.KEYWORD, "foreach_reverse", 13, 14,
-				CompletionProposal.KEYWORD, "function", 13, 14);
+		String s = "void foo() { f }";
+		
+		assertCompletions(null, "test.d", s, 14, CompletionProposal.METHOD_REF, 
+				"foo()", 13, 14
+				);
 	}
 	
 	public void testVariableOnFunctionScope() throws Exception {
-		assertCompletions(null, "test.d", "void foo(int xVar) { x }", 22, 
-				CompletionProposal.FIELD_REF, "xVar", 21, 22);
+		String s = "void foo(int xVar) { x }";
+		
+		assertCompletions(null, "test.d", s, 22, CompletionProposal.LOCAL_VARIABLE_REF, 
+				"xVar", 21, 22);
 	}
 	
 	public void testVariableOnIf() throws Exception {
-		assertCompletions(null, "test.d", "void foo(int xVar) { if(x }", 25, 
-				CompletionProposal.FIELD_REF, "xVar", 24, 25);
+		String s = "void foo(int xVar) { if(x }";
+		
+		assertCompletions(null, "test.d", s, 25, CompletionProposal.LOCAL_VARIABLE_REF, 
+				"xVar", 24, 25);
 	}
 	
 	public void testVariableInsideIf() throws Exception {
-		assertCompletions(null, "test.d", "void foo(int xVar) { if(true) { x }", 33, 
-				CompletionProposal.FIELD_REF, "xVar", 32, 33);
+		String s = "void foo(int xVar) { if(true) { x }";
+		
+		assertCompletions(null, "test.d", s, 33,  CompletionProposal.LOCAL_VARIABLE_REF, 
+				"xVar", 32, 33);
 	}
 	
 	public void testDontSuggestFurtherInScope() throws Exception {
-		assertCompletions(null, "test.d", "void foo(int xVar) { if(x) { } int xxxVar; }", 25, 
-				CompletionProposal.FIELD_REF, "xVar", 24, 25);
+		String s = "void foo(int xVar) { if(x) { } int xxxVar; }";
+		
+		assertCompletions(null, "test.d", s, 25, CompletionProposal.LOCAL_VARIABLE_REF, 
+				"xVar", 24, 25);
 	}
 	
 	public void testWithScope() throws Exception {
-		assertCompletions(null, "test.d", "void foo(Object o) { with(o) { pr } }", 33, 
-				CompletionProposal.KEYWORD, "pragma", 31, 33,
-				CompletionProposal.METHOD_REF, "print()", 31, 33);
+		String s = "void foo(Object o) { with(o) { no } }";
+		
+		assertCompletions(null, "test.d", s, 33, CompletionProposal.METHOD_REF, 
+				"notifyRegister()", 31, 33,
+				"notifyUnRegister()", 31, 33
+				);
 	}
 
 }

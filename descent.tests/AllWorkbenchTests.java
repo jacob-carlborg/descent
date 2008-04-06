@@ -6,10 +6,10 @@ import descent.tests.assist.CompletionOnContinueStatement_Test;
 import descent.tests.assist.CompletionOnDotIdExp_Test;
 import descent.tests.assist.CompletionOnGotoStatement_Test;
 import descent.tests.assist.CompletionOnImport_Test;
-import descent.tests.assist.CompletionOnKeyword_Test;
 import descent.tests.assist.CompletionOnModule_Test;
 import descent.tests.assist.CompletionOnScope_Test;
 import descent.tests.assist.CompletionOnTypeDotIdExp_Test;
+import descent.tests.assist.KeywordProposal_Test;
 import descent.tests.binding.BindingEnum_Test;
 import descent.tests.binding.BindingExpression_Test;
 import descent.tests.binding.BindingFunction_Test;
@@ -55,8 +55,8 @@ public class AllWorkbenchTests {
 	 * Comment a line to disable testing a particular feature.
 	 */
 	private final static int enabled = 0
-					| BINDING 
-//					| CODE_COMPLETE 
+//					| BINDING 
+					| CODE_COMPLETE 
 //					| CODE_EVALUATE 
 //					| CODE_SELECT 
 //					| LOOKUP 
@@ -81,13 +81,13 @@ public class AllWorkbenchTests {
 		}
 		
 		if (isEnabled(CODE_COMPLETE)) {
+			suite.addTestSuite(KeywordProposal_Test.class);
 			suite.addTestSuite(CompletionOnBreakStatement_Test.class);
-			suite.addTestSuite(CompletionOnCaseStatement_Test.class);
 			suite.addTestSuite(CompletionOnContinueStatement_Test.class);
-			suite.addTestSuite(CompletionOnDotIdExp_Test.class);
 			suite.addTestSuite(CompletionOnGotoStatement_Test.class);
-			suite.addTestSuite(CompletionOnImport_Test.class);
-			suite.addTestSuite(CompletionOnKeyword_Test.class);
+			suite.addTestSuite(CompletionOnCaseStatement_Test.class);
+			suite.addTestSuite(CompletionOnDotIdExp_Test.class);
+			suite.addTestSuite(CompletionOnImport_Test.class);			
 			suite.addTestSuite(CompletionOnModule_Test.class);
 			suite.addTestSuite(CompletionOnScope_Test.class);
 			suite.addTestSuite(CompletionOnTypeDotIdExp_Test.class);

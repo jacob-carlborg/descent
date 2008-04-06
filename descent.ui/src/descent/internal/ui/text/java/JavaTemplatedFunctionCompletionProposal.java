@@ -106,7 +106,7 @@ public class JavaTemplatedFunctionCompletionProposal extends LazyJavaCompletionP
 	}
 
 	private boolean computeHasParameters() throws IllegalArgumentException {
-		return Signature.getParameterCount(fProposal.getTypeName()) > 0;
+		return Signature.getParameterCount(fProposal.getTypeSignature()) > 0;
 	}
 	
 	protected final boolean hasTemplateParameters() {

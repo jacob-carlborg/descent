@@ -30,7 +30,6 @@ import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Parser;
-import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.SuperExp;
@@ -50,6 +49,8 @@ public class CompletionParser extends Parser {
 	public int cursorLocation;
 	private ASTDmdNode assistNode;
 	private List<ICompletionOnKeyword> keywordCompletions;
+	private boolean wantKeywords = true;
+	private boolean acceptMoreKeywords = true;
 	
 	// Javadoc completion, and other ddocs found, in order to
 	// provide autocompletion for macros in other places
@@ -83,7 +84,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
-		if (javadocCompletion == null) {
+		if (wantKeywords && javadocCompletion == null) {
 			return keywordCompletions;
 		} else {
 			return Collections.EMPTY_LIST;
@@ -120,6 +121,7 @@ public class CompletionParser extends Parser {
 		
 		if (start <= cursorLocation && cursorLocation <= end) {
 			assistNode = new CompletionOnModuleDeclaration(packages, module, cursorLocation);
+			wantKeywords = false;
 			return (ModuleDeclaration) assistNode;
 		} else {
 			return super.newModuleDeclaration(packages, module);
@@ -133,6 +135,7 @@ public class CompletionParser extends Parser {
 	
 		if (start <= cursorLocation && cursorLocation <= end) {
 			assistNode = new CompletionOnImport(loc, packages, module, aliasid, isstatic, cursorLocation);
+			wantKeywords = false;
 			return (Import) assistNode;
 		} else {
 			return super.newImport(loc, packages, module, aliasid, isstatic);
@@ -261,7 +264,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected void expect(char[][] toks) {
-		if (inCompletion()) {
+		if (acceptMoreKeywords && inCompletion()) {
 			if (keywordCompletions == null) {
 				keywordCompletions = new ArrayList<ICompletionOnKeyword>();
 			}
@@ -283,6 +286,10 @@ public class CompletionParser extends Parser {
 			}
 			
 			keywordCompletions.add(new CompletionOnKeyword(tokValue, toks));
+			
+			if (toks == contractsExpectations) {
+				acceptMoreKeywords = false;
+			}
 		}
 	}
 	

@@ -290,11 +290,11 @@ public class CompletionEngine extends Engine
 			// First the assist node
 			if (assistNode != null) {
 				if (assistNode instanceof CompletionOnModuleDeclaration && 
-						!requestor.isIgnored(CompletionProposal.PACKAGE_REF)) {
+						!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
 					CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
 					completeModuleDeclaration(node);
 				} else if (assistNode instanceof CompletionOnImport &&
-						!requestor.isIgnored(CompletionProposal.PACKAGE_REF)) {
+						!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
 					CompletionOnImport node = (CompletionOnImport) assistNode;
 					completeImport(node);
 				} else if (assistNode instanceof CompletionOnArgumentName) {
@@ -563,7 +563,7 @@ public class CompletionEngine extends Engine
 		
 		if (fqnBeforeCursor.length == 0 || 
 				match(fqnBeforeCursor, sourceUnitFqn)) {
-			CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition, node);
+			CompletionProposal proposal = createProposal(CompletionProposal.COMPILATION_UNIT_REF, this.actualCompletionPosition, node);
 			proposal.setCompletion(sourceUnitFqn);
 			proposal.setReplaceRange(this.startPosition, this.endPosition);
 			this.requestor.accept(proposal);
@@ -1179,17 +1179,6 @@ public class CompletionEngine extends Engine
 
 
 	private void completeExpression(Expression e1, IdentifierExp ident) throws JavaModelException {
-		if (ident.resolvedSymbol != null) {
-			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR);
-			
-			currentName = ident.ident;
-			startPosition = ident.start;
-			endPosition = ident.start + ident.length;
-			
-			suggestDsymbol(ident.resolvedSymbol, INCLUDE_ALL);
-			return;
-		}
-		
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
 			Declaration decl = var.var;
@@ -1241,6 +1230,15 @@ public class CompletionEngine extends Engine
 			SymOffExp symoff = (SymOffExp) e1;
 			Type type = symoff.type;
 			completeType(type, ident, false);
+		} else if (ident.resolvedSymbol != null) {
+			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR);
+			
+			currentName = ident.ident;
+			startPosition = ident.start;
+			endPosition = ident.start + ident.length;
+			
+			suggestDsymbol(ident.resolvedSymbol, INCLUDE_ALL);
+			return;
 		}
 	}
 
@@ -1665,6 +1663,25 @@ public class CompletionEngine extends Engine
 				}
 				return;
 			}
+		}
+		
+		if (member instanceof EnumMember) {
+			if (currentName.length == 0 || match(currentName, ident)) {
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				relevance += computeRelevanceForCaseMatching(currentName, ident);
+				relevance += R_ENUM_CONSTANT;
+				
+				CompletionProposal proposal = this.createProposal(CompletionProposal.ENUM_MEMBER, this.actualCompletionPosition, member);
+				proposal.setName(ident);
+				proposal.setCompletion(ident);
+				proposal.setSignature(member.getSignature().toCharArray());
+				proposal.setFlags(flags | member.getFlags());		
+				proposal.setRelevance(relevance);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+			return;
 		}
 		
 		if ((includes & INCLUDE_TYPES) != 0) {
@@ -2361,12 +2378,16 @@ public class CompletionEngine extends Engine
 		boolean isExpectingBool = expectedTypeSignature != null && expectedTypeSignature.length == 1 &&
 			expectedTypeSignature[0] == TY.Tbool.mangleChar;
 		
+		if (isExpectingBool) {
+			choices = new char[][] { TOK.TOKtrue.charArrayValue, TOK.TOKfalse.charArrayValue };
+		}
+			
 		int length = keyword.length;
-		if (canCompleteEmptyToken || length > 0)
-			for (int i = 0; i < choices.length; i++)
+		if (canCompleteEmptyToken || length > 0) {
+			for (int i = 0; i < choices.length; i++) {
 				if (length <= choices[i].length
 					&& CharOperation.prefixEquals(keyword, choices[i], false /* ignore case */
-				)){
+				)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(keyword, choices[i]);
@@ -2392,6 +2413,8 @@ public class CompletionEngine extends Engine
 						this.requestor.accept(proposal);
 					}
 				}
+			}
+		}
 	}
 	
 	int computeBaseRelevance(){
@@ -2458,7 +2481,7 @@ public class CompletionEngine extends Engine
 		relevance += computeRelevanceForInterestingProposal();
 		relevance += R_QUALIFIED + R_COMPILATION_UNIT;
 		
-		CompletionProposal proposal = createProposal(CompletionProposal.PACKAGE_REF, this.actualCompletionPosition, null);
+		CompletionProposal proposal = createProposal(CompletionProposal.COMPILATION_UNIT_REF, this.actualCompletionPosition, null);
 		proposal.setCompletion(fullyQualifiedName);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);

@@ -138,7 +138,7 @@ public class JavaTypeCompletionProcessor extends CUPositionCompletionProcessor {
 		
 		public void accept(CompletionProposal proposal) {
 			switch (proposal.getKind()) {
-				case CompletionProposal.PACKAGE_REF :
+				case CompletionProposal.COMPILATION_UNIT_REF :
 					char[] packageName= proposal.getDeclarationSignature();
 					if (TypeFilter.isFiltered(packageName))
 						return;

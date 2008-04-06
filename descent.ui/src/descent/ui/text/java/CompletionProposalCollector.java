@@ -331,7 +331,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	protected int computeRelevance(CompletionProposal proposal) {
 		final int baseRelevance= proposal.getRelevance() * 16;
 		switch (proposal.getKind()) {
-			case CompletionProposal.PACKAGE_REF:
+			case CompletionProposal.COMPILATION_UNIT_REF:
 				return baseRelevance + 0;
 			case CompletionProposal.LABEL_REF:
 				return baseRelevance + 1;
@@ -389,7 +389,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 		switch (proposal.getKind()) {
 			case CompletionProposal.KEYWORD:
 				return createKeywordProposal(proposal);
-			case CompletionProposal.PACKAGE_REF:
+			case CompletionProposal.COMPILATION_UNIT_REF:
 				return createPackageProposal(proposal);
 			case CompletionProposal.TYPE_REF:
 				return createTypeProposal(proposal);
@@ -593,7 +593,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 				if (declaration == null)
 					return "java.lang.Object".toCharArray(); //$NON-NLS-1$
 				return Signature.toCharArray(declaration);
-			case CompletionProposal.PACKAGE_REF:
+			case CompletionProposal.COMPILATION_UNIT_REF:
 				return proposal.getDeclarationSignature();
 			case CompletionProposal.JAVADOC_TYPE_REF:
 			case CompletionProposal.TYPE_REF:
