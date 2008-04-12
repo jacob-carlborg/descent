@@ -492,10 +492,22 @@ public class CompletionProposalLabelProvider {
 		StringBuffer buf= new StringBuffer();
 		buf.append(proposal.getName());
 		
-		char[] typeName = proposal.getTypeSignature();
-		if (typeName != null && typeName.length != 0) {
+		char[] typeSignature = proposal.getTypeSignature();
+		if (typeSignature != null && typeSignature.length != 0) {
 			buf.append("    "); //$NON-NLS-1$
-			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName)));
+			buf.append(Signature.getSimpleName(Signature.toCharArray(typeSignature)));
+		}
+		
+		char[] declSignature = proposal.getDeclarationSignature();
+		if (declSignature != null && declSignature.length != 0) {
+			buf.append(JavaElementLabels.CONCAT_STRING);
+			
+			int declKind = Signature.getTypeSignatureKind(declSignature);
+			if (declKind == Signature.MODULE_SIGNATURE) {
+				buf.append(Signature.toCharArray(declSignature));	
+			} else {
+				buf.append(Signature.getSimpleName(Signature.toCharArray(declSignature)));
+			}
 		}
 		
 //		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());

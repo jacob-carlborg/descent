@@ -82,7 +82,7 @@ public class ModuleBuilder {
 	/*
 	 * One ring to rule them all. 
 	 */
-	private final static boolean LAZY = false; 
+	private final static boolean LAZY = true;
 	
 	/*
 	 * Wether to make surface ClassDeclaration semantic lazy.
@@ -203,7 +203,7 @@ public class ModuleBuilder {
 			
 			time = System.currentTimeMillis() - time;
 			if (time != 0) {
-//				System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
+				System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
 			}
 		} catch (JavaModelException e) {
 			e.printStackTrace();

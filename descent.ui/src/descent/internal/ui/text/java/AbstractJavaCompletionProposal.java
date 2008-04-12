@@ -284,7 +284,9 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 				StringBuffer buffer= new StringBuffer(getReplacementString());
 	
 				// fix for PR #5533. Assumes that no eating takes place.
-				if ((getCursorPosition() > 0 && getCursorPosition() <= buffer.length() && buffer.charAt(getCursorPosition() - 1) != trigger)) {
+				if ((getCursorPosition() > 0 && getCursorPosition() <= buffer.length() 
+						&& buffer.charAt(getCursorPosition() - 1) != trigger
+						&& trigger != '=' && trigger != ';')) {
 					buffer.insert(getCursorPosition(), trigger);
 					setCursorPosition(getCursorPosition() + 1);
 				}

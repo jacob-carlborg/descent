@@ -404,9 +404,9 @@ public class InternalSignature implements ISignatureConstants {
 				if (pack.exists()) {
 					// found it
 					descent.core.ICompilationUnit unit = pack
-							.getCompilationUnit(filename);
+							.getClassFile(filename);
 					if (!unit.exists()) {
-						unit = pack.getClassFile(filename);
+						unit = pack.getCompilationUnit(filename);
 						if (!unit.exists())
 							continue;
 					}

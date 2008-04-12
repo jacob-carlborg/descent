@@ -40,7 +40,7 @@ public class InternalCompletionProposal {
 	protected char[] declarationPackageName;
 	protected char[] declarationTypeName;
 	protected char[] packageName;
-	protected char[] typeName;
+	protected char[] typeSignature;
 	protected char[][] parameterPackageNames;
 	protected char[][] parameterTypeNames;
 	
@@ -157,7 +157,7 @@ public class InternalCompletionProposal {
 	}
 	
 	protected char[] getTypeSignature() {
-		return this.typeName;
+		return this.typeSignature;
 	}
 	
 	protected char[][] getParameterPackageNames() {
@@ -181,8 +181,8 @@ public class InternalCompletionProposal {
 		this.packageName = packageName;
 	}
 	
-	protected void setTypeName(char[] typeName) {
-		this.typeName = typeName;
+	protected void setTypeSignature(char[] typeSignature) {
+		this.typeSignature = typeSignature;
 	}
 	
 	protected void setParameterPackageNames(char[][] parameterPackageNames) {

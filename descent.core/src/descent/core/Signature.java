@@ -763,6 +763,169 @@ public final class Signature {
 	 * Value is <code>"w"</code>.
 	 */
 	public static final String SIG_DCHAR								= "w";
+	
+	/**
+	 * Kind constant for a primitive type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int PRIMITIVE_TYPE_SIGNATURE = 1;
+	
+	/**
+	 * Kind constant for a pointer type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int POINTER_TYPE_SIGNATURE = 2;
+	
+	/**
+	 * Kind constant for a dynamic array type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int DYNAMIC_ARRAY_TYPE_SIGNATURE = 3;
+	
+	/**
+	 * Kind constant for a static array type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int STATIC_ARRAY_TYPE_SIGNATURE = 4;
+	
+	/**
+	 * Kind constant for an associative type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int ASSOCIATIVE_ARRAY_TYPE_SIGNATURE = 5;
+	
+	/**
+	 * Kind constant for a typeof type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TYPEOF_TYPE_SIGNATURE = 6;
+	
+	/**
+	 * Kind constant for a slice type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int SLICE_TYPE_SIGNATURE = 7;
+	
+	/**
+	 * Kind constant for a module signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int MODULE_SIGNATURE = 8;
+	
+	/**
+	 * Kind constant for a class type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int CLASS_TYPE_SIGNATURE = 9;
+	
+	/**
+	 * Kind constant for a struct type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int STRUCT_TYPE_SIGNATURE = 10;
+	
+	/**
+	 * Kind constant for a union type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int UNION_TYPE_SIGNATURE = 11;
+	
+	/**
+	 * Kind constant for an interface type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int INTERFACE_TYPE_SIGNATURE = 12;
+	
+	/**
+	 * Kind constant for an identifier type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int IDENTIFIER_TYPE_SIGNATURE = 13;
+	
+	/**
+	 * Kind constant for a function type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int FUNCTION_TYPE_SIGNATURE = 14;
+	
+	/**
+	 * Kind constant for a delegate type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int DELEGATE_TYPE_SIGNATURE = 15;
+	
+	/**
+	 * Kind constant for a template type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATE_TYPE_SIGNATURE = 16;
+	
+	/**
+	 * Kind constant for a template instance type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATE_INSTANCE_TYPE_SIGNATURE = 17;
+	
+	/**
+	 * Kind constant for a function signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int FUNCTION_SIGNATURE = 18;
+	
+	/**
+	 * Kind constant for a templated class type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_CLASS_TYPE_SIGNATURE = 19;
+	
+	/**
+	 * Kind constant for a templated struct type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_STRUCT_TYPE_SIGNATURE = 20;
+	
+	/**
+	 * Kind constant for a templated union type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_UNION_TYPE_SIGNATURE = 21;
+	
+	/**
+	 * Kind constant for a templated interface type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_INTERFACE_TYPE_SIGNATURE = 22;
+	
+	/**
+	 * Kind constant for a templated function signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TEMPLATED_FUNCTION_SIGNATURE = 23;
+	
+	
 		
 private Signature() {
 	// Not instantiable
@@ -1844,6 +2007,113 @@ public static char[] getSimpleName(char[] qualifiedName) {
 	} else {
 		return CharOperation.subarray(qualifiedName, dot, qualifiedName.length);
 	}
+}
+
+/**
+ * Returns the kind a given signature.
+ * @param signature a signature
+ * @return  the kind of type signature
+ */
+public static int getTypeSignatureKind(String signature) {
+	final int[] kind = { 0 };
+	SignatureProcessor.process(signature, false, new SignatureRequestorAdapter() {
+		@Override
+		public void acceptPrimitive(TypeBasic type) {
+			kind[0] = PRIMITIVE_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptPointer(String signature) {
+			kind[0] = POINTER_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptAssociativeArray(String signature) {
+			kind[0] = ASSOCIATIVE_ARRAY_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptDelegate(String signature) {
+			kind[0] = DELEGATE_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptDynamicArray(String signature) {
+			kind[0] = DYNAMIC_ARRAY_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptIdentifier(char[][] compoundName, String signature) {
+			kind[0] = IDENTIFIER_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptModule(char[][] compoundName, String signature) {
+			kind[0] = MODULE_SIGNATURE;
+		}
+		@Override
+		public void acceptSlice(char[] lwr, char[] upr, String signature) {
+			kind[0] = SLICE_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptStaticArray(char[] dimension, String signature) {
+			kind[0] = STATIC_ARRAY_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
+			switch(type) {
+			case ISignatureConstants.CLASS:
+				kind[0] = CLASS_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.STRUCT:
+				kind[0] = STRUCT_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.UNION:
+				kind[0] = UNION_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.INTERFACE:
+				kind[0] = INTERFACE_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.FUNCTION:
+				kind[0] = FUNCTION_SIGNATURE;
+				break;
+			case ISignatureConstants.TEMPLATE:
+				kind[0] = TEMPLATE_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.TEMPLATED_CLASS:
+				kind[0] = TEMPLATED_CLASS_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.TEMPLATED_STRUCT:
+				kind[0] = TEMPLATED_STRUCT_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.TEMPLATED_UNION:
+				kind[0] = TEMPLATED_UNION_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.TEMPLATED_INTERFACE:
+				kind[0] = TEMPLATED_INTERFACE_TYPE_SIGNATURE;
+				break;
+			case ISignatureConstants.TEMPLATED_FUNCTION:
+				kind[0] = TEMPLATED_FUNCTION_SIGNATURE;
+				break;
+			}
+		}
+		@Override
+		public void acceptTypeof(char[] expression, String signature) {
+			kind[0] = TYPEOF_TYPE_SIGNATURE;
+		}
+		@Override
+		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
+			kind[0] = FUNCTION_TYPE_SIGNATURE;
+		}
+		@Override
+		public void exitTemplateInstance(String signature) {
+			kind[0] = TEMPLATE_INSTANCE_TYPE_SIGNATURE;
+		}
+	});
+	return kind[0];
+}
+
+/**
+ * Returns the kind a given signature.
+ * @param signature a signature
+ * @return the kind of signature
+ */
+public static int getTypeSignatureKind(char[] signature) {
+	return getTypeSignatureKind(new String(signature));
 }
 
 /*

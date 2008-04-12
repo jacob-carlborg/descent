@@ -1318,7 +1318,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	}
 	
 	public char[] getTypeSignature() {
-		return this.typeName;
+		return this.typeSignature;
 	}
 	
 	/**

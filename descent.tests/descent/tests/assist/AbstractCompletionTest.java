@@ -93,8 +93,10 @@ public abstract class AbstractCompletionTest extends AbstractModelTest {
 			int end = (Integer) expectations[i];
 			assertEquals(end, prop.getReplaceEnd());
 			
-			for (int j = 0; j < extras.length; j++, i++) {
-				switch(extras[i]) {
+			for (int j = 0; j < extras.length; j++) {
+				i++;
+				
+				switch(extras[j]) {
 				case LABEL:
 					assertTrue(expectations[i] instanceof String);
 					String label = (String) expectations[i];					
@@ -111,9 +113,13 @@ public abstract class AbstractCompletionTest extends AbstractModelTest {
 					assertEquals(typeSignature, new String(prop.getTypeSignature()));
 					break;
 				case DECLARATION_SIGNATURE:
-					assertTrue(expectations[i] instanceof String);
+					assertTrue(expectations[i] == null || expectations[i] instanceof String);
 					String declSignature = (String) expectations[i];
-					assertEquals(declSignature, new String(prop.getDeclarationSignature()));
+					if (declSignature == null) {
+						assertNull(prop.getDeclarationSignature());
+					} else {
+						assertEquals(declSignature, new String(prop.getDeclarationSignature()));
+					}
 					break;
 				}
 			}

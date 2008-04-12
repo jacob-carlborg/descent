@@ -19,12 +19,10 @@ public class SemanticRest {
 	}
 
 	public void setSemanticContext(Scope scope, SemanticContext context) {
-		if (scope == null) {
-			System.out.println(1);
+		if (scope != null) {
+			this.sc = scope;
+			this.linkage = scope.linkage;
 		}
-		
-		this.sc = scope;
-		this.linkage = scope.linkage;
 		this.context = context;
 	}
 	

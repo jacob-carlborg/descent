@@ -53,7 +53,7 @@ import descent.ui.text.java.JavaContentAssistInvocationContext;
   */
 public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	/** Triggers for types. Do not modify. */
-	protected static final char[] TYPE_TRIGGERS= new char[] { '.', '\t', '[', '(', ' ' };
+	protected static final char[] TYPE_TRIGGERS= new char[] { '.', '\t', '[', '(', '=', ';', ' ' };
 	/** Triggers for types in javadoc. Do not modify. */
 	protected static final char[] JDOC_TYPE_TRIGGERS= new char[] { '#', '}', ' ', '.' };
 
@@ -68,6 +68,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	private boolean fIsSetterComputed= false;
 	private boolean fIsGetter;
 	private boolean fIsGetterComputed= false;
+	private boolean fWantProperty = false;
 	private int[] fArgumentOffsets;
 	private int[] fArgumentLengths;
 	private String fQualifiedName;
@@ -276,11 +277,13 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	 */
 	public void apply(IDocument document, char trigger, int offset) {
 		try {
-			boolean insertClosingParenthesis= trigger == '(' && autocloseBrackets();
-			if (insertClosingParenthesis) {
-				updateReplacementWithParentheses();
-				trigger= '\0';
-			}
+			this.fWantProperty = trigger == '=' || trigger == ';';
+			
+//			boolean insertClosingParenthesis= trigger == '(' && autocloseBrackets();
+//			if (insertClosingParenthesis) {
+//				updateReplacementWithParentheses();
+//				trigger= '\0';
+//			}
 			
 			super.apply(document, trigger, offset);
 			int baseOffset= getReplacementOffset();
@@ -557,6 +560,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	}
 	
 	private boolean computeIsSetter() throws IllegalArgumentException {
+		if (!fWantProperty) {
+			return false;
+		}
+		
 		char[] retType = Signature.getReturnType(fProposal.getTypeSignature());
 		if (retType.length == 1 && retType[0] == 'v') {
 			return Signature.getParameterCount(fProposal.getTypeSignature()) == 1;
@@ -565,6 +572,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	}
 	
 	private boolean computeIsGetter() throws IllegalArgumentException {
+		if (!fWantProperty) {
+			return false;
+		}
+		
 		char[] retType = Signature.getReturnType(fProposal.getTypeSignature());
 		if (retType.length != 1 || retType[0] != 'v') {
 			return !hasParameters();

@@ -120,7 +120,6 @@ import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
-import descent.internal.core.InternalSignature;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 
@@ -470,6 +469,11 @@ public class CompletionEngine extends Engine
 						if (type == null) {
 							return;
 						}
+					} else if (isGetter((TypeFunction) type)) {
+						type = ((TypeFunction) type).next;
+						if (type == null) {
+							return;
+						}
 					}
 				}
 				expectedType = type;
@@ -505,6 +509,11 @@ public class CompletionEngine extends Engine
 	private boolean isSetter(TypeFunction type) {
 		return type != null && type.next == Type.tvoid
 			&& type.parameters != null && type.parameters.size() == 1;
+	}
+	
+	private boolean isGetter(TypeFunction type) {
+		return type != null && type.next != Type.tvoid
+			&& (type.parameters == null || type.parameters.isEmpty());
 	}
 
 	private void computeExpectedTypeForTypeFunction(TypeFunction typeFunc, int decrease) {
@@ -1367,7 +1376,7 @@ public class CompletionEngine extends Engine
 		proposal.setName(name);
 		proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
 		proposal.setSignature(signature);
-		proposal.setTypeName(signature);
+		proposal.setTypeSignature(signature);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		CompletionEngine.this.requestor.accept(proposal);
@@ -1382,7 +1391,7 @@ public class CompletionEngine extends Engine
 		suggestAllTypesProperties(type);
 		
 		if (type.isintegral()) {
-			suggestIntegralProperties();
+			suggestIntegralProperties(type.getSignature().toCharArray());
 		}
 		
 		if (type.isfloating()) {
@@ -1393,14 +1402,16 @@ public class CompletionEngine extends Engine
 	public final static char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
 	private void suggestAllTypesProperties(Type type) {
 		suggestProperties(
+				type.getSignature().toCharArray(),
 				allTypesProperties, 
 				new Type[] { type, typeInt, typeInt, typeCharArray, typeCharArray }, 
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] integralTypesProperties = { Id.max, Id.min };
-	private void suggestIntegralProperties() {
+	private void suggestIntegralProperties(char[] declarationSignature) {
 		suggestProperties(
+				declarationSignature,
 				integralTypesProperties, 
 				new Type[] { typeInt, typeInt },
 				R_INTERESTING_BUILTIN_PROPERTY);
@@ -1409,6 +1420,7 @@ public class CompletionEngine extends Engine
 	public final static char[][] floatingPointTypesProperties = { Id.infinity, Id.nan, Id.dig, Id.epsilon, Id.mant_dig, Id.max_10_exp, Id.max_exp, Id.min_10_exp, Id.min_exp, Id.max, Id.min };
 	private void suggestFloatingProperties(Type type) {
 		suggestProperties(
+				type.getSignature().toCharArray(),
 				floatingPointTypesProperties, 
 				new Type[] { type, type, typeInt, type, typeInt, typeInt, typeInt, typeInt, typeInt, type, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
@@ -1419,6 +1431,7 @@ public class CompletionEngine extends Engine
 	private void suggestTypeStaticArrayProperties(TypeSArray type) {
 		suggestAllTypesProperties(type);
 		suggestProperties(
+				type.getSignature().toCharArray(),
 				staticAndDynamicArrayProperties, 
 				new Type[] { type, type, typeInt, typeInt, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
@@ -1427,6 +1440,7 @@ public class CompletionEngine extends Engine
 	private void suggestTypeDynamicArrayProperties(TypeDArray type) {
 		suggestAllTypesProperties(type);
 		suggestProperties(
+				type.getSignature().toCharArray(),
 				staticAndDynamicArrayProperties,
 				new Type[] { type, type, typeInt, typeInt, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
@@ -1436,6 +1450,7 @@ public class CompletionEngine extends Engine
 	private void suggestTypeAssociativeArrayProperties(TypeAArray type) {
 		suggestAllTypesProperties(type);
 		suggestProperties(
+				type.getSignature().toCharArray(),
 				associativeArrayProperties,
 				new Type[] { typeInt, 
 					new TypeDArray(type.index), 
@@ -1511,7 +1526,7 @@ public class CompletionEngine extends Engine
 		
 		// If the base type of the enum is integral, also suggest integer properties
 		if (enumDeclaration.memtype.isintegral()) {
-			suggestIntegralProperties();
+			suggestIntegralProperties(enumDeclaration.getSignature().toCharArray());
 		}
 	}
 	
@@ -1652,8 +1667,9 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, var);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					proposal.setTypeName(typeName);
+					proposal.setTypeSignature(typeName);
 					proposal.setSignature(sig);
+					proposal.setDeclarationSignature(var.parent.getSignature().toCharArray());
 					proposal.setFlags(flags | var.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1694,7 +1710,7 @@ public class CompletionEngine extends Engine
 					
 					boolean isLocal = alias.parent instanceof FuncDeclaration;
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, alias);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.TYPE_REF, this.actualCompletionPosition, alias);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					String signature = alias.getSignature();
@@ -1742,7 +1758,7 @@ public class CompletionEngine extends Engine
 					char[] sigChars = sig.toCharArray();
 					relevance += computeRelevanceForExpectedType(type);
 					
-					proposal.setTypeName(sigChars);
+					proposal.setTypeSignature(sigChars);
 					proposal.setFlags(flags | alias.getFlags() | Flags.AccAlias);
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1765,11 +1781,11 @@ public class CompletionEngine extends Engine
 					
 					boolean isLocal = typedef.parent instanceof FuncDeclaration;
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, typedef);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.TYPE_REF, this.actualCompletionPosition, typedef);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
-					proposal.setTypeName(typedef.basetype.getSignature().toCharArray());
+					proposal.setTypeSignature(typedef.basetype.getSignature().toCharArray());
 					proposal.setFlags(flags | typedef.getFlags() | Flags.AccTypedef);
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -1914,7 +1930,7 @@ public class CompletionEngine extends Engine
 					if (sig != null) {
 						proposal.setSignature(sig.toCharArray());
 					}
-					proposal.setTypeName(type.getSignature().toCharArray());
+					proposal.setTypeSignature(type.getSignature().toCharArray());
 					proposal.setFlags(flags | func.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2057,7 +2073,8 @@ public class CompletionEngine extends Engine
 		return true;
 	}
 
-	private void suggestProperties( 
+	private void suggestProperties(
+			char[] declarationSignature,
 			char[][] properties,
 			Type[] types,
 			int relevance) {
@@ -2076,7 +2093,9 @@ public class CompletionEngine extends Engine
 				proposal.setRelevance(relevance);
 				proposal.setName(property);
 				proposal.setCompletion(property);
-				proposal.setTypeName(type.getSignature().toCharArray());
+				proposal.setDeclarationSignature(declarationSignature);
+				proposal.setTypeSignature(type.getSignature().toCharArray());
+				proposal.setSignature((new String(declarationSignature) + "/" + property.length + new String(property)).toCharArray());
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}

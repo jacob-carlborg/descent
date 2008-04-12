@@ -997,6 +997,13 @@ protected IBuffer openBuffer(IProgressMonitor pm, Object info) throws JavaModelE
 			: BufferManager.getDefaultBufferManager().createBuffer(this);
 	if (buffer == null) return null;
 	
+	if (buffer.getOwner() == null) {
+		buffer = 
+			isWorkingCopy 
+				? this.owner.createBuffer(this) 
+				: BufferManager.getDefaultBufferManager().createBuffer(this);
+	}
+	
 	// set the buffer source
 	if (buffer.getCharacters() == null) {
 		if (isWorkingCopy) {

@@ -1,3 +1,4 @@
  - Select good default colors for structs and unions.
  - Test code select and binding for aliased symbols (i.e. alias Foo.Bar myAlias).
  - See why "Box!(int) box = new |" shrinks icons, etc.
+ - Implement ClassFile#buildStructure to use a File to get it's contents.
