@@ -169,7 +169,7 @@ public class CompletionProposalLabelProvider {
 			}
 		}
 		
-		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature));
+		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature, false /* don't fully qualify names */));
 		if (prefix != null) {
 			displayName = CharOperation.concat(prefix, displayName, ' ');
 		}
@@ -259,7 +259,8 @@ public class CompletionProposalLabelProvider {
 			nameBuffer.append(declaringType);
 		} else {
 			// module name
-			char[] fullName= Signature.toCharArray(methodProposal.getSignature());
+			char[] fullName= Signature.toCharArray(methodProposal.getSignature(),
+					false /* don't fully qualify names */);
 			int qIndex= findSimpleNameStart(fullName);
 			if (qIndex > 0) {
 				nameBuffer.append(JavaElementLabels.CONCAT_STRING);
@@ -279,7 +280,8 @@ public class CompletionProposalLabelProvider {
 		nameBuffer.append(')');
 		
 		// module name
-		char[] fullName= Signature.toCharArray(tempProposal.getSignature());
+		char[] fullName= Signature.toCharArray(tempProposal.getSignature(),
+				false /* don't fully qualify names */);
 		int qIndex= findSimpleNameStart(fullName);
 		if (qIndex > 0) {
 			nameBuffer.append(JavaElementLabels.CONCAT_STRING);
@@ -302,7 +304,8 @@ public class CompletionProposalLabelProvider {
 		
 		// TODO Descent this is not working properly
 		// module name
-		char[] fullName= Signature.toCharArray(tempProposal.getSignature());
+		char[] fullName= Signature.toCharArray(tempProposal.getSignature(),
+				false /* don't fully qualify names */);
 		int qIndex= findSimpleNameStart(fullName);
 		if (qIndex > 0) {
 			nameBuffer.append(JavaElementLabels.CONCAT_STRING);
@@ -414,12 +417,14 @@ public class CompletionProposalLabelProvider {
 			signature= typeProposal.getSignature();
 		else
 			signature= typeProposal.getSignature();
-		char[] fullName= Signature.toCharArray(signature);
+		char[] fullName= Signature.toCharArray(signature,
+				false /* don't fully qualify names */);
 		return createTypeProposalLabel(fullName);
 	}
 	
 	String createJavadocTypeProposalLabel(CompletionProposal typeProposal) {
-		char[] fullName= Signature.toCharArray(typeProposal.getSignature());
+		char[] fullName= Signature.toCharArray(typeProposal.getSignature(),
+				false /* don't fully qualify names */);
 		return createJavadocTypeProposalLabel(fullName);
 	}
 	
@@ -477,7 +482,8 @@ public class CompletionProposalLabelProvider {
 		char[] typeName = proposal.getTypeSignature();
 		if (typeName != null && typeName.length != 0) {
 			buf.append("    "); //$NON-NLS-1$
-			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName)));
+			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName,
+					false /* don't fully qualify names */)));
 		}
 		
 //		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
@@ -495,19 +501,15 @@ public class CompletionProposalLabelProvider {
 		char[] typeSignature = proposal.getTypeSignature();
 		if (typeSignature != null && typeSignature.length != 0) {
 			buf.append("    "); //$NON-NLS-1$
-			buf.append(Signature.getSimpleName(Signature.toCharArray(typeSignature)));
+			buf.append(Signature.toCharArray(typeSignature,
+					false /* don't fully qualify names */));
 		}
 		
 		char[] declSignature = proposal.getDeclarationSignature();
 		if (declSignature != null && declSignature.length != 0) {
 			buf.append(JavaElementLabels.CONCAT_STRING);
-			
-			int declKind = Signature.getTypeSignatureKind(declSignature);
-			if (declKind == Signature.MODULE_SIGNATURE) {
-				buf.append(Signature.toCharArray(declSignature));	
-			} else {
-				buf.append(Signature.getSimpleName(Signature.toCharArray(declSignature)));
-			}
+			buf.append(Signature.toCharArray(declSignature,
+					false /* don't fully qualify names */));	
 		}
 		
 //		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());

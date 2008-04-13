@@ -60,7 +60,8 @@ public class AnonymousTypeCompletionProposal extends JavaTypeCompletionProposal 
 		else
 			buffer.append(" extends "); //$NON-NLS-1$
 		if (fDeclarationSignature != null)
-			buffer.append(Signature.toString(fDeclarationSignature));
+			buffer.append(Signature.toString(fDeclarationSignature,
+					false /* don't fully qualify names */));
 		else
 			buffer.append(fSuperType.getFullyQualifiedParameterizedName());
 		int start= buffer.length();

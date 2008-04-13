@@ -1500,12 +1500,13 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
  * </p> 
  *
  * @param signature the type signature
+ * @param fqn whether to fully qualify name (<code>true</code>) or not (<code>false</code>).
  * @return the string representation of the type
  * @exception IllegalArgumentException if the signature is not syntactically
  *   correct
  */
-public static char[] toCharArray(char[] signature) throws IllegalArgumentException {
-	return toString(new String(signature)).toCharArray();
+public static char[] toCharArray(char[] signature, boolean fqn) throws IllegalArgumentException {
+	return toString(new String(signature), fqn).toCharArray();
 }
 /**
  * Converts the given signature to a readable string.
@@ -1524,11 +1525,12 @@ public static char[] toCharArray(char[] signature) throws IllegalArgumentExcepti
  * </p>
  *
  * @param signature the type signature
+ * @param fqn whether to fully qualify name (<code>true</code>) or not (<code>false</code>).
  * @return the string representation of the type
  * @exception IllegalArgumentException if the signature is not syntactically
  *   correct
  */
-public static String toString(String signature) throws IllegalArgumentException {
+public static String toString(String signature, final boolean fqn) throws IllegalArgumentException {
 	final Stack<Stack<StringBuilder>> stack = new Stack<Stack<StringBuilder>>();
 	stack.push(new Stack<StringBuilder>());
 	
@@ -1625,8 +1627,12 @@ public static String toString(String signature) throws IllegalArgumentException 
 					StringBuilder funcType = st.pop();
 					StringBuilder funcName = st.pop();
 					
-					if (funcName.length() != 0) {
-						funcName.append('.');
+					if (fqn) {
+						if (funcName.length() != 0) {
+							funcName.append('.');
+						}
+					} else {
+						funcName.setLength(0);
 					}
 					funcName.append(name);
 					
@@ -1641,8 +1647,12 @@ public static String toString(String signature) throws IllegalArgumentException 
 					Stack<StringBuilder> st = stack.peek();
 					
 					StringBuilder sb = st.peek();
-					if (sb.length() > 0) {
-						sb.append('.');
+					if (fqn) {
+						if (sb.length() > 0) {
+							sb.append('.');
+						}
+					} else {
+						sb.setLength(0);
 					}
 					sb.append(name);
 					
@@ -1845,8 +1855,15 @@ public static String toString(String signature) throws IllegalArgumentException 
 				stack.pop();
 				
 				StringBuilder sb = stack.peek().peek();
-				sb.append('!');
-				sb.append('(');
+				
+				// If sb ends with ')', this is an instantiation of a template,
+				// so remove the parameters
+				if (sb.length() != 0 && sb.charAt(sb.length() - 1) == ')') {
+					sb.setLength(indexOfMatchingParen(sb) + 1);
+				} else {
+					sb.append('!');
+					sb.append('(');
+				}
 				
 				Stack<StringBuilder> tp = templateInstances.pop();
 				for (int i = 0; i < tp.size(); i++) {
@@ -1858,6 +1875,23 @@ public static String toString(String signature) throws IllegalArgumentException 
 				}
 				
 				sb.append(')');
+			}
+			private int indexOfMatchingParen(StringBuilder sb) {
+				int parenCount = 0;
+				for (int i = sb.length() - 1; i >= 0; i--) {
+					char c = sb.charAt(i);
+					switch(c) {
+					case ')':
+						parenCount++;
+						break;
+					case '(':
+						parenCount--;
+						if (parenCount == 0) {
+							return i;
+						}
+					}
+				}
+				throw new IllegalStateException();
 			}
 		});
 	

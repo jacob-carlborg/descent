@@ -592,12 +592,12 @@ public class CompletionProposalCollector extends CompletionRequestor {
 				// TODO remove when bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=84690 gets fixed
 				if (declaration == null)
 					return "java.lang.Object".toCharArray(); //$NON-NLS-1$
-				return Signature.toCharArray(declaration);
+				return Signature.toCharArray(declaration, false /* don't fully qualify names */);
 			case CompletionProposal.COMPILATION_UNIT_REF:
 				return proposal.getDeclarationSignature();
 			case CompletionProposal.JAVADOC_TYPE_REF:
 			case CompletionProposal.TYPE_REF:
-				return Signature.toCharArray(proposal.getSignature());
+				return Signature.toCharArray(proposal.getSignature(), false /* don't fully qualify names */);
 			case CompletionProposal.LOCAL_VARIABLE_REF:
 			case CompletionProposal.VARIABLE_DECLARATION:
 			case CompletionProposal.KEYWORD:

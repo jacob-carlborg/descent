@@ -279,6 +279,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		
 		sd.copySourceRange(this);
 		sd.javaElement = javaElement;
+		sd.templated = templated;
 		
 		return sd;
 	}

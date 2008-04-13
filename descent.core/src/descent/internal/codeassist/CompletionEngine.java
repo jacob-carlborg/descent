@@ -280,6 +280,19 @@ public class CompletionEngine extends Engine
 			
 			this.requestor.acceptContext(buildContext(parser));
 			
+			if (parser.wantNames()) {
+				if (assistNode instanceof VarDeclaration) {
+					VarDeclaration var = (VarDeclaration) assistNode;
+					char[] name = var.ident == null ? CharOperation.NO_CHAR : var.ident.ident;
+					
+					this.startPosition = this.actualCompletionPosition - name.length;
+					this.endPosition = this.actualCompletionPosition;
+					
+					findVariableNames(name, var.type, CharOperation.NO_CHAR_CHAR);
+				}
+				return;
+			}
+			
 			// If there's an expected type, doSemantic to find it out
 			if (parser.expectedTypeNode != null) {
 				doSemantic();
@@ -1162,7 +1175,8 @@ public class CompletionEngine extends Engine
 		if (sd instanceof ClassDeclaration) {
 			completeTypeClass((TypeClass) sd.type(), onlyStatics);
 		} else if (sd.members != null && !sd.members.isEmpty()) {
-			suggestMembers(sd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+			// If the members are from a Module, don't restrict to "static" symbols
+			suggestMembers(sd.members, sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 		}
 	}
 	

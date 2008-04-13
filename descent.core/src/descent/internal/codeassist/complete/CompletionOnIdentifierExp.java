@@ -27,6 +27,10 @@ public class CompletionOnIdentifierExp extends IdentifierExp {
 		this.dot = dot;
 	}
 	
+	public CompletionOnIdentifierExp(Loc loc, IdentifierExp ident) {
+		super(loc, ident);
+	}
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression exp = super.semantic(sc, context);

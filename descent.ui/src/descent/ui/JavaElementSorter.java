@@ -272,7 +272,9 @@ public class JavaElementSorter extends ViewerSorter {
 			String[] params2= ((IMethod) e2).getParameterTypes();
 			int len= Math.min(params1.length, params2.length);
 			for (int i = 0; i < len; i++) {
-				cmp= getNewCollator().compare(Signature.toString(params1[i]), Signature.toString(params2[i]));
+				cmp= getNewCollator().compare(Signature.toString(params1[i],
+						false /* don't fully qualify names */), Signature.toString(params2[i],
+								false /* don't fully qualify names */));
 				if (cmp != 0) {
 					return cmp;
 				}

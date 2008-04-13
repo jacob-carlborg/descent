@@ -98,7 +98,8 @@ public class MethodCompletionProposal extends JavaTypeCompletionProposal impleme
 		buf.append(')');
 		if (returnTypeSig != null) {
 			buf.append("  "); //$NON-NLS-1$
-			buf.append(Signature.toString(returnTypeSig));
+			buf.append(Signature.toString(returnTypeSig,
+					false /* don't fully qualify names */));
 			buf.append(" - "); //$NON-NLS-1$
 			buf.append(JavaTextMessages.MethodCompletionProposal_method_label);
 		} else {
@@ -138,7 +139,8 @@ public class MethodCompletionProposal extends JavaTypeCompletionProposal impleme
 		}
 
 		if (fReturnTypeSig != null) {
-			buf.append(Signature.toString(fReturnTypeSig));
+			buf.append(Signature.toString(fReturnTypeSig,
+					false /* don't fully qualify names */));
 		}
 		buf.append(' ');
 		buf.append(fMethodName);

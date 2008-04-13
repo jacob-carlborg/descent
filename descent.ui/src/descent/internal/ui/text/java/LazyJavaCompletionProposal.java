@@ -350,7 +350,8 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 		if (fProposal.getKind() == CompletionProposal.METHOD_NAME_REFERENCE) {
 			// static imports - includes package & type name
 			StringBuffer buf= new StringBuffer();
-			buf.append(Signature.toCharArray(fProposal.getDeclarationSignature()));
+			buf.append(Signature.toCharArray(fProposal.getDeclarationSignature(),
+					false /* don't fully qualify names */));
 			buf.append('.');
 			buf.append(getDisplayString());
 			return isPrefix(prefix, buf.toString());

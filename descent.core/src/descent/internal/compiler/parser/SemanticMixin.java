@@ -160,7 +160,7 @@ public class SemanticMixin {
 		
 		appendTemplateParameters(tempdecl, sb);
 		
-		tempinst.appendSignature(sb);
+		tempinst.appendInstanceSignature(sb);
 	}
 	
 	private static void appendTemplateParameters(TemplateDeclaration tempdecl, StringBuilder sb) {

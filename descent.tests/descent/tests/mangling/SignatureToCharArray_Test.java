@@ -41,19 +41,19 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testClass() {
-		tca("foo.test.Bar", MODULE + "3foo4test" + CLASS + "3Bar");
+		tca("Bar", MODULE + "3foo4test" + CLASS + "3Bar");
 	}
 	
 	public void testStruct() {
-		tca("foo.test.Bar", MODULE + "3foo4test" + STRUCT + "3Bar");
+		tca("Bar", MODULE + "3foo4test" + STRUCT + "3Bar");
 	}
 	
 	public void testUnion() {
-		tca("foo.test.Bar", MODULE + "3foo4test" + UNION + "3Bar");
+		tca("Bar", MODULE + "3foo4test" + UNION + "3Bar");
 	}
 	
 	public void testInterface() {
-		tca("foo.test.Bar", MODULE + "3foo4test" + INTERFACE + "3Bar");
+		tca("Bar", MODULE + "3foo4test" + INTERFACE + "3Bar");
 	}
 	
 	public void testIdentifier() {
@@ -84,6 +84,10 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 		tca("void function(lazy int)", F + MODIFIER_LAZY + i + Z + v);
 	}
 	
+	public void testFunctionWithObjects() {
+		tca("Object function(Object)", F + MODULE + "6object" + CLASS + "6Object" + Z + MODULE + "6object" + CLASS + "6Object");
+	}
+	
 	public void testDelegate() {
 		tca("void delegate(int)", D + F + i + Z + v);
 	}
@@ -101,39 +105,39 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testTemplate() {
-		tca("foo.test.Bar!()", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!()", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithAliasParameters() {
-		tca("foo.test.Bar!(alias T, alias U)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(alias T, alias U)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithAliasParameter() {
-		tca("foo.test.Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithTupleParameter() {
-		tca("foo.test.Bar!(T...)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_TUPLE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(T...)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_TUPLE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithValueParameter() {
-		tca("foo.test.Bar!(T)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(T)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithValueParameter2() {
-		tca("foo.test.Bar!(int T)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(int T)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithValueParameter3() {
-		tca("foo.test.Bar!(int T : 3)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + '1' + TEMPLATE_VALUE_PARAMETER + '3' + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(int T : 3)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + '1' + TEMPLATE_VALUE_PARAMETER + '3' + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithTypeParameter() {
-		tca("foo.test.Bar!(T)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(T)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateWithTypeParameter2() {
-		tca("foo.test.Bar!(T : int)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + i + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(T : int)", MODULE + "3foo4test" + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + i + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateInstance() {
@@ -157,35 +161,36 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testFunctionWithName() {
-		tca("void foo.test.Bar()", MODULE + "3foo4test" + FUNCTION + "3Bar" + F + Z + v);
+		tca("void Bar()", MODULE + "3foo4test" + FUNCTION + "3Bar" + F + Z + v);
 	}
 	
 	public void testFunctionWithNameAndParameter() {
-		tca("void foo.test.Bar(int)", MODULE + "3foo4test" + FUNCTION + "3Bar" + F + i + Z + v);
+		tca("void Bar(int)", MODULE + "3foo4test" + FUNCTION + "3Bar" + F + i + Z + v);
 	}
 	
 	public void testTemplatedClassWithAliasParameter() {
-		tca("foo.test.Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_CLASS + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_CLASS + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplatedInterfaceWithAliasParameter() {
-		tca("foo.test.Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_INTERFACE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_INTERFACE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplatedStructWithAliasParameter() {
-		tca("foo.test.Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_STRUCT + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_STRUCT + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplatedUnionWithAliasParameter() {
-		tca("foo.test.Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_UNION + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
+		tca("Bar!(alias T : x)", MODULE + "3foo4test" + TEMPLATED_UNION + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplatedFunctionWithNameAndParameter() {
-		tca("void foo.test.Bar!(alias T : x)(int)", MODULE + "3foo4test" + TEMPLATED_FUNCTION + "3Bar" + F + i + Z + v + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
+		tca("void Bar!(alias T : x)(int)", MODULE + "3foo4test" + TEMPLATED_FUNCTION + "3Bar" + F + i + Z + v + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	protected void tca(String expected, String signature) {
-		assertEquals(expected, new String(Signature.toCharArray(signature.toCharArray())));
+		assertEquals(expected, new String(Signature.toCharArray(signature.toCharArray(),
+				false /* 't fully qualify things */)));
 	}
 	
 }

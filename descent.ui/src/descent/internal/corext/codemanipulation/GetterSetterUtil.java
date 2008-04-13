@@ -93,7 +93,8 @@ public class GetterSetterUtil {
 		IType parentType= field.getDeclaringType();
 		
 		String returnSig= field.getTypeSignature();
-		String typeName= Signature.toString(returnSig);
+		String typeName= Signature.toString(returnSig,
+				false /* don't fully qualify names */);
 		
 		IJavaProject project= field.getJavaProject();
 
@@ -165,7 +166,8 @@ public class GetterSetterUtil {
 		boolean isSync= Flags.isSynchronized(flags);
 		boolean isFinal= Flags.isFinal(flags);
 		
-		String typeName= Signature.toString(field.getTypeSignature());
+		String typeName= Signature.toString(field.getTypeSignature(),
+				false /* don't fully qualify names */);
 		String accessorName = NamingConventions.removePrefixAndSuffixForFieldName(field.getJavaProject(), fieldName, field.getFlags());
 
 		String lineDelim= "\n"; // Use default line delimiter, as generated stub has to be formatted anyway //$NON-NLS-1$

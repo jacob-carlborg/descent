@@ -446,7 +446,8 @@ public final class RefactoringAvailabilityTester {
 					return false;
 				return true;
 			}
-			if (type == null || PrimitiveType.toCode(Signature.toString(type)) != null)
+			if (type == null || PrimitiveType.toCode(Signature.toString(type,
+					false /* don't fully qualify names */)) != null)
 				return false;
 			return true;
 		}
@@ -459,7 +460,8 @@ public final class RefactoringAvailabilityTester {
 			if (element instanceof IMethod) {
 				final IMethod method= (IMethod) element;
 				final String type= method.getReturnType();
-				if (PrimitiveType.toCode(Signature.toString(type)) == null)
+				if (PrimitiveType.toCode(Signature.toString(type,
+						false /* don't fully qualify names */)) == null)
 					return Checks.isAvailable(method);
 			} else if (element instanceof IField && !JdtFlags.isEnum((IField) element))
 				return Checks.isAvailable((IField) element);

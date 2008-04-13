@@ -200,7 +200,8 @@ public final class SignatureUtil {
 		// TODO JDT signature
 //		signature= Signature.getTypeErasure(signature);
 //		signature= Signature.getElementType(signature);
-		return Signature.toString(signature);
+		return Signature.toString(signature,
+				false /* don't fully qualify names */);
 	}
 	
 	/**

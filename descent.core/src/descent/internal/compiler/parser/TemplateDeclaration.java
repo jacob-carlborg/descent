@@ -777,6 +777,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		td = new TemplateDeclaration(loc, ident, p, d);
 		td.copySourceRange(this);
 		td.javaElement = javaElement;
+		td.wrapper = wrapper;
 		return td;
 	}
 

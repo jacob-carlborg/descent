@@ -330,7 +330,8 @@ public String readableName() {
 	int length;
 	if (this.parameterTypes != null && (length = this.parameterTypes.length) > 0) {
 		for (int i = 0; i < length; i++) {
-			buffer.append(Signature.toString(this.parameterTypes[i]));
+			buffer.append(Signature.toString(this.parameterTypes[i],
+					false /* don't fully qualify names */));
 			if (i < length - 1) {
 				buffer.append(", "); //$NON-NLS-1$
 			}
@@ -385,10 +386,12 @@ protected void toStringName(StringBuffer buffer, long flags) {
 		for (int i = 0; i < length; i++) {
 			try {
 				if (i < length - 1) {
-					buffer.append(Signature.toString(parameters[i]));
+					buffer.append(Signature.toString(parameters[i],
+							false /* don't fully qualify names */));
 					buffer.append(", "); //$NON-NLS-1$
 				} else {
-					buffer.append(Signature.toString(parameters[i]));
+					buffer.append(Signature.toString(parameters[i],
+							false /* don't fully qualify names */));
 				}
 			} catch (IllegalArgumentException e) {
 				// parameter signature is malformed

@@ -171,7 +171,8 @@ public class JavadocContentAccess {
 				String[] parameterNames = method.getParameterNames();
 				String[] parameterTypes = method.getParameterTypes();
 				for(int i = 0; i < parameterNames.length; i++) {
-					parameterTypes[i] = Signature.toString(parameterTypes[i]);
+					parameterTypes[i] = Signature.toString(parameterTypes[i],
+							false /* don't fully qualify names */);
 				}
 				
 				parameters = new HashMap<String, String>();

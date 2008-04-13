@@ -931,6 +931,10 @@ public class TemplateInstance extends ScopeDsymbol {
 	public void appendSignature(StringBuilder sb) {
 		sb.append(name.ident.length);
 		sb.append(name.ident);
+		appendInstanceSignature(sb);
+	}
+	
+	public void appendInstanceSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.TEMPLATE_INSTANCE);
 		for (int j = 0; j < size(tiargs); j++) {
 			ASTDmdNode o = tiargs.get(j);

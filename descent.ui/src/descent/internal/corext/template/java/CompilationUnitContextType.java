@@ -42,7 +42,8 @@ public abstract class CompilationUnitContextType extends TemplateContextType {
 				return null;
 
 			try {
-				return Signature.toString(((IMethod) element).getReturnType());
+				return Signature.toString(((IMethod) element).getReturnType(),
+						false /* don't fully qualify names */);
 			} catch (JavaModelException e) {
 				return null;
 			}

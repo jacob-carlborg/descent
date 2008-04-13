@@ -504,7 +504,8 @@ public class StubUtility {
 		context.setVariable(CodeTemplateContextType.ENCLOSING_METHOD, methodName);
 				
 		if (retTypeSig != null) {
-			context.setVariable(CodeTemplateContextType.RETURN_TYPE, Signature.toString(retTypeSig));
+			context.setVariable(CodeTemplateContextType.RETURN_TYPE, Signature.toString(retTypeSig,
+					false /* don't fully qualify names */));
 		}
 		if (target != null) {
 			String targetTypeName= target.getDeclaringType().getFullyQualifiedName('.');
@@ -538,9 +539,11 @@ public class StubUtility {
 		IDocument document= new Document(str);
 		String[] exceptionNames= new String[excTypeSig.length];
 		for (int i= 0; i < excTypeSig.length; i++) {
-			exceptionNames[i]= Signature.toString(excTypeSig[i]);
+			exceptionNames[i]= Signature.toString(excTypeSig[i],
+					false /* don't fully qualify names */);
 		}
-		String returnType= retTypeSig != null ? Signature.toString(retTypeSig) : null;
+		String returnType= retTypeSig != null ? Signature.toString(retTypeSig,
+				false /* don't fully qualify names */) : null;
 		int[] tagOffsets= position.getOffsets();
 		for (int i= tagOffsets.length - 1; i >= 0; i--) { // from last to first
 			try {

@@ -10,15 +10,12 @@
  *******************************************************************************/
 package descent.internal.ui.text.java;
 
-import org.eclipse.text.edits.TextEdit;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-
 import org.eclipse.jface.preference.IPreferenceStore;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.TextEdit;
 
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
@@ -29,17 +26,13 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.rewrite.ImportRewrite;
-
 import descent.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import descent.internal.corext.codemanipulation.StubUtility;
-import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.corext.util.QualifiedTypeNameHistory;
-
-import descent.ui.PreferenceConstants;
-import descent.ui.text.java.JavaContentAssistInvocationContext;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
+import descent.ui.PreferenceConstants;
+import descent.ui.text.java.JavaContentAssistInvocationContext;
 
 /**
  * If passed compilation unit is not null, the replacement string will be seen as a qualified type name.
@@ -66,7 +59,8 @@ public class LazyJavaTypeCompletionProposal extends LazyJavaCompletionProposal {
 	
 	public final String getQualifiedTypeName() {
 		if (fQualifiedName == null)
-			fQualifiedName= String.valueOf(Signature.toCharArray(fProposal.getSignature()));
+			fQualifiedName= String.valueOf(Signature.toCharArray(fProposal.getSignature(),
+					false /* don't fully qualify names */));
 		return fQualifiedName;
 	}
 	

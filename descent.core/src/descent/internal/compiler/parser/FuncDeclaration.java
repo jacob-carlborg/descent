@@ -2028,6 +2028,7 @@ public class FuncDeclaration extends Declaration {
 		}
 		f.copySourceRange(this);
 		f.javaElement = javaElement;
+		f.templated = templated;
 		return f;
 	}
 

@@ -51,6 +51,7 @@ public class CompletionParser extends Parser {
 	private List<ICompletionOnKeyword> keywordCompletions;
 	private boolean wantKeywords = true;
 	private boolean acceptMoreKeywords = true;
+	private boolean wantNames = false;
 	
 	// Javadoc completion, and other ddocs found, in order to
 	// provide autocompletion for macros in other places
@@ -81,6 +82,10 @@ public class CompletionParser extends Parser {
 	
 	public ASTDmdNode getAssistNode() {
 		return assistNode;
+	}
+	
+	public boolean wantNames() {
+		return wantNames;
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
@@ -614,6 +619,28 @@ public class CompletionParser extends Parser {
 				expectedTypeNode = var;
 			}
 		}
+		
+		// Case:
+		// int foo = |
+		if (((ident == null && prevToken.ptr + prevToken.sourceLen < cursorLocation) ||
+				(ident != null && prevToken.ptr + prevToken.sourceLen <= cursorLocation) )
+				&& cursorLocation <= token.ptr &&
+				(init == null || (init instanceof ExpInitializer && ((ExpInitializer) init).exp instanceof ErrorExp))) {
+			if (ident == null) {
+				wantNames = true;
+				assistNode = var;
+			} else {
+				CompletionOnIdentifierExp comp = new CompletionOnIdentifierExp(loc, new IdentifierExp(CharOperation.NO_CHAR));
+				assistNode = comp;			
+				var.init = new ExpInitializer(loc, comp);
+			}
+		}
+		
+		if (ident instanceof CompletionOnIdentifierExp) {
+			wantNames = true;
+			assistNode = var;
+		}
+		
 		return var;
 	}
 	

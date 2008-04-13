@@ -89,14 +89,17 @@ public class GetterSetterCompletionProposal extends JavaTypeCompletionProposal i
 		if (isGetter) {
 			buf.append(GetterSetterUtil.getGetterName(field, null));
 			buf.append("()  "); //$NON-NLS-1$
-			buf.append(Signature.toString(field.getTypeSignature()));
+			buf.append(Signature.toString(field.getTypeSignature(),
+					false /* don't fully qualify names */));
 			buf.append(" - "); //$NON-NLS-1$
 			buf.append(Messages.format(JavaTextMessages.GetterSetterCompletionProposal_getter_label, field.getElementName()));
 		} else {
 			buf.append(GetterSetterUtil.getSetterName(field, null));
-			buf.append('(').append(Signature.toString(field.getTypeSignature())).append(')');
+			buf.append('(').append(Signature.toString(field.getTypeSignature(),
+					false /* don't fully qualify names */)).append(')');
 			buf.append("  "); //$NON-NLS-1$
-			buf.append(Signature.toString(Signature.SIG_VOID));
+			buf.append(Signature.toString(Signature.SIG_VOID,
+					false /* don't fully qualify names */));
 			buf.append(" - "); //$NON-NLS-1$
 			buf.append(Messages.format(JavaTextMessages.GetterSetterCompletionProposal_setter_label, field.getElementName()));
 		}

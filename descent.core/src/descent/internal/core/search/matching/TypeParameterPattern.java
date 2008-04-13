@@ -69,7 +69,8 @@ public class TypeParameterPattern extends JavaSearchPattern implements IIndexCon
 			int length = parameters.length;
 			this.methodArgumentTypes = new char[length][];
 			for (int i=0; i<length; i++) {
-				this.methodArgumentTypes[i] = Signature.toCharArray(parameters[i].toCharArray());
+				this.methodArgumentTypes[i] = Signature.toCharArray(parameters[i].toCharArray(),
+						false /* don't fully qualify names */);
 			}
 		}
 	}

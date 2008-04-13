@@ -288,6 +288,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		
 		id.copySourceRange(this);
 		id.javaElement = javaElement;
+		id.templated = templated;
 		
 		return id;
 	}

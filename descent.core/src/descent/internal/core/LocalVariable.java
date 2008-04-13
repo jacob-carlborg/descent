@@ -195,7 +195,8 @@ public class LocalVariable extends SourceRefElement implements ILocalVariable {
 	protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean showResolvedInfo) {
 		buffer.append(this.tabString(tab));
 		if (info != NO_INFO) {
-			buffer.append(Signature.toString(this.getTypeSignature()));
+			buffer.append(Signature.toString(this.getTypeSignature(),
+					false /* don't fully qualify names */));
 			buffer.append(" "); //$NON-NLS-1$
 		}
 		toStringName(buffer);

@@ -787,6 +787,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		
 		cd.copySourceRange(this);
 		cd.javaElement = javaElement;
+		cd.templated = templated;
 		
 		return cd;
 	}

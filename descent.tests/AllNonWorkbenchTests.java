@@ -37,11 +37,13 @@ import descent.tests.format.FormatWhitespaceDeclarations_Test;
 import descent.tests.format.FormatWhitespaceStatements_Test;
 import descent.tests.format.FormatWithStatement_Test;
 import descent.tests.mangling.Demangler_Test;
+import descent.tests.mangling.SignatureKind_Test;
 import descent.tests.mangling.SignatureParameterCount_Test;
 import descent.tests.mangling.SignatureParameterTypes_Test;
 import descent.tests.mangling.SignatureProcessor_Test;
 import descent.tests.mangling.SignatureReturnType_Test;
 import descent.tests.mangling.SignatureTemplateParameterCount_Test;
+import descent.tests.mangling.SignatureToCharArrayFqn_Test;
 import descent.tests.mangling.SignatureToCharArray_Test;
 import descent.tests.mangling.SignatureToTemplateParameter_Test;
 import descent.tests.mangling.SignatureToType_Test;
@@ -227,11 +229,13 @@ public class AllNonWorkbenchTests {
 			suite.addTestSuite(SignatureParameterCount_Test.class);
 			suite.addTestSuite(SignatureTemplateParameterCount_Test.class);
 			suite.addTestSuite(SignatureToCharArray_Test.class);
+			suite.addTestSuite(SignatureToCharArrayFqn_Test.class);
 			suite.addTestSuite(SignatureReturnType_Test.class);
 			suite.addTestSuite(SignatureParameterTypes_Test.class);
 			suite.addTestSuite(SignatureProcessor_Test.class);
 			suite.addTestSuite(SignatureToType_Test.class);
 			suite.addTestSuite(SignatureToTemplateParameter_Test.class);
+			suite.addTestSuite(SignatureKind_Test.class);
 		}
 		
 		if (isEnabled(REWRITE)) {

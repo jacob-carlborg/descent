@@ -53,6 +53,7 @@ public class UnionDeclaration extends StructDeclaration {
 		
 		ud.copySourceRange(this);
 		ud.javaElement = javaElement;
+		ud.templated = templated;
 		
 		return ud;
 	}

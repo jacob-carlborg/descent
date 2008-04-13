@@ -17,6 +17,7 @@ import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.AnonDeclaration;
@@ -750,6 +751,14 @@ public class ModuleBuilder {
 			
 			if (LAZY_TEMPLATES && surface) {
 				temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), null, toDsymbols(symbol));
+				temp.wrapper = true;
+				
+				if (symbol instanceof AggregateDeclaration) {
+					((AggregateDeclaration) symbol).templated = true;
+				} else if (symbol instanceof FuncDeclaration) {
+					((FuncDeclaration) symbol).templated = true;
+				}
+				
 				temp.rest = new SemanticRest(new Runnable() {
 					public void run() {
 						try {
