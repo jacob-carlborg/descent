@@ -9,8 +9,17 @@ import descent.tests.assist.CompletionOnImport_Test;
 import descent.tests.assist.CompletionOnModule_Test;
 import descent.tests.assist.CompletionOnScope_Test;
 import descent.tests.assist.CompletionOnTypeDotIdExp_Test;
+import descent.tests.assist.EnumMemberProposal_Test;
 import descent.tests.assist.FieldProposal_Test;
+import descent.tests.assist.FunctionCallProposal_Test;
 import descent.tests.assist.KeywordProposal_Test;
+import descent.tests.assist.LocalVariableProposal_Test;
+import descent.tests.assist.MethodProposal_Test;
+import descent.tests.assist.OpCallProposal_Test;
+import descent.tests.assist.TemplateProposal_Test;
+import descent.tests.assist.TemplatedAggregateProposal_Test;
+import descent.tests.assist.TemplatedFunctionProposal_Test;
+import descent.tests.assist.TypeProposal_Test;
 import descent.tests.binding.BindingEnum_Test;
 import descent.tests.binding.BindingExpression_Test;
 import descent.tests.binding.BindingFunction_Test;
@@ -57,12 +66,12 @@ public class AllWorkbenchTests {
 	 */
 	private final static int enabled = 0
 //					| BINDING 
-//					| CODE_COMPLETE 
+					| CODE_COMPLETE 
 //					| CODE_EVALUATE 
 //					| CODE_SELECT 
 //					| LOOKUP 
 //					| MODEL 
-					| SIGNATURE
+//					| SIGNATURE
 					;
 	
 	public static Test suite() {
@@ -82,8 +91,17 @@ public class AllWorkbenchTests {
 		}
 		
 		if (isEnabled(CODE_COMPLETE)) {
-			suite.addTestSuite(KeywordProposal_Test.class);
+			suite.addTestSuite(EnumMemberProposal_Test.class);
 			suite.addTestSuite(FieldProposal_Test.class);
+			suite.addTestSuite(FunctionCallProposal_Test.class);
+			suite.addTestSuite(KeywordProposal_Test.class);
+			suite.addTestSuite(LocalVariableProposal_Test.class);
+			suite.addTestSuite(MethodProposal_Test.class);
+			suite.addTestSuite(OpCallProposal_Test.class);
+			suite.addTestSuite(TemplatedAggregateProposal_Test.class);
+			suite.addTestSuite(TemplatedFunctionProposal_Test.class);
+			suite.addTestSuite(TemplateProposal_Test.class);
+			suite.addTestSuite(TypeProposal_Test.class);
 			suite.addTestSuite(CompletionOnBreakStatement_Test.class);
 			suite.addTestSuite(CompletionOnContinueStatement_Test.class);
 			suite.addTestSuite(CompletionOnGotoStatement_Test.class);

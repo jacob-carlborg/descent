@@ -136,7 +136,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected ParseResult getParseResult(String source, int apiLevel) {
-		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), "unknown.d".toCharArray(), null, true);
+		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), "unknown.d".toCharArray(), null, true, false);
 	}
 	
 	protected ParseResult getModuleSemantic(String source, int apiLevel) {

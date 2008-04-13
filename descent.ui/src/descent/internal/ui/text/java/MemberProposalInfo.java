@@ -66,12 +66,13 @@ public abstract class MemberProposalInfo extends ProposalInfo {
 	 * @throws JavaModelException if accessing the java model fails
 	 */
 	protected IMember resolveMember() throws JavaModelException {
-		char[] signature = fProposal.getSignature();
-		if (signature == null) {
-			return null;
-		}
-		
-		IJavaElement result = fJavaProject.findBySignature(new String(signature));
+//		char[] signature = fProposal.getSignature();
+//		if (signature == null) {
+//			return null;
+//		}
+//		
+//		IJavaElement result = fJavaProject.findBySignature(new String(signature));
+		IJavaElement result = fProposal.getJavaElement();
 		if (result != null && result instanceof IMember) {
 			return (IMember) result;
 		} else {

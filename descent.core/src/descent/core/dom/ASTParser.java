@@ -879,7 +879,8 @@ public class ASTParser {
 							this.apiLevel,
 							sourceUnit,
 							this.compilerOptions,
-							this.statementsRecovery);
+							this.statementsRecovery,
+							false);
 					needToResolveBindings = false;
 				}
 			} else {
@@ -888,7 +889,8 @@ public class ASTParser {
 							this.apiLevel,
 							sourceUnit,
 							this.compilerOptions,
-							this.statementsRecovery);
+							this.statementsRecovery,
+							false);
 					needToResolveBindings = false;
 				} catch (IllegalArgumentException e) {
 					throw e;

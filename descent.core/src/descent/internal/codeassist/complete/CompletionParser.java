@@ -6,7 +6,9 @@ import java.util.List;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
@@ -52,6 +54,8 @@ public class CompletionParser extends Parser {
 	private boolean wantKeywords = true;
 	private boolean acceptMoreKeywords = true;
 	private boolean wantNames = false;
+	private boolean wantAssist = true;
+	private boolean wantOnlyType = false;
 	
 	// Javadoc completion, and other ddocs found, in order to
 	// provide autocompletion for macros in other places
@@ -88,8 +92,17 @@ public class CompletionParser extends Parser {
 		return wantNames;
 	}
 	
+	public boolean wantAssist() {
+		return wantAssist;
+	}
+	
+	public boolean wantOnlyType() {
+		return wantOnlyType;
+	}
+	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
-		if (wantKeywords && javadocCompletion == null) {
+		if (wantKeywords && javadocCompletion == null
+				&& !wantOnlyType) {
 			return keywordCompletions;
 		} else {
 			return Collections.EMPTY_LIST;
@@ -707,6 +720,56 @@ public class CompletionParser extends Parser {
 			expectedTypeNode = ret;
 		}
 		return ret;
+	}
+	
+	@Override
+	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+		// We don't want assist for an aggregate's name, but we do want it
+		// for base classes
+		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
+			if (prevToken.value != TOK.TOKcolon && prevToken.value != TOK.TOKcomma) {
+				wantAssist = false;
+			} else {
+				wantOnlyType = true;
+			}
+		}
+		
+		return super.newClassDeclaration(loc, id, baseClasses);
+	}
+	
+	@Override
+	protected AggregateDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+		// We don't want assist for an aggregate's name, but we do want it
+		// for base classes
+		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
+			if (prevToken.value != TOK.TOKcolon && prevToken.value != TOK.TOKcomma) {
+				wantAssist = false;
+			} else {
+				wantOnlyType = true;
+			}
+		}
+		
+		return super.newInterfaceDeclaration(loc, id, baseClasses);
+	}
+	
+	@Override
+	protected AggregateDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
+		// We don't want assist for an aggregate's name
+		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
+			wantAssist = false;
+		}
+		
+		return super.newStructDeclaration(loc, id);
+	}
+	
+	@Override
+	protected AggregateDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
+		// We don't want assist for an aggregate's name
+		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
+			wantAssist = false;
+		}
+		
+		return super.newUnionDeclaration(loc, id);
 	}
 	
 	private boolean analyzeBinExp(Expression e, Expression e2) {

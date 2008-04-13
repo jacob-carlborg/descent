@@ -88,27 +88,20 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit) {
+//		long time = System.nanoTime();
+		
 		source = unit.getContents();
 		
-		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true).module;
-		module.moduleName = unit.getFullyQualifiedName();
+		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true, true).module;
 		
-		// Don't do semantic analysis here
-//		// If the target is an ICompilationUnit, we need to solve all the
-//		// compile-time stuff to know the *real* structure of the module
-//		if (unit instanceof ICompilationUnit) {
-//			ICompilationUnit cunit = (ICompilationUnit) unit;
-//			try {
-//				module.moduleName = cunit.getFullyQualifiedName();
-//				CompilationUnitResolver.resolve(module, cunit.getJavaProject(), cunit.getOwner());
-//			} catch (JavaModelException e) {
-//				Util.log(e);
-//			}
-//		}
+		module.moduleName = unit.getFullyQualifiedName();
 	
 		requestor.enterCompilationUnit();
 		module.accept(this);
 		requestor.exitCompilationUnit(endOf(module));
+		
+//		time = System.nanoTime() - time;
+//		System.out.println("SourceElementParser took: " + time + " nanoseconds to complete.");
 		
 		return module;
 	}

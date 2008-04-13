@@ -14,9 +14,11 @@ alias char[] string;
 alias wchar[] wstring;
 alias dchar[] dstring;
 
+/*
 extern (C)
 {   int printf(char *, ...);
 }
+*/
 
 class Object
 {

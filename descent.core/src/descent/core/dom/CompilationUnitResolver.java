@@ -110,16 +110,18 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	public static ParseResult parse(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			Map options, 
-			boolean statementsRecovery) {
+			boolean statementsRecovery,
+			boolean diet) {
 		
-		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, statementsRecovery);
+		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, statementsRecovery, diet);
 	}
 	
 	public static ParseResult parse(int apiLevel,
 			char[] source,
 			char[] filename, 
 			Map options, 
-			boolean statementsRecovery) {
+			boolean statementsRecovery,
+			boolean diet) {
 		
 		descent.internal.compiler.parser.Parser parser;
 		if (options != null) {
@@ -137,6 +139,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		} else {
 			parser = new Parser(apiLevel, source, 0, source.length, filename);
 		}
+		
+		parser.diet = diet;
 		
 		PublicScanner scanner = new PublicScanner(true, true, true, true, apiLevel);
 		scanner.setLexerAndSource(parser, source);
@@ -156,7 +160,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
 		
-		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
+		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery, false);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
 		result.context = resolve(result.module, javaProject, owner);
 		return result;

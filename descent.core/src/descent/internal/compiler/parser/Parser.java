@@ -157,7 +157,10 @@ public class Parser extends Lexer {
 	public final static int PScurly = 4;	// { } statement is required
 	public final static int PScurlyscope = 8;	// { } starts a new scope
 	
-	public SemanticContext context;
+	/*
+	 * Wheter to do skip parsing of function bodies. 
+	 */
+	public boolean diet;
 
 	private Module module;
 	private ModuleDeclaration md;
@@ -1753,21 +1756,21 @@ public class Parser extends Lexer {
 			}
 			
 			if (firstToken.value == TOKclass) {
-				a = new ClassDeclaration(loc(), id, baseClasses);
+				a = newClassDeclaration(loc(), id, baseClasses);
 			} else {
-				a = new InterfaceDeclaration(loc(), id, baseClasses);
+				a = newInterfaceDeclaration(loc(), id, baseClasses);
 			}
 			break;			
 		case TOKstruct:
 			if (id != null) {
-				a = new StructDeclaration(loc(), id);
+				a = newStructDeclaration(loc(), id);
 			} else {
 				anon = 2;
 			}
 			break;
 		case TOKunion:
 			if (id != null) {
-				a = new UnionDeclaration(loc(), id);
+				a = newUnionDeclaration(loc(), id);
 			} else {
 				anon = 1;
 			}
@@ -1797,6 +1800,13 @@ public class Parser extends Lexer {
 			if (id == null) {
 				// A single "class" makes no declaration
 				if (firstToken.value == TOKstruct || firstToken.value == TOKunion) {
+					// Signal the creation of the struct or union, anyway
+					if (firstToken.value == TOKstruct) {
+						newStructDeclaration(loc, null);
+					} else {
+						newUnionDeclaration(loc, null);
+					}
+					
 					String word = toWord(firstToken.value.toString());
 					parsingErrorInsertToComplete(firstToken,  word + "Body", word + "Declaration");
 				}
@@ -1807,16 +1817,16 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken,  word + "Body", word + "Declaration");
 				switch(firstToken.value) {
 				case TOKclass:
-					a = new ClassDeclaration(loc(), id, baseClasses);
+					a = newClassDeclaration(loc(), id, baseClasses);
 					break;
 				case TOKinterface:
-					a = new InterfaceDeclaration(loc(), id, baseClasses);
+					a = newInterfaceDeclaration(loc(), id, baseClasses);
 					break;
 				case TOKstruct:
-					a = new StructDeclaration(loc(), id);
+					a = newStructDeclaration(loc(), id);
 					break;
 				case TOKunion:
-					a = new UnionDeclaration(loc(), id);
+					a = newUnionDeclaration(loc(), id);
 					break;
 				}
 			}		
@@ -1843,7 +1853,7 @@ public class Parser extends Lexer {
 
 		return a;
 	}
-	
+
 	private BaseClasses parseBaseClasses() {
 		PROT protection = PROT.PROTpublic;
 		BaseClasses baseclasses = new BaseClasses();
@@ -3269,7 +3279,25 @@ public class Parser extends Lexer {
 				if (f.frequire != null || f.fensure != null) {
 					parsingErrorInsertToComplete(prevToken, "body { ... }", "FunctionDeclaration");
 				}
-				f.setFbody(parseStatement(PSsemi));
+				
+//				if (diet) {
+//					int curlyCount = 1;
+//					char tok = 0;
+//					do {
+//						tok = input[p++];
+//						switch(tok) {
+//						case '{':
+//							curlyCount++;
+//							break;
+//						case '}':
+//							curlyCount--;
+//							break;
+//						}
+//					} while(curlyCount != 0 && tok != 0);
+//					nextToken();
+//				} else {
+					f.setFbody(parseStatement(PSsemi));
+//				}
 				break;
 
 			case TOKbody:
@@ -7311,6 +7339,22 @@ public class Parser extends Lexer {
 	
 	protected Statement newReturnStatement(Loc loc, Expression exp) {
 		return new ReturnStatement(loc, exp);
+	}
+	
+	protected AggregateDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
+		return new UnionDeclaration(loc, id);
+	}
+
+	protected AggregateDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
+		return new StructDeclaration(loc, id);
+	}
+
+	protected AggregateDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+		return new InterfaceDeclaration(loc, id, baseClasses);
+	}
+
+	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+		return new ClassDeclaration(loc, id, baseClasses);
 	}
 	
 	/**

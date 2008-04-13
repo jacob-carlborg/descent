@@ -406,9 +406,18 @@ public class InternalSignature implements ISignatureConstants {
 					descent.core.ICompilationUnit unit = pack
 							.getClassFile(filename);
 					if (!unit.exists()) {
-						unit = pack.getCompilationUnit(filename);
-						if (!unit.exists())
-							continue;
+						// For .di files
+						unit = pack.getClassFile(filename + "i");
+						if (!unit.exists()) {
+							unit = pack.getCompilationUnit(filename);
+							if (!unit.exists()) {
+								// For .di files
+								unit = pack.getCompilationUnit(filename + "i");
+								if (!unit.exists()) {
+									continue;
+								}
+							}
+						}
 					}
 
 					return unit;

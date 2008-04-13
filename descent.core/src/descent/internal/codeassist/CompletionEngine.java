@@ -120,6 +120,7 @@ import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.INamingRequestor;
 import descent.internal.core.InternalNamingConventions;
+import descent.internal.core.InternalSignature;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
 
@@ -148,10 +149,71 @@ public class CompletionEngine extends Engine
 		specialFunctions.put(Id.classDelete, dummy);
 	}
 	
+	private static final char[] op = { 'o', 'p' };
+	private static final HashtableOfCharArrayAndObject ops = new HashtableOfCharArrayAndObject();
+	{
+		Object dummy = new Object();
+		ops.put(Id.uadd, dummy);
+		ops.put(Id.neg, dummy);
+		ops.put(Id.com, dummy);
+		ops.put(Id.add, dummy);
+		ops.put(Id.add_r, dummy);
+		ops.put(Id.sub, dummy);
+		ops.put(Id.sub_r, dummy);
+		ops.put(Id.mul, dummy);
+		ops.put(Id.mul_r, dummy);
+		ops.put(Id.div, dummy);
+		ops.put(Id.div_r, dummy);
+		ops.put(Id.mod, dummy);
+		ops.put(Id.mod_r, dummy);
+		ops.put(Id.eq, dummy);
+		ops.put(Id.cmp, dummy);
+		ops.put(Id.iand, dummy);
+		ops.put(Id.iand_r, dummy);
+		ops.put(Id.ior, dummy);
+		ops.put(Id.ior_r, dummy);
+		ops.put(Id.ixor, dummy);
+		ops.put(Id.ixor_r, dummy);
+		ops.put(Id.shl, dummy);
+		ops.put(Id.shl_r, dummy);
+		ops.put(Id.shr, dummy);
+		ops.put(Id.shr_r, dummy);
+		ops.put(Id.ushr, dummy);
+		ops.put(Id.ushr_r, dummy);
+		ops.put(Id.cat, dummy);
+		ops.put(Id.cat_r, dummy);
+		ops.put(Id.assign, dummy);
+		ops.put(Id.addass, dummy);
+		ops.put(Id.subass, dummy);
+		ops.put(Id.mulass, dummy);
+		ops.put(Id.divass, dummy);
+		ops.put(Id.modass, dummy);
+		ops.put(Id.andass, dummy);
+		ops.put(Id.orass, dummy);
+		ops.put(Id.xorass, dummy);
+		ops.put(Id.shlass, dummy);
+		ops.put(Id.shrass, dummy);
+		ops.put(Id.ushrass, dummy);
+		ops.put(Id.catass, dummy);
+		ops.put(Id.postinc, dummy);
+		ops.put(Id.postdec, dummy);
+		ops.put(Id.index, dummy);
+		ops.put(Id.indexass, dummy);
+		ops.put(Id.slice, dummy);
+		ops.put(Id.sliceass, dummy);
+		ops.put(Id.call, dummy);
+		ops.put(Id._cast, dummy);
+		ops.put(Id.opIn, dummy);
+		ops.put(Id.opIn_r, dummy);
+		ops.put(Id.apply, dummy);
+		ops.put(Id.applyReverse, dummy);
+	}
+	
 	IJavaProject javaProject;
 	CompletionParser parser;
 	CompletionRequestor requestor;
 	CompilerConfiguration compilerConfig;
+	public InternalSignature internalSignature;
 	
 	Module module;
 	SemanticContext semanticContext;
@@ -218,6 +280,7 @@ public class CompletionEngine extends Engine
 		this.nameEnvironment = nameEnvironment;
 		this.typeCache = new HashtableOfObject(5);
 		this.compilerConfig = new CompilerConfiguration();
+		this.internalSignature = new InternalSignature(javaProject);
 	}
 
 	/**
@@ -272,13 +335,17 @@ public class CompletionEngine extends Engine
 			
 			this.module = parser.parseModuleObj();
 			this.module.moduleName = sourceUnit.getFullyQualifiedName();
+			this.requestor.acceptContext(buildContext(parser));
+			
+			if (!parser.wantAssist()) {
+				return;
+			}
+			
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
 			if (assistNode != null) {
 				System.out.println(assistNode.getClass());
 			}
-			
-			this.requestor.acceptContext(buildContext(parser));
 			
 			if (parser.wantNames()) {
 				if (assistNode instanceof VarDeclaration) {
@@ -552,7 +619,12 @@ public class CompletionEngine extends Engine
 		endPosition = actualCompletionPosition;
 		
 		wantConstructorsAndOpCall = false;
-		completeScope(scope, INCLUDE_ALL);
+		
+		if (parser.wantOnlyType()) {
+			completeScope(scope, INCLUDE_TYPES);
+		} else {
+			completeScope(scope, INCLUDE_ALL);	
+		}
 	}
 
 	private CompletionContext buildContext(CompletionParser parser) {
@@ -1114,7 +1186,7 @@ public class CompletionEngine extends Engine
 			currentName = CharOperation.NO_CHAR;
 			completeType(type, false /* not only statics */);
 		} else if (sym instanceof ScopeDsymbol) {
-			completeScopeDsymbol((ScopeDsymbol) sym, true /* only statics */);
+			completeScopeDsymbol((ScopeDsymbol) sym, true /* only statics */, INCLUDE_ALL);
 		}
 	}
 	
@@ -1150,7 +1222,7 @@ public class CompletionEngine extends Engine
 			}
 		} else {
 			if (sym instanceof ScopeDsymbol && ((ScopeDsymbol) sym).members != null) {
-				completeScopeDsymbol((ScopeDsymbol) sym, false /* not only statics */);
+				completeScopeDsymbol((ScopeDsymbol) sym, false /* not only statics */, includes);
 			} else {
 				DsymbolTable table = scope.scopesym.symtab;
 				if (table == null) {
@@ -1171,12 +1243,12 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void completeScopeDsymbol(ScopeDsymbol sd, boolean onlyStatics) {
+	private void completeScopeDsymbol(ScopeDsymbol sd, boolean onlyStatics, int includes) {
 		if (sd instanceof ClassDeclaration) {
 			completeTypeClass((TypeClass) sd.type(), onlyStatics);
 		} else if (sd.members != null && !sd.members.isEmpty()) {
 			// If the members are from a Module, don't restrict to "static" symbols
-			suggestMembers(sd.members, sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+			suggestMembers(sd.members, sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), includes);
 		}
 	}
 	
@@ -1598,7 +1670,7 @@ public class CompletionEngine extends Engine
 	 * Suggest a member with another name (for aliases).
 	 */
 	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
-		if (member instanceof Import && member.getModule() == module) {
+		if (member instanceof Import /* && member.getModule() == module */) {
 			Module mod = ((Import) member).mod;
 			if (mod != null) {
 				char[] fqn = mod.getFullyQualifiedName().toCharArray();
@@ -1888,6 +1960,12 @@ public class CompletionEngine extends Engine
 			FuncDeclaration func = member.isFuncDeclaration();
 			if (func != null) {
 				char[] funcName = ident;
+				
+				// Skip op*, unless currentName starts with op
+				if (ops.containsKey(funcName) &&
+						!CharOperation.prefixEquals(op, currentName)) {
+					return;
+				}
 				
 				// Skip special functions if not completing constructors and opCall
 				if ((includes & INCLUDE_FUNCTIONS) != 0 && specialFunctions.containsKey(funcName)) {

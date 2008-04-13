@@ -164,6 +164,7 @@ public class SemanticMixin {
 	}
 	
 	private static void appendTemplateParameters(TemplateDeclaration tempdecl, StringBuilder sb) {
+		tempdecl.consumeRest();
 		for(TemplateParameter param : tempdecl.parameters) {
 			param.appendSignature(sb);
 		}

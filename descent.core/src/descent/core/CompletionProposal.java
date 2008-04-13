@@ -14,10 +14,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.codeassist.InternalCompletionProposal;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.core.util.Util;
 
 /**
  * Completion proposal.
@@ -1697,6 +1700,27 @@ public final class CompletionProposal extends InternalCompletionProposal {
 			}
 		}
 		return this.parameterNames;
+	}
+	
+	public IJavaElement getJavaElement() {
+		if (node instanceof Dsymbol) {
+			Dsymbol sym = (Dsymbol) node;
+			if (sym.getJavaElement() != null) {
+				return sym.getJavaElement();
+			} else {
+				Module mod = sym.getModule();
+				ICompilationUnit unit = completionEngine.internalSignature.getCompilationUnit(mod.moduleName);
+				if (unit != null) {
+					try {
+						return completionEngine.internalSignature.binarySearch(unit, node.start, node.length);
+					} catch (JavaModelException e) {
+						Util.log(e);
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**

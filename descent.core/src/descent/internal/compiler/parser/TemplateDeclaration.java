@@ -753,8 +753,41 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					s[0].parent = this;
 				}
 			}
+			
+			// Descent: do semantic of my members without reporting
+			// problems, in order to get code selection, code completion,
+			// code evaluation and bindings.
+//			context.muteProblems++;
+//			for(Dsymbol member : members) {
+//				member.semantic(scope, context);
+//			}
+//			context.muteProblems--;
 		}
 	}
+	
+//	@Override
+//	public void semantic2(Scope sc, SemanticContext context) {
+//		// Descent: do semantic of my members without reporting
+//		// problems, in order to get code selection, code completion,
+//		// code evaluation and bindings.
+//		context.muteProblems++;
+//		for(Dsymbol member : members) {
+//			member.semantic2(scope, context);
+//		}
+//		context.muteProblems--;
+//	}
+//	
+//	@Override
+//	public void semantic3(Scope sc, SemanticContext context) {
+//		// Descent: do semantic of my members without reporting
+//		// problems, in order to get code selection, code completion,
+//		// code evaluation and bindings.
+//		context.muteProblems++;
+//		for(Dsymbol member : members) {
+//			member.semantic3(scope, context);
+//		}
+//		context.muteProblems--;
+//	}
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {

@@ -17,6 +17,11 @@ public abstract class AbstractCompletionTest extends AbstractModelTest {
 	
 	CompletionProposalLabelProvider labelProvider = new CompletionProposalLabelProvider();
 	
+	@Override
+	protected String getPhobosPath() {
+		return "C:\\ary\\programacion\\java\\descent\\descent.tests\\phobos";
+	}
+	
 	/**
 	 * For example:
 	 * 
