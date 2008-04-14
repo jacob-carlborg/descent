@@ -1,3 +1,5 @@
 MODULES = 
-	$(MODULE org.source.descent.unittests.flute)
-  $(MODULE org.source.descent.unittests.naming)
+	$(MODULE org.source.descent.flute.flute)
+	$(MODULE org.source.descent.flute.reflect)
+	$(MODULE org.source.descent.flute.io)
+	$(MODULE org.source.descent.flute.shared)
