@@ -88,7 +88,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit) {
-//		long time = System.nanoTime();
+		long time = System.nanoTime();
 		
 		source = unit.getContents();
 		
@@ -100,8 +100,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		module.accept(this);
 		requestor.exitCompilationUnit(endOf(module));
 		
-//		time = System.nanoTime() - time;
-//		System.out.println("SourceElementParser took: " + time + " nanoseconds to complete.");
+		time = System.nanoTime() - time;
+		System.out.println("SourceElementParser took: " + time + " nanoseconds to complete.");
 		
 		return module;
 	}

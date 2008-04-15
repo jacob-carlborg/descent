@@ -82,6 +82,25 @@ public class CompletionParser extends Parser {
 
 	public CompletionParser(int apiLevel, char[] source, char[] filename) {
 		super(apiLevel, source, 0, source.length, null, null, false, filename);
+		this.diet = true;
+	}
+	
+	/*
+	 * Do diet parsing, and return false if the cursor location
+	 * falls in a function.
+	 */
+	@Override
+	protected boolean dietParse() {
+		int before = token.ptr + token.sourceLen;
+		
+		boolean ret = super.dietParse();
+		
+		int after = token.ptr + token.sourceLen;
+		if (before <= cursorLocation && cursorLocation <= after) {
+			return false;
+		}
+		
+		return ret;
 	}
 	
 	public ASTDmdNode getAssistNode() {

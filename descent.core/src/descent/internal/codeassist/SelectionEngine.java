@@ -34,12 +34,10 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
-import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
-import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
@@ -55,16 +53,13 @@ import descent.internal.core.JavaProject;
 import descent.internal.core.LocalVariable;
 import descent.internal.core.SearchableEnvironment;
 import descent.internal.core.util.Util;
-import static descent.internal.compiler.parser.TOK.TOKblockcomment;
-import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
-import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
-import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
-import static descent.internal.compiler.parser.TOK.TOKlinecomment;
-import static descent.internal.compiler.parser.TOK.TOKpluscomment;
 
 /*
  * For now, don't take the JDT approach: let's parse, visit and see where
  * if the node falls between the given ranges.
+ * 
+ * TODO: don't use visiting strategy, improve the custom selection parser to improve
+ * performance.
  */
 public class SelectionEngine extends AstVisitorAdapter {
 
@@ -104,38 +99,19 @@ public class SelectionEngine extends AstVisitorAdapter {
 		try {
 			char[] contents = sourceUnit.getContents();
 
-			final Token[] docToken = { null };
-
-			// Custom parser to see if we are selecting a token in a comment
-			Parser parser = new Parser(contents, 0, contents.length,
-					true /* tokenize comments */, false, false, false,
-					javaProject.getApiLevel(), null, null, false, sourceUnit
-							.getFileName()) {
-				@Override
-				public TOK nextToken() {
-					TOK tok = Lexer_nextToken();
-
-					while ((tok == TOKlinecomment || tok == TOKdoclinecomment
-							|| tok == TOKblockcomment
-							|| tok == TOKdocblockcomment
-							|| tok == TOKpluscomment || tok == TOKdocpluscomment)) {
-						if (token.ptr <= offset
-								&& offset <= token.ptr + token.sourceLen) {
-							docToken[0] = new Token(token);
-						}
-
-						tok = Lexer_nextToken();
-					}
-
-					return tok;
-				}
-			};
+			SelectionParser parser = new SelectionParser(
+					javaProject.getApiLevel(),
+					contents, 
+					sourceUnit.getFileName());
+			parser.selectionOffset = this.offset;
+			parser.selectionLength = this.length;
+			
 			parser.nextToken();
 
 			module = parser.parseModuleObj();
 
-			if (docToken[0] != null) {
-				char[] tok = extractToken(docToken[0], offset);
+			if (parser.commentToken != null) {
+				char[] tok = extractToken(parser.commentToken, offset);
 				if (tok == null) {
 					return NO_ELEMENTS;
 				}
@@ -205,7 +181,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		char[] sourceString = token.sourceString;
 
 		int start = offset - token.ptr;
-		while (start >= 0 && Chars.isidchar(sourceString[start])) {
+		while (0 <= start && start < sourceString.length && Chars.isidchar(sourceString[start])) {
 			start--;
 		}
 		start++;

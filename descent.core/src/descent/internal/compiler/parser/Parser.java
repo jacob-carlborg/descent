@@ -157,10 +157,12 @@ public class Parser extends Lexer {
 	public final static int PScurly = 4;	// { } statement is required
 	public final static int PScurlyscope = 8;	// { } starts a new scope
 	
-	/*
-	 * Wheter to do skip parsing of function bodies. 
+	/**
+	 * Wheter to do skip parsing of function bodies if they do not
+	 * contain inner declarations.
 	 */
 	public boolean diet;
+	private boolean inDiet;
 
 	private Module module;
 	private ModuleDeclaration md;
@@ -1260,7 +1262,7 @@ public class Parser extends Lexer {
 
 	    InvariantDeclaration invariant = new InvariantDeclaration(loc());
 	    invariant.invariantStart = start;
-	    invariant.setFbody(parseStatement(PScurly));
+	    invariant.setFbody(dietParseStatement());
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return invariant;
 	}
@@ -1270,7 +1272,7 @@ public class Parser extends Lexer {
 		nextToken();
 		
 		UnitTestDeclaration unitTest = new UnitTestDeclaration(loc());
-		unitTest.setFbody(parseStatement(PScurly));
+		unitTest.setFbody(dietParseStatement());
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return unitTest;
 	}
@@ -3280,24 +3282,7 @@ public class Parser extends Lexer {
 					parsingErrorInsertToComplete(prevToken, "body { ... }", "FunctionDeclaration");
 				}
 				
-//				if (diet) {
-//					int curlyCount = 1;
-//					char tok = 0;
-//					do {
-//						tok = input[p++];
-//						switch(tok) {
-//						case '{':
-//							curlyCount++;
-//							break;
-//						case '}':
-//							curlyCount--;
-//							break;
-//						}
-//					} while(curlyCount != 0 && tok != 0);
-//					nextToken();
-//				} else {
-					f.setFbody(parseStatement(PSsemi));
-//				}
+				f.setFbody(dietParseStatement());
 				break;
 
 			case TOKbody:
@@ -3370,7 +3355,7 @@ public class Parser extends Lexer {
 		
 		linkage = linksave;
 	}
-	
+
 	public Initializer parseInitializer() {
 		StructInitializer is;
 		ArrayInitializer ia;
@@ -6986,6 +6971,18 @@ public class Parser extends Lexer {
 	
 	@Override
 	public TOK nextToken() {
+		// In diet mode we don't care about comments and pragmas
+		if (inDiet) {
+			TOK tok = super.nextToken();
+			while(tok == TOKlinecomment || tok == TOKdoclinecomment ||
+				  tok == TOKblockcomment || tok == TOKdocblockcomment ||
+				  tok == TOKpluscomment || tok == TOKdocpluscomment ||
+				  tok == TOKPRAGMA) {
+				tok = super.nextToken();
+			}
+			return tok;
+		}
+		
 		appendLeadingComments = true;
 		
 		// If many comments come in a rush, only the first
@@ -7355,6 +7352,86 @@ public class Parser extends Lexer {
 
 	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		return new ClassDeclaration(loc, id, baseClasses);
+	}
+	
+	private Statement dietParseStatement() {
+		if (diet) {
+			int saveP = p;
+			Token saveToken = new Token(token);
+			
+			inDiet = true;
+			boolean success = dietParse();					
+			inDiet = false;
+			
+			if (success) {
+				return null;
+			}
+			
+			p = saveP;
+			token = saveToken;
+		}
+		
+		return parseStatement(PSsemi);
+	}
+	
+	/**
+	 * Tries to skip a function body. The current token is '{'.
+	 * @return <code>true</code> if the body could be skipped,
+	 * or <code>false</code> if not, and thus function body
+	 * will be parsed (by the method that invoked this method).
+	 * 
+	 * TODO try doing this at the character level to improve performance further
+	 */
+	protected boolean dietParse() {
+		int curlyCount = 1;
+		int parenCount = 0;
+		TOK save = null;
+		TOK prev;
+		TOK tok = token.value;
+		do {
+			prev = tok;
+			tok = nextToken();
+			switch(tok) {
+			// Any of this implies an inner-declaration
+			case TOKclass:
+			case TOKinterface:
+			case TOKstruct:
+			case TOKunion:
+				return false;
+				
+			// Parenthesis counting:
+			// If we found a parenthesis for the first time, remember
+			// which token was before it. If after the closing parenthesis
+			// comes '{', we check what that token was. If it is an
+			// identifier, then this is probably an inner-function declaration.
+			case TOKlparen:
+				if (parenCount == 0) {
+					save = prev;
+				}
+				parenCount++;
+				break;
+			case TOKrparen:
+				parenCount--;
+				if (parenCount == 0) {
+					if (save == TOKidentifier &&
+						peek(token).value == TOK.TOKlcurly) {
+						return false;
+					}
+				}
+				break;
+			
+			// Curly counting
+			case TOKlcurly:
+				curlyCount++;
+				break;
+			case TOKrcurly:
+				curlyCount--;
+				break;			
+			}
+		} while(curlyCount != 0 && tok != TOK.TOKeof);
+		nextToken();
+		
+		return true;
 	}
 	
 	/**
