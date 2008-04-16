@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -44,15 +43,11 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.internal.debug.core.model.DescentDebugTarget;
-import descent.launching.BuildProcessor;
-import descent.launching.IExecutableTarget;
 import descent.debug.core.model.IDebugger;
 import descent.debug.core.utils.ArgumentUtils;
 import descent.debug.core.utils.ProcessFactory;
 
 public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
-	
-	private static final boolean USE_NEW_BUILDER = true;
 	
 	/**
 	 * The project containing the programs file being launched
@@ -62,9 +57,6 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 	 * A list of prequisite projects ordered by their build order.
 	 */
 	private List orderedProjects;
-
-	abstract public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
-			throws CoreException;
 
 	/**
 	 * Returns the working directory specified by the given launch
@@ -523,9 +515,8 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 		return DebugPlugin.getDefault().getLaunchManager().getEnvironment(config);
 	}
 	
-	public boolean launchExecutableTarget(
+	public void launch(
 			ILaunchConfiguration config,
-			IExecutableTarget target,
 			String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException
 	{
@@ -535,22 +526,12 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 		monitor.beginTask("Launching Local D Application", 100); //$NON-NLS-1$
 		// check for cancellation
 		if (monitor.isCanceled()) {
-			return false;
+			return;
 		}
 		try {
 			monitor.worked(1);
 			
-			String exePath;
-			if(USE_NEW_BUILDER)
-			{
-				exePath = BuildProcessor.getInstance().build(target, new SubProgressMonitor(monitor, 90));
-				if(null == exePath)
-					return false;
-			}
-			else
-			{
-				exePath = verifyProgramPath(config).toOSString();
-			}
+			String exePath = verifyProgramPath(config).toOSString();
 			
 			verifyJavaProject(config);
 			
@@ -640,8 +621,6 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 				monitor.worked(3);
 				DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[0]));
 			}
-			
-			return true;
 		} finally {
 			monitor.done();
 		}

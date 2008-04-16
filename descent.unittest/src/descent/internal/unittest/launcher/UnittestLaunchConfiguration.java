@@ -58,18 +58,8 @@ public class UnittestLaunchConfiguration extends
 			List<ITestSpecification> tests = findTests(project,
 					new SubProgressMonitor(monitor, 15));
 			
-			// Create the executale target
-			UnittestExecutableTarget target = new UnittestExecutableTarget();
-			target.setProject(project);
-			for(ITestSpecification test : tests)
-				target.addModule(test.getDeclaration().getCompilationUnit().
-						getFullyQualifiedName());
-			
-			// Build and launch the applicataion
-			boolean launched = launchExecutableTarget(config, target, mode, launch, 
-					new SubProgressMonitor(monitor, 80));
-			if(!launched)
-				return;
+			// Launch the applicataion
+			super.launch(config, mode, launch, new SubProgressMonitor(monitor, 80));
 			
 			// Transfer the launch config attributes to the launch
 			launch.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, getProjectName(config));

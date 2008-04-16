@@ -17,7 +17,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.compare,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
- descent.launching,
  descent.debug.core,
  descent.debug.ui
 Eclipse-LazyStart: true
