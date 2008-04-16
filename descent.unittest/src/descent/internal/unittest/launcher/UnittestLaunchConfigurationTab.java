@@ -17,6 +17,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -35,6 +36,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -78,8 +80,8 @@ public class UnittestLaunchConfigurationTab extends
 		comp.setLayout(topLayout);
 
 		createProjectSelection(comp);
-		createRunAllTests(comp);
-		createTestContainerSelector(comp);
+		createTestSelection(comp);
+		createPortSelection(comp);
 
 		Dialog.applyDialogFont(comp);
 		validatePage();
@@ -99,7 +101,7 @@ public class UnittestLaunchConfigurationTab extends
 
 	//--------------------------------------------------------------------------
 	// Project selection
-
+	
 	private Label fProjLabel;
 	private Text fProjText;
 	private Button fProjButton;
@@ -203,12 +205,156 @@ public class UnittestLaunchConfigurationTab extends
 		}
 		return getJavaModel().getJavaProject(projectName);
 	}
+	
+	private void updateProjectFromConfig(ILaunchConfiguration config)
+    {
+        String projectName= ""; //$NON-NLS-1$
+        try
+        {
+            projectName = config.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
+        } 
+        catch (CoreException ce) { }
+        fProjText.setText(projectName);
+    }
+	
+	//--------------------------------------------------------------------------
+	// Port selection
+	
+	private Group fPortGroup;
+	private Button fAutoPortRadioButton;
+	private Button fSpecPortRadioButton;
+	private Label fSpecPortLabel;
+	private Text fSpecPortText;
+	
+	private void createPortSelection(Composite comp)
+	{
+	    fPortGroup = createGroup(comp, "Port for test runner");
+	    
+	    createAutoPortSelection(fPortGroup);
+	    createSpecPortSelection(fPortGroup);
+	}
+	
+	private void createAutoPortSelection(Composite comp)
+	{
+	    fAutoPortRadioButton = new Button(comp, SWT.RADIO);
+	    fAutoPortRadioButton.setText("Automatically select an available port");
+        GridData gd = new GridData();
+        gd.horizontalSpan = 3;
+        fAutoPortRadioButton.setLayoutData(gd);
+        fAutoPortRadioButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (fAutoPortRadioButton.getSelection())
+                    portModeChanged();
+            }
+        });
+	}
+	
+	private void createSpecPortSelection(Composite comp)
+	{
+	    fSpecPortRadioButton = new Button(comp, SWT.RADIO);
+	    fSpecPortRadioButton.setText("Use the specified port");
+        GridData gd = new GridData();
+        gd.horizontalSpan = 3;
+        fSpecPortRadioButton.setLayoutData(gd);
+        fSpecPortRadioButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (fSpecPortRadioButton.getSelection())
+                    portModeChanged();
+            }
+        });
+        
+        fSpecPortLabel = new Label(comp, SWT.NONE);
+        fSpecPortLabel.setText("Port:");
+        gd = new GridData();
+        gd.horizontalIndent = 25;
+        fSpecPortLabel.setLayoutData(gd);
+
+        fSpecPortText = new Text(comp, SWT.SINGLE | SWT.BORDER);
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 2;
+        fSpecPortText.setLayoutData(gd);
+        fSpecPortText.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent evt)
+            {
+                validatePage();
+                updateLaunchConfigurationDialog();
+            }
+        });
+	}
+	
+	private void portModeChanged()
+    {
+        boolean isAutoPortMode = fAutoPortRadioButton.getSelection();
+        setEnablePortSelection(!isAutoPortMode);
+        validatePage();
+        updateLaunchConfigurationDialog();
+    }
+	
+	private void setEnablePortSelection(boolean enabled)
+	{
+	    fSpecPortLabel.setEnabled(enabled);
+	    fSpecPortText.setEnabled(enabled);
+	}
+	
+	private void updatePortFromConfig(ILaunchConfiguration config)
+	{
+	    String portStr = "";
+	    try
+	    {
+	        portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "");
+	    }
+	    catch(CoreException ce) { }
+	    
+	    int portNum = 0;
+	    portStr = portStr.trim();
+	    if(!portStr.equals(""))
+	    {
+	        try
+	        {
+	            portNum = Integer.parseInt(portStr);
+	        }
+	        catch(NumberFormatException e) { }
+	    }
+	    
+	    if(portNum == 0)
+	    {
+	        fAutoPortRadioButton.setSelection(true);
+	        fSpecPortRadioButton.setSelection(false);
+	    }
+	    else
+	    {
+	        fAutoPortRadioButton.setSelection(false);
+	        fSpecPortRadioButton.setSelection(true);
+	        fSpecPortText.setText(String.valueOf(portNum));
+	    }
+	    
+	    portModeChanged();
+	}
 
 	//--------------------------------------------------------------------------
-	// Run all tests in project
-
+	// Test container selection
+	
+	private Group fTestSelectionGroup;
 	private Button fAllTestsRadioButton;
+	private Button fContainerRadioButton;
+	private Label fContainerLabel;
+	private Text fContainerText;
+	private Button fContainerButton;
+    private Button fIncludeSubpackagesCheckbox;
 
+    private void createTestSelection(Composite comp)
+    {
+        fTestSelectionGroup = createGroup(comp, "Test selection");
+        
+        createRunAllTests(fTestSelectionGroup);
+        createTestContainerSelector(fTestSelectionGroup);
+    }
+    
 	private void createRunAllTests(Composite comp)
 	{
 		fAllTestsRadioButton = new Button(comp, SWT.RADIO);
@@ -227,77 +373,128 @@ public class UnittestLaunchConfigurationTab extends
 		});
 	}
 
-	//--------------------------------------------------------------------------
-	// Test container selection
-	
-	private Button fTestContainerRadioButton;
-	private Button fIncludeSubpackagesCheckbox;
-	private TreeViewer fContainerSelectionViewer;
-
 	private void createTestContainerSelector(Composite comp)
-	{
-		// TODO this is way too slow; make it a dialog with a progress monitor
-		
-		fTestContainerRadioButton = new Button(comp, SWT.RADIO);
-		fTestContainerRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_selected_container);
+	{	
+		fContainerRadioButton = new Button(comp, SWT.RADIO);
+		fContainerRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_selected_container);
 		GridData gd = new GridData();
 		gd.horizontalSpan = 3;
-		fTestContainerRadioButton.setLayoutData(gd);
-		fTestContainerRadioButton.addSelectionListener(new SelectionAdapter()
+		fContainerRadioButton.setLayoutData(gd);
+		fContainerRadioButton.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if (fTestContainerRadioButton.getSelection())
+				if (fContainerRadioButton.getSelection())
 					testModeChanged();
 			}
 		});
 		
+		fContainerLabel = new Label(comp, SWT.NONE);
+		fContainerLabel.setText("Test container:");
+        gd = new GridData();
+        gd.horizontalIndent = 25;
+        fContainerLabel.setLayoutData(gd);
+
+        fContainerText = new Text(comp, SWT.SINGLE | SWT.BORDER);
+        fContainerText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        fContainerText.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent evt)
+            {
+                validatePage();
+                updateLaunchConfigurationDialog();
+            }
+        });
+
+        fContainerButton = new Button(comp, SWT.PUSH);
+        fContainerButton.setText(JUnitMessages.JUnitMainTab_label_browse);
+        gd = new GridData();
+        fContainerButton.setLayoutData(gd);
+        LayoutUtil.setButtonDimensionHint(fContainerButton);
+        fContainerButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent evt)
+            {
+                handleContainerButtonSelected();
+                validatePage();
+                updateLaunchConfigurationDialog();
+            }
+        });
+		
 		fIncludeSubpackagesCheckbox = new Button(comp, SWT.CHECK);
-		fIncludeSubpackagesCheckbox.setText("Include sub-packages if a package is selected");
+		fIncludeSubpackagesCheckbox.setText("Include subpackages if a package is selected");
 		gd = new GridData();
 		gd.horizontalSpan = 3;
 		gd.horizontalIndent = 25;
 		fIncludeSubpackagesCheckbox.setLayoutData(gd);
-		
-		fContainerSelectionViewer = new TreeViewer(comp);
-		gd = new GridData(GridData.FILL_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL);
-		gd.horizontalSpan = 3;
-		gd.horizontalIndent = 25;
-		fContainerSelectionViewer.getControl().setLayoutData(gd);
-		fContainerSelectionViewer.setLabelProvider(new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT));
-		fContainerSelectionViewer.setSorter(new JavaElementSorter());
+		fIncludeSubpackagesCheckbox.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent evt)
+            {
+                updateLaunchConfigurationDialog();
+            }
+        });
 	}
+	
+	private void testModeChanged()
+    {
+        boolean isAllTestsMode = fAllTestsRadioButton.getSelection();
+        setEnableContainerSelection(!isAllTestsMode);
+        validatePage();
+        updateLaunchConfigurationDialog();
+    }
 	
 	private void setEnableContainerSelection(boolean enabled)
-	{
-		fIncludeSubpackagesCheckbox.setEnabled(enabled);
-		fContainerSelectionViewer.getControl().setEnabled(enabled);
-		
-		if(enabled)
-			fContainerSelectionViewer.setInput(getJavaProject());
-	}
-
-	//--------------------------------------------------------------------------
-	// State Management
-
-	private void testModeChanged()
-	{
-		boolean isAllTestsMode = fAllTestsRadioButton.getSelection();
-		setEnableContainerSelection(!isAllTestsMode);
-		validatePage();
-		updateLaunchConfigurationDialog();
-	}
-	
-	/**
-	 * This is called whenever the project changes. It switchs to the "run
-	 * all tests in project", since test lookup takes time.
-	 */
-	private void resetTestMode()
-	{
-		fTestContainerRadioButton.setSelection(false);
-		fAllTestsRadioButton.setSelection(true);
-		testModeChanged();
-	}
+    {
+        fIncludeSubpackagesCheckbox.setEnabled(enabled);
+        fContainerLabel.setEnabled(enabled);
+        fContainerText.setEnabled(enabled);
+        fContainerButton.setEnabled(enabled);
+    }
+    
+    /**
+     * This is called whenever the project changes. It switchs to the "run
+     * all tests in project", since test lookup takes time.
+     */
+    private void resetTestMode()
+    {
+        fContainerRadioButton.setSelection(false);
+        fAllTestsRadioButton.setSelection(true);
+        testModeChanged();
+    }
+    
+    private void updateTestContainerFromConfig(ILaunchConfiguration config)
+    {
+        String containerHandle= ""; //$NON-NLS-1$
+        String includeSubpackages = ""; //$NON-NLS-1$
+        try
+        {
+            containerHandle = config.getAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+            includeSubpackages = config.getAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR, "false"); //$NON-NLS-1$
+        }
+        catch (CoreException ce) { }
+        
+        if(containerHandle.equals(""))
+        {
+            fAllTestsRadioButton.setSelection(true);
+            fContainerRadioButton.setSelection(false);
+            fIncludeSubpackagesCheckbox.setEnabled(false);
+        }
+        else
+        {
+            fContainerRadioButton.setSelection(true);
+            fAllTestsRadioButton.setSelection(false);
+            fContainerText.setText(containerHandle);
+            fIncludeSubpackagesCheckbox.setSelection("true".equals(includeSubpackages)); //$NON-NLS-1$
+        }
+        
+        testModeChanged();
+    }
+    
+    private void handleContainerButtonSelected()
+    {
+        fContainerText.setText("");
+    }
 
 	//--------------------------------------------------------------------------
 	// Initialization
@@ -305,35 +502,8 @@ public class UnittestLaunchConfigurationTab extends
 	public void initializeFrom(ILaunchConfiguration config)
 	{
 		updateProjectFromConfig(config);
+		updatePortFromConfig(config);
 		updateTestContainerFromConfig(config);
-	}
-	
-	private void updateProjectFromConfig(ILaunchConfiguration config)
-	{
-		String projectName= ""; //$NON-NLS-1$
-		try {
-			projectName = config.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
-		} catch (CoreException ce) {
-		}
-		fProjText.setText(projectName);
-	}
-
-	public void updateTestContainerFromConfig(ILaunchConfiguration config)
-	{
-		String containerHandle= ""; //$NON-NLS-1$
-		try {
-			containerHandle = config.getAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
-		} catch (CoreException ce) {			
-		}
-		
-		if(containerHandle.equals(""))
-		{
-			fAllTestsRadioButton.setSelection(true);
-		}
-		else
-		{
-			fTestContainerRadioButton.setSelection(true);
-		}
 	}
 
 	//--------------------------------------------------------------------------
@@ -345,14 +515,24 @@ public class UnittestLaunchConfigurationTab extends
 		return getErrorMessage() == null;
 	}
 
-	protected void validatePage()
+	private void validatePage()
 	{
 		setErrorMessage(null);
 		setMessage(null);
 
 		String errorMsg = validateProject();
 		if(null != errorMsg)
+		{
 			setErrorMessage(errorMsg);
+			return;
+		}
+		
+		errorMsg = validatePort();
+		if(null != errorMsg)
+        {
+            setErrorMessage(errorMsg);
+            return;
+        }
 	}
 
 	private String validateProject()
@@ -382,14 +562,53 @@ public class UnittestLaunchConfigurationTab extends
 		
 		return null;
 	}
+	
+	private String validatePort()
+	{
+	    if(fAutoPortRadioButton.getSelection())
+	        return null;
+	    
+	    String portStr = fSpecPortText.getText().trim();
+	    if(portStr.length() == 0)
+	        return "Port not defined!";
+	    
+	    int portNum;
+	    try
+	    {
+	        portNum = Integer.parseInt(portStr);
+	    }
+	    catch(NumberFormatException e)
+	    {
+	        return "Invalid port number";
+	    }
+	    
+	    if(portNum < 1024 || portNum > 65535)
+	    {
+	        return "Port must be between 1024 and 65535";
+	    }
+	    
+	    return null;
+	}
 
 	//--------------------------------------------------------------------------
 	// Application
 
 	public void performApply(ILaunchConfigurationWorkingCopy config)
-	{	
+	{   
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
-		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR,
+		        fAllTestsRadioButton.getSelection() ?
+		                "" :
+		                fContainerText.getText());
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR,
+		        fAutoPortRadioButton.getSelection() ?
+		                "" :
+		                fSpecPortText.getText());
+		String includeSubpackages = 
+            (fContainerRadioButton.getSelection() && fIncludeSubpackagesCheckbox.getSelection()) ?
+                "true" :
+                "false";
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR, includeSubpackages);
 		
 		// TODO get the fluted program executable
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
@@ -418,6 +637,7 @@ public class UnittestLaunchConfigurationTab extends
 		}
 		
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "");
 	}
 
 	/**
@@ -426,7 +646,7 @@ public class UnittestLaunchConfigurationTab extends
 	 * 
 	 * @return Java element context.
 	 */
-	protected IJavaElement getContext()
+	private IJavaElement getContext()
 	{
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -474,7 +694,7 @@ public class UnittestLaunchConfigurationTab extends
 	}
 
 	//--------------------------------------------------------------------------
-	// Convenience (non-layout) methods
+	// Convenience methods
 
 	/**
 	 * Convenience method to get the workspace root.
@@ -490,6 +710,30 @@ public class UnittestLaunchConfigurationTab extends
 	private IJavaModel getJavaModel()
 	{
 		return JavaCore.create(getWorkspaceRoot());
+	}
+	
+	/**
+	 * Method used to create the groups for port & test selection. The created
+	 * group will take up 3 columns and have 3 columns.
+	 * 
+	 * @param comp the composite to create the group under
+	 * @param text the group label
+	 * @return     the new group
+	 */
+	private Group createGroup(Composite comp, String text)
+	{
+	    Group group = new Group(comp, SWT.NONE);
+	    group.setText(text);
+	    
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
+        group.setLayoutData(gd);
+        
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 3;
+        group.setLayout(layout);
+        
+        return group;
 	}
 
 	//--------------------------------------------------------------------------

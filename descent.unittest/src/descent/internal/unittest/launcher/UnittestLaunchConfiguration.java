@@ -56,14 +56,17 @@ public class UnittestLaunchConfiguration extends
 			//Find the tests
 			IJavaProject project = verifyJavaProject(config);
 			List<ITestSpecification> tests = findTests(project,
-					new SubProgressMonitor(monitor, 15));
+					new SubProgressMonitor(monitor, 60));
 			
 			// Launch the applicataion
-			super.launch(config, mode, launch, new SubProgressMonitor(monitor, 80));
+			super.launch(config, mode, launch, new SubProgressMonitor(monitor, 35));
+			if(monitor.isCanceled())
+			    return;
 			
 			// Transfer the launch config attributes to the launch
 			launch.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, getProjectName(config));
-			launch.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "30587");
+			launch.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR,
+			        config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""));
 			
 			// Start the Descent side of things
 			DescentUnittestPlugin.getModel().notifyLaunch(launch, tests);

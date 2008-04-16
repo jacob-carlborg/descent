@@ -11,6 +11,8 @@
 
 package descent.internal.unittest.model;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -203,17 +205,25 @@ public final class DescentUnittestModel
 		if (portStr == null || projectStr == null)
 			return;
 		
-		final int port = Integer.parseInt(portStr);
+		final int port = getPort(portStr);
 		final IJavaProject launchedProject = getJavaProject(projectStr);
 		
 		if(launchedProject == null)
+		{
 			return;
+		}
+		
+		if(port < 0)
+		{
+		    throw new RuntimeException("Could not find open port to launch on. " +
+		    		"Check your firewall settings.");
+		}
 		
 		getDisplay().asyncExec(new Runnable()
 		{
 			public void run()
 			{
-				connectTestRunner(launch, launchedProject, port, tests);
+				connectTestRunner(launch, launchedProject, /* TODO port */ 30587, tests);
 			}
 		});
 	}
@@ -313,6 +323,39 @@ public final class DescentUnittestModel
 			display = Display.getDefault();
 		}
 		return display;
+	}
+	
+	private static int getPort(String portStr)
+	{
+	    int port = 0;
+	    try
+	    {
+	        port = Integer.parseInt(portStr);
+	    }
+	    catch(NumberFormatException e) { }
+	    
+	    if(port < 1024 || port > 65535)
+	        port = findFreePort();
+	    
+	    return port;
+	}
+	
+	private static int findFreePort()
+	{
+	    ServerSocket socket= null;
+        try {
+            socket= new ServerSocket(0);
+            return socket.getLocalPort();
+        } catch (IOException e) { 
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return -1;
 	}
 	
 	//--------------------------------------------------------------------------
