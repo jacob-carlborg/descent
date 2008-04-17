@@ -21,6 +21,9 @@ public class Import extends Dsymbol {
 	public Module mod;
 	public Package pkg;
 	public boolean isstatic;
+	
+	// Added for Descent
+	public boolean ispublic;
 
 	public int firstStart;
 	public int lastLength;
@@ -191,6 +194,12 @@ public class Import extends Dsymbol {
 				if (sc.explicitProtection == 0) {
 					prot = PROTprivate;
 				}
+				
+				// Check added for Descent
+				else if (sc.protection == PROT.PROTpublic) {
+					this.ispublic = true;
+				}
+				
 				sc.scopesym.importScope(mod, prot);
 			}
 

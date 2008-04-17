@@ -413,8 +413,13 @@ public class CompletionParser extends Parser {
 	@Override
 	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
 		if (prevToken.ptr + prevToken.sourceLen == cursorLocation || token.ptr + token.sourceLen == cursorLocation) {
-			assistNode = new CompletionOnDotIdExp(loc, e, id);
-			return (DotIdExp) assistNode;
+			if (cursorLocation <= id.start) {
+				assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+				return (DotIdExp) assistNode;
+			} else {
+				assistNode = new CompletionOnDotIdExp(loc, e, id);
+				return (DotIdExp) assistNode;
+			}
 		} else {
 			return super.newDotIdExp(loc, e, id);
 		}

@@ -304,5 +304,31 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF);
 	}
+	
+	public void testDontSuggestFieldFromReachablePrivateImport() throws Exception {
+		createCompilationUnit("one.d", "int oneVar;");
+		createCompilationUnit("two.d", "import one; int twoVar;");
+		
+		String s = "import two; void foo() {  }";
+		
+		int pos = s.length() - 2; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				"twoVar", pos, pos);
+	}
+	
+	public void testSuggestFieldFromReachablePublicImport() throws Exception {
+		createCompilationUnit("one.d", "int oneVar;");
+		createCompilationUnit("two.d", "public import one; int twoVar;");
+		
+		String s = "import two; void foo() {  }";
+		
+		int pos = s.length() - 2; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				"oneVar", pos, pos,
+				"twoVar", pos, pos
+				);
+	}
 
 }

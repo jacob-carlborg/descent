@@ -106,8 +106,8 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"foo()", s.length(), s.length(),
 				"notifyRegister()", s.length(), s.length(),
 				"notifyUnRegister()", s.length(), s.length(),
-				"opCmp()", s.length(), s.length(),
-				"opEquals()", s.length(), s.length(),
+//				"opCmp()", s.length(), s.length(),
+//				"opEquals()", s.length(), s.length(),
 				"print()", s.length(), s.length(),
 				"toHash()", s.length(), s.length(),
 				"toString()", s.length(), s.length()
@@ -133,8 +133,8 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"foo()", s.length(), s.length(),
 				"notifyRegister()", s.length(), s.length(),
 				"notifyUnRegister()", s.length(), s.length(),
-				"opCmp()", s.length(), s.length(),
-				"opEquals()", s.length(), s.length(),
+//				"opCmp()", s.length(), s.length(),
+//				"opEquals()", s.length(), s.length(),
 				"print()", s.length(), s.length(),
 				"toHash()", s.length(), s.length(),
 				"toString()", s.length(), s.length()
@@ -159,8 +159,8 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"foo()", s.length(), s.length(),
 				"notifyRegister()", s.length(), s.length(),
 				"notifyUnRegister()", s.length(), s.length(),
-				"opCmp()", s.length(), s.length(),
-				"opEquals()", s.length(), s.length(),
+//				"opCmp()", s.length(), s.length(),
+//				"opEquals()", s.length(), s.length(),
 				"print()", s.length(), s.length(),
 				"toHash()", s.length(), s.length(),
 				"toString()", s.length(), s.length()

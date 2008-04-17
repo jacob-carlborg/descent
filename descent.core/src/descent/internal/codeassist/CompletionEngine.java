@@ -47,6 +47,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
@@ -57,6 +58,7 @@ import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.ConditionalDeclaration;
+import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.DVCondition;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotVarExp;
@@ -76,7 +78,9 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
+import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LabelStatement;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.MATCH;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
@@ -250,7 +254,8 @@ public class CompletionEngine extends Engine
 	int INCLUDE_FUNCTIONS = 4;
 	int INCLUDE_CONSTRUCTORS = 8;
 	int INCLUDE_OPCALL = 16;
-	int INCLUDE_ALL = INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS;
+	int INCLUDE_IMPORTS = 32;
+	int INCLUDE_ALL = INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS | INCLUDE_IMPORTS;
 	
 	/**
 	 * The CompletionEngine is responsible for computing source completions.
@@ -436,7 +441,7 @@ public class CompletionEngine extends Engine
 					ClassDeclaration classDeclaration = ((TypeClass) expectedType).sym;					
 					if (!isImported(classDeclaration.getModule().getFullyQualifiedName().toCharArray()) &&
 							!classDeclaration.isAbstract()) {						
-						suggestDsymbol(classDeclaration, INCLUDE_TYPES);
+						suggestDsymbol(classDeclaration, INCLUDE_TYPES | INCLUDE_IMPORTS);
 					}
 				}
 				
@@ -621,7 +626,7 @@ public class CompletionEngine extends Engine
 		wantConstructorsAndOpCall = false;
 		
 		if (parser.wantOnlyType()) {
-			completeScope(scope, INCLUDE_TYPES);
+			completeScope(scope, INCLUDE_TYPES | INCLUDE_IMPORTS);
 		} else {
 			completeScope(scope, INCLUDE_ALL);	
 		}
@@ -982,7 +987,7 @@ public class CompletionEngine extends Engine
 			
 			Scope scope = node.scope;
 			
-			completeScope(scope, INCLUDE_TYPES);
+			completeScope(scope, INCLUDE_TYPES | INCLUDE_IMPORTS);
 			
 			// Also suggest packages
 			isCompletingPackage = true;
@@ -1005,12 +1010,45 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		if (sym instanceof ClassDeclaration || sym instanceof StructDeclaration) {
-			ScopeDsymbol cd = (ScopeDsymbol) sym;
-			if (cd.members != null && !cd.members.isEmpty()) {
-				suggestMembers(cd.members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
+		if (sym instanceof ClassDeclaration) {
+			ClassDeclaration cd = (ClassDeclaration) sym;
+			Declaration func = cd.ctor;
+			
+			// First constructors, only if in new
+			if (parser.inNewExp) {
+				HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
+				
+				if (func == null) {
+					// Suggest default constructor
+					cd.ctor = new CtorDeclaration(Loc.ZERO, new Arguments(), 0);
+					cd.ctor.type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
+					cd.ctor.parent = cd;
+					
+					suggestMember(cd.ctor, false, 0, hash, INCLUDE_CONSTRUCTORS);
+				} else {
+					while(func != null) {
+						suggestMember(func, false, 0, hash, INCLUDE_CONSTRUCTORS);
+						
+						if (func instanceof FuncDeclaration) {
+							func = ((FuncDeclaration) func).overnext;
+						} else {
+							break;
+						}
+					}
+				}
+			
+			// Then opCalls, only if not in new
+			} else {
+				suggestMembers(cd.members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			}
 		}
+		
+//		if (sym instanceof ClassDeclaration || sym instanceof StructDeclaration) {
+//			ScopeDsymbol cd = (ScopeDsymbol) sym;
+//			if (cd.members != null && !cd.members.isEmpty()) {
+//				suggestMembers(cd.members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
+//			}
+//		}
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -1065,9 +1103,9 @@ public class CompletionEngine extends Engine
 				currentName = sym.ident.ident;
 			}
 			
-			isCompletingTypeIdentifier = true;
+//			isCompletingTypeIdentifier = true;
 			trySuggestCall(type, currentName, CharOperation.NO_CHAR);
-			isCompletingTypeIdentifier = false;
+//			isCompletingTypeIdentifier = false;
 		} else if (node.exp instanceof CallExp) {
 			CallExp ce = (CallExp) node.exp;
 			if (ce.e1 instanceof IdentifierExp) {
@@ -1125,9 +1163,9 @@ public class CompletionEngine extends Engine
 			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 			
 			// Show constructors and opCalls
-//			if (node.resolvedSymbol != null) {
-//				suggestConstructorsAndOpCall(node.resolvedSymbol);
-//			}
+			if (node.resolvedSymbol != null) {
+				suggestConstructorsAndOpCall(node.resolvedSymbol);
+			}
 		} else {
 			completeIdentDot(node);
 		}
@@ -1671,13 +1709,20 @@ public class CompletionEngine extends Engine
 	 */
 	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (member instanceof Import /* && member.getModule() == module */) {
-			Module mod = ((Import) member).mod;
+			Import imp = ((Import) member);
+			
+			// Don't suggest imports from imported modules
+			if (!imp.ispublic && (includes & INCLUDE_IMPORTS) == 0) {
+				return;
+			}
+			
+			Module mod = imp.mod;
 			if (mod != null) {
 				char[] fqn = mod.getFullyQualifiedName().toCharArray();
 				if (!suggestedModules.containsKey(fqn)) {
 					suggestedModules.put(fqn, this);
 					
-					suggestMembers(mod.members, false, funcSignatures, includes);
+					suggestMembers(mod.members, false, funcSignatures, includes & (~INCLUDE_IMPORTS));
 				}
 			}
 			return;
@@ -1962,7 +2007,7 @@ public class CompletionEngine extends Engine
 				char[] funcName = ident;
 				
 				// Skip op*, unless currentName starts with op
-				if (ops.containsKey(funcName) &&
+				if ((includes & INCLUDE_OPCALL) == 0 && ops.containsKey(funcName) &&
 						!CharOperation.prefixEquals(op, currentName)) {
 					return;
 				}
@@ -2049,7 +2094,8 @@ public class CompletionEngine extends Engine
 	 */
 	private void trySuggestCall(Type type, char[] ident, char[] signature) {
 		// We are completing a type, don't suggest a call
-		if (isCompletingTypeIdentifier || !wantConstructorsAndOpCall) {
+		if (isCompletingTypeIdentifier || !wantConstructorsAndOpCall
+				|| parser.inNewExp) {
 			return;
 		}
 		

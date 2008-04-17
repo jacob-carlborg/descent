@@ -5993,8 +5993,12 @@ public class Parser extends Lexer {
 					e = parseNewExp(e);
 					continue;
 				} else {
-					// signal a new DotIdExp anyway
-					e = newDotIdExp(loc(), e, new IdentifierExp(CharOperation.NO_CHAR));
+					// signal a new DotIdExp anyway with the token's string representation
+					IdentifierExp fakeId = new IdentifierExp(token.value.charArrayValue);
+					fakeId.start = token.ptr;
+					fakeId.length = token.sourceLen;
+					
+					e = newDotIdExp(loc(), e, fakeId);
 					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}

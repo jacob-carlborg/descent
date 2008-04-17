@@ -7,7 +7,7 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 	public void testInVarAssignment() throws Exception {
 		String s = "int foo() { return 1; } int x = ";
 		
-		int pos = s.length(); 
+		int pos = s.length();
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
@@ -16,6 +16,8 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 	
 	public void testInVarAssignmentSome() throws Exception {
 		String s = "int foo() { return 1; } int x = f";
+		
+		
 		
 		int pos = s.length(); 
 		
@@ -40,6 +42,79 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 				"toHash()", pos, pos, "toHash()  hash_t - Object",
 				"toString()", pos, pos, "toString()  char[] - Object"
 				);
+	}
+	
+	public void testClassMethodSomething() throws Exception {
+		String s = "void foo(Object obj) { obj.n }";
+		
+		int pos = s.lastIndexOf('.') + 2; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
+				new int[] { LABEL },
+				"notifyRegister()", pos - 1, pos, "notifyRegister(void delegate(Object) dg)  void - Object",
+				"notifyUnRegister()", pos - 1, pos, "notifyUnRegister(void delegate(Object) dg)  void - Object"
+				);
+	}
+	
+	public void testClassMethodOp() throws Exception {
+		String s = "void foo(Object obj) { obj.op }";
+		
+		int pos = s.lastIndexOf('.') + 3; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
+				new int[] { LABEL },
+				"opCmp()", pos - 2, pos, "opCmp(Object o)  int - Object",
+				"opEquals()", pos - 2, pos, "opEquals(Object o)  int - Object"
+				);
+	}
+	
+	public void testClassMethodKeyword() throws Exception {
+		String s = "class Foo { void isSome() { } } void foo(Foo obj) { obj.is }";
+		
+		int pos = s.lastIndexOf('.') + 3; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
+				"isSome()", pos - 2, pos
+				);
+	}
+	
+	public void testClassDefaultConstructor() throws Exception {
+		String s = "void foo() { new Object }";
+		
+		int pos = s.lastIndexOf("Object") + 6; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
+				new int[] { LABEL },
+				"Object()", pos - 6, pos, "Object()  Object - Object"
+				);
+	}
+	
+	public void testClassConstructors() throws Exception {
+		String s = "class Foo { this(int x) { } this(int x, int y) { } } void foo() { new Foo }";
+		
+		int pos = s.lastIndexOf("Foo") + 3; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
+				new int[] { LABEL },
+				"Foo()", pos - 3, pos, "Foo(int x)  Foo - Foo",
+				"Foo()", pos - 3, pos, "Foo(int x, int y)  Foo - Foo"
+				);
+	}
+	
+	public void testOnlySuggestConstructorInNew() throws Exception {
+		String s = "void foo(Foo obj) { Object }";
+		
+		int pos = s.lastIndexOf("Object") + 6; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF);
+	}
+	
+	public void testOnlySuggestConstructorInNew2() throws Exception {
+		String s = "void foo(Foo obj) { Object o = Object }";
+		
+		int pos = s.lastIndexOf("Object") + 6; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF);
 	}
 	
 	public void testDontSuggestInModuleScope() throws Exception {
