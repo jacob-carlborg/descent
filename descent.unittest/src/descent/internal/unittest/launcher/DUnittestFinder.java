@@ -1,18 +1,10 @@
 package descent.internal.unittest.launcher;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-
-import org.eclipse.jface.operation.IRunnableContext;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PlatformUI;
 
 import descent.core.ICompilationUnit;
 import descent.core.IInitializer;
@@ -22,7 +14,6 @@ import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IParent;
 import descent.core.IType;
-import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.unittest.ITestSpecification;
 
@@ -33,90 +24,40 @@ public class DUnittestFinder
 	 */
 	static final int LIST_PREALLOC = 10;
 	
-	/**
-	 * Finds unit tests in a separate runnable. Safe to be called from the
-	 * UI thread.
-	 * 
-	 * @param context  The context in which to run the search.
-	 * @param elements The elements to search
-	 * @return         An array of modules containing unit tests
-	 */
-	public static List<ITestSpecification> findTests(
-			IRunnableContext context, final Object[] elements)
-			throws InvocationTargetException, InterruptedException
+	public static void findTestsInContainer(
+	        IJavaElement container,
+			List<ITestSpecification> result,
+			IProgressMonitor pm,
+			boolean includeSubpackages)
 	{
-		final List<ITestSpecification> result = 
-			new ArrayList<ITestSpecification>(LIST_PREALLOC);
-
-		if (elements.length > 0) {
-			IRunnableWithProgress runnable = new IRunnableWithProgress()
-			{
-				public void run(IProgressMonitor pm) throws InterruptedException
-				{
-					findTestsInContainer(elements, result, pm);
-				}
-			};
-			context.run(true, true, runnable);
-		}
-		return result;
-	}
-	
-	/**
-	 * Finds unit tests in a separate runnable (creating its own
-	 * context to run in). Safe to be called in the UI thread.
-	 * 
-	 * @param elements The elements to search
-	 * @return         An array of modules containing unit tests
-	 */
-	public static List<ITestSpecification> findTests(final Object[] elements) 
-			throws InvocationTargetException, InterruptedException
-	{
-		final List<ITestSpecification> result = 
-			new ArrayList<ITestSpecification>(LIST_PREALLOC);
-
-		if (elements.length > 0)
-		{
-			IRunnableWithProgress runnable = new IRunnableWithProgress()
-			{
-				public void run(IProgressMonitor pm) throws InterruptedException
-				{
-					findTestsInContainer(elements, result, pm);
-				}
-			};
-			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(runnable);
-		}
-		return result;
-	}
-	
-	public static void findTestsInContainer(Object[] elements,
-			List<ITestSpecification> result, IProgressMonitor pm)
-	{
-		try {
-			for (int i= 0; i < elements.length; i++) {
-				Object container= DUnittestFinder.computeScope(elements[i]);
-				if (container instanceof IJavaProject) {
-					IJavaProject project= (IJavaProject) container;
-					findTestsInProject(project, result, pm);
-				} else if (container instanceof IPackageFragmentRoot) {
-					IPackageFragmentRoot root= (IPackageFragmentRoot) container;
-					findTestsInPackageFragmentRoot(root, result, pm);
-				} else if (container instanceof IPackageFragment) {
-					IPackageFragment fragment= (IPackageFragment) container;
-					findTestsInPackageFragment(fragment, result, pm);
-				} else if (container instanceof ICompilationUnit) {
-					ICompilationUnit module= (ICompilationUnit) container;
-					pm.beginTask("Finding unit tests", 1);
-					findTestsInCompilationUnit(module, result);
-					pm.worked(1);
-					pm.done();
-				}
-			}			
-		} catch (JavaModelException e) {
+	    try
+	    {
+			if (container instanceof IJavaProject) {
+				IJavaProject project= (IJavaProject) container;
+				findTestsInProject(project, result, pm);
+			} else if (container instanceof IPackageFragmentRoot) {
+				IPackageFragmentRoot root= (IPackageFragmentRoot) container;
+				findTestsInPackageFragmentRoot(root, result, pm);
+			} else if (container instanceof IPackageFragment) {
+				IPackageFragment fragment= (IPackageFragment) container;
+				if(includeSubpackages)
+				    findTestsInPackageAndSubpackages(fragment, result, pm);
+				else
+				    findTestsInPackageFragment(fragment, result, pm);
+			} else if (container instanceof ICompilationUnit) {
+				ICompilationUnit module= (ICompilationUnit) container;
+				pm.beginTask("Finding unit tests", 1);
+				findTestsInCompilationUnit(module, result);
+				pm.worked(1);
+				pm.done();
+			}	
+		} catch(JavaModelException e) {
 			// do nothing
 		}
 	}
 	
-	private static void findTestsInProject(IJavaProject project,
+	private static void findTestsInProject(
+	        IJavaProject project,
 			List<ITestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		IPackageFragmentRoot[] roots= project.getPackageFragmentRoots();
@@ -129,25 +70,64 @@ public class DUnittestFinder
 		pm.done();
 	}
 
-	private static void findTestsInPackageFragmentRoot(IPackageFragmentRoot root, 
+	private static void findTestsInPackageFragmentRoot(
+	        IPackageFragmentRoot root, 
 			List<ITestSpecification> result,
 			IProgressMonitor pm) throws JavaModelException {
 		IJavaElement[] children= root.getChildren();
 		pm.beginTask("Finding unit tests", 100 * children.length);
 		for (int j= 0; j < children.length; j++) {
 			IPackageFragment fragment= (IPackageFragment) children[j];
-			findTestsInPackageFragment(fragment, result,
-					new SubProgressMonitor(pm, 100));
+			findTestsInPackageFragment(fragment, result, 
+			        new SubProgressMonitor(pm, 100));
 		}
 		pm.done();
 	}
-
-	private static void findTestsInPackageFragment(IPackageFragment fragment,
+	
+	private static void findTestsInPackageAndSubpackages(
+	        IPackageFragment fragment,
+            List<ITestSpecification> result,
+            IProgressMonitor pm) throws JavaModelException
+	{
+	    // If it's the default package, include everything in the source folder
+	    if(fragment.isDefaultPackage())
+	    {
+	        findTestsInPackageFragmentRoot((IPackageFragmentRoot)
+	                fragment.getParent(), result, pm);
+	        return;
+	    }
+	    
+	    // Otherwise, manually find out which packages are subpackages
+	    String packageName = fragment.getElementName();
+        List<IPackageFragment> subpackages = new ArrayList<IPackageFragment>();
+        IPackageFragmentRoot parent = (IPackageFragmentRoot) fragment.getParent();
+        IJavaElement[] allPackages = parent.getChildren();
+        
+        for(int i = 0; i < allPackages.length; i++)
+        {
+            if(null == allPackages[i] || !(allPackages[i] instanceof IPackageFragment))
+                continue;
+            
+            IPackageFragment pkg = (IPackageFragment) allPackages[i];
+            if(pkg.getElementName().startsWith(packageName))
+                subpackages.add(pkg);
+        }
+        
+        pm.beginTask("Finding unit tests", 100 * subpackages.size());
+        for(IPackageFragment pkg : subpackages)
+            findTestsInPackageFragment(pkg, result, new SubProgressMonitor(pm, 100));
+        pm.done();
+	}
+	
+	private static void findTestsInPackageFragment(
+	        IPackageFragment fragment,
 			List<ITestSpecification> result,
-			IProgressMonitor pm) throws JavaModelException {
+			IProgressMonitor pm) throws JavaModelException
+	{   
 		ICompilationUnit[] compilationUnits= fragment.getCompilationUnits();
 		pm.beginTask("Finding unit tests", compilationUnits.length);
-		for (int k= 0; k < compilationUnits.length; k++) {
+		for (int k= 0; k < compilationUnits.length; k++)
+		{
 			ICompilationUnit module = compilationUnits[k];
 			findTestsInCompilationUnit(module, result);
 			pm.worked(1);
@@ -155,7 +135,8 @@ public class DUnittestFinder
 		pm.done();
 	}
 	
-	private static void findTestsInCompilationUnit(ICompilationUnit module,
+	private static void findTestsInCompilationUnit(
+	        ICompilationUnit module,
 			List<ITestSpecification> result) throws JavaModelException
 	{
 		testSearch(result, module.getFullyQualifiedName(), module);
@@ -186,17 +167,5 @@ public class DUnittestFinder
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Makes sure the element refers to the correct scope.
-	 */
-	private static Object computeScope(Object element) throws JavaModelException
-	{
-		if (element instanceof IFileEditorInput)
-			element= ((IFileEditorInput) element).getFile();
-		if (element instanceof IResource)
-			element= JavaCore.create((IResource) element);
-		return element;
 	}
 }
