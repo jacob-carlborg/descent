@@ -11,10 +11,7 @@ public interface IUnittestLaunchConfigurationAttributes
 	
 	/**
 	 * The launch container, or "" iff running all the tests in the project. The
-	 * container can either be the fully-qualified name of a module in the
-	 * project or the fully qualified name of a package followed by ".*". If
-	 * this is the empty string, all modules in the project will be searched for
-	 * tests to run.
+	 * container should be the handle to a project, package, or source folder.
 	 */
 	public static final String LAUNCH_CONTAINER_ATTR= DescentUnittestPlugin.PLUGIN_ID+".CONTAINER"; //$NON-NLS-1$
 	

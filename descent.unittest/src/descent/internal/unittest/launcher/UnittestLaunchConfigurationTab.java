@@ -1,15 +1,9 @@
 package descent.internal.unittest.launcher;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -17,13 +11,9 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 
 import org.eclipse.swt.SWT;
@@ -45,20 +35,23 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragment;
+import descent.core.IPackageFragmentRoot;
 import descent.core.JavaCore;
-import descent.core.JavaModelException;
 
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 
 import descent.ui.JavaElementLabelProvider;
-import descent.ui.JavaElementSorter;
 import descent.ui.StandardJavaElementContentProvider;
 
+import descent.internal.ui.wizards.TypedElementSelectionValidator;
+import descent.internal.ui.wizards.TypedViewerFilter;
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.ui.JUnitMessages;
 import descent.internal.unittest.ui.LayoutUtil;
@@ -79,7 +72,6 @@ public class UnittestLaunchConfigurationTab extends
 		topLayout.numColumns = 3;
 		comp.setLayout(topLayout);
 
-		createProjectSelection(comp);
 		createTestSelection(comp);
 		createPortSelection(comp);
 
@@ -98,123 +90,184 @@ public class UnittestLaunchConfigurationTab extends
 		super.dispose();
 		fTestIcon.dispose();
 	}
-
+	
 	//--------------------------------------------------------------------------
-	// Project selection
-	
-	private Label fProjLabel;
-	private Text fProjText;
-	private Button fProjButton;
+    // Test selection
+    
+    private Group fTestSelectionGroup;
+    private Label fContainerLabel;
+    private Text fContainerText;
+    private Button fContainerButton;
+    private Button fIncludeSubpackagesCheckbox;
+    private IJavaElement fContainerElement;
 
-	private void createProjectSelection(Composite comp)
-	{
-		fProjLabel = new Label(comp, SWT.NONE);
-		fProjLabel.setText(JUnitMessages.JUnitMainTab_label_project);
-		GridData gd = new GridData();
-		fProjLabel.setLayoutData(gd);
-
-		fProjText = new Text(comp, SWT.SINGLE | SWT.BORDER);
-		fProjText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		fProjText.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent evt)
-			{
-				resetTestMode();
-				validatePage();
-				updateLaunchConfigurationDialog();
-			}
-		});
-
-		fProjButton = new Button(comp, SWT.PUSH);
-		fProjButton.setText(JUnitMessages.JUnitMainTab_label_browse);
-		gd = new GridData();
-		fProjButton.setLayoutData(gd);
-		LayoutUtil.setButtonDimensionHint(fProjButton);
-		fProjButton.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent evt)
-			{
-				handleProjectButtonSelected();
-			}
-		});
-	}
-
-	/**
-	 * Show a dialog that lets the user select a project.  This in turn provides
-	 * context for choosing the container that should be run.
-	 */
-	private void handleProjectButtonSelected()
-	{
-		IJavaProject project = chooseJavaProject();
-		if (project == null)
-		{
-			return;
-		}
-
-		String projectName = project.getElementName();
-		fProjText.setText(projectName);
-	}
-
-	/**
-	 * Realize a Java Project selection dialog and return the first selected project,
-	 * or null if there was none.
-	 */
-	private IJavaProject chooseJavaProject()
-	{
-		IJavaProject[] projects;
-		try
-		{
-			projects = JavaCore.create(getWorkspaceRoot()).getJavaProjects();
-		}
-		catch (JavaModelException e)
-		{
-			DescentUnittestPlugin.log(e.getStatus());
-			projects = new IJavaProject[0];
-		}
-
-		ILabelProvider labelProvider = new JavaElementLabelProvider(
-				JavaElementLabelProvider.SHOW_DEFAULT);
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(
-				getShell(), labelProvider);
-		dialog.setTitle(JUnitMessages.JUnitMainTab_projectdialog_title);
-		dialog.setMessage(JUnitMessages.JUnitMainTab_projectdialog_message);
-		dialog.setElements(projects);
-
-		IJavaProject javaProject = getJavaProject();
-		if (javaProject != null)
-		{
-			dialog.setInitialSelections(new Object[] { javaProject });
-		}
-		if (dialog.open() == Window.OK)
-		{
-			return (IJavaProject) dialog.getFirstResult();
-		}
-		return null;
-	}
-
-	/**
-	 * Return the IJavaProject corresponding to the project name in the project name
-	 * text field, or null if the text does not match a project name.
-	 */
-	private IJavaProject getJavaProject()
-	{
-		String projectName = fProjText.getText().trim();
-		if (projectName.length() < 1)
-		{
-			return null;
-		}
-		return getJavaModel().getJavaProject(projectName);
-	}
-	
-	private void updateProjectFromConfig(ILaunchConfiguration config)
+    private void createTestSelection(Composite comp)
     {
-        String projectName= ""; //$NON-NLS-1$
+        fTestSelectionGroup = createGroup(comp, "Test selection");
+        
+        fContainerLabel = new Label(fTestSelectionGroup, SWT.NONE);
+        fContainerLabel.setText("Test container:");
+        GridData gd = new GridData();
+        fContainerLabel.setLayoutData(gd);
+
+        fContainerText = new Text(fTestSelectionGroup, SWT.SINGLE | SWT.BORDER);
+        fContainerText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        fContainerText.setEditable(false);
+
+        fContainerButton = new Button(fTestSelectionGroup, SWT.PUSH);
+        fContainerButton.setText(JUnitMessages.JUnitMainTab_label_browse);
+        gd = new GridData();
+        fContainerButton.setLayoutData(gd);
+        LayoutUtil.setButtonDimensionHint(fContainerButton);
+        fContainerButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent evt)
+            {
+                handleContainerButtonSelected();
+                validatePage();
+                updateLaunchConfigurationDialog();
+            }
+        });
+        
+        fIncludeSubpackagesCheckbox = new Button(fTestSelectionGroup, SWT.CHECK);
+        fIncludeSubpackagesCheckbox.setText("Include subpackages if a package is selected");
+        gd = new GridData();
+        gd.horizontalSpan = 3;
+        fIncludeSubpackagesCheckbox.setLayoutData(gd);
+        fIncludeSubpackagesCheckbox.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent evt)
+            {
+                updateLaunchConfigurationDialog();
+            }
+        });
+    }
+    
+    private void updateTestContainerFromConfig(ILaunchConfiguration config)
+    {
+        String containerHandle = ""; //$NON-NLS-1$
+        String includeSubpackages = ""; //$NON-NLS-1$
         try
         {
-            projectName = config.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
-        } 
+            containerHandle = config.getAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+            includeSubpackages = config.getAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR, "false"); //$NON-NLS-1$
+        }
         catch (CoreException ce) { }
-        fProjText.setText(projectName);
+        
+        fIncludeSubpackagesCheckbox.setSelection("true".equals(includeSubpackages)); //$NON-NLS-1$
+        if(!("".equals(containerHandle)))
+        {
+            IJavaElement element = JavaCore.create(containerHandle);
+            if(null != element)
+                setContainerElement(element);
+        }
+    }
+    
+    private void handleContainerButtonSelected()
+    {
+        IJavaElement container = chooseContainer();
+        if(null != container)
+            setContainerElement(container);
+        validatePage();
+        updateLaunchConfigurationDialog();
+    }
+    
+    private void setContainerElement(IJavaElement element)
+    {
+        fContainerElement = element;
+        fContainerText.setText(getReadableName(element));
+    }
+    
+    private String getReadableName(IJavaElement element)
+    {
+        if(element instanceof IJavaProject)
+        {
+            return element.getElementName();
+        }
+        else
+        {
+            StringBuilder elementName = new StringBuilder();
+            elementName.append(element.getJavaProject().getElementName());
+            elementName.append(" - ");
+            
+            if(element instanceof ICompilationUnit)
+                elementName.append(((ICompilationUnit) element).getFullyQualifiedName());
+            else if(element instanceof IPackageFragment)
+                elementName.append(((IPackageFragment) element).isDefaultPackage() ?
+                        "(default package)" :
+                        element.getElementName());
+            else
+                elementName.append(element.getElementName());
+            
+            return elementName.toString();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private IJavaElement chooseContainer()
+    {
+        Class[] acceptedClasses = new Class[]
+        {
+            IJavaProject.class,
+            IPackageFragmentRoot.class,
+            IPackageFragment.class,
+            ICompilationUnit.class,
+        };
+        TypedElementSelectionValidator validator = 
+            new TypedElementSelectionValidator(acceptedClasses, false)
+            {
+                public boolean isSelectedValid(Object element)
+                {
+                    return true;
+                }
+            };
+        
+        acceptedClasses = new Class[] 
+        {
+            IJavaProject.class,
+            IJavaModel.class,
+            IPackageFragmentRoot.class,
+            IPackageFragment.class,
+            ICompilationUnit.class,
+        };
+        ViewerFilter filter= new TypedViewerFilter(acceptedClasses)
+        {
+            public boolean select(Viewer viewer, Object parent, Object element)
+            {
+                if((element instanceof IPackageFragmentRoot))
+                    if(((IPackageFragmentRoot) element).isArchive())
+                        return false;
+                
+                return super.select(viewer, parent, element);
+            }
+        };      
+
+        StandardJavaElementContentProvider provider = new StandardJavaElementContentProvider();
+        ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT); 
+        ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), labelProvider, provider);
+        dialog.setValidator(validator);
+        dialog.setTitle("Test container selection");
+        dialog.setMessage("Select a project, package, or module from which all unit tests will be run");  
+        dialog.addFilter(filter);
+        dialog.setInput(JavaCore.create(getWorkspaceRoot()));
+        dialog.setInitialSelection(fContainerElement);
+        dialog.setAllowMultiple(false);
+        
+        if (dialog.open() == Window.OK)
+            return (IJavaElement) dialog.getFirstResult();
+        
+        return null;
+    }
+    
+    private String validateTestSelection()
+    {
+        if(null == fContainerElement)
+            return "No test container selected";
+        
+        if(!fContainerElement.exists())
+            return "Test container does not exist";
+        
+        return null;
     }
 	
 	//--------------------------------------------------------------------------
@@ -335,165 +388,32 @@ public class UnittestLaunchConfigurationTab extends
 	    
 	    portModeChanged();
 	}
-
-	//--------------------------------------------------------------------------
-	// Test container selection
 	
-	private Group fTestSelectionGroup;
-	private Button fAllTestsRadioButton;
-	private Button fContainerRadioButton;
-	private Label fContainerLabel;
-	private Text fContainerText;
-	private Button fContainerButton;
-    private Button fIncludeSubpackagesCheckbox;
-
-    private void createTestSelection(Composite comp)
+	private String validatePort()
     {
-        fTestSelectionGroup = createGroup(comp, "Test selection");
+        if(fAutoPortRadioButton.getSelection())
+            return null;
         
-        createRunAllTests(fTestSelectionGroup);
-        createTestContainerSelector(fTestSelectionGroup);
-    }
-    
-	private void createRunAllTests(Composite comp)
-	{
-		fAllTestsRadioButton = new Button(comp, SWT.RADIO);
-		fAllTestsRadioButton
-				.setText(JUnitMessages.UnittestLaunchConfigurationTab_all_tests_in_project);
-		GridData gd = new GridData();
-		gd.horizontalSpan = 3;
-		fAllTestsRadioButton.setLayoutData(gd);
-		fAllTestsRadioButton.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (fAllTestsRadioButton.getSelection())
-					testModeChanged();
-			}
-		});
-	}
-
-	private void createTestContainerSelector(Composite comp)
-	{	
-		fContainerRadioButton = new Button(comp, SWT.RADIO);
-		fContainerRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_selected_container);
-		GridData gd = new GridData();
-		gd.horizontalSpan = 3;
-		fContainerRadioButton.setLayoutData(gd);
-		fContainerRadioButton.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (fContainerRadioButton.getSelection())
-					testModeChanged();
-			}
-		});
-		
-		fContainerLabel = new Label(comp, SWT.NONE);
-		fContainerLabel.setText("Test container:");
-        gd = new GridData();
-        gd.horizontalIndent = 25;
-        fContainerLabel.setLayoutData(gd);
-
-        fContainerText = new Text(comp, SWT.SINGLE | SWT.BORDER);
-        fContainerText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        fContainerText.addModifyListener(new ModifyListener()
-        {
-            public void modifyText(ModifyEvent evt)
-            {
-                validatePage();
-                updateLaunchConfigurationDialog();
-            }
-        });
-
-        fContainerButton = new Button(comp, SWT.PUSH);
-        fContainerButton.setText(JUnitMessages.JUnitMainTab_label_browse);
-        gd = new GridData();
-        fContainerButton.setLayoutData(gd);
-        LayoutUtil.setButtonDimensionHint(fContainerButton);
-        fContainerButton.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent evt)
-            {
-                handleContainerButtonSelected();
-                validatePage();
-                updateLaunchConfigurationDialog();
-            }
-        });
-		
-		fIncludeSubpackagesCheckbox = new Button(comp, SWT.CHECK);
-		fIncludeSubpackagesCheckbox.setText("Include subpackages if a package is selected");
-		gd = new GridData();
-		gd.horizontalSpan = 3;
-		gd.horizontalIndent = 25;
-		fIncludeSubpackagesCheckbox.setLayoutData(gd);
-		fIncludeSubpackagesCheckbox.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent evt)
-            {
-                updateLaunchConfigurationDialog();
-            }
-        });
-	}
-	
-	private void testModeChanged()
-    {
-        boolean isAllTestsMode = fAllTestsRadioButton.getSelection();
-        setEnableContainerSelection(!isAllTestsMode);
-        validatePage();
-        updateLaunchConfigurationDialog();
-    }
-	
-	private void setEnableContainerSelection(boolean enabled)
-    {
-        fIncludeSubpackagesCheckbox.setEnabled(enabled);
-        fContainerLabel.setEnabled(enabled);
-        fContainerText.setEnabled(enabled);
-        fContainerButton.setEnabled(enabled);
-    }
-    
-    /**
-     * This is called whenever the project changes. It switchs to the "run
-     * all tests in project", since test lookup takes time.
-     */
-    private void resetTestMode()
-    {
-        fContainerRadioButton.setSelection(false);
-        fAllTestsRadioButton.setSelection(true);
-        testModeChanged();
-    }
-    
-    private void updateTestContainerFromConfig(ILaunchConfiguration config)
-    {
-        String containerHandle= ""; //$NON-NLS-1$
-        String includeSubpackages = ""; //$NON-NLS-1$
+        String portStr = fSpecPortText.getText().trim();
+        if(portStr.length() == 0)
+            return "Port not defined";
+        
+        int portNum;
         try
         {
-            containerHandle = config.getAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
-            includeSubpackages = config.getAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR, "false"); //$NON-NLS-1$
+            portNum = Integer.parseInt(portStr);
         }
-        catch (CoreException ce) { }
-        
-        if(containerHandle.equals(""))
+        catch(NumberFormatException e)
         {
-            fAllTestsRadioButton.setSelection(true);
-            fContainerRadioButton.setSelection(false);
-            fIncludeSubpackagesCheckbox.setEnabled(false);
-        }
-        else
-        {
-            fContainerRadioButton.setSelection(true);
-            fAllTestsRadioButton.setSelection(false);
-            fContainerText.setText(containerHandle);
-            fIncludeSubpackagesCheckbox.setSelection("true".equals(includeSubpackages)); //$NON-NLS-1$
+            return "Invalid port number";
         }
         
-        testModeChanged();
-    }
-    
-    private void handleContainerButtonSelected()
-    {
-        fContainerText.setText("");
+        if(portNum < 1024 || portNum > 65535)
+        {
+            return "Port must be between 1024 and 65535";
+        }
+        
+        return null;
     }
 
 	//--------------------------------------------------------------------------
@@ -501,9 +421,8 @@ public class UnittestLaunchConfigurationTab extends
 
 	public void initializeFrom(ILaunchConfiguration config)
 	{
-		updateProjectFromConfig(config);
+	    updateTestContainerFromConfig(config);
 		updatePortFromConfig(config);
-		updateTestContainerFromConfig(config);
 	}
 
 	//--------------------------------------------------------------------------
@@ -519,13 +438,13 @@ public class UnittestLaunchConfigurationTab extends
 	{
 		setErrorMessage(null);
 		setMessage(null);
-
-		String errorMsg = validateProject();
-		if(null != errorMsg)
-		{
-			setErrorMessage(errorMsg);
-			return;
-		}
+		
+		String errorMsg = validateTestSelection();
+        if(null != errorMsg)
+        {
+            setErrorMessage(errorMsg);
+            return;
+        }
 		
 		errorMsg = validatePort();
 		if(null != errorMsg)
@@ -535,80 +454,26 @@ public class UnittestLaunchConfigurationTab extends
         }
 	}
 
-	private String validateProject()
-	{
-		String projectName = fProjText.getText().trim();
-		if (projectName.length() == 0)
-			return "Project not defined";
-
-		IStatus status = ResourcesPlugin.getWorkspace().validatePath(
-				IPath.SEPARATOR + projectName, IResource.PROJECT);
-		if (!status.isOK())
-			return String.format("Invalid project name: %$1s", projectName);
-
-		IProject project = getWorkspaceRoot().getProject(projectName);
-		if (!project.exists())
-			return "Project does not exist";
-
-		try
-		{
-			if (!project.hasNature(JavaCore.NATURE_ID))
-				return "Not a D project";
-		}
-		catch (Exception e)
-		{
-			// Ignore
-		}
-		
-		return null;
-	}
-	
-	private String validatePort()
-	{
-	    if(fAutoPortRadioButton.getSelection())
-	        return null;
-	    
-	    String portStr = fSpecPortText.getText().trim();
-	    if(portStr.length() == 0)
-	        return "Port not defined!";
-	    
-	    int portNum;
-	    try
-	    {
-	        portNum = Integer.parseInt(portStr);
-	    }
-	    catch(NumberFormatException e)
-	    {
-	        return "Invalid port number";
-	    }
-	    
-	    if(portNum < 1024 || portNum > 65535)
-	    {
-	        return "Port must be between 1024 and 65535";
-	    }
-	    
-	    return null;
-	}
-
 	//--------------------------------------------------------------------------
 	// Application
 
 	public void performApply(ILaunchConfigurationWorkingCopy config)
-	{   
-		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText());
-		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR,
-		        fAllTestsRadioButton.getSelection() ?
-		                "" :
-		                fContainerText.getText());
-		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR,
-		        fAutoPortRadioButton.getSelection() ?
-		                "" :
-		                fSpecPortText.getText());
-		String includeSubpackages = 
-            (fContainerRadioButton.getSelection() && fIncludeSubpackagesCheckbox.getSelection()) ?
-                "true" :
-                "false";
-		config.setAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR, includeSubpackages);
+	{
+	    String launchContainer = "";
+        String project = "";
+	    
+	    if(null != fContainerElement && fContainerElement.exists())
+	    {
+	        launchContainer = fContainerElement.getHandleIdentifier();
+	        project = fContainerElement.getJavaProject().getElementName();
+	    }
+	    
+	    config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, launchContainer);
+        config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
+	    config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, 
+	            fAutoPortRadioButton.getSelection() ? "" : fSpecPortText.getText());
+	    config.setAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR,
+	            fIncludeSubpackagesCheckbox.getSelection() ? "true" : "false");
 		
 		// TODO get the fluted program executable
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
@@ -619,78 +484,50 @@ public class UnittestLaunchConfigurationTab extends
 	// Defaults
 	public void setDefaults(ILaunchConfigurationWorkingCopy config)
 	{
-		IJavaElement javaElement = getContext();
-		String name = "";
-		if (javaElement != null)
+	    String launchContainer = "";
+	    String project = "";
+	    
+		ICompilationUnit element = getContext();
+		if (element != null)
 		{
-			IJavaProject javaProject = javaElement.getJavaProject();
-			name = (javaProject != null && javaProject.exists()) ?
-					javaProject.getElementName() : "";
-			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, name);
-			
-			name = getLaunchConfigurationDialog().generateName(name);
-			config.rename(name);
-		}
-		else
-		{
-			config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
+		    launchContainer = element.getHandleIdentifier();
+	        project = element.getJavaProject().getElementName();
 		}
 		
-		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
+		System.out.println("Initializing launch container to " + launchContainer);
+		
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, launchContainer);
+        config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "");
 	}
 
 	/**
-	 * Returns the current Java element context from which to initialize
-	 * default settings, or <code>null</code> if none.
+	 * Returns the current compilation unit context from which to initialize
+	 * default settings, or <code>null</code> if none. This is generally the
+	 * module currently open in the editor.
 	 * 
-	 * @return Java element context.
+	 * @return Compilation unit context.
 	 */
-	private IJavaElement getContext()
+	private ICompilationUnit getContext()
 	{
-		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
-		if (activeWorkbenchWindow == null)
-		{
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (null == activeWorkbenchWindow)
 			return null;
-		}
+		
 		IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
-		if (page != null)
-		{
-			ISelection selection = page.getSelection();
-			if (selection instanceof IStructuredSelection)
-			{
-				IStructuredSelection ss = (IStructuredSelection) selection;
-				if (!ss.isEmpty())
-				{
-					Object obj = ss.getFirstElement();
-					if (obj instanceof IJavaElement)
-					{
-						return (IJavaElement) obj;
-					}
-					if (obj instanceof IResource)
-					{
-						IJavaElement je = JavaCore.create((IResource) obj);
-						if (je == null)
-						{
-							IProject pro = ((IResource) obj).getProject();
-							je = JavaCore.create(pro);
-						}
-						if (je != null)
-						{
-							return je;
-						}
-					}
-				}
-			}
-			IEditorPart part = page.getActiveEditor();
-			if (part != null)
-			{
-				IEditorInput input = part.getEditorInput();
-				return (IJavaElement) input.getAdapter(IJavaElement.class);
-			}
-		}
-		return null;
+		if(null == page)
+		    return null;
+		
+		IEditorPart part = page.getActiveEditor();
+        if(null == part)
+            return null;
+        
+        IEditorInput input = part.getEditorInput();
+        IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
+        if(element instanceof ICompilationUnit)
+            return (ICompilationUnit) element;
+        else
+            return null;
 	}
 
 	//--------------------------------------------------------------------------
@@ -702,14 +539,6 @@ public class UnittestLaunchConfigurationTab extends
 	private IWorkspaceRoot getWorkspaceRoot()
 	{
 		return ResourcesPlugin.getWorkspace().getRoot();
-	}
-
-	/**
-	 * Convenience method to get access to the java model.
-	 */
-	private IJavaModel getJavaModel()
-	{
-		return JavaCore.create(getWorkspaceRoot());
 	}
 	
 	/**
