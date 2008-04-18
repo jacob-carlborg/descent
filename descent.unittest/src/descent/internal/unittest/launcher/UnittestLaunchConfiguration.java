@@ -30,6 +30,7 @@ import descent.core.JavaCore;
 import descent.debug.core.AbstractDescentLaunchConfigurationDelegate;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.internal.unittest.DescentUnittestPlugin;
+import descent.internal.unittest.ui.JUnitMessages;
 import descent.unittest.ITestSpecification;
 
 /**
@@ -54,7 +55,7 @@ public class UnittestLaunchConfiguration extends
 		
 		try
 		{
-			monitor.beginTask("Launching unit test application", 100);
+			monitor.beginTask(JUnitMessages.UnittestLaunchConfiguration_task_name, 100);
 			if (monitor.isCanceled())
 				return;
 			
@@ -62,22 +63,21 @@ public class UnittestLaunchConfiguration extends
 			List<ITestSpecification> tests = findTests(config, 
 			        new SubProgressMonitor(monitor, 60));
 			if(tests.isEmpty())
-			    throw error("No tests were found in the given launch container");
+			    throw error(JUnitMessages.UnittestLaunchConfiguration_no_tests_found);
 			if(monitor.isCanceled())
                 return;
 			
 			// Get the port
-            String portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "");
+            String portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""); //$NON-NLS-1$
             int port = getPort(portStr);
             if(port < 1024 || port > 65535)
-                throw error("Invalid port number");
+                throw error(JUnitMessages.UnittestLaunchConfiguration_invalid_port);
             if(monitor.isCanceled())
                 return;
             monitor.worked(5);
 			
 			// Launch the applicataion
-			// TODO super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
-			monitor.worked(30);
+			super.launch(config, mode, launch, new SubProgressMonitor(monitor, 30));
 			if(monitor.isCanceled())
 			    return;
 			
@@ -86,8 +86,7 @@ public class UnittestLaunchConfiguration extends
 			launch.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, String.valueOf(port));
 			
 			// Start the Descent side of things
-			// TODO DescentUnittestPlugin.getModel().notifyLaunch(launch, tests);
-			printTests(tests);
+			DescentUnittestPlugin.getModel().notifyLaunch(launch, tests);
 			monitor.worked(5);
 		}
 		finally
@@ -101,15 +100,15 @@ public class UnittestLaunchConfiguration extends
 		throws CoreException
 	{
 	    String containerStr = config.getAttribute(
-	            IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, "");
-	    IJavaElement container = !("".equals(containerStr)) ?
+	            IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
+	    IJavaElement container = !("".equals(containerStr)) ? //$NON-NLS-1$
 	            JavaCore.create(containerStr) : null;
 	    if(null == container)
-	        throw error("Launch container could not be found");
+	        throw error(JUnitMessages.UnittestLaunchConfiguration_container_not_found);
 	    
 	    boolean includeSubpackages = config.getAttribute(
 	            IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR,
-	            "false").equals("true");
+	            "false").equals("true"); //$NON-NLS-1$ //$NON-NLS-2$
 	    
 		final List<ITestSpecification> result = new ArrayList<ITestSpecification>(DUnittestFinder.LIST_PREALLOC);
 		DUnittestFinder.findTestsInContainer(container, result, monitor, includeSubpackages);
@@ -146,20 +145,13 @@ public class UnittestLaunchConfiguration extends
                 }
             }
         }
-        throw error("Could not find open port");
+        throw error(JUnitMessages.UnittestLaunchConfiguration_no_open_port);
     }
 	
 	private static CoreException error(String message)
 	{
 	    return new CoreException(new Status(IStatus.ERROR, 
 	            DescentUnittestPlugin.PLUGIN_ID, message));
-	}
-	
-	// TODO remove -- for testing only
-	private static void printTests(List<ITestSpecification> tests)
-	{
-	    for(ITestSpecification test : tests)
-	        System.out.println(test.getId());
 	}
 
 	@Override

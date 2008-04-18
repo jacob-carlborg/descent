@@ -28,9 +28,9 @@ import descent.internal.unittest.DescentUnittestPlugin;
 public class FluteApplicationInstance
 {
 	// Yes, these should all have different protections :-P
-	public static final String FLUTE_VERSION = "flute 0.1";
-	static final String AWAITING_INPUT = "(flute)";
-	private static final String LOCALHOST  = "127.0.0.1";
+	public static final String FLUTE_VERSION = "flute 0.1"; //$NON-NLS-1$
+	static final String AWAITING_INPUT = "(flute)"; //$NON-NLS-1$
+	private static final String LOCALHOST  = "127.0.0.1"; //$NON-NLS-1$
 	
 	private SocketConnection fConn;
 	
@@ -106,7 +106,7 @@ public class FluteApplicationInstance
 			setState(new RunningOneTest(this));
 			
 			beforeWaitStateReturn();
-			fConn.write("r " + signature + "\r\n"); //$NON-NLS-1$
+			fConn.write("r " + signature + "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			waitStateReturn();
 			
 			return ((RunningOneTest) fState).getResult();	
@@ -125,7 +125,7 @@ public class FluteApplicationInstance
 	{
 		try
 		{
-			fConn.write("x\r\n");
+			fConn.write("x\r\n"); //$NON-NLS-1$
 		}
 		finally
 		{
@@ -172,7 +172,7 @@ public class FluteApplicationInstance
 		private final OutputStream out;
 		private final LineByLineReader in;
 
-		private static final String LOCALHOST = "127.0.0.1";
+		private static final String LOCALHOST = "127.0.0.1"; //$NON-NLS-1$
 
 		SocketConnection(int port)
 				throws IOException
@@ -221,7 +221,7 @@ public class FluteApplicationInstance
 				try
 				{
 					reader = new BufferedReader(new InputStreamReader(stream,
-							"UTF-8"));
+							"UTF-8")); //$NON-NLS-1$
 				}
 				catch (UnsupportedEncodingException e)
 				{

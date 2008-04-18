@@ -81,7 +81,7 @@ public class UnittestLaunchConfigurationTab extends
 
 	public String getName()
 	{
-		return JUnitMessages.JUnitMainTab_tab_label;
+		return JUnitMessages.UnittestLaunchConfigurationTab_tab_label;
 	}
 
 	@Override
@@ -103,10 +103,10 @@ public class UnittestLaunchConfigurationTab extends
 
     private void createTestSelection(Composite comp)
     {
-        fTestSelectionGroup = createGroup(comp, "Test selection");
+        fTestSelectionGroup = createGroup(comp, JUnitMessages.UnittestLaunchConfigurationTab_group_test_selection);
         
         fContainerLabel = new Label(fTestSelectionGroup, SWT.NONE);
-        fContainerLabel.setText("Test container:");
+        fContainerLabel.setText(JUnitMessages.UnittestLaunchConfigurationTab_label_test_container);
         GridData gd = new GridData();
         fContainerLabel.setLayoutData(gd);
 
@@ -115,7 +115,7 @@ public class UnittestLaunchConfigurationTab extends
         fContainerText.setEditable(false);
 
         fContainerButton = new Button(fTestSelectionGroup, SWT.PUSH);
-        fContainerButton.setText(JUnitMessages.JUnitMainTab_label_browse);
+        fContainerButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_label_browse);
         gd = new GridData();
         fContainerButton.setLayoutData(gd);
         LayoutUtil.setButtonDimensionHint(fContainerButton);
@@ -130,7 +130,7 @@ public class UnittestLaunchConfigurationTab extends
         });
         
         fIncludeSubpackagesCheckbox = new Button(fTestSelectionGroup, SWT.CHECK);
-        fIncludeSubpackagesCheckbox.setText("Include subpackages if a package is selected");
+        fIncludeSubpackagesCheckbox.setText(JUnitMessages.UnittestLaunchConfigurationTab_label_include_subpackages);
         gd = new GridData();
         gd.horizontalSpan = 3;
         fIncludeSubpackagesCheckbox.setLayoutData(gd);
@@ -155,7 +155,7 @@ public class UnittestLaunchConfigurationTab extends
         catch (CoreException ce) { }
         
         fIncludeSubpackagesCheckbox.setSelection("true".equals(includeSubpackages)); //$NON-NLS-1$
-        if(!("".equals(containerHandle)))
+        if(!("".equals(containerHandle))) //$NON-NLS-1$
         {
             IJavaElement element = JavaCore.create(containerHandle);
             if(null != element)
@@ -188,13 +188,13 @@ public class UnittestLaunchConfigurationTab extends
         {
             StringBuilder elementName = new StringBuilder();
             elementName.append(element.getJavaProject().getElementName());
-            elementName.append(" - ");
+            elementName.append(" - "); //$NON-NLS-1$
             
             if(element instanceof ICompilationUnit)
                 elementName.append(((ICompilationUnit) element).getFullyQualifiedName());
             else if(element instanceof IPackageFragment)
                 elementName.append(((IPackageFragment) element).isDefaultPackage() ?
-                        "(default package)" :
+                        JUnitMessages.UnittestLaunchConfigurationTab_default_package :
                         element.getElementName());
             else
                 elementName.append(element.getElementName());
@@ -203,7 +203,7 @@ public class UnittestLaunchConfigurationTab extends
         }
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     private IJavaElement chooseContainer()
     {
         Class[] acceptedClasses = new Class[]
@@ -246,8 +246,8 @@ public class UnittestLaunchConfigurationTab extends
         ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT); 
         ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), labelProvider, provider);
         dialog.setValidator(validator);
-        dialog.setTitle("Test container selection");
-        dialog.setMessage("Select a project, package, or module from which all unit tests will be run");  
+        dialog.setTitle(JUnitMessages.UnittestLaunchConfigurationTab_dialog_test_container_selection);
+        dialog.setMessage(JUnitMessages.UnittestLaunchConfigurationTab_label_test_container_selection);  
         dialog.addFilter(filter);
         dialog.setInput(JavaCore.create(getWorkspaceRoot()));
         dialog.setInitialSelection(fContainerElement);
@@ -262,10 +262,10 @@ public class UnittestLaunchConfigurationTab extends
     private String validateTestSelection()
     {
         if(null == fContainerElement)
-            return "No test container selected";
+            return JUnitMessages.UnittestLaunchConfigurationTab_error_no_test_container;
         
         if(!fContainerElement.exists())
-            return "Test container does not exist";
+            return JUnitMessages.UnittestLaunchConfigurationTab_error_test_container_does_not_exist;
         
         return null;
     }
@@ -281,7 +281,7 @@ public class UnittestLaunchConfigurationTab extends
 	
 	private void createPortSelection(Composite comp)
 	{
-	    fPortGroup = createGroup(comp, "Port for test runner");
+	    fPortGroup = createGroup(comp, JUnitMessages.UnittestLaunchConfigurationTab_group_port);
 	    
 	    createAutoPortSelection(fPortGroup);
 	    createSpecPortSelection(fPortGroup);
@@ -290,7 +290,7 @@ public class UnittestLaunchConfigurationTab extends
 	private void createAutoPortSelection(Composite comp)
 	{
 	    fAutoPortRadioButton = new Button(comp, SWT.RADIO);
-	    fAutoPortRadioButton.setText("Automatically select an available port");
+	    fAutoPortRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_label_automatically_choose_port);
         GridData gd = new GridData();
         gd.horizontalSpan = 3;
         fAutoPortRadioButton.setLayoutData(gd);
@@ -307,7 +307,7 @@ public class UnittestLaunchConfigurationTab extends
 	private void createSpecPortSelection(Composite comp)
 	{
 	    fSpecPortRadioButton = new Button(comp, SWT.RADIO);
-	    fSpecPortRadioButton.setText("Use the specified port");
+	    fSpecPortRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_label_use_specified_port);
         GridData gd = new GridData();
         gd.horizontalSpan = 3;
         fSpecPortRadioButton.setLayoutData(gd);
@@ -321,7 +321,7 @@ public class UnittestLaunchConfigurationTab extends
         });
         
         fSpecPortLabel = new Label(comp, SWT.NONE);
-        fSpecPortLabel.setText("Port:");
+        fSpecPortLabel.setText(JUnitMessages.UnittestLaunchConfigurationTab_label_port);
         gd = new GridData();
         gd.horizontalIndent = 25;
         fSpecPortLabel.setLayoutData(gd);
@@ -356,16 +356,16 @@ public class UnittestLaunchConfigurationTab extends
 	
 	private void updatePortFromConfig(ILaunchConfiguration config)
 	{
-	    String portStr = "";
+	    String portStr = ""; //$NON-NLS-1$
 	    try
 	    {
-	        portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "");
+	        portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""); //$NON-NLS-1$
 	    }
 	    catch(CoreException ce) { }
 	    
 	    int portNum = 0;
 	    portStr = portStr.trim();
-	    if(!portStr.equals(""))
+	    if(!portStr.equals("")) //$NON-NLS-1$
 	    {
 	        try
 	        {
@@ -396,7 +396,7 @@ public class UnittestLaunchConfigurationTab extends
         
         String portStr = fSpecPortText.getText().trim();
         if(portStr.length() == 0)
-            return "Port not defined";
+            return JUnitMessages.UnittestLaunchConfigurationTab_error_no_port;
         
         int portNum;
         try
@@ -405,12 +405,12 @@ public class UnittestLaunchConfigurationTab extends
         }
         catch(NumberFormatException e)
         {
-            return "Invalid port number";
+            return JUnitMessages.UnittestLaunchConfigurationTab_error_invalid_port;
         }
         
         if(portNum < 1024 || portNum > 65535)
         {
-            return "Port must be between 1024 and 65535";
+            return JUnitMessages.UnittestLaunchConfigurationTab_error_port_number;
         }
         
         return null;
@@ -459,8 +459,8 @@ public class UnittestLaunchConfigurationTab extends
 
 	public void performApply(ILaunchConfigurationWorkingCopy config)
 	{
-	    String launchContainer = "";
-        String project = "";
+	    String launchContainer = ""; //$NON-NLS-1$
+        String project = ""; //$NON-NLS-1$
 	    
 	    if(null != fContainerElement && fContainerElement.exists())
 	    {
@@ -471,21 +471,21 @@ public class UnittestLaunchConfigurationTab extends
 	    config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, launchContainer);
         config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
 	    config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, 
-	            fAutoPortRadioButton.getSelection() ? "" : fSpecPortText.getText());
+	            fAutoPortRadioButton.getSelection() ? "" : fSpecPortText.getText()); //$NON-NLS-1$
 	    config.setAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR,
-	            fIncludeSubpackagesCheckbox.getSelection() ? "true" : "false");
+	            fIncludeSubpackagesCheckbox.getSelection() ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		// TODO get the fluted program executable
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
-				"C:/Users/xycos/workspace/descent.unittest/testdata/bin/test.exe");
+				"C:/Users/xycos/workspace/descent.unittest/testdata/bin/test.exe"); //$NON-NLS-1$
 	}
 
 	//--------------------------------------------------------------------------
 	// Defaults
 	public void setDefaults(ILaunchConfigurationWorkingCopy config)
 	{
-	    String launchContainer = "";
-	    String project = "";
+	    String launchContainer = ""; //$NON-NLS-1$
+	    String project = ""; //$NON-NLS-1$
 	    
 		ICompilationUnit element = getContext();
 		if (element != null)
@@ -494,11 +494,9 @@ public class UnittestLaunchConfigurationTab extends
 	        project = element.getJavaProject().getElementName();
 		}
 		
-		System.out.println("Initializing launch container to " + launchContainer);
-		
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, launchContainer);
         config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
-		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, "");
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""); //$NON-NLS-1$
 	}
 
 	/**

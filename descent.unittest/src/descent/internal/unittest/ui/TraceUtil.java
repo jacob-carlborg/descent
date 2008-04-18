@@ -13,7 +13,7 @@ public class TraceUtil
 		sig.append(ISignatureConstants.MODULE);
 		
 		// Split takes a regex, so String.split(".") doesn't work
-		String[] fragments = moduleName.split("\\.");
+		String[] fragments = moduleName.split("\\."); //$NON-NLS-1$
 		for(String fragment : fragments)
 		{
 			sig.append(String.valueOf(fragment.length()));
@@ -40,17 +40,17 @@ public class TraceUtil
 				return;
 			case FAILED:
 				writer.writeLine(String.format(
-						"<%1$s:%2$d> %3$s",
+						"<%1$s:%2$d> %3$s", //$NON-NLS-1$
 						result.getFile(),
 						result.getLine(),
-						message != null ? message : ""),
+						message != null ? message : ""), //$NON-NLS-1$
 						LineType.EXCEPTION);
 				break;
 			case ERROR:
 				writer.writeLine(String.format(
-						"%1$s%2$s",
+						"%1$s%2$s", //$NON-NLS-1$
 						result.getExceptionType(),
-						message != null ? ": " + message : ""),
+						message != null ? ": " + message : ""), //$NON-NLS-1$ //$NON-NLS-2$
 						LineType.EXCEPTION);
 		}
 		IStackTraceElement[] stackTrace = result.getStackTrace();
@@ -66,7 +66,7 @@ public class TraceUtil
 			if(ste.lineInfoFound())
 			{
 				writer.writeLine(String.format(
-						"<%1$s:%2$d> %3$s",
+						"<%1$s:%2$d> %3$s", //$NON-NLS-1$
 						ste.getModule(),
 						ste.getLine(),
 						ste.getFunction()),
@@ -75,7 +75,7 @@ public class TraceUtil
 			else
 			{
 				writer.writeLine(String.format(
-						"<0x%1$x> %2$s",
+						"<0x%1$x> %2$s", //$NON-NLS-1$
 						ste.getAddress(),
 						ste.getFunction()),
 						LineType.STACK_FRAME);

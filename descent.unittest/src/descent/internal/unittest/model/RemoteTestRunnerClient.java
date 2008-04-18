@@ -131,7 +131,6 @@ public class RemoteTestRunnerClient
 	
 	public void terminate()
 	{
-		System.out.println("Is Wayne Brady gonna have to choke a process?");
 		if(isRunning())
 		{
 			try

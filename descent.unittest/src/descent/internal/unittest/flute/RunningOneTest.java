@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import descent.internal.unittest.ui.JUnitMessages;
+
 import static descent.internal.unittest.flute.FluteTestResult.ResultType;
 import static descent.internal.unittest.flute.FluteTestResult.StackTraceElement;
 import static descent.unittest.ITestResult.ResultType.PASSED;
@@ -15,16 +17,16 @@ import static descent.unittest.ITestResult.ResultType.ERROR;
 
 class RunningOneTest implements IState
 {
-	private static final String PASSED_MSG = "PASSED";
-	private static final String FAILED_MSG = "FAILED";
-	private static final String ERROR_MSG = "ERROR";
+	private static final String PASSED_MSG = "PASSED"; //$NON-NLS-1$
+	private static final String FAILED_MSG = "FAILED"; //$NON-NLS-1$
+	private static final String ERROR_MSG = "ERROR"; //$NON-NLS-1$
 	
 	private static final Pattern ASSERTION_FAILURE = Pattern.compile(
-			"Assertion failed in (\\S*) at line (\\d*)(?:\\: (.*))?");
+			"Assertion failed in (\\S*) at line (\\d*)(?:\\: (.*))?"); //$NON-NLS-1$
 	private static final Pattern ERROR_CONDITION = Pattern.compile(
-			"Exception ([^\\:]*): (.*)");
+			"Exception ([^\\:]*): (.*)"); //$NON-NLS-1$
 	private static final Pattern STACK_TRACE_ELEMENT = Pattern.compile(
-			"\\<\\<ST\\>\\> (.*) \\((?:(?:([^\\:]*)\\:(.*))|(?:0x(\\w*)))\\)");
+			"\\<\\<ST\\>\\> (.*) \\((?:(?:([^\\:]*)\\:(.*))|(?:0x(\\w*)))\\)"); //$NON-NLS-1$
 	
 	private static final StackTraceElement[] NO_STACK_TRACE =
 		new StackTraceElement[] {};
@@ -80,8 +82,6 @@ class RunningOneTest implements IState
 		Matcher m = STACK_TRACE_ELEMENT.matcher(text);
 		if(m.find())
 		{
-			System.out.println("----------------");
-			System.out.println("Stack trace: " + text);
 			
 			// If we've gotten to the stack trace, we're done with
 			// processing error messages.
@@ -94,11 +94,6 @@ class RunningOneTest implements IState
 			String module = m.group(2);
 			String lineStr = m.group(3);
 			String addrStr = m.group(4);
-			
-			System.out.println("function: " + function);
-			System.out.println("module: " + module);
-			System.out.println("lineStr: " + lineStr);
-			System.out.println("addrStr: " + addrStr);
 			
 			if(module != null)
 			{
@@ -127,7 +122,6 @@ class RunningOneTest implements IState
 				stackTrace.add(StackTraceElement.address(function, addr));
 			}
 			
-			System.out.println("----------------");
 			return;
 		}
 		
@@ -135,7 +129,7 @@ class RunningOneTest implements IState
 		// the line break back in)
 		if(isAppending)
 		{
-			message.append("\r\n" + text);
+			message.append("\r\n" + text); //$NON-NLS-1$
 			return;
 		}
 		
@@ -193,8 +187,8 @@ class RunningOneTest implements IState
 		if(resultType == null)
 		{
 			return FluteTestResult.error(
-					"Internal error running test",
-					"",
+					JUnitMessages.RunningOneTest_internal_error,
+					"", //$NON-NLS-1$
 					NO_STACK_TRACE);
 		}
 		

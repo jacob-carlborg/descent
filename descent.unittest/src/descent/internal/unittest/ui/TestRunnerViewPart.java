@@ -455,7 +455,7 @@ public class TestRunnerViewPart extends ViewPart {
 			if (!fShowOnErrorOnly && fTestRunSession.getStartedCount() == 1) 
 				postShowTestResultsView();
 				
-			String status = " " + testCaseElement.getName();
+			String status = " " + testCaseElement.getName(); //$NON-NLS-1$
 			registerInfoMessage(status); 
 		}
 		

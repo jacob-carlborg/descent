@@ -43,7 +43,7 @@ import descent.unittest.ITestResult;
 public class FailureTrace implements IMenuListener
 {
 	private static final Pattern TRACE_LINE_PATTERN = Pattern.compile(
-			"^<([^\\:]*):(\\d*)>");
+			"^<([^\\:]*):(\\d*)>"); //$NON-NLS-1$
     
 	private Table fTable;
 	private TestRunnerViewPart fTestRunner;

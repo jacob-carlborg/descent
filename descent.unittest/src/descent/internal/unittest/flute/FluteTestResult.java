@@ -53,12 +53,12 @@ public final class FluteTestResult implements ITestResult
 			StringBuffer buf = new StringBuffer();
 			
 			buf.append(function);
-			buf.append(" (");
+			buf.append(" ("); //$NON-NLS-1$
 			if(addr >= 0)
-				buf.append(String.format("%1$s:0x%2$x", module, addr));
+				buf.append(String.format("%1$s:0x%2$x", module, addr)); //$NON-NLS-1$
 			else
-				buf.append(String.format("%1$s:%2$d", module, line));
-			buf.append(")");
+				buf.append(String.format("%1$s:%2$d", module, line)); //$NON-NLS-1$
+			buf.append(")"); //$NON-NLS-1$
 			
 			return buf.toString();
 		}
@@ -140,20 +140,20 @@ public final class FluteTestResult implements ITestResult
 	{
 		StringBuffer buf = new StringBuffer();
 		
-		buf.append("resultType: " + resultType + "\n");
-		buf.append("file: " + file + "\n");
-		buf.append("line: " + line + "\n");
-		buf.append("exceptionType: " + exceptionType + "\n");
-		buf.append("message: " + message + "\n");
+		buf.append("resultType: " + resultType + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("file: " + file + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("line: " + line + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("exceptionType: " + exceptionType + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("message: " + message + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(stackTrace != null)
 		{
-			buf.append("stackTrace: [\n");
+			buf.append("stackTrace: [\n"); //$NON-NLS-1$
 			for(IStackTraceElement ste: stackTrace)
-				buf.append("   " + ste.toString() + "\n");
-			buf.append("]");
+				buf.append("   " + ste.toString() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("]"); //$NON-NLS-1$
 		}
 		else
-			buf.append("stackTrace: null");
+			buf.append("stackTrace: null"); //$NON-NLS-1$
 		
 		return buf.toString();
 	}

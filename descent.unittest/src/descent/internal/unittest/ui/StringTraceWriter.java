@@ -8,7 +8,7 @@ public class StringTraceWriter implements ITraceWriter
 	
 	public void writeLine(String line, LineType type)
 	{
-		buf.append(line + "\n");
+		buf.append(line + "\n"); //$NON-NLS-1$
 	}
 
 	@Override
