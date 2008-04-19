@@ -12,11 +12,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.core.util.Util;
-import static descent.internal.compiler.parser.ILS.ILSno;
-import static descent.internal.compiler.parser.ILS.ILSuninitialized;
-import static descent.internal.compiler.parser.ILS.ILSyes;
 import static descent.internal.compiler.parser.LINK.LINKc;
-import static descent.internal.compiler.parser.LINK.LINKd;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
@@ -40,13 +36,11 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
-import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
@@ -87,7 +81,6 @@ public class FuncDeclaration extends Declaration {
 	public boolean inferRetType;
 	public boolean naked; // !=0 if naked
 	public boolean inlineAsm; // !=0 if has inline assembler
-	public ILS inlineStatus;
 	public int inlineNest; // !=0 if nested inline
 	public boolean cantInterpret;
 	public boolean nestedFrameRef;
@@ -128,7 +121,6 @@ public class FuncDeclaration extends Declaration {
 		this.sourceType = type;
 		this.loc = loc;
 		this.vtblIndex = -1;
-		this.inlineStatus = ILSuninitialized;
 		this.inferRetType = (type != null && type.nextOf() == null);
 	}
 
@@ -186,8 +178,8 @@ public class FuncDeclaration extends Declaration {
 	public void bodyToCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		if (fbody != null
-				&& (!hgs.hdrgen || hgs.tpltMember || canInline(true, true,
-						context))) {
+				&& (!hgs.hdrgen || hgs.tpltMember /* || canInline(true, true,
+						context) */)) {
 			buf.writenl();
 
 			// in{}
@@ -223,212 +215,6 @@ public class FuncDeclaration extends Declaration {
 			buf.writeByte(';');
 			buf.writenl();
 		}
-	}
-
-	public boolean canInline(boolean hasthis, boolean hdrscan,
-			SemanticContext context) {
-		InlineCostState ics = new InlineCostState();
-		int cost;
-
-		if (needThis() && !hasthis) {
-			return false;
-		}
-
-		if (inlineNest != 0 || (semanticRun == 0 && !hdrscan)) {
-			return false;
-		}
-
-		switch (inlineStatus) {
-		case ILSyes:
-			return true;
-
-		case ILSno:
-			return false;
-
-		case ILSuninitialized:
-			break;
-
-		default:
-			throw new IllegalStateException("assert(0);");
-		}
-
-		if (type != null) {
-			if (type.ty != Tfunction) {
-				throw new IllegalStateException("assert(type.ty == Tfunction);");
-			}
-			TypeFunction tf = (TypeFunction) type;
-			if (tf.varargs == 1) { // no variadic parameter lists
-				// goto Lno;
-				if (!hdrscan) {
-					inlineStatus = ILSno;
-				}
-				return false;
-			}
-
-			/* Don't inline a function that returns non-void, but has
-			 * no return expression.
-			 */
-			if (tf.next != null && tf.next.ty != Tvoid
-					&& (hasReturnExp & 1) == 0 && !hdrscan) {
-				// goto Lno
-				if (!hdrscan) {
-					inlineStatus = ILSno;
-				}
-				return false;
-			}
-		} else {
-			CtorDeclaration ctor = isCtorDeclaration();
-
-			if (ctor != null && ctor.varargs == 1) {
-				// goto Lno
-				if (!hdrscan) {
-					inlineStatus = ILSno;
-				}
-				return false;
-			}
-		}
-
-		if (fbody == null || !hdrscan
-				&& (isSynchronized() || isImportedSymbol() || nestedFrameRef || // no nested references to this frame
-				(isVirtual(context) && !isFinal()))) {
-			// goto Lno;
-			if (!hdrscan) {
-				inlineStatus = ILSno;
-			}
-			return false;
-		}
-
-		/* If any parameters are Tsarray's (which are passed by reference)
-		 * or out parameters (also passed by reference), don't do inlining.
-		 */
-		if (parameters != null) {
-			for (int i = 0; i < parameters.size(); i++) {
-				VarDeclaration v = (VarDeclaration) parameters.get(i);
-				if (v.isOut() || v.isRef()
-						|| v.type.toBasetype(context).ty == Tsarray) {
-					// goto Lno;
-					if (!hdrscan) {
-						inlineStatus = ILSno;
-					}
-					return false;
-				}
-			}
-		}
-
-		// memset(&ics, 0, sizeof(ics));
-		ics.nested = 0;
-		ics.hasthis = hasthis;
-		ics.fd = this;
-		ics.hdrscan = hdrscan;
-		cost = fbody.inlineCost(ics, context);
-		if (cost >= COST_MAX) {
-			// goto Lno;
-			if (!hdrscan) {
-				inlineStatus = ILSno;
-			}
-			return false;
-		}
-
-		if (!hdrscan) {
-			inlineScan(context);
-		}
-
-		// Lyes:
-		if (!hdrscan) {
-			inlineStatus = ILSyes;
-		}
-		return true;
-	}
-
-	public boolean canInline(boolean hasthis, SemanticContext context) {
-		return canInline(hasthis, false, context);
-	}
-
-	public Expression doInline(InlineScanState iss, Expression ethis,
-			List arguments, SemanticContext context) {
-		InlineDoState ids;
-		DeclarationExp de;
-		Expression e = null;
-
-		// memset(&ids, 0, sizeof(ids));
-		ids = new InlineDoState();
-
-		ids.parent = iss.fd;
-
-		// Set up vthis
-		if (ethis != null) {
-			VarDeclaration vthis;
-			ExpInitializer ei;
-			VarExp ve;
-
-			if (ethis.type.ty != Tclass && ethis.type.ty != Tpointer) {
-				ethis = ethis.addressOf(null, context);
-			}
-
-			ei = new ExpInitializer(ethis.loc, ethis);
-
-			vthis = new VarDeclaration(ethis.loc, ethis.type, Id.This, ei);
-			vthis.storage_class = STCin;
-			vthis.linkage = LINKd;
-			vthis.parent = iss.fd;
-
-			ve = new VarExp(vthis.loc, vthis);
-			ve.type = vthis.type;
-
-			ei.exp = new AssignExp(vthis.loc, ve, ethis);
-			ei.exp.type = ve.type;
-
-			ids.vthis = vthis;
-		}
-
-		// Set up parameters
-		if (ethis != null) {
-			e = new DeclarationExp(Loc.ZERO, ids.vthis);
-			e.type = Type.tvoid;
-		}
-
-		if (arguments != null && arguments.size() != 0) {
-			if (parameters.size() != arguments.size()) {
-				throw new IllegalStateException(
-						"assert(parameters.size() == arguments.size());");
-			}
-
-			for (int i = 0; i < arguments.size(); i++) {
-				VarDeclaration vfrom = (VarDeclaration) parameters.get(i);
-				VarDeclaration vto;
-				Expression arg = (Expression) arguments.get(i);
-				ExpInitializer ei;
-				VarExp ve;
-
-				ei = new ExpInitializer(arg.loc, arg);
-
-				vto = new VarDeclaration(vfrom.loc, vfrom.type, vfrom.ident, ei);
-				vto.storage_class |= vfrom.storage_class
-						& (STCin | STCout | STClazy | STCref);
-				vto.linkage = vfrom.linkage;
-				vto.parent = iss.fd;
-
-				ve = new VarExp(vto.loc, vto);
-				//ve.type = vto.type;
-				ve.type = arg.type;
-
-				ei.exp = new AssignExp(vto.loc, ve, arg);
-				ei.exp.type = ve.type;
-
-				ids.from.add(vfrom);
-				ids.to.add(vto);
-
-				de = new DeclarationExp(Loc.ZERO, vto);
-				de.type = Type.tvoid;
-
-				e = Expression.combine(e, de);
-			}
-		}
-
-		inlineNest++;
-		Expression eb = fbody.doInline(ids);
-		inlineNest--;
-		return Expression.combine(e, eb);
 	}
 
 	public int getLevel(Loc loc, FuncDeclaration fd, SemanticContext context) {
@@ -477,17 +263,6 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public int getNodeType() {
 		return FUNC_DECLARATION;
-	}
-
-	@Override
-	public void inlineScan(SemanticContext context) {
-		InlineScanState iss = new InlineScanState();
-		iss.fd = this;
-		if (fbody != null) {
-			inlineNest++;
-			fbody = fbody.inlineScan(iss, context);
-			inlineNest--;
-		}
 	}
 
 	public Expression interpret(InterState istate, Expressions arguments,

@@ -122,9 +122,5 @@ public class AssertExp extends UnaExp {
 		}
 		buf.writeByte(')');
 	}
-	
-	// PERHAPS int inlineCost(InlineCostState *ics);
-	// PERHAPS Expression *doInline(InlineDoState *ids);
-	// PERHAPS Expression *inlineScan(InlineScanState *iss);
 
 }

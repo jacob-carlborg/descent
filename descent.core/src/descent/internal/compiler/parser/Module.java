@@ -387,6 +387,4 @@ public class Module extends Package {
 		return javaElement;
 	}
 
-	// PERHAPS void inlineScan();
-
 }

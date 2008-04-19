@@ -20,30 +20,8 @@ public class SuperExp extends ThisExp {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		if (ids.vthis == null) {
-			throw new IllegalStateException("assert(ids.vthis);");
-		}
-
-		VarExp ve = new VarExp(loc, ids.vthis);
-		ve.type = type;
-		return ve;
-	}
-
-	@Override
 	public int getNodeType() {
 		return SUPER_EXP;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		FuncDeclaration fd = ics.fd;
-		if (!ics.hdrscan) {
-			if (fd.isNested() || !ics.hasthis) {
-				return COST_MAX;
-			}
-		}
-		return 1;
 	}
 
 	@Override

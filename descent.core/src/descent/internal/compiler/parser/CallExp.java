@@ -14,7 +14,6 @@ import static descent.internal.compiler.parser.Scope.CSXany_ctor;
 import static descent.internal.compiler.parser.Scope.CSXlabel;
 import static descent.internal.compiler.parser.Scope.CSXsuper_ctor;
 import static descent.internal.compiler.parser.Scope.CSXthis_ctor;
-import static descent.internal.compiler.parser.TOK.TOKcall;
 import static descent.internal.compiler.parser.TOK.TOKcomma;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdot;
@@ -89,59 +88,8 @@ public class CallExp extends UnaExp {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		CallExp ce;
-
-		ce = (CallExp) copy();
-		ce.e1 = e1.doInline(ids);
-		ce.arguments = arrayExpressiondoInline(arguments, ids);
-		return ce;
-	}
-
-	@Override
 	public int getNodeType() {
 		return CALL_EXP;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1 + e1.inlineCost(ics, context)
-				+ arrayInlineCost(ics, arguments, context);
-	}
-
-	@Override
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		Expression e = this;
-
-		e1 = e1.inlineScan(iss, context);
-		arrayInlineScan(iss, arguments, context);
-
-		if (e1.op == TOKvar) {
-			VarExp ve = (VarExp) e1;
-			FuncDeclaration fd = ve.var.isFuncDeclaration();
-
-			if (fd != null && fd != iss.fd && fd.canInline(false, context)) {
-				e = fd.doInline(iss, null, arguments, context);
-			}
-		} else if (e1.op == TOKdotvar) {
-			DotVarExp dve = (DotVarExp) e1;
-			FuncDeclaration fd = dve.var.isFuncDeclaration();
-
-			if (fd != null && fd != iss.fd && fd.canInline(true, context)) {
-				if (dve.e1.op == TOKcall
-						&& dve.e1.type.toBasetype(context).ty == Tstruct) {
-					/* To create ethis, we'll need to take the address
-					 * of dve.e1, but this won't work if dve.e1 is
-					 * a function call.
-					 */
-					;
-				} else {
-					e = fd.doInline(iss, dve.e1, arguments, context);
-				}
-			}
-		}
-
-		return e;
 	}
 
 	@Override

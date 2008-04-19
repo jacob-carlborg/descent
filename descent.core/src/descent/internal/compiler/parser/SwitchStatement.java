@@ -56,24 +56,6 @@ public class SwitchStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		condition = condition.inlineScan(iss, context);
-		body = body != null ? body.inlineScan(iss, context) : null;
-		if (sdefault != null) {
-			sdefault = (DefaultStatement) sdefault.inlineScan(iss, context);
-		}
-		if (cases != null) {
-			for (int i = 0; i < cases.size(); i++) {
-				Statement s;
-
-				s = (Statement) cases.get(i);
-				cases.set(i, s.inlineScan(iss, context));
-			}
-		}
-		return this;
-	}
-
-	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		if (istate.start == this) {
 			istate.start = null;

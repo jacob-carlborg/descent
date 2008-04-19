@@ -84,15 +84,6 @@ public class TupleExp extends Expression {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		TupleExp ce;
-
-		ce = (TupleExp) copy();
-		ce.exps = arrayExpressiondoInline(exps, ids);
-		return ce;
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -122,20 +113,6 @@ public class TupleExp extends Expression {
 	@Override
 	public int getNodeType() {
 		return TUPLE_EXP;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1 + arrayInlineCost(ics, exps, context);
-	}
-
-	@Override
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		Expression e = this;
-
-		arrayInlineScan(iss, exps, context);
-
-		return e;
 	}
 
 	@Override
@@ -229,8 +206,4 @@ public class TupleExp extends Expression {
 		argsToCBuffer(buf, exps, hgs, context);
 		buf.writeByte(')');
 	}
-
-	//PERHAPS int inlineCost(InlineCostState *ics);
-	//PERHAPS Expression *doInline(InlineDoState *ids);
-	//PERHAPS Expression *inlineScan(InlineScanState *iss);
 }

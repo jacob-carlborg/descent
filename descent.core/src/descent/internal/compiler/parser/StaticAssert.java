@@ -37,12 +37,7 @@ public class StaticAssert extends Dsymbol {
 	public int getNodeType() {
 		return STATIC_ASSERT;
 	}
-
-	@Override
-	public void inlineScan(SemanticContext context) {
-		// empty
-	}
-
+	
 	@Override
 	public String kind() {
 		return "static assert";

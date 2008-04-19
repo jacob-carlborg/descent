@@ -15,7 +15,8 @@ import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TUPLE;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
-import static descent.internal.compiler.parser.MATCH.*;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
@@ -29,7 +30,6 @@ import static descent.internal.compiler.parser.TOK.TOKarray;
 import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
-import static descent.internal.compiler.parser.TOK.TOKdsymbol;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
@@ -604,6 +604,13 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * the parser.
 	 */
 	public boolean synthetic;
+	
+	/**
+	 * Descent: symbols created from mixins holds a reference
+	 * to the CompileStatement or CompileDeclaration that created
+	 * them, so we can then go to this creator when doing code-selection.
+	 */
+	public Dsymbol creator;
 
 	public void accessCheck(Scope sc, Expression e, Declaration d,
 			SemanticContext context) {
@@ -1117,33 +1124,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		buf.writeByte(')');
 	}
 
-	public static void scanVar(Dsymbol s, InlineScanState iss,
-			SemanticContext context) {
-		VarDeclaration vd = s.isVarDeclaration();
-		if (vd != null) {
-			TupleDeclaration td = vd.toAlias(context).isTupleDeclaration();
-			if (td != null) {
-				for (int i = 0; i < td.objects.size(); i++) {
-					DsymbolExp se = (DsymbolExp) td.objects.get(i);
-					if (se.op != TOKdsymbol) {
-						throw new IllegalStateException(
-								"assert (se.op == TOKdsymbol);");
-					}
-					scanVar(se.s, iss, context);
-				}
-			} else {
-				// Scan initializer (vd.init)
-				if (vd.init() != null) {
-					ExpInitializer ie = vd.init().isExpInitializer();
-
-					if (ie != null) {
-						ie.exp = ie.exp.inlineScan(iss, context);
-					}
-				}
-			}
-		}
-	}
-
 	public static void arrayExpressionScanForNestedRef(Scope sc, Expressions a,
 			SemanticContext context) {
 		if (null == a) {
@@ -1512,55 +1492,6 @@ public abstract class ASTDmdNode extends ASTNode {
 					if (i == exps.size())
 						return; // empty tuple, no more arguments
 					arg = exps.get(i);
-				}
-			}
-		}
-	}
-
-	public static int arrayInlineCost(InlineCostState ics, List arguments,
-			SemanticContext context) {
-		int cost = 0;
-
-		if (arguments != null) {
-			for (int i = 0; i < arguments.size(); i++) {
-				Expression e = (Expression) arguments.get(i);
-
-				if (e != null)
-					cost += e.inlineCost(ics, context);
-			}
-		}
-		return cost;
-	}
-
-	public static Expressions arrayExpressiondoInline(Expressions a,
-			InlineDoState ids) {
-		Expressions newa = null;
-
-		if (a != null) {
-			newa = new Expressions();
-			newa.setDim(a.size());
-
-			for (int i = 0; i < a.size(); i++) {
-				Expression e = (Expression) a.get(i);
-
-				if (e != null) {
-					e = e.doInline(ids);
-					newa.set(i, e);
-				}
-			}
-		}
-		return newa;
-	}
-
-	public static void arrayInlineScan(InlineScanState iss, List arguments,
-			SemanticContext context) {
-		if (arguments != null) {
-			for (int i = 0; i < arguments.size(); i++) {
-				Expression e = (Expression) arguments.get(i);
-
-				if (e != null) {
-					e = e.inlineScan(iss, context);
-					arguments.set(i, e);
 				}
 			}
 		}

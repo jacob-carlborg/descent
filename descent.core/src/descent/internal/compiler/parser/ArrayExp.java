@@ -28,34 +28,8 @@ public class ArrayExp extends UnaExp {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		ArrayExp ce;
-
-		ce = (ArrayExp) copy();
-		ce.e1 = e1.doInline(ids);
-		ce.arguments = arrayExpressiondoInline(arguments, ids);
-		return ce;
-	}
-
-	@Override
 	public int getNodeType() {
 		return ARRAY_EXP;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1 + e1.inlineCost(ics, context)
-				+ arrayInlineCost(ics, arguments, context);
-	}
-
-	@Override
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		Expression e = this;
-
-		e1 = e1.inlineScan(iss, context);
-		arrayInlineScan(iss, arguments, context);
-
-		return e;
 	}
 
 	@Override

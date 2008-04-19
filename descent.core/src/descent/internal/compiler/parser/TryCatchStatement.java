@@ -60,23 +60,6 @@ public class TryCatchStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		if (body != null) {
-			body = body.inlineScan(iss, context);
-		}
-		if (catches != null) {
-			for (int i = 0; i < catches.size(); i++) {
-				Catch c = catches.get(i);
-
-				if (c.handler != null) {
-					c.handler = c.handler.inlineScan(iss, context);
-				}
-			}
-		}
-		return this;
-	}
-
-	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		body = body.semanticScope(sc, null /*this*/, null, context);
 

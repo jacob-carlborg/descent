@@ -17,19 +17,6 @@ public abstract class UnaExp extends Expression {
 		this.sourceE1 = e1;
 	}
 
-	@Override
-	public Expression doInline(InlineDoState ids) {
-		UnaExp ue = (UnaExp) copy();
-
-		ue.e1 = e1.doInline(ids);
-		return ue;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1 + e1.inlineCost(ics, context);
-	}
-
 	public final Expression interpretCommon(InterState istate,
 			UnaExp_fp fp, SemanticContext context) {
 		Expression e;

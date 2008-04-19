@@ -30,42 +30,6 @@ public class IndexExp extends BinExp {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		IndexExp are = (IndexExp) copy();
-
-		are.e1 = e1.doInline(ids);
-
-		if (lengthVar != null) {
-			VarDeclaration vd = lengthVar;
-			ExpInitializer ie;
-			ExpInitializer ieto;
-			VarDeclaration vto;
-
-			vto = new VarDeclaration(vd.loc, vd.type, vd.ident, vd.init);
-			vto = vd;
-			vto.parent = ids.parent;
-			vto.csym = null;
-			vto.isym = null;
-
-			ids.from.add(vd);
-			ids.to.add(vto);
-
-			if (vd.init != null) {
-				ie = vd.init.isExpInitializer();
-				if (ie == null) {
-					throw new IllegalStateException("assert(ie);");
-				}
-				ieto = new ExpInitializer(ie.loc(), ie.exp.doInline(ids));
-				vto.init = ieto;
-			}
-
-			are.lengthVar = vto;
-		}
-		are.e2 = e2.doInline(ids);
-		return are;
-	}
-
-	@Override
 	public int getNodeType() {
 		return 0;
 	}

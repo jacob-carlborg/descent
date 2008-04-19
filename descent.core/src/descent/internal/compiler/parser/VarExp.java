@@ -192,8 +192,4 @@ public class VarExp extends Expression {
 		}
 		return this;
 	}
-	
-	//PERHAPS void dump(int indent);
-	//PERHAPS int inlineCost(InlineCostState *ics);
-	//PERHAPS Expression *doInline(InlineDoState *ids);
 }

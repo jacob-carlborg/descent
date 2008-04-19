@@ -213,18 +213,6 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public void inlineScan(SemanticContext context) {
-		int i;
-
-		if (members != null) {
-			for (i = 0; i < members.size(); i++) {
-				Dsymbol s = members.get(i);
-				s.inlineScan(context);
-			}
-		}
-	}
-
-	@Override
 	public AggregateDeclaration isAggregateDeclaration() {
 		return this;
 	}

@@ -260,8 +260,4 @@ public class ArrayLiteralExp extends Expression {
 		}
 		return this;
 	}
-
-	// PERHAPS int inlineCost(InlineCostState *ics);
-	// PERHAPS Expression *doInline(InlineDoState *ids);
-	// PERHAPS Expression *inlineScan(InlineScanState *iss);
 }

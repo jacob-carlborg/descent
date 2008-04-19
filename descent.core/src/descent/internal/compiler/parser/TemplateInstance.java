@@ -975,6 +975,4 @@ public class TemplateInstance extends ScopeDsymbol {
 			this.sourceTiargs = new Objects(tiargs);
 		}
 	}
-
-	// PERHAPS void inlineScan();
 }

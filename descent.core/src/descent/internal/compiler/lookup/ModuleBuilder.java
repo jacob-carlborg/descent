@@ -382,6 +382,7 @@ public class ModuleBuilder {
 		} else if (init.isMixin()) {
 			Expression exp = encoder.decodeExpression(init.getElementName().toCharArray());
 			CompileDeclaration member = new CompileDeclaration(getLoc(module, init), exp);
+			member.setJavaElement(init);
 			members.add(member);
 		} else if (init.isExtern()) {
 			// Also try to lazily initialize things inside:

@@ -312,6 +312,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 		if (node.resolvedSymbol != null) {
 			Dsymbol sym = node.resolvedSymbol;
+			
+			// See if this symbols was created at compile-time
+			while (sym.creator != null) {
+				sym = sym.creator;
+			}
+			
 			if (sym.getJavaElement() != null) {
 				addJavaElement(sym.getJavaElement());
 			} else {

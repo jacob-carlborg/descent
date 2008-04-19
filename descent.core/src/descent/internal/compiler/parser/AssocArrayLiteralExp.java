@@ -368,8 +368,4 @@ public class AssocArrayLiteralExp extends Expression {
 			value.toMangleBuffer(buf, context);
 		}
 	}
-	
-	// PERHAPS int inlineCost(InlineCostState *ics);
-	// PERHAPS Expression *doInline(InlineDoState *ids);
-	// PERHAPS Expression *inlineScan(InlineScanState *iss);
 }

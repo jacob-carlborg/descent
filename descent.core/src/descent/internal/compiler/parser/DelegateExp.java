@@ -101,11 +101,6 @@ public class DelegateExp extends UnaExp {
 	}
 
 	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return COST_MAX;
-	}
-
-	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			e1 = e1.semantic(sc, context);

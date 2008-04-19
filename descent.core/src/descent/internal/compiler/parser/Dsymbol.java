@@ -194,10 +194,6 @@ public class Dsymbol extends ASTDmdNode {
 		return false;
 	}
 
-	public void inlineScan(SemanticContext context) {
-		// empty
-	}
-
 	public AggregateDeclaration isAggregateDeclaration() {
 		return null;
 	}

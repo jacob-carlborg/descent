@@ -45,17 +45,6 @@ public class WithStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		if (exp != null) {
-			exp = exp.inlineScan(iss, context);
-		}
-		if (body != null) {
-			body = body.inlineScan(iss, context);
-		}
-		return this;
-	}
-
-	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		ScopeDsymbol sym;
 		Initializer init;

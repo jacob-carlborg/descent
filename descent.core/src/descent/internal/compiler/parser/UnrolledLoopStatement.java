@@ -36,23 +36,6 @@ public class UnrolledLoopStatement extends Statement {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		Expression e = null;
-
-		for (int i = 0; i < statements.size(); i++) {
-			Statement s = statements.get(i);
-			if (s != null) {
-				Expression e2 = s.doInline(ids);
-				e = Expression.combine(e, e2);
-				if (s.isReturnStatement() != null) {
-					break;
-				}
-			}
-		}
-		return e;
-	}
-
-	@Override
 	public boolean fallOffEnd(SemanticContext context) {
 		boolean falloff = true;
 
@@ -87,33 +70,6 @@ public class UnrolledLoopStatement extends Statement {
 	@Override
 	public boolean hasContinue() {
 		return true;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		int cost = 0;
-
-		for (int i = 0; i < statements.size(); i++) {
-			Statement s = statements.get(i);
-			if (s != null) {
-				cost += s.inlineCost(ics, context);
-				if (cost >= COST_MAX) {
-					break;
-				}
-			}
-		}
-		return cost;
-	}
-
-	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		for (int i = 0; i < statements.size(); i++) {
-			Statement s = statements.get(i);
-			if (s != null) {
-				statements.set(i, s.inlineScan(iss, context));
-			}
-		}
-		return this;
 	}
 
 	@Override

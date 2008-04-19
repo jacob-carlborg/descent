@@ -113,5 +113,13 @@ public class CodeSelecType_Test extends AbstractModelTest {
 		assertEquals(1, elements.length);
 		assertEquals(unit.getAllTypes()[0].getChildren()[0], elements[0]);
 	}
+	
+	public void testSelectClassCreatedFromMixin() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", "mixin(\"class Foo { }\"); Foo foo;");
+		
+		IJavaElement[] elements = unit.codeSelect(27, 0);
+		assertEquals(1, elements.length);
+		assertEquals(unit.getChildren()[0], elements[0]);
+	}
 
 }

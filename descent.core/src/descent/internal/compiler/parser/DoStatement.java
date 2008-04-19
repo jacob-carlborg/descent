@@ -57,13 +57,6 @@ public class DoStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		body = body != null ? body.inlineScan(iss, context) : null;
-		condition = condition.inlineScan(iss, context);
-		return this;
-	}
-
-	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		if (istate.start == this) {
 			istate.start = null;

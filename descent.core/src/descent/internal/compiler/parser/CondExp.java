@@ -73,16 +73,6 @@ public class CondExp extends BinExp {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		CondExp ce = (CondExp) copy();
-
-		ce.econd = econd.doInline(ids);
-		ce.e1 = e1.doInline(ids);
-		ce.e2 = e2.doInline(ids);
-		return ce;
-	}
-
-	@Override
 	public int getNodeType() {
 		return COND_EXP;
 	}
@@ -97,20 +87,6 @@ public class CondExp extends BinExp {
 
 		// Pick the worst match
 		return (m1.ordinal() < m2.ordinal()) ? m1 : m2;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1 + e1.inlineCost(ics, context) + e2.inlineCost(ics, context)
-				+ econd.inlineCost(ics, context);
-	}
-
-	@Override
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		econd = econd.inlineScan(iss, context);
-		e1 = e1.inlineScan(iss, context);
-		e2 = e2.inlineScan(iss, context);
-		return this;
 	}
 
 	@Override

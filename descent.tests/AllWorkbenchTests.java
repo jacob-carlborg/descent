@@ -66,9 +66,9 @@ public class AllWorkbenchTests {
 	 */
 	private final static int enabled = 0
 //					| BINDING 
-					| CODE_COMPLETE 
+//					| CODE_COMPLETE 
 //					| CODE_EVALUATE 
-//					| CODE_SELECT 
+					| CODE_SELECT 
 //					| LOOKUP 
 //					| MODEL 
 //					| SIGNATURE

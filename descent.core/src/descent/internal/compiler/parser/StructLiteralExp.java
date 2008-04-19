@@ -47,15 +47,6 @@ public class StructLiteralExp extends Expression {
 		return f;
 	}
 
-	@Override
-	public Expression doInline(InlineDoState ids) {
-		StructLiteralExp ce;
-
-		ce = (StructLiteralExp) copy();
-		ce.elements = arrayExpressiondoInline(elements, ids);
-		return ce;
-	}
-
 	public Expression getField(Type type, int offset, SemanticContext context) {
 		Expression e = null;
 		int i = getFieldIndex(type, offset, context);
@@ -95,18 +86,6 @@ public class StructLiteralExp extends Expression {
 	@Override
 	public int getNodeType() {
 		return 0;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1 + arrayInlineCost(ics, elements, context);
-	}
-
-	@Override
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		Expression e = this;
-		arrayInlineScan(iss, elements, context);
-		return e;
 	}
 
 	@Override

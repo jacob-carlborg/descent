@@ -65,21 +65,6 @@ public class ForStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		if (init != null) {
-			init = init.inlineScan(iss, context);
-		}
-		if (condition != null) {
-			condition = condition.inlineScan(iss, context);
-		}
-		if (increment != null) {
-			increment = increment.inlineScan(iss, context);
-		}
-		body = body.inlineScan(iss, context);
-		return this;
-	}
-
-	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		if (istate.start == this) {
 			istate.start = null;

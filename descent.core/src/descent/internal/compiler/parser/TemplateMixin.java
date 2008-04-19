@@ -52,11 +52,6 @@ public class TemplateMixin extends TemplateInstance {
 	}
 
 	@Override
-	public void inlineScan(SemanticContext context) {
-		super.inlineScan(context);
-	}
-
-	@Override
 	public TemplateMixin isTemplateMixin() {
 		return this;
 	}

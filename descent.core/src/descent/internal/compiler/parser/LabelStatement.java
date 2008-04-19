@@ -65,14 +65,6 @@ public class LabelStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		if (statement != null) {
-			statement = statement.inlineScan(iss, context);
-		}
-		return this;
-	}
-
-	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		if (istate.start == this) {
 			istate.start = null;

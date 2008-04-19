@@ -66,22 +66,6 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public void inlineScan(SemanticContext context) {
-		int i;
-		Dsymbols d = include(null, null, context);
-
-		if (d != null) {
-			for (i = 0; i < d.size(); i++) {
-				Dsymbol s;
-
-				s = (Dsymbol) d.get(i);
-				//printf("AttribDeclaration::inlineScan %s\n", s.toChars());
-				s.inlineScan(context);
-			}
-		}
-	}
-
-	@Override
 	public AttribDeclaration isAttribDeclaration() {
 		return this;
 	}

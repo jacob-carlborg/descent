@@ -117,13 +117,6 @@ public class ForeachStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		aggr = aggr.inlineScan(iss, context);
-		body = body.inlineScan(iss, context);
-		return this;
-	}
-
-	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		if (istate.start == this) {
 			istate.start = null;

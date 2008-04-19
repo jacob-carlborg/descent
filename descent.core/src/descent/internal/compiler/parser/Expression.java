@@ -264,10 +264,6 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return this;
 	}
 
-	public Expression doInline(InlineDoState ids) {
-		return copy();
-	}
-
 	@Override
 	public DYNCAST dyncast() {
 		return DYNCAST.DYNCAST_EXPRESSION;
@@ -341,14 +337,6 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			return match;
 		}
 		return MATCHnomatch;
-	}
-
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return 1;
-	}
-
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		return this;
 	}
 
 	public Expression integralPromotions(Scope sc, SemanticContext context) {

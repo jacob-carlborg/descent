@@ -22,30 +22,8 @@ public class ThisExp extends Expression {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		if (ids.vthis == null) {
-			return this;
-		}
-
-		VarExp ve = new VarExp(loc, ids.vthis);
-		ve.type = type;
-		return ve;
-	}
-
-	@Override
 	public int getNodeType() {
 		return THIS_EXP;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		FuncDeclaration fd = ics.fd;
-		if (!ics.hdrscan) {
-			if (fd.isNested() || !ics.hasthis) {
-				return COST_MAX;
-			}
-		}
-		return 1;
 	}
 
 	@Override

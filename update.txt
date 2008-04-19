@@ -4,7 +4,6 @@ clone.c
 constfold.c
 expression.c
 func.c --> missing StaticCtorDeclaration::StaticCtorDeclaration and StaticDtorDeclaration::StaticDtorDeclaration
-inline.c
 interpret.c
 mtype.c
 mtype.h

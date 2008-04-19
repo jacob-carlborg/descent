@@ -55,17 +55,6 @@ public class TryFinallyStatement extends Statement {
 	}
 
 	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		if (body != null) {
-			body = body.inlineScan(iss, context);
-		}
-		if (finalbody != null) {
-			finalbody = finalbody.inlineScan(iss, context);
-		}
-		return this;
-	}
-
-	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		body = body.semantic(sc, context);
 		sc = sc.push();

@@ -322,10 +322,5 @@ public class SliceExp extends UnaExp {
 		type = Type.terror;
 		return e;
 	}
-	
-	//PERHAPS void dump(int indent);
-    //PERHAPS int inlineCost(InlineCostState *ics);
-    //PERHAPS Expression *doInline(InlineDoState *ids);
-    //PERHAPS Expression *inlineScan(InlineScanState *iss);
 
 }

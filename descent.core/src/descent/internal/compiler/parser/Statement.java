@@ -15,10 +15,6 @@ public abstract class Statement extends ASTDmdNode {
 		return false;
 	}
 
-	public Expression doInline(InlineDoState ids) {
-		throw new IllegalStateException("assert(0);");
-	}
-
 	public boolean fallOffEnd(SemanticContext context) {
 		return true;
 	}
@@ -33,14 +29,6 @@ public abstract class Statement extends ASTDmdNode {
 
 	public boolean hasContinue() {
 		return false;
-	}
-
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return COST_MAX;
-	}
-
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		return this;
 	}
 
 	public Expression interpret(InterState istate, SemanticContext context) {

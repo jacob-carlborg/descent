@@ -1,7 +1,11 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.IInitializer;
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKeof;
 import static descent.internal.compiler.parser.TOK.TOKstring;
@@ -11,7 +15,9 @@ public class CompileDeclaration extends AttribDeclaration {
 
 	public Expression exp, sourceExp;
 	public ScopeDsymbol sd;
-
+	
+	protected IInitializer javaElement;
+	
 	public CompileDeclaration(Loc loc, Expression exp) {
 		super(null);
 		this.loc = loc;
@@ -57,10 +63,19 @@ public class CompileDeclaration extends AttribDeclaration {
 		p.loc = loc;
 		decl = p.parseModule();
 		for(Dsymbol s : decl) {
-			s.synthetic = true;
-			s.setStart(getStart() + 1);
-			s.setLength(getLength());
-			s.setLineNumber(getLineNumber());
+			s.accept(new AstVisitorAdapter() {
+				@Override
+				public void preVisit(ASTNode node) {
+					if (node instanceof ASTDmdNode) {
+						ASTDmdNode s = (ASTDmdNode) node;
+						s.synthetic = true;
+						s.setStart(getStart() + 1);
+						s.setLength(getLength());
+						s.setLineNumber(getLineNumber());					
+						s.creator = CompileDeclaration.this;
+					}
+				}
+			});
 		}
 
 		// TODO semantic do this better
@@ -96,6 +111,15 @@ public class CompileDeclaration extends AttribDeclaration {
 		exp.toCBuffer(buf, hgs, context);
 		buf.writestring(");");
 		buf.writenl();
+	}
+	
+	@Override
+	public IJavaElement getJavaElement() {
+		return javaElement;
+	}
+	
+	public void setJavaElement(IInitializer javaElement) {
+		this.javaElement = javaElement;
 	}
 
 }

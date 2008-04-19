@@ -2114,10 +2114,14 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 				length= -1;
 
 				if (reference instanceof IMember) {
-					range= ((IMember) reference).getNameRange();
-					if (range != null) {
-						offset= range.getOffset();
-						length= range.getLength();
+					ISourceRange range2= ((IMember) reference).getNameRange();
+					if (range2 != null) {
+						range = range2;
+						offset= range2.getOffset();
+						length= range2.getLength();
+					} else {
+						offset = range.getOffset();
+						length = range.getLength();
 					}
 				} else if (reference instanceof ITypeParameter) {
 					range= ((ITypeParameter) reference).getNameRange();

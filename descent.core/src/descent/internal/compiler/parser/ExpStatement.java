@@ -26,11 +26,6 @@ public class ExpStatement extends Statement {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		return exp != null ? exp.doInline(ids) : null;
-	}
-
-	@Override
 	public boolean fallOffEnd(SemanticContext context) {
 		if (exp != null) {
 			if (exp.op == TOKassert) {
@@ -49,19 +44,6 @@ public class ExpStatement extends Statement {
 	@Override
 	public int getNodeType() {
 		return EXP_STATEMENT;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		return exp != null ? exp.inlineCost(ics, context) : 0;
-	}
-
-	@Override
-	public Statement inlineScan(InlineScanState iss, SemanticContext context) {
-		if (exp != null) {
-			exp = exp.inlineScan(iss, context);
-		}
-		return this;
 	}
 
 	@Override

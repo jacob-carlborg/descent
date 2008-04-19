@@ -26,96 +26,8 @@ public class DeclarationExp extends Expression {
 	}
 
 	@Override
-	public Expression doInline(InlineDoState ids) {
-		DeclarationExp de = (DeclarationExp) copy();
-		VarDeclaration vd;
-
-		//printf("DeclarationExp::doInline(%s)\n", toChars());
-		vd = declaration.isVarDeclaration();
-		if (vd != null) {
-			if (vd.isStatic() || vd.isConst()) {
-				;
-			} else {
-				ExpInitializer ie;
-				ExpInitializer ieto;
-				VarDeclaration vto;
-
-				vto = new VarDeclaration(vd.loc, vd.type, vd.ident, vd.init);
-				vto = vd;
-				vto.parent = ids.parent;
-				//		    vto.csym = null;
-				//		    vto.isym = null;
-
-				ids.from.add(vd);
-				ids.to.add(vto);
-
-				if (vd.init().isVoidInitializer() != null) {
-					vto.init = new VoidInitializer(vd.init.loc);
-				} else {
-					ie = vd.init.isExpInitializer();
-					if (ie == null) {
-						throw new IllegalStateException("assert(ie);");
-					}
-					ieto = new ExpInitializer(ie.loc, ie.exp.doInline(ids));
-					vto.init(ieto);
-				}
-				de.declaration = vto;
-			}
-		}
-		/* This needs work, like DeclarationExp::toElem(), if we are
-		 * to handle TemplateMixin's. For now, we just don't inline them.
-		 */
-		return de;
-	}
-
-	@Override
 	public int getNodeType() {
 		return DECLARATION_EXP;
-	}
-
-	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		int cost = 0;
-		VarDeclaration vd;
-
-		vd = declaration.isVarDeclaration();
-		if (vd != null) {
-			TupleDeclaration td = vd.toAlias(context).isTupleDeclaration();
-			if (td != null) {
-				return COST_MAX; // finish DeclarationExp::doInline
-			}
-			if (!ics.hdrscan && vd.isDataseg(context)) {
-				return COST_MAX;
-			}
-			cost += 1;
-
-			// Scan initializer (vd.init)
-			if (vd.init() != null) {
-				ExpInitializer ie = vd.init().isExpInitializer();
-
-				if (ie != null) {
-					cost += ie.exp.inlineCost(ics, context);
-				}
-			}
-		}
-
-		// These can contain functions, which when copied, get output twice.
-		if (declaration.isStructDeclaration() != null
-				|| declaration.isClassDeclaration() != null
-				|| declaration.isFuncDeclaration() != null
-				|| declaration.isTypedefDeclaration() != null
-				|| declaration.isTemplateMixin() != null) {
-			return COST_MAX;
-		}
-
-		//printf("DeclarationExp::inlineCost('%s')\n", toChars());
-		return cost;
-	}
-
-	@Override
-	public Expression inlineScan(InlineScanState iss, SemanticContext context) {
-		scanVar(declaration, iss, context);
-		return this;
 	}
 
 	@Override
@@ -209,11 +121,6 @@ public class DeclarationExp extends Expression {
 			declaration.semantic2(sc, context);
 			if (context.global.errors == 0) {
 				declaration.semantic3(sc, context);
-
-				if (context.global.errors == 0
-						&& context.global.params.useInline) {
-					declaration.inlineScan(context);
-				}
 			}
 		}
 

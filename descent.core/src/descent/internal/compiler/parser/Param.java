@@ -38,35 +38,12 @@ public class Param {
 	public String argv0;	// program name
 	public List<String> imppath; // array of char*'s of where to look for import modules
 	public List<String> fileImppath;	// array of char*'s of where to look for file import modules
-	public String objdir;	// .obj file output directory
-	public String objname;	// .obj file output name
-
-	public char doDocComments;	// process embedded documentation comments
-	public String docdir;	// write documentation file to docdir directory
-	public String docname;	// write documentation file to docname
-	public List<String> ddocfiles;	// macro include files for Ddoc
-
-	public char doHdrGeneration;	// process embedded documentation comments
-	public String hdrdir;		// write 'header' file to docdir directory
-	public String hdrname;		// write 'header' file to docname
 
 	public long debuglevel;	// debug level
 	public List<char[]> debugids;		// debug identifiers
 
 	public long versionlevel;	// version level
 	public List<char[]> versionids;		// version identifiers
-
-	public boolean dump_source;
-
-    // Hidden debug switches
-	public char debuga;
-	public char debugb;
-	public char debugc;
-	public char debugf;
-	public char debugr;
-	public char debugw;
-	public char debugx;
-	public char debugy;
 
 	public char run;		// run resulting executable
 	public int runargs_length;
@@ -75,24 +52,6 @@ public class Param {
 	public Param() {
 		versionids = new ArrayList<char[]>();
 		debugids = new ArrayList<char[]>();
-//		versionids.add("DigitalMars".toCharArray());
-//		versionids.add("Windows".toCharArray());
-//		versionids.add("Win32".toCharArray());
-//		versionids.add("X86".toCharArray());
-//		versionids.add("LittleEndian".toCharArray());
-//		versionids.add("D_InlineAsm".toCharArray());
-//		versionids.add("D_InlineAsm_X86".toCharArray());
-//		versionids.add("all".toCharArray());
 	}
-
-    // Linker stuff
-    /*
-    Array *objfiles;
-    Array *linkswitches;
-    Array *libfiles;
-    char *deffile;
-    char *resfile;
-    char *exefile;
-    */
 	
 }

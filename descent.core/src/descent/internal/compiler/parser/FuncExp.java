@@ -31,12 +31,6 @@ public class FuncExp extends Expression {
 	}
 
 	@Override
-	public int inlineCost(InlineCostState ics, SemanticContext context) {
-		// Right now, this makes the function be output to the .obj file twice.
-		return COST_MAX;
-	}
-
-	@Override
 	public void scanForNestedRef(Scope sc, SemanticContext context) {
 		// empty
 	}
@@ -54,11 +48,6 @@ public class FuncExp extends Expression {
 				fd.semantic2(sc, context);
 				if (context.global.errors == 0) {
 					fd.semantic3(sc, context);
-
-					if (context.global.errors == 0
-							&& context.global.params.useInline) {
-						fd.inlineScan(context);
-					}
 				}
 			}
 
