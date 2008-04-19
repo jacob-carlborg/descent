@@ -26,6 +26,7 @@ import static descent.internal.compiler.parser.PROT.PROTprivate;
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCdeprecated;
+import static descent.internal.compiler.parser.STC.STCfinal;
 import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
@@ -98,6 +99,17 @@ public class FuncDeclaration extends Declaration {
 	// Support for NRVO (named return value optimization)
 	public int nrvo_can; // !=0 means we can do it
 	public VarDeclaration nrvo_var; // variable to replace with shidden
+	
+    BUILTIN builtin;		// set if this is a known, builtin
+    						// function we can evaluate at compile
+    						// time
+
+    int tookAddressOf;		// set if someone took the address of
+							// this function
+    Dsymbols closureVars;	// local variables in this function
+							// which are referenced by nested
+							// functions
+
 	
 	// Wether this function is actually a templated function
 	public boolean templated;
@@ -788,6 +800,10 @@ public class FuncDeclaration extends Declaration {
 		if (isMain()) {
 			return "_Dmain";
 		}
+		
+		if (isWinMain() || isDllMain()) {
+		    return ident.toChars();
+		}
 
 		return super.mangle(context);
 	}
@@ -997,6 +1013,11 @@ public class FuncDeclaration extends Declaration {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.NonVirtualFunctionsCannotBeAbstract, this));
 		}
+		
+		if (isAbstract() && isFinal()) {
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.CannotBeBothAbstractAndFinal, this));
+		}
 
 		sd = parent.isStructDeclaration();
 		if (sd != null) {
@@ -1044,7 +1065,14 @@ public class FuncDeclaration extends Declaration {
 
 			// if static function, do not put in vtbl[]
 			if (!isVirtual(context)) {
-				return;
+				// goto Ldone
+				
+			    /* Save scope for possible later use (if we need the
+			     * function internals)
+			     */
+			    scope = new Scope(sc, context);
+			    scope.setNoFree();
+			    return;
 			}
 
 			// Find index of existing function in vtbl[] to override
@@ -1276,8 +1304,8 @@ public class FuncDeclaration extends Declaration {
 			case 1: {
 				Argument arg0 = Argument.getNth(f.parameters, 0, context);
 				if (arg0.type.ty != Tarray
-						|| arg0.type.next.ty != Tarray
-						|| arg0.type.next.next.ty != Tchar
+						|| arg0.type.nextOf().ty != Tarray
+						|| arg0.type.nextOf().nextOf().ty != Tchar
 						|| ((arg0.storageClass & (STCout | STCref | STClazy)) != 0)) {
 					// goto Lmainerr;
 					gotoLmainerr = true;
@@ -1338,6 +1366,7 @@ public class FuncDeclaration extends Declaration {
 			}
 		}
 
+		// Ldone:
 		/*
 		 * Save scope for possible later use (if we need the function internals)
 		 */
@@ -1369,6 +1398,9 @@ public class FuncDeclaration extends Declaration {
 		VarDeclaration _arguments = null;
 
 		if (parent == null) {
+			if (context.global.errors != 0) {
+				return;
+			}
 			throw new IllegalStateException("assert(0);");
 		}
 
@@ -1412,7 +1444,7 @@ public class FuncDeclaration extends Declaration {
 			sc2.sw = null;
 			sc2.fes = fes;
 			sc2.linkage = LINK.LINKd;
-			sc2.stc &= ~(STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
+			sc2.stc &= ~(STCauto | STCscope | STCstatic | STCabstract | STCdeprecated | STCfinal);
 			sc2.protection = PROT.PROTpublic;
 			sc2.explicitProtection = 0;
 			sc2.structalign = 8;
@@ -1737,20 +1769,26 @@ public class FuncDeclaration extends Declaration {
 				boolean offend = fbody != null ? fbody.fallOffEnd(context)
 						: true;
 
-				if (isStaticCtorDeclaration() != null) { /*
-				 * It's a static
-				 * constructor.
-				 * Ensure that all
-				 * ctor consts were
-				 * initialized.
-				 */
+				if (isStaticCtorDeclaration() != null) { 
+					/*
+					 * It's a static constructor.
+					 * Ensure that all ctor consts were initialized.
+					 */
+					
+					Dsymbol p = toParent();
+					ScopeDsymbol ad2 = p.isScopeDsymbol();
+					if (null == ad2) {
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeErrorLoc(
+												IProblem.StaticConstructorCanOnlyBePartOfStructClassModule,
+												this));
+					} else {
+						for (int i = 0; i < ad2.members.size(); i++) {
+							Dsymbol s = ad2.members.get(i);
 
-					ScopeDsymbol ad2 = toParent().isScopeDsymbol();
-					Assert.isTrue(ad2 != null);
-					for (int i = 0; i < ad2.members.size(); i++) {
-						Dsymbol s = ad2.members.get(i);
-
-						s.checkCtorConstInit(context);
+							s.checkCtorConstInit(context);
+						}
 					}
 				}
 

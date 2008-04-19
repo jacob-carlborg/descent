@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+
 public class Global {
 	
 	public int structalign = 8;

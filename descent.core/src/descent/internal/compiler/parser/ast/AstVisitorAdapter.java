@@ -287,7 +287,7 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(IftypeCondition node) {
 	}
 
-	public void endVisit(IftypeExp node) {
+	public void endVisit(IsExp node) {
 	}
 
 	public void endVisit(Import node) {
@@ -1078,7 +1078,7 @@ public class AstVisitorAdapter implements IASTVisitor {
 		return true;
 	}
 
-	public boolean visit(IftypeExp node) {
+	public boolean visit(IsExp node) {
 		return true;
 	}
 

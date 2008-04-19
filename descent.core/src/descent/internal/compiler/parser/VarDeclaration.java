@@ -132,7 +132,7 @@ public class VarDeclaration extends Declaration {
 	}
 
 	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
-		if (!this.isDataseg(context) && this.parent != sc.parent && this.parent != null) {
+		if (parent != null && !this.isDataseg(context) && this.parent != sc.parent) {
 			FuncDeclaration fdv = this.toParent().isFuncDeclaration();
 			FuncDeclaration fdthis = (FuncDeclaration) sc.parent.isFuncDeclaration();
 
@@ -265,7 +265,11 @@ public class VarDeclaration extends Declaration {
 			 * declarations.
 			 */
 			storage_class &= ~STCauto;
+			originalType = type;
 		} else {
+			if (null == originalType) {
+				originalType = type;
+			}
 			type = type.semantic(loc, sc, context);
 		}
 
@@ -311,6 +315,7 @@ public class VarDeclaration extends Declaration {
 			int nelems = Argument.dim(tt.arguments, context);
 			Objects exps = new Objects();
 			exps.setDim(nelems);
+			Expression ie = init != null ? init.toExpression(context) : null;
 
 			for (int i = 0; i < nelems; i++) {
 				Argument arg = Argument.getNth(tt.arguments, i, context);
@@ -321,7 +326,16 @@ public class VarDeclaration extends Declaration {
 				String name = buf.extractData();
 				IdentifierExp id = new IdentifierExp(loc, name.toCharArray());
 
-				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
+			    Expression einit = ie;
+				if (ie != null && ie.op == TOK.TOKtuple) {
+					einit = (Expression) ((TupleExp) ie).exps.get(i);
+				}
+				Initializer ti = init;
+				if (einit != null) {
+					ti = new ExpInitializer(einit.loc, einit);
+				}
+
+				VarDeclaration v = new VarDeclaration(loc, arg.type, id, ti);
 				v.semantic(sc, context);
 
 				if (sc.scopesym != null) {
@@ -417,9 +431,16 @@ public class VarDeclaration extends Declaration {
 
 		if (init == null && !sc.inunion && !isStatic() && !isConst()
 				&& fd != null
-				&& (storage_class & (STCfield | STCin | STCforeach)) == 0) {
+				&& (storage_class & (STCfield | STCin | STCforeach)) == 0 &&
+				type.size(context) != 0) {
 			// Provide a default initializer
 			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
+				/* If a struct is all zeros, as a special case
+			     * set it's initializer to the integer 0.
+			     * In AssignExp::toElem(), we check for this and issue
+			     * a memset() to initialize the struct.
+			     * Must do same check in interpreter.
+			     */				
 				Expression e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 				Expression e1;
 				e1 = new VarExp(loc, this);
@@ -446,10 +467,11 @@ public class VarDeclaration extends Declaration {
 
 		if (init != null) {
 			ArrayInitializer ai = init.isArrayInitializer();
-			if (ai != null && type.toBasetype(context).ty == Taarray) {
+			if (ai != null && tb.ty == Taarray) {
 				init = ai.toAssocArrayInitializer(context);
 			}
 
+			StructInitializer si = init.isStructInitializer();
 			ExpInitializer ei = init.isExpInitializer();
 
 			// See if we can allocate on the stack
@@ -493,24 +515,23 @@ public class VarDeclaration extends Declaration {
 
 					t = type.toBasetype(context);
 					if (t.ty == TY.Tsarray) {
-						dim = ((TypeSArray) t).dim.toInteger(context)
-								.intValue();
-						// If multidimensional static array, treat as one large
-						// array
-						while (true) {
-							t = t.next.toBasetype(context);
-							if (t.ty != TY.Tsarray) {
-								break;
+					    ei.exp = ei.exp.semantic(sc, context);
+						if (null == ei.exp.implicitConvTo(type, context)) {
+							dim = ((TypeSArray) t).dim.toInteger(context)
+									.intValue();
+							// If multidimensional static array, treat as one large
+							// array
+							while (true) {
+								t = t.nextOf().toBasetype(context);
+								if (t.ty != TY.Tsarray) {
+									break;
+								}
+								dim *= ((TypeSArray) t).dim.toInteger(
+										context).intValue();
+								e1.type = new TypeSArray(t.nextOf(),
+										new IntegerExp(loc, Id.ZERO, dim,
+												Type.tindex));
 							}
-							if (t.next.toBasetype(context).ty == TY.Tbit) {
-								// t.size() gives size in bytes, convert to bits
-								dim *= t.size(loc, context) * 8;
-							} else {
-								dim *= ((TypeSArray) t).dim.toInteger(context)
-										.intValue();
-							}
-							e1.type = new TypeSArray(t.next, new IntegerExp(
-									loc, Id.ZERO, dim, Type.tindex));
 						}
 						e1 = new SliceExp(loc, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
@@ -539,31 +560,38 @@ public class VarDeclaration extends Declaration {
 				 * Ignore failure.
 				 */
 
-				if (ei != null && 0 == context.global.errors && 0 == inferred) {
+				if (0 == context.global.errors && 0 == inferred) {
 					int errors = context.global.errors;
 					context.global.gag++;
-					Expression e = ei.exp.syntaxCopy(context);
+					Expression e = null;
+					Initializer i2 = init;
 					inuse++;
-					e = e.semantic(sc, context);
-					
+					if (ei != null) {
+						e = ei.exp.syntaxCopy(context);
+						e = e.semantic(sc, context);
+
+						e = e.implicitCastTo(sc, type, context);
+					} else if (si != null || ai != null) {
+						i2 = init.syntaxCopy(context);
+						i2 = i2.semantic(sc, type, context);
+					}
 					inuse--;
-					e = e.implicitCastTo(sc, type, context);
 					context.global.gag--;
 					if (errors != context.global.errors) // if errors happened
 					{
-						if (context.global.gag == 0)
+						if (context.global.gag == 0) {
 							context.global.errors = errors; // act as if nothing happened
-					} else {
+						}
+					} else if (ei != null) {
 						e = e.optimize(WANTvalue | WANTinterpret, context);
-						
-						
-						
 						if (e.op == TOKint64 || e.op == TOKstring) {
 							// TODO Descent: instead of copying the result, do semantic analysis again,
 							// in order to get binding resolution
 							ei.exp.semantic(sc, context);
-							//ei.exp(e); // no errors, keep result
+							//							ei.exp = e;		// no errors, keep result
 						}
+					} else {
+						init = i2; // no errors, keep result
 					}
 				}
 			}

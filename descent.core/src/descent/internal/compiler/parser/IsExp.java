@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
-public class IftypeExp extends Expression {
+public class IsExp extends Expression {
 
 	public Type targ, sourceTarg;
 	public IdentifierExp id;
@@ -13,7 +13,7 @@ public class IftypeExp extends Expression {
 	public Type tspec, sourceTspec;
 	public TOK tok2;
 
-	public IftypeExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
+	public IsExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
 			TOK tok2) {
 		super(loc, TOK.TOKis);
 		this.targ = this.sourceTarg = targ;
@@ -233,7 +233,7 @@ public class IftypeExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new IftypeExp(loc, targ.syntaxCopy(context), id, tok,
+		return new IsExp(loc, targ.syntaxCopy(context), id, tok,
 				null != tspec ? tspec.syntaxCopy(context) : null, tok2);
 	}
 

@@ -403,7 +403,7 @@ public class CallExp extends UnaExp {
 						// Should fix deduce() so it works on null argument
 						arguments = new Expressions();
 					}
-					f = td.deduce(sc, loc, null, arguments, context);
+					f = td.deduceFunctionTemplate(sc, loc, null, arguments, context);
 					if (f == null) {
 						type = Type.terror;
 						return this;
@@ -564,7 +564,7 @@ public class CallExp extends UnaExp {
 					// Descent: lazy initialization
 					te.td.consumeRest();
 					
-					f = te.td.deduce(sc, loc, null, arguments, context);
+					f = te.td.deduceFunctionTemplate(sc, loc, null, arguments, context);
 					if (f == null) {
 						type = Type.terror;
 						return this;

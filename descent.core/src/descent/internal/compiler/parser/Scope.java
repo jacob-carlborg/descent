@@ -60,6 +60,7 @@ public class Scope {
 	public int noctor; // set if constructor calls aren't allowed
 	public int intypeof; // in typeof(exp)
 	public int parameterSpecialization; // // if in template parameter specialization
+    public int noaccesscheck;		// don't do access checks
 	public int callSuper; // primitive flow analysis for constructors
 	public int structalign; // alignment for struct members
 	public LINK linkage; // linkage for external functions
@@ -107,6 +108,7 @@ public class Scope {
 		this.incontract = 0;
 		this.nofree = false;
 		this.noctor = 0;
+		this.noaccesscheck = 0;
 		this.intypeof = 0;
 		this.parameterSpecialization = 0;
 		this.callSuper = 0;
@@ -138,6 +140,7 @@ public class Scope {
 		this.incontract = enclosing.incontract;
 		this.nofree = false;
 		this.noctor = enclosing.noctor;
+		this.noaccesscheck = enclosing.noaccesscheck;
 		this.intypeof = enclosing.intypeof;
 		this.parameterSpecialization = enclosing.parameterSpecialization;
 		this.callSuper = enclosing.callSuper;

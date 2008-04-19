@@ -10,7 +10,11 @@ public class DtorDeclaration extends FuncDeclaration {
 	public int thisStart;
 
 	public DtorDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.dtor), STC.STCundefined, null);
+		this(loc, new IdentifierExp(Loc.ZERO, Id.dtor));
+	}
+	
+	public DtorDeclaration(Loc loc, IdentifierExp id) {
+		super(loc, id, STC.STCundefined, null);
 	}
 
 	@Override
@@ -95,7 +99,7 @@ public class DtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		DtorDeclaration dd = new DtorDeclaration(loc);
+		DtorDeclaration dd = new DtorDeclaration(loc, ident);
 		dd.javaElement = javaElement;
 		dd.copySourceRange(this);
 		return super.syntaxCopy(dd, context);

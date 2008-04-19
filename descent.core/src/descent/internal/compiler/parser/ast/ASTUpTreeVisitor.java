@@ -437,8 +437,8 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(IftypeCondition.class.getSuperclass().equals(Condition.class));
 		return visit((Condition) node);
 	}
-	public boolean visit(IftypeExp node) {
-		Assert.isTrue(IftypeExp.class.getSuperclass().equals(Expression.class));
+	public boolean visit(IsExp node) {
+		Assert.isTrue(IsExp.class.getSuperclass().equals(Expression.class));
 		return visit((Expression) node);
 	}
 	public boolean visit(Import node) {
@@ -1371,8 +1371,8 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		Assert.isTrue(IftypeCondition.class.getSuperclass().equals(Condition.class));
 		endVisit((Condition) node);
 	}
-	public void endVisit(IftypeExp node) {
-		Assert.isTrue(IftypeExp.class.getSuperclass().equals(Expression.class));
+	public void endVisit(IsExp node) {
+		Assert.isTrue(IsExp.class.getSuperclass().equals(Expression.class));
 		endVisit((Expression) node);
 	}
 	public void endVisit(Import node) {

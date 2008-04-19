@@ -180,7 +180,12 @@ public class Version extends ASTNode {
 						throw new IllegalArgumentException();
 					}
 					break;
-				default:
+				case ITerminalSymbols.TokenNameunittest:
+					if (getAST().apiLevel < AST.D2) {
+						throw new IllegalArgumentException();
+					}
+					break;
+				default:					
 					throw new IllegalArgumentException();
 			}
 		} catch(InvalidInputException e) {

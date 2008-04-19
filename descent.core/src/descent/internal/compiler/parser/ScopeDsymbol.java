@@ -216,5 +216,20 @@ public class ScopeDsymbol extends Dsymbol {
 		sd.members = arraySyntaxCopy(members, context);
 		return sd;
 	}
+	
+	/*******************************************
+	 * Look for member of the form:
+	 *	const(MemberInfo)[] getMembers(string);
+	 * Returns NULL if not found
+	 */
+	FuncDeclaration findGetMembers(SemanticContext context) {
+		Dsymbol s = search_function(this, Id.getmembers, context);
+		FuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
+
+		if (fdx != null && fdx.isVirtual(context))
+			fdx = null;
+
+		return fdx;
+	}
 
 }

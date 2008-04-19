@@ -286,7 +286,7 @@ public class ASTConverter {
 		case ASTDmdNode.IF_STATEMENT:
 			return convert((IfStatement) symbol);
 		case ASTDmdNode.IFTYPE_EXP:
-			return convert((IftypeExp) symbol);
+			return convert((IsExp) symbol);
 		case ASTDmdNode.IMPORT:
 			return convert((Import) symbol);
 		case ASTDmdNode.IN_EXP:
@@ -836,7 +836,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Expression convert(IftypeExp a) {
+	public descent.core.dom.Expression convert(IsExp a) {
 		descent.core.dom.Type convertedTarg = null;
 		if (a.sourceTarg != null) {
 			convertedTarg = convert(a.sourceTarg);

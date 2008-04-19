@@ -117,7 +117,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		s.semantic(sc, context);
 	}
 
-	public FuncDeclaration deduce(Scope sc, Loc loc, Objects targsi, Expressions fargs, SemanticContext context) {
+	public FuncDeclaration deduceFunctionTemplate(Scope sc, Loc loc, Objects targsi, Expressions fargs, SemanticContext context) {
 
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
@@ -145,7 +145,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			MATCH m;
 
 			Objects dedargs = new Objects();
-			m = td.deduceMatch(targsi, fargs, dedargs, context);
+			m = td.deduceFunctionTemplateMatch(targsi, fargs, dedargs, context);
 
 			if (m == MATCH.MATCHnomatch) {
 				continue;
@@ -224,7 +224,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 	private static final GotoL2 GOTO_L2 = new GotoL2();
 
-	public MATCH deduceMatch(Objects targsi, Expressions fargs,
+	public MATCH deduceFunctionTemplateMatch(Objects targsi, Expressions fargs,
 			Objects dedargs, SemanticContext context) {
 		int i;
 		int nfparams;

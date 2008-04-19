@@ -48,6 +48,10 @@ public abstract class Initializer extends ASTDmdNode {
 	public VoidInitializer isVoidInitializer() {
 		return null;
 	}
+	
+	public StructInitializer isStructInitializer() {
+		return null;
+	}
 
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
 		return this;

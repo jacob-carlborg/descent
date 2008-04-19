@@ -46,9 +46,9 @@ import descent.core.compiler.IProblem;
 public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public final static int PTRSIZE = 4;
-
-	// TODO where to get this value from?
 	public final static int REALSIZE = 8;
+	public final static int MODconst = 1; // type is const
+	public final static int MODinvariant = 2; // type is invariant
 
 	public static class Modification {
 		public int startPosition;

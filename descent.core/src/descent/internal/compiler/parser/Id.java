@@ -55,6 +55,8 @@ public interface Id {
 	static final char[] TypeInfo_Function = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n' };
 	static final char[] TypeInfo_Delegate = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'D', 'e', 'l', 'e', 'g', 'a', 't', 'e' };
 	static final char[] TypeInfo_Tuple = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'T', 'u', 'p', 'l', 'e' };
+	static final char[] TypeInfo_Const = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'C', 'o', 'n', 's', 't' };
+	static final char[] TypeInfo_Invariant = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'I', 'n', 'v', 'a', 'r', 'i', 'a', 'n', 't' };
 	static final char[] _arguments = { '_', 'a', 'r', 'g', 'u', 'm', 'e', 'n', 't', 's' };
 	static final char[] _argptr = { '_', 'a', 'r', 'g', 'p', 't', 'r' };
 	static final char[] _match = { '_', 'm', 'a', 't', 'c', 'h' };
@@ -193,6 +195,7 @@ public interface Id {
 	static final char[] aaRehash = { '_', 'a', 'a', 'R', 'e', 'h', 'a', 's', 'h' };
 	static final char[] funcptr = { 'f', 'u', 'n', 'c', 'p', 't', 'r' };
 	static final char[] cast = { 'o', 'p', 'C', 'a', 's', 't' };
+	static final char[] getmembers = { 'g', 'e', 't', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
 	
 	// Others useful
 	static final char[] ZERO = { '0' };

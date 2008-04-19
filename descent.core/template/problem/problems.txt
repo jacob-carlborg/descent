@@ -349,6 +349,9 @@ FunctionsCannotBeConstOrAuto
 NonVirtualFunctionsCannotBeAbstract
 	formatString=Non-virtual functions cannot be abstract
 	numArgs=0
+CannotBeBothAbstractAndFinal
+	formatString=Cannot be both abstract and final
+	numArgs=0
 ModifierCannotBeAppliedToVariables
 	formatString=%1$s cannot be applied to variables
 	numArgs=1
@@ -1330,7 +1333,9 @@ UnpairedUtf16Value
 IllegalUtf16Value
 	formatString=Illegal UTF-16 Value
 	numArgs=0
-
+StaticConstructorCanOnlyBePartOfStructClassModule
+	formatString=Static constructor can only be part of struct/class/module
+	numArgs=0
 
 
 

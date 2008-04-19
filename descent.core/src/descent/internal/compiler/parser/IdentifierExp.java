@@ -227,7 +227,8 @@ public class IdentifierExp extends Expression {
 	}
 	
 	public String toChars() {
-		return new String(ident).intern();
+//		return new String(ident).intern();
+		return new String(ident);
 	}
 
 	@Override

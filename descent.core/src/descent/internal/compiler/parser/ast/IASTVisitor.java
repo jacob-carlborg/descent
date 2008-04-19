@@ -116,7 +116,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(IdentityExp node);
 	boolean visit(IfStatement node);
 	boolean visit(IftypeCondition node);
-	boolean visit(IftypeExp node);
+	boolean visit(IsExp node);
 	boolean visit(Import node);
 	boolean visit(IndexExp node);
 	boolean visit(InExp node);
@@ -346,7 +346,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(IdentityExp node);
 	void endVisit(IfStatement node);
 	void endVisit(IftypeCondition node);
-	void endVisit(IftypeExp node);
+	void endVisit(IsExp node);
 	void endVisit(Import node);
 	void endVisit(IndexExp node);
 	void endVisit(InExp node);

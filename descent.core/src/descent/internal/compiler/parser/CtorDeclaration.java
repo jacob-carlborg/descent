@@ -67,6 +67,10 @@ public class CtorDeclaration extends FuncDeclaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		ClassDeclaration cd;
 		Type tret;
+		
+	    if (type != null) {
+	    	return;
+	    }
 
 		sc = sc.push();
 		sc.stc &= ~STC.STCstatic; // not a static constructor

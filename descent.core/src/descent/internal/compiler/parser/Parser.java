@@ -1114,10 +1114,21 @@ public class Parser extends Lexer {
 				c = newVersionCondition(module, loc(), level, id);
 				check(TOKrparen);		
 			} else {
-				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
+				/* Allow:
+				 *    version (unittest)
+				 * even though unittest is a keyword
+				 */
+				if (apiLevel == D2 &&
+						token.value == TOKunittest) {
+					id = token.value.charArrayValue;
+					idTokenStart = token.ptr;
+					idTokenLength = token.sourceLen;
+				} else {
+					parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
+				}
 				
 				c = newVersionCondition(module, loc(), level, id);
-				
+					
 				// For improved syntax error recovery
 				if (token.value != TOKrparen) {
 					nextToken();
@@ -2081,6 +2092,7 @@ public class Parser extends Lexer {
 					
 					if (tp_ident == null) {
 						error(IProblem.NoIdentifierForTemplateValueParameter, t.lineNumber, t.ptr, t.sourceLen);
+						// TODO update to DMD 1.028 behaviour? What's the point?
 						// goto Lerr;
 						malformed[0] = true;
 						return tpl;
@@ -2734,146 +2746,141 @@ public class Parser extends Lexer {
 		return parseDeclarator(targ, ident, null, null);
 	}
 
-	private Type parseDeclarator(Type t, IdentifierExp[] pident, TemplateParameters[] tpl, int[] identStart) {
+	private Type parseDeclarator(Type t, IdentifierExp[] pident,
+			TemplateParameters[] tpl, int[] identStart) {
 		// This may happen if a basic type was not find
 		if (t == null) {
 			return null;
 		}
-		
+
 		Type ts;
-	    Type ta;
+		Type ta;
 
-	    t = parseBasicType2(t);
+		t = parseBasicType2(t);
 
-	    switch (token.value)
-	    {
+		switch (token.value) {
 
 		case TOKidentifier:
-		    if (pident != null) {
-		    	pident[0] = newIdentifierExp();
-		    	if (identStart != null) identStart[0] = token.ptr;
-		    } else {
-		    	error(IProblem.UnexpectedIdentifierInDeclarator, token.lineNumber, token.ptr, token.sourceLen);
-		    }
-		    ts = t;
-		    nextToken();
-		    break;
+			if (pident != null) {
+				pident[0] = newIdentifierExp();
+				if (identStart != null)
+					identStart[0] = token.ptr;
+			} else {
+				error(IProblem.UnexpectedIdentifierInDeclarator,
+						token.lineNumber, token.ptr, token.sourceLen);
+			}
+			ts = t;
+			nextToken();
+			break;
 
 		case TOKlparen:
 			int oldStart = t.start;
-		    nextToken();
-		    ts = parseDeclarator(t, pident, null, identStart);
-		    ts.setSourceRange(oldStart, token.ptr + token.sourceLen - oldStart);
-		    check(TOKrparen);
-		    break;
+			nextToken();
+			ts = parseDeclarator(t, pident, null, identStart);
+			ts.setSourceRange(oldStart, token.ptr + token.sourceLen - oldStart);
+			check(TOKrparen);
+			break;
 
 		default:
-		    ts = t;
-		    break;
-	    }
+			ts = t;
+			break;
+		}
 
-	    while (true)
-	    {
-		switch (token.value)
-		{
-	//#if CARRAYDECL
-		    case TOKlbracket:
-		    {	// This is the old C-style post [] syntax.
-			nextToken();
-			if (token.value == TOKrbracket) // []
-			{
-			    ta = new TypeDArray(t);
-			    ta.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
-			    
-			    nextToken();
-			}
-			else if (isDeclaration(token, 0, TOKrbracket, null))
-			{   // It's an associative array declaration
-			    Type index;
+		while (true) {
+			switch (token.value) {
+			//#if CARRAYDECL
+			case TOKlbracket: { // This is the old C-style post [] syntax.
+				nextToken();
+				if (token.value == TOKrbracket) // []
+				{
+					ta = new TypeDArray(t);
+					ta.setSourceRange(t.start, token.ptr + token.sourceLen
+							- t.start);
 
-			    if (apiLevel < D2) {
-				    index = parseBasicType();
-				    index = parseDeclarator(index, null, null, identStart);	// [ type ]
-			    } else {
-			    	index = parseType();									// [ type ]
-			    }
-			    
-			    ta = newTypeAArray(t, index);
-			    
-			    check(TOKrbracket);
-			}
-			else
-			{
-			    Expression e = parseExpression();		// [ expression ]
-			    
-			    ta = new TypeSArray(t, e);
-			    ta.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
-			    check(TOKrbracket);
-			}
-			
-			if (ts != t) {
-				Type pt = ts;
-				while(pt.next != t) {
-					pt = pt.next;
+					nextToken();
+				} else if (isDeclaration(token, 0, TOKrbracket, null)) { // It's an associative array declaration
+					Type index;
+
+					if (apiLevel < D2) {
+						index = parseBasicType();
+						index = parseDeclarator(index, null, null, identStart); // [ type ]
+					} else {
+						index = parseType(); // [ type ]
+					}
+
+					ta = newTypeAArray(t, index);
+
+					check(TOKrbracket);
+				} else {
+					Expression e = parseExpression(); // [ expression ]
+
+					ta = new TypeSArray(t, e);
+					ta.setSourceRange(t.start, token.ptr + token.sourceLen
+							- t.start);
+					check(TOKrbracket);
 				}
-				pt.next = ta;
-				pt.sourceNext = ta;
-			} else {
-				ts = ta;
-			}
-			continue;
-		    }
-	//#endif
-		    case TOKlparen:
-		    {	Arguments arguments;
-			int varargs = 0;
 
-			if (tpl != null)
-			{
-			    /* Look ahead to see if this is (...)(...),
-			     * i.e. a function template declaration
-			     */
-			    if (peekPastParen(token).value == TOKlparen)
-			    {   // It's a function template declaration
-
-			    	// Gather template parameter list
-			    	boolean[] malformed = { false };
-			    	tpl[0] = parseTemplateParameterList(malformed);
-			    }
-			}
-
-			int[] pointer2_varargs = { varargs };
-			arguments = parseParameters(pointer2_varargs);			
-			varargs = pointer2_varargs[0];
-			
-			ta = new TypeFunction(arguments, t, varargs, linkage);
-			
-			// Assign parent of arguments
-			if (arguments != null) {
-				for(int i = 0; i < arguments.size(); i++) {
-					arguments.get(i).parentType = (TypeFunction) ta;
+				if (ts != t) {
+					Type pt = ts;
+					while (pt.next != t) {
+						pt = pt.next;
+					}
+					pt.next = ta;
+					pt.sourceNext = ta;
+				} else {
+					ts = ta;
 				}
+				continue;
 			}
-			
-			ta.setSourceRange(t.start, t.length);
-			
-			if (ts != t) {
-				Type pt = ts;
-				while(pt.next != t) {
-					pt = pt.next;
+				//#endif
+			case TOKlparen: {
+				Arguments arguments;
+				int varargs = 0;
+
+				if (tpl != null) {
+					/* Look ahead to see if this is (...)(...),
+					 * i.e. a function template declaration
+					 */
+					if (peekPastParen(token).value == TOKlparen) { // It's a function template declaration
+
+						// Gather template parameter list
+						boolean[] malformed = { false };
+						tpl[0] = parseTemplateParameterList(malformed);
+					}
 				}
-				pt.next = ta;
-				pt.sourceNext = ta;
-			} else {
-				ts = ta;
+
+				int[] pointer2_varargs = { varargs };
+				arguments = parseParameters(pointer2_varargs);
+				varargs = pointer2_varargs[0];
+
+				ta = new TypeFunction(arguments, t, varargs, linkage);
+
+				// Assign parent of arguments
+				if (arguments != null) {
+					for (int i = 0; i < arguments.size(); i++) {
+						arguments.get(i).parentType = (TypeFunction) ta;
+					}
+				}
+
+				ta.setSourceRange(t.start, t.length);
+
+				if (ts != t) {
+					Type pt = ts;
+					while (pt.next != t) {
+						pt = pt.next;
+					}
+					pt.next = ta;
+					pt.sourceNext = ta;
+				} else {
+					ts = ta;
+				}
+				break;
+			}
 			}
 			break;
-		    }
 		}
-		break;
-	    }
 
-	    return ts;
+		return ts;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -5811,7 +5818,7 @@ public class Parser extends Lexer {
 				nextToken();
 				break;
 			}
-			e = new IftypeExp(loc(), targ, ident, tok, tspec, tok2);
+			e = new IsExp(loc(), targ, ident, tok, tspec, tok2);
 			break;
 		}
 

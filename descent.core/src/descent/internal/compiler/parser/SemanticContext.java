@@ -12,6 +12,7 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
+import descent.internal.core.util.Util;
 
 public class SemanticContext {
 
@@ -45,6 +46,8 @@ public class SemanticContext {
 	public ClassDeclaration Type_typeinfofunction;
 	public ClassDeclaration Type_typeinfodelegate;
 	public ClassDeclaration Type_typeinfotypelist;
+	public ClassDeclaration Type_typeinfoconst;
+	public ClassDeclaration Type_typeinfoinvariant;
 
 	public Type Type_tvoidptr;
 	
@@ -60,6 +63,7 @@ public class SemanticContext {
 	public Dsymbol TemplateAliasParameter_sdummy = null;
 	public Expression TemplateValueParameter_edummy = null;
 	public TypeInfoDeclaration[] Type_internalTI = new TypeInfoDeclaration[TY.values().length];
+	public int apiLevel;
 	
 	public StringTable stringTable;
 
@@ -97,6 +101,7 @@ public class SemanticContext {
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.encoder = new ASTNodeEncoder();
+		this.apiLevel = Util.getApiLevel(project);
 		
 		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
 			muteProblems++;
@@ -273,6 +278,14 @@ public class SemanticContext {
 			Type_typeinfodelegate = (ClassDeclaration) s;
 		} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Tuple)) {
 			Type_typeinfotypelist = (ClassDeclaration) s;
+		}
+		
+		if (apiLevel == Lexer.D2) {
+			if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Const)) {
+				Type_typeinfoconst = (ClassDeclaration) s;
+			} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Invariant)) {
+				Type_typeinfoinvariant = (ClassDeclaration) s;
+			}
 		}
 	}
 

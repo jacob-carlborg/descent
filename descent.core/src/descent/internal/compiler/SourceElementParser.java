@@ -1509,7 +1509,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 
-	public boolean visit(IftypeExp node) {
+	public boolean visit(IsExp node) {
 		return false;
 	}
 

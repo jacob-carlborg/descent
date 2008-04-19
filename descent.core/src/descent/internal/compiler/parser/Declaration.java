@@ -8,6 +8,7 @@ import static descent.internal.compiler.parser.STC.STCin;
 public abstract class Declaration extends Dsymbol {
 
 	public Type type;
+	public Type originalType;
 	public Type sourceType;
 	public int storage_class;
 	public LINK linkage;
@@ -16,6 +17,7 @@ public abstract class Declaration extends Dsymbol {
 	public Declaration(IdentifierExp ident) {
 		super(ident);
 		this.type = null;
+		this.originalType = null;
 		this.storage_class = STC.STCundefined;
 		this.protection = PROT.PROTundefined;
 		this.linkage = LINK.LINKdefault;
@@ -80,6 +82,10 @@ public abstract class Declaration extends Dsymbol {
 
 	public boolean isConst() {
 		return (this.storage_class & STC.STCconst) != 0;
+	}
+	
+	public boolean isInvariant() {
+		return false;
 	}
 
 	public boolean isAuto() {

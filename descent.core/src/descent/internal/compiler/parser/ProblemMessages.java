@@ -127,6 +127,7 @@ final class ProblemMessages extends NLS {
 	public static String IsClassPathCorrect;
 	public static String FunctionsCannotBeConstOrAuto;
 	public static String NonVirtualFunctionsCannotBeAbstract;
+	public static String CannotBeBothAbstractAndFinal;
 	public static String ModifierCannotBeAppliedToVariables;
 	public static String StructsCannotBeAbstract;
 	public static String UnionsCannotBeAbstract;
@@ -454,6 +455,7 @@ final class ProblemMessages extends NLS {
 	public static String Utf16LowValueOutOfRange;
 	public static String UnpairedUtf16Value;
 	public static String IllegalUtf16Value;
+	public static String StaticConstructorCanOnlyBePartOfStructClassModule;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

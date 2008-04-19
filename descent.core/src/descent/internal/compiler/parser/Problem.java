@@ -361,6 +361,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.FunctionsCannotBeConstOrAuto);
 		case NonVirtualFunctionsCannotBeAbstract:
 			return String.format(ProblemMessages.NonVirtualFunctionsCannotBeAbstract);
+		case CannotBeBothAbstractAndFinal:
+			return String.format(ProblemMessages.CannotBeBothAbstractAndFinal);
 		case ModifierCannotBeAppliedToVariables:
 			return String.format(ProblemMessages.ModifierCannotBeAppliedToVariables, arguments[0]);
 		case StructsCannotBeAbstract:
@@ -1015,6 +1017,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.UnpairedUtf16Value);
 		case IllegalUtf16Value:
 			return String.format(ProblemMessages.IllegalUtf16Value);
+		case StaticConstructorCanOnlyBePartOfStructClassModule:
+			return String.format(ProblemMessages.StaticConstructorCanOnlyBePartOfStructClassModule);
 		default:
 			return "";
 		}

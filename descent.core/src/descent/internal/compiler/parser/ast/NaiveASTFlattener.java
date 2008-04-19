@@ -1455,7 +1455,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		return false;
 	}
 
-	public boolean visit(IftypeExp node) {
+	public boolean visit(IsExp node) {
 		this.buffer.append("is(");
 		node.targ.accept(this);
 		if (node.id != null) {

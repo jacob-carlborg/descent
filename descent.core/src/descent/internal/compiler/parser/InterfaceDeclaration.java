@@ -150,6 +150,10 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			scx = scope; // save so we don't make redundant copies
 			scope = null;
 		}
+		
+	    if ((sc.stc & STC.STCdeprecated) != 0) {
+			isdeprecated = true;
+		}
 
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
@@ -261,7 +265,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 		sc = sc.push(this);
 		sc.parent = this;
-		if (isCOMclass()) {
+		if (isCOMinterface()) {
 			sc.linkage = LINKwindows;
 		}
 		sc.structalign = 8;
@@ -297,10 +301,15 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 	@Override
 	public int vtblOffset() {
-		if (isCOMclass()) {
+		if (isCOMinterface()) {
 			return 0;
 		}
 		return 1;
+	}
+	
+	@Override
+	public boolean isCOMinterface() {
+		return com;
 	}
 	
 	public char getSignaturePrefix() {

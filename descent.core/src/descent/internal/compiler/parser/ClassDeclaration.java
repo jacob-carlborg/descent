@@ -188,7 +188,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			// If this is an interface, and it derives from a COM interface,
 			// then this is a COM interface too.
-			if (b.base.isCOMclass()) {
+			if (b.base.isCOMinterface()) {
 				com = true;
 			}
 
@@ -259,6 +259,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 	public boolean isCOMclass() {
 		return com;
+	}
+	
+	public boolean isCOMinterface() {
+		return false;
 	}
 
 	public boolean isNested() {
@@ -366,6 +370,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 			scx = scope; // save so we don't make redundant copies
 			scope = null;
 		}
+		
+	    if ((sc.stc & STCdeprecated) != 0) {
+	    	isdeprecated = true;
+	    }
+
 
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
@@ -406,6 +415,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 				baseclasses.remove(0);
 			} else {
 				tc = (TypeClass) (tb);
+			    if (tc.sym.isDeprecated()) {
+					if (!isDeprecated()) {
+						// Deriving from deprecated class makes this one deprecated too
+						isdeprecated = true;
+
+						tc.checkDeprecated(loc, sc, context);
+					}
+				}
+				
 				if (tc.sym.isInterfaceDeclaration() != null) {
 					;
 				} else {
@@ -471,6 +489,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 				baseclasses.remove(i);
 				continue;
 			} else {
+			    if (tc.sym.isDeprecated()) {
+					if (!isDeprecated()) {
+						// Deriving from deprecated class makes this one deprecated too
+						isdeprecated = true;
+
+						tc.checkDeprecated(loc, sc, context);
+					}
+				}
+				
 				// Check for duplicate interfaces
 				for (int j = (baseClass != null ? 1 : 0); j < i; j++) {
 					BaseClass b2 = baseclasses.get(j);
@@ -627,9 +654,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if ((storage_class & STC.STCabstract) != 0) {
 			isabstract = true;
 		}
-		if ((storage_class & STC.STCdeprecated) != 0) {
-			isdeprecated = true;
-		}
 
 		sc = sc.push(this);
 		sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
@@ -718,7 +742,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			
 			members.add(ctor);
 			ctor.addMember(sc, this, 1, context);
-			sc = scsave;
+			sc = scsave; // why? What about sc->nofree?
 			sc.offset = structsize;
 			ctor.semantic(sc, context);
 			defaultCtor = ctor;
@@ -755,9 +779,41 @@ public class ClassDeclaration extends AggregateDeclaration {
 		sizeok = 1;
 
 		context.Module_dprogress++;
+		
+		// TODO check if this is necessary for Descent
+//	    dtor = buildDtor(sc, context);
 
 		sc.pop();
 	}
+	
+	/**********************************************************
+	 * fd is in the vtbl[] for this class.
+	 * Return 1 if function is hidden (not findable through search).
+	 */
+
+	private static int isf(Object param, FuncDeclaration fd)
+	{
+	    return param == fd ? 1 : 0;
+	}
+	
+	public final static OverloadApply_fp isf = new OverloadApply_fp() {
+		public int call(Object param, FuncDeclaration f, SemanticContext context) {
+			return isf(param, f);
+		}
+	};
+
+	private boolean isFuncHidden(FuncDeclaration fd, SemanticContext context) {
+		Dsymbol s = search(Loc.ZERO, fd.ident, 4 | 2, context);
+		if (null == s) {
+			/* Because, due to a hack, if there are multiple definitions
+			 * of fd.ident, NULL is returned.
+			 */
+			return false;
+		}
+		FuncDeclaration fdstart = s.toAlias(context).isFuncDeclaration();
+		return !(overloadApply(fdstart, isf, fd, context) == 1 ? true : false);
+	}
+
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {

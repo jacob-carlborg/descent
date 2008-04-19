@@ -49,6 +49,11 @@ public class StructInitializer extends Initializer {
 	public int getNodeType() {
 		return STRUCT_INITIALIZER;
 	}
+	
+	@Override
+	public StructInitializer isStructInitializer() {
+		return this;
+	}
 
 	@Override
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
@@ -187,7 +192,36 @@ public class StructInitializer extends Initializer {
 
 	@Override
 	public Expression toExpression(SemanticContext context) {
-		return null;
+		Expression e;
+
+		if (null == ad) { // if fwd referenced
+			return null;
+		}
+		StructDeclaration sd = ad.isStructDeclaration();
+		if (null == sd) {
+			return null;
+		}
+		Expressions elements = new Expressions();
+		for (int i = 0; i < value.size(); i++) {
+			if (field.get(i) != null) {
+				// goto Lno;
+				return null;
+			}
+			Initializer iz = (Initializer) value.get(i);
+			if (null == iz) {
+				// goto Lno;
+				return null;
+			}
+			Expression ex = iz.toExpression(context);
+			if (null == ex) {
+				// goto Lno;
+				return null;
+			}
+			elements.add(ex);
+		}
+		e = new StructLiteralExp(loc, sd, elements);
+		e.type = sd.type;
+		return e;
 	}
 
 }

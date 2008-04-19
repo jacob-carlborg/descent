@@ -565,7 +565,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e;
 	}
 
-	public static Dsymbol search_function(AggregateDeclaration ad,
+	public static Dsymbol search_function(ScopeDsymbol ad,
 			char[] funcid, SemanticContext context) {
 		Dsymbol s;
 		FuncDeclaration fd;
@@ -1648,7 +1648,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		FuncDeclaration fd;
 
 		assert (td != null);
-		fd = td.deduce(sc, loc, targsi, arguments, context);
+		fd = td.deduceFunctionTemplate(sc, loc, targsi, arguments, context);
 		if (null == fd)
 			return;
 		m.anyf = fd;
