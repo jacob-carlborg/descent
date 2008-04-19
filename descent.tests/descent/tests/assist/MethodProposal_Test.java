@@ -14,6 +14,18 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 				"foo()", pos, pos, "@4test[3fooFZi", "FZi", "@4test", "foo()  int - test");
 	}
 	
+	public void testInVarAssignmentFQN() throws Exception {
+		createCompilationUnit("one.two", "test.d", "int foo() { return 1; }");
+		
+		String s = "import one.two.test; int x = ";
+		
+		int pos = s.length();
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
+				new int[] { LABEL }, 
+				"foo()", pos, pos, "foo()  int - one.two.test");
+	}
+	
 	public void testInVarAssignmentSome() throws Exception {
 		String s = "int foo() { return 1; } int x = f";
 		

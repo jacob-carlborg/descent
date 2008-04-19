@@ -17,30 +17,22 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.PropertyChangeEvent;
-
-import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.IWhitespaceDetector;
-import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import descent.core.JavaCore;
-
-import descent.ui.PreferenceConstants;
-import descent.ui.text.IColorManager;
-import descent.ui.text.IJavaColorConstants;
-
-import descent.internal.ui.javaeditor.SemanticHighlightings;
 import descent.internal.ui.text.AbstractJavaScanner;
 import descent.internal.ui.text.CombinedWordRule;
+import descent.internal.ui.text.ISourceVersionDependent;
 import descent.internal.ui.text.JavaWhitespaceDetector;
 import descent.internal.ui.text.JavaWordDetector;
-import descent.internal.ui.text.ISourceVersionDependent;
+import descent.ui.text.IColorManager;
+import descent.ui.text.IJavaColorConstants;
 
 
 /**
@@ -161,7 +153,10 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 	};
 	
 	static String[] fgKeywords2= {
-		"__traits", //$NON-NLS-1$
+		"__traits", //$NON-NLS-1$,
+		"__overloadset", //$NON-NLS-1$
+		"nothrow", //$NON-NLS-1$
+		"pure", //$NON-NLS-1$
 	};
 
 	private static final String RETURN= "return"; //$NON-NLS-1$
@@ -183,6 +178,9 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 	private static String[] fgSpecialTokens= { 
 		"__FILE__", "__LINE__", "__DATE__", "__TIME__", "__TIMESTAMP__", "__VENDOR__", "__VERSION__"       //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$
 		}; 
+	private static String[] fgSpecialTokens2= { 
+		"__EOF__",
+		};
 
 	private static String[] fgConstants= { "false", "null", "true" }; //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 
@@ -243,6 +241,10 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		token= getToken(IJavaColorConstants.JAVA_KEYWORD);
 		for (int i=0; i<fgKeywords2.length; i++)
 			j2Matcher.addWord(fgKeywords2[i], token);
+		
+		token= getToken(IJavaColorConstants.JAVA_SPECIAL_TOKEN);
+		for (int i=0; i<fgSpecialTokens2.length; i++)
+			j2Matcher.addWord(fgSpecialTokens2[i], token);
 
 		combinedWordRule.addWordMatcher(j2Matcher);
 		fVersionDependentRules.add(j2Matcher);
@@ -274,6 +276,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		token= getToken(IJavaColorConstants.JAVA_SPECIAL_TOKEN);
 		for (int i=0; i<fgSpecialTokens.length; i++)
 			stWordRule.addWord(fgSpecialTokens[i], token);
+		
 		combinedWordRule.addWordMatcher(stWordRule);
 
 		rules.add(combinedWordRule);

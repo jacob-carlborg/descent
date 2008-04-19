@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKPRAGMA;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddass;
 import static descent.internal.compiler.parser.TOK.TOKand;
@@ -539,7 +539,29 @@ public class Lexer implements IProblemRequestor {
 				t.sourceLen = p - t.ptr;
 				t.setString(input, t.ptr, t.sourceLen);
 				return;
-
+				
+			case 'q':
+				if (apiLevel == D2) {
+					if (input[p + 1] == '"')
+					{
+					    p++;
+					    t.value = delimitedStringConstant(t);
+					    return;
+					}
+					else if (input[p + 1] == '{')
+					{
+					    p++;
+					    t.value = tokenStringConstant(t);
+					    return;
+					}
+					else {
+						case_ident(t);
+						return;
+					}
+				} else {
+					case_ident(t);
+					return;
+				}
 			case '"':
 				t.value = escapeStringConstant(t, 0);
 				t.sourceLen = p - t.ptr;
@@ -552,8 +574,19 @@ public class Lexer implements IProblemRequestor {
 				stringbuffer.reset();
 				do {
 					p++;
-					c = escapeSequence();
-					stringbuffer.writeUTF8(c);
+				    switch (input[p])
+				    {
+					case 'u':
+					case 'U':
+					case '&':
+					    c = escapeSequence();
+					    stringbuffer.writeUTF8(c);
+					    break;
+					default:
+					    c = escapeSequence();
+					    stringbuffer.writeByte(c);
+					    break;
+				    }
 				} while (input[p] == '\\');
 				//stringbuffer.writeByte(0);
 				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
@@ -584,7 +617,8 @@ public class Lexer implements IProblemRequestor {
 			case 'n':
 			case 'o':
 			case 'p':
-			case 'q': /*case 'r':*/
+			/* case 'q': */
+			/* case 'r': */
 			case 's':
 			case 't':
 			case 'u':
@@ -619,16 +653,6 @@ public class Lexer implements IProblemRequestor {
 			case 'Z':
 			case '_':
 				case_ident(t);
-				//		    	if (t.string != null) {
-				//		    		String s = new String(t.string);
-				//		    		Integer num = count.get(s);
-				//		    		if (num == null) {
-				//		    			num = 1;
-				//		    		} else {
-				//		    			num = num + 1;
-				//		    		}
-				//		    		count.put(s, num);
-				//		    	}
 				return;
 
 			case '/':
@@ -2484,6 +2508,30 @@ public class Lexer implements IProblemRequestor {
 					return;
 				}
 				break;
+			case 'o':
+				if (apiLevel == D2) {
+					p++;
+					if (input[p] == 't') {
+						p++;
+						if (input[p] == 'h') {
+							p++;
+							if (input[p] == 'r') {
+								p++;
+								if (input[p] == 'o') {
+									p++;
+									if (input[p] == 'w'
+											&& !Chars.isidchar(input[p + 1])) {
+										t.value = TOK.TOKnothrow;
+										t.sourceLen = 7;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
 			case 'u':
 				p++;
 				if (input[p] == 'l') {
@@ -2763,7 +2811,8 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				if (input[p] == 'b') {
+				switch(input[p]) {
+				case 'b':
 					p++;
 					if (input[p] == 'l') {
 						p++;
@@ -2778,6 +2827,19 @@ public class Lexer implements IProblemRequestor {
 							}
 						}
 					}
+					break;
+				case 'r':
+					if (apiLevel == D2) {
+						p++;
+						if (input[p] == 'e'
+								&& !Chars.isidchar(input[p + 1])) {
+							t.value = TOK.TOKpure;
+							t.sourceLen = 4;
+							p++;
+							return;
+						}
+					}
+					break;
 				}
 				break;
 			default:
@@ -3500,6 +3562,31 @@ public class Lexer implements IProblemRequestor {
 						}
 					}
 					break;
+				case 'E':
+					if (apiLevel == D2) {
+						p++;
+						if (input[p] == 'O') {
+							p++;
+							if (input[p] == 'F') {
+								p++;
+								if (input[p] == '_') {
+									p++;
+									if (input[p] == '_'
+											&& !Chars.isidchar(input[p + 1])) {
+										t.value = TOK.TOKeof;
+										t.len = 0;
+										
+										// Advance scanner to end of file
+										while(!(input[p] == 0 || input[p] == 0x1A)) {
+											p++;
+										}
+										return;
+									}
+								}
+							}
+						}
+					}
+					break;
 				case 'F':
 					p++;
 					if (input[p] == 'I') {
@@ -3677,6 +3764,46 @@ public class Lexer implements IProblemRequestor {
 						}
 					}
 					break;
+				case 'o':
+					if (apiLevel == D2) {
+						p++;
+						if (input[p] == 'v') {
+							p++;
+							if (input[p] == 'e') {
+								p++;
+								if (input[p] == 'r') {
+									p++;
+									if (input[p] == 'l') {
+										p++;
+										if (input[p] == 'o') {
+											p++;
+											if (input[p] == 'a') {
+												p++;
+												if (input[p] == 'd') {
+													p++;
+													if (input[p] == 's') {
+														p++;
+														if (input[p] == 'e') {
+															p++;
+															if (input[p] == 't'
+																	&& !Chars
+																			.isidchar(input[p + 1])) {
+																t.value = TOK.TOKoverloadset;
+																t.sourceLen = 13;
+																p++;
+																return;
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					}
 				case 't':
 					if (apiLevel == D2) {
 						p++;
@@ -4083,6 +4210,9 @@ public class Lexer implements IProblemRequestor {
 					// Chars.isoctal inlined
 				} while (++n < 3 && ('0' <= c && c <= '7'));
 				c = v;
+			    if (c > 0xFF) {
+					error(IProblem.ValueIsLargerThanAByte, linnum, p - 1, 2, new String[] { String.valueOf(c) });
+			    }
 			} else {
 				error(IProblem.UndefinedEscapeSequence, linnum, p - 1, 2);
 			}
@@ -4228,6 +4358,256 @@ public class Lexer implements IProblemRequestor {
 				}
 				n++;
 				break;
+			}
+		}
+	}
+	
+	/**************************************
+	 * Lex delimited strings:
+	 *	q"(foo(xxx))"   // "foo(xxx)"
+	 *	q"[foo(]"       // "foo("
+	 *	q"/foo]/"       // "foo]"
+	 *	q"HERE
+	 *	foo
+	 *	HERE"		// "foo\n"
+	 * Input:
+	 *	p is on the "
+	 */
+
+	private TOK delimitedStringConstant(Token t) {
+		int c;
+//		Loc start = loc;
+		int delimleft = 0;
+		int delimright = 0;
+		int nest = 1;
+		int nestcount = 0;
+		char[] hereid = null;
+		int blankrol = 0;
+		int startline = 0;
+
+		p++;
+		stringbuffer.reset();
+		while (true) {
+			c = input[p++];
+			switch (c) {
+			case '\n':
+				//		    Lnextline:
+				newline(false /* not in comment */);
+				startline = 1;
+				if (blankrol != 0) {
+					blankrol = 0;
+					continue;
+				}
+				if (hereid != null) {
+					stringbuffer.writeUTF8(c);
+					continue;
+				}
+				break;
+
+			case '\r':
+				if (input[p] == '\n')
+					continue; // ignore
+				c = '\n'; // treat EndOfLine as \n character
+				//			goto Lnextline;
+				newline(false /* not in comment */);
+				startline = 1;
+				if (blankrol != 0) {
+					blankrol = 0;
+					continue;
+				}
+				if (hereid != null) {
+					stringbuffer.writeUTF8(c);
+					continue;
+				}
+				break;
+
+			case 0:
+			case 0x1A: {
+				return delimitedStringConstant_Lerror(t);
+			}
+
+			default:
+				if ((c & 0x80) != 0) {
+					p--;
+					c = decodeUTF();
+					p++;
+					if (c == PS || c == LS) {
+						//			    	goto Lnextline;
+						newline(false /* not in comment */);
+						startline = 1;
+						if (blankrol != 0) {
+							blankrol = 0;
+							continue;
+						}
+						if (hereid != null) {
+							stringbuffer.writeUTF8(c);
+							continue;
+						}
+						break;
+					}
+				}
+				break;
+			}
+			if (delimleft == 0) {
+				delimleft = c;
+				nest = 1;
+				nestcount = 1;
+				if (c == '(')
+					delimright = ')';
+				else if (c == '{')
+					delimright = '}';
+				else if (c == '[')
+					delimright = ']';
+				else if (c == '<')
+					delimright = '>';
+
+				// isalpha inlined, isUniAlpha inlined
+				else if (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
+						|| c == '_' || (c >= 0x80 && UniAlpha.isUniAlpha(c))) { // Start of identifier; must be a heredoc
+					Token t2 = new Token();
+					p--;
+					scan(t2); // read in heredoc identifier
+					if (t2.value != TOKidentifier) {
+						error(IProblem.IdentifierExpectedForHeredoc,
+								t2.lineNumber, t2.ptr, p - t2.ptr);
+						delimright = c;
+					} else {
+						hereid = t2.sourceString;
+						//printf("hereid = '%s'\n", hereid.toChars());
+						blankrol = 1;
+					}
+					nest = 0;
+				} else {
+					delimright = c;
+					nest = 0;
+				}
+			} else {
+				if (blankrol != 0) {
+					error(IProblem.HeredocRestOfLineShouldBeBlank, linnum,
+							t.ptr, p - t.ptr);
+					blankrol = 0;
+					continue;
+				}
+				if (nest == 1) {
+					if (c == delimleft)
+						nestcount++;
+					else if (c == delimright) {
+						nestcount--;
+						if (nestcount == 0) {
+							//			    	goto Ldone;
+							return delimitedStringConstant_Ldone(t, delimright);
+						}
+					}
+				} else if (c == delimright) {
+					//				goto Ldone;
+					return delimitedStringConstant_Ldone(t, delimright);
+				}
+
+				// isalpha inlined
+				if (startline != 0
+						&& (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))) {
+					Token t2 = new Token();
+					int psave = p;
+					p--;
+					scan(t2); // read in possible heredoc identifier
+					//printf("endid = '%s'\n", t.ident.toChars());
+					if (t2.value == TOKidentifier
+							&& CharOperation.equals(t2.sourceString, hereid)) { /* should check that rest of line is blank
+					 */
+						//			    goto Ldone;
+						return delimitedStringConstant_Ldone(t, delimright);
+					}
+					p = psave;
+				}
+				stringbuffer.writeUTF8(c);
+				startline = 0;
+			}
+		}
+
+		//	Ldone:
+		//		return delimitedStringConstant_Ldone(t, delimright);
+	}
+	
+	private TOK delimitedStringConstant_Ldone(Token t, int delimright) {
+		if (input[p] == '"') {
+	    	p++;
+	    } else {
+	    	error(IProblem.DelimitedStringMustEndInValue, t.lineNumber, t.ptr, p - t.ptr, new String[] { String.valueOf((char) delimright) });
+	    }
+//	    stringbuffer.writeByte(0);
+	    
+	    t.len = stringbuffer.data.length();
+	    stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+	    
+	    System.out.println(new String(t.ustring));
+	    
+	    t.sourceLen = p - t.ptr;
+	    t.sourceString = CharOperation.subarray(input, t.ptr, p);
+	    
+	    stringPostfix(t);
+	    return TOKstring;
+	}
+	
+	private TOK delimitedStringConstant_Lerror(Token t) {
+		error(IProblem.UnterminatedStringConstant, t.lineNumber, t.ptr, p - t.ptr - 1);
+	    t.ustring = CharOperation.NO_CHAR;
+	    t.len = 0;
+	    t.sourceLen = 0;
+	    t.sourceString = CharOperation.NO_CHAR;
+	    t.postfix = 0;
+	    return TOKstring;
+	}
+
+	/**************************************
+	 * Lex delimited strings:
+	 *	q{ foo(xxx) } // " foo(xxx) "
+	 *	q{foo(}       // "foo("
+	 *	q{{foo}"}"}   // "{foo}"}""
+	 * Input:
+	 *	p is on the q
+	 */
+
+	private TOK tokenStringConstant(Token t) {
+		int nest = 1;
+		int pstart = ++p;
+
+		while (true) {
+			Token tok = new Token();
+
+			scan(tok);
+			switch (tok.value) {
+			case TOKlcurly:
+				nest++;
+				continue;
+
+			case TOKrcurly:
+				if (--nest == 0) {
+					t.len = p - 1 - pstart;
+					t.ustring = CharOperation.subarray(input, pstart, pstart + t.len);
+					
+					t.sourceLen = p - t.ptr;
+				    t.sourceString = CharOperation.subarray(input, t.ptr, p);
+				    
+					stringPostfix(t);
+					return TOKstring;
+				}
+				continue;
+
+			case TOKeof: {
+				error(IProblem.UnterminatedTokenStringConstant,
+						token.lineNumber, token.ptr, p - token.ptr - 1);
+				t.ustring = CharOperation.NO_CHAR;
+				t.len = 0;
+				
+				t.sourceLen = 0;
+				t.sourceString = CharOperation.NO_CHAR;
+				
+				t.postfix = 0;
+				return TOKstring;
+			}
+
+			default:
+				continue;
 			}
 		}
 	}

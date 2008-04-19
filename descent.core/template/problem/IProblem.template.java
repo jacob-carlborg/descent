@@ -208,7 +208,7 @@ public interface IProblem {
 	int CAT_RESTRICTION = 150;
 	
 	/* Problems during lexing, parsing, and semantic analysis, generated automatically,
-	   55 is the first semantic error in the list. */
+	   60 is the first semantic error in the list. */
 	/* EVAL-ONCE
 	 * 
 	 * my $i = 1;

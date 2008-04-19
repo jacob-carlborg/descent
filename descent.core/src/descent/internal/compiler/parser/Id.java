@@ -65,6 +65,7 @@ public interface Id {
 	static final char[] TIMESTAMP = { '_', '_', 'T', 'I', 'M', 'E', 'S', 'T', 'A', 'M', 'P', '_', '_' };
 	static final char[] VENDOR = { '_', '_', 'V', 'E', 'N', 'D', 'O', 'R', '_', '_' };
 	static final char[] VERSION = { '_', '_', 'V', 'E', 'R', 'S', 'I', 'O', 'N', '_', '_' };
+	static final char[] EOFX = { '_', '_', 'E', 'O', 'F', '_', '_' };
 	static final char[] nan = { 'n', 'a', 'n' };
 	static final char[] infinity = { 'i', 'n', 'f', 'i', 'n', 'i', 't', 'y' };
 	static final char[] dig = { 'd', 'i', 'g' };

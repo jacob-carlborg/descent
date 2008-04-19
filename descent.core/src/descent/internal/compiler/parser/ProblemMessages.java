@@ -64,6 +64,11 @@ final class ProblemMessages extends NLS {
 	public static String VariadicTemplateParameterMustBeTheLastOne;
 	public static String NeedSizeOfRightmostArray;
 	public static String ConflictingStorageClass;
+	public static String ValueIsLargerThanAByte;
+	public static String UnterminatedTokenStringConstant;
+	public static String HeredocRestOfLineShouldBeBlank;
+	public static String IdentifierExpectedForHeredoc;
+	public static String DelimitedStringMustEndInValue;
 	public static String SymbolConflictsWithSymbolAtLocation;
 	public static String SymbolAtLocationConflictsWithSymbolAtLocation;
 	public static String PropertyCanNotBeRedefined;
@@ -405,7 +410,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotUseTemplateToAddVirtualFunctionToClass;
 	public static String OutResultIsAlreadyDefined;
 	public static String MissingInitializerForConstField;
-	public static String SomethingNotFound;
+	public static String ImportNotFound;
 	public static String SymbolMustBeAnArrayOfPointerType;
 	public static String RvalueOfInExpressionMustBeAnAssociativeArray;
 	public static String InterfaceInheritsFromDuplicateInterface;
@@ -449,7 +454,6 @@ final class ProblemMessages extends NLS {
 	public static String Utf16LowValueOutOfRange;
 	public static String UnpairedUtf16Value;
 	public static String IllegalUtf16Value;
-	public static String UseIsNull;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

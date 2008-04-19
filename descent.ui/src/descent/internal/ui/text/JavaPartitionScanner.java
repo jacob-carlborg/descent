@@ -118,7 +118,7 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		rules.add(new EndOfLineRule("//", singleLineComment)); //$NON-NLS-1$
 		
 		rules.add(new DStringRule("x\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
-		
+		rules.add(new DStringRule("q\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		rules.add(new DStringRule("r\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		rules.add(new DStringRule("`", "`", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		

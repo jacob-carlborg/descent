@@ -14,6 +14,18 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 				"wxyz", pos, pos, "@4test/4wxyz", "i", "@4test", "wxyz    int - test");
 	}
 	
+	public void testVarWithBasicTypeInFunctionFQN() throws Exception {
+		createCompilationUnit("one.two", "three.d", "int wxyz;");
+		
+		String s = "import one.two.three; void foo() { }";
+		
+		int pos = s.lastIndexOf('{') + 1; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
+				"wxyz", pos, pos, "@3one3two5three/4wxyz", "i", "@3one3two5three", "wxyz    int - one.two.three");
+	}
+	
 	public void testVarWithBasicTypeInFunctionSome() throws Exception {
 		String s = "int wxyz; void foo() { w }";
 		

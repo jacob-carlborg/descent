@@ -15,5 +15,17 @@ public class Expressions extends Array<Expression> {
 	public Expressions(Expressions objects) {
 		super(objects);
 	}
+	
+	public Expressions copy() {
+		Expressions other = new Expressions();
+		for(Expression exp : this) {
+			if (exp != null) {
+				other.add(exp.copy());
+			} else {
+				other.add(null);
+			}
+		}
+		return other;
+	}
 
 }

@@ -214,6 +214,9 @@ public interface ITerminalSymbols {
 	int TokenNamemacro = 183;
 	
 	int TokenName__traits = 184;
+	int TokenName__overloadset = 185;
+	int TokenNamenothrow = 186;
+	int TokenNamepure = 187;
 
 }
 

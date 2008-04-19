@@ -1104,7 +1104,7 @@ public class CompletionEngine extends Engine
 			}
 			
 //			isCompletingTypeIdentifier = true;
-			trySuggestCall(type, currentName, CharOperation.NO_CHAR);
+			trySuggestCall(type, currentName, CharOperation.NO_CHAR, true /* only statics */);
 //			isCompletingTypeIdentifier = false;
 		} else if (node.exp instanceof CallExp) {
 			CallExp ce = (CallExp) node.exp;
@@ -1180,9 +1180,10 @@ public class CompletionEngine extends Engine
 			endPosition = actualCompletionPosition;
 			
 			if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
-				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR);
+				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			} else {
-				trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR);
+				// TODO check this
+				trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			}
 		} else if (node.e1 instanceof CallExp && node.e1 != node) {
 			completeCallExp((CallExp) node.e1);
@@ -1364,7 +1365,8 @@ public class CompletionEngine extends Engine
 			Type type = symoff.type;
 			completeType(type, ident, false);
 		} else if (ident.resolvedSymbol != null) {
-			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR);
+			// TODO check this
+			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR, true /* only statics */);
 			
 			currentName = ident.ident;
 			startPosition = ident.start;
@@ -1806,7 +1808,7 @@ public class CompletionEngine extends Engine
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					CompletionEngine.this.requestor.accept(proposal);
 					
-					trySuggestCall(var.type(), ident, sig);
+					trySuggestCall(var.type(), ident, sig, false /* dosen't matter */);
 				}
 				return;
 			}
@@ -1956,7 +1958,7 @@ public class CompletionEngine extends Engine
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					CompletionEngine.this.requestor.accept(proposal);
 					
-					trySuggestCall(member.type(), ident, sigChars);
+					trySuggestCall(member.type(), ident, sigChars, true /* only statics */);
 					
 					// If we are expecting an enum, suggest it's members! :-)
 					if (expectedType != null && expectedType instanceof TypeEnum 
@@ -2092,7 +2094,7 @@ public class CompletionEngine extends Engine
 	/*
 	 * Suggest function pointer, delegate, or opCall calls.
 	 */
-	private void trySuggestCall(Type type, char[] ident, char[] signature) {
+	private void trySuggestCall(Type type, char[] ident, char[] signature, boolean onlyStatics) {
 		// We are completing a type, don't suggest a call
 		if (isCompletingTypeIdentifier || !wantConstructorsAndOpCall
 				|| parser.inNewExp) {
@@ -2126,13 +2128,13 @@ public class CompletionEngine extends Engine
 		case ASTDmdNode.TYPE_STRUCT: {
 			StructDeclaration sym = ((TypeStruct) type).sym;
 			currentName = ident;
-			suggestMembers(sym.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		case ASTDmdNode.TYPE_CLASS: {			
 			ClassDeclaration sym = ((TypeClass) type).sym;
 			currentName = ident;
-			suggestMembers(sym.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		}

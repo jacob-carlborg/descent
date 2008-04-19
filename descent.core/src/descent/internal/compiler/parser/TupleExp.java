@@ -50,12 +50,14 @@ public class TupleExp extends Expression {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
-		for (int i = 0; i < exps.size(); i++) {
-			Expression e = exps.get(i);
-			e = e.castTo(sc, t, context);
-			exps.set(i, e);
+		TupleExp e = (TupleExp) copy();
+	    e.exps = (Expressions) exps.copy();		
+		for (int i = 0; i < e.exps.size(); i++) {
+			Expression ex = e.exps.get(i);
+			ex = ex.castTo(sc, t, context);
+			e.exps.set(i, ex);
 		}
-		return this;
+		return e;
 	}
 
 	@Override

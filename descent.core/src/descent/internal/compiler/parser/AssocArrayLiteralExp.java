@@ -45,25 +45,33 @@ public class AssocArrayLiteralExp extends Expression {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+	    if (same(type, t, context)) {
+	    	return this;
+	    }
+	    
+	    AssocArrayLiteralExp e = this;		
 		Type typeb = type.toBasetype(context);
 		Type tb = t.toBasetype(context);
 		if (tb.ty == Taarray && typeb.ty == Taarray
-				&& tb.next.toBasetype(context).ty != Tvoid) {
+				&& tb.nextOf().toBasetype(context).ty != Tvoid) {
+			e = (AssocArrayLiteralExp) copy();
+			e.keys = (Expressions) keys.copy();
+			e.values = (Expressions) values.copy();
 			assert (keys.size() == values.size());
 			for (int i = 0; i < keys.size(); i++) {
-				Expression e = values.get(i);
-				e = e.castTo(sc, tb.next, context);
-				values.set(i, e);
+				Expression ex = values.get(i);
+				ex = ex.castTo(sc, tb.nextOf(), context);
+				e.values.set(i, ex);
 
-				e = keys.get(i);
-				e = e.castTo(sc, ((TypeAArray) tb).key, context);
-				keys.set(i, e);
+				ex = keys.get(i);
+				ex = ex.castTo(sc, ((TypeAArray) tb).index, context);
+				e.keys.set(i, ex);
 			}
-			type = t;
-			return this;
+			e.type = t;
+			return e;
 		}
 		// L1:
-		return super.castTo(sc, t, context);
+		return e.Expression_castTo(sc, t, context);
 	}
 
 	@Override

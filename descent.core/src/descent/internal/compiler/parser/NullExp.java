@@ -13,56 +13,59 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
 public class NullExp extends Expression {
-	
-	public boolean committed;	// !=0 if type is committed
-	
+
+	public boolean committed; // !=0 if type is committed
+
 	public NullExp(Loc loc) {
 		super(loc, TOK.TOKnull);
 		this.committed = false;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
-	
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
-		Expression e;
+		NullExp e;
 		Type tb;
 
-		committed = true;
-		e = this;
+		if (same(type, t, context)) {
+			committed = true;
+			return this;
+		}
+		e = (NullExp) copy();
+		e.committed = true;
 		tb = t.toBasetype(context);
-		type = type.toBasetype(context);
-		if (!same(tb, type, context)) {
+		e.type = type.toBasetype(context);
+		if (!same(tb, e.type, context)) {
 			// NULL implicitly converts to any pointer type or dynamic array
-			if (type.ty == Tpointer
-					&& type.next.ty == Tvoid
+			if (e.type.ty == Tpointer
+					&& e.type.nextOf().ty == Tvoid
 					&& (tb.ty == Tpointer || tb.ty == Tarray
 							|| tb.ty == Taarray || tb.ty == Tdelegate)) {
 			} else {
-				return super.castTo(sc, t, context);
+				return e.Expression_castTo(sc, t, context);
 			}
 		}
 		e.type = t;
 		return e;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return NULL_EXP;
 	}
-	
+
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		// TODO Descent this check is not in DMD, see why it can be null here (bug in Descent, probably)
 		if (type == null) {
 			type = Type.tvoid.pointerTo(context);
 		}
-		
+
 		if (this.type.equals(t)) {
 			return MATCHexact;
 		}
@@ -78,29 +81,29 @@ public class NullExp extends Expression {
 		}
 		return super.implicitConvTo(t, context);
 	}
-	
+
 	@Override
-	public Expression interpret(InterState istate, SemanticContext context)
-	{
+	public Expression interpret(InterState istate, SemanticContext context) {
 		return this;
 	}
-	
+
 	@Override
 	public boolean isBool(boolean result) {
 		return result ? false : true;
 	}
-	
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		 // NULL is the same as (void *)0
-	    if (type == null) {
+		// NULL is the same as (void *)0
+		if (type == null) {
 			type = Type.tvoid.pointerTo(context);
 		}
-	    return this;
+		return this;
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring("null");
 	}
 

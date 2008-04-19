@@ -141,7 +141,7 @@ public class AddrExp extends UnaExp {
 						context.acceptProblem(Problem.newSemanticTypeError(
 				    			IProblem.ArrayIndexOutOfBounds,
 				    			this,
-				    			new String[] { 
+				    			new String[] {
 				    				String.valueOf(index),
 				    				String.valueOf(dim),
 				    			}));

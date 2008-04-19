@@ -14,7 +14,7 @@ public class ComplexExp extends Expression {
 		this.value = value;
 		this.type = type;
 	}
-	
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
@@ -23,12 +23,21 @@ public class ComplexExp extends Expression {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
-		if (type.iscomplex() && t.iscomplex()) {
-			type = t;
-		} else {
-			return super.castTo(sc, t, context);
+		Expression e = this;
+		if (!same(type, t, context)) {
+			if (type.iscomplex() && t.iscomplex()) {
+				e = copy();
+				e.type = t;
+			} else {
+				e = super.castTo(sc, t, context);
+			}
 		}
-		return this;
+		
+		// Descent	
+		e.copySourceRange(this);
+		
+		return e;
+
 	}
 
 	@Override
@@ -52,7 +61,7 @@ public class ComplexExp extends Expression {
 	public real_t toImaginary(SemanticContext context) {
 		return value.im;
 	}
-	
+
 	@Override
 	public complex_t toComplex(SemanticContext context) {
 		return value;
@@ -98,12 +107,12 @@ public class ComplexExp extends Expression {
 	public int getNodeType() {
 		return COMPLEX_EXP;
 	}
-	
+
 	@Override
 	public boolean isConst() {
 		return true;
 	}
-	
+
 	@Override
 	public String toChars(SemanticContext context) {
 		StringBuilder sb = new StringBuilder();
@@ -114,20 +123,21 @@ public class ComplexExp extends Expression {
 		sb.append("i)");
 		return sb.toString();
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.data.append(toString());
 	}
-	
+
 	@Override
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte('c');
-	    real_t r = toReal(context);
-	    realToMangleBuffer(buf, r);
-	    buf.writeByte('c');	// separate the two
-	    r = toImaginary(context);
-	    realToMangleBuffer(buf, r);
+		real_t r = toReal(context);
+		realToMangleBuffer(buf, r);
+		buf.writeByte('c'); // separate the two
+		r = toImaginary(context);
+		realToMangleBuffer(buf, r);
 	}
 
 }

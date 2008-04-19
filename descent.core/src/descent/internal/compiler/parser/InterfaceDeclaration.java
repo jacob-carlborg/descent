@@ -13,6 +13,8 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 
 // DMD 1.020
 public class InterfaceDeclaration extends ClassDeclaration {
+	
+    int cpp;				// !=0 if this is a C++ interface
 
 	public InterfaceDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {

@@ -65,6 +65,30 @@ public class Problem implements IProblem {
 		return newSemanticTypeProblem(id, line, start, length, arguments, true);
 	}
 	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode node, String[] arguments) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.getStart(), node.getLength(), arguments, true);
+	}
+	
+	public static Problem newSemanticTypeErrorLoc(int id, ASTDmdNode node, String[] arguments) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), arguments, true);
+	}
+	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2, String[] arguments) {
+		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.getStart(), n2.getStart()+ n2.getLength() - n1.getStart(), arguments, true);
+	}
+	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2) {
+		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.getStart(), n2.getStart() + n2.getLength() - n1.getStart(), null, true);
+	}
+	
+	public static Problem newSemanticTypeError(int id, ASTDmdNode node) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.getStart(), node.getLength(), null, true);
+	}
+	
+	public static Problem newSemanticTypeErrorLoc(int id, ASTDmdNode node) {
+		return newSemanticTypeProblem(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), null, true);
+	}
+	
 	public static Problem newSemanticTypeError(int id, int line, int start, int length) {
 		return newSemanticTypeError(id, line, start, length, null);
 	}
@@ -75,6 +99,14 @@ public class Problem implements IProblem {
 	
 	public static IProblem newSemanticTypeWarning(int id, int line, int start, int length) {
 		return newSemanticTypeWarning(id, line, start, length, null);
+	}
+	
+	public static IProblem newSemanticTypeWarning(int id, ASTDmdNode node) {
+		return newSemanticTypeWarning(id, node.getLineNumber(), node.getStart(), node.getLength(), null);
+	}
+	
+	public static IProblem newSemanticTypeWarningLoc(int id, ASTDmdNode node) {
+		return newSemanticTypeWarning(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), null);
 	}
 	
 	public static Problem newTask(String message, int line, int start, int length) {

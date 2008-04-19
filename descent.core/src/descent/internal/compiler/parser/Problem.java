@@ -235,6 +235,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.NeedSizeOfRightmostArray);
 		case ConflictingStorageClass:
 			return String.format(ProblemMessages.ConflictingStorageClass);
+		case ValueIsLargerThanAByte:
+			return String.format(ProblemMessages.ValueIsLargerThanAByte, arguments[0]);
+		case UnterminatedTokenStringConstant:
+			return String.format(ProblemMessages.UnterminatedTokenStringConstant);
+		case HeredocRestOfLineShouldBeBlank:
+			return String.format(ProblemMessages.HeredocRestOfLineShouldBeBlank);
+		case IdentifierExpectedForHeredoc:
+			return String.format(ProblemMessages.IdentifierExpectedForHeredoc);
+		case DelimitedStringMustEndInValue:
+			return String.format(ProblemMessages.DelimitedStringMustEndInValue, arguments[0]);
 		case SymbolConflictsWithSymbolAtLocation:
 			return String.format(ProblemMessages.SymbolConflictsWithSymbolAtLocation, arguments[0], arguments[1], arguments[2], arguments[3]);
 		case SymbolAtLocationConflictsWithSymbolAtLocation:
@@ -918,7 +928,7 @@ public class Problem implements IProblem {
 		case MissingInitializerForConstField:
 			return String.format(ProblemMessages.MissingInitializerForConstField, arguments[0]);
 		case ImportNotFound:
-			return String.format(ProblemMessages.SomethingNotFound, arguments[0]);
+			return String.format(ProblemMessages.ImportNotFound, arguments[0]);
 		case SymbolMustBeAnArrayOfPointerType:
 			return String.format(ProblemMessages.SymbolMustBeAnArrayOfPointerType, arguments[0], arguments[1]);
 		case RvalueOfInExpressionMustBeAnAssociativeArray:
@@ -1005,8 +1015,6 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.UnpairedUtf16Value);
 		case IllegalUtf16Value:
 			return String.format(ProblemMessages.IllegalUtf16Value);
-//		case UseIsNull:
-//			return String.format(ProblemMessages.UseIsNull);
 		default:
 			return "";
 		}

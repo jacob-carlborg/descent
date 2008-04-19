@@ -14,6 +14,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	public Type type;
 	public PROT protection;
+	public Type handle; // 'this' type
 	public int storage_class;
 	public boolean isdeprecated;
 	public int structsize; // size of struct
@@ -24,11 +25,12 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	// 0: no size
 	// 1: size is correct
 	// 2: cannot determine size; fwd referenced
-	public boolean com; // !=0 if this is a COM class
+	public boolean com; // !=0 if this is a COM class (meaning it derives from IUnknown)
 	public boolean isauto; // !=0 if this is an auto class
 	public boolean isabstract; // !=0 if abstract class
 	public Scope scope; // !=NULL means context to use
-	public Type handle; // 'this' type
+    public FuncDeclarations dtors;	// Array of destructors
+    public FuncDeclaration dtor;	// aggregate destructor
 
 	// Special member functions
 	public InvariantDeclaration inv; // invariant

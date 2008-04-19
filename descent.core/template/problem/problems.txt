@@ -160,6 +160,21 @@ NeedSizeOfRightmostArray
 ConflictingStorageClass
 	formatString=Conflicting storage class
 	numArgs=0
+ValueIsLargerThanAByte
+	formatString=%1$s is larger than a byte
+	numArgs=1
+UnterminatedTokenStringConstant
+	formatString=Unterminated token string constant
+	numArgs=0
+HeredocRestOfLineShouldBeBlank
+	formatString=Heredoc rest of line should be blank
+	numArgs=0
+IdentifierExpectedForHeredoc
+	formatString=Identifier expected for heredoc
+	numArgs=0
+DelimitedStringMustEndInValue
+	formatString=Delimited string must end in %1$s
+	numArgs=1
 SymbolConflictsWithSymbolAtLocation
 	formatString=%1$s conflicts with %2$s %3$s at %4$s
 	numArgs=4

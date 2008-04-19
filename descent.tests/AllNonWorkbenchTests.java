@@ -128,8 +128,8 @@ public class AllNonWorkbenchTests {
 //					| DDOC 
 //					| DEBUGGER 
 //					| FORMATTER 
-//					| LEXER_PARSER 
-					| SIGNATURE 
+					| LEXER_PARSER 
+//					| SIGNATURE 
 //					| REWRITE 
 //					| TRACE
 					;

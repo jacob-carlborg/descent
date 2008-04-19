@@ -169,7 +169,7 @@ public class CompletionProposalLabelProvider {
 			}
 		}
 		
-		char[] displayName= Signature.getSimpleName(Signature.toCharArray(typeSignature, false /* don't fully qualify names */));
+		char[] displayName= Signature.toCharArray(typeSignature, false /* don't fully qualify names */);
 		if (prefix != null) {
 			displayName = CharOperation.concat(prefix, displayName, ' ');
 		}

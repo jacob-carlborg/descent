@@ -19,11 +19,11 @@ public class RealExp extends Expression {
 		this.value = value;
 		this.type = type;
 	}
-	
+
 	public RealExp(Loc loc, real_t value, Type type) {
 		this(loc, null, value, type);
 	}
-	
+
 	public RealExp(Loc loc, double d, Type type) {
 		this(loc, new real_t(BigDecimal.valueOf(d)), type);
 	}
@@ -34,17 +34,23 @@ public class RealExp extends Expression {
 		visitor.endVisit(this);
 	}
 
-
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
-		if (type.isreal() && t.isreal()) {
-			type = t;
-		} else if (type.isimaginary() && t.isimaginary()) {
-			type = t;
-		} else {
-			return super.castTo(sc, t, context);
+		Expression e = this;
+		if (!same(type, t, context)) {
+			if ((type.isreal() && t.isreal())
+					|| (type.isimaginary() && t.isimaginary())) {
+				e = copy();
+				e.type = t;
+			} else {
+				e = super.castTo(sc, t, context);
+			}
 		}
-		return this;
+		
+		// Descent
+		e.copySourceRange(this);
+		
+		return e;
 	}
 
 	@Override
@@ -82,9 +88,10 @@ public class RealExp extends Expression {
 		}
 		return this;
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		// TODO semantic toCBuffer
 		buf.data.append(value);
 	}
@@ -121,27 +128,26 @@ public class RealExp extends Expression {
 	public integer_t toUInteger(SemanticContext context) {
 		return value.to_integer_t().castToUns64();
 	}
-	
+
 	@Override
 	public char[] toCharArray() {
 		return str;
 	}
-	
+
 	@Override
 	public boolean isConst() {
 		return true;
 	}
-	
+
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
 		return this;
 	}
 
 	@Override
-	public void toMangleBuffer(OutBuffer buf, SemanticContext context)
-	{
-		 buf.writeByte('e');
-		 realToMangleBuffer(buf, value);
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
+		buf.writeByte('e');
+		realToMangleBuffer(buf, value);
 	}
 
 }

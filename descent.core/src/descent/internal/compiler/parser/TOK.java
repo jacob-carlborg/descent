@@ -152,6 +152,9 @@ public enum TOK implements ITerminalSymbols {
 	
 	// In 2.0
 	TOKtraits("__traits", TokenName__traits),
+	TOKoverloadset("__overloadset", TokenName__overloadset),
+	TOKnothrow("nothrow", TokenNamenothrow),
+	TOKpure("pure", TokenNamepure),
 
 	
 	// Additional in Descent
@@ -172,6 +175,7 @@ public enum TOK implements ITerminalSymbols {
 	
 	TOKnotis,
 	TOKconstruct,
+	TOKblit,
 
 	//TOKMAX
 	;

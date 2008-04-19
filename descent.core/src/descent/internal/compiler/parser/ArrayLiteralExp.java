@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
-import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
@@ -35,31 +35,40 @@ public class ArrayLiteralExp extends Expression {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+	    if (same(type, t, context)) {
+	    	return this;
+	    }
+	    
+	    ArrayLiteralExp e = this;		
 		Type typeb = type.toBasetype(context);
 		Type tb = t.toBasetype(context);
-		if ((tb.ty == Tarray || tb.ty == Tsarray)
-				&& (typeb.ty == Tarray || typeb.ty == Tsarray)) {
+	    if ((tb.ty == Tarray || tb.ty == Tsarray) &&
+	    		(typeb.ty == Tarray || typeb.ty == Tsarray) &&
+	    		tb.nextOf().toBasetype(context).ty != Tvoid) {
 			if (tb.ty == Tsarray) {
 				TypeSArray tsa = (TypeSArray) tb;
 				if (elements.size() != tsa.dim.toInteger(context).intValue()) {
 					// goto L1;
-					return super.castTo(sc, t, context);
+					return e.Expression_castTo(sc, t, context);
 				}
 			}
 
+			e = (ArrayLiteralExp) copy();
+			e.elements = (Expressions) elements.copy();
 			for (int i = 0; i < elements.size(); i++) {
-				Expression e = elements.get(i);
-				e = e.castTo(sc, tb.next, context);
-				elements.set(i, e);
+				Expression ex = elements.get(i);
+				ex = ex.castTo(sc, tb.next, context);
+				e.elements.set(i, ex);
 			}
-			type = t;
-			return this;
+			e.type = t;
+			return e;
 		}
 		if (tb.ty == Tpointer && typeb.ty == Tsarray) {
-			type = typeb.next.pointerTo(context);
+			e = (ArrayLiteralExp) copy();
+			e.type = typeb.nextOf().pointerTo(context);
 		}
 		// L1:
-		return super.castTo(sc, t, context);
+		return e.Expression_castTo(sc, t, context);
 	}
 
 	@Override

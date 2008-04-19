@@ -211,6 +211,12 @@ public class StringExp extends Expression {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		// TODO UPDATE SEMANTIC!!
+		
+	    /* This follows copy-on-write; any changes to 'this'
+	     * will result in a copy.
+	     * The this->string member is considered immutable.
+	     */
 		StringExp se;
 		Type tb;
 		int unique;
