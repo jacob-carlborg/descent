@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import static descent.internal.compiler.parser.LINK.LINKc;
 import static descent.internal.compiler.parser.LINK.LINKcpp;
 import static descent.internal.compiler.parser.LINK.LINKd;
@@ -3269,7 +3270,7 @@ public class Parser extends Lexer {
 		return a;
 	}
 	
-	private void parseContracts(FuncDeclaration f) {
+	private void parseContracts(final FuncDeclaration f) {
 	    LINK linksave = linkage;
 
 	    // The following is irrelevant, as it is overridden by sc->linkage in
@@ -3289,7 +3290,29 @@ public class Parser extends Lexer {
 					parsingErrorInsertToComplete(prevToken, "body { ... }", "FunctionDeclaration");
 				}
 				
-				f.setFbody(dietParseStatement());
+				/*
+				 * Diet parsing: skip the function body if possible.
+				 * But... the function's body might be needed later if we need to interpret it.
+				 * So... assign the "rest" of it by parsing the actual body when needed.
+				 */
+				final int startSkip = p;
+				
+				Statement body = dietParseStatement();
+				f.setFbody(body);
+				
+				// Diet successful
+				if (body == null) {
+					final int endSkip = p;					
+					f.rest = new SemanticRest(new Runnable() {
+						public void run() {
+							Parser parser = new Parser(apiLevel, CharOperation.subarray(input, startSkip, endSkip));
+							
+							Statement body = parser.dietParseStatement(); 
+							f.fbody = body;
+						}
+					});
+				}
+				
 				break;
 
 			case TOKbody:
