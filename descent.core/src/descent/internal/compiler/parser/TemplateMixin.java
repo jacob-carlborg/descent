@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
@@ -224,6 +226,15 @@ public class TemplateMixin extends TemplateInstance {
 		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
 		if (null == members) {
 			return;
+		} else {
+			for(Dsymbol member : members) {
+				member.accept(new AstVisitorAdapter() {
+					@Override
+					public void preVisit(ASTNode node) {
+						node.setSourceRange(start, length);
+					}
+				});
+			}
 		}
 
 		symtab = new DsymbolTable();

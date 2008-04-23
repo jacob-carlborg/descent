@@ -342,5 +342,15 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 				"twoVar", pos, pos
 				);
 	}
+	
+	public void testMixin() throws Exception {
+		String s = "template Foo() { int wxyz; } class Foo { mixin Foo!(); } void foo(Foo f) { f.w }";
+		
+		int pos = s.lastIndexOf(".") + 2; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				"wxyz", pos - 1, pos
+				);
+	}
 
 }

@@ -1336,6 +1336,9 @@ IllegalUtf16Value
 StaticConstructorCanOnlyBePartOfStructClassModule
 	formatString=Static constructor can only be part of struct/class/module
 	numArgs=0
+ShiftAssignIsOutsideTheRange
+	formatString=Shift assign by %1$s is outside the range 0..%2$s
+	numArgs=2
 
 
 

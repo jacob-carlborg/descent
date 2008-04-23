@@ -1200,8 +1200,10 @@ public class FuncDeclaration extends Declaration {
 		 * t = t.semantic(loc, sc); if (!t.isClassHandle()) error("can only
 		 * throw classes, not %s", t.toChars()); } }
 		 */
+		
+		// Descent: changed to always get semantic done on arguments
 
-		if (fbody != null || frequire != null) {
+//		if (fbody != null || frequire != null) {
 			// Establish function scope
 			ScopeDsymbol ss;
 			Scope sc2;
@@ -1797,7 +1799,7 @@ public class FuncDeclaration extends Declaration {
 
 			sc2.callSuper = 0;
 			sc2.pop();
-		}
+//		}
 		semanticRun = 2;
 	}
 

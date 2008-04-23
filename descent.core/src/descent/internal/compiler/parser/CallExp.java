@@ -136,7 +136,7 @@ public class CallExp extends UnaExp {
 			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) {
 				Expression eresult = fd.interpret(null, arguments, context);
-				if (eresult != null) {
+				if (eresult != null && eresult != EXP_VOID_INTERPRET) {
 					e = eresult;
 				} else if ((result & WANTinterpret) != 0) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));

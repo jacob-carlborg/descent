@@ -22,6 +22,7 @@ import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -40,6 +41,7 @@ import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeDotIdExp;
+import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeQualified;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
@@ -90,10 +92,21 @@ public class CompletionParser extends Parser {
 	 * falls in a function.
 	 */
 	@Override
-	protected boolean dietParse() {
+	protected boolean dietParse(FuncDeclaration f) {
+		
+		// If any argument is being autocompleted, don't skip
+		TypeFunction type = (TypeFunction) f.type;
+		if (type != null && type.parameters != null) {
+			for(Argument arg : type.parameters) {
+				if (arg.start <= cursorLocation && cursorLocation <= arg.start + arg.length) {
+					return false;
+				}
+			}
+		}
+		
 		int before = token.ptr + token.sourceLen;
 		
-		boolean ret = super.dietParse();
+		boolean ret = super.dietParse(f);
 		
 		int after = token.ptr + token.sourceLen;
 		if (before <= cursorLocation && cursorLocation <= after) {

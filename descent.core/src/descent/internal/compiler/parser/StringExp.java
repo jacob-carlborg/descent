@@ -109,8 +109,8 @@ public class StringExp extends Expression {
 					p = Utf.decodeChar(string, 0, len, u, c);
 					// utf_decodeChar((unsigned char )string, len, &u, &c);
 					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
+						context.acceptProblem(Problem.newSemanticTypeError(p,
+								this, new String[0]));
 						break;
 					} else {
 						buffer.write4(c[0]);
@@ -130,8 +130,8 @@ public class StringExp extends Expression {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeChar(string, 0, len, u, c);
 					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
+						context.acceptProblem(Problem.newSemanticTypeError(p,
+								this, new String[0]));
 						break;
 					} else {
 						buffer.writeUTF16(c[0]);
@@ -178,8 +178,10 @@ public class StringExp extends Expression {
 					switch (t.ty) {
 					case Tsarray:
 						if (type.ty == Tsarray
-								&& !((TypeSArray) type).dim.toInteger(context).equals(((TypeSArray) t).dim
-										.toInteger(context))) {
+								&& !((TypeSArray) type).dim.toInteger(context)
+										.equals(
+												((TypeSArray) t).dim
+														.toInteger(context))) {
 							return MATCHnomatch;
 						}
 					case Tarray:
@@ -211,219 +213,264 @@ public class StringExp extends Expression {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
-		// TODO UPDATE SEMANTIC!!
-		
-	    /* This follows copy-on-write; any changes to 'this'
-	     * will result in a copy.
-	     * The this->string member is considered immutable.
-	     */
+		/* This follows copy-on-write; any changes to 'this'
+		 * will result in a copy.
+		 * The this->string member is considered immutable.
+		 */
 		StringExp se;
 		Type tb;
-		int unique;
+		int copied = 0;
 
-		if (!committed && t.ty == Tpointer && t.next.ty == Tvoid) {
+		if (!committed && t.ty == Tpointer && t.nextOf().ty == Tvoid) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CannotConvertStringLiteralToVoidPointer, this));
 		}
 
-		tb = t.toBasetype(context);
-		if (tb.ty == Tdelegate && type.toBasetype(context).ty != Tdelegate) {
-			return super.castTo(sc, t, context);
+		se = this;
+
+		if (!committed) {
+			se = (StringExp) copy();
+
+			// Descent
+			se.copySourceRange(this);
+
+			se.committed = true;
+
+			copied = 1; // this is the only instance
 		}
 
-		se = this;
-		unique = 0;
-		if (!committed) {
-			// Copy when committing the type
-			char[] s = new char[string.length];
-			// TODO see if the following translation is ok, and if a copy is needed
-			// s = mem.malloc((len + 1) * sz);
-			// memcpy(s, string, (len + 1) * sz);
-			System.arraycopy(string, 0, s, 0, string.length);
-			se = new StringExp(loc, s, len);
-			se.type = type;
-			se.sz = sz;
-			se.committed = false;
-			se.copySourceRange(this);
-			unique = 1; // this is the only instance
+		if (same(type, t, context)) {
+			return se;
 		}
-		se.type = type.toBasetype(context);
-		if (same(tb, se.type, context)) {
+
+		tb = t.toBasetype(context);
+		if (tb.ty == Tdelegate && type.toBasetype(context).ty != Tdelegate)
+			return Expression_castTo(sc, t, context);
+
+		Type typeb = type.toBasetype(context);
+		if (same(typeb, tb, context)) {
+			if (0 == copied) {
+				se = (StringExp) copy();
+				// Descent
+				se.copySourceRange(this);
+
+				copied = 1;
+			}
 			se.type = t;
-			se.committed = true;
 			return se;
 		}
 
 		if (tb.ty != Tsarray && tb.ty != Tarray && tb.ty != Tpointer) {
-			se.committed = true;
+			if (0 == copied) {
+				se = (StringExp) copy();
+				//		 Descent
+				se.copySourceRange(this);
+				copied = 1;
+			}
 			// goto Lcast;
 			return castTo_Lcast(se, t);
 		}
-		if (se.type.ty != Tsarray && se.type.ty != Tarray
-				&& se.type.ty != Tpointer) {
-			se.committed = true;
-			// goto Lcast;
-			return castTo_Lcast(se, t);
-		}
+		if (typeb.ty != Tsarray && typeb.ty != Tarray && typeb.ty != Tpointer) {
+			if (0 == copied) {
+				se = (StringExp) copy();
+				//		 Descent
+				se.copySourceRange(this);
 
-		if (se.committed) {
-			if (se.type.next.size(context) == tb.next.size(context)) {
+				copied = 1;
+			}
+			// goto Lcast;
+			return castTo_Lcast(se, t);
+		}
+		
+		boolean gotoL2 = false;
+
+		if (typeb.nextOf().size(context) == tb.nextOf().size(context)) {
+			if (0 == copied) {
+				se = (StringExp) copy();
+				//		 Descent
+				se.copySourceRange(this);
+
+				copied = 1;
+			}
+			if (tb.ty == Tsarray) {
+				// goto L2;	// handle possible change in static array dimension
+				gotoL2 = true;
+			}
+			
+			if (!gotoL2) {
 				se.type = t;
 				return se;
 			}
-			// goto Lcast;
-			return castTo_Lcast(se, t);
 		}
+		
+		if (!gotoL2) {
 
-		se.committed = true;
-
-		TY tfty;
-		TY ttty;
-		int p;
-		int[] u = { 0 };
-		int[] c = { 0 };
-		int newlen;
-
-		{
-			OutBuffer buffer = new OutBuffer();
-			newlen = 0;
-			tfty = se.type.next.toBasetype(context).ty;
-			ttty = tb.next.toBasetype(context).ty;
-
-			int x = X(tfty, ttty);
-			if (x == X(Tchar, Tchar) || x == X(Twchar, Twchar)
-					|| x == X(Tdchar, Tdchar)) {
-				// break;
-			} else if (x == X(Tchar, Twchar)) {
-				for (u[0] = 0; u[0] < len;) {
-					p = Utf.decodeChar(se.string, 0, len, u, c);
-					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
-					} else {
-						buffer.writeUTF16(c[0]);
-					}
-				}
-				newlen = buffer.offset() / 2;
-				buffer.writeUTF16(0);
-				// goto L1;
-				if (0 == unique) {
-					se = new StringExp(loc, null, 0);
-				}
-				buffer.data.getChars(0, buffer.offset(),
-						se.string = new char[buffer.offset()], 0);
-				se.len = newlen;
-				se.sz = tb.next.size(context);
-			} else if (x == X(Tchar, Tdchar)) {
-				for (u[0] = 0; u[0] < len;) {
-					p = Utf.decodeChar(se.string, 0, len, u, c);
-					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
-					}
-					buffer.write4(c[0]);
-					newlen++;
-				}
-				buffer.write4(0);
-				// goto L1;
-				if (0 == unique) {
-					se = new StringExp(loc, null, 0);
-				}
-				buffer.data.getChars(0, buffer.offset(),
-						se.string = new char[buffer.offset()], 0);
-				se.len = newlen;
-				se.sz = tb.next.size(context);
-			} else if (x == X(Twchar, Tchar)) {
-				for (u[0] = 0; u[0] < len;) {
-					p = Utf.decodeWchar(se.string, 0, len, u, c);
-					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
-					} else {
-						buffer.writeUTF8(c[0]);
-					}
-				}
-				newlen = buffer.offset();
-				buffer.writeUTF8(0);
-				// goto L1;
-				if (0 == unique) {
-					se = new StringExp(loc, null, 0);
-				}
-				buffer.data.getChars(0, buffer.offset(),
-						se.string = new char[buffer.offset()], 0);
-				se.len = newlen;
-				se.sz = tb.next.size(context);
-			} else if (x == X(Twchar, Tdchar)) {
-				for (u[0] = 0; u[0] < len;) {
-					p = Utf.decodeWchar(se.string, 0, len, u, c);
-					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
-					}
-					buffer.write4(c[0]);
-					newlen++;
-				}
-				buffer.write4(0);
-				// goto L1;
-				if (0 == unique) {
-					se = new StringExp(loc, null, 0);
-				}
-				buffer.data.getChars(0, buffer.offset(),
-						se.string = new char[buffer.offset()], 0);
-				se.len = newlen;
-				se.sz = tb.next.size(context);
-			} else if (x == X(Tdchar, Tchar)) {
-				for (u[0] = 0; u[0] < len; u[0]++) {
-					c[0] = se.string[u[0]];
-					if (!Utf.isValidDchar(c[0])) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InvalidUCS32Char, this, new String[] { String.valueOf(c[0]) })); // TODO format in hexa
-					} else {
-						buffer.writeUTF8(c[0]);
-					}
-					newlen++;
-				}
-				newlen = buffer.offset();
-				buffer.writeUTF8(0);
-				// goto L1;
-				if (0 == unique) {
-					se = new StringExp(loc, null, 0);
-				}
-				buffer.data.getChars(0, buffer.offset(),
-						se.string = new char[buffer.offset()], 0);
-				se.len = newlen;
-				se.sz = tb.next.size(context);
-			} else if (x == X(Tdchar, Twchar)) {
-				for (u[0] = 0; u[0] < len; u[0]++) {
-					c[0] = se.string[u[0]];
-					if (!Utf.isValidDchar(c[0])) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InvalidUCS32Char, this, new String[] { String.valueOf(c[0]) })); // TODO format in hexa
-					} else {
-						buffer.writeUTF16(c[0]);
-					}
-					newlen++;
-				}
-				newlen = buffer.offset() / 2;
-				buffer.writeUTF16(0);
-				// goto L1;
-				// L1: 
-				if (0 == unique) {
-					se = new StringExp(loc, null, 0);
-				}
-				buffer.data.getChars(0, buffer.offset(),
-						se.string = new char[buffer.offset()], 0);
-				se.len = newlen;
-				se.sz = tb.next.size(context);
-			} else {
-				if (se.type.next.size(context) == tb.next.size(context)) {
-					se.type = t;
-					return se;
-				}
+			if (committed) {
 				// goto Lcast;
 				return castTo_Lcast(se, t);
 			}
+	
+			int p;
+			int[] u = { 0 };
+			int[] c = { 0 };
+	
+			{
+				OutBuffer buffer = new OutBuffer();
+				int newlen = 0;
+				TY tfty = se.type.nextOf().toBasetype(context).ty;
+				TY ttty = tb.nextOf().toBasetype(context).ty;
+	
+				int x = X(tfty, ttty);
+				if (x == X(Tchar, Tchar) || x == X(Twchar, Twchar)
+						|| x == X(Tdchar, Tdchar)) {
+					// break;
+				} else if (x == X(Tchar, Twchar)) {
+					for (u[0] = 0; u[0] < len;) {
+						p = Utf.decodeChar(se.string, 0, len, u, c);
+						if (p >= 0) {
+							context.acceptProblem(Problem.newSemanticTypeError(p,
+									this, new String[0]));
+						} else {
+							buffer.writeUTF16(c[0]);
+						}
+					}
+					newlen = buffer.offset() / 2;
+					buffer.writeUTF16(0);
+					// goto L1;
+					if (0 == copied) {
+						se = (StringExp) copy();
+						// Descent
+						se.copySourceRange(this);
+					}
+					buffer.data.getChars(0, buffer.offset(),
+							se.string = new char[buffer.offset()], 0);
+					se.len = newlen;
+					se.sz = tb.nextOf().size(context);
+				} else if (x == X(Tchar, Tdchar)) {
+					for (u[0] = 0; u[0] < len;) {
+						p = Utf.decodeChar(se.string, 0, len, u, c);
+						if (p >= 0) {
+							context.acceptProblem(Problem.newSemanticTypeError(p,
+									this, new String[0]));
+						}
+						buffer.write4(c[0]);
+						newlen++;
+					}
+					buffer.write4(0);
+					// goto L1;
+					if (0 == copied) {
+						se = (StringExp) copy();
+						// Descent
+						se.copySourceRange(this);
+					}
+					buffer.data.getChars(0, buffer.offset(),
+							se.string = new char[buffer.offset()], 0);
+					se.len = newlen;
+					se.sz = tb.nextOf().size(context);
+				} else if (x == X(Twchar, Tchar)) {
+					for (u[0] = 0; u[0] < len;) {
+						p = Utf.decodeWchar(se.string, 0, len, u, c);
+						if (p >= 0) {
+							context.acceptProblem(Problem.newSemanticTypeError(p,
+									this, new String[0]));
+						} else {
+							buffer.writeUTF8(c[0]);
+						}
+					}
+					newlen = buffer.offset();
+					buffer.writeUTF8(0);
+					// goto L1;
+					if (0 == copied) {
+						se = (StringExp) copy();
+						// Descent
+						se.copySourceRange(this);
+					}
+					buffer.data.getChars(0, buffer.offset(),
+							se.string = new char[buffer.offset()], 0);
+					se.len = newlen;
+					se.sz = tb.nextOf().size(context);
+				} else if (x == X(Twchar, Tdchar)) {
+					for (u[0] = 0; u[0] < len;) {
+						p = Utf.decodeWchar(se.string, 0, len, u, c);
+						if (p >= 0) {
+							context.acceptProblem(Problem.newSemanticTypeError(p,
+									this, new String[0]));
+						}
+						buffer.write4(c[0]);
+						newlen++;
+					}
+					buffer.write4(0);
+					// goto L1;
+					if (0 == copied) {
+						se = (StringExp) copy();
+						// Descent
+						se.copySourceRange(this);
+					}
+					buffer.data.getChars(0, buffer.offset(),
+							se.string = new char[buffer.offset()], 0);
+					se.len = newlen;
+					se.sz = tb.nextOf().size(context);
+				} else if (x == X(Tdchar, Tchar)) {
+					for (u[0] = 0; u[0] < len; u[0]++) {
+						c[0] = se.string[u[0]];
+						if (!Utf.isValidDchar(c[0])) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.InvalidUCS32Char, this,
+									new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+						} else {
+							buffer.writeUTF8(c[0]);
+						}
+						newlen++;
+					}
+					newlen = buffer.offset();
+					buffer.writeUTF8(0);
+					// goto L1;
+					if (0 == copied) {
+						se = (StringExp) copy();
+						// Descent
+						se.copySourceRange(this);
+					}
+					buffer.data.getChars(0, buffer.offset(),
+							se.string = new char[buffer.offset()], 0);
+					se.len = newlen;
+					se.sz = tb.nextOf().size(context);
+				} else if (x == X(Tdchar, Twchar)) {
+					for (u[0] = 0; u[0] < len; u[0]++) {
+						c[0] = se.string[u[0]];
+						if (!Utf.isValidDchar(c[0])) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.InvalidUCS32Char, this,
+									new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+						} else {
+							buffer.writeUTF16(c[0]);
+						}
+						newlen++;
+					}
+					newlen = buffer.offset() / 2;
+					buffer.writeUTF16(0);
+					// goto L1;
+					// L1: 
+					if (0 == copied) {
+						se = (StringExp) copy();
+						// Descent
+						se.copySourceRange(this);
+					}
+					buffer.data.getChars(0, buffer.offset(),
+							se.string = new char[buffer.offset()], 0);
+					se.len = newlen;
+					se.sz = tb.nextOf().size(context);
+				} else {
+					if (se.type.next.size(context) == tb.next.size(context)) {
+						se.type = t;
+						return se;
+					}
+					// goto Lcast;
+					return castTo_Lcast(se, t);
+				}
+			}
 		}
+
+		// L2:
 
 		// See if need to truncate or extend the literal
 		if (tb.ty == Tsarray) {
@@ -433,27 +480,20 @@ public class StringExp extends Expression {
 			if (dim2 != se.len) {
 				int newsz = se.sz;
 
-				if (unique == 1 && dim2 < se.len) {
-					se.len = dim2;
-					// Add terminating 0
-					// --> no need in Java
-					// memset((unsigned char *)se.string + dim2 * newsz, 0, newsz);
-				} else {
-					// Copy when changing the string literal
-					char[] s = null;
-					int d;
+				// Copy when changing the string literal
+				char[] s = null;
+				int d;
 
-					d = (dim2 < se.len) ? dim2 : se.len;
-					// TODO semantic
-					// s = (unsigned char *)mem.malloc((dim2 + 1) * newsz);
-					// memcpy(s, se.string, d * newsz);
-					// Extend with 0, add terminating 0
-					// TODO semantic
-					// memset((char *)s + d * newsz, 0, (dim2 + 1 - d) * newsz);
-					se = new StringExp(loc, s, dim2);
-					se.committed = true; // it now has a firm type
-					se.sz = newsz;
-				}
+				d = (dim2 < se.len) ? dim2 : se.len;
+				// TODO semantic
+				// s = (unsigned char *)mem.malloc((dim2 + 1) * newsz);
+				// memcpy(s, se.string, d * newsz);
+				// Extend with 0, add terminating 0
+				// TODO semantic
+				// memset((char *)s + d * newsz, 0, (dim2 + 1 - d) * newsz);
+				se = new StringExp(loc, s, dim2);
+				se.string = s;
+				se.len = dim2;
 			}
 		}
 		se.type = t;
@@ -512,28 +552,28 @@ public class StringExp extends Expression {
 
 			case 2: {
 				// TODO semantic
-//				unsigned u;
-//				d_wchar s1 = (d_wchar) string;
-//				d_wchar s2 = (d_wchar) se2.string;
-//
-//				for (u = 0; u < len; u++) {
-//					if (s1[u] != s2[u])
-//						return s1[u] - s2[u];
-//				}
+				//				unsigned u;
+				//				d_wchar s1 = (d_wchar) string;
+				//				d_wchar s2 = (d_wchar) se2.string;
+				//
+				//				for (u = 0; u < len; u++) {
+				//					if (s1[u] != s2[u])
+				//						return s1[u] - s2[u];
+				//				}
 				// temporary workarround:
 				return CharOperation.equals(string, se2.string) ? 0 : 1;
 			}
 
 			case 4: {
 				// TODO semantic
-//				unsigned u;
-//				d_dchar s1 = (d_dchar) string;
-//				d_dchar s2 = (d_dchar) se2.string;
-//
-//				for (u = 0; u < len; u++) {
-//					if (s1[u] != s2[u])
-//						return s1[u] - s2[u];
-//				}
+				//				unsigned u;
+				//				d_dchar s1 = (d_dchar) string;
+				//				d_dchar s2 = (d_dchar) se2.string;
+				//
+				//				for (u = 0; u < len; u++) {
+				//					if (s1[u] != s2[u])
+				//						return s1[u] - s2[u];
+				//				}
 				// temporary workarround:
 				return CharOperation.equals(string, se2.string) ? 0 : 1;
 			}
@@ -544,72 +584,70 @@ public class StringExp extends Expression {
 		}
 		return len1 - len2;
 	}
-	
+
 	@Override
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
 		char m;
-	    OutBuffer tmp = new OutBuffer();
-	    int p;
-	    int[] c = { 0 };
-	    int[] u = { 0 };
-	    char[] q;
-	    int qlen;
+		OutBuffer tmp = new OutBuffer();
+		int p;
+		int[] c = { 0 };
+		int[] u = { 0 };
+		char[] q;
+		int qlen;
 
-	    /* Write string in UTF-8 format
-	     */
-	    switch (sz)
-	    {	case 1:
-		    m = 'a';
-		    q = string;
-		    qlen = len;
-		    break;
+		/* Write string in UTF-8 format
+		 */
+		switch (sz) {
+		case 1:
+			m = 'a';
+			q = string;
+			qlen = len;
+			break;
 		case 2:
-		    m = 'w';
-		    for (u[0] = 0; u[0] < len; )
-		    {
-		    	p = Utf.decodeWchar(string, 0, len, u, c);
+			m = 'w';
+			for (u[0] = 0; u[0] < len;) {
+				p = Utf.decodeWchar(string, 0, len, u, c);
 				if (p >= 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							p, this, new String[0]));
+					context.acceptProblem(Problem.newSemanticTypeError(p, this,
+							new String[0]));
 				} else {
 					tmp.writeUTF8(c[0]);
 				}
-	                p = Utf.decodeWchar(string, 0, len, u, c);
-	                if (p >= 0)
-	                	context.acceptProblem(Problem.newSemanticTypeError(
-								p, this, new String[0]));
-	                else
-	                    tmp.writeUTF8(c[0]);
-		    }
-		    q = tmp.data.toString().toCharArray();
-		    qlen = tmp.data.length();
-		    break;
+				p = Utf.decodeWchar(string, 0, len, u, c);
+				if (p >= 0)
+					context.acceptProblem(Problem.newSemanticTypeError(p, this,
+							new String[0]));
+				else
+					tmp.writeUTF8(c[0]);
+			}
+			q = tmp.data.toString().toCharArray();
+			qlen = tmp.data.length();
+			break;
 		case 4:
-		    m = 'd';
-	            for (u[0] = 0; u[0] < len; u[0]++)
-	            {
-	                c[0] = string[u[0]];
-	                if (!Utf.isValidDchar(c[0])) {
-	                	context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InvalidUCS32Char, this, new String[] { String.valueOf(c[0]) })); // TODO format in hexa
-	                }
-	                else
-	                    tmp.writeUTF8(c[0]);
-	            }
-	            q = tmp.data.toString().toCharArray();
-			    qlen = tmp.data.length();
-		    break;
+			m = 'd';
+			for (u[0] = 0; u[0] < len; u[0]++) {
+				c[0] = string[u[0]];
+				if (!Utf.isValidDchar(c[0])) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.InvalidUCS32Char, this,
+							new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+				} else
+					tmp.writeUTF8(c[0]);
+			}
+			q = tmp.data.toString().toCharArray();
+			qlen = tmp.data.length();
+			break;
 		default:
 			throw new IllegalStateException("assert(0);");
-	    }
-	    buf.writeByte(m);
-	    buf.data.append(qlen).append("_");
-	    for (int i = 0; i < qlen; i++) {
-	    	buf.data.append(q[i]);
-	    	/* TODO semantic append correctly and remove the line above
-	    	buf.printf("%02x", q[i]);
-	    	*/
-	    }
+		}
+		buf.writeByte(m);
+		buf.data.append(qlen).append("_");
+		for (int i = 0; i < qlen; i++) {
+			buf.data.append(q[i]);
+			/* TODO semantic append correctly and remove the line above
+			 buf.printf("%02x", q[i]);
+			 */
+		}
 	}
 
 }

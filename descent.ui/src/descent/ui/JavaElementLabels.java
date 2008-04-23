@@ -958,7 +958,7 @@ public class JavaElementLabels {
 		if (getFlag(flags, T_FULLY_QUALIFIED)) {
 			ICompilationUnit unit = type.getCompilationUnit();
 			//getCompilationUnitLabel(unit, flags & QUALIFIER_FLAGS, buf);
-			getCompilationUnitLabel(unit, flags, buf);
+			getCompilationUnitLabel(unit, flags | CU_QUALIFIED, buf);
 			buf.append('.');
 //			IPackageFragment pack= type.getPackageFragment();
 //			if (!pack.isDefaultPackage()) {

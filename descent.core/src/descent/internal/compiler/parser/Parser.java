@@ -1274,7 +1274,7 @@ public class Parser extends Lexer {
 
 	    InvariantDeclaration invariant = new InvariantDeclaration(loc());
 	    invariant.invariantStart = start;
-	    invariant.setFbody(dietParseStatement());
+	    invariant.setFbody(dietParseStatement(invariant));
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return invariant;
 	}
@@ -1284,7 +1284,7 @@ public class Parser extends Lexer {
 		nextToken();
 		
 		UnitTestDeclaration unitTest = new UnitTestDeclaration(loc());
-		unitTest.setFbody(dietParseStatement());
+		unitTest.setFbody(dietParseStatement(unitTest));
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return unitTest;
 	}
@@ -3297,7 +3297,7 @@ public class Parser extends Lexer {
 				 */
 				final int startSkip = p;
 				
-				Statement body = dietParseStatement();
+				Statement body = dietParseStatement(f);
 				f.setFbody(body);
 				
 				// Diet successful
@@ -3307,7 +3307,7 @@ public class Parser extends Lexer {
 						public void run() {
 							Parser parser = new Parser(apiLevel, CharOperation.subarray(input, startSkip, endSkip));
 							
-							Statement body = parser.dietParseStatement(); 
+							Statement body = parser.dietParseStatement(f); 
 							f.fbody = body;
 						}
 					});
@@ -7388,13 +7388,13 @@ public class Parser extends Lexer {
 		return new ClassDeclaration(loc, id, baseClasses);
 	}
 	
-	private Statement dietParseStatement() {
+	private Statement dietParseStatement(FuncDeclaration f) {
 		if (diet) {
 			int saveP = p;
 			Token saveToken = new Token(token);
 			
 			inDiet = true;
-			boolean success = dietParse();					
+			boolean success = dietParse(f);					
 			inDiet = false;
 			
 			if (success) {
@@ -7410,13 +7410,14 @@ public class Parser extends Lexer {
 	
 	/**
 	 * Tries to skip a function body. The current token is '{'.
+	 * @param f the target function whoes body is being skipped
 	 * @return <code>true</code> if the body could be skipped,
 	 * or <code>false</code> if not, and thus function body
 	 * will be parsed (by the method that invoked this method).
 	 * 
 	 * TODO try doing this at the character level to improve performance further
 	 */
-	protected boolean dietParse() {
+	protected boolean dietParse(FuncDeclaration f) {
 		int curlyCount = 1;
 		int parenCount = 0;
 		TOK save = null;

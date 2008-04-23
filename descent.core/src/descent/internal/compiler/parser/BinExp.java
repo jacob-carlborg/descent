@@ -1103,6 +1103,20 @@ public abstract class BinExp extends Expression {
 	public Expression optimize(int result, SemanticContext context) {
 		e1 = e1.optimize(result, context);
 	    e2 = e2.optimize(result, context);
+	    if (op == TOKshlass || op == TOKshrass || op == TOKushrass)
+	    {
+		if (e2.isConst())
+		{
+		    integer_t i2 = e2.toInteger(context);
+		    integer_t sz = new integer_t(e1.type.size(context)).multiply(8);
+		    if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0)
+		    {   
+		    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.ShiftAssignIsOutsideTheRange, sourceE1, sourceE2, new String[] { i2.toString(), sz.toString() }));
+		    	e2 = new IntegerExp(0);
+		    }
+		}
+	    }
+
 	    return this;
 	}
 

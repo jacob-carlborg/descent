@@ -6,9 +6,12 @@ import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
 import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
 import static descent.internal.compiler.parser.TOK.TOKlinecomment;
 import static descent.internal.compiler.parser.TOK.TOKpluscomment;
+import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
+import descent.internal.compiler.parser.TypeFunction;
 
 public class SelectionParser extends Parser {
 	
@@ -34,10 +37,21 @@ public class SelectionParser extends Parser {
 	 * falls in a function.
 	 */
 	@Override
-	protected boolean dietParse() {
+	protected boolean dietParse(FuncDeclaration f) {
+		
+		// If any argument is being selected, don't skip
+		TypeFunction type = (TypeFunction) f.type;
+		if (type != null && type.parameters != null) {
+			for(Argument arg : type.parameters) {
+				if (intersectsSelection(arg.start, arg.start + arg.length)) {
+					return false;
+				}
+			}
+		}
+		
 		int before = token.ptr + token.sourceLen;
 		
-		boolean ret = super.dietParse();
+		boolean ret = super.dietParse(f);
 		
 		int after = token.ptr + token.sourceLen;
 		
@@ -51,14 +65,22 @@ public class SelectionParser extends Parser {
 		// If any of these points fall between the other two in the top or bottom,
 		// there is an intersection.
 		
-		if (isBetween(selectionOffset, before, selectionOffset + selectionLength) ||
-			isBetween(selectionOffset, after, selectionOffset + selectionLength) ||
-			isBetween(before, selectionOffset, after) ||
-			isBetween(before, selectionOffset + selectionLength, after)) {
+		if (intersectsSelection(before, after)) {
 			return false;
 		}
 		
 		return ret;
+	}
+	
+	private boolean intersectsSelection(int start, int end) {
+		return intersects(start, end, selectionOffset, selectionOffset + selectionLength);
+	}
+	
+	private boolean intersects(int start1, int end1, int start2, int end2) {
+		return (isBetween(start1, start2, end1) ||
+			isBetween(start1, end2, end2) ||
+			isBetween(start2, start1, end2) ||
+			isBetween(start2, end1, end2));
 	}
 	
 	private boolean isBetween(int min, int val, int max) {

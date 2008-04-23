@@ -655,5 +655,6 @@ public interface IProblem {
 	int UnpairedUtf16Value = 444;
 	int IllegalUtf16Value = 445;
 	int StaticConstructorCanOnlyBePartOfStructClassModule = 446;
+	int ShiftAssignIsOutsideTheRange = 447;
 
 }

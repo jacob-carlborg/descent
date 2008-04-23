@@ -68,6 +68,13 @@ public class SemanticMixin {
 	}
 	
 	public static void appendSignature(Dsymbol aThis, StringBuilder sb) {
+		if (aThis instanceof TemplateMixin) {
+			TemplateMixin mixin = (TemplateMixin) aThis;
+			mixin.tempdecl.appendSignature(sb);
+			mixin.appendInstanceSignature(sb);
+			return;
+		}
+		
 		Dsymbol parent = aThis.effectiveParent();
 		if (parent == null) {
 			return;
@@ -88,6 +95,7 @@ public class SemanticMixin {
 		} else {
 			parent.appendSignature(sb);
 		}
+		
 		appendNameSignature(aThis, sb);
 	}
 	
@@ -120,10 +128,6 @@ public class SemanticMixin {
 				sb.append(aThis.ident.ident);
 			}
 			
-			if (aThis instanceof FuncDeclaration) {
-				aThis.type().appendSignature(sb);
-			}
-			
 			if (aThis instanceof TemplateDeclaration) {
 				TemplateDeclaration temp = (TemplateDeclaration) aThis;
 				if (temp.wrapper && temp.members.get(0) instanceof FuncDeclaration) {
@@ -144,6 +148,10 @@ public class SemanticMixin {
 			if (aThis instanceof TemplateDeclaration) {
 				appendTemplateParameters((TemplateDeclaration) aThis, sb);
 			}
+			
+			if (aThis instanceof FuncDeclaration) {
+				aThis.type().appendSignature(sb);
+			}
 		}
 	}
 	
@@ -154,13 +162,23 @@ public class SemanticMixin {
 			appendTemplateInstanceSignature(tempdecl, sb);
 		}
 		
-		sb.append(aThis.getSignaturePrefix());
+		if (aThis.templated()) {
+			sb.append(aThis.getSignaturePrefix());
+		} else {
+			sb.append(ISignatureConstants.TEMPLATE);
+		}
 		sb.append(tempinst.name.ident.length);
 		sb.append(tempinst.name.ident);
 		
 		appendTemplateParameters(tempdecl, sb);
 		
 		tempinst.appendInstanceSignature(sb);
+		
+		if (!aThis.templated()) {
+			sb.append(aThis.getSignaturePrefix());
+			sb.append(aThis.ident.ident.length);
+			sb.append(aThis.ident);
+		}
 	}
 	
 	private static void appendTemplateParameters(TemplateDeclaration tempdecl, StringBuilder sb) {

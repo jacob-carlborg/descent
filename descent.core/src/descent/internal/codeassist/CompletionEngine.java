@@ -61,6 +61,7 @@ import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.DVCondition;
 import descent.internal.compiler.parser.Declaration;
+import descent.internal.compiler.parser.DotExp;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
@@ -99,6 +100,7 @@ import descent.internal.compiler.parser.SymOffExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
@@ -1260,23 +1262,33 @@ public class CompletionEngine extends Engine
 				isWithScopeSymbol = false;
 			}
 		} else {
-			if (sym instanceof ScopeDsymbol && ((ScopeDsymbol) sym).members != null) {
-				completeScopeDsymbol((ScopeDsymbol) sym, false /* not only statics */, includes);
-			} else {
-				DsymbolTable table = scope.scopesym.symtab;
-				if (table == null) {
-					return;
+			if (sym instanceof ScopeDsymbol) {
+				ScopeDsymbol scopeDsymbol = (ScopeDsymbol) sym;
+				if (scopeDsymbol.members != null) {
+					completeScopeDsymbol(scopeDsymbol, false /* not only statics */, includes);
+				}
+				if (scopeDsymbol.imports != null) {
+					// TODO optimize this
+					Dsymbols syms = new Dsymbols();
+					syms.addAll(scopeDsymbol.imports);
+					
+					suggestMembers(syms, false /* not only statics */, new HashtableOfCharArrayAndObject(), includes);	
+				}
+			}
+			
+			DsymbolTable table = scope.scopesym.symtab;
+			if (table == null) {
+				return;
+			}
+			
+			for(char[] key : table.keys()) {
+				if (key == null) {
+					continue;
 				}
 				
-				for(char[] key : table.keys()) {
-					if (key == null) {
-						continue;
-					}
-					
-					Dsymbol dsymbol = table.lookup(key);
-					if (dsymbol != null) {
-						suggestDsymbol(dsymbol, includes);
-					}
+				Dsymbol dsymbol = table.lookup(key);
+				if (dsymbol != null) {
+					suggestDsymbol(dsymbol, includes);
 				}
 			}
 		}
@@ -1322,6 +1334,10 @@ public class CompletionEngine extends Engine
 			
 			Type type = decl.type();
 			completeType(type, ident, false /* not only statics */);
+		} else if (e1 instanceof DotExp) {
+			// This is the case of a mixin
+			DotExp dot = (DotExp) e1;
+			completeExpression(dot.e2, ident);
 		} else if (e1 instanceof DotVarExp) {
 			DotVarExp var = (DotVarExp) e1;
 			Declaration decl = var.var;
@@ -1351,6 +1367,9 @@ public class CompletionEngine extends Engine
 				this.startPosition = se.start;
 				this.endPosition = se.start + se.length;
 				completePackage((Package) se.sds, name, ident);
+			} else if (se.sds instanceof TemplateMixin) {
+				currentName = computePrefixAndSourceRange(ident);
+				suggestMembers(((TemplateMixin) se.sds).members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			}
 		} else if (e1 instanceof ThisExp) {
 			ThisExp thisExp = (ThisExp) e1;
@@ -1730,6 +1749,45 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
+		if (member instanceof TemplateMixin) {
+			TemplateMixin mixin = (TemplateMixin) member;
+			if (mixin.ident != null && mixin.ident.ident != null &&
+				match(this.currentName, ident)) {
+				
+				// Suggest as if it were a variable declaration
+				String signature = mixin.parent.getSignature() + ISignatureConstants.VARIABLE + ident.length + new String(ident);
+				
+				char[] sig = signature.toCharArray();
+				char[] typeName = mixin.inst.getSignature().toCharArray();
+				
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				relevance += computeRelevanceForCaseMatching(currentName, ident);
+				
+				boolean isLocal = mixin.parent instanceof FuncDeclaration;
+				
+				if (isLocal) {
+					relevance += R_LOCAL_VAR;
+				} else {
+					relevance += R_VAR;	
+				}
+				
+				CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, mixin);
+				proposal.setName(ident);
+				proposal.setCompletion(ident);
+				proposal.setTypeSignature(typeName);
+				proposal.setSignature(sig);
+				proposal.setDeclarationSignature(mixin.parent.getSignature().toCharArray());
+				proposal.setFlags(flags | mixin.getFlags());
+				proposal.setRelevance(relevance);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				CompletionEngine.this.requestor.accept(proposal);
+			}
+			
+			suggestMembers(mixin.members, onlyStatics, funcSignatures, includes);
+			return;
+		}
+		
 		if (!isVisible(member)) {
 			return;
 		}
@@ -1776,10 +1834,6 @@ public class CompletionEngine extends Engine
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					String signature = var.getSignature();
-					if (signature == null) {
-						System.out.println(1);
-						return;
-					}
 					
 					char[] sig = signature.toCharArray();
 					char[] typeName = var.type().getSignature().toCharArray();

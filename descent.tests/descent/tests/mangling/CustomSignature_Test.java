@@ -3,8 +3,10 @@ package descent.tests.mangling;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.AssignExp;
+import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
+import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.FuncDeclaration;
@@ -104,6 +106,16 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		assertEquals(MODULE + "3one" + ENUM + "3Foo", type.getSignature());
 	}
 	
+	public void testFunction() throws Exception {
+		one("");
+		two("void foo() { }");
+		
+		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
+				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+		FuncDeclaration func = (FuncDeclaration) module.members.get(2);
+		assertEquals(MODULE + "3two" + FUNCTION + "3fooFZv", func.getSignature());
+	}
+	
 	public void testTemplatedClass() throws Exception {
 		one("class Foo() { }");
 		two("Foo!() x;");
@@ -168,6 +180,36 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		TemplateDeclaration tempdecl = ti.tempdecl;
 		Module imodule = (Module) tempdecl.parent;
 		assertNotNull(imodule);
+	}
+	
+	public void testMixedTemplateVariable() throws Exception {
+		one("template Foo() { int someProperty; }");
+		two("class Bar { mixin Foo!(); } void foo(Bar bar) { bar.someProperty = 3; }");
+		
+		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
+				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+		FuncDeclaration func = (FuncDeclaration) module.members.get(3);
+		CompoundStatement cs = (CompoundStatement) func.fbody;
+		ExpStatement ex = (ExpStatement) cs.statements.get(0);
+		AssignExp ae = (AssignExp) ex.exp;
+		DotVarExp ve = (DotVarExp) ae.e1;
+		VarDeclaration var = (VarDeclaration) ve.var;
+		assertEquals(MODULE + "3one" + TEMPLATE + "3Foo" + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK + VARIABLE + "12someProperty", var.getSignature());
+	}
+	
+	public void testMixedTemplateFunction() throws Exception {
+		one("template Foo() { void someFunction() { } }");
+		two("class Bar { mixin Foo!(); } void foo(Bar bar) { bar.someFunction(); }");
+		
+		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
+				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+		FuncDeclaration func = (FuncDeclaration) module.members.get(3);
+		CompoundStatement cs = (CompoundStatement) func.fbody;
+		ExpStatement ex = (ExpStatement) cs.statements.get(0);
+		CallExp call = (CallExp) ex.exp;
+		DotVarExp ve = (DotVarExp) call.e1;
+		FuncDeclaration var = (FuncDeclaration) ve.var;
+		assertEquals(MODULE + "3one" + TEMPLATE + "3Foo" + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK + FUNCTION + "12someFunctionFZv", var.getSignature());
 	}
 
 }

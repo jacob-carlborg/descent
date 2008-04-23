@@ -1019,6 +1019,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.IllegalUtf16Value);
 		case StaticConstructorCanOnlyBePartOfStructClassModule:
 			return String.format(ProblemMessages.StaticConstructorCanOnlyBePartOfStructClassModule);
+		case ShiftAssignIsOutsideTheRange:
+			return String.format(ProblemMessages.ShiftAssignIsOutsideTheRange, arguments[0], arguments[1]);
 		default:
 			return "";
 		}

@@ -456,6 +456,7 @@ final class ProblemMessages extends NLS {
 	public static String UnpairedUtf16Value;
 	public static String IllegalUtf16Value;
 	public static String StaticConstructorCanOnlyBePartOfStructClassModule;
+	public static String ShiftAssignIsOutsideTheRange;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
