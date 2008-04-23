@@ -1862,7 +1862,9 @@ public class CompletionEngine extends Engine
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					CompletionEngine.this.requestor.accept(proposal);
 					
-					trySuggestCall(var.type(), ident, sig, false /* dosen't matter */);
+					if (CharOperation.equals(this.currentName, var.ident.ident)) {
+						trySuggestCall(var.type(), ident, sig, false /* dosen't matter */);
+					}
 				}
 				return;
 			}
@@ -2034,7 +2036,7 @@ public class CompletionEngine extends Engine
 					if (member instanceof TemplateDeclaration) {
 						TemplateDeclaration temp = (TemplateDeclaration) member;
 						if (temp.wrapper) {
-							Dsymbol first = (Dsymbol) temp.members.get(0);
+							Dsymbol first = temp.members.get(0);
 							if (first instanceof FuncDeclaration) {
 								kind = CompletionProposal.TEMPLATED_FUNCTION_REF;
 							} else if (first instanceof AggregateDeclaration) {
