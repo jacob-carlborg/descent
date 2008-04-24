@@ -22,6 +22,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * The Java model element has no parent (it is the root of the Java element 
  * hierarchy). Its children are <code>IJavaProject</code>s.
  * <p>
+ * A java model contains an active project, which is used to determine
+ * how semantic analysis is done for any compilation unit.
+ * </p>
+ * <p>
  * This interface provides methods for performing copy, move, rename, and
  * delete operations on multiple Java elements.
  * </p>
@@ -256,5 +260,17 @@ void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonitor moni
  * </ul>
  */
 void rename(IJavaElement[] elements, IJavaElement[] destinations, String[] names, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+
+/**
+ * Returns the active project of this java model.
+ * @return the active project of this java model
+ */
+IJavaProject getActiveProject();
+
+/**
+ * Sets  the active project of this java model
+ * @param javaProject a java project
+ */
+void setActiveProject(IJavaProject javaProject);
 
 }

@@ -1,10 +1,15 @@
 package descent.internal.core;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+
+import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.core.util.Util;
 
 public class CompilerConfiguration {
+	
+	private IJavaProject javaProject;
 	
 	// 0: no, 1: some, 2: full
 	public int semanticAnalysisLevel;
@@ -16,6 +21,12 @@ public class CompilerConfiguration {
 	public boolean warnings;
 	
 	public CompilerConfiguration() {
+		this(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject());
+	}
+	
+	public CompilerConfiguration(IJavaProject javaProject) {
+		this.javaProject = javaProject;
+		
 		semanticAnalysisLevel = (int) getLevel(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
 		
 		debugLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
@@ -44,10 +55,17 @@ public class CompilerConfiguration {
 		return debugLevel >= version;
 	}
 	
-	private static long getLevel(String prefKey) {
-		String Level = JavaCore.getOption(prefKey);
+	private long getLevel(String prefKey) {
+		String level;
+		
+		if (javaProject == null) {
+			level = JavaCore.getOption(prefKey);
+		} else {
+			level = javaProject.getOption(prefKey, true);
+		}
+		
 		try {
-			return Long.parseLong(Level);
+			return Long.parseLong(level);
 		} catch (NumberFormatException e) {
 			Util.log(e);
 			return 0;
@@ -57,7 +75,13 @@ public class CompilerConfiguration {
 	private HashtableOfCharArrayAndObject getIdentifiers(String pref) {
 		HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
 		
-		String prefValue = JavaCore.getOption(pref);
+		String prefValue;
+		if (javaProject == null) {
+			prefValue = JavaCore.getOption(pref);
+		} else {
+			prefValue = javaProject.getOption(pref, true);
+		}
+		
 		String[] idents = prefValue.split(",");
 		for(String ident : idents) {
 			hash.put(ident.trim().toCharArray(), this);

@@ -996,7 +996,7 @@ public class CompletionEngine extends Engine
 			nameEnvironment.findCompilationUnits(currentName, this);
 			
 			// And top level declarations
-			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+//			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 			
 			// Show constructors and opCalls
 			if (node.ident.resolvedSymbol != null) {
@@ -1145,7 +1145,7 @@ public class CompletionEngine extends Engine
 		nameEnvironment.findCompilationUnits(currentName, this);
 		
 		// And top level declarations
-		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+//		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
@@ -1162,7 +1162,7 @@ public class CompletionEngine extends Engine
 			nameEnvironment.findCompilationUnits(currentName, this);
 			
 			// And top level declarations
-			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+//			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
 			
 			// Show constructors and opCalls
 			if (node.resolvedSymbol != null) {
@@ -1273,6 +1273,10 @@ public class CompletionEngine extends Engine
 					syms.addAll(scopeDsymbol.imports);
 					
 					suggestMembers(syms, false /* not only statics */, new HashtableOfCharArrayAndObject(), includes);	
+				}
+				
+				if (scopeDsymbol.members != null || scopeDsymbol.imports != null) {
+					return;
 				}
 			}
 			
@@ -2291,7 +2295,6 @@ public class CompletionEngine extends Engine
 				proposal.setCompletion(property);
 				proposal.setDeclarationSignature(declarationSignature);
 				proposal.setTypeSignature(type.getSignature().toCharArray());
-				proposal.setSignature((new String(declarationSignature) + "/" + property.length + new String(property)).toCharArray());
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 				CompletionEngine.this.requestor.accept(proposal);
 			}

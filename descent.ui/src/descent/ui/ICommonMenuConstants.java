@@ -107,7 +107,7 @@ public interface ICommonMenuConstants {
 	 * <code>"group.reorganize"</code>).
 	 */
 	public static final String GROUP_REORGANIZE = IWorkbenchActionConstants.GROUP_REORGANIZE;
-
+	
 	/**
 	 * Pop-up menu: name of group for code generation actions ( value
 	 * <code>"group.generate"</code>).

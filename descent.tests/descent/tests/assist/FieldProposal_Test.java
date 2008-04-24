@@ -52,13 +52,13 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		int pos = s.lastIndexOf('.') + 1;
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
-				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
-				"alignof", pos, pos, "@4testC9SomeClass/7alignof", "i", "@4testC9SomeClass", "alignof    int - SomeClass",
-				"init", pos, pos, "@4testC9SomeClass/4init", "@4testC9SomeClass", "@4testC9SomeClass", "init    SomeClass - SomeClass",
-				"mangleof", pos, pos, "@4testC9SomeClass/8mangleof", "Aa", "@4testC9SomeClass", "mangleof    char[] - SomeClass",
-				"sizeof", pos, pos, "@4testC9SomeClass/6sizeof", "i", "@4testC9SomeClass", "sizeof    int - SomeClass",
-				"stringof", pos, pos, "@4testC9SomeClass/8stringof", "Aa", "@4testC9SomeClass", "stringof    char[] - SomeClass",
-				"wxyz", pos, pos, "@4testC9SomeClass/4wxyz", "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
+				new int[] { TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
+				"alignof", pos, pos, "i", "@4testC9SomeClass", "alignof    int - SomeClass",
+				"init", pos, pos, "@4testC9SomeClass", "@4testC9SomeClass", "init    SomeClass - SomeClass",
+				"mangleof", pos, pos, "Aa", "@4testC9SomeClass", "mangleof    char[] - SomeClass",
+				"sizeof", pos, pos, "i", "@4testC9SomeClass", "sizeof    int - SomeClass",
+				"stringof", pos, pos, "Aa", "@4testC9SomeClass", "stringof    char[] - SomeClass",
+				"wxyz", pos, pos, "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
 				);
 	}
 	
@@ -350,6 +350,16 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				"wxyz", pos - 1, pos
+				);
+	}
+	
+	public void testNamedMixin() throws Exception {
+		String s = "template Foo() { int wxyz; } class Foo { mixin Foo!() xyzw; } void foo(Foo f) { f.x }";
+		
+		int pos = s.lastIndexOf(".") + 2; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				"xyzw", pos - 1, pos
 				);
 	}
 

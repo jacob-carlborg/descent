@@ -59,6 +59,8 @@ public class JavaModel extends Openable implements IJavaModel {
 	 * Note this cache is kept for the whole session.
 	 */ 
 	public static HashSet existingExternalConfirmedFiles = new HashSet();
+	
+	private IJavaProject activeProject;
 
 /**
  * Constructs a new Java Model on the given workspace.
@@ -417,5 +419,31 @@ public static synchronized File getDirectory(Object target) {
 @Override
 protected void appendElementSignature(StringBuilder sb) {
 	// Nothing
+}
+/*
+ * (non-Javadoc)
+ * @see descent.core.IJavaModel#setActiveProject(descent.core.IJavaProject)
+ */
+public void setActiveProject(IJavaProject javaProject) {
+	this.activeProject = javaProject;
+}
+/*
+ * (non-Javadoc)
+ * @see descent.core.IJavaModel#getActiveProject()
+ */
+public IJavaProject getActiveProject() {
+	if (activeProject == null || !activeProject.getProject().isOpen()) {
+		try {
+			for(IJavaProject project : getJavaProjects()) {
+				if (project.getProject().isOpen()) {
+					setActiveProject(project);
+					return project;
+				}
+			}
+		} catch (JavaModelException e) {
+			return null;
+		}
+	}
+	return activeProject;
 }
 }

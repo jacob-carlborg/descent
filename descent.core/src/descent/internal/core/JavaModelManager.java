@@ -1669,6 +1669,10 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	private File getVariableAndContainersFile() {
 		return JavaCore.getPlugin().getStateLocation().append("variablesAndContainers.dat").toFile(); //$NON-NLS-1$
 	}
+	
+	private File getActiveProjectFile() {
+		return JavaCore.getPlugin().getStateLocation().append("activeProject.dat").toFile(); //$NON-NLS-1$
+	}
 
 	/**
  	 * Returns the name of the variables for which an CP variable initializer is registered through an extension point
@@ -2125,6 +2129,34 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	    } else {
 	        getClasspathBeingResolved().remove(project);
 	    }
+	}
+	
+	public void loadActiveProject() throws CoreException {
+		File file = getActiveProjectFile();
+		DataInputStream in = null;
+		try {
+			in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+			String projectName = in.readUTF();
+			
+			IResource resource = getJavaModel().getWorkspace().getRoot().findMember(projectName);
+			if (resource != null && resource instanceof IProject) {
+				getJavaModel().setActiveProject(JavaCore.create((IProject) resource));
+			}
+		} catch (IOException e) {
+			if (file.exists())
+				Util.log(e, "Unable to read active project file"); //$NON-NLS-1$
+		} catch (RuntimeException e) {
+			if (file.exists())
+				Util.log(e, "Unable to read active project file (file is corrupt)"); //$NON-NLS-1$
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// nothing we can do: ignore
+				}
+			}
+		}
 	}
 
 	public void loadVariablesAndContainers() throws CoreException {
@@ -2993,6 +3025,26 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		}
 	}
 	
+	private void saveActiveProject() throws CoreException {
+		File file = getActiveProjectFile();
+		DataOutputStream out = null;
+		try {
+			out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+			out.writeUTF(getJavaModel().getActiveProject().getProject().getName());
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.ERROR, JavaCore.PLUGIN_ID, IStatus.ERROR, "Problems while saving active project", e); //$NON-NLS-1$
+			throw new CoreException(status);
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					// nothing we can do: ignore
+				}
+			}
+		}
+	}
+	
 	private final class VariablesAndContainersSaveHelper {
 
 		private final HashtableOfObjectToInt classpathEntryIds; // IClasspathEntry -> int
@@ -3212,6 +3264,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		if (VERBOSE)
 			start = System.currentTimeMillis();
 		saveVariablesAndContainers();
+		saveActiveProject();
 		if (VERBOSE)
 			traceVariableAndContainers("Saved", start); //$NON-NLS-1$
 		
@@ -3803,6 +3856,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 			if (VERBOSE)
 				start = System.currentTimeMillis();
  			loadVariablesAndContainers();
+ 			loadActiveProject();
  			if (VERBOSE)
 				traceVariableAndContainers("Loaded", start); //$NON-NLS-1$
 

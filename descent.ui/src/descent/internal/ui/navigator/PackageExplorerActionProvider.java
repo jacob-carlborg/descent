@@ -8,8 +8,10 @@
  **************************************************************************************************/
 package descent.internal.ui.navigator;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewPart;
@@ -24,6 +26,8 @@ import descent.internal.ui.navigator.IExtensionStateConstants.Values;
 import descent.internal.ui.wizards.buildpaths.newsourcepage.GenerateBuildPathActionGroup;
 import descent.ui.actions.GenerateActionGroup;
 import descent.ui.actions.OpenViewActionGroup;
+import descent.ui.actions.SetAsActiveProjectAction;
+import descent.ui.actions.SetAsActiveProjectActionGroup;
 
 // TODO JDT UI actions: remove comments
 public class PackageExplorerActionProvider extends CommonActionProvider {
@@ -45,6 +49,8 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 	private GenerateBuildPathActionGroup fBuildPathGroup;
 
 	private GenerateActionGroup fGenerateGroup;
+	
+	private SetAsActiveProjectActionGroup fSetAsActiveProjectActionGroup;
 
 	private boolean fInViewPart = false;
 	private boolean fHasFilledViewMenu = false;
@@ -59,8 +65,9 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 			fBuildPathGroup.fillActionBars(actionBars);
 			fGenerateGroup.fillActionBars(actionBars); 
 			//fSearchGroup.fillActionBars(actionBars);
+			fSetAsActiveProjectActionGroup.fillActionBars(actionBars);
 		}
-
+		
 	}
 
 	public void fillContextMenu(IMenuManager menu) {
@@ -70,6 +77,8 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 			fBuildPathGroup.fillContextMenu(menu);
 			fGenerateGroup.fillContextMenu(menu); 
 			//fSearchGroup.fillContextMenu(menu);
+			
+			fSetAsActiveProjectActionGroup.fillContextMenu(menu);
 		}
 	}
 
@@ -95,6 +104,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 				fGenerateGroup = new GenerateActionGroup(viewPart);
 				//fSearchGroup = new JavaSearchActionGroup(viewPart);
 				fBuildPathGroup = new GenerateBuildPathActionGroup(viewPart);
+				fSetAsActiveProjectActionGroup = new SetAsActiveProjectActionGroup(viewPart);
 				
 				fInViewPart = true;
 			}
@@ -110,6 +120,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 			fGenerateGroup.setContext(context);
 			//fSearchGroup.setContext(context);
 			fBuildPathGroup.setContext(context);
+			fSetAsActiveProjectActionGroup.setContext(context);
 		}
 	}
 

@@ -13,9 +13,11 @@ package descent.core.dom;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.ICompilationUnit;
+import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;

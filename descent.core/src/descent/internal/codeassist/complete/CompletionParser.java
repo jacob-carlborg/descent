@@ -95,12 +95,16 @@ public class CompletionParser extends Parser {
 	protected boolean dietParse(FuncDeclaration f) {
 		
 		// If any argument is being autocompleted, don't skip
+		// Same for return type
 		TypeFunction type = (TypeFunction) f.type;
 		if (type != null && type.parameters != null) {
 			for(Argument arg : type.parameters) {
 				if (arg.start <= cursorLocation && cursorLocation <= arg.start + arg.length) {
 					return false;
 				}
+			}
+			if (type.next != null && type.next.start <= cursorLocation && cursorLocation <= type.next.start + type.next.length) {
+				return false;
 			}
 		}
 		

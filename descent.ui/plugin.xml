@@ -3510,4 +3510,15 @@
             id="descent.ui.PersistableJavaElementFactory">
       </factory>
    </extension>
+ <extension
+       point="org.eclipse.ui.decorators">
+    <decorator
+          adaptable="true"
+          class="descent.internal.ui.ActiveJavaProjectLabelDecorator"
+          id="descent.ui.activeProjectDecorator"
+          label="descent.ui.activeProjectDecorator"
+          lightweight="true"
+          objectClass="descent.core.IJavaProject"
+          state="true"/>
+ </extension>
 </plugin>

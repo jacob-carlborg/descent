@@ -6,6 +6,7 @@ import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
 import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
 import static descent.internal.compiler.parser.TOK.TOKlinecomment;
 import static descent.internal.compiler.parser.TOK.TOKpluscomment;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.Parser;
@@ -40,12 +41,16 @@ public class SelectionParser extends Parser {
 	protected boolean dietParse(FuncDeclaration f) {
 		
 		// If any argument is being selected, don't skip
+		// Same for return type
 		TypeFunction type = (TypeFunction) f.type;
 		if (type != null && type.parameters != null) {
 			for(Argument arg : type.parameters) {
-				if (intersectsSelection(arg.start, arg.start + arg.length)) {
+				if (intersectsSelection(arg)) {
 					return false;
 				}
+			}
+			if (type.next != null && intersectsSelection(type.next)) {
+				return false;
 			}
 		}
 		
@@ -70,6 +75,10 @@ public class SelectionParser extends Parser {
 		}
 		
 		return ret;
+	}
+	
+	private boolean intersectsSelection(ASTDmdNode node) {
+		return intersectsSelection(node.start, node.start + node.length);
 	}
 	
 	private boolean intersectsSelection(int start, int end) {
