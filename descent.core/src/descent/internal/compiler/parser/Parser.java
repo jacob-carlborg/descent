@@ -7461,9 +7461,12 @@ public class Parser extends Lexer {
 				break;
 			case TOKrcurly:
 				curlyCount--;
-				break;			
+				break;
 			}
 		} while(curlyCount != 0 && tok != TOK.TOKeof);
+		
+		inDiet = false;
+		
 		nextToken();
 		
 		return true;

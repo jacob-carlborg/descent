@@ -36,7 +36,7 @@ public class Comment extends ASTDmdNode {
 	
 	@Override
 	public String toString() {
-		return "#Comment";
+		return new String(string);
 	}
 
 }

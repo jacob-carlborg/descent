@@ -727,13 +727,13 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	/**
 	 * Kind of completion request.
 	 */
-	private int completionKind;
+	private final int completionKind;
 	
 	/**
 	 * Offset in original buffer where ICodeAssist.codeComplete() was
 	 * requested.
 	 */
-	private int completionLocation;
+	private final int completionLocation;
 	
 	/**
 	 * Start position (inclusive) of source range in original buffer 
@@ -1320,6 +1320,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return this.signature;
 	}
 	
+	@Override
 	public char[] getTypeSignature() {
 		return this.typeSignature;
 	}
@@ -1712,7 +1713,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 				ICompilationUnit unit = completionEngine.internalSignature.getCompilationUnit(mod.moduleName);
 				if (unit != null) {
 					try {
-						return completionEngine.internalSignature.binarySearch(unit, node.start, node.length);
+						return completionEngine.internalSignature.binarySearch(unit, node.start, node.start + node.length);
 					} catch (JavaModelException e) {
 						Util.log(e);
 					}
@@ -1822,6 +1823,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return this.isConstructor;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append('[');
