@@ -940,8 +940,8 @@ public class ASTConverter {
 	// TODO ASTConverter use source
 	public descent.core.dom.TemplateMixinDeclaration convert(TemplateMixin a) {
 		descent.core.dom.TemplateMixinDeclaration b = new descent.core.dom.TemplateMixinDeclaration(ast);
-		if (a.ident != null) {
-			b.setName((SimpleName) convert(a.ident));
+		if (a.sourceIdent != null) {
+			b.setName((SimpleName) convert(a.sourceIdent));
 		}
 		
 		descent.core.dom.Type convertedType = convertTemplateMixin(a.typeStart, a.typeLength, a.tqual, a.idents, a.sourceTiargs);

@@ -344,7 +344,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 	}
 	
 	public void testMixin() throws Exception {
-		String s = "template Foo() { int wxyz; } class Foo { mixin Foo!(); } void foo(Foo f) { f.w }";
+		String s = "template Bar() { int wxyz; } class Foo { mixin Bar!(); } void foo(Foo f) { f.w }";
 		
 		int pos = s.lastIndexOf(".") + 2; 
 		
@@ -354,7 +354,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 	}
 	
 	public void testNamedMixin() throws Exception {
-		String s = "template Foo() { int wxyz; } class Foo { mixin Foo!() xyzw; } void foo(Foo f) { f.x }";
+		String s = "template Bar() { int wxyz; } class Foo { mixin Bar!() xyzw; } void foo(Foo f) { f.x }";
 		
 		int pos = s.lastIndexOf(".") + 2; 
 		

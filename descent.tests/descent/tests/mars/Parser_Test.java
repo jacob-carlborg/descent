@@ -22,6 +22,7 @@ import descent.internal.compiler.lookup.DmdModuleFinder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.core.CompilerConfiguration;
 
 public abstract class Parser_Test extends TestCase {
 	
@@ -157,7 +158,7 @@ public abstract class Parser_Test extends TestCase {
 				return false;
 			}
 			
-		}, result.module, null, new DmdModuleFinder(global), global);
+		}, result.module, null, new DmdModuleFinder(global), global, new CompilerConfiguration());
 		
 		if (!(result.module.problems != null && result.module.problems.size() > 0)) {
 			result.module.semantic(context);

@@ -13,6 +13,7 @@ public class TemplateMixin extends TemplateInstance {
 	public Identifiers idents;
 	public Type tqual;
 	public Scope scope;
+	public IdentifierExp sourceIdent; // For Descent
 	
 	public int typeStart;
 	public int typeLength;
@@ -21,6 +22,7 @@ public class TemplateMixin extends TemplateInstance {
 			Identifiers idents, Objects tiargs) {
 		super(loc, idents.get(idents.size() - 1));
 		this.ident = ident;
+		this.sourceIdent = ident;
 		this.tqual = tqual;
 		this.idents = idents;
 		this.tiargs(tiargs != null ? tiargs : new Objects(0));

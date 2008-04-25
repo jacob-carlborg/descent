@@ -327,13 +327,18 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		return storage_class;
 	}
 	
+	@Override
+	public Type type() {
+		return type;
+	}
+	
 	void consumeRestStructure() {
 		if (rest != null && !rest.isStructureKnown()) {
 			rest.buildStructure();
 		}
 	}
 	
-	void consumeRest() {
+	public void consumeRest() {
 		if (rest != null && !rest.isConsumed()) {
 			rest.consume(this);
 		}

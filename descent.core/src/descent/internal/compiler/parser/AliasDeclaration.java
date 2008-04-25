@@ -313,7 +313,7 @@ public class AliasDeclaration extends Declaration {
 		return javaElement;
 	}
 
-	void consumeRest() {
+	public void consumeRest() {
 		if (rest != null && !rest.isConsumed()) {
 			rest.consume(this);
 		}

@@ -1,14 +1,12 @@
 package descent.internal.compiler.lookup;
 
 import descent.internal.compiler.parser.Dsymbol;
-import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
 public class SemanticRest {
 	
 	private Scope sc;
-	private LINK linkage;
 	private SemanticContext context;
 	private boolean consumed;
 	private boolean structureKnown;
@@ -20,8 +18,7 @@ public class SemanticRest {
 
 	public void setSemanticContext(Scope scope, SemanticContext context) {
 		if (scope != null) {
-			this.sc = scope;
-			this.linkage = scope.linkage;
+			this.sc = Scope.copy(scope);
 		}
 		this.context = context;
 	}
@@ -54,12 +51,7 @@ public class SemanticRest {
 			buildStructure();
 		}
 		
-		LINK linkage_save = sc.linkage;
-		sc.linkage = linkage;
-		
 		symbol.semantic(sc, context);
-		
-		sc.linkage = linkage_save;
 	}
 	
 

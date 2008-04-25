@@ -83,6 +83,10 @@ public class Scope {
 	 * }
 	 */
 	public int numberForLocalVariables = -1;
+	
+	private Scope() {
+		
+	}
 
 	public Scope(SemanticContext context) {
 		this.context = context;
@@ -147,6 +151,38 @@ public class Scope {
 		this.flags = 0;
 		this.anonAgg = null;
 		this.context = context;
+	}
+	
+	public static Scope copy(Scope scope) {
+		Scope copy = new Scope();
+		copy.enclosing = scope.enclosing;
+		copy.module = scope.module;
+		copy.scopesym = scope.scopesym;
+		copy.sd = scope.sd;
+		copy.func = scope.func;
+		copy.parent = scope.parent;
+		copy.slabel = scope.slabel;
+		copy.sw = scope.sw;
+		copy.tf = scope.tf;
+		copy.sbreak = scope.sbreak;
+		copy.scontinue = scope.scontinue;
+		copy.fes = scope.fes;
+		copy.offset = scope.offset;
+		copy.inunion = scope.inunion;
+		copy.incontract = scope.incontract; 
+		copy.nofree = scope.nofree;
+		copy.noctor = scope.noctor;
+		copy.intypeof = scope.intypeof;
+		copy.parameterSpecialization = scope.parameterSpecialization;
+		copy.noaccesscheck = scope.noaccesscheck;
+		copy.callSuper = scope.callSuper;
+		copy.structalign = scope.structalign;
+		copy.linkage = scope.linkage;
+		copy.protection = scope.protection;
+		copy.explicitProtection = scope.explicitProtection;
+		copy.stc = scope.stc;    
+		copy.flags = scope.flags;
+		return copy;
 	}
 
 	public void error(String s) {

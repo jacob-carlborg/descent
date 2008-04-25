@@ -180,7 +180,7 @@ public abstract class Declaration extends Dsymbol {
 		
 	}
 	
-	void consumeRest() {
+	public void consumeRest() {
 		
 	}
 

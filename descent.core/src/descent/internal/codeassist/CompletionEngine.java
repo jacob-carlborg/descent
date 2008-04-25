@@ -1733,6 +1733,9 @@ public class CompletionEngine extends Engine
 	 * Suggest a member with another name (for aliases).
 	 */
 	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		// The member may not have it's semantic pass done
+		member.consumeRest();
+		
 		if (member instanceof Import /* && member.getModule() == module */) {
 			Import imp = ((Import) member);
 			
@@ -1755,7 +1758,7 @@ public class CompletionEngine extends Engine
 		
 		if (member instanceof TemplateMixin) {
 			TemplateMixin mixin = (TemplateMixin) member;
-			if (mixin.ident != null && mixin.ident.ident != null &&
+			if (mixin.sourceIdent != null && mixin.sourceIdent.ident != null &&
 				match(this.currentName, ident)) {
 				
 				// Suggest as if it were a variable declaration
@@ -1903,7 +1906,7 @@ public class CompletionEngine extends Engine
 					
 					boolean isLocal = alias.parent instanceof FuncDeclaration;
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.TYPE_REF, this.actualCompletionPosition, alias);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, alias);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					String signature = alias.getSignature();
@@ -1974,7 +1977,7 @@ public class CompletionEngine extends Engine
 					
 					boolean isLocal = typedef.parent instanceof FuncDeclaration;
 					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.TYPE_REF, this.actualCompletionPosition, typedef);
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, typedef);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
@@ -1990,6 +1993,10 @@ public class CompletionEngine extends Engine
 			
 			if (isType) {
 				if (currentName.length == 0 || match(currentName, ident)) {
+					if (member.getSignature() == null) {
+						member.getSignature();
+					}
+					
 					char[] sigChars = member.getSignature().toCharArray();
 					
 					int relevance = computeBaseRelevance();
@@ -2018,7 +2025,7 @@ public class CompletionEngine extends Engine
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					CompletionEngine.this.requestor.accept(proposal);
 					
-					trySuggestCall(member.type(), ident, sigChars, true /* only statics */);
+//					trySuggestCall(member.type(), ident, sigChars, true /* only statics */);
 					
 					// If we are expecting an enum, suggest it's members! :-)
 					if (expectedType != null && expectedType instanceof TypeEnum 

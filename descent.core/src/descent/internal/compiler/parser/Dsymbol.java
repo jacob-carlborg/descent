@@ -698,5 +698,10 @@ public class Dsymbol extends ASTDmdNode {
 	public boolean templated() {
 		return false;
 	}
+	
+	// Descent: lazy initialization
+	public void consumeRest() {
+		
+	}
 
 }

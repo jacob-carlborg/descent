@@ -333,7 +333,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				module, 
 				project,
 				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config),
-				global);
+				global,
+				config);
 		
 		if (!RESOLVE) return context;
 		

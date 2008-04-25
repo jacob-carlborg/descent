@@ -2,3 +2,4 @@
  - Give constructors higher relevance so that they appear first
  - Show opCalls
  - Check if aliases are shown ok in proposals.
+ - Check completion in new char[ | ]

@@ -927,12 +927,12 @@ public class TemplateInstance extends ScopeDsymbol {
 		return name.getErrorLength();
 	}
 	
-//	@Override
-//	public void appendSignature(StringBuilder sb) {
-//		sb.append(name.ident.length);
-//		sb.append(name.ident);
-//		appendInstanceSignature(sb);
-//	}
+	@Override
+	public void appendSignature(StringBuilder sb) {
+		sb.append(name.ident.length);
+		sb.append(name.ident);
+		appendInstanceSignature(sb);
+	}
 	
 	public void appendInstanceSignature(StringBuilder sb) {
 		sb.append(ISignatureConstants.TEMPLATE_INSTANCE);

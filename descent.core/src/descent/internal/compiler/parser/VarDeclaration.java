@@ -779,7 +779,7 @@ public class VarDeclaration extends Declaration {
 	}
 	
 	@Override
-	void consumeRest() {
+	public void consumeRest() {
 		if (rest != null && !rest.isConsumed()) {
 			rest.consume(this);
 		}

@@ -51,7 +51,7 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 //				"opCmp()", pos, pos, "opCmp(Object o)  int - Object",
 //				"opEquals()", pos, pos, "opEquals(Object o)  int - Object",
 				"print()", pos, pos, "print()  void - Object",
-				"toHash()", pos, pos, "toHash()  hash_t - Object",
+				"toHash()", pos, pos, "toHash()  int - Object",
 				"toString()", pos, pos, "toString()  char[] - Object"
 				);
 	}

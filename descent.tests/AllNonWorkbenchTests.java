@@ -125,13 +125,13 @@ public class AllNonWorkbenchTests {
 	 * Comment a line to disable testing a particular feature.
 	 */
 	private final static int enabled = 0
-//					| DDOC 
-//					| DEBUGGER 
-//					| FORMATTER 
+					| DDOC 
+					| DEBUGGER 
+					| FORMATTER 
 					| LEXER_PARSER 
-//					| SIGNATURE 
-//					| REWRITE 
-//					| TRACE
+					| SIGNATURE 
+					| REWRITE 
+					| TRACE
 					;
 	
 	public static Test suite() {

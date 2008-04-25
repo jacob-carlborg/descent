@@ -889,7 +889,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 	}
 	
-	void consumeRest() {
+	public void consumeRest() {
 		if (rest != null && !rest.isConsumed()) {
 			rest.consume(this);
 		}

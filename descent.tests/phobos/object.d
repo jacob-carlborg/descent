@@ -3,28 +3,11 @@
 
 module object;
 
-//alias bit bool;
-alias bool bit;
-
-alias typeof(int.sizeof) size_t;
-alias typeof(cast(void*)0 - cast(void*)0) ptrdiff_t;
-alias size_t hash_t;
-
-alias char[] string;
-alias wchar[] wstring;
-alias dchar[] dstring;
-
-/*
-extern (C)
-{   int printf(char *, ...);
-}
-*/
-
 class Object
 {
     void print();
     char[] toString();
-    hash_t toHash();
+    int toHash();
     int opCmp(Object o);
     int opEquals(Object o);
 
@@ -65,16 +48,16 @@ class ClassInfo : Object
 
 struct OffsetTypeInfo
 {
-    size_t offset;
+    int offset;
     TypeInfo ti;
 }
 
 class TypeInfo
 {
-    hash_t getHash(void *p);
+    int getHash(void *p);
     int equals(void *p1, void *p2);
     int compare(void *p1, void *p2);
-    size_t tsize();
+    int tsize();
     void swap(void *p1, void *p2);
     TypeInfo next();
     void[] init();
@@ -107,7 +90,7 @@ class TypeInfo_Array : TypeInfo
 class TypeInfo_StaticArray : TypeInfo
 {
     TypeInfo value;
-    size_t len;
+    int len;
 }
 
 class TypeInfo_AssociativeArray : TypeInfo

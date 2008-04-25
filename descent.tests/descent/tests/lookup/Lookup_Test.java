@@ -85,7 +85,7 @@ public class Lookup_Test extends AbstractLookupTest {
 	}
 	
 	public void testUnionDefinedOk() throws Exception {
-		one("union Bar { a }");
+		one("union Bar { int a; }");
 		two("Bar b;");
 		assertNoErrors();
 	}

@@ -92,7 +92,9 @@ public class EnumDeclaration extends ScopeDsymbol {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (rest != null && !rest.isConsumed()) {
-			rest.setSemanticContext(sc, context);
+			if (rest.getScope() == null) {
+				rest.setSemanticContext(sc, context);
+			}
 			return;
 		}
 		
@@ -387,7 +389,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 	}
 	
-	void consumeRest() {
+	public void consumeRest() {
 		if (rest != null && !rest.isConsumed()) {
 			rest.consume(this);
 		}

@@ -12,6 +12,7 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
+import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.util.Util;
 
 public class SemanticContext {
@@ -92,7 +93,8 @@ public class SemanticContext {
 			Module module,
 			IJavaProject project,
 			IModuleFinder moduleFinder,
-			Global global) {
+			Global global,
+			CompilerConfiguration config) {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
@@ -103,7 +105,7 @@ public class SemanticContext {
 		this.encoder = new ASTNodeEncoder();
 		this.apiLevel = Util.getApiLevel(project);
 		
-		if (JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
+		if (config.semanticAnalysisLevel == 0) {
 			muteProblems++;
 		}
 		
