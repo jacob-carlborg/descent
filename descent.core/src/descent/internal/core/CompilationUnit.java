@@ -157,6 +157,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 		options.put(JavaCore.COMPILER_TASK_TAGS, ""); //$NON-NLS-1$
 	}
 	SourceElementParser parser = new SourceElementParser(requestor, new CompilerOptions(options));
+	parser.diet = !computeProblems && !createAST;
 	// parser.reportOnlyOneSyntaxError = !computeProblems;
 	// parser.setStatementsRecovery(statementsRecovery);
 	

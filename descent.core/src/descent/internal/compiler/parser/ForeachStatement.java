@@ -295,6 +295,9 @@ public class ForeachStatement extends Statement {
 							arg.ident, ie);
 					
 					// Descent: for binding resolution
+					if (arg.ident != null) {
+						var.copySourceRange(arg.ident);
+					}
 					arg.var = var;
 					
 					var.storage_class |= STCconst;
@@ -331,6 +334,9 @@ public class ForeachStatement extends Statement {
 				}
 				
 				// Descent: for binding resolution
+				if (arg.ident != null) {
+					var.copySourceRange(arg.ident);
+				}
 				arg.var = var;
 				
 				DeclarationExp de = new DeclarationExp(loc, var);
@@ -411,6 +417,9 @@ public class ForeachStatement extends Statement {
 						& (STCin | STCout | STCref);
 				
 				// Descent: for binding resolution
+				if (arg.ident != null) {
+					var.copySourceRange(arg.ident);
+				}
 				arg.var = var;
 				
 				DeclarationExp de = new DeclarationExp(loc, var);
@@ -535,6 +544,13 @@ public class ForeachStatement extends Statement {
 
 				ie = new ExpInitializer(loc, id);
 				v = new VarDeclaration(loc, arg.type, arg.ident, ie);
+				
+				// Descent: for binding resolution
+				if (arg.ident != null) {
+					v.copySourceRange(arg.ident);
+				}
+				arg.var = v;
+				
 				s[0] = new DeclarationStatement(loc, v);
 				body = new CompoundStatement(loc, s[0], body);
 			}

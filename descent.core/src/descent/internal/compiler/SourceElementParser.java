@@ -55,6 +55,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private Stack< Stack<AttribDeclaration> > attribDeclarationStack;
 	private ASTNodeEncoder astNodeEncoder;
 	private char[] source;
+	
+	public boolean diet = true;
 
 	/**
 	 * @param surfaceDeclarations instruct the parser to ignore statements
@@ -92,7 +94,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		source = unit.getContents();
 		
-		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true, true).module;
+		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true, diet).module;
 		
 		module.moduleName = unit.getFullyQualifiedName();
 	
