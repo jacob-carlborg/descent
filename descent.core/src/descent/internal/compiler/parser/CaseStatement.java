@@ -24,8 +24,8 @@ public class CaseStatement extends Statement {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, exp);
-			TreeVisitor.acceptChildren(visitor, statement);
+			TreeVisitor.acceptChildren(visitor, sourceExp);
+			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
 	}

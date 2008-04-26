@@ -1191,7 +1191,7 @@ public class CompletionEngine extends Engine
 			startPosition = actualCompletionPosition;
 			endPosition = actualCompletionPosition;
 			
-			if (node.e1 instanceof VarExp) {
+			if (node.e1 instanceof VarExp && node.e1.type instanceof TypeFunction) {
 				VarExp var = (VarExp) node.e1;
 				if (var.var instanceof FuncDeclaration) {
 					wantMethodContextInfo = true;
@@ -2795,10 +2795,10 @@ public class CompletionEngine extends Engine
 		}
 		
 		char[] fullName = CharOperation.concat(packageName, typeName, '.');
-//		if (knownDeclarations.containsKey(fullName)) {
-//			return;
-//		}
-//		knownDeclarations.put(fullName, this);
+		if (knownDeclarations.containsKey(fullName)) {
+			return;
+		}
+		knownDeclarations.put(fullName, this);
 		
 		StringBuilder sig = new StringBuilder();
 		InternalSignature.appendPackageName(packageName, sig);
@@ -2952,10 +2952,10 @@ public class CompletionEngine extends Engine
 		sig.append(name);
 		sig.append(signature);
 		char[] sigChars = sig.toString().toCharArray();
-//		if (knownDeclarations.containsKey(sigChars)) {
-//			return;
-//		}
-//		knownDeclarations.put(sigChars, this);
+		if (knownDeclarations.containsKey(sigChars)) {
+			return;
+		}
+		knownDeclarations.put(sigChars, this);
 		
 		char[] fullName = CharOperation.concat(packageName, name, '.');
 		

@@ -272,6 +272,11 @@ public class VarDeclaration extends Declaration {
 			}
 			type = type.semantic(loc, sc, context);
 		}
+		
+		// Added for Descent: case "auto foo = new"
+		if (type == null) {
+			return;
+		}
 
 		type.checkDeprecated(loc, sc, context);
 		linkage = sc.linkage;

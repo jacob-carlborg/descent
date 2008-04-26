@@ -112,11 +112,12 @@ public class CompletionProposalLabelProvider {
 			return buffer;
 		}
 		char[][] parameterNames= methodProposal.findParameterNames(null);
+		char[][] parameterDefaultValues = methodProposal.findParameterDefaultValues(null);
 		char[][] parameterTypes= Signature.getParameterTypes(signature);
 		for (int i= 0; i < parameterTypes.length; i++) {
 			parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
 		}
-		return appendParameterSignature(buffer, parameterTypes, parameterNames);
+		return appendParameterSignature(buffer, parameterTypes, parameterNames, parameterDefaultValues);
 	}
 	
 	private StringBuffer appendTemplateParameterList(StringBuffer buffer, CompletionProposal tempProposal) {
@@ -124,6 +125,7 @@ public class CompletionProposalLabelProvider {
 		// gets fixed.
 		//char[] signature= SignatureUtil.fix83600(tempProposal.getSignature());
 		char[][] parameterNames= tempProposal.findTemplateParameterNames(null);
+		char[][] defaultValues = tempProposal.findTemplateParameterDefaultValues(null);
 		
 		for (int i = 0; i < parameterNames.length; i++) {
 			if (i != 0) {
@@ -132,6 +134,13 @@ public class CompletionProposalLabelProvider {
 			}
 			
 			buffer.append(parameterNames[i]);
+			
+			if (defaultValues != null && i < defaultValues.length && defaultValues[i] != null) {
+				buffer.append(' ');
+				buffer.append('=');
+				buffer.append(' ');
+				buffer.append(defaultValues[i]);
+			}
 		}
 		
 		return buffer;
@@ -191,7 +200,7 @@ public class CompletionProposalLabelProvider {
 	 * @return the display string of the parameter list defined by the passed
 	 *         arguments
 	 */
-	private final StringBuffer appendParameterSignature(StringBuffer buffer, char[][] parameterTypes, char[][] parameterNames) {
+	private final StringBuffer appendParameterSignature(StringBuffer buffer, char[][] parameterTypes, char[][] parameterNames, char[][] parameterDefaultValues) {
 		if (parameterTypes != null) {
 			for (int i = 0; i < parameterTypes.length; i++) {
 				if (i > 0) {
@@ -204,6 +213,14 @@ public class CompletionProposalLabelProvider {
 				if (parameterNames != null && i < parameterNames.length && parameterNames[i] != null) {
 					buffer.append(' ');
 					buffer.append(parameterNames[i]);
+					
+					if (parameterDefaultValues != null && i < parameterDefaultValues.length && parameterDefaultValues[i] != null) {
+						buffer.append(' ');
+						buffer.append('=');
+						buffer.append(' ');
+						buffer.append(parameterDefaultValues[i]);
+					}
+						
 				}
 			}
 		}

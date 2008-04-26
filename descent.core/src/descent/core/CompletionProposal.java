@@ -830,7 +830,19 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	private boolean parameterNamesComputed = false;
 	
 	/**
-	 * Parameter names (for template completions), or
+	 * Parameter default values (for method completions), or
+	 * <code>null</code> if none. Lazily computed.
+	 * Defaults to <code>null</code>.
+	 */
+	private char[][] parameterDefaultValues = null;
+	
+	/**
+	 * Indicates whether parameter default values have been computed.
+	 */
+	private boolean parameterDefaultValuesComputed = false;
+	
+	/**
+	 * Template parameter names (for template completions), or
 	 * <code>null</code> if none. Lazily computed.
 	 * Defaults to <code>null</code>.
 	 */
@@ -840,6 +852,18 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * Indicates whether template parameter names have been computed.
 	 */
 	private boolean templateParameterNamesComputed = false;
+	
+	/**
+	 * Template parameter default values (for template completions), or
+	 * <code>null</code> if none. Lazily computed.
+	 * Defaults to <code>null</code>.
+	 */
+	private char[][] templateParameterDefaultValues = null;
+	
+	/**
+	 * Indicates whether template parameter default values have been computed.
+	 */
+	private boolean templateParameterDefaultValuesComputed = false;
 	
 	/**
 	 * Creates a basic completion proposal. All instance
@@ -1729,6 +1753,56 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return this.parameterNames;
 	}
 	
+	/**
+	 * Finds the method default values names.
+	 * This information is relevant to method reference (and
+	 * method declaration proposals). Returns <code>null</code>
+	 * if not available or not relevant.
+	 * <p>
+	 * The client must not modify the array returned.
+	 * </p>
+	 * <p>
+	 * <b>Note that this is an expensive thing to compute, which may require
+	 * parsing Java source files, etc. Use sparingly.</b>
+	 * </p>
+	 * 
+	 * @param monitor the progress monitor, or <code>null</code> if none
+	 * @return the default values, or <code>null</code> if none
+	 * or not available or not relevant
+	 */
+	public char[][] findParameterDefaultValues(IProgressMonitor monitor) {
+		if (!this.parameterDefaultValuesComputed) {
+			this.parameterDefaultValuesComputed = true;
+			
+			IJavaElement element = getJavaElement();
+			if (element instanceof IMethod) {
+				IMethod method = (IMethod) element;
+				String[] paramDefaultValues;
+				try {
+					paramDefaultValues = method.getParameterDefaultValues();
+
+					if (paramDefaultValues == null) {
+						this.parameterDefaultValues = CharOperation.NO_CHAR_CHAR;
+					} else {
+						this.parameterDefaultValues = new char[paramDefaultValues.length][];
+						for (int i = 0; i < paramDefaultValues.length; i++) {
+							if (paramDefaultValues[i] != null) {
+								this.parameterDefaultValues[i] = paramDefaultValues[i]
+										.toCharArray();
+							}
+						}
+					}
+				} catch (JavaModelException e) {
+					this.parameterDefaultValues = CharOperation.NO_CHAR_CHAR;
+				}
+			} else {
+				getJavaElement();
+				this.parameterDefaultValues = CharOperation.NO_CHAR_CHAR;
+			}
+		}
+		return this.parameterDefaultValues;
+	}
+	
 	public IJavaElement getJavaElement() {
 		if (node instanceof Dsymbol) {
 			Dsymbol sym = (Dsymbol) node;
@@ -1789,11 +1863,66 @@ public final class CompletionProposal extends InternalCompletionProposal {
 					this.templateParameterNames[i] = ident == null || ident.ident == null ? ("arg" + (i + 1)).toCharArray() : ident.ident;
 				}
 			} else {
-				this.templateParameterNames = CharOperation.NO_CHAR_CHAR;
-			}
+				IJavaElement elem = getJavaElement();
+				if (elem != null && elem instanceof ITemplated) {
+					ITemplated templated = (ITemplated) elem;
+					try {
+						ITypeParameter[] params = templated.getTypeParameters();
+						templateParameterNames = new char[params.length][];
+						for (int i = 0; i < templateParameterNames.length; i++) {
+							templateParameterNames[i] = params[i].getElementName().toCharArray();
+						}
+					} catch (JavaModelException e) {
+						this.templateParameterNames = CharOperation.NO_CHAR_CHAR;	
+					}
+				} else {
+					this.templateParameterNames = CharOperation.NO_CHAR_CHAR;
+				}}
 			
 		}
 		return this.templateParameterNames;
+	}
+	
+	/**
+	 * Finds the template parameter names.
+	 * This information is relevant to template reference (and
+	 * template declaration proposals). Returns <code>null</code>
+	 * if not available or not relevant.
+	 * <p>
+	 * The client must not modify the array returned.
+	 * </p>
+	 * <p>
+	 * <b>Note that this is an expensive thing to compute, which may require
+	 * parsing Java source files, etc. Use sparingly.</b>
+	 * </p>
+	 * 
+	 * @param monitor the progress monitor, or <code>null</code> if none
+	 * @return the parameter names, or <code>null</code> if none
+	 * or not available or not relevant
+	 */
+	public char[][] findTemplateParameterDefaultValues(IProgressMonitor monitor) {
+		if (!this.templateParameterDefaultValuesComputed) {
+			this.templateParameterDefaultValuesComputed = true;
+			
+			IJavaElement elem = getJavaElement();
+			if (elem != null && elem instanceof ITemplated) {
+				ITemplated templated = (ITemplated) elem;
+				try {
+					ITypeParameter[] params = templated.getTypeParameters();
+					templateParameterDefaultValues = new char[params.length][];
+					for (int i = 0; i < templateParameterDefaultValues.length; i++) {
+						if (params[i].getDefaultValue() != null) {
+							templateParameterDefaultValues[i] = params[i].getDefaultValue().toCharArray();
+						}
+					}
+				} catch (JavaModelException e) {
+					this.templateParameterDefaultValues = CharOperation.NO_CHAR_CHAR;	
+				}
+			} else {
+				this.templateParameterDefaultValues = CharOperation.NO_CHAR_CHAR;
+			}
+		}
+		return this.templateParameterDefaultValues;
 	}
 
 	/**
