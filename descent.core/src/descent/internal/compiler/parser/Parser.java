@@ -6781,6 +6781,8 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private Expression parseNewExp(Expression thisexp) {
+		int start = token.ptr;
+		
 		Type t;
 		Expressions newargs = null;
 		Expressions arguments = null;
@@ -6866,7 +6868,7 @@ public class Parser extends Lexer {
 		 * t = new TypeDArray(t); } else if (token.value == TOKlparen) arguments =
 		 * parseArguments(); #endif
 		 */
-		e = newNewExp(loc(), thisexp, newargs, t, arguments);
+		e = newNewExp(loc(), thisexp, newargs, t, arguments, start);
 		return e;
 	}
 
@@ -7373,7 +7375,7 @@ public class Parser extends Lexer {
 		return new CallExp(loc, e, expressions);
 	}
 	
-	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments) {
+	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments, int start) {
 		return new NewExp(loc, thisexp, newargs, t, arguments);
 	}
 	

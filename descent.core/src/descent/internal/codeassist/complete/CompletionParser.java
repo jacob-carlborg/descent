@@ -738,11 +738,12 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments) {
-		Expression newExp = super.newNewExp(loc, thisexp, newargs, t, arguments);
+	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments, int start) {
+		Expression newExp = super.newNewExp(loc, thisexp, newargs, t, arguments, start);
 		
 		if ((t != null && isMatch(t)) || (thisexp != null && isMatch(thisexp))
-			|| prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
+			|| (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr)
+			|| (start <= cursorLocation && t != null && cursorLocation <= t.start)) {
 			inNewExp = true;
 			targetNew = newExp;
 		}

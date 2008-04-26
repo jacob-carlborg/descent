@@ -1926,7 +1926,7 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
-		if (member instanceof EnumMember) {
+		if (member instanceof EnumMember && !parser.inNewExp) {
 			if (currentName.length == 0 || match(currentName, ident)) {
 				int relevance = computeBaseRelevance();
 				relevance += computeRelevanceForInterestingProposal();
