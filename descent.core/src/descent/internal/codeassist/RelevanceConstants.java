@@ -39,7 +39,7 @@ public interface RelevanceConstants {
 	int R_TRUE_OR_FALSE = 40;
 	int R_INLINE_TAG = 31;
 	int R_VALUE_TAG = 31;
-	int R_CONSTRUCTOR = 10;
+	int R_CONSTRUCTOR = 30;
 	int R_FUNCTION_POINTER_CALL = 20;
 	int R_FUNCTION_POINTER_CALL_WANT = 20;
 	int R_WITH = 20;

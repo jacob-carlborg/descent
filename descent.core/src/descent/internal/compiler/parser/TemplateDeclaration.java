@@ -883,7 +883,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return javaElement;
 	}
 	
-	void consumeRestStructure() {
+	public void consumeRestStructure() {
 		if (rest != null && !rest.isStructureKnown()) {
 			rest.buildStructure();
 		}

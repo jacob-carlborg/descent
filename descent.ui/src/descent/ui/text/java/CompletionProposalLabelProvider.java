@@ -78,7 +78,12 @@ public class CompletionProposalLabelProvider {
 		appendTemplateParameterList(sb1, methodProposal);
 		
 		StringBuffer sb2 = new StringBuffer();
-		appendUnboundedParameterList(sb2, methodProposal);
+		if (methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.OP_CALL ||
+				methodProposal.getKind() == CompletionProposal.FUNCTION_CALL ||
+				methodProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF) {
+			appendUnboundedParameterList(sb2, methodProposal);
+		}
 		
 		if (sb1.length() > 0 && sb2.length() > 0) {
 			sb1.append(',');

@@ -188,6 +188,10 @@ public class SignatureToCharArrayFqn_Test extends AbstractSignatureTest {
 		tcaFqn("void foo.test.Bar!(alias T : x)(int)", MODULE + "3foo4test" + TEMPLATED_FUNCTION + "3Bar" + F + i + Z + v + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + IDENTIFIER + "1x" + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
+	public void testInstanceWithinTemplate() {
+		tcaFqn("minmaxtype!(T) tango.math.Core.min!(T...)(T)", "@5tango4math4Core)3minF?1TZ?10minmaxtype!^?1T'%'"); 
+	}
+	
 	protected void tcaFqn(String expected, String signature) {
 		assertEquals(expected, new String(Signature.toCharArray(signature.toCharArray(),
 				true /* 't fully qualify things */)));

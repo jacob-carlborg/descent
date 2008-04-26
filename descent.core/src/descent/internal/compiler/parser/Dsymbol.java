@@ -700,6 +700,10 @@ public class Dsymbol extends ASTDmdNode {
 	}
 	
 	// Descent: lazy initialization
+	public void consumeRestStructure() {
+		
+	}
+	
 	public void consumeRest() {
 		
 	}

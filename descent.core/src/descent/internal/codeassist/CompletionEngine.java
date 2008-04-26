@@ -77,6 +77,7 @@ import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.IndexExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LINK;
@@ -100,6 +101,8 @@ import descent.internal.compiler.parser.SymOffExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TY;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateExp;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Type;
@@ -436,17 +439,6 @@ public class CompletionEngine extends Engine
 			
 			// For new |, don't suggest keywords or ddoc
 			if (parser.inNewExp) {
-				
-				// Suggest the expected type if the user didn't type anything, and
-				// it's not in the current imports (and it's not abstract)
-				if (currentName.length == 0 && expectedType instanceof TypeClass) {
-					ClassDeclaration classDeclaration = ((TypeClass) expectedType).sym;					
-					if (!isImported(classDeclaration.getModule().getFullyQualifiedName().toCharArray()) &&
-							!classDeclaration.isAbstract()) {						
-						suggestDsymbol(classDeclaration, INCLUDE_TYPES | INCLUDE_IMPORTS);
-					}
-				}
-				
 				return;
 			}
 			
@@ -1120,7 +1112,7 @@ public class CompletionEngine extends Engine
 			}
 		} else if (node.exp instanceof VarExp) {
 			Declaration var = ((VarExp) node.exp).var;
-			Type type = var.type();
+//			Type type = var.type();
 			
 			// Need to set correct location of IdentifierExp
 			IdentifierExp ident = new IdentifierExp(var.ident.ident);
@@ -1129,6 +1121,14 @@ public class CompletionEngine extends Engine
 			currentName = computePrefixAndSourceRange(ident);
 			
 //			completeType(type, ident, false);
+		} else if (node.exp instanceof TemplateExp) {
+			TemplateDeclaration td = ((TemplateExp) node.exp).td;
+			
+			// Need to set correct location of IdentifierExp
+			IdentifierExp ident = new IdentifierExp(td.ident.ident);
+			ident.copySourceRange(node);
+			
+			currentName = computePrefixAndSourceRange(ident);
 		} else {
 			return;
 		}
@@ -1270,7 +1270,11 @@ public class CompletionEngine extends Engine
 				if (scopeDsymbol.imports != null) {
 					// TODO optimize this
 					Dsymbols syms = new Dsymbols();
-					syms.addAll(scopeDsymbol.imports);
+					for(ScopeDsymbol scopeSym : scopeDsymbol.imports) {
+						if (!(scopeSym instanceof TemplateMixin)) {
+							syms.add(scopeSym);
+						}
+					}
 					
 					suggestMembers(syms, false /* not only statics */, new HashtableOfCharArrayAndObject(), includes);	
 				}
@@ -1386,6 +1390,10 @@ public class CompletionEngine extends Engine
 		} else if (e1 instanceof SymOffExp) {
 			SymOffExp symoff = (SymOffExp) e1;
 			Type type = symoff.type;
+			completeType(type, ident, false);
+		} else if (e1 instanceof IndexExp) {
+			IndexExp index = (IndexExp) e1;
+			Type type = index.type;
 			completeType(type, ident, false);
 		} else if (ident.resolvedSymbol != null) {
 			// TODO check this
@@ -1505,11 +1513,12 @@ public class CompletionEngine extends Engine
 			signature[lastIndexOfVar] = FUNCTION;
 		}
 		
-		char[] sig = CharOperation.concat(signature, type.getSignature().toCharArray());
-		suggestTypeFunction(sig, name);
+		char[] typeSignature = type.getSignature().toCharArray();
+		char[] declSignature = CharOperation.concat(signature, typeSignature);
+		suggestTypeFunction(declSignature, typeSignature, name);
 	}
 	
-	private void suggestTypeFunction(char[] signature, char[] name) {
+	private void suggestTypeFunction(char[] signature, char[] typeSignature, char[] name) {
 		CompletionProposal proposal = this.createProposal(CompletionProposal.FUNCTION_CALL, this.actualCompletionPosition, null);
 		
 		int relevance = computeBaseRelevance();
@@ -1525,7 +1534,7 @@ public class CompletionEngine extends Engine
 		proposal.setName(name);
 		proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
 		proposal.setSignature(signature);
-		proposal.setTypeSignature(signature);
+		proposal.setTypeSignature(typeSignature);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		CompletionEngine.this.requestor.accept(proposal);
@@ -1723,6 +1732,16 @@ public class CompletionEngine extends Engine
 		}
 		
 		if (member.ident == null || member.ident.ident == null) {
+			// Suggest member of anynoymous symbols
+			if (member instanceof StructDeclaration ||
+				member instanceof EnumDeclaration) {
+				suggestMembers(((ScopeDsymbol) member).members, onlyStatics, flags, funcSignatures, includes);
+			}
+			return;
+		}
+		
+		// Skip template instances!
+		if (member instanceof TemplateInstance) {
 			return;
 		}
 		
@@ -2059,7 +2078,11 @@ public class CompletionEngine extends Engine
 					CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition, member);
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					proposal.setSignature(member.getSignature().toCharArray());
+					
+					char[] sig = member.getSignature().toCharArray();
+					proposal.setSignature(sig);
+					proposal.setTypeSignature(sig);
+					
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2108,6 +2131,7 @@ public class CompletionEngine extends Engine
 					if (constructor || opCall) {
 						relevance += R_CAMEL_CASE;
 						relevance += R_CONSTRUCTOR;
+						relevance += R_NEW;
 					} else {
 						relevance += computeRelevanceForCaseMatching(currentName, ident);
 					}

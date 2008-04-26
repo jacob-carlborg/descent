@@ -3,3 +3,6 @@
  - Show opCalls
  - Check if aliases are shown ok in proposals.
  - Check completion in new char[ | ]
+ - Write test for autocompletion like foo[0]. |
+ - Suggest templates after mixin |
+ - Write test for suggest member of anon enum

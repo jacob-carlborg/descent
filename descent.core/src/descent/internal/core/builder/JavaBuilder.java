@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -129,7 +130,15 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			Module module = parser.parseModuleObj();
 			module.moduleName = unit.getFullyQualifiedName();
 			
-			if (!JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS).equals("0")) {
+			IJavaProject activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
+			String showSemanticError = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+			if (activeProject == null) {
+				showSemanticError = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS); 
+			} else {
+				showSemanticError = activeProject.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, true);
+			}
+			
+			if (!showSemanticError.equals("0")) {
 				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
 			}
 			

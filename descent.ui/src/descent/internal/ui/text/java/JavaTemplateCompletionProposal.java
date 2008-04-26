@@ -198,7 +198,6 @@ public class JavaTemplateCompletionProposal extends LazyJavaCompletionProposal {
 		 * 3) by parameter count
 		 * 4) by parameter type names
 		 */
-		// TODO JDT signature
 		char[] name= fProposal.getName();
 		char[] parameterList= Signature.toCharArray(fProposal.getSignature(), false /* don't fully qualify names */);
 		int parameterCount= Signature.getTemplateParameterCount(fProposal.getSignature()) % 10; // we don't care about insane methods with >9 parameters

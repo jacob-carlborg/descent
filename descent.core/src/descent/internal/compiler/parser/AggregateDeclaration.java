@@ -332,7 +332,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		return type;
 	}
 	
-	void consumeRestStructure() {
+	public void consumeRestStructure() {
 		if (rest != null && !rest.isStructureKnown()) {
 			rest.buildStructure();
 		}

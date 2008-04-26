@@ -195,7 +195,7 @@ public class NewExp extends Expression {
 					member = f.isCtorDeclaration();
 					Assert.isNotNull(member);
 
-					cd.accessCheck(sc, member, context, f); // TODO check if "f" is the reference
+					cd.accessCheck(sc, member, context, this);
 
 					tf = (TypeFunction) f.type;
 					type = tf.next;

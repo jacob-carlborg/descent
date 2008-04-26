@@ -3612,6 +3612,13 @@ public class Parser extends Lexer {
 			} else {
 				// goto Lexp;
 				Expression exp = parseExpression();
+				
+				// Signal a new variable declaration if it's an identifier... this is nice
+				// to autocomplete Object | --> object
+				if (exp != null && exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP) {
+					newVarDeclaration(loc, new TypeIdentifier(loc, ((IdentifierExp) exp).ident), null, null);
+				}
+				
 				check(TOKsemicolon);
 				s = newExpStatement(loc(), exp);
 				break;

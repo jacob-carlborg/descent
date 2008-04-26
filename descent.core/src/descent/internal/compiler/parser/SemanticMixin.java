@@ -57,13 +57,14 @@ public class SemanticMixin {
 		return buffer.toString();
 	}
 	
+	static long total = 0;
 	public static String getSignature(Dsymbol aThis) {
 		if (aThis.effectiveParent() == null) {
 			return null;
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		appendSignature(aThis, sb);
+		appendSignature(aThis, sb);		
 		return sb.toString();
 	}
 	
@@ -130,8 +131,11 @@ public class SemanticMixin {
 			
 			if (aThis instanceof TemplateDeclaration) {
 				TemplateDeclaration temp = (TemplateDeclaration) aThis;
-				if (temp.wrapper && temp.members.get(0) instanceof FuncDeclaration) {
-					temp.members.get(0).type().appendSignature(sb);
+				Dsymbol dsymbol = temp.members.get(0);
+				if (temp.wrapper && dsymbol instanceof FuncDeclaration) {
+					dsymbol.consumeRestStructure();
+					dsymbol.consumeRest();
+					dsymbol.type().appendSignature(sb);
 				}
 			}
 			

@@ -320,6 +320,19 @@ public class SignatureProcessor implements ISignatureConstants {
 				i++;
 				
 				requestor.exitTemplateInstance(substring(signature, start, i, wantSignature));
+				
+				// If a template parameter follows, don't continue waiting for
+				// a next template instance or identifier
+				if (i < signature.length()) {
+					c = signature.charAt(i);
+					if (c == TEMPLATE_ALIAS_PARAMETER ||
+						c == TEMPLATE_TYPE_PARAMETER ||
+						c == TEMPLATE_VALUE_PARAMETER ||
+						c == TEMPLATE_TUPLE_PARAMETER) {
+						return i;
+					}
+				}
+				
 				continue;
 			case TEMPLATE_INSTANCE_TYPE:
 				requestor.enterTemplateInstanceType();

@@ -175,13 +175,5 @@ public abstract class Declaration extends Dsymbol {
 	public final int getStorageClass() {
 		return storage_class;
 	}
-	
-	void consumeRestStructure() {
-		
-	}
-	
-	public void consumeRest() {
-		
-	}
 
 }

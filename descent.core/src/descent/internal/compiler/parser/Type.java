@@ -844,11 +844,15 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			return false;
 		}
 		
-		if (singleton == t.singleton) {
-			return true;
-		}
+//		if (singleton == t.singleton) {
+//			return true;
+//		}
+//		
+//		if (singleton.deco != null && t.singleton.deco != null && singleton.deco.equals(t.singleton.deco)) {
+//			return true;
+//		}
 		
-		if (singleton.deco != null && t.singleton.deco != null && singleton.deco.equals(t.singleton.deco)) {
+		if (t != null && t.deco != null && this.deco != null && t.deco.equals(this.deco)) {
 			return true;
 		}
 		

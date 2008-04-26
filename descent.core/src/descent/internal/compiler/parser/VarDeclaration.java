@@ -772,7 +772,7 @@ public class VarDeclaration extends Declaration {
 	}
 	
 	@Override
-	void consumeRestStructure() {
+	public void consumeRestStructure() {
 		if (rest != null && !rest.isStructureKnown()) {
 			rest.buildStructure();
 		}

@@ -67,6 +67,11 @@ public final class CompletionProposalComparator implements Comparator {
 		 * TODO the correct (but possibly much slower) sorting would use a
 		 * collator.
 		 */
+		if (getSortKey(p1) == null || getSortKey(p2) == null) {
+			getSortKey(p1);
+			getSortKey(p2);
+		}
+		
 		// fix for bug 67468
 		return getSortKey(p1).compareToIgnoreCase(getSortKey(p2));
 	}
