@@ -2044,6 +2044,92 @@ public static char[] getSimpleName(char[] qualifiedName) {
 }
 
 /**
+ * Returns the first segments of a fully qualified name. Segments
+ * are divided by dots.
+ * 
+ * <p>
+ * For example:
+ * <pre>
+ * getSimpleName("int") -> ""
+ * getSimpleName("foo.test.Bar") -> "foo.test"
+ * getSimpleName("foo.test.Bar!(int)") -> "foo.test"
+ * getSimpleName("foo.test.metdhod(int, float)") -> "foo.test"
+ * </pre>
+ * </p> * 
+ * 
+ * @param qualifiedName a fully qualified name
+ * @return the last segment of the fully qualified name
+ */
+public static String getQualifier(String qualifiedName) {
+	int dot = 0;
+	int parenCount = 0;
+	for (int i = 0; i < qualifiedName.length(); i++) {
+		char c = qualifiedName.charAt(i);
+		switch(c) {
+		case '(':
+			parenCount++;
+			break;
+		case ')':
+			parenCount--;
+			break;
+		case '.':
+			if (parenCount == 0) {
+				dot = i;
+			}
+			break;
+		}
+	}
+	if (dot == 0) {
+		return qualifiedName;
+	} else {
+		return qualifiedName.substring(0, dot);
+	}
+}
+
+/**
+ * Returns the last segment of a fully qualified name. Segments
+ * are divided by dots.
+ * 
+ * <p>
+ * For example:
+ * <pre>
+ * getSimpleName("int") -> "int"
+ * getSimpleName("foo.test.Bar") -> "Bar"
+ * getSimpleName("foo.test.Bar!(int)") -> "Bar!(int)"
+ * getSimpleName("foo.test.metdhod(int, float)") -> "method(int, float)"
+ * </pre>
+ * </p> * 
+ * 
+ * @param qualifiedName a fully qualified name
+ * @return the last segment of the fully qualified name
+ */
+public static char[] getQualifier(char[] qualifiedName) {
+	int dot = 0;
+	int parenCount = 0;
+	for (int i = 0; i < qualifiedName.length; i++) {
+		char c = qualifiedName[i];
+		switch(c) {
+		case '(':
+			parenCount++;
+			break;
+		case ')':
+			parenCount--;
+			break;
+		case '.':
+			if (parenCount == 0) {
+				dot = i;
+			}
+			break;
+		}
+	}
+	if (dot == 0) {
+		return qualifiedName;
+	} else {
+		return CharOperation.subarray(qualifiedName, 0, dot);
+	}
+}
+
+/**
  * Returns the kind a given signature.
  * @param signature a signature
  * @return  the kind of type signature

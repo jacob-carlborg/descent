@@ -3302,10 +3302,12 @@ public class Parser extends Lexer {
 				
 				// Diet successful
 				if (body == null) {
-					final int endSkip = p;					
+					final int endSkip = p;
+					final Module moduleSkip = module;
 					f.rest = new SemanticRest(new Runnable() {
 						public void run() {
 							Parser parser = new Parser(apiLevel, CharOperation.subarray(input, startSkip, endSkip));
+							parser.module = moduleSkip;
 							
 							Statement body = parser.dietParseStatement(f); 
 							f.fbody = body;

@@ -1689,12 +1689,38 @@ public final class CompletionProposal extends InternalCompletionProposal {
 					return this.parameterNames;
 				}
 				
+				func.consumeRestStructure();
+				
 				TypeFunction tf = (TypeFunction) func.type; 
 				
 				this.parameterNames = new char[tf.parameters.size()][];
 				for (int i = 0; i < tf.parameters.size(); i++) {
 					IdentifierExp ident = tf.parameters.get(i).ident;
 					this.parameterNames[i] = ident == null || ident.ident == null ? ("arg" + (i + 1)).toCharArray() : ident.ident;
+				}
+			} else if (declarationStart != -1 && packageName != null) {
+				IJavaElement element = getJavaElement();
+				if (element instanceof IMethod) {
+					IMethod method = (IMethod) element;
+					String[] paramNames;
+					try {
+						paramNames = method.getParameterNames();
+
+						this.parameterNames = new char[paramNames.length][];
+						for (int i = 0; i < paramNames.length; i++) {
+							if (paramNames[i].length() == 0) {
+								this.parameterNames[i] = ("arg" + i).toCharArray();
+							} else {
+								this.parameterNames[i] = paramNames[i]
+										.toCharArray();
+							}
+						}
+					} catch (JavaModelException e) {
+						this.parameterNames = CharOperation.NO_CHAR_CHAR;
+					}
+				} else {
+					getJavaElement();
+					this.parameterNames = CharOperation.NO_CHAR_CHAR;
 				}
 			} else {
 				this.parameterNames = CharOperation.NO_CHAR_CHAR;
@@ -1717,6 +1743,15 @@ public final class CompletionProposal extends InternalCompletionProposal {
 					} catch (JavaModelException e) {
 						Util.log(e);
 					}
+				}
+			}
+		} else if (packageName != null && declarationStart != -1) {
+			ICompilationUnit cu = completionEngine.internalSignature.getCompilationUnit(new String(packageName));
+			if (cu != null) {
+				try {
+					return completionEngine.internalSignature.binarySearch(cu, declarationStart, declarationStart);
+				} catch (JavaModelException e) {
+					Util.log(e);
 				}
 			}
 		}

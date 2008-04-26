@@ -51,6 +51,7 @@ public class InternalCompletionProposal {
 	protected boolean isConstructor = false;
 	
 	protected ASTDmdNode node;
+	protected int declarationStart = -1;
 	
 	protected char[][] createDefaultParameterNames(int length) {
 		char[][] parameterNames;

@@ -28,6 +28,7 @@ public class TypeDeclarationPattern extends FQNPattern implements IIndexConstant
 // set to TYPE_SUFFIX for matching both classes and interfaces
 public char typeSuffix; 
 public boolean secondary = false;
+public int declarationStart;
 
 protected static char[][] CATEGORIES = { TYPE_DECL };
 
@@ -78,11 +79,12 @@ void rehash() {
 
 /*
  * Create index key for type declaration pattern:
- *		key = typeName / packageName / enclosingTypeName / modifiers
- * or for secondary types
- *		key = typeName / packageName / enclosingTypeName / modifiers / 'S'
+ *		key = typeName / packageName / declarationStart / enclosingTypeName / modifiers
  */
-public static char[] createIndexKey(long modifiers, char[] typeName, char[] packageName, char[][] enclosingTypeNames) { //, char typeSuffix) {
+public static char[] createIndexKey(long modifiers, char[] typeName, char[] packageName, char[][] enclosingTypeNames, int declarationStart) { //, char typeSuffix) {
+	char[] declarationStartChars = String.valueOf(declarationStart).toCharArray();
+	int declarationStartLength = declarationStartChars.length;
+	
 	int typeNameLength = typeName == null ? 0 : typeName.length;
 	int packageLength = packageName == null ? 0 : packageName.length;
 	int enclosingNamesLength = 0;
@@ -94,7 +96,7 @@ public static char[] createIndexKey(long modifiers, char[] typeName, char[] pack
 		}
 	}
 
-	int resultLength = typeNameLength + packageLength + enclosingNamesLength + 5;
+	int resultLength = typeNameLength + packageLength + declarationStartLength + enclosingNamesLength + 6;
 //	if (secondary) resultLength += 2;
 	char[] result = new char[resultLength];
 	int pos = 0;
@@ -107,6 +109,9 @@ public static char[] createIndexKey(long modifiers, char[] typeName, char[] pack
 		System.arraycopy(packageName, 0, result, pos, packageLength);
 		pos += packageLength;
 	}
+	result[pos++] = SEPARATOR;
+	System.arraycopy(declarationStartChars, 0, result, pos, declarationStartLength);
+	pos += declarationStartLength;
 	result[pos++] = SEPARATOR;
 	if (enclosingTypeNames != null && enclosingNamesLength > 0) {
 		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
@@ -156,12 +161,10 @@ TypeDeclarationPattern(int matchRule) {
 }
 /*
  * Type entries are encoded as:
- * 	simpleTypeName / packageName / enclosingTypeName / modifiers
+ * 	simpleTypeName / packageName / declarationStart / enclosingTypeName / modifiers
  *			e.g. Object/java.lang//0
  * 		e.g. Cloneable/java.lang//512
  * 		e.g. LazyValue/javax.swing/UIDefaults/0
- * or for secondary types as:
- * 	simpleTypeName / packageName / enclosingTypeName / modifiers / S
  */
 public void decodeIndexKey(char[] key) {
 	int slash = CharOperation.indexOf(SEPARATOR, key, 0);
@@ -173,6 +176,15 @@ public void decodeIndexKey(char[] key) {
 	} else {
 		slash = CharOperation.indexOf(SEPARATOR, key, start);
 		this.pkg = internedPackageNames.add(CharOperation.subarray(key, start, slash));
+	}
+	
+	start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.declarationStart = -1;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		// TODO optimize this
+		this.declarationStart = Integer.parseInt(new String(CharOperation.subarray(key, start, slash)));
 	}
 
 	// Continue key read by the end to decode modifiers

@@ -792,24 +792,24 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		if (thenDeclarations != null && !thenDeclarations.isEmpty()) {
 			if (elseDeclarations != null && !elseDeclarations.isEmpty()) {
-				requestor.enterConditionalThen(startOf(thenDeclarations.get(0)));
+				requestor.enterConditionalThen(startOfDeclaration(thenDeclarations.get(0)));
 			}
 			for(Dsymbol ideclaration : thenDeclarations) {
 				Dsymbol declaration = ideclaration;
 				declaration.accept(this);
 			}
 			if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
-				requestor.exitConditionalThen(endOf(thenDeclarations.get(thenDeclarations.size() - 1)));
+				requestor.exitConditionalThen(endOfDeclaration(thenDeclarations.get(thenDeclarations.size() - 1)));
 			}
 		}
 		
 		if (elseDeclarations != null &&!elseDeclarations.isEmpty()) {
-			requestor.enterConditionalElse(startOf(elseDeclarations.get(0)));
+			requestor.enterConditionalElse(startOfDeclaration(elseDeclarations.get(0)));
 			for(Dsymbol ideclaration : elseDeclarations) {
 				Dsymbol declaration = ideclaration;
 				declaration.accept(this);
 			}
-			requestor.exitConditionalElse(endOf(elseDeclarations.get(elseDeclarations.size() - 1)));
+			requestor.exitConditionalElse(endOfDeclaration(elseDeclarations.get(elseDeclarations.size() - 1)));
 		}
 		
 		pushLevelInAttribDeclarationStack();

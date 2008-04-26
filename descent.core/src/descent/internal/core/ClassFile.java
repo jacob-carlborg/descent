@@ -223,9 +223,10 @@ public boolean equals(Object o) {
 public boolean exists() {
 	//return super.exists() && validateClassFile().isOK();
 	//return true;
-	if (getResource() != null) {
-		return getResource().getLocation().toFile().exists();
-	} else if (getPath() != null) {
+//	if (getResource() != null) {
+//		return getResource().getLocation().toFile().exists();
+//	} else 
+		if (getPath() != null) {
 		return getPath().toFile().exists();
 	} else {
 		return false;

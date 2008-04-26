@@ -137,7 +137,7 @@ public void acceptType(IType type) {
 				}
 			}
 		}
-		this.requestor.acceptType(packageName, type.getElementName().toCharArray(), null, type.getFlags(), accessRestriction);
+		this.requestor.acceptType(packageName, type.getElementName().toCharArray(), null, type.getFlags(), type.getSourceRange().getOffset(), accessRestriction);
 	} catch (JavaModelException jme) {
 		// ignore
 	}

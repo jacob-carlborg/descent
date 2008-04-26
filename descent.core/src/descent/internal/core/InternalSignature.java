@@ -399,7 +399,7 @@ public class InternalSignature implements ISignatureConstants {
 
 		try {
 			for (IPackageFragmentRoot root : javaProject
-					.getPackageFragmentRoots()) {
+					.getAllPackageFragmentRoots()) {
 				IPackageFragment pack = root.getPackageFragment(packages);
 				if (pack.exists()) {
 					// found it

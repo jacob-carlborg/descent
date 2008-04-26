@@ -50,7 +50,8 @@ public final class ProposalContextInformation implements IContextInformation, IC
 		else
 			fImage= null;
 		if (proposal.getCompletion().length == 0)
-			fPosition= proposal.getCompletionLocation() + 1;
+			//fPosition= proposal.getCompletionLocation() + 1;
+			fPosition= proposal.getCompletionLocation();
 		else
 			fPosition= -1;
 		fContextDisplayString= labelProvider.createLabel(proposal);

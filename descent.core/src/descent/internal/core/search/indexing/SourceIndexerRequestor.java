@@ -170,7 +170,7 @@ private void enterClass(TypeInfo typeInfo) {
 			typeParameterSignatures[i] = typeParameterInfo.signature;
 		}
 	}
-	this.indexer.addClassDeclaration(typeInfo.modifiers, this.packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures);
+	this.indexer.addClassDeclaration(typeInfo.modifiers, this.packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures, typeInfo.declarationStart);
 	this.pushTypeName(typeInfo.name);
 }
 /**
@@ -199,7 +199,7 @@ private void enterEnum(TypeInfo typeInfo) {
 	} else {
 		typeNames = this.enclosingTypeNames();
 	}
-	this.indexer.addEnumDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces);
+	this.indexer.addEnumDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeInfo.declarationStart);
 	this.pushTypeName(typeInfo.name);	
 }
 /**
@@ -212,7 +212,7 @@ public void enterField(FieldInfo fieldInfo) {
 	} else {
 		typeNames = this.enclosingTypeNames();
 	}
-	this.indexer.addFieldDeclaration(fieldInfo.modifiers, this.packageName, typeNames, fieldInfo.type, fieldInfo.name);
+	this.indexer.addFieldDeclaration(fieldInfo.modifiers, this.packageName, typeNames, fieldInfo.type, fieldInfo.name, fieldInfo.declarationStart);
 	this.methodDepth++;
 }
 /**
@@ -254,7 +254,7 @@ private void enterInterface(TypeInfo typeInfo) {
 			typeParameterSignatures[i] = typeParameterInfo.signature;
 		}
 	}
-	this.indexer.addInterfaceDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures);
+	this.indexer.addInterfaceDeclaration(typeInfo.modifiers, packageName, typeInfo.name, typeNames, typeInfo.superinterfaces, typeParameterSignatures, typeInfo.declarationStart);
 	this.pushTypeName(typeInfo.name);	
 }
 /**
@@ -267,7 +267,7 @@ public void enterMethod(MethodInfo methodInfo) {
 	} else {
 		typeNames = this.enclosingTypeNames();
 	}
-	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, methodInfo.signature);
+	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, methodInfo.signature, methodInfo.declarationStart);
 	this.methodDepth++;
 }
 /**

@@ -28,11 +28,11 @@ public interface ISearchRequestor {
 	 *    Nested type names are in the qualified form "A.I".
 	 *    The default package is represented by an empty array.
 	 */
-	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction);
+	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, int declarationStart, AccessRestriction accessRestriction);
 	
 	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction);
 	
-	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, AccessRestriction accessRestriction);
+	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, int declarationStart, AccessRestriction accessRestriction);
 
 //	/**
 //	 * One result of the search consists of a new annotation.

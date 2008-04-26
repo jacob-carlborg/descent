@@ -398,25 +398,23 @@ public final class ImportRewriteAnalyzer {
 	}
 	
 	public void addImport(String fullTypeName, boolean isStatic) {
-		// TODO JDT signature
-//		String typeContainerName= Signature.getQualifier(fullTypeName);
-//		ImportDeclEntry decl= new ImportDeclEntry(fullTypeName, isStatic, null);
-//		sortIn(typeContainerName, decl, isStatic);
+		String typeContainerName= Signature.getQualifier(fullTypeName);
+		ImportDeclEntry decl= new ImportDeclEntry(fullTypeName, isStatic, null);
+		sortIn(typeContainerName, decl, isStatic);
 	}
 	
 	public boolean removeImport(String qualifiedName, boolean isStatic) {
-		// TODO JDT signature
-//		String containerName= Signature.getQualifier(qualifiedName);
-//		
-//		int nPackages= this.packageEntries.size();
-//		for (int i= 0; i < nPackages; i++) {
-//			PackageEntry entry= (PackageEntry) this.packageEntries.get(i);
-//			if (entry.compareTo(containerName, isStatic) == 0) {
-//				if (entry.remove(qualifiedName, isStatic)) {
-//					return true;
-//				}
-//			}
-//		}
+		String containerName= Signature.getQualifier(qualifiedName);
+		
+		int nPackages= this.packageEntries.size();
+		for (int i= 0; i < nPackages; i++) {
+			PackageEntry entry= (PackageEntry) this.packageEntries.get(i);
+			if (entry.compareTo(containerName, isStatic) == 0) {
+				if (entry.remove(qualifiedName, isStatic)) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -835,8 +833,8 @@ public final class ImportRewriteAnalyzer {
 		
 		public String getTypeContainerName() {
 			// TODO JDT signature
-//			return Signature.getQualifier(this.elementName);
-			return this.elementName;
+			return Signature.getQualifier(this.elementName);
+//			return this.elementName;
 		}
 		
 		public int compareTo(String fullName, boolean isStaticImport) {
@@ -852,8 +850,8 @@ public final class ImportRewriteAnalyzer {
 		
 		public String getSimpleName() {
 			// TODO JDT signature
-//			return Signature.getSimpleName(this.elementName);
-			return this.elementName;
+			return Signature.getSimpleName(this.elementName);
+//			return this.elementName;
 		}		
 		
 		public boolean isOnDemand() {

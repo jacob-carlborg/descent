@@ -106,6 +106,10 @@ public class Signature_Test extends AbstractSignatureTest implements ISignatureC
 	public void testSimpleNameQualifiedNested() {
 		sn("Bar", "foo(some.Annoynace x).Bar");
 	}
+	
+	public void testQualifierQualifiedMethod() {
+		qf("foo.bar", "foo.bar.method(int x, long z)");
+	}
 
 	public void testIsVariadicFalse() {
 		varFalse(F + Z + v);
@@ -171,6 +175,11 @@ public class Signature_Test extends AbstractSignatureTest implements ISignatureC
 	protected void sn(String expected, String actual) {
 		assertEquals(expected, Signature.getSimpleName(actual));
 		assertEquals(expected, new String(Signature.getSimpleName(actual.toCharArray())));
+	}
+	
+	protected void qf(String expected, String actual) {
+		assertEquals(expected, Signature.getQualifier(actual));
+		assertEquals(expected, new String(Signature.getQualifier(actual.toCharArray())));
 	}
 	
 }

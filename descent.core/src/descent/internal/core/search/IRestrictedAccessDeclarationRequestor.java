@@ -22,6 +22,6 @@ public interface IRestrictedAccessDeclarationRequestor extends IRestrictedAccess
 	
 	public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, AccessRestriction access);
 	
-	public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, String path, AccessRestriction access);
+	public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, String path, int declarationStart, AccessRestriction access);
 
 }

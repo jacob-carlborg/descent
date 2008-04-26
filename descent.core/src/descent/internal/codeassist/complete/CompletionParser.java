@@ -238,7 +238,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected IdentifierExp newIdentifierExp() {
-		if (token.ptr + token.sourceLen == cursorLocation) {
+		if (token.ptr + token.sourceLen == cursorLocation && !wantNames) {
 			assistNode = new CompletionOnIdentifierExp(loc, token);
 			return (IdentifierExp) assistNode;
 		} else {
@@ -303,7 +303,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected ExpStatement newExpStatement(Loc loc, Expression exp) {
-		if (exp instanceof IdentifierExp) {
+		if (exp instanceof IdentifierExp && !wantNames) {
 			IdentifierExp id = (IdentifierExp) exp;			
 			if (id.start + id.length == cursorLocation) {
 				assistNode = new CompletionOnExpStatement(loc, exp);
@@ -693,6 +693,10 @@ public class CompletionParser extends Parser {
 		if (ident instanceof CompletionOnIdentifierExp) {
 			wantNames = true;
 			assistNode = var;
+		} else if (ident == null && token.value == TOK.TOKidentifier && cursorLocation == token.ptr + token.sourceLen) {
+			wantNames = true;
+			var = new VarDeclaration(loc, type, new IdentifierExp(token.sourceString), init);
+			assistNode = var;
 		}
 		
 		return var;
@@ -703,11 +707,24 @@ public class CompletionParser extends Parser {
 		Expression callExp = super.newCallExp(loc, e, expressions);
 		
 		if (expressions != null) {
-			for (int i = 0; i < expressions.size(); i++) {
-				Expression exp = expressions.get(i);
-				if (isMatch(exp)) {
-					expectedTypeNode = callExp;
-					expectedArgumentIndex = i;
+			if (expressions.isEmpty()) {
+				if (e.start + e.length <= cursorLocation && cursorLocation <= token.ptr
+						&& prevToken.value == TOK.TOKrparen) {
+					assistNode = new CompletionOnCallExp(loc, e, expressions);
+					return (Expression) assistNode;
+				}
+			} else {
+				for (int i = 0; i < expressions.size(); i++) {
+					Expression exp = expressions.get(i);
+					if (isMatch(exp)) {
+						expectedTypeNode = callExp;
+						expectedArgumentIndex = i;
+						
+						if (cursorLocation == exp.start) {
+							assistNode = new CompletionOnCallExp(loc, e, expressions);
+							return (Expression) assistNode;
+						}
+					}
 				}
 			}
 		}
@@ -742,11 +759,25 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (arguments != null) {
-			for (int i = 0; i < arguments.size(); i++) {
-				Expression exp = arguments.get(i);
-				if (isMatch(exp)) {
-					expectedTypeNode = newExp;
-					expectedArgumentIndex = i + newArgsSize;
+			if (arguments.isEmpty()) {
+				if (((thisexp != null && thisexp.start + thisexp.length <= cursorLocation) || 
+					(t != null && t.start + t.length <= cursorLocation)) && cursorLocation <= token.ptr
+						&& prevToken.value == TOK.TOKrparen) {
+					assistNode = new CompletionOnNewExp(loc, thisexp, newargs, t, arguments);
+					return (Expression) assistNode;
+				}
+			} else {
+				for (int i = 0; i < arguments.size(); i++) {
+					Expression exp = arguments.get(i);
+					if (isMatch(exp)) {
+						expectedTypeNode = newExp;
+						expectedArgumentIndex = i + newArgsSize;
+						
+						if (cursorLocation == exp.start) {
+							assistNode = new CompletionOnNewExp(loc, thisexp, newargs, t, arguments);
+							return (Expression) assistNode;
+						}
+					}
 				}
 			}
 		}

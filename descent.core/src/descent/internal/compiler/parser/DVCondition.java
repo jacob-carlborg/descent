@@ -14,6 +14,10 @@ public abstract class DVCondition extends Condition {
 		this.mod = mod;
 		this.level = level;
 		this.ident = id;
+		
+		if (mod == null) {
+			System.out.println(this);
+		}
 	}
 	
 	@Override

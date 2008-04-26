@@ -267,12 +267,12 @@ public class SearchableEnvironment
 				}
 			};
 			IRestrictedAccessTypeRequestor typeRequestor = new IRestrictedAccessTypeRequestor() {
-				public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+				public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))
 						return;
 					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
 						return; // accept only top level types
-					storage.acceptType(packageName, simpleTypeName, enclosingTypeNames, modifiers, access);
+					storage.acceptType(packageName, simpleTypeName, enclosingTypeNames, modifiers, declarationStart, access);
 				}
 			};
 			try {
@@ -460,12 +460,12 @@ public class SearchableEnvironment
 				}
 			};
 			IRestrictedAccessDeclarationRequestor typeRequestor = new IRestrictedAccessDeclarationRequestor() {
-				public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+				public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))
 						return;
 					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
 						return; // accept only top level types
-					storage.acceptType(packageName, simpleTypeName, enclosingTypeNames, modifiers, access);
+					storage.acceptType(packageName, simpleTypeName, enclosingTypeNames, modifiers, declarationStart, access);
 				}
 				public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))
@@ -474,12 +474,12 @@ public class SearchableEnvironment
 						return; // accept only top level types
 					storage.acceptField(packageName, name, typeName, enclosingTypeNames, modifiers, access);
 				}
-				public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, String path, AccessRestriction access) {
+				public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, String path, int declarationStart, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))
 						return;
 					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
 						return; // accept only top level types
-					storage.acceptMethod(packageName, name, enclosingTypeNames, signature, modifiers, access);
+					storage.acceptMethod(packageName, name, enclosingTypeNames, signature, modifiers, declarationStart, access);
 				}
 			};
 			try {

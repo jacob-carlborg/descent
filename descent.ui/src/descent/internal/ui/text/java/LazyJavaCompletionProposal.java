@@ -244,7 +244,7 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	/*
 	 * @see ICompletionProposalExtension#getContextInformationPosition()
 	 */
-	public final int getContextInformationPosition() {
+	public int getContextInformationPosition() {
 		if (getContextInformation() == null)
 			return getReplacementOffset() - 1;
 		return getReplacementOffset() + getCursorPosition();

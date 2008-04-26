@@ -109,11 +109,16 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		
 		if (!hasParameters() || !hasArgumentList()) {
 			setCursorPosition(replacement.length() + (isVariadic() ? 1 : 2));
-			return replacement + "()"; //$NON-NLS-1$
+			if (replacement.length() > 0) {
+				return replacement + "()"; //$NON-NLS-1$
+			} else {
+				return replacement;
+			}
 		}
 		
 		char[][] parameterNames= fProposal.findParameterNames(null);
 		if (parameterNames == null) {
+			System.out.println(1);
 			return replacement + "()"; //$NON-NLS-1$
 		}
 		
@@ -289,15 +294,15 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			int baseOffset= getReplacementOffset();
 			String replacement= getReplacementString();
 
-			int offestAdded = 0;
+			int offsetAdded = 0;
 			
 			if (fImportRewrite != null && fImportRewrite.hasRecordedChanges()) {
 				int oldLen= document.getLength();
 				fImportRewrite.rewriteImports(new NullProgressMonitor()).apply(document, TextEdit.UPDATE_REGIONS);
 				
-				offestAdded = document.getLength() - oldLen;
-				setReplacementOffset(getReplacementOffset() + offestAdded);
-				setCursorPosition(getCursorPosition() + offestAdded);
+				offsetAdded = document.getLength() - oldLen;
+				setReplacementOffset(getReplacementOffset() + offsetAdded);
+				setCursorPosition(getCursorPosition() + offsetAdded);
 			}
 			
 			if (fArgumentOffsets != null && getTextViewer() != null && !isGetter()) {
@@ -305,7 +310,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 					LinkedModeModel model= new LinkedModeModel();
 					for (int i= 0; i != fArgumentOffsets.length; i++) {
 						LinkedPositionGroup group= new LinkedPositionGroup();
-						group.addPosition(new LinkedPosition(document, baseOffset + fArgumentOffsets[i] + offestAdded, fArgumentLengths[i], LinkedPositionGroup.NO_STOP));
+						group.addPosition(new LinkedPosition(document, baseOffset + fArgumentOffsets[i] + offsetAdded, fArgumentLengths[i], LinkedPositionGroup.NO_STOP));
 						model.addGroup(group);
 					}
 
@@ -330,7 +335,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				}
 			} else {
 				// Before the last )
-				fSelectedRegion= new Region(baseOffset + replacement.length() + offestAdded - (isVariadic() ? 1 : 0), 0);
+				fSelectedRegion= new Region(baseOffset + replacement.length() + offsetAdded - (isVariadic() ? 1 : 0), 0);
 			}
 			
 			//rememberSelection();
@@ -647,6 +652,11 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			return new Point(getReplacementOffset(), 0);
 
 		return new Point(fSelectedRegion.getOffset(), fSelectedRegion.getLength());
+	}
+	
+	@Override
+	public int getContextInformationPosition() {
+		return getReplacementOffset();
 	}
 	
 }

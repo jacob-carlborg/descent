@@ -216,7 +216,10 @@ public class JavaCompletionProposalComputer implements IJavaCompletionProposalCo
 				if (javaProposals[i] instanceof JavaMethodCompletionProposal) {
 					JavaMethodCompletionProposal jmcp= (JavaMethodCompletionProposal) javaProposals[i];
 					jmcp.setContextInformationPosition(contextInformationOffset);
-				}
+				} else if (javaProposals[i] instanceof LazyJavaMethodCompletionProposal) {
+					LazyJavaMethodCompletionProposal jmcp= (LazyJavaMethodCompletionProposal) javaProposals[i];
+					jmcp.setContextInformationPosition(contextInformationOffset);
+				} 
 			}
 		}
 		

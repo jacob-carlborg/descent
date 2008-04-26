@@ -49,6 +49,7 @@ boolean methodParameters = false;
 char[][] methodArguments;
 
 public char[] signature;
+public int declarationStart;
 
 protected static char[][] REF_CATEGORIES = { METHOD_REF };
 protected static char[][] REF_AND_DECL_CATEGORIES = { METHOD_REF, METHOD_DECL };
@@ -59,14 +60,17 @@ protected static char[][] DECL_CATEGORIES = { METHOD_DECL };
  * e.g. 'foo/0'
  */
 /*
- * selector / packageName / signature / enclosingTypeName / modifiers / arity
+ * selector / packageName / signature / declarationStart / enclosingTypeName / modifiers / argCount  
  */
-public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] selector, char[] signature, int argCount) {
+public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] selector, char[] signature, int argCount, int declarationStart) {
 	char[] countChars = argCount < 10
 		? COUNTS[argCount]
 		: ("/" + String.valueOf(argCount)).toCharArray();
 		
 	int countCharsLength = countChars.length;
+	
+	char[] declarationStartChars = String.valueOf(declarationStart).toCharArray();
+	int declarationStartLength = declarationStartChars.length;
 	
 	int selectorLength = selector == null ? 0 : selector.length;
 	int packageLength = packageName == null ? 0 : packageName.length;
@@ -80,7 +84,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 		}
 	}
 
-	int resultLength = selectorLength + packageLength + signatureLength + enclosingNamesLength + countCharsLength + 6;
+	int resultLength = selectorLength + packageLength + signatureLength + enclosingNamesLength + declarationStartLength + countCharsLength + 7;
 	char[] result = new char[resultLength];
 	int pos = 0;
 	if (selectorLength > 0) {
@@ -98,6 +102,10 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 		pos += signatureLength;
 	}
 	result[pos++] = SEPARATOR;
+	System.arraycopy(declarationStartChars, 0, result, pos, declarationStartLength);
+	pos += declarationStartLength;
+	
+	result[pos++] = SEPARATOR;
 	if (enclosingTypeNames != null && enclosingNamesLength > 0) {
 		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
 			char[] enclosingName = enclosingTypeNames[i];
@@ -108,6 +116,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 				result[pos++] = '.';
 		}
 	}
+	
 	result[pos++] = SEPARATOR;
 	result[pos++] = (char) modifiers;
 	result[pos++] = (char) (modifiers>>16);
@@ -116,6 +125,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 	}
 	return result;
 }
+// selector / packageName / signature / declarationStart / enclosingTypeName / modifiers / argCount
 public void decodeIndexKey(char[] key) {
 	int slash = CharOperation.indexOf(SEPARATOR, key, 0);
 	this.selector = CharOperation.subarray(key, 0, slash);
@@ -134,6 +144,15 @@ public void decodeIndexKey(char[] key) {
 	} else {
 		slash = CharOperation.indexOf(SEPARATOR, key, start);
 		this.signature = CharOperation.subarray(key, start, slash);
+	}
+	
+	start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.declarationStart = -1;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		// TODO optimize this
+		this.declarationStart = Integer.parseInt(new String(CharOperation.subarray(key, start, slash)));
 	}
 	
 	// Continue key read by the end to decode arity

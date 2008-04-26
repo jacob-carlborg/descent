@@ -855,10 +855,10 @@ public class FuncDeclaration extends Declaration {
 			// Find index of existing function in vtbl[] to override
 			if (cd.baseClass != null) {
 				for (vi = 0; vi < cd.baseClass.vtbl.size() && !gotoL1; vi++) {
-					try {
-						cd.vtbl.get(vi);
-					} catch (Exception e) {
-						System.out.println(e);
+					// Descent workarround
+					// TODO fix this
+					if (vi >= cd.vtbl.size()) {
+						break;
 					}
 					
 					FuncDeclaration fdv = ((Dsymbol) cd.vtbl.get(vi))

@@ -130,9 +130,9 @@ public class SemanticMixin {
 			}
 			
 			if (aThis instanceof TemplateDeclaration) {
-				TemplateDeclaration temp = (TemplateDeclaration) aThis;
-				Dsymbol dsymbol = temp.members.get(0);
-				if (temp.wrapper && dsymbol instanceof FuncDeclaration) {
+				TemplateDeclaration temp = (TemplateDeclaration) aThis;				
+				if (temp.wrapper && temp.members.size() == 1 && temp.members.get(0) instanceof FuncDeclaration) {
+					Dsymbol dsymbol = temp.members.get(0);
 					dsymbol.consumeRestStructure();
 					dsymbol.consumeRest();
 					dsymbol.type().appendSignature(sb);
