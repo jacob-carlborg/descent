@@ -1,5 +1,7 @@
 package descent.internal.codeassist.complete;
 
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
@@ -34,6 +36,13 @@ public class CompletionOnTypeIdentifier extends TypeIdentifier {
 		this.scope = ScopeCopy.copy(sc, context);
 		
 		return type;
+	}
+	
+	@Override
+	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+		super.resolve(loc, sc, pe, pt, ps, context);
+		
+		this.scope = ScopeCopy.copy(sc, context);
 	}
 
 }

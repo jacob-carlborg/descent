@@ -255,6 +255,7 @@ public class CompletionEngine extends Engine
 	boolean wantConstructorsAndOpCall = true;
 	boolean wantProperties = true;
 	boolean wantMethodContextInfo = false;
+	boolean wantKeywords = true;
 	
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
@@ -409,6 +410,8 @@ public class CompletionEngine extends Engine
 				} else if (assistNode instanceof CompletionOnCaseStatement) {
 					CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
 					completeCaseStatement(node);
+					
+					wantKeywords = false;
 				} else if (assistNode instanceof CompletionOnTypeDotIdExp) {
 					CompletionOnTypeDotIdExp node = (CompletionOnTypeDotIdExp) assistNode;
 					completeTypeDotIdExp(node);
@@ -449,6 +452,7 @@ public class CompletionEngine extends Engine
 			
 			// Then the keywords
 			if (!wantMethodContextInfo &&
+					wantKeywords &&
 					parser.getKeywordCompletions() != null && 
 					!requestor.isIgnored(CompletionProposal.KEYWORD)) {
 				
@@ -987,7 +991,20 @@ public class CompletionEngine extends Engine
 			
 			Scope scope = node.scope;
 			
-			completeScope(scope, INCLUDE_TYPES | INCLUDE_IMPORTS);
+			// Inside a function, this may be the case of:
+			// Object something;
+			//
+			// somet --> request autocompletion
+			//
+			// something = ...;
+			//
+			// The parser thinks it's: somet something (a var declaration with type "somet"),
+			// so inside a function we want other things beside types
+			if (scope != null && scope.func != null) {
+				isCompletingTypeIdentifier = false;
+			}
+			
+			completeScope(scope, INCLUDE_ALL);
 			
 			// Also suggest packages
 			isCompletingPackage = true;
@@ -1046,13 +1063,6 @@ public class CompletionEngine extends Engine
 		} else if (sym instanceof StructDeclaration) {
 			suggestMembers(((StructDeclaration) sym).members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 		}
-		
-//		if (sym instanceof ClassDeclaration || sym instanceof StructDeclaration) {
-//			ScopeDsymbol cd = (ScopeDsymbol) sym;
-//			if (cd.members != null && !cd.members.isEmpty()) {
-//				suggestMembers(cd.members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL);
-//			}
-//		}
 	}
 	
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
@@ -1107,9 +1117,7 @@ public class CompletionEngine extends Engine
 				currentName = sym.ident.ident;
 			}
 			
-//			isCompletingTypeIdentifier = true;
 			trySuggestCall(type, currentName, CharOperation.NO_CHAR, true /* only statics */);
-//			isCompletingTypeIdentifier = false;
 		} else if (node.exp instanceof CallExp) {
 			CallExp ce = (CallExp) node.exp;
 			if (ce.e1 instanceof IdentifierExp) {
@@ -1122,15 +1130,12 @@ public class CompletionEngine extends Engine
 			}
 		} else if (node.exp instanceof VarExp) {
 			Declaration var = ((VarExp) node.exp).var;
-//			Type type = var.type();
 			
 			// Need to set correct location of IdentifierExp
 			IdentifierExp ident = new IdentifierExp(var.ident.ident);
 			ident.copySourceRange(node);
 			
 			currentName = computePrefixAndSourceRange(ident);
-			
-//			completeType(type, ident, false);
 		} else if (node.exp instanceof TemplateExp) {
 			TemplateDeclaration td = ((TemplateExp) node.exp).td;
 			
@@ -1195,7 +1200,7 @@ public class CompletionEngine extends Engine
 				VarExp var = (VarExp) node.e1;
 				if (var.var instanceof FuncDeclaration) {
 					wantMethodContextInfo = true;
-					suggestMember(var.var, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_FUNCTIONS);
+					suggestMember(var.var, false, 0, null, INCLUDE_FUNCTIONS);
 				}
 			} else if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
 				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
@@ -1217,7 +1222,7 @@ public class CompletionEngine extends Engine
 			endPosition = actualCompletionPosition;
 			
 			wantMethodContextInfo = true;
-			suggestMember(node.member, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_CONSTRUCTORS);
+			suggestMember(node.member, false, 0, null, INCLUDE_CONSTRUCTORS);
 		}
 	}
 
@@ -1348,19 +1353,6 @@ public class CompletionEngine extends Engine
 		 return scope.scopesym.members.get(0);
 		}
 	}
-
-	private void suggestDsymbol(Dsymbol dsymbol, int includes) {
-		if (dsymbol instanceof Import) {
-//			IModule mod = ((Import) dsymbol).mod;
-//			if (mod != null) {
-//				suggestMembers(mod.members(), false, new HashtableOfCharArrayAndObject(0), includes);
-//			}
-		} else {
-			suggestMember(dsymbol, false, 0, new HashtableOfCharArrayAndObject(0), includes);
-		}
-	}
-
-
 	private void completeExpression(Expression e1, IdentifierExp ident) throws JavaModelException {
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
@@ -1651,9 +1643,7 @@ public class CompletionEngine extends Engine
 		
 		// Keep a hashtable of already used signatures, in order to avoid
 		// suggesting overriden functions
-		HashtableOfCharArrayAndObject funcSignatures = new HashtableOfCharArrayAndObject();
-		
-		completeTypeClassRecursively(type, onlyStatics, funcSignatures);
+		completeTypeClassRecursively(type, onlyStatics, new HashtableOfCharArrayAndObject());
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
@@ -1706,7 +1696,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Suggest enum members
-		completeEnumMembers(enumDeclaration, new HashtableOfCharArrayAndObject(), false /* don't use fqn */);
+		completeEnumMembers(enumDeclaration, null, false /* don't use fqn */);
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
@@ -1730,6 +1720,10 @@ public class CompletionEngine extends Engine
 		for(int i = 0; i < length; i++) {
 			suggestMember(members.get(i), onlyStatics, flags, funcSignatures, includes);
 		}
+	}
+	
+	private void suggestDsymbol(Dsymbol dsymbol, int includes) {
+		suggestMember(dsymbol, false, 0, null, includes);
 	}
 	
 	/*
@@ -1770,7 +1764,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Skip template instances!
-		if (member instanceof TemplateInstance) {
+		if (member instanceof TemplateInstance && !(member instanceof TemplateMixin)) {
 			return;
 		}
 		
@@ -1781,6 +1775,10 @@ public class CompletionEngine extends Engine
 	 * Suggest a member with another name (for aliases).
 	 */
 	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		suggestMember(member, ident, onlyStatics, flags, funcSignatures, includes, false);
+	}
+	
+	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes, boolean isAliased) {
 		// The member may not have it's semantic pass done
 		member.consumeRestStructure();
 		member.consumeRest();
@@ -1867,7 +1865,7 @@ public class CompletionEngine extends Engine
 		if (alias != null) {
 			Dsymbol sym = alias.toAlias(semanticContext);
 			if (sym != null && sym != alias) {
-				suggestMember(sym, ident, false /* not only statics, check passed */, flags, funcSignatures, includes);
+				suggestMember(sym, ident, false /* not only statics, check passed */, flags, funcSignatures, includes, true);
 				
 				// Find overloads! :-)
 				while(sym instanceof FuncDeclaration) {
@@ -1880,7 +1878,7 @@ public class CompletionEngine extends Engine
 					}
 					sym = funcDecl;
 				}
-				return;
+//				return;
 			}
 		}
 		
@@ -1916,6 +1914,7 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | var.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					proposal.isAlias = isAliased;
 					CompletionEngine.this.requestor.accept(proposal);
 					
 					if (CharOperation.equals(this.currentName, var.ident.ident)) {
@@ -1931,7 +1930,7 @@ public class CompletionEngine extends Engine
 				int relevance = computeBaseRelevance();
 				relevance += computeRelevanceForInterestingProposal();
 				relevance += computeRelevanceForCaseMatching(currentName, ident);
-				relevance += R_ENUM_CONSTANT;
+				relevance += R_VAR;
 				
 				CompletionProposal proposal = this.createProposal(CompletionProposal.ENUM_MEMBER, this.actualCompletionPosition, member);
 				proposal.setName(ident);
@@ -1940,6 +1939,7 @@ public class CompletionEngine extends Engine
 				proposal.setFlags(flags | member.getFlags());		
 				proposal.setRelevance(relevance);
 				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				proposal.isAlias = isAliased;
 				CompletionEngine.this.requestor.accept(proposal);
 			}
 			return;
@@ -2007,6 +2007,7 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | alias.getFlags() | Flags.AccAlias);
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					proposal.isAlias = isAliased;
 					CompletionEngine.this.requestor.accept(proposal);
 				}
 				return;
@@ -2034,6 +2035,7 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | typedef.getFlags() | Flags.AccTypedef);
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					proposal.isAlias = isAliased;
 					CompletionEngine.this.requestor.accept(proposal);
 				}
 				return;
@@ -2072,6 +2074,7 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					proposal.isAlias = isAliased;
 					CompletionEngine.this.requestor.accept(proposal);
 					
 //					trySuggestCall(member.type(), ident, sigChars, true /* only statics */);
@@ -2080,7 +2083,7 @@ public class CompletionEngine extends Engine
 					if (expectedType != null && expectedType instanceof TypeEnum 
 							&& member instanceof EnumDeclaration &&
 							expectedType.same(member.getType())) {
-						completeEnumMembers((EnumDeclaration) member, new HashtableOfCharArrayAndObject(), true);
+						completeEnumMembers((EnumDeclaration) member, null, true);
 					}
 				}
 			}
@@ -2114,6 +2117,7 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					proposal.isAlias = isAliased;
 					CompletionEngine.this.requestor.accept(proposal);
 				}
 			}
@@ -2200,6 +2204,7 @@ public class CompletionEngine extends Engine
 					proposal.setFlags(flags | func.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+					proposal.isAlias = isAliased;
 					if (func.parent != null) {
 						String parentSignature = func.parent.getSignature();
 						if (parentSignature != null) {
@@ -2385,7 +2390,7 @@ public class CompletionEngine extends Engine
 			} else {
 				proposition = member.ident.ident;
 			}
-			if (!excludedNames.containsKey(proposition) && (
+			if (!(excludedNames != null && excludedNames.containsKey(proposition)) && (
 					currentName.length == 0 || 
 					match(currentName, proposition) || 
 					match(currentName, member.ident.ident)

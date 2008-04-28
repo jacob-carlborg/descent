@@ -86,8 +86,13 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	}
 	
 	public final String getQualifiedTypeName() {
-		if (fQualifiedName == null)
-			fQualifiedName= String.valueOf(fProposal.getCompletion());
+		if (fQualifiedName == null) {
+			if (fProposal.isAlias()) {
+				fQualifiedName = new String(fProposal.getName());
+			} else {
+				fQualifiedName= String.valueOf(fProposal.getCompletion());
+			}
+		}
 		return fQualifiedName;
 	}
 	

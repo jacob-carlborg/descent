@@ -22,6 +22,7 @@ public class ScopeCopy {
 	public static Scope copy(Scope a, SemanticContext context) {
 		Scope b = new Scope(context);
 		b.scopesym = new ScopeDsymbol();
+		b.func = a.func;
 		
 		if (b.scopesym != null) {
 			Dsymbols dsymbols = new Dsymbols();

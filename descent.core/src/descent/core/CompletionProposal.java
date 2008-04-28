@@ -1987,6 +1987,10 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return this.isConstructor;
 	}
 	
+	public boolean isAlias() {
+		return isAlias;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();

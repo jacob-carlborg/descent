@@ -283,6 +283,18 @@ public class JavaElementLabels {
 	public final static long T_CATEGORY= 1L << 51;
 	
 	/**
+	 * Type names contain the kind (class, struct, template, etc.).
+	 * e.g. <code>Map&lt;S, T&gt;</code>
+	 */
+	public final static long T_KIND= 1L << 52;
+	
+	/**
+	 * Field names contain the kind (variable, alias, typedef).
+	 * e.g. <code>Map&lt;S, T&gt;</code>
+	 */
+	public final static long F_KIND= 1L << 53;
+	
+	/**
 	 * Show category for all elements.
 	 * @since 3.2
 	 */
@@ -702,6 +714,20 @@ public class JavaElementLabels {
 	public static void getFieldLabel(IField field, long flags, StringBuffer buf) {
 		try {
 			
+			if (getFlag(flags, F_KIND)) {
+				if (field.isAlias()) {
+					buf.append("alias "); //$NON-NLS-1$
+				} else if (field.isEnumConstant()) {
+					buf.append("enum constant "); //$NON-NLS-1$
+				} else if (field.isTemplateMixin()) {
+					buf.append("template mixin "); //$NON-NLS-1$
+				} else if (field.isTypedef()) {
+					buf.append("typedef "); //$NON-NLS-1$
+				} else if (field.isVariable()) {
+					buf.append("variable "); //$NON-NLS-1$
+				}
+			}
+			
 			if (getFlag(flags, F_PRE_TYPE_SIGNATURE) && field.exists() && !Flags.isEnum(field.getFlags())) {
 				if (getFlag(flags, USE_RESOLVED) && field.isResolved()) {
 					getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
@@ -954,6 +980,26 @@ public class JavaElementLabels {
 	 * @param buf The buffer to append the resulting label to.
 	 */		
 	public static void getTypeLabel(IType type, long flags, StringBuffer buf) {
+		
+		if (getFlag(flags, T_KIND)) {
+			try {
+				if (type.isClass()) {
+					buf.append("class "); //$NON-NLS-1$
+				} else if (type.isInterface()) {
+					buf.append("interface "); //$NON-NLS-1$
+				} else if (type.isUnion()) {
+					buf.append("union "); //$NON-NLS-1$
+				} else if (type.isStruct()) {
+					buf.append("struct "); //$NON-NLS-1$
+				} else if (type.isTemplate()) {
+					buf.append("template "); //$NON-NLS-1$
+				} else if (type.isEnum()) {
+					buf.append("enum "); //$NON-NLS-1$
+				}
+			} catch (JavaModelException e) {
+				
+			}
+		}
 		
 		if (getFlag(flags, T_FULLY_QUALIFIED)) {
 			ICompilationUnit unit = type.getCompilationUnit();

@@ -11,22 +11,22 @@ public class Catch extends ASTDmdNode {
 	public Type type, sourceType;
 	public IdentifierExp ident;
 	public VarDeclaration var;
-	public Statement handler;
+	public Statement handler, sourceHandler;
 
 	public Catch(Loc loc, Type type, IdentifierExp id, Statement handler) {
 		this.loc = loc;
 		this.type = sourceType = type;
 		this.ident = id;
-		this.handler = handler;
+		this.handler = sourceHandler = handler;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, handler);
+			TreeVisitor.acceptChildren(visitor, sourceHandler);
 		}
 		visitor.endVisit(this);
 	}

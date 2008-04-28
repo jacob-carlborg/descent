@@ -52,6 +52,7 @@ public class InternalCompletionProposal {
 	
 	protected ASTDmdNode node;
 	protected int declarationStart = -1;
+	protected boolean isAlias; // Whether the proposal is an alias for another symbol
 	
 	protected char[][] createDefaultParameterNames(int length) {
 		char[][] parameterNames;

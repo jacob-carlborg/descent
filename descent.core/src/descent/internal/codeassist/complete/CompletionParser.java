@@ -863,7 +863,7 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (second == assistNode ||
-				(second.start <= cursorLocation && cursorLocation <= second.start + second.length) ||
+				(second != null && second.start <= cursorLocation && cursorLocation <= second.start + second.length) ||
 				(first != null && second != null && first.start + first.length <= cursorLocation && cursorLocation <= second.start) ||
 				second == targetNew) {
 			return true;
