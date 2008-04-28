@@ -6101,7 +6101,11 @@ public class Parser extends Lexer {
 			default:
 				return e;
 			}
-			nextToken();
+			
+			// This if is for Descent, for improved statement recovery
+			if (token.value != TOK.TOKrcurly) {
+				nextToken();
+			}
 	    }
 	}
 
