@@ -167,8 +167,7 @@ public class JavaParameterListValidator implements IContextInformationValidator,
 									nestingMode= NONE;
 						}
 						break;
-					} 
-					break;
+					}
 				case '{':
 					if (considerNesting) {
 						if (nestingMode == ANGLE) {
@@ -242,7 +241,7 @@ public class JavaParameterListValidator implements IContextInformationValidator,
 			if (position < line.getOffset() || position >= document.getLength())
 				return false;
 
-			return getCharCount(document, fPosition, position, "(<", ")>", false) >= 0; //$NON-NLS-1$ //$NON-NLS-2$
+			return getCharCount(document, fPosition, position, "(", ")", false) >= 0; //$NON-NLS-1$ //$NON-NLS-2$
 
 		} catch (BadLocationException x) {
 			return false;

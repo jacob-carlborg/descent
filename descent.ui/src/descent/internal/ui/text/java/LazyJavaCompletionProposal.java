@@ -35,6 +35,7 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	protected static final String COMMA= ","; //$NON-NLS-1$
 	protected static final String SPACE= " "; //$NON-NLS-1$
 	protected static final String ASSIGN= "="; //$NON-NLS-1$
+	protected static final String EXCL= "!"; //$NON-NLS-1$
 	
 	protected static final class FormatterPrefs {
 		/* Methods & constructors */
@@ -42,9 +43,9 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 		public final boolean afterOpeningParen;
 		public final boolean beforeAssignmentOperator;
 		public final boolean afterAssignmentOperator;
-		public final boolean beforeComma;
-		public final boolean afterComma;
-		public final boolean beforeClosingParen;
+		public final boolean beforeFunctionComma;
+		public final boolean afterFunctionComma;
+		public final boolean beforeFunctionClosingParen;
 		public final boolean inEmptyList;
 		
 		/* type parameters */
@@ -59,11 +60,11 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 		FormatterPrefs(IJavaProject project) {
 			beforeOpeningParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION, false);
 			afterOpeningParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, false);
-			beforeComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, false);
-			afterComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, true);
+			beforeFunctionComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, false);
+			afterFunctionComma= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, true);
 			beforeAssignmentOperator= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASSIGNMENT_OPERATOR, true);
 			afterAssignmentOperator= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_ASSIGNMENT_OPERATOR, true);
-			beforeClosingParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, false);
+			beforeFunctionClosingParen= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, false);
 			inEmptyList= getCoreOption(project, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, false);
 			
 			beforeOpeningBracket= false;

@@ -16,6 +16,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 
 import descent.core.CompletionProposal;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
 import descent.core.Signature;
 import descent.internal.ui.JavaPlugin;
 import descent.ui.PreferenceConstants;
@@ -32,7 +33,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	
 	private boolean fHasParameters;
 	private boolean fHasParametersComputed= false;
-	private boolean fIsVariadic;
+	private int fIsVariadic;
 	private boolean fIsVariadicComputed= false;
 	private boolean fIsSetter;
 	private boolean fIsSetterComputed= false;
@@ -112,10 +113,10 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		return fHasParameters;
 	}
 	
-	protected final boolean isVariadic() {
+	protected final int getVariadic() {
 		if (!fIsVariadicComputed) {
 			fIsVariadicComputed= true;
-			fIsVariadic= computeIsVariadic();
+			fIsVariadic= computeGetVariadic();
 		}
 		return fIsVariadic;
 	}
@@ -140,8 +141,8 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		return Signature.getParameterCount(fProposal.getTypeSignature()) > 0;
 	}
 	
-	protected boolean computeIsVariadic() throws IllegalArgumentException {
-		return Signature.isVariadic(fProposal.getTypeSignature());
+	protected int computeGetVariadic() throws IllegalArgumentException {
+		return Signature.getVariadic(fProposal.getTypeSignature());
 	}
 	
 	protected boolean computeIsSetter() throws IllegalArgumentException {
@@ -225,7 +226,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	//			if (prefs.beforeClosingParen)
 	//				buffer.append(SPACE);
 			} else {
-				if (isVariadic()) {
+				if (getVariadic() != IMethod.VARARGS_NO) {
 					setCursorPosition(buffer.length());
 				}
 				

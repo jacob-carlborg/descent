@@ -148,24 +148,24 @@ public class Signature_Test extends AbstractSignatureTest implements ISignatureC
 	}
 	
 	protected void varTrue(String signature) {
-		assertTrue(Signature.isVariadic(signature));
-		assertTrue(Signature.isVariadic(signature.toCharArray()));
+		assertTrue(Signature.getVariadic(signature) != 0);
+		assertTrue(Signature.getVariadic(signature.toCharArray()) != 0);
 	}
 	
 	protected void varFalse(String signature) {
-		assertFalse(Signature.isVariadic(signature.toCharArray()));
+		assertFalse(Signature.getVariadic(signature.toCharArray()) != 0);
 	}
 	
 	protected void varFail(String signature) {
 		try {
-			Signature.isVariadic(signature);
+			Signature.getVariadic(signature);
 			fail("Expected IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			
 		}
 		
 		try {
-			Signature.isVariadic(signature.toCharArray());
+			Signature.getVariadic(signature.toCharArray());
 			fail("Expected IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			

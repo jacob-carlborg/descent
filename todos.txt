@@ -6,3 +6,5 @@
  - Write test for autocompletion like foo[0]. |
  - Suggest templates after mixin |
  - Write test for suggest member of anon enum
+ - Autocomplete tempnam
+ - templateFoo!(T, U, V)( --> here crash when autocomplete <-- x, y)

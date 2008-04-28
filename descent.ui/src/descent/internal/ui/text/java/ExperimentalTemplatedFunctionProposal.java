@@ -122,10 +122,10 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 		
 		for (int i= 0; i != tempCount; i++) {
 			if (i != 0) {
-				if (prefs.beforeComma)
+				if (prefs.beforeFunctionComma)
 					buffer.append(SPACE);
 				buffer.append(COMMA);
-				if (prefs.afterComma)
+				if (prefs.afterFunctionComma)
 					buffer.append(SPACE);
 			}
 			
@@ -134,7 +134,7 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 			fTempArgumentLengths[i]= tempParameterNames[i].length;
 		}
 		
-		if (prefs.beforeClosingParen)
+		if (prefs.beforeFunctionClosingParen)
 			buffer.append(SPACE);
 
 		buffer.append(RPAREN);
@@ -150,10 +150,10 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 		
 		for (int i= 0; i != count; i++) {
 			if (i != 0) {
-				if (prefs.beforeComma)
+				if (prefs.beforeFunctionComma)
 					buffer.append(SPACE);
 				buffer.append(COMMA);
-				if (prefs.afterComma)
+				if (prefs.afterFunctionComma)
 					buffer.append(SPACE);
 			}
 			

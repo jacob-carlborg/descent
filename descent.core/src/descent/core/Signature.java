@@ -1303,8 +1303,10 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 			}
 			@Override
 			public void acceptAssociativeArray(String signature) {
-				parameters.remove(parameters.size() - 1);
-				replace(signature);
+				if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+					parameters.remove(parameters.size() - 1);
+					replace(signature);
+				}
 			}
 			@Override
 			public void acceptTypeof(char[] expression, String signature) {
@@ -1900,24 +1902,17 @@ public static String toString(String signature, final boolean fqn) throws Illega
 
 /**
  * Determines if the given function type or delegate type signature is variadic.
- * @param signature a function type or delegate type signature
- * @return <code>true</code> if the signature is variadic, <code>false</code> otherwise
- * @throws IllegalArgumentException if the signature is malformed, or is not a function
- * type or delegate type signature
  */
-public static boolean isVariadic(char[] signature) throws IllegalArgumentException {
-	return isVariadic(new String(signature));
+public static int getVariadic(char[] signature) throws IllegalArgumentException {
+	return getVariadic(new String(signature));
 }
 
 /**
  * Determines if the given function type or delegate type signature is variadic. The
  * signature may be fully qualified.
- * @param signature a function type or delegate type signature
- * @return <code>true</code> if the signature is variadic, <code>false</code> otherwise
- * @throws IllegalArgumentException if the signature is malformed
  */
-public static boolean isVariadic(String signature) throws IllegalArgumentException {
-	final boolean[] variadic = { false };
+public static int getVariadic(String signature) throws IllegalArgumentException {
+	final int[] variadic = { 0 };
 	final boolean[] valid = { false };
 	
 	SignatureProcessor.process(signature, false /* dont't want sub-signatures */, 
@@ -1926,9 +1921,16 @@ public static boolean isVariadic(String signature) throws IllegalArgumentExcepti
 			@Override
 			public void acceptArgumentBreak(char c) {
 				if (functionCount == 1) {
-					variadic[0] = 
-						c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC ||
-						c == ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC2;
+					switch(c) {
+					case ISignatureConstants.FUNCTION_PARAMETERS_BREAK:
+						break;
+					case ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC:
+						variadic[0] = IMethod.VARARGS_UNDEFINED_TYPES;
+						break;
+					case ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC2:
+						variadic[0] = IMethod.VARARGS_SAME_TYPES;
+						break;
+					}
 				}
 			}
 			@Override

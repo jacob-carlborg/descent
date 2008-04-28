@@ -24,6 +24,7 @@ import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.Signature;
+import descent.core.compiler.CharOperation;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.rewrite.ImportRewrite;
 import descent.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
@@ -62,8 +63,34 @@ public class LazyJavaTypeCompletionProposal extends LazyJavaCompletionProposal {
 			if (fProposal.isAlias()) {
 				fQualifiedName = new String(fProposal.getName());
 			} else {
-				fQualifiedName= String.valueOf(Signature.toCharArray(fProposal.getSignature(),
+				char[] sig = fProposal.getSignature();
+				
+				// Remove template parameters
+				int firstIndex = -1;
+				
+				for (int i = sig.length - 1; i >= 0; i--) {
+					char c = sig[i];
+					switch(c) {
+					case Signature.C_TEMPLATE_ALIAS_PARAMETER:
+					case Signature.C_TEMPLATE_TUPLE_PARAMETER:
+					case Signature.C_TEMPLATE_TYPE_PARAMETER:
+					case Signature.C_TEMPLATE_VALUE_PARAMETER:
+						firstIndex = i;
+						break;
+					}
+				}
+				
+				if (firstIndex != -1) {
+					sig = CharOperation.append(CharOperation.subarray(sig, 0, firstIndex), Signature.C_TEMPLATE_PARAMETERS_BREAK);
+				}
+				
+				fQualifiedName= String.valueOf(Signature.toCharArray(sig,
 						true /* don't fully qualify names */));
+				
+				if (firstIndex != -1) {
+					// Remove !()
+					fQualifiedName = fQualifiedName.substring(0, fQualifiedName.length() - 3);
+				}
 			}
 		return fQualifiedName;
 	}

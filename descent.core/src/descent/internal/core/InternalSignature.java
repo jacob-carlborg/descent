@@ -446,6 +446,11 @@ public class InternalSignature implements ISignatureConstants {
 			return null;
 		}
 		
+		if (start == end && child instanceof ISourceReference 
+				&& ((ISourceReference) child).getSourceRange().getOffset() == start) {
+			return child;
+		}
+		
 		if (child instanceof IParent) {
 			IParent childAsParent = (IParent) child;
 			if (childAsParent.hasChildren()) {
@@ -479,7 +484,12 @@ public class InternalSignature implements ISignatureConstants {
 			} else {
 				if (range.getOffset() <= start
 						&& end <= range.getOffset() + range.getLength()) {
-					return a[mid]; // key found	
+					// It might be that the next element's start is the one we are looking for
+					if (start == end && mid + 1 < a.length && ((ISourceReference) a[mid + 1]).getSourceRange().getOffset() == start) {
+						return a[mid + 1]; // key found
+					} else {
+						return a[mid]; // key found
+					}
 				} else {
 					return null;
 				}

@@ -36,6 +36,7 @@ public char[][] parameterQualifications;
 public char[][] parameterSimpleNames;
 public int parameterCount;
 public boolean varargs = false;
+public char[] templateParametersSignature;
 
 // extra reference info
 protected IType declaringType;
@@ -60,9 +61,9 @@ protected static char[][] DECL_CATEGORIES = { METHOD_DECL };
  * e.g. 'foo/0'
  */
 /*
- * selector / packageName / signature / declarationStart / enclosingTypeName / modifiers / argCount  
+ * selector / packageName / signature / templateParametersSignature, declarationStart / enclosingTypeName / modifiers / argCount  
  */
-public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] selector, char[] signature, int argCount, int declarationStart) {
+public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] selector, char[] signature, char[] templateParametersSignature, int argCount, int declarationStart) {
 	char[] countChars = argCount < 10
 		? COUNTS[argCount]
 		: ("/" + String.valueOf(argCount)).toCharArray();
@@ -75,6 +76,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 	int selectorLength = selector == null ? 0 : selector.length;
 	int packageLength = packageName == null ? 0 : packageName.length;
 	int signatureLength = signature == null ? 0 : signature.length;
+	int templateParametersSignatureLength = templateParametersSignature == null ? 0 : templateParametersSignature.length;
 	int enclosingNamesLength = 0;
 	if (enclosingTypeNames != null) {
 		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
@@ -84,7 +86,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 		}
 	}
 
-	int resultLength = selectorLength + packageLength + signatureLength + enclosingNamesLength + declarationStartLength + countCharsLength + 7;
+	int resultLength = selectorLength + packageLength + signatureLength + templateParametersSignatureLength + enclosingNamesLength + declarationStartLength + countCharsLength + 8;
 	char[] result = new char[resultLength];
 	int pos = 0;
 	if (selectorLength > 0) {
@@ -100,6 +102,11 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 	if (signatureLength > 0) {
 		System.arraycopy(signature, 0, result, pos, signatureLength);
 		pos += signatureLength;
+	}
+	result[pos++] = SEPARATOR;
+	if (templateParametersSignatureLength > 0) {
+		System.arraycopy(templateParametersSignature, 0, result, pos, templateParametersSignatureLength);
+		pos += templateParametersSignatureLength;
 	}
 	result[pos++] = SEPARATOR;
 	System.arraycopy(declarationStartChars, 0, result, pos, declarationStartLength);
@@ -125,7 +132,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 	}
 	return result;
 }
-// selector / packageName / signature / declarationStart / enclosingTypeName / modifiers / argCount
+// selector / packageName / signature / templateParametersSignature, declarationStart / enclosingTypeName / modifiers / argCount
 public void decodeIndexKey(char[] key) {
 	int slash = CharOperation.indexOf(SEPARATOR, key, 0);
 	this.selector = CharOperation.subarray(key, 0, slash);
@@ -144,6 +151,14 @@ public void decodeIndexKey(char[] key) {
 	} else {
 		slash = CharOperation.indexOf(SEPARATOR, key, start);
 		this.signature = CharOperation.subarray(key, start, slash);
+	}
+	
+	start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.templateParametersSignature = CharOperation.NO_CHAR;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		this.templateParametersSignature = CharOperation.subarray(key, start, slash);
 	}
 	
 	start = ++slash;

@@ -32,10 +32,12 @@ import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
 import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.Signature;
+import descent.core.compiler.CharOperation;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.rewrite.ImportRewrite;
 import descent.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
@@ -62,7 +64,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 
 	private boolean fHasParameters;
 	private boolean fHasParametersComputed= false;
-	private boolean fIsVariadic;
+	private int fIsVariadic;
 	private boolean fIsVariadicComputed= false;
 	private boolean fIsSetter;
 	private boolean fIsSetterComputed= false;
@@ -113,7 +115,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		}
 		
 		if (!hasParameters() || !hasArgumentList()) {
-			setCursorPosition(replacement.length() + (isVariadic() ? 1 : 2));
+			setCursorPosition(replacement.length() + (getVariadic() != IMethod.VARARGS_NO ? 1 : 2));
 			if (replacement.length() > 0) {
 				return replacement + "()"; //$NON-NLS-1$
 			} else {
@@ -121,19 +123,47 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			}
 		}
 		
+		
+		char[][] templateParameterNames = fProposal.findTemplateParameterNames(null);
+		if (templateParameterNames == null) {
+			templateParameterNames = CharOperation.NO_CHAR_CHAR;
+		}
+		
 		char[][] parameterNames= fProposal.findParameterNames(null);
 		if (parameterNames == null) {
-			System.out.println(1);
 			return replacement + "()"; //$NON-NLS-1$
 		}
 		
-		int count= parameterNames.length;
+		int count= templateParameterNames.length + parameterNames.length;
 		fArgumentOffsets= new int[count];
 		fArgumentLengths= new int[count];
 		
 		StringBuffer buffer= new StringBuffer(replacement);
 		
 		FormatterPrefs prefs= getFormatterPrefs();
+		
+		if (templateParameterNames.length > 0) {
+			buffer.append(EXCL);
+			buffer.append(LPAREN);
+			
+			setCursorPosition(buffer.length());
+			
+			for (int i= 0; i != templateParameterNames.length; i++) {
+				if (i != 0) {
+					if (prefs.beforeTypeArgumentComma)
+						buffer.append(SPACE);
+					buffer.append(COMMA);
+					if (prefs.afterTypeArgumentComma)
+						buffer.append(SPACE);
+				}
+				
+				fArgumentOffsets[i]= buffer.length();
+				buffer.append(templateParameterNames[i]);
+				fArgumentLengths[i]= templateParameterNames[i].length;
+			}
+			
+			buffer.append(RPAREN);
+		}
 		
 		if (isSetter()) {
 			if (prefs.beforeAssignmentOperator)
@@ -142,7 +172,9 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			if (prefs.afterAssignmentOperator)
 				buffer.append(SPACE);
 			
-			setCursorPosition(buffer.length());
+			if (templateParameterNames.length == 0) {
+				setCursorPosition(buffer.length());
+			}
 			
 			if (fArgumentLengths.length > 0) {
 				fArgumentOffsets[0]= buffer.length();
@@ -150,33 +182,37 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				fArgumentLengths[0]= parameterNames[0].length;
 			}
 		} else if (isGetter()) {
-			setCursorPosition(buffer.length());
+			if (templateParameterNames.length == 0) {
+				setCursorPosition(buffer.length());
+			}
 		} else {
 			
 			if (prefs.beforeOpeningParen)
 				buffer.append(SPACE);
 			buffer.append(LPAREN);
 			
-			setCursorPosition(buffer.length());
+			if (templateParameterNames.length == 0) {
+				setCursorPosition(buffer.length());
+			}			
 			
 			if (prefs.afterOpeningParen)
 				buffer.append(SPACE);
 			
-			for (int i= 0; i != count; i++) {
+			for (int i= 0; i != parameterNames.length; i++) {
 				if (i != 0) {
-					if (prefs.beforeComma)
+					if (prefs.beforeFunctionComma)
 						buffer.append(SPACE);
 					buffer.append(COMMA);
-					if (prefs.afterComma)
+					if (prefs.afterFunctionComma)
 						buffer.append(SPACE);
 				}
 				
-				fArgumentOffsets[i]= buffer.length();
+				fArgumentOffsets[i + templateParameterNames.length]= buffer.length();
 				buffer.append(parameterNames[i]);
-				fArgumentLengths[i]= parameterNames[i].length;
+				fArgumentLengths[i + templateParameterNames.length]= parameterNames[i].length;
 			}
 			
-			if (prefs.beforeClosingParen)
+			if (prefs.beforeFunctionClosingParen)
 				buffer.append(SPACE);
 	
 			buffer.append(RPAREN);
@@ -340,7 +376,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				}
 			} else {
 				// Before the last )
-				fSelectedRegion= new Region(baseOffset + replacement.length() + offsetAdded - (isVariadic() ? 1 : 0), 0);
+				fSelectedRegion= new Region(baseOffset + replacement.length() + offsetAdded - (getVariadic() != IMethod.VARARGS_NO ? 1 : 0), 0);
 			}
 			
 			//rememberSelection();
@@ -537,10 +573,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		return fHasParameters;
 	}
 	
-	protected final boolean isVariadic() {
+	protected final int getVariadic() {
 		if (!fIsVariadicComputed) {
 			fIsVariadicComputed= true;
-			fIsVariadic= computeIsVariadic();
+			fIsVariadic= computeGetVariadic();
 		}
 		return fIsVariadic;
 	}
@@ -565,8 +601,8 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		return Signature.getParameterCount(fProposal.getTypeSignature()) > 0;
 	}
 	
-	private boolean computeIsVariadic() throws IllegalArgumentException {
-		return Signature.isVariadic(fProposal.getTypeSignature());
+	private int computeGetVariadic() throws IllegalArgumentException {
+		return Signature.getVariadic(fProposal.getTypeSignature());
 	}
 	
 	private boolean computeIsSetter() throws IllegalArgumentException {
@@ -661,7 +697,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	
 	@Override
 	public int getContextInformationPosition() {
-		return getReplacementOffset();
+		return getReplacementOffset() + getCursorPosition();
 	}
 	
 }

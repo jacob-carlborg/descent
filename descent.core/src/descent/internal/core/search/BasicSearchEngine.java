@@ -648,7 +648,7 @@ public class BasicSearchEngine {
 					}
 				}
 				if (match(record.typeSuffix, record.modifiers)) {
-					nameRequestor.acceptType(record.modifiers, record.pkg, record.simpleName, record.enclosingTypeNames, documentPath, record.declarationStart, accessRestriction);
+					nameRequestor.acceptType(record.modifiers, record.pkg, record.simpleName, record.templateParametersSignature, record.enclosingTypeNames, documentPath, record.declarationStart, accessRestriction);
 				}
 				return true;
 			}
@@ -702,7 +702,7 @@ public class BasicSearchEngine {
 							}
 							*/
 							if (match(typeSuffix, packageName, typeName, matchRule, kind, packageDeclaration, simpleName)) {
-								nameRequestor.acceptType(type.getFlags(), packageDeclaration, simpleName, enclosingTypeNames, path, type.getSourceRange().getOffset(), null);
+								nameRequestor.acceptType(type.getFlags(), packageDeclaration, simpleName, SearchUtil.getTemplateParametersSignature(type), enclosingTypeNames, path, type.getSourceRange().getOffset(), null);
 							}
 						}
 					} else {
@@ -853,7 +853,7 @@ public class BasicSearchEngine {
 						accessRestriction = access.getViolatedRestriction(path);
 					}
 				}
-				nameRequestor.acceptType(record.modifiers, record.pkg, record.simpleName, record.enclosingTypeNames, documentPath, record.declarationStart, accessRestriction);
+				nameRequestor.acceptType(record.modifiers, record.pkg, record.simpleName, record.templateParametersSignature, record.enclosingTypeNames, documentPath, record.declarationStart, accessRestriction);
 				return true;
 			}
 		};
@@ -992,7 +992,7 @@ public class BasicSearchEngine {
 						accessRestriction = access.getViolatedRestriction(path);
 					}
 				}
-				nameRequestor.acceptType(record.modifiers, record.getPackageName(), record.simpleName, record.getEnclosingTypeNames(), documentPath, record.declarationStart, accessRestriction);
+				nameRequestor.acceptType(record.modifiers, record.getPackageName(), record.simpleName, record.templateParametersSignature, record.getEnclosingTypeNames(), documentPath, record.declarationStart, accessRestriction);
 				return true;
 			}
 		};
@@ -1044,7 +1044,7 @@ public class BasicSearchEngine {
 								suffix = IIndexConstants.ANNOTATION_TYPE_SUFFIX;
 							}
 							if (pattern.matchesDecodedKey(new QualifiedTypeDeclarationPattern(qualification, simpleName, suffix, matchRule))) {
-								nameRequestor.acceptType(type.getFlags(), packageDeclaration, simpleName, enclosingTypeNames, path, type.getSourceRange().getOffset(), null);
+								nameRequestor.acceptType(type.getFlags(), packageDeclaration, simpleName, SearchUtil.getTemplateParametersSignature(type), enclosingTypeNames, path, type.getSourceRange().getOffset(), null);
 							}
 						}
 					} else {
@@ -1348,14 +1348,15 @@ public class BasicSearchEngine {
 					
 					if (record instanceof TypeDeclarationPattern) {
 						if (match(((TypeDeclarationPattern) record).typeSuffix, record.modifiers)) {
-							nameRequestor.acceptType(record.modifiers, record.pkg, record.simpleName, record.enclosingTypeNames, documentPath, ((TypeDeclarationPattern) record).declarationStart, accessRestriction);
+							TypeDeclarationPattern tdp = (TypeDeclarationPattern) record;
+							nameRequestor.acceptType(record.modifiers, record.pkg, record.simpleName, tdp.templateParametersSignature, record.enclosingTypeNames, documentPath, tdp.declarationStart, accessRestriction);
 						}
 					} else if (record instanceof FieldPattern) {
 						FieldPattern field = (FieldPattern) record;
 						nameRequestor.acceptField(record.modifiers, record.pkg, record.simpleName, field.typeName, record.enclosingTypeNames, documentPath, accessRestriction);
 					} else if (record instanceof MethodPattern) {
 						MethodPattern method = (MethodPattern) record;
-						nameRequestor.acceptMethod(record.modifiers, record.pkg, method.selector, record.enclosingTypeNames, method.signature, documentPath, method.declarationStart, accessRestriction);
+						nameRequestor.acceptMethod(record.modifiers, record.pkg, method.selector, record.enclosingTypeNames, method.signature, method.templateParametersSignature, documentPath, method.declarationStart, accessRestriction);
 					}
 					
 					
@@ -1411,7 +1412,7 @@ public class BasicSearchEngine {
 								}
 								*/
 								if (match(typeSuffix, packageName, typeName, matchRule, kind, packageDeclaration, simpleName)) {
-									nameRequestor.acceptType(type.getFlags(), packageDeclaration, simpleName, enclosingTypeNames, path, type.getSourceRange().getOffset(), null);
+									nameRequestor.acceptType(type.getFlags(), packageDeclaration, simpleName, SearchUtil.getTemplateParametersSignature(type), enclosingTypeNames, path, type.getSourceRange().getOffset(), null);
 								}
 							}
 						} else {

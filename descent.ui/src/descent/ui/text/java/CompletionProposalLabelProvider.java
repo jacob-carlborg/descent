@@ -16,6 +16,7 @@ import org.eclipse.jface.text.Assert;
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
 import descent.core.Flags;
+import descent.core.IMethod;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.internal.corext.template.java.SignatureUtil;
@@ -83,6 +84,7 @@ public class CompletionProposalLabelProvider {
 				methodProposal.getKind() == CompletionProposal.FUNCTION_CALL ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF) {
 			appendUnboundedParameterList(sb2, methodProposal);
+			appendVarargs(sb2, methodProposal);
 		}
 		
 		if (sb1.length() > 0 && sb2.length() > 0) {
@@ -118,6 +120,22 @@ public class CompletionProposalLabelProvider {
 			parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
 		}
 		return appendParameterSignature(buffer, parameterTypes, parameterNames, parameterDefaultValues);
+	}
+	
+	private StringBuffer appendVarargs(StringBuffer buffer, CompletionProposal methodProposal) {
+		int varargs = Signature.getVariadic(methodProposal.getTypeSignature());
+		if (varargs != IMethod.VARARGS_NO) {
+			if (varargs == IMethod.VARARGS_UNDEFINED_TYPES) {
+				if (buffer.charAt(buffer.length() - 1) != '(') {
+					buffer.append(',');
+					buffer.append(' ');
+				}
+			}
+			buffer.append('.');
+			buffer.append('.');
+			buffer.append('.');
+		}
+		return buffer;
 	}
 	
 	private StringBuffer appendTemplateParameterList(StringBuffer buffer, CompletionProposal tempProposal) {
@@ -250,18 +268,17 @@ public class CompletionProposalLabelProvider {
 	String createMethodProposalLabel(CompletionProposal methodProposal) {
 		StringBuffer nameBuffer= new StringBuffer();
 		nameBuffer.append(methodProposal.getName());
-		nameBuffer.append('(');
-		appendUnboundedParameterList(nameBuffer, methodProposal);
 		
-		if (Signature.isVariadic(methodProposal.getTypeSignature())) {
-			if (nameBuffer.charAt(nameBuffer.length() - 1) != '(') {
-				nameBuffer.append(',');
-			}
-			nameBuffer.append('.');
-			nameBuffer.append('.');
-			nameBuffer.append('.');
+		if (Signature.getTypeSignatureKind(methodProposal.getSignature()) == Signature.TEMPLATED_FUNCTION_SIGNATURE) {
+			nameBuffer.append('!');
+			nameBuffer.append('(');
+			appendTemplateParameterList(nameBuffer, methodProposal);
+			nameBuffer.append(')');
 		}
 		
+		nameBuffer.append('(');
+		appendUnboundedParameterList(nameBuffer, methodProposal);
+		appendVarargs(nameBuffer, methodProposal);
 		nameBuffer.append(')');
 
 		// return type
@@ -272,23 +289,7 @@ public class CompletionProposalLabelProvider {
 			nameBuffer.append(returnType);
 		}
 
-		// declaring type
-		String declaringType= extractDeclaringTypeFQN(methodProposal);
-		if (declaringType != null) {
-			nameBuffer.append(" - "); //$NON-NLS-1$
-			// TODO JDT signature
-//			declaringType= Signature.getSimpleName(declaringType);
-			nameBuffer.append(declaringType);
-		} else {
-			// module name
-			char[] fullName= Signature.toCharArray(methodProposal.getSignature(),
-					false /* don't fully qualify names */);
-			int qIndex= findSimpleNameStart(fullName);
-			if (qIndex > 0) {
-				nameBuffer.append(JavaElementLabels.CONCAT_STRING);
-				nameBuffer.append(fullName, 0, qIndex - 1);
-			}
-		}
+		appendDeclaration(methodProposal, nameBuffer);
 
 		return nameBuffer.toString();
 	}
@@ -301,14 +302,7 @@ public class CompletionProposalLabelProvider {
 		appendTemplateParameterList(nameBuffer, tempProposal);
 		nameBuffer.append(')');
 		
-		// module name
-		char[] fullName= Signature.toCharArray(tempProposal.getSignature(),
-				false /* don't fully qualify names */);
-		int qIndex= findSimpleNameStart(fullName);
-		if (qIndex > 0) {
-			nameBuffer.append(JavaElementLabels.CONCAT_STRING);
-			nameBuffer.append(fullName, 0, qIndex - 1);
-		}
+		appendDeclaration(tempProposal, nameBuffer);
 		
 		return nameBuffer.toString();
 	}
@@ -324,17 +318,27 @@ public class CompletionProposalLabelProvider {
 		appendUnboundedParameterList(nameBuffer, tempProposal);
 		nameBuffer.append(')');
 		
-		// TODO Descent this is not working properly
-		// module name
-		char[] fullName= Signature.toCharArray(tempProposal.getSignature(),
-				false /* don't fully qualify names */);
-		int qIndex= findSimpleNameStart(fullName);
-		if (qIndex > 0) {
-			nameBuffer.append(JavaElementLabels.CONCAT_STRING);
-			nameBuffer.append(fullName, 0, qIndex - 1);
-		}
+		appendDeclaration(tempProposal, nameBuffer);
 		
 		return nameBuffer.toString();
+	}
+
+	private void appendDeclaration(CompletionProposal proposal, StringBuffer nameBuffer) {
+		// declaring type
+		String declaringType= extractDeclaringTypeFQN(proposal);
+		if (declaringType != null) {
+			nameBuffer.append(" - "); //$NON-NLS-1$
+			nameBuffer.append(declaringType);
+		} else {
+			// module name
+			char[] fullName= Signature.toCharArray(proposal.getSignature(),
+					false /* don't fully qualify names */);
+			int qIndex= findSimpleNameStart(fullName);
+			if (qIndex > 0) {
+				nameBuffer.append(JavaElementLabels.CONCAT_STRING);
+				nameBuffer.append(fullName, 0, qIndex - 1);
+			}
+		}
 	}
 	
 	/**
@@ -434,14 +438,23 @@ public class CompletionProposalLabelProvider {
 	 * @return the display label for the given type proposal
 	 */
 	String createTypeProposalLabel(CompletionProposal typeProposal) {
-		char[] signature;
-		if (fContext != null && fContext.isInJavadoc())
-			signature= typeProposal.getSignature();
-		else
-			signature= typeProposal.getSignature();
-		char[] fullName= Signature.toCharArray(signature,
-				false /* don't fully qualify names */);
-		return createTypeProposalLabel(fullName);
+		StringBuffer nameBuffer = new StringBuffer();
+		
+		if (typeProposal.isAlias()) {
+			nameBuffer.append(typeProposal.getName());
+		} else {
+			char[] signature;
+			if (fContext != null && fContext.isInJavadoc())
+				signature= typeProposal.getSignature();
+			else
+				signature= typeProposal.getSignature();
+			nameBuffer.append(Signature.toCharArray(signature,
+					false /* don't fully qualify names */));
+		}
+		
+		appendDeclaration(typeProposal, nameBuffer);
+
+		return nameBuffer.toString();
 	}
 	
 	String createJavadocTypeProposalLabel(CompletionProposal typeProposal) {

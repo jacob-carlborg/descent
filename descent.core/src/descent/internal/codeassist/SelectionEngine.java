@@ -134,6 +134,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 					public void acceptMethod(char[] packageName, char[] name,
 							char[][] enclosingTypeNames, char[] signature,
+							char[] templateParametersSignature,
 							long modifiers, int declarationStart, AccessRestriction accessRestriction) {
 						IJavaElement element = internalSignature.findMethod(
 								packageName, name, signature);
@@ -146,6 +147,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 					}
 
 					public void acceptType(char[] packageName, char[] typeName,
+							char[] templateParametersSignature,
 							char[][] enclosingTypeNames, long modifiers,
 							int declarationStart,
 							AccessRestriction accessRestriction) {

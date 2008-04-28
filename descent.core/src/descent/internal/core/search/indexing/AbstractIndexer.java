@@ -43,7 +43,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			char[][] superinterfaces,
 			char[][] typeParameterSignatures,
 			int declarationStart) {
-		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, declarationStart);
+		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, CharOperation.concat(typeParameterSignatures), enclosingTypeNames, declarationStart);
 		addIndexEntry(TYPE_DECL, indexKey);
 
 //		if (superclass != null) {
@@ -93,7 +93,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			addIndexEntry(CONSTRUCTOR_REF, ConstructorPattern.createIndexKey(innermostTypeName, argCount));
 	}
 	public void addEnumDeclaration(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[][] superinterfaces, int declarationStart) {
-		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, declarationStart);
+		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, null, enclosingTypeNames, declarationStart);
 		addIndexEntry(TYPE_DECL, indexKey);
 
 		addIndexEntry(
@@ -122,7 +122,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 		this.document.addIndexEntry(category, key);
 	}
 	public void addInterfaceDeclaration(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[][] superinterfaces, char[][] typeParameterSignatures, int declarationStart) {
-		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, declarationStart);
+		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, CharOperation.concat(typeParameterSignatures), enclosingTypeNames, declarationStart);
 		addIndexEntry(TYPE_DECL, indexKey);
 
 		if (superinterfaces != null) {
@@ -136,9 +136,9 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			}
 		}
 	}
-	public void addMethodDeclaration(long modifiers, char[] packageName, char[] methodName, char[][] enclosingTypeNames, char[][] parameterTypes, char[] signature, int declarationStart) {
+	public void addMethodDeclaration(long modifiers, char[] packageName, char[] methodName, char[][] enclosingTypeNames, char[][] parameterTypes, char[][] typeParameters, char[] signature, int declarationStart) {
 		int argCount = parameterTypes == null ? 0 : parameterTypes.length;
-		addIndexEntry(METHOD_DECL, MethodPattern.createIndexKey(modifiers, packageName, enclosingTypeNames, methodName, signature, argCount, declarationStart));
+		addIndexEntry(METHOD_DECL, MethodPattern.createIndexKey(modifiers, packageName, enclosingTypeNames, methodName, signature, CharOperation.concat(typeParameters), argCount, declarationStart));
 	
 		if (parameterTypes != null) {
 			for (int i = 0; i < argCount; i++)
@@ -151,7 +151,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 			addTypeReference(signature);
 	}
 	public void addMethodReference(char[] methodName, int argCount) {
-		addIndexEntry(METHOD_REF, MethodPattern.createIndexKey(0, null, null, methodName, null, argCount, 0));
+		addIndexEntry(METHOD_REF, MethodPattern.createIndexKey(0, null, null, methodName, null, null, argCount, 0));
 	}
 	public void addNameReference(char[] name) {
 		addIndexEntry(REF, name);

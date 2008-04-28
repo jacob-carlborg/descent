@@ -19,6 +19,6 @@ import descent.internal.compiler.env.AccessRestriction;
  */
 public interface IRestrictedAccessTypeRequestor {
 	
-	public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access);
+	public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[] templateParametersSignature, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access);
 
 }

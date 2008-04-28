@@ -577,7 +577,7 @@ public class JavaElementLabels {
 			if (getFlag(flags, M_PARAMETER_TYPES | M_PARAMETER_NAMES)) {
 				String[] types= null;
 				int nParams= 0;
-				boolean renderVarargs= false;
+				int varargs = method.exists() ? method.getVarargs() : 0;
 				if (getFlag(flags, M_PARAMETER_TYPES)) {
 					if (resolvedKey != null) {
 						types= Signature.getParameterTypes(resolvedKey.toSignature());
@@ -585,8 +585,6 @@ public class JavaElementLabels {
 						types= method.getParameterTypes();
 					}
 					nParams= types.length;
-					//renderVarargs= method.exists() && Flags.isVarargs(method.getFlags());
-					renderVarargs = false;
 				}
 				String[] names= null;
 				if (getFlag(flags, M_PARAMETER_NAMES) && method.exists()) {
@@ -608,24 +606,27 @@ public class JavaElementLabels {
 						buf.append(COMMA_STRING);
 					}
 					if (types != null) {
-						String paramSig= types[i];
-						if (renderVarargs && (i == nParams - 1)) {
-							// TODO JDT signature
-//							int newDim= Signature.getArrayCount(paramSig) - 1;
-//							getTypeSignatureLabel(Signature.getElementType(paramSig), flags, buf);
-//							for (int k= 0; k < newDim; k++) {
-//								buf.append('[').append(']');
-//							}
-//							buf.append(ELLIPSIS_STRING);
-						} else {
-							getTypeSignatureLabel(paramSig, flags, buf);
-						}
+						String paramSig= types[i];						
+						getTypeSignatureLabel(paramSig, flags, buf);
 					}
 					if (names != null) {
-						if (types != null) {
+						if (types != null && names[i] != null && names[i].length() > 0) {
 							buf.append(' ');
 						}
 						buf.append(names[i]);
+					}
+				}
+				
+				if (varargs != 0) {
+					if (varargs == IMethod.VARARGS_SAME_TYPES) {
+						buf.append(' ');
+						buf.append(ELLIPSIS_STRING);
+					} else {
+						if (nParams > 0 ) {
+							buf.append(',');
+							buf.append(' ');
+						}
+						buf.append(ELLIPSIS_STRING);
 					}
 				}
 			} else {

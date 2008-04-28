@@ -1202,6 +1202,12 @@ public class CompletionEngine extends Engine
 					wantMethodContextInfo = true;
 					suggestMember(var.var, false, 0, null, INCLUDE_FUNCTIONS);
 				}
+			} else if (node.e1 instanceof DotVarExp && node.e1.type instanceof TypeFunction) {
+				DotVarExp var = (DotVarExp) node.e1;
+				if (var.var instanceof FuncDeclaration) {
+					wantMethodContextInfo = true;
+					suggestMember(var.var, false, 0, null, INCLUDE_FUNCTIONS);
+				}
 			} else if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
 				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			} else {
@@ -1854,8 +1860,10 @@ public class CompletionEngine extends Engine
 		// Filter statics if only statics were requested
 		Declaration decl = member.isDeclaration();
 		if (decl != null) {
-			if (!isType && !decl.isStatic() && !decl.isConst() && onlyStatics && 
-					!(member instanceof AliasDeclaration) && !(member instanceof TypedefDeclaration)) {
+			if (!isType && !decl.isStatic() && !decl.isConst() && onlyStatics 
+					&& !(member instanceof AliasDeclaration) 
+					&& !(member instanceof TypedefDeclaration)
+					) {
 				return;
 			}
 		}
@@ -1865,7 +1873,7 @@ public class CompletionEngine extends Engine
 		if (alias != null) {
 			Dsymbol sym = alias.toAlias(semanticContext);
 			if (sym != null && sym != alias) {
-				suggestMember(sym, ident, false /* not only statics, check passed */, flags, funcSignatures, includes, true);
+				suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes, true);
 				
 				// Find overloads! :-)
 				while(sym instanceof FuncDeclaration) {
@@ -1878,7 +1886,7 @@ public class CompletionEngine extends Engine
 					}
 					sym = funcDecl;
 				}
-//				return;
+				return;
 			}
 		}
 		
@@ -2071,6 +2079,8 @@ public class CompletionEngine extends Engine
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
+					proposal.setTypeSignature(sigChars);
+					proposal.setDeclarationSignature(member.parent.getSignature().toCharArray());
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2113,6 +2123,7 @@ public class CompletionEngine extends Engine
 					char[] sig = member.getSignature().toCharArray();
 					proposal.setSignature(sig);
 					proposal.setTypeSignature(sig);
+					proposal.setDeclarationSignature(temp.parent.getSignature().toCharArray());
 					
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
@@ -2271,6 +2282,20 @@ public class CompletionEngine extends Engine
 			sym.consumeRest();
 			currentName = ident;
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			
+			// Then try with superclass and superinterface members
+			BaseClasses baseClasses = sym.baseclasses;
+			if (baseClasses.isEmpty()) {
+				// Suggest Object if no base classes are present and this is not object
+				if (semanticContext.ClassDeclaration_object != null && 
+					type != semanticContext.ClassDeclaration_object.type) {
+					trySuggestCall((TypeClass) semanticContext.ClassDeclaration_object.type, ident, signature, onlyStatics);
+				}
+			} else {
+				for(BaseClass baseClass : baseClasses) {
+					trySuggestCall((TypeClass) baseClass.base.type, ident, signature, onlyStatics);
+				}
+			}
 			break;
 		}
 		}
@@ -2786,7 +2811,7 @@ public class CompletionEngine extends Engine
 		
 	}
 
-	public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
+	public void acceptType(char[] packageName, char[] typeName, char[] templateParametersSignature, char[][] enclosingTypeNames, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
 		if (packageName == null || packageName.length == 0) {
 			return;
 		}
@@ -2807,9 +2832,20 @@ public class CompletionEngine extends Engine
 		
 		StringBuilder sig = new StringBuilder();
 		InternalSignature.appendPackageName(packageName, sig);
-		sig.append(CLASS);
+		
+		char[] declSignature = sig.toString().toCharArray();
+		
+		if (templateParametersSignature.length > 0) {
+			sig.append(TEMPLATED_CLASS);
+		} else {
+			sig.append(CLASS);
+		}
 		sig.append(typeName.length);
 		sig.append(typeName);
+		if (templateParametersSignature != null) {
+			sig.append(templateParametersSignature);
+			sig.append(TEMPLATE_PARAMETERS_BREAK);
+		}
 		
 		char[] sigChar = sig.toString().toCharArray();
 		
@@ -2838,6 +2874,7 @@ public class CompletionEngine extends Engine
 		
 		proposal.setSignature(sigChar);
 		proposal.setTypeSignature(sigChar);
+		proposal.setDeclarationSignature(declSignature);
 		proposal.setFlags(modifiers);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2924,7 +2961,7 @@ public class CompletionEngine extends Engine
 //		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
-	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
+	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, char[] templateParametersSignature, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
 		if (packageName == null || packageName.length == 0) {
 			return;
 		}
@@ -2952,10 +2989,22 @@ public class CompletionEngine extends Engine
 		
 		StringBuilder sig = new StringBuilder();
 		InternalSignature.appendPackageName(packageName, sig);
-		sig.append(FUNCTION);
+		
+		char[] declSignature = sig.toString().toCharArray();
+		
+		if (templateParametersSignature.length > 0) {
+			sig.append(TEMPLATED_FUNCTION);
+		} else {
+			sig.append(FUNCTION);
+		}
 		sig.append(name.length);
 		sig.append(name);
 		sig.append(signature);
+		if (templateParametersSignature.length > 0) {
+			sig.append(templateParametersSignature);
+			sig.append(TEMPLATE_PARAMETERS_BREAK);
+		}
+		
 		char[] sigChars = sig.toString().toCharArray();
 		if (knownDeclarations.containsKey(sigChars)) {
 			return;
@@ -2976,6 +3025,7 @@ public class CompletionEngine extends Engine
 		proposal.setName(name);
 		proposal.setSignature(sigChars);
 		proposal.setTypeSignature(signature);
+		proposal.setDeclarationSignature(declSignature);
 		proposal.setFlags(modifiers);
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);

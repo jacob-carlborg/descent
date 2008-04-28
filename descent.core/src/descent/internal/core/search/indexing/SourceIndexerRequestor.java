@@ -267,7 +267,19 @@ public void enterMethod(MethodInfo methodInfo) {
 	} else {
 		typeNames = this.enclosingTypeNames();
 	}
-	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, methodInfo.signature, methodInfo.declarationStart);
+	
+	char[][] typeParameterSignatures = null;
+	if (methodInfo.typeParameters != null) {
+		int typeParametersLength = methodInfo.typeParameters.length;
+		typeParameterSignatures = new char[typeParametersLength][];
+		for (int i = 0; i < typeParametersLength; i++) {
+			ISourceElementRequestor.TypeParameterInfo typeParameterInfo =methodInfo.typeParameters[i];
+//			typeParameterSignatures[i] = Signature.createTypeParameterSignature(typeParameterInfo.name, CharOperation.NO_CHAR_CHAR);
+			typeParameterSignatures[i] = typeParameterInfo.signature;
+		}
+	}
+	
+	this.indexer.addMethodDeclaration(methodInfo.modifiers, packageName, methodInfo.name, typeNames, methodInfo.parameterTypes, typeParameterSignatures, methodInfo.signature, methodInfo.declarationStart);
 	this.methodDepth++;
 }
 /**

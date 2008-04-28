@@ -1067,6 +1067,50 @@ public static final char[] concatWith(char[][] array, char separator) {
 }
 
 /**
+ * Answers the concatenation of the given array parts.
+ * <br>
+ * <br>
+ * For example:<br>
+ * <ol>
+ * <li><pre>
+ *    array = { { 'a' }, { 'b' } }
+ *    => result = { 'a', b' }
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param array the given array
+ * @return the concatenation of the given array parts
+ */
+public static final char[] concat(char[][] array) {
+	int length = array == null ? 0 : array.length;
+	if (length == 0)
+		return CharOperation.NO_CHAR;
+
+	int size = 0;
+	int index = length;
+	while (--index >= 0) {
+		size += array[index].length;
+	}
+	if (size <= 0)
+		return CharOperation.NO_CHAR;
+	char[] result = new char[size];
+	index = length;
+	while (--index >= 0) {
+		length = array[index].length;
+		if (length > 0) {
+			System.arraycopy(
+				array[index],
+				0,
+				result,
+				(size -= length),
+				length);
+		}
+	}
+	return result;
+}
+
+/**
  * Answers true if the array contains an occurrence of character, false otherwise.
  * 
  * <br>
