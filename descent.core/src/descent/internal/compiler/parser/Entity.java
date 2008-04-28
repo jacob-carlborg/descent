@@ -44,6 +44,7 @@ public class Entity {
 		{ "Agrave",	0x00C0, },
 		{ "agrave",	0x00E0, },
 		{ "aleph", 	0x2135, },
+		{ "alefsym",  8501, },
 		{ "alpha", 	0x03B1, },
 		{ "Amacr", 	0x0100, },
 		{ "amacr", 	0x0101, },
@@ -68,6 +69,7 @@ public class Entity {
 		{ "atilde",	0x00E3, },
 		{ "Auml",  	0x00C4, },
 		{ "auml",  	0x00E4, },
+		{ "Alpha",	   913, },
 		{ null,		0 },
 	};
 
@@ -140,6 +142,8 @@ public class Entity {
 		{ "bull",  	0x2022, },
 		{ "bump",  	0x224E, },
 		{ "bumpe", 	0x224F, },
+		{ "bdquo",	  8222, },
+		{ "Beta",	   914, },
 		{ null,		0 },
 	};
 
@@ -190,6 +194,8 @@ public class Entity {
 		{ "curren",	0x00A4, },
 		{ "cuvee", 	0x22CE, },
 		{ "cuwed", 	0x22CF, },
+		{ "crarr",	  8629, },
+		{ "Chi",	   935, },
 		{ null,		0 },
 	};
 
@@ -286,15 +292,19 @@ public class Entity {
 		{ "epsiv", 	0x03B5, },
 		{ "equals",	0x003D, },
 		{ "equiv", 	0x2261, },
+		{ "epsilon",   949, },
 		{ "erDot", 	0x2253, },
 		{ "esdot", 	0x2250, },
 		{ "eta",   	0x03B7, },
+		{ "Epsilon",   917, },
 		{ "ETH",   	0x00D0, },
 		{ "eth",   	0x00F0, },
 		{ "Euml",  	0x00CB, },
 		{ "euml",  	0x00EB, },
 		{ "excl",  	0x0021, },
 		{ "exist", 	0x2203, },
+		{ "euro",	  8364, },
+		{ "Eta",	   919, },
 		{ null,		0 },
 	};
 
@@ -327,6 +337,7 @@ public class Entity {
 		{ "frac58",	0x215D, },
 		{ "frac78",	0x215E, },
 		{ "frown", 	0x2322, },
+		{ "frasl",	8260, },
 		{ null,		0 },
 	};
 
@@ -435,6 +446,7 @@ public class Entity {
 		{ "iukcy", 	0x0456, },
 		{ "Iuml",  	0x00CF, },
 		{ "iuml",  	0x00EF, },
+		{ "Iota",	   921, },
 		{ null,		0 },
 	};
 
@@ -466,6 +478,7 @@ public class Entity {
 		{ "khgr",  	0x03C7, },
 		{ "KJcy",  	0x040C, },
 		{ "kjcy",  	0x045C, },
+		{ "Kappa",	   922, },
 		{ null,		0 },
 	};
 
@@ -540,6 +553,8 @@ public class Entity {
 		{ "ltrie", 	0x22B4, },
 		{ "ltrif", 	0x25C2, },
 		{ "lvnE",  	0x2268, },
+		{ "lsaquo",	  8249, },
+		{ "lrm",	  8206, },
 		{ null,		0 },
 	};
 
@@ -564,6 +579,7 @@ public class Entity {
 		{ "models",	0x22A7, },
 		{ "mu",    	0x03BC, },
 		{ "mumap", 	0x22B8, },
+		{ "Mu",	       924, },
 		{ null,		0 },
 	};
 
@@ -574,8 +590,8 @@ public class Entity {
 		{ "nap",   	0x2249, },
 		{ "napos", 	0x0149, },
 		{ "natur", 	0x266E, },
-//				"nbsp",  	0x00A0,
-		{ "nbsp",  	32,     }, // make non-breaking space appear as space
+//			"nbsp",  	0x00A0,
+		{ "nbsp",  	32, },   // make non-breaking space appear as space
 		{ "Ncaron",	0x0147, },
 		{ "ncaron",	0x0148, },
 		{ "Ncedil",	0x0145, },
@@ -641,6 +657,7 @@ public class Entity {
 		{ "nVdash",	0x22AE, },
 		{ "nVDash",	0x22AF, },
 		{ "nwarr", 	0x2196, },
+		{ "Nu",	       925, },
 		{ null,		0 },
 	};
 
@@ -692,6 +709,9 @@ public class Entity {
 		{ "otimes",	0x2297, },
 		{ "Ouml",  	0x00D6, },
 		{ "ouml",  	0x00F6, },
+		{ "Omicron",   927, },
+		{ "omicron",   959, },
+		{ "oline",	  8254, },
 		{ null,		0		},
 	};
 
@@ -739,6 +759,7 @@ public class Entity {
 		{ "Psi",   	0x03A8, },
 		{ "psi",   	0x03C8, },
 		{ "puncsp",	0x2008, },
+		{ "phi",	   966, },
 		{ null,		0 },
 	};
 
@@ -798,6 +819,9 @@ public class Entity {
 		{ "rtrie", 	0x22B5, },
 		{ "rtrif", 	0x25B8, },
 		{ "rx",    	0x211E, },
+		{ "rsaquo",	  8250, },
+		{ "Rho",	   929, },
+		{ "rlm",	  8207, },
 		{ null,		0 },
 	};
 
@@ -882,6 +906,8 @@ public class Entity {
 		{ "supne", 	0x228B, },
 		{ "supnE", 	0x228B, },
 		{ "szlig", 	0x00DF, },
+		{ "sigmaf",	   962, },
+		{ "sbquo",	  8218, },
 		{ null,		0 },
 	};
 
@@ -901,6 +927,7 @@ public class Entity {
 		{ "there4",	0x2234, },
 		{ "Theta", 	0x0398, },
 		{ "thetas",	0x03B8, },
+		{ "thetasym",  977, },
 		{ "thetav",	0x03D1, },
 		{ "THgr",  	0x0398, },
 		{ "thgr",  	0x03B8, },
@@ -923,6 +950,8 @@ public class Entity {
 		{ "Tstrok",	0x0166, },
 		{ "tstrok",	0x0167, },
 		{ "twixt", 	0x226C, },
+		{ "theta",	   952, },
+		{ "Tau",	   932, },
 		{ null,		0 },
 	};
 
@@ -974,6 +1003,10 @@ public class Entity {
 		{ "utrif", 	0x25B4, },
 		{ "Uuml",  	0x00DC, },
 		{ "uuml",  	0x00FC, },
+		{ "Upsilon",   933, },
+		{ "upsilon",   965, },
+		{ "upsih",	   978, },
+		{ "uarr",	  8593, },
 		{ null,		0 },
 	};
 
@@ -1058,6 +1091,9 @@ public class Entity {
 		{ "zgr",   	0x03B6, },
 		{ "ZHcy",  	0x0416, },
 		{ "zhcy",  	0x0436, },
+		{ "Zeta",	   918, },
+		{ "zwnj",	  8204, },
+		{ "zwj",	  8205, },
 		{ null, 0 },
 	};
 	
