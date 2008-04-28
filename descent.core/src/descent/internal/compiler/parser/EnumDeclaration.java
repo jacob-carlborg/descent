@@ -147,7 +147,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		boolean first = true;
-		for (Dsymbol sym : members) {
+		
+		int len = members.size();
+		for(int i = 0; i < len; i++) {
+			Dsymbol sym = members.get(i);
+			
 			EnumMember em = sym.isEnumMember();
 			Expression e;
 
