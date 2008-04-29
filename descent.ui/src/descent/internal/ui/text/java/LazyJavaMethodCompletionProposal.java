@@ -343,7 +343,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				
 				offsetAdded = document.getLength() - oldLen;
 				setReplacementOffset(getReplacementOffset() + offsetAdded);
-				setCursorPosition(getCursorPosition() + offsetAdded);
+				setCursorPosition(getCursorPosition());
 			}
 			
 			if (fArgumentOffsets != null && getTextViewer() != null && !isGetter()) {

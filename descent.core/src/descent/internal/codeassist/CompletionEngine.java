@@ -23,6 +23,7 @@ import descent.internal.codeassist.complete.CompletionOnArgumentName;
 import descent.internal.codeassist.complete.CompletionOnBreakStatement;
 import descent.internal.codeassist.complete.CompletionOnCallExp;
 import descent.internal.codeassist.complete.CompletionOnCaseStatement;
+import descent.internal.codeassist.complete.CompletionOnClassDeclaration;
 import descent.internal.codeassist.complete.CompletionOnCompoundStatement;
 import descent.internal.codeassist.complete.CompletionOnContinueStatement;
 import descent.internal.codeassist.complete.CompletionOnDebugCondition;
@@ -31,10 +32,12 @@ import descent.internal.codeassist.complete.CompletionOnExpStatement;
 import descent.internal.codeassist.complete.CompletionOnGotoStatement;
 import descent.internal.codeassist.complete.CompletionOnIdentifierExp;
 import descent.internal.codeassist.complete.CompletionOnImport;
+import descent.internal.codeassist.complete.CompletionOnInterfaceDeclaration;
 import descent.internal.codeassist.complete.CompletionOnJavadocImpl;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionOnNewExp;
 import descent.internal.codeassist.complete.CompletionOnSuperDotExp;
+import descent.internal.codeassist.complete.CompletionOnTemplateMixin;
 import descent.internal.codeassist.complete.CompletionOnThisDotExp;
 import descent.internal.codeassist.complete.CompletionOnTypeDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnTypeIdentifier;
@@ -255,7 +258,8 @@ public class CompletionEngine extends Engine
 	boolean wantConstructorsAndOpCall = true;
 	boolean wantProperties = true;
 	boolean wantMethodContextInfo = false;
-	boolean wantKeywords = true;
+	
+	Scope rootScope;
 	
 	int INCLUDE_TYPES = 1;
 	int INCLUDE_VARIABLES = 2;
@@ -380,70 +384,7 @@ public class CompletionEngine extends Engine
 			}
 			
 			// First the assist node
-			if (assistNode != null) {
-				if (assistNode instanceof CompletionOnModuleDeclaration && 
-						!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
-					CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
-					completeModuleDeclaration(node);
-				} else if (assistNode instanceof CompletionOnImport &&
-						!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
-					CompletionOnImport node = (CompletionOnImport) assistNode;
-					completeImport(node);
-				} else if (assistNode instanceof CompletionOnArgumentName) {
-					CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
-					completeArgumentName(node);
-				} else if (assistNode instanceof CompletionOnGotoStatement) {
-					CompletionOnGotoStatement node = (CompletionOnGotoStatement) assistNode;
-					completeGotoBreakOrContinueStatement(node.ident, false /* don't check in loop */);
-				} else if (assistNode instanceof CompletionOnBreakStatement) {
-					CompletionOnBreakStatement node = (CompletionOnBreakStatement) assistNode;
-					completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
-				} else if (assistNode instanceof CompletionOnContinueStatement) {
-					CompletionOnContinueStatement node = (CompletionOnContinueStatement) assistNode;
-					completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
-				} else if (assistNode instanceof CompletionOnVersionCondition) {
-					CompletionOnVersionCondition node = (CompletionOnVersionCondition) assistNode;
-					completeVersionCondition(node);
-				} else if (assistNode instanceof CompletionOnDebugCondition) {
-					CompletionOnDebugCondition node = (CompletionOnDebugCondition) assistNode;
-					completeDebugCondition(node);
-				} else if (assistNode instanceof CompletionOnCaseStatement) {
-					CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
-					completeCaseStatement(node);
-					
-					wantKeywords = false;
-				} else if (assistNode instanceof CompletionOnTypeDotIdExp) {
-					CompletionOnTypeDotIdExp node = (CompletionOnTypeDotIdExp) assistNode;
-					completeTypeDotIdExp(node);
-				} else if (assistNode instanceof CompletionOnDotIdExp) {
-					CompletionOnDotIdExp node = (CompletionOnDotIdExp) assistNode;
-					completeDotIdExp(node);
-				} else if (assistNode instanceof CompletionOnTypeIdentifier) {
-					CompletionOnTypeIdentifier node = (CompletionOnTypeIdentifier) assistNode;
-					completeTypeIdentifier(node);
-				} else if (assistNode instanceof CompletionOnExpStatement) {
-					CompletionOnExpStatement node = (CompletionOnExpStatement) assistNode;
-					completeExpStatement(node);
-				} else if (assistNode instanceof CompletionOnIdentifierExp) {
-					CompletionOnIdentifierExp node = (CompletionOnIdentifierExp) assistNode;
-					completeIdentifierExp(node);
-				} else if (assistNode instanceof CompletionOnThisDotExp) {
-					CompletionOnThisDotExp node = (CompletionOnThisDotExp) assistNode;
-					completeThisDotExp(node);
-				} else if (assistNode instanceof CompletionOnSuperDotExp) {
-					CompletionOnSuperDotExp node = (CompletionOnSuperDotExp) assistNode;
-					completeSuperDotExp(node);
-				} else if (assistNode instanceof CompletionOnCompoundStatement) {
-					CompletionOnCompoundStatement node = (CompletionOnCompoundStatement) assistNode;
-					completeCompoundStatement(node);
-				} else if (assistNode instanceof CompletionOnCallExp) {
-					CompletionOnCallExp node = (CompletionOnCallExp) assistNode;
-					completeCallExp(node);
-				} else if (assistNode instanceof CompletionOnNewExp) {
-					CompletionOnNewExp node = (CompletionOnNewExp) assistNode;
-					completeNewExp(node);
-				}
-			}
+			completeNode(assistNode);
 			
 			// For new |, don't suggest keywords or ddoc
 			if (parser.inNewExp) {
@@ -452,7 +393,6 @@ public class CompletionEngine extends Engine
 			
 			// Then the keywords
 			if (!wantMethodContextInfo &&
-					wantKeywords &&
 					parser.getKeywordCompletions() != null && 
 					!requestor.isIgnored(CompletionProposal.KEYWORD)) {
 				
@@ -486,6 +426,80 @@ public class CompletionEngine extends Engine
 		}
 	}
 
+	private void completeNode(ASTDmdNode assistNode) throws JavaModelException {
+		if (assistNode != null) {
+			if (assistNode instanceof CompletionOnModuleDeclaration && 
+					!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
+				CompletionOnModuleDeclaration node = (CompletionOnModuleDeclaration) assistNode;
+				completeModuleDeclaration(node);
+			} else if (assistNode instanceof CompletionOnImport &&
+					!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
+				CompletionOnImport node = (CompletionOnImport) assistNode;
+				completeImport(node);
+			} else if (assistNode instanceof CompletionOnArgumentName) {
+				CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
+				completeArgumentName(node);
+			} else if (assistNode instanceof CompletionOnGotoStatement) {
+				CompletionOnGotoStatement node = (CompletionOnGotoStatement) assistNode;
+				completeGotoBreakOrContinueStatement(node.ident, false /* don't check in loop */);
+			} else if (assistNode instanceof CompletionOnBreakStatement) {
+				CompletionOnBreakStatement node = (CompletionOnBreakStatement) assistNode;
+				completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
+			} else if (assistNode instanceof CompletionOnContinueStatement) {
+				CompletionOnContinueStatement node = (CompletionOnContinueStatement) assistNode;
+				completeGotoBreakOrContinueStatement(node.ident, true /* check in loop */);
+			} else if (assistNode instanceof CompletionOnVersionCondition) {
+				CompletionOnVersionCondition node = (CompletionOnVersionCondition) assistNode;
+				completeVersionCondition(node);
+			} else if (assistNode instanceof CompletionOnDebugCondition) {
+				CompletionOnDebugCondition node = (CompletionOnDebugCondition) assistNode;
+				completeDebugCondition(node);
+			} else if (assistNode instanceof CompletionOnCaseStatement) {
+				CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
+				completeCaseStatement(node);
+			} else if (assistNode instanceof CompletionOnTypeDotIdExp) {
+				CompletionOnTypeDotIdExp node = (CompletionOnTypeDotIdExp) assistNode;
+				completeTypeDotIdExp(node);
+			} else if (assistNode instanceof CompletionOnDotIdExp) {
+				CompletionOnDotIdExp node = (CompletionOnDotIdExp) assistNode;
+				completeDotIdExp(node);
+			} else if (assistNode instanceof CompletionOnTypeIdentifier) {
+				CompletionOnTypeIdentifier node = (CompletionOnTypeIdentifier) assistNode;
+				completeTypeIdentifier(node);
+			} else if (assistNode instanceof CompletionOnExpStatement) {
+				CompletionOnExpStatement node = (CompletionOnExpStatement) assistNode;
+				completeExpStatement(node);
+			} else if (assistNode instanceof CompletionOnIdentifierExp) {
+				CompletionOnIdentifierExp node = (CompletionOnIdentifierExp) assistNode;
+				completeIdentifierExp(node);
+			} else if (assistNode instanceof CompletionOnThisDotExp) {
+				CompletionOnThisDotExp node = (CompletionOnThisDotExp) assistNode;
+				completeThisDotExp(node);
+			} else if (assistNode instanceof CompletionOnSuperDotExp) {
+				CompletionOnSuperDotExp node = (CompletionOnSuperDotExp) assistNode;
+				completeSuperDotExp(node);
+			} else if (assistNode instanceof CompletionOnCompoundStatement) {
+				CompletionOnCompoundStatement node = (CompletionOnCompoundStatement) assistNode;
+				completeCompoundStatement(node);
+			} else if (assistNode instanceof CompletionOnCallExp) {
+				CompletionOnCallExp node = (CompletionOnCallExp) assistNode;
+				completeCallExp(node);
+			} else if (assistNode instanceof CompletionOnNewExp) {
+				CompletionOnNewExp node = (CompletionOnNewExp) assistNode;
+				completeNewExp(node);
+			} else if (assistNode instanceof CompletionOnTemplateMixin) {
+				CompletionOnTemplateMixin node = (CompletionOnTemplateMixin) assistNode;
+				completeTemplateMixin(node);
+			} else if (assistNode instanceof CompletionOnClassDeclaration) {
+				CompletionOnClassDeclaration node = (CompletionOnClassDeclaration) assistNode;
+				completeClassDeclaration(node);
+			} else if (assistNode instanceof CompletionOnInterfaceDeclaration) {
+				CompletionOnInterfaceDeclaration node = (CompletionOnInterfaceDeclaration) assistNode;
+				completeInterfaceDeclaration(node);
+			}
+		}
+	}
+	
 	private void computeExpectedType() {
 		if (parser.expectedTypeNode instanceof CallExp) {
 			CallExp callExp = (CallExp) parser.expectedTypeNode;
@@ -621,7 +635,9 @@ public class CompletionEngine extends Engine
 	private void completeCompoundStatement(CompletionOnCompoundStatement node) throws JavaModelException {
 		doSemantic();
 		
-		Scope scope = node.scope;
+		if (rootScope == null) {
+			rootScope = node.scope;
+		}
 		
 		currentName = CharOperation.NO_CHAR;
 		startPosition = actualCompletionPosition;
@@ -630,9 +646,9 @@ public class CompletionEngine extends Engine
 		wantConstructorsAndOpCall = false;
 		
 		if (parser.wantOnlyType()) {
-			completeScope(scope, INCLUDE_TYPES | INCLUDE_IMPORTS);
+			completeScope(rootScope, INCLUDE_TYPES | INCLUDE_IMPORTS);
 		} else {
-			completeScope(scope, INCLUDE_ALL);	
+			completeScope(rootScope, INCLUDE_ALL);	
 		}
 	}
 
@@ -989,7 +1005,9 @@ public class CompletionEngine extends Engine
 		if (node.dot == -1) {
 			currentName = computePrefixAndSourceRange(node.ident);
 			
-			Scope scope = node.scope;
+			if (rootScope == null) {
+				rootScope = node.scope;
+			}
 			
 			// Inside a function, this may be the case of:
 			// Object something;
@@ -1000,11 +1018,11 @@ public class CompletionEngine extends Engine
 			//
 			// The parser thinks it's: somet something (a var declaration with type "somet"),
 			// so inside a function we want other things beside types
-			if (scope != null && scope.func != null) {
+			if (rootScope != null && rootScope.func != null) {
 				isCompletingTypeIdentifier = false;
 			}
 			
-			completeScope(scope, INCLUDE_ALL);
+			completeScope(rootScope, INCLUDE_ALL);
 			
 			// Also suggest packages
 			isCompletingPackage = true;
@@ -1148,12 +1166,15 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		Scope scope = node.scope;
-		if (scope == null) {
+		if (rootScope == null) {
+			rootScope = node.scope;
+		}
+		
+		if (rootScope == null) {
 			return;
 		}
 		
-		completeScope(scope, INCLUDE_ALL);
+		completeScope(rootScope, INCLUDE_ALL);
 		
 		// Also suggest packages
 		isCompletingPackage = true;
@@ -1169,8 +1190,11 @@ public class CompletionEngine extends Engine
 		if (node.dot == -1) {
 			currentName = computePrefixAndSourceRange(node);
 			
-			Scope scope = node.scope;
-			completeScope(scope, INCLUDE_ALL);
+			if (rootScope == null) {
+				rootScope = node.scope;
+			}
+			
+			completeScope(rootScope, INCLUDE_ALL);
 			
 			// Also suggest packages
 			isCompletingPackage = true;
@@ -1231,7 +1255,45 @@ public class CompletionEngine extends Engine
 			suggestMember(node.member, false, 0, null, INCLUDE_CONSTRUCTORS);
 		}
 	}
+	
+	private void completeTemplateMixin(CompletionOnTemplateMixin node) throws JavaModelException {
+		doSemantic();
+		
+		if (node.scope != null) {
+			currentName = computePrefixAndSourceRange(node.name);
+			
+			completeScope(node.scope, INCLUDE_ALL);
+		}
+	}
+	
+	private void completeClassDeclaration(CompletionOnClassDeclaration node) throws JavaModelException {
+		doSemantic();
+		
+		completeAggregateDeclaration(node, node.theScope, node.baseClassIndex);
+	}
 
+	private void completeInterfaceDeclaration(CompletionOnInterfaceDeclaration node) throws JavaModelException {
+		doSemantic();
+		
+		completeAggregateDeclaration(node, node.theScope, node.baseClassIndex);
+	}
+	
+	private void completeAggregateDeclaration(ClassDeclaration node, Scope scope, int baseClassIndex) throws JavaModelException {
+		if (scope != null) {
+			rootScope = scope;
+			
+			if (baseClassIndex == -1) {
+				currentName = CharOperation.NO_CHAR;
+				startPosition = actualCompletionPosition;
+				endPosition = actualCompletionPosition;
+				
+				completeScope(rootScope, INCLUDE_ALL);
+			} else {
+				completeNode(node.baseclasses.get(baseClassIndex).type);
+			}
+		}
+	}
+	
 	private void completeSuperDotExp(CompletionOnSuperDotExp node) throws JavaModelException {
 		doSemantic();
 		

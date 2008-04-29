@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Flags;
 import descent.core.IType;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
@@ -397,6 +398,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 		if (rest != null && !rest.isConsumed()) {
 			rest.consume(this);
 		}
+	}
+	
+	@Override
+	public long getFlags() {
+		return super.getFlags() | Flags.AccEnum;
 	}
 
 }

@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.Flags;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
@@ -318,6 +319,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		} else {
 			return ISignatureConstants.INTERFACE;
 		}
+	}
+	
+	@Override
+	public long getFlags() {
+		return super.getFlags() | Flags.AccInterface;
 	}
 
 }

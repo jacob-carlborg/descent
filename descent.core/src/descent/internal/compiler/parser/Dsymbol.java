@@ -626,7 +626,7 @@ public class Dsymbol extends ASTDmdNode {
 	 * This method is only intended to be invoked if the module
 	 * is resolved.
 	 */
-	public final long getFlags() {
+	public long getFlags() {
 		long flags = 0;
 		long storage_class = getStorageClass();
 		PROT protection = getProtection();

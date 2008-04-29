@@ -6,6 +6,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.Flags;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTnone;
@@ -333,6 +334,11 @@ public class StructDeclaration extends AggregateDeclaration {
 		} else {
 			return ISignatureConstants.STRUCT;
 		}
+	}
+	
+	@Override
+	public long getFlags() {
+		return super.getFlags() | Flags.AccStruct;
 	}
 
 }

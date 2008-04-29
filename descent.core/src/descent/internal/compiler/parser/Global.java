@@ -10,6 +10,7 @@ public class Global {
 	public Param params = new Param();
 	public long debugLevel;
 	public Array<String> path = new Array<String>();
+	public Array<String> filePath = new Array<String>();
 	
 	public Global() {
 		path.add("C:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");

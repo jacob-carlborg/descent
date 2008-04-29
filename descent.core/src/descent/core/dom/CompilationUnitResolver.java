@@ -368,9 +368,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		try {
 			for(IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
 				if (root.getResource() == null) {
-					global.path.add(root.getPath().toOSString());
+					String path = root.getPath().toOSString();
+					global.path.add(path);
+					global.filePath.add(path);
 				} else {
-					global.path.add(root.getResource().getLocation().toOSString());
+					String path = root.getResource().getLocation().toOSString();
+					global.path.add(path);
+					global.filePath.add(path);
 				}
 			}
 		} catch (JavaModelException e) {

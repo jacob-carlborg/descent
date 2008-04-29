@@ -3592,44 +3592,46 @@ public class ASTConverter {
 			ret = convert(typeof);
 		}
 		
-		for(int i = 0; i < ids.size(); i++) {
-			IdentifierExp id = ids.get(i);
-			if (id == null || (id.ident != null && CharOperation.equals(id.ident, Id.empty))) continue;
-			
-			descent.core.dom.Type second;
-			if (i == ids.size() - 1) {
-				if (tiargs == null || tiargs.isEmpty()) {
-					descent.core.dom.SimpleName firstName = (SimpleName) convert(id);
-					second = ast.newSimpleType(firstName);
-					second.setSourceRange(firstName.getStartPosition(), firstName.getLength());
-				} else {
-					TemplateType type = new TemplateType(ast);
-					type.setName((SimpleName) convert(id));
-					for(ASTDmdNode node : tiargs) {
-						type.arguments().add(convert(node));
+		if (ids != null) {
+			for(int i = 0; i < ids.size(); i++) {
+				IdentifierExp id = ids.get(i);
+				if (id == null || (id.ident != null && CharOperation.equals(id.ident, Id.empty))) continue;
+				
+				descent.core.dom.Type second;
+				if (i == ids.size() - 1) {
+					if (tiargs == null || tiargs.isEmpty()) {
+						descent.core.dom.SimpleName firstName = (SimpleName) convert(id);
+						second = ast.newSimpleType(firstName);
+						second.setSourceRange(firstName.getStartPosition(), firstName.getLength());
+					} else {
+						TemplateType type = new TemplateType(ast);
+						type.setName((SimpleName) convert(id));
+						for(ASTDmdNode node : tiargs) {
+							type.arguments().add(convert(node));
+						}
+						second = type;
+						second.setSourceRange(id.start, start + length - id.start);
 					}
-					second = type;
-					second.setSourceRange(id.start, start + length - id.start);
-				}
-			} else {
-				if (id instanceof TemplateInstanceWrapper) {
-					second = convert((TemplateInstanceWrapper) id);
 				} else {
-					descent.core.dom.SimpleName name = (SimpleName) convert(id);
-					second = ast.newSimpleType(name);
-					second.setSourceRange(name.getStartPosition(), name.getLength());
+					if (id instanceof TemplateInstanceWrapper) {
+						second = convert((TemplateInstanceWrapper) id);
+					} else {
+						descent.core.dom.SimpleName name = (SimpleName) convert(id);
+						second = ast.newSimpleType(name);
+						second.setSourceRange(name.getStartPosition(), name.getLength());
+					}
 				}
-			}
-			if (ret == null) {
-				if (i == 1) {
-					ret = ast.newQualifiedType(null, second);
+				if (ret == null) {
+					if (i == 1) {
+						ret = ast.newQualifiedType(null, second);
+					} else {
+						ret = second;
+					}
 				} else {
-					ret = second;
+					ret = ast.newQualifiedType(ret, second);
 				}
-			} else {
-				ret = ast.newQualifiedType(ret, second);
+				ret.setSourceRange(start, second.getStartPosition() + second.getLength() - start);
 			}
-			ret.setSourceRange(start, second.getStartPosition() + second.getLength() - start);
 		}
 		return ret;
 	}

@@ -8,6 +8,7 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
@@ -32,11 +33,13 @@ import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
+import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
@@ -410,6 +413,8 @@ public class CompletionParser extends Parser {
 		// exp.start is -1 if it's an error expression
 		if (caseEnd <= cursorLocation && cursorLocation <= expStart + expLength && exp != null && (exp instanceof ErrorExp || 
 				(exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP))) {
+			wantKeywords = false;
+			
 			assistNode = new CompletionOnCaseStatement(loc, exp, statement);
 			return (CaseStatement) assistNode;
 		} else {
@@ -452,6 +457,17 @@ public class CompletionParser extends Parser {
 			assistNode = typeBasic;
 		}
 		return typeBasic;
+	}
+	
+	@Override
+	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
+			wantKeywords = false;
+			
+			assistNode = new CompletionOnTemplateMixin(loc, id, tqual, idents, tiargs);
+			return (CompletionOnTemplateMixin) assistNode;
+		}
+		return super.newTemplateMixin(loc, id, tqual, idents, tiargs);
 	}
 	
 	@Override
@@ -799,11 +815,25 @@ public class CompletionParser extends Parser {
 	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		// We don't want assist for an aggregate's name, but we do want it
 		// for base classes
-		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
-			if (prevToken.value != TOK.TOKcolon && prevToken.value != TOK.TOKcomma) {
-				wantAssist = false;
-			} else {
-				wantOnlyType = true;
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr && 
+				(prevToken.value == TOK.TOKcolon || prevToken.value == TOK.TOKcomma)) {
+			wantOnlyType = true;
+			
+			assistNode = new CompletionOnClassDeclaration(loc, id, baseClasses);
+			return (AggregateDeclaration) assistNode;
+		}
+		
+		if (baseClasses != null) {
+			int i = 0;
+			for(BaseClass bc : baseClasses) {
+				if (bc.type != null && bc.type.start <= cursorLocation && cursorLocation <= bc.type.start + bc.type.length) {
+					wantOnlyType = true;
+					
+					assistNode = new CompletionOnClassDeclaration(loc, id, baseClasses);
+					((CompletionOnClassDeclaration) assistNode).baseClassIndex = i;
+					return (AggregateDeclaration) assistNode;
+				}
+				i++;
 			}
 		}
 		
@@ -814,11 +844,25 @@ public class CompletionParser extends Parser {
 	protected AggregateDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		// We don't want assist for an aggregate's name, but we do want it
 		// for base classes
-		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
-			if (prevToken.value != TOK.TOKcolon && prevToken.value != TOK.TOKcomma) {
-				wantAssist = false;
-			} else {
-				wantOnlyType = true;
+		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr && 
+				(prevToken.value == TOK.TOKcolon || prevToken.value == TOK.TOKcomma)) {
+			wantOnlyType = true;
+			
+			assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
+			return (AggregateDeclaration) assistNode;
+		}
+		
+		if (baseClasses != null) {
+			int i = 0;
+			for(BaseClass bc : baseClasses) {
+				if (bc.type != null && bc.type.start <= cursorLocation && cursorLocation <= bc.type.start + bc.type.length) {
+					wantOnlyType = true;
+					
+					assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
+					((CompletionOnInterfaceDeclaration) assistNode).baseClassIndex = i;
+					return (AggregateDeclaration) assistNode;
+				}
+				i++;
 			}
 		}
 		

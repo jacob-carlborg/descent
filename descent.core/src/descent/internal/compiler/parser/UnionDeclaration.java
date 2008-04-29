@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Flags;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -80,6 +81,11 @@ public class UnionDeclaration extends StructDeclaration {
 		} else {
 			return ISignatureConstants.UNION;
 		}
+	}
+	
+	@Override
+	public long getFlags() {
+		return (super.getFlags() | Flags.AccUnion) - Flags.AccStruct;
 	}
 
 }

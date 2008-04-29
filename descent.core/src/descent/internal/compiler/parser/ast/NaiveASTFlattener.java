@@ -2460,32 +2460,34 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			ret = true;
 		}
 		
-		for(int i = 0; i < ids.size(); i++) {
-			IdentifierExp id = ids.get(i);
-			if (id == null || (id.ident != null && CharOperation.equals(id.ident, Id.empty))) continue;
-			
-			if (!ret) {
-				if (i == 1) {
+		if (ids != null) {
+			for(int i = 0; i < ids.size(); i++) {
+				IdentifierExp id = ids.get(i);
+				if (id == null || (id.ident != null && CharOperation.equals(id.ident, Id.empty))) continue;
+				
+				if (!ret) {
+					if (i == 1) {
+						this.buffer.append(".");
+					} else {
+						
+					}
+				} else {
 					this.buffer.append(".");
-				} else {
-					
 				}
-			} else {
-				this.buffer.append(".");
-			}
-			
-			if (i == ids.size() - 1) {
-				if (tiargs == null || tiargs.isEmpty()) {
-					id.accept(this);
+				
+				if (i == ids.size() - 1) {
+					if (tiargs == null || tiargs.isEmpty()) {
+						id.accept(this);
+					} else {
+						id.accept(this);
+						visitList(tiargs, ", ", "!(", ")");
+					}
 				} else {
 					id.accept(this);
-					visitList(tiargs, ", ", "!(", ")");
 				}
-			} else {
-				id.accept(this);
+				
+				ret = true;
 			}
-			
-			ret = true;
 		}
 	}
 

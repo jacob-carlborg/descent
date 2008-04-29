@@ -1829,19 +1829,22 @@ public class Parser extends Lexer {
 				// We've got at least "class Identifier", make a declaration out of it
 				String word = toWord(firstToken.value.toString());
 				parsingErrorInsertToComplete(prevToken,  word + "Body", word + "Declaration");
-				switch(firstToken.value) {
-				case TOKclass:
-					a = newClassDeclaration(loc(), id, baseClasses);
-					break;
-				case TOKinterface:
-					a = newInterfaceDeclaration(loc(), id, baseClasses);
-					break;
-				case TOKstruct:
-					a = newStructDeclaration(loc(), id);
-					break;
-				case TOKunion:
-					a = newUnionDeclaration(loc(), id);
-					break;
+				
+				if (a == null) {
+					switch(firstToken.value) {
+					case TOKclass:
+						a = newClassDeclaration(loc(), id, baseClasses);
+						break;
+					case TOKinterface:
+						a = newInterfaceDeclaration(loc(), id, baseClasses);
+						break;
+					case TOKstruct:
+						a = newStructDeclaration(loc(), id);
+						break;
+					case TOKunion:
+						a = newUnionDeclaration(loc(), id);
+						break;
+					}
 				}
 			}		
 		}
@@ -2157,8 +2160,9 @@ public class Parser extends Lexer {
 			}
 			if (token.value != TOKidentifier) {
 				parsingErrorDeleteToken(prevToken);
+				
 				// goto Lerr;
-				return null;
+				return newTemplateMixin(loc(), null, null, null, null);
 			}
 			id = newIdentifierExp();
 			nextToken();
@@ -2206,7 +2210,7 @@ public class Parser extends Lexer {
 			id = null;
 		}
 		
-		tm = new TemplateMixin(loc(), id, tqual, idents, tiargs);
+		tm = newTemplateMixin(loc(), id, tqual, idents, tiargs);
 		tm.setTypeSourceRange(typeStart, typeLength);
 
 		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
@@ -2220,7 +2224,7 @@ public class Parser extends Lexer {
 	    
 	    // Lerr:
 	    // return NULL;
-	}
+	}	
 
 	@SuppressWarnings("unchecked")
 	private Objects parseTemplateArgumentList() {
@@ -7401,6 +7405,10 @@ public class Parser extends Lexer {
 
 	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		return new ClassDeclaration(loc, id, baseClasses);
+	}
+	
+	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
+		return new TemplateMixin(loc(), id, tqual, idents, tiargs);
 	}
 	
 	private Statement dietParseStatement(FuncDeclaration f) {

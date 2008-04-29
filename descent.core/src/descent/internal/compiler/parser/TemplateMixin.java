@@ -20,7 +20,7 @@ public class TemplateMixin extends TemplateInstance {
 
 	public TemplateMixin(Loc loc, IdentifierExp ident, Type tqual,
 			Identifiers idents, Objects tiargs) {
-		super(loc, idents.get(idents.size() - 1));
+		super(loc, idents == null || idents.isEmpty() ? null : idents.get(idents.size() - 1));
 		this.ident = ident;
 		this.sourceIdent = ident;
 		this.tqual = tqual;
@@ -94,6 +94,11 @@ public class TemplateMixin extends TemplateInstance {
 			Dsymbol s;
 			int i;
 			IdentifierExp id;
+			
+			// Descent: recovery on "mixin"
+			if (idents == null) {
+				return;
+			}
 
 			if (tqual != null) {
 				s = tqual.toDsymbol(sc, context);

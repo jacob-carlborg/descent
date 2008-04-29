@@ -66,23 +66,32 @@ public class FileExp extends UnaExp {
 	    }
 	    
 	    String filename = new String(((StringExp) e1).string);
-	    File file = context.fileImports.get(filename);
 	    
-	    if(null == file)
-	    {
-	    	context.acceptProblem(Problem.newSemanticTypeError(
-	    			IProblem.FileImportsMustBeSpecified,
-	    			e1,
-	    			new String[] { filename }));
-			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
+	    File file = null;
+	    for(String filePath : context.global.filePath) {
+	    	File aFile = new File(filePath, filename);
+	    	if (aFile.exists()) {
+	    		file = aFile;
+	    		break;
+	    	}
 	    }
 	    
-	    if(!file.exists())
+	    // TODO remove this error?
+//	    if(null == file)
+//	    {
+//	    	context.acceptProblem(Problem.newSemanticTypeError(
+//	    			IProblem.FileImportsMustBeSpecified,
+//	    			e1,
+//	    			new String[] { filename }));
+//			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
+//	    }
+	    
+	    if(file == null)
 	    {
 	    	context.acceptProblem(Problem.newSemanticTypeError(
 	    			IProblem.FileNotFound,
 	    			e1,
-	    			new String[] { file.getAbsolutePath() }));
+	    			new String[] { filename }));
 			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
