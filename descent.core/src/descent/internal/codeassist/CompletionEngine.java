@@ -100,6 +100,7 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.SymOffExp;
 import descent.internal.compiler.parser.TOK;
@@ -258,6 +259,8 @@ public class CompletionEngine extends Engine
 	boolean wantConstructorsAndOpCall = true;
 	boolean wantProperties = true;
 	boolean wantMethodContextInfo = false;
+	boolean isCompletingThisCall = false;
+	boolean isCompletingSuperCall = false;
 	
 	Scope rootScope;
 	
@@ -1215,6 +1218,12 @@ public class CompletionEngine extends Engine
 	private void completeCallExp(CallExp node) throws JavaModelException {
 		doSemantic();
 		
+		if (node.sourceE1 instanceof SuperExp) {
+			isCompletingSuperCall = true;	
+		} else if (node.sourceE1 instanceof ThisExp) {
+			isCompletingThisCall = true;	
+		}
+		
 		if (node.e1 != null && node.e1.type != null) {
 			currentName = CharOperation.NO_CHAR;
 			startPosition = actualCompletionPosition;
@@ -1223,23 +1232,48 @@ public class CompletionEngine extends Engine
 			if (node.e1 instanceof VarExp && node.e1.type instanceof TypeFunction) {
 				VarExp var = (VarExp) node.e1;
 				if (var.var instanceof FuncDeclaration) {
-					wantMethodContextInfo = true;
-					suggestMember(var.var, false, 0, null, INCLUDE_FUNCTIONS);
+					suggestContextInfo((FuncDeclaration) var.var);
 				}
 			} else if (node.e1 instanceof DotVarExp && node.e1.type instanceof TypeFunction) {
 				DotVarExp var = (DotVarExp) node.e1;
 				if (var.var instanceof FuncDeclaration) {
-					wantMethodContextInfo = true;
-					suggestMember(var.var, false, 0, null, INCLUDE_FUNCTIONS);
+					suggestContextInfo((FuncDeclaration) var.var);
 				}
 			} else if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
 				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			} else {
-				// TODO check this
+				wantMethodContextInfo = true;
 				trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			}
 		} else if (node.e1 instanceof CallExp && node.e1 != node) {
 			completeCallExp((CallExp) node.e1);
+		} else if (node.e1 instanceof SuperExp) {
+			
+		}
+	}
+	
+	private void suggestContextInfo(FuncDeclaration func) {
+		int includes = func instanceof CtorDeclaration ? INCLUDE_CONSTRUCTORS : INCLUDE_FUNCTIONS;
+		
+		wantMethodContextInfo = true;
+		suggestMember(func, false, 0, null, includes);
+		
+		Dsymbol prev = func.overprevious;
+		while(prev != null) {
+			suggestMember(prev, false, 0, null, includes);
+			prev = prev.overprevious;
+		}
+		
+		Dsymbol next = func.overnext;
+		while(next != null) {
+			suggestMember(next, false, 0, null, includes);
+			if (next instanceof FuncDeclaration) {
+				next = ((FuncDeclaration) next).overnext;
+			} else if (next instanceof AliasDeclaration) {
+				next = ((AliasDeclaration) next).overnext;
+			} else {
+				break;
+			}
 		}
 	}
 	
@@ -1251,8 +1285,7 @@ public class CompletionEngine extends Engine
 			startPosition = actualCompletionPosition;
 			endPosition = actualCompletionPosition;
 			
-			wantMethodContextInfo = true;
-			suggestMember(node.member, false, 0, null, INCLUDE_CONSTRUCTORS);
+			suggestContextInfo((FuncDeclaration) node.member);
 		}
 	}
 	
@@ -1942,7 +1975,7 @@ public class CompletionEngine extends Engine
 					FuncDeclaration func = (FuncDeclaration) sym;
 					
 					semanticContext.allowOvernextBySignature = true;				
-					Declaration funcDecl = func.overnext();
+					Declaration funcDecl = func.overnext;
 					if (funcDecl != null && funcDecl != sym) {
 						suggestMember(funcDecl, ident, onlyStatics, flags, funcSignatures, includes);
 					}
@@ -2256,14 +2289,14 @@ public class CompletionEngine extends Engine
 					if (constructor || opCall) {
 						proposal.setName(currentName);
 						if (wantMethodContextInfo) {
-							proposal.setCompletion(CharOperation.NO_CHAR);
+							handleContextInfo(func, funcNameIsOpCall, proposal);
 						} else {
 							proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
 						}
 					} else {
 						proposal.setName(funcName);
 						if (wantMethodContextInfo) {
-							proposal.setCompletion(CharOperation.NO_CHAR);
+							handleContextInfo(func, funcNameIsOpCall, proposal);
 						} else {
 							proposal.setCompletion(CharOperation.concat(ident, "()".toCharArray()));
 						}
@@ -2292,6 +2325,19 @@ public class CompletionEngine extends Engine
 					}
 				}
 				return;
+			}
+		}
+	}
+	
+	private void handleContextInfo(FuncDeclaration func, boolean funcNameIsOpCall, CompletionProposal proposal) {
+		proposal.setCompletion(CharOperation.NO_CHAR);
+		if (funcNameIsOpCall || func instanceof CtorDeclaration) {
+			if (isCompletingThisCall) {
+				proposal.setName(TOK.TOKthis.charArrayValue);
+			} else if (isCompletingSuperCall) {
+				proposal.setName(TOK.TOKsuper.charArrayValue);
+			} else {
+				proposal.setName(func.parent.ident.ident);
 			}
 		}
 	}

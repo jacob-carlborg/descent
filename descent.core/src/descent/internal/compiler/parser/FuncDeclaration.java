@@ -624,7 +624,7 @@ public class FuncDeclaration extends Declaration {
 					if (t.equals(d.type)) {
 						return f;
 					}
-					next = f.overnext();
+					next = f.overnext;
 				}
 			}
 		}
@@ -646,6 +646,7 @@ public class FuncDeclaration extends Declaration {
 				return false;
 			}
 			overnext = a;
+			a.overprevious = this;
 			return true;
 		}
 		f = s.isFuncDeclaration();
@@ -664,6 +665,7 @@ public class FuncDeclaration extends Declaration {
 			return overnext.overloadInsert(f, context);
 		}
 		overnext = f;
+		f.overprevious = this;
 		return true;
 	}
 
@@ -1861,10 +1863,6 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public int getLineNumber() {
 		return loc.linnum;
-	}
-	
-	public Declaration overnext() {
-		return overnext;
 	}
 	
 	public VarDeclaration vthis() {

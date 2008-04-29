@@ -153,7 +153,7 @@ public class SemanticMixin {
 				appendTemplateParameters((TemplateDeclaration) aThis, sb);
 			}
 			
-			if (aThis instanceof FuncDeclaration) {
+			if (aThis instanceof FuncDeclaration && !(aThis.parent instanceof TemplateInstance)) {
 				aThis.type().appendSignature(sb);
 			}
 		}
@@ -173,6 +173,10 @@ public class SemanticMixin {
 		}
 		sb.append(tempinst.name.ident.length);
 		sb.append(tempinst.name.ident);
+		
+		if (aThis instanceof FuncDeclaration) {
+			aThis.type().appendSignature(sb);
+		}
 		
 		appendTemplateParameters(tempdecl, sb);
 		

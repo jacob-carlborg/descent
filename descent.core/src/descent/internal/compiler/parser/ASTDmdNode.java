@@ -462,7 +462,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				inferApplyArgTypesX(fa.funcalias, arguments, context);
 				next = fa.overnext;
 			} else if ((f = d.isFuncDeclaration()) != null) {
-				next = f.overnext();
+				next = f.overnext;
 
 				TypeFunction tf = (TypeFunction) f.type;
 				if (inferApplyArgTypesY(tf, arguments, context)) {
@@ -1399,7 +1399,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						return 1;
 					}
 
-					next = f.overnext();
+					next = f.overnext;
 				}
 			}
 		}

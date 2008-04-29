@@ -104,6 +104,7 @@ public class AliasDeclaration extends Declaration {
 
 		if (overnext == null) {
 			overnext = s;
+			s.overprevious = this;
 			return true;
 		} else {
 			return overnext.overloadInsert(s, context);

@@ -63,6 +63,7 @@ public class Dsymbol extends ASTDmdNode {
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
 	public Loc loc;
+	public Dsymbol overprevious; // previous in overload list
 
 	public Dsymbol() {
 	}

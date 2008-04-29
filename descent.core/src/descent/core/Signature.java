@@ -12,6 +12,7 @@
 package descent.core;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
 
@@ -1826,7 +1827,12 @@ public static String toString(String signature, final boolean fqn) throws Illega
 			}
 			private char nextTemplateParameterName() {
 				// We don't care about crazy templates with more than 8 parameters
-				return (char) ('T' + templateParameters.peek().size());
+				try {
+					return (char) ('T' + templateParameters.peek().size());
+				} catch (EmptyStackException e) {
+					System.out.println(1);
+					return 'T';
+				}
 			}
 			@Override
 			public void exitTemplateParameters() {

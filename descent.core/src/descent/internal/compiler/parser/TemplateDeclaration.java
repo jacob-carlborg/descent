@@ -686,6 +686,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		beforePf.overnext = f;
+		f.overprevious = beforePf;
 		return true;
 	}
 
