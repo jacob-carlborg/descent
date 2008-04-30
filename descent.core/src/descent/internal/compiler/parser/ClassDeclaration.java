@@ -869,11 +869,13 @@ public class ClassDeclaration extends AggregateDeclaration {
 		buf.writenl();
 		buf.writeByte('{');
 		buf.writenl();
-		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
-
-			buf.writestring("    ");
-			s.toCBuffer(buf, hgs, context);
+		if (members != null) {
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s = members.get(i);
+	
+				buf.writestring("    ");
+				s.toCBuffer(buf, hgs, context);
+			}
 		}
 		buf.writestring("}");
 		buf.writenl();

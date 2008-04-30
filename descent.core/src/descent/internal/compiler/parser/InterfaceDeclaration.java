@@ -76,24 +76,26 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		
 		cd.consumeRest();
 		
-		for (j = 0; j < cd.interfaces.size(); j++) {
-			BaseClass b = cd.interfaces.get(j);
-
-			if (SemanticMixin.equals(this, b.base)) {
-				if (poffset != null) {
-					poffset[0] = b.offset;
-					if (j != 0 && cd.isInterfaceDeclaration() != null) {
+		if (cd != null && cd.interfaces != null) {
+			for (j = 0; j < cd.interfaces.size(); j++) {
+				BaseClass b = cd.interfaces.get(j);
+	
+				if (SemanticMixin.equals(this, b.base)) {
+					if (poffset != null) {
+						poffset[0] = b.offset;
+						if (j != 0 && cd.isInterfaceDeclaration() != null) {
+							poffset[0] = OFFSET_RUNTIME;
+						}
+					}
+					return true;
+				}
+				if (isBaseOf(b, poffset)) {
+					if (j != 0 && poffset != null
+							&& cd.isInterfaceDeclaration() != null) {
 						poffset[0] = OFFSET_RUNTIME;
 					}
+					return true;
 				}
-				return true;
-			}
-			if (isBaseOf(b, poffset)) {
-				if (j != 0 && poffset != null
-						&& cd.isInterfaceDeclaration() != null) {
-					poffset[0] = OFFSET_RUNTIME;
-				}
-				return true;
 			}
 		}
 
