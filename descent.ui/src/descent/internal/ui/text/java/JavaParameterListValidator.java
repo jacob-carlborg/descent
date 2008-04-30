@@ -240,6 +240,25 @@ public class JavaParameterListValidator implements IContextInformationValidator,
 
 			if (position < line.getOffset() || position >= document.getLength())
 				return false;
+			
+			boolean isSetter = false;
+			int pos = fPosition;
+		loop:
+			while(pos >= 0) {
+				char c = document.getChar(pos);
+				switch(c) {
+				case '(':
+					break loop;
+				case '=':
+					isSetter = true;
+					break loop;
+				}
+				pos--;
+			}
+			
+			if (isSetter) {
+				return Character.isJavaIdentifierPart(document.getChar(position));
+			}
 
 			return getCharCount(document, fPosition, position, "(", ")", false) >= 0; //$NON-NLS-1$ //$NON-NLS-2$
 

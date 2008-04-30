@@ -161,9 +161,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 			} else {
 				module.moduleName = sourceUnit.getFullyQualifiedName();
 
-				context = CompilationUnitResolver.resolve(module, javaProject,
-						owner);
-
 				long time2 = System.currentTimeMillis();
 				module.accept(this);
 				time2 = System.currentTimeMillis() - time2;
@@ -177,6 +174,17 @@ public class SelectionEngine extends AstVisitorAdapter {
 		} finally {
 			time = System.currentTimeMillis() - time;
 			System.out.println("Selection time: " + time);
+		}
+	}
+	
+	private void doSemantic() {
+		if (context == null) {
+			try {
+				context = CompilationUnitResolver.resolve(module, javaProject,
+						owner);
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
 		}
 	}
 
@@ -228,8 +236,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(Module node) {
 		// Don't visit template instances in the module scope
-		for (Dsymbol symbol : node.members) {
-			Dsymbol dsymbol = symbol;
+		int length = node.members.size();
+		for (int i = 0; i < length; i++) {
+			Dsymbol dsymbol = node.members.get(i);
 			if (null == dsymbol.isTemplateInstance()) {
 				dsymbol.accept(this);
 			}
@@ -312,6 +321,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (!isInRange(node)) {
 			return false;
 		}
+		
+		doSemantic();
 
 		if (node.resolvedSymbol != null) {
 			Dsymbol sym = node.resolvedSymbol;
@@ -365,6 +376,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(Import node) {
 		if (isInRange(node.id)) {
+			doSemantic();
+			
 			Module mod = node.mod;
 			if (mod != null) {
 				if (mod.getJavaElement() != null) {
@@ -391,13 +404,16 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 	@Override
 	public boolean visit(Argument node) {
-		if (node.var != null && isInRange(node.ident)) {
-			if (node.var instanceof VarDeclaration) {
-				add((VarDeclaration) node.var);
-			} else if (node.var instanceof AliasDeclaration) {
-				add((AliasDeclaration) node.var);
-			} else if (node.var instanceof TypedefDeclaration) {
-				add((TypedefDeclaration) node.var);
+		if (isInRange(node.ident)) {
+			doSemantic();
+			if (node.var != null) {
+				if (node.var instanceof VarDeclaration) {
+					add((VarDeclaration) node.var);
+				} else if (node.var instanceof AliasDeclaration) {
+					add((AliasDeclaration) node.var);
+				} else if (node.var instanceof TypedefDeclaration) {
+					add((TypedefDeclaration) node.var);
+				}
 			}
 			return false;
 		}
@@ -406,12 +422,16 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 	@Override
 	public boolean visit(NewExp node) {
-		if (isInRange(node.sourceNewtype) && node.member != null) {
-			CtorDeclaration ctor = node.member;
-			if (ctor.getJavaElement() != null) {
-				addJavaElement(ctor.getJavaElement());
-			} else {
-				addBinarySearch(ctor);
+		if (isInRange(node.sourceNewtype)) {
+			doSemantic();
+			
+			if (node.member != null) {
+				CtorDeclaration ctor = node.member;
+				if (ctor.getJavaElement() != null) {
+					addJavaElement(ctor.getJavaElement());
+				} else {
+					addBinarySearch(ctor);
+				}
 			}
 			return false;
 		}
@@ -470,6 +490,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 
 	private void add(VarDeclaration node) {
+		doSemantic();
+		
 		if (node.getJavaElement() != null) {
 			addJavaElement(node.getJavaElement());
 		} else if (isLocal(node)) {
@@ -480,6 +502,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 
 	private void add(AliasDeclaration node) {
+		doSemantic();
+		
 		if (node.getJavaElement() != null) {
 			addJavaElement(node.getJavaElement());
 		} else if (isLocal(node)) {
@@ -490,6 +514,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 
 	private void add(TypedefDeclaration node) {
+		doSemantic();
+		
 		if (node.getJavaElement() != null) {
 			addJavaElement(node.getJavaElement());
 		} else if (isLocal(node)) {

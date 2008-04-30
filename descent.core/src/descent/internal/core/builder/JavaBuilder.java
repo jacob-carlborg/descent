@@ -76,6 +76,10 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	public static void build(IResource[] resources, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("", 100 * resources.length);
 		for(IResource resource : resources) {
+			if (monitor.isCanceled()) {
+				return;
+			}
+			
 			build(resource, new SubProgressMonitor(monitor, 100));
 		}
 		monitor.done();

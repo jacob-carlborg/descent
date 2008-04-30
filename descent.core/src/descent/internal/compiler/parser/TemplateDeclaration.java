@@ -853,12 +853,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		buf.writestring(ident.toChars());
 		buf.writeByte('(');
-		for (int i = 0; i < parameters.size(); i++) {
-			TemplateParameter tp = parameters.get(i);
-			if (i != 0) {
-				buf.writeByte(',');
+		if (parameters != null) {
+			for (int i = 0; i < parameters.size(); i++) {
+				TemplateParameter tp = parameters.get(i);
+				if (i != 0) {
+					buf.writeByte(',');
+				}
+				tp.toCBuffer(buf, hgs, context);
 			}
-			tp.toCBuffer(buf, hgs, context);
 		}
 		buf.writeByte(')');
 		// buf.writeByte(0);
