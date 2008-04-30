@@ -19,6 +19,7 @@ import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.lookup.DmdModuleFinder;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.SemanticContext;
@@ -158,7 +159,8 @@ public abstract class Parser_Test extends TestCase {
 				return false;
 			}
 			
-		}, result.module, null, new DmdModuleFinder(global), global, new CompilerConfiguration());
+		}, result.module, null, new DmdModuleFinder(global), global, new CompilerConfiguration(),
+		new ASTNodeEncoder());
 		
 		if (!(result.module.problems != null && result.module.problems.size() > 0)) {
 			result.module.semantic(context);

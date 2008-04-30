@@ -195,19 +195,39 @@ public class Parser extends Lexer {
 	
 	public Parser(int apiLevel, char[] source, int offset, 
 			int length, char[] filename) {
-		this(apiLevel, source, offset, length, null, null, false, filename);
+		this(apiLevel, source, offset, length, filename, true);
+	}
+	
+	public Parser(int apiLevel, char[] source, int offset, 
+			int length, char[] filename, boolean recordLineSeparator) {
+		this(apiLevel, source, offset, length, null, null, recordLineSeparator, false, filename);
 	}
 	
 	public Parser(int apiLevel, char[] source, int offset, 
 			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename) {
+		this(apiLevel, source, offset, length, taskTags, taskPriorities, isTaskCaseSensitive, filename, new ASTNodeEncoder());
+	}
+	
+	public Parser(int apiLevel, char[] source, int offset, 
+			int length, char[][] taskTags, char[][] taskPriorities, boolean recordLineSeparator, boolean isTaskCaseSensitive, char[] filename) {
+		this(apiLevel, source, offset, length, taskTags, taskPriorities, recordLineSeparator, isTaskCaseSensitive, filename, new ASTNodeEncoder());
+	}
+	
+	public Parser(int apiLevel, char[] source, int offset, 
+			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename, ASTNodeEncoder encoder) {
+		this(apiLevel, source, offset, length, taskTags, taskPriorities, true, isTaskCaseSensitive, filename, encoder);
+	}
+	
+	public Parser(int apiLevel, char[] source, int offset, 
+			int length, char[][] taskTags, char[][] taskPriorities, boolean recordLineSeparator, boolean isTaskCaseSensitive, char[] filename, ASTNodeEncoder encoder) {
 		this(source, offset, length, 
 				true /* tokenize comments */, 
 				true /* tokenize pragmas */,
 				false /* don't tokenize whitespace */, 
-				true /* record line separators */,
+				recordLineSeparator,
 				apiLevel,
 				taskTags, taskPriorities, isTaskCaseSensitive,
-				filename);
+				filename, encoder);
 	}
 	
 	public Parser(char[] source, int offset, int length,
@@ -216,9 +236,20 @@ public class Parser extends Lexer {
 			int apiLevel,
 			char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
 			char[] filename) {
+		this(source, offset, length, tokenizeComments, tokenizePragmas,
+				tokenizeWhiteSpace, recordLineSeparator, apiLevel,
+				taskTags, taskPriorities, isTaskCaseSensitive, filename, new ASTNodeEncoder());
+	}
+	
+	public Parser(char[] source, int offset, int length,
+			boolean tokenizeComments, boolean tokenizePragmas,
+			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
+			int apiLevel,
+			char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
+			char[] filename, ASTNodeEncoder encoder) {
 		super(source, offset, length, tokenizeComments, tokenizePragmas,
 				tokenizeWhiteSpace, recordLineSeparator,
-				apiLevel, filename);
+				apiLevel, filename, encoder);
 		if (tokenizeComments) {
 			this.comments = new ArrayList<Comment>(0);
 		}
@@ -2112,7 +2143,7 @@ public class Parser extends Lexer {
 						tp_defaultvalue = parseCondExp();
 					}
 					
-					tp = new TemplateValueParameter(loc(), tp_ident, tp_valtype, tp_specvalue, tp_defaultvalue);
+					tp = new TemplateValueParameter(loc(), tp_ident, tp_valtype, tp_specvalue, tp_defaultvalue, encoder);
 				}
 				tp.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 				
@@ -2153,7 +2184,7 @@ public class Parser extends Lexer {
 				check(TOKlparen);
 				exp = parseExpression();
 				check(TOKrparen);
-				tqual = new TypeTypeof(loc(), exp);
+				tqual = new TypeTypeof(loc(), exp, encoder);
 				tqual.setSourceRange(typeStart, prevToken.ptr + prevToken.sourceLen - typeStart);
 				
 				check(TOKdot);				
@@ -2182,7 +2213,7 @@ public class Parser extends Lexer {
 				break;
 			
 			if (tiargs != null) {
-				TemplateInstance tempinst = new TemplateInstance(loc(), id);
+				TemplateInstance tempinst = new TemplateInstance(loc(), id, encoder);
 			    tempinst.tiargs(tiargs);
 			    tempinst.start = thisStart;
 			    tempinst.length = prevToken.ptr + prevToken.sourceLen - thisStart;
@@ -2453,7 +2484,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst = new TemplateInstance(loc(), id);
+				tempinst = new TemplateInstance(loc(), id, encoder);
 				tempinst.tiargs(parseTemplateArgumentList());
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				tid = new TypeInstance(loc(), tempinst);
@@ -2518,7 +2549,7 @@ public class Parser extends Lexer {
 			exp = parseExpression();
 			check(TOKrparen);
 			
-			tid = new TypeTypeof(loc(), exp);
+			tid = new TypeTypeof(loc(), exp, encoder);
 			tid.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			((TypeTypeof) tid).setTypeofSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
@@ -2579,7 +2610,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst[0] = new TemplateInstance(loc(), id[0]);
+				tempinst[0] = new TemplateInstance(loc(), id[0], encoder);
 				tempinst[0].tiargs(parseTemplateArgumentList());
 				tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
 				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
@@ -2649,9 +2680,9 @@ public class Parser extends Lexer {
 							nextToken();
 							e2 = parseExpression(); // [ exp .. exp ]
 							
-							t = new TypeSlice(t, e, e2);
+							t = new TypeSlice(t, e, e2, encoder);
 						} else {
-							t = new TypeSArray(t, e);
+							t = new TypeSArray(t, e, encoder);
 						}
 					    t.setSourceRange(subType.start, token.ptr + token.sourceLen - subType.start);
 						
@@ -2686,7 +2717,7 @@ public class Parser extends Lexer {
 						} else {
 							Expression e = parseExpression(); // [ expression
 																// ]
-							ta = new TypeSArray(t, e);
+							ta = new TypeSArray(t, e, encoder);
 							check(TOKrbracket);
 						}
 
@@ -2819,7 +2850,7 @@ public class Parser extends Lexer {
 				} else {
 					Expression e = parseExpression(); // [ expression ]
 
-					ta = new TypeSArray(t, e);
+					ta = new TypeSArray(t, e, encoder);
 					ta.setSourceRange(t.start, token.ptr + token.sourceLen
 							- t.start);
 					check(TOKrbracket);
@@ -5557,7 +5588,7 @@ public class Parser extends Lexer {
 		    {	// identifier!(template-argument-list)
 		    	TemplateInstance tempinst;
 		    	
-		    	tempinst = new TemplateInstance(loc(), id);		    	
+		    	tempinst = new TemplateInstance(loc(), id, encoder);		    	
 		    	nextToken();
 		    	tempinst.tiargs(parseTemplateArgumentList());
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
@@ -5719,7 +5750,7 @@ public class Parser extends Lexer {
 		    exp = parseExpression();
 		    check(TOKrparen);
 		    
-			t = new TypeTypeof(loc(), exp);
+			t = new TypeTypeof(loc(), exp, encoder);
 			t.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			((TypeTypeof) t).setTypeofSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
@@ -6020,7 +6051,7 @@ public class Parser extends Lexer {
 						// identifier!(template-argument-list)
 						TemplateInstance tempinst;
 						
-						tempinst = new TemplateInstance(loc(), id);						
+						tempinst = new TemplateInstance(loc(), id, encoder);						
 						nextToken();
 						
 						tempinst.tiargs(parseTemplateArgumentList());
@@ -7408,7 +7439,7 @@ public class Parser extends Lexer {
 	}
 	
 	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
-		return new TemplateMixin(loc(), id, tqual, idents, tiargs);
+		return new TemplateMixin(loc(), id, tqual, idents, tiargs, encoder);
 	}
 	
 	private Statement dietParseStatement(FuncDeclaration f) {

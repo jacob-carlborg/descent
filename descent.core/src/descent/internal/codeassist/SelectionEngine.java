@@ -10,11 +10,13 @@ import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -75,6 +77,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	ICompilationUnit unit;
 	Module module;
 	SemanticContext context;
+	ASTNodeEncoder encoder;
 	List<IJavaElement> selectedElements;
 	InternalSignature internalSignature;
 
@@ -89,8 +92,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 	public IJavaElement[] select(ICompilationUnit sourceUnit, final int offset,
 			final int length) {
-		long time = System.currentTimeMillis();
-		
 		this.offset = offset;
 		this.length = length;
 		this.unit = sourceUnit;
@@ -105,6 +106,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 					sourceUnit.getFileName());
 			parser.selectionOffset = this.offset;
 			parser.selectionLength = this.length;
+			
+			encoder = parser.encoder;
 			
 			parser.nextToken();
 
@@ -160,20 +163,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 				});
 			} else {
 				module.moduleName = sourceUnit.getFullyQualifiedName();
-
-				long time2 = System.currentTimeMillis();
 				module.accept(this);
-				time2 = System.currentTimeMillis() - time2;
-				System.out.println("Selection visiting time: " + time2);
 			}
 			return selectedElements.toArray(new IJavaElement[selectedElements
 					.size()]);
 		} catch (JavaModelException e) {
 			Util.log(e);
 			return NO_ELEMENTS;
-		} finally {
-			time = System.currentTimeMillis() - time;
-			System.out.println("Selection time: " + time);
 		}
 	}
 	
@@ -181,7 +177,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (context == null) {
 			try {
 				context = CompilationUnitResolver.resolve(module, javaProject,
-						owner);
+						owner, encoder);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

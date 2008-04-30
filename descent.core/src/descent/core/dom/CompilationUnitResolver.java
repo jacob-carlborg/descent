@@ -30,6 +30,7 @@ import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.lookup.DescentModuleFinder;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.Module;
@@ -43,15 +44,17 @@ import descent.internal.core.util.Util;
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	private final static boolean RESOLVE = true;
-	private final static boolean STATS = true;
+	private final static boolean STATS = false;
 	
 	public static class ParseResult {
 		public Module module;
 		public PublicScanner scanner;
 		public SemanticContext context;
-		public ParseResult(Module module, PublicScanner scanner) {
+		public ASTNodeEncoder encoder;
+		public ParseResult(Module module, PublicScanner scanner, ASTNodeEncoder encoder) {
 			this.module = module;
 			this.scanner = scanner;
+			this.encoder = encoder;
 		}
 	}
 	
@@ -132,25 +135,26 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				parser = new Parser(apiLevel, source, 0, source.length, 
 						Util.toCharArrays(taskTags.split(",")),
 						Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
+						recordLineSeparator,
 						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE)),
 						filename
 						);
 			} else {
-				parser = new Parser(apiLevel, source, 0, source.length, filename);
+				parser = new Parser(apiLevel, source, 0, source.length, filename, recordLineSeparator);
 			}
 		} else {
-			parser = new Parser(apiLevel, source, 0, source.length, filename);
+			parser = new Parser(apiLevel, source, 0, source.length, filename, recordLineSeparator);
 		}
 		
 		parser.diet = diet;
 		
-		PublicScanner scanner = new PublicScanner(true, true, true, true, apiLevel);
+		PublicScanner scanner = new PublicScanner(true, true, true, recordLineSeparator, apiLevel);
 		scanner.setLexerAndSource(parser, source);
 		
 		Module module = parser.parseModuleObj();
 		module.setSourceRange(0, source.length);
 		
-		return new ParseResult(module, scanner);
+		return new ParseResult(module, scanner, parser.encoder);
 	}
 	
 	public static ParseResult resolve(
@@ -165,20 +169,21 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = resolve(result.module, javaProject, owner);
+		result.context = resolve(result.module, javaProject, owner, result.encoder);
 		return result;
 	}
 	
 	public static SemanticContext resolve(
 			final Module module, 
 			final IJavaProject project,
-			final WorkingCopyOwner owner) 
+			final WorkingCopyOwner owner,
+			final ASTNodeEncoder encoder) 
 		throws JavaModelException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
 		
 		Global global = prepareForSemantic(project, config);
-		return resolve(module, project, global, owner, config);
+		return resolve(module, project, global, owner, config, encoder);
 	}
 	
 	private static SemanticContext resolve(
@@ -186,7 +191,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final IJavaProject project,
 			final Global global,
 			final WorkingCopyOwner owner,
-			final CompilerConfiguration config) throws JavaModelException {
+			final CompilerConfiguration config,
+			final ASTNodeEncoder encoder) throws JavaModelException {
 		
 		long time = System.currentTimeMillis();
 		
@@ -333,9 +339,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				problemRequestor, 
 				module, 
 				project,
-				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config),
+				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
 				global,
-				config);
+				config,
+				encoder);
 		
 		if (!RESOLVE) return context;
 		

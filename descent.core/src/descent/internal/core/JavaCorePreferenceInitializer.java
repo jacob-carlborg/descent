@@ -54,7 +54,9 @@ public class JavaCorePreferenceInitializer extends AbstractPreferenceInitializer
 		defaultOptionsMap.put(JavaCore.COMPILER_VERSION_IDENTIFIERS, "DigitalMars, Windows, Win32, X86, LittleEndian, D_InlineAsm, D_InlineAsm_X86, all");
 		defaultOptionsMap.put(JavaCore.COMPILER_DEBUG_LEVEL, "0");
 		defaultOptionsMap.put(JavaCore.COMPILER_DEBUG_IDENTIFIERS, "");
-		defaultOptionsMap.put(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, "2");
+		
+		// By default, don't show errors. There's a long way until we can get this right, and fast
+		defaultOptionsMap.put(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, "0");
 		defaultOptionsMap.put(JavaCore.COMPILER_ENABLE_WARNINGS, JavaCore.ENABLED);
 		defaultOptionsMap.put(JavaCore.COMPILER_ALLOW_DEPRECATED, JavaCore.DISABLED);
 		

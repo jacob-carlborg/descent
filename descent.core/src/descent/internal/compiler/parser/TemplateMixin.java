@@ -19,8 +19,8 @@ public class TemplateMixin extends TemplateInstance {
 	public int typeLength;
 
 	public TemplateMixin(Loc loc, IdentifierExp ident, Type tqual,
-			Identifiers idents, Objects tiargs) {
-		super(loc, idents == null || idents.isEmpty() ? null : idents.get(idents.size() - 1));
+			Identifiers idents, Objects tiargs, ASTNodeEncoder encoder) {
+		super(loc, idents == null || idents.isEmpty() ? null : idents.get(idents.size() - 1), encoder);
 		this.ident = ident;
 		this.sourceIdent = ident;
 		this.tqual = tqual;
@@ -373,7 +373,7 @@ public class TemplateMixin extends TemplateInstance {
 		}
 
 		tm = new TemplateMixin(loc, ident, (tqual != null ? tqual.syntaxCopy(context)
-				: null), ids, tiargs);
+				: null), ids, tiargs, context.encoder);
 		super.syntaxCopy(tm, context);
 		return tm;
 	}

@@ -162,7 +162,7 @@ public class ModuleBuilder {
 		boolean surface = true;
 	}
 	
-	private final ASTNodeEncoder encoder = new ASTNodeEncoder();	
+	private final ASTNodeEncoder encoder;	
 	private final CompilerConfiguration config;
 	
 	/**
@@ -170,8 +170,9 @@ public class ModuleBuilder {
 	 * Depending on the configuration, some version/debug blocks will not
 	 * be part of the returned module.
 	 */
-	public ModuleBuilder(CompilerConfiguration config) {
+	public ModuleBuilder(CompilerConfiguration config, ASTNodeEncoder encoder) {
 		this.config = config;
+		this.encoder = encoder;
 	}
 	
 	/**
@@ -193,19 +194,12 @@ public class ModuleBuilder {
 				module.md = new ModuleDeclaration(packages, name);
 			}
 			
-			long time = System.currentTimeMillis();
-			
 			State state = new State();
 			
 			module.members = new Dsymbols();
 			fill(module, module.members, unit.getChildren(), state);
 			
 			state.surface = false;
-			
-			time = System.currentTimeMillis() - time;
-			if (time != 0) {
-				System.out.println("Building module " + module.moduleName + " took: " + time + " milliseconds to complete.");
-			}
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 			Util.log(e);
@@ -712,7 +706,6 @@ public class ModuleBuilder {
 			}
 		}
 		
-//		System.out.println(imp);
 		members.add(wrap(imp, flags));
 	}
 	
@@ -793,7 +786,7 @@ public class ModuleBuilder {
 	}
 
 	private TemplateParameter getTemplateParameter(String name, String signature, String defaultValue) {
-		TemplateParameter param = InternalSignature.toTemplateParameter(signature, defaultValue);
+		TemplateParameter param = InternalSignature.toTemplateParameter(signature, defaultValue, encoder);
 		param.ident = new IdentifierExp(name.toCharArray());
 		return param;
 	}
@@ -845,7 +838,7 @@ public class ModuleBuilder {
 		if (signature == null) {
 			return null;
 		}
-		Type type = InternalSignature.toType(signature);
+		Type type = InternalSignature.toType(signature, encoder);
 		return new BaseClass(type, PROT.PROTpublic);
 	}
 	
@@ -853,7 +846,7 @@ public class ModuleBuilder {
 		if (signature == null || signature.length() == 0) {
 			return null;
 		}
-		return InternalSignature.toType(signature);
+		return InternalSignature.toType(signature, encoder);
 	}
 	
 	private Type getType(IMethod method) throws JavaModelException {

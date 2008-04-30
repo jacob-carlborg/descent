@@ -158,6 +158,8 @@ public class Lexer implements IProblemRequestor {
 	public char[][] taskTags = null;
 	public char[][] taskPriorities = null;
 	public boolean isTaskCaseSensitive = true;
+	
+	public final ASTNodeEncoder encoder;
 
 	private boolean tokenizeComments;
 	public boolean tokenizeWhiteSpace;
@@ -200,8 +202,9 @@ public class Lexer implements IProblemRequestor {
 	/*static*/int newEntry2 = 0, newEntry3 = 0, newEntry4 = 0, newEntry5 = 0,
 			newEntry6 = 0;
 
-	/* package */Lexer(int apiLevel) {
+	/* package */ Lexer(int apiLevel, ASTNodeEncoder encoder) {
 		this.apiLevel = apiLevel;
+		this.encoder = encoder;
 	}
 
 	protected IProblemReporter reporter;
@@ -265,12 +268,20 @@ public class Lexer implements IProblemRequestor {
 		this(source, offset, length, tokenizeComments, tokenizePragmas,
 				tokenizeWhiteSpace, recordLineSeparator, apiLevel, null);
 	}
-
+	
 	public Lexer(char[] source, int offset, int length,
 			boolean tokenizeComments, boolean tokenizePragmas,
 			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
 			int apiLevel, char[] filename) {
-		this(apiLevel);
+		this(source, offset, length, tokenizeComments, tokenizePragmas,
+				tokenizeWhiteSpace, recordLineSeparator, apiLevel, filename, new ASTNodeEncoder());
+	}
+
+	public Lexer(char[] source, int offset, int length,
+			boolean tokenizeComments, boolean tokenizePragmas,
+			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
+			int apiLevel, char[] filename, ASTNodeEncoder encoder) {
+		this(apiLevel, encoder);
 		reset(source, offset, length, tokenizeComments, tokenizePragmas,
 				tokenizeWhiteSpace, recordLineSeparator);
 		this.filename = filename;
@@ -4539,8 +4550,6 @@ public class Lexer implements IProblemRequestor {
 	    
 	    t.len = stringbuffer.data.length();
 	    stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
-	    
-	    System.out.println(new String(t.ustring));
 	    
 	    t.sourceLen = p - t.ptr;
 	    t.sourceString = CharOperation.subarray(input, t.ptr, p);

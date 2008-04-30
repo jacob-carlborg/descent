@@ -81,8 +81,6 @@ public class TypeIdentifier extends TypeQualified {
 				!(pt[0] instanceof TypeStruct) &&
 				!(pt[0] instanceof TypeEnum) &&
 				!(pt[0] instanceof TypeTypedef)) {
-//			System.out.println(pt[0] + " --> " + s);
-			
 			if (pt[0] instanceof TypeBasic) {
 				pt[0] = new TypeBasic(pt[0]);
 			}

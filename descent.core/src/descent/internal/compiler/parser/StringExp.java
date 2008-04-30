@@ -122,7 +122,7 @@ public class StringExp extends Expression {
 				len = newlen;
 				sz = 4;
 				type = new TypeSArray(Type.tdchar, new IntegerExp(loc, len,
-						Type.tindex));
+						Type.tindex), context.encoder);
 				committed = true;
 				break;
 
@@ -146,7 +146,7 @@ public class StringExp extends Expression {
 				len = newlen;
 				sz = 2;
 				type = new TypeSArray(Type.twchar, new IntegerExp(loc, len,
-						Type.tindex));
+						Type.tindex), context.encoder);
 				committed = true;
 				break;
 
@@ -154,7 +154,7 @@ public class StringExp extends Expression {
 				committed = true;
 			default:
 				type = new TypeSArray(Type.tchar, new IntegerExp(loc, len,
-						Type.tindex));
+						Type.tindex), context.encoder);
 				break;
 			}
 			type = type.semantic(loc, sc, context);

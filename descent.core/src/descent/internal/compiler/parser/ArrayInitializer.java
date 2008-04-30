@@ -66,7 +66,7 @@ public class ArrayInitializer extends Initializer {
 				Initializer iz = value.get(0);
 				if (iz != null) {
 					Type t = iz.inferType(sc, context);
-					t = new TypeSArray(t, new IntegerExp(iz.loc, value.size()));
+					t = new TypeSArray(t, new IntegerExp(iz.loc, value.size()), context.encoder);
 					t = t.semantic(loc, sc, context);
 					return t;
 				}
@@ -137,16 +137,16 @@ public class ArrayInitializer extends Initializer {
 	public Initializer syntaxCopy(SemanticContext context) {
 		ArrayInitializer ai = new ArrayInitializer(loc);
 
-		if (!(index.size() == value.size())) {
+		if (!(size(index) == size(value))) {
 			throw new IllegalStateException("assert(index.dim == value.dim);");
 		}
 
-		ai.index = new Expressions(index.size());
-		ai.value = new Initializers(value.size());
+		ai.index = new Expressions(size(index));
+		ai.value = new Initializers(size(value));
 		
-		ai.index.setDim(index.size());
-		ai.value.setDim(value.size());
-		for (int i = 0; i < ai.value.size(); i++) {
+		ai.index.setDim(size(index));
+		ai.value.setDim(size(value));
+		for (int i = 0; i < size(ai.value); i++) {
 			Expression e = index.get(i);
 			if (e != null) {
 				e = e.syntaxCopy(context);

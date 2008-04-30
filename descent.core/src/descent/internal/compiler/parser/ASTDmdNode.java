@@ -823,7 +823,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	
 							char[] id = ("_arrayArg" + (++context.ASTDmdNode_idn)).toCharArray();
 							Type t = new TypeSArray(tb.next, new IntegerExp(loc,
-									nargs - i));
+									nargs - i), context.encoder);
 							t = t.semantic(loc, sc, context);
 							VarDeclaration v = new VarDeclaration(loc, t, id,
 									new VoidInitializer(loc));

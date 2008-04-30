@@ -1691,11 +1691,15 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				
 				StringBuilder sb = new StringBuilder();
 				
-				for (int i = 0; i < compoundName.length; i++) {
-					if (i != 0) {
-						sb.append('.');
+				if (fqn) {
+					for (int i = 0; i < compoundName.length; i++) {
+						if (i != 0) {
+							sb.append('.');
+						}
+						sb.append(compoundName[i]);
 					}
-					sb.append(compoundName[i]);
+				} else if (compoundName.length > 0) {
+					sb.append(compoundName[compoundName.length - 1]);
 				}
 				
 				st.push(sb);
@@ -1827,12 +1831,7 @@ public static String toString(String signature, final boolean fqn) throws Illega
 			}
 			private char nextTemplateParameterName() {
 				// We don't care about crazy templates with more than 8 parameters
-				try {
-					return (char) ('T' + templateParameters.peek().size());
-				} catch (EmptyStackException e) {
-					System.out.println(1);
-					return 'T';
-				}
+				return (char) ('T' + templateParameters.peek().size());
 			}
 			@Override
 			public void exitTemplateParameters() {

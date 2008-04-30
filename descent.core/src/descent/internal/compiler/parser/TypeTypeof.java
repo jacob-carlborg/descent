@@ -10,10 +10,14 @@ public class TypeTypeof extends TypeQualified {
 	public Expression exp, sourceExp;
 	public int typeofStart;
 	public int typeofLength;
+	
+	// Descent: to improve performance, must be set by Parser or ModuleBuilder
+	public ASTNodeEncoder encoder;  
 
-	public TypeTypeof(Loc loc, Expression exp) {
+	public TypeTypeof(Loc loc, Expression exp, ASTNodeEncoder encoder) {
 		super(loc, TY.Ttypeof);
 		this.exp = this.sourceExp = exp;
+		this.encoder = encoder;
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class TypeTypeof extends TypeQualified {
 
 	@Override
 	public Type syntaxCopy(SemanticContext context) {
-		TypeTypeof t = new TypeTypeof(loc, exp.syntaxCopy(context));
+		TypeTypeof t = new TypeTypeof(loc, exp.syntaxCopy(context), encoder);
 		t.syntaxCopyHelper(this, context);
 		return t;
 	}
@@ -125,7 +129,7 @@ public class TypeTypeof extends TypeQualified {
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(ISignatureConstants.TYPEOF);
-		char[] expc = new ASTNodeEncoder().encodeExpression(exp);
+		char[] expc = encoder.encodeExpression(exp);
 		sb.append(expc.length);
 		sb.append(ISignatureConstants.TYPEOF);
 		sb.append(expc);

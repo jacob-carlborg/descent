@@ -169,7 +169,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 			    	// find problems
 			    	CompilationUnitResolver.resolve(module, 
 			    			workingCopy.getJavaProject(),
-			    			this.workingCopyOwner);
+			    			this.workingCopyOwner, parseResult.encoder);
 			    	
 			    	/* TODO JDT problems
 					char[] contents = workingCopy.getContents();

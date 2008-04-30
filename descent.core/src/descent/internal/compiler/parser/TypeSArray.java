@@ -27,11 +27,15 @@ import static descent.internal.compiler.parser.TY.Twchar;
 public class TypeSArray extends TypeArray {
 
 	public Expression dim, sourceDim;
+	
+	// Descent: to improve performance, must be set by Parser or ModuleBuilder
+	public ASTNodeEncoder encoder;  
 
-	public TypeSArray(Type next, Expression dim) {
+	public TypeSArray(Type next, Expression dim, ASTNodeEncoder encoder) {
 		super(TY.Tsarray, next);
 		this.dim = dim;
 		this.sourceDim = dim;
+		this.encoder = encoder;
 	}
 
 	@Override
@@ -377,7 +381,7 @@ public class TypeSArray extends TypeArray {
 	public Type syntaxCopy(SemanticContext context) {
 		Type t = next.syntaxCopy(context);
 		Expression e = dim.syntaxCopy(context);
-		t = new TypeSArray(t, e);
+		t = new TypeSArray(t, e, context.encoder);
 		return t;
 	}
 
@@ -424,7 +428,7 @@ public class TypeSArray extends TypeArray {
 		next.appendSignature(sb);
 		sb.append('G');
 		
-		char[] expc = new ASTNodeEncoder().encodeExpression(dim);
+		char[] expc = encoder.encodeExpression(dim);
 		sb.append(expc.length);
 		sb.append('G');
 		sb.append(expc);

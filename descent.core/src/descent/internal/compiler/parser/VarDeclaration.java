@@ -535,7 +535,7 @@ public class VarDeclaration extends Declaration {
 										context).intValue();
 								e1.type = new TypeSArray(t.nextOf(),
 										new IntegerExp(loc, Id.ZERO, dim,
-												Type.tindex));
+												Type.tindex), context.encoder);
 							}
 						}
 						e1 = new SliceExp(loc, e1, null, null);

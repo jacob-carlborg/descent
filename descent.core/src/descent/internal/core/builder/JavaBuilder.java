@@ -25,6 +25,7 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.CompilationUnitResolver;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.core.util.Util;
@@ -33,7 +34,7 @@ import descent.internal.core.util.Util;
  * Uses the lexer to grab the task tags in a source file, and creates
  * task resource markers with them.
  */
-public class JavaBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
+public class JavaBuilder extends IncrementalProjectBuilder {
 	
 	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
@@ -45,42 +46,67 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			}
 			fullBuild(project, monitor);
 		} else {
-			delta.accept(this);
+			delta.accept(new JavaBuilderVisitor(isShowSemanticErrors()));
 		}
 		return null;
 	}
 
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
+		IJavaProject javaProject = JavaCore.create(project);
 		IResource[] members = project.members();
-		build(members, monitor);
+		build(javaProject, isShowSemanticErrors(), members, new ASTNodeEncoder(), monitor);
 	}
-
-	public boolean visit(IResourceDelta delta) throws CoreException {
-		IResource resource = delta.getResource();
-		if (resource.getType() == IResource.FILE) {
-			switch(delta.getKind()) {
-			case IResourceDelta.ADDED:
-			case IResourceDelta.CHANGED:
-				build((IFile) resource);
-				break;
-			case IResourceDelta.REMOVED:
-				break;
-			}
+	
+	private boolean isShowSemanticErrors() {
+		IJavaProject activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
+		String showSemanticErrorsOpt = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+		if (activeProject == null) {
+			showSemanticErrorsOpt = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS); 
+		} else {
+			showSemanticErrorsOpt = activeProject.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, true);
 		}
-		return true;
+		
+		return !showSemanticErrorsOpt.equals("0");
+	}
+	
+	private class JavaBuilderVisitor implements IResourceDeltaVisitor {
+		
+		ASTNodeEncoder encoder = new ASTNodeEncoder();
+		boolean showSemanticErrors;
+		
+		public JavaBuilderVisitor(boolean showSemanticErrors) {
+			this.showSemanticErrors = showSemanticErrors;
+		}
+
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			IResource resource = delta.getResource();
+			if (resource.getType() == IResource.FILE) {
+				switch(delta.getKind()) {
+				case IResourceDelta.ADDED:
+				case IResourceDelta.CHANGED:
+					IFile file = (IFile) resource;
+					build(JavaCore.create(file.getProject()), showSemanticErrors, file, encoder);
+					break;
+				case IResourceDelta.REMOVED:
+					break;
+				}
+			}
+			return true;
+		}
 	}
 	
 	/**
 	 * Recursively associate tasks and problems to the given resources.
 	 */
-	public static void build(IResource[] resources, IProgressMonitor monitor) throws CoreException {
+	public static void build(IJavaProject javaProject, boolean showSemanticErrors,
+			IResource[] resources, ASTNodeEncoder encoder, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("", 100 * resources.length);
 		for(IResource resource : resources) {
 			if (monitor.isCanceled()) {
 				return;
 			}
 			
-			build(resource, new SubProgressMonitor(monitor, 100));
+			build(javaProject, showSemanticErrors, resource, encoder, new SubProgressMonitor(monitor, 100));
 		}
 		monitor.done();
 	}
@@ -88,14 +114,14 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	/**
 	 * Recursively associate tasks and problems to the given resource.
 	 */
-	public static void build(IResource resource, IProgressMonitor monitor) throws CoreException {
+	public static void build(IJavaProject javaProject, boolean showSemanticErrors, IResource resource, ASTNodeEncoder encoder, IProgressMonitor monitor) throws CoreException {
 		if (resource.getType() == IResource.FILE) {
 			monitor.beginTask("", 1);
-			build((IFile) resource);
+			build(javaProject, showSemanticErrors, (IFile) resource, encoder);
 			monitor.done();
 		} else if (resource instanceof IContainer) {
 			IResource[] members = ((IContainer) resource).members();
-			build(members, monitor);
+			build(javaProject, showSemanticErrors, members, encoder, monitor);
 		}
 		monitor.done();
 	}
@@ -104,16 +130,11 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	 * Associate tasks and problems to the given file, 
 	 * if that file is an ICompilationUnit.
 	 */
-	public static void build(IFile file) throws CoreException {
+	public static void build(IJavaProject javaProject, boolean showSemanticErrors,  IFile file, ASTNodeEncoder encoder) throws CoreException {
 		IJavaElement element = JavaCore.create(file);
 		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
-			long time = System.currentTimeMillis();
-			
 			removeTasks(file);
 			removeProblems(file);
-			
-			IProject project = file.getProject();
-			IJavaProject javaProject = JavaCore.create(project);
 			
 			ICompilationUnit unit = (ICompilationUnit) element;
 			String source = unit.getSource();
@@ -129,28 +150,18 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 					getTaskTags(javaProject),
 					getTaskPriorities(javaProject),
 					getTaskCaseSensitive(javaProject),
-					filename
+					filename,
+					encoder
 					);
 			Module module = parser.parseModuleObj();
 			module.moduleName = unit.getFullyQualifiedName();
 			
-			IJavaProject activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
-			String showSemanticError = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
-			if (activeProject == null) {
-				showSemanticError = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS); 
-			} else {
-				showSemanticError = activeProject.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, true);
-			}
-			
-			if (!showSemanticError.equals("0")) {
-				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner());
+			if (showSemanticErrors) {
+				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner(), parser.encoder);
 			}
 			
 			associateTaskTags(file, parser);
 			associateProblems(file, module);
-			
-			time = System.currentTimeMillis() - time;
-//			System.out.println("Build time for " + module.moduleName + ": " + time);
 		}
 	}
 

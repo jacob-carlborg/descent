@@ -48,6 +48,7 @@ import descent.internal.codeassist.impl.Engine;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -231,6 +232,7 @@ public class CompletionEngine extends Engine
 	
 	Module module;
 	SemanticContext semanticContext;
+	ASTNodeEncoder encoder;
 	
 	char[] fileName = null;
 	char[] sourceUnitFqn = null;
@@ -327,7 +329,7 @@ public class CompletionEngine extends Engine
 			System.out.println(sourceUnit.getContents());
 		}
 		
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 		
 		this.requestor.beginReporting();
 		try {
@@ -350,6 +352,8 @@ public class CompletionEngine extends Engine
 			suggestedModules.put(sourceUnitFqn, this);
 			
 			parser = new CompletionParser(Util.getApiLevel(this.compilerOptions.getMap()), source, this.fileName);
+			encoder = parser.encoder;
+			
 			parser.cursorLocation = completionPosition;
 			parser.nextToken();
 			
@@ -362,10 +366,6 @@ public class CompletionEngine extends Engine
 			}
 			
 			ASTDmdNode assistNode = parser.getAssistNode();
-			
-			if (assistNode != null) {
-				System.out.println(assistNode.getClass());
-			}
 			
 			if (parser.wantNames()) {
 				if (assistNode instanceof VarDeclaration) {
@@ -424,8 +424,8 @@ public class CompletionEngine extends Engine
 		} finally {
 			this.requestor.endReporting();
 			
-			time = System.currentTimeMillis() - time;
-			System.out.println("Completion took " + time + " milliseconds to complete.");
+//			time = System.currentTimeMillis() - time;
+//			System.out.println("Completion took " + time + " milliseconds to complete.");
 		}
 	}
 
@@ -668,7 +668,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		semanticRun = true;
-		semanticContext = CompilationUnitResolver.resolve(module, this.javaProject, null);
+		semanticContext = CompilationUnitResolver.resolve(module, this.javaProject, null, encoder);
 	}
 
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {
@@ -1740,17 +1740,12 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeClass(TypeClass type, boolean onlyStatics) {
-		long time = System.currentTimeMillis();
-		
 		// Keep a hashtable of already used signatures, in order to avoid
 		// suggesting overriden functions
 		completeTypeClassRecursively(type, onlyStatics, new HashtableOfCharArrayAndObject());
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
-		
-		time = System.currentTimeMillis() - time;
-		System.out.println("Complete type class took " + time + " milliseconds");
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {

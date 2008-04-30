@@ -153,7 +153,7 @@ public class TypeAArray extends TypeArray {
 				// Rewrite as a static array
 				TypeSArray tsa;
 
-				tsa = new TypeSArray(next, e[0]);
+				tsa = new TypeSArray(next, e[0], context.encoder);
 				return tsa.semantic(loc, sc, context);
 			} else if (t[0] != null) {
 				index = t[0];

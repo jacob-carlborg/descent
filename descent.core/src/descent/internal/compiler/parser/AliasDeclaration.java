@@ -120,10 +120,6 @@ public class AliasDeclaration extends Declaration {
 			return;
 		}
 		
-		if (sc == null) {
-			System.out.println(1);
-		}
-		
 		if (aliassym != null) {
 			if (aliassym.isTemplateInstance() != null) {
 				aliassym.semantic(sc, context);

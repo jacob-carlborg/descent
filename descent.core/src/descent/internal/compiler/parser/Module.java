@@ -109,8 +109,6 @@ public class Module extends Package {
 		if (semanticstarted != 0) {
 			return;
 		}
-		
-		long time = System.currentTimeMillis();
 
 		semanticstarted = 1;
 
@@ -161,11 +159,6 @@ public class Module extends Package {
 		sc.pop();
 
 		semanticdone = semanticstarted;
-		
-		time = System.currentTimeMillis() - time;
-		if (time != 0) {
-//			System.out.println("Semantic 1 on " + moduleName + " took: " + time + " milliseconds to complete.");
-		}
 	}
 
 	@Override
@@ -186,8 +179,6 @@ public class Module extends Package {
 			throw new IllegalStateException("assert(semanticstarted == 1);");
 		}
 		semanticstarted = 2;
-		
-		long time = System.currentTimeMillis();
 
 		// Note that modules get their own scope, from scratch.
 		// This is so regardless of where in the syntax a module
@@ -206,11 +197,6 @@ public class Module extends Package {
 		sc = sc.pop();
 		sc.pop();
 		semanticdone = semanticstarted;
-		
-		time = System.currentTimeMillis() - time;
-		if (time != 0) {
-//			System.out.println("Semantic 2 on " + moduleName + " took: " + time + " milliseconds to complete.");
-		}
 	}
 
 	@Override
@@ -225,8 +211,6 @@ public class Module extends Package {
 			return;
 		}
 		semanticstarted = 3;
-		
-		long time = System.currentTimeMillis();
 
 		// Note that modules get their own scope, from scratch.
 		// This is so regardless of where in the syntax a module
@@ -245,11 +229,6 @@ public class Module extends Package {
 		sc = sc.pop();
 		sc.pop();
 		semanticdone = semanticstarted;
-		
-		time = System.currentTimeMillis() - time;
-		if (time != 0) {
-//			System.out.println("Semantic 3 on " + moduleName + " took: " + time + " milliseconds to complete.");
-		}
 	}
 
 	public void addDeferredSemantic(Dsymbol s, SemanticContext context) {

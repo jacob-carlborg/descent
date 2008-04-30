@@ -205,7 +205,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		 * The best match is td_best with arguments tdargs. Now instantiate the
 		 * template.
 		 */
-		ti = new TemplateInstance(loc, td_best, tdargs);
+		ti = new TemplateInstance(loc, td_best, tdargs, context.encoder);
 		ti.semantic(sc, context);
 		fd = ti.toAlias(context).isFuncDeclaration();
 		if (null == fd) {
@@ -526,7 +526,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		 * as td2.
 		 */
 
-		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident); // create
+		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident, context.encoder); // create
 		// dummy
 		// template
 		// instance

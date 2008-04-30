@@ -11,11 +11,15 @@ public class TypeSlice extends Type {
 
 	public Expression lwr, sourceLwr;
 	public Expression upr, sourceUpr;
+	
+	// Descent: to improve performance, must be set by Parser or ModuleBuilder
+	public ASTNodeEncoder encoder;  
 
-	public TypeSlice(Type next, Expression lwr, Expression upr) {
+	public TypeSlice(Type next, Expression lwr, Expression upr, ASTNodeEncoder encoder) {
 		super(TY.Tslice, next);
 		this.lwr = this.sourceLwr = lwr;
 		this.upr = this.sourceUpr = upr;
+		this.encoder = encoder;
 	}
 
 	@Override
@@ -151,7 +155,7 @@ public class TypeSlice extends Type {
 	@Override
 	public Type syntaxCopy(SemanticContext context)
 	{
-		return new TypeSlice(next.syntaxCopy(context), lwr.syntaxCopy(context), upr.syntaxCopy(context));
+		return new TypeSlice(next.syntaxCopy(context), lwr.syntaxCopy(context), upr.syntaxCopy(context), context.encoder);
 	}
 
 	@Override
@@ -186,12 +190,12 @@ public class TypeSlice extends Type {
 		next.appendSignature(sb);
 		sb.append(ISignatureConstants.SLICE);
 		
-		char[] expc = new ASTNodeEncoder().encodeExpression(lwr);
+		char[] expc = encoder.encodeExpression(lwr);
 		sb.append(expc.length);
 		sb.append(ISignatureConstants.SLICE);
 		sb.append(expc);
 		
-		expc = new ASTNodeEncoder().encodeExpression(upr);
+		expc = encoder.encodeExpression(upr);
 		sb.append(expc.length);
 		sb.append(ISignatureConstants.SLICE);
 		sb.append(expc);

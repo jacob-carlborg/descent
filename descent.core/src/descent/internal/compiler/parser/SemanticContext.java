@@ -94,7 +94,8 @@ public class SemanticContext {
 			IJavaProject project,
 			IModuleFinder moduleFinder,
 			Global global,
-			CompilerConfiguration config) {
+			CompilerConfiguration config,
+			ASTNodeEncoder encoder) {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
@@ -102,7 +103,7 @@ public class SemanticContext {
 		this.moduleFinder = moduleFinder;
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
-		this.encoder = new ASTNodeEncoder();
+		this.encoder = encoder;
 		this.apiLevel = Util.getApiLevel(project);
 		
 		if (config.semanticAnalysisLevel == 0) {
@@ -165,7 +166,7 @@ public class SemanticContext {
 		}
 		
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
-			System.out.println("~~~" + problem);
+//			System.out.println("~~~" + problem);
 			problemRequestor.acceptProblem(problem);
 		}
 		

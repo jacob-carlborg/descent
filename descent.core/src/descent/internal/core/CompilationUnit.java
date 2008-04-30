@@ -161,10 +161,6 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	parser.diet = !computeProblems && !createAST;
 	parser.recordLineSeparator = createAST;
 	
-	if (createAST) {
-		System.out.println("!!!!");
-	}
-	
 	// parser.reportOnlyOneSyntaxError = !computeProblems;
 	// parser.setStatementsRecovery(statementsRecovery);
 	
@@ -191,7 +187,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	try {
 		if (computeProblems) {
 			
-			context = CompilationUnitResolver.resolve(module, this.getJavaProject(), this.owner);
+			context = CompilationUnitResolver.resolve(module, this.getJavaProject(), this.owner, parser.encoder);
 			
 			if (problems == null) {
 				// report problems to the problem requestor

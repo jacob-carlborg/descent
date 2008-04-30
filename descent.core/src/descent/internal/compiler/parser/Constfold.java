@@ -865,7 +865,7 @@ public class Constfold {
 				if (type.toBasetype(context).ty == Tsarray) {
 					e.type = new TypeSArray(e1.type.toBasetype(context).next,
 							new IntegerExp(Loc.ZERO, es1.elements.size(),
-									Type.tindex));
+									Type.tindex), context.encoder);
 					e.type = e.type.semantic(loc, null, context);
 				} else {
 					e.type = type;
@@ -884,7 +884,7 @@ public class Constfold {
 
 				if (type.toBasetype(context).ty == Tsarray) {
 					e.type = new TypeSArray(e2.type, new IntegerExp(Loc.ZERO,
-							es1.elements.size(), Type.tindex));
+							es1.elements.size(), Type.tindex), context.encoder);
 					e.type = e.type.semantic(loc, null, context);
 				} else {
 					e.type = type;
@@ -903,7 +903,7 @@ public class Constfold {
 
 				if (type.toBasetype(context).ty == Tsarray) {
 					e.type = new TypeSArray(e1.type, new IntegerExp(Loc.ZERO,
-							es2.elements.size(), Type.tindex));
+							es2.elements.size(), Type.tindex), context.encoder);
 					e.type = e.type.semantic(loc, null, context);
 				} else {
 					e.type = type;

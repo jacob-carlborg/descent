@@ -31,23 +31,28 @@ public class TemplateInstance extends ScopeDsymbol {
 	public Dsymbol isnested; // if referencing local symbols, this is the context
 	public boolean nest; // For recursion detection
 	public int errors; // 1 if compiled with errors
+	
+	// Descent: to improve performance, must be set by Parser or ModuleBuilder
+	public ASTNodeEncoder encoder; 
 
 	// to TemplateDeclaration.parameters
 	// [int, char, 100]
 
-	public TemplateInstance(Loc loc, IdentifierExp id) {
+	public TemplateInstance(Loc loc, IdentifierExp id, ASTNodeEncoder encoder) {
 		super(null);
 		this.loc = loc;
 		this.name = id;
+		this.encoder = encoder;
 	}
 
-	public TemplateInstance(Loc loc, TemplateDeclaration td, Objects tiargs) {
+	public TemplateInstance(Loc loc, TemplateDeclaration td, Objects tiargs, ASTNodeEncoder encoder) {
 		super(null);
 		this.loc = loc;
 		this.name = td.ident;
 		tiargs(tiargs);
 		this.tempdecl = td;
 		this.havetempdecl = 1;
+		this.encoder = encoder;
 	}
 
 	@Override
@@ -473,8 +478,6 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		long time = System.currentTimeMillis();
-		
 		// Comment in Descent, we want template instances resolved when possible
 //		if (context.global.errors > 0) {
 //			if (0 == context.global.gag) {
@@ -703,17 +706,10 @@ public class TemplateInstance extends ScopeDsymbol {
 				tempdecl.instances.remove(tempdecl_instance_idx);
 			}
 		}
-		
-		time = System.currentTimeMillis() - time;
-		if (time != 0) {
-//			System.out.println("Template instace semantic 1 on " + toString() + " took: " + time + " milliseconds to complete.");
-		}
 	}
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
-		long time = System.currentTimeMillis();
-		
 		int i;
 
 		if (semanticdone >= 2) {
@@ -733,17 +729,10 @@ public class TemplateInstance extends ScopeDsymbol {
 			sc = sc.pop();
 			sc.pop();
 		}
-		
-		time = System.currentTimeMillis() - time;
-		if (time != 0) {
-			System.out.println("Template instace semantic 2 took: " + time + " milliseconds to complete.");
-		}
 	}
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
-		long time = System.currentTimeMillis();
-		
 		int i;
 
 		//if (toChars()[0] == 'D') *(char*)0=0;
@@ -762,11 +751,6 @@ public class TemplateInstance extends ScopeDsymbol {
 			sc = sc.pop();
 			sc.pop();
 		}
-		
-		time = System.currentTimeMillis() - time;
-		if (time != 0) {
-			System.out.println("Template instace semantic 1 took: " + time + " milliseconds to complete.");
-		}
 	}
 
 	public void semanticTiargs(Scope sc, SemanticContext context) {
@@ -781,7 +765,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (s != null) {
 			ti = (TemplateInstance) s;
 		} else {
-			ti = new TemplateInstance(loc, name);
+			ti = new TemplateInstance(loc, name, context.encoder);
 		}
 
 		ti.tiargs = arraySyntaxCopy(tiargs, context);
@@ -947,7 +931,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				ta.appendSignature(sb);
 			} else if (ea != null) {
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
-				char[] exp = new ASTNodeEncoder().encodeExpression(ea);
+				char[] exp = encoder.encodeExpression(ea);
 				sb.append(exp.length);
 				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
 				sb.append(exp);

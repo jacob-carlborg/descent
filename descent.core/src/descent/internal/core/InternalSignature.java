@@ -49,7 +49,7 @@ public class InternalSignature implements ISignatureConstants {
 		this.javaProject = javaProject;
 	}
 	
-	public static Type toType(String signature) {
+	public static Type toType(String signature, final ASTNodeEncoder encoder) {
 		final Stack<Stack<Type>> stack = new Stack<Stack<Type>>();
 		stack.push(new Stack<Type>());
 		
@@ -57,7 +57,6 @@ public class InternalSignature implements ISignatureConstants {
 		
 		final Stack<Objects> tiargsStack = new Stack<Objects>();
 		
-		final ASTNodeEncoder encoder = new ASTNodeEncoder();
 		SignatureProcessor.process(signature, false /* don't want sub-signatures */, 
 			new SignatureRequestorAdapter() {
 				@Override
@@ -73,7 +72,7 @@ public class InternalSignature implements ISignatureConstants {
 				@Override
 				public void acceptStaticArray(char[] dimension, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension)));
+					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder));
 				}
 				@Override
 				public void acceptDynamicArray(String signature) {
@@ -88,12 +87,12 @@ public class InternalSignature implements ISignatureConstants {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression)));
+					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
 				}
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr)));
+					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder));
 				}
 				@Override
 				public void acceptIdentifier(char[][] compoundName, String signature) {
@@ -177,7 +176,7 @@ public class InternalSignature implements ISignatureConstants {
 					TypeIdentifier typeIdent = (TypeIdentifier) previous.pop();
 					
 					if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
-						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident);
+						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident, encoder);
 						templInstance.tiargs = tiargs;
 						
 						if (previous.isEmpty()) {
@@ -188,7 +187,7 @@ public class InternalSignature implements ISignatureConstants {
 							previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
 						}
 					} else {
-						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1));
+						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
 						templInstance.tiargs = tiargs;
 						
 						typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
@@ -207,10 +206,6 @@ public class InternalSignature implements ISignatureConstants {
 			});
 		
 		return stack.peek().pop();
-	}
-	
-	public static Type fromSignature(char[] signature) {
-		return toType(new String(signature));
 	}
 	
 	public IJavaElement findType(char[] packageName, char[] typeName) {
@@ -252,14 +247,12 @@ public class InternalSignature implements ISignatureConstants {
 		sb.append(name);
 	}
 
-	public static TemplateParameter toTemplateParameter(String signature, final String defaultValue) {
+	public static TemplateParameter toTemplateParameter(String signature, final String defaultValue, final ASTNodeEncoder encoder) {
 		final TemplateParameter[] param = { null };
 		final Stack<Stack<Type>> stack = new Stack<Stack<Type>>();
 		stack.push(new Stack<Type>());
 		
 		final Stack<Stack<Integer>> modifiers = new Stack<Stack<Integer>>();	
-		
-		final ASTNodeEncoder encoder = new ASTNodeEncoder();
 		
 		final Expression[] specValue = { null };
 		
@@ -278,7 +271,7 @@ public class InternalSignature implements ISignatureConstants {
 				@Override
 				public void acceptStaticArray(char[] dimension, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension)));
+					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder));
 				}
 				@Override
 				public void acceptDynamicArray(String signature) {
@@ -293,12 +286,12 @@ public class InternalSignature implements ISignatureConstants {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression)));
+					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
 				}
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr)));
+					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder));
 				}
 				@Override
 				public void acceptIdentifier(char[][] compoundName, String signature) {
@@ -354,7 +347,7 @@ public class InternalSignature implements ISignatureConstants {
 				public void exitTemplateTypeParameter(String signature) {
 					Stack<Type> types = stack.peek();
 					Type type = types.isEmpty() ? null : types.get(0);				
-					Type def = defaultValue == null ? null : toType(defaultValue);
+					Type def = defaultValue == null ? null : toType(defaultValue, encoder);
 					
 					param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, def);
 				}
@@ -362,7 +355,7 @@ public class InternalSignature implements ISignatureConstants {
 				public void exitTemplateAliasParameter(String signature) {
 					Stack<Type> types = stack.peek();
 					Type type = types.isEmpty() ? null : types.get(0);
-					Type def = defaultValue == null ? null : toType(defaultValue);
+					Type def = defaultValue == null ? null : toType(defaultValue, encoder);
 					
 					param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, def);
 				}
@@ -376,7 +369,7 @@ public class InternalSignature implements ISignatureConstants {
 					Type type = types.get(0);
 					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
 					
-					param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def);
+					param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def, encoder);
 				}
 				
 			});

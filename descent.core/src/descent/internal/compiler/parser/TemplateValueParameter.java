@@ -18,9 +18,12 @@ public class TemplateValueParameter extends TemplateParameter {
 	public Type valType, sourceValType;
 	public Expression specValue, sourceSpecValue;
 	public Expression defaultValue, sourceDefaultValue;
+	
+	// Descent: to improve performance, must be set by Parser or ModuleBuilder
+	public ASTNodeEncoder encoder;  
 
 	public TemplateValueParameter(Loc loc, IdentifierExp ident, Type valType,
-			Expression specValue, Expression defaultValue) {
+			Expression specValue, Expression defaultValue, ASTNodeEncoder encoder) {
 		super(loc, ident);
 		this.valType = valType;
 		this.specValue = specValue;
@@ -29,6 +32,8 @@ public class TemplateValueParameter extends TemplateParameter {
 		this.sourceValType = valType;
 		this.sourceSpecValue = specValue;
 		this.sourceDefaultValue = defaultValue;
+		
+		this.encoder = encoder;
 	}
 
 	@Override
@@ -231,7 +236,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	@Override
 	public TemplateParameter syntaxCopy(SemanticContext context) {
 		TemplateValueParameter tp = new TemplateValueParameter(loc, ident,
-				valType, specValue, defaultValue);
+				valType, specValue, defaultValue, context.encoder);
 		tp.valType = valType.syntaxCopy(context);
 		if (specValue != null) {
 			tp.specValue = specValue.syntaxCopy(context);
@@ -262,7 +267,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		valType.appendSignature(sb);
 		if (specValue != null) {
 			sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER2);
-			char[] exp = new ASTNodeEncoder().encodeExpression(specValue);
+			char[] exp = encoder.encodeExpression(specValue);
 			sb.append(exp.length);
 			sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
 			sb.append(exp);
@@ -274,7 +279,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		if (defaultValue == null) {
 			return null;
 		}
-		return new ASTNodeEncoder().encodeExpression(defaultValue);
+		return encoder.encodeExpression(defaultValue);
 	}
 
 }

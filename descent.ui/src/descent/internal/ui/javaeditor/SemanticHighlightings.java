@@ -2136,6 +2136,7 @@ public class SemanticHighlightings {
 	
 	private static boolean isNotAggregateContainer(int nodeType) {
 		return nodeType != ASTNode.SIMPLE_TYPE && nodeType != ASTNode.THIS_LITERAL && nodeType != ASTNode.QUALIFIED_TYPE  && nodeType != ASTNode.QUALIFIED_NAME && nodeType != ASTNode.AGGREGATE_DECLARATION
+			&& nodeType != ASTNode.ENUM_DECLARATION 
 			&& nodeType != ASTNode.ALIAS_DECLARATION_FRAGMENT && nodeType != ASTNode.TYPEDEF_DECLARATION_FRAGMENT
 			&& nodeType != ASTNode.CALL_EXPRESSION // For opCall
 			&& nodeType != ASTNode.DOT_IDENTIFIER_EXPRESSION

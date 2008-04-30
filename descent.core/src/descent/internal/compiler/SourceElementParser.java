@@ -17,6 +17,7 @@ import descent.core.Flags;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
 import descent.internal.compiler.ISourceElementRequestor.MethodInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
@@ -53,7 +54,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private final CompilerOptions options;
 	private final NaiveASTFlattener flattener;
 	private final Stack< Stack<AttribDeclaration> > attribDeclarationStack;
-	private final ASTNodeEncoder astNodeEncoder;
+	public ASTNodeEncoder encoder;
 	private char[] source;
 	
 	public boolean diet = true;
@@ -72,7 +73,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 		this.flattener = new NaiveASTFlattener();
 		this.attribDeclarationStack = new Stack< Stack<AttribDeclaration> >();
 		this.attribDeclarationStack.push(new Stack<AttribDeclaration>());
-		this.astNodeEncoder = new ASTNodeEncoder();
 	}
 	
 	protected int getASTlevel() {
@@ -91,11 +91,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit) {
-		long time = System.nanoTime();
+//		long time = System.nanoTime();
 		
 		source = unit.getContents();
 		
-		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), recordLineSeparator, true, diet).module;
+		ParseResult result = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), recordLineSeparator, true, diet);
+		
+		module = result.module;
+		encoder = result.encoder;
 		
 		module.moduleName = unit.getFullyQualifiedName();
 	
@@ -103,8 +106,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		module.accept(this);
 		requestor.exitCompilationUnit(endOf(module));
 		
-		time = System.nanoTime() - time;
-		System.out.println("SourceElementParser took: " + time + " nanoseconds to complete.");
+//		time = System.nanoTime() - time;
+//		System.out.println("SourceElementParser took: " + time + " nanoseconds to complete.");
 		
 		return module;
 	}
@@ -594,7 +597,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		info.type = getSignature(node.type);
-		info.initializationSource = astNodeEncoder.encodeInitializer(node.init);
+		info.initializationSource = encoder.encodeInitializer(node.init);
 		
 		requestor.enterField(info);
 		
@@ -655,7 +658,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, astNodeEncoder.encodeExpression(node.exp));
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, encoder.encodeExpression(node.exp));
 		return false;
 	}
 	
@@ -750,7 +753,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		
-		info.initializationSource = astNodeEncoder.encodeExpression(node.value);
+		info.initializationSource = encoder.encodeExpression(node.value);
 		
 		requestor.enterField(info);
 		
@@ -782,7 +785,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(CompileDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, astNodeEncoder.encodeExpression(node.exp));
+		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, encoder.encodeExpression(node.exp));
 		return false;
 	}
 	

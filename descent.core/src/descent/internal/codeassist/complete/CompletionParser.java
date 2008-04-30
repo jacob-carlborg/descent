@@ -464,7 +464,7 @@ public class CompletionParser extends Parser {
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
 			wantKeywords = false;
 			
-			assistNode = new CompletionOnTemplateMixin(loc, id, tqual, idents, tiargs);
+			assistNode = new CompletionOnTemplateMixin(loc, id, tqual, idents, tiargs, encoder);
 			return (CompletionOnTemplateMixin) assistNode;
 		}
 		return super.newTemplateMixin(loc, id, tqual, idents, tiargs);

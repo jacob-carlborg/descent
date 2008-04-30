@@ -250,10 +250,6 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public Expression deref() {
-		if (type == null) {
-			System.out.println(1);
-		}
-
 		if (type.ty == Treference) {
 			Expression e;
 
