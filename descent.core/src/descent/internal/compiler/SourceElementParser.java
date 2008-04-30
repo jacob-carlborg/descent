@@ -50,13 +50,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	public ISourceElementRequestor requestor;
 	protected Module module;
-	private CompilerOptions options;
-	private NaiveASTFlattener flattener;
-	private Stack< Stack<AttribDeclaration> > attribDeclarationStack;
-	private ASTNodeEncoder astNodeEncoder;
+	private final CompilerOptions options;
+	private final NaiveASTFlattener flattener;
+	private final Stack< Stack<AttribDeclaration> > attribDeclarationStack;
+	private final ASTNodeEncoder astNodeEncoder;
 	private char[] source;
 	
 	public boolean diet = true;
+	public boolean recordLineSeparator = false;
 
 	/**
 	 * @param surfaceDeclarations instruct the parser to ignore statements
@@ -94,7 +95,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		source = unit.getContents();
 		
-		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), true, diet).module;
+		module = CompilationUnitResolver.parse(getASTlevel(), unit, options.getMap(), recordLineSeparator, true, diet).module;
 		
 		module.moduleName = unit.getFullyQualifiedName();
 	
@@ -359,6 +360,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		requestor.enterType(info);
 	}
 	
+	@Override
 	public boolean visit(ClassDeclaration node) {
 		if (node.templated) {
 			return true;
@@ -369,6 +371,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(InterfaceDeclaration node) {
 		if (node.templated) {
 			return true;
@@ -379,12 +382,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(ModuleDeclaration node) {
 		requestor.acceptPackage(startOfDeclaration(node), endOfDeclaration(node), node.getFQN());
 		pushLevelInAttribDeclarationStack();
 		return false;
 	}
 	
+	@Override
 	public boolean visit(StructDeclaration node) {
 		if (node.templated) {
 			return true;
@@ -395,6 +400,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(UnionDeclaration node) {
 		if (node.templated) {
 			return true;
@@ -405,10 +411,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(TemplateDeclaration node) {
 		// TODO Java -> D
 		if (node.wrapper) {
-			Dsymbol wrappedSymbol = (Dsymbol) node.members.get(0); // SEMANTIC
+			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				visit((FuncDeclaration) wrappedSymbol, node);
 				return true;
@@ -475,6 +482,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		requestor.enterMethod(info);
 	}
 
+	@Override
 	public boolean visit(FuncDeclaration node) {
 		if (!node.templated) {
 			visit(node, null);
@@ -511,54 +519,63 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(CtorDeclaration node) {
 		visit(node, Flags.AccConstructor, node.arguments, Id.ctor);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(DtorDeclaration node) {
 		visit(node, Flags.AccDestructor, null, Id.dtor);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(NewDeclaration node) {
 		visit(node, Flags.AccNew, node.arguments, Id.classNew);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(DeleteDeclaration node) {
 		visit(node, Flags.AccDelete, node.arguments, Id.classDelete);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(StaticCtorDeclaration node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers), CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(StaticDtorDeclaration node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticDestructor, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(InvariantDeclaration node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccInvariant, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(UnitTestDeclaration node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccUnitTest, CharOperation.NO_CHAR);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(VarDeclaration node) {
 		VarDeclaration last = node;
 		while(last.next != null) {
@@ -584,6 +601,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(AliasDeclaration node) {
 		AliasDeclaration last = node;
 		while(last.next != null) {
@@ -609,6 +627,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(TypedefDeclaration node) {
 		TypedefDeclaration last = node;
 		while(last.next != null) {
@@ -634,27 +653,32 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(StaticAssert node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, astNodeEncoder.encodeExpression(node.exp));
 		return false;
 	}
 	
+	@Override
 	public boolean visit(DebugSymbol node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccDebugAssignment, node.version.value);
 		return false;
 	}
 
+	@Override
 	public boolean visit(VersionSymbol node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccVersionAssignment, node.version.value);
 		return false;
 	}
 	
+	@Override
 	public boolean visit(AlignDeclaration node) {
 		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccAlign, node.salign == 0 ? CharOperation.NO_CHAR : String.valueOf(node.salign).toCharArray());
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
+	@Override
 	public boolean visit(LinkDeclaration node) {
 		char[] id = null;
 		switch(node.linkage) {
@@ -671,6 +695,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(PragmaDeclaration node) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(node.ident);
@@ -687,6 +712,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(EnumDeclaration node) {
 		// TODO Java -> D
 		// Also, since the base class notation in D dosen't distinguis between
@@ -711,6 +737,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
 	public boolean visit(EnumMember node) {
 		FieldInfo info = new FieldInfo();
 		info.declarationStart = startOfDeclaration(node);
@@ -730,6 +757,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(TemplateMixin node) {
 		FieldInfo info = new FieldInfo();
 		info.declarationStart = startOfDeclaration(node);
@@ -752,11 +780,13 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(CompileDeclaration node) {
 		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, astNodeEncoder.encodeExpression(node.exp));
 		return false;
 	}
 	
+	@Override
 	public boolean visit(ConditionalDeclaration node) {
 		char[] displayString = CharOperation.NO_CHAR;;
 		int flags = 0;
@@ -816,6 +846,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(Import node) {
 		if (!node.first) {
 			return false;
@@ -902,18 +933,21 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return sb.toString();
 	}
 
+	@Override
 	public boolean visit(ProtDeclaration node) {
 		pushAttribDeclaration(node);
 		return true;
 	}
 	
+	@Override
 	public boolean visit(StorageClassDeclaration node) {
 		pushAttribDeclaration(node);
 		return true;
 	}
 	
+	@Override
 	public boolean visit(DeclarationStatement node) {
-		Dsymbol dsymbol = (Dsymbol) ((DeclarationExp) node.sourceExp).declaration; // SEMANTIC
+		Dsymbol dsymbol = ((DeclarationExp) node.sourceExp).declaration; // SEMANTIC
 		switch(dsymbol.getNodeType()) {
 		case ASTDmdNode.ENUM_DECLARATION:
 		case ASTDmdNode.CLASS_DECLARATION:
@@ -942,10 +976,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	// ------------------------------------------------------------------------	
 	
+	@Override
 	public void endVisit(ModuleDeclaration node) {
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(ClassDeclaration node) {
 		if (node.templated) {
 			return;
@@ -955,6 +991,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(InterfaceDeclaration node) {
 		if (node.templated) {
 			return;
@@ -964,6 +1001,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(StructDeclaration node) {
 		if (node.templated) {
 			return;
@@ -973,6 +1011,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(UnionDeclaration node) {
 		if (node.templated) {
 			return;
@@ -982,6 +1021,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(TemplateDeclaration node) {
 		if (node.postComment != null) {
 			requestor.exitType(endOfDeclaration(node.postComment));
@@ -993,6 +1033,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 	}
 	
+	@Override
 	public void endVisit(FuncDeclaration node) {
 		if (node.templated) {
 			return;
@@ -1002,59 +1043,69 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(CtorDeclaration node) {
 		requestor.exitConstructor(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(DtorDeclaration node) {
 		requestor.exitConstructor(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(NewDeclaration node) {
 		requestor.exitConstructor(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(DeleteDeclaration node) {
 		requestor.exitConstructor(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(StaticCtorDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(StaticDtorDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(InvariantDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(UnitTestDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(VarDeclaration node) {
 		VarDeclaration last = node;
 		while(last.next != null) {
 			last = last.next;
 		}
 		
-		int initializerStart = node.sourceInit == null ? - 1 : startOf((ASTDmdNode) node.sourceInit); // SEMANTIC
+		int initializerStart = node.sourceInit == null ? - 1 : startOf(node.sourceInit); // SEMANTIC
 		int declarationSourceEnd = endOf(last);
 		int declarationEnd = endOfDeclaration(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
+	@Override
 	public void endVisit(AliasDeclaration node) {
 		AliasDeclaration last = node;
 		while(last.next != null) {
@@ -1068,6 +1119,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 
+	@Override
 	public void endVisit(TypedefDeclaration node) {
 		TypedefDeclaration last = node;
 		while(last.next != null) {
@@ -1081,38 +1133,46 @@ public class SourceElementParser extends AstVisitorAdapter {
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
+	@Override
 	public void endVisit(StaticAssert node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 	}
 
+	@Override
 	public void endVisit(DebugSymbol node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 	}
 
+	@Override
 	public void endVisit(VersionSymbol node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 	}
 
+	@Override
 	public void endVisit(AlignDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(LinkDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(PragmaDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(EnumDeclaration node) {
 		requestor.exitType(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
 	}
 
+	@Override
 	public void endVisit(EnumMember node) {
 		int initializerStart = node.value == null ? - 1 : startOf(node.value);
 		int declarationEnd = endOf(node.ident);
@@ -1121,6 +1181,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 
+	@Override
 	public void endVisit(TemplateMixin node) {
 		int declarationSourceEnd = endOfDeclaration(node);
 		int initializerStart = node.ident == null ? declarationSourceEnd - 1 : endOf(node.ident);			
@@ -1128,10 +1189,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
 	}
 
+	@Override
 	public void endVisit(CompileDeclaration node) {
 		requestor.exitInitializer(endOfDeclaration(node));
 	}
 	
+	@Override
 	public void endVisit(ConditionalDeclaration node) {
 		requestor.exitConditional(endOfDeclaration(node));
 		popLevelInAttribDeclarationStack();
@@ -1143,6 +1206,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(Import node) {
 		if (!node.first) {
 			return;
@@ -1151,10 +1215,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		popLevelInAttribDeclarationStack();
 	}
 	
+	@Override
 	public void endVisit(ProtDeclaration node) {
 		popAttribDeclaration();
 	}
 
+	@Override
 	public void endVisit(StorageClassDeclaration node) {
 		popAttribDeclaration();
 	}
@@ -1170,42 +1236,52 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	// ------------------------------------------------------------------------
 
+	@Override
 	public boolean visit(ASTNode node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ASTDmdNode node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AddAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AddExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AddrExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AggregateDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AndAndExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AndAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AndExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AnonDeclaration node) {
 		TypeInfo info = new TypeInfo();
 		info.declarationStart = startOfDeclaration(node);
@@ -1223,746 +1299,932 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 
+	@Override
 	public boolean visit(AnonymousAggregateDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Argument node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ArrayExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ArrayInitializer node) {
 		return false;
 	}
 	
+	@Override
 	public boolean visit(ArrayLengthExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ArrayLiteralExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ArrayScopeSymbol node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AsmBlock node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AsmStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AssertExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AssocArrayLiteralExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(AttribDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(BaseClass node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(BinExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(BoolExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(BreakStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CallExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CaseStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(CastExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CatAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Catch node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(CatExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ClassInfoDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CmpExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ComExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CommaExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CompileExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CompileStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ComplexExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(CompoundStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(CondExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Condition node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ConditionalStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(ContinueStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DebugCondition node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Declaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DeclarationExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DefaultStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(DelegateExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DeleteExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DivAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DivExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DollarExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DoStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(DotExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DotIdExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DotTemplateExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DotTemplateInstanceExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DotTypeExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DotVarExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Dsymbol node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(DsymbolExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(EqualExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ExpInitializer node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Expression node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ExpStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(FileExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ForeachRangeStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(ForeachStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(ForStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(FuncAliasDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(FuncExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(FuncLiteralDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(GotoCaseStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(GotoDefaultStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(GotoStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(HaltExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(IdentifierExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(IdentityExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(IfStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(IftypeCondition node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(IsExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(IndexExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(InExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Initializer node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(IntegerExp node) {
 		return false;
 	}	
 
+	@Override
 	public boolean visit(LabelDsymbol node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(LabelStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(MinAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(MinExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ModAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ModExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Modifier node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ModuleInfoDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(MulAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(MulExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(NegExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(NewAnonClassExp node) {
 		return false;
 	}	
 
+	@Override
 	public boolean visit(NewExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(NotExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(NullExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(OnScopeStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(OrAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(OrExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(OrOrExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Package node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(PostExp node) {
 		return false;
 	}	
 
+	@Override
 	public boolean visit(PragmaStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(PtrExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(RealExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(RemoveExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ReturnStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(ScopeDsymbol node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ScopeExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ScopeStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(ShlAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ShlExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ShrAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ShrExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(SliceExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Statement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(StaticAssertStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(StaticIfCondition node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(StaticIfDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(StringExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(StructInitializer node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(SuperExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(SwitchStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(SymOffExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(SynchronizedStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(TemplateAliasParameter node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateInstance node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateInstanceWrapper node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateParameter node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateTupleParameter node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateTypeParameter node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TemplateValueParameter node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ThisDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ThisExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ThrowStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TraitsExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TryCatchStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(TryFinallyStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(Tuple node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TupleDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TupleExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Type node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeAArray node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeBasic node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeClass node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeDArray node) {
 		return false;
 	}	
 
+	@Override
 	public boolean visit(TypeDelegate node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeDotIdExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeEnum node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeFunction node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeIdentifier node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeidExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoArrayDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoAssociativeArrayDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoClassDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoDelegateDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoEnumDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoFunctionDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoInterfaceDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoPointerDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoStaticArrayDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoStructDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInfoTypedefDeclaration node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeInstance node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypePointer node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeQualified node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeSArray node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeSlice node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeStruct node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeTuple node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeTypedef node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(TypeTypeof node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(UAddExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(UnaExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(UnrolledLoopStatement node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(UshrAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(UshrExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(VarExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(Version node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(VersionCondition node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(VoidInitializer node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(VolatileStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(WhileStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(WithScopeSymbol node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(WithStatement node) {
 		return true;
 	}
 
+	@Override
 	public boolean visit(XorAssignExp node) {
 		return false;
 	}
 
+	@Override
 	public boolean visit(XorExp node) {
 		return false;
 	}

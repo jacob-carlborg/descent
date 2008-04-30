@@ -872,6 +872,7 @@ public class ASTParser {
 							this.project,
 							this.compilerOptions,
 							this.workingCopyOwner,
+							true,
 							this.statementsRecovery,
 							monitor);
 				} catch (JavaModelException e) {
@@ -879,6 +880,7 @@ public class ASTParser {
 							this.apiLevel,
 							sourceUnit,
 							this.compilerOptions,
+							true,
 							this.statementsRecovery,
 							false);
 					needToResolveBindings = false;
@@ -889,6 +891,7 @@ public class ASTParser {
 							this.apiLevel,
 							sourceUnit,
 							this.compilerOptions,
+							true,
 							this.statementsRecovery,
 							false);
 					needToResolveBindings = false;
@@ -953,6 +956,7 @@ public class ASTParser {
 				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
 				for(Statement statement : ((Block) result).statements()) {
 					statement.accept(new GenericVisitor() {
+						@Override
 						protected boolean visitNode(ASTNode node) {
 							node.setSourceRange(node.getStartPosition() - 1, node.getLength());
 							return true;

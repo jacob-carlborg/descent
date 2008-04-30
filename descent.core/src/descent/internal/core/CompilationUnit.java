@@ -103,6 +103,7 @@ public void becomeWorkingCopy(IProblemRequestor problemRequestor, IProgressMonit
 	}
 }
 
+@Override
 protected boolean buildStructure(OpenableElementInfo info, final IProgressMonitor pm, Map newElements, IResource underlyingResource) throws JavaModelException {
 
 	// check if this compilation unit can be opened
@@ -158,6 +159,12 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	}
 	SourceElementParser parser = new SourceElementParser(requestor, new CompilerOptions(options));
 	parser.diet = !computeProblems && !createAST;
+	parser.recordLineSeparator = createAST;
+	
+	if (createAST) {
+		System.out.println("!!!!");
+	}
+	
 	// parser.reportOnlyOneSyntaxError = !computeProblems;
 	// parser.setStatementsRecovery(statementsRecovery);
 	
@@ -237,6 +244,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 /*
  * @see Openable#canBeRemovedFromCache
  */
+@Override
 public boolean canBeRemovedFromCache() {
 	if (getPerWorkingCopyInfo() != null) return false; // working copies should remain in the cache until they are destroyed
 	return super.canBeRemovedFromCache();
@@ -244,12 +252,14 @@ public boolean canBeRemovedFromCache() {
 /*
  * @see Openable#canBufferBeRemovedFromCache
  */
+@Override
 public boolean canBufferBeRemovedFromCache(IBuffer buffer) {
 	if (getPerWorkingCopyInfo() != null) return false; // working copy buffers should remain in the cache until working copy is destroyed
 	return super.canBufferBeRemovedFromCache(buffer);
 }/*
  * @see IOpenable#close
  */
+@Override
 public void close() throws JavaModelException {
 	if (getPerWorkingCopyInfo() != null) return; // a working copy must remain opened until it is discarded
 	super.close();
@@ -257,6 +267,7 @@ public void close() throws JavaModelException {
 /*
  * @see Openable#closing
  */
+@Override
 protected void closing(Object info) {
 	if (getPerWorkingCopyInfo() == null) {
 		super.closing(info);
@@ -299,6 +310,7 @@ public IEvaluationResult codeEvaluate(int offset, WorkingCopyOwner owner) throws
  * @see IWorkingCopy#commit(boolean, IProgressMonitor)
  * @deprecated
  */
+@Deprecated
 public void commit(boolean force, IProgressMonitor monitor) throws JavaModelException {
 	commitWorkingCopy(force, monitor);
 }
@@ -327,6 +339,7 @@ public void copy(IJavaElement container, IJavaElement sibling, String rename, bo
 /**
  * Returns a new element info for this element.
  */
+@Override
 protected Object createElementInfo() {
 	return new CompilationUnitElementInfo();
 }
@@ -392,6 +405,7 @@ public void delete(boolean force, IProgressMonitor monitor) throws JavaModelExce
  * @see IWorkingCopy#destroy()
  * @deprecated
  */
+@Deprecated
 public void destroy() {
 	try {
 		discardWorkingCopy();
@@ -414,11 +428,13 @@ public void discardWorkingCopy() throws JavaModelException {
  *
  * @see Object#equals(java.lang.Object)
  */
+@Override
 public boolean equals(Object obj) {
 	if (!(obj instanceof CompilationUnit)) return false;
 	CompilationUnit other = (CompilationUnit)obj;
 	return this.owner.equals(other.owner) && super.equals(obj);
 }
+@Override
 public boolean exists() {
 	// working copy always exists in the model until it is gotten rid of (even if not on classpath)
 	if (getPerWorkingCopyInfo() != null) return true;	
@@ -498,6 +514,7 @@ public IType findPrimaryType() {
  * @see IWorkingCopy#findSharedWorkingCopy(IBufferFactory)
  * @deprecated
  */
+@Deprecated
 public IJavaElement findSharedWorkingCopy(IBufferFactory factory) {
 
 	// if factory is null, default factory must be used
@@ -550,6 +567,7 @@ public IType[] getAllTypes() throws JavaModelException {
 /**
  * @see IMember#getCompilationUnit()
  */
+@Override
 public ICompilationUnit getCompilationUnit() {
 	return this;
 }
@@ -578,6 +596,7 @@ public char[] getContents() {
  *
  * @see IJavaElement#getCorrespondingResource()
  */
+@Override
 public IResource getCorrespondingResource() throws JavaModelException {
 	PackageFragmentRoot root = getPackageFragmentRoot();
 	if (root == null || root.isArchive()) {
@@ -598,6 +617,7 @@ public IJavaElement getElementAt(int position) throws JavaModelException {
 		return e;
 	}
 }
+@Override
 public String getElementName() {
 	return this.name;
 }
@@ -618,6 +638,7 @@ public char[] getFileName() {
 /*
  * @see JavaElement
  */
+@Override
 public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner workingCopyOwner) {
 	switch (token.charAt(0)) {
 		case JEM_IMPORTDECLARATION:
@@ -640,6 +661,7 @@ public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento,
 /**
  * @see JavaElement#getHandleMementoDelimiter()
  */
+@Override
 protected char getHandleMementoDelimiter() {
 	return JavaElement.JEM_COMPILATIONUNIT;
 }
@@ -692,6 +714,7 @@ public char[] getMainTypeName(){
  * @see IWorkingCopy#getOriginal(IJavaElement)
  * @deprecated
  */
+@Deprecated
 public IJavaElement getOriginal(IJavaElement workingCopyElement) {
 	// backward compatibility
 	if (!isWorkingCopy()) return null;
@@ -706,6 +729,7 @@ public IJavaElement getOriginal(IJavaElement workingCopyElement) {
  * @see IWorkingCopy#getOriginalElement()
  * @deprecated
  */
+@Deprecated
 public IJavaElement getOriginalElement() {
 	// backward compatibility
 	if (!isWorkingCopy()) return null;
@@ -770,6 +794,7 @@ public ICompilationUnit getPrimary() {
 /*
  * @see JavaElement#getPrimaryElement(boolean)
  */
+@Override
 public IJavaElement getPrimaryElement(boolean checkOwner) {
 	if (checkOwner && isPrimary()) return this;
 	return new CompilationUnit((PackageFragment)getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
@@ -818,6 +843,7 @@ public IType[] getTypes() throws JavaModelException {
 /**
  * @see IJavaElement
  */
+@Override
 public IResource getUnderlyingResource() throws JavaModelException {
 	if (isWorkingCopy() && !isPrimary()) return null;
 	return super.getUnderlyingResource();
@@ -826,6 +852,7 @@ public IResource getUnderlyingResource() throws JavaModelException {
  * @see IWorkingCopy#getSharedWorkingCopy(IProgressMonitor, IBufferFactory, IProblemRequestor)
  * @deprecated
  */
+@Deprecated
 public IJavaElement getSharedWorkingCopy(IProgressMonitor pm, IBufferFactory factory, IProblemRequestor problemRequestor) throws JavaModelException {
 	
 	// if factory is null, default factory must be used
@@ -837,6 +864,7 @@ public IJavaElement getSharedWorkingCopy(IProgressMonitor pm, IBufferFactory fac
  * @see IWorkingCopy#getWorkingCopy()
  * @deprecated
  */
+@Deprecated
 public IJavaElement getWorkingCopy() throws JavaModelException {
 	return getWorkingCopy(null);
 }
@@ -850,6 +878,7 @@ public ICompilationUnit getWorkingCopy(IProgressMonitor monitor) throws JavaMode
  * @see IWorkingCopy#getWorkingCopy(IProgressMonitor, IBufferFactory, IProblemRequestor)
  * @deprecated
  */
+@Deprecated
 public IJavaElement getWorkingCopy(IProgressMonitor monitor, IBufferFactory factory, IProblemRequestor problemRequestor) throws JavaModelException {
 	return getWorkingCopy(BufferFactoryWrapper.create(factory), problemRequestor, monitor);
 }
@@ -874,6 +903,7 @@ public ICompilationUnit getWorkingCopy(WorkingCopyOwner workingCopyOwner, IProbl
 /**
  * @see Openable#hasBuffer()
  */
+@Override
 protected boolean hasBuffer() {
 	return true;
 }
@@ -895,6 +925,7 @@ public boolean hasResourceChanged() {
  * @see IWorkingCopy#isBasedOn(IResource)
  * @deprecated
  */
+@Deprecated
 public boolean isBasedOn(IResource resource) {
 	if (!isWorkingCopy()) return false;
 	if (!getResource().equals(resource)) return false;
@@ -903,6 +934,7 @@ public boolean isBasedOn(IResource resource) {
 /**
  * @see IOpenable#isConsistent()
  */
+@Override
 public boolean isConsistent() {
 	return !JavaModelManager.getJavaModelManager().getElementsOutOfSynchWithBuffers().contains(this);
 }
@@ -912,6 +944,7 @@ public boolean isPrimary() {
 /**
  * @see Openable#isSourceElement()
  */
+@Override
 protected boolean isSourceElement() {
 	return true;
 }
@@ -945,6 +978,7 @@ public boolean isWorkingCopy() {
 /**
  * @see IOpenable#makeConsistent(IProgressMonitor)
  */
+@Override
 public void makeConsistent(IProgressMonitor monitor) throws JavaModelException {
 	makeConsistent(NO_AST, false/*don't resolve bindings*/, false /* don't perform statements recovery */, null/*don't collect problems but report them*/, monitor);
 }
@@ -988,6 +1022,7 @@ public void move(IJavaElement container, IJavaElement sibling, String rename, bo
 /**
  * @see Openable#openBuffer(IProgressMonitor, Object)
  */
+@Override
 protected IBuffer openBuffer(IProgressMonitor pm, Object info) throws JavaModelException {
 
 	// create buffer
@@ -1037,6 +1072,7 @@ protected IBuffer openBuffer(IProgressMonitor pm, Object info) throws JavaModelE
 	
 	return buffer;
 }
+@Override
 protected void openParent(Object childInfo, HashMap newElements, IProgressMonitor pm) throws JavaModelException {
 	if (!isWorkingCopy())
 		super.openParent(childInfo, newElements, pm);
@@ -1047,6 +1083,7 @@ protected void openParent(Object childInfo, HashMap newElements, IProgressMonito
  * @see ICompilationUnit#reconcile()
  * @deprecated
  */
+@Deprecated
 public IMarker[] reconcile() throws JavaModelException {
 	reconcile(NO_AST, false/*don't force problem detection*/, false, null/*use primary owner*/, null/*no progress monitor*/);
 	return null;
@@ -1135,6 +1172,7 @@ public void restore() throws JavaModelException {
 /**
  * @see IOpenable
  */
+@Override
 public void save(IProgressMonitor pm, boolean force) throws JavaModelException {
 	if (isWorkingCopy()) {
 		// no need to save the buffer for a working copy (this is a noop)
@@ -1178,6 +1216,7 @@ public String getFullyQualifiedName() {
 /**
  * Debugging purposes
  */
+@Override
 protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean showResolvedInfo) {
 	if (!isPrimary()) {
 		buffer.append(this.tabString(tab));

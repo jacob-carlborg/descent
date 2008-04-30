@@ -13,11 +13,9 @@ package descent.core.dom;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.ICompilationUnit;
-import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
@@ -112,16 +110,18 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	public static ParseResult parse(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			Map options, 
+			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			boolean diet) {
 		
-		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, statementsRecovery, diet);
+		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, recordLineSeparator, statementsRecovery, diet);
 	}
 	
 	public static ParseResult parse(int apiLevel,
 			char[] source,
 			char[] filename, 
-			Map options, 
+			Map options,
+			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			boolean diet) {
 		
@@ -159,10 +159,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IJavaProject javaProject,
 			Map options,
 			WorkingCopyOwner owner,
+			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
 		
-		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery, false);
+		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
 		result.context = resolve(result.module, javaProject, owner);
 		return result;

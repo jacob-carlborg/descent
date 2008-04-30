@@ -62,6 +62,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 	 * @exception JavaModelException if setting the source
 	 * 	of the original compilation unit fails
 	 */
+	@Override
 	protected void executeOperation() throws JavaModelException {
 		if (this.progressMonitor != null) {
 			if (this.progressMonitor.isCanceled()) 
@@ -127,6 +128,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 	/**
 	 * @see JavaModelOperation#isReadOnly
 	 */
+	@Override
 	public boolean isReadOnly() {
 		return true;
 	}
@@ -157,7 +159,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				}
 				
 				// TODO JDT verify this
-				ParseResult parseResult = CompilationUnitResolver.parse(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents(), workingCopy.getFileName(), null, true, false);
+				ParseResult parseResult = CompilationUnitResolver.parse(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents(), workingCopy.getFileName(), null, true, true, false);
 				Module module = parseResult.module;
 				module.moduleName = workingCopy.getFullyQualifiedName();
 				
@@ -239,6 +241,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 			});
 		}
 	}
+	@Override
 	protected IJavaModelStatus verify() {
 		IJavaModelStatus status = super.verify();
 		if (!status.isOK()) {

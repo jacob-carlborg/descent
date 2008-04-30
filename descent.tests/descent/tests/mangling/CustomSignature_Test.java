@@ -31,7 +31,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeClass type = (TypeClass) var.type;
 		ClassDeclaration cd = type.sym;
@@ -47,7 +47,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeClass type = (TypeClass) var.type;
 		ClassDeclaration cd = type.sym;
@@ -63,7 +63,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeStruct type = (TypeStruct) var.type;
 		StructDeclaration cd = type.sym;
@@ -79,7 +79,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeStruct type = (TypeStruct) var.type;
 		StructDeclaration cd = type.sym;
@@ -95,7 +95,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
 		TypeEnum type = (TypeEnum) var.type;
 		EnumDeclaration cd = type.sym;
@@ -111,7 +111,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("void foo() { }");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		FuncDeclaration func = (FuncDeclaration) module.members.get(2);
 		assertEquals(MODULE + "3two" + FUNCTION + "3fooFZv", func.getSignature());
 	}
@@ -121,9 +121,9 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo!() x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
-		Type type = (Type) var.type;
+		Type type = var.type;
 		assertEquals(MODULE + "3one" + TEMPLATED_CLASS + "3Foo" + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK, type.getSignature());
 	}
 	
@@ -132,9 +132,9 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("Foo!(int) x;");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		VarDeclaration var = (VarDeclaration) module.members.get(2);
-		Type type = (Type) var.type;
+		Type type = var.type;
 		assertEquals(MODULE + "3one" + TEMPLATED_CLASS + "3Foo" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_PARAMETERS_BREAK + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + "i" + TEMPLATE_PARAMETERS_BREAK, type.getSignature());
 	}
 	
@@ -143,7 +143,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("void foo() { x = null; }");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		FuncDeclaration func = (FuncDeclaration) module.members.get(2);
 		CompoundStatement cs = (CompoundStatement) func.fbody;
 		ExpStatement ex = (ExpStatement) cs.statements.get(0);
@@ -165,7 +165,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("void foo() { x = null; }");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		FuncDeclaration func = (FuncDeclaration) module.members.get(2);
 		CompoundStatement cs = (CompoundStatement) func.fbody;
 		ExpStatement ex = (ExpStatement) cs.statements.get(0);
@@ -187,7 +187,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("class Bar { mixin Foo!(); } void foo(Bar bar) { bar.someProperty = 3; }");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		FuncDeclaration func = (FuncDeclaration) module.members.get(3);
 		CompoundStatement cs = (CompoundStatement) func.fbody;
 		ExpStatement ex = (ExpStatement) cs.statements.get(0);
@@ -202,7 +202,7 @@ public class CustomSignature_Test extends AbstractLookupTest implements ISignatu
 		two("class Bar { mixin Foo!(); } void foo(Bar bar) { bar.someFunction(); }");
 		
 		Module module = CompilationUnitResolver.resolve(javaProject.getApiLevel(), 
-				(ICompilationUnit) two, javaProject, null, null, true, null).module;
+				(ICompilationUnit) two, javaProject, null, null, true, true, null).module;
 		FuncDeclaration func = (FuncDeclaration) module.members.get(3);
 		CompoundStatement cs = (CompoundStatement) func.fbody;
 		ExpStatement ex = (ExpStatement) cs.statements.get(0);

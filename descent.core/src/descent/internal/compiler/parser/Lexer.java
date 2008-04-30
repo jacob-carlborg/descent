@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKPRAGMA;
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddass;
 import static descent.internal.compiler.parser.TOK.TOKand;
@@ -27,6 +27,7 @@ import static descent.internal.compiler.parser.TOK.TOKfloat64v;
 import static descent.internal.compiler.parser.TOK.TOKfloat80v;
 import static descent.internal.compiler.parser.TOK.TOKge;
 import static descent.internal.compiler.parser.TOK.TOKgt;
+import static descent.internal.compiler.parser.TOK.TOKidentifier;
 import static descent.internal.compiler.parser.TOK.TOKidentity;
 import static descent.internal.compiler.parser.TOK.TOKimaginary32v;
 import static descent.internal.compiler.parser.TOK.TOKimaginary64v;
@@ -123,7 +124,7 @@ public class Lexer implements IProblemRequestor {
 	private final static int LS = 0x2028;
 	private final static int PS = 0x2029;
 
-	private OutBuffer stringbuffer = new OutBuffer();
+	private final OutBuffer stringbuffer = new OutBuffer();
 	private Token freelist;
 
 	public int base;
@@ -218,17 +219,17 @@ public class Lexer implements IProblemRequestor {
 		if (source.length != length) {
 			throw new IllegalStateException();
 		}
-
-		// Make input larger and add zeros, to avoid comparing
-		input = new char[length - base + 5];
-
-		System.arraycopy(source, 0, input, 0, source.length);
+		
+		input = source;
+		
 		reset(offset, length);
 		this.tokenizeComments = tokenizeComments;
 		this.tokenizePragmas = tokenizePragmas;
 		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
 		this.recordLineSeparator = recordLineSeparator;
-		this.lineEnds = new int[250];
+		if (this.recordLineSeparator) {
+			this.lineEnds = new int[250];
+		}
 		if (token == null) {
 			token = new Token();
 		} else {
@@ -433,7 +434,7 @@ public class Lexer implements IProblemRequestor {
 				return;
 			}
 
-			switch (input[p]) {
+			switch (input(p)) {
 			case 0:
 			case 0x1A:
 				t.value = TOKeof; // end of file
@@ -454,7 +455,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '\r':
 				p++;
-				if (input[p] != '\n') { // if CR stands by itself
+				if (input(p) != '\n') { // if CR stands by itself
 					newline(NOT_IN_COMMENT);
 				}
 				if (tokenizeWhiteSpace) {
@@ -518,19 +519,19 @@ public class Lexer implements IProblemRequestor {
 				return;
 
 			case 'r':
-				if (input[p + 1] != '"') {
+				if (input(p + 1) != '"') {
 					case_ident(t);
 					return;
 				}
 				p++;
 			case '`':
-				t.value = wysiwygStringConstant(t, input[p]);
+				t.value = wysiwygStringConstant(t, input(p));
 				t.sourceLen = p - t.ptr;
 				t.setString(input, t.ptr, t.sourceLen);
 				return;
 
 			case 'x':
-				if (input[p + 1] != '"') {
+				if (input(p + 1) != '"') {
 					case_ident(t);
 					return;
 				}
@@ -542,13 +543,13 @@ public class Lexer implements IProblemRequestor {
 				
 			case 'q':
 				if (apiLevel == D2) {
-					if (input[p + 1] == '"')
+					if (input(p + 1) == '"')
 					{
 					    p++;
 					    t.value = delimitedStringConstant(t);
 					    return;
 					}
-					else if (input[p + 1] == '{')
+					else if (input(p + 1) == '{')
 					{
 					    p++;
 					    t.value = tokenStringConstant(t);
@@ -574,7 +575,7 @@ public class Lexer implements IProblemRequestor {
 				stringbuffer.reset();
 				do {
 					p++;
-				    switch (input[p])
+				    switch (input(p))
 				    {
 					case 'u':
 					case 'U':
@@ -587,7 +588,7 @@ public class Lexer implements IProblemRequestor {
 					    stringbuffer.writeByte(c);
 					    break;
 				    }
-				} while (input[p] == '\\');
+				} while (input(p) == '\\');
 				//stringbuffer.writeByte(0);
 				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
 				t.postfix = 0;
@@ -657,7 +658,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '/':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case '=':
 					p++;
 					t.value = TOKdivass;
@@ -669,7 +670,7 @@ public class Lexer implements IProblemRequestor {
 					linnum = this.linnum;
 					while (true) {
 						while (true) {
-							char c = input[p];
+							char c = input(p);
 							switch (c) {
 							case '/':
 								break;
@@ -681,7 +682,7 @@ public class Lexer implements IProblemRequestor {
 
 							case '\r':
 								p++;
-								if (input[p] != '\n') {
+								if (input(p) != '\n') {
 									newline(IN_COMMENT);
 								}
 								continue;
@@ -707,7 +708,7 @@ public class Lexer implements IProblemRequestor {
 							break;
 						}
 						p++;
-						if (input[p - 2] == '*' && p - 3 != t.ptr) {
+						if (input(p - 2) == '*' && p - 3 != t.ptr) {
 							break;
 						}
 					}
@@ -717,7 +718,7 @@ public class Lexer implements IProblemRequestor {
 					}
 
 					if (tokenizeComments) {
-						t.value = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment
+						t.value = (input(t.ptr + 2) == '*' && p - 4 != t.ptr) ? TOKdocblockcomment
 								: TOKblockcomment;
 						t.sourceLen = p - t.ptr;
 						t.setString(input, t.ptr, t.sourceLen);
@@ -729,13 +730,13 @@ public class Lexer implements IProblemRequestor {
 				case '/': // do // style comments
 					linnum = this.linnum;
 					while (true) {
-						char c = input[++p];
+						char c = input(++p);
 						switch (c) {
 						case '\n':
 							break;
 
 						case '\r':
-							if (input[p + 1] == '\n') {
+							if (input(p + 1) == '\n') {
 								p++;
 							}
 							break;
@@ -746,7 +747,7 @@ public class Lexer implements IProblemRequestor {
 								checkTaskTag(t.ptr, p);
 							}
 							if (tokenizeComments) {
-								t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment
+								t.value = input(t.ptr + 2) == '/' ? TOKdoclinecomment
 										: TOKlinecomment;
 								t.sourceLen = p - t.ptr;
 								t.setString(input, t.ptr, t.sourceLen);
@@ -773,7 +774,7 @@ public class Lexer implements IProblemRequestor {
 					if (tokenizeComments) {
 						p++;
 
-						t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment
+						t.value = input(t.ptr + 2) == '/' ? TOKdoclinecomment
 								: TOKlinecomment;
 						t.sourceLen = p - t.ptr;
 						t.setString(input, t.ptr, t.sourceLen);
@@ -794,11 +795,11 @@ public class Lexer implements IProblemRequestor {
 					p++;
 					nest = 1;
 					while (true) {
-						char c = input[p];
+						char c = input(p);
 						switch (c) {
 						case '/':
 							p++;
-							if (input[p] == '+') {
+							if (input(p) == '+') {
 								p++;
 								nest++;
 							}
@@ -806,7 +807,7 @@ public class Lexer implements IProblemRequestor {
 
 						case '+':
 							p++;
-							if (input[p] == '/') {
+							if (input(p) == '/') {
 								p++;
 								if (--nest == 0) {
 									break;
@@ -816,7 +817,7 @@ public class Lexer implements IProblemRequestor {
 
 						case '\r':
 							p++;
-							if (input[p] != '\n') {
+							if (input(p) != '\n') {
 								newline(IN_COMMENT);
 							}
 							continue;
@@ -851,7 +852,7 @@ public class Lexer implements IProblemRequestor {
 						checkTaskTag(t.ptr, p);
 					}
 					if (tokenizeComments) {
-						t.value = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment
+						t.value = (input(t.ptr + 2) == '+' && p - 4 != t.ptr) ? TOKdocpluscomment
 								: TOKpluscomment;
 						t.sourceLen = p - t.ptr;
 						t.setString(input, t.ptr, t.sourceLen);
@@ -868,13 +869,13 @@ public class Lexer implements IProblemRequestor {
 			case '.':
 				p++;
 				// Chars.isdigit inlined
-				if ('0' <= input[p] && input[p] <= '9') {
+				if ('0' <= input(p) && input(p) <= '9') {
 					p--;
 					t.value = inreal(t);
 					t.sourceLen = p - t.ptr;
 					t.setString(input, t.ptr, t.sourceLen);
-				} else if (input[p] == '.') {
-					if (input[p + 1] == '.') {
+				} else if (input(p) == '.') {
+					if (input(p + 1) == '.') {
 						p += 2;
 						t.value = TOKdotdotdot;
 						t.sourceLen = 3;
@@ -891,11 +892,11 @@ public class Lexer implements IProblemRequestor {
 
 			case '&':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKandass;
 					t.sourceLen = 2;
-				} else if (input[p] == '&') {
+				} else if (input(p) == '&') {
 					p++;
 					t.value = TOKandand;
 					t.sourceLen = 2;
@@ -907,11 +908,11 @@ public class Lexer implements IProblemRequestor {
 
 			case '|':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKorass;
 					t.sourceLen = 2;
-				} else if (input[p] == '|') {
+				} else if (input(p) == '|') {
 					p++;
 					t.value = TOKoror;
 					t.sourceLen = 2;
@@ -923,20 +924,20 @@ public class Lexer implements IProblemRequestor {
 
 			case '-':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKminass;
 					t.sourceLen = 2;
 				}
 				/*
 				 #if 0
-				 else if (input[p] == '>')
+				 else if (input(p) == '>')
 				 {   p++;
 				 t.value = TOKarrow;
 				 }
 				 #endif
 				 */
-				else if (input[p] == '-') {
+				else if (input(p) == '-') {
 					p++;
 					t.value = TOKminusminus;
 					t.sourceLen = 2;
@@ -948,11 +949,11 @@ public class Lexer implements IProblemRequestor {
 
 			case '+':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKaddass;
 					t.sourceLen = 2;
-				} else if (input[p] == '+') {
+				} else if (input(p) == '+') {
 					p++;
 					t.value = TOKplusplus;
 					t.sourceLen = 2;
@@ -964,13 +965,13 @@ public class Lexer implements IProblemRequestor {
 
 			case '<':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKle; // <=
 					t.sourceLen = 2;
-				} else if (input[p] == '<') {
+				} else if (input(p) == '<') {
 					p++;
-					if (input[p] == '=') {
+					if (input(p) == '=') {
 						p++;
 						t.value = TOKshlass; // <<=
 						t.sourceLen = 3;
@@ -978,9 +979,9 @@ public class Lexer implements IProblemRequestor {
 						t.value = TOKshl; // <<
 						t.sourceLen = 2;
 					}
-				} else if (input[p] == '>') {
+				} else if (input(p) == '>') {
 					p++;
-					if (input[p] == '=') {
+					if (input(p) == '=') {
 						p++;
 						t.value = TOKleg; // <>=
 						t.sourceLen = 3;
@@ -996,19 +997,19 @@ public class Lexer implements IProblemRequestor {
 
 			case '>':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKge; // >=
 					t.sourceLen = 2;
-				} else if (input[p] == '>') {
+				} else if (input(p) == '>') {
 					p++;
-					if (input[p] == '=') {
+					if (input(p) == '=') {
 						p++;
 						t.value = TOKshrass; // >>=
 						t.sourceLen = 3;
-					} else if (input[p] == '>') {
+					} else if (input(p) == '>') {
 						p++;
-						if (input[p] == '=') {
+						if (input(p) == '=') {
 							p++;
 							t.value = TOKushrass; // >>>=
 							t.sourceLen = 4;
@@ -1028,9 +1029,9 @@ public class Lexer implements IProblemRequestor {
 
 			case '!':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
-					if (input[p] == '=' && apiLevel == D0) {
+					if (input(p) == '=' && apiLevel == D0) {
 						p++;
 						t.value = TOKnotidentity; // !==
 						t.sourceLen = 3;
@@ -1038,11 +1039,11 @@ public class Lexer implements IProblemRequestor {
 						t.value = TOKnotequal; // !=
 						t.sourceLen = 2;
 					}
-				} else if (input[p] == '<') {
+				} else if (input(p) == '<') {
 					p++;
-					if (input[p] == '>') {
+					if (input(p) == '>') {
 						p++;
-						if (input[p] == '=') {
+						if (input(p) == '=') {
 							p++;
 							t.value = TOKunord; // !<>=
 							t.sourceLen = 4;
@@ -1050,7 +1051,7 @@ public class Lexer implements IProblemRequestor {
 							t.value = TOKue; // !<>
 							t.sourceLen = 3;
 						}
-					} else if (input[p] == '=') {
+					} else if (input(p) == '=') {
 						p++;
 						t.value = TOKug; // !<=
 						t.sourceLen = 3;
@@ -1058,9 +1059,9 @@ public class Lexer implements IProblemRequestor {
 						t.value = TOKuge; // !<
 						t.sourceLen = 2;
 					}
-				} else if (input[p] == '>') {
+				} else if (input(p) == '>') {
 					p++;
-					if (input[p] == '=') {
+					if (input(p) == '=') {
 						p++;
 						t.value = TOKul; // !>=
 						t.sourceLen = 3;
@@ -1076,9 +1077,9 @@ public class Lexer implements IProblemRequestor {
 
 			case '=':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
-					if (input[p] == '=' && apiLevel == D0) {
+					if (input(p) == '=' && apiLevel == D0) {
 						p++;
 						t.value = TOKidentity; // ===
 						t.sourceLen = 3;
@@ -1094,7 +1095,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '~':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKcatass; // ~=
 					t.sourceLen = 2;
@@ -1161,7 +1162,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '*':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKmulass;
 					t.sourceLen = 2;
@@ -1173,7 +1174,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '%':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKmodass;
 					t.sourceLen = 2;
@@ -1185,7 +1186,7 @@ public class Lexer implements IProblemRequestor {
 
 			case '^':
 				p++;
-				if (input[p] == '=') {
+				if (input(p) == '=') {
 					p++;
 					t.value = TOKxorass;
 					t.sourceLen = 2;
@@ -1204,7 +1205,7 @@ public class Lexer implements IProblemRequestor {
 				continue;
 
 			default: {
-				char c = input[p];
+				char c = input(p);
 
 				if (c >= 0x80) {
 					int u = decodeUTF();
@@ -1240,11 +1241,11 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	private void case_ident(Token t) {
-		switch (input[p]) {
+		switch (input(p)) {
 		// C
 		case 'C':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = Id.C;
@@ -1254,7 +1255,7 @@ public class Lexer implements IProblemRequestor {
 		// D
 		case 'D':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = Id.D;
@@ -1264,16 +1265,16 @@ public class Lexer implements IProblemRequestor {
 		// P:
 		case 'P':
 			p++;
-			if (input[p] == 'a') {
+			if (input(p) == 'a') {
 				p++;
-				if (input[p] == 's') {
+				if (input(p) == 's') {
 					p++;
-					if (input[p] == 'c') {
+					if (input(p) == 'c') {
 						p++;
-						if (input[p] == 'a') {
+						if (input(p) == 'a') {
 							p++;
-							if (input[p] == 'l'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'l'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKidentifier;
 								t.sourceString = Id.Pascal;
 								t.sourceLen = 6;
@@ -1288,16 +1289,16 @@ public class Lexer implements IProblemRequestor {
 		// S:
 		case 'S':
 			p++;
-			if (input[p] == 'y') {
+			if (input(p) == 'y') {
 				p++;
-				if (input[p] == 's') {
+				if (input(p) == 's') {
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'e') {
+						if (input(p) == 'e') {
 							p++;
-							if (input[p] == 'm'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'm'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKidentifier;
 								t.sourceString = Id.System;
 								t.sourceLen = 6;
@@ -1312,18 +1313,18 @@ public class Lexer implements IProblemRequestor {
 		// W:
 		case 'W':
 			p++;
-			if (input[p] == 'i') {
+			if (input(p) == 'i') {
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 'd') {
+					if (input(p) == 'd') {
 						p++;
-						if (input[p] == 'o') {
+						if (input(p) == 'o') {
 							p++;
-							if (input[p] == 'w') {
+							if (input(p) == 'w') {
 								p++;
-								if (input[p] == 's'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 's'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKidentifier;
 									t.sourceString = Id.Windows;
 									t.sourceLen = 7;
@@ -1339,21 +1340,21 @@ public class Lexer implements IProblemRequestor {
 		// a:
 		case 'a':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'b':
 				p++;
-				if (input[p] == 's') {
+				if (input(p) == 's') {
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'a') {
+							if (input(p) == 'a') {
 								p++;
-								if (input[p] == 'c') {
+								if (input(p) == 'c') {
 									p++;
-									if (input[p] == 't'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 't'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKabstract;
 										t.sourceLen = 8;
 										p++;
@@ -1367,12 +1368,12 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'l':
 				p++;
-				if (input[p] == 'i') {
+				if (input(p) == 'i') {
 					p++;
-					switch (input[p]) {
+					switch (input(p)) {
 					case 'a':
 						p++;
-						if (input[p] == 's' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 's' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKalias;
 							t.sourceLen = 5;
 							p++;
@@ -1381,7 +1382,7 @@ public class Lexer implements IProblemRequestor {
 						break;
 					case 'g':
 						p++;
-						if (input[p] == 'n' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'n' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKalign;
 							t.sourceLen = 5;
 							p++;
@@ -1393,9 +1394,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 's':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'm':
-					if (!Chars.isidchar(input[p + 1])) {
+					if (!Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKasm;
 						t.sourceLen = 3;
 						p++;
@@ -1404,12 +1405,12 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 's':
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKassert;
 								t.sourceLen = 6;
 								p++;
@@ -1422,9 +1423,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				if (input[p] == 't') {
+				if (input(p) == 't') {
 					p++;
-					if (input[p] == 'o' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'o' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKauto;
 						t.sourceLen = 4;
 						p++;
@@ -1433,7 +1434,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_a;
@@ -1444,13 +1445,13 @@ public class Lexer implements IProblemRequestor {
 		// b:
 		case 'b':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'o':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'd':
 					p++;
-					if (input[p] == 'y' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'y' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKbody;
 						t.sourceLen = 4;
 						p++;
@@ -1459,7 +1460,7 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'o':
 					p++;
-					if (input[p] == 'l' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'l' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKbool;
 						t.sourceLen = 4;
 						p++;
@@ -1470,11 +1471,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'r':
 				p++;
-				if (input[p] == 'e') {
+				if (input(p) == 'e') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'k' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'k' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKbreak;
 							t.sourceLen = 5;
 							p++;
@@ -1485,9 +1486,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'y':
 				p++;
-				if (input[p] == 't') {
+				if (input(p) == 't') {
 					p++;
-					if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKint8;
 						t.sourceLen = 4;
 						p++;
@@ -1496,7 +1497,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_b;
@@ -1507,15 +1508,15 @@ public class Lexer implements IProblemRequestor {
 		// c:
 		case 'c':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'a':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 's':
 					p++;
-					switch (input[p]) {
+					switch (input(p)) {
 					case 'e':
-						if (!Chars.isidchar(input[p + 1])) {
+						if (!Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKcase;
 							t.sourceLen = 4;
 							p++;
@@ -1523,7 +1524,7 @@ public class Lexer implements IProblemRequestor {
 						}
 						break;
 					case 't':
-						if (!Chars.isidchar(input[p + 1])) {
+						if (!Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKcast;
 							t.sourceLen = 4;
 							p++;
@@ -1534,9 +1535,9 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 't':
 					p++;
-					if (input[p] == 'c') {
+					if (input(p) == 'c') {
 						p++;
-						if (input[p] == 'h' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'h' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKcatch;
 							t.sourceLen = 5;
 							p++;
@@ -1548,9 +1549,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'e':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKcent;
 						t.sourceLen = 4;
 						p++;
@@ -1560,16 +1561,16 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'd':
 				p++;
-				if (input[p] == 'o') {
+				if (input(p) == 'o') {
 					p++;
-					if (input[p] == 'u') {
+					if (input(p) == 'u') {
 						p++;
-						if (input[p] == 'b') {
+						if (input(p) == 'b') {
 							p++;
-							if (input[p] == 'l') {
+							if (input(p) == 'l') {
 								p++;
-								if (input[p] == 'e'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'e'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKcomplex64;
 									t.sourceLen = 7;
 									p++;
@@ -1582,14 +1583,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'f':
 				p++;
-				if (input[p] == 'l') {
+				if (input(p) == 'l') {
 					p++;
-					if (input[p] == 'o') {
+					if (input(p) == 'o') {
 						p++;
-						if (input[p] == 'a') {
+						if (input(p) == 'a') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKcomplex32;
 								t.sourceLen = 6;
 								p++;
@@ -1601,9 +1602,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'h':
 				p++;
-				if (input[p] == 'a') {
+				if (input(p) == 'a') {
 					p++;
-					if (input[p] == 'r' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'r' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKchar;
 						t.sourceLen = 4;
 						p++;
@@ -1613,11 +1614,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'l':
 				p++;
-				if (input[p] == 'a') {
+				if (input(p) == 'a') {
 					p++;
-					if (input[p] == 's') {
+					if (input(p) == 's') {
 						p++;
-						if (input[p] == 's' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 's' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKclass;
 							t.sourceLen = 5;
 							p++;
@@ -1628,12 +1629,12 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'o':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					switch (input[p]) {
+					switch (input(p)) {
 					case 's':
 						p++;
-						if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKconst;
 							t.sourceLen = 5;
 							p++;
@@ -1642,14 +1643,14 @@ public class Lexer implements IProblemRequestor {
 						break;
 					case 't':
 						p++;
-						if (input[p] == 'i') {
+						if (input(p) == 'i') {
 							p++;
-							if (input[p] == 'n') {
+							if (input(p) == 'n') {
 								p++;
-								if (input[p] == 'u') {
+								if (input(p) == 'u') {
 									p++;
-									if (input[p] == 'e'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'e'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKcontinue;
 										t.sourceLen = 8;
 										p++;
@@ -1664,11 +1665,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'r':
 				p++;
-				if (input[p] == 'e') {
+				if (input(p) == 'e') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'l' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'l' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKcomplex80;
 							t.sourceLen = 5;
 							p++;
@@ -1678,7 +1679,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_c;
@@ -1689,14 +1690,14 @@ public class Lexer implements IProblemRequestor {
 		// d:
 		case 'd':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'c':
 				p++;
-				if (input[p] == 'h') {
+				if (input(p) == 'h') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'r' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'r' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKdchar;
 							t.sourceLen = 5;
 							p++;
@@ -1707,12 +1708,12 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'e':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'b':
 					p++;
-					if (input[p] == 'u') {
+					if (input(p) == 'u') {
 						p++;
-						if (input[p] == 'g' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'g' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKdebug;
 							t.sourceLen = 5;
 							p++;
@@ -1722,14 +1723,14 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'f':
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'u') {
+						if (input(p) == 'u') {
 							p++;
-							if (input[p] == 'l') {
+							if (input(p) == 'l') {
 								p++;
-								if (input[p] == 't'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 't'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKdefault;
 									t.sourceLen = 7;
 									p++;
@@ -1741,17 +1742,17 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'l':
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						switch (input[p]) {
+						switch (input(p)) {
 						case 'g':
 							p++;
-							if (input[p] == 'a') {
+							if (input(p) == 'a') {
 								p++;
-								if (input[p] == 't') {
+								if (input(p) == 't') {
 									p++;
-									if (input[p] == 'e'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'e'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKdelegate;
 										t.sourceLen = 8;
 										p++;
@@ -1762,8 +1763,8 @@ public class Lexer implements IProblemRequestor {
 							break;
 						case 't':
 							p++;
-							if (input[p] == 'e'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'e'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKdelete;
 								t.sourceLen = 6;
 								p++;
@@ -1775,21 +1776,21 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'p':
 					p++;
-					if (input[p] == 'r') {
+					if (input(p) == 'r') {
 						p++;
-						if (input[p] == 'e') {
+						if (input(p) == 'e') {
 							p++;
-							if (input[p] == 'c') {
+							if (input(p) == 'c') {
 								p++;
-								if (input[p] == 'a') {
+								if (input(p) == 'a') {
 									p++;
-									if (input[p] == 't') {
+									if (input(p) == 't') {
 										p++;
-										if (input[p] == 'e') {
+										if (input(p) == 'e') {
 											p++;
-											if (input[p] == 'd'
+											if (input(p) == 'd'
 													&& !Chars
-															.isidchar(input[p + 1])) {
+															.isidchar(input(p + 1))) {
 												t.value = TOK.TOKdeprecated;
 												t.sourceLen = 10;
 												p++;
@@ -1805,7 +1806,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			case 'o':
-				if (!Chars.isidchar(input[p + 1])) {
+				if (!Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKdo;
 					t.sourceLen = 2;
 					p++;
@@ -1813,14 +1814,14 @@ public class Lexer implements IProblemRequestor {
 				}
 
 				p++;
-				if (input[p] == 'u') {
+				if (input(p) == 'u') {
 					p++;
-					if (input[p] == 'b') {
+					if (input(p) == 'b') {
 						p++;
-						if (input[p] == 'l') {
+						if (input(p) == 'l') {
 							p++;
-							if (input[p] == 'e'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'e'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKfloat64;
 								t.sourceLen = 6;
 								p++;
@@ -1831,7 +1832,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_d;
@@ -1842,12 +1843,12 @@ public class Lexer implements IProblemRequestor {
 		// e:
 		case 'e':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'l':
 				p++;
-				if (input[p] == 's') {
+				if (input(p) == 's') {
 					p++;
-					if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKelse;
 						t.sourceLen = 4;
 						p++;
@@ -1857,9 +1858,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'n':
 				p++;
-				if (input[p] == 'u') {
+				if (input(p) == 'u') {
 					p++;
-					if (input[p] == 'm' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'm' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKenum;
 						t.sourceLen = 4;
 						p++;
@@ -1869,10 +1870,10 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'x':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'i':
 					p++;
-					if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKidentifier;
 						t.sourceString = Id.exit;
 						t.sourceLen = 4;
@@ -1882,12 +1883,12 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'p':
 					p++;
-					if (input[p] == 'o') {
+					if (input(p) == 'o') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKexport;
 								t.sourceLen = 6;
 								p++;
@@ -1898,12 +1899,12 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 't':
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'n'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'n'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKextern;
 								t.sourceLen = 6;
 								p++;
@@ -1915,7 +1916,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_e;
@@ -1926,20 +1927,20 @@ public class Lexer implements IProblemRequestor {
 		// f:
 		case 'f':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'a':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'i':
 					p++;
-					if (input[p] == 'l') {
+					if (input(p) == 'l') {
 						p++;
-						if (input[p] == 'u') {
+						if (input(p) == 'u') {
 							p++;
-							if (input[p] == 'r') {
+							if (input(p) == 'r') {
 								p++;
-								if (input[p] == 'e'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'e'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKidentifier;
 									t.sourceString = Id.failure;
 									t.sourceLen = 7;
@@ -1952,9 +1953,9 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'l':
 					p++;
-					if (input[p] == 's') {
+					if (input(p) == 's') {
 						p++;
-						if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKfalse;
 							t.sourceString = TOK.TOKfalse.charArrayValue;
 							t.sourceLen = 5;
@@ -1967,12 +1968,12 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'i':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'l') {
-							if (!Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'l') {
+							if (!Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKfinal;
 								t.sourceLen = 5;
 								p++;
@@ -1980,10 +1981,10 @@ public class Lexer implements IProblemRequestor {
 							}
 
 							p++;
-							if (input[p] == 'l') {
+							if (input(p) == 'l') {
 								p++;
-								if (input[p] == 'y'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'y'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKfinally;
 									t.sourceLen = 7;
 									p++;
@@ -1996,11 +1997,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'l':
 				p++;
-				if (input[p] == 'o') {
+				if (input(p) == 'o') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKfloat32;
 							t.sourceLen = 5;
 							p++;
@@ -2011,8 +2012,8 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'o':
 				p++;
-				if (input[p] == 'r') {
-					if (!Chars.isidchar(input[p + 1])) {
+				if (input(p) == 'r') {
+					if (!Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKfor;
 						t.sourceLen = 3;
 						p++;
@@ -2020,14 +2021,14 @@ public class Lexer implements IProblemRequestor {
 					}
 
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == 'a') {
+						if (input(p) == 'a') {
 							p++;
-							if (input[p] == 'c') {
+							if (input(p) == 'c') {
 								p++;
-								if (input[p] == 'h') {
-									if (!Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'h') {
+									if (!Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKforeach;
 										t.sourceLen = 7;
 										p++;
@@ -2035,23 +2036,23 @@ public class Lexer implements IProblemRequestor {
 									}
 
 									p++;
-									if (input[p] == '_') {
+									if (input(p) == '_') {
 										p++;
-										if (input[p] == 'r') {
+										if (input(p) == 'r') {
 											p++;
-											if (input[p] == 'e') {
+											if (input(p) == 'e') {
 												p++;
-												if (input[p] == 'v') {
+												if (input(p) == 'v') {
 													p++;
-													if (input[p] == 'e') {
+													if (input(p) == 'e') {
 														p++;
-														if (input[p] == 'r') {
+														if (input(p) == 'r') {
 															p++;
-															if (input[p] == 's') {
+															if (input(p) == 's') {
 																p++;
-																if (input[p] == 'e'
+																if (input(p) == 'e'
 																		&& !Chars
-																				.isidchar(input[p + 1])) {
+																				.isidchar(input(p + 1))) {
 																	t.value = TOK.TOKforeach_reverse;
 																	t.sourceLen = 15;
 																	p++;
@@ -2072,18 +2073,18 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 'c') {
+					if (input(p) == 'c') {
 						p++;
-						if (input[p] == 't') {
+						if (input(p) == 't') {
 							p++;
-							if (input[p] == 'i') {
+							if (input(p) == 'i') {
 								p++;
-								if (input[p] == 'o') {
+								if (input(p) == 'o') {
 									p++;
-									if (input[p] == 'n'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'n'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKfunction;
 										t.sourceLen = 8;
 										p++;
@@ -2096,7 +2097,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_f;
@@ -2107,18 +2108,18 @@ public class Lexer implements IProblemRequestor {
 		// g:
 		case 'g':
 			p++;
-			if (input[p] == 'o') {
+			if (input(p) == 'o') {
 				p++;
-				if (input[p] == 't') {
+				if (input(p) == 't') {
 					p++;
-					if (input[p] == 'o' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'o' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKgoto;
 						t.sourceLen = 4;
 						p++;
 						return;
 					}
 				}
-			} else if (!Chars.isidchar(input[p])) {
+			} else if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_g;
@@ -2128,7 +2129,7 @@ public class Lexer implements IProblemRequestor {
 		// h
 		case 'h':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_h;
@@ -2138,19 +2139,19 @@ public class Lexer implements IProblemRequestor {
 		// i:
 		case 'i':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'd':
 				p++;
-				if (input[p] == 'o') {
+				if (input(p) == 'o') {
 					p++;
-					if (input[p] == 'u') {
+					if (input(p) == 'u') {
 						p++;
-						if (input[p] == 'b') {
+						if (input(p) == 'b') {
 							p++;
-							if (input[p] == 'l') {
+							if (input(p) == 'l') {
 								p++;
-								if (input[p] == 'e'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'e'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKimaginary64;
 									t.sourceLen = 7;
 									p++;
@@ -2162,7 +2163,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			case 'f':
-				if (!Chars.isidchar(input[p + 1])) {
+				if (!Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKif;
 					t.sourceLen = 2;
 					p++;
@@ -2170,14 +2171,14 @@ public class Lexer implements IProblemRequestor {
 				}
 
 				p++;
-				if (input[p] == 'l') {
+				if (input(p) == 'l') {
 					p++;
-					if (input[p] == 'o') {
+					if (input(p) == 'o') {
 						p++;
-						if (input[p] == 'a') {
+						if (input(p) == 'a') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKimaginary32;
 								t.sourceLen = 6;
 								p++;
@@ -2185,14 +2186,14 @@ public class Lexer implements IProblemRequestor {
 							}
 						}
 					}
-				} else if (apiLevel == D0 && input[p] == 't') {
+				} else if (apiLevel == D0 && input(p) == 't') {
 					p++;
-					if (input[p] == 'y') {
+					if (input(p) == 'y') {
 						p++;
-						if (input[p] == 'p') {
+						if (input(p) == 'p') {
 							p++;
-							if (input[p] == 'e'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'e'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKiftype;
 								t.sourceLen = 6;
 								p++;
@@ -2204,14 +2205,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'm':
 				p++;
-				if (input[p] == 'p') {
+				if (input(p) == 'p') {
 					p++;
-					if (input[p] == 'o') {
+					if (input(p) == 'o') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKimport;
 								t.sourceLen = 6;
 								p++;
@@ -2222,7 +2223,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			case 'n':
-				if (!Chars.isidchar(input[p + 1])) {
+				if (!Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKin;
 					t.sourceLen = 2;
 					p++;
@@ -2230,12 +2231,12 @@ public class Lexer implements IProblemRequestor {
 				}
 
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'o':
 					p++;
-					if (input[p] == 'u') {
+					if (input(p) == 'u') {
 						p++;
-						if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKinout;
 							t.sourceLen = 5;
 							p++;
@@ -2244,7 +2245,7 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				case 't':
-					if (!Chars.isidchar(input[p + 1])) {
+					if (!Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKint32;
 						t.sourceLen = 3;
 						p++;
@@ -2252,19 +2253,19 @@ public class Lexer implements IProblemRequestor {
 					}
 
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'f') {
+							if (input(p) == 'f') {
 								p++;
-								if (input[p] == 'a') {
+								if (input(p) == 'a') {
 									p++;
-									if (input[p] == 'c') {
+									if (input(p) == 'c') {
 										p++;
-										if (input[p] == 'e'
+										if (input(p) == 'e'
 												&& !Chars
-														.isidchar(input[p + 1])) {
+														.isidchar(input(p + 1))) {
 											t.value = TOK.TOKinterface;
 											t.sourceLen = 9;
 											p++;
@@ -2278,19 +2279,19 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'v':
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'i') {
+							if (input(p) == 'i') {
 								p++;
-								if (input[p] == 'a') {
+								if (input(p) == 'a') {
 									p++;
-									if (input[p] == 'n') {
+									if (input(p) == 'n') {
 										p++;
-										if (input[p] == 't'
+										if (input(p) == 't'
 												&& !Chars
-														.isidchar(input[p + 1])) {
+														.isidchar(input(p + 1))) {
 											t.value = TOK.TOKinvariant;
 											t.sourceLen = 9;
 											p++;
@@ -2306,11 +2307,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'r':
 				p++;
-				if (input[p] == 'e') {
+				if (input(p) == 'e') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'l' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'l' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKimaginary80;
 							t.sourceLen = 5;
 							p++;
@@ -2320,7 +2321,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			case 's':
-				if (!Chars.isidchar(input[p + 1])) {
+				if (!Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKis;
 					t.sourceLen = 2;
 					p++;
@@ -2328,7 +2329,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_i;
@@ -2339,7 +2340,7 @@ public class Lexer implements IProblemRequestor {
 		// j:
 		case 'j':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_j;
@@ -2349,7 +2350,7 @@ public class Lexer implements IProblemRequestor {
 		// k:
 		case 'k':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_k;
@@ -2359,12 +2360,12 @@ public class Lexer implements IProblemRequestor {
 		// l:
 		case 'l':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'a':
 				p++;
-				if (input[p] == 'z') {
+				if (input(p) == 'z') {
 					p++;
-					if (input[p] == 'y' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'y' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKlazy;
 						t.sourceLen = 4;
 						p++;
@@ -2374,14 +2375,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'e':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 'g') {
+					if (input(p) == 'g') {
 						p++;
-						if (input[p] == 't') {
+						if (input(p) == 't') {
 							p++;
-							if (input[p] == 'h'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'h'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKidentifier;
 								t.sourceString = Id.length;
 								t.sourceLen = 6;
@@ -2394,7 +2395,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'i':
 				p++;
-				if (input[p] == 'b' && !Chars.isidchar(input[p + 1])) {
+				if (input(p) == 'b' && !Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceString = Id.lib;
 					t.sourceLen = 3;
@@ -2404,9 +2405,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'o':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 'g' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'g' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKint64;
 						t.sourceLen = 4;
 						p++;
@@ -2415,7 +2416,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_l;
@@ -2426,14 +2427,14 @@ public class Lexer implements IProblemRequestor {
 		// m:
 		case 'm':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'a':
 				p++;
-				if (input[p] == 'c') {
+				if (input(p) == 'c') {
 					p++;
-					if (input[p] == 'r') {
+					if (input(p) == 'r') {
 						p++;
-						if (input[p] == 'o' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'o' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKmacro;
 							t.sourceLen = 5;
 							p++;
@@ -2444,11 +2445,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'i':
 				p++;
-				if (input[p] == 'x') {
+				if (input(p) == 'x') {
 					p++;
-					if (input[p] == 'i') {
+					if (input(p) == 'i') {
 						p++;
-						if (input[p] == 'n' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'n' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKmixin;
 							t.sourceLen = 5;
 							p++;
@@ -2459,14 +2460,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'o':
 				p++;
-				if (input[p] == 'd') {
+				if (input(p) == 'd') {
 					p++;
-					if (input[p] == 'u') {
+					if (input(p) == 'u') {
 						p++;
-						if (input[p] == 'l') {
+						if (input(p) == 'l') {
 							p++;
-							if (input[p] == 'e'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'e'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKmodule;
 								t.sourceLen = 6;
 								p++;
@@ -2478,7 +2479,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 's':
 				p++;
-				if (input[p] == 'g' && !Chars.isidchar(input[p + 1])) {
+				if (input(p) == 'g' && !Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceString = Id.msg;
 					t.sourceLen = 3;
@@ -2487,7 +2488,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_m;
@@ -2498,10 +2499,10 @@ public class Lexer implements IProblemRequestor {
 		// n:
 		case 'n':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'e':
 				p++;
-				if (input[p] == 'w' && !Chars.isidchar(input[p + 1])) {
+				if (input(p) == 'w' && !Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKnew;
 					t.sourceLen = 3;
 					p++;
@@ -2511,16 +2512,16 @@ public class Lexer implements IProblemRequestor {
 			case 'o':
 				if (apiLevel == D2) {
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'h') {
+						if (input(p) == 'h') {
 							p++;
-							if (input[p] == 'r') {
+							if (input(p) == 'r') {
 								p++;
-								if (input[p] == 'o') {
+								if (input(p) == 'o') {
 									p++;
-									if (input[p] == 'w'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'w'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKnothrow;
 										t.sourceLen = 7;
 										p++;
@@ -2534,9 +2535,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				if (input[p] == 'l') {
+				if (input(p) == 'l') {
 					p++;
-					if (input[p] == 'l' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'l' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKnull;
 						t.sourceLen = 4;
 						p++;
@@ -2545,7 +2546,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_n;
@@ -2556,17 +2557,17 @@ public class Lexer implements IProblemRequestor {
 		// o:
 		case 'o':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'b':
 				p++;
-				if (input[p] == 'j') {
+				if (input(p) == 'j') {
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == 'c') {
+						if (input(p) == 'c') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKidentifier;
 								t.sourceLen = 6;
 								t.sourceString = Id.object;
@@ -2580,30 +2581,30 @@ public class Lexer implements IProblemRequestor {
 			case 'n':
 				if (apiLevel == D0) {
 					p++;
-					if (input[p] == '_') {
+					if (input(p) == '_') {
 						p++;
-						if (input[p] == 's') {
+						if (input(p) == 's') {
 							p++;
-							if (input[p] == 'c') {
+							if (input(p) == 'c') {
 								p++;
-								if (input[p] == 'o') {
+								if (input(p) == 'o') {
 									p++;
-									if (input[p] == 'p') {
+									if (input(p) == 'p') {
 										p++;
-										if (input[p] == 'e') {
+										if (input(p) == 'e') {
 											p++;
-											if (input[p] == '_') {
+											if (input(p) == '_') {
 												p++;
-												switch (input[p]) {
+												switch (input(p)) {
 												case 'e':
 													p++;
-													if (input[p] == 'x') {
+													if (input(p) == 'x') {
 														p++;
-														if (input[p] == 'i') {
+														if (input(p) == 'i') {
 															p++;
-															if (input[p] == 't'
+															if (input(p) == 't'
 																	&& !Chars
-																			.isidchar(input[p + 1])) {
+																			.isidchar(input(p + 1))) {
 																t.value = TOK.TOKon_scope_exit;
 																t.sourceLen = 13;
 																p++;
@@ -2614,19 +2615,19 @@ public class Lexer implements IProblemRequestor {
 													break;
 												case 'f':
 													p++;
-													if (input[p] == 'a') {
+													if (input(p) == 'a') {
 														p++;
-														if (input[p] == 'i') {
+														if (input(p) == 'i') {
 															p++;
-															if (input[p] == 'l') {
+															if (input(p) == 'l') {
 																p++;
-																if (input[p] == 'u') {
+																if (input(p) == 'u') {
 																	p++;
-																	if (input[p] == 'r') {
+																	if (input(p) == 'r') {
 																		p++;
-																		if (input[p] == 'e'
+																		if (input(p) == 'e'
 																				&& !Chars
-																						.isidchar(input[p + 1])) {
+																						.isidchar(input(p + 1))) {
 																			t.value = TOK.TOKon_scope_failure;
 																			t.sourceLen = 16;
 																			p++;
@@ -2640,19 +2641,19 @@ public class Lexer implements IProblemRequestor {
 													break;
 												case 's':
 													p++;
-													if (input[p] == 'u') {
+													if (input(p) == 'u') {
 														p++;
-														if (input[p] == 'c') {
+														if (input(p) == 'c') {
 															p++;
-															if (input[p] == 'c') {
+															if (input(p) == 'c') {
 																p++;
-																if (input[p] == 'e') {
+																if (input(p) == 'e') {
 																	p++;
-																	if (input[p] == 's') {
+																	if (input(p) == 's') {
 																		p++;
-																		if (input[p] == 's'
+																		if (input(p) == 's'
 																				&& !Chars
-																						.isidchar(input[p + 1])) {
+																						.isidchar(input(p + 1))) {
 																			t.value = TOK.TOKon_scope_success;
 																			t.sourceLen = 16;
 																			p++;
@@ -2676,7 +2677,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+				if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 					t.value = TOK.TOKout;
 					t.sourceLen = 3;
 					p++;
@@ -2685,18 +2686,18 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'v':
 				p++;
-				if (input[p] == 'e') {
+				if (input(p) == 'e') {
 					p++;
-					if (input[p] == 'r') {
+					if (input(p) == 'r') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'i') {
+							if (input(p) == 'i') {
 								p++;
-								if (input[p] == 'd') {
+								if (input(p) == 'd') {
 									p++;
-									if (input[p] == 'e'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'e'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKoverride;
 										t.sourceLen = 8;
 										p++;
@@ -2709,7 +2710,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_o;
@@ -2720,19 +2721,19 @@ public class Lexer implements IProblemRequestor {
 		// p:
 		case 'p':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'a':
 				p++;
-				if (input[p] == 'c') {
+				if (input(p) == 'c') {
 					p++;
-					if (input[p] == 'k') {
+					if (input(p) == 'k') {
 						p++;
-						if (input[p] == 'a') {
+						if (input(p) == 'a') {
 							p++;
-							if (input[p] == 'g') {
+							if (input(p) == 'g') {
 								p++;
-								if (input[p] == 'e'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'e'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKpackage;
 									t.sourceLen = 7;
 									p++;
@@ -2745,15 +2746,15 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'r':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'a':
 					p++;
-					if (input[p] == 'g') {
+					if (input(p) == 'g') {
 						p++;
-						if (input[p] == 'm') {
+						if (input(p) == 'm') {
 							p++;
-							if (input[p] == 'a'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'a'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKpragma;
 								t.sourceLen = 6;
 								p++;
@@ -2764,14 +2765,14 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'i':
 					p++;
-					if (input[p] == 'v') {
+					if (input(p) == 'v') {
 						p++;
-						if (input[p] == 'a') {
+						if (input(p) == 'a') {
 							p++;
-							if (input[p] == 't') {
+							if (input(p) == 't') {
 								p++;
-								if (input[p] == 'e'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'e'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKprivate;
 									t.sourceLen = 7;
 									p++;
@@ -2783,19 +2784,19 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'o':
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'e') {
+						if (input(p) == 'e') {
 							p++;
-							if (input[p] == 'c') {
+							if (input(p) == 'c') {
 								p++;
-								if (input[p] == 't') {
+								if (input(p) == 't') {
 									p++;
-									if (input[p] == 'e') {
+									if (input(p) == 'e') {
 										p++;
-										if (input[p] == 'd'
+										if (input(p) == 'd'
 												&& !Chars
-														.isidchar(input[p + 1])) {
+														.isidchar(input(p + 1))) {
 											t.value = TOK.TOKprotected;
 											t.sourceLen = 9;
 											p++;
@@ -2811,15 +2812,15 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				switch(input[p]) {
+				switch(input(p)) {
 				case 'b':
 					p++;
-					if (input[p] == 'l') {
+					if (input(p) == 'l') {
 						p++;
-						if (input[p] == 'i') {
+						if (input(p) == 'i') {
 							p++;
-							if (input[p] == 'c'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'c'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKpublic;
 								t.sourceLen = 6;
 								p++;
@@ -2831,8 +2832,8 @@ public class Lexer implements IProblemRequestor {
 				case 'r':
 					if (apiLevel == D2) {
 						p++;
-						if (input[p] == 'e'
-								&& !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'e'
+								&& !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKpure;
 							t.sourceLen = 4;
 							p++;
@@ -2843,7 +2844,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_p;
@@ -2854,7 +2855,7 @@ public class Lexer implements IProblemRequestor {
 		// q:
 		case 'q':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_q;
@@ -2864,12 +2865,12 @@ public class Lexer implements IProblemRequestor {
 		// r:
 		case 'r':
 			p++;
-			if (input[p] == 'e') {
+			if (input(p) == 'e') {
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'a':
 					p++;
-					if (input[p] == 'l' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'l' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKfloat80;
 						t.sourceLen = 4;
 						p++;
@@ -2877,7 +2878,7 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				case 'f':
-					if (!Chars.isidchar(input[p + 1])) {
+					if (!Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKref;
 						t.sourceLen = 3;
 						p++;
@@ -2886,12 +2887,12 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 't':
 					p++;
-					if (input[p] == 'u') {
+					if (input(p) == 'u') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'n'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'n'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKreturn;
 								t.sourceLen = 6;
 								p++;
@@ -2901,7 +2902,7 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				}
-			} else if (!Chars.isidchar(input[p])) {
+			} else if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_r;
@@ -2911,14 +2912,14 @@ public class Lexer implements IProblemRequestor {
 		// s:
 		case 's':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'c':
 				p++;
-				if (input[p] == 'o') {
+				if (input(p) == 'o') {
 					p++;
-					if (input[p] == 'p') {
+					if (input(p) == 'p') {
 						p++;
-						if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKscope;
 							t.sourceLen = 5;
 							p++;
@@ -2929,11 +2930,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'h':
 				p++;
-				if (input[p] == 'o') {
+				if (input(p) == 'o') {
 					p++;
-					if (input[p] == 'r') {
+					if (input(p) == 'r') {
 						p++;
-						if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKint16;
 							t.sourceLen = 5;
 							p++;
@@ -2944,14 +2945,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'i':
 				p++;
-				if (input[p] == 'z') {
+				if (input(p) == 'z') {
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == '_') {
+						if (input(p) == '_') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKidentifier;
 								t.sourceString = Id.size_t;
 								t.sourceLen = 6;
@@ -2964,15 +2965,15 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 't':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'a':
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'i') {
+						if (input(p) == 'i') {
 							p++;
-							if (input[p] == 'c'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'c'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKstatic;
 								t.sourceLen = 6;
 								p++;
@@ -2983,13 +2984,13 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'r':
 					p++;
-					switch (input[p]) {
+					switch (input(p)) {
 					case 'i':
 						p++;
-						if (input[p] == 'n') {
+						if (input(p) == 'n') {
 							p++;
-							if (input[p] == 'g'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'g'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKidentifier;
 								t.sourceString = Id.string;
 								t.sourceLen = 6;
@@ -3000,10 +3001,10 @@ public class Lexer implements IProblemRequestor {
 						break;
 					case 'u':
 						p++;
-						if (input[p] == 'c') {
+						if (input(p) == 'c') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKstruct;
 								t.sourceLen = 6;
 								p++;
@@ -3017,17 +3018,17 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'u':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'c':
 					p++;
-					if (input[p] == 'c') {
+					if (input(p) == 'c') {
 						p++;
-						if (input[p] == 'e') {
+						if (input(p) == 'e') {
 							p++;
-							if (input[p] == 's') {
+							if (input(p) == 's') {
 								p++;
-								if (input[p] == 's'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 's'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKidentifier;
 									t.sourceString = Id.success;
 									t.sourceLen = 7;
@@ -3040,9 +3041,9 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'p':
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						if (input[p] == 'r' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'r' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKsuper;
 							t.sourceLen = 5;
 							p++;
@@ -3054,14 +3055,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'w':
 				p++;
-				if (input[p] == 'i') {
+				if (input(p) == 'i') {
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'c') {
+						if (input(p) == 'c') {
 							p++;
-							if (input[p] == 'h'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'h'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKswitch;
 								t.sourceLen = 6;
 								p++;
@@ -3073,27 +3074,27 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'y':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 'c') {
+					if (input(p) == 'c') {
 						p++;
-						if (input[p] == 'h') {
+						if (input(p) == 'h') {
 							p++;
-							if (input[p] == 'r') {
+							if (input(p) == 'r') {
 								p++;
-								if (input[p] == 'o') {
+								if (input(p) == 'o') {
 									p++;
-									if (input[p] == 'n') {
+									if (input(p) == 'n') {
 										p++;
-										if (input[p] == 'i') {
+										if (input(p) == 'i') {
 											p++;
-											if (input[p] == 'z') {
+											if (input(p) == 'z') {
 												p++;
-												if (input[p] == 'e') {
+												if (input(p) == 'e') {
 													p++;
-													if (input[p] == 'd'
+													if (input(p) == 'd'
 															&& !Chars
-																	.isidchar(input[p + 1])) {
+																	.isidchar(input(p + 1))) {
 														t.value = TOK.TOKsynchronized;
 														t.sourceLen = 12;
 														p++;
@@ -3110,7 +3111,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_s;
@@ -3121,21 +3122,21 @@ public class Lexer implements IProblemRequestor {
 		// t:
 		case 't':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'e':
 				p++;
-				if (input[p] == 'm') {
+				if (input(p) == 'm') {
 					p++;
-					if (input[p] == 'p') {
+					if (input(p) == 'p') {
 						p++;
-						if (input[p] == 'l') {
+						if (input(p) == 'l') {
 							p++;
-							if (input[p] == 'a') {
+							if (input(p) == 'a') {
 								p++;
-								if (input[p] == 't') {
+								if (input(p) == 't') {
 									p++;
-									if (input[p] == 'e'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'e'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKtemplate;
 										t.sourceLen = 8;
 										p++;
@@ -3149,10 +3150,10 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'h':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'i':
 					p++;
-					if (input[p] == 's' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 's' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKthis;
 						t.sourceLen = 4;
 						p++;
@@ -3161,9 +3162,9 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'r':
 					p++;
-					if (input[p] == 'o') {
+					if (input(p) == 'o') {
 						p++;
-						if (input[p] == 'w' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'w' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKthrow;
 							t.sourceLen = 5;
 							p++;
@@ -3175,10 +3176,10 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'r':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'u':
 					p++;
-					if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKtrue;
 						t.sourceString = TOK.TOKtrue.charArrayValue;
 						t.sourceLen = 4;
@@ -3187,7 +3188,7 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				case 'y':
-					if (!Chars.isidchar(input[p + 1])) {
+					if (!Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKtry;
 						t.sourceLen = 3;
 						p++;
@@ -3198,17 +3199,17 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'y':
 				p++;
-				if (input[p] == 'p') {
+				if (input(p) == 'p') {
 					p++;
-					if (input[p] == 'e') {
+					if (input(p) == 'e') {
 						p++;
-						switch (input[p]) {
+						switch (input(p)) {
 						case 'd':
 							p++;
-							if (input[p] == 'e') {
+							if (input(p) == 'e') {
 								p++;
-								if (input[p] == 'f'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'f'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKtypedef;
 									t.sourceLen = 7;
 									p++;
@@ -3218,8 +3219,8 @@ public class Lexer implements IProblemRequestor {
 							break;
 						case 'i':
 							p++;
-							if (input[p] == 'd'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'd'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKtypeid;
 								t.sourceLen = 6;
 								p++;
@@ -3228,8 +3229,8 @@ public class Lexer implements IProblemRequestor {
 							break;
 						case 'o':
 							p++;
-							if (input[p] == 'f'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 'f'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKtypeof;
 								t.sourceLen = 6;
 								p++;
@@ -3241,7 +3242,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_t;
@@ -3252,14 +3253,14 @@ public class Lexer implements IProblemRequestor {
 		// u:
 		case 'u':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'b':
 				p++;
-				if (input[p] == 'y') {
+				if (input(p) == 'y') {
 					p++;
-					if (input[p] == 't') {
+					if (input(p) == 't') {
 						p++;
-						if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKuns8;
 							t.sourceLen = 5;
 							p++;
@@ -3270,11 +3271,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'c':
 				p++;
-				if (input[p] == 'e') {
+				if (input(p) == 'e') {
 					p++;
-					if (input[p] == 'n') {
+					if (input(p) == 'n') {
 						p++;
-						if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKucent;
 							t.sourceLen = 5;
 							p++;
@@ -3285,9 +3286,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'i':
 				p++;
-				if (input[p] == 'n') {
+				if (input(p) == 'n') {
 					p++;
-					if (input[p] == 't' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 't' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKuns32;
 						t.sourceLen = 4;
 						p++;
@@ -3297,11 +3298,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'l':
 				p++;
-				if (input[p] == 'o') {
+				if (input(p) == 'o') {
 					p++;
-					if (input[p] == 'n') {
+					if (input(p) == 'n') {
 						p++;
-						if (input[p] == 'g' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'g' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKuns64;
 							t.sourceLen = 5;
 							p++;
@@ -3312,12 +3313,12 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'n':
 				p++;
-				if (input[p] == 'i') {
+				if (input(p) == 'i') {
 					p++;
-					switch (input[p]) {
+					switch (input(p)) {
 					case 'o':
 						p++;
-						if (input[p] == 'n' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'n' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKunion;
 							t.sourceLen = 5;
 							p++;
@@ -3326,14 +3327,14 @@ public class Lexer implements IProblemRequestor {
 						break;
 					case 't':
 						p++;
-						if (input[p] == 't') {
+						if (input(p) == 't') {
 							p++;
-							if (input[p] == 'e') {
+							if (input(p) == 'e') {
 								p++;
-								if (input[p] == 's') {
+								if (input(p) == 's') {
 									p++;
-									if (input[p] == 't'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 't'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKunittest;
 										t.sourceLen = 8;
 										p++;
@@ -3348,14 +3349,14 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 's':
 				p++;
-				if (input[p] == 'h') {
+				if (input(p) == 'h') {
 					p++;
-					if (input[p] == 'o') {
+					if (input(p) == 'o') {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 't'
-									&& !Chars.isidchar(input[p + 1])) {
+							if (input(p) == 't'
+									&& !Chars.isidchar(input(p + 1))) {
 								t.value = TOK.TOKuns16;
 								t.sourceLen = 6;
 								p++;
@@ -3366,7 +3367,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_u;
@@ -3377,19 +3378,19 @@ public class Lexer implements IProblemRequestor {
 		// v:
 		case 'v':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'e':
 				p++;
-				if (input[p] == 'r') {
+				if (input(p) == 'r') {
 					p++;
-					if (input[p] == 's') {
+					if (input(p) == 's') {
 						p++;
-						if (input[p] == 'i') {
+						if (input(p) == 'i') {
 							p++;
-							if (input[p] == 'o') {
+							if (input(p) == 'o') {
 								p++;
-								if (input[p] == 'n'
-										&& !Chars.isidchar(input[p + 1])) {
+								if (input(p) == 'n'
+										&& !Chars.isidchar(input(p + 1))) {
 									t.value = TOK.TOKversion;
 									t.sourceLen = 7;
 									p++;
@@ -3402,10 +3403,10 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'o':
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'i':
 					p++;
-					if (input[p] == 'd' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'd' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKvoid;
 						t.sourceLen = 4;
 						p++;
@@ -3414,16 +3415,16 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'l':
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 't') {
+						if (input(p) == 't') {
 							p++;
-							if (input[p] == 'i') {
+							if (input(p) == 'i') {
 								p++;
-								if (input[p] == 'l') {
+								if (input(p) == 'l') {
 									p++;
-									if (input[p] == 'e'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == 'e'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKvolatile;
 										t.sourceLen = 8;
 										p++;
@@ -3437,7 +3438,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_v;
@@ -3448,14 +3449,14 @@ public class Lexer implements IProblemRequestor {
 		// w:
 		case 'w':
 			p++;
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'c':
 				p++;
-				if (input[p] == 'h') {
+				if (input(p) == 'h') {
 					p++;
-					if (input[p] == 'a') {
+					if (input(p) == 'a') {
 						p++;
-						if (input[p] == 'r' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'r' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKwchar;
 							t.sourceLen = 5;
 							p++;
@@ -3466,11 +3467,11 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'h':
 				p++;
-				if (input[p] == 'i') {
+				if (input(p) == 'i') {
 					p++;
-					if (input[p] == 'l') {
+					if (input(p) == 'l') {
 						p++;
-						if (input[p] == 'e' && !Chars.isidchar(input[p + 1])) {
+						if (input(p) == 'e' && !Chars.isidchar(input(p + 1))) {
 							t.value = TOK.TOKwhile;
 							t.sourceLen = 5;
 							p++;
@@ -3481,9 +3482,9 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case 'i':
 				p++;
-				if (input[p] == 't') {
+				if (input(p) == 't') {
 					p++;
-					if (input[p] == 'h' && !Chars.isidchar(input[p + 1])) {
+					if (input(p) == 'h' && !Chars.isidchar(input(p + 1))) {
 						t.value = TOK.TOKwith;
 						t.sourceLen = 4;
 						p++;
@@ -3492,7 +3493,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			default:
-				if (!Chars.isidchar(input[p])) {
+				if (!Chars.isidchar(input(p))) {
 					t.value = TOK.TOKidentifier;
 					t.sourceLen = 1;
 					t.sourceString = charArray_w;
@@ -3503,7 +3504,7 @@ public class Lexer implements IProblemRequestor {
 		// 'x':
 		case 'x':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_x;
@@ -3513,7 +3514,7 @@ public class Lexer implements IProblemRequestor {
 		// 'y':
 		case 'y':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_y;
@@ -3523,7 +3524,7 @@ public class Lexer implements IProblemRequestor {
 		// 'z':
 		case 'z':
 			p++;
-			if (!Chars.isidchar(input[p])) {
+			if (!Chars.isidchar(input(p))) {
 				t.value = TOK.TOKidentifier;
 				t.sourceLen = 1;
 				t.sourceString = charArray_z;
@@ -3533,21 +3534,21 @@ public class Lexer implements IProblemRequestor {
 		// _
 		case '_':
 			p++;
-			if (input[p] == '_') {
+			if (input(p) == '_') {
 				p++;
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'D':
 					p++;
-					if (input[p] == 'A') {
+					if (input(p) == 'A') {
 						p++;
-						if (input[p] == 'T') {
+						if (input(p) == 'T') {
 							p++;
-							if (input[p] == 'E') {
+							if (input(p) == 'E') {
 								p++;
-								if (input[p] == '_') {
+								if (input(p) == '_') {
 									p++;
-									if (input[p] == '_'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == '_'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKstring;
 										t.len = Id.DATE_DUMMY.length;
 										t.ustring = Id.DATE_DUMMY;
@@ -3565,19 +3566,19 @@ public class Lexer implements IProblemRequestor {
 				case 'E':
 					if (apiLevel == D2) {
 						p++;
-						if (input[p] == 'O') {
+						if (input(p) == 'O') {
 							p++;
-							if (input[p] == 'F') {
+							if (input(p) == 'F') {
 								p++;
-								if (input[p] == '_') {
+								if (input(p) == '_') {
 									p++;
-									if (input[p] == '_'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == '_'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKeof;
 										t.len = 0;
 										
 										// Advance scanner to end of file
-										while(!(input[p] == 0 || input[p] == 0x1A)) {
+										while(!(input(p) == 0 || input(p) == 0x1A)) {
 											p++;
 										}
 										return;
@@ -3589,16 +3590,16 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'F':
 					p++;
-					if (input[p] == 'I') {
+					if (input(p) == 'I') {
 						p++;
-						if (input[p] == 'L') {
+						if (input(p) == 'L') {
 							p++;
-							if (input[p] == 'E') {
+							if (input(p) == 'E') {
 								p++;
-								if (input[p] == '_') {
+								if (input(p) == '_') {
 									p++;
-									if (input[p] == '_'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == '_'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKstring;
 										if (filename != null) {
 											t.ustring = filename;
@@ -3619,16 +3620,16 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'L':
 					p++;
-					if (input[p] == 'I') {
+					if (input(p) == 'I') {
 						p++;
-						if (input[p] == 'N') {
+						if (input(p) == 'N') {
 							p++;
-							if (input[p] == 'E') {
+							if (input(p) == 'E') {
 								p++;
-								if (input[p] == '_') {
+								if (input(p) == '_') {
 									p++;
-									if (input[p] == '_'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == '_'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKint64v;
 										t.intValue = new integer_t(linnum);
 										t.special = Token.SPECIAL__LINE__;
@@ -3644,28 +3645,28 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'T':
 					p++;
-					if (input[p] == 'I') {
+					if (input(p) == 'I') {
 						p++;
-						if (input[p] == 'M') {
+						if (input(p) == 'M') {
 							p++;
-							if (input[p] == 'E') {
+							if (input(p) == 'E') {
 								p++;
-								switch (input[p]) {
+								switch (input(p)) {
 								case 'S':
 									p++;
-									if (input[p] == 'T') {
+									if (input(p) == 'T') {
 										p++;
-										if (input[p] == 'A') {
+										if (input(p) == 'A') {
 											p++;
-											if (input[p] == 'M') {
+											if (input(p) == 'M') {
 												p++;
-												if (input[p] == 'P') {
+												if (input(p) == 'P') {
 													p++;
-													if (input[p] == '_') {
+													if (input(p) == '_') {
 														p++;
-														if (input[p] == '_'
+														if (input(p) == '_'
 																&& !Chars
-																		.isidchar(input[p + 1])) {
+																		.isidchar(input(p + 1))) {
 															t.value = TOK.TOKstring;
 															t.ustring = Id.TIMESTAMP_DUMMY;
 															t.len = t.ustring.length;
@@ -3683,8 +3684,8 @@ public class Lexer implements IProblemRequestor {
 									break;
 								case '_':
 									p++;
-									if (input[p] == '_'
-											&& !Chars.isidchar(input[p + 1])) {
+									if (input(p) == '_'
+											&& !Chars.isidchar(input(p + 1))) {
 										t.value = TOK.TOKstring;
 										t.ustring = Id.TIME_DUMMY;
 										t.len = t.ustring.length;
@@ -3702,22 +3703,22 @@ public class Lexer implements IProblemRequestor {
 					break;
 				case 'V':
 					p++;
-					if (input[p] == 'E') {
+					if (input(p) == 'E') {
 						p++;
-						switch (input[p]) {
+						switch (input(p)) {
 						case 'N':
 							p++;
-							if (input[p] == 'D') {
+							if (input(p) == 'D') {
 								p++;
-								if (input[p] == 'O') {
+								if (input(p) == 'O') {
 									p++;
-									if (input[p] == 'R') {
+									if (input(p) == 'R') {
 										p++;
-										if (input[p] == '_') {
+										if (input(p) == '_') {
 											p++;
-											if (input[p] == '_'
+											if (input(p) == '_'
 													&& !Chars
-															.isidchar(input[p + 1])) {
+															.isidchar(input(p + 1))) {
 												t.value = TOK.TOKstring;
 												t.ustring = Id.VENDOR_DUMMY;
 												t.len = t.ustring.length;
@@ -3734,19 +3735,19 @@ public class Lexer implements IProblemRequestor {
 							break;
 						case 'R':
 							p++;
-							if (input[p] == 'S') {
+							if (input(p) == 'S') {
 								p++;
-								if (input[p] == 'I') {
+								if (input(p) == 'I') {
 									p++;
-									if (input[p] == 'O') {
+									if (input(p) == 'O') {
 										p++;
-										if (input[p] == 'N') {
+										if (input(p) == 'N') {
 											p++;
-											if (input[p] == '_') {
+											if (input(p) == '_') {
 												p++;
-												if (input[p] == '_'
+												if (input(p) == '_'
 														&& !Chars
-																.isidchar(input[p + 1])) {
+																.isidchar(input(p + 1))) {
 													t.value = TOK.TOKint64v;
 													t.intValue = integer_t.ONE;
 													t.special = Token.SPECIAL__VERSION__;													
@@ -3767,27 +3768,27 @@ public class Lexer implements IProblemRequestor {
 				case 'o':
 					if (apiLevel == D2) {
 						p++;
-						if (input[p] == 'v') {
+						if (input(p) == 'v') {
 							p++;
-							if (input[p] == 'e') {
+							if (input(p) == 'e') {
 								p++;
-								if (input[p] == 'r') {
+								if (input(p) == 'r') {
 									p++;
-									if (input[p] == 'l') {
+									if (input(p) == 'l') {
 										p++;
-										if (input[p] == 'o') {
+										if (input(p) == 'o') {
 											p++;
-											if (input[p] == 'a') {
+											if (input(p) == 'a') {
 												p++;
-												if (input[p] == 'd') {
+												if (input(p) == 'd') {
 													p++;
-													if (input[p] == 's') {
+													if (input(p) == 's') {
 														p++;
-														if (input[p] == 'e') {
+														if (input(p) == 'e') {
 															p++;
-															if (input[p] == 't'
+															if (input(p) == 't'
 																	&& !Chars
-																			.isidchar(input[p + 1])) {
+																			.isidchar(input(p + 1))) {
 																t.value = TOK.TOKoverloadset;
 																t.sourceLen = 13;
 																p++;
@@ -3807,17 +3808,17 @@ public class Lexer implements IProblemRequestor {
 				case 't':
 					if (apiLevel == D2) {
 						p++;
-						if (input[p] == 'r') {
+						if (input(p) == 'r') {
 							p++;
-							if (input[p] == 'a') {
+							if (input(p) == 'a') {
 								p++;
-								if (input[p] == 'i') {
+								if (input(p) == 'i') {
 									p++;
-									if (input[p] == 't') {
+									if (input(p) == 't') {
 										p++;
-										if (input[p] == 's'
+										if (input(p) == 's'
 												&& !Chars
-														.isidchar(input[p + 1])) {
+														.isidchar(input(p + 1))) {
 											t.value = TOK.TOKtraits;
 											t.sourceLen = 8;
 											p++;
@@ -3838,12 +3839,12 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	private void case_ident_other(Token t) {
-		char c = input[p];
+		char c = input(p);
 
 		if (c > 0 && Chars.isidchar(c)
 				|| (c >= 0x80 && UniAlpha.isUniAlpha(decodeUTF()))) {
 			do {
-				c = input[++p];
+				c = input(++p);
 			} while (c > 0 && Chars.isidchar(c)
 					|| (c >= 0x80 && UniAlpha.isUniAlpha(decodeUTF())));
 		}
@@ -4071,7 +4072,7 @@ public class Lexer implements IProblemRequestor {
 		int ndigits = 0;
 		int startOfNumber;
 
-		c = input[p];
+		c = input(p);
 		switch (c) {
 		case '\'':
 		case '"':
@@ -4121,7 +4122,7 @@ public class Lexer implements IProblemRequestor {
 				ndigits = 2;
 			}
 			p++;
-			c = input[p];
+			c = input(p);
 			if (Chars.ishex(c)) {
 				long v;
 
@@ -4138,7 +4139,7 @@ public class Lexer implements IProblemRequestor {
 						c -= 'A' - 10;
 					}
 					v = v * 16 + c;
-					c = input[++p];
+					c = input(++p);
 					if (++n == ndigits) {
 						break;
 					}
@@ -4165,7 +4166,7 @@ public class Lexer implements IProblemRequestor {
 
 		case '&': // named character entity
 			for (int idstart = ++p; true; p++) {
-				char c2 = input[p];
+				char c2 = input(p);
 				switch (c2) {
 				case ';':
 					c = Entity.HtmlNamedEntity(input, idstart, p - idstart,
@@ -4206,7 +4207,7 @@ public class Lexer implements IProblemRequestor {
 				v = 0;
 				do {
 					v = v * 8 + (c - '0');
-					c = input[++p];
+					c = input(++p);
 					// Chars.isoctal inlined
 				} while (++n < 3 && ('0' <= c && c <= '7'));
 				c = v;
@@ -4227,14 +4228,14 @@ public class Lexer implements IProblemRequestor {
 		p++;
 		stringbuffer.reset();
 		while (true) {
-			c = input[p++];
+			c = input(p++);
 			switch (c) {
 			case '\n':
 				newline(NOT_IN_COMMENT);
 				break;
 
 			case '\r':
-				if (input[p] == '\n') {
+				if (input(p) == '\n') {
 					continue; // ignore
 				}
 				c = '\n'; // treat EndOfLine as \n character
@@ -4288,7 +4289,7 @@ public class Lexer implements IProblemRequestor {
 		p++;
 		stringbuffer.reset();
 		while (true) {
-			c = input[p++];
+			c = input(p++);
 			switch (c) {
 			case ' ':
 			case '\t':
@@ -4297,7 +4298,7 @@ public class Lexer implements IProblemRequestor {
 				continue; // skip white space
 
 			case '\r':
-				if (input[p] == '\n') {
+				if (input(p) == '\n') {
 					continue; // ignore
 				}
 				// Treat isolated '\r' as if it were a '\n'
@@ -4388,7 +4389,7 @@ public class Lexer implements IProblemRequestor {
 		p++;
 		stringbuffer.reset();
 		while (true) {
-			c = input[p++];
+			c = input(p++);
 			switch (c) {
 			case '\n':
 				//		    Lnextline:
@@ -4405,7 +4406,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 
 			case '\r':
-				if (input[p] == '\n')
+				if (input(p) == '\n')
 					continue; // ignore
 				c = '\n'; // treat EndOfLine as \n character
 				//			goto Lnextline;
@@ -4529,7 +4530,7 @@ public class Lexer implements IProblemRequestor {
 	}
 	
 	private TOK delimitedStringConstant_Ldone(Token t, int delimright) {
-		if (input[p] == '"') {
+		if (input(p) == '"') {
 	    	p++;
 	    } else {
 	    	error(IProblem.DelimitedStringMustEndInValue, t.lineNumber, t.ptr, p - t.ptr, new String[] { String.valueOf((char) delimright) });
@@ -4619,10 +4620,10 @@ public class Lexer implements IProblemRequestor {
 		p++;
 		stringbuffer.reset();
 		while (true) {
-			c = input[p++];
+			c = input(p++);
 			switch (c) {
 			case '\\':
-				switch (input[p]) {
+				switch (input(p)) {
 				case 'u':
 				case 'U':
 				case '&':
@@ -4641,7 +4642,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 
 			case '\r':
-				if (input[p] == '\n') {
+				if (input(p) == '\n') {
 					continue; // ignore
 				}
 				c = '\n'; // treat EndOfLine as \n character
@@ -4692,11 +4693,11 @@ public class Lexer implements IProblemRequestor {
 		TOK tk = TOKcharv;
 
 		p++;
-		c = input[p++];
+		c = input(p++);
 
 		switch (c) {
 		case '\\':
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'u':
 				t.intValue = new integer_t(escapeSequence());
 				tk = TOKwcharv;
@@ -4751,7 +4752,7 @@ public class Lexer implements IProblemRequestor {
 		t.sourceLen = p - t.ptr + 1;
 		t.setString(input, t.ptr, t.sourceLen);
 
-		if (input[p] != '\'') {
+		if (input(p) != '\'') {
 			error(IProblem.UnterminatedCharacterConstant, token.lineNumber,
 					token.ptr, p - token.ptr);
 			return tk;
@@ -4761,11 +4762,11 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	private void stringPostfix(Token t) {
-		switch (input[p]) {
+		switch (input(p)) {
 		case 'c':
 		case 'w':
 		case 'd':
-			t.postfix = input[p];
+			t.postfix = input(p);
 			p++;
 			break;
 
@@ -4790,7 +4791,7 @@ public class Lexer implements IProblemRequestor {
 	 ++p;
 	 if (n == nchars)
 	 break;
-	 c = input[p];
+	 c = input(p);
 	 if (!Chars.ishex(c))
 	 {   error("\\%c sequence must be followed by %d hex characters", u, nchars);
 	 break;
@@ -4848,7 +4849,7 @@ public class Lexer implements IProblemRequestor {
 
 		goto_done: while (true) {
 			boolean writeToStringBuffer = true;
-			c = input[p];
+			c = input(p);
 			switch (state) {
 			case STATE_initial: // opening state
 				if (c == '0') {
@@ -4873,7 +4874,7 @@ public class Lexer implements IProblemRequestor {
 					break;
 
 				case '.':
-					if (input[p + 1] == '.') {
+					if (input(p + 1) == '.') {
 						break goto_done;
 					}
 				case 'i':
@@ -4915,7 +4916,7 @@ public class Lexer implements IProblemRequestor {
 					break;
 
 				case 'L':
-					if (input[p + 1] == 'i') {
+					if (input(p + 1) == 'i') {
 						//goto real;
 						p = start;
 						return inreal(t);
@@ -4939,7 +4940,7 @@ public class Lexer implements IProblemRequestor {
 						writeToStringBuffer = false;
 						break;
 					}
-					if (c == '.' && input[p + 1] != '.') {
+					if (c == '.' && input(p + 1) != '.') {
 						p = start;
 						return inreal(t);
 					} else if (c == 'i' || c == 'f' || c == 'F' || c == 'e'
@@ -4948,7 +4949,7 @@ public class Lexer implements IProblemRequestor {
 						// It's a real number. Back up and rescan as a real
 						p = start;
 						return inreal(t);
-					} else if (c == 'L' && input[p + 1] == 'i') {
+					} else if (c == 'L' && input(p + 1) == 'i') {
 						// goto real;
 						p = start;
 						return inreal(t);
@@ -4968,7 +4969,7 @@ public class Lexer implements IProblemRequestor {
 						writeToStringBuffer = false;
 						break;
 					}
-					if (c == '.' && input[p + 1] != '.') {
+					if (c == '.' && input(p + 1) != '.') {
 						p = start;
 						return inreal(t);
 					}
@@ -5010,7 +5011,7 @@ public class Lexer implements IProblemRequestor {
 						writeToStringBuffer = false;
 						break;
 					}
-					if (c == '.' && input[p + 1] != '.') {
+					if (c == '.' && input(p + 1) != '.') {
 						p = start;
 						return inreal(t);
 					}
@@ -5126,7 +5127,7 @@ public class Lexer implements IProblemRequestor {
 		while (true) {
 			char f;
 
-			switch (input[p]) {
+			switch (input(p)) {
 			case 'U':
 			case 'u':
 				f = FLAGS_unsigned;
@@ -5255,7 +5256,7 @@ public class Lexer implements IProblemRequestor {
 		done: 
 		while (true) {
 			// Get next char from input
-			c = input[p++];
+			c = input(p++);
 			while (true) {
 				switch (dblstate) {
 				case 0: // opening state
@@ -5330,7 +5331,7 @@ public class Lexer implements IProblemRequestor {
 		
 		t.floatValue = strold(stringbuffer.data);
 		
-		switch (input[p]) {
+		switch (input(p)) {
 		case 'F':
 		case 'f':
 			t.floatValue = strof(stringbuffer.data);
@@ -5351,8 +5352,8 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			break;
 		}
-		if (input[p] == 'i' || input[p] == 'I') {
-			if (input[p] == 'I') {
+		if (input(p) == 'i' || input(p) == 'I') {
+			if (input(p) == 'I') {
 				error(IProblem.ISuffixDeprecated, linnum, p, 1);
 			}
 			p++;
@@ -5398,7 +5399,7 @@ public class Lexer implements IProblemRequestor {
 		boolean stay = true;
 		boolean isRN = false;
 		do {
-			switch (input[p]) {
+			switch (input(p)) {
 			case 0:
 			case 0x1A:
 				p++;
@@ -5411,7 +5412,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case '\r':
 				p++;
-				if (input[p] == '\n') {
+				if (input(p) == '\n') {
 					newline(NOT_IN_COMMENT);
 					p++;
 					stay = false;
@@ -5431,7 +5432,7 @@ public class Lexer implements IProblemRequestor {
 	private void whitespace(Token t) {
 		boolean stay = true;
 		do {
-			switch (input[p]) {
+			switch (input(p)) {
 			case ' ':
 			case '\t':
 			case '\f':
@@ -5443,7 +5444,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 			case '\r':
 				p++;
-				if (input[p] == '\n') {
+				if (input(p) == '\n') {
 					newline(NOT_IN_COMMENT);
 					p++;
 					break;
@@ -5476,7 +5477,7 @@ public class Lexer implements IProblemRequestor {
 	/*
 	 private void getDocComment(Token t, boolean lineComment) {
 	 OutBuffer buf = new OutBuffer();
-	 char ct = input[t.ptr + 2];
+	 char ct = input(t.ptr + 2);
 	 int q = t.ptr + 3;	// start of comment text
 	 int linestart = 0;
 
@@ -5486,7 +5487,7 @@ public class Lexer implements IProblemRequestor {
 
 	 for (; q < qend; q++)
 	 {
-	 if (input[q] != ct)
+	 if (input(q) != ct)
 	 break;
 	 }
 
@@ -5494,14 +5495,14 @@ public class Lexer implements IProblemRequestor {
 	 {
 	 for (; q < qend; qend--)
 	 {
-	 if (input[qend - 1] != ct)
+	 if (input(qend - 1) != ct)
 	 break;
 	 }
 	 }
 
 	 for (; q < qend; q++)
 	 {
-	 char c = input[q];
+	 char c = input(q);
 
 	 switch (c)
 	 {
@@ -5520,7 +5521,7 @@ public class Lexer implements IProblemRequestor {
 	 break;
 
 	 case '\r':
-	 if (input[q + 1] == '\n')
+	 if (input(q + 1) == '\n')
 	 continue;		// skip the \r
 	 
 	 c = '\n';		// replace all newlines with \n
@@ -5534,8 +5535,8 @@ public class Lexer implements IProblemRequestor {
 	 if (c == 226)
 	 {
 	 // If LS or PS
-	 if (input[q + 1] == 128 &&
-	 (input[q + 2] == 168 || input[q + 2] == 169))
+	 if (input(q + 1) == 128 &&
+	 (input(q + 2) == 168 || input(q + 2) == 169))
 	 {
 	 q += 2;
 	 c = '\n';		// replace all newlines with \n
@@ -5942,6 +5943,10 @@ public class Lexer implements IProblemRequestor {
 				}
 			}
 		}
+	}
+	
+	private final char input(int position) {
+		return position >= input.length ? 0 : input[position];
 	}
 
 }

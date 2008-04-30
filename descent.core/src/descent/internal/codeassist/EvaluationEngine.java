@@ -64,7 +64,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		this.offset = offset;
 		
 		try {
-			ParseResult parseResult = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, true, null);
+			ParseResult parseResult = CompilationUnitResolver.resolve(Util.getApiLevel(this.compilerOptions.getMap()), sourceUnit, javaProject, settings, owner, false, true, null);
 			
 			context = parseResult.context;
 			
@@ -81,8 +81,8 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	public boolean visit(VarDeclaration node) {
 		if (result == null) {
 			if (node.isConst() && isInRange(node.ident)) { 
-				evalInit((Initializer) node.init);
-			} else if (isInRange((Initializer) node.sourceInit)) {
+				evalInit(node.init);
+			} else if (isInRange(node.sourceInit)) {
 				node.sourceInit.accept(this);
 			}
 			return false;
@@ -125,7 +125,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			result = new EvaluationResult(null, IEvaluationResult.VOID);
 		} else if (init.isExpInitializer() != null) {
 			ExpInitializer expInit = (ExpInitializer) init;
-			evalExp((Expression) expInit.exp);
+			evalExp(expInit.exp);
 		}
 	}
 	
@@ -194,7 +194,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	}
 	
 	private void evalReal(RealExp exp) {
-		real_t value = ((RealExp) exp).value;
+		real_t value = (exp).value;
 		switch(exp.type.ty) {
 		case Tfloat32:
 			if (value.isNaN()) {

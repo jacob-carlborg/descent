@@ -95,7 +95,7 @@ public abstract class Parser_Test extends TestCase {
 		
 		CompilationUnit unit = getCompilationUnit(source, apiLevel);
 		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
-		Block block = (Block) func.getBody();
+		Block block = func.getBody();
 		Statement stm = block.statements().get(0);
 		stm.accept(new GenericVisitor() {
 			@Override
@@ -137,7 +137,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected ParseResult getParseResult(String source, int apiLevel) {
-		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), "unknown.d".toCharArray(), null, true, false);
+		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), "unknown.d".toCharArray(), null, true, true, false);
 	}
 	
 	protected ParseResult getModuleSemantic(String source, int apiLevel) {

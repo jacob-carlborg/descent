@@ -129,7 +129,7 @@ public class ModuleBuilder {
 	 * Wether to make surface VarDeclaration semantic lazy.
 	 * Currently doesn't work.
 	 */
-	private final static boolean LAZY_VARS = LAZY & false;
+	private final static boolean LAZY_VARS = LAZY & true;
 	
 	/*
 	 * We want to skip things like:
@@ -162,7 +162,7 @@ public class ModuleBuilder {
 		boolean surface = true;
 	}
 	
-	private ASTNodeEncoder encoder = new ASTNodeEncoder();	
+	private final ASTNodeEncoder encoder = new ASTNodeEncoder();	
 	private final CompilerConfiguration config;
 	
 	/**
@@ -677,7 +677,7 @@ public class ModuleBuilder {
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTypedef()) {
-			TypedefDeclaration member = new TypedefDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()), (Initializer) getInitializer(field));
+			TypedefDeclaration member = new TypedefDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()), getInitializer(field));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTemplateMixin()) {
