@@ -129,7 +129,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *     | "&"  // union
  *     | "|"  // interface
  *     | "E"  // enum
- *     | "/"  // variable
+ *     | "¡"  // variable
  *     | "="  // alias
  *     | "T"  // typedef
  *     )
@@ -484,9 +484,9 @@ public final class Signature {
 	
 	/**
 	 * Character constant indicating a variable in a signature.
-	 * Value is <code>'/'</code>.
+	 * Value is <code>'¡'</code>.
 	 */
-	public static final char C_VARIABLE									= '/';
+	public static final char C_VARIABLE									= '¡';
 	
 	/**
 	 * Character constant indicating an alias type in a signature.

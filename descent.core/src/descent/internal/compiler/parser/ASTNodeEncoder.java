@@ -10,8 +10,8 @@ import descent.core.compiler.CharOperation;
  */
 public class ASTNodeEncoder {
 	
-//	private final static char INTEGER_EXP = '=';
-//	private final static char IDENTIFIER_EXP = '?';
+	private char[] nastyChar = { '/' };
+	private char[] nastyCharSoltuion = { '*', '!', '_', '!', '*' };
 	
 	private Parser parser;
 	private Parser initParser(char[] source) {
@@ -28,25 +28,33 @@ public class ASTNodeEncoder {
 		
 	}
 	
+	// TODO horrible hack: the indexer may get consufed if the expression has
+	// the '/' character in it, so replace it with some very improbable
+	// string, and then replace it back later
+	
+	private char[] encoderForIndexer(char[] value) {
+		if (CharOperation.indexOf('/', value) != -1) {
+			return CharOperation.replace(value, nastyChar, nastyCharSoltuion);
+		} else {
+			return value;
+		}
+	}
+	
+	private char[] decodeForIndexer(char[] value) {
+		if (CharOperation.indexOf(nastyCharSoltuion, value, false) != -1) {
+			return CharOperation.replace(value, nastyCharSoltuion, nastyChar);
+		} else {
+			return value;
+		}
+	}
+	
 	public char[] encodeExpression(Expression value) {
 		if (value == null) {
 			return null;
 		}
 		
-		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
-//		if (value instanceof IntegerExp) {
-//			StringBuilder sb = new StringBuilder();
-//			sb.append(INTEGER_EXP);
-//			sb.append(((IntegerExp) value).value.toString());
-//			return sb.toString().toCharArray();
-//		} else if (value instanceof IdentifierExp) {
-//			StringBuilder sb = new StringBuilder();
-//			sb.append(IDENTIFIER_EXP);
-//			sb.append(((IdentifierExp) value).ident);
-//			return sb.toString().toCharArray();
-//		} else {
-			return value.toString().toCharArray();
-//		}
+		char[] result = value.toString().toCharArray();
+		return encoderForIndexer(result);
 	}
 	
 	public Expression decodeExpression(char[] value) {
@@ -54,12 +62,7 @@ public class ASTNodeEncoder {
 			return null;
 		}
 		
-		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
-//		if (value[0] == INTEGER_EXP) {
-//			return new IntegerExp(Loc.ZERO, new integer_t(new BigInteger(new String(value, 1, value.length - 1))));
-//		} else if (value[0] == IDENTIFIER_EXP) {
-//			return new IdentifierExp(CharOperation.subarray(value, 1, value.length));
-//		}
+		value = decodeForIndexer(value);
 		
 		return initParser(value).parseExpression();
 	}
@@ -73,7 +76,8 @@ public class ASTNodeEncoder {
 			return encodeExpression(((ExpInitializer) init).exp);
 		}
 		
-		return init.toString().toCharArray();
+		char[] result = init.toString().toCharArray();
+		return encoderForIndexer(result);
 	}
 	
 	public Initializer decodeInitializer(char[] value) {
@@ -87,10 +91,7 @@ public class ASTNodeEncoder {
 			return new VoidInitializer(Loc.ZERO);
 		}
 		
-		// Optimize for IntegerExp and IdentifierExp, which are the most common cases
-//		if (value[0] == INTEGER_EXP || value[0] == IDENTIFIER_EXP) {
-//			return new ExpInitializer(Loc.ZERO, decodeExpression(value));
-//		}
+		value = decodeForIndexer(value);
 
 		return initParser(value).parseInitializer();
 	}

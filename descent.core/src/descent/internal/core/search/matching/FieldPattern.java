@@ -166,9 +166,11 @@ public void decodeIndexKey(char[] key) {
 	if (key[start] == SEPARATOR) {
 		this.declarationStart = -1;
 	} else {
-		slash = CharOperation.indexOf(SEPARATOR, key, start);
-		// TODO optimize this
-		this.declarationStart = Integer.parseInt(new String(CharOperation.subarray(key, start, slash)));
+		this.declarationStart = 0;
+		for (; key[start] != SEPARATOR; start++) {
+			declarationStart = 10 * declarationStart + (key[start] - '0');
+		}
+		slash = start;
 	}
 
 	// Continue key read by the end to decode modifiers

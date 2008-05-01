@@ -12,7 +12,7 @@ public interface ISignatureConstants {
 	char UNION = '&';
 	char ENUM = 'E';
 	char ENUM_MEMBER = '~';
-	char VARIABLE = '/';
+	char VARIABLE = '¡';
 	char ALIAS = '=';
 	char TYPEDEF = 'T';
 	char FUNCTION = '[';

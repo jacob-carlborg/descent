@@ -115,12 +115,13 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		}
 		
 		if (!hasParameters() || !hasArgumentList()) {
-			setCursorPosition(replacement.length() + (getVariadic() != IMethod.VARARGS_NO ? 1 : 2));
-//			if (replacement.length() > 0) {
-//				return replacement + "()"; //$NON-NLS-1$
-//			} else {
+			if (fProposal.getCompletion().length > 0 && fProposal.getCompletion()[fProposal.getCompletion().length - 1] == ')') {
+				return replacement + "()"; //$NON-NLS-1$
+			} else {
+				boolean variadic = getVariadic() != IMethod.VARARGS_NO;
+				setCursorPosition(replacement.length() + (variadic ? 1 : 2));
 				return replacement;
-//			}
+			}
 		}
 		
 		
@@ -376,7 +377,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				}
 			} else {
 				// Before the last )
-				fSelectedRegion= new Region(baseOffset + replacement.length() + offsetAdded - (getVariadic() != IMethod.VARARGS_NO ? 1 : 0), 0);
+				fSelectedRegion= new Region(baseOffset + replacement.length() + offsetAdded - (replacement.endsWith(")") && getVariadic() != IMethod.VARARGS_NO ? 1 : 0), 0); //$NON-NLS-1$
 			}
 			
 			//rememberSelection();

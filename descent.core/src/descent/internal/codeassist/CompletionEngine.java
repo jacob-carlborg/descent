@@ -224,6 +224,8 @@ public class CompletionEngine extends Engine
 		ops.put(Id.applyReverse, dummy);
 	}
 	
+	char[] parenthesis = { '(', ')' };
+	
 	IJavaProject javaProject;
 	CompletionParser parser;
 	CompletionRequestor requestor;
@@ -719,7 +721,9 @@ public class CompletionEngine extends Engine
 			this.endPosition++;
 		}
 		
-		nameEnvironment.findCompilationUnits(fqnBeforeCursor, this);
+		if (fqnBeforeCursor.length > 0) {
+			nameEnvironment.findCompilationUnits(fqnBeforeCursor, this);
+		}
 	}
 	
 	private void completeArgumentName(CompletionOnArgumentName node) throws JavaModelException {
@@ -1035,10 +1039,14 @@ public class CompletionEngine extends Engine
 			
 			// Also suggest packages
 			isCompletingPackage = true;
-			nameEnvironment.findCompilationUnits(currentName, this);
+			if (currentName.length > 0) {
+				nameEnvironment.findCompilationUnits(currentName, this);
+			}
 			
 			// And top level declarations
-			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			if (currentName.length > 0) {
+				nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			}
 			
 			// Show constructors and opCalls
 			if (node.ident.resolvedSymbol != null) {
@@ -1187,10 +1195,14 @@ public class CompletionEngine extends Engine
 		
 		// Also suggest packages
 		isCompletingPackage = true;
-		nameEnvironment.findCompilationUnits(currentName, this);
+		if (currentName.length > 0) {
+			nameEnvironment.findCompilationUnits(currentName, this);
+		}
 		
 		// And top level declarations
-		nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+		if (currentName.length > 0) {
+			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+		}
 	}
 	
 	private void completeIdentifierExp(CompletionOnIdentifierExp node) throws JavaModelException {
@@ -1198,6 +1210,7 @@ public class CompletionEngine extends Engine
 		
 		if (node.dot == -1) {
 			currentName = computePrefixAndSourceRange(node);
+			isBetweenMethodName = node.resolvedSymbol != null;
 			
 			if (rootScope == null) {
 				rootScope = node.scope;
@@ -1207,10 +1220,15 @@ public class CompletionEngine extends Engine
 			
 			// Also suggest packages
 			isCompletingPackage = true;
-			nameEnvironment.findCompilationUnits(currentName, this);
+			
+			if (currentName.length > 0) {
+				nameEnvironment.findCompilationUnits(currentName, this);
+			}
 			
 			// And top level declarations
-			nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			if (currentName.length > 0) {
+				nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			}
 			
 			// Show constructors and opCalls
 			if (node.resolvedSymbol != null) {
@@ -1567,7 +1585,9 @@ public class CompletionEngine extends Engine
 		}
 		
 		isCompletingPackage = true;
-		nameEnvironment.findCompilationUnits(fqn, this);
+		if (fqn.length > 0) {
+			nameEnvironment.findCompilationUnits(fqn, this);
+		}
 	}
 
 	private void completeType(Type type, IdentifierExp ident, boolean onlyStatics) {
@@ -1666,11 +1686,7 @@ public class CompletionEngine extends Engine
 		if (wantMethodContextInfo) {
 			proposal.setCompletion(CharOperation.NO_CHAR);
 		} else {
-			if (!isBetweenMethodName && parser.completionTokenEnd == this.actualCompletionPosition) {
-				proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
-			} else {
-				proposal.setCompletion(currentName);
-			}
+			handleMethodCompletion(proposal, currentName);
 		}
 		
 		proposal.setSignature(signature);
@@ -2304,22 +2320,14 @@ public class CompletionEngine extends Engine
 						if (wantMethodContextInfo) {
 							handleContextInfo(func, funcNameIsOpCall, proposal);
 						} else {
-							if (!isBetweenMethodName && parser.completionTokenEnd == this.actualCompletionPosition) {
-								proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
-							} else {
-								proposal.setCompletion(currentName);
-							}
+							handleMethodCompletion(proposal, currentName);
 						}
 					} else {
 						proposal.setName(funcName);
 						if (wantMethodContextInfo) {
 							handleContextInfo(func, funcNameIsOpCall, proposal);
 						} else {
-							if (!isBetweenMethodName && parser.completionTokenEnd == this.actualCompletionPosition) {
-								proposal.setCompletion(CharOperation.concat(ident, "()".toCharArray()));
-							} else {
-								proposal.setCompletion(ident);
-							}
+							handleMethodCompletion(proposal, ident);							
 						}
 					}
 					
@@ -2350,6 +2358,18 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	private void handleMethodCompletion(CompletionProposal proposal, char[] ident) {
+		if (isBetweenMethodName) {
+			if (parser.completionToken != null && parser.completionTokenEnd == actualCompletionPosition) {
+				proposal.setCompletion(CharOperation.concat(ident, parenthesis));
+			} else {
+				proposal.setCompletion(ident);
+			}
+		} else {
+			proposal.setCompletion(CharOperation.concat(ident, parenthesis));
+		}
+	}
+
 	private void handleContextInfo(FuncDeclaration func, boolean funcNameIsOpCall, CompletionProposal proposal) {
 		proposal.setCompletion(CharOperation.NO_CHAR);
 		if (funcNameIsOpCall || func instanceof CtorDeclaration) {
@@ -3146,7 +3166,7 @@ public class CompletionEngine extends Engine
 		relevance += computeRelevanceForExpectedType(signature);
 		relevance += R_METHOD;
 		
-		proposal.setCompletion(CharOperation.concat(fullName, "".toCharArray()));
+		handleMethodCompletion(proposal, fullName);
 		
 		proposal.setName(name);
 		proposal.setSignature(sigChars);
