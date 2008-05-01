@@ -114,7 +114,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			module = parser.parseModuleObj();
 
 			if (parser.commentToken != null) {
-				char[] tok = extractToken(parser.commentToken, offset);
+				final char[] tok = extractToken(parser.commentToken, offset);
 				if (tok == null) {
 					return NO_ELEMENTS;
 				}
@@ -127,23 +127,16 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 					public void acceptField(char[] packageName, char[] name,
 							char[] typeName, char[][] enclosingTypeNames,
-							long modifiers, AccessRestriction accessRestriction) {
-						IJavaElement element = internalSignature.findField(
-								packageName, name);
-						if (element != null) {
-							addJavaElement(element);
-						}
+							long modifiers, int declarationStart, AccessRestriction accessRestriction) {
+						addBinarySearch(packageName, name, declarationStart);
 					}
 
 					public void acceptMethod(char[] packageName, char[] name,
 							char[][] enclosingTypeNames, char[] signature,
 							char[] templateParametersSignature,
 							long modifiers, int declarationStart, AccessRestriction accessRestriction) {
-						IJavaElement element = internalSignature.findMethod(
-								packageName, name, signature);
-						if (element != null) {
-							addJavaElement(element);
-						}
+						
+						addBinarySearch(packageName, name, declarationStart);
 					}
 
 					public void acceptPackage(char[] packageName) {
@@ -154,12 +147,28 @@ public class SelectionEngine extends AstVisitorAdapter {
 							char[][] enclosingTypeNames, long modifiers,
 							int declarationStart,
 							AccessRestriction accessRestriction) {
-						IJavaElement element = internalSignature.findField(
-								packageName, typeName);
-						if (element != null) {
-							addJavaElement(element);
+						
+						addBinarySearch(packageName, typeName, declarationStart);
+					}
+					
+					private void addBinarySearch(char[] packageName, char[] name, int declarationStart) {
+						if (!CharOperation.equals(tok, name)) {
+							return;
+						}
+						
+						try {
+							descent.core.ICompilationUnit unit = internalSignature.getCompilationUnit(new String(packageName));
+							if (unit != null) {
+								IJavaElement element = internalSignature.binarySearch(unit, declarationStart, declarationStart);
+								if (element != null) {
+									addJavaElement(element);
+								}
+							}
+						} catch (JavaModelException e) {
+							Util.log(e);
 						}
 					}
+					
 				});
 			} else {
 				module.moduleName = sourceUnit.getFullyQualifiedName();

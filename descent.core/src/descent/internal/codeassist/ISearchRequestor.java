@@ -30,7 +30,7 @@ public interface ISearchRequestor {
 	 */
 	public void acceptType(char[] packageName, char[] typeName, char[] templateParametersSignature, char[][] enclosingTypeNames, long modifiers, int declarationStart, AccessRestriction accessRestriction);
 	
-	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction);
+	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, int declartionStart, AccessRestriction accessRestriction);
 	
 	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, char[] templateParametersSignature, long modifiers, int declarationStart, AccessRestriction accessRestriction);
 

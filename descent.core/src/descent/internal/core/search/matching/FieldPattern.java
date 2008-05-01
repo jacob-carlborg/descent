@@ -27,15 +27,20 @@ protected char[] typeSimpleName;
 
 public char[] typeName;
 
+public int declarationStart;
+
 protected static char[][] REF_CATEGORIES = { REF };
 protected static char[][] REF_AND_DECL_CATEGORIES = { REF, FIELD_DECL };
 protected static char[][] DECL_CATEGORIES = { FIELD_DECL };
 
 /*
  * Create index key for field declaration pattern:
- *		key = fieldName / typeName / packageName / enclosingTypeName / modifiers
+ *		key = fieldName / typeName / packageName / declarationStart / enclosingTypeName / modifiers
  */
-public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] fieldName, char[] typeName) {
+public static char[] createIndexKey(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] fieldName, char[] typeName, int declarationStart) {
+	char[] declarationStartChars = String.valueOf(declarationStart).toCharArray();
+	int declarationStartLength = declarationStartChars.length;
+	
 	int fieldNameLength = fieldName == null ? 0 : fieldName.length;
 	int typeNameLength = typeName == null ? 0 : typeName.length;
 	int packageLength = packageName == null ? 0 : packageName.length;
@@ -48,7 +53,7 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 		}
 	}
 
-	int resultLength = fieldNameLength + typeNameLength + packageLength + enclosingNamesLength + 6;
+	int resultLength = fieldNameLength + typeNameLength + packageLength + declarationStartLength + enclosingNamesLength + 7;
 	char[] result = new char[resultLength];
 	int pos = 0;
 	if (fieldNameLength > 0) {
@@ -65,6 +70,9 @@ public static char[] createIndexKey(long modifiers, char[] packageName, char[][]
 		System.arraycopy(packageName, 0, result, pos, packageLength);
 		pos += packageLength;
 	}
+	result[pos++] = SEPARATOR;
+	System.arraycopy(declarationStartChars, 0, result, pos, declarationStartLength);
+	pos += declarationStartLength;
 	result[pos++] = SEPARATOR;
 	if (enclosingTypeNames != null && enclosingNamesLength > 0) {
 		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
@@ -127,7 +135,7 @@ public FieldPattern(
 }
 /*
  * Type entries are encoded as:
- * 	simpleTypeName / packageName / enclosingTypeName / modifiers
+ * 	simpleTypeName / packageName / declarationStart, enclosingTypeName / modifiers
  *			e.g. Object/java.lang//0
  * 		e.g. Cloneable/java.lang//512
  * 		e.g. LazyValue/javax.swing/UIDefaults/0
@@ -152,6 +160,15 @@ public void decodeIndexKey(char[] key) {
 	} else {
 		slash = CharOperation.indexOf(SEPARATOR, key, start);
 		this.pkg = TypeDeclarationPattern.internedPackageNames.add(CharOperation.subarray(key, start, slash));
+	}
+	
+	start = ++slash;
+	if (key[start] == SEPARATOR) {
+		this.declarationStart = -1;
+	} else {
+		slash = CharOperation.indexOf(SEPARATOR, key, start);
+		// TODO optimize this
+		this.declarationStart = Integer.parseInt(new String(CharOperation.subarray(key, start, slash)));
 	}
 
 	// Continue key read by the end to decode modifiers

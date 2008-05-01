@@ -208,31 +208,6 @@ public class InternalSignature implements ISignatureConstants {
 		return stack.peek().pop();
 	}
 	
-	public IJavaElement findType(char[] packageName, char[] typeName) {
-		StringBuilder sb = new StringBuilder();
-		appendPackageName(packageName, sb);
-		sb.append(CLASS);
-		appendName(typeName, sb);
-		return javaProject.findBySignature(sb.toString());
-	}
-	
-	public IJavaElement findMethod(char[] packageName, char[] methodName, char[] signature) {
-		StringBuilder sb = new StringBuilder();
-		appendPackageName(packageName, sb);
-		sb.append(FUNCTION);
-		appendName(methodName, sb);
-		sb.append(signature);
-		return javaProject.findBySignature(sb.toString());
-	}
-	
-	public IJavaElement findField(char[] packageName, char[] fieldName) {
-		StringBuilder sb = new StringBuilder();
-		appendPackageName(packageName, sb);
-		sb.append(VARIABLE);
-		appendName(fieldName, sb);
-		return javaProject.findBySignature(sb.toString());
-	}
-	
 	public static void appendPackageName(char[] packageName, StringBuilder sb) {
 		sb.append(MODULE);
 		

@@ -85,7 +85,7 @@ public class LazyJavaTypeCompletionProposal extends LazyJavaCompletionProposal {
 				}
 				
 				fQualifiedName= String.valueOf(Signature.toCharArray(sig,
-						true /* don't fully qualify names */));
+						true /* fully qualify names */));
 				
 				if (firstIndex != -1) {
 					// Remove !()

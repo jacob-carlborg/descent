@@ -60,7 +60,7 @@ public class LazyJavaFieldCompletionProposal extends LazyJavaCompletionProposal 
 				fQualifiedName = new String(fProposal.getName());
 			} else {
 				fQualifiedName= String.valueOf(Signature.toCharArray(fProposal.getSignature(),
-						false /* don't fully qualify names */));
+						true /* fully qualify names */));
 			}
 		}
 		return fQualifiedName;

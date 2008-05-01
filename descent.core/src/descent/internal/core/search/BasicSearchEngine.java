@@ -1353,7 +1353,7 @@ public class BasicSearchEngine {
 						}
 					} else if (record instanceof FieldPattern) {
 						FieldPattern field = (FieldPattern) record;
-						nameRequestor.acceptField(record.modifiers, record.pkg, record.simpleName, field.typeName, record.enclosingTypeNames, documentPath, accessRestriction);
+						nameRequestor.acceptField(record.modifiers, record.pkg, record.simpleName, field.typeName, record.enclosingTypeNames, documentPath, field.declarationStart, accessRestriction);
 					} else if (record instanceof MethodPattern) {
 						MethodPattern method = (MethodPattern) record;
 						nameRequestor.acceptMethod(record.modifiers, record.pkg, method.selector, record.enclosingTypeNames, method.signature, method.templateParametersSignature, documentPath, method.declarationStart, accessRestriction);

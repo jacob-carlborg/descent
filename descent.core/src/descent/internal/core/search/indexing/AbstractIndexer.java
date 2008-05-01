@@ -112,7 +112,7 @@ public abstract class AbstractIndexer implements IIndexConstants {
 		}
 	}	
 	public void addFieldDeclaration(long modifiers, char[] packageName, char[][] enclosingTypeNames, char[] typeName, char[] fieldName, int declarationStart) {
-		addIndexEntry(FIELD_DECL, FieldPattern.createIndexKey(modifiers, packageName, enclosingTypeNames, fieldName, typeName));
+		addIndexEntry(FIELD_DECL, FieldPattern.createIndexKey(modifiers, packageName, enclosingTypeNames, fieldName, typeName, declarationStart));
 		addTypeReference(typeName);
 	}
 	public void addFieldReference(char[] fieldName) {

@@ -2994,80 +2994,71 @@ public class CompletionEngine extends Engine
 		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
-	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, AccessRestriction accessRestriction) {
-//		if (packageName == null || packageName.length == 0) {
-//			return;
-//		}
-//		
-//		if (isImported(packageName)) {
-//			return;
-//		}
-//		
-//		if (parser.inNewExp) {
-//			return;
-//		}
-//		
-//		// Skip variables if they are not imported
+	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
+		if (packageName == null || packageName.length == 0) {
+			return;
+		}
+		
+		if (isImported(packageName)) {
+			return;
+		}
+		
+		if (parser.inNewExp) {
+			return;
+		}
+		
+		// Skip variables if they are not imported
 //		if ((modifiers & (Flags.AccAlias | Flags.AccTypedef)) == 0 && !isImported(packageName)) {
 //			return;
 //		}
-//		
-//		// Don't show not imported variables if completing type identifier
-//		if (isCompletingTypeIdentifier) {
-//			if ((modifiers & Flags.AccTypedef) == 0 &&
-//					(modifiers & Flags.AccAlias) == 0) {
-//				return;
-//			}
-//		}
-//		
-//		if (!isVisible(modifiers, packageName)) {
-//			return;
-//		}
-//		
-//		char[] fullName = CharOperation.concat(packageName, name, '.');
-//		if (knownDeclarations.containsKey(fullName)) {
-//			return;
-//		}
-//		knownDeclarations.put(fullName, this);
-//		
-//		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition);
-//		
-//		int relevance = computeBaseRelevance();
-//		relevance += computeRelevanceForCaseMatching(currentName, name);
-//		relevance += computeRelevanceForExpectedType(typeName);
-//		relevance += R_VAR;
-//		
-//		proposal.setCompletion(fullName);
-//		
-//		proposal.setName(name);
-//		
-//		StringBuilder sig = new StringBuilder();
-//		InternalSignature.appendPackageName(packageName, sig);
-//		sig.append(VARIABLE);
-//		sig.append(name.length);
-//		sig.append(name);
-//		
-//		// If it's a function pointer or delegate, suggest call
-//		if (typeName.length >= 2 && 
-//				(typeName[0] == POINTER || typeName[0] == DELEGATE) && 
-//				typeName[1] == FUNCTION) {
-//			StringBuilder sig2 = new StringBuilder();
-//			sig2.append(MODULE);
-//			sig2.append(packageName.length);
-//			sig2.append(packageName);
-//			sig2.append(FUNCTION);
-//			sig2.append(name.length);
-//			sig2.append(name);
-//			sig2.append(typeName, 1, typeName.length - 1);
-//			suggestTypeFunction(sig2.toString().toCharArray(), name);
-//		}
-//		
-//		proposal.setSignature(sig.toString().toCharArray());
-//		proposal.setTypeName(typeName);
-//		proposal.setFlags(modifiers);
-//		proposal.setRelevance(relevance);
-//		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-//		CompletionEngine.this.requestor.accept(proposal);
+		
+		// Don't show not imported variables if completing type identifier
+		if (isCompletingTypeIdentifier) {
+			if ((modifiers & Flags.AccTypedef) == 0 &&
+					(modifiers & Flags.AccAlias) == 0) {
+				return;
+			}
+		}
+		
+		if (!isVisible(modifiers, packageName)) {
+			return;
+		}
+		
+		char[] fullName = CharOperation.concat(packageName, name, '.');
+		if (knownDeclarations.containsKey(fullName)) {
+			return;
+		}
+		knownDeclarations.put(fullName, this);
+		
+		CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition, null);
+		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForCaseMatching(currentName, name);
+		relevance += computeRelevanceForExpectedType(typeName);
+		relevance += R_VAR;
+		
+		proposal.setCompletion(fullName);
+		proposal.setName(name);
+		
+		StringBuilder sig = new StringBuilder();
+		InternalSignature.appendPackageName(packageName, sig);
+		
+		char[] declSignature = sig.toString().toCharArray();
+		
+		sig.append(VARIABLE);
+		sig.append(name.length);
+		sig.append(name);
+		
+		proposal.setSignature(sig.toString().toCharArray());
+		proposal.setTypeSignature(typeName);
+		proposal.setDeclarationSignature(declSignature);
+		proposal.setFlags(modifiers);
+		proposal.setRelevance(relevance);
+		proposal.setPackageName(packageName);
+		proposal.declarationStart = declarationStart;
+		
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
 	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, char[] templateParametersSignature, long modifiers, int declarationStart, AccessRestriction accessRestriction) {

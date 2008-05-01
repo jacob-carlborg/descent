@@ -20,7 +20,7 @@ import descent.internal.compiler.env.AccessRestriction;
  */
 public interface IRestrictedAccessDeclarationRequestor extends IRestrictedAccessTypeRequestor {
 	
-	public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, AccessRestriction access);
+	public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access);
 	
 	public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, char[] templateParametersSignature, String path, int declarationStart, AccessRestriction access);
 
