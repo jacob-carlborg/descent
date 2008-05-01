@@ -75,6 +75,7 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ErrorExp;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.FuncAliasDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
@@ -1998,6 +1999,10 @@ public class CompletionEngine extends Engine
 			Dsymbol sym = alias.toAlias(semanticContext);
 			if (sym != null && sym != alias) {
 				suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes, true);
+				
+				if (sym instanceof FuncAliasDeclaration) {
+					sym = ((FuncAliasDeclaration) sym).funcalias;
+				}
 				
 				// Find overloads! :-)
 				while(sym instanceof FuncDeclaration) {

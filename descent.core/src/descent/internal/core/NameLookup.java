@@ -900,7 +900,7 @@ public class NameLookup implements SuffixConstants {
 		}
 		// TODO Descent optimize and clean up
 */		if (partialMatch) {
-			String[] splittedName = Util.splitOn('.', name, 0, name.length());
+			String[] splittedName = Util.splitOn('.', name, 0, name.length());		
 			String[] splittedNameBefore = new String[splittedName.length - 1];
 			System.arraycopy(splittedName, 0, splittedNameBefore, 0, splittedName.length - 1);
 			
