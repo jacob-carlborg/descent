@@ -263,6 +263,7 @@ public class CompletionEngine extends Engine
 	boolean wantMethodContextInfo = false;
 	boolean isCompletingThisCall = false;
 	boolean isCompletingSuperCall = false;
+	boolean isBetweenMethodName = false;
 	
 	Scope rootScope;
 	
@@ -659,6 +660,11 @@ public class CompletionEngine extends Engine
 		// TODO Descent completion context
 		CompletionContext context = new CompletionContext();
 		context.setOffset(this.offset);
+		if (parser.completionToken != null) {
+			context.setTokenKind(CompletionContext.TOKEN_KIND_NAME);
+			context.setToken(parser.completionToken);
+			context.setTokenRange(parser.completionTokenStart, parser.completionTokenEnd);
+		}
 		return context;
 	}
 
@@ -1455,6 +1461,8 @@ public class CompletionEngine extends Engine
 		}
 	}
 	private void completeExpression(Expression e1, IdentifierExp ident) throws JavaModelException {
+		isBetweenMethodName = ident != null && ident.resolvedSymbol != null;
+		
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
 			Declaration decl = var.var;
@@ -1658,7 +1666,11 @@ public class CompletionEngine extends Engine
 		if (wantMethodContextInfo) {
 			proposal.setCompletion(CharOperation.NO_CHAR);
 		} else {
-			proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+			if (!isBetweenMethodName && parser.completionTokenEnd == this.actualCompletionPosition) {
+				proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+			} else {
+				proposal.setCompletion(currentName);
+			}
 		}
 		
 		proposal.setSignature(signature);
@@ -2292,14 +2304,22 @@ public class CompletionEngine extends Engine
 						if (wantMethodContextInfo) {
 							handleContextInfo(func, funcNameIsOpCall, proposal);
 						} else {
-							proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+							if (!isBetweenMethodName && parser.completionTokenEnd == this.actualCompletionPosition) {
+								proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+							} else {
+								proposal.setCompletion(currentName);
+							}
 						}
 					} else {
 						proposal.setName(funcName);
 						if (wantMethodContextInfo) {
 							handleContextInfo(func, funcNameIsOpCall, proposal);
 						} else {
-							proposal.setCompletion(CharOperation.concat(ident, "()".toCharArray()));
+							if (!isBetweenMethodName && parser.completionTokenEnd == this.actualCompletionPosition) {
+								proposal.setCompletion(CharOperation.concat(ident, "()".toCharArray()));
+							} else {
+								proposal.setCompletion(ident);
+							}
 						}
 					}
 					
@@ -2706,7 +2726,12 @@ public class CompletionEngine extends Engine
 
 	private char[] computePrefixAndSourceRange(IdentifierExp ident) {
 		char[] prefix;
-		if (ident == null || ident.ident == null || CharOperation.equals(ident.ident, CharOperation.NO_CHAR)) {
+		
+		if (parser.completionToken != null) {
+			this.startPosition = parser.completionTokenStart;
+			this.endPosition = parser.completionTokenEnd;
+			prefix = parser.completionToken;
+		} else if (ident == null || ident.ident == null || CharOperation.equals(ident.ident, CharOperation.NO_CHAR)) {
 			this.startPosition = this.actualCompletionPosition;
 			this.endPosition = this.actualCompletionPosition;
 			prefix = CharOperation.NO_CHAR;
@@ -2715,6 +2740,7 @@ public class CompletionEngine extends Engine
 			this.endPosition = ident.start + ident.length;
 			prefix = ident.ident;
 		}
+		
 		return prefix;
 	}
 	

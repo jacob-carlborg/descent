@@ -84,6 +84,10 @@ public class CompletionParser extends Parser {
 	
 	public boolean inNewExp;
 	public boolean isInExp;
+	
+	public char[] completionToken;
+	public int completionTokenStart;
+	public int completionTokenEnd;
 
 	public CompletionParser(int apiLevel, char[] source, char[] filename) {
 		super(apiLevel, source, 0, source.length, null, null, false, filename);
@@ -241,7 +245,11 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected IdentifierExp newIdentifierExp() {
-		if (token.ptr + token.sourceLen == cursorLocation && !wantNames) {
+		if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen && !wantNames) {
+			completionTokenStart = token.ptr;
+			completionTokenEnd = token.ptr + token.sourceLen;
+			completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+			
 			assistNode = new CompletionOnIdentifierExp(loc, token);
 			return (IdentifierExp) assistNode;
 		} else {
@@ -260,7 +268,7 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected TypeQualified newTypeIdentifier(Loc loc, IdentifierExp id) {
-		if (id.start + id.length == cursorLocation) {
+		if (id.start <= cursorLocation && cursorLocation <= id.start + id.length) {
 			assistNode = new CompletionOnTypeIdentifier(loc, id);
 			return (TypeQualified) assistNode;
 		} else {
@@ -434,11 +442,15 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
-		if (prevToken.ptr + prevToken.sourceLen == cursorLocation || token.ptr + token.sourceLen == cursorLocation) {
+		if (prevToken.ptr <= cursorLocation && cursorLocation <= prevToken.ptr + prevToken.sourceLen) {
 			if (cursorLocation <= id.start) {
 				assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
 				return (DotIdExp) assistNode;
 			} else {
+				completionTokenStart = prevToken.ptr;
+				completionTokenEnd = prevToken.ptr + prevToken.sourceLen;
+				completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+				
 				assistNode = new CompletionOnDotIdExp(loc, e, id);
 				return (DotIdExp) assistNode;
 			}
