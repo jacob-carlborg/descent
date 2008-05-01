@@ -1654,7 +1654,13 @@ public class CompletionEngine extends Engine
 		}
 		
 		proposal.setName(name);
-		proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+		
+		if (wantMethodContextInfo) {
+			proposal.setCompletion(CharOperation.NO_CHAR);
+		} else {
+			proposal.setCompletion(CharOperation.concat(currentName, "()".toCharArray()));
+		}
+		
 		proposal.setSignature(signature);
 		proposal.setTypeSignature(typeSignature);
 		proposal.setRelevance(relevance);

@@ -3516,9 +3516,12 @@
           adaptable="true"
           class="descent.internal.ui.ActiveJavaProjectLabelDecorator"
           id="descent.ui.activeProjectDecorator"
-          label="descent.ui.activeProjectDecorator"
+          label="Descent Active Project"
           lightweight="true"
-          objectClass="descent.core.IJavaProject"
-          state="true"/>
+          state="true">
+       <enablement>
+          <objectClass name="descent.core.IJavaProject"/>
+       </enablement>
+    </decorator>
  </extension>
 </plugin>
