@@ -544,10 +544,6 @@ public class CompletionProposalLabelProvider {
 		if (declSignature != null && declSignature.length != 0) {
 			buf.append(JavaElementLabels.CONCAT_STRING);
 			
-			if (new String(declSignature).equals("3Foo!^i^f\'")) {
-				System.out.println(1);
-			}
-			
 			buf.append(Signature.toCharArray(declSignature,
 					false /* don't fully qualify names */));	
 		}

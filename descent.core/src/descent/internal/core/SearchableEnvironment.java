@@ -467,12 +467,12 @@ public class SearchableEnvironment
 						return; // accept only top level types
 					storage.acceptType(packageName, simpleTypeName, templateParametersSignature, enclosingTypeNames, modifiers, declarationStart, access);
 				}
-				public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+				public void acceptField(long modifiers, char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))
 						return;
 					if (!findMembers && enclosingTypeNames != null && enclosingTypeNames.length > 0)
 						return; // accept only top level types
-					storage.acceptField(packageName, name, typeName, enclosingTypeNames, modifiers, access);
+					storage.acceptField(packageName, name, typeName, enclosingTypeNames, modifiers, declarationStart, access);
 				}
 				public void acceptMethod(long modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, char[] templateParametersSignature, String path, int declarationStart, AccessRestriction access) {
 					if (excludePath != null && excludePath.equals(path))

@@ -1619,7 +1619,18 @@ public static String toString(String signature, final boolean fqn) throws Illega
 			}
 			@Override
 			public void acceptModule(char[][] compoundName, String signature) {
-				acceptIdentifier(compoundName, signature);
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = new StringBuilder();
+				
+				for (int i = 0; i < compoundName.length; i++) {
+					if (i != 0) {
+						sb.append('.');
+					}
+					sb.append(compoundName[i]);
+				}
+				
+				st.push(sb);
 			}
 			@Override
 			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
