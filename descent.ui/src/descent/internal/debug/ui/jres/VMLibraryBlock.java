@@ -244,7 +244,7 @@ public class VMLibraryBlock implements SelectionListener, ISelectionChangedListe
 	 * Saves settings in the given working copy
 	 */
 	public void performApply(IVMInstall vm) {		
-		if (isDefaultLocations()) {
+		if (getVMInstall() != null && isDefaultLocations()) {
 			vm.setLibraryLocations(null);
 		} else {
 			LibraryLocation[] libs = fLibraryContentProvider.getLibraries();
