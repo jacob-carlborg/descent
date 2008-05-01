@@ -35,16 +35,26 @@ public class Running implements IState {
 			// After a breakpoint hit comes the source, then "->". So we signal
 			// the breakpoint hit in two next interpret call.
 			fLastWasBreakpointHit = 2;
+			handleBreakpoint(text);
 			
-			int indexOfColon = text.lastIndexOf(':');
-			if (indexOfColon != -1) {
-				int indexOfSpaceBefore = text.lastIndexOf(' ', indexOfColon - 1);
-				int indexOfSpaceAfter = text.indexOf(' ', indexOfColon + 1);
-				if (indexOfSpaceBefore != -1 && indexOfSpaceAfter != -1) {
-					fBreakpointFileName = text.substring(indexOfSpaceBefore + 1, indexOfColon);
-					fBreakpointLineNumber = Integer.parseInt(text.substring(indexOfColon + 1, indexOfSpaceAfter));
-					return;
-				}
+		// Unhandled exceptions create breakpoints
+		} else if (text.startsWith("Unhandled Exception")) { //$NON-NLS-1$
+			// Unhandled Exception: EXCEPTION_ACCESS_VIOLATION(0xc0000005) at other.foo other.d:9 (0x00402035) thread(3856)
+			
+			fLastWasBreakpointHit = 1;			
+			handleBreakpoint(text);
+		}
+	}
+	
+	private void handleBreakpoint(String text) {
+		int indexOfColon = text.lastIndexOf(':');
+		if (indexOfColon != -1) {
+			int indexOfSpaceBefore = text.lastIndexOf(' ', indexOfColon - 1);
+			int indexOfSpaceAfter = text.indexOf(' ', indexOfColon + 1);
+			if (indexOfSpaceBefore != -1 && indexOfSpaceAfter != -1) {
+				fBreakpointFileName = text.substring(indexOfSpaceBefore + 1, indexOfColon);
+				fBreakpointLineNumber = Integer.parseInt(text.substring(indexOfColon + 1, indexOfSpaceAfter));
+				return;
 			}
 		}
 	}

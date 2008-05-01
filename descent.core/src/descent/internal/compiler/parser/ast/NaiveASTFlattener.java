@@ -1373,7 +1373,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			this.buffer.append(" body");
 		}
 		this.buffer.append(" ");
-		node.fd.fbody.accept(this);
+		if (node.fd.fbody != null) {
+			node.fd.fbody.accept(this);
+		}
 		return false;
 	}
 
