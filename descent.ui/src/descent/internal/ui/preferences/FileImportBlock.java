@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -111,11 +112,14 @@ public class FileImportBlock extends OptionsConfigurationBlock
         }
     }
 	
+    private Button fUseImportsCheckbox;
+    
     private TableViewer fViewer;
+    private List<File> fList = new ArrayList<File>();
+    
     private Button fNewButton;
     private Button fEditButton;
     private Button fRemoveButton;
-    private List<File> fList = new ArrayList<File>();
     
 	public FileImportBlock(IStatusChangeListener context,
 			IProject project,
@@ -138,10 +142,31 @@ public class FileImportBlock extends OptionsConfigurationBlock
         layout.numColumns = 2;
         comp.setLayout(layout);
         
+        createCheckbox(comp);
         createListControl(comp);
         createButtons(comp);
-		
+        
+        updateEnablement();
+        
 		return comp;
+	}
+	
+	private void createCheckbox(Composite comp)
+	{
+	    fUseImportsCheckbox = new Button(comp, SWT.CHECK);
+	    fUseImportsCheckbox.setFont(comp.getFont());
+	    fUseImportsCheckbox.setText("Use library import path");
+	    fUseImportsCheckbox.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent evt)
+            {
+                updateEnablement();
+            }
+        });
+	    
+	    GridData gd = new GridData();
+	    gd.horizontalSpan = 2;
+	    fUseImportsCheckbox.setLayoutData(gd);
 	}
 	
 	private void createListControl(Composite comp)
@@ -211,8 +236,6 @@ public class FileImportBlock extends OptionsConfigurationBlock
 	    fNewButton = createButton(comp, listener, "New...");
 	    fEditButton = createButton(comp, listener, "Edit...");
 	    fRemoveButton = createButton(comp, listener, "Remove");
-	    
-	    updateEnablement();
 	}
 	
 	private Button createButton(Composite comp, SelectionListener listener, String label)
@@ -234,16 +257,29 @@ public class FileImportBlock extends OptionsConfigurationBlock
 	
 	private void updateEnablement()
 	{
-	    File file = getSelectedElement();
-	    if(null == file)
+	    if(fUseImportsCheckbox.getSelection())
 	    {
-    	    fEditButton.setEnabled(false);
-    	    fRemoveButton.setEnabled(false);
+	        fViewer.getControl().setEnabled(false);
+	        fNewButton.setEnabled(false);
+	        fEditButton.setEnabled(false);
+            fRemoveButton.setEnabled(false);
 	    }
 	    else
 	    {
-	        fEditButton.setEnabled(true);
-	        fRemoveButton.setEnabled(true);
+	        fViewer.getControl().setEnabled(true);
+            fNewButton.setEnabled(true);
+	        
+    	    File file = getSelectedElement();
+    	    if(null == file)
+    	    {
+        	    fEditButton.setEnabled(false);
+        	    fRemoveButton.setEnabled(false);
+    	    }
+    	    else
+    	    {
+    	        fEditButton.setEnabled(true);
+    	        fRemoveButton.setEnabled(true);
+    	    }
 	    }
 	}
 	
@@ -323,7 +359,7 @@ public class FileImportBlock extends OptionsConfigurationBlock
 		}	
 		return new String[] { title, message };
 	}
-
+    
 	@Override
 	protected void validateSettings(Key changedKey, String oldValue,
 			String newValue)
