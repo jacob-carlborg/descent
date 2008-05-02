@@ -529,20 +529,28 @@
          </filter>
          <keywordReference id="descent.ui.todo"/>
       </page>
-            <!--
       <page
+            category="descent.ui.propertyPages.CompliancePreferencePage"
             class="descent.internal.ui.preferences.FileImportPropertyPage"
             id="descent.ui.propertyPages.FileImportPropertyPage"
             name="%fileImportPageName"
             objectClass="org.eclipse.core.resources.IProject">
+         <filter
+               name="nature"
+               value="descent.core.dnature">
+         </filter>
       </page>
       <page
+            category="descent.ui.propertyPages.CompliancePreferencePage"
             class="descent.internal.ui.preferences.FileImportPropertyPage"
             id="descent.ui.propertyPages.FileImportPropertyPage"
             name="%fileImportPageName"
             objectClass="descent.core.IJavaProject">
+         <filter
+               name="nature"
+               value="descent.core.dnature">
+         </filter>
       </page>
-      -->
       <!--
       <page
             objectClass="descent.core.IPackageFragmentRoot"

@@ -56,7 +56,8 @@ public class OpenModuleAction extends OpenEditorAction
 			return null;
 		
 		ICompilationUnit module;
-		IJavaElement javaElement = project.findBySignature(moduleSignature);
+		// TODO IJavaElement javaElement = project.findBySignature(moduleSignature);
+		IJavaElement javaElement = null;
 		if(javaElement != null && javaElement instanceof ICompilationUnit
 			&& javaElement.exists())
 		{
