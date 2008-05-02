@@ -192,6 +192,7 @@ public class ListDialogField extends DialogField {
 	}
 	
 	public void setTableColumns(ColumnsDescription column) {
+	    fTableColumns= column;
 	}
 	
 	
