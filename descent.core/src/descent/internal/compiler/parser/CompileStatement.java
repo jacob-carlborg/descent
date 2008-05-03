@@ -40,7 +40,9 @@ public class CompileStatement extends Statement {
 		exp = exp.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret,
 				context);
 		if (exp.op != TOK.TOKstring) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
+			}
 			return this;
 		}
 		StringExp se = (StringExp) exp;
@@ -71,12 +73,14 @@ public class CompileStatement extends Statement {
 		}
 		
 		// TODO semantic do this better
-		if (p.problems != null) {
-			for (int i = 0; i < p.problems.size(); i++) {
-				Problem problem = (Problem) p.problems.get(i);
-				problem.setSourceStart(start);
-				problem.setSourceEnd(start + length - 1);
-				context.acceptProblem(problem);
+		if (context.acceptsProblems()) {
+			if (p.problems != null) {
+				for (int i = 0; i < p.problems.size(); i++) {
+					Problem problem = (Problem) p.problems.get(i);
+					problem.setSourceStart(start);
+					problem.setSourceEnd(start + length - 1);
+					context.acceptProblem(problem);
+				}
 			}
 		}
 

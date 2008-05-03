@@ -88,22 +88,30 @@ public class CmpExp extends BinExp {
 		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
 			if (!t1.next.equals(t2.next)) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArrayComparisonTypeMismatch, this, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ArrayComparisonTypeMismatch, this, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
+				}
 			}
 			e = this;
 		} else if (t1.ty == TY.Tstruct || t2.ty == TY.Tstruct
 				|| (t1.ty == TY.Tclass && t2.ty == TY.Tclass)) {
 			if (t2.ty == TY.Tstruct) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, new String[] { t2
-						.toDsymbol(sc, context).kind(), t2.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, new String[] { t2
+							.toDsymbol(sc, context).kind(), t2.toChars(context) }));
+				}
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, new String[] { t1
-						.toDsymbol(sc, context).kind(), t1.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, new String[] { t1
+							.toDsymbol(sc, context).kind(), t1.toChars(context) }));
+				}
 			}
 			e = this;
 		} else if (t1.iscomplex() || t2.iscomplex()) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CompareNotDefinedForComplexOperands, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CompareNotDefinedForComplexOperands, this));
+			}
 			e = new IntegerExp(loc, 0);
 		} else {
 			e = this;

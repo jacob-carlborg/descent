@@ -32,7 +32,9 @@ public class StaticIfCondition extends Condition {
 	public boolean include(Scope sc, ScopeDsymbol s, SemanticContext context) {
 		if (inc == 0) {
 			if (null == sc) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticIfConditionalCannotBeAtGlobalScope, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticIfConditionalCannotBeAtGlobalScope, this));
+				}
 				inc = 2;
 				return false;
 			}
@@ -48,7 +50,9 @@ public class StaticIfCondition extends Condition {
 			} else if (e.isBool(false)) {
 				inc = 2;
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotConstantOrDoesNotEvaluateToABool, exp, new String[] { e.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotConstantOrDoesNotEvaluateToABool, exp, new String[] { e.toChars(context) }));
+				}
 				inc = 2;
 			}
 		}

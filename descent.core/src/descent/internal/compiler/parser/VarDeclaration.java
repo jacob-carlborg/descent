@@ -126,8 +126,10 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public void checkCtorConstInit(SemanticContext context) {
 		if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.MissingInitializerInStaticConstructorForConstVariable, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.MissingInitializerInStaticConstructorForConstVariable, this));
+			}
 		}
 	}
 
@@ -175,8 +177,10 @@ public class VarDeclaration extends Declaration {
 	public boolean isDataseg(SemanticContext context) {
 		Dsymbol parent = this.toParent();
 		if (parent == null && (this.storage_class & (STCstatic | STCconst)) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotResolveForwardReference, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotResolveForwardReference, this));
+			}
 			this.type = Type.terror;
 			return false;
 		}
@@ -244,8 +248,10 @@ public class VarDeclaration extends Declaration {
 	private void semantic0(Scope sc, SemanticContext context) {
 		storage_class |= sc.stc;
 		if ((storage_class & STCextern) != 0 && init != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ExternSymbolsCannotHaveInitializers, init));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ExternSymbolsCannotHaveInitializers, init));
+			}
 		}
 
 		/*
@@ -288,13 +294,17 @@ public class VarDeclaration extends Declaration {
 
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STClazy) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VoidsHaveNoValue, sourceType == null ? this : sourceType));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.VoidsHaveNoValue, sourceType == null ? this : sourceType));
+			}
 			type = Type.terror;
 			tb = type;
 		}
 		if (tb.ty == TY.Tfunction) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCannotBeDeclaredToBeAFunction, ident, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCannotBeDeclaredToBeAFunction, ident, new String[] { toChars(context) }));
+			}
 			type = Type.terror;
 			tb = type;
 		}
@@ -304,10 +314,12 @@ public class VarDeclaration extends Declaration {
 			ts.sym.consumeRest();
 
 			if (ts.sym.members == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						// "No definition of struct " + ts.sym.ident,
-						IProblem.NoDefinition, sourceType, new String[] { new String(
-								ts.sym.ident.ident) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							// "No definition of struct " + ts.sym.ident,
+							IProblem.NoDefinition, sourceType, new String[] { new String(
+									ts.sym.ident.ident) }));
+				}
 			}
 		}
 
@@ -367,20 +379,26 @@ public class VarDeclaration extends Declaration {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
 			if (ident != null) {
-				context
-						.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ModifierCannotBeAppliedToVariables, ident,
-								new String[] { "synchronized" }));
+				if (context.acceptsProblems()) {
+					context
+							.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.ModifierCannotBeAppliedToVariables, ident,
+									new String[] { "synchronized" }));
+				}
 			}
 		} else if (isOverride()) {
 			if (ident != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "override" }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "override" }));
+				}
 			}
 		} else if (isAbstract()) {
 			if (ident != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "abstract" }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ModifierCannotBeAppliedToVariables, ident, new String[] { "abstract" }));
+				}
 			}
 		} else if ((storage_class & STCtemplateparameter) != 0) {
 		} else {
@@ -394,8 +412,10 @@ public class VarDeclaration extends Declaration {
 
 			InterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.FieldsNotAllowedInInterfaces, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.FieldsNotAllowedInInterfaces, this));
+				}
 			}
 
 			TemplateInstance ti = parent.isTemplateInstance();
@@ -412,8 +432,10 @@ public class VarDeclaration extends Declaration {
 				// If it's a member template
 				AggregateDeclaration ad = ti.tempdecl.isMember();
 				if (ad != null && storage_class != STCundefined) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotUseTemplateToAddFieldToAggregate, this, new String[] { ad.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotUseTemplateToAddFieldToAggregate, this, new String[] { ad.toChars(context) }));
+					}
 				}
 			}
 		}
@@ -428,8 +450,10 @@ public class VarDeclaration extends Declaration {
 			if ((storage_class & (STCauto | STCscope)) == 0) {
 				if ((storage_class & STCparameter) == 0
 						&& equals(ident, Id.withSym)) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ReferenceToScopeClassMustBeScope, this, new String[] { toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ReferenceToScopeClassMustBeScope, this, new String[] { toChars(context) }));
+					}
 				}
 			}
 		}
@@ -508,7 +532,9 @@ public class VarDeclaration extends Declaration {
 							init = init.semantic(sc, type, context);
 							e = init.toExpression(context);
 							if (e == null) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAStaticAndCannotHaveStaticInitializer, this, new String[] { toChars(context) }));
+								if (context.acceptsProblems()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAStaticAndCannotHaveStaticInitializer, this, new String[] { toChars(context) }));
+								}
 								return;
 							}
 						}

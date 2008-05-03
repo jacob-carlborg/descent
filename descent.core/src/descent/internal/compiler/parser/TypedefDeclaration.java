@@ -90,8 +90,10 @@ public class TypedefDeclaration extends Declaration {
 				semantic2(sc, context);
 			}
 		} else if (sem == 1) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
+			}
 		}
 	}
 

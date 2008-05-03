@@ -67,8 +67,10 @@ public class AnonDeclaration extends AttribDeclaration {
 
 		if (ad == null
 				|| (ad.isStructDeclaration() == null && ad.isClassDeclaration() == null)) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.AnonCanOnlyBePartOfAnAggregate, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.AnonCanOnlyBePartOfAnAggregate, this));
+			}
 			return;
 		}
 

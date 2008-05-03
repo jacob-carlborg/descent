@@ -37,7 +37,9 @@ public class TupleExp extends Expression {
 				Expression e = new TypeExp(loc, t);
 				exps.add(e);
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+				}
 			}
 		}
 	}
@@ -180,7 +182,9 @@ public class TupleExp extends Expression {
 
 			e = e.semantic(sc, context);
 			if (e.type == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
+				}
 				e.type = Type.terror;
 			}
 			exps.set(i, e);

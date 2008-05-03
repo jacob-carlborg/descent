@@ -96,14 +96,18 @@ public class MinExp extends BinExp {
 			} else if (t2.isintegral()) {
 				e = scaleFactor(sc, context);
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.IncompatibleTypesForMinus, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.IncompatibleTypesForMinus, this));
+				}
 				return new IntegerExp(loc, 0);
 			}
 		} else if (t2.ty == TY.Tpointer) {
 			type = e2.type;
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotSubtractPointerFromSymbol, this, new String[] { e1.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotSubtractPointerFromSymbol, this, new String[] { e1.type.toChars(context) }));
+			}
 			return new IntegerExp(loc, 0);
 		} else {
 			typeCombine(sc, context);

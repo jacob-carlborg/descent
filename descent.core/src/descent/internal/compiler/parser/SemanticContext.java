@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
-import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
@@ -140,15 +139,21 @@ public class SemanticContext {
 		// Update global list of modules
 		if (null == dst.insert(module)) {
 			if (module.md != null) {
-				acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ModuleIsInMultiplePackages, module.md, new String[] { module.md.toChars(this) }));
+				if (acceptsProblems()) {
+					acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ModuleIsInMultiplePackages, module.md, new String[] { module.md.toChars(this) }));
+				}
 			} else {
 				if (module.md == null) {
-					acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ModuleIsInMultipleDefined, 0, 0, 1));
+					if (acceptsProblems()) {
+						acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ModuleIsInMultipleDefined, 0, 0, 1));
+					}
 				} else {
-					acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ModuleIsInMultipleDefined, module.md));
+					if (acceptsProblems()) {
+						acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ModuleIsInMultipleDefined, module.md));
+					}
 				}
 			}
 		} else {
@@ -156,6 +161,22 @@ public class SemanticContext {
 				Module_amodules = new Dsymbols();
 			}
 			Module_amodules.add(module);
+		}
+	}
+	
+	public final boolean acceptsProblems() {
+		if (fatalWasSignaled) {
+			return false;
+		}
+		
+		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
+			return true;
+		} else {
+			// Each acceptProblem is preceded by acceptsProblems, and originaly
+			// global.errors is incremented, so...
+			
+			global.errors++;
+			return false;
 		}
 	}
 
@@ -170,9 +191,7 @@ public class SemanticContext {
 			problemRequestor.acceptProblem(problem);
 		}
 		
-//		if (muteProblems == 0) {
-			global.errors++;
-//		}
+		global.errors++;
 	}
 
 	private int generatedIds;	
@@ -225,7 +244,9 @@ public class SemanticContext {
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
 			int length = ident.start + ident.length - start;
 			
-			acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, ident.getLineNumber(), start, length, new String[] { CharOperation.toString(compoundName) }));
+			if (acceptsProblems()) {
+				acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, ident.getLineNumber(), start, length, new String[] { CharOperation.toString(compoundName) }));
+			}
 			return null;
 		}
 
@@ -233,6 +254,7 @@ public class SemanticContext {
 		
 		// If we're in object.d, assign the well known class declarations
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
+			m.consumeRestStructure();
 			for (Dsymbol symbol : m.members) {
 				checkObjectMember(symbol);
 			}

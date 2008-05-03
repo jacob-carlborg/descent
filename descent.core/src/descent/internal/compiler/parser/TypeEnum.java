@@ -29,8 +29,10 @@ public class TypeEnum extends Type {
 	@Override
 	public int alignsize(SemanticContext context) {
 		if (null == sym.memtype) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
+			}
 			return 4;
 		}
 		return sym.memtype.alignsize(context);
@@ -122,10 +124,12 @@ public class TypeEnum extends Type {
 	}
 
 	private Expression getProperty_Lfwd(char[] ident, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.ForwardReferenceOfSymbolDotSymbol, this,
-				new String[] { toChars(context),
-						new String(ident) }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.ForwardReferenceOfSymbolDotSymbol, this,
+					new String[] { toChars(context),
+							new String(ident) }));
+		}
 		return new IntegerExp(Loc.ZERO, 0, this);
 	}
 
@@ -187,8 +191,10 @@ public class TypeEnum extends Type {
 	@Override
 	public int size(Loc loc, SemanticContext context) {
 		if (null == sym.memtype) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.EnumIsForwardReference, this, new String[] { sym.toChars(context) }));
+			}
 			return 4;
 		}
 		return sym.memtype.size(loc, context);
@@ -200,8 +206,10 @@ public class TypeEnum extends Type {
 		sym.consumeRest();
 		
 		if (sym.memtype == null) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.EnumIsForwardReference, sym));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.EnumIsForwardReference, sym));
+			}
 			return tint32;
 		}
 		return sym.memtype.toBasetype(context);

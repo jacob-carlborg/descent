@@ -57,8 +57,10 @@ public class InExp extends BinExp {
 
 		Type t2b = e2.type.toBasetype(context);
 		if (t2b.ty != TY.Taarray) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.RvalueOfInExpressionMustBeAnAssociativeArray, e2, new String[] { e2.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.RvalueOfInExpressionMustBeAnAssociativeArray, e2, new String[] { e2.type.toChars(context) }));
+			}
 			type = Type.terror;
 		} else {
 			TypeAArray ta = (TypeAArray) t2b;

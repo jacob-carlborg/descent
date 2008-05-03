@@ -41,7 +41,9 @@ public class TemplateTypeParameter extends TemplateParameter {
 		((AliasDeclaration) sparam).isTemplateParameter = true;
 		
 		if (null == sc.insert(sparam)) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
+			}
 		}
 	}
 

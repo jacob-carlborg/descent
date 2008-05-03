@@ -131,8 +131,10 @@ public class Import extends Dsymbol {
 			if (null != s.isModule()) {
 				mod = (Module) s;
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PackageAndModuleHaveTheSameName, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.PackageAndModuleHaveTheSameName, this));
+				}
 			}
 		}
 
@@ -218,8 +220,10 @@ public class Import extends Dsymbol {
 				Dsymbol s = (Dsymbol) aliasdecls.get(i);
 
 				if (null == mod.search(loc, names.get(i), 0, context)) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ImportNotFound, this, new String[] { (names.get(i)).toChars() }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ImportNotFound, this, new String[] { (names.get(i)).toChars() }));
+					}
 				}
 
 				s.semantic(sc, context);

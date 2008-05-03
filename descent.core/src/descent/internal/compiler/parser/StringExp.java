@@ -109,8 +109,10 @@ public class StringExp extends Expression {
 					p = Utf.decodeChar(string, 0, len, u, c);
 					// utf_decodeChar((unsigned char )string, len, &u, &c);
 					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(p,
-								this, new String[0]));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(p,
+									this, new String[0]));
+						}
 						break;
 					} else {
 						buffer.write4(c[0]);
@@ -130,8 +132,10 @@ public class StringExp extends Expression {
 				for (u[0] = 0; u[0] < len;) {
 					p = Utf.decodeChar(string, 0, len, u, c);
 					if (p >= 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(p,
-								this, new String[0]));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(p,
+									this, new String[0]));
+						}
 						break;
 					} else {
 						buffer.writeUTF16(c[0]);
@@ -222,8 +226,10 @@ public class StringExp extends Expression {
 		int copied = 0;
 
 		if (!committed && t.ty == Tpointer && t.nextOf().ty == Tvoid) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotConvertStringLiteralToVoidPointer, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotConvertStringLiteralToVoidPointer, this));
+			}
 		}
 
 		se = this;
@@ -328,8 +334,10 @@ public class StringExp extends Expression {
 					for (u[0] = 0; u[0] < len;) {
 						p = Utf.decodeChar(se.string, 0, len, u, c);
 						if (p >= 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(p,
-									this, new String[0]));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(p,
+										this, new String[0]));
+							}
 						} else {
 							buffer.writeUTF16(c[0]);
 						}
@@ -350,8 +358,10 @@ public class StringExp extends Expression {
 					for (u[0] = 0; u[0] < len;) {
 						p = Utf.decodeChar(se.string, 0, len, u, c);
 						if (p >= 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(p,
-									this, new String[0]));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(p,
+										this, new String[0]));
+							}
 						}
 						buffer.write4(c[0]);
 						newlen++;
@@ -371,8 +381,10 @@ public class StringExp extends Expression {
 					for (u[0] = 0; u[0] < len;) {
 						p = Utf.decodeWchar(se.string, 0, len, u, c);
 						if (p >= 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(p,
-									this, new String[0]));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(p,
+										this, new String[0]));
+							}
 						} else {
 							buffer.writeUTF8(c[0]);
 						}
@@ -393,8 +405,10 @@ public class StringExp extends Expression {
 					for (u[0] = 0; u[0] < len;) {
 						p = Utf.decodeWchar(se.string, 0, len, u, c);
 						if (p >= 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(p,
-									this, new String[0]));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(p,
+										this, new String[0]));
+							}
 						}
 						buffer.write4(c[0]);
 						newlen++;
@@ -414,9 +428,11 @@ public class StringExp extends Expression {
 					for (u[0] = 0; u[0] < len; u[0]++) {
 						c[0] = se.string[u[0]];
 						if (!Utf.isValidDchar(c[0])) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.InvalidUCS32Char, this,
-									new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.InvalidUCS32Char, this,
+										new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+							}
 						} else {
 							buffer.writeUTF8(c[0]);
 						}
@@ -438,9 +454,11 @@ public class StringExp extends Expression {
 					for (u[0] = 0; u[0] < len; u[0]++) {
 						c[0] = se.string[u[0]];
 						if (!Utf.isValidDchar(c[0])) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.InvalidUCS32Char, this,
-									new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.InvalidUCS32Char, this,
+										new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+							}
 						} else {
 							buffer.writeUTF16(c[0]);
 						}
@@ -608,15 +626,19 @@ public class StringExp extends Expression {
 			for (u[0] = 0; u[0] < len;) {
 				p = Utf.decodeWchar(string, 0, len, u, c);
 				if (p >= 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(p, this,
-							new String[0]));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(p, this,
+								new String[0]));
+					}
 				} else {
 					tmp.writeUTF8(c[0]);
 				}
 				p = Utf.decodeWchar(string, 0, len, u, c);
 				if (p >= 0)
-					context.acceptProblem(Problem.newSemanticTypeError(p, this,
-							new String[0]));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(p, this,
+								new String[0]));
+					}
 				else
 					tmp.writeUTF8(c[0]);
 			}
@@ -628,9 +650,11 @@ public class StringExp extends Expression {
 			for (u[0] = 0; u[0] < len; u[0]++) {
 				c[0] = string[u[0]];
 				if (!Utf.isValidDchar(c[0])) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.InvalidUCS32Char, this,
-							new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InvalidUCS32Char, this,
+								new String[] { String.valueOf(c[0]) })); // TODO format in hexa
+					}
 				} else
 					tmp.writeUTF8(c[0]);
 			}

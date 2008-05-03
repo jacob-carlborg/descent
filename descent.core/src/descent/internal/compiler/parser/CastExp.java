@@ -57,8 +57,10 @@ public class CastExp extends UnaExp {
 			VarDeclaration v = ve.var.isVarDeclaration();
 			if (v != null) {
 				if (!v.isDataseg(context) && !v.isParameter()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.EscapingReferenceToLocal, this, new String[] { v.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.EscapingReferenceToLocal, this, new String[] { v.toChars(context) }));
+					}
 				}
 			}
 		}

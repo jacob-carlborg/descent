@@ -41,11 +41,15 @@ public class VarExp extends Expression {
 			// if reference type
 			if (tb.ty == Tarray || tb.ty == Tsarray || tb.ty == Tclass) {
 				if ((v.isAuto() || v.isScope()) && !v.noauto()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.EscapingReferenceToAutoLocal, this, new String[] { v.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.EscapingReferenceToAutoLocal, this, new String[] { v.toChars(context) }));
+					}
 				} else if ((v.storage_class & STCvariadic) != 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.EscapingReferenceToVariadicParameter, this, new String[] { v.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.EscapingReferenceToVariadicParameter, this, new String[] { v.toChars(context) }));
+					}
 				}
 			}
 		}
@@ -84,12 +88,16 @@ public class VarExp extends Expression {
 			SemanticContext context) {
 		if (sc.incontract != 0 && var.isParameter()) {
 			// TODO the start and length of the problem should be different (should be passed by parameter to this function)
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, new String[] { var.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, new String[] { var.toChars(context) }));
+			}
 		}
 
 		if (type != null && type.toBasetype(context).ty == Tsarray) {
 			// TODO the start and length of the problem should be different (should be passed by parameter to this function)
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotChangeReferenceToStaticArray, this, new String[] { var.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotChangeReferenceToStaticArray, this, new String[] { var.toChars(context) }));
+			}
 		}
 
 		VarDeclaration v = var.isVarDeclaration();
@@ -97,8 +105,10 @@ public class VarExp extends Expression {
 				&& v.canassign() == 0
 				&& (var.isConst() || (context.global.params.Dversion > 1 && var
 						.isFinal()))) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotModifyFinalVariable, this, new String[] { var.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotModifyFinalVariable, this, new String[] { var.toChars(context) }));
+			}
 		}
 
 		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
@@ -188,7 +198,9 @@ public class VarExp extends Expression {
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if ((var.storage_class & STClazy) != 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.LazyVariablesCannotBeLvalues, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.LazyVariablesCannotBeLvalues, this));
+			}
 		}
 		return this;
 	}

@@ -39,14 +39,18 @@ public class ThrowStatement extends Statement {
 		fd.hasReturnExp |= 2;
 
 		if (sc.incontract != 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ThrowStatementsCannotBeInContracts, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ThrowStatementsCannotBeInContracts, this));
+			}
 		}
 		exp = exp.semantic(sc, context);
 		exp = resolveProperties(sc, exp, context);
 		if (null == exp.type.toBasetype(context).isClassHandle()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlyThrowClassObjects, exp, new String[] { exp.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CanOnlyThrowClassObjects, exp, new String[] { exp.type.toChars(context) }));
+			}
 		}
 		return this;
 	}

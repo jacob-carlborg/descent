@@ -123,6 +123,10 @@ public class SemanticMixin {
 			
 		} else {
 			
+			if (aThis instanceof TemplateInstance) {
+				aThis = ((TemplateInstance) aThis).tempdecl;
+			}
+			
 			if (!(aThis.parent instanceof TemplateInstance)) {
 				sb.append(aThis.getSignaturePrefix());
 				sb.append(aThis.ident.ident.length);

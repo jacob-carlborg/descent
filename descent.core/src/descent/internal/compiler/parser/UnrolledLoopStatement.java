@@ -47,10 +47,12 @@ public class UnrolledLoopStatement extends Statement {
 			}
 
 			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				context
-						.acceptProblem(Problem.newSemanticTypeWarning(
-								IProblem.StatementIsNotReachable, 0, s.start,
-								s.length));
+				if (context.acceptsProblems()) {
+					context
+							.acceptProblem(Problem.newSemanticTypeWarning(
+									IProblem.StatementIsNotReachable, 0, s.start,
+									s.length));
+				}
 			}
 			falloff = s.fallOffEnd(context);
 		}

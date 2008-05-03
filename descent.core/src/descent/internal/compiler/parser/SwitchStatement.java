@@ -98,8 +98,10 @@ public class SwitchStatement extends Statement {
 		}
 		if (null == s) {
 			if (hasNoDefault != 0) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.NoDefaultOrCaseInSwitchStatement, this, new String[] { econdition.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.NoDefaultOrCaseInSwitchStatement, this, new String[] { econdition.toChars(context) }));
+				}
 			}
 			s = sdefault;
 		}
@@ -154,8 +156,10 @@ public class SwitchStatement extends Statement {
 				GotoCaseStatement gcs = (GotoCaseStatement) gotoCases.get(i);
 	
 				if (null == gcs.exp) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.NoCaseStatementFollowingGoto, this));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.NoCaseStatementFollowingGoto, this));
+					}
 					break;
 				}
 	
@@ -173,7 +177,9 @@ public class SwitchStatement extends Statement {
 						}
 					}
 				}
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseNotFound, gcs.exp, new String[] { gcs.exp.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseNotFound, gcs.exp, new String[] { gcs.exp.toChars(context) }));
+				}
 				// Lfoundcase: ;
 			}
 		}
@@ -182,8 +188,10 @@ public class SwitchStatement extends Statement {
 			hasNoDefault = 1;
 
 			if (context.global.params.warnings) {
-				context.acceptProblem(Problem.newSemanticTypeWarningLoc(
-						IProblem.SwitchStatementHasNoDefault, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeWarningLoc(
+							IProblem.SwitchStatementHasNoDefault, this));
+				}
 			}
 
 			// Generate runtime error if the default is hit

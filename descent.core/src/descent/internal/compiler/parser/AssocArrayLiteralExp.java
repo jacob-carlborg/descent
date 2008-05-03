@@ -281,8 +281,10 @@ public class AssocArrayLiteralExp extends Expression {
 		expandTuples(values, context);
 		if(keys.size() != values.size())
 		{
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NumberOfKeysMustMatchNumberOfValues, this, new String[] { String.valueOf(keys.size()), String.valueOf(values.size()) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.NumberOfKeysMustMatchNumberOfValues, this, new String[] { String.valueOf(keys.size()), String.valueOf(values.size()) }));
+			}
 			keys.clear();
 			values.clear();
 		}
@@ -292,10 +294,14 @@ public class AssocArrayLiteralExp extends Expression {
 			Expression value = values.get(i);
 			
 			if(null == key.type) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, key, new String[] { key.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, key, new String[] { key.toChars(context) }));
+				}
 			}
 			if(null == value.type) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, value, new String[] { value.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, value, new String[] { value.toChars(context) }));
+				}
 			}
 			key = resolveProperties(sc, key, context);
 			value = resolveProperties(sc, value, context);

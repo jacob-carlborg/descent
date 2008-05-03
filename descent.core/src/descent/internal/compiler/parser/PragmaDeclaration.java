@@ -63,24 +63,30 @@ public class PragmaDeclaration extends AttribDeclaration {
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOKstring) {
 					} else {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.StringExpectedForPragmaMsg, e));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.StringExpectedForPragmaMsg, e));
+						}
 					}
 				}
 			}
 			// goto Lnodecl
 			if (decl != null) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.PragmaIsMissingClosingSemicolon, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.PragmaIsMissingClosingSemicolon, this));
+				}
 			}
 			return;
 		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
-				context
-						.acceptProblem(Problem
-								.newSemanticTypeErrorLoc(
-										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
-										this));
+				if (context.acceptsProblems()) {
+					context
+							.acceptProblem(Problem
+									.newSemanticTypeErrorLoc(
+											IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
+											this));
+				}
 			} else {
 				Expression e = args.get(0);
 
@@ -88,19 +94,25 @@ public class PragmaDeclaration extends AttribDeclaration {
 				e = e.optimize(WANTvalue | WANTinterpret, context);
 				args.set(0, e);
 				if (e.op != TOKstring) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.StringExpectedForPragmaLib, e));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.StringExpectedForPragmaLib, e));
+					}
 				}
 			}
 			// goto Lnodecl;
 			if (decl != null) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.PragmaIsMissingClosingSemicolon, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.PragmaIsMissingClosingSemicolon, this));
+				}
 			}
 			return;
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UnrecognizedPragma, ident));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.UnrecognizedPragma, ident));
+			}
 		}
 
 		if (decl != null) {

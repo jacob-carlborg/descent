@@ -200,8 +200,10 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if(dim != 2)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -209,16 +211,20 @@ public class TraitsExp extends Expression {
 			Expression e = isExpression((ASTDmdNode) args.get(1));
 			if(null == e)
 			{ 
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StringExpectedAsSecondArgument, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.StringExpectedAsSecondArgument, this));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			e = e.optimize(WANTvalue | WANTinterpret, context);
 			if(e.op != TOK.TOKstring)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StringExpectedAsSecondArgument, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.StringExpectedAsSecondArgument, this));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -226,8 +232,10 @@ public class TraitsExp extends Expression {
 			se = se.toUTF8(sc, context);
 			if (se.sz != 1)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.StringMustBeChars, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.StringMustBeChars, this));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -246,8 +254,10 @@ public class TraitsExp extends Expression {
 			}
 			else
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.InvalidFirstArgument, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.InvalidFirstArgument, this));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 	
@@ -316,8 +326,10 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -325,16 +337,20 @@ public class TraitsExp extends Expression {
 			Dsymbol s = getDsymbol(o, context);
 			if(null == s)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FirstArgumentIsNotAClass, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FirstArgumentIsNotAClass, this));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ClassDeclaration cd = s.isClassDeclaration();
 			if (null == cd)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FirstArgumentIsNotAClass, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FirstArgumentIsNotAClass, this));
+				}
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			return new IntegerExp(loc, cd.structsize, Type.tsize_t);
@@ -346,8 +362,10 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
+				}
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -355,16 +373,20 @@ public class TraitsExp extends Expression {
 			Dsymbol s = getDsymbol(o, context);
 			if (null == s)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArgumentHasNoMembers, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ArgumentHasNoMembers, this));
+				}
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
 			ScopeDsymbol sd = s.isScopeDsymbol();
 			if(null == sd)
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.KindSymbolHasNoMembers, this, new String[] { s.kind(), s.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.KindSymbolHasNoMembers, this, new String[] { s.kind(), s.toChars(context) }));
+				}
 			    return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
@@ -407,8 +429,10 @@ public class TraitsExp extends Expression {
 	    
 	    else
 	    {
-	    	context.acceptProblem(Problem.newSemanticTypeError(
-	    			IProblem.UnrecongnizedTrait, this.ident, new String[] { new String(ident) }));
+	    	if (context.acceptsProblems()) {
+		    	context.acceptProblem(Problem.newSemanticTypeError(
+		    			IProblem.UnrecongnizedTrait, this.ident, new String[] { new String(ident) }));
+	    	}
 	    	return new IntegerExp(loc, 0, Type.tbool);
 	    }
 	    

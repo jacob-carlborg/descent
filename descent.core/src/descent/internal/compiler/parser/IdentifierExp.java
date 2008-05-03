@@ -92,12 +92,8 @@ public class IdentifierExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
-
-		
 		
 		s = sc.search(loc, this, scopesym, context);
-		
-		
 		
 		// Descent: for binding resolution
 		resolvedSymbol = s;
@@ -164,9 +160,11 @@ public class IdentifierExp extends Expression {
 			// Descent: for binding resolution
 			return resolvedExpression = e.semantic(sc, context);
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.UndefinedIdentifier, this,
-				new String[] { new String(ident) }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.UndefinedIdentifier, this,
+					new String[] { new String(ident) }));
+		}
 		type = Type.terror;
 		return this;
 	}

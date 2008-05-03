@@ -85,16 +85,20 @@ public class DsymbolExp extends Expression {
 				if (type == null) {
 					type = v.type;
 					if (v.type == null) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ForwardReferenceOfSymbol, this,
-								new String[] { v.toString() }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.ForwardReferenceOfSymbol, this,
+									new String[] { v.toString() }));
+						}
 						type = Type.terror;
 					}
 				}
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
 					if (v.init() != null) {
 						if (v.inuse() != 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
+							}
 							type = Type.tint32;
 							return this;
 						}
@@ -176,7 +180,9 @@ public class DsymbolExp extends Expression {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+						}
 					} else {
 						Expression e2 = (Expression) o;
 						e2 = e2.syntaxCopy(context);
@@ -214,7 +220,9 @@ public class DsymbolExp extends Expression {
 		}
 
 		// Lerr:
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, s, new String[] { s.kind(), s.toChars(context) }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, s, new String[] { s.kind(), s.toChars(context) }));
+		}
 		type = Type.terror;
 		return this;
 	}

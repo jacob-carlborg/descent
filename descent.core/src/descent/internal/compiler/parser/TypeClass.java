@@ -170,8 +170,10 @@ public class TypeClass extends Type {
 					e.type = t.pointerTo(context);
 					if (sym.isInterfaceDeclaration() != null) {
 						if (sym.isCOMclass()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.NoClassInfoForComInterfaceObjects, this));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.NoClassInfoForComInterfaceObjects, this));
+							}
 						}
 						e.type = e.type.pointerTo(context);
 						e = new PtrExp(e.loc, e);
@@ -184,9 +186,11 @@ public class TypeClass extends Type {
 
 			else if (equals(ident, Id.typeinfo)) {
 				if (!context.global.params.useDeprecated) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DeprecatedProperty, ident, new String[] { "typeinfo",
-									".typeid(type)" }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.DeprecatedProperty, ident, new String[] { "typeinfo",
+										".typeid(type)" }));
+					}
 				}
 				return getTypeInfo(sc, context);
 			}
@@ -245,8 +249,10 @@ public class TypeClass extends Type {
 
 		d = s.isDeclaration();
 		if (null == d) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolDotSymbolIsNotADeclaration, this, new String[] { e.toChars(context), ident.toChars() }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolDotSymbolIsNotADeclaration, this, new String[] { e.toChars(context), ident.toChars() }));
+			}
 			return new IntegerExp(e.loc, 1, Type.tint32);
 		}
 
@@ -271,8 +277,10 @@ public class TypeClass extends Type {
 						} else if ((null == cd || !cd.isBaseOf(thiscd, null,
 								context))
 								&& null == d.isFuncDeclaration()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.ThisIsRequiredButIsNotABaseClassOf, this, new String[] { e.type.toChars(context), thiscd.toChars(context) }));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.ThisIsRequiredButIsNotABaseClassOf, this, new String[] { e.type.toChars(context), thiscd.toChars(context) }));
+							}
 						}
 					}
 				}

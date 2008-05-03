@@ -86,6 +86,11 @@ public class ModuleBuilder {
 	private final static boolean LAZY = true;
 	
 	/*
+	 * Wether to make surface Module semantic.
+	 */
+	public boolean LAZY_MODULES = LAZY & true;
+	
+	/*
 	 * Wether to make surface ClassDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_CLASSES = LAZY & true;
@@ -129,7 +134,7 @@ public class ModuleBuilder {
 	 * Wether to make surface VarDeclaration semantic lazy.
 	 * Currently doesn't work.
 	 */
-	private final static boolean LAZY_VARS = LAZY & true;
+	public boolean LAZY_VARS = LAZY & true;
 	
 	/*
 	 * We want to skip things like:
@@ -173,6 +178,18 @@ public class ModuleBuilder {
 	public ModuleBuilder(CompilerConfiguration config, ASTNodeEncoder encoder) {
 		this.config = config;
 		this.encoder = encoder;
+		
+		switch(config.semanticAnalysisLevel) {
+		case 0: // None
+			LAZY_MODULES = LAZY & true;
+			LAZY_VARS = LAZY & true;
+			break;
+		case 1: // Some
+		case 2: // All
+			LAZY_MODULES = false;
+			LAZY_VARS = false;
+			break;
+		}
 	}
 	
 	/**
@@ -185,25 +202,51 @@ public class ModuleBuilder {
 		module.setJavaElement(unit);
 		module.moduleName = unit.getFullyQualifiedName();
 		
-		try {
-			IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
-			if (packageDeclarations.length == 1) {
-				String elementName = packageDeclarations[0].getElementName();
-				Identifiers packages = new Identifiers();
-				IdentifierExp name = splitName(elementName, packages);	
-				module.md = new ModuleDeclaration(packages, name);
+		if (LAZY_MODULES) {
+			module.setJavaElement(unit);
+			module.rest = new SemanticRest(new Runnable() {
+				public void run() {
+					try {
+						IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
+						if (packageDeclarations.length == 1) {
+							String elementName = packageDeclarations[0].getElementName();
+							Identifiers packages = new Identifiers();
+							IdentifierExp name = splitName(elementName, packages);	
+							module.md = new ModuleDeclaration(packages, name);
+						}
+						
+						State state = new State();
+						
+						module.members = new Dsymbols();
+						fill(module, module.members, unit.getChildren(), state);
+						
+						state.surface = false;
+					} catch (JavaModelException e) {
+						Util.log(e);
+					}
+				}
+			});
+			module.rest.skipScopeCheck = true;
+		} else {
+			try {
+				IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
+				if (packageDeclarations.length == 1) {
+					String elementName = packageDeclarations[0].getElementName();
+					Identifiers packages = new Identifiers();
+					IdentifierExp name = splitName(elementName, packages);	
+					module.md = new ModuleDeclaration(packages, name);
+				}
+				
+				State state = new State();
+				
+				module.members = new Dsymbols();
+				fill(module, module.members, unit.getChildren(), state);
+				
+				state.surface = false;
+			} catch (JavaModelException e) {
+				Util.log(e);
+				return null;
 			}
-			
-			State state = new State();
-			
-			module.members = new Dsymbols();
-			fill(module, module.members, unit.getChildren(), state);
-			
-			state.surface = false;
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-			Util.log(e);
-			return null;
 		}
 		
 		return module;

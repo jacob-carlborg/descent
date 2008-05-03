@@ -78,8 +78,10 @@ public class DeleteDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.DeleteDeallocatorsOnlyForClassOrStruct, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.DeleteDeallocatorsOnlyForClassOrStruct, this));
+			}
 		}
 		type = new TypeFunction(arguments, Type.tvoid, 0, LINK.LINKd);
 
@@ -89,14 +91,18 @@ public class DeleteDeclaration extends FuncDeclaration {
 		// Check that there is only one argument of type void*
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) != 1) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.OneArgumentOfTypeExpected, this,
-					new String[] { "void*" }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.OneArgumentOfTypeExpected, this,
+						new String[] { "void*" }));
+			}
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tvoid.pointerTo(context))) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OneArgumentOfTypeExpected, a.type, new String[] { "void*" }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.OneArgumentOfTypeExpected, a.type, new String[] { "void*" }));
+				}
 			}
 		}
 

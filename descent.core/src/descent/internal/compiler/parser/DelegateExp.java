@@ -45,16 +45,20 @@ public class DelegateExp extends UnaExp {
 						if (f.tintro() != null
 								&& f.tintro().next.isBaseOf(f.type.next, offset,
 										context) && offset[0] != 0) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CannotFormDelegateDueToCovariantReturnType, this));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.CannotFormDelegateDueToCovariantReturnType, this));
+							}
 						}
 						e = new DelegateExp(loc, e1, f);
 						e.type = t;
 						return e;
 					}
 					if (func.tintro() != null) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CannotFormDelegateDueToCovariantReturnType, this));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.CannotFormDelegateDueToCovariantReturnType, this));
+						}
 					}
 				}
 			}
@@ -65,8 +69,10 @@ public class DelegateExp extends UnaExp {
 			if (func.tintro() != null
 					&& func.tintro().next.isBaseOf(func.type.next, offset,
 							context) && offset[0] != 0) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotFormDelegateDueToCovariantReturnType, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotFormDelegateDueToCovariantReturnType, this));
+				}
 			}
 		}
 		e.type = t;
@@ -136,8 +142,10 @@ public class DelegateExp extends UnaExp {
 							loop = true;
 							continue L10;
 						}
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { func.toChars(context), ad.toChars(context), t
-								.toChars(context) }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { func.toChars(context), ad.toChars(context), t
+									.toChars(context) }));
+						}
 					}
 				}
 			}

@@ -43,10 +43,14 @@ public class DebugSymbol extends Dsymbol {
 		m = sd.isModule();
 		if (ident != null) {
 			if (null == m) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
+				}
 			} else {
 				if (findCondition(m.debugidsNot, ident)) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, this, new String[] { ident.toString() } ));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, this, new String[] { ident.toString() } ));
+					}
 				}
 				if (null == m.debugids) {
 					m.debugids = new ArrayList<char[]>();
@@ -55,7 +59,9 @@ public class DebugSymbol extends Dsymbol {
 			}
 		} else {
 			if (null == m) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
+				}
 			} else {
 				m.debuglevel = level;
 			}

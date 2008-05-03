@@ -58,10 +58,12 @@ public class FileExp extends UnaExp {
 	    e1 = e1.optimize(WANTvalue, context);
 	    if (e1.op != TOK.TOKstring)
 	    {
-	    	context.acceptProblem(Problem.newSemanticTypeError(
-	    			IProblem.FileNameMustBeString,
-	    			e1,
-	    			new String[] { e1.toChars(context) }));
+	    	if (context.acceptsProblems()) {
+		    	context.acceptProblem(Problem.newSemanticTypeError(
+		    			IProblem.FileNameMustBeString,
+		    			e1,
+		    			new String[] { e1.toChars(context) }));
+	    	}
 			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
@@ -88,10 +90,12 @@ public class FileExp extends UnaExp {
 	    
 	    if(file == null)
 	    {
-	    	context.acceptProblem(Problem.newSemanticTypeError(
-	    			IProblem.FileNotFound,
-	    			e1,
-	    			new String[] { filename }));
+	    	if (context.acceptsProblems()) {
+		    	context.acceptProblem(Problem.newSemanticTypeError(
+		    			IProblem.FileNotFound,
+		    			e1,
+		    			new String[] { filename }));
+	    	}
 			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
@@ -102,10 +106,12 @@ public class FileExp extends UnaExp {
 	    }
 	    catch(IOException e)
 	    {
-	    	context.acceptProblem(Problem.newSemanticTypeError(
-	    			IProblem.ErrorReadingFile,
-	    			e1,
-	    			new String[] { file.getAbsolutePath() }));
+	    	if (context.acceptsProblems()) {
+		    	context.acceptProblem(Problem.newSemanticTypeError(
+		    			IProblem.ErrorReadingFile,
+		    			e1,
+		    			new String[] { file.getAbsolutePath() }));
+	    	}
 	    	return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
 	    }
 	}

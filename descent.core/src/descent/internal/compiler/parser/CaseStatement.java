@@ -79,7 +79,9 @@ public class CaseStatement extends Statement {
 			exp = exp.implicitCastTo(sc, sw.condition.type, context);
 			exp = exp.optimize(WANTvalue | WANTinterpret, context);
 			if (exp.op != TOKstring && exp.op != TOKint64) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, new String[] { exp.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, new String[] { exp.toChars(context) }));
+				}
 				exp = new IntegerExp(0);
 			}
 
@@ -88,7 +90,9 @@ public class CaseStatement extends Statement {
 
 				//printf("comparing '%s' with '%s'\n", exp.toChars(), cs.exp.toChars());
 				if (cs.exp.equals(exp)) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, new String[] { exp.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, new String[] { exp.toChars(context) }));
+					}
 					break;
 				}
 			}
@@ -107,7 +111,9 @@ public class CaseStatement extends Statement {
 				}
 			}
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseIsNotInSwitch, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseIsNotInSwitch, this));
+			}
 		}
 		statement = statement.semantic(sc, context);
 		return this;

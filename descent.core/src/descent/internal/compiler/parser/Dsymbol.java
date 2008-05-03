@@ -106,10 +106,12 @@ public class Dsymbol extends ASTDmdNode {
 				if (equals(ident, Id.__sizeof)
 						|| equals(ident, Id.alignof)
 						|| equals(ident, Id.mangleof)) {
-					context.acceptProblem(Problem.newSemanticMemberError(
-							IProblem.PropertyCanNotBeRedefined, 0, ident.start,
-							ident.length,
-							new String[] { new String(ident.ident) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticMemberError(
+								IProblem.PropertyCanNotBeRedefined, 0, ident.start,
+								ident.length,
+								new String[] { new String(ident.ident) }));
+					}
 				}
 			}
 			return 1;
@@ -137,7 +139,9 @@ public class Dsymbol extends ASTDmdNode {
 				}
 			}
 
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, reference, new String[] { this.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, reference, new String[] { this.toChars(context) }));
+			}
 		}
 	}
 
@@ -480,15 +484,19 @@ public class Dsymbol extends ASTDmdNode {
 			id = ti.name;
 			sm = s.search(loc, id, 0, context);
 			if (null == sm) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { id.toChars(), s.kind(), s.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { id.toChars(), s.kind(), s.toChars(context) }));
+				}
 				return null;
 			}
 			sm = sm.toAlias(context);
 			TemplateDeclaration td = sm.isTemplateDeclaration();
 			if (null == td) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolIsNotATemplate, this, new String[] { id.toChars(), sm.kind() }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolIsNotATemplate, this, new String[] { id.toChars(), sm.kind() }));
+				}
 				return null;
 			}
 			ti.tempdecl = td;
@@ -518,8 +526,10 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public int size(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.DSymbolHasNoSize, this, new String[] { toChars(context) }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.DSymbolHasNoSize, this, new String[] { toChars(context) }));
+		}
 		return 0;
 	}
 

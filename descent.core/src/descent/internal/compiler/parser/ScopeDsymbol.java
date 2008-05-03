@@ -114,15 +114,19 @@ public class ScopeDsymbol extends Dsymbol {
 	
 	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
 		if (loc != null && loc.filename != null) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
-					s2, new String[] { s1.toPrettyChars(context), s1.locToChars(context), s2.toPrettyChars(context), s2.locToChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
+						s2, new String[] { s1.toPrettyChars(context), s1.locToChars(context), s2.toPrettyChars(context), s2.locToChars(context) }));
+			}
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.SymbolConflictsWithSymbolAtLocation, 
-					s1, new String[] { s1.toChars(context), s2.kind(),
-						    s2.toPrettyChars(context),
-						    s2.locToChars(context)}));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.SymbolConflictsWithSymbolAtLocation, 
+						s1, new String[] { s1.toChars(context), s2.kind(),
+							    s2.toPrettyChars(context),
+							    s2.locToChars(context)}));
+			}
 		}		
 	}
 
@@ -197,8 +201,10 @@ public class ScopeDsymbol extends Dsymbol {
 				Declaration d = s.isDeclaration();
 				if (d != null && d.protection == PROT.PROTprivate
 						&& d.parent.isTemplateMixin() == null) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.MemberIsPrivate, d, new String[] { new String(d.ident.ident) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.MemberIsPrivate, d, new String[] { new String(d.ident.ident) }));
+					}
 				}
 			}
 		}

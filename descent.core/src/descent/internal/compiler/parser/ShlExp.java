@@ -53,8 +53,10 @@ public class ShlExp extends BinExp {
 			integer_t i2 = e2.toInteger(context);
 			if (i2.compareTo(0) < 0
 					|| i2.compareTo(e1.type.size(context) * 8) > 0) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ShiftLeftExceeds, this, new String[] { i2.toString(), String.valueOf(e2.type.size(context) * 8) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ShiftLeftExceeds, this, new String[] { i2.toString(), String.valueOf(e2.type.size(context) * 8) }));
+				}
 				e2 = new IntegerExp(0);
 			}
 			if (e1.isConst()) {

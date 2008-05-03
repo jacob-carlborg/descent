@@ -133,13 +133,17 @@ public class TypeDArray extends TypeArray {
 		case Tfunction:
 		case Tnone:
 		case Ttuple:
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfType, this, new String[] { tbn.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfType, this, new String[] { tbn.toChars(context) }));
+			}
 			tn = next = tint32;
 			break;
 		}
 		if (tn.isauto()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotHaveArrayOfAuto, this, new String[] { tn.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotHaveArrayOfAuto, this, new String[] { tn.toChars(context) }));
+			}
 		}
 		if (next != tn) {
 			//deco = NULL;			// redo

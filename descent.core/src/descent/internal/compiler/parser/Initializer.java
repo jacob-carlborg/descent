@@ -32,8 +32,10 @@ public abstract class Initializer extends ASTDmdNode {
 	}
 
 	public Type inferType(Scope sc, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.CannotInferTypeFromInitializer, this));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotInferTypeFromInitializer, this));
+		}
 		return Type.terror;
 	}
 	

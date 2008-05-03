@@ -55,7 +55,9 @@ public class SynchronizedStatement extends Statement {
 			exp = resolveProperties(sc, exp, context);
 			cd = exp.type.isClassHandle();
 			if (null == cd) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlySynchronizeOnClassObjects, exp, new String[] { exp.type.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlySynchronizeOnClassObjects, exp, new String[] { exp.type.toChars(context) }));
+				}
 			} else if (cd.isInterfaceDeclaration() != null) {
 				Type t = new TypeIdentifier(Loc.ZERO, new IdentifierExp(
 						Id.Object));

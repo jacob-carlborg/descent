@@ -29,8 +29,10 @@ public class TypeTuple extends Type {
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
 				if (e.type.ty == Ttuple) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotFormTupleOfTuples, e, new String[] { toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotFormTupleOfTuples, e, new String[] { toChars(context) }));
+					}
 				}
 				Argument arg = new Argument(STCin, e.type, null, null);
 				arguments.set(i, arg);
@@ -86,9 +88,11 @@ public class TypeTuple extends Type {
 		if (equals(ident, Id.length)) {
 			e = new IntegerExp(loc, arguments.size(), Type.tsize_t);
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.NoPropertyForTuple, lineNumber, start, length, new String[] { new String(ident),
-							toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.NoPropertyForTuple, lineNumber, start, length, new String[] { new String(ident),
+								toChars(context) }));
+			}
 			e = new IntegerExp(loc, 1, Type.tint32);
 		}
 		return e;
@@ -165,8 +169,10 @@ public class TypeTuple extends Type {
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = exps.get(i);
 				if (e.type.ty == TY.Ttuple) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotFormTupleOfTuples, e));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotFormTupleOfTuples, e));
+					}
 				}
 				Argument arg = new Argument(STCin, e.type, null, null);
 				arguments.set(i, arg);

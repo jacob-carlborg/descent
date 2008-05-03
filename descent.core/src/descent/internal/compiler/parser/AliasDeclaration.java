@@ -177,7 +177,9 @@ public class AliasDeclaration extends Declaration {
 				semantic_L2(sc, context, s[0]); // it's a symbolic alias
 				return;
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, new String[] { e[0].toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, new String[] { e[0].toChars(context) }));
+				}
 				t[0] = e[0].type;
 			}
 		} else if (t[0] != null) {
@@ -204,12 +206,14 @@ public class AliasDeclaration extends Declaration {
 		type = null;
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReferenceOfSymbol, tempType, new String[] { tempType.toString() }));
-			context
-					.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReferenceOfSymbol, v.ident, new String[] { new String(
-									v.ident.ident) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForwardReferenceOfSymbol, tempType, new String[] { tempType.toString() }));
+				context
+						.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ForwardReferenceOfSymbol, v.ident, new String[] { new String(
+										v.ident.ident) }));
+			}
 			s = null;
 		} else {
 			FuncDeclaration f = s.toAlias(context).isFuncDeclaration();
@@ -275,8 +279,10 @@ public class AliasDeclaration extends Declaration {
 		
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
+			}
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;

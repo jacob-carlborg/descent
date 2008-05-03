@@ -85,7 +85,9 @@ public abstract class BinExp extends Expression {
 		sourceE1.resolvedExpression = e1;
 		
 		if (e1.type == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e1, new String[] { e1.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e1, new String[] { e1.toChars(context) }));
+			}
 			e1.type = Type.terror;
 		}
 		e2 = e2.semantic(sc, context);
@@ -94,7 +96,9 @@ public abstract class BinExp extends Expression {
 		sourceE2.resolvedExpression = e2;
 		
 		if (e2.type == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e2, new String[] { e2.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e2, new String[] { e2.toChars(context) }));
+			}
 			e2.type = Type.terror;
 		}
 		Assert.isNotNull(e1.type);
@@ -158,16 +162,20 @@ public abstract class BinExp extends Expression {
 			e1.checkScalar(context);
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
+				}
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);
 			e2.checkArithmetic(context);
 
 			if (op == TOKmodass && e2.type.iscomplex()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotPerformModuloComplexArithmetic, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotPerformModuloComplexArithmetic, this));
+				}
 				return new IntegerExp(loc, 0);
 			}
 		}
@@ -176,7 +184,9 @@ public abstract class BinExp extends Expression {
 	}
 
 	public void incompatibleTypes(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypesForOperator, e1, e2, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypesForOperator, e1, e2, new String[] { e1.type.toChars(context), e2.type.toChars(context), op.toString() }));
+		}
 	}
 
 	public boolean isunsigned() {
@@ -637,8 +647,10 @@ public abstract class BinExp extends Expression {
 
 				Expression ev = v.value();
 				if (null != fp && null == ev) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+					}
 					return e;
 				}
 				if (null != fp)
@@ -674,8 +686,10 @@ public abstract class BinExp extends Expression {
 			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
 			if (null != fp && null == v.value()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+				}
 				return e;
 			}
 			if (v.value().op != TOKstructliteral)
@@ -730,8 +744,10 @@ public abstract class BinExp extends Expression {
 				return EXP_CANT_INTERPRET;
 			if (null == v.value()) {
 				if (null != fp) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+					}
 					return e;
 				}
 
@@ -966,8 +982,10 @@ public abstract class BinExp extends Expression {
 
 			if (m.count > 1) {
 				// Error, ambiguous
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type
-								.toChars(context), m.lastf.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type
+									.toChars(context), m.lastf.toChars(context) }));
+				}
 			} else if (m.last == MATCHnomatch) {
 				m.lastf = m.anyf;
 			}
@@ -1040,8 +1058,10 @@ public abstract class BinExp extends Expression {
 
 				if (m.count > 1) {
 					// Error, ambiguous
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.BothOverloadsMuchArgumentList, this, new String[] { m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context) }));
+					}
 				} else if (m.last == MATCHnomatch) {
 					m.lastf = m.anyf;
 				}
@@ -1110,8 +1130,10 @@ public abstract class BinExp extends Expression {
 		    integer_t i2 = e2.toInteger(context);
 		    integer_t sz = new integer_t(e1.type.size(context)).multiply(8);
 		    if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0)
-		    {   
-		    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.ShiftAssignIsOutsideTheRange, sourceE1, sourceE2, new String[] { i2.toString(), sz.toString() }));
+		    {
+		    	if (context.acceptsProblems()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ShiftAssignIsOutsideTheRange, sourceE1, sourceE2, new String[] { i2.toString(), sz.toString() }));
+		    	}
 		    	e2 = new IntegerExp(0);
 		    }
 		}

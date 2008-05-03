@@ -89,7 +89,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			result = ASTDmdNode.accessCheckX(smember, f, this, cdscope);
 		}
 		if (!result) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, reference, new String[] { smember.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, reference, new String[] { smember.toChars(context) }));
+			}
 		}
 	}
 
@@ -249,7 +251,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		if (scope != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, this, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, this, new String[] { toChars(context) }));
+			}
 		}
 		if (members != null) {
 			sc = sc.push(this);
@@ -280,8 +284,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		consumeRest();
 		
 		if (null == members) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UnknownSize, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.UnknownSize, this));
+			}
 		}
 		if (sizeok != 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(

@@ -2214,6 +2214,7 @@ public class CompletionEngine extends Engine
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					proposal.isAlias = isAliased;
+					
 					CompletionEngine.this.requestor.accept(proposal);
 					
 //					trySuggestCall(member.type(), ident, sigChars, true /* only statics */);

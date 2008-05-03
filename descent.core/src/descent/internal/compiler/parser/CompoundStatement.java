@@ -65,9 +65,11 @@ public class CompoundStatement extends Statement {
 			}
 
 			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				context
-					.acceptProblem(Problem.newSemanticTypeWarning(
-							IProblem.StatementIsNotReachable, s));
+				if (context.acceptsProblems()) {
+					context
+						.acceptProblem(Problem.newSemanticTypeWarning(
+								IProblem.StatementIsNotReachable, s));
+				}
 			}
 			falloff = s.fallOffEnd(context);
 		}

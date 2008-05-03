@@ -457,8 +457,10 @@ public class Constfold {
 				n1 = e1.toInteger(context).castToSinteger_t();
 				n2 = e2.toInteger(context).castToSinteger_t();
 				if (n2.equals(0)) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DivisionByZero, e1, e2));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.DivisionByZero, e1, e2));
+					}
 					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
@@ -679,7 +681,9 @@ public class Constfold {
 				integer_t i = e2.toInteger(context);
 
 				if (i.compareTo(es1.len) >= 0) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringIndexOutOfBounds, e2, new String[] { i.toString(), String.valueOf(es1.len) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringIndexOutOfBounds, e2, new String[] { i.toString(), String.valueOf(es1.len) }));
+					}
 				} else {
 					integer_t value;
 
@@ -1469,9 +1473,11 @@ public class Constfold {
 			e = new StructLiteralExp(loc, sd, elements);
 			e.type = type;
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotCastSymbolToSymbol, e1, new String[] { e1.type.toChars(context),
-					        type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CannotCastSymbolToSymbol, e1, new String[] { e1.type.toChars(context),
+						        type.toChars(context) }));
+			}
 			// Changed for Descent to not explode in other semantic
 			// e = new IntegerExp(loc, 0, type);
 			e = new IntegerExp(loc, 0, Type.tint32);

@@ -54,9 +54,11 @@ public class AndAndExp extends BinExp {
 			type = Type.tvoid;
 		}
 		if (e2.op == TOK.TOKtype || e2.op == TOK.TOKimport) {
-			context.acceptProblem(Problem.newSemanticTypeWarning(
-					IProblem.SymbolNotAnExpression, 0, e2.start, e2.length,
-					new String[] { e2.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeWarning(
+						IProblem.SymbolNotAnExpression, 0, e2.start, e2.length,
+						new String[] { e2.toChars(context) }));
+			}
 		}
 
 		return this;
@@ -122,9 +124,11 @@ public class AndAndExp extends BinExp {
 			e2 = e2.optimize(WANTflags | (result & WANTinterpret), context);
 			if (result > 0 && e2.type.toBasetype(context).ty == Tvoid
 					&& context.global.errors <= 0) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolHasNoValue, this,
-						new String[] { "void" }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolHasNoValue, this,
+							new String[] { "void" }));
+				}
 			}
 			if (e1.isConst()) {
 				if (e2.isConst()) {

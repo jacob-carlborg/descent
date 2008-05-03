@@ -41,7 +41,9 @@ public class Catch extends ASTDmdNode {
 
 		if (context.IN_GCC) {
 			if (sc.tf != null) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotPutCatchStatementInsideFinallyBlock, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotPutCatchStatementInsideFinallyBlock, this));
+				}
 			}
 		}
 
@@ -55,8 +57,10 @@ public class Catch extends ASTDmdNode {
 		}
 		type = type.semantic(loc, sc, context);
 		if (type.toBasetype(context).isClassHandle() == null) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlyCatchClassObjects, sourceType, new String[] { type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CanOnlyCatchClassObjects, sourceType, new String[] { type.toChars(context) }));
+			}
 		} else if (ident != null) {
 			var = new VarDeclaration(loc, type, ident, null);
 			var.parent = sc.parent;

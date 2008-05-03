@@ -58,16 +58,20 @@ public class AssertExp extends UnaExp {
 				e = msg.interpret(istate, context);
 				if(e == EXP_CANT_INTERPRET)
 					return EXP_CANT_INTERPRET; //goto Lcant;
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AssertionFailed, this,
-						new String[]
-						{ e.toChars(context), }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.AssertionFailed, this,
+							new String[]
+							{ e.toChars(context), }));
+				}
 			}
 			else
 			{
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AssertionFailedNoMessage, this,
-						new String[] { e1.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.AssertionFailedNoMessage, this,
+							new String[] { e1.toChars(context) }));
+				}
 			}
 			return EXP_CANT_INTERPRET; //goto Lcant;
 		}

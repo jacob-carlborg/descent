@@ -27,18 +27,22 @@ public class VersionCondition extends DVCondition {
 			if (ident.ident != null
 					&& equals(ident, resevered[i])) {
 				// goto Lerror;
-				context
-						.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.VersionIdentifierReserved, ident,
-								new String[] { new String(ident.ident) }));
+				if (context.acceptsProblems()) {
+					context
+							.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.VersionIdentifierReserved, ident,
+									new String[] { new String(ident.ident) }));
+				}
 			}
 		}
 
 		if (ident.ident != null && ident.ident[0] == 'D'
 				&& ident.ident[1] == '_') {
 			// goto Lerror;
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.VersionIdentifierReserved, ident, new String[] { new String(ident.ident) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.VersionIdentifierReserved, ident, new String[] { new String(ident.ident) }));
+			}
 		}
 	}
 

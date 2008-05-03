@@ -69,9 +69,11 @@ public class NewDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
-			context
-					.acceptProblem(Problem.newSemanticTypeErrorLoc(
-							IProblem.NewAllocatorsOnlyForClassOrStruct, this));
+			if (context.acceptsProblems()) {
+				context
+						.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.NewAllocatorsOnlyForClassOrStruct, this));
+			}
 		}
 		tret = Type.tvoid.pointerTo(context);
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
@@ -82,14 +84,18 @@ public class NewDeclaration extends FuncDeclaration {
 		// Check that there is at least one argument of type uint
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) < 1) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.AtLeastOneArgumentOfTypeExpected, this,
-					new String[] { "uint" }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.AtLeastOneArgumentOfTypeExpected, this,
+						new String[] { "uint" }));
+			}
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tuns32)) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FirstArgumentMustBeOfType, a.type, new String[] { "uint" }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FirstArgumentMustBeOfType, a.type, new String[] { "uint" }));
+				}
 			}
 		}
 

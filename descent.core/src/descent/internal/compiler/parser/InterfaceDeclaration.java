@@ -194,8 +194,10 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				tc = null;
 			}
 			if (tc == null || tc.sym.isInterfaceDeclaration() == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.BaseTypeMustBeInterface, b.sourceType));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.BaseTypeMustBeInterface, b.sourceType));
+				}
 				baseclasses.remove(i);
 				continue;
 			} else {
@@ -205,14 +207,18 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				for (int j = 0; j < i; j++) {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-								IProblem.InterfaceInheritsFromDuplicateInterface, b2, new String[] { toChars(context), b2.base.toChars(context) }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+									IProblem.InterfaceInheritsFromDuplicateInterface, b2, new String[] { toChars(context), b2.base.toChars(context) }));
+						}
 					}
 				}
 
 				b.base = tc.sym;
 				if (b.base == this || isBaseOf2(b.base)) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CircularInheritanceOfInterface, b));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CircularInheritanceOfInterface, b));
+					}
 					baseclasses.remove(i);
 					continue;
 				}

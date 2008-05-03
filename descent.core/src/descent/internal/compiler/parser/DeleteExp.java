@@ -31,9 +31,11 @@ public class DeleteExp extends UnaExp {
 
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		context
-				.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ExpressionDoesNotGiveABooleanResult, this));
+		if (context.acceptsProblems()) {
+			context
+					.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ExpressionDoesNotGiveABooleanResult, this));
+		}
 		return this;
 	}
 
@@ -58,8 +60,10 @@ public class DeleteExp extends UnaExp {
 			ClassDeclaration cd = tc.sym;
 
 			if (cd.isInterfaceDeclaration() != null && cd.isCOMclass()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotDeleteInstanceOfComInterface, this, new String[] { cd.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotDeleteInstanceOfComInterface, this, new String[] { cd.toChars(context) }));
+				}
 			}
 			break;
 		}
@@ -95,7 +99,9 @@ public class DeleteExp extends UnaExp {
 					break;
 				}
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeleteType, this, new String[] { e1.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeleteType, this, new String[] { e1.type.toChars(context) }));
+			}
 			break;
 		}
 
@@ -104,7 +110,9 @@ public class DeleteExp extends UnaExp {
 			Type tb1 = ae.e1.type.toBasetype(context);
 			if (tb1.ty == Taarray) {
 				if (!context.global.params.useDeprecated) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeleteAAKeyDeprecated, this));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeleteAAKeyDeprecated, this));
+					}
 				}
 			}
 		}

@@ -12,6 +12,8 @@ public class SemanticRest {
 	private boolean structureKnown;
 	private final Runnable runnable;
 	
+	public boolean skipScopeCheck;
+	
 	public SemanticRest(Runnable runnable) {
 		this.runnable = runnable;
 	}
@@ -41,7 +43,7 @@ public class SemanticRest {
 	}
 	
 	public void consume(Dsymbol symbol) {
-		if (sc == null) {
+		if (sc == null && !skipScopeCheck) {
 			return;
 		}
 		

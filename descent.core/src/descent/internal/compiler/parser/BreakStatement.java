@@ -86,15 +86,21 @@ public class BreakStatement extends Statement {
 					Statement s = ls.statement;
 
 					if (!s.hasBreak()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.LabelHasNoBreak, this, new String[] { ident.toChars() }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.LabelHasNoBreak, this, new String[] { ident.toChars() }));
+						}
 					}
 					if (ls.tf != sc.tf) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotBreakOutOfFinallyBlock, this));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotBreakOutOfFinallyBlock, this));
+						}
 					}
 					return this;
 				}
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, ident, new String[] { ident.toChars() }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, ident, new String[] { ident.toChars() }));
+			}
 		} else if (sc.sbreak == null) {
 			if (sc.fes != null) {
 				Statement s;
@@ -103,7 +109,9 @@ public class BreakStatement extends Statement {
 				s = new ReturnStatement(0, new IntegerExp(1));
 				return s;
 			}
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.BreakIsNotInsideALoopOrSwitch, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BreakIsNotInsideALoopOrSwitch, this));
+			}
 		}
 		return this;
 	}

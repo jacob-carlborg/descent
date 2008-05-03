@@ -105,16 +105,20 @@ public class BaseClass extends ASTDmdNode {
 			if (fd != null && !fd.isAbstract()) {
 				// Check that calling conventions match
 				if (fd.linkage != ifd.linkage) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.LinkageDoesNotMatchInterfaceFunction, this));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.LinkageDoesNotMatchInterfaceFunction, this));
+					}
 				}
 
 				// Check that it is current
 				if (newinstance != 0 && fd.toParent() != cd
 						&& ifd.toParent() == base) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id
-									.toChars(context), ifd.ident.toChars() }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id
+										.toChars(context), ifd.ident.toChars() }));
+					}
 				}
 
 				if (fd.toParent() == cd) {
@@ -123,8 +127,10 @@ public class BaseClass extends ASTDmdNode {
 			} else {
 				// BUG: should mark this class as abstract?
 				if (!cd.isAbstract()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id.toChars(context), ifd.ident.toChars() }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id.toChars(context), ifd.ident.toChars() }));
+					}
 				}
 				fd = null;
 			}

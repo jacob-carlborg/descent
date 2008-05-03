@@ -7,6 +7,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -47,6 +48,8 @@ public class Module extends Package {
 	public String moduleName; // foo.bar 
 	private String signature; // Descent signature
 	private ICompilationUnit javaElement;
+	
+	public SemanticRest rest;
 
 	public Module(String filename, IdentifierExp ident) {
 		super(ident);
@@ -103,12 +106,25 @@ public class Module extends Package {
 
 		semantic3(null, context);
 	}
+	
+	private static int nest = 0; 
 
 	@Override
 	public void semantic(Scope scope, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(null, context);
+			return;
+		}
+		
 		if (semanticstarted != 0) {
 			return;
 		}
+		
+//		for (int i = 0; i < nest; i++) {
+//			System.out.print("  ");
+//		}
+//		System.out.println(this.moduleName);
+//		nest++;
 
 		semanticstarted = 1;
 
@@ -159,15 +175,24 @@ public class Module extends Package {
 		sc.pop();
 
 		semanticdone = semanticstarted;
+		
+		nest--;
 	}
 
 	@Override
 	public void semantic2(Scope scope, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(null, context);
+			return;
+		}
+		
 		if (context.Module_deferred != null
 				&& context.Module_deferred.size() > 0) {
 			for (Dsymbol sd : context.Module_deferred) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotResolveForwardReference, sd.getLineNumber(), sd.getErrorStart(), sd.getErrorLength()));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotResolveForwardReference, sd.getLineNumber(), sd.getErrorStart(), sd.getErrorLength()));
+				}
 			}
 			return;
 		}
@@ -201,6 +226,11 @@ public class Module extends Package {
 
 	@Override
 	public void semantic3(Scope scope, SemanticContext context) {
+		if (rest != null && !rest.isConsumed()) {
+			rest.setSemanticContext(null, context);
+			return;
+		}
+		
 		if (semanticstarted >= 3) {
 			return;
 		}
@@ -315,11 +345,23 @@ public class Module extends Package {
 				&& this.searchCacheFlags == flags) {
 			s = this.searchCacheSymbol;
 		} else {
+			// Descent: lazy initailization
+			consumeRestStructure();
+			consumeRest();
+			
 			this.insearch = true;
 			s = super.search(loc, ident, flags, context);
 			this.insearch = false;
 
 			this.searchCacheIdent = ident;
+			
+			if ("SOCKET_ERROR".equals(new String(ident)) && s == null) {
+				this.insearch = true;
+				s = super.search(loc, ident, flags, context);
+				this.insearch = false;
+				this.searchCacheIdent = ident;
+			}
+			
 			this.searchCacheSymbol = s;
 			this.searchCacheFlags = flags;
 		}
@@ -364,6 +406,18 @@ public class Module extends Package {
 	@Override
 	public ICompilationUnit getJavaElement() {
 		return javaElement;
+	}
+	
+	public void consumeRestStructure() {
+		if (rest != null && !rest.isStructureKnown()) {
+			rest.buildStructure();
+		}
+	}
+	
+	public void consumeRest() {
+		if (rest != null && !rest.isConsumed()) {
+			rest.consume(this);
+		}
 	}
 
 }

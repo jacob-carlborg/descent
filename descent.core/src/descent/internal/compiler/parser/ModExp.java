@@ -76,8 +76,10 @@ public class ModExp extends BinExp {
 		if (type.isfloating()) {
 			type = e1.type;
 			if (e2.type.iscomplex()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotPerformModuloComplexArithmetic, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotPerformModuloComplexArithmetic, this));
+				}
 				return new IntegerExp(Loc.ZERO, 0);
 			}
 		}

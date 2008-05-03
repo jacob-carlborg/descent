@@ -90,13 +90,17 @@ public class DeclarationExp extends Expression {
 		// Must be unique in both.
 		if (s.ident != null) {
 			if (sc.insert(s) == null) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DeclarationIsAlreadyDefined, s, new String[] { s.toChars(context) } ));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DeclarationIsAlreadyDefined, s, new String[] { s.toChars(context) } ));
+				}
 			} else if (sc.func != null) {
 				//VarDeclaration v = s.isVarDeclaration();
 				if ((s.isFuncDeclaration() != null /*|| v && v.storage_class & STCstatic*/)
 						&& sc.func.localsymtab.insert(s) == null) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.DeclarationIsAlreadyDefinedInAnotherScope, this, new String[] { s.toPrettyChars(context), sc.func.toChars(context) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.DeclarationIsAlreadyDefinedInAnotherScope, this, new String[] { s.toPrettyChars(context), sc.func.toChars(context) }));
+					}
 				} else if (!context.global.params.useDeprecated) { // Disallow shadowing
 
 					for (Scope scx = sc.enclosing; scx != null
@@ -107,7 +111,9 @@ public class DeclarationExp extends Expression {
 								&& scx.scopesym.symtab != null
 								&& (s2 = scx.scopesym.symtab.lookup(s.ident)) != null
 								&& s != s2) {
-							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ShadowingDeclarationIsDeprecated, s, new String[] { s.toPrettyChars(context) }));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ShadowingDeclarationIsDeprecated, s, new String[] { s.toPrettyChars(context) }));
+							}
 						}
 					}
 				}

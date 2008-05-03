@@ -156,7 +156,9 @@ public class TypeTypedef extends Type {
 			return false; // assume not
 		}
 		if (sym.inuse) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
+			}
 			sym.basetype = Type.terror;
 		}
 		sym.inuse = true;
@@ -184,7 +186,9 @@ public class TypeTypedef extends Type {
 	@Override
 	public Type toBasetype(SemanticContext context) {
 		if (sym.inuse) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
+			}
 			sym.basetype = Type.terror;
 			return Type.terror;
 		}

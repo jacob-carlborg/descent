@@ -33,7 +33,9 @@ public class CompileExp extends UnaExp {
 		e1 = resolveProperties(sc, e1, context);
 		e1 = e1.optimize(WANTvalue | WANTinterpret, context);
 		if (e1.op != TOKstring) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { e1.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { e1.toChars(context) }));
+			}
 			type = Type.terror;
 			return this;
 		}
@@ -44,17 +46,21 @@ public class CompileExp extends UnaExp {
 		Expression e = p.parseExpression();
 		
 		// TODO semantic do this better
-		if (p.problems != null) {
-			for (int i = 0; i < p.problems.size(); i++) {
-				Problem problem = (Problem) p.problems.get(i);
-				problem.setSourceStart(start);
-				problem.setSourceEnd(start + length - 1);
-				context.acceptProblem(problem);
+		if (context.acceptsProblems()) {
+			if (p.problems != null) {
+				for (int i = 0; i < p.problems.size(); i++) {
+					Problem problem = (Problem) p.problems.get(i);
+					problem.setSourceStart(start);
+					problem.setSourceEnd(start + length - 1);
+					context.acceptProblem(problem);
+				}
 			}
 		}
 		
 		if (p.token.value != TOKeof) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompleteMixinDeclaration, this, new String[] { se.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompleteMixinDeclaration, this, new String[] { se.toChars(context) }));
+			}
 		}
 		return e.semantic(sc, context);
 	}

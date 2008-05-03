@@ -145,8 +145,10 @@ public abstract class Declaration extends Dsymbol {
 				return ident.toChars();
 
 			case LINKdefault:
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForwardDeclaration, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ForwardDeclaration, this));
+				}
 				return ident.toChars();
 
 			default:

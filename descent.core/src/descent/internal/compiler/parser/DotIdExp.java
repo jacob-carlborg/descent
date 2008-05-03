@@ -137,7 +137,9 @@ public class DotIdExp extends UnaExp {
 				VarDeclaration v = s.isVarDeclaration();
 				if (v != null) {
 					if (v.inuse() != 0) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
+						}
 						type = Type.tint32;
 						return this;
 					}
@@ -225,8 +227,10 @@ public class DotIdExp extends UnaExp {
 			    return e;
 			}
 
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.UndefinedIdentifier, this, new String[] { toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.UndefinedIdentifier, this, new String[] { toChars(context) }));
+			}
 			type = Type.tvoid;
 			return this;
 		} else if (e1.type.ty == Tpointer && !equals(ident, Id.init)

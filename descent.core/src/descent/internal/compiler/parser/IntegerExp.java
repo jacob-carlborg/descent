@@ -494,8 +494,10 @@ public class IntegerExp extends Expression {
 		} else if (loc != null && loc.filename == null) {
 			loc = e.loc;
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstantIsNotAnLValue, 
-				e, new String[] { e.toChars(context) }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstantIsNotAnLValue, 
+					e, new String[] { e.toChars(context) }));
+		}
 		return this;
 	}
 	

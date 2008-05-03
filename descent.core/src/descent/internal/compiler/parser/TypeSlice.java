@@ -75,8 +75,10 @@ public class TypeSlice extends Type {
 				
 				if(!(i1 <= i2 && i2 <= td.objects.size()))
 				{
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SliceIsOutOfRange, this, new String[] { String.valueOf(i1), String.valueOf(i2), String.valueOf(td.objects.size()) }));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.SliceIsOutOfRange, this, new String[] { String.valueOf(i1), String.valueOf(i2), String.valueOf(td.objects.size()) }));
+					}
 					super.resolve(loc, sc, pe, pt, ps, context); // goto Ldefault;
 				}
 				
@@ -121,8 +123,10 @@ public class TypeSlice extends Type {
 		Type tbn = next.toBasetype(context);
 		if(tbn.ty != Ttuple)
 		{
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlySliceTupleTypes, this, new String[] { tbn.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CanOnlySliceTupleTypes, this, new String[] { tbn.toChars(context) }));
+			}
 			return Type.terror;
 		}
 		TypeTuple tt = (TypeTuple) tbn;
@@ -137,8 +141,10 @@ public class TypeSlice extends Type {
 		
 		if(!(i1 <= i2 && i2 <= tt.arguments.size()))
 		{
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SliceIsOutOfRange, this, new String[] { String.valueOf(i1), String.valueOf(i2), String.valueOf(tt.arguments.size()) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SliceIsOutOfRange, this, new String[] { String.valueOf(i1), String.valueOf(i2), String.valueOf(tt.arguments.size()) }));
+			}
 			return Type.terror;
 		}
 		

@@ -57,8 +57,10 @@ public class DotVarExp extends UnaExp {
 						continue;
 					} else {
 						String p = var.isStatic() ? "static " : "";
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, new String[] { p, var.toChars(context), p }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, new String[] { p, var.toChars(context), p }));
+						}
 					}
 				}
 				break;
@@ -84,12 +86,16 @@ public class DotVarExp extends UnaExp {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+						}
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.SymbolIsNotAMember, this, new String[] { e.toChars(context) }));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.SymbolIsNotAMember, this, new String[] { e.toChars(context) }));
+							}
 						} else {
 							DsymbolExp ve = (DsymbolExp) e;
 
@@ -159,8 +165,10 @@ public class DotVarExp extends UnaExp {
 								loop = true;
 								continue L1;
 							}
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { var.toChars(context), ad.toChars(context),
-									t.toChars(context) }));
+							if (context.acceptsProblems()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { var.toChars(context), ad.toChars(context),
+										t.toChars(context) }));
+							}
 						}
 					}
 				}

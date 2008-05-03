@@ -57,8 +57,10 @@ public class ArrayInitializer extends Initializer {
 			for (int i = 0; i < value.size(); i++) {
 				if (index.get(i) != null) {
 					// goto Lno;
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotInferTypeFromThisArrayInitializer, this));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotInferTypeFromThisArrayInitializer, this));
+					}
 					return Type.terror;
 				}
 			}
@@ -73,8 +75,10 @@ public class ArrayInitializer extends Initializer {
 			}
 		}
 
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.CannotInferTypeFromThisArrayInitializer, this));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.CannotInferTypeFromThisArrayInitializer, this));
+		}
 		return Type.terror;
 	}
 
@@ -96,7 +100,9 @@ public class ArrayInitializer extends Initializer {
 			break;
 
 		default:
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUseArrayToInitialize, this, new String[] { type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUseArrayToInitialize, this, new String[] { type.toChars(context) }));
+			}
 			return this;
 		}
 
@@ -120,15 +126,19 @@ public class ArrayInitializer extends Initializer {
 			// This was length == 0 in DMD, with length
 			// an unsigned. So in a long, it's:
 			if (length == (Integer.MAX_VALUE + 1) * 2) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArrayDimensionOverflow, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ArrayDimensionOverflow, this));
+				}
 			}
 			if (length > dim) {
 				dim = length;
 			}
 		}
 	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
-	    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, new String[] { String.valueOf(dim), amax.divide(t.next.size(context)).toString() }));
+	    	if (context.acceptsProblems()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, new String[] { String.valueOf(dim), amax.divide(t.next.size(context)).toString() }));
+	    	}
 	    }
 		return this;
 	}
@@ -195,7 +205,9 @@ public class ArrayInitializer extends Initializer {
 	}
 
 	private Initializer toAssocArrayInitializer_Lno(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAssociativeArrayInitializer, this));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAssociativeArrayInitializer, this));
+		}
 		return this;
 	}
 
@@ -250,7 +262,9 @@ public class ArrayInitializer extends Initializer {
 	}
 	
 	private Expression toExpression_Lno(SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayInitializersAsExpressionsNotAllowed, this));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayInitializersAsExpressionsNotAllowed, this));
+		}
 		return null;
 	}
 

@@ -49,16 +49,20 @@ public class ForeachRangeStatement extends Statement {
 		lwr = lwr.semantic(sc, context);
 		lwr = resolveProperties(sc, lwr, context);
 		if (null == lwr.type) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.InvalidRangeLowerBound, this, new String[] { lwr.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.InvalidRangeLowerBound, this, new String[] { lwr.toChars(context) }));
+			}
 			return this;
 		}
 
 		upr = upr.semantic(sc, context);
 		upr = resolveProperties(sc, upr, context);
 		if (null == upr.type) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.InvalidRangeUpperBound, this, new String[] { upr.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.InvalidRangeUpperBound, this, new String[] { upr.toChars(context) }));
+			}
 			return this;
 		}
 
@@ -76,8 +80,10 @@ public class ForeachRangeStatement extends Statement {
 		}
 
 		if (!arg.type.isscalar(context)) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolIsNotAnArithmeticType, this, new String[] { arg.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolIsNotAnArithmeticType, this, new String[] { arg.type.toChars(context) }));
+			}
 		}
 
 		sym = new ScopeDsymbol();
@@ -91,8 +97,10 @@ public class ForeachRangeStatement extends Statement {
 		de.semantic(sc, context);
 
 		if (0 < key.storage_class) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForeachRangeKeyCannotHaveStorageClass, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForeachRangeKeyCannotHaveStorageClass, this));
+			}
 		}
 
 		sc.sbreak = this;

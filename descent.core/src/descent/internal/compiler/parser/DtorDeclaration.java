@@ -74,8 +74,10 @@ public class DtorDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.DestructorsOnlyForClass, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.DestructorsOnlyForClass, this));
+			}
 		} else {
 			if (cd.dtors == null) {
 				cd.dtors = new FuncDeclarations();

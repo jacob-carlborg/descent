@@ -53,7 +53,9 @@ public class CompileDeclaration extends AttribDeclaration {
 		exp = resolveProperties(sc, exp, context);
 		exp = exp.optimize(WANTvalue | WANTinterpret, context);
 		if (exp.op != TOKstring) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
+			}
 			return;
 		}
 		StringExp se = (StringExp) exp;
@@ -79,19 +81,23 @@ public class CompileDeclaration extends AttribDeclaration {
 		}
 
 		// TODO semantic do this better
-		if (p.problems != null) {
-			for (int i = 0; i < p.problems.size(); i++) {
-				Problem problem = (Problem) p.problems.get(i);
-				problem.setSourceStart(start);
-				problem.setSourceEnd(start + length - 1);
-				context.acceptProblem(problem);
+		if (context.acceptsProblems()) {
+			if (p.problems != null) {
+				for (int i = 0; i < p.problems.size(); i++) {
+					Problem problem = (Problem) p.problems.get(i);
+					problem.setSourceStart(start);
+					problem.setSourceEnd(start + length - 1);
+					context.acceptProblem(problem);
+				}
 			}
 		}
 
 		if (p.token.value != TOKeof) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.IncompleteMixinDeclaration, this,
-					new String[] { se.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.IncompleteMixinDeclaration, this,
+						new String[] { se.toChars(context) }));
+			}
 		}
 
 		super.addMember(sc, sd, 0, context);

@@ -121,15 +121,19 @@ public class EnumDeclaration extends ScopeDsymbol {
 			EnumDeclaration sym = (EnumDeclaration) memtype.toDsymbol(sc,
 					context);
 			if (sym.memtype == null) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.BaseEnumIsForwardReference, sourceMemtype));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.BaseEnumIsForwardReference, sourceMemtype));
+				}
 				memtype = Type.tint32;
 			}
 		}
 
 		if (!memtype.isintegral()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.EnumBaseTypeMustBeOfIntegralType, sourceMemtype));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.EnumBaseTypeMustBeOfIntegralType, sourceMemtype));
+			}
 			memtype = Type.tint32;
 		}
 
@@ -143,8 +147,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		if (members.size() == 0) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.EnumMustHaveAtLeastOneMember, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.EnumMustHaveAtLeastOneMember, this));
+			}
 		}
 
 		boolean first = true;
@@ -352,8 +358,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 	
 	private final void enumValueOverflow(EnumMember em, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-				IProblem.EnumValueOverflow, em));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					IProblem.EnumValueOverflow, em));
+		}
 	}
 	
 	@Override

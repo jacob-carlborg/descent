@@ -53,7 +53,9 @@ public class CatAssignExp extends BinExp {
 			SliceExp se = (SliceExp) e1;
 
 			if (se.e1.type.toBasetype(context).ty == TY.Tsarray) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAppendToStaticArray, this, new String[] { se.e1.type.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAppendToStaticArray, this, new String[] { se.e1.type.toChars(context) }));
+				}
 			}
 		}
 
@@ -80,8 +82,10 @@ public class CatAssignExp extends BinExp {
 		}
 
 		else {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAppendTypeToType, this, new String[] { tb2.toChars(context), tb1
-					.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAppendTypeToType, this, new String[] { tb2.toChars(context), tb1
+						.toChars(context) }));
+			}
 			type = Type.tint32;
 			e = this;
 		}

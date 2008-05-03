@@ -132,10 +132,12 @@ public class CatExp extends BinExp {
 						.toBasetype(context).ty == TY.Tsarray)) {
 			e = this;
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlyConcatenateArrays, this,
-					new String[] { e1.type.toChars(context),
-							e2.type.toChars(context), }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CanOnlyConcatenateArrays, this,
+						new String[] { e1.type.toChars(context),
+								e2.type.toChars(context), }));
+			}
 			type = Type.tint32;
 			e = this;
 		}

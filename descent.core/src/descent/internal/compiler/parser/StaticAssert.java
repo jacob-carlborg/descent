@@ -69,20 +69,26 @@ public class StaticAssert extends Dsymbol {
 				msg = msg.optimize(WANTvalue | WANTinterpret, context);
 				hgs.console = 1;
 				msg.toCBuffer(buf, hgs, context);
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AssertionFailed, exp,
-						new String[] { buf.toChars() }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.AssertionFailed, exp,
+							new String[] { buf.toChars() }));
+				}
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.AssertionFailedNoMessage, exp, new String[] { exp.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.AssertionFailedNoMessage, exp, new String[] { exp.toChars(context) }));
+				}
 			}
 			if (context.global.gag == 0) {
 				fatal(context);
 			}
 		} else if (!e.isBool(true)) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ExpressionIsNotEvaluatableAtCompileTime, exp,
-					new String[] { exp.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ExpressionIsNotEvaluatableAtCompileTime, exp,
+						new String[] { exp.toChars(context) }));
+			}
 		}
 	}
 

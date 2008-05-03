@@ -149,8 +149,10 @@ public class PtrExp extends UnaExp {
 			break;
 
 		default:
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CanOnlyDereferenceAPointer, this, new String[] { e1.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.CanOnlyDereferenceAPointer, this, new String[] { e1.type.toChars(context) }));
+			}
 			type = Type.tint32;
 			break;
 		}

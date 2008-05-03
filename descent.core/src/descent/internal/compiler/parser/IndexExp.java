@@ -69,8 +69,10 @@ public class IndexExp extends BinExp {
 			SemanticContext context) {
 		modifiable = 1;
 		if (e1.op == TOK.TOKstring) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.StringLiteralsAreImmutable, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.StringLiteralsAreImmutable, this));
+			}
 		}
 		if (e1.type.toBasetype(context).ty == TY.Taarray) {
 			e1 = e1.modifiableLvalue(sc, e1, context);
@@ -135,9 +137,11 @@ public class IndexExp extends BinExp {
 
 		e2 = e2.semantic(sc, context);
 		if (null == e2.type) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolHasNoValue, e2,
-					new String[] { e2.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolHasNoValue, e2,
+						new String[] { e2.toChars(context) }));
+			}
 			e2.type = Type.terror;
 		}
 		e2 = resolveProperties(sc, e2, context);
@@ -202,18 +206,22 @@ public class IndexExp extends BinExp {
 			}
 
 			else {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ArrayIndexOutOfBounds, this, new String[] { index.toString(),
-								length.toString() }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ArrayIndexOutOfBounds, this, new String[] { index.toString(),
+									length.toString() }));
+				}
 				e = e1;
 			}
 			break;
 		}
 
 		default: {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.SymbolMustBeAnArrayOfPointerType, this, new String[] { e1.toChars(context),
-							e1.type.toChars(context) }));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.SymbolMustBeAnArrayOfPointerType, this, new String[] { e1.toChars(context),
+								e1.type.toChars(context) }));
+			}
 			type = Type.tint32;
 			break;
 		}

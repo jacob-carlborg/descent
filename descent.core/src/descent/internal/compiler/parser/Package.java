@@ -33,9 +33,11 @@ public class Package extends ScopeDsymbol {
 								"assert(p.isPackage());");
 					}
 					if (null != p.isModule()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.PackageAndModuleHaveTheSameName, 0, 0,
-								0));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.PackageAndModuleHaveTheSameName, 0, 0,
+									0));
+						}
 						// TODO semantic
 						// fatal();
 						break;

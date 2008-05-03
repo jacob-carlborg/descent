@@ -87,8 +87,10 @@ public class SliceExp extends UnaExp {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context)
 	{
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.SliceExpressionIsNotAModifiableLvalue, this, new String[] { toChars(context) }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SliceExpressionIsNotAModifiableLvalue, this, new String[] { toChars(context) }));
+		}
 	    return this;
 	}
 
@@ -153,8 +155,10 @@ public class SliceExp extends UnaExp {
 
 		if (t.ty == TY.Tpointer) {
 			if (null == lwr || null == upr) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NeedUpperAndLowerBoundToSlicePointer, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.NeedUpperAndLowerBoundToSlicePointer, this));
+				}
 			}
 		} else if (t.ty == TY.Tarray || t.ty == TY.Tsarray) {
 		} else if (t.ty == TY.Tclass || t.ty == TY.Tstruct) {
@@ -183,8 +187,10 @@ public class SliceExp extends UnaExp {
 			if (null == lwr && null == upr) {
 				return e1;
 			} else if (null == lwr || null == upr) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NeedUpperAndLowerBoundToSliceTuple, this));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.NeedUpperAndLowerBoundToSliceTuple, this));
+				}
 				return Lerror(t, e, sc, context);
 			}
 		} else {
@@ -256,7 +262,9 @@ public class SliceExp extends UnaExp {
 				}
 				e = e.semantic(sc, context);
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, this, new String[] { String.valueOf(i1), String.valueOf(i2) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, this, new String[] { String.valueOf(i1), String.valueOf(i2) }));
+				}
 				e = e1;
 			}
 			return e;
@@ -317,8 +325,10 @@ public class SliceExp extends UnaExp {
 		else
 			s = t.toChars(context);
 
-		context.acceptProblem(Problem.newSemanticTypeError(
-				IProblem.SymbolCannotBeSlicedWithBrackets, this, new String[] { s }));
+		if (context.acceptsProblems()) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.SymbolCannotBeSlicedWithBrackets, this, new String[] { s }));
+		}
 		type = Type.terror;
 		return e;
 	}
