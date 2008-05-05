@@ -88,7 +88,7 @@ public class ModuleBuilder {
 	/*
 	 * Wether to make surface Module semantic.
 	 */
-	public boolean LAZY_MODULES = LAZY & true;
+	public boolean LAZY_MODULES = LAZY & false;
 	
 	/*
 	 * Wether to make surface ClassDeclaration semantic lazy.
@@ -179,17 +179,17 @@ public class ModuleBuilder {
 		this.config = config;
 		this.encoder = encoder;
 		
-		switch(config.semanticAnalysisLevel) {
-		case 0: // None
-			LAZY_MODULES = LAZY & true;
-			LAZY_VARS = LAZY & true;
-			break;
-		case 1: // Some
-		case 2: // All
-			LAZY_MODULES = false;
-			LAZY_VARS = false;
-			break;
-		}
+//		switch(config.semanticAnalysisLevel) {
+//		case 0: // None
+//			LAZY_MODULES = LAZY & true;
+//			LAZY_VARS = LAZY & true;
+//			break;
+//		case 1: // Some
+//		case 2: // All
+//			LAZY_MODULES = false;
+//			LAZY_VARS = false;
+//			break;
+//		}
 	}
 	
 	/**
@@ -207,6 +207,8 @@ public class ModuleBuilder {
 			module.rest = new SemanticRest(new Runnable() {
 				public void run() {
 					try {
+						long time = System.currentTimeMillis();
+						
 						IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
 						if (packageDeclarations.length == 1) {
 							String elementName = packageDeclarations[0].getElementName();
@@ -221,6 +223,9 @@ public class ModuleBuilder {
 						fill(module, module.members, unit.getChildren(), state);
 						
 						state.surface = false;
+						
+						time = System.currentTimeMillis() - time;
+						System.out.println(module.moduleName + ": " + time);
 					} catch (JavaModelException e) {
 						Util.log(e);
 					}

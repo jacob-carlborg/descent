@@ -259,6 +259,12 @@
          </showInPart>
       </perspectiveExtension>
       <perspectiveExtension
+            targetID="descent.ui.JavaBrowsingPerspective">
+         <showInPart
+               id="descent.ui.PackageExplorer">
+         </showInPart>
+      </perspectiveExtension>
+      <perspectiveExtension
             targetID="org.eclipse.debug.ui.DebugPerspective">
          <showInPart
                id="descent.ui.PackageExplorer">
@@ -3532,4 +3538,97 @@
        </enablement>
     </decorator>
  </extension>
+ 
+ <!-- =========================================================================== -->
+<!-- Java Browsing 																 -->
+<!-- =========================================================================== -->
+
+<!--
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="%Browsing.perspectiveName"
+            icon="$nl$/icons/full/eview16/browse_persp.gif"
+            class="descent.internal.ui.browsing.JavaBrowsingPerspectiveFactory"
+            id="descent.ui.JavaBrowsingPerspective">
+         <description>
+            %browsing.perspective.description
+         </description>
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <perspectiveShortcut
+               id="descent.ui.JavaBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="descent.ui.JavaBrowsingPerspective">
+         <perspectiveShortcut
+               id="descent.ui.JavaBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="descent.ui.JavaPerspective">
+         <perspectiveShortcut
+               id="descent.ui.JavaBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="descent.ui.JavaBrowsingPerspective">
+         <perspectiveShortcut
+               id="descent.ui.JavaPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="descent.ui.JavaBrowsingPerspective">
+         <perspectiveShortcut
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <perspectiveShortcut
+               id="descent.ui.JavaBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="%Browsing.viewCategoryName"
+            id="descent.ui.java.browsing">
+      </category>
+      <view
+            name="%Browsing.projectsViewName"
+            icon="$nl$/icons/full/eview16/projects.gif"
+            category="descent.ui.java.browsing"
+            class="descent.internal.ui.browsing.ProjectsView"
+            id="descent.ui.ProjectsView">
+      </view>
+      <view
+            name="%Browsing.packagesViewName"
+            icon="$nl$/icons/full/eview16/packages.gif"
+            category="descent.ui.java.browsing"
+            class="descent.internal.ui.browsing.PackagesView"
+            id="descent.ui.PackagesView">
+      </view>
+      <view
+            name="%Browsing.typesViewName"
+            icon="$nl$/icons/full/eview16/types.gif"
+            category="descent.ui.java.browsing"
+            class="descent.internal.ui.browsing.TypesView"
+            id="descent.ui.TypesView">
+      </view>
+      <view
+            name="%Browsing.membersViewName"
+            icon="$nl$/icons/full/eview16/members.gif"
+            category="descent.ui.java.browsing"
+            class="descent.internal.ui.browsing.MembersView"
+            id="descent.ui.MembersView">
+      </view>
+   </extension>
+ -->
 </plugin>

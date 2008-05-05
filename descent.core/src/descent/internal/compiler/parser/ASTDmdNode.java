@@ -41,6 +41,7 @@ import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Ttuple;
@@ -1650,38 +1651,42 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 
 			if (null == t2 || !t1.equals(t2)) {
-				// goto L1;
+				// goto Lnomatch;
 				return false;
 			}
 		} else if (e1 != null) {
-			if (null == e2 || !e1.equals(e2)) {
-				// goto L1;
+			if (null == e2) {
+				// goto Lnomatch;
+				return false;
+			}
+			if (!e1.equals(e2)) {
+				// goto Lnomatch;
 				return false;
 			}
 		} else if (s1 != null) {
 			if (null == s2 || !s1.equals(s2) || s1.parent != s2.parent) {
-				// goto L1;
+				// goto Lnomatch;
 				return false;
 			}
 		} else if (v1 != null) {
 			if (null == v2) {
-				// goto L1;
+				// goto Lnomatch;
 				return false;
 			}
 			if (size(v1.objects) != size(v2.objects)) {
-				// goto L1;
+				// goto Lnomatch;
 				return false;
 			}
 			for (int i = 0; i < size(v1.objects); i++) {
 				if (!match((ASTDmdNode) v1.objects.get(i),
 						(ASTDmdNode) v2.objects.get(i), tempdecl, sc, context)) {
-					// goto L1;
+					// goto Lnomatch;
 					return false;
 				}
 			}
 		}
 		return true; // match
-		//	L1:
+		//	Lnomatch:
 		//	    return 0;	// nomatch;
 	}
 
@@ -1840,6 +1845,29 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		
 		return t1.same(t2);	
+	}
+	
+	public static int templateIdentifierLookup(IdentifierExp id, TemplateParameters parameters) {
+		for (int i = 0; i < size(parameters); i++) {
+			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+
+			if (equals(tp.ident, id))
+				return i;
+		}
+
+		return -1;
+	}
+	
+	public static int templateParameterLookup(Type tparam,
+			TemplateParameters parameters) {
+		if (tparam.ty != Tident) {
+			throw new IllegalStateException("assert(tparam.ty == Tident);");
+		}
+		TypeIdentifier tident = (TypeIdentifier) tparam;
+		if (size(tident.idents) == 0) {
+			return templateIdentifierLookup(tident.ident, parameters);
+		}
+		return -1;
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {

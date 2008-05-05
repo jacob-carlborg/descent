@@ -13,6 +13,7 @@ package descent.internal.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
@@ -20,6 +21,7 @@ import descent.core.*;
 import descent.core.compiler.IProblem;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.ISourceElementRequestor;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.util.ReferenceInfoAdapter;
 
@@ -103,6 +105,11 @@ public class CompilationUnitStructureRequestor extends ReferenceInfoAdapter impl
 	protected HashtableOfObject messageRefCache;
 	protected HashtableOfObject typeRefCache;
 	protected HashtableOfObject unknownRefCache;
+
+	private static Object dummy = new Object();
+	protected Stack<Boolean> hasId = new Stack<Boolean>();
+	protected int topLevelNesting = 0;
+	protected HashtableOfCharArrayAndObject topLevelIdentifiers = new HashtableOfCharArrayAndObject();
 
 protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUnitElementInfo unitInfo, Map newElements) {
 	this.unit = unit;
@@ -232,11 +239,13 @@ public void enterCompilationUnit() {
 public void enterConstructor(MethodInfo methodInfo) {
 	enterMethod(methodInfo);
 }
+
 /**
  * @see ISourceElementRequestor
  */
 public void enterField(FieldInfo fieldInfo) {
-
+	addToTopLevel(fieldInfo.name);
+	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceField handle = null;
@@ -276,6 +285,11 @@ public void enterInitializer(
 	int declarationSourceStart,
 	long modifiers,
 	char[] displayString) {
+		// If there is a mixin, cancel the identifiers cache
+		if (topLevelNesting == 0 && ((modifiers & Flags.AccMixin) != 0) || (modifiers & Flags.AccTemplateMixin) != 0) {
+			topLevelIdentifiers = null;
+		}
+	
 		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 		Initializer handle = null;
@@ -369,7 +383,8 @@ public void enterConditionalElse(int declarationSourceStart) {
  * @see ISourceElementRequestor
  */
 public void enterMethod(MethodInfo methodInfo) {
-
+	addToTopLevel(methodInfo.name);
+	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceMethod handle = null;
@@ -442,7 +457,14 @@ public void enterMethod(MethodInfo methodInfo) {
  * @see ISourceElementRequestor
  */
 public void enterType(TypeInfo typeInfo) {
-
+	addToTopLevel(typeInfo.name);
+	if (typeInfo.name != null && typeInfo.name.length > 0) {
+		hasId.push(true);
+		topLevelNesting++;
+	} else {
+		hasId.push(false);
+	}
+	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	// Changed to allow annonymous enums, structs and unions
@@ -534,6 +556,8 @@ public void exitCompilationUnit(int declarationEnd) {
 	
 	// set children
 	setChildren(this.unitInfo);
+	
+	this.unitInfo.topLevelIdentifiers = topLevelIdentifiers;
 	
 	this.unitInfo.setSourceLength(declarationEnd + 1);
 
@@ -628,7 +652,11 @@ public void exitMethod(int declarationEnd, int defaultValueStart, int defaultVal
  * @see ISourceElementRequestor
  */
 public void exitType(int declarationEnd) {
-
+	boolean val = hasId.pop();
+	if (val) {
+		topLevelNesting--;
+	}
+	
 	exitMember(declarationEnd);
 }
 /**
@@ -649,4 +677,11 @@ private void setChildren(JavaElementInfo info) {
 		info.children = elements;
 	}
 }
+
+private void addToTopLevel(char[] name) {
+	if (topLevelIdentifiers != null && topLevelNesting == 0 && name != null && name.length > 0) {
+		topLevelIdentifiers.put(name, dummy);	
+	}
+}
+
 }

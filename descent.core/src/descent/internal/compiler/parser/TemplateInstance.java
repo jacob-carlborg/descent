@@ -7,9 +7,10 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.STC.*;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
-import static descent.internal.compiler.parser.TOK.TOKfunction;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 
@@ -120,6 +121,8 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 
 			dedtypes.setDim(size(td.parameters));
+			dedtypes.zero();
+			
 			if (null == td.scope) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -151,7 +154,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				int c1 = td.leastAsSpecialized(td_best, context);
 				int c2 = td_best.leastAsSpecialized(td, context);
 
-				if (c1 != 0 && 0 == c2) {
+				if (c1 > c2) {
 					// goto Ltd;
 					td_ambig = null;
 					td_best = td;
@@ -162,7 +165,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					tdtypes.setDim(dedtypes.size());
 					tdtypes.memcpy(dedtypes);
 					continue;
-				} else if (0 == c1 && c2 != 0) {
+				} else if (c1 < c2) {
 					// goto Ltd_best;
 					td_ambig = null;
 					continue;
@@ -403,8 +406,8 @@ public class TemplateInstance extends ScopeDsymbol {
 		return aliasdecl;
 	}
 
-	public boolean isNested(Objects args, SemanticContext context) {
-		boolean nested = false;
+	public int isNested(Objects args, SemanticContext context) {
+		int nested = 0;
 
 		/* A nested instance happens when an argument references a local
 		 * symbol that is on the stack.
@@ -434,25 +437,66 @@ public class TemplateInstance extends ScopeDsymbol {
 				// else if(null != sa)
 				if (gotoLsa) {
 					Declaration d = sa.isDeclaration();
-					if (null != d
+					
+					boolean condition = null != d
 							&& !d.isDataseg(context)
 							&& (null == d.isFuncDeclaration() || d
 									.isFuncDeclaration().isNested())
-							&& null == isTemplateMixin()) {
+							&& null == isTemplateMixin();
+					if (context.apiLevel == Parser.D2) {
+						condition = condition && null != d && 0 == (d.storage_class & STCmanifest);
+					}
+					
+					if (condition) {
 						// if module level template
 						if (null != tempdecl.toParent().isModule()) {
-							if (null != isnested && isnested != d.toParent()) {
+							Dsymbol dparent = d.toParent();
+							if (null == isnested)
+								isnested = dparent;
+							else if (isnested != dparent) {
+								boolean gotoL1 = false;
+								
+								/* Select the more deeply nested of the two.
+								 * Error if one is not nested inside the other.
+								 */
+								for (Dsymbol p = isnested; p != null; p = p.parent) {
+									if (p == dparent) {
+										// goto L1;	// isnested is most nested
+										gotoL1 = true;
+										break;
+									}
+								}
+								
+								if (!gotoL1) {
+									for (Dsymbol p = dparent; true; p = p.parent) {
+										if (p == isnested) {
+											isnested = dparent;
+											// goto L1;	// dparent is most nested
+											break;
+										}
+									}
+								}
 								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeError(
-											IProblem.InconsistentNestingLevels, this, new String[] { isnested.toChars(context), d.toParent().toChars(context) }));
+									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+											IProblem.SymbolIsNestedInBoth, 
+											this, 
+											new String[] { 
+											this.toChars(context), 
+											isnested.toChars(context), 
+											dparent.toChars(context) }));
 								}
 							}
-							isnested = d.toParent();
-							nested = true;
+							// L1:
+							nested |= 1;
 						} else {
 							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.CannotUseLocalAsTemplateParameter, this, new String[] { d.toChars(context) }));
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeError(
+														IProblem.CannotUseLocalAsTemplateParameter,
+														this,
+														new String[] { d
+																.toChars(context) }));
 							}
 						}
 					}
@@ -928,6 +972,9 @@ public class TemplateInstance extends ScopeDsymbol {
 				ea[0] = ea[0].semantic(sc, context);
 				ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
 				tiargs.set(j, ea[0]);
+			    if (ea[0].op == TOKtype) {
+					tiargs.set(j, ea[0].type);
+			    }
 			} else if (sa[0] != null) {
 			} else {
 				throw new IllegalStateException("assert (0);");

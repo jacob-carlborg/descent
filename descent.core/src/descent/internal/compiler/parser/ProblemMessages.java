@@ -440,7 +440,6 @@ final class ProblemMessages extends NLS {
 	public static String SpecializationNotAllowedForDeducedParameter;
 	public static String CannotDeclareTemplateAtFunctionScope;
 	public static String TemplateHasNoValue;
-	public static String InconsistentNestingLevels;
 	public static String CannotUseLocalAsTemplateParameter;
 	public static String NoSizeForType;
 	public static String SymbolDotSymbolIsNotADeclaration;
@@ -457,6 +456,8 @@ final class ProblemMessages extends NLS {
 	public static String IllegalUtf16Value;
 	public static String StaticConstructorCanOnlyBePartOfStructClassModule;
 	public static String ShiftAssignIsOutsideTheRange;
+	public static String TemplateTupleParameterMustBeLastOne;
+	public static String SymbolIsNestedInBoth;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

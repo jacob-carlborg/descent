@@ -267,6 +267,8 @@ public class TemplateMixin extends TemplateInstance {
 		argsym = new ScopeDsymbol();
 		argsym.parent = scy.parent;
 		Scope scope = scy.push(argsym);
+		
+	    int errorsave = context.global.errors;
 
 		// Declare each template parameter as an alias for the argument type
 		declareParameters(scope, context);
@@ -302,6 +304,14 @@ public class TemplateMixin extends TemplateInstance {
 		if (sc.func != null) {
 			semantic3(sc2, context);
 		}
+		
+	    // Give additional context info if error occurred during instantiation
+	    if (context.global.errors != errorsave)
+	    {
+	    	if (context.acceptsProblems()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
+	    	}
+	    }
 
 		sc2.pop();
 

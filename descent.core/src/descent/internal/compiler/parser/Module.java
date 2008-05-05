@@ -5,13 +5,19 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import descent.internal.core.CompilationUnit;
+import descent.internal.core.CompilationUnitElementInfo;
+import descent.internal.core.util.Util;
 
 // DMD 1.020
 public class Module extends Package {
+	
+	private final static boolean FAST_SEARCH = false;
 
 	public int apiLevel;
 	public ModuleDeclaration md;
@@ -176,7 +182,7 @@ public class Module extends Package {
 
 		semanticdone = semanticstarted;
 		
-		nest--;
+//		nest--;
 	}
 
 	@Override
@@ -345,23 +351,33 @@ public class Module extends Package {
 				&& this.searchCacheFlags == flags) {
 			s = this.searchCacheSymbol;
 		} else {
-			// Descent: lazy initailization
-			consumeRestStructure();
-			consumeRest();
-			
 			this.insearch = true;
-			s = super.search(loc, ident, flags, context);
-			this.insearch = false;
-
-			this.searchCacheIdent = ident;
 			
-			if ("SOCKET_ERROR".equals(new String(ident)) && s == null) {
-				this.insearch = true;
+			// Descent: lazy initailization
+			if (FAST_SEARCH && javaElement != null && rest != null && !rest.isConsumed()) {
+				try {
+					CompilationUnit unit = (CompilationUnit) javaElement;
+					CompilationUnitElementInfo info = (CompilationUnitElementInfo) unit.getElementInfo();
+					if (info.containsTopLevelIdentifier(ident)) {
+						consumeRestStructure();
+						consumeRest();
+						s = super.search(loc, ident, flags, context);
+					} else {
+						s = null;
+					}
+				} catch (JavaModelException e) {
+					Util.log(e);
+					s = null;
+				}
+			} else {
+				consumeRestStructure();
+				consumeRest();
 				s = super.search(loc, ident, flags, context);
-				this.insearch = false;
-				this.searchCacheIdent = ident;
 			}
 			
+			this.insearch = false;
+
+			this.searchCacheIdent = ident;			
 			this.searchCacheSymbol = s;
 			this.searchCacheFlags = flags;
 		}

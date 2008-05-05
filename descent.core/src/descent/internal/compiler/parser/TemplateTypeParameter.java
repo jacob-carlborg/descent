@@ -132,8 +132,9 @@ public class TemplateTypeParameter extends TemplateParameter {
 			t = (Type) dedtypes.get(i);
 		} else {
 			m = MATCHconvert;
-			if (t != null) { // Must match already deduced type
-
+			if (t != null) { 
+				// Must match already deduced type
+				m = MATCHexact;
 				if (!t.equals(ta)) {
 					// goto Lnomatch;
 					psparam = null;

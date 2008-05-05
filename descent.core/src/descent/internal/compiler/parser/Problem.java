@@ -987,8 +987,6 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotDeclareTemplateAtFunctionScope, arguments[0]);
 		case TemplateHasNoValue:
 			return String.format(ProblemMessages.TemplateHasNoValue, arguments[0]);
-		case InconsistentNestingLevels:
-			return String.format(ProblemMessages.InconsistentNestingLevels, arguments[0], arguments[1]);
 		case CannotUseLocalAsTemplateParameter:
 			return String.format(ProblemMessages.CannotUseLocalAsTemplateParameter, arguments[0]);
 		case NoSizeForType:
@@ -1021,6 +1019,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.StaticConstructorCanOnlyBePartOfStructClassModule);
 		case ShiftAssignIsOutsideTheRange:
 			return String.format(ProblemMessages.ShiftAssignIsOutsideTheRange, arguments[0], arguments[1]);
+		case TemplateTupleParameterMustBeLastOne:
+			return String.format(ProblemMessages.TemplateTupleParameterMustBeLastOne);
+		case SymbolIsNestedInBoth:
+			return String.format(ProblemMessages.SymbolIsNestedInBoth, arguments[0], arguments[1], arguments[2]);
 		default:
 			return "";
 		}

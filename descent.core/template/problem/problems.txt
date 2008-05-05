@@ -1288,9 +1288,6 @@ CannotDeclareTemplateAtFunctionScope
 TemplateHasNoValue
 	formatString=Template %1$s has no value
 	numArgs=1
-InconsistentNestingLevels
-	formatString=Inconsistent nesting levels %1$s and %2$s
-	numArgs=2
 CannotUseLocalAsTemplateParameter
 	formatString=Cannot use local '%1$s' as template parameter
 	numArgs=1
@@ -1339,8 +1336,12 @@ StaticConstructorCanOnlyBePartOfStructClassModule
 ShiftAssignIsOutsideTheRange
 	formatString=Shift assign by %1$s is outside the range 0..%2$s
 	numArgs=2
-
-
+TemplateTupleParameterMustBeLastOne
+	formatString=Template tuple parameter must be last one
+	numArgs=0
+SymbolIsNestedInBoth
+	formatString=%1$s is nested in both %2$s and %2$s
+	numArgs=3
 
 
 

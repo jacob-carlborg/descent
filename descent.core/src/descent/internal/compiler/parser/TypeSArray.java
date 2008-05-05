@@ -11,6 +11,8 @@ import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
+import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbit;
@@ -61,8 +63,41 @@ public class TypeSArray extends TypeArray {
 		if (null != tparam) {
 			if (tparam.ty == Tsarray) {
 				TypeSArray tp = (TypeSArray) tparam;
-				if (dim.toInteger(context) != tp.dim.toInteger(context))
+				
+			    if (tp.dim.op == TOKvar
+						&& (((VarExp) tp.dim).var.storage_class & STCtemplateparameter) != 0) {
+					int i = templateIdentifierLookup(
+							((VarExp) tp.dim).var.ident, parameters);
+					// This code matches code in TypeInstance::deduceType()
+					if (i == -1) {
+						// goto Lnomatch;
+						return MATCHnomatch;
+					}
+					TemplateParameter tp2 = (TemplateParameter) parameters
+							.get(i);
+					TemplateValueParameter tvp = tp2.isTemplateValueParameter();
+					if (null == tvp) {
+						// goto Lnomatch;
+						return MATCHnomatch;
+					}
+					Expression e = (Expression) dedtypes.get(i);
+					if (e != null) {
+						if (!dim.equals(e)) {
+							// goto Lnomatch;
+							return MATCHnomatch;
+						}
+					} else {
+						Type vt = tvp.valType.semantic(Loc.ZERO, sc, context);
+						MATCH m = (MATCH) dim.implicitConvTo(vt, context);
+						if (m == MATCHnomatch) {
+							// goto Lnomatch;
+							return MATCHnomatch;
+						}
+						dedtypes.set(i, dim);
+					}
+				} else if (dim.toInteger(context) != tp.dim.toInteger(context)) {
 					return MATCHnomatch;
+				}
 			}
 
 			else if (tparam.ty == Taarray) {

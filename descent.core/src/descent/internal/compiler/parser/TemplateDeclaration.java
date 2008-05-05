@@ -5,6 +5,7 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IJavaElement;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -176,11 +177,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			int c2 = 0;
 			td_best.leastAsSpecialized(td, context);
 
-			if (0 != c1 && 0 == c2) {
+			if (c1 > c2) {
 				// Ltd:
 				td_ambig = null;
 				continue;
-			} else if (0 == c1 && 0 != c2) {
+			} else if (c1 < c2) {
 				// Ltd_best:
 				td_ambig = null;
 				td_best = td;
@@ -238,9 +239,10 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			Objects dedargs, SemanticContext context) {
 		int i;
 		int nfparams;
-		int nfparams2;
 		int nfargs;
 		int nargsi;
+		int fptupindex = -1;
+		int tuple_dim = 0;
 		MATCH match = MATCHexact;
 		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
 		TypeFunction fdtype;
@@ -260,13 +262,20 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		ScopeDsymbol paramsym = new ScopeDsymbol();
 		paramsym.parent = scope.parent;
 		Scope paramscope = scope.push(paramsym);
+		
+		tp = isVariadic();
 
 		nargsi = 0;
 		if (null != targsi) { // Set initial template arguments
 
 			nargsi = targsi.size();
-			if (nargsi > parameters.size())
-				return Lnomatch(paramscope); // goto Lnomatch;
+			if (nargsi > parameters.size()) {
+				if (null == tp) {
+					return Lnomatch(paramscope); // goto Lnomatch;
+				}
+				dedargs.setDim(nargsi);
+				dedargs.zero();
+			}
 
 			//memcpy(dedargs.data, targsi.data, nargsi * sizeof(dedargs.data));
 			for (i = 0; i < nargsi; i++) {
@@ -301,7 +310,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		nfparams = Argument.dim(fdtype.parameters, context); // number of
 		// function
 		// parameters
-		nfparams2 = nfparams;
 		nfargs = fargs.size(); // number of function arguments
 
 		/*
@@ -323,44 +331,45 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				} else if (nfargs < nfparams - 1) {
 					throw GOTO_L1;
 				} else {
-					/*
-					 * See if 'A' of the template parameter matches 'A' of the
-					 * type of the last function parameter.
-					 */
-					Argument fparam = (Argument) fdtype.parameters
-							.get(nfparams - 1);
-					if (fparam.type.ty != Tident) {
-						throw GOTO_L1;
+				    /* 
+				     * Figure out which of the function parameters matches
+				     * the tuple template parameter. Do this by matching
+				     * type identifiers.
+				     * Set the index of this function parameter to fptupindex.
+				     */
+				    for (fptupindex = 0; fptupindex < nfparams; fptupindex++) {
+						Argument fparam = (Argument) fdtype.parameters
+								.get(fptupindex);
+						if (fparam.type.ty != Tident) {
+							continue;
+						}
+						TypeIdentifier tid = (TypeIdentifier) fparam.type;
+	
+						if (!equals(tp.ident, tid.ident)
+								|| (tid.idents != null && tid.idents.size() > 0)) {
+							continue;
+						}
+						if (fdtype.varargs > 0) // variadic function doesn't
+							return Lnomatch(paramscope); // goto Lnomatch; // go
+						// with
+						// variadic template
+	
+						/* 
+						 * The types of the function arguments
+						 * now form the tuple argument.
+						 */
+						Tuple t = new Tuple();
+						dedargs.set(parameters.size() - 1, t);
+	
+						tuple_dim = nfargs - (nfparams - 1);
+						t.objects.setDim(tuple_dim);
+						for (i = 0; i < tuple_dim; i++) {
+							Expression farg = (Expression) fargs.get(fptupindex + 1);
+							t.objects.set(i, farg.type);
+						}
+						throw GOTO_L2;
 					}
-					TypeIdentifier tid = (TypeIdentifier) fparam.type;
-
-					if (!equals(tp.ident, tid.ident)
-							|| (tid.idents != null && tid.idents.size() > 0)) {
-						throw GOTO_L1;
-					}
-					if (fdtype.varargs > 0) // variadic function doesn't
-						return Lnomatch(paramscope); // goto Lnomatch; // go
-					// with
-					// variadic template
-
-					/*
-					 * The types of the function arguments [nfparams - 1 ..
-					 * nfargs] now form the tuple argument.
-					 */
-					Tuple t = new Tuple();
-					dedargs.set(parameters.size() - 1, t);
-
-					int tuple_dim = nfargs - (nfparams - 1);
-					t.objects.setDim(tuple_dim);
-					for (i = 0; i < tuple_dim; i++) {
-						Expression farg = (Expression) fargs.get(nfparams - 1
-								+ i);
-						t.objects.set(i, farg.type);
-					}
-					nfparams2--; // don't consider the last parameter for
-					// type
-					// deduction
-					throw GOTO_L2;
+				    fptupindex--;
 				}
 			}
 			throw GOTO_L1;
@@ -382,7 +391,18 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		// L2:
 		// Loop through the function parameters
-		for (i = 0; i < nfparams2; i++) {
+		for (i = 0; i < nfparams; i++) {
+			
+			/* Skip over function parameters which wound up
+			 * as part of a template tuple parameter.
+			 */
+			if (i == fptupindex) {
+				if (fptupindex == nfparams - 1)
+					break;
+				i += tuple_dim - 1;
+				continue;
+			}
+			
 			Argument fparam = Argument.getNth(fdtype.parameters, i, context);
 			Expression farg;
 			MATCH m;
@@ -755,8 +775,15 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			tp.declareParameter(paramscope, context);
 		}
 
-		for (TemplateParameter tp : parameters) {
+		for (int i = 0; i < parameters.size(); i++) {
+			TemplateParameter tp = parameters.get(i);
 			tp.semantic(paramscope, context);
+			
+			if (i + 1 != parameters.size() && tp.isTemplateTupleParameter() != null) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.TemplateTupleParameterMustBeLastOne, tp));
+				}
+			}
 		}
 
 		paramscope.pop();
@@ -770,41 +797,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					s[0].parent = this;
 				}
 			}
-			
-			// Descent: do semantic of my members without reporting
-			// problems, in order to get code selection, code completion,
-			// code evaluation and bindings.
-//			context.muteProblems++;
-//			for(Dsymbol member : members) {
-//				member.semantic(scope, context);
-//			}
-//			context.muteProblems--;
 		}
 	}
-	
-//	@Override
-//	public void semantic2(Scope sc, SemanticContext context) {
-//		// Descent: do semantic of my members without reporting
-//		// problems, in order to get code selection, code completion,
-//		// code evaluation and bindings.
-//		context.muteProblems++;
-//		for(Dsymbol member : members) {
-//			member.semantic2(scope, context);
-//		}
-//		context.muteProblems--;
-//	}
-//	
-//	@Override
-//	public void semantic3(Scope sc, SemanticContext context) {
-//		// Descent: do semantic of my members without reporting
-//		// problems, in order to get code selection, code completion,
-//		// code evaluation and bindings.
-//		context.muteProblems++;
-//		for(Dsymbol member : members) {
-//			member.semantic3(scope, context);
-//		}
-//		context.muteProblems--;
-//	}
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
@@ -891,6 +885,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		} else {
 			return ISignatureConstants.TEMPLATE;
 		}
+	}
+	
+	/**
+	 * We can overload templates.
+	 */
+	public boolean isOverloadable() {
+		return true;
 	}
 	
 	public void setJavaElement(IJavaElement javaElement) {

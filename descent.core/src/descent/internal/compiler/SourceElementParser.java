@@ -416,7 +416,6 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(TemplateDeclaration node) {
-		// TODO Java -> D
 		if (node.wrapper) {
 			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
@@ -1026,10 +1025,20 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public void endVisit(TemplateDeclaration node) {
+		int end;
 		if (node.postComment != null) {
-			requestor.exitType(endOfDeclaration(node.postComment));
+			end = endOfDeclaration(node.postComment);
 		} else {
-			requestor.exitType(endOfDeclaration(node));
+			end = endOfDeclaration(node);
+		}
+		
+		if (node.wrapper) {
+			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
+			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
+				requestor.exitMethod(end, -1, -1);
+			} else {
+				requestor.exitType(end);
+			}
 		}
 		if (!node.wrapper) {
 			popLevelInAttribDeclarationStack();

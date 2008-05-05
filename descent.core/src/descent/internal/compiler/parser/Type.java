@@ -1037,25 +1037,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return this;
 	}
 
-	public int templateParameterLookup(Type tparam,
-			TemplateParameters parameters) {
-		if (tparam.ty != Tident) {
-			throw new IllegalStateException("assert(tparam.ty == Tident);");
-		}
-		TypeIdentifier tident = (TypeIdentifier) tparam;
-		if (size(tident.idents) == 0) {
-			IdentifierExp id = tident.ident;
-
-			for (int i = 0; i < parameters.size(); i++) {
-				TemplateParameter tp = (TemplateParameter) parameters.get(i);
-
-				if (equals(tp.ident, id))
-					return i;
-			}
-		}
-		return -1;
-	}
-
 	public MATCH deduceType(Scope sc, Type tparam,
 			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
@@ -1101,7 +1082,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			} else if (ty == Tclass && at.ty == Tclass) {
 				return implicitConvTo(at, context);
 			} else if (ty == Tsarray && at.ty == Tarray
-					&& next.equals(at.nextOf())) {
+					&& nextOf().equals(at.nextOf())) {
 				return MATCHexact;
 			} else
 				return MATCHnomatch;

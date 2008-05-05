@@ -26,6 +26,10 @@ public class STC {
 	public final static int STCscope	    = 0x80000;		// template parameter
 	public final static int STCinvariant	= 0x100000;
 	public final static int STCref	    = 0x200000;
+	public final static int STCinit	    = 0x400000;		// has explicit initializer
+	public final static int STCmanifest	    = 0x800000;		// manifest constant
+	public final static int STCnodtor	    = 0x1000000;	// don't run destructor
+	public final static int STCnothrow	    = 0x2000000;	// never throws exceptions
 	
 	public static int fromTOK(TOK tok) {
 		switch(tok) {
