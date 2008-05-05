@@ -275,11 +275,74 @@ module org.dsource.descent.flute.flute;
  *  - Remove any internal unittests before release, so they don't clutter user code
  */
 
-import cn.kuehne.flectioned;
-import org.dsource.descent.flute.io;
 
-// Import and define functions for library-independent use
-version(Tango)
+// Functions this program uses in a tango/phobos independent manner
+
+/**
+ * Initializes input/output. Should be called before any IO operations are
+ * performed.
+ */
+//private void initIO();
+
+/**
+ * Closes input/output. Should be called before program termination and after
+ * initIO().
+ */
+//private void closeIO();
+
+/**
+ * Flushes the output stream. Should be called before waiting for user input and
+ * before possibly lengthy operations to alert users.
+ */
+//private void flush();
+
+/**
+ * Prints the given string to the output (either a socket or stdout).
+ * 
+ * Params:
+ *     str = The string to print
+ */
+//private void write(char[] str);
+
+/**
+ * Reads a line (terminated by a system-specific line specifier for stdout, or a
+ * CRLF for socket input), and returns the line.
+ * 
+ * Returns: The next line from the input stream
+ */
+//private char[] readln();
+
+/**
+ * Initalize libraries needed to lookup file/line information in exception stack
+ * traces. 
+ */
+//private void initDebugInfo();
+
+/**
+ * Close librries needed to lookup file/line information in exception stack traces.
+ */
+//private void closeDebugInfo();
+
+/**
+ * Attempts to look up the file/line in the debug info given an execution
+ * address.
+ * 
+ * Params:
+ *     addr = the execution address to look up
+ *     line = the line thatn was executing
+ *     file = the file that was executing, as reported by the debug info
+ * Returns: true if and only if the lookup was succesful, false otherwise.
+ */
+//private static bool getDebugInfo(void* addr, out int line, out char[] file)
+
+import cn.kuehne.flectioned;
+
+/**
+ * Port to listen on (this should be configurable somehow)...
+ */
+private const ushort PORT = 30587;
+
+static if(is(typeof((new object.Object()).toUtf8()) == char[]))
 {
 	version = inTango;
 	
@@ -289,12 +352,111 @@ version(Tango)
 	import tango.core.Array : tangoFind = find;
 	import tango.stdc.ctype : isdigit;
 	
+	version(FluteCommandLine)
+	{
+		import tango.io.Stdout : Cin, Cout;
+	}
+	else
+	{
+		import tango.net.ServerSocket;
+		import tango.net.InternetAddress;
+		import tango.net.SocketConduit;
+		
+		import tango.io.model.IConduit;
+		import tango.io.model.IBuffer;
+		import tango.io.protocol.model.IWriter;
+		
+		import tango.io.Buffer;
+		import tango.io.protocol.Writer;
+	}
+	
 	static import tango.text.convert.Integer;
 	static if(is(typeof(tango.text.convert.Integer.toString)))
 		alias tango.text.convert.Integer.toString itoa;
 	else
 		alias tango.text.convert.Integer.toUtf8 itoa;
+	
+	version(FluteCommandLine) {} else
+	{
+		private ServerSocket serv;
+		private IConduit socket;
+		private IBuffer buf;
+		private IWriter writer;
+	}
+	
+	private void initIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			serv = new ServerSocket(new InternetAddress("127.0.0.1", PORT));
+			socket = serv.accept();
+			buf = new Buffer(socket);
+			writer = new Writer(buf);
+		}
+	}
+	
+	private void closeIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			socket.detach();
+			serv.socket.detach();
+		}
+	}
+	
+	private void flush()
+	{
+		version(FluteCommandLine)
+			Cout.flush();
+		else
+			writer.flush();
+	}
+	
+	private void write(char[] str)
+	{
+		version(FluteCommandLine)
+			Cout(str);
+		else
+			writer.put(str);
+	}
+	
+	private char[] readln()
+	{
+		version(FluteCommandLine)
+		{
+			return Cin.copyln();
+		}
+		else
+		{
+			char[] content;
+			
+			uint line (void[] input)
+			{
+				char[] text = cast(char[]) input;
+				foreach (i, c; text)
+				{
+					if (c == '\n')
+					{
+						uint j = i;
+						if (j && (text[j - 1] == '\r'))
+							--j;
+						content = text [0 .. j];
+						return i + 1;
+					}
+				}
+				return IConduit.Eof;
+			}
 
+			bool read = buf.next(&line) || (content = cast(char[]) 
+					buf.slice(buf.readable), false);
+			return read ? content.dup : null;
+		}
+	}
+	
 	private int find(char[] haystack, char[] needle)
 	{ 
 		uint res = tangoFind(haystack, needle); 
@@ -311,10 +473,258 @@ else
 	import std.ctype : isdigit;
 	import std.asserterror : AssertError;
 	
+	version(FluteCommandLine)
+	{
+		import std.stdio: writef, fflush, stdout;
+		import std.stdio : cinReadln = readln;
+	}
+	else
+	{
+		import std.socket : Socket, TcpSocket, AddressFamily, InternetAddress,
+			SocketShutdown, SocketException;
+		import std.socketstream : SocketStream;
+		import std.stream : Stream;
+	}
+	
+	version(FluteCommandLine) { } else
+	{
+		Socket serv;
+		Stream stream;
+	}
+	
+	private void initIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			try
+			{
+				serv = new TcpSocket(AddressFamily.INET);
+				serv.bind(new InternetAddress("127.0.0.1", PORT));
+				serv.listen(0);
+				Socket conn = serv.accept();
+				stream = new SocketStream(conn);
+			}
+			catch(SocketException se)
+			{
+				std.stdio.writefln("Couldn't create socket; error code " ~
+					itoa(se.errorCode));
+				exit(se.errorCode);
+			}
+		}
+	}
+	
+	private void closeIO()
+	{
+		version(FluteCommandLine)
+			{ } // Nothing to do
+		else
+		{
+			stream.close();
+			serv.shutdown(SocketShutdown.BOTH);
+			serv.close();
+		}
+	}
+	
+	private void flush()
+	{
+		version(FluteCommandLine)
+			fflush(stdout);
+		else
+			stream.flush();
+	}
+	
+	private void write(char[] str)
+	{
+		version(FluteCommandLine)
+			writef(str);
+		else
+			stream.writeString(str);
+	}
+	
+	private char[] readln()
+	{
+		version(FluteCommandLine)
+			return cinReadln();
+		else
+			return stream.readLine();
+	}
+	
 	private char[] itoa(int i)
 	{
 		return format("%d", i);
 	}
+}
+
+version(Windows)
+{
+	/// Can we lookup debug info?
+	private bool debugInfo = false;
+	
+	import std.c.windows.windows;
+	
+	private enum
+	{
+		MAX_MODULE_NAME32 = 255,
+		TH32CS_SNAPMODULE = 0x00000008,
+		SYMOPT_LOAD_LINES = 0x10,
+	}
+	
+	private extern(Windows) struct MODULEENTRY32
+	{
+		DWORD  dwSize;
+		DWORD  th32ModuleID;
+		DWORD  th32ProcessID;
+		DWORD  GlblcntUsage;
+		DWORD  ProccntUsage;
+		BYTE  *modBaseAddr;
+		DWORD  modBaseSize;
+		HMODULE hModule;
+		char   szModule[MAX_MODULE_NAME32 + 1];
+		char   szExePath[MAX_PATH];
+	}
+	
+	private extern(Windows) struct IMAGEHLP_LINE
+	{
+		DWORD SizeOfStruct;
+	    PVOID Key; 
+	    DWORD LineNumber; 
+	    PTSTR FileName; 
+	    DWORD Address;
+	}
+	alias IMAGEHLP_LINE* PIMAGEHLP_LINE;
+	
+	private extern(Windows) BOOL Module32First(HANDLE, MODULEENTRY32*);
+	private extern(Windows) BOOL Module32Next(HANDLE, MODULEENTRY32*);
+	private extern(Windows) HANDLE CreateToolhelp32Snapshot(DWORD,DWORD);
+	
+	private HMODULE imagehlp;
+	private HANDLE proc;
+	private extern(Windows) DWORD function(DWORD) SymSetOptions;
+	private extern(Windows) BOOL function(HANDLE, PCSTR, BOOL) SymInitialize;
+	private extern(Windows) BOOL function(HANDLE) SymCleanup;
+	private extern(Windows) DWORD function(HANDLE, HANDLE, PCSTR, PCSTR, DWORD, DWORD) SymLoadModule;
+	private extern(Windows) BOOL function(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINE) SymGetLineFromAddr;
+		
+	private void initDebugInfo()
+	{
+		MODULEENTRY32 moduleEntry;
+		moduleEntry.dwSize = moduleEntry.sizeof;
+		char buffer[4096];
+		
+		try
+		{
+			scope(failure)
+			{
+				if(imagehlp)
+					FreeLibrary(imagehlp);
+				
+				SymSetOptions = null;
+				SymInitialize = null;
+				SymCleanup = null;
+				SymLoadModule = null;
+				SymGetLineFromAddr = null;
+			}
+			
+			proc = GetCurrentProcess();
+			if(!proc)
+				throw new Exception("GetCurrentProcess() returned null");
+			
+			HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0);
+			if(!snapshot)
+				throw new Exception("CreateToolHelp32Snapshot failed");
+			
+			imagehlp = LoadLibraryA("imagehlp.dll");
+			if(!imagehlp)
+				throw new Exception("Failed to load imagehlp.dll");
+			
+			SymSetOptions = cast(typeof(SymSetOptions)) GetProcAddress(imagehlp, "SymSetOptions");
+			if(!SymSetOptions)
+				throw new Exception("Failed to load SymSetOptions");
+			
+			SymInitialize = cast(typeof(SymInitialize)) GetProcAddress(imagehlp, "SymInitialize");
+			if(!SymInitialize)
+				throw new Exception("Failed to load SymInitialize");
+			
+			SymCleanup = cast(typeof(SymCleanup)) GetProcAddress(imagehlp, "SymCleanup");
+			if(!SymCleanup)
+				throw new Exception("Failed to load SymCleanup");
+			
+			SymLoadModule = cast(typeof(SymLoadModule)) GetProcAddress(imagehlp, "SymLoadModule");
+			if(!SymLoadModule)
+				throw new Exception("Failed to load SymLoadModule");
+			
+			SymGetLineFromAddr = cast(typeof(SymGetLineFromAddr)) GetProcAddress(imagehlp, "SymGetLineFromAddr");
+			if(!SymGetLineFromAddr)
+				throw new Exception("Failed to load SymGetLineFromAddr");
+			
+			// Since Flectioned doesn't load the line inforamtion when loading
+			// symbols, we have little choice but to load all the symbols again, this
+			// time with SYMOPT_LOAD_LINES on.
+			if(!SymCleanup(proc))
+				throw new Exception("SymCleanup failed");
+			SymSetOptions(SYMOPT_LOAD_LINES);
+			if(!SymInitialize(proc, null, FALSE))
+				throw new Exception("SymInitialize failed");
+			
+			// We have to enumerate through the modules individually so that each
+			// module finds its search path
+			if(!Module32First(snapshot, &moduleEntry))
+				throw new Exception("Module32First Failed");
+			do
+			{
+				if(GetModuleFileNameA(moduleEntry.hModule, buffer.ptr, buffer.length))
+					SymLoadModule(proc, HANDLE.init, buffer.ptr, null, 0, 0);
+			}
+			while(Module32Next(snapshot, &moduleEntry));
+			
+			debugInfo = true;
+		}
+		catch(Exception e)
+		{
+			//write(e.toString() ~ "\n");
+		}
+	}
+		
+	private void closeDebugInfo()
+	{
+		if(debugInfo)
+		{
+			SymCleanup(proc);
+			FreeLibrary(imagehlp);
+			
+			SymSetOptions = null;
+			SymInitialize = null;
+			SymCleanup = null;
+			SymLoadModule = null;
+			SymGetLineFromAddr = null;
+		}
+	}
+	
+	private bool getDebugInfo(void* addr, out int line, out char[] file)
+	{	
+		if(!debugInfo || !addr)
+			goto Lunknown;
+		
+		IMAGEHLP_LINE lineInfo;
+		DWORD displacement;
+		lineInfo.SizeOfStruct = lineInfo.sizeof;
+		
+		if(!SymGetLineFromAddr(proc, cast(DWORD) addr, &displacement, &lineInfo))
+			goto Lunknown;
+		
+		line = lineInfo.LineNumber;
+		file = lineInfo.FileName[0 .. strlen(lineInfo.FileName)];
+		return true;
+		
+		Lunknown:
+			return false;
+	}
+}
+else
+{
+	// TODO
 }
 
 // Needed for clean program exit
@@ -402,21 +812,21 @@ private class TestResult
 		switch(type)
 		{
 			case ResultType.PASSED:
-				io.write("PASSED\r\n");
+				write("PASSED\r\n");
 				return;
 			
 			case ResultType.FAILED:
-				io.write("FAILED\r\n");
+				write("FAILED\r\n");
 				version(inTango)
 				{
 					// TODO
 					AssertException ae = cast(AssertException) e;
 					assert(ae !is null);
-					io.write("Assertion failed in " ~ ae.file ~ " at line " ~
+					write("Assertion failed in " ~ ae.file ~ " at line " ~
 						itoa(ae.line));
 					if(ae.msg && ae.msg.length > 0)
-						io.write(": " ~ ae.msg);
-					io.write("\r\n");
+						write(": " ~ ae.msg);
+					write("\r\n");
 				}
 				else
 				{
@@ -432,24 +842,24 @@ private class TestResult
 					
 					AssertError ae = cast(AssertError) e;
 					assert(ae !is null);
-					io.write("Assertion failed in " ~ ae.filename ~ " at line " ~
+					write("Assertion failed in " ~ ae.filename ~ " at line " ~
 						itoa(ae.linnum));
 					char[] msg = extractMessage(ae.msg);
 					if(msg)
-						io.write(": " ~ msg);
-					io.write("\r\n");
+						write(": " ~ msg);
+					write("\r\n");
 				}
 				goto LprintStackTrace;
 			
 			// PERHAPS this could be cleaned up for standardizing stuff across phobos
 			// and tango, i.e. filename/line, etc.
 			case ResultType.ERROR:
-				io.write("ERROR\r\n");
+				write("ERROR\r\n");
 				static if(is(typeof((new Object).toString)))
-					io.write("Exception " ~ e.classinfo.name ~ ": " ~ e.toString()
+					write("Exception " ~ e.classinfo.name ~ ": " ~ e.toString()
 						~ "\r\n");
 				else
-					io.write("Exception " ~ e.classinfo.name ~ ": " ~ e.toUtf8()
+					write("Exception " ~ e.classinfo.name ~ ": " ~ e.toUtf8()
 						~ "\r\n");
 				goto LprintStackTrace;
 			default:
@@ -495,7 +905,7 @@ private class TestResult
 				
 				int line;
 				char[] file;
-				if(getLineFromAddr(ste.code, line, file))
+				if(getDebugInfo(ste.code, line, file))
 				{
 					buf ~= file ~ ":" ~ itoa(line);
 				}
@@ -504,7 +914,7 @@ private class TestResult
 					buf ~= toHex(cast(size_t) ste.code);
 				}
 				buf ~= ")\r\n";
-				io.write(buf);
+				write(buf);
 			}
 	}
 }
@@ -831,10 +1241,10 @@ private class TestRegistry
 		switch(found.found)
 		{
 			case SearchResult.TestFound.NOT_FOUND:
-				io.write("Test " ~ spec ~ "not found\r\n");
+				write("Test " ~ spec ~ "not found\r\n");
 				return null;
 			case SearchResult.TestFound.AMBIGUOUS:
-				io.write("Simple name " ~ spec[1 .. $] ~ " is ambigous, could refer"
+				write("Simple name " ~ spec[1 .. $] ~ " is ambigous, could refer"
 				      " to either " ~ found.ambig.fqns[0] ~ " or " ~
 				      found.ambig.fqns[1]);
 				return null;
@@ -880,7 +1290,7 @@ private class TestRegistry
 		uint passed, failed, error;
 		foreach(spec; testNames.sort)
 		{
-			io.write(spec ~ "\r\n");
+			write(spec ~ "\r\n");
 			TestResult result = runTest(spec);
 			if(result)
 			{
@@ -897,22 +1307,19 @@ private class TestRegistry
 						break;
 				}
 			}
-			io.write("\r\n");
-			io.flush();
+			write("\r\n");
+			flush();
 		}
 		
 		uint total = passed + failed + error;
-		io.write("   PASSED: " ~ itoa(passed) ~ "/" ~ itoa(total) ~ "\r\n");
-		io.write("   FAILED: " ~ itoa(failed) ~ "/" ~ itoa(total) ~ "\r\n");
-		io.write("   ERROR: "  ~ itoa(error)  ~ "/" ~ itoa(total) ~ "\r\n");
+		write("   PASSED: " ~ itoa(passed) ~ "/" ~ itoa(total) ~ "\r\n");
+		write("   FAILED: " ~ itoa(failed) ~ "/" ~ itoa(total) ~ "\r\n");
+		write("   ERROR: "  ~ itoa(error)  ~ "/" ~ itoa(total) ~ "\r\n");
 	}
 }
 
 /// The registry of all the tests in the pplication
 private TestRegistry registry;
-
-/// The I/O provider used for all operations
-private IOProvider io;
 
 /**
  * Main flute entry point. This will be called during static construction, and
@@ -921,8 +1328,9 @@ private IOProvider io;
 private void fluteMain()
 {
 	TracedException.traceAllExceptions();
-	io = getIOProvider();
-	io.write(VERSION_STRING ~ "\r\n");
+	initIO();
+	initDebugInfo();
+	write(VERSION_STRING ~ "\r\n");
 	initRegistry();
 	if(!commandLoop())
 		fluteExit();
@@ -934,8 +1342,9 @@ private void fluteMain()
  */
 private void fluteExit()
 {
-	io.flush();
-	delete io;
+	flush();
+	closeDebugInfo();
+	closeIO();
 	_moduleDtor();
 	gc_term();
 
@@ -957,9 +1366,9 @@ private void fluteExit()
 private bool commandLoop()
 {
 	LnextCommand:
-	io.write("(flute)\r\n");
-	io.flush();
-	char[] line = trim(io.readln());
+	write("(flute)\r\n");
+	flush();
+	char[] line = trim(readln());
 	if(line.length < 1)
 		goto LnextCommand;
 	
@@ -981,7 +1390,7 @@ private bool commandLoop()
 		if(line.length > 1)
 			goto default;
 		foreach(spec; registry.getTestNames())
-			io.write(spec ~ "\r\n");
+			write(spec ~ "\r\n");
 		goto LnextCommand;
 	
 	// a -- Run all tests
@@ -1001,7 +1410,7 @@ private bool commandLoop()
 	
 	// It's an unknown command -- say so & try again
 	default:
-		io.write("Unrecognized command " ~ line ~ "\r\n");
+		write("Unrecognized command " ~ line ~ "\r\n");
 		goto LnextCommand;
 	}
 }
@@ -1080,7 +1489,7 @@ private void initRegistry()
 		{
 			version(Flute_NoWarnings) {}
 			else
-				io.write("Warning: Test " ~ test.getSignature() ~ 
+				write("Warning: Test " ~ test.getSignature() ~ 
 					" given multiple names, only " ~ test.getSimpleName()~
 					" used\r\n");
 			continue;

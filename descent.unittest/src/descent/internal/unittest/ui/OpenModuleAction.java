@@ -10,6 +10,8 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragment;
+import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ISignatureConstants;
 
@@ -49,23 +51,46 @@ public class OpenModuleAction extends OpenEditorAction
 	}
 
 	private static ICompilationUnit findModule(IJavaProject project,
-			String moduleSignature, Set<IJavaProject> visitedProjects)
-			throws JavaModelException
+			String moduleSignature,
+			Set<IJavaProject> visitedProjects)
+		throws JavaModelException
 	{
 		if (visitedProjects.contains(project))
 			return null;
 		
-		ICompilationUnit module;
-		// TODO IJavaElement javaElement = project.findBySignature(moduleSignature);
-		IJavaElement javaElement = null;
-		if(javaElement != null && javaElement instanceof ICompilationUnit
-			&& javaElement.exists())
-		{
-			// Note: existance must be tested since an IcompilationUnit may
-			// be returned for non-existant modules
-			module = (ICompilationUnit) javaElement;
-			return module;
-		}
+		int index = moduleSignature.lastIndexOf('.');
+        String packagePart = index > 0 ? moduleSignature.substring(0, index) : "";
+        String modulePart = String.format("%1$s.d", index > 0 ? 
+                moduleSignature.substring(index + 1) : moduleSignature);
+        
+        ICompilationUnit module = null;
+        for(IPackageFragmentRoot root : project.getPackageFragmentRoots())
+        {
+            IPackageFragment pkg = root.getPackageFragment(packagePart);
+            if (pkg.exists())
+            {
+                // Check if it's in the package...
+                module = pkg.getCompilationUnit(modulePart);
+                
+                // If not, check if it's a class file
+                if (!module.exists())
+                {
+                    module = pkg.getClassFile(modulePart);
+                }
+                
+                if(module.exists())
+                {
+                    break;
+                }
+            }
+        }
+        
+        if(null != module && module.exists())
+        {
+            // Note: existance must be tested since an ICompilationUnit may
+            // be returned for non-existant modules
+            return module;
+        }
 		
 		//fix for bug 87492: visit required projects explicitly to also find not exported types
 		visitedProjects.add(project);
