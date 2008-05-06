@@ -59,10 +59,12 @@ public class CatAssignExp extends BinExp {
 			}
 		}
 
-		e1 = e1.modifiableLvalue(sc, null, context);
+		e1 = e1.modifiableLvalue(sc, e1, context);
 
 		Type tb1 = e1.type.toBasetype(context);
 		Type tb2 = e2.type.toBasetype(context);
+		
+		e2.rvalue(context);
 
 		if ((tb1.ty == TY.Tarray)
 				&& (tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray)

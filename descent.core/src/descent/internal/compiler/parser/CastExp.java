@@ -191,7 +191,11 @@ public class CastExp extends UnaExp {
 			}
 
 			Type tob = to.toBasetype(context);
-			if (tob.ty == Tstruct && !tob.equals(e1.type.toBasetype(context))) {
+			if (tob.ty == Tstruct && 
+				!tob.equals(e1.type.toBasetype(context)) &&
+			    null == ((TypeStruct)to).sym.search(Loc.ZERO, Id.call, 0, context)
+			    ) 
+			{
 				/* Look to replace:
 				 *	cast(S)t
 				 * with:

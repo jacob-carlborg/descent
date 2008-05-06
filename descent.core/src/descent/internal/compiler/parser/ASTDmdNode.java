@@ -620,13 +620,12 @@ public abstract class ASTDmdNode extends ASTNode {
 	public void accessCheck(Scope sc, Expression e, Declaration d,
 			SemanticContext context) {
 		if (e == null) {
-			if (d.prot() == PROTprivate && d.getModule() != sc.module
-					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d)) {
-				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, new String[] { d.kind(), d
-							.getModule().toChars(context), d.toChars(context),
-							sc.module.toChars(context) }));
-				}
+			if (context.acceptsProblems() && 
+					(d.prot() == PROTprivate && d.getModule() != sc.module
+					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d))) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, new String[] { d.kind(), d
+						.getModule().toChars(context), d.toChars(context),
+						sc.module.toChars(context) }));
 			}
 		} else if (e.type.ty == Tclass) { // Do access check
 			ClassDeclaration cd;
@@ -675,7 +674,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					buf.writeByte(',');
 				}
 				argbuf.reset();
-				arg.type.toCBuffer2(argbuf, null, hgs, context);
+				arg.type.toCBuffer2(argbuf, hgs, 0, context);
 				buf.write(argbuf);
 			}
 		}
@@ -686,11 +685,13 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); i++) {
 				Expression arg = arguments.get(i);
-
-				if (i != 0) {
-					buf.writeByte(',');
+				
+				if (arg != null) {
+					if (i != 0) {
+						buf.writeByte(',');
+					}
+					expToCBuffer(buf, hgs, arg, PREC.PREC_assign, context);
 				}
-				expToCBuffer(buf, hgs, arg, PREC.PREC_assign, context);
 			}
 		}
 	}
@@ -901,18 +902,17 @@ public abstract class ASTDmdNode extends ASTNode {
 					// BUG: should check that argument to inout is type
 					// 'invariant'
 					// BUG: assignments to inout should also be type 'invariant'
-					arg = arg.modifiableLvalue(sc, null, context);
+					arg = arg.modifiableLvalue(sc, arg, context);
 
 					// if (arg.op == TOKslice)
 					// arg.error("cannot modify slice %s", arg.toChars());
 
 					// Don't have a way yet to do a pointer to a bit in array
-					if (arg.op == TOKarray
-							&& arg.type.toBasetype(context).ty == Tbit) {
-						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
-						}
+					if (context.acceptsProblems() &&
+							arg.op == TOKarray && 
+							arg.type.toBasetype(context).ty == Tbit) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
 					}
 				}
 
@@ -1871,15 +1871,17 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {
+		if (context.acceptsProblems()) {
+			return;
+		}
+		
 		boolean reported = false;
 		
 		if (modifiers != null) {
 			for (Modifier modifier : modifiers) {
 				if (modifier.tok == tok) {
-					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								problemId, modifier));
-					}
+					context.acceptProblem(Problem.newSemanticTypeError(
+							problemId, modifier));
 					reported = true;
 				}
 			}
@@ -1888,20 +1890,16 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (extraModifiers != null) {
 			for (Modifier modifier : extraModifiers) {
 				if (modifier.tok == tok) {
-					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								problemId, modifier));
-					}
+					context.acceptProblem(Problem.newSemanticTypeError(
+							problemId, modifier));
 					reported = true;
 				}
 			}
 		}
 		
 		if (!reported) {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						problemId, this));
-			}
+			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+					problemId, this));
 		}
 	}
 	

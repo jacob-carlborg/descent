@@ -24,7 +24,7 @@ import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKtemplate;
 import static descent.internal.compiler.parser.TOK.TOKthis;
-import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TOK.*;
 
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
@@ -306,13 +306,14 @@ public class CallExp extends UnaExp {
 						// Descent: for binding resolution
 						sourceE1.setResolvedSymbol(opCall);
 						
-						// goto L1;	// overload of opCall, therefore it's a call
-						// Rewrite as e1.call(arguments)
-						Expression e = new DotIdExp(loc, e1, new IdentifierExp(
-								Id.call));
-						e = new CallExp(loc, e, arguments);
-						e = e.semantic(sc, context);
-						return e;
+						// goto L1;	
+						return semantic_L1(sc, context);
+					}
+					
+					if (e1.op != TOKtype) {
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.KindSymbolDoesNotOverload, this, new String[] { ad.kind(), ad.toChars(context) }));
+						}
 					}
 					
 					/* It's a struct literal
@@ -320,17 +321,12 @@ public class CallExp extends UnaExp {
 					Expression e = new StructLiteralExp(loc,
 							(StructDeclaration) ad, arguments);
 					e = e.semantic(sc, context);
+					e.type = e1.type; // in case e1.type was a typedef
 					return e;
 				} else if (t1.ty == Tclass) {
 					ad = ((TypeClass) t1).sym;
 					// goto L1;
-					// L1:
-					// Rewrite as e1.call(arguments)
-					Expression e = new DotIdExp(loc, e1, new IdentifierExp(
-							Id.call));
-					e = new CallExp(loc, e, arguments);
-					e = e.semantic(sc, context);
-					return e;
+					return semantic_L1(sc, context);
 				}
 			}
 
@@ -625,6 +621,16 @@ public class CallExp extends UnaExp {
 
 		// Lcheckargs:
 		return semantic_Lcheckargs(sc, tf, f, context);
+	}
+
+	private Expression semantic_L1(Scope sc, SemanticContext context) {
+		// overload of opCall, therefore it's a call
+		// Rewrite as e1.call(arguments)
+		Expression e = new DotIdExp(loc, e1, new IdentifierExp(
+				Id.call));
+		e = new CallExp(loc, e, arguments);
+		e = e.semantic(sc, context);
+		return e;
 	}
 
 	private Expression semantic_Lcheckargs(Scope sc, TypeFunction tf,

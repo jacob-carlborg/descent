@@ -4,6 +4,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.TOK.*;
+
 // DMD 1.020
 public class IsExp extends Expression {
 
@@ -12,6 +14,7 @@ public class IsExp extends Expression {
 	public TOK tok;
 	public Type tspec, sourceTspec;
 	public TOK tok2;
+	public TemplateParameters parameters;
 
 	public IsExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
 			TOK tok2) {
@@ -244,13 +247,30 @@ public class IsExp extends Expression {
 			SemanticContext context) {
 		buf.writestring("is(");
 		targ.toCBuffer(buf, id, hgs, context);
-		if (null != tspec) {
+		if (tok2 != TOKreserved) {
+			buf.data.append(' ');
+			buf.data.append(tok.toString());
+			buf.data.append(' ');
+			buf.data.append(tok2.toString());
+		} else if (null != tspec) {
 			if (tok == TOK.TOKcolon)
 				buf.writestring(" : ");
 			else
 				buf.writestring(" == ");
 			tspec.toCBuffer(buf, null, hgs, context);
 		}
+
+		if (context.apiLevel == Parser.D2) {
+			if (parameters != null) { 
+				// First parameter is already output, so start with second
+				for (int i = 1; i < size(parameters); i++) {
+					buf.writeByte(',');
+					TemplateParameter tp = parameters.get(i);
+					tp.toCBuffer(buf, hgs, context);
+				}
+			}
+		}
+
 		buf.writeByte(')');
 	}
 

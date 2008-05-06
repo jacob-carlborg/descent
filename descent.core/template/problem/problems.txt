@@ -811,6 +811,9 @@ CalledWithArgumentTypesMatchesBoth
 SymbolIsNotAnArithmeticType
 	formatString='%1$s' is not an arithmetic type
 	numArgs=1
+SymbolIsNotAnArithmeticTypeItIs
+	formatString='%1$s' is not an arithmetic type, it is '%2$s'
+	numArgs=2
 CannotPerformModuloComplexArithmetic
 	formatString=Cannot perform modulo complex arithmetic
 	numArgs=0
@@ -1340,12 +1343,23 @@ TemplateTupleParameterMustBeLastOne
 	formatString=Template tuple parameter must be last one
 	numArgs=0
 SymbolIsNestedInBoth
-	formatString=%1$s is nested in both %2$s and %2$s
+	formatString=%1$s is nested in both %2$s and %3$s
 	numArgs=3
-
-
-
-
+FunctionIsAbstract
+	formatString=Function %1$s is abstract
+	numArgs=1
+KindSymbolDoesNotOverload
+	formatString=%1$s %2$s does not overload ()
+	numArgs=2
+MismatchedTupleLengths
+	formatString=Mismatched tuple lengths, %1$s and %2$s
+	numArgs=2
+DoNotUseNullWhenComparingClassTypes
+	formatString=Do not use null when comparing class types
+	numArgs=0
+UseTokenInsteadOfTokenWhenComparingWithNull
+	formatString=Use '%1$s' instead of '%2$s' when comparing with null
+	numArgs=2
 
 
 

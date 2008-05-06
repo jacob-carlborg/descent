@@ -59,7 +59,9 @@ public class DeleteExp extends UnaExp {
 			TypeClass tc = (TypeClass) tb;
 			ClassDeclaration cd = tc.sym;
 
-			if (cd.isInterfaceDeclaration() != null && cd.isCOMclass()) {
+			if (cd.isCOMinterface()) {
+			    /* Because COM classes are deleted by IUnknown.Release()
+				 */
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotDeleteInstanceOfComInterface, this, new String[] { cd.toChars(context) }));
@@ -75,13 +77,10 @@ public class DeleteExp extends UnaExp {
 				FuncDeclaration f = sd.aggDelete;
 
 				if (f != null) {
-					Expression e;
-					Expression ec;
 					Type tpv = Type.tvoid.pointerTo(context);
 
-					e = e1;
-					e.type = tpv;
-					ec = new VarExp(loc, f);
+					Expression e = e1.castTo(sc, tpv, context);
+					Expression ec = new VarExp(loc, f);
 					e = new CallExp(loc, ec, e);
 					return e.semantic(sc, context);
 				}

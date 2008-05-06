@@ -76,7 +76,7 @@ public class DsymbolExp extends Expression {
 
 			em = s.isEnumMember();
 			if (em != null) {
-				e = em.value();
+				e = em.value().copy();
 				e = e.semantic(sc, context);
 				return e;
 			}

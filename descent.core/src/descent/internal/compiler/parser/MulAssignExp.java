@@ -48,7 +48,7 @@ public class MulAssignExp extends BinExp {
 			return e;
 		}
 
-		e1 = e1.modifiableLvalue(sc, null, context);
+		e1 = e1.modifiableLvalue(sc, e1, context);
 		e1.checkScalar(context);
 		e1.checkNoBool(context);
 		type = e1.type;

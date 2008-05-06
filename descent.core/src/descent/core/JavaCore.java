@@ -91,6 +91,7 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.QualifiedName;
@@ -100,6 +101,11 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import descent.core.compiler.CharOperation;
+import descent.core.search.IJavaSearchConstants;
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchEngine;
+import descent.core.search.SearchPattern;
+import descent.core.search.TypeNameRequestor;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.BatchOperation;
 import descent.internal.core.BufferFactoryWrapper;
@@ -2893,7 +2899,6 @@ public final class JavaCore extends AbstractUIPlugin {
 	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
 		try {
 			if (monitor != null) monitor.beginTask(Messages.javamodel_initialization, 100);
-			/* TODO JDT search
 			// dummy query for waiting until the indexes are ready and classpath containers/variables are initialized
 			SearchEngine engine = new SearchEngine();
 			IJavaSearchScope scope = SearchEngine.createWorkspaceScope(); // initialize all containers and variables
@@ -2905,12 +2910,8 @@ public final class JavaCore extends AbstractUIPlugin {
 					IJavaSearchConstants.CLASS,
 					scope, 
 					new TypeNameRequestor() {
-						public void acceptType(
-							int modifiers,
-							char[] packageName,
-							char[] simpleTypeName,
-							char[][] enclosingTypeNames,
-							String path) {
+						@Override
+						public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 							// no type to accept
 						}
 					},
@@ -2926,7 +2927,6 @@ public final class JavaCore extends AbstractUIPlugin {
 					throw e;
 				// else indexes were not ready: catch the exception so that jars are still refreshed
 			}
-			*/
 			
 			// check if the build state version number has changed since last session
 			// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=98969)

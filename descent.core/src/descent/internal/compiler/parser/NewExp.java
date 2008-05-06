@@ -142,6 +142,14 @@ public class NewExp extends Expression {
 				} else if (cd.isAbstract()) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfAbstractClass, sourceNewtype, new String[] { cd.toChars(context) }));
+						for(int i = 0; i < size(cd.vtbl); i++) {
+						    FuncDeclaration fd = ((Dsymbol) cd.vtbl.get(i)).isFuncDeclaration();
+							if (fd != null && fd.isAbstract()) {
+								if (context.acceptsProblems()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionIsAbstract, this, new String[] { fd.toChars(context)} ));
+								}
+							}
+						}
 					}
 				}
 				checkDeprecated(sc, cd, context);

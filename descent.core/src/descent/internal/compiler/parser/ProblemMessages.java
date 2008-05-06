@@ -281,6 +281,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotGotoInOrOutOfFinallyBlock;
 	public static String CalledWithArgumentTypesMatchesBoth;
 	public static String SymbolIsNotAnArithmeticType;
+	public static String SymbolIsNotAnArithmeticTypeItIs;
 	public static String CannotPerformModuloComplexArithmetic;
 	public static String OperatorNotAllowedOnBoolExpression;
 	public static String ForeachKeyTypeMustBeIntOrUint;
@@ -458,6 +459,11 @@ final class ProblemMessages extends NLS {
 	public static String ShiftAssignIsOutsideTheRange;
 	public static String TemplateTupleParameterMustBeLastOne;
 	public static String SymbolIsNestedInBoth;
+	public static String FunctionIsAbstract;
+	public static String KindSymbolDoesNotOverload;
+	public static String MismatchedTupleLengths;
+	public static String DoNotUseNullWhenComparingClassTypes;
+	public static String UseTokenInsteadOfTokenWhenComparingWithNull;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

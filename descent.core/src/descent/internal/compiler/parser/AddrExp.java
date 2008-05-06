@@ -136,17 +136,15 @@ public class AddrExp extends UnaExp {
 						&& !ve.var.isImportedSymbol()) {
 					TypeSArray ts = (TypeSArray) ve.type;
 					integer_t dim = ts.dim.toInteger(context);
-					if (index.compareTo(0) < 0 || index.compareTo(dim) >= 0) {
+					if (context.acceptsProblems() && (index.compareTo(0) < 0 || index.compareTo(dim) >= 0)) {
 						// PERHAPS test this error
-						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-					    			IProblem.ArrayIndexOutOfBounds,
-					    			this,
-					    			new String[] {
-					    				String.valueOf(index),
-					    				String.valueOf(dim),
-					    			}));
-						}
+						context.acceptProblem(Problem.newSemanticTypeError(
+				    			IProblem.ArrayIndexOutOfBounds,
+				    			this,
+				    			new String[] {
+				    				String.valueOf(index),
+				    				String.valueOf(dim),
+				    			}));
 					}
 					e = new SymOffExp(loc, ve.var, index.multiply(ts.next
 							.size(context)), context);

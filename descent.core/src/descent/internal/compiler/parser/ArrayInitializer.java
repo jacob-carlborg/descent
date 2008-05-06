@@ -135,10 +135,9 @@ public class ArrayInitializer extends Initializer {
 				dim = length;
 			}
 		}
-	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
-	    	if (context.acceptsProblems()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, new String[] { String.valueOf(dim), amax.divide(t.next.size(context)).toString() }));
-	    	}
+	    if (context.acceptsProblems() && 
+	    		new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
+    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, new String[] { String.valueOf(dim), amax.divide(t.next.size(context)).toString() }));
 	    }
 		return this;
 	}

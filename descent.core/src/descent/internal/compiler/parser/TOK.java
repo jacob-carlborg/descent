@@ -21,7 +21,7 @@ public enum TOK implements ITerminalSymbols {
 	TOKaddress(PREC_unary), TOKtypedot(PREC_primary), TOKtype,
 	TOKthrow("throw", TokenNamethrow), TOKnew("new", TokenNamenew, PREC_unary), 
 	TOKdelete("delete", TokenNamedelete, PREC_unary), TOKstar("*", TokenNameMULTIPLY, PREC_unary), 
-	TOKsymoff, TOKvar(PREC_primary), TOKdotvar, TOKdotti(PREC_primary), TOKdotexp, TOKdottype, 
+	TOKsymoff, TOKvar(PREC_primary), TOKdotvar(PREC_primary), TOKdotti(PREC_primary), TOKdotexp, TOKdottype, 
 	TOKslice("..", TokenNameDOT_DOT, PREC_primary), 
 	TOKarraylength, 
 	TOKversion("version", TokenNameversion), TOKmodule("module", TokenNamemodule), 
@@ -174,8 +174,8 @@ public enum TOK implements ITerminalSymbols {
 	
 	
 	TOKnotis,
-	TOKconstruct,
-	TOKblit,
+	TOKconstruct(PREC_assign),
+	TOKblit(PREC_assign),
 
 	//TOKMAX
 	;

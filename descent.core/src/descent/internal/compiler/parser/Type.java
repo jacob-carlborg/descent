@@ -491,6 +491,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public TY ty;
+	public char mod; // modifiers (MODconst, MODinvariant)
 	public Type next, sourceNext;
 	public String deco;
 	public Type pto; // merged pointer to this type
@@ -1012,6 +1013,38 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (ident != null) {
 			buf.writeByte(' ');
 			buf.writestring(ident.ident);
+		}
+	}
+	
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod,
+			SemanticContext context) {
+		if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
+		}
+		buf.writestring(toChars(context));
+	}
+
+	public void toCBuffer3(OutBuffer buf, HdrGenState hgs, int mod,
+			SemanticContext context) {
+		if (mod != this.mod) {
+			switch (this.mod) {
+			case 0:
+				toCBuffer2(buf, hgs, this.mod, context);
+				break;
+			case MODconst:
+				buf.writestring("const(");
+				toCBuffer2(buf, hgs, this.mod, context);
+				buf.writeByte(')');
+				break;
+			case MODinvariant:
+				buf.writestring("invariant(");
+				toCBuffer2(buf, hgs, this.mod, context);
+				buf.writeByte(')');
+				break;
+			default:
+				throw new IllegalStateException("assert(0)");
+			}
 		}
 	}
 

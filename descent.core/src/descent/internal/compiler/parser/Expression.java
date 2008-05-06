@@ -157,14 +157,16 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e;
 	}
 
-	public void checkArithmetic(SemanticContext context) {
+	public Expression checkArithmetic(SemanticContext context) {
 		if (!type.isintegral() && !type.isfloating()) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolIsNotAnArithmeticType, this,
-						new String[] { toChars(context) }));
+						IProblem.SymbolIsNotAnArithmeticTypeItIs, this,
+						new String[] { toChars(context), type.toChars(context) }));
+				return new IntegerExp(0);
 			}
 		}
+		return this;
 	}
 
 	public void checkDeprecated(Scope sc, Dsymbol s, SemanticContext context) {

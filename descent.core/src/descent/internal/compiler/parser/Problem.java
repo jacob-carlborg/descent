@@ -669,6 +669,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CalledWithArgumentTypesMatchesBoth, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
 		case SymbolIsNotAnArithmeticType:
 			return String.format(ProblemMessages.SymbolIsNotAnArithmeticType, arguments[0]);
+		case SymbolIsNotAnArithmeticTypeItIs:
+			return String.format(ProblemMessages.SymbolIsNotAnArithmeticTypeItIs, arguments[0], arguments[1]);
 		case CannotPerformModuloComplexArithmetic:
 			return String.format(ProblemMessages.CannotPerformModuloComplexArithmetic);
 		case OperatorNotAllowedOnBoolExpression:
@@ -1023,6 +1025,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.TemplateTupleParameterMustBeLastOne);
 		case SymbolIsNestedInBoth:
 			return String.format(ProblemMessages.SymbolIsNestedInBoth, arguments[0], arguments[1], arguments[2]);
+		case FunctionIsAbstract:
+			return String.format(ProblemMessages.FunctionIsAbstract, arguments[0]);
+		case KindSymbolDoesNotOverload:
+			return String.format(ProblemMessages.KindSymbolDoesNotOverload, arguments[0], arguments[1]);
+		case MismatchedTupleLengths:
+			return String.format(ProblemMessages.MismatchedTupleLengths, arguments[0], arguments[1]);
+		case DoNotUseNullWhenComparingClassTypes:
+			return String.format(ProblemMessages.DoNotUseNullWhenComparingClassTypes);
+		case UseTokenInsteadOfTokenWhenComparingWithNull:
+			return String.format(ProblemMessages.UseTokenInsteadOfTokenWhenComparingWithNull, arguments[0], arguments[1]);
 		default:
 			return "";
 		}

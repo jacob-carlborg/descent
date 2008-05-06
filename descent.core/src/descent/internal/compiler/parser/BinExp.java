@@ -18,8 +18,10 @@ import static descent.internal.compiler.parser.TOK.TOKandass;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKassign;
 import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKblit;
 import static descent.internal.compiler.parser.TOK.TOKcast;
 import static descent.internal.compiler.parser.TOK.TOKcatass;
+import static descent.internal.compiler.parser.TOK.TOKconstruct;
 import static descent.internal.compiler.parser.TOK.TOKdivass;
 import static descent.internal.compiler.parser.TOK.TOKequal;
 import static descent.internal.compiler.parser.TOK.TOKge;
@@ -108,6 +110,7 @@ public abstract class BinExp extends Expression {
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		if (op == TOKplusplus || op == TOKminusminus || op == TOKassign
+				|| op == TOKconstruct || op == TOKblit
 				|| op == TOKaddass || op == TOKminass || op == TOKcatass
 				|| op == TOKmulass || op == TOKdivass || op == TOKmodass
 				|| op == TOKshlass || op == TOKshrass || op == TOKushrass
@@ -131,7 +134,7 @@ public abstract class BinExp extends Expression {
 				return e;
 			}
 
-			e1 = e1.modifiableLvalue(sc, null, context);
+			e1 = e1.modifiableLvalue(sc, e1, context);
 			e1.checkScalar(context);
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
@@ -158,14 +161,12 @@ public abstract class BinExp extends Expression {
 				return e;
 			}
 
-			e1 = e1.modifiableLvalue(sc, null, context);
+			e1 = e1.modifiableLvalue(sc, e1, context);
 			e1.checkScalar(context);
 			type = e1.type;
-			if (type.toBasetype(context).ty == Tbool) {
-				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
-				}
+			if (context.acceptsProblems() && type.toBasetype(context).ty == Tbool) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);

@@ -5,6 +5,9 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Cmp;
 
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TY.*;
+
 // DMD 1.020
 public class CmpExp extends BinExp {
 
@@ -72,6 +75,14 @@ public class CmpExp extends BinExp {
 		}
 
 		super.semanticp(sc, context);
+		
+	    if (context.acceptsProblems() &&
+	    		e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
+	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)
+	    {
+    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.DoNotUseNullWhenComparingClassTypes, this));
+	    }
+		
 		e = op_overload(sc, context);
 		if (null != e) {
 			e = new CmpExp(loc, op, e, new IntegerExp(loc, 0, Type.tint32));

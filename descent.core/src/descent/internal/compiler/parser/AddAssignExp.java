@@ -54,7 +54,7 @@ public class AddAssignExp extends BinExp {
 			return e;
 		}
 
-		e1 = e1.modifiableLvalue(sc, null, context);
+		e1 = e1.modifiableLvalue(sc, e1, context);
 
 		Type tb1 = e1.type.toBasetype(context);
 		Type tb2 = e2.type.toBasetype(context);

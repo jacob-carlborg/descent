@@ -129,7 +129,7 @@ public class DotVarExp extends UnaExp {
 				L1: while (loop) {
 					loop = false;
 
-					Type t = e1.type;
+					Type t = e1.type.toBasetype(context);
 
 					if (ad != null
 							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)

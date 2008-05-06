@@ -4,6 +4,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.TOK.*;
+
 // DMD 1.020
 public class AssignExp extends BinExp {
 
@@ -149,6 +151,35 @@ public class AssignExp extends BinExp {
 		super.semantic(sc, context);
 		e2 = resolveProperties(sc, e2, context);
 		assert (null != e1.type);
+		
+	    /* Rewrite tuple assignment as a tuple of assignments.
+	     */
+	    if (e1.op == TOKtuple && e2.op == TOKtuple)
+	    {	TupleExp tup1 = (TupleExp)e1;
+		TupleExp tup2 = (TupleExp) e2;
+		int dim = size(tup1.exps);
+		if (dim != size(tup2.exps))
+		{
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.MismatchedTupleLengths, this, new String[] { String.valueOf(dim), String.valueOf(size(tup2.exps)) }));
+			}
+		}
+		else
+		{   Expressions exps = new Expressions();
+		    exps.setDim(dim);
+
+		    for (int i = 0; i < dim; i++)
+		    {	
+		    	Expression ex1 = (Expression) tup1.exps.get(i);
+				Expression ex2 = (Expression) tup2.exps.get(i);
+				exps.set(i, new AssignExp(loc, ex1, ex2));
+		    }
+		    Expression e = new TupleExp(loc, exps);
+		    e = e.semantic(sc, context);
+		    return e;
+		}
+	    }
+
 
 		t1 = e1.type.toBasetype(context);
 
@@ -177,7 +208,7 @@ public class AssignExp extends BinExp {
 		if (e1.op == TOK.TOKarraylength) {
 			// e1 is not an lvalue, but we let code generator handle it
 			ArrayLengthExp ale = (ArrayLengthExp) e1;
-			ale.e1 = ale.e1.modifiableLvalue(sc, null, context);
+			ale.e1 = ale.e1.modifiableLvalue(sc, e1, context);
 		} else if (e1.op == TOK.TOKslice) {
 			;
 		} else {
@@ -186,8 +217,12 @@ public class AssignExp extends BinExp {
 			e1 = e1.modifiableLvalue(sc, e1old, context);
 		}
 
-		if (e1.op == TOK.TOKslice && null != t1.next
-				&& !(t1.next.equals(e2.type.next))) { // memset
+		if (e1.op == TOK.TOKslice && 
+				null != t1.nextOf() && 
+				e2.implicitConvTo(t1.nextOf(), context) != MATCH.MATCHnomatch &&
+				!(t1.nextOf().equals(e2.type.nextOf()))) { 
+			// memset
+			ismemset = true;	// make it easy for back end to tell what this is
 			e2 = e2.implicitCastTo(sc, t1.next, context);
 		} else if (t1.ty == TY.Tsarray) {
 			if (context.acceptsProblems()) {

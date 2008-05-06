@@ -5,6 +5,9 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Equal;
 
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TY.*;
+
 // DMD 1.020
 public class EqualExp extends BinExp {
 
@@ -97,6 +100,12 @@ public class EqualExp extends BinExp {
 				}
 			}
 		}
+		
+	    if (context.acceptsProblems() && 
+	    		(e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
+	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)) {
+	    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.UseTokenInsteadOfTokenWhenComparingWithNull, this, new String[] { op == TOKequal ? TOKidentity.toString() : TOKnotidentity.toString(), op.toString() }));
+	    }
 
 		e = op_overload(sc, context);
 		if (null != e) {

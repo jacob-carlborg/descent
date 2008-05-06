@@ -132,6 +132,10 @@ public class ArrayLiteralExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 		Type t0 = null;
+		
+		if (type != null) {
+			return this;
+		}
 
 		// Run semantic() on each element
 		for (int i = 0; i < elements.size(); i++) {

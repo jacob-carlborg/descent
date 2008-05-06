@@ -70,6 +70,10 @@ public class StringExp extends Expression {
 		toCBuffer(out, hdr, context);
 		return out.toChars();
 	}
+	
+	public int charAt(int i) {
+		return string[i];
+	}
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,

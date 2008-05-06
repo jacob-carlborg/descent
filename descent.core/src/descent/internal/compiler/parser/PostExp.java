@@ -58,7 +58,7 @@ public class PostExp extends BinExp {
 			}
 
 			e = this;
-			e1 = e1.modifiableLvalue(sc, null, context);
+			e1 = e1.modifiableLvalue(sc, e1, context);
 			e1.checkScalar(context);
 			e1.checkNoBool(context);
 			if (e1.type.ty == TY.Tpointer) {

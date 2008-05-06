@@ -54,16 +54,16 @@ public class MinAssignExp extends BinExp {
 			return e;
 		}
 
-		e1 = e1.modifiableLvalue(sc, null, context);
+		e1 = e1.modifiableLvalue(sc, e1, context);
 		e1.checkScalar(context);
 		e1.checkNoBool(context);
 		if (e1.type.ty == TY.Tpointer && e2.type.isintegral()) {
 			e = scaleFactor(sc, context);
 		} else {
-			type = e1.type;
-			typeCombine(sc, context);
 			e1.checkArithmetic(context);
 			e2.checkArithmetic(context);
+			type = e1.type;
+			typeCombine(sc, context);
 			if (type.isreal() || type.isimaginary()) {
 				assert (e2.type.isfloating());
 				e2 = e2.castTo(sc, e1.type, context);

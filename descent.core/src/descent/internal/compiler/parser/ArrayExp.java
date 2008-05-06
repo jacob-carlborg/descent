@@ -108,11 +108,10 @@ public class ArrayExp extends UnaExp {
 
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
-		if ((type != null) && (type.toBasetype(context).ty == TY.Tvoid)) {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.VoidsHaveNoValue, this));
-			}
+		if (context.acceptsProblems() &&
+				(type != null) && (type.toBasetype(context).ty == TY.Tvoid)) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					IProblem.VoidsHaveNoValue, this));
 		}
 		return this;
 	}
