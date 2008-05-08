@@ -125,10 +125,12 @@ public class ForStatement extends Statement {
 				if (e != null && e != EXP_CONTINUE_INTERPRET) {
 					break;
 				}
-				// Lcontinue: 
-				e = increment.interpret(istate, context);
-				if (e == EXP_CANT_INTERPRET) {
-					break;
+				// Lcontinue:
+			    if (increment != null) {
+					e = increment.interpret(istate, context);
+					if (e == EXP_CANT_INTERPRET) {
+						break;
+					}
 				}
 			} else if (e.isBool(false)) {
 				e = null;

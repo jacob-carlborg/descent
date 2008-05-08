@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Shl;
 
@@ -44,29 +43,7 @@ public class ShlExp extends BinExp {
 
 	@Override
 	public Expression optimize(int result, SemanticContext context) {
-		Expression e;
-
-		e1 = e1.optimize(result, context);
-		e2 = e2.optimize(result, context);
-		e = this;
-		if (e2.isConst()) {
-			integer_t i2 = e2.toInteger(context);
-			if (i2.compareTo(0) < 0
-					|| i2.compareTo(e1.type.size(context) * 8) > 0) {
-				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ShiftLeftExceeds, this, new String[] { i2.toString(), String.valueOf(e2.type.size(context) * 8) }));
-				}
-				e2 = new IntegerExp(0);
-			}
-			if (e1.isConst()) {
-				e = new IntegerExp(loc, e1.toInteger(context).shiftLeft(
-						e2.toInteger(context)), type);
-				e.start = e1.start;
-				e.length = e2.start + e2.length - e1.start;
-			}
-		}
-		return e;
+		return shift_optimize(result, this, Shl, context);
 	}
 
 	@Override

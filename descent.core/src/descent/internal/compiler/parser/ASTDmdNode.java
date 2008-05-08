@@ -1492,10 +1492,17 @@ public abstract class ASTDmdNode extends ASTNode {
         SymbolDeclaration s = d.isSymbolDeclaration();
         if (null != v)
         {
-            if (v.isConst() && null != v.init())
+        	boolean condition;
+        	if (context.apiLevel == Parser.D2) {
+        		condition = (v.isConst() || v.isInvariant()) && v.init != null && null == v.value;
+        	} else {
+        		condition = v.isConst() && null != v.init();
+        	}
+        	
+            if (condition)
             {
                 e = v.init().toExpression(context);
-                if (null == e.type)
+                if (e != null && null == e.type)
                     e.type = v.type;
             }
             else
@@ -1585,7 +1592,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		Tuple v2 = isTuple(o2);
 
 		/* A proper implementation of the various equals() overrides
-		 * should make it possible to just do o1->equals(o2), but
+		 * should make it possible to just do o1.equals(o2), but
 		 * we'll do that another day.
 		 */
 
@@ -1827,6 +1834,11 @@ public abstract class ASTDmdNode extends ASTNode {
 			return templateIdentifierLookup(tident.ident, parameters);
 		}
 		return -1;
+	}
+	
+	public static Expression eval_builtin(BUILTIN b, Expressions args) {
+		// XXX DMD 2
+		return null;
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {

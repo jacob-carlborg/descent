@@ -32,6 +32,7 @@ import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCvariadic;
 
+import static descent.internal.compiler.parser.TOK.TOKaddress;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 
 import static descent.internal.compiler.parser.TY.Tarray;
@@ -41,6 +42,7 @@ import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
@@ -418,9 +420,19 @@ public class FuncDeclaration extends Declaration {
 							break;
 						}
 					}
-				} else { /* Value parameters
-				 */
-					earg = earg.interpret(istatex, context);
+				} else { 
+					/* 
+					 * Value parameters
+					 */
+					Type ta = arg.type.toBasetype(context);
+					if (ta.ty == Tsarray && earg.op == TOKaddress) {
+						/* Static arrays are passed by a simple pointer.
+						 * Skip past this to get at the actual arg.
+						 */
+						earg = ((AddrExp) earg).e1;
+					}
+					earg = earg.interpret(istate != null ? istate : istatex, context);
+
 					if (earg == EXP_CANT_INTERPRET) {
 						return null;
 					}
@@ -1937,6 +1949,11 @@ public class FuncDeclaration extends Declaration {
 			SemanticContext context) {
 		type.toCBuffer(buf, ident, hgs, context);
 		bodyToCBuffer(buf, hgs, context);
+	}
+	
+	public BUILTIN isBuiltin() {
+		// XXX DMD 2
+		return BUILTIN.BUILTINunknown;
 	}
 	
 	@Override

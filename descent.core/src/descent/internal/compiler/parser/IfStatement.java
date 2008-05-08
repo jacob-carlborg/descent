@@ -72,18 +72,14 @@ public class IfStatement extends Statement {
 			throw new IllegalStateException("assert(e);");
 		}
 		if (e != EXP_CANT_INTERPRET) {
-			if (!e.isConst()) {
-				e = EXP_CANT_INTERPRET;
+			if (e.isBool(true)) {
+				e = ifbody != null ? ifbody.interpret(istate, context)
+						: null;
+			} else if (e.isBool(false)) {
+				e = elsebody != null ? elsebody.interpret(istate, context)
+						: null;
 			} else {
-				if (e.isBool(true)) {
-					e = ifbody != null ? ifbody.interpret(istate, context)
-							: null;
-				} else if (e.isBool(false)) {
-					e = elsebody != null ? elsebody.interpret(istate, context)
-							: null;
-				} else {
-					e = EXP_CANT_INTERPRET;
-				}
+				e = EXP_CANT_INTERPRET;
 			}
 		}
 		return e;

@@ -235,6 +235,10 @@ public class ArrayLiteralExp extends Expression {
 				if (ex != e) {
 					if (null == expsx) {
 						expsx = new Expressions();
+						expsx.setDim(size(elements));
+						for (int j = 0; j < size(elements); j++) {
+							expsx.set(j, elements.get(j));
+						}
 						expsx.addAll(elements);
 					}
 					expsx.set(i, ex);

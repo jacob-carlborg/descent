@@ -2,5 +2,3 @@ class.c --> check is buildDtor is really necessary
 clone.c
 constfold.c
 func.c --> missing StaticCtorDeclaration::StaticCtorDeclaration and StaticDtorDeclaration::StaticDtorDeclaration
-interpret.c
-optimize.c

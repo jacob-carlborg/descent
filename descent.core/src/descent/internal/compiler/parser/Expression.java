@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.Constfold.BinExp_fp;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
@@ -542,6 +543,29 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public integer_t toUInteger(SemanticContext context) {
 		return toInteger(context).castToUns64();
+	}
+	
+	public static Expression shift_optimize(int result, BinExp e, BinExp_fp fp,
+			SemanticContext context) {
+		Expression ex = e;
+
+		e.e1 = e.e1.optimize(result, context);
+		e.e2 = e.e2.optimize(result, context);
+		if (e.e2.isConst()) {
+			integer_t i2 = e.e2.toInteger(context);
+			integer_t sz = new integer_t(e.e1.type.size(context)).multiply(8);
+			if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ShiftAssignIsOutsideTheRange, e,
+							new String[] { i2.toString(), sz.toString() }));
+				}
+				e.e2 = new IntegerExp(0);
+			}
+			if (e.e1.isConst())
+				ex = fp.call(e.type, e.e1, e.e2, context);
+		}
+		return ex;
 	}
 
 	@Override

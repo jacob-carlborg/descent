@@ -28,6 +28,7 @@ import static descent.internal.compiler.parser.TOK.TOKge;
 import static descent.internal.compiler.parser.TOK.TOKgt;
 import static descent.internal.compiler.parser.TOK.TOKin;
 import static descent.internal.compiler.parser.TOK.TOKindex;
+import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKle;
 import static descent.internal.compiler.parser.TOK.TOKlt;
 import static descent.internal.compiler.parser.TOK.TOKmin;
@@ -585,7 +586,9 @@ public abstract class BinExp extends Expression {
 			// goto Lcant;
 			return EXP_CANT_INTERPRET;
 		}
-		if (!e1.isConst() && e1.op != TOKstring && e1.op != TOKarrayliteral
+		if (!e1.isConst() &&
+				e1.op != TOKnull &&
+				e1.op != TOKstring && e1.op != TOKarrayliteral
 				&& e1.op != TOKstructliteral) {
 			// goto Lcant;
 			return EXP_CANT_INTERPRET;
@@ -596,7 +599,9 @@ public abstract class BinExp extends Expression {
 			// goto Lcant;
 			return EXP_CANT_INTERPRET;
 		}
-		if (!e2.isConst() && e2.op != TOKstring && e2.op != TOKarrayliteral
+		if (!e2.isConst() &&
+				e1.op != TOKnull &&
+				e2.op != TOKstring && e2.op != TOKarrayliteral
 				&& e2.op != TOKstructliteral) {
 			// goto Lcant;
 			return EXP_CANT_INTERPRET;
@@ -641,9 +646,15 @@ public abstract class BinExp extends Expression {
 				/* Chase down rebinding of out and ref
 				 */
 				if (null != v.value() && v.value().op == TOKvar) {
-					ve = (VarExp) v.value();
-					v = ve.var.isVarDeclaration();
-					assert (null != v);
+					VarExp ve2 = (VarExp) v.value;
+					if (ve2.var.isSymbolDeclaration() != null) {
+					    /* This can happen if v is a struct initialized to
+					     * 0 using an __initZ SymbolDeclaration from
+					     * TypeStruct::defaultInit()
+					     */
+					} else {
+					    v = ve2.var.isVarDeclaration();
+					}
 				}
 
 				Expression ev = v.value();
@@ -654,10 +665,17 @@ public abstract class BinExp extends Expression {
 					}
 					return e;
 				}
-				if (null != fp)
+				if (null != fp) {
 					e2 = fp.call(v.type, ev, e2, context);
-				else
+				} else {
+			    	/* Look for special case of struct being initialized with 0.
+					 */
+					if (v.type.toBasetype(context).ty == Tstruct
+							&& e2.op == TOKint64) {
+						e2 = v.type.defaultInit(context);
+					}
 					e2 = Constfold.Cast(v.type, v.type, e2, context);
+				}
 				if (e2 != EXP_CANT_INTERPRET) {
 					if (!v.isParameter()) {
 						for (int i = 0; true; i++) {
@@ -693,9 +711,15 @@ public abstract class BinExp extends Expression {
 				}
 				return e;
 			}
-			if (v.value().op != TOKstructliteral)
+			Expression vie = v.value;
+			if (vie.op == TOKvar) {
+				Declaration d = ((VarExp) vie).var;
+				vie = getVarExp(e1.loc, istate, d, context);
+			}
+			if (vie.op != TOKstructliteral) {
 				return EXP_CANT_INTERPRET;
-			StructLiteralExp se = (StructLiteralExp) v.value();
+			}
+			StructLiteralExp se = (StructLiteralExp) vie;
 			int fieldi = se.getFieldIndex(type, soe.offset.intValue(), context);
 			if (fieldi == -1)
 				return EXP_CANT_INTERPRET;
@@ -1123,24 +1147,24 @@ public abstract class BinExp extends Expression {
 	@Override
 	public Expression optimize(int result, SemanticContext context) {
 		e1 = e1.optimize(result, context);
-	    e2 = e2.optimize(result, context);
-	    if (op == TOKshlass || op == TOKshrass || op == TOKushrass)
-	    {
-		if (e2.isConst())
-		{
-		    integer_t i2 = e2.toInteger(context);
-		    integer_t sz = new integer_t(e1.type.size(context)).multiply(8);
-		    if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0)
-		    {
-		    	if (context.acceptsProblems()) {
-		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ShiftAssignIsOutsideTheRange, sourceE1, sourceE2, new String[] { i2.toString(), sz.toString() }));
-		    	}
-		    	e2 = new IntegerExp(0);
-		    }
+		e2 = e2.optimize(result, context);
+		if (op == TOKshlass || op == TOKshrass || op == TOKushrass) {
+			if (e2.isConst()) {
+				integer_t i2 = e2.toInteger(context);
+				integer_t sz = new integer_t(e1.type.size(context)).multiply(8);
+				if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ShiftAssignIsOutsideTheRange,
+								sourceE1, sourceE2, new String[] {
+										i2.toString(), sz.toString() }));
+					}
+					e2 = new IntegerExp(0);
+				}
+			}
 		}
-	    }
 
-	    return this;
+		return this;
 	}
 
 }

@@ -98,30 +98,58 @@ public class CallExp extends UnaExp {
 
 		if (e1.op == TOKvar) {
 			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
-			if (fd != null) { // Inline .dup
-				if (fd.ident != null
-						&& equals(fd.ident, Id.adDup)
-						&& arguments != null && arguments.size() == 2) {
-					e = arguments.get(1);
-					e = e.interpret(istate, context);
-					if (e != EXP_CANT_INTERPRET) {
-						e = expType(type, e, context);
-					}
-				} else {
-					Expression eresult = fd.interpret(istate, arguments,
-							context);
-					if (eresult != null) {
-						e = eresult;
-					} else if (fd.type.toBasetype(context).nextOf().ty == Tvoid) {
-						e = EXP_VOID_INTERPRET;
-					} else {
-						if (istate.stackOverflow) {
-							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, new String[] { toChars(context) }));
+			if (fd != null) {
+				boolean doInlineDup = true;
+				if (context.apiLevel == Parser.D2) {
+					doInlineDup = false;
+
+					BUILTIN b = fd.isBuiltin();
+					if (b != BUILTIN.BUILTINunknown) {
+						Expressions args = new Expressions();
+						args.setDim(size(arguments));
+						for (int i = 0; i < size(args); i++) {
+							Expression earg = (Expression) arguments.get(i);
+							earg = earg.interpret(istate, context);
+							if (earg == EXP_CANT_INTERPRET) {
+								return earg;
 							}
+							args.set(i, earg);
+						}
+						e = eval_builtin(b, args);
+						if (null == e) {
+							e = EXP_CANT_INTERPRET;
+						}
+					} else {
+						doInlineDup = true;
+					}
+				}
+				
+				// Inline .dup
+				if (doInlineDup) {
+					if (fd.ident != null
+							&& equals(fd.ident, Id.adDup)
+							&& arguments != null && arguments.size() == 2) {
+						e = arguments.get(1);
+						e = e.interpret(istate, context);
+						if (e != EXP_CANT_INTERPRET) {
+							e = expType(type, e, context);
+						}
+					} else {
+						Expression eresult = fd.interpret(istate, arguments,
+								context);
+						if (eresult != null) {
+							e = eresult;
+						} else if (fd.type.toBasetype(context).nextOf().ty == Tvoid && 0 == context.global.errors) {
+							e = EXP_VOID_INTERPRET;
 						} else {
-							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
+							if (istate.stackOverflow) {
+								if (context.acceptsProblems()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, new String[] { toChars(context) }));
+								}
+							} else {
+								if (context.acceptsProblems()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
+								}
 							}
 						}
 					}

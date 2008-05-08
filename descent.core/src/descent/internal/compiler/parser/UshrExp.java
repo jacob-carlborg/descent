@@ -43,17 +43,7 @@ public class UshrExp extends BinExp {
 
 	@Override
 	public Expression optimize(int result, SemanticContext context) {
-		Expression e;
-
-		e1 = e1.optimize(result, context);
-		e2 = e2.optimize(result, context);
-
-		if (e1.isConst() && e2.isConst()) {
-			e = Ushr.call(type, e1, e2, context);
-		} else {
-			e = this;
-		}
-		return e;
+		return shift_optimize(result, this, Ushr, context);
 	}
 
 	@Override

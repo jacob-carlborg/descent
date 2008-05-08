@@ -43,12 +43,27 @@ public class DeclarationExp extends Expression {
 				} else if (v.init().isVoidInitializer() != null) {
 					e = null;
 				}
-			} else if (s == v && v.isConst() && v.init() != null) {
-				e = v.init().toExpression(context);
-				if (null == e) {
+			} else { 
+				boolean condition;
+				if (context.apiLevel == Parser.D2) {
+					condition = s == v && (v.isConst() || v.isInvariant()) && v.init != null;
+				} else {
+					condition = s == v && v.isConst() && v.init() != null;
+				}
+				
+				if (condition) {
+					e = v.init().toExpression(context);
+					if (null == e) {
+						e = EXP_CANT_INTERPRET;
+					} else if (null == e.type) {
+						e.type = v.type;
+					}
+				} else if (declaration.isAttribDeclaration() != null
+						|| declaration.isTemplateMixin() != null
+						|| declaration.isTupleDeclaration() != null) { // These can be made to work, too lazy now
 					e = EXP_CANT_INTERPRET;
-				} else if (null == e.type) {
-					e.type = v.type;
+				} else { // Others should not contain executable code, so are trivial to evaluate
+					e = null;
 				}
 			}
 		}
