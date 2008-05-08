@@ -54,10 +54,10 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		// Initialize to first member of enum
 		Expression e;
-		e = new IntegerExp(Loc.ZERO, sym.defaultval, this);
+		e = new IntegerExp(loc, sym.defaultval, this);
 		return e;
 	}
 
@@ -67,6 +67,14 @@ public class TypeEnum extends Type {
 		EnumMember m;
 		Dsymbol s;
 		Expression em;
+		
+	    if (null == sym.symtab) {
+	    	// goto Lfwd;
+	    	if (context.acceptsProblems()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfSymbolDotSymbol, e, ident, new String[] { toChars(context), ident.toChars() }));
+	    	}
+	        return new IntegerExp(Loc.ZERO, 0, this);
+	    }
 		
 		// Descent: lazy initialization
 		sym.consumeRest();
@@ -112,7 +120,7 @@ public class TypeEnum extends Type {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = defaultInit(context);
+			e = defaultInit(loc, context);
 		} else {
 			if (null == sym.memtype) {
 				// goto Lfwd;
@@ -216,13 +224,12 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependstring(sym.toChars(context));
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
+		buf.writestring(sym.toChars(context));
 	}
 
 	@Override
@@ -240,11 +247,6 @@ public class TypeEnum extends Type {
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
-	}
-
-	@Override
-	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		toBasetype(context).toTypeInfoBuffer(buf, context);
 	}
 	
 	@Override

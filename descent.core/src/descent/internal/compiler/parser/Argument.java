@@ -13,7 +13,7 @@ import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
 // DMD 1.020
-public class Argument extends ASTDmdNode {
+public class Argument extends ASTDmdNode implements Cloneable {
 
 	public static void argsToCBuffer(OutBuffer buf, HdrGenState hgs,
 			Arguments arguments, int varargs, SemanticContext context) {
@@ -39,7 +39,7 @@ public class Argument extends ASTDmdNode {
 					buf.writestring("lazy ");
 				}
 				argbuf.reset();
-				arg.type.toCBuffer2(argbuf, arg.ident, hgs, context);
+				arg.type.toCBuffer(argbuf, arg.ident, hgs, context);
 				if (arg.defaultArg != null) {
 					argbuf.writestring(" = ");
 					arg.defaultArg.toCBuffer(argbuf, hgs, context);
@@ -88,7 +88,7 @@ public class Argument extends ASTDmdNode {
 				}
 				arg = args.get(i);
 				argbuf.reset();
-				arg.type.toCBuffer2(argbuf, null, hgs, context);
+				arg.type.toCBuffer2(argbuf, hgs, 0, context);
 				buf.write(argbuf);
 			}
 			if (varargs != 0) {
@@ -256,6 +256,14 @@ public class Argument extends ASTDmdNode {
 			throw new IllegalStateException("assert(0);");
 		}
 		type.toDecoBuffer(buf, context);
+	}
+	
+	public Argument copy() {
+		try {
+			return (Argument) clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public String getSignature() {

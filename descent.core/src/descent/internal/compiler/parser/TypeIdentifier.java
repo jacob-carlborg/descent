@@ -136,17 +136,13 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		OutBuffer tmp = new OutBuffer();
-
-		tmp.writestring(this.ident.toChars());
-		toCBuffer2Helper(tmp, null, hgs, context);
-		buf.prependstring(tmp.toChars());
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
+		buf.writestring(this.ident.toChars());
+		toCBuffer2Helper(buf, hgs, context);
 	}
 
 	@Override

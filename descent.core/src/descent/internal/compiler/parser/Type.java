@@ -673,7 +673,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return singleton.arrayof;
 	}
 
-	public Expression defaultInit(SemanticContext context) {
+	public final Expression defaultInit(SemanticContext context) {
+		return defaultInit(Loc.ZERO, context);
+	}
+	
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		return null;
 	}
 
@@ -707,7 +711,12 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			}
 			e = getTypeInfo(null, context);
 		} else if (equals(ident, Id.init)) {
-			e = defaultInit(context);
+			if (ty == Tvoid) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidDoesNotHaveAnInitializer, lineNumber, start, length));
+				}
+			}
+			e = defaultInit(loc, context);
 		} else if (equals(ident, Id.mangleof)) {
 			Assert.isNotNull(deco);
 			e = new StringExp(loc, deco.toCharArray(), deco.length(), 'c');
@@ -779,7 +788,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 					return e;
 				}
 			} else if (equals(ident, Id.init)) {
-				return defaultInit(context);
+			    Expression ex = defaultInit(e.loc, context);
+			    return ex;
 			}
 		}
 
@@ -987,44 +997,27 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public String toChars(SemanticContext context) {
 		OutBuffer buf = new OutBuffer();
 		HdrGenState hgs = new HdrGenState();
-		toCBuffer2(buf, null, hgs, context);
+		toCBuffer(buf, null, hgs, context);
 		return buf.toChars();
 	}
 
 	public void toCBuffer(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
 			SemanticContext context) {
-		OutBuffer tbuf = new OutBuffer();
-		toCBuffer2(tbuf, ident, hgs, context);
-		buf.write(tbuf);
-	}
-
-	public boolean hasPointers(SemanticContext context) {
-		return false;
-	}
-
-	public char[] getTypeInfoIdent(int internal) {
-		// TODO semantic
-		return null;
-	}
-
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependstring(toChars(context));
+	    toCBuffer2(buf, hgs, 0, context);
 		if (ident != null) {
 			buf.writeByte(' ');
-			buf.writestring(ident.ident);
+			buf.writestring(ident.toChars());
 		}
 	}
 	
-	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod,
-			SemanticContext context) {
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
 		if (mod != this.mod) {
 			toCBuffer3(buf, hgs, mod, context);
 			return;
 		}
 		buf.writestring(toChars(context));
 	}
-
+	
 	public void toCBuffer3(OutBuffer buf, HdrGenState hgs, int mod,
 			SemanticContext context) {
 		if (mod != this.mod) {
@@ -1046,6 +1039,15 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				throw new IllegalStateException("assert(0)");
 			}
 		}
+	}
+
+	public boolean hasPointers(SemanticContext context) {
+		return false;
+	}
+
+	public char[] getTypeInfoIdent(int internal) {
+		// TODO semantic
+		return null;
 	}
 
 	public Type nextOf() {
@@ -1136,10 +1138,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return new TypeInfoDeclaration(this, 0, context);
 	}
 
-	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		throw new IllegalStateException("assert(0);");
-	}
-
 	public boolean builtinTypeInfo() {
 		return false;
 	}
@@ -1185,8 +1183,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public Expression getInternalTypeInfo(Scope sc, SemanticContext context) {
-		TypeInfoDeclaration tid;
-		Expression e;
+//		TypeInfoDeclaration tid;
+//		Expression e;
 		Type t;
 
 		t = toBasetype(context);

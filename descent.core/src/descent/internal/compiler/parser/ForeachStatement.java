@@ -28,7 +28,6 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
-import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tdchar;
 import static descent.internal.compiler.parser.TY.Tdelegate;
@@ -395,7 +394,7 @@ public class ForeachStatement extends Statement {
 			 * Look for special case of parsing char types out of char type
 			 * array.
 			 */
-			tn = tab.next.toBasetype(context);
+			tn = tab.nextOf().toBasetype(context);
 			if (tn.ty == Tchar || tn.ty == Twchar || tn.ty == Tdchar) {
 				Argument arg;
 
@@ -463,13 +462,6 @@ public class ForeachStatement extends Statement {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachTargetIsNotAnArrayOf, sourceAggr, new String[] { tab.toChars(context), value.type.toChars(context) }));
 					}
-				}
-			}
-
-			if ((value.storage_class & STCout) != 0
-					&& value.type.toBasetype(context).ty == Tbit) {
-				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachValueCannotBeOutAndTypeBit, this));
 				}
 			}
 
@@ -543,7 +535,7 @@ public class ForeachStatement extends Statement {
 		IdentifierExp id;
 		Type tret;
 
-		tret = func.type.next;
+		tret = func.type.nextOf();
 
 		// Need a variable to hold value from any return statements in body.
 		if (sc.func.vresult == null && tret != null && !same(tret, Type.tvoid, context)) {
@@ -622,7 +614,7 @@ public class ForeachStatement extends Statement {
 								IProblem.ForeachIndexCannotBeRef, arg));
 					}
 				}
-				if (!arg.type.equals(taa.index)) {
+				if (!arg.type.equals(taa.nextOf())) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForeachIndexMustBeType, this, new String[] { taa.index.toChars(context), arg.type.toChars(context) }));

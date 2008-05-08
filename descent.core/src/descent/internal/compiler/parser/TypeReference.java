@@ -37,13 +37,13 @@ public class TypeReference extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependstring("&");
-		if (ident != null) {
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
-		next.toCBuffer2(buf, null, hgs, context);
+		next.toCBuffer2(buf, hgs, this.mod, context);
+		buf.writeByte('&');
 	}
 	
 	@Override
@@ -53,9 +53,9 @@ public class TypeReference extends Type {
 	}
 	
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		Expression e;
-	    e = new NullExp(Loc.ZERO);
+	    e = new NullExp(loc);
 	    e.type = this;
 	    return e;
 	}

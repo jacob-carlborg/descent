@@ -25,9 +25,9 @@ public class TypeDelegate extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		Expression e;
-		e = new NullExp(Loc.ZERO);
+		e = new NullExp(loc);
 		e.type = this;
 		return e;
 	}
@@ -98,19 +98,17 @@ public class TypeDelegate extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod,
 			SemanticContext context) {
-		OutBuffer args = new OutBuffer();
+		if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
+		}
 		TypeFunction tf = (TypeFunction) next;
 
-		argsToCBuffer(args, hgs, tf.parameters, tf.varargs, context);
-		buf.prependstring(args.toChars());
-		buf.prependstring(" delegate");
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
-		}
-		next.next.toCBuffer2(buf, null, hgs, context);
+		tf.next.toCBuffer2(buf, hgs, 0, context);
+		buf.writestring(" delegate");
+		Argument.argsToCBuffer(buf, hgs, tf.parameters, tf.varargs, context);
 	}
 	
 	@Override

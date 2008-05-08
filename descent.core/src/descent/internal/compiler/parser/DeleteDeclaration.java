@@ -123,7 +123,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring("delete");
-		argsToCBuffer(buf, hgs, arguments, 0, context);
+		Argument.argsToCBuffer(buf, hgs, arguments, 0, context);
 		bodyToCBuffer(buf, hgs, context);
 	}
 	

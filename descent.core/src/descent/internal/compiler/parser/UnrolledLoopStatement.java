@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.Assert;
-import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // DMD 1.020
@@ -37,26 +36,13 @@ public class UnrolledLoopStatement extends Statement {
 
 	@Override
 	public boolean fallOffEnd(SemanticContext context) {
-		boolean falloff = true;
-
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
-
-			if (s == null) {
-				continue;
-			}
-
-			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				if (context.acceptsProblems()) {
-					context
-							.acceptProblem(Problem.newSemanticTypeWarning(
-									IProblem.StatementIsNotReachable, 0, s.start,
-									s.length));
-				}
-			}
-			falloff = s.fallOffEnd(context);
+			if (s != null) {
+				s.fallOffEnd(context);
+			} 
 		}
-		return falloff;
+		return true;
 	}
 
 	@Override

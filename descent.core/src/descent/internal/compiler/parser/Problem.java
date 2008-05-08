@@ -687,8 +687,6 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OnlyOneOrTwoArgumentsForArrayForeach);
 		case ForeachTargetIsNotAnArrayOf:
 			return String.format(ProblemMessages.ForeachTargetIsNotAnArrayOf, arguments[0], arguments[1]);
-		case ForeachValueCannotBeOutAndTypeBit:
-			return String.format(ProblemMessages.ForeachValueCannotBeOutAndTypeBit);
 		case ForeachKeyCannotBeInout:
 			return String.format(ProblemMessages.ForeachKeyCannotBeInout);
 		case ForeachValueOfUTFConversionCannotBeInout:
@@ -1035,6 +1033,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.DoNotUseNullWhenComparingClassTypes);
 		case UseTokenInsteadOfTokenWhenComparingWithNull:
 			return String.format(ProblemMessages.UseTokenInsteadOfTokenWhenComparingWithNull, arguments[0], arguments[1]);
+		case VoidDoesNotHaveAnInitializer:
+			return String.format(ProblemMessages.VoidDoesNotHaveAnInitializer);
 		default:
 			return "";
 		}

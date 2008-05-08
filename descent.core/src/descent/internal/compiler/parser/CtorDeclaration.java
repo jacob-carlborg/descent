@@ -141,7 +141,7 @@ public class CtorDeclaration extends FuncDeclaration {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring("this");
-		argsToCBuffer(buf, hgs, arguments, varargs, context);
+		Argument.argsToCBuffer(buf, hgs, arguments, varargs, context);
 		bodyToCBuffer(buf, hgs, context);
 	}
 

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import descent.core.IJavaElement;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -52,7 +53,7 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		Expression e;
 		Type bt;
 
@@ -60,7 +61,7 @@ public class TypeTypedef extends Type {
 			return sym.init.toExpression(context);
 		}
 		bt = sym.basetype;
-		e = bt.defaultInit(context);
+		e = bt.defaultInit(loc, context);
 		e.type = this;
 		while (bt.ty == TY.Tsarray) {
 			e.type = bt.next;
@@ -199,13 +200,12 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependstring(sym.toChars(context));
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
+		buf.writestring(sym.toChars(context));
 	}
 
 	@Override
@@ -224,10 +224,15 @@ public class TypeTypedef extends Type {
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
 	}
-
+	
 	@Override
-	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		sym.basetype.toTypeInfoBuffer(buf, context);
+	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length, SemanticContext context) {
+		if (CharOperation.equals(ident, Id.init)) {
+			return super.getProperty(loc, ident, lineNumber, start, length,
+					context);
+		}
+		return sym.basetype.getProperty(loc, ident, lineNumber, start, length,
+				context);
 	}
 	
 	@Override

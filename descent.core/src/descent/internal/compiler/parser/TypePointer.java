@@ -29,9 +29,9 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		Expression e;
-		e = new NullExp(Loc.ZERO);
+		e = new NullExp(loc);
 		e.type = this;
 		return e;
 	}
@@ -119,14 +119,15 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod,
 			SemanticContext context) {
-		buf.prependstring("*");
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+		if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
-		next.toCBuffer2(buf, ident, hgs, context);
+		next.toCBuffer2(buf, hgs, this.mod, context);
+		if (next.ty != Tfunction)
+			buf.writeByte('*');
 	}
 	
 	@Override

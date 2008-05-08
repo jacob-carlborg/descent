@@ -96,9 +96,9 @@ public class ReturnStatement extends Statement {
 			}
 		}
 
-		Type tret = fd.type.next;
+		Type tret = fd.type.nextOf();
 		if (fd.tintro != null) {
-			tret = fd.tintro.next;
+			tret = fd.tintro.nextOf();
 		}
 		Type tbret = null;
 
@@ -168,18 +168,18 @@ public class ReturnStatement extends Statement {
 
 			if (fd.returnLabel != null && tbret.ty != Tvoid) {
 			} else if (fd.inferRetType) {
-				if (fd.type.next != null) {
-					if (!exp.type.equals(fd.type.next)) {
+				if (fd.type.nextOf() != null) {
+					if (!exp.type.equals(fd.type.nextOf())) {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.MismatchedFunctionReturnTypeInference, sourceExp, new String[] { exp.type.toChars(context), fd.type.next.toChars(context) }));
+									IProblem.MismatchedFunctionReturnTypeInference, sourceExp, new String[] { exp.type.toChars(context), fd.type.nextOf().toChars(context) }));
 						}
 					}
 				} else {
 					fd.type.next = exp.type;
 					fd.type = fd.type.semantic(loc, sc, context);
 					if (fd.tintro == null) {
-						tret = fd.type.next;
+						tret = fd.type.nextOf();
 						tbret = tret.toBasetype(context);
 					}
 				}
@@ -187,11 +187,11 @@ public class ReturnStatement extends Statement {
 				exp = exp.implicitCastTo(sc, tret, context);
 			}
 		} else if (fd.inferRetType) {
-			if (fd.type.next != null) {
-				if (fd.type.next.ty != Tvoid) {
+			if (fd.type.nextOf() != null) {
+				if (fd.type.nextOf().ty != Tvoid) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.MismatchedFunctionReturnTypeInference, this, new String[] { "void", fd.type.next.toChars(context) }));
+								IProblem.MismatchedFunctionReturnTypeInference, this, new String[] { "void", fd.type.nextOf().toChars(context) }));
 					}
 				}
 			} else {
@@ -225,7 +225,7 @@ public class ReturnStatement extends Statement {
 				sc.fes.cases.add(this);
 				s = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
 						.size() + 1));
-			} else if (fd.type.next.toBasetype(context) == Type.tvoid) {
+			} else if (fd.type.nextOf().toBasetype(context) == Type.tvoid) {
 				Statement s1;
 				Statement s2;
 

@@ -1100,47 +1100,6 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e1;
 	}
 
-	public static void argsToCBuffer(OutBuffer buf, HdrGenState hgs,
-			List<Argument> arguments, int varargs, SemanticContext context) {
-		buf.writeByte('(');
-		if (arguments != null) {
-			int i;
-			OutBuffer argbuf = new OutBuffer();
-
-			for (i = 0; i < arguments.size(); i++) {
-				Argument arg;
-
-				if (i != 0) {
-					buf.writestring(", ");
-				}
-				arg = arguments.get(i);
-				if ((arg.storageClass & STCout) != 0) {
-					buf.writestring("out ");
-				} else if ((arg.storageClass & STCref) != 0) {
-					buf
-							.writestring((context.global.params.Dversion == 1) ? "inout "
-									: "ref ");
-				} else if ((arg.storageClass & STClazy) != 0) {
-					buf.writestring("lazy ");
-				}
-				argbuf.reset();
-				arg.type.toCBuffer2(argbuf, arg.ident, hgs, context);
-				if (arg.defaultArg != null) {
-					argbuf.writestring(" = ");
-					arg.defaultArg.toCBuffer(argbuf, hgs, context);
-				}
-				buf.write(argbuf);
-			}
-			if (varargs != 0) {
-				if (i != 0 && varargs == 1) {
-					buf.writeByte(',');
-				}
-				buf.writestring("...");
-			}
-		}
-		buf.writeByte(')');
-	}
-
 	public static void arrayExpressionScanForNestedRef(Scope sc, Expressions a,
 			SemanticContext context) {
 		if (null == a) {

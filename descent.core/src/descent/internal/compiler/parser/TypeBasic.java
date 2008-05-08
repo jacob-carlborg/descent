@@ -91,7 +91,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		BigInteger value;
 
 		switch (ty) {
@@ -113,11 +113,11 @@ public class TypeBasic extends Type {
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
-			return getProperty(Loc.ZERO, Id.nan, 0, 0, 0, context);
+			return getProperty(loc, Id.nan, 0, 0, 0, context);
 		default:
-			return new IntegerExp(Loc.ZERO, Id.ZERO, 0, this);
+			return new IntegerExp(loc, Id.ZERO, 0, this);
 		}
-		return new IntegerExp(Loc.ZERO, new integer_t(value), this);
+		return new IntegerExp(loc, new integer_t(value), this);
 	}
 
 	@Override
@@ -243,7 +243,7 @@ public class TypeBasic extends Type {
 	@Override
 	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
 			SemanticContext context) {
-		Expression e;
+//		Expression e;
 		integer_t ivalue;
 		real_t fvalue;
 
@@ -755,13 +755,13 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependstring(this.toString());
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
+		buf.writestring(ty.name);
+
 	}
 
 	@Override

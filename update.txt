@@ -3,7 +3,4 @@ clone.c
 constfold.c
 func.c --> missing StaticCtorDeclaration::StaticCtorDeclaration and StaticDtorDeclaration::StaticDtorDeclaration
 interpret.c
-mtype.c
-mtype.h
 optimize.c
-statement.c

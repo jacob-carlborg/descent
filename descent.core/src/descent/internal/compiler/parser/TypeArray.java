@@ -102,20 +102,4 @@ public abstract class TypeArray extends Type {
 		}
 		return e;
 	}
-
-	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		OutBuffer buf2 = new OutBuffer();
-		toPrettyBracket(buf2, hgs, context);
-		buf.prependstring(buf2.toChars());
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
-		}
-		next.toCBuffer2(buf, null, hgs, context);
-	}
-
-	public abstract void toPrettyBracket(OutBuffer buf, HdrGenState hgs,
-			SemanticContext context);
 }

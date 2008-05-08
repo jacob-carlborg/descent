@@ -134,7 +134,7 @@ public class ModuleBuilder {
 	 * Wether to make surface VarDeclaration semantic lazy.
 	 * Currently doesn't work.
 	 */
-	public boolean LAZY_VARS = LAZY & true;
+	public boolean LAZY_VARS = LAZY & false;
 	
 	/*
 	 * We want to skip things like:

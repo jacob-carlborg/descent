@@ -53,9 +53,9 @@ public class TypeAArray extends TypeArray {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		Expression e;
-		e = new NullExp(Loc.ZERO);
+		e = new NullExp(loc);
 		e.type = this;
 		return e;
 	}
@@ -218,24 +218,24 @@ public class TypeAArray extends TypeArray {
 		}
 		return t;
 	}
+	
+	@Override
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
+		}
+		next.toCBuffer2(buf, hgs, this.mod, context);
+		buf.writeByte('[');
+		index.toCBuffer2(buf, hgs, 0, context);
+		buf.writeByte(']');
+	}
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		index.toDecoBuffer(buf, context);
 		next.toDecoBuffer(buf, context);
-	}
-
-	@Override
-	public void toPrettyBracket(OutBuffer buf, HdrGenState hgs,
-			SemanticContext context) {
-		buf.writeByte('[');
-		{
-			OutBuffer ibuf = new OutBuffer();
-			index.toCBuffer2(ibuf, null, hgs, context);
-			buf.write(ibuf);
-		}
-		buf.writeByte(']');
 	}
 	
 	@Override

@@ -147,8 +147,8 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
-		return next.defaultInit(context);
+	public Expression defaultInit(Loc loc, SemanticContext context) {
+		return next.defaultInit(loc, context);
 	}
 
 	@Override
@@ -321,6 +321,15 @@ public class TypeSArray extends TypeArray {
 			dim = semanticLength(sc, tbn, dim, context);
 
 			dim = dim.optimize(WANTvalue | WANTinterpret, context);
+			if (sc.parameterSpecialization != 0 && dim.op == TOKvar &&
+				    (((VarExp) dim).var.storage_class & STCtemplateparameter) != 0)
+			{
+			    /* It could be a template parameter N which has no value yet:
+			     *   template Foo(T : T[N], size_t N);
+			     */
+			    return this;
+			}
+			
 			int d1 = dim.toInteger(context).intValue();
 			dim = dim.castTo(sc, tsize_t, context);
 			dim = dim.optimize(WANTvalue, context);
@@ -465,20 +474,17 @@ public class TypeSArray extends TypeArray {
 		}
 		return e;
 	}
-
+	
 	@Override
-	public void toPrettyBracket(OutBuffer buf, HdrGenState hgs,
-			SemanticContext context) {
-		buf.writestring("[");
-		buf.writestring(dim.toChars(context));
-		buf.writestring("]");
-	}
-
-	@Override
-	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		buf.writeByte(ty.mangleChar);
-		if (null != next)
-			next.toTypeInfoBuffer(buf, context);
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
+		}
+		next.toCBuffer2(buf, hgs, this.mod, context);
+		buf.data.append('[');
+		buf.data.append(dim);
+		buf.data.append(']');
 	}
 	
 	@Override

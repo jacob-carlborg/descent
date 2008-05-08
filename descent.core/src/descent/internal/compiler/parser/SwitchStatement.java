@@ -130,13 +130,14 @@ public class SwitchStatement extends Statement {
 		if (condition.type.isString(context)) {
 			// If it's not an array, cast it to one
 			if (condition.type.ty != Tarray) {
-				condition = condition.implicitCastTo(sc, condition.type.next
+				condition = condition.implicitCastTo(sc, condition.type.nextOf()
 						.arrayOf(context), context);
 			}
 		} else {
 			condition = condition.integralPromotions(sc, context);
 			condition.checkIntegral(context);
 		}
+	    condition = condition.optimize(WANTvalue, context);
 
 		sc = sc.push();
 		sc.sbreak = this;

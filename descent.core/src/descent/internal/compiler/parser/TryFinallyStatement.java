@@ -35,7 +35,7 @@ public class TryFinallyStatement extends Statement {
 	@Override
 	public boolean fallOffEnd(SemanticContext context) {
 		boolean result;
-		result = body.fallOffEnd(context);
+		result = body != null ? body.fallOffEnd(context) : true;
 		return result;
 	}
 

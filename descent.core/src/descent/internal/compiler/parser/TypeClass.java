@@ -89,9 +89,9 @@ public class TypeClass extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		Expression e;
-		e = new NullExp(Loc.ZERO);
+		e = new NullExp(loc);
 		e.type = this;
 		return e;
 	}
@@ -139,112 +139,150 @@ public class TypeClass extends Type {
 			return e;
 		}
 
-		//L1:
-		if (null == s) {
-			// See if it's a base class
-			ClassDeclaration cbase;
-			for (cbase = sym.baseClass; null != cbase; cbase = cbase.baseClass) {
-				if (equals(ident, cbase.ident)) {
-					e = new DotTypeExp(Loc.ZERO, e, cbase);
+		gotoL1 = true;
+		// L1:
+		while(gotoL1) {
+			gotoL1 = false;
+			
+			if (null == s) {
+				// See if it's a base class
+				ClassDeclaration cbase;
+				for (cbase = sym.baseClass; null != cbase; cbase = cbase.baseClass) {
+					if (equals(ident, cbase.ident)) {
+						e = new DotTypeExp(Loc.ZERO, e, cbase);
+						return e;
+					}
+				}
+	
+				if (equals(ident, Id.classinfo)) {
+					Type t;
+	
+					if (context.ClassDeclaration_classinfo == null) {
+						throw new IllegalStateException(
+								"assert(ClassDeclaration.classinfo);");
+					}
+					t = context.ClassDeclaration_classinfo.type;
+					if (e.op == TOKtype || e.op == TOKdottype) {
+						/* 
+						 * For type.classinfo, we know the classinfo at compile time.
+						 */
+						if (sym.vclassinfo == null) {
+							sym.vclassinfo = new ClassInfoDeclaration(sym, context);
+						}
+						e = new VarExp(e.loc, sym.vclassinfo);
+						e = e.addressOf(sc, context);
+						e.type = t; // do this so we don't get redundant dereference
+					} else {
+					    /* 
+					     * For class objects, the classinfo reference is the first
+						 * entry in the vtbl[]
+						 */
+						e = new PtrExp(e.loc, e);
+						e.type = t.pointerTo(context);
+						if (sym.isInterfaceDeclaration() != null) {
+							if (sym.isCOMinterface()) {
+							    /* COM interface vtbl[]s are different in that the
+								 * first entry is always pointer to QueryInterface().
+								 * We can't get a .classinfo for it.
+								 */
+								if (context.acceptsProblems()) {
+									context.acceptProblem(Problem.newSemanticTypeError(
+											IProblem.NoClassInfoForComInterfaceObjects, this));
+								}
+							}
+						    /* 
+						     * For an interface, the first entry in the vtbl[]
+						     * is actually a pointer to an instance of struct Interface.
+						     * The first member of Interface is the .classinfo,
+						     * so add an extra pointer indirection.
+						     */
+							e.type = e.type.pointerTo(context);
+							e = new PtrExp(e.loc, e);
+							e.type = t.pointerTo(context);
+						}
+						e = new PtrExp(e.loc, e, t);
+					}
+					return e;
+				}
+	
+				else if (equals(ident, Id.typeinfo)) {
+					if (!context.global.params.useDeprecated) {
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.DeprecatedProperty, ident, new String[] { "typeinfo",
+											".typeid(type)" }));
+						}
+					}
+					return getTypeInfo(sc, context);
+				}
+	
+				else if (equals(ident, Id.outer)
+						&& null != sym.vthis) {
+					s = sym.vthis;
+				}
+	
+				else {
+					//return getProperty(e.loc, ident);
+					return super.dotExp(sc, e, ident, context);
+				}
+			}
+			
+			// Descent: for binding resolution
+			ident.resolvedSymbol = s;
+	
+			s = s.toAlias(context);
+			v = s.isVarDeclaration();
+			if (null != v && v.isConst()) {
+				ExpInitializer ei = v.getExpInitializer(context);
+	
+				if (null != ei) {
+					e = ei.exp.copy(); // need to copy it if it's a StringExp
+					e = e.semantic(sc, context);
 					return e;
 				}
 			}
-
-			if (equals(ident, Id.classinfo)) {
-				Type t;
-
-				if (context.ClassDeclaration_classinfo == null) {
-					throw new IllegalStateException(
-							"assert(ClassDeclaration.classinfo);");
-				}
-				t = context.ClassDeclaration_classinfo.type;
-				if (e.op == TOKtype || e.op == TOKdottype) {
-					if (sym.vclassinfo == null) {
-						sym.vclassinfo = new ClassInfoDeclaration(sym, context);
-					}
-					e = new VarExp(e.loc, sym.vclassinfo);
-					e = e.addressOf(sc, context);
-					e.type = t; // do this so we don't get redundant dereference
-				} else {
-					e = new PtrExp(e.loc, e);
-					e.type = t.pointerTo(context);
-					if (sym.isInterfaceDeclaration() != null) {
-						if (sym.isCOMclass()) {
-							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.NoClassInfoForComInterfaceObjects, this));
-							}
-						}
-						e.type = e.type.pointerTo(context);
-						e = new PtrExp(e.loc, e);
-						e.type = t.pointerTo(context);
-					}
-					e = new PtrExp(e.loc, e, t);
-				}
+	
+			if (null != s.getType()) {
+				return new TypeExp(e.loc, s.getType());
+			}
+	
+			EnumMember em = s.isEnumMember();
+			if (null != em) {
+				assert (null != em.value());
+				return em.value().copy();
+			}
+	
+			TemplateMixin tm = s.isTemplateMixin();
+			if (null != tm) {
+				Expression de_;
+	
+				de_ = new DotExp(e.loc, e, new ScopeExp(e.loc, tm));
+				de_.type = e.type;
+				return de_;
+			}
+	
+			TemplateDeclaration td = s.isTemplateDeclaration();
+			if (null != td) {
+				e = new DotTemplateExp(e.loc, e, td);
+				e.semantic(sc, context);
 				return e;
 			}
-
-			else if (equals(ident, Id.typeinfo)) {
-				if (!context.global.params.useDeprecated) {
-					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.DeprecatedProperty, ident, new String[] { "typeinfo",
-										".typeid(type)" }));
-					}
+			
+		    TemplateInstance ti = s.isTemplateInstance();
+			if (ti != null) {
+				if (0 == ti.semanticdone) {
+					ti.semantic(sc, context);
 				}
-				return getTypeInfo(sc, context);
+				s = ti.inst.toAlias(context);
+				if (null == s.isTemplateInstance()) {
+					// goto L1;
+					gotoL1 = true;
+					continue;
+				}
+				Expression de2 = new DotExp(e.loc, e, new ScopeExp(e.loc, ti));
+				de2.type = e.type;
+				return de2;
 			}
-
-			else if (equals(ident, Id.outer)
-					&& null != sym.vthis) {
-				s = sym.vthis;
-			}
-
-			else {
-				//return getProperty(e.loc, ident);
-				return super.dotExp(sc, e, ident, context);
-			}
-		}
-		
-		// Descent: for binding resolution
-		ident.resolvedSymbol = s;
-
-		s = s.toAlias(context);
-		v = s.isVarDeclaration();
-		if (null != v && v.isConst()) {
-			ExpInitializer ei = v.getExpInitializer(context);
-
-			if (null != ei) {
-				e = ei.exp.copy(); // need to copy it if it's a StringExp
-				e = e.semantic(sc, context);
-				return e;
-			}
-		}
-
-		if (null != s.getType()) {
-			return new TypeExp(e.loc, s.getType());
-		}
-
-		EnumMember em = s.isEnumMember();
-		if (null != em) {
-			assert (null != em.value());
-			return em.value().copy();
-		}
-
-		TemplateMixin tm = s.isTemplateMixin();
-		if (null != tm) {
-			Expression de_;
-
-			de_ = new DotExp(e.loc, e, new ScopeExp(e.loc, tm));
-			de_.type = e.type;
-			return de_;
-		}
-
-		TemplateDeclaration td = s.isTemplateDeclaration();
-		if (null != td) {
-			e = new DotTemplateExp(e.loc, e, td);
-			e.semantic(sc, context);
-			return e;
 		}
 
 		d = s.isDeclaration();
@@ -411,13 +449,12 @@ public class TypeClass extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependstring(sym.toChars(context));
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
+		buf.writestring(sym.toChars(context));
 	}
 
 	@Override

@@ -98,7 +98,7 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(SemanticContext context) {
+	public Expression defaultInit(Loc loc, SemanticContext context) {
 		 Symbol s;
 		 Declaration d;
 
@@ -114,7 +114,7 @@ public class TypeStruct extends Type {
 		// int offset;
 
 		Expression b;
-		VarDeclaration v;
+		VarDeclaration v = null;
 		Dsymbol s;
 		DotVarExp de;
 		Declaration d;
@@ -166,49 +166,68 @@ public class TypeStruct extends Type {
 		// Descent: for binding resolution
 		ident.resolvedSymbol = s;
 
-		//L1:
-		if (null == s) {
-			return super.dotExp(sc, e, ident, context);
-		}
-
-		s = s.toAlias(context);
-
-		v = s.isVarDeclaration();
-		if (null != v && v.isConst()) {
-			ExpInitializer ei = v.getExpInitializer(context);
-
-			if (null != ei) {
-				e = ei.exp.copy(); // need to copy it if it's a StringExp
-				e = e.semantic(sc, context);
+		boolean continueInL1 = true;
+	// L1:
+		while(continueInL1) {
+			continueInL1 = false;
+			if (null == s) {
+				return super.dotExp(sc, e, ident, context);
+			}
+	
+			s = s.toAlias(context);
+	
+			v = s.isVarDeclaration();
+			if (null != v && v.isConst()) {
+				ExpInitializer ei = v.getExpInitializer(context);
+	
+				if (null != ei) {
+					e = ei.exp.copy(); // need to copy it if it's a StringExp
+					e = e.semantic(sc, context);
+					return e;
+				}
+			}
+	
+			if (null != s.getType()) {
+				//return new DotTypeExp(e.loc, e, s);
+				return new TypeExp(e.loc, s.getType());
+			}
+	
+			EnumMember em = s.isEnumMember();
+			if (null != em) {
+				assert (null != em.value());
+				return em.value().copy();
+			}
+	
+			TemplateMixin tm = s.isTemplateMixin();
+			if (null != tm) {
+				Expression de_;
+	
+				de_ = new DotExp(e.loc, e, new ScopeExp(e.loc, tm));
+				de_.type = e.type;
+				return de_;
+			}
+	
+			TemplateDeclaration td = s.isTemplateDeclaration();
+			if (null != td) {
+				e = new DotTemplateExp(e.loc, e, td);
+				e.semantic(sc, context);
 				return e;
 			}
-		}
-
-		if (null != s.getType()) {
-			//return new DotTypeExp(e.loc, e, s);
-			return new TypeExp(e.loc, s.getType());
-		}
-
-		EnumMember em = s.isEnumMember();
-		if (null != em) {
-			assert (null != em.value());
-			return em.value().copy();
-		}
-
-		TemplateMixin tm = s.isTemplateMixin();
-		if (null != tm) {
-			Expression de_;
-
-			de_ = new DotExp(e.loc, e, new ScopeExp(e.loc, tm));
-			de_.type = e.type;
-			return de_;
-		}
-
-		TemplateDeclaration td = s.isTemplateDeclaration();
-		if (null != td) {
-			e = new DotTemplateExp(e.loc, e, td);
-			e.semantic(sc, context);
-			return e;
+			
+		    TemplateInstance ti = s.isTemplateInstance();
+			if (ti != null) {
+				if (0 == ti.semanticdone)
+					ti.semantic(sc, context);
+				s = ti.inst.toAlias(context);
+				if (null == s.isTemplateInstance()) {
+					// goto L1;
+					continueInL1 = true;
+					continue;
+				}
+				Expression de2 = new DotExp(e.loc, e, new ScopeExp(e.loc, ti));
+				de2.type = e.type;
+				return de2;
+			}
 		}
 
 		d = s.isDeclaration();
@@ -315,12 +334,17 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		buf.prependbyte(' ');
-		buf.prependstring(toChars(context));
-		if (ident != null)
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
+		}
+		TemplateInstance ti = sym.parent.isTemplateInstance();
+		if (ti != null && ti.toAlias(context) == sym) {
+			buf.writestring(ti.toChars(context));
+		} else {
+			buf.writestring(sym.toChars(context));
+		}
 	}
 
 	@Override
@@ -341,11 +365,6 @@ public class TypeStruct extends Type {
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
-	}
-
-	@Override
-	public void toTypeInfoBuffer(OutBuffer buf, SemanticContext context) {
-		toDecoBuffer(buf, context);
 	}
 	
 	@Override

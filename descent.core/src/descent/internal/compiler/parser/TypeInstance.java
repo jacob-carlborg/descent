@@ -238,19 +238,15 @@ public class TypeInstance extends TypeQualified {
 		t.syntaxCopyHelper(this, context);
 		return t;
 	}
-
+	
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		OutBuffer tmp = new OutBuffer();
-
-		tempinst.toCBuffer(tmp, hgs, context);
-		toCBuffer2Helper(tmp, null, hgs, context);
-		buf.prependstring(tmp.toChars());
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
+		tempinst.toCBuffer(buf, hgs, context);
+		toCBuffer2Helper(buf, hgs, context);
 	}
 	
 	@Override

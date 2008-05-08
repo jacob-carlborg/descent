@@ -129,6 +129,7 @@ public class DoStatement extends Statement {
 		sc.noctor--;
 		condition = condition.semantic(sc, context);
 		condition = resolveProperties(sc, condition, context);
+	    condition = condition.optimize(WANTvalue, context);
 
 		condition = condition.checkToBoolean(context);
 

@@ -104,7 +104,7 @@ public class EqualExp extends BinExp {
 	    if (context.acceptsProblems() && 
 	    		(e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
 	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)) {
-	    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.UseTokenInsteadOfTokenWhenComparingWithNull, this, new String[] { op == TOKequal ? TOKidentity.toString() : TOKnotidentity.toString(), op.toString() }));
+	    	context.acceptProblem(Problem.newSemanticTypeError(IProblem.UseTokenInsteadOfTokenWhenComparingWithNull, this, new String[] { op == TOKequal ? "is" : "!is", op.toString() }));
 	    }
 
 		e = op_overload(sc, context);

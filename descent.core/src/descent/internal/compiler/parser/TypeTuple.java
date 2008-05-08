@@ -135,15 +135,8 @@ public class TypeTuple extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		OutBuffer buf2 = new OutBuffer();
-		argsToCBuffer(buf2, hgs, arguments, 0, context);
-		buf.prependstring(buf2.toChars());
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
-		}
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    Argument.argsToCBuffer(buf, hgs, arguments, 0, context);
 	}
 
 	@Override

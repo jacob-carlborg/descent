@@ -838,9 +838,6 @@ OnlyOneOrTwoArgumentsForArrayForeach
 ForeachTargetIsNotAnArrayOf
 	formatString=foreach: %1$s is not an array of %2$s
 	numArgs=2
-ForeachValueCannotBeOutAndTypeBit
-	formatString=foreach: value cannot be out and type bit
-	numArgs=0
 ForeachKeyCannotBeInout
 	formatString=foreach: key cannot be inout
 	numArgs=0
@@ -1360,7 +1357,9 @@ DoNotUseNullWhenComparingClassTypes
 UseTokenInsteadOfTokenWhenComparingWithNull
 	formatString=Use '%1$s' instead of '%2$s' when comparing with null
 	numArgs=2
-
+VoidDoesNotHaveAnInitializer
+	formatString=void does not have an initializer
+	numArgs=0
 
 
 

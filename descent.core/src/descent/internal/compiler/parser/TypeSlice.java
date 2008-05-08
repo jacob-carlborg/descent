@@ -165,22 +165,18 @@ public class TypeSlice extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
-		OutBuffer buf2 = new OutBuffer();
-
-		buf2.writestring("[");
-		buf2.writestring(lwr.toChars(context));
-		buf2.writestring(" .. ");
-		buf2.writestring(upr.toChars(context));
-		buf2.writestring("]");
-
-		buf.prependstring(buf2.toChars());
-		if (ident != null) {
-			buf.writeByte(' ');
-			buf.writestring(ident.toChars());
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    if (mod != this.mod) {
+			toCBuffer3(buf, hgs, mod, context);
+			return;
 		}
-		next.toCBuffer2(buf, null, hgs, context);
+		next.toCBuffer2(buf, hgs, this.mod, context);
+
+		buf.data.append('[');
+		buf.data.append(lwr.toChars(context));
+		buf.data.append(" .. ");
+		buf.data.append(upr.toChars(context));
+		buf.data.append(']');
 	}
 	
 	@Override

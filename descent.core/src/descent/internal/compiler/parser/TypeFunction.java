@@ -27,10 +27,14 @@ public class TypeFunction extends Type {
 	public Arguments parameters, sourceParameters;
 	public int varargs;
 	public char linkageChar;
+	
+	private TypeFunction(Type treturn) {
+		super(Tfunction, treturn);
+	}
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
-		super(Tfunction, treturn);
+		this(treturn);
 		
 		this.parameters = parameters;
 		if (this.parameters != null) {
@@ -55,10 +59,6 @@ public class TypeFunction extends Type {
 			TemplateParameters parameters, Objects dedtypes,
 			SemanticContext context) {
 		boolean L1 = true;
-
-		// printf("TypeFunction.deduceType()\n");
-		// printf("\tthis = %d, ", ty); print();
-		// printf("\ttparam = %d, ", tparam.ty); tparam.print();
 
 		// Extra check that function characteristics must match
 		if (null != tparam && tparam.ty == Tfunction) {
@@ -207,48 +207,56 @@ public class TypeFunction extends Type {
 		if (deco != null) { // if semantic() already run
 			return this;
 		}
+		
+	    TypeFunction tf = new TypeFunction(next);
+	    if (parameters != null) {
+		    tf.parameters = new Arguments();
+		    for (int i = 0; i < size(parameters); i++) {
+				tf.parameters.add(parameters.get(i).copy());
+			}
+	    }
 
-		linkage = sc.linkage;
-		if (next == null) {
-			next = tvoid;
+		tf.linkage = sc.linkage;
+		if (null == tf.next) {
+			tf.next = tvoid;
 		}
-		next = next.semantic(loc, sc, context);
-		if (next.toBasetype(context).ty == Tsarray) {
+		tf.next = tf.next.semantic(loc, sc, context);
+		if (tf.next.toBasetype(context).ty == Tsarray) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.FunctionsCannotReturnStaticArrays, this));
 			}
-			next = Type.terror;
+			tf.next = Type.terror;
 		}
-		if (next.toBasetype(context).ty == Tfunction) {
+		if (tf.next.toBasetype(context).ty == Tfunction) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAFunction, this));
 			}
-			next = Type.terror;
+			tf.next = Type.terror;
 		}
-		if (next.toBasetype(context).ty == Ttuple) {
+		if (tf.next.toBasetype(context).ty == Ttuple) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnATuple, this));
 			}
-			next = Type.terror;
+			tf.next = Type.terror;
 		}
-		if (next.isauto() && (sc.flags & SCOPEctor) == 0) {
+		if (tf.next.isauto() && (sc.flags & SCOPEctor) == 0) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, this, new String[] { next.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, this, new String[] { tf.next.toChars(context) }));
 			}
 		}
 
-		if (parameters != null) {
-			int dim = Argument.dim(parameters, context);
+		if (tf.parameters != null) {
+			int dim = Argument.dim(tf.parameters, context);
 
 			for (int i = 0; i < dim; i++) {
-				Argument arg = Argument.getNth(parameters, i, context);
+				Argument arg = Argument.getNth(tf.parameters, i, context);
 				Type t;
 
-				inuse++;
+				tf.inuse++;
 				arg.type = arg.type.semantic(loc, sc, context);
-				if (inuse == 1) {
-					inuse--;
+				if (tf.inuse == 1) {
+					tf.inuse--;
 				}
 				t = arg.type.toBasetype(context);
 
@@ -283,23 +291,23 @@ public class TypeFunction extends Type {
 				 * change.
 				 */
 				if (t.ty == Ttuple) {
-					dim = Argument.dim(parameters, context);
+					dim = Argument.dim(tf.parameters, context);
 					i--;
 				}
 			}
 		}
-		deco = merge(context).deco;
+		tf.deco = tf.merge(context).deco;
 
-		if (inuse != 0) {
+		if (tf.inuse != 0) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveType, this));
 			}
-			inuse = 0;
+			tf.inuse = 0;
 			return terror;
 		}
 
-		if (varargs != 0 && linkage != LINK.LINKd
-				&& Argument.dim(parameters, context) == 0) {
+		if (tf.varargs != 0 && tf.linkage != LINK.LINKd
+				&& Argument.dim(tf.parameters, context) == 0) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter, this));
 			}
@@ -309,7 +317,7 @@ public class TypeFunction extends Type {
 		 * Don't return merge(), because arg identifiers and default args can be
 		 * different even though the types match
 		 */
-		return this;
+		return tf;
 	}
 
 	@Override
@@ -525,62 +533,104 @@ public class TypeFunction extends Type {
 
 		return match;
 	}
-
+	
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, IdentifierExp ident, HdrGenState hgs, SemanticContext context) {
 		String p = null;
 
-	    if (inuse != 0)
-	    {	inuse = 2;		// flag error to caller
-		return;
-	    }
-	    inuse++;
-	    if (hgs.ddoc != 1)
-	    {
-		switch (linkage)
-		{
-		    case LINKd:		p = null;	break;
-		    case LINKc:		p = "C ";	break;
-		    case LINKwindows:	p = "Windows ";	break;
-		    case LINKpascal:	p = "Pascal ";	break;
-		    case LINKcpp:	p = "C++ ";	break;
-		    // Added for Descent
-		    case LINKsystem:
-		    	if (context._WIN32) {
-		    		p = "Windows ";
-		    	} else {
-		    		p = "C ";
-		    	}
-		    	break;
-		    default:
-		    	throw new IllegalStateException("assert(0);");
+		if (inuse != 0) {
+			inuse = 2; // flag error to caller
+			return;
 		}
-	    }
+		inuse++;
+		if (next != null
+				&& (null == ident || equals(ident.toHChars2(), ident.toChars()
+						.toCharArray()))) {
+			next.toCBuffer2(buf, hgs, 0, context);
+		}
+		if (hgs.ddoc != 1) {
+			switch (linkage) {
+			case LINKd:
+				p = null;
+				break;
+			case LINKc:
+				p = "C ";
+				break;
+			case LINKwindows:
+				p = "Windows ";
+				break;
+			case LINKpascal:
+				p = "Pascal ";
+				break;
+			case LINKcpp:
+				p = "C++ ";
+				break;
+			// Added for Descent
+			case LINKsystem:
+				if (context._WIN32) {
+					p = "Windows ";
+				} else {
+					p = "C ";
+				}
+				break;
+			default:
+				throw new IllegalStateException("assert(0);");
+			}
+		}
 
-	    if (buf.data.length() != 0)
-	    {
-		if (!hgs.hdrgen && p != null) {
-			buf.prependstring(p);
-		}
-		buf.bracket('(', ')');
-		assert(ident == null);
-	    }
-	    else
-	    {
 		if (!hgs.hdrgen && p != null) {
 			buf.writestring(p);
 		}
-		if (ident != null)
-		{   buf.writeByte(' ');
-		    buf.writestring(ident.toHChars2());
+		
+		if (ident != null) {
+			buf.writeByte(' ');
+			buf.writestring(ident.toHChars2());
 		}
-	    }
-	    Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
-	    if (next != null&& (null == ident || ident.toHChars2().equals(ident.toChars()))) {
-			next.toCBuffer2(buf, null, hgs, context);
+		
+		Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
+		inuse--;
+	}
+	
+	@Override
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
+	    String p = null;
+
+		if (inuse != 0) {
+			inuse = 2; // flag error to caller
+			return;
 		}
-	    inuse--;
+		inuse++;
+		if (next != null) {
+			next.toCBuffer2(buf, hgs, 0, context);
+		}
+		if (hgs.ddoc != 1) {
+			switch (linkage) {
+			case LINKd:
+				p = null;
+				break;
+			case LINKc:
+				p = "C ";
+				break;
+			case LINKwindows:
+				p = "Windows ";
+				break;
+			case LINKpascal:
+				p = "Pascal ";
+				break;
+			case LINKcpp:
+				p = "C++ ";
+				break;
+			default:
+				throw new IllegalStateException("assert(0);");
+			}
+		}
+
+		if (!hgs.hdrgen && p != null) {
+			buf.writestring(p);
+		}
+		buf.writestring(" function");
+		Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
+		inuse--;
 	}
 
 	@SuppressWarnings("serial")

@@ -263,8 +263,7 @@ public abstract class TypeQualified extends Type {
 	}
 
 	@Override
-	public void toCBuffer2(OutBuffer buf, IdentifierExp ident, HdrGenState hgs,
-			SemanticContext context) {
+	public void toCBuffer2(OutBuffer buf, HdrGenState hgs, int mod, SemanticContext context) {
 		int i;
 
 		for (i = 0; i < idents.size(); i++) {
@@ -281,8 +280,7 @@ public abstract class TypeQualified extends Type {
 		}
 	}
 
-	public void toCBuffer2Helper(OutBuffer buf, IdentifierExp ident,
-			HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer2Helper(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		int i;
 
 		if (idents != null) {

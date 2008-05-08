@@ -290,7 +290,6 @@ final class ProblemMessages extends NLS {
 	public static String OnlyOneOrTwoArgumentsForAssociativeArrayForeach;
 	public static String OnlyOneOrTwoArgumentsForArrayForeach;
 	public static String ForeachTargetIsNotAnArrayOf;
-	public static String ForeachValueCannotBeOutAndTypeBit;
 	public static String ForeachKeyCannotBeInout;
 	public static String ForeachValueOfUTFConversionCannotBeInout;
 	public static String CannotInferTypeForSymbol;
@@ -464,6 +463,7 @@ final class ProblemMessages extends NLS {
 	public static String MismatchedTupleLengths;
 	public static String DoNotUseNullWhenComparingClassTypes;
 	public static String UseTokenInsteadOfTokenWhenComparingWithNull;
+	public static String VoidDoesNotHaveAnInitializer;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
