@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class GotoDefaultStatement extends Statement {
 
 	public SwitchStatement sw;

@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class IfStatement extends Statement {
 
 	public Argument arg;

@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Mul;
 
-// DMD 1.020
+
 public class MulAssignExp extends BinExp {
 
 	public MulAssignExp(Loc loc, Expression e1, Expression e2) {

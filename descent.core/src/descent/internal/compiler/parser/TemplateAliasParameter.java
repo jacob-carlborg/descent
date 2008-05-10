@@ -7,7 +7,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
-// DMD 1.020
+
 public class TemplateAliasParameter extends TemplateParameter {
 
 	public Type specAliasT, sourceSpecAliasT;

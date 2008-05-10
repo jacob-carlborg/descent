@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.STC.*;
 
-// DMD 1.020
+
 public class SymbolDeclaration extends Declaration {
 
 	public Symbol sym;

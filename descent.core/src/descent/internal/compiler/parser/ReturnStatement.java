@@ -24,7 +24,7 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class ReturnStatement extends Statement {
 
 	public Expression exp, sourceExp;

@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 // TODO this class needs a serious re-implementation
-// DMD 1.020
+
 public class OutBuffer {
 	
 	public StringBuilder data;

@@ -37,7 +37,7 @@ import static descent.internal.compiler.parser.TY.Twchar;
  * @author Walter Bright, port by Robert Fraser & Ary Manzana
  */
 
-// DMD 1.020
+
 public class Constfold {
 
 	public static interface UnaExp_fp {
@@ -685,9 +685,7 @@ public class Constfold {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringIndexOutOfBounds, e2, new String[] { i.toString(), String.valueOf(es1.len) }));
 					}
 				} else {
-					integer_t value;
-
-					value = new integer_t(es1.string[i.intValue()]);
+					int value = es1.charAt(i.intValue());
 					e = new IntegerExp(loc, value, type);
 				}
 			} else if (e1.type.toBasetype(context).ty == Tsarray
@@ -757,9 +755,9 @@ public class Constfold {
 			Loc loc = e1.loc;
 			Type t;
 
-			if ((e1.op == TOKnull && e2.op == TOKint64)
-					|| (e1.op == TOKint64 && e2.op == TOKnull)) {
-				if (e1.op == TOKnull && e2.op == TOKint64) {
+			if ((e1.op == TOKnull && (e2.op == TOKint64 || e2.op == TOKstructliteral))
+					|| ((e1.op == TOKint64 || e1.op == TOKstructliteral) && e2.op == TOKnull)) {
+				if (e1.op == TOKnull && (e2.op == TOKint64 || e2.op == TOKstructliteral)) {
 					e = e2;
 				} else {
 					e = e1;
@@ -877,7 +875,7 @@ public class Constfold {
 			}
 
 			else if (e1.op == TOKarrayliteral
-					&& e1.type.toBasetype(context).next.equals(e2.type)) {
+					&& e1.type.toBasetype(context).nextOf().equals(e2.type)) {
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
 
 				ArrayLiteralExp ale = new ArrayLiteralExp(es1.loc,
@@ -896,7 +894,7 @@ public class Constfold {
 			}
 
 			else if (e2.op == TOKarrayliteral
-					&& e2.type.toBasetype(context).next.equals(e1.type)) {
+					&& e2.type.toBasetype(context).nextOf().equals(e1.type)) {
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
 
 				ArrayLiteralExp ale = new ArrayLiteralExp(es2.loc,
@@ -924,7 +922,7 @@ public class Constfold {
 					t = e2.type;
 				}
 				Type tb = t.toBasetype(context);
-				if (tb.ty == Tarray && tb.next.equals(e.type)) {
+				if (tb.ty == Tarray && tb.nextOf().equals(e.type)) {
 					Expressions expressions = new Expressions(1);
 					expressions.add(e);
 					e = new ArrayLiteralExp(loc, expressions);
@@ -951,24 +949,45 @@ public class Constfold {
 				SemanticContext context) {
 			Expression e;
 			Loc loc = e1.loc;
-			int cmp;
+			boolean cmp = false;
 			real_t r1;
 			real_t r2;
 
-			// printf("Equal(e1 = %s, e2 = %s)\n", e1.toChars(), e2.toChars());
-
 			assert (op == TOKequal || op == TOKnotequal);
 
-			if (e1.op == TOKstring && e2.op == TOKstring) {
+		    if (e1.op == TOKnull) {
+				if (e2.op == TOKnull) {
+					cmp = true;
+				}
+				else if (e2.op == TOKstring) {
+					StringExp es2 = (StringExp) e2;
+					cmp = (0 == es2.len);
+				} else if (e2.op == TOKarrayliteral) {
+					ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
+					cmp = null == es2.elements || (0 == es2.elements.size());
+				} else {
+					return EXP_CANT_INTERPRET;
+				}
+			} else if (e2.op == TOKnull) {
+				if (e1.op == TOKstring) {
+					StringExp es1 = (StringExp) e1;
+					cmp = (0 == es1.len);
+				} else if (e1.op == TOKarrayliteral) {
+					ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
+					cmp = null == es1.elements || (0 == es1.elements.size());
+				} else {
+					return EXP_CANT_INTERPRET;
+				}
+			} else if (e1.op == TOKstring && e2.op == TOKstring) {
 				StringExp es1 = (StringExp) e1;
 				StringExp es2 = (StringExp) e2;
 
 				assert (es1.sz == es2.sz);
 				if (es1.len == es2.len
 						&& CharOperation.equals(es1.string, es2.string)) {
-					cmp = 1;
+					cmp = true;
 				} else {
-					cmp = 0;
+					cmp = false;
 				}
 			} else if (e1.op == TOKarrayliteral && e2.op == TOKarrayliteral) {
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
@@ -976,13 +995,13 @@ public class Constfold {
 
 				if ((null == es1.elements || es1.elements.isEmpty())
 						&& (null == es2.elements || es2.elements.isEmpty())) {
-					cmp = 1; // both arrays are empty
+					cmp = true; // both arrays are empty
 				} else if (null == es1.elements || es2.elements.isEmpty()) {
-					cmp = 0;
+					cmp = false;
 				} else if (es1.elements.size() != es2.elements.size()) {
-					cmp = 0;
+					cmp = false;
 				} else {
-					cmp = 1;
+					cmp = true;
 					for (int i = 0; i < es1.elements.size(); i++) {
 						Expression ee1 = es1.elements.get(i);
 						Expression ee2 = es2.elements.get(i);
@@ -992,8 +1011,35 @@ public class Constfold {
 						if (v == EXP_CANT_INTERPRET) {
 							return EXP_CANT_INTERPRET;
 						}
-						cmp = v.toInteger(context).intValue();
-						if (cmp == 0) {
+						cmp = v.toInteger(context).isTrue();
+						if (cmp == false) {
+							break;
+						}
+					}
+				}
+			} else if ((e1.op == TOKarrayliteral && e2.op == TOKstring) ||
+					(e1.op == TOKstring && e2.op == TOKarrayliteral)) {
+				if (e1.op == TOKarrayliteral && e2.op == TOKstring) { 
+					// Swap operands and use common code
+					Expression ex = e1;
+					e1 = e2;
+					e2 = ex;
+				}
+				StringExp es1 = (StringExp) e1;
+				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
+				int dim1 = es1.len;
+				int dim2 = es2.elements != null ? es2.elements.size() : 0;
+				if (dim1 != dim2) {
+					cmp = false;
+				} else {
+					for (int i = 0; i < dim1; i++) {
+						integer_t c = new integer_t((int) es1.charAt(i));
+						Expression ee2 = (Expression) es2.elements.get(i);
+						if (ee2.isConst()) {
+							return EXP_CANT_INTERPRET;
+						}
+						cmp = (c.equals(ee2.toInteger(context)));
+						if (cmp == false) {
 							break;
 						}
 					}
@@ -1003,16 +1049,16 @@ public class Constfold {
 				StructLiteralExp es2 = (StructLiteralExp) e2;
 
 				if (es1.sd != es2.sd) {
-					cmp = 0;
+					cmp = false;
 				} else if ((null == es1.elements || es1.elements.isEmpty())
 						&& (null == es2.elements || es2.elements.isEmpty())) {
-					cmp = 1; // both arrays are empty
+					cmp = true; // both arrays are empty
 				} else if (null == es1.elements || null == es2.elements) {
-					cmp = 0;
+					cmp = false;
 				} else if (es1.elements.size() != es2.elements.size()) {
-					cmp = 0;
+					cmp = false;
 				} else {
-					cmp = 1;
+					cmp = true;
 					for (int i = 0; i < es1.elements.size(); i++) {
 						Expression ee1 = es1.elements.get(i);
 						Expression ee2 = es2.elements.get(i);
@@ -1021,7 +1067,7 @@ public class Constfold {
 							continue;
 						}
 						if (null == ee1 || null == ee2) {
-							cmp = 0;
+							cmp = false;
 							break;
 						}
 
@@ -1030,8 +1076,8 @@ public class Constfold {
 						if (v == EXP_CANT_INTERPRET) {
 							return EXP_CANT_INTERPRET;
 						}
-						cmp = v.toInteger(context).intValue();
-						if (cmp == 0) {
+						cmp = v.toInteger(context).isTrue();
+						if (cmp == false) {
 							break;
 						}
 					}
@@ -1049,23 +1095,21 @@ public class Constfold {
 
 				if (r1.isNaN() || r2.isNaN()) // if unordered
 				{
-					cmp = 0;
+					cmp = false;
 				} else {
-					cmp = r1.equals(r2) ? 1 : 0;
+					cmp = r1.equals(r2);
 				}
 			} else if (e1.type.iscomplex()) {
-				cmp = e1.toComplex(context).equals(e2.toComplex(context)) ? 1
-						: 0;
+				cmp = e1.toComplex(context).equals(e2.toComplex(context));
 			} else if (e1.type.isintegral()) {
-				cmp = e1.toInteger(context).equals(e2.toInteger(context)) ? 1
-						: 0;
+				cmp = e1.toInteger(context).equals(e2.toInteger(context));
 			} else {
 				return EXP_CANT_INTERPRET;
 			}
 			if (op == TOKnotequal) {
-				cmp ^= 1;
+				cmp ^= true;
 			}
-			e = new IntegerExp(loc, cmp, type);
+			e = new IntegerExp(loc, cmp ? 1 : 0, type);
 			e.copySourceRange(e1, e2);
 			return e;
 		}
@@ -1295,7 +1339,9 @@ public class Constfold {
 			Loc loc = e1.loc;
 			boolean cmp;
 
-			if (e1.op == TOKsymoff && e2.op == TOKsymoff) {
+		    if (e1.op == TOKnull && e2.op == TOKnull) {
+				cmp = true;
+			} else if (e1.op == TOKsymoff && e2.op == TOKsymoff) {
 				SymOffExp es1 = (SymOffExp) e1;
 				SymOffExp es2 = (SymOffExp) e2;
 

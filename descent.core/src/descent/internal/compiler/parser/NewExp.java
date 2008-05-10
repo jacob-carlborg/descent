@@ -14,7 +14,7 @@ import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-// DMD 1.020
+
 public class NewExp extends Expression {
 
 	public Expression thisexp, sourceThisexp;

@@ -7,7 +7,7 @@ import descent.core.compiler.CharOperation;
 /**
  * Hashtable of {String --> int }
  */
-// DMD 1.020
+
 public final class HashtableOfCharArrayAndObject implements Cloneable {
 	public static final Object MISSING_ELEMENT = null;
 

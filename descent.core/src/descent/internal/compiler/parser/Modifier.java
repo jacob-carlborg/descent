@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.core.Flags;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class Modifier extends ASTDmdNode {
 	
 	public int lineNumber;

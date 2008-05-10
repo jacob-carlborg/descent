@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class DeclarationExp extends Expression {
 
 	public Dsymbol declaration, sourceDeclaration;

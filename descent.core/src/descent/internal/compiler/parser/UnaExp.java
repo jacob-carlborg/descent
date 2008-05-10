@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.Constfold.*;
 
-// DMD 1.020
+
 public abstract class UnaExp extends Expression {
 
 	public Expression e1;

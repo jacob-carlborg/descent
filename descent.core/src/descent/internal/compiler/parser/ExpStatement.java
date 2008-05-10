@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKassert;
 import static descent.internal.compiler.parser.TOK.TOKhalt;
 
-// DMD 1.020
+
 public class ExpStatement extends Statement {
 
 	public Expression exp, sourceExp;

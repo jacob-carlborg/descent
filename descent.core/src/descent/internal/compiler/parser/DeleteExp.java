@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.TOK.TOKindex;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-// DMD 1.020
+
 public class DeleteExp extends UnaExp {
 
 	public DeleteExp(Loc loc, Expression e1) {

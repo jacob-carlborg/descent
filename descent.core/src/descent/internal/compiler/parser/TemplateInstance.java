@@ -16,7 +16,7 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 
 import static descent.internal.compiler.parser.TY.Ttuple;
 
-// DMD 1.020
+
 public class TemplateInstance extends ScopeDsymbol {
 
 	public Objects tiargs, sourceTiargs;

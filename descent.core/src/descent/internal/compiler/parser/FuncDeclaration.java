@@ -46,7 +46,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class FuncDeclaration extends Declaration {
 
 	private final static char[] missing_return_expression = { 'm', 'i', 's',

@@ -20,7 +20,7 @@ import static descent.internal.compiler.parser.STC.STCstatic;
 
 import static descent.internal.compiler.parser.TY.Tclass;
 
-// DMD 1.020
+
 public class ClassDeclaration extends AggregateDeclaration {
 
 	public final static int OFFSET_RUNTIME = 0x76543210;

@@ -9,7 +9,7 @@ import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 
-// DMD 1.020
+
 public class IndexExp extends BinExp {
 
 	public VarDeclaration lengthVar;

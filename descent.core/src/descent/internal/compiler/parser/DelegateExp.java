@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-// DMD 1.020
+
 public class DelegateExp extends UnaExp {
 
 	public FuncDeclaration func;

@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.Assert;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
-// DMD 1.020
+
 public class Scope {
 
 	public final static int CSXthis_ctor = 0x0001;

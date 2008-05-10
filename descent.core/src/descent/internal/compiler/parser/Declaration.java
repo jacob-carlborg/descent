@@ -4,7 +4,7 @@ import descent.core.compiler.IProblem;
 
 import static descent.internal.compiler.parser.STC.STCin;
 
-// DMD 1.020
+
 public abstract class Declaration extends Dsymbol {
 
 	public Type type;

@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TOK.TOKtuple;
 
 import static descent.internal.compiler.parser.TY.Tpointer;
 
-// DMD 1.020
+
 public class DotIdExp extends UnaExp {
 
 	public IdentifierExp ident;

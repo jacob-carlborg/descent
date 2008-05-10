@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class OrOrExp extends BinExp {
 
 	public OrOrExp(Loc loc, Expression e1, Expression e2) {

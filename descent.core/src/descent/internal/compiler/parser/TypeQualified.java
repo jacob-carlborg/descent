@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 
-// DMD 1.020
+
 public abstract class TypeQualified extends Type {
 
 	public Loc loc;

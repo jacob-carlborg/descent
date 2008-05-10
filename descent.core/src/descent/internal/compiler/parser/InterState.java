@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser;
 
-// DMD 1.020
+
 public class InterState
 {
 	InterState caller;		// calling function's InterState

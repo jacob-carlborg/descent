@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 
 // TODO methods for Real may not work
-// DMD 1.020
+
 public class NumberUtils {
 	
 	public static integer_t castToUns64(real_t value) {

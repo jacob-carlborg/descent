@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class RealExp extends Expression {
 
 	public char[] str;

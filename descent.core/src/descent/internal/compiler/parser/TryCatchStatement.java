@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
-// DMD 1.020
+
 public class TryCatchStatement extends Statement {
 
 	public Statement body, sourceBody;

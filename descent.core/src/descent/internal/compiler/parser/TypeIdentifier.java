@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.TY.Tident;
 
-// DMD 1.020
+
 public class TypeIdentifier extends TypeQualified {
 
 	public IdentifierExp ident;

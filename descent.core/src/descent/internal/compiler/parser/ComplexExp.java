@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class ComplexExp extends Expression {
 
 	public complex_t value;

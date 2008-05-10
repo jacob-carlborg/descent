@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 
-// DMD 1.020
+
 public class complex_t {
 
 	public final static complex_t ZERO = new complex_t(real_t.ZERO, real_t.ZERO);

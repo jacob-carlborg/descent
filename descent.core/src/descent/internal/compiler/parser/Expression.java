@@ -20,7 +20,7 @@ import static descent.internal.compiler.parser.TY.Treference;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public class Parenthesis {

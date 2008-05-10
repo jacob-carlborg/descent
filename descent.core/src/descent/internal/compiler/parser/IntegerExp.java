@@ -15,7 +15,7 @@ import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
 
-// DMD 1.020
+
 public class IntegerExp extends Expression {
 
 	private final static BigInteger N_0x8000000000000000 = new BigInteger(

@@ -4,7 +4,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class IdentifierExp extends Expression {
 	
 	public final static IdentifierExp EMPTY = new IdentifierExp(Id.empty);

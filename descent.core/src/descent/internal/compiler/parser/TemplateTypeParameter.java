@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
-// DMD 1.020
+
 public class TemplateTypeParameter extends TemplateParameter {
 
 	public Type specType, sourceSpecType;

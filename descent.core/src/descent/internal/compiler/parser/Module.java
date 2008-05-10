@@ -14,7 +14,7 @@ import descent.internal.core.CompilationUnit;
 import descent.internal.core.CompilationUnitElementInfo;
 import descent.internal.core.util.Util;
 
-// DMD 1.020
+
 public class Module extends Package {
 	
 	private final static boolean FAST_SEARCH = false;

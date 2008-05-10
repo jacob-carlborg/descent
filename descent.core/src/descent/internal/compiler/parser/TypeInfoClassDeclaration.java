@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class TypeInfoClassDeclaration extends TypeInfoDeclaration {
 
 	public TypeInfoClassDeclaration(Type tinfo, SemanticContext context) {

@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Mod;
 
-// DMD 1.020
+
 public class ModExp extends BinExp {
 
 	public ModExp(Loc loc, Expression e1, Expression e2) {

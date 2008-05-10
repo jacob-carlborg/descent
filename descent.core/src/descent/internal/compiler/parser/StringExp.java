@@ -23,7 +23,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
-// DMD 1.020
+
 public class StringExp extends Expression {
 
 	public char[] sourceString;

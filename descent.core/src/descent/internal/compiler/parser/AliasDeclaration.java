@@ -11,7 +11,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 
-// DMD 1.020
 public class AliasDeclaration extends Declaration {
 
 	public boolean first = true; // is this the first declaration in a multi

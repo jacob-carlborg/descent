@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Not;
 
-// DMD 1.020
+
 public class NotExp extends UnaExp {
 
 	public NotExp(Loc loc, Expression e1) {

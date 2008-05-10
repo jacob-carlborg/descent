@@ -5,7 +5,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.Constfold.Add;
 
-// DMD 1.020 
 public class AddExp extends BinExp {
 
 	public AddExp(Loc loc, Expression e1, Expression e2) {

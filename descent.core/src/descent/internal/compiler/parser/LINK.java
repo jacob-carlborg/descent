@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.core.dom.ExternDeclaration.Linkage;
 
-// DMD 1.020
+
 public enum LINK {
 	
     LINKdefault,

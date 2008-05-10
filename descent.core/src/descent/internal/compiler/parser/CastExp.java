@@ -18,7 +18,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class CastExp extends UnaExp {
 
 	public Type to, sourceTo;

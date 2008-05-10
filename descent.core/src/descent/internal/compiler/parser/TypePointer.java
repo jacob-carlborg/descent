@@ -12,7 +12,7 @@ import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class TypePointer extends Type {
 
 	public TypePointer(Type next) {

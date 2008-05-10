@@ -13,7 +13,7 @@ import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-// DMD 1.020
+
 public class DotVarExp extends UnaExp {
 
 	public Declaration var;

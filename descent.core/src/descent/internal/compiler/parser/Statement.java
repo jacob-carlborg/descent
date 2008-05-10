@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 
-// DMD 1.020
+
 public abstract class Statement extends ASTDmdNode {
 
 	public Loc loc;

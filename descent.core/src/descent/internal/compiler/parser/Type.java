@@ -42,7 +42,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 
-// DMD 1.020
+
 public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public final static int PTRSIZE = 4;

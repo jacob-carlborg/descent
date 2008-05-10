@@ -13,7 +13,7 @@ import static descent.internal.compiler.parser.PROT.PROTnone;
 
 import static descent.internal.compiler.parser.STC.STCin;
 
-// DMD 1.020
+
 public class StructDeclaration extends AggregateDeclaration {
 
 	public boolean zeroInit; // !=0 if initialize with 0 fill

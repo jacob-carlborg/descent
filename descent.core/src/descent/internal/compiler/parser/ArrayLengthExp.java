@@ -5,7 +5,6 @@ import static descent.internal.compiler.parser.PREC.*;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 
-// DMD 1.020
 public class ArrayLengthExp extends UnaExp {
 
 	public ArrayLengthExp(Loc loc, Expression e1) {

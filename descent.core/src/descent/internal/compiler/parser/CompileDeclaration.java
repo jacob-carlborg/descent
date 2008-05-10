@@ -10,7 +10,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKeof;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 
-// DMD 1.020
+
 public class CompileDeclaration extends AttribDeclaration {
 
 	public Expression exp, sourceExp;

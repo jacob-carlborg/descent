@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.Constfold.Cmp;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.*;
 
-// DMD 1.020
+
 public class CmpExp extends BinExp {
 
 	public CmpExp(Loc loc, TOK op, Expression e1, Expression e2) {

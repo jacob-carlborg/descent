@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import java.util.Hashtable;
 import java.util.Map;
 
-// DMD 1.020
+
 public class StringTable {
 	
 	Map<String, StringValue> map = new Hashtable<String, StringValue>();

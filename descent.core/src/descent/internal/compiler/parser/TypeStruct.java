@@ -14,7 +14,7 @@ import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-// DMD 1.020
+
 public class TypeStruct extends Type {
 
 	public StructDeclaration sym;

@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
 public class AlignDeclaration extends AttribDeclaration {
 
 	public int salign;

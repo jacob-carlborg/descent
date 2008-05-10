@@ -12,7 +12,6 @@ import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
-// DMD 1.020
 public class Argument extends ASTDmdNode implements Cloneable {
 
 	public static void argsToCBuffer(OutBuffer buf, HdrGenState hgs,

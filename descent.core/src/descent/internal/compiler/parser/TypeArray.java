@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Twchar;
 
-// DMD 1.020
+
 public abstract class TypeArray extends Type {
 
 	private final static char[][] name1 = { "_adReverseChar".toCharArray(),

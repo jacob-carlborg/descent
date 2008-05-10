@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdeclaration;
 
-// DMD 1.020
+
 public class DeclarationStatement extends ExpStatement {
 
 	public DeclarationStatement(Loc loc, Dsymbol s) {

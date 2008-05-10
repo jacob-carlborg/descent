@@ -1,0 +1,15 @@
+This file list the porting process from DMD.
+
+Last DMD 1.x ported version: 1.029
+Last DMD 2.x ported version: 2.003 (but just the lexer and parser)
+
+Notes: 1.029 front end doesn't have differences with 1.028.
+
+-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-
+
+Remaining from DMD 1.028
+------------------------------
+class.c --> check is buildDtor is really necessary
+clone.c
+func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration 
+            and StaticDtorDeclaration::StaticDtorDeclaration

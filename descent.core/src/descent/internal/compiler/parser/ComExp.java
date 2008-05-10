@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Com;
 
-// DMD 1.020
+
 public class ComExp extends UnaExp {
 
 	public ComExp(Loc loc, Expression e1) {

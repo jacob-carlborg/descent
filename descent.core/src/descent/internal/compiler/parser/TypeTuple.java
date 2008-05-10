@@ -7,7 +7,7 @@ import static descent.internal.compiler.parser.STC.STCin;
 
 import static descent.internal.compiler.parser.TY.Ttuple;
 
-// DMD 1.020
+
 public class TypeTuple extends Type {
 
 	public Arguments arguments;

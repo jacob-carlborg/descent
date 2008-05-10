@@ -4,7 +4,6 @@ import java.util.List;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
 public class AsmStatement extends Statement {
 	
 	private final static char[] EAX = { 'E', 'A', 'X' };

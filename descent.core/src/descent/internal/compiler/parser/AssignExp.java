@@ -6,7 +6,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TOK.*;
 
-// DMD 1.020
 public class AssignExp extends BinExp {
 
 	public boolean ismemset;

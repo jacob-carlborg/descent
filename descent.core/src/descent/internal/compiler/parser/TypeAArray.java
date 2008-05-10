@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
-// DMD 1.020
+
 public class TypeAArray extends TypeArray {
 
 	public Type index, sourceIndex;

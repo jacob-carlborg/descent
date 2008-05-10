@@ -14,7 +14,6 @@ import static descent.internal.compiler.parser.TOK.TOKequal;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
 public class AssocArrayLiteralExp extends Expression {
 
 	public Expressions keys, sourceKeys;

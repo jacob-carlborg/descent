@@ -8,7 +8,7 @@ import static descent.internal.compiler.parser.Constfold.Equal;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.*;
 
-// DMD 1.020
+
 public class EqualExp extends BinExp {
 
 	public EqualExp(Loc loc, TOK op, Expression e1, Expression e2) {

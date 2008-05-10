@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Bool;
 
-// DMD 1.020
+
 public class BoolExp extends UnaExp {
 
 	public BoolExp(Loc loc, Expression e, Type t) {

@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser;
 
-// DMD 1.020
+
 public class Expressions extends Array<Expression> {
 
 	private static final long serialVersionUID = 1L;

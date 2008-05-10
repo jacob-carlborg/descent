@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 
-// DMD 1.020
+
 public class CaseStatement extends Statement {
 
 	public Expression exp, sourceExp;

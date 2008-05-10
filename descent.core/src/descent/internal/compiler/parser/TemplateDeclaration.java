@@ -21,7 +21,7 @@ import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class TemplateDeclaration extends ScopeDsymbol {
 
 	public static TemplateTupleParameter isVariadic(

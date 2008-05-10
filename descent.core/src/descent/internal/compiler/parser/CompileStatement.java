@@ -9,7 +9,7 @@ import static descent.internal.compiler.parser.Parser.PScurlyscope;
 import static descent.internal.compiler.parser.Parser.PSsemi;
 import static descent.internal.compiler.parser.TOK.TOKeof;
 
-// DMD 1.020
+
 public class CompileStatement extends Statement {
 
 	public Expression exp, sourceExp;

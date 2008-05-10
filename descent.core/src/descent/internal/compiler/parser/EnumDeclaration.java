@@ -9,7 +9,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class EnumDeclaration extends ScopeDsymbol {
 
 	private final static int N_2 = 2;

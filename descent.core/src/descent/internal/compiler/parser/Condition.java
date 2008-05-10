@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 
-// DMD 1.020
+
 public abstract class Condition extends ASTRangeLessNode {
 
 	public final static int DEBUG = 1;

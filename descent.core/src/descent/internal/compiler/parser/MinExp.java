@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
 
-// DMD 1.020
+
 public class MinExp extends BinExp {
 
 	public MinExp(Loc loc, Expression e1, Expression e2) {

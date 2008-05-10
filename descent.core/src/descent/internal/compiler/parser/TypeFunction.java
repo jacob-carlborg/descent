@@ -19,7 +19,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Tident;
 
-// DMD 1.020
+
 public class TypeFunction extends Type {
 
 	public int inuse;

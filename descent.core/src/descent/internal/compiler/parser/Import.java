@@ -6,7 +6,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 
-// DMD 1.020
+
 public class Import extends Dsymbol {
 
 	public boolean first = true; // Is this the first import in a multi?

@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.TOK.TOKaddress;
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.Constfold.Ptr;
 
-// DMD 1.020
+
 public class PtrExp extends UnaExp {
 
 	public PtrExp(Loc loc, Expression e) {

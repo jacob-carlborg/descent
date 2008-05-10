@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class DeleteDeclaration extends FuncDeclaration {
 
 	public Arguments arguments;

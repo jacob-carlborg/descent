@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.core.compiler.CharOperation;
 
-// DMD 1.020
+
 public class Token {
 	
 	public final static int SPECIAL__FILE__ = 1;

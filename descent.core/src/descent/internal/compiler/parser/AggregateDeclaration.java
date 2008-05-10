@@ -9,7 +9,6 @@ import descent.internal.compiler.lookup.SemanticRest;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
-// DMD 1.020
 public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	public Type type;

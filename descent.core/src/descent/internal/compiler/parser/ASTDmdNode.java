@@ -48,7 +48,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 // class Object in DMD compiler
-// DMD 1.020
+
 public abstract class ASTDmdNode extends ASTNode {
 
 	public final static int COST_MAX = 250;

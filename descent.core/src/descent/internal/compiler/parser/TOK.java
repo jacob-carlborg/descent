@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.core.compiler.ITerminalSymbols;
 import static descent.internal.compiler.parser.PREC.*;
 
-// DMD 1.020
+
 public enum TOK implements ITerminalSymbols {
 	TOKreserved,
 

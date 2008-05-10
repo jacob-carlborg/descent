@@ -27,7 +27,7 @@ import static descent.internal.compiler.parser.TOK.TOKscope;
 import static descent.internal.compiler.parser.TOK.TOKstatic;
 import static descent.internal.compiler.parser.TOK.TOKsynchronized;
 
-// DMD 1.020
+
 public class StorageClassDeclaration extends AttribDeclaration {
 
 	static class SCstring {

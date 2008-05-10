@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 
-// DMD 1.020
+
 public class real_t {
 	
 	// We'd like a math context of 80 bits, but...

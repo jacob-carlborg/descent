@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
-// DMD 1.020
+
 public class StaticIfDeclaration extends ConditionalDeclaration {
 
 	public ScopeDsymbol sd;

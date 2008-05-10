@@ -12,7 +12,6 @@ import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 
-// DMD 1.020
 public class AnonDeclaration extends AttribDeclaration {
 
 	public boolean isunion;

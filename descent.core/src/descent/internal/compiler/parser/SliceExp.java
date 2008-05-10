@@ -7,7 +7,7 @@ import static descent.internal.compiler.parser.PREC.PREC_assign;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 
-// DMD 1.020
+
 public class SliceExp extends UnaExp {
 
 	public Expression lwr, sourceLwr;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class DebugCondition extends DVCondition {
 
 	public DebugCondition(Module mod, Loc loc, long level, char[] id) {

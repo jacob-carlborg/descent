@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 
-// DMD 1.020
+
 public class FuncLiteralDeclaration extends FuncDeclaration {
 
 	private final static char[] foreachBody = { '_', '_', 'f', 'o', 'r', 'e',

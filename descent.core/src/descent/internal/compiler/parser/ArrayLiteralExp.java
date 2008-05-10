@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-// DMD 1.020
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;

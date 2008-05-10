@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-
-// DMD 1.020
 public abstract class AttribDeclaration extends Dsymbol {
 
 	public Dsymbols decl;

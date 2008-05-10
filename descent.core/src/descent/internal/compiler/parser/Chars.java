@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
-// DMD 1.020
+
 public class Chars {
 	
 	private final static BigInteger N_0x20 = new BigInteger("20", 16);

@@ -7,7 +7,7 @@ import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
-// DMD 1.020
+
 public class TemplateMixin extends TemplateInstance {
 
 	public Identifiers idents;

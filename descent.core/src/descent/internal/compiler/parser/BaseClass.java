@@ -6,7 +6,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tfunction;
 
-// DMD 1.020
 public class BaseClass extends ASTDmdNode {
 
 	public Modifier modifier;

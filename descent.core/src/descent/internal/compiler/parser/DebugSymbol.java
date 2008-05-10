@@ -6,7 +6,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class DebugSymbol extends Dsymbol {
 
 	public long level;

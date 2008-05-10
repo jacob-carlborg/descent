@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 
-// DMD 1.020
+
 public class CondExp extends BinExp {
 
 	public Expression econd, sourceEcond;

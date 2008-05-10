@@ -6,7 +6,7 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 
 import static descent.internal.compiler.parser.TY.Tsarray;
 
-// DMD 1.020
+
 public class DsymbolExp extends Expression {
 
 	public Dsymbol s;

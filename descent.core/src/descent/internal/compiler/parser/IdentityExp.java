@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Identity;
 
-// DMD 1.020
+
 public class IdentityExp extends BinExp {
 
 	public IdentityExp(Loc loc, TOK op, Expression e1, Expression e2) {

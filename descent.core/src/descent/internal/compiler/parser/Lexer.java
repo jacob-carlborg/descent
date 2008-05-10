@@ -97,7 +97,6 @@ import descent.internal.compiler.parser.ast.IProblemReporter;
 /**
  * Internal lexer class.
  */
-// DMD 1.020 and DMD 2.003
 public class Lexer implements IProblemRequestor {
 
 	public final static int D0 = 0;

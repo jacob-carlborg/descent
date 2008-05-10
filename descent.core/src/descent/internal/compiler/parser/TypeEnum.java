@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.TY.Tenum;
 
-// DMD 1.020
+
 public class TypeEnum extends Type {
 
 	public EnumDeclaration sym;

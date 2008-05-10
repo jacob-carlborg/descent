@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKon_scope_success;
 
-// DMD 1.020
+
 public class OnScopeStatement extends Statement {
 
 	private static int num;

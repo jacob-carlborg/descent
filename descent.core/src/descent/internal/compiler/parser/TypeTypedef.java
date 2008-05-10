@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.TY.Ttypedef;
 
-// DMD 1.020
+
 public class TypeTypedef extends Type {
 
 	public TypedefDeclaration sym;

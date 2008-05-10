@@ -9,7 +9,7 @@ import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
-// DMD 1.020
+
 public class StructInitializer extends Initializer {
 
 	public Identifiers field, sourceField;

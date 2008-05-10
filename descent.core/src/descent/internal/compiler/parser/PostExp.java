@@ -6,7 +6,7 @@ import static descent.internal.compiler.parser.Constfold.Add;
 import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKplusplus;
 
-// DMD 1.020
+
 public class PostExp extends BinExp {
 	
 	public PostExp(Loc loc, TOK op, Expression e) {

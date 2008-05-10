@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 
-// DMD 1.020
+
 public class Entity {
 	
 	public static int HtmlNamedEntity(char[] input, int p, int length, int lineNumber, IProblemRequestor requestor) {

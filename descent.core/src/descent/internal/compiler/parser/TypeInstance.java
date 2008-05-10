@@ -9,7 +9,7 @@ import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
 
-// DMD 1.020
+
 public class TypeInstance extends TypeQualified {
 
 	public TemplateInstance tempinst;

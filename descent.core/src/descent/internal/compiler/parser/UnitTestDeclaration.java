@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class UnitTestDeclaration extends FuncDeclaration {
 
 	private static int unitTestId;

@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TOK.TOKcolon;
 import static descent.internal.compiler.parser.TOK.TOKequal;
 
-// DMD 1.020
+
 public class IftypeCondition extends Condition {
 
 	public Type targ;

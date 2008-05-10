@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class UnrolledLoopStatement extends Statement {
 
 	public Statements statements;

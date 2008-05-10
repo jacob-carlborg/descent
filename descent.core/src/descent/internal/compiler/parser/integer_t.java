@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
-// DMD 1.020
+
 // This is also an alias of uinteger_t, as defined by DMD
 public class integer_t extends Number {
 

@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCtemplateparameter;
 
-// DMD 1.020
+
 public class TemplateValueParameter extends TemplateParameter {
 
 	public static Expression edummy = null;

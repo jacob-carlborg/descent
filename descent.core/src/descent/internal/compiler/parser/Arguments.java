@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-// DMD 1.020
 public class Arguments extends Array<Argument> {
 
 	private static final long serialVersionUID = 1L;

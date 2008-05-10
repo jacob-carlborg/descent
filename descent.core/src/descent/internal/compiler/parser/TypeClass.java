@@ -19,7 +19,7 @@ import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public class TypeClass extends Type {
 
 	public ClassDeclaration sym;

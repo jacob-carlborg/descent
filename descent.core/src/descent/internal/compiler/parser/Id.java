@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.core.compiler.CharOperation;
 
-// DMD 1.020
+
 public interface Id {
 	
 	static final char[] IUnknown = { 'I', 'u', 'n', 'k', 'n', 'o', 'w', 'n' };

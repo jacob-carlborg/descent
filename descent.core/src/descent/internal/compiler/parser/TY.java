@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.TypeBasic.*;
 
-// DMD 1.020
+
 public enum TY {
 	
     Tarray('A'),		// dynamic array

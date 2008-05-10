@@ -63,7 +63,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-// DMD 1.020
+
 public abstract class BinExp extends Expression {
 
 	public Expression e1, sourceE1;

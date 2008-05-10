@@ -35,7 +35,6 @@ import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
-// DMD 1.020 and DMD 2.003
 public class Parser extends Lexer {
 	
 	// Tokens expected in several parse locations

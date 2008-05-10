@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Scope.CSXlabel;
 
-// DMD 1.020
+
 public class LabelStatement extends Statement {
 
 	public IdentifierExp ident;

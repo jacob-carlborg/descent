@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-// DMD 1.020
+
 public class VersionCondition extends DVCondition {
 
 	public static final char[][] resevered = {

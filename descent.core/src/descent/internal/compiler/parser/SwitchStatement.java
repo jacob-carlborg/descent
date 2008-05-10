@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TOK.TOKequal;
 
 import static descent.internal.compiler.parser.TY.Tarray;
 
-// DMD 1.020
+
 public class SwitchStatement extends Statement {
 
 	public Expression condition, sourceCondition;

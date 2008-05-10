@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tsarray;
 
-// DMD 1.020
+
 public class StructLiteralExp extends Expression {
 
 	public StructDeclaration sd; // which aggregate this is for

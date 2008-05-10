@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKfloat64;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 
-// DMD 1.020
+
 public class CommaExp extends BinExp {
 
 	public CommaExp(Loc loc, Expression e1, Expression e2) {

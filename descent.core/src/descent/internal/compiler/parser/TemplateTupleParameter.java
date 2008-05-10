@@ -6,7 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 
-// DMD 1.020
+
 public class TemplateTupleParameter extends TemplateParameter {
 
 	public TemplateTupleParameter(Loc loc, IdentifierExp ident) {
