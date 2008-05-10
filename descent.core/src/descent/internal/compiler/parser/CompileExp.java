@@ -46,14 +46,12 @@ public class CompileExp extends UnaExp {
 		Expression e = p.parseExpression();
 		
 		// TODO semantic do this better
-		if (context.acceptsProblems()) {
-			if (p.problems != null) {
-				for (int i = 0; i < p.problems.size(); i++) {
-					Problem problem = (Problem) p.problems.get(i);
-					problem.setSourceStart(start);
-					problem.setSourceEnd(start + length - 1);
-					context.acceptProblem(problem);
-				}
+		if (p.problems != null) {
+			for (int i = 0; i < p.problems.size(); i++) {
+				Problem problem = (Problem) p.problems.get(i);
+				problem.setSourceStart(start);
+				problem.setSourceEnd(start + length - 1);
+				context.acceptProblem(problem);
 			}
 		}
 		

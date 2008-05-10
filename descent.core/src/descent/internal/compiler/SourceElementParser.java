@@ -1039,6 +1039,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 			} else {
 				requestor.exitType(end);
 			}
+		} else {
+			requestor.exitType(end);
 		}
 		if (!node.wrapper) {
 			popLevelInAttribDeclarationStack();

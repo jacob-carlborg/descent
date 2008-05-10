@@ -620,12 +620,13 @@ public abstract class ASTDmdNode extends ASTNode {
 	public void accessCheck(Scope sc, Expression e, Declaration d,
 			SemanticContext context) {
 		if (e == null) {
-			if (context.acceptsProblems() && 
-					(d.prot() == PROTprivate && d.getModule() != sc.module
+			if ((d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d))) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, new String[] { d.kind(), d
-						.getModule().toChars(context), d.toChars(context),
-						sc.module.toChars(context) }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, new String[] { d.kind(), d
+							.getModule().toChars(context), d.toChars(context),
+							sc.module.toChars(context) }));
+				}
 			}
 		} else if (e.type.ty == Tclass) { // Do access check
 			ClassDeclaration cd;
@@ -908,11 +909,12 @@ public abstract class ASTDmdNode extends ASTNode {
 					// arg.error("cannot modify slice %s", arg.toChars());
 
 					// Don't have a way yet to do a pointer to a bit in array
-					if (context.acceptsProblems() &&
-							arg.op == TOKarray && 
+					if (arg.op == TOKarray && 
 							arg.type.toBasetype(context).ty == Tbit) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
+						}
 					}
 				}
 
@@ -1842,17 +1844,15 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {
-		if (context.acceptsProblems()) {
-			return;
-		}
-		
 		boolean reported = false;
 		
 		if (modifiers != null) {
 			for (Modifier modifier : modifiers) {
 				if (modifier.tok == tok) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							problemId, modifier));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								problemId, modifier));
+					}
 					reported = true;
 				}
 			}
@@ -1861,16 +1861,20 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (extraModifiers != null) {
 			for (Modifier modifier : extraModifiers) {
 				if (modifier.tok == tok) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							problemId, modifier));
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								problemId, modifier));
+					}
 					reported = true;
 				}
 			}
 		}
 		
 		if (!reported) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					problemId, this));
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						problemId, this));
+			}
 		}
 	}
 	

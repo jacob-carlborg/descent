@@ -83,7 +83,7 @@ public class ModuleBuilder {
 	/*
 	 * One ring to rule them all. 
 	 */
-	private final static boolean LAZY = true;
+	private final static boolean LAZY = false;
 	
 	/*
 	 * Wether to make surface Module semantic.

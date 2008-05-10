@@ -259,67 +259,77 @@ public class TemplateMixin extends TemplateInstance {
 				break;
 			}
 		}
-
-		Scope scy = sc;
-		scy = sc.push(this);
-		scy.parent = this;
-
-		argsym = new ScopeDsymbol();
-		argsym.parent = scy.parent;
-		Scope scope = scy.push(argsym);
 		
-	    int errorsave = context.global.errors;
+		// Descent: temporary adjust error position so errors doesn't
+		// appear inside templates, but always on the invocation site
+		context.startTemplateEvaluation(this);
 
-		// Declare each template parameter as an alias for the argument type
-		declareParameters(scope, context);
-
-		// Add members to enclosing scope, as well as this scope
-		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s;
-
-			s = members.get(i);
-			s.addMember(scope, this, i, context);
-			//sc.insert(s);
-			//printf("sc.parent = %p, sc.scopesym = %p\n", sc.parent, sc.scopesym);
-			//printf("s.parent = %s\n", s.parent.toChars());
-		}
-
-		// Do semantic() analysis on template instance members
-		Scope sc2;
-		sc2 = scope.push(this);
-		sc2.offset = sc.offset;
-		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
-			s.semantic(sc2, context);
-		}
-		sc.offset = sc2.offset;
-
-		/* The problem is when to parse the initializer for a variable.
-		 * Perhaps VarDeclaration::semantic() should do it like it does
-		 * for initializers inside a function.
-		 */
-		//	    if (sc.parent.isFuncDeclaration())
-		semantic2(sc2, context);
-
-		if (sc.func != null) {
-			semantic3(sc2, context);
-		}
-		
-	    // Give additional context info if error occurred during instantiation
-	    if (context.global.errors != errorsave)
-	    {
-	    	if (context.acceptsProblems()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
-	    	}
-	    }
-
-		sc2.pop();
-
-		scope.pop();
-
-		//	    if (!isAnonymous())
-		{
-			scy.pop();
+		try {
+			Scope scy = sc;
+			scy = sc.push(this);
+			scy.parent = this;
+	
+			argsym = new ScopeDsymbol();
+			argsym.parent = scy.parent;
+			Scope scope = scy.push(argsym);
+			
+		    int errorsave = context.global.errors;
+	
+			// Declare each template parameter as an alias for the argument type
+			declareParameters(scope, context);
+	
+			// Add members to enclosing scope, as well as this scope
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s;
+	
+				s = members.get(i);
+				s.addMember(scope, this, i, context);
+				//sc.insert(s);
+				//printf("sc.parent = %p, sc.scopesym = %p\n", sc.parent, sc.scopesym);
+				//printf("s.parent = %s\n", s.parent.toChars());
+			}
+	
+			// Do semantic() analysis on template instance members
+			Scope sc2;
+			sc2 = scope.push(this);
+			sc2.offset = sc.offset;
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s = members.get(i);
+				s.semantic(sc2, context);
+			}
+			sc.offset = sc2.offset;
+	
+			/* The problem is when to parse the initializer for a variable.
+			 * Perhaps VarDeclaration::semantic() should do it like it does
+			 * for initializers inside a function.
+			 */
+			//	    if (sc.parent.isFuncDeclaration())
+			semantic2(sc2, context);
+	
+			if (sc.func != null) {
+				semantic3(sc2, context);
+			}
+			
+		    // Give additional context info if error occurred during instantiation
+		    if (context.global.errors != errorsave)
+		    {
+		    	if (context.acceptsProblems()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
+		    	}
+		    }
+	
+			sc2.pop();
+	
+			scope.pop();
+	
+			//	    if (!isAnonymous())
+			{
+				scy.pop();
+			}
+		} finally {
+			// Descent: temporary adjust error position so errors doesn't
+			// appear inside templates, but always on the invocation site
+			context.endTemplateEvaluation();
 		}
 	}
 

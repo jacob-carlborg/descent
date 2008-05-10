@@ -121,6 +121,7 @@ public class AddrExp extends UnaExp {
 			if (!ve.var.isOut() && !ve.var.isRef()
 					&& !ve.var.isImportedSymbol()) {
 				e = new SymOffExp(loc, ve.var, 0, context);
+				e.copySourceRange(ve);
 				e.type = type;
 				return e;
 			}
@@ -135,15 +136,17 @@ public class AddrExp extends UnaExp {
 						&& !ve.var.isImportedSymbol()) {
 					TypeSArray ts = (TypeSArray) ve.type;
 					integer_t dim = ts.dim.toInteger(context);
-					if (context.acceptsProblems() && (index.compareTo(0) < 0 || index.compareTo(dim) >= 0)) {
+					if ((index.compareTo(0) < 0 || index.compareTo(dim) >= 0)) {
 						// PERHAPS test this error
-						context.acceptProblem(Problem.newSemanticTypeError(
-				    			IProblem.ArrayIndexOutOfBounds,
-				    			this,
-				    			new String[] {
-				    				String.valueOf(index),
-				    				String.valueOf(dim),
-				    			}));
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+					    			IProblem.ArrayIndexOutOfBounds,
+					    			this,
+					    			new String[] {
+					    				String.valueOf(index),
+					    				String.valueOf(dim),
+					    			}));
+						}
 					}
 					e = new SymOffExp(loc, ve.var, index.multiply(ts.next
 							.size(context)), context);

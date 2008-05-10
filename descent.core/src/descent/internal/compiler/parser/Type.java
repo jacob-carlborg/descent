@@ -647,6 +647,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (singleton.pto == null) {
 			Type t;
 
+			if (singleton.deco == null && this.deco != null) {
+				singleton.deco = this.deco;
+			}
+			
 			t = new TypePointer(singleton);
 			singleton.pto = t.merge(context);
 		}
@@ -656,6 +660,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type referenceTo(SemanticContext context) {
 		if (singleton.rto == null) {
 			Type t;
+			
+			if (singleton.deco == null && this.deco != null) {
+				singleton.deco = this.deco;
+			}
 
 			t = new TypeReference(singleton, context);
 			singleton.rto = t.merge(context);
@@ -666,6 +674,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type arrayOf(SemanticContext context) {
 		if (singleton.arrayof == null) {
 			Type t;
+			
+			if (singleton.deco == null && this.deco != null) {
+				singleton.deco = this.deco;
+			}
 
 			t = new TypeDArray(singleton);
 			singleton.arrayof = t.merge(context);

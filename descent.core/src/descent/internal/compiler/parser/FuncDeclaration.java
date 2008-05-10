@@ -303,6 +303,11 @@ public class FuncDeclaration extends Declaration {
 							sym = ((ProtDeclaration) sym).decl.get(0);
 						}
 					}
+					
+					if (sym instanceof TemplateDeclaration) {
+						sym = ((TemplateDeclaration) sym).members.get(0);
+					}
+					
 					FuncDeclaration func = (FuncDeclaration) sym;
 					func.semantic(scope.enclosing, context);
 					func.semantic2(scope.enclosing, context);

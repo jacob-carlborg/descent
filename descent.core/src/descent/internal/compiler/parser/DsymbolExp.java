@@ -120,8 +120,7 @@ public class DsymbolExp extends Expression {
 					}
 				}
 				e = new VarExp(loc, v);
-				e.start = start;
-				e.length = length;
+				e.copySourceRange(this);
 				e.type = type;
 				e = e.semantic(sc, context);
 				return e.deref();
@@ -133,7 +132,9 @@ public class DsymbolExp extends Expression {
 			}
 			f = s.isFuncDeclaration();
 			if (f != null) {
-				return new VarExp(loc, f);
+				VarExp ve = new VarExp(loc, f);
+				ve.copySourceRange(this);
+				return ve;
 			}
 			cd = s.isClassDeclaration();
 			if (cd != null && thiscd != null

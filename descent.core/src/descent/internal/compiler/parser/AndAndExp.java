@@ -121,12 +121,13 @@ public class AndAndExp extends BinExp {
 			e = e.optimize(result, context);
 		} else {
 			e2 = e2.optimize(WANTflags | (result & WANTinterpret), context);
-			if (context.acceptsProblems() &&
-					result > 0 && e2.type.toBasetype(context).ty == Tvoid
+			if (result > 0 && e2.type.toBasetype(context).ty == Tvoid
 					&& context.global.errors <= 0) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolHasNoValue, this,
-						new String[] { "void" }));
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolHasNoValue, this,
+							new String[] { "void" }));
+				}
 			}
 			if (e1.isConst()) {
 				if (e2.isConst()) {

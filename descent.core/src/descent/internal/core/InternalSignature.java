@@ -135,6 +135,10 @@ public class InternalSignature implements ISignatureConstants {
 						args.add(arg);
 					}
 					
+					// TODO Descent: for now assume everything has D linkage so that deco
+					// comparisons work
+					link = LINK.LINKd;
+					
 					TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
 					
 					sub = stack.peek();

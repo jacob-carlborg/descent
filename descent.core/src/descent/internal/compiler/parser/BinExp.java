@@ -165,9 +165,11 @@ public abstract class BinExp extends Expression {
 			e1 = e1.modifiableLvalue(sc, e1, context);
 			e1.checkScalar(context);
 			type = e1.type;
-			if (context.acceptsProblems() && type.toBasetype(context).ty == Tbool) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
+			if (type.toBasetype(context).ty == Tbool) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.OperatorNotAllowedOnBoolExpression, this, new String[] { toChars(context) }));
+				}
 			}
 			typeCombine(sc, context);
 			e1.checkArithmetic(context);

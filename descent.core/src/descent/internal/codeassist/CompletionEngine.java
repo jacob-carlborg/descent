@@ -69,6 +69,7 @@ import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DotExp;
 import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.DsymbolExp;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.EnumDeclaration;
@@ -1524,9 +1525,19 @@ public class CompletionEngine extends Engine
 				this.startPosition = se.start;
 				this.endPosition = se.start + se.length;
 				completePackage((Package) se.sds, name, ident);
-			} else if (se.sds instanceof TemplateMixin) {
+			} else if (se.sds instanceof TemplateInstance) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers(((TemplateMixin) se.sds).members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				options.checkVisibility = false;
+				suggestMembers(((TemplateInstance) se.sds).members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				options.checkVisibility = true;
+			}
+		} else if (e1 instanceof DsymbolExp) {
+			DsymbolExp de = (DsymbolExp) e1;
+			if (de.s instanceof TemplateInstance) {
+				currentName = computePrefixAndSourceRange(ident);
+				options.checkVisibility = false;
+				suggestMembers(((TemplateInstance) de.s).members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				options.checkVisibility = true;
 			}
 		} else if (e1 instanceof ThisExp) {
 			ThisExp thisExp = (ThisExp) e1;

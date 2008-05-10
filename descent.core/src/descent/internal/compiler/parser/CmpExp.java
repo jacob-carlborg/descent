@@ -76,11 +76,12 @@ public class CmpExp extends BinExp {
 
 		super.semanticp(sc, context);
 		
-	    if (context.acceptsProblems() &&
-	    		e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
+	    if (e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
 	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)
 	    {
-    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.DoNotUseNullWhenComparingClassTypes, this));
+	    	if (context.acceptsProblems()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.DoNotUseNullWhenComparingClassTypes, this));
+	    	}
 	    }
 		
 		e = op_overload(sc, context);

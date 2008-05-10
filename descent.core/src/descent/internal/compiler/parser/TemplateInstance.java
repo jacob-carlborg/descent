@@ -684,103 +684,111 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		// Copy the syntax trees from the TemplateDeclaration
 		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
+		
+		// Descent: temporary adjust error position so errors doesn't
+		// appear inside templates, but always on the invocation site
+		context.startTemplateEvaluation(this);
 
-		// Create our own scope for the template parameters
-		Scope scope = tempdecl.scope;
-		if (null == scope) {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { tempdecl.toChars(context) }));
+		try {
+			// Create our own scope for the template parameters
+			Scope scope = tempdecl.scope;
+			if (null == scope) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { tempdecl.toChars(context) }));
+				}
+				return;
 			}
-			return;
-		}
-		argsym = new ScopeDsymbol();
-		argsym.parent = scope.parent;
-		scope = scope.push(argsym);
-
-		// Declare each template parameter as an alias for the argument type
-		declareParameters(scope, context);
-
-		// Add members of template instance to template instance symbol table
-		//	    parent = scope.scopesym;
-		symtab = new DsymbolTable();
-		int memnum = 0;
-		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
-			memnum |= s.addMember(scope, this, memnum, context);
-		}
-
-		/* See if there is only one member of template instance, and that
-		 * member has the same name as the template instance.
-		 * If so, this template instance becomes an alias for that member.
-		 */
-		if (members.size() > 0) {
-			Dsymbol[] s = new Dsymbol[] { null };
-			if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
-				if (null != s[0].ident && equals(s[0].ident, tempdecl.ident)) {
-					aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
-					
-					// Descent
-					aliasdecl.isTemplateParameter = true;
+			argsym = new ScopeDsymbol();
+			argsym.parent = scope.parent;
+			scope = scope.push(argsym);
+	
+			// Declare each template parameter as an alias for the argument type
+			declareParameters(scope, context);
+	
+			// Add members of template instance to template instance symbol table
+			//	    parent = scope.scopesym;
+			symtab = new DsymbolTable();
+			int memnum = 0;
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s = members.get(i);
+				memnum |= s.addMember(scope, this, memnum, context);
+			}
+	
+			/* See if there is only one member of template instance, and that
+			 * member has the same name as the template instance.
+			 * If so, this template instance becomes an alias for that member.
+			 */
+			if (members.size() > 0) {
+				Dsymbol[] s = new Dsymbol[] { null };
+				if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
+					if (null != s[0].ident && equals(s[0].ident, tempdecl.ident)) {
+						aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
+						
+						// Descent
+						aliasdecl.isTemplateParameter = true;
+					}
 				}
 			}
-		}
-
-		// Do semantic() analysis on template instance members
-		Scope sc2;
-		sc2 = scope.push(this);
-		sc2.parent = /*isnested ? sc.parent :*/this;
-
-		for (int i = 0; i < members.size(); i++) {
-			Dsymbol s = members.get(i);
-			s.semantic(sc2, context);
-			sc2.module.runDeferredSemantic(context);
-		}
-
-		/* If any of the instantiation members didn't get semantic() run
-		 * on them due to forward references, we cannot run semantic2()
-		 * or semantic3() yet.
-		 */
-		boolean gotoLaftersemantic = false;
-		for (int j = 0; j < size(context.Module_deferred); j++) {
-			Dsymbol sd = (Dsymbol) context.Module_deferred.get(j);
-
-			if (sd.parent == this) {
-				gotoLaftersemantic = true;
+	
+			// Do semantic() analysis on template instance members
+			Scope sc2;
+			sc2 = scope.push(this);
+			sc2.parent = /*isnested ? sc.parent :*/this;
+	
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol s = members.get(i);
+				s.semantic(sc2, context);
+				sc2.module.runDeferredSemantic(context);
 			}
-		}
-
-		/* The problem is when to parse the initializer for a variable.
-		 * Perhaps VarDeclaration.semantic() should do it like it does
-		 * for initializers inside a function.
-		 */
-		//	    if (sc.parent.isFuncDeclaration())
-		/* BUG 782: this has problems if the classes this depends on
-		 * are forward referenced. Find a way to defer semantic()
-		 * on this template.
-		 */
-		if (!gotoLaftersemantic) {
-			semantic2(sc2, context);
-
-			if (null != sc.func || dosemantic3 > 0) {
-				semantic3(sc2, context);
+	
+			/* If any of the instantiation members didn't get semantic() run
+			 * on them due to forward references, we cannot run semantic2()
+			 * or semantic3() yet.
+			 */
+			boolean gotoLaftersemantic = false;
+			for (int j = 0; j < size(context.Module_deferred); j++) {
+				Dsymbol sd = (Dsymbol) context.Module_deferred.get(j);
+	
+				if (sd.parent == this) {
+					gotoLaftersemantic = true;
+				}
 			}
-		}
-
-		//Laftersemantic:
-		sc2.pop();
-
-		scope.pop();
-
-		// Give additional context info if error occurred during instantiation
-		if (context.global.errors != errorsave) {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
+	
+			/* The problem is when to parse the initializer for a variable.
+			 * Perhaps VarDeclaration.semantic() should do it like it does
+			 * for initializers inside a function.
+			 */
+			//	    if (sc.parent.isFuncDeclaration())
+			/* BUG 782: this has problems if the classes this depends on
+			 * are forward referenced. Find a way to defer semantic()
+			 * on this template.
+			 */
+			if (!gotoLaftersemantic) {
+				semantic2(sc2, context);
+	
+				if (null != sc.func || dosemantic3 > 0) {
+					semantic3(sc2, context);
+				}
 			}
-			errors = 1;
-			if (context.global.gag > 0) {
-				tempdecl.instances.remove(tempdecl_instance_idx);
+	
+			//Laftersemantic:
+			sc2.pop();
+	
+			scope.pop();
+	
+			// Give additional context info if error occurred during instantiation
+			if (context.global.errors != errorsave) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
+				}
+				errors = 1;
+				if (context.global.gag > 0) {
+					tempdecl.instances.remove(tempdecl_instance_idx);
+				}
 			}
+		} finally {
+			context.endTemplateEvaluation();
 		}
 	}
 

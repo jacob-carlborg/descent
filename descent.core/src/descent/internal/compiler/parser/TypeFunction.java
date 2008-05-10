@@ -20,21 +20,17 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Tident;
 
 
-public class TypeFunction extends Type {
+public class TypeFunction extends Type implements Cloneable {
 
 	public int inuse;
 	public LINK linkage; // calling convention
 	public Arguments parameters, sourceParameters;
 	public int varargs;
 	public char linkageChar;
-	
-	private TypeFunction(Type treturn) {
-		super(Tfunction, treturn);
-	}
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
-		this(treturn);
+		super(Tfunction, treturn);
 		
 		this.parameters = parameters;
 		if (this.parameters != null) {
@@ -208,7 +204,7 @@ public class TypeFunction extends Type {
 			return this;
 		}
 		
-	    TypeFunction tf = new TypeFunction(next);
+	    TypeFunction tf = copy();
 	    if (parameters != null) {
 		    tf.parameters = new Arguments();
 		    for (int i = 0; i < size(parameters); i++) {
@@ -297,6 +293,14 @@ public class TypeFunction extends Type {
 			}
 		}
 		tf.deco = tf.merge(context).deco;
+		
+		// Descent: I'm not sure about this, but it seems DMD copies the resolved types to
+		// the original arguments with the memcpy
+		if (tf.parameters != null && parameters != null) {
+			for(int i = 0; i < parameters.size() && i < tf.parameters.size(); i++) {
+				parameters.get(i).type = tf.parameters.get(i).type;
+			}
+		}
 
 		if (tf.inuse != 0) {
 			if (context.acceptsProblems()) {
@@ -337,21 +341,26 @@ public class TypeFunction extends Type {
 			return;
 		}
 		inuse++;
-		switch (linkage) {
-		case LINKd:
-		case LINKc:
-		case LINKwindows:
-		case LINKpascal:
-		case LINKcpp:
-			mc = linkage.mangleChar;
-			break;
-		// Added for Descent
-		case LINKsystem:
-			mc = context._WIN32 ? LINK.LINKwindows.mangleChar : LINK.LINKc.mangleChar;
-			break;
-		default:
-			throw new IllegalStateException("assert(0);");
-		}
+		
+		// TODO Descent: for now assume everything has D linkage so that deco
+		// comparisons work
+//		switch (linkage) {
+//		case LINKd:
+//		case LINKc:
+//		case LINKwindows:
+//		case LINKpascal:
+//		case LINKcpp:
+//			mc = linkage.mangleChar;
+//			break;
+//		// Added for Descent
+//		case LINKsystem:
+//			mc = context._WIN32 ? LINK.LINKwindows.mangleChar : LINK.LINKc.mangleChar;
+//			break;
+//		default:
+//			throw new IllegalStateException("assert(0);");
+//		}
+		
+		mc = LINK.LINKd.mangleChar;
 		
 		// For Descent signature
 		linkageChar = mc;
@@ -631,6 +640,14 @@ public class TypeFunction extends Type {
 		buf.writestring(" function");
 		Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
 		inuse--;
+	}
+	
+	public TypeFunction copy() {
+		try {
+			return (TypeFunction) clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("serial")

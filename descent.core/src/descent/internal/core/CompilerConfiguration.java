@@ -35,8 +35,8 @@ public class CompilerConfiguration {
 		versionLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
 		versionIdentifiers = getIdentifiers(JavaCore.COMPILER_VERSION_IDENTIFIERS);
 		
-		useDeprecated = JavaCore.getOption(JavaCore.COMPILER_ALLOW_DEPRECATED).equals(JavaCore.ENABLED);
-		warnings = JavaCore.getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
+		useDeprecated = getOption(JavaCore.COMPILER_ALLOW_DEPRECATED).equals(JavaCore.ENABLED);
+		warnings = getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
 	}
 	
 	public boolean isVersionEnabled(char[] version) {
@@ -56,14 +56,7 @@ public class CompilerConfiguration {
 	}
 	
 	private long getLevel(String prefKey) {
-		String level;
-		
-		if (javaProject == null) {
-			level = JavaCore.getOption(prefKey);
-		} else {
-			level = javaProject.getOption(prefKey, true);
-		}
-		
+		String level = getOption(prefKey);
 		try {
 			return Long.parseLong(level);
 		} catch (NumberFormatException e) {
@@ -75,19 +68,21 @@ public class CompilerConfiguration {
 	private HashtableOfCharArrayAndObject getIdentifiers(String pref) {
 		HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
 		
-		String prefValue;
-		if (javaProject == null) {
-			prefValue = JavaCore.getOption(pref);
-		} else {
-			prefValue = javaProject.getOption(pref, true);
-		}
-		
+		String prefValue = getOption(pref);		
 		String[] idents = prefValue.split(",");
 		for(String ident : idents) {
 			hash.put(ident.trim().toCharArray(), this);
 		}
 		
 		return hash;
+	}
+	
+	private String getOption(String pref) {
+		if (javaProject == null) {
+			return JavaCore.getOption(pref);
+		} else {
+			return javaProject.getOption(pref, true);
+		}
 	}
 
 }

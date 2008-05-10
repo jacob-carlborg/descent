@@ -153,8 +153,7 @@ public class IdentifierExp extends Expression {
 					}
 				}
 				e = new DsymbolExp(loc, s);
-				e.start = start;
-				e.length = length;
+				e.copySourceRange(this);
 			}
 			
 			// Descent: for binding resolution

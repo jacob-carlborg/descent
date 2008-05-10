@@ -1,8 +1,12 @@
 package descent.internal.compiler.parser;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -80,6 +84,7 @@ public class SemanticContext {
 	public boolean fatalWasSignaled;
 	
 	public final ASTNodeEncoder encoder;
+	private final List<ASTDmdNode> templateEvaluationStack;
 	
 	/*
 	 * This is for autocompletion, for suggesting overloads of
@@ -103,6 +108,7 @@ public class SemanticContext {
 		this.stringTable = new StringTable();
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.encoder = encoder;
+		this.templateEvaluationStack = new LinkedList<ASTDmdNode>();
 		this.apiLevel = Util.getApiLevel(project);
 		
 		if (config.semanticAnalysisLevel == 0) {
@@ -180,7 +186,7 @@ public class SemanticContext {
 		}
 	}
 
-	public void acceptProblem(IProblem problem) {
+	public void acceptProblem(Problem problem) {
 		// Don't report more problems if fatal was signaled
 		if (fatalWasSignaled) {
 			return;
@@ -188,6 +194,13 @@ public class SemanticContext {
 		
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
 //			System.out.println("~~~" + problem);
+			
+			if (!templateEvaluationStack.isEmpty()) {
+				ASTDmdNode target = templateEvaluationStack.get(0);
+				problem.setSourceStart(target.start);
+				problem.setSourceEnd(target.start + target.length - 1);				
+			}
+			
 			problemRequestor.acceptProblem(problem);
 		}
 		
@@ -225,6 +238,15 @@ public class SemanticContext {
 			st.insert(fd);
 		}
 		return fd;
+	}
+	
+	
+	public void startTemplateEvaluation(ASTDmdNode node) {
+		this.templateEvaluationStack.add(node);
+	}
+	
+	public void endTemplateEvaluation() {
+		this.templateEvaluationStack.remove(this.templateEvaluationStack.size() - 1);
 	}
 	
 	public Module load(Loc loc, Identifiers packages,

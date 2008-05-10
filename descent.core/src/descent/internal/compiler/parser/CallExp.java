@@ -564,7 +564,14 @@ public class CallExp extends UnaExp {
 					// Descent: lazy initialization
 					te.td.consumeRest();
 					
-					f = te.td.deduceFunctionTemplate(sc, loc, null, arguments, context);
+					// Descent: temporary adjust error position so errors doesn't
+					// appear inside templates, but always on the invocation site
+					context.startTemplateEvaluation(this);
+					try {
+						f = te.td.deduceFunctionTemplate(sc, loc, null, arguments, context);
+					} finally {
+						context.endTemplateEvaluation();
+					}
 					if (f == null) {
 						type = Type.terror;
 						return this;
