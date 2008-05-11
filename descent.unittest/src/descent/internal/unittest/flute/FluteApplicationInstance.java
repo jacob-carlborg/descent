@@ -70,8 +70,11 @@ public class FluteApplicationInstance
 	/**
 	 * Initializes the flute application. Should be called only once
 	 * and before any calls to other methods.
+	 * 
+	 * @return true if and only if the connection was successfully made. If a
+	 *         was encountered, the instance should be killed instantly.
 	 */
-	public void init() throws IOException
+	public boolean init() throws IOException
 	{
 		assert(fState instanceof StartingUp);
 		assert(null == fConn);
@@ -80,10 +83,10 @@ public class FluteApplicationInstance
 		
 		// Make the connection (interpretation will begin automatically)
 		fConn = new SocketConnection(fPort);
-		
 		waitStateReturn();
-		assert(((StartingUp) fState).hasCorrectVersion);
+		boolean retVal = ((StartingUp) fState).hasCorrectVersion;
 		setState(fWaitingState);
+		return retVal;
 	}
 	
 	public boolean isConnected()

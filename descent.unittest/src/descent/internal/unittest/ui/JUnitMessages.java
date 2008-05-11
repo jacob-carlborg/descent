@@ -81,9 +81,14 @@ public final class JUnitMessages extends NLS
 	public static String TestRunnerViewPart_toggle_vertical_label;
 	public static String TestRunnerViewPart_wrapperJobName;
     public static String UnittestLaunchConfiguration_container_not_found;
+    public static String UnittestLaunchConfiguration_could_not_connect;
+    public static String UnittestLaunchConfiguration_could_not_delete_file;
+    public static String UnittestLaunchConfiguration_error_crearing_file;
+    public static String UnittestLaunchConfiguration_error_writing_file;
     public static String UnittestLaunchConfiguration_invalid_port;
     public static String UnittestLaunchConfiguration_no_open_port;
     public static String UnittestLaunchConfiguration_no_tests_found;
+    public static String UnittestLaunchConfiguration_program_does_not_exist;
     public static String UnittestLaunchConfiguration_task_name;
     public static String UnittestLaunchConfigurationTab_default_package;
     public static String UnittestLaunchConfigurationTab_dialog_test_container_selection;

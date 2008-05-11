@@ -25,6 +25,7 @@ import org.eclipse.debug.core.ILaunchManager;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.internal.unittest.flute.FluteApplicationInstance;
 import descent.internal.unittest.model.TestElement.Status;
 
 import descent.unittest.ITestResult;
@@ -92,9 +93,10 @@ public class TestRunSession
 	volatile boolean fIsStopped;
 	
 
-	public TestRunSession(IJavaProject testedProject, int port, ILaunch launch,
-			final List<ITestSpecification> tests)
+	public TestRunSession(IJavaProject testedProject, FluteApplicationInstance app,
+	        ILaunch launch, final List<ITestSpecification> tests)
 	{
+	    assert(null != app);
 		assert(null != testedProject);
 		assert(null != launch);
 		
@@ -112,11 +114,11 @@ public class TestRunSession
 		fIdToTest.put(fTestRoot.getId(), fTestRoot);
 		fTotalCount = 0;
 		
-		// Add the run listener that translates tuff to the session listeners
+		// Add the run listener that translates stuff to the session listeners
 		List<ITestRunListener> listeners = new ArrayList<ITestRunListener>();
 		listeners.add(new TestSessionNotifier());
 		
-		fTestRunnerClient= new RemoteTestRunnerClient(port, tests, listeners);
+		fTestRunnerClient= new RemoteTestRunnerClient(app, tests, listeners);
 		fSessionListeners= new ListenerList();
 		
 		// PERHAPS error handling might be nice...
@@ -125,7 +127,6 @@ public class TestRunSession
 				public void run()
 				{
 					createTestTree(tests);
-					fTestRunnerClient.init();
 					if(fTestRunnerClient.isConnected())
 						fTestRunnerClient.run();
 				}

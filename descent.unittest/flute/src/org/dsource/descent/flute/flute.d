@@ -409,7 +409,7 @@ private class TestResult
 				io.write("FAILED\r\n");
 				version(inTango)
 				{
-					// TODO
+					TODO();
 					AssertException ae = cast(AssertException) e;
 					assert(ae !is null);
 					io.write("Assertion failed in " ~ ae.file ~ " at line " ~
@@ -482,7 +482,7 @@ private class TestResult
 					version(inPhobos)
 						return format("%#0.*x", percision, val);
 					else
-						{ } // TANGO
+						{ TODO(); }
 				}
 				
 				char[] buf = "   <<ST>> ";

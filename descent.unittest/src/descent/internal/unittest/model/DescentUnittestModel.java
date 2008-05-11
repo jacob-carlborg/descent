@@ -41,6 +41,7 @@ import descent.unittest.ITestRunListener;
 import descent.unittest.ITestSpecification;
 
 import descent.internal.unittest.DescentUnittestPlugin;
+import descent.internal.unittest.flute.FluteApplicationInstance;
 import descent.internal.unittest.launcher.IUnittestLaunchConfigurationAttributes;
 import descent.internal.unittest.ui.JUnitPreferencesConstants;
 import descent.internal.unittest.ui.TestRunnerViewPart;
@@ -192,27 +193,16 @@ public final class DescentUnittestModel
 	 * aboout changes to the launch but instead the triggering of a specific
 	 * state).
 	 */
-	public void notifyLaunch(final ILaunch launch, 
+	public void notifyLaunch(final ILaunch launch,
+	        final FluteApplicationInstance app,
+	        final IJavaProject project,
 			final List<ITestSpecification> tests)
 	{
-		ILaunchConfiguration config = launch.getLaunchConfiguration();
-		if (config == null)
-			return;
-		
-		// test whether the launch defines the JUnit attributes
-		String portStr = launch.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR);
-		String projectStr = launch.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME);
-		if (portStr == null || projectStr == null)
-			return;
-		
-		final int port = Integer.parseInt(portStr);
-		final IJavaProject launchedProject = getJavaProject(projectStr);
-		
 		getDisplay().asyncExec(new Runnable()
 		{
 			public void run()
 			{
-				connectTestRunner(launch, launchedProject, /* TODO port */ 30587, tests);
+				connectTestRunner(launch, app, project, tests);
 			}
 		});
 	}
@@ -232,8 +222,10 @@ public final class DescentUnittestModel
 		return null;
 	}
 	
-	private void connectTestRunner(ILaunch launch, IJavaProject project,
-			int port, List<ITestSpecification> tests)
+	private void connectTestRunner(ILaunch launch,
+	        FluteApplicationInstance app,
+	        IJavaProject project,
+	        List<ITestSpecification> tests)
 	{
 		showTestRunnerViewPartInActivePage(findTestRunnerViewPartInActivePage());
 
@@ -249,7 +241,7 @@ public final class DescentUnittestModel
 			notifyTestRunSessionRemoved(session);
 		}
 
-		TestRunSession testRunSession = new TestRunSession(project, port, launch, tests);
+		TestRunSession testRunSession = new TestRunSession(project, app, launch, tests);
 		fTestRunSessions.addFirst(testRunSession);
 		notifyTestRunSessionAdded(testRunSession);
 	}

@@ -56,6 +56,24 @@ unittest
 
 unittest
 {
+	throwAnException();
+}
+
+void throwAnException()
+{
+	// Another couple lines to test line info
+	
+	
+	
+	doTheThrowing();
+}
+
+void doTheThrowing()
+{
+	// More blank lines
+	
+	
+	
 	throw new ArgumentException("NO WAI!");
 }
 

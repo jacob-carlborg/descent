@@ -59,8 +59,8 @@ public class OpenModuleAction extends OpenEditorAction
 			return null;
 		
 		int index = moduleSignature.lastIndexOf('.');
-        String packagePart = index > 0 ? moduleSignature.substring(0, index) : "";
-        String modulePart = String.format("%1$s.d", index > 0 ? 
+        String packagePart = index > 0 ? moduleSignature.substring(0, index) : ""; //$NON-NLS-1$
+        String modulePart = String.format("%1$s.d", index > 0 ?  //$NON-NLS-1$
                 moduleSignature.substring(index + 1) : moduleSignature);
         
         ICompilationUnit module = null;

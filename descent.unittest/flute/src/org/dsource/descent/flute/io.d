@@ -4,8 +4,8 @@
  * console stdio, which is useful mainly for testing purposes. Otherwise, will
  * provide socket I/O.
  * 
- * The socket will always bind to the localhost, and will opn a port determined
- * by the contents of the ".fluteio" file (without the quotes) in the current
+ * The socket will always bind to the localhost, and will open a port determined
+ * by the contents of the ".fluteport" file (without the quotes) in the current
  * working directory. This file's sole contents should be an ASCII-encoded
  * decimal integer between 1024 and 65535m representing the port flute should
  * open on. If this file does not exist or is in the wrong format, an error will
@@ -110,10 +110,7 @@ else
 			Stream stream;
 			
 			public this()
-			{
-				writef("Port %s\n", getPort());
-				exit(EXIT_SUCCESS);
-				
+			{	
 				try
 				{
 					serv = new TcpSocket(AddressFamily.INET);
@@ -124,7 +121,7 @@ else
 				}
 				catch(SocketException se)
 				{
-					writef("Couldn't create socket; error code %d\n",
+					writef("Couldn't create socket; error code %d\n", 
 						se.errorCode);
 					exit(se.errorCode);
 				}

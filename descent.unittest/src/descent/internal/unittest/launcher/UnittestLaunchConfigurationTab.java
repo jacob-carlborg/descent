@@ -477,7 +477,7 @@ public class UnittestLaunchConfigurationTab extends
 		
 		// TODO get the fluted program executable
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
-				"C:/Users/xycos/workspace/descent.unittest/testdata/bin/test.exe"); //$NON-NLS-1$
+				"C:/workspace/descent.unittest/testdata/bin/test.exe"); //$NON-NLS-1$
 	}
 
 	//--------------------------------------------------------------------------

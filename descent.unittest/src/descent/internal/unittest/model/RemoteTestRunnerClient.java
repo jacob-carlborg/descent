@@ -29,16 +29,16 @@ public class RemoteTestRunnerClient
 {
 	private final List<ITestSpecification> tests;
 	private final List<ITestRunListener> listeners;
-	private final int port;
 	private boolean stopped = true;
 	private long startTime;
 	
 	private FluteApplicationInstance app;
 	
-	public RemoteTestRunnerClient(int $port, List<ITestSpecification> $tests,
+	public RemoteTestRunnerClient(FluteApplicationInstance $app,
+	        List<ITestSpecification> $tests,
 			List<ITestRunListener> $listeners)
 	{
-		port = $port;
+		app = $app;
 		tests = $tests;
 		listeners = $listeners;
 	}
@@ -56,24 +56,6 @@ public class RemoteTestRunnerClient
 	public synchronized boolean isConnected()
 	{
 		return app.isConnected();
-	}
-	
-	public void init()
-	{		
-		if(isRunning())
-			return;
-		
-		try
-		{
-			synchronized(this)
-			{
-				app = new FluteApplicationInstance(port);
-			}
-			app.init();
-		}
-		catch(IOException e)
-		{
-		}
 	}
 	
 	public void run()
