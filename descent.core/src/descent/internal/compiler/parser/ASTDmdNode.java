@@ -30,6 +30,7 @@ import static descent.internal.compiler.parser.TOK.TOKarray;
 import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKfloat64;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
@@ -1444,8 +1445,9 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (exps != null) {
 			for (int i = 0; i < exps.size(); i++) {
 				Expression arg = exps.get(i);
-				if (null == arg)
+				if (null == arg) {
 					continue;
+				}
 
 				// Look for tuple with 0 members
 				if (arg.op == TOKtype) {
@@ -1455,8 +1457,9 @@ public abstract class ASTDmdNode extends ASTNode {
 
 						if (null == tt.arguments || tt.arguments.size() == 0) {
 							exps.remove(i);
-							if (i == exps.size())
+							if (i == exps.size()) {
 								return;
+							}
 							i--;
 							continue;
 						}
@@ -1469,8 +1472,9 @@ public abstract class ASTDmdNode extends ASTNode {
 
 					exps.remove(i); // remove arg
 					exps.addAll(i, te.exps); // replace with tuple contents
-					if (i == exps.size())
+					if (i == exps.size()) {
 						return; // empty tuple, no more arguments
+					}
 					arg = exps.get(i);
 				}
 			}
@@ -1495,7 +1499,7 @@ public abstract class ASTDmdNode extends ASTNode {
         if (null != v)
         {
         	boolean condition;
-        	if (context.apiLevel == Parser.D2) {
+        	if (context.apiLevel == Lexer.D2) {
         		condition = (v.isConst() || v.isInvariant()) && v.init != null && null == v.value;
         	} else {
         		condition = v.isConst() && null != v.init();
@@ -1504,8 +1508,9 @@ public abstract class ASTDmdNode extends ASTNode {
             if (condition)
             {
                 e = v.init().toExpression(context);
-                if (e != null && null == e.type)
-                    e.type = v.type;
+                if (e != null && null == e.type) {
+					e.type = v.type;
+				}
             }
             else
             {
@@ -1516,11 +1521,13 @@ public abstract class ASTDmdNode extends ASTNode {
 	        					IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
                 	}
                 }
-                else if (e != EXP_CANT_INTERPRET)
-                    e = e.interpret(istate, context);
+                else if (e != EXP_CANT_INTERPRET) {
+					e = e.interpret(istate, context);
+				}
             }
-            if (null == e)
-                e = EXP_CANT_INTERPRET;
+            if (null == e) {
+				e = EXP_CANT_INTERPRET;
+			}
         }
         else if (null != s)
         {
@@ -1540,19 +1547,20 @@ public abstract class ASTDmdNode extends ASTNode {
 		Expression e = isExpression(oarg);
 		Dsymbol s = isDsymbol(oarg);
 		Tuple v = isTuple(oarg);
-		if (null != t)
+		if (null != t) {
 			t.toCBuffer(buf, null, hgs, context);
-		else if (null != e)
+		} else if (null != e) {
 			e.toCBuffer(buf, hgs, context);
-		else if (null != s) {
+		} else if (null != s) {
 			String p = null != s.ident ? s.ident.toChars() : s.toChars(context);
 			buf.writestring(p);
 		} else if (null != v) {
 			Objects args = v.objects;
 			for (int i = 0; i < args.size(); i++) {
-				if (i > 0)
+				if (i > 0) {
 					buf.writeByte(',');
-				ASTDmdNode o = (ASTDmdNode) args.get(i);
+				}
+				ASTDmdNode o = args.get(i);
 				ObjectToCBuffer(buf, hgs, o, context);
 			}
 		} else if (null == oarg) {
@@ -1569,8 +1577,9 @@ public abstract class ASTDmdNode extends ASTNode {
 
 		assert (td != null);
 		fd = td.deduceFunctionTemplate(sc, loc, targsi, arguments, context);
-		if (null == fd)
+		if (null == fd) {
 			return;
+		}
 		m.anyf = fd;
 		if (m.last.ordinal() >= MATCHexact.ordinal()) {
 			m.nextf = fd;
@@ -1646,8 +1655,8 @@ public abstract class ASTDmdNode extends ASTNode {
 				return false;
 			}
 			for (int i = 0; i < size(v1.objects); i++) {
-				if (!match((ASTDmdNode) v1.objects.get(i),
-						(ASTDmdNode) v2.objects.get(i), tempdecl, sc, context)) {
+				if (!match(v1.objects.get(i),
+						v2.objects.get(i), tempdecl, sc, context)) {
 					// goto Lnomatch;
 					return false;
 				}
@@ -1738,9 +1747,9 @@ public abstract class ASTDmdNode extends ASTNode {
 	     * 0X1.9P+2			=> 19P2
 	     */
 
-	    if (value.isNaN())
-		buf.writestring("NAN");	// no -NAN bugs
-	    else
+	    if (value.isNaN()) {
+			buf.writestring("NAN");	// no -NAN bugs
+		} else
 	    {
 			char[] buffer = value.toString().toCharArray();
 			for (int i = 0; i < buffer.length; i++)
@@ -1758,8 +1767,9 @@ public abstract class ASTDmdNode extends ASTNode {
 				    break;
 	
 				case '0':
-				    if (i < 2)
-					break;		// skip leading 0X
+				    if (i < 2) {
+						break;		// skip leading 0X
+					}
 				default:
 				    buf.writeByte(c);
 				    break;
@@ -1817,10 +1827,11 @@ public abstract class ASTDmdNode extends ASTNode {
 	
 	public static int templateIdentifierLookup(IdentifierExp id, TemplateParameters parameters) {
 		for (int i = 0; i < size(parameters); i++) {
-			TemplateParameter tp = (TemplateParameter) parameters.get(i);
+			TemplateParameter tp = parameters.get(i);
 
-			if (equals(tp.ident, id))
+			if (equals(tp.ident, id)) {
 				return i;
+			}
 		}
 
 		return -1;
@@ -1838,9 +1849,47 @@ public abstract class ASTDmdNode extends ASTNode {
 		return -1;
 	}
 	
-	public static Expression eval_builtin(BUILTIN b, Expressions args) {
-		// XXX DMD 2
-		return null;
+	public static Expression eval_builtin(BUILTIN builtin,
+			Expressions arguments, SemanticContext context) {
+		Expression arg0 = arguments.get(0);
+		Expression e = null;
+		switch (builtin) {
+		case BUILTINsin:
+			if (arg0.op == TOKfloat64) {
+				e = new RealExp(Loc.ZERO, arg0.toReal(context).sin(),
+						Type.tfloat80);
+			}
+			break;
+
+		case BUILTINcos:
+			if (arg0.op == TOKfloat64) {
+				e = new RealExp(Loc.ZERO, arg0.toReal(context).cos(),
+						Type.tfloat80);
+			}
+			break;
+
+		case BUILTINtan:
+			if (arg0.op == TOKfloat64) {
+				e = new RealExp(Loc.ZERO, arg0.toReal(context).tan(),
+						Type.tfloat80);
+			}
+			break;
+
+		case BUILTINsqrt:
+			if (arg0.op == TOKfloat64) {
+				e = new RealExp(Loc.ZERO, arg0.toReal(context).sqrt(),
+						Type.tfloat80);
+			}
+			break;
+
+		case BUILTINfabs:
+			if (arg0.op == TOKfloat64) {
+				e = new RealExp(Loc.ZERO, arg0.toReal(context).abs(),
+						Type.tfloat80);
+			}
+			break;
+		}
+		return e;
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {

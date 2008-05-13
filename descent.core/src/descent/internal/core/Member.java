@@ -338,6 +338,10 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
  */
 public ISourceRange getNameRange() throws JavaModelException {
 	MemberElementInfo info= (MemberElementInfo)getElementInfo();
+//	if (info.getNameSourceStart() == 0 && info.getNameSourceEnd() == 0) {
+//		return null;
+//	}
+	
 	return new SourceRange(info.getNameSourceStart(), info.getNameSourceEnd() - info.getNameSourceStart() + 1);
 }
 /**

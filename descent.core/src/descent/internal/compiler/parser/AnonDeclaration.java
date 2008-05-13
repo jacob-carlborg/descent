@@ -11,6 +11,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCtls;
 
 public class AnonDeclaration extends AttribDeclaration {
 
@@ -86,7 +87,12 @@ public class AnonDeclaration extends AttribDeclaration {
 			}
 
 			sc = sc.push();
-			sc.stc &= ~(STCauto | STCscope | STCstatic);
+			
+			if (context.apiLevel == Parser.D2) {
+				sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls);	
+			} else {
+				sc.stc &= ~(STCauto | STCscope | STCstatic);
+			}
 			sc.inunion = isunion;
 			sc.offset = 0;
 			sc.flags = 0;

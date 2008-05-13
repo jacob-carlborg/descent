@@ -1032,15 +1032,20 @@ public class JavaElementLabels {
 				if (type.getParent() instanceof IField && type.isEnum()) {
 					typeName= '{' + ELLIPSIS_STRING + '}'; 
 				} else {
-					// TODO JDT signature
-//					String supertypeName;
-//					String[] superInterfaceNames= type.getSuperInterfaceNames();					
-//					if (superInterfaceNames.length > 0) {
-//						supertypeName= Signature.getSimpleName(superInterfaceNames[0]);
-//					} else {
-//						supertypeName= Signature.getSimpleName(type.getSuperclassName());
-//					}
-//					typeName= Messages.format(JavaUIMessages.JavaElementLabels_anonym_type , supertypeName); 
+					if (type.isEnum() || type.isStruct() || type.isUnion()) {
+						typeName= JavaUIMessages.JavaElementLabels_anonym; 
+					} else {
+						String supertypeName;
+						String[] superInterfaceNames= type.getSuperInterfaceNames();					
+						if (superInterfaceNames.length > 0) {
+							supertypeName= Signature.toString(superInterfaceNames[0], false /* don't fully qualify names */);
+						} else if (type.getSuperclassName() != null) {
+							supertypeName= Signature.toString(type.getSuperclassName(), false /* don't fully qualify names */);
+						} else {
+							supertypeName = "Object"; //$NON-NLS-1$
+						}
+						typeName= Messages.format(JavaUIMessages.JavaElementLabels_anonym_type , supertypeName);
+					}
 				}
 			} catch (JavaModelException e) {
 				//ignore

@@ -46,6 +46,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
+import static descent.internal.compiler.parser.BUILTIN.*;
 
 public class FuncDeclaration extends Declaration {
 
@@ -54,6 +55,7 @@ public class FuncDeclaration extends Declaration {
 			'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n' };
 	private final static char[] null_this = { 'n', 'u', 'l', 'l', ' ', 't',
 			'h', 'i', 's' };
+	private static String FeZe = "FeZe"; // real function(real)
 
 	public List fthrows; // Array of Type's of exceptions (not used)
 	public Statement fensure;
@@ -94,24 +96,23 @@ public class FuncDeclaration extends Declaration {
 	// Support for NRVO (named return value optimization)
 	public int nrvo_can; // !=0 means we can do it
 	public VarDeclaration nrvo_var; // variable to replace with shidden
-	
-    BUILTIN builtin;		// set if this is a known, builtin
-    						// function we can evaluate at compile
-    						// time
 
-    int tookAddressOf;		// set if someone took the address of
-							// this function
-    Dsymbols closureVars;	// local variables in this function
-							// which are referenced by nested
-							// functions
+	BUILTIN builtin; // set if this is a known, builtin
+	// function we can evaluate at compile
+	// time
 
-	
+	int tookAddressOf; // set if someone took the address of
+	// this function
+	Dsymbols closureVars; // local variables in this function
+	// which are referenced by nested
+	// functions
+
 	// Wether this function is actually a templated function
 	public boolean templated;
-	
+
 	protected IMethod javaElement;
 	private FuncDeclaration materialized; // in case the body is yet unknown
-	
+
 	public SemanticRest rest;
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
@@ -179,9 +180,8 @@ public class FuncDeclaration extends Declaration {
 
 	public void bodyToCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		if (fbody != null
-				&& (!hgs.hdrgen || hgs.tpltMember /* || canInline(true, true,
-						context) */)) {
+		if (fbody != null && (!hgs.hdrgen || hgs.tpltMember /* || canInline(true, true,
+		 context) */)) {
 			buf.writenl();
 
 			// in{}
@@ -236,7 +236,9 @@ public class FuncDeclaration extends Declaration {
 				if (!thisfd.isNested() && null == thisfd.vthis()) {
 					// goto Lerr;
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.CannotAccessFrameOfFunction, this,
+								new String[] { fd.toChars(context) }));
 					}
 					return 1;
 				}
@@ -246,14 +248,21 @@ public class FuncDeclaration extends Declaration {
 					if (!thiscd.isNested()) {
 						// goto Lerr;
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
+							context
+									.acceptProblem(Problem
+											.newSemanticTypeErrorLoc(
+													IProblem.CannotAccessFrameOfFunction,
+													this, new String[] { fd
+															.toChars(context) }));
 						}
 						return 1;
 					}
 				} else {
 					// goto Lerr;
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotAccessFrameOfFunction, this, new String[] { fd.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.CannotAccessFrameOfFunction, this,
+								new String[] { fd.toChars(context) }));
 					}
 					return 1;
 				}
@@ -278,7 +287,7 @@ public class FuncDeclaration extends Declaration {
 		if (context.global.errors != 0) {
 			return null;
 		}
-		
+
 		// If no body is avaiable (this FuncDeclaration was created from
 		// an IMethod) materialize the body and interpret
 		if (javaElement != null) {
@@ -289,25 +298,27 @@ public class FuncDeclaration extends Declaration {
 				try {
 					String source = javaElement.getSource();
 					// TODO api level
-					Parser parser = new Parser(source.toCharArray(), 0, source.length(), false, false, false, false, Parser.D1, null, null, false, null);
+					Parser parser = new Parser(source.toCharArray(), 0, source
+							.length(), false, false, false, false, Lexer.D1,
+							null, null, false, null);
 					parser.nextToken();
-					
+
 					Module module = parser.parseModuleObj();
-					
+
 					Dsymbol sym = module.members.get(0);
-					while(sym instanceof StorageClassDeclaration ||
-						  sym instanceof ProtDeclaration) {
+					while (sym instanceof StorageClassDeclaration
+							|| sym instanceof ProtDeclaration) {
 						if (sym instanceof StorageClassDeclaration) {
 							sym = ((StorageClassDeclaration) sym).decl.get(0);
 						} else {
 							sym = ((ProtDeclaration) sym).decl.get(0);
 						}
 					}
-					
+
 					if (sym instanceof TemplateDeclaration) {
 						sym = ((TemplateDeclaration) sym).members.get(0);
 					}
-					
+
 					FuncDeclaration func = (FuncDeclaration) sym;
 					func.semantic(scope.enclosing, context);
 					func.semantic2(scope.enclosing, context);
@@ -320,7 +331,7 @@ public class FuncDeclaration extends Declaration {
 			}
 			return materialized.interpret(istate, arguments, context);
 		}
-		
+
 		if (equals(ident, Id.aaLen)) {
 			return interpret_aaLen(istate, arguments, context);
 		} else if (equals(ident, Id.aaKeys)) {
@@ -425,7 +436,7 @@ public class FuncDeclaration extends Declaration {
 							break;
 						}
 					}
-				} else { 
+				} else {
 					/* 
 					 * Value parameters
 					 */
@@ -436,7 +447,8 @@ public class FuncDeclaration extends Declaration {
 						 */
 						earg = ((AddrExp) earg).e1;
 					}
-					earg = earg.interpret(istate != null ? istate : istatex, context);
+					earg = earg.interpret(istate != null ? istate : istatex,
+							context);
 
 					if (earg == EXP_CANT_INTERPRET) {
 						return null;
@@ -519,8 +531,8 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean isDllMain() {
-		return equals(ident, Id.DllMain)
-				&& linkage != LINKc && null == isMember();
+		return equals(ident, Id.DllMain) && linkage != LINKc
+				&& null == isMember();
 	}
 
 	@Override
@@ -531,7 +543,7 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public FuncDeclaration isFuncDeclaration() {
 		consumeRest();
-		
+
 		return this;
 	}
 
@@ -541,8 +553,8 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public boolean isMain() {
-		return ident != null && equals(ident, Id.main)
-				&& linkage != LINK.LINKc && isMember() == null && !isNested();
+		return ident != null && equals(ident, Id.main) && linkage != LINK.LINKc
+				&& isMember() == null && !isNested();
 	}
 
 	public AggregateDeclaration isMember2() {
@@ -579,13 +591,13 @@ public class FuncDeclaration extends Declaration {
 
 	public boolean isVirtual(SemanticContext context) {
 		return this.isMember() != null
-		&& !(this.isStatic() || this.protection == PROT.PROTprivate || this.protection == PROT.PROTpackage)
-		&& this.toParent().isClassDeclaration() != null;
+				&& !(this.isStatic() || this.protection == PROT.PROTprivate || this.protection == PROT.PROTpackage)
+				&& this.toParent().isClassDeclaration() != null;
 	}
 
 	public boolean isWinMain() {
-		return equals(ident, Id.WinMain)
-				&& linkage != LINKc && null == isMember();
+		return equals(ident, Id.WinMain) && linkage != LINKc
+				&& null == isMember();
 	}
 
 	@Override
@@ -598,9 +610,9 @@ public class FuncDeclaration extends Declaration {
 		if (isMain()) {
 			return "_Dmain";
 		}
-		
+
 		if (isWinMain() || isDllMain()) {
-		    return ident.toChars();
+			return ident.toChars();
 		}
 
 		return super.mangle(context);
@@ -716,7 +728,13 @@ public class FuncDeclaration extends Declaration {
 				tf = (TypeFunction) this.type;
 
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParametersDoesNotMatchParameterTypes, caller, new String[] { this.kindForError(context) + Argument.argsTypesToChars(tf.parameters, tf.varargs, context), buf.toChars() }));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ParametersDoesNotMatchParameterTypes,
+							caller, new String[] {
+									this.kindForError(context)
+											+ Argument.argsTypesToChars(
+													tf.parameters, tf.varargs,
+													context), buf.toChars() }));
 				}
 				return m.anyf; // as long as it's not a FuncAliasDeclaration
 			} else {
@@ -724,12 +742,16 @@ public class FuncDeclaration extends Declaration {
 				TypeFunction t2 = (TypeFunction) m.nextf.type;
 
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CalledWithArgumentTypesMatchesBoth, caller, new String[] { buf.toChars(), m.lastf.toPrettyChars(context), Argument
-							.argsTypesToChars(t1.parameters, t1.varargs,
-									context), m.nextf
-							.toPrettyChars(context), Argument
-							.argsTypesToChars(t2.parameters, t2.varargs,
-									context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CalledWithArgumentTypesMatchesBoth,
+							caller, new String[] {
+									buf.toChars(),
+									m.lastf.toPrettyChars(context),
+									Argument.argsTypesToChars(t1.parameters,
+											t1.varargs, context),
+									m.nextf.toPrettyChars(context),
+									Argument.argsTypesToChars(t2.parameters,
+											t2.varargs, context) }));
 				}
 				return m.lastf;
 			}
@@ -768,7 +790,7 @@ public class FuncDeclaration extends Declaration {
 		}
 		return (LabelDsymbol) s;
 	}
-	
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (rest != null && !rest.isConsumed()) {
@@ -777,7 +799,7 @@ public class FuncDeclaration extends Declaration {
 			}
 			return;
 		}
-		
+
 		boolean gotoL1 = false;
 		boolean gotoL2 = false;
 		boolean gotoLmainerr = false;
@@ -794,7 +816,8 @@ public class FuncDeclaration extends Declaration {
 		if (type.ty != Tfunction) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.SymbolMustBeAFunction, this, new String[] { toChars(context) }));
+						IProblem.SymbolMustBeAFunction, this,
+						new String[] { toChars(context) }));
 			}
 			return;
 		}
@@ -825,7 +848,7 @@ public class FuncDeclaration extends Declaration {
 						IProblem.NonVirtualFunctionsCannotBeAbstract, this));
 			}
 		}
-		
+
 		if (isAbstract() && isFinal()) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
@@ -841,7 +864,9 @@ public class FuncDeclaration extends Declaration {
 			//|| isUnitTestDeclaration()
 			) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SpecialMemberFunctionsNotAllowedForSymbol, this, new String[] { sd.kind() }));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.SpecialMemberFunctionsNotAllowedForSymbol,
+							this, new String[] { sd.kind() }));
 				}
 			}
 		}
@@ -855,12 +880,16 @@ public class FuncDeclaration extends Declaration {
 					|| isUnitTestDeclaration() != null
 					|| isNewDeclaration() != null || isDelete()) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SpecialFunctionsNotAllowedInInterface, this, new String[] { id.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.SpecialFunctionsNotAllowedInInterface,
+							this, new String[] { id.toChars(context) }));
 				}
 			}
 			if (fbody != null) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.FunctionBodyIsNotAbstractInInterface, this, new String[] { id.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.FunctionBodyIsNotAbstractInInterface,
+							this, new String[] { id.toChars(context) }));
 				}
 			}
 		}
@@ -869,7 +898,7 @@ public class FuncDeclaration extends Declaration {
 		if (cd != null) {
 			// Descent: lazy initialization
 			cd.consumeRest();
-			
+
 			int vi;
 
 			if (isCtorDeclaration() != null) {
@@ -886,13 +915,13 @@ public class FuncDeclaration extends Declaration {
 			// if static function, do not put in vtbl[]
 			if (!isVirtual(context)) {
 				// goto Ldone
-				
-			    /* Save scope for possible later use (if we need the
-			     * function internals)
-			     */
-			    scope = new Scope(sc, context);
-			    scope.setNoFree();
-			    return;
+
+				/* Save scope for possible later use (if we need the
+				 * function internals)
+				 */
+				scope = new Scope(sc, context);
+				scope.setNoFree();
+				return;
 			}
 
 			// Find index of existing function in vtbl[] to override
@@ -903,7 +932,7 @@ public class FuncDeclaration extends Declaration {
 					if (vi >= cd.vtbl.size()) {
 						break;
 					}
-					
+
 					FuncDeclaration fdv = ((Dsymbol) cd.vtbl.get(vi))
 							.isFuncDeclaration();
 
@@ -915,15 +944,31 @@ public class FuncDeclaration extends Declaration {
 
 						if (cov == 2) {
 							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-										IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.FunctionOfTypeOverridesButIsNotCovariant,
+														this,
+														new String[] {
+																toChars(context),
+																type
+																		.toChars(context),
+																fdv
+																		.toPrettyChars(context),
+																fdv.type
+																		.toChars(context) }));
 							}
 						}
 						if (cov == 1) {
 							if (fdv.isFinal()) {
 								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-											IProblem.CannotOverrideFinalFunction, this, new String[] { fdv.toPrettyChars(context) }));
+									context
+											.acceptProblem(Problem
+													.newSemanticTypeErrorLoc(
+															IProblem.CannotOverrideFinalFunction,
+															this,
+															new String[] { fdv
+																	.toPrettyChars(context) }));
 								}
 							}
 							if (fdv.toParent() == parent) {
@@ -940,22 +985,31 @@ public class FuncDeclaration extends Declaration {
 									if (context.BREAKABI) {
 										if (this.parent.isClassDeclaration() == null) {
 											if (context.acceptsProblems()) {
-												context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-														IProblem.MultipleOverridesOfSameFunction, this));
+												context
+														.acceptProblem(Problem
+																.newSemanticTypeErrorLoc(
+																		IProblem.MultipleOverridesOfSameFunction,
+																		this));
 											}
 										}
 									} else {
 										if (this.parent.isClassDeclaration() == null
 												&& isDtorDeclaration() == null) {
 											if (context.acceptsProblems()) {
-												context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-														IProblem.MultipleOverridesOfSameFunction, this));
+												context
+														.acceptProblem(Problem
+																.newSemanticTypeErrorLoc(
+																		IProblem.MultipleOverridesOfSameFunction,
+																		this));
 											}
 										}
 									}
 									if (context.acceptsProblems()) {
-										context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-												IProblem.MultipleOverridesOfSameFunction, this));
+										context
+												.acceptProblem(Problem
+														.newSemanticTypeErrorLoc(
+																IProblem.MultipleOverridesOfSameFunction,
+																this));
 									}
 								}
 							}
@@ -1011,7 +1065,7 @@ public class FuncDeclaration extends Declaration {
 					if (ident.toString().equals("callWindowProc")) {
 						System.out.println(1);
 					}
-					
+
 					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
 					if (s != null) {
 						FuncDeclaration f2 = s.isFuncDeclaration();
@@ -1022,10 +1076,16 @@ public class FuncDeclaration extends Declaration {
 						if (f2 != null && f2.isFinal()
 								&& f2.prot() != PROTprivate) {
 							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-										IProblem.CannotOverrideFinalFunctions, this, new String[] {
-												new String(ident.ident),
-												new String(cd.ident.ident) }));
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.CannotOverrideFinalFunctions,
+														this,
+														new String[] {
+																new String(
+																		ident.ident),
+																new String(
+																		cd.ident.ident) }));
 							}
 						}
 					}
@@ -1056,8 +1116,19 @@ public class FuncDeclaration extends Declaration {
 						int cov = type.covariant(fdv.type, context);
 						if (cov == 2) {
 							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-										IProblem.FunctionOfTypeOverridesButIsNotCovariant, this, new String[] { toChars(context), type.toChars(context), fdv.toPrettyChars(context), fdv.type.toChars(context) }));
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.FunctionOfTypeOverridesButIsNotCovariant,
+														this,
+														new String[] {
+																toChars(context),
+																type
+																		.toChars(context),
+																fdv
+																		.toPrettyChars(context),
+																fdv.type
+																		.toChars(context) }));
 							}
 						}
 						if (cov == 1) {
@@ -1080,8 +1151,16 @@ public class FuncDeclaration extends Declaration {
 							if (ti != null) {
 								if (tintro != null && !tintro.equals(ti)) {
 									if (context.acceptsProblems()) {
-										context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-												IProblem.IncompatibleCovariantTypes, this, new String[] { tintro.toChars(context), ti.toChars(context) }));
+										context
+												.acceptProblem(Problem
+														.newSemanticTypeErrorLoc(
+																IProblem.IncompatibleCovariantTypes,
+																this,
+																new String[] {
+																		tintro
+																				.toChars(context),
+																		ti
+																				.toChars(context) }));
 									}
 								}
 								tintro = ti;
@@ -1104,8 +1183,8 @@ public class FuncDeclaration extends Declaration {
 				if (introducing && isOverride()) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-								IProblem.FunctionDoesNotOverrideAny, this, new String[] {
-										new String(ident.ident),
+								IProblem.FunctionDoesNotOverrideAny, this,
+								new String[] { new String(ident.ident),
 										new String(cd.ident.ident) }));
 					}
 				}
@@ -1113,7 +1192,8 @@ public class FuncDeclaration extends Declaration {
 
 			// L2:	;
 		} else if (isOverride() && parent.isTemplateInstance() == null) {
-			errorOnModifier(IProblem.OverrideOnlyForClassMemberFunctions, TOK.TOKoverride, context);
+			errorOnModifier(IProblem.OverrideOnlyForClassMemberFunctions,
+					TOK.TOKoverride, context);
 		}
 
 		/*
@@ -1124,7 +1204,8 @@ public class FuncDeclaration extends Declaration {
 			if (ti != null) {
 				// Take care of nested templates
 				while (true) {
-					TemplateInstance ti2 = ti.tempdecl.parent.isTemplateInstance();
+					TemplateInstance ti2 = ti.tempdecl.parent
+							.isTemplateInstance();
 					if (ti2 == null) {
 						break;
 					}
@@ -1135,8 +1216,12 @@ public class FuncDeclaration extends Declaration {
 				ClassDeclaration cd2 = ti.tempdecl.isClassMember();
 				if (cd2 != null) {
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-								IProblem.CannotUseTemplateToAddVirtualFunctionToClass, this, new String[] { cd2.toChars(context) }));
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeErrorLoc(
+												IProblem.CannotUseTemplateToAddVirtualFunctionToClass,
+												this, new String[] { cd2
+														.toChars(context) }));
 					}
 				}
 			}
@@ -1169,7 +1254,8 @@ public class FuncDeclaration extends Declaration {
 				if (f.nextOf().ty != Tint32 && f.nextOf().ty != Tvoid) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.MustReturnIntOrVoidFromMainFunction, type));
+								IProblem.MustReturnIntOrVoidFromMainFunction,
+								type));
 					}
 				}
 			}
@@ -1182,8 +1268,7 @@ public class FuncDeclaration extends Declaration {
 			}
 		}
 
-		if (equals(ident, Id.assign)
-				&& (sd != null || cd != null)) { // Disallow
+		if (equals(ident, Id.assign) && (sd != null || cd != null)) { // Disallow
 			// identity
 			// assignment
 			// operator.
@@ -1228,8 +1313,11 @@ public class FuncDeclaration extends Declaration {
 
 	private final void semantic_Lassignerr(SemanticContext context) {
 		if (context.acceptsProblems()) {
-			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-					IProblem.IdentityAssignmentOperatorOverloadIsIllegal, this));
+			context
+					.acceptProblem(Problem
+							.newSemanticTypeErrorLoc(
+									IProblem.IdentityAssignmentOperatorOverloadIsIllegal,
+									this));
 		}
 	}
 
@@ -1246,7 +1334,7 @@ public class FuncDeclaration extends Declaration {
 			}
 			return;
 		}
-		
+
 		TypeFunction f;
 		AggregateDeclaration ad;
 		VarDeclaration argptr = null;
@@ -1280,63 +1368,51 @@ public class FuncDeclaration extends Declaration {
 		 * t = t.semantic(loc, sc); if (!t.isClassHandle()) error("can only
 		 * throw classes, not %s", t.toChars()); } }
 		 */
-		
+
 		// Descent: changed to always get semantic done on arguments
+		//		if (fbody != null || frequire != null) {
+		// Establish function scope
+		ScopeDsymbol ss;
+		Scope sc2;
 
-//		if (fbody != null || frequire != null) {
-			// Establish function scope
-			ScopeDsymbol ss;
-			Scope sc2;
+		localsymtab = new DsymbolTable();
 
-			localsymtab = new DsymbolTable();
+		ss = new ScopeDsymbol();
+		ss.parent = sc.scopesym;
+		sc2 = sc.push(ss);
+		sc2.func = this;
+		sc2.parent = this;
+		sc2.callSuper = 0;
+		sc2.sbreak = null;
+		sc2.scontinue = null;
+		sc2.sw = null;
+		sc2.fes = fes;
+		sc2.linkage = LINK.LINKd;
+		sc2.stc &= ~(STCauto | STCscope | STCstatic | STCabstract
+				| STCdeprecated | STCfinal);
+		sc2.protection = PROT.PROTpublic;
+		sc2.explicitProtection = 0;
+		sc2.structalign = 8;
+		sc2.incontract = 0;
+		sc2.tf = null;
+		sc2.noctor = 0;
 
-			ss = new ScopeDsymbol();
-			ss.parent = sc.scopesym;
-			sc2 = sc.push(ss);
-			sc2.func = this;
-			sc2.parent = this;
-			sc2.callSuper = 0;
-			sc2.sbreak = null;
-			sc2.scontinue = null;
-			sc2.sw = null;
-			sc2.fes = fes;
-			sc2.linkage = LINK.LINKd;
-			sc2.stc &= ~(STCauto | STCscope | STCstatic | STCabstract | STCdeprecated | STCfinal);
-			sc2.protection = PROT.PROTpublic;
-			sc2.explicitProtection = 0;
-			sc2.structalign = 8;
-			sc2.incontract = 0;
-			sc2.tf = null;
-			sc2.noctor = 0;
+		// Declare 'this'
+		ad = isThis();
+		if (ad != null) {
+			VarDeclaration v;
 
-			// Declare 'this'
-			ad = isThis();
-			if (ad != null) {
-				VarDeclaration v;
-
-				if (isFuncLiteralDeclaration() != null && isNested()) {
-					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-								IProblem.LiteralsCannotBeClassMembers, this));
-					}
-					return;
-				} else {
-					Assert.isTrue(!isNested()); // can't be both member and
-					// nested
-					Assert.isNotNull(ad.handle);
-					v = new ThisDeclaration(loc, ad.handle);
-					v.storage_class |= STCparameter | STCin;
-					v.semantic(sc2, context);
-					if (sc2.insert(v) == null) {
-						Assert.isTrue(false);
-					}
-					v.parent = this;
-					vthis = v;
+			if (isFuncLiteralDeclaration() != null && isNested()) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.LiteralsCannotBeClassMembers, this));
 				}
-			} else if (isNested()) {
-				VarDeclaration v;
-
-				v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
+				return;
+			} else {
+				Assert.isTrue(!isNested()); // can't be both member and
+				// nested
+				Assert.isNotNull(ad.handle);
+				v = new ThisDeclaration(loc, ad.handle);
 				v.storage_class |= STCparameter | STCin;
 				v.semantic(sc2, context);
 				if (sc2.insert(v) == null) {
@@ -1345,563 +1421,595 @@ public class FuncDeclaration extends Declaration {
 				v.parent = this;
 				vthis = v;
 			}
+		} else if (isNested()) {
+			VarDeclaration v;
 
-			// Declare hidden variable _arguments[] and _argptr
-			if (f.varargs != 0) {
-				Type t;
-
-				if (f.linkage == LINK.LINKd) { // Declare _arguments[]
-					if (context.BREAKABI) {
-						v_arguments = new VarDeclaration(loc,
-								context.Type_typeinfotypelist.type,
-								Id._arguments_typeinfo, null);
-						v_arguments.storage_class = STCparameter | STCin;
-						v_arguments.semantic(sc2, context);
-						sc2.insert(v_arguments);
-						v_arguments.parent = this;
-
-						t = context.Type_typeinfo.type.arrayOf(context);
-						_arguments = new VarDeclaration(loc, t, Id._arguments,
-								null);
-						_arguments.semantic(sc2, context);
-						sc2.insert(_arguments);
-						_arguments.parent = this;
-					} else {
-						t = context.Type_typeinfo.type.arrayOf(context);
-						v_arguments = new VarDeclaration(loc, t, Id._arguments,
-								null);
-						v_arguments.storage_class = STCparameter | STCin;
-						v_arguments.semantic(sc2, context);
-						sc2.insert(v_arguments);
-						v_arguments.parent = this;
-					}
-				}
-				if (f.linkage == LINK.LINKd
-						|| (parameters != null && parameters.size() > 0)) { // Declare
-					// _argptr
-					t = Type.tvoid.pointerTo(context);
-					argptr = new VarDeclaration(loc, t, Id._argptr, null);
-					argptr.semantic(sc2, context);
-					sc2.insert(argptr);
-					argptr.parent = this;
-				}
+			v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
+			v.storage_class |= STCparameter | STCin;
+			v.semantic(sc2, context);
+			if (sc2.insert(v) == null) {
+				Assert.isTrue(false);
 			}
+			v.parent = this;
+			vthis = v;
+		}
 
-			// Propagate storage class from tuple arguments to their
-			// sub-arguments.
-			if (f.parameters != null) {
-				for (int i = 0; i < f.parameters.size(); i++) {
-					Argument arg = f.parameters.get(i);
+		// Declare hidden variable _arguments[] and _argptr
+		if (f.varargs != 0) {
+			Type t;
 
-					if (arg.type.ty == Ttuple) {
-						TypeTuple t = (TypeTuple) arg.type;
-						int dim = Argument.dim(t.arguments, context);
-						for (int j = 0; j < dim; j++) {
-							Argument narg = Argument.getNth(t.arguments, j,
-									context);
-							narg.storageClass = arg.storageClass;
-						}
-					}
-				}
-			}
+			if (f.linkage == LINK.LINKd) { // Declare _arguments[]
+				if (context.BREAKABI) {
+					v_arguments = new VarDeclaration(loc,
+							context.Type_typeinfotypelist.type,
+							Id._arguments_typeinfo, null);
+					v_arguments.storage_class = STCparameter | STCin;
+					v_arguments.semantic(sc2, context);
+					sc2.insert(v_arguments);
+					v_arguments.parent = this;
 
-			// Declare all the function parameters as variables
-			if (nparams != 0) { // parameters[] has all the tuples removed, as
-				// the back end
-				// doesn't know about tuples
-				parameters = new Dsymbols(nparams);
-				for (int i = 0; i < nparams; i++) {
-					Argument arg = Argument.getNth(f.parameters, i, context);
-					IdentifierExp id = arg.ident;
-					if (id == null) {
-						id = new IdentifierExp(loc, ("_param_" + i + "u")
-								.toCharArray());
-						arg.ident = id;
-					}
-					VarDeclaration v = new VarDeclaration(loc, arg.type, id,
+					t = context.Type_typeinfo.type.arrayOf(context);
+					_arguments = new VarDeclaration(loc, t, Id._arguments, null);
+					_arguments.semantic(sc2, context);
+					sc2.insert(_arguments);
+					_arguments.parent = this;
+				} else {
+					t = context.Type_typeinfo.type.arrayOf(context);
+					v_arguments = new VarDeclaration(loc, t, Id._arguments,
 							null);
-					v.copySourceRange(arg);
-					
-					// Descent: for binding resolution
-					arg.var = v;
-					
-					v.storage_class |= STCparameter;
-					if (f.varargs == 2 && i + 1 == nparams) {
-						v.storage_class |= STCvariadic;
+					v_arguments.storage_class = STCparameter | STCin;
+					v_arguments.semantic(sc2, context);
+					sc2.insert(v_arguments);
+					v_arguments.parent = this;
+				}
+			}
+			if (f.linkage == LINK.LINKd
+					|| (parameters != null && parameters.size() > 0)) { // Declare
+				// _argptr
+				t = Type.tvoid.pointerTo(context);
+				argptr = new VarDeclaration(loc, t, Id._argptr, null);
+				argptr.semantic(sc2, context);
+				sc2.insert(argptr);
+				argptr.parent = this;
+			}
+		}
+
+		// Propagate storage class from tuple arguments to their
+		// sub-arguments.
+		if (f.parameters != null) {
+			for (int i = 0; i < f.parameters.size(); i++) {
+				Argument arg = f.parameters.get(i);
+
+				if (arg.type.ty == Ttuple) {
+					TypeTuple t = (TypeTuple) arg.type;
+					int dim = Argument.dim(t.arguments, context);
+					for (int j = 0; j < dim; j++) {
+						Argument narg = Argument
+								.getNth(t.arguments, j, context);
+						narg.storageClass = arg.storageClass;
 					}
-					v.storage_class |= arg.storageClass
-							& (STCin | STCout | STCref | STClazy);
-					if ((v.storage_class & STClazy) != 0) {
-						v.storage_class |= STCin;
+				}
+			}
+		}
+
+		// Declare all the function parameters as variables
+		if (nparams != 0) { // parameters[] has all the tuples removed, as
+			// the back end
+			// doesn't know about tuples
+			parameters = new Dsymbols(nparams);
+			for (int i = 0; i < nparams; i++) {
+				Argument arg = Argument.getNth(f.parameters, i, context);
+				IdentifierExp id = arg.ident;
+				if (id == null) {
+					id = new IdentifierExp(loc, ("_param_" + i + "u")
+							.toCharArray());
+					arg.ident = id;
+				}
+				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
+				v.copySourceRange(arg);
+
+				// Descent: for binding resolution
+				arg.var = v;
+
+				v.storage_class |= STCparameter;
+				if (f.varargs == 2 && i + 1 == nparams) {
+					v.storage_class |= STCvariadic;
+				}
+				v.storage_class |= arg.storageClass
+						& (STCin | STCout | STCref | STClazy);
+				if ((v.storage_class & STClazy) != 0) {
+					v.storage_class |= STCin;
+				}
+				v.semantic(sc2, context);
+				if (sc2.insert(v) == null) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ParameterIsAlreadyDefined, arg.ident,
+								new String[] { toChars(context),
+										v.toChars(context) }));
 					}
-					v.semantic(sc2, context);
+				} else {
+					parameters.add(v);
+				}
+				localsymtab.insert(v);
+				v.parent = this;
+			}
+		}
+
+		// Declare the tuple symbols and put them in the symbol table,
+		// but not in parameters[].
+		if (f.parameters != null) {
+			for (int i = 0; i < f.parameters.size(); i++) {
+				Argument arg = f.parameters.get(i);
+
+				if (arg.ident == null) {
+					continue; // never used, so ignore
+				}
+				if (arg.type.ty == Ttuple) {
+					TypeTuple t = (TypeTuple) arg.type;
+					int dim = Argument.dim(t.arguments, context);
+					Objects exps = new Objects();
+					exps.setDim(dim);
+					for (int j = 0; j < dim; j++) {
+						Argument narg = Argument
+								.getNth(t.arguments, j, context);
+						Assert.isNotNull(narg.ident);
+						VarDeclaration v = sc2.search(loc, narg.ident, null,
+								context).isVarDeclaration();
+						Assert.isNotNull(v);
+						Expression e = new VarExp(loc, v);
+						exps.set(j, e);
+					}
+					Assert.isNotNull(arg.ident);
+					TupleDeclaration v = new TupleDeclaration(loc, arg.ident,
+							exps);
+					v.isexp = true;
 					if (sc2.insert(v) == null) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterIsAlreadyDefined, arg.ident, new String[] { toChars(context), v.toChars(context) }));
+							context.acceptProblem(Problem
+									.newSemanticTypeErrorLoc(
+											IProblem.ParameterIsAlreadyDefined,
+											v, new String[] { toChars(context),
+													v.toChars(context) }));
 						}
-					} else {
-						parameters.add(v);
 					}
 					localsymtab.insert(v);
 					v.parent = this;
 				}
 			}
+		}
 
-			// Declare the tuple symbols and put them in the symbol table,
-			// but not in parameters[].
-			if (f.parameters != null) {
-				for (int i = 0; i < f.parameters.size(); i++) {
-					Argument arg = f.parameters.get(i);
+		sc2.incontract++;
 
-					if (arg.ident == null) {
-						continue; // never used, so ignore
+		if (frequire != null) {
+			// BUG: need to error if accessing out parameters
+			// BUG: need to treat parameters as const
+			// BUG: need to disallow returns and throws
+			// BUG: verify that all in and ref parameters are read
+			frequire = frequire.semantic(sc2, context);
+			labtab = null; // so body can't refer to labels
+		}
+
+		if (fensure != null || addPostInvariant(context)) {
+			ScopeDsymbol sym;
+
+			sym = new ScopeDsymbol();
+			sym.parent = sc2.scopesym;
+			sc2 = sc2.push(sym);
+
+			Assert.isNotNull(type.nextOf());
+			if (type.nextOf().ty == Tvoid) {
+				if (outId != null) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.VoidFunctionsHaveNoResult, outId));
 					}
-					if (arg.type.ty == Ttuple) {
-						TypeTuple t = (TypeTuple) arg.type;
-						int dim = Argument.dim(t.arguments, context);
-						Objects exps = new Objects();
-						exps.setDim(dim);
-						for (int j = 0; j < dim; j++) {
-							Argument narg = Argument.getNth(t.arguments, j,
-									context);
-							Assert.isNotNull(narg.ident);
-							VarDeclaration v = sc2.search(loc, narg.ident,
-									null, context).isVarDeclaration();
-							Assert.isNotNull(v);
-							Expression e = new VarExp(loc, v);
-							exps.set(j, e);
-						}
-						Assert.isNotNull(arg.ident);
-						TupleDeclaration v = new TupleDeclaration(loc,
-								arg.ident, exps);
-						v.isexp = true;
-						if (sc2.insert(v) == null) {
-							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ParameterIsAlreadyDefined, v, new String[] { toChars(context), v.toChars(context) }));
-							}
-						}
-						localsymtab.insert(v);
-						v.parent = this;
-					}
+				}
+			} else {
+				if (outId == null) {
+					outId = new IdentifierExp(loc, Id.result); // provide a
+					// default
 				}
 			}
 
-			sc2.incontract++;
+			if (outId != null) { // Declare result variable
+				VarDeclaration v;
+				Loc loc = this.loc;
 
-			if (frequire != null) {
-				// BUG: need to error if accessing out parameters
-				// BUG: need to treat parameters as const
-				// BUG: need to disallow returns and throws
-				// BUG: verify that all in and ref parameters are read
-				frequire = frequire.semantic(sc2, context);
+				if (fensure != null) {
+					fensure.loc = loc;
+				}
+
+				v = new VarDeclaration(loc, type.nextOf(), outId, null);
+				v.noauto = true;
+				sc2.incontract--;
+				v.semantic(sc2, context);
+				sc2.incontract++;
+				if (sc2.insert(v) == null) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.OutResultIsAlreadyDefined, this,
+								new String[] { v.toChars(context) }));
+					}
+				}
+				v.parent = this;
+				vresult = v;
+
+				// vresult gets initialized with the function return value
+				// in ReturnStatement::semantic()
+			}
+
+			// BUG: need to treat parameters as const
+			// BUG: need to disallow returns and throws
+			if (fensure != null) {
+				fensure = fensure.semantic(sc2, context);
 				labtab = null; // so body can't refer to labels
 			}
 
-			if (fensure != null || addPostInvariant(context)) {
-				ScopeDsymbol sym;
-
-				sym = new ScopeDsymbol();
-				sym.parent = sc2.scopesym;
-				sc2 = sc2.push(sym);
-
-				Assert.isNotNull(type.nextOf());
-				if (type.nextOf().ty == Tvoid) {
-					if (outId != null) {
-						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.VoidFunctionsHaveNoResult, outId));
-						}
-					}
-				} else {
-					if (outId == null) {
-						outId = new IdentifierExp(loc, Id.result); // provide a
-						// default
-					}
-				}
-
-				if (outId != null) { // Declare result variable
-					VarDeclaration v;
-					Loc loc = this.loc;
-
-					if (fensure != null) {
-						fensure.loc = loc;
-					}
-
-					v = new VarDeclaration(loc, type.nextOf(), outId, null);
-					v.noauto = true;
-					sc2.incontract--;
-					v.semantic(sc2, context);
-					sc2.incontract++;
-					if (sc2.insert(v) == null) {
-						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-									IProblem.OutResultIsAlreadyDefined, this, new String[] { v.toChars(context) }));
-						}
-					}
-					v.parent = this;
-					vresult = v;
-
-					// vresult gets initialized with the function return value
-					// in ReturnStatement::semantic()
-				}
-
-				// BUG: need to treat parameters as const
-				// BUG: need to disallow returns and throws
+			if (!context.global.params.useOut) {
 				if (fensure != null) {
-					fensure = fensure.semantic(sc2, context);
-					labtab = null; // so body can't refer to labels
+					fensure = null; // discard
 				}
-
-				if (!context.global.params.useOut) {
-					if (fensure != null) {
-						fensure = null; // discard
-					}
-					if (vresult != null) {
-						vresult = null;
-					}
+				if (vresult != null) {
+					vresult = null;
 				}
-
-				// Postcondition invariant
-				if (addPostInvariant(context)) {
-					Expression e = null;
-					if (isCtorDeclaration() != null) {
-						// Call invariant directly only if it exists
-						InvariantDeclaration inv = ad.inv;
-						ClassDeclaration cd = ad.isClassDeclaration();
-
-						while (inv == null && cd != null) {
-							cd = cd.baseClass;
-							if (cd == null) {
-								break;
-							}
-							inv = cd.inv;
-						}
-						if (inv != null) {
-							e = new DsymbolExp(loc, inv);
-							e = new CallExp(loc, e);
-							e = e.semantic(sc2, context);
-						}
-					} else { // Call invariant virtually
-						ThisExp v = new ThisExp(loc);
-						v.type = vthis.type;
-						e = new AssertExp(loc, v);
-					}
-					if (e != null) {
-						ExpStatement s = new ExpStatement(loc, e);
-						if (fensure != null) {
-							fensure = new CompoundStatement(loc, s, fensure);
-						} else {
-							fensure = s;
-						}
-					}
-				}
-
-				if (fensure != null) {
-					returnLabel = new LabelDsymbol(Id.returnLabel);
-					LabelStatement ls = new LabelStatement(loc,
-							new IdentifierExp(loc, Id.returnLabel), fensure);
-					ls.isReturnLabel = true;
-					returnLabel.statement = ls;
-				}
-				sc2 = sc2.pop();
 			}
 
-			sc2.incontract--;
+			// Postcondition invariant
+			if (addPostInvariant(context)) {
+				Expression e = null;
+				if (isCtorDeclaration() != null) {
+					// Call invariant directly only if it exists
+					InvariantDeclaration inv = ad.inv;
+					ClassDeclaration cd = ad.isClassDeclaration();
 
-			if (fbody != null) {
-				ClassDeclaration cd = isClassMember();
+					while (inv == null && cd != null) {
+						cd = cd.baseClass;
+						if (cd == null) {
+							break;
+						}
+						inv = cd.inv;
+					}
+					if (inv != null) {
+						e = new DsymbolExp(loc, inv);
+						e = new CallExp(loc, e);
+						e = e.semantic(sc2, context);
+					}
+				} else { // Call invariant virtually
+					ThisExp v = new ThisExp(loc);
+					v.type = vthis.type;
+					e = new AssertExp(loc, v);
+				}
+				if (e != null) {
+					ExpStatement s = new ExpStatement(loc, e);
+					if (fensure != null) {
+						fensure = new CompoundStatement(loc, s, fensure);
+					} else {
+						fensure = s;
+					}
+				}
+			}
 
-				if (isCtorDeclaration() != null && cd != null) {
+			if (fensure != null) {
+				returnLabel = new LabelDsymbol(Id.returnLabel);
+				LabelStatement ls = new LabelStatement(loc, new IdentifierExp(
+						loc, Id.returnLabel), fensure);
+				ls.isReturnLabel = true;
+				returnLabel.statement = ls;
+			}
+			sc2 = sc2.pop();
+		}
+
+		sc2.incontract--;
+
+		if (fbody != null) {
+			ClassDeclaration cd = isClassMember();
+
+			if (isCtorDeclaration() != null && cd != null) {
+				for (int i = 0; i < cd.fields.size(); i++) {
+					VarDeclaration v = cd.fields.get(i);
+					v.ctorinit(false);
+				}
+			}
+
+			if (inferRetType || f.retStyle() != RET.RETstack) {
+				nrvo_can = 0;
+			}
+
+			fbody = fbody.semantic(sc2, context);
+
+			if (inferRetType) { // If no return type inferred yet, then
+				// infer a void
+				if (type.nextOf() == null) {
+					type.next = Type.tvoid;
+					type = type.semantic(loc, sc, context);
+				}
+				f = (TypeFunction) type;
+			}
+
+			boolean offend = fbody != null ? fbody.fallOffEnd(context) : true;
+
+			if (isStaticCtorDeclaration() != null) {
+				/*
+				 * It's a static constructor.
+				 * Ensure that all ctor consts were initialized.
+				 */
+
+				Dsymbol p = toParent();
+				ScopeDsymbol ad2 = p.isScopeDsymbol();
+				if (null == ad2) {
+					if (context.acceptsProblems()) {
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeErrorLoc(
+												IProblem.StaticConstructorCanOnlyBePartOfStructClassModule,
+												this));
+					}
+				} else {
+					for (int i = 0; i < ad2.members.size(); i++) {
+						Dsymbol s = ad2.members.get(i);
+
+						s.checkCtorConstInit(context);
+					}
+				}
+			}
+
+			if (isCtorDeclaration() != null && cd != null) {
+
+				// Verify that all the ctorinit fields got initialized
+				if ((sc2.callSuper & Scope.CSXthis_ctor) == 0) {
 					for (int i = 0; i < cd.fields.size(); i++) {
 						VarDeclaration v = cd.fields.get(i);
-						v.ctorinit(false);
-					}
-				}
 
-				if (inferRetType || f.retStyle() != RET.RETstack) {
-					nrvo_can = 0;
-				}
-
-				fbody = fbody.semantic(sc2, context);
-
-				if (inferRetType) { // If no return type inferred yet, then
-					// infer a void
-					if (type.nextOf() == null) {
-						type.next = Type.tvoid;
-						type = type.semantic(loc, sc, context);
-					}
-					f = (TypeFunction) type;
-				}
-
-				boolean offend = fbody != null ? fbody.fallOffEnd(context)
-						: true;
-
-				if (isStaticCtorDeclaration() != null) { 
-					/*
-					 * It's a static constructor.
-					 * Ensure that all ctor consts were initialized.
-					 */
-					
-					Dsymbol p = toParent();
-					ScopeDsymbol ad2 = p.isScopeDsymbol();
-					if (null == ad2) {
-						if (context.acceptsProblems()) {
-							context
-									.acceptProblem(Problem
-											.newSemanticTypeErrorLoc(
-													IProblem.StaticConstructorCanOnlyBePartOfStructClassModule,
-													this));
-						}
-					} else {
-						for (int i = 0; i < ad2.members.size(); i++) {
-							Dsymbol s = ad2.members.get(i);
-
-							s.checkCtorConstInit(context);
+						if (!v.ctorinit() && v.isCtorinit()) {
+							if (context.acceptsProblems()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.MissingInitializerForConstField,
+														v,
+														new String[] { v
+																.toChars(context) }));
+							}
 						}
 					}
 				}
 
-				if (isCtorDeclaration() != null && cd != null) {
+				if ((sc2.callSuper & Scope.CSXany_ctor) == 0
+						&& cd.baseClass != null && cd.baseClass.ctor != null) {
+					sc2.callSuper = 0;
 
-					// Verify that all the ctorinit fields got initialized
-					if ((sc2.callSuper & Scope.CSXthis_ctor) == 0) {
-						for (int i = 0; i < cd.fields.size(); i++) {
-							VarDeclaration v = cd.fields.get(i);
+					// Insert implicit super() at start of fbody
+					Expression e1 = new SuperExp(loc);
+					Expression e = new CallExp(loc, e1);
 
-							if (!v.ctorinit() && v.isCtorinit()) {
-								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-											IProblem.MissingInitializerForConstField, v, new String[] { v.toChars(context) }));
-								}
+					int errors = context.global.errors;
+					context.global.gag++;
+					e = e.semantic(sc2, context);
+					context.global.gag--;
+					if (errors != context.global.errors) {
+
+						// I may be a synthetic node. In that case, mark
+						// the error in the class' name
+						if (this.synthetic) {
+							if (context.acceptsProblems()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.NoMatchForImplicitSuperCallInConstructor,
+														parent));
+							}
+						} else {
+							if (context.acceptsProblems()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.NoMatchForImplicitSuperCallInConstructor,
+														this));
 							}
 						}
 					}
 
-					if ((sc2.callSuper & Scope.CSXany_ctor) == 0
-							&& cd.baseClass != null
-							&& cd.baseClass.ctor != null) {
-						sc2.callSuper = 0;
-
-						// Insert implicit super() at start of fbody
-						Expression e1 = new SuperExp(loc);
-						Expression e = new CallExp(loc, e1);
-
-						int errors = context.global.errors;
-						context.global.gag++;
-						e = e.semantic(sc2, context);
-						context.global.gag--;
-						if (errors != context.global.errors) {
-							
-							// I may be a synthetic node. In that case, mark
-							// the error in the class' name
-							if (this.synthetic) {
-								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-											IProblem.NoMatchForImplicitSuperCallInConstructor, parent));
-								}
-							} else {
-								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-											IProblem.NoMatchForImplicitSuperCallInConstructor, this));
-								}
-							}
-						}
-
-						Statement s = new ExpStatement(loc, e);
-						fbody = new CompoundStatement(loc, s, fbody);
-					}
-				} else if (fes != null) { 
-					// For foreach(){} body, append a return 0;
-					Expression e = new IntegerExp(loc, 0);
-					Statement s = new ReturnStatement(loc, e);
-					fbody = new CompoundStatement(loc, fbody, s);
-					Assert.isTrue(returnLabel == null);
-				} else if (hasReturnExp == 0 && type.nextOf().ty != Tvoid) {
-					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-								IProblem.FunctionMustReturnAResultOfType, this, new String[] { type.nextOf()
-										.toString() }));
-					}
-				} else if (!inlineAsm) {
-					if (type.nextOf().ty == Tvoid) {
-						if (offend && isMain()) { // Add a return 0; statement
-							Statement s = new ReturnStatement(loc,
-									new IntegerExp(loc, 0));
-							fbody = new CompoundStatement(loc, fbody, s);
-						}
-					} else {
-						if (offend) {
-							Expression e;
-
-							if (context.global.params.warnings) {
-								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeWarning(
-											IProblem.NoReturnAtEndOfFunction, getLineNumber(), getErrorStart(),
-											getErrorLength(), new String[] { toChars(context) }));
-								}
-							}
-
-							if (context.global.params.useAssert
-									&& !context.global.params.useInline) { /*
-							 * Add
-							 * an
-							 * assert(0,
-							 * msg);
-							 * where
-							 * the
-							 * missing
-							 * return
-							 * should
-							 * be.
-							 */
-								e = new AssertExp(loc, new IntegerExp(loc, 0),
-										new StringExp(loc,
-												missing_return_expression, missing_return_expression.length));
-							} else {
-								e = new HaltExp(loc);
-							}
-							e = new CommaExp(loc, e, type.nextOf()
-									.defaultInit(context));
-							e = e.semantic(sc2, context);
-							Statement s = new ExpStatement(loc, e);
-							fbody = new CompoundStatement(loc, fbody, s);
-						}
-					}
+					Statement s = new ExpStatement(loc, e);
+					fbody = new CompoundStatement(loc, s, fbody);
 				}
-			}
-
-			{
-				Statements a = new Statements();
-
-				// Merge in initialization of 'out' parameters
-				if (parameters != null) {
-					for (int i = 0; i < parameters.size(); i++) {
-						VarDeclaration v;
-
-						v = (VarDeclaration) parameters.get(i);
-						if ((v.storage_class & (STCout | STCin)) == STCout) {
-							Assert.isNotNull(v.init);
-							ExpInitializer ie = v.init.isExpInitializer();
-							Assert.isNotNull(ie);
-							ExpStatement es = new ExpStatement(loc, ie.exp);
-							a.add(es);
-						}
-					}
+			} else if (fes != null) {
+				// For foreach(){} body, append a return 0;
+				Expression e = new IntegerExp(loc, 0);
+				Statement s = new ReturnStatement(loc, e);
+				fbody = new CompoundStatement(loc, fbody, s);
+				Assert.isTrue(returnLabel == null);
+			} else if (hasReturnExp == 0 && type.nextOf().ty != Tvoid) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.FunctionMustReturnAResultOfType, this,
+							new String[] { type.nextOf().toString() }));
 				}
-
-				if (argptr != null) { // Initialize _argptr to point past
-					// non-variadic arg
-					Expression e1;
-					Expression e;
-					Type t = argptr.type;
-					VarDeclaration p;
-					int offset;
-
-					e1 = new VarExp(loc, argptr);
-					if (parameters != null && parameters.size() > 0) {
-						p = (VarDeclaration) parameters
-								.get(parameters.size() - 1);
-					} else {
-						p = v_arguments; // last parameter is _arguments[]
-					}
-					offset = p.type.size(loc, context);
-					offset = (offset + 3) & ~3; // assume stack aligns on 4
-					e = new SymOffExp(loc, p, offset, context);
-					e = new AssignExp(loc, e1, e);
-					e.type = t;
-					ExpStatement es = new ExpStatement(loc, e);
-					a.add(es);
-				}
-
-				if (_arguments != null) {
-					/*
-					 * Advance to elements[] member of TypeInfo_Tuple with:
-					 * _arguments = v_arguments.elements;
-					 */
-					Expression e = new VarExp(loc, v_arguments);
-					e = new DotIdExp(loc, e,
-							new IdentifierExp(loc, Id.elements));
-					Expression e1 = new VarExp(loc, _arguments);
-					e = new AssignExp(loc, e1, e);
-					e = e.semantic(sc, context);
-					ExpStatement es = new ExpStatement(loc, e);
-					a.add(es);
-				}
-
-				// Merge contracts together with body into one compound
-				// statement
-
-				if (context._DH) {
-					if (frequire != null && context.global.params.useIn) {
-						frequire.incontract = true;
-						a.add(frequire);
+			} else if (!inlineAsm) {
+				if (type.nextOf().ty == Tvoid) {
+					if (offend && isMain()) { // Add a return 0; statement
+						Statement s = new ReturnStatement(loc, new IntegerExp(
+								loc, 0));
+						fbody = new CompoundStatement(loc, fbody, s);
 					}
 				} else {
-					if (frequire != null && context.global.params.useIn) {
-						a.add(frequire);
-					}
-				}
+					if (offend) {
+						Expression e;
 
-				// Precondition invariant
-				if (addPreInvariant(context)) {
-					Expression e = null;
-					if (isDtorDeclaration() != null) {
-						// Call invariant directly only if it exists
-						InvariantDeclaration inv = ad.inv;
-						ClassDeclaration cd = ad.isClassDeclaration();
-
-						while (inv == null && cd != null) {
-							cd = cd.baseClass;
-							if (cd == null) {
-								break;
+						if (context.global.params.warnings) {
+							if (context.acceptsProblems()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeWarning(
+														IProblem.NoReturnAtEndOfFunction,
+														getLineNumber(),
+														getErrorStart(),
+														getErrorLength(),
+														new String[] { toChars(context) }));
 							}
-							inv = cd.inv;
 						}
-						if (inv != null) {
-							e = new DsymbolExp(loc, inv);
-							e = new CallExp(loc, e);
-							e = e.semantic(sc2, context);
+
+						if (context.global.params.useAssert
+								&& !context.global.params.useInline) { /*
+						 * Add
+						 * an
+						 * assert(0,
+						 * msg);
+						 * where
+						 * the
+						 * missing
+						 * return
+						 * should
+						 * be.
+						 */
+							e = new AssertExp(loc, new IntegerExp(loc, 0),
+									new StringExp(loc,
+											missing_return_expression,
+											missing_return_expression.length));
+						} else {
+							e = new HaltExp(loc);
 						}
-					} else { // Call invariant virtually
-						ThisExp v = new ThisExp(loc);
-						v.type = vthis.type;
-						Expression se = new StringExp(loc, null_this, null_this.length);
-						se = se.semantic(sc, context);
-						se.type = Type.tchar.arrayOf(context);
-						e = new AssertExp(loc, v, se);
-					}
-					if (e != null) {
-						ExpStatement s = new ExpStatement(loc, e);
-						a.add(s);
-					}
-				}
-
-				if (fbody != null) {
-					a.add(fbody);
-				}
-
-				if (fensure != null) {
-					a.add(returnLabel.statement);
-
-					if (type.nextOf().ty != Tvoid) {
-						// Create: return vresult;
-						Assert.isNotNull(vresult);
-						Expression e = new VarExp(loc, vresult);
-						if (tintro != null) {
-							e = e.implicitCastTo(sc, tintro.nextOf(), context);
-							e = e.semantic(sc, context);
-						}
-						ReturnStatement s = new ReturnStatement(loc, e);
-						a.add(s);
+						e = new CommaExp(loc, e, type.nextOf().defaultInit(
+								context));
+						e = e.semantic(sc2, context);
+						Statement s = new ExpStatement(loc, e);
+						fbody = new CompoundStatement(loc, fbody, s);
 					}
 				}
+			}
+		}
 
-				fbody = new CompoundStatement(loc, a);
+		{
+			Statements a = new Statements();
+
+			// Merge in initialization of 'out' parameters
+			if (parameters != null) {
+				for (int i = 0; i < parameters.size(); i++) {
+					VarDeclaration v;
+
+					v = (VarDeclaration) parameters.get(i);
+					if ((v.storage_class & (STCout | STCin)) == STCout) {
+						Assert.isNotNull(v.init);
+						ExpInitializer ie = v.init.isExpInitializer();
+						Assert.isNotNull(ie);
+						ExpStatement es = new ExpStatement(loc, ie.exp);
+						a.add(es);
+					}
+				}
 			}
 
-			sc2.callSuper = 0;
-			sc2.pop();
-//		}
+			if (argptr != null) { // Initialize _argptr to point past
+				// non-variadic arg
+				Expression e1;
+				Expression e;
+				Type t = argptr.type;
+				VarDeclaration p;
+				int offset;
+
+				e1 = new VarExp(loc, argptr);
+				if (parameters != null && parameters.size() > 0) {
+					p = (VarDeclaration) parameters.get(parameters.size() - 1);
+				} else {
+					p = v_arguments; // last parameter is _arguments[]
+				}
+				offset = p.type.size(loc, context);
+				offset = (offset + 3) & ~3; // assume stack aligns on 4
+				e = new SymOffExp(loc, p, offset, context);
+				e = new AssignExp(loc, e1, e);
+				e.type = t;
+				ExpStatement es = new ExpStatement(loc, e);
+				a.add(es);
+			}
+
+			if (_arguments != null) {
+				/*
+				 * Advance to elements[] member of TypeInfo_Tuple with:
+				 * _arguments = v_arguments.elements;
+				 */
+				Expression e = new VarExp(loc, v_arguments);
+				e = new DotIdExp(loc, e, new IdentifierExp(loc, Id.elements));
+				Expression e1 = new VarExp(loc, _arguments);
+				e = new AssignExp(loc, e1, e);
+				e = e.semantic(sc, context);
+				ExpStatement es = new ExpStatement(loc, e);
+				a.add(es);
+			}
+
+			// Merge contracts together with body into one compound
+			// statement
+
+			if (context._DH) {
+				if (frequire != null && context.global.params.useIn) {
+					frequire.incontract = true;
+					a.add(frequire);
+				}
+			} else {
+				if (frequire != null && context.global.params.useIn) {
+					a.add(frequire);
+				}
+			}
+
+			// Precondition invariant
+			if (addPreInvariant(context)) {
+				Expression e = null;
+				if (isDtorDeclaration() != null) {
+					// Call invariant directly only if it exists
+					InvariantDeclaration inv = ad.inv;
+					ClassDeclaration cd = ad.isClassDeclaration();
+
+					while (inv == null && cd != null) {
+						cd = cd.baseClass;
+						if (cd == null) {
+							break;
+						}
+						inv = cd.inv;
+					}
+					if (inv != null) {
+						e = new DsymbolExp(loc, inv);
+						e = new CallExp(loc, e);
+						e = e.semantic(sc2, context);
+					}
+				} else { // Call invariant virtually
+					ThisExp v = new ThisExp(loc);
+					v.type = vthis.type;
+					Expression se = new StringExp(loc, null_this,
+							null_this.length);
+					se = se.semantic(sc, context);
+					se.type = Type.tchar.arrayOf(context);
+					e = new AssertExp(loc, v, se);
+				}
+				if (e != null) {
+					ExpStatement s = new ExpStatement(loc, e);
+					a.add(s);
+				}
+			}
+
+			if (fbody != null) {
+				a.add(fbody);
+			}
+
+			if (fensure != null) {
+				a.add(returnLabel.statement);
+
+				if (type.nextOf().ty != Tvoid) {
+					// Create: return vresult;
+					Assert.isNotNull(vresult);
+					Expression e = new VarExp(loc, vresult);
+					if (tintro != null) {
+						e = e.implicitCastTo(sc, tintro.nextOf(), context);
+						e = e.semantic(sc, context);
+					}
+					ReturnStatement s = new ReturnStatement(loc, e);
+					a.add(s);
+				}
+			}
+
+			fbody = new CompoundStatement(loc, a);
+		}
+
+		sc2.callSuper = 0;
+		sc2.pop();
+		//		}
 		semanticRun = 2;
 	}
 
@@ -1923,7 +2031,7 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		consumeRestStructure();
-		
+
 		FuncDeclaration f;
 
 		if (s != null) {
@@ -1932,10 +2040,10 @@ public class FuncDeclaration extends Declaration {
 			f = new FuncDeclaration(loc, ident, storage_class, type
 					.syntaxCopy(context));
 		}
-		
+
 		// Descent
 		f.templated = templated;
-		
+
 		f.outId = outId;
 		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;
 		f.fensure = fensure != null ? fensure.syntaxCopy(context) : null;
@@ -1955,33 +2063,55 @@ public class FuncDeclaration extends Declaration {
 		type.toCBuffer(buf, ident, hgs, context);
 		bodyToCBuffer(buf, hgs, context);
 	}
-	
+
 	public BUILTIN isBuiltin() {
-		// XXX DMD 2
-		return BUILTIN.BUILTINunknown;
+		if (builtin == BUILTINunknown) {
+			builtin = BUILTINnot;
+			if (parent != null && parent.isModule() != null) {
+				if (equals(parent.ident, Id.math) && parent.parent != null
+						&& equals(parent.parent.ident, Id.std)
+						&& null == parent.parent.parent) {
+					if (FeZe.equals(type.deco)) {
+						if (equals(ident, Id.sin)) {
+							builtin = BUILTINsin;
+						} else if (equals(ident, Id.cos)) {
+							builtin = BUILTINcos;
+						} else if (equals(ident, Id.tan)) {
+							builtin = BUILTINtan;
+						} else if (equals(ident, Id._sqrt)) {
+							builtin = BUILTINsqrt;
+						} else if (equals(ident, Id.fabs)) {
+							builtin = BUILTINfabs;
+						}
+					}
+				}
+			}
+		}
+		return builtin;
 	}
-	
+
 	@Override
 	public int getLineNumber() {
 		return loc.linnum;
 	}
-	
+
 	public VarDeclaration vthis() {
 		return vthis;
 	}
-	
+
 	public Type tintro() {
 		return tintro;
 	}
-	
+
 	public boolean inferRetType() {
 		return inferRetType;
 	}
-	
+
 	public void nestedFrameRef(boolean nestedFrameRef) {
 		this.nestedFrameRef = nestedFrameRef;
 	}
-	
+
+	@Override
 	public char getSignaturePrefix() {
 		if (templated) {
 			return ISignatureConstants.TEMPLATED_FUNCTION;
@@ -1989,34 +2119,34 @@ public class FuncDeclaration extends Declaration {
 			return ISignatureConstants.FUNCTION;
 		}
 	}
-	
+
 	public String getFunctionSignature() {
 		StringBuilder sb = new StringBuilder();
 		SemanticMixin.appendNameSignature(this, sb);
 		return sb.toString();
 	}
-	
+
 	@Override
 	public boolean templated() {
 		return templated;
 	}
-	
+
 	public void setJavaElement(IMethod javaElement) {
 		this.javaElement = javaElement;
 	}
-	
+
 	@Override
 	public IMethod getJavaElement() {
 		return javaElement;
 	}
-	
+
 	@Override
 	public void consumeRestStructure() {
 		if (rest != null && !rest.isStructureKnown()) {
 			rest.buildStructure();
 		}
 	}
-	
+
 	@Override
 	public void consumeRest() {
 		if (rest != null && !rest.isConsumed()) {

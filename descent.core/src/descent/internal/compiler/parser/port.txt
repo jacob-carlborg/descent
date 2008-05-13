@@ -13,3 +13,43 @@ class.c --> check is buildDtor is really necessary
 clone.c
 func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration 
             and StaticDtorDeclaration::StaticDtorDeclaration
+            
+Remaining from DMD 2.013
+------------------------------
+Make an option to ignore unrecongnized pragmas
+
+cast.c
+class.c
+clone.c
+constfold.c
+declaration.c
+declaration.h
+dsymbol.c
+dsymbol.h
+enum.c
+enum.h
+expression.c
+expression.h
+func.c
+idgen.c
+impcnvgen.c
+init.c
+inline.c
+lexer.c
+lexer.h
+mangle.c
+mars.c
+module.c
+mtype.c
+mtype.h
+opopver.c
+optimize.c
+parse.c
+parse.h
+statement.c
+statement.h
+struct.c
+template.c
+template.h
+traits.c
+typinf.c

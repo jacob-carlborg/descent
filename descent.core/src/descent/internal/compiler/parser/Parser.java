@@ -6835,6 +6835,8 @@ public class Parser extends Lexer {
 
 		// An anonymous nested class starts with "class"
 		if (token.value == TOKclass) {
+			int anonStart = token.ptr;
+			
 			nextToken();
 			if (token.value == TOKlparen)
 				arguments = parseArguments();
@@ -6859,6 +6861,9 @@ public class Parser extends Lexer {
 				cd.members = decl;
 				cd.sourceMembers = new Dsymbols(decl);
 			}
+			
+			cd.start = anonStart;
+			cd.length = prevToken.ptr + prevToken.sourceLen - anonStart;
 			
 			e = new NewAnonClassExp(loc(), thisexp, newargs, cd, arguments);
 

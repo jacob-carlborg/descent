@@ -353,4 +353,29 @@ public class real_t {
 		}
 	}
 
+	public real_t sin() {
+		double val = value.doubleValue();
+		return new real_t(Math.sin(val));
+	}
+	
+	public real_t cos() {
+		double val = value.doubleValue();
+		return new real_t(Math.cos(val));
+	}
+	
+	public real_t tan() {
+		double val = value.doubleValue();
+		return new real_t(Math.tan(val));
+	}
+	
+	public real_t sqrt() {
+		double val = value.doubleValue();
+		return new real_t(Math.sqrt(val));
+	}
+	
+	public real_t abs() {
+		double val = value.doubleValue();
+		return new real_t(Math.abs(val));
+	}
+
 }

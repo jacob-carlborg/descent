@@ -10,7 +10,6 @@ import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
-import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;

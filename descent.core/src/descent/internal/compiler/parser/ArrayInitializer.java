@@ -31,6 +31,10 @@ public class ArrayInitializer extends Initializer {
 	}
 
 	public void addInit(Expression index, Initializer value) {
+		if (value == null) {
+			System.out.println();
+		}
+		
 		if (this.index == null) {
 			this.index = new Expressions();
 			this.value = new Initializers();
@@ -119,6 +123,10 @@ public class ArrayInitializer extends Initializer {
 			}
 
 			val = value.get(i);
+			if (val == null || t == null) {
+				System.out.println();
+			}
+			
 			val = val.semantic(sc, t.next, context);
 			value.set(i, val);
 			length++;

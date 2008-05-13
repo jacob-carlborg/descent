@@ -464,6 +464,7 @@ final class ProblemMessages extends NLS {
 	public static String DoNotUseNullWhenComparingClassTypes;
 	public static String UseTokenInsteadOfTokenWhenComparingWithNull;
 	public static String VoidDoesNotHaveAnInitializer;
+	public static String FunctionNameExpectedForStartAddress;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

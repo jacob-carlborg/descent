@@ -196,6 +196,15 @@ public interface Id {
 	static final char[] funcptr = { 'f', 'u', 'n', 'c', 'p', 't', 'r' };
 	static final char[] cast = { 'o', 'p', 'C', 'a', 's', 't' };
 	static final char[] getmembers = { 'g', 'e', 't', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
+	static final char[] startaddress = { 's', 't', 'a', 'r', 't', 'a', 'd', 'd', 'r', 'e', 's', 's' };
+	
+	static final char[] std = { 's', 't', 'd' };
+	static final char[] math = { 'm', 'a', 't', 'h' };
+	static final char[] sin = { 's', 'i', 'n' };
+	static final char[] cos = { 'c', 'o', 's' };
+	static final char[] tan = { 't', 'a', 'n' };
+	static final char[] _sqrt = { 's', 'q', 'r', 't' };
+	static final char[] fabs = { 'f', 'a', 'b', 's' };
 	
 	// Others useful
 	static final char[] ZERO = { '0' };

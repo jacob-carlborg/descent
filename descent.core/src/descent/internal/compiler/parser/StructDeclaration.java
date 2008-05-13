@@ -17,6 +17,11 @@ import static descent.internal.compiler.parser.STC.STCin;
 public class StructDeclaration extends AggregateDeclaration {
 
 	public boolean zeroInit; // !=0 if initialize with 0 fill
+	public int hasIdentityAssign;	// !=0 if has identity opAssign
+	public FuncDeclaration cpctor;	// generated copy-constructor, if any
+
+	public FuncDeclarations postblits;	// Array of postblit functions
+	public FuncDeclaration postblit;	// aggregate postblit
 
 	public StructDeclaration(Loc loc, IdentifierExp id) {
 		super(loc, id);

@@ -8,13 +8,12 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 
-
 public class PragmaDeclaration extends AttribDeclaration {
 
 	public Expressions args, sourceArgs;
 
-	public PragmaDeclaration(Loc loc, IdentifierExp ident,
-			Expressions args, Dsymbols decl) {
+	public PragmaDeclaration(Loc loc, IdentifierExp ident, Expressions args,
+			Dsymbols decl) {
 		super(decl);
 		this.loc = loc;
 		this.ident = ident;
@@ -70,13 +69,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 					}
 				}
 			}
-			// goto Lnodecl
-			if (decl != null) {
-				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-							IProblem.PragmaIsMissingClosingSemicolon, this));
-				}
-			}
+			semantic_Lnodecl(context);
 			return;
 		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
@@ -100,18 +93,35 @@ public class PragmaDeclaration extends AttribDeclaration {
 					}
 				}
 			}
-			// goto Lnodecl;
-			if (decl != null) {
+			semantic_Lnodecl(context);
+			return;
+		} else if (context.apiLevel == Parser.D2 && equals(ident, Id.startaddress)) {
+			if (args == null || args.size() != 1) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-							IProblem.PragmaIsMissingClosingSemicolon, this));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FunctionNameExpectedForStartAddress, this));
+				}
+			} else {
+				Expression e = (Expression) args.get(0);
+				e = e.semantic(sc, context);
+				e = e.optimize(WANTvalue | WANTinterpret, context);
+				args.set(0, e);
+				Dsymbol sa = getDsymbol(e, context);
+				if (null == sa || null == sa.isFuncDeclaration()) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.FunctionNameExpectedForStartAddress, e));
+					}
 				}
 			}
+			semantic_Lnodecl(context);
 			return;
 		} else {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UnrecognizedPragma, ident));
+			if (!context.global.ignoreUnsupportedPragmas) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.UnrecognizedPragma, ident));
+				}
 			}
 		}
 
@@ -123,13 +133,22 @@ public class PragmaDeclaration extends AttribDeclaration {
 		return;
 	}
 
+	private void semantic_Lnodecl(SemanticContext context) {
+		if (decl != null) {
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+						IProblem.PragmaIsMissingClosingSemicolon, this));
+			}
+		}
+	}
+
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);
-		pd = new PragmaDeclaration(loc, ident,
-				Expression.arraySyntaxCopy(args, context), arraySyntaxCopy(decl, context));
+		pd = new PragmaDeclaration(loc, ident, Expression.arraySyntaxCopy(args,
+				context), arraySyntaxCopy(decl, context));
 		return pd;
 	}
 
@@ -138,26 +157,31 @@ public class PragmaDeclaration extends AttribDeclaration {
 			SemanticContext context) {
 		buf.writestring("pragma(");
 		buf.writestring(ident.toChars());
-		if (args != null) {
-			for (Expression e : args) {
-				buf.writestring(", ");
-				e.toCBuffer(buf, hgs, context);
+		if (args != null && args.size() != 0) {
+			if (context.apiLevel == Parser.D2) {
+		        buf.writestring(", ");
+		        argsToCBuffer(buf, args, hgs, context);
+			} else {
+				for (Expression e : args) {
+					buf.writestring(", ");
+					e.toCBuffer(buf, hgs, context);
+				}
 			}
 		}
 		buf.writestring(")");
 		super.toCBuffer(buf, hgs, context);
 	}
-	
+
 	@Override
 	public int getErrorStart() {
 		return start;
 	}
-	
+
 	@Override
 	public int getErrorLength() {
 		return 6; // "pragma".length()
 	}
-	
+
 	@Override
 	public String getSignature() {
 		return parent.getSignature();

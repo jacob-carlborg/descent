@@ -663,5 +663,6 @@ public interface IProblem {
 	int DoNotUseNullWhenComparingClassTypes = 452;
 	int UseTokenInsteadOfTokenWhenComparingWithNull = 453;
 	int VoidDoesNotHaveAnInitializer = 454;
+	int FunctionNameExpectedForStartAddress = 455;
 
 }

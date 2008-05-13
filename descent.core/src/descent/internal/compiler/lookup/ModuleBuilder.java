@@ -86,52 +86,52 @@ public class ModuleBuilder {
 	private final static boolean LAZY = false;
 	
 	/*
-	 * Wether to make surface Module semantic.
+	 * Whether to make surface Module semantic.
 	 */
 	public boolean LAZY_MODULES = LAZY & false;
 	
 	/*
-	 * Wether to make surface ClassDeclaration semantic lazy.
+	 * Whether to make surface ClassDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_CLASSES = LAZY & true;
 	
 	/*
-	 * Wether to make surface InterfaceDeclaration semantic lazy.
+	 * Whether to make surface InterfaceDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_INTERFACES = LAZY & true;
 	
 	/*
-	 * Wether to make surface StructDeclaration semantic lazy.
+	 * Whether to make surface StructDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_STRUCTS = LAZY & true;
 	
 	/*
-	 * Wether to make surface UnionDeclaration semantic lazy.
+	 * Whether to make surface UnionDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_UNIONS = LAZY & true;
 	
 	/*
-	 * Wether to make surface AliasDeclaration semantic lazy.
+	 * Whether to make surface AliasDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_ALIASES = LAZY & true;
 	
 	/*
-	 * Wether to make surface EnumDeclaration semantic lazy.
+	 * Whether to make surface EnumDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_ENUMS = LAZY & true;
 	
 	/*
-	 * Wether to make surface TemplateDeclaration semantic lazy.
+	 * Whether to make surface TemplateDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_TEMPLATES = LAZY & true;
 	
 	/*
-	 * Wether to make surface FuncDeclaration semantic lazy.
+	 * Whether to make surface FuncDeclaration semantic lazy.
 	 */
 	private final static boolean LAZY_FUNCTIONS = LAZY & true;
 	
 	/*
-	 * Wether to make surface VarDeclaration semantic lazy.
+	 * Whether to make surface VarDeclaration semantic lazy.
 	 * Currently doesn't work.
 	 */
 	public boolean LAZY_VARS = LAZY & false;

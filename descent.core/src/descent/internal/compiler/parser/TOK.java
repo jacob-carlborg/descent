@@ -176,6 +176,10 @@ public enum TOK implements ITerminalSymbols {
 	TOKnotis,
 	TOKconstruct(PREC_assign),
 	TOKblit(PREC_assign),
+	
+	TOKtls,
+	TOKline,
+	TOKfile,
 
 	//TOKMAX
 	;

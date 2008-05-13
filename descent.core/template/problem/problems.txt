@@ -1360,7 +1360,9 @@ UseTokenInsteadOfTokenWhenComparingWithNull
 VoidDoesNotHaveAnInitializer
 	formatString=void does not have an initializer
 	numArgs=0
-
+FunctionNameExpectedForStartAddress
+	formatString=Function name expected for start address
+	numArgs=0
 
 
 

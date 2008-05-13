@@ -1035,6 +1035,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.UseTokenInsteadOfTokenWhenComparingWithNull, arguments[0], arguments[1]);
 		case VoidDoesNotHaveAnInitializer:
 			return String.format(ProblemMessages.VoidDoesNotHaveAnInitializer);
+		case FunctionNameExpectedForStartAddress:
+			return String.format(ProblemMessages.FunctionNameExpectedForStartAddress);
 		default:
 			return "";
 		}
