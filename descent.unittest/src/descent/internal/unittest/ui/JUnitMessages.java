@@ -106,6 +106,11 @@ public final class JUnitMessages extends NLS
     public static String UnittestLaunchConfigurationTab_label_test_container;
     public static String UnittestLaunchConfigurationTab_label_test_container_selection;
     public static String UnittestLaunchConfigurationTab_label_use_specified_port;
+    public static String UnittestLaunchConfigurationTab_stack_tacing_group;
+    public static String UnittestLaunchConfigurationTab_stacktrace_always_disabled;
+    public static String UnittestLaunchConfigurationTab_stacktrace_always_enabled;
+    public static String UnittestLaunchConfigurationTab_stacktrace_disabled_in_debug;
+    public static String UnittestLaunchConfigurationTab_stacktrace_info;
 	public static String UnittestLaunchConfigurationTab_tab_label;
 	
 	private static final String BUNDLE_NAME= "descent.internal.unittest.ui.JUnitMessages";//$NON-NLS-1$

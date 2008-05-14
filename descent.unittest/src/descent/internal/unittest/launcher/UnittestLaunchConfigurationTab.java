@@ -74,6 +74,7 @@ public class UnittestLaunchConfigurationTab extends
 
 		createTestSelection(comp);
 		createPortSelection(comp);
+		createTraceSelection(comp);
 
 		Dialog.applyDialogFont(comp);
 		validatePage();
@@ -408,14 +409,131 @@ public class UnittestLaunchConfigurationTab extends
             return JUnitMessages.UnittestLaunchConfigurationTab_error_invalid_port;
         }
         
-        if(portNum < 1024 || portNum > 65535)
+        if(portNum <= 0 || portNum > 65535)
         {
             return JUnitMessages.UnittestLaunchConfigurationTab_error_port_number;
         }
         
         return null;
     }
-
+	
+	//--------------------------------------------------------------------------
+	// Trace selection
+	
+	private Group fTraceGroup;
+	private Label fTraceInfo;
+	private Button fAlwaysRadioButton;
+	private Button fNoDebugModeRadioButton;
+	private Button fNeverRadioButton;
+	
+	private void createTraceSelection(Composite comp)
+	{
+	    fTraceGroup = createGroup(comp, JUnitMessages.UnittestLaunchConfigurationTab_stack_tacing_group);
+	    
+	    fTraceInfo = new Label(fTraceGroup, SWT.LEFT | SWT.WRAP);
+	    fTraceInfo.setText(JUnitMessages.UnittestLaunchConfigurationTab_stacktrace_info);
+	    GridData gd = new GridData(GridData.FILL_BOTH);
+	    gd.horizontalSpan = 3;
+	    fTraceInfo.setLayoutData(gd);
+	    
+	    Label spacer = new Label(fTraceGroup, SWT.NONE);
+	    gd = new GridData();
+	    gd.horizontalAlignment= GridData.BEGINNING;
+        gd.grabExcessHorizontalSpace = false;
+        gd.horizontalSpan = 3;
+        gd.horizontalIndent = 0;
+        gd.widthHint = 0;
+        gd.heightHint = 0;
+        spacer.setLayoutData(gd);
+	    
+	    fAlwaysRadioButton = new Button(fTraceGroup, SWT.RADIO);
+	    fAlwaysRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_stacktrace_always_enabled);
+        gd = new GridData();
+        gd.horizontalSpan = 3;
+        gd.horizontalIndent = 25;
+        fAlwaysRadioButton.setLayoutData(gd);
+        fAlwaysRadioButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                if(fAlwaysRadioButton.getSelection())
+                    updateLaunchConfigurationDialog();
+            }
+        });
+        
+        fNoDebugModeRadioButton = new Button(fTraceGroup, SWT.RADIO);
+        fNoDebugModeRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_stacktrace_disabled_in_debug);
+        gd = new GridData();
+        gd.horizontalSpan = 3;
+        gd.horizontalIndent = 25;
+        fNoDebugModeRadioButton.setLayoutData(gd);
+        fNoDebugModeRadioButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                if(fNoDebugModeRadioButton.getSelection())
+                    updateLaunchConfigurationDialog();
+            }
+        });
+        
+        fNeverRadioButton = new Button(fTraceGroup, SWT.RADIO);
+        fNeverRadioButton.setText(JUnitMessages.UnittestLaunchConfigurationTab_stacktrace_always_disabled);
+        gd = new GridData();
+        gd.horizontalSpan = 3;
+        gd.horizontalIndent = 25;
+        fNeverRadioButton.setLayoutData(gd);
+        fNeverRadioButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                if(fNeverRadioButton.getSelection())
+                    updateLaunchConfigurationDialog();
+            }
+        });
+	}
+	
+	private void updateTraceFromConfig(ILaunchConfiguration config)
+	{
+	    String stackTraceMode = IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED_IN_DEBUG_MODE;
+	    try
+        {
+	        stackTraceMode = config.getAttribute(IUnittestLaunchConfigurationAttributes.ENABLE_STACKTACING_ATTR,
+	                IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED_IN_DEBUG_MODE);
+        }
+        catch(CoreException ce) { }
+	    
+        if(stackTraceMode.equals(IUnittestLaunchConfigurationAttributes.STACKTRACING_ENABLED))
+        {
+            fAlwaysRadioButton.setSelection(true);
+            fNoDebugModeRadioButton.setSelection(false);
+            fNeverRadioButton.setSelection(false);
+        } 
+        else if(stackTraceMode.equals(IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED))
+        {
+            fAlwaysRadioButton.setSelection(false);
+            fNoDebugModeRadioButton.setSelection(false);
+            fNeverRadioButton.setSelection(true);
+        }
+        else
+        {
+            fAlwaysRadioButton.setSelection(false);
+            fNoDebugModeRadioButton.setSelection(true);
+            fNeverRadioButton.setSelection(false);
+        }
+	}
+	
+	private String getTraceSetting()
+	{
+	    if(fAlwaysRadioButton.getSelection())
+	        return IUnittestLaunchConfigurationAttributes.STACKTRACING_ENABLED;
+	    else if(fNoDebugModeRadioButton.getSelection())
+	        return IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED_IN_DEBUG_MODE;
+	    else if(fNeverRadioButton.getSelection())
+	        return IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED;
+	    else
+	        return null;
+	}
+	
 	//--------------------------------------------------------------------------
 	// Initialization
 
@@ -423,6 +541,7 @@ public class UnittestLaunchConfigurationTab extends
 	{
 	    updateTestContainerFromConfig(config);
 		updatePortFromConfig(config);
+		updateTraceFromConfig(config);
 	}
 
 	//--------------------------------------------------------------------------
@@ -474,7 +593,8 @@ public class UnittestLaunchConfigurationTab extends
 	            fAutoPortRadioButton.getSelection() ? "" : fSpecPortText.getText()); //$NON-NLS-1$
 	    config.setAttribute(IUnittestLaunchConfigurationAttributes.INCLUDE_SUBPACKAGES_ATTR,
 	            fIncludeSubpackagesCheckbox.getSelection() ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
-		
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.ENABLE_STACKTACING_ATTR, getTraceSetting());
+	    
 		// TODO get the fluted program executable
 		config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_NAME,
 				"C:/workspace/descent.unittest/testdata/bin/test.exe"); //$NON-NLS-1$
@@ -497,6 +617,7 @@ public class UnittestLaunchConfigurationTab extends
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.LAUNCH_CONTAINER_ATTR, launchContainer);
         config.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
 		config.setAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""); //$NON-NLS-1$
+		config.setAttribute(IUnittestLaunchConfigurationAttributes.ENABLE_STACKTACING_ATTR, IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED_IN_DEBUG_MODE);
 	}
 
 	/**

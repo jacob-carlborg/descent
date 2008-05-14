@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
 
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
@@ -56,14 +57,12 @@ public class UnittestLaunchConfiguration extends
 	 * the program (well, it's not, but this might be easier than finding the
 	 * stack frame and trying to read the arguments like that).
 	 */
-	public static final String PORT_FILENAME = ".fluteport"; //$NON-NLS-1$
+	public static final String CONFIG_FILENAME = ".fluteconfig"; //$NON-NLS-1$
 	
 	@Override
 	public void launch(ILaunchConfiguration config, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
-	{
-	    System.out.println(launch.getClass());
-	    
+	{   
 		if (monitor == null)
 			monitor = new NullProgressMonitor();
 		boolean shouldKill = false; // Should the process be killed?
@@ -81,19 +80,17 @@ public class UnittestLaunchConfiguration extends
 			    throw error(JUnitMessages.UnittestLaunchConfiguration_no_tests_found);
 			if(monitor.isCanceled())
                 return;
-			
+            
 			// Get the port
-            String portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""); //$NON-NLS-1$
-            int port = getPort(portStr);
-            if(port < 1024 || port > 65535)
-                throw error(JUnitMessages.UnittestLaunchConfiguration_invalid_port);
+			String portStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.PORT_ATTR, ""); //$NON-NLS-1$
+	        int port = getPort(portStr);
+	        if(port <= 0 || port > 65535)
+	            throw error(JUnitMessages.UnittestLaunchConfiguration_invalid_port);
+			
+            // Create the config file
+            createConfigFile(config, mode, port);
             if(monitor.isCanceled())
                 return;
-            
-            // Create the file with the port
-            String portFilePath = getPortFilePath(config);
-            File portFile = createFile(portFilePath);
-            writeToFile(Integer.toString(port), portFile);
             monitor.worked(15); // 55
 			
 			// Launch the applicataion
@@ -164,6 +161,33 @@ public class UnittestLaunchConfiguration extends
 		return result;
 	}
 	
+	private void createConfigFile(ILaunchConfiguration config, String mode, 
+	        int port) throws CoreException
+    {   
+        // Get whether stack tracing is enabled
+        boolean stackTrace;
+        String stackTraceStr = config.getAttribute(IUnittestLaunchConfigurationAttributes.ENABLE_STACKTACING_ATTR,
+                IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED_IN_DEBUG_MODE);
+        if(IUnittestLaunchConfigurationAttributes.STACKTRACING_ENABLED.equals(stackTraceStr))
+            stackTrace = true;
+        else if(IUnittestLaunchConfigurationAttributes.STACKTRACING_DISABLED.equals(stackTraceStr))
+            stackTrace = false;
+        else
+            stackTrace = !mode.equals(ILaunchManager.DEBUG_MODE);
+        
+        // Generate the string which should be written to the file
+        StringBuilder contents = new StringBuilder();
+        contents.append("port="); //$NON-NLS-1$
+        contents.append(Integer.toString(port));
+        contents.append("\nstacktrace="); //$NON-NLS-1$
+        contents.append(stackTrace ? "on\n" : "off\n"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+	    // Generate and write the file
+        String configFilePath = getConfigFilePath(config);
+        File configFile = createFile(configFilePath);
+        writeToFile(contents.toString(), configFile);
+    }
+	
 	private static int getPort(String portStr) throws CoreException
     {
         int port = 0;
@@ -173,7 +197,7 @@ public class UnittestLaunchConfiguration extends
         }
         catch(NumberFormatException e) { }
         
-        if(port < 1024 || port > 65535)
+        if(port <= 0 || port > 65535)
             port = findFreePort();
         
         return port;
@@ -202,6 +226,24 @@ public class UnittestLaunchConfiguration extends
 	    return new CoreException(new Status(IStatus.ERROR, 
 	            DescentUnittestPlugin.PLUGIN_ID, message));
 	}
+	
+	private String getConfigFilePath(ILaunchConfiguration config) throws CoreException
+    {
+        File dirFile = verifyWorkingDirectory(config);
+        String dirPath;
+        if(null != dirFile)
+        {
+            dirPath = dirFile.getPath();
+        }
+        else
+        {
+            File exe = new File(verifyProgramPath(config).toOSString());
+            if(!exe.exists() || !exe.isFile())
+                throw error(JUnitMessages.UnittestLaunchConfiguration_program_does_not_exist);
+            dirPath = exe.getParent();
+        }
+        return dirPath + File.separator + CONFIG_FILENAME;
+    }
 	
 	private static File createFile(String path) throws CoreException
 	{
@@ -237,24 +279,6 @@ public class UnittestLaunchConfiguration extends
 	    {
 	        throw error(String.format(JUnitMessages.UnittestLaunchConfiguration_error_writing_file, e.getMessage()));
 	    }
-	}
-	
-	private String getPortFilePath(ILaunchConfiguration config) throws CoreException
-	{
-	    File dirFile = verifyWorkingDirectory(config);
-        String dirPath;
-        if(null != dirFile)
-        {
-            dirPath = dirFile.getPath();
-        }
-        else
-        {
-            File exe = new File(verifyProgramPath(config).toOSString());
-            if(!exe.exists() || !exe.isFile())
-                throw error(JUnitMessages.UnittestLaunchConfiguration_program_does_not_exist);
-            dirPath = exe.getParent();
-        }
-        return dirPath + File.separator + PORT_FILENAME;
 	}
 
 	@Override

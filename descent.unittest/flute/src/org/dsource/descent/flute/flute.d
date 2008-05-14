@@ -307,7 +307,7 @@ else
 	
 	import std.c.stdlib: exit, EXIT_SUCCESS, EXIT_FAILURE;
 	import std.c.string : strlen;
-	import std.string : atoi, format, find, trim = strip;
+	import std.string : atoi, format, trim = strip;
 	import std.ctype : isdigit;
 	import std.asserterror : AssertError;
 	
@@ -346,6 +346,12 @@ private const char[] NAMED_TEST_MARKER = ".__setTestName!(__testName_";
 
 /// A string containing version information, printed at the start of the application
 private const char[] VERSION_STRING = "flute 0.1";
+
+/**
+ * The config attribute representing whether stacktraces should be used, either
+ * "on" or "off"
+ */
+private const string STACKTRACE_ATTR = "stacktrace";
 
 /*
  * The result of running a test
@@ -920,10 +926,24 @@ private IOProvider io;
  */
 private void fluteMain()
 {
-	TracedException.traceAllExceptions();
-	io = getIOProvider();
+	// Read the config file
+	string[string] config = readConfig();
+	
+	// Get the I/O provider
+	io = getIOProvider(config);
+	
+	// Activate stack tracing if needed
+	string* enableStackTrace = STACKTRACE_ATTR in config;
+	if(enableStackTrace && (*enableStackTrace) == "on")
+		TracedException.traceAllExceptions(true);
+	
+	// Write out the evrsion info
 	io.write(VERSION_STRING ~ "\r\n");
+	
+	// Initialize the test registry (find all the tests)
 	initRegistry();
+	
+	// Go into the main loop
 	if(!commandLoop())
 		fluteExit();
 }

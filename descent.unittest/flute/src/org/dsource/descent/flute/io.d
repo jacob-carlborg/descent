@@ -4,12 +4,8 @@
  * console stdio, which is useful mainly for testing purposes. Otherwise, will
  * provide socket I/O.
  * 
- * The socket will always bind to the localhost, and will open a port determined
- * by the contents of the ".fluteport" file (without the quotes) in the current
- * working directory. This file's sole contents should be an ASCII-encoded
- * decimal integer between 1024 and 65535m representing the port flute should
- * open on. If this file does not exist or is in the wrong format, an error will
- * be printed to stdout and the application will exit.
+ * Also provides the means for getting the configuration file and exports a
+ * library-independent "find" function.
  */
 module org.dsource.descent.flute.io;
 
@@ -19,15 +15,18 @@ version(Tango)
 }
 else
 {
+	public import std.string : find;
+	
+	import std.c.stdlib : exit, EXIT_SUCCESS, EXIT_FAILURE;
+	import std.file : exists, read;
+
 	version(FluteCommandLine)
 	{
 		import std.stdio : writef, fflush, stdout, cinReadln = readln;
 	}
 	else
 	{
-		import std.c.stdlib : exit, EXIT_SUCCESS, EXIT_FAILURE;
 		import std.ctype : isdigit;
-		import std.file : exists, read;
 		import std.socket : Socket, TcpSocket, AddressFamily, InternetAddress,
 			SocketShutdown, SocketException;
 		import std.socketstream : SocketStream;
@@ -42,10 +41,29 @@ else
  * deleted when done. This should only be called once (since trying to open a
  * socket on the same port more than once will obviously not work too well).
  */
-public IOProvider getIOProvider()
+public IOProvider getIOProvider(string[string] config)
 {
-	return new IOProviderImpl();
+	return new IOProviderImpl(config);
 }
+
+/**
+ * Finds needle in the hasytack or returns -1 on failure (Tango's find returns
+ * the length of the string while Phobos's returns -1. The function exported
+ * from this module acts as Phobos's).
+ */
+// uint find(string haystack, string needle)
+
+/**
+ * Reads the configuaration file. The file should be a file in the working
+ * diretcory called ".fluteconfig" and have a set of keys and values on the
+ * same line separated by an =, with newlines separating the pairs, like so:
+ * 
+ * port=30587
+ * stacktrace=on
+ * 
+ * There must be a newline after the last pair.
+ */
+// string[string] readConfig()
 
 /**
  * The interface for issuing I/O commands. This is an abstract class instead of
@@ -76,16 +94,36 @@ public abstract class IOProvider
 	public abstract string readln();
 }
 
+private const string CONFIG_FILE_NAME = ".fluteconfig";
+private const string PORT_ATTR = "port";
+
 version(Tango)
 {
 	
 }
 else
 {
+	string[string] readConfig()
+	{
+		if(!exists(CONFIG_FILE_NAME))
+		{
+			writef("Couldn't open config file %s\n", CONFIG_FILE_NAME);
+			exit(EXIT_FAILURE);
+		}
+		
+		string contents = cast(string) read(CONFIG_FILE_NAME);
+		return parseConfigFile(contents);
+	}
+	
 	version(FluteCommandLine)
 	{
 		private final class IOProviderImpl : IOProvider
-		{	
+		{
+			private this(string[string] config)
+			{
+				// Nothing to do
+			}
+			
 			public void write(string str)
 			{
 				writef(str);
@@ -109,12 +147,20 @@ else
 			Socket serv;
 			Stream stream;
 			
-			public this()
+			public this(string[string] config)
 			{	
 				try
 				{
+					string* portStr = PORT_ATTR in config;
+					if(!portStr)
+					{
+						writef("No port defined in config file\n");
+						exit(EXIT_FAILURE);
+					}
+					uint port = atoi(*portStr);
+					
 					serv = new TcpSocket(AddressFamily.INET);
-					serv.bind(new InternetAddress("127.0.0.1", getPort()));
+					serv.bind(new InternetAddress("127.0.0.1", port));
 					serv.listen(0);
 					Socket conn = serv.accept();
 					stream = new SocketStream(conn);
@@ -155,41 +201,45 @@ else
 			{
 				return stream.readLine();
 			}
-			
-			private const string CONFIG_FILE_NAME = ".fluteport";
-			
-			private uint getPort()
-			{
-				if(!exists(CONFIG_FILE_NAME))
-				{
-					writef("Couldn't open config file %s\n", CONFIG_FILE_NAME);
-					exit(EXIT_FAILURE);
-				}
-				
-				string contents = cast(string) read(CONFIG_FILE_NAME);
-				
-				uint i = 0;
-				while(i < contents.length && isdigit(contents[i]))
-					i++;
-				
-				if(0 == i)
-				{
-					writef("Invalid flute config file %s\n", CONFIG_FILE_NAME);
-					exit(EXIT_FAILURE);
-				}
-				
-				string portStr = contents[0 .. i];
-				int portNum = atoi(portStr);
-				
-				if(portNum < 1024 || portNum > 65535)
-				{
-					writef("Invalid port %d - Must be in the range 1024 .. 65535\n",
-						portNum);
-					exit(EXIT_FAILURE);
-				}
-				
-				return portNum;
-			}
 		}
 	}
+}
+
+/**
+ * Process the contents of the config file.
+ * 
+ * Params:
+ *     content = the contents of the config file
+ * Returns: the configuration data as a string -> string hash
+ */
+private string[string] parseConfigFile(string content)
+{
+	// This function splits the line and adds it to the config
+	string[string] config;
+	void processLine(string line)
+	{
+		int pos = find(line, '=');
+		if(pos <= 0 || pos + 1 == line.length)
+			return;
+		
+		string key = line[0 .. pos];
+		string value = line[pos + 1 .. $];
+		config[key]= value;
+	}
+	
+	// Enumerate through the lines, passing them to processLine
+	uint start = 0;
+	foreach (i, c; content)
+	{
+		if (c == '\n')
+		{
+			uint end = i;
+			if(end && (content[end - 1] == '\r'))
+				--end;
+			processLine(content[start .. end]);
+			start = i + 1;
+		}
+	}
+	
+	return config;
 }

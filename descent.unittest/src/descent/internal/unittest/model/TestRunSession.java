@@ -129,6 +129,7 @@ public class TestRunSession
 					createTestTree(tests);
 					if(fTestRunnerClient.isConnected())
 						fTestRunnerClient.run();
+					fTestRunnerClient.terminate();
 				}
 			}
 		)).start();
