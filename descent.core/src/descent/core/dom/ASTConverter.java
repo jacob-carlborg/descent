@@ -3644,6 +3644,9 @@ public class ASTConverter {
 				AliasDeclaration alias = (AliasDeclaration) a.resolvedSymbol;
 				if (alias.aliassym != null && alias.aliassym.ident != null && alias.aliassym.ident.ident != null) {
 					id = alias.aliassym.ident.ident;
+				} else if (alias.sourceType != null) {
+					// HACK: resolve this correctly
+					id = alias.sourceType.toCharArray();
 				} else {
 					id = a.ident;
 				}
