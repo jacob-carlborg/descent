@@ -732,6 +732,12 @@ public class GenericVisitor extends ASTVisitor {
 		
 		endVisitNode(node);
 	}
+	
+	@Override
+	public void endVisit(TypeofReturn node) {
+		
+		endVisitNode(node);
+	}
 
 	@Override
 	public void endVisit(TypeTemplateParameter node) {
@@ -1485,6 +1491,12 @@ public class GenericVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeofType node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(TypeofReturn node) {
 		
 		return visitNode(node);
 	}

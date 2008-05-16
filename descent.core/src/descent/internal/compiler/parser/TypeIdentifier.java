@@ -132,6 +132,7 @@ public class TypeIdentifier extends TypeQualified {
 
 		t = new TypeIdentifier(loc, ident);
 		t.syntaxCopyHelper(this, context);
+		t.copySourceRange(this);
 		return t;
 	}
 

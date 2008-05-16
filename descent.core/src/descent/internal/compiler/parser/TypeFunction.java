@@ -329,6 +329,7 @@ public class TypeFunction extends Type implements Cloneable {
 		Type treturn = next != null ? next.syntaxCopy(context) : null;
 		Arguments params = Dsymbol.arraySyntaxCopy(parameters, context);
 		Type t = new TypeFunction(params, treturn, varargs, linkage);
+		t.copySourceRange(this);
 		return t;
 	}
 

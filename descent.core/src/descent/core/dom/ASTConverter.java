@@ -77,6 +77,8 @@ public class ASTConverter {
 	protected IProgressMonitor monitor;
 	protected boolean resolveBindings;
 	
+	public boolean inTemplateInstantiation;
+	
 	private Comment[] moduleComments;
 	
 	public ASTConverter(boolean resolveBindings, IProgressMonitor monitor) {
@@ -101,10 +103,14 @@ public class ASTConverter {
 		CompilationUnit unit = new CompilationUnit(ast);
 		unit.setJavaElement(cu);
 		
-		moduleComments = convertComments(module.comments);
-		unit.setCommentTable(moduleComments);
+		if (module.comments != null) {
+			moduleComments = convertComments(module.comments);
+			unit.setCommentTable(moduleComments);
+		}
 		
-		unit.setPragmaTable(convertPragmas(module.pragmas));
+		if (module.pragmas != null) {
+			unit.setPragmaTable(convertPragmas(module.pragmas));
+		}
 		
 		if (module.md != null) {
 			unit.setModuleDeclaration(convert(module.md));
@@ -449,6 +455,8 @@ public class ASTConverter {
 			return convert((TypeSlice) symbol);
 		case ASTDmdNode.TYPE_TYPEOF:
 			return convert((TypeTypeof) symbol);
+		case ASTDmdNode.TYPE_RETURN:
+			return convert((TypeReturn) symbol);
 		case ASTDmdNode.UADD_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.POSITIVE);
 		case ASTDmdNode.UNION_DECLARATION:
@@ -3101,6 +3109,12 @@ public class ASTConverter {
 		}
 	}
 	
+	public descent.core.dom.Type convert(TypeReturn a) {
+		TypeofReturn b = new TypeofReturn(ast);
+		b.setSourceRange(a.start, a.length);
+		return b;
+	}
+	
 	public descent.core.dom.Type convert(TypeInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
 		if (a.tempinst.name != null) {
@@ -3442,6 +3456,24 @@ public class ASTConverter {
 				convert((StorageClassDeclaration) symbol, destination);
 				break;
 			}
+			case ASTDmdNode.CONDITIONAL_DECLARATION:
+				if (inTemplateInstantiation) {
+					ConditionalDeclaration decl = (ConditionalDeclaration) symbol;
+					switch(decl.condition.inc) {
+					case 0:
+						destination.add((Declaration) convert(symbol));
+						break;
+					case 1:
+						convertDeclarations(destination, decl.decl);
+						break;
+					case 2:
+						convertDeclarations(destination, decl.elsedecl);
+						break;
+					}
+				} else {
+					destination.add((Declaration) convert(symbol));
+				}
+				break;
 			default:
 				destination.add((Declaration) convert(symbol));
 			}
@@ -3461,11 +3493,40 @@ public class ASTConverter {
 	public void convertStatements(List<descent.core.dom.Statement> destination, List<Statement> source) {
 		if (source == null || source.isEmpty()) return;
 		for(Statement stm : source) {
+			
+			if (inTemplateInstantiation) {
+				switch(stm.getNodeType()) {
+				case ASTDmdNode.CONDITIONAL_STATEMENT:
+					if (inTemplateInstantiation) {
+						ConditionalStatement condStm = (ConditionalStatement) stm;
+						switch(condStm.condition.inc) {
+						case 1:
+							stm = condStm.ifbody;
+							stm = extractSingleCompoundStatement(stm);
+							break;
+						case 2:
+							stm = condStm.elsebody;
+							stm = extractSingleCompoundStatement(stm);
+							break;
+						}
+					}
+				}
+			}
 			descent.core.dom.Statement convertStm = convert(stm);
 			if (convertStm != null) {
 				destination.add(convertStm);
 			}
 		}
+	}
+
+	private Statement extractSingleCompoundStatement(Statement stm) {
+		if (stm instanceof CompoundStatement) {
+			CompoundStatement cs = (CompoundStatement) stm;
+			if (cs.statements != null && cs.statements.size() == 1) {
+				stm = cs.statements.get(0);
+			}
+		}
+		return stm;
 	}
 	
 	public void convertBaseClasses(List<descent.core.dom.BaseClass> destination, List<BaseClass> source) {
@@ -3576,7 +3637,23 @@ public class ASTConverter {
 		if (a == null || a.ident == null || CharOperation.equals(a.ident, Id.empty)) return null;
 		
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
-		b.internalSetIdentifier(new String(a.ident));
+		
+		char[] id;
+		if (inTemplateInstantiation) {
+			if (a.resolvedSymbol instanceof AliasDeclaration) {
+				AliasDeclaration alias = (AliasDeclaration) a.resolvedSymbol;
+				if (alias.aliassym != null && alias.aliassym.ident != null && alias.aliassym.ident.ident != null) {
+					id = alias.aliassym.ident.ident;
+				} else {
+					id = a.ident;
+				}
+			} else {
+				id = a.ident;
+			}
+		} else {
+			id = a.ident;
+		}
+		b.internalSetIdentifier(new String(id));
 		b.setSourceRange(a.start, a.length);
 		
 		if (resolveBindings) {

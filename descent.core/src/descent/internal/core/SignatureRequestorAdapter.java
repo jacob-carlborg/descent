@@ -133,6 +133,10 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 	
+	public void acceptTypeofReturn() {
+		
+	}
+	
 	public void acceptSlice(char[] lwr, char[] upr, String signature) {
 		
 	}

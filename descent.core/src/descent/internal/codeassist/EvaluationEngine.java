@@ -7,6 +7,10 @@ import descent.core.IEvaluationResult;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.dom.AST;
+import descent.core.dom.ASTConverter;
+import descent.core.dom.ASTNode;
+import descent.core.dom.CompilationUnit;
 import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
@@ -114,6 +118,18 @@ public class EvaluationEngine extends AstVisitorAdapter {
 				evalExp(node.evaluatedExpression);
 			} else if (node.resolvedExpression != null) {
 				evalExp(node.resolvedExpression);
+			} else if (node.templateInstance != null && node.templateInstance.members != null) {
+				ASTConverter converter = new ASTConverter(false, null);
+				converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
+				converter.init(javaProject, context, null);
+				converter.inTemplateInstantiation = true;
+				
+				Module module = new Module(null, null);
+				module.members = node.templateInstance.members;
+				module.sourceMembers = node.templateInstance.members;
+				
+				CompilationUnit unit = converter.convert(module, null);
+				result = new EvaluationResult(unit, IEvaluationResult.COMPILATION_UNIT);
 			}
 		}
 		

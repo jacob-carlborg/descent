@@ -3610,15 +3610,19 @@ public class Lexer implements IProblemRequestor {
 									p++;
 									if (input(p) == '_'
 											&& !Chars.isidchar(input(p + 1))) {
-										t.value = TOK.TOKstring;
-										if (filename != null) {
-											t.ustring = filename;
+										if (apiLevel == D2) {
+											t.value = TOK.TOKfile;
 										} else {
-											t.ustring = Id.FILE_DUMMY;
+											t.value = TOK.TOKstring;
+											if (filename != null) {
+												t.ustring = filename;
+											} else {
+												t.ustring = Id.FILE_DUMMY;
+											}
+											t.len = t.ustring.length;
+											t.special = Token.SPECIAL__FILE__;
+											t.sourceString = Id.FILE;
 										}
-										t.len = t.ustring.length;
-										t.special = Token.SPECIAL__FILE__;
-										t.sourceString = Id.FILE;
 										t.sourceLen = 8;
 										p++;
 										return;
@@ -3629,24 +3633,30 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				case 'L':
-					p++;
-					if (input(p) == 'I') {
+					if (apiLevel != D2) {
 						p++;
-						if (input(p) == 'N') {
+						if (input(p) == 'I') {
 							p++;
-							if (input(p) == 'E') {
+							if (input(p) == 'N') {
 								p++;
-								if (input(p) == '_') {
+								if (input(p) == 'E') {
 									p++;
-									if (input(p) == '_'
-											&& !Chars.isidchar(input(p + 1))) {
-										t.value = TOK.TOKint64v;
-										t.intValue = new integer_t(linnum);
-										t.special = Token.SPECIAL__LINE__;
-										t.sourceString = Id.LINE;
-										t.sourceLen = 8;
+									if (input(p) == '_') {
 										p++;
-										return;
+										if (input(p) == '_'
+												&& !Chars.isidchar(input(p + 1))) {
+											if (apiLevel == D2) {
+												t.value = TOK.TOKline;
+											} else {
+												t.value = TOK.TOKint64v;
+												t.intValue = new integer_t(linnum);
+												t.special = Token.SPECIAL__LINE__;
+												t.sourceString = Id.LINE;
+											}
+											t.sourceLen = 8;
+											p++;
+											return;
+										}
 									}
 								}
 							}
@@ -3818,7 +3828,27 @@ public class Lexer implements IProblemRequestor {
 				case 't':
 					if (apiLevel == D2) {
 						p++;
-						if (input(p) == 'r') {
+						switch(input(p)) {
+						case 'h':
+							p++;
+							if (input(p) == 'r') {
+								p++;
+								if (input(p) == 'e') {
+									p++;
+									if (input(p) == 'a') {
+										p++;
+										if (input(p) == 'd'
+												&& !Chars
+														.isidchar(input(p + 1))) {
+											t.value = TOK.TOKtls;
+											t.sourceLen = 8;
+											p++;
+											return;
+										}
+									}
+								}
+							}
+						case 'r':
 							p++;
 							if (input(p) == 'a') {
 								p++;
@@ -3837,6 +3867,7 @@ public class Lexer implements IProblemRequestor {
 									}
 								}
 							}
+							break;
 						}
 						break;
 					}

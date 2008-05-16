@@ -275,7 +275,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 					case IProblem.ContinueNotInLoop:
 					case IProblem.ForeachIndexCannotBeRef:
 					case IProblem.IncompatibleParameterStorageClass:
-					case IProblem.OutCannotBeFinal:
+					case IProblem.OutCannotBeConst:
+					case IProblem.OutCannotBeInvariant:
 					case IProblem.ScopeCannotBeRefOrOut:
 					case IProblem.SymbolNotDefined:
 					case IProblem.SymbolNotATemplate:

@@ -236,6 +236,7 @@ public class TypeInstance extends TypeQualified {
 
 		t = new TypeInstance(loc, (TemplateInstance) tempinst.syntaxCopy(null, context));
 		t.syntaxCopyHelper(this, context);
+		t.copySourceRange(this);
 		return t;
 	}
 	

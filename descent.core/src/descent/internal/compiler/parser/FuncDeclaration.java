@@ -2046,8 +2046,14 @@ public class FuncDeclaration extends Declaration {
 
 		f.outId = outId;
 		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;
+		f.sourceFrequire = f.frequire;
+		
 		f.fensure = fensure != null ? fensure.syntaxCopy(context) : null;
+		f.sourceFensure = f.fensure;
+		
 		f.fbody = fbody != null ? fbody.syntaxCopy(context) : null;
+		f.sourceFbody = f.fbody;
+		
 		if (fthrows != null) {
 			throw new IllegalStateException("assert(!fthrows);"); // deprecated
 		}

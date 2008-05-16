@@ -36,6 +36,7 @@ import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypeInstance;
 import descent.internal.compiler.parser.TypePointer;
+import descent.internal.compiler.parser.TypeReturn;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
 import descent.internal.compiler.parser.TypeTypeof;
@@ -88,6 +89,11 @@ public class InternalSignature implements ISignatureConstants {
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
+				}
+				@Override
+				public void acceptTypeofReturn() {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeReturn(Loc.ZERO));
 				}
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
@@ -266,6 +272,11 @@ public class InternalSignature implements ISignatureConstants {
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
+				}
+				@Override
+				public void acceptTypeofReturn() {
+					Stack<Type> sub = stack.peek();
+					sub.push(new TypeReturn(Loc.ZERO));
 				}
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {

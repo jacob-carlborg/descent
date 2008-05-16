@@ -215,6 +215,7 @@ public class TypeAArray extends TypeArray {
 			t = this;
 		} else {
 			t = new TypeAArray(t, ti);
+			t.copySourceRange(this);
 		}
 		return t;
 	}

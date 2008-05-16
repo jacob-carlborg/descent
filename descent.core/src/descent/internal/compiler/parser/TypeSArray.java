@@ -450,6 +450,7 @@ public class TypeSArray extends TypeArray {
 		Type t = next.syntaxCopy(context);
 		Expression e = dim.syntaxCopy(context);
 		t = new TypeSArray(t, e, context.encoder);
+		t.copySourceRange(this);
 		return t;
 	}
 

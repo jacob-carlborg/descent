@@ -1114,6 +1114,13 @@ public abstract class ASTNode {
 	public static final int MODIFIED_TYPE = 137;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>TypeofReturn</code>.
+	 * @see TypeofReturn
+	 */
+	public static final int TYPEOF_RETURN = 138;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1362,6 +1369,8 @@ public abstract class ASTNode {
 			return TypeExpression.class;
 		case TYPEID_EXPRESSION:
 			return TypeidExpression.class;
+		case TYPEOF_RETURN:
+			return TypeofReturn.class;
 		case TYPEOF_TYPE:
 			return TypeofType.class;
 		case TYPE_TEMPLATE_PARAMETER:

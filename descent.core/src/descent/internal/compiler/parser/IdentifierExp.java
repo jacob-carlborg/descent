@@ -24,10 +24,16 @@ public class IdentifierExp extends Expression {
 	public char[] ident;
 	
 	/*
-	 * Once the semantic pass is done, the evaluated expression is kept in
+	 * Once semantic pass is done, the evaluated expression is kept in
 	 * this variable. Only for compile-time function evaluation. 
 	 */
 	public Expression evaluatedExpression;
+	
+	/*
+	 * Once semantic pass is done, if this identifier was the name of
+	 * a TemplateInstance, this holds it.
+	 */
+	public TemplateInstance templateInstance;
 
 	public IdentifierExp(Loc loc) {
 		super(loc, TOK.TOKidentifier);

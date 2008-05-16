@@ -18,6 +18,7 @@ import descent.core.ICodeAssist;
 import descent.core.IEvaluationResult;
 import descent.core.JavaModelException;
 import descent.core.ToolFactory;
+import descent.core.dom.CompilationUnit;
 import descent.core.formatter.CodeFormatter;
 
 public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
@@ -72,31 +73,42 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 			return result.toString();
 		case IEvaluationResult.CHAR_ARRAY:
 		case IEvaluationResult.WCHAR_ARRAY:
-		case IEvaluationResult.DCHAR_ARRAY:
+		case IEvaluationResult.DCHAR_ARRAY: {
 			String text = (String) result.getValue();
 			// Try to format the code, it could be a list of declarations or statements
-			CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
-			try {
-				// The most common example is something inside a function 
-				TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS,
-						text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
-				if (edit == null) {
-					// If not, try parsing a whole compilation unit
-					edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT,
-							text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
-				}
-				if (edit != null) {
-					Document doc = new Document(text);
-					edit.apply(doc);
-					text = doc.get();
-				}
-			} catch (Exception e) {
-			}
-
+			text = format(text);
 			return text;
+		}
+		case IEvaluationResult.COMPILATION_UNIT: {
+			CompilationUnit unit = (CompilationUnit) result.getValue();
+			String text = unit.toString();
+			text = format(text);
+			return text;
+		}
 		default:
 			return null;
 		}		
+	}
+
+	private String format(String text) {
+		CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
+		try {
+			// The most common example is something inside a function 
+			TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS,
+					text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
+			if (edit == null) {
+				// If not, try parsing a whole compilation unit
+				edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT,
+						text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
+			}
+			if (edit != null) {
+				Document doc = new Document(text);
+				edit.apply(doc);
+				text = doc.get();
+			}
+		} catch (Exception e) {
+		}
+		return text;
 	}
 
 	@Override

@@ -53,6 +53,7 @@ public interface ISignatureConstants {
 	char TEMPLATE_INSTANCE_VALUE = '-';
 	char TEMPLATE_INSTANCE_SYMBOL = '*';
 	char TYPEOF = '>';
+	char TYPEOF_RETURN = 'Q';
 	char SLICE = '¬';
 	char SCOPE = '#';
 	char POSITION = '$';

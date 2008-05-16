@@ -47,6 +47,8 @@ public class STC {
 		case TOKextern: return STCextern;
 		case TOKinvariant: return STCinvariant;
 		case TOKref: return STCref;
+		case TOKnothrow: return STCnothrow;
+		case TOKtls: return STCtls;
 		}
 		throw new IllegalStateException();
 	}

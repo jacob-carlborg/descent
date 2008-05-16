@@ -634,6 +634,9 @@ public class AstVisitorAdapter implements IASTVisitor {
 
 	public void endVisit(TypeTypeof node) {
 	}
+	
+	public void endVisit(TypeReturn node) {
+	}
 
 	public void endVisit(UAddExp node) {
 	}
@@ -1539,6 +1542,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(TypeTypeof node) {
+		return true;
+	}
+	
+	public boolean visit(TypeReturn node) {
 		return true;
 	}
 

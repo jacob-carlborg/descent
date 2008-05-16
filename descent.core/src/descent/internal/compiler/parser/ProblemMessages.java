@@ -51,6 +51,7 @@ final class ProblemMessages extends NLS {
 	public static String NoIdentifierForTemplateValueParameter;
 	public static String UnexpectedIdentifierInDeclarator;
 	public static String RedundantStorageClass;
+	public static String RedundantProtectionAttribute;
 	public static String UseBracesForAnEmptyStatement;
 	public static String MultipleDeclarationsMustHaveTheSameType;
 	public static String RedundantInStatement;
@@ -69,6 +70,8 @@ final class ProblemMessages extends NLS {
 	public static String HeredocRestOfLineShouldBeBlank;
 	public static String IdentifierExpectedForHeredoc;
 	public static String DelimitedStringMustEndInValue;
+	public static String TypeOnlyAllowedIfAnonymousEnumAndNoEnumType;
+	public static String IfTypeThereMustBeAnInitializer;
 	public static String SymbolConflictsWithSymbolAtLocation;
 	public static String SymbolAtLocationConflictsWithSymbolAtLocation;
 	public static String PropertyCanNotBeRedefined;
@@ -175,7 +178,8 @@ final class ProblemMessages extends NLS {
 	public static String ForeachIndexCannotBeRef;
 	public static String ParametersDoesNotMatchParameterTypes;
 	public static String IncompatibleParameterStorageClass;
-	public static String OutCannotBeFinal;
+	public static String OutCannotBeConst;
+	public static String OutCannotBeInvariant;
 	public static String ScopeCannotBeRefOrOut;
 	public static String IncompatibleTypesForOperator;
 	public static String IncompatibleTypesForMinus;
@@ -465,6 +469,8 @@ final class ProblemMessages extends NLS {
 	public static String UseTokenInsteadOfTokenWhenComparingWithNull;
 	public static String VoidDoesNotHaveAnInitializer;
 	public static String FunctionNameExpectedForStartAddress;
+	public static String TypeofReturnMustBeInsideFunction;
+	public static String PostBlitsAreOnlyForStructUnionDefinitions;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

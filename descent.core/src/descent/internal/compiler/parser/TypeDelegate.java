@@ -93,6 +93,7 @@ public class TypeDelegate extends Type {
 			t = this;
 		} else {
 			t = new TypeDelegate(t);
+			t.copySourceRange(this);
 		}
 		return t;
 	}

@@ -114,6 +114,7 @@ public class TypePointer extends Type {
 			t = this;
 		} else {
 			t = new TypePointer(t);
+			t.copySourceRange(this);
 		}
 		return t;
 	}

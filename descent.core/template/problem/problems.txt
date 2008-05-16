@@ -121,6 +121,9 @@ UnexpectedIdentifierInDeclarator
 RedundantStorageClass
 	formatString=Redundant storage class
 	numArgs=0
+RedundantProtectionAttribute
+	formatString=Redundant protection attribute
+	numArgs=0
 UseBracesForAnEmptyStatement
 	formatString=Use '{ }' for an empty statement, not a ';'
 	numArgs=0
@@ -175,6 +178,12 @@ IdentifierExpectedForHeredoc
 DelimitedStringMustEndInValue
 	formatString=Delimited string must end in %1$s
 	numArgs=1
+TypeOnlyAllowedIfAnonymousEnumAndNoEnumType
+	formatString=Type only allowed if anonymous enum and no enum type
+	numArgs=0
+IfTypeThereMustBeAnInitializer
+	formatString=If type, there must be an initializer
+	numArgs=0
 SymbolConflictsWithSymbolAtLocation
 	formatString=%1$s conflicts with %2$s %3$s at %4$s
 	numArgs=4
@@ -491,13 +500,16 @@ ParametersDoesNotMatchParameterTypes
 	formatString=%1$s does not match parameter types (%2$s)
 	numArgs=2
 IncompatibleParameterStorageClass
-	formatString=<<TODO>>
+	formatString=incompatible parameter storage class
 	numArgs=0
-OutCannotBeFinal
-	formatString=<<TODO>>
+OutCannotBeConst
+	formatString=out cannot be const
+	numArgs=0
+OutCannotBeInvariant
+	formatString=out cannot be invariant
 	numArgs=0
 ScopeCannotBeRefOrOut
-	formatString=<<TODO>>
+	formatString=scope cannot be ref or out
 	numArgs=0
 IncompatibleTypesForOperator
 	formatString=Types %1$s and %2$s are incompatible for %3$s
@@ -1363,8 +1375,12 @@ VoidDoesNotHaveAnInitializer
 FunctionNameExpectedForStartAddress
 	formatString=Function name expected for start address
 	numArgs=0
-
-
+TypeofReturnMustBeInsideFunction
+	formatString=typeof(return) must be inside function
+	numArgs=0
+PostBlitsAreOnlyForStructUnionDefinitions
+	formatString=Post blits are only for struct/union definitions
+	numArgs=0
 
 
 

@@ -164,6 +164,7 @@ public class TypeDArray extends TypeArray {
 			t = this;
 		} else {
 			t = new TypeDArray(t);
+			t.copySourceRange(this);
 		}
 		return t;
 	}

@@ -1639,6 +1639,12 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(TypeofReturn node) {
+		this.buffer.append("typeof(return)");
+		return false;
+	}
+	
+	@Override
 	public boolean visit(TypeTemplateParameter node) {
 		node.getName().accept(this);
 		if (node.getSpecificType() != null) {

@@ -3004,6 +3004,13 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		endModifiedType(node);
 		return false;
 	}
+	
+	public boolean visit(TypeReturn node) {
+		startModifiedType(node);
+		this.buffer.append("typeof(return)");
+		endModifiedType(node);
+		return false;
+	}
 
 	public boolean visit(UAddExp node) {
 		this.buffer.append("+");

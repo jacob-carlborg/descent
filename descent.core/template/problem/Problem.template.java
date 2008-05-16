@@ -93,19 +93,19 @@ public class Problem implements IProblem {
 		return newSemanticTypeError(id, line, start, length, null);
 	}
 	
-	public static IProblem newSemanticTypeWarning(int id, int line, int start, int length, String[] arguments) {
+	public static Problem newSemanticTypeWarning(int id, int line, int start, int length, String[] arguments) {
 		return newSemanticTypeProblem(id, line, start, length, arguments, false);
 	}
 	
-	public static IProblem newSemanticTypeWarning(int id, int line, int start, int length) {
+	public static Problem newSemanticTypeWarning(int id, int line, int start, int length) {
 		return newSemanticTypeWarning(id, line, start, length, null);
 	}
 	
-	public static IProblem newSemanticTypeWarning(int id, ASTDmdNode node) {
+	public static Problem newSemanticTypeWarning(int id, ASTDmdNode node) {
 		return newSemanticTypeWarning(id, node.getLineNumber(), node.getStart(), node.getLength(), null);
 	}
 	
-	public static IProblem newSemanticTypeWarningLoc(int id, ASTDmdNode node) {
+	public static Problem newSemanticTypeWarningLoc(int id, ASTDmdNode node) {
 		return newSemanticTypeWarning(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), null);
 	}
 	

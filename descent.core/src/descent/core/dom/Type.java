@@ -13,6 +13,7 @@ package descent.core.dom;
  *    SimpleType
  *    TemplateType
  *    TypeofType
+ *    TypeofReturn
  * </pre>
  */
 public abstract class Type extends ASTNode {

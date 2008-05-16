@@ -16,7 +16,8 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.013
 ------------------------------
-Make an option to ignore unrecongnized pragmas
+Make an option to ignore unrecongnized pragmas.
+Implement TypeReturn, PostBlitDeclaration and TemplateThisParameter for Descent side.
 
 cast.c
 class.c
@@ -35,8 +36,6 @@ idgen.c
 impcnvgen.c
 init.c
 inline.c
-lexer.c
-lexer.h
 mangle.c
 mars.c
 module.c
@@ -45,7 +44,6 @@ mtype.h
 opopver.c
 optimize.c
 parse.c
-parse.h
 statement.c
 statement.h
 struct.c

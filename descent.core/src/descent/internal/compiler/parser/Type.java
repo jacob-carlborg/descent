@@ -494,6 +494,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public char mod; // modifiers (MODconst, MODinvariant)
 	public Type next, sourceNext;
 	public String deco;
+	public Type cto; // MODconst ? mutable version of this type : const version
+	public Type ito; // MODinvariant ? mutable version of this type : invariant version
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
@@ -684,6 +686,38 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 		return singleton.arrayof;
 	}
+	
+	public Type constOf(SemanticContext context) {
+		if (isConst()) {
+			return this;
+		}
+		if (cto != null) {
+			return cto;
+		}
+		Type t = makeConst(0, 0);
+		t = t.merge(context);
+		cto = t;
+		if (ito != null) {
+			ito.cto = t;
+		}
+		return t;
+	}
+
+	public Type invariantOf(SemanticContext context) {
+		if (isInvariant()) {
+			return this;
+		}
+		if (ito != null) {
+			return ito;
+		}
+		Type t = makeInvariant(0, 0);
+		t = t.merge(context);
+		ito = t;
+		if (cto != null) {
+			cto.ito = t;
+		}
+		return t;
+	}
 
 	public final Expression defaultInit(SemanticContext context) {
 		return defaultInit(Loc.ZERO, context);
@@ -764,9 +798,22 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 		for (t = this; t != null; t = t.next) {
 			s = t.toDsymbol(sc, context);
-			if (s != null)
+			if (s != null) {
 				s.checkDeprecated(sc, context, this); // TODO check "this" for reference
+			}
 		}
+	}
+	
+	public boolean isConst() {
+		return mod == MODconst;
+	}
+	
+	public boolean isInvariant() {
+		return mod == MODinvariant;
+	}
+	
+	public boolean isMutable() {
+		return mod == 0;
 	}
 
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
@@ -854,8 +901,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Type))
+		if (!(o instanceof Type)) {
 			return false;
+		}
 
 		Type t = (Type) o;
 
@@ -1131,17 +1179,19 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			} else if (ty == Tsarray && at.ty == Tarray
 					&& nextOf().equals(at.nextOf())) {
 				return MATCHexact;
-			} else
+			} else {
 				return MATCHnomatch;
+			}
 		}
 
 		if (ty != tparam.ty) {
 			return MATCHnomatch;
 		}
 
-		if (nextOf() != null)
+		if (nextOf() != null) {
 			return nextOf().deduceType(sc, tparam.nextOf(), parameters,
 					dedtypes, context);
+		}
 
 		return MATCHexact;
 	}

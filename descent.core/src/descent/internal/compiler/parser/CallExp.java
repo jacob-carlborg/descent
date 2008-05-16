@@ -115,7 +115,7 @@ public class CallExp extends UnaExp {
 							}
 							args.set(i, earg);
 						}
-						e = eval_builtin(b, args);
+						e = eval_builtin(b, args, context);
 						if (null == e) {
 							e = EXP_CANT_INTERPRET;
 						}

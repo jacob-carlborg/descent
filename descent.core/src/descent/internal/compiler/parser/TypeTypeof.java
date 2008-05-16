@@ -97,6 +97,7 @@ public class TypeTypeof extends TypeQualified {
 	public Type syntaxCopy(SemanticContext context) {
 		TypeTypeof t = new TypeTypeof(loc, exp.syntaxCopy(context), encoder);
 		t.syntaxCopyHelper(this, context);
+		t.copySourceRange(this);
 		return t;
 	}
 

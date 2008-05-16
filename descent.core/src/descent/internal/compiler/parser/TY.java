@@ -50,6 +50,7 @@ public enum TY {
     Ttypeof('@'),
     Ttuple('B'),
     Tslice('@'),
+    Treturn('@')
     
     ;
     

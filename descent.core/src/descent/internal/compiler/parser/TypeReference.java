@@ -24,10 +24,12 @@ public class TypeReference extends Type {
 	@Override
 	public Type syntaxCopy(SemanticContext context) {
 		Type t = next.syntaxCopy(context);
-		if (same(t, next, context))
+		if (same(t, next, context)) {
 			t = this;
-		else
+		} else {
 			t = new TypeReference(t, context);
+			t.copySourceRange(this);
+		}
 		return t;
 	}
 

@@ -265,6 +265,10 @@ public class SignatureProcessor implements ISignatureConstants {
 				i += n;
 				
 				return i;
+			case TYPEOF_RETURN:
+				i++;
+				requestor.acceptTypeofReturn();
+				return i;
 			case SLICE:
 				i = process0(signature, i + 1, wantSignature, requestor);
 				i++;

@@ -8,10 +8,15 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class EnumMember extends Dsymbol {
 
 	public Expression value, sourceValue;
+	public Type type, sourceType;
 	
 	private IField javaElement;
 
 	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
+		this(loc, id, value, null);
+	}
+	
+	public EnumMember(Loc loc, IdentifierExp id, Expression value, Type type) {
 		super(id);
 		this.loc = loc;
 		this.value = this.sourceValue = value;
@@ -22,6 +27,8 @@ public class EnumMember extends Dsymbol {
 			start = id.start;
 			length = value.start + value.length - id.start;
 		}
+		this.type = type;
+		this.sourceType = type;
 	}
 
 	@Override

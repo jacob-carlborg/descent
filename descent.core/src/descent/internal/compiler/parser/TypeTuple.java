@@ -131,6 +131,7 @@ public class TypeTuple extends Type {
 	public Type syntaxCopy(SemanticContext context) {
 		Arguments args = Argument.arraySyntaxCopy(arguments, context);
 		Type t = TypeTuple.newArguments(args);
+		t.copySourceRange(this);
 		return t;
 	}
 

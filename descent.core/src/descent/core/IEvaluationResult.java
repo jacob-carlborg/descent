@@ -3,6 +3,8 @@ package descent.core;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import descent.core.dom.CompilationUnit;
+
 
 /**
  * Represents the result of a compile-time evaluation.
@@ -170,6 +172,12 @@ public interface IEvaluationResult {
 	 * TODO: implement this
 	 */
 	int ARRAY = CREAL + 1;
+	
+	/**
+	 * A compilation unit result.
+	 * {@link #getValue()} can be safely cast to {@link CompilationUnit}.
+	 */
+	int COMPILATION_UNIT = ARRAY + 1;
 	
 	/**
 	 * Returns the kind of this evaluation result. This is one of this

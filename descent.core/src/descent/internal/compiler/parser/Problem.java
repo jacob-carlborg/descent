@@ -209,6 +209,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.UnexpectedIdentifierInDeclarator);
 		case RedundantStorageClass:
 			return String.format(ProblemMessages.RedundantStorageClass);
+		case RedundantProtectionAttribute:
+			return String.format(ProblemMessages.RedundantProtectionAttribute);
 		case UseBracesForAnEmptyStatement:
 			return String.format(ProblemMessages.UseBracesForAnEmptyStatement);
 		case MultipleDeclarationsMustHaveTheSameType:
@@ -245,6 +247,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.IdentifierExpectedForHeredoc);
 		case DelimitedStringMustEndInValue:
 			return String.format(ProblemMessages.DelimitedStringMustEndInValue, arguments[0]);
+		case TypeOnlyAllowedIfAnonymousEnumAndNoEnumType:
+			return String.format(ProblemMessages.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType);
+		case IfTypeThereMustBeAnInitializer:
+			return String.format(ProblemMessages.IfTypeThereMustBeAnInitializer);
 		case SymbolConflictsWithSymbolAtLocation:
 			return String.format(ProblemMessages.SymbolConflictsWithSymbolAtLocation, arguments[0], arguments[1], arguments[2], arguments[3]);
 		case SymbolAtLocationConflictsWithSymbolAtLocation:
@@ -457,8 +463,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ParametersDoesNotMatchParameterTypes, arguments[0], arguments[1]);
 		case IncompatibleParameterStorageClass:
 			return String.format(ProblemMessages.IncompatibleParameterStorageClass);
-		case OutCannotBeFinal:
-			return String.format(ProblemMessages.OutCannotBeFinal);
+		case OutCannotBeConst:
+			return String.format(ProblemMessages.OutCannotBeConst);
+		case OutCannotBeInvariant:
+			return String.format(ProblemMessages.OutCannotBeInvariant);
 		case ScopeCannotBeRefOrOut:
 			return String.format(ProblemMessages.ScopeCannotBeRefOrOut);
 		case IncompatibleTypesForOperator:
@@ -1037,6 +1045,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.VoidDoesNotHaveAnInitializer);
 		case FunctionNameExpectedForStartAddress:
 			return String.format(ProblemMessages.FunctionNameExpectedForStartAddress);
+		case TypeofReturnMustBeInsideFunction:
+			return String.format(ProblemMessages.TypeofReturnMustBeInsideFunction);
+		case PostBlitsAreOnlyForStructUnionDefinitions:
+			return String.format(ProblemMessages.PostBlitsAreOnlyForStructUnionDefinitions);
 		default:
 			return "";
 		}

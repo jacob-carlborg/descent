@@ -2221,6 +2221,16 @@ public final class AST {
 		TypeofType node = new TypeofType(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented typeof return node owned by this AST.
+	 * 
+	 * @return the new unparented typeof return node
+	 */
+	public TypeofReturn newTypeofReturn() {
+		TypeofReturn node = new TypeofReturn(this);
+		return node;
+	}
 
 	/**
 	 * Creates an unparented type template parameter node owned by this AST.

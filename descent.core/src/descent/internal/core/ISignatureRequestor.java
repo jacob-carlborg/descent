@@ -208,6 +208,11 @@ public interface ISignatureRequestor {
 	 * The processor has found a typeof type.
 	 */
 	void acceptTypeof(char[] expression, String signature);
+	
+	/**
+	 * The processor has found a typeof return.
+	 */
+	void acceptTypeofReturn();
 
 	/**
 	 * The processor has found a slice type.

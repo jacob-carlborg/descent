@@ -253,6 +253,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int ARRAY_LENGTH_EXP = 194;
 	public final static int DOT_TEMPLATE_EXP = 195;
 	public final static int TYPE_REFERENCE = 196;
+	public final static int TYPE_RETURN = 197;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {

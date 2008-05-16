@@ -12,7 +12,6 @@
 package descent.core;
 
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
 
@@ -46,6 +45,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   | StaticArrayTypeSignature
  *   | AssociativeArrayTypeSignature
  *   | TypeofTypeSignature
+ *   | TypeofReturnSignature
  *   | SliceTypeSignature
  *   | FunctionTypeSignature
  *   | DelegateTypeSignature
@@ -90,6 +90,9 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   
  * TypeofTypeSignature ::=
  *   ">" Number ">" Chars // Number == Chars.length
+ *   
+ * TypeofReturnSignature ::=
+ *   "Q"
  *   
  * SliceTypeSignature ::=
  *   "¬" TypeSignature "¬"
@@ -385,6 +388,12 @@ public final class Signature {
 	 * Value is <code>'>'</code>.
 	 */
 	public static final char C_TYPEOF									= '>';
+	
+	/**
+	 * Character constant indicating a typeof return in a signature.
+	 * Value is <code>'>'</code>.
+	 */
+	public static final char C_TYPEOF_RETURN							= 'Q';
 	
 	/**
 	 * Character constant indicating a slice type in a signature.
@@ -926,6 +935,13 @@ public final class Signature {
 	 */
 	public static final int TEMPLATED_FUNCTION_SIGNATURE = 23;
 	
+	/**
+	 * Kind constant for a typeof return signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TYPEOF_RETURN_SIGNATURE = 24;
+	
 	
 		
 private Signature() {
@@ -1314,6 +1330,10 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 				add(signature);
 			}
 			@Override
+			public void acceptTypeofReturn() {
+				add(String.valueOf(ISignatureConstants.TYPEOF_RETURN));
+			}
+			@Override
 			public void acceptSlice(char[] lwr, char[] upr, String signature) {
 				replace(signature);
 			}
@@ -1461,6 +1481,10 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 				copy(signature);
 			}
 			@Override
+			public void acceptTypeofReturn() {
+				copy(String.valueOf(ISignatureConstants.TYPEOF_RETURN));
+			}
+			@Override
 			public void acceptSlice(char[] lwr, char[] upr, String signature) {
 				copy(signature);
 			}
@@ -1598,6 +1622,15 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				sb.append("typeof(");
 				sb.append(expression);
 				sb.append(')');
+				
+				st.push(sb);
+			}
+			@Override
+			public void acceptTypeofReturn() {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append("typeof(return)");
 				
 				st.push(sb);
 			}
@@ -2232,6 +2265,10 @@ public static int getTypeSignatureKind(String signature) {
 		@Override
 		public void acceptTypeof(char[] expression, String signature) {
 			kind[0] = TYPEOF_TYPE_SIGNATURE;
+		}
+		@Override
+		public void acceptTypeofReturn() {
+			kind[0] = TYPEOF_RETURN_SIGNATURE;
 		}
 		@Override
 		public void exitFunctionType(LINK link, char argumentBreak, String signature) {
